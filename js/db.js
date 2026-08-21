@@ -73,11 +73,12 @@
     S.positionStages.forEach(st => walkPos(st.children, st.stage, st.tag, ""));
     if (onProgress) onProgress("写入岗位体系…");
     for (const p of flatPos) {
+      if (nameToPos.has(p.name)) continue; // 同名岗位只写入一次（防止树中重名或重复 seed）
       const id = await db.positions.add({
         name: p.name, stage: p.stage, tag: p.tag, category: p.category,
         description: p.description, demand: p.demand, sort: 0, status: "active"
       });
-      if (!nameToPos.has(p.name)) nameToPos.set(p.name, id);
+      nameToPos.set(p.name, id);
     }
 
     // 3) 岗位技术栈
@@ -167,6 +168,33 @@
       added++;
     }
     return added;
+  };
+
+  /* 迁移：清理重复岗位记录（同名岗位只保留 id 最小的一条） */
+  DB.migrateDedupPositions = async function () {
+    const MIGRATION_KEY = "migrated_dedup_positions_v1";
+    if (await DB.getSetting(MIGRATION_KEY)) return 0;
+    const all = await db.positions.toArray();
+    const byName = new Map();
+    for (const p of all) {
+      if (!byName.has(p.name)) byName.set(p.name, []);
+      byName.get(p.name).push(p);
+    }
+    let removed = 0;
+    for (const [name, list] of byName) {
+      if (list.length <= 1) continue;
+      // 按 id 升序，保留第一条，删除其余
+      list.sort((a, b) => a.id - b.id);
+      const keepId = list[0].id;
+      const dupIds = list.slice(1).map(p => p.id);
+      for (const did of dupIds) {
+        await db.positions.delete(did);
+        await db.positionSkills.where("positionId").equals(did).delete();
+        removed++;
+      }
+    }
+    if (removed > 0) await DB.setSetting(MIGRATION_KEY, true);
+    return removed;
   };
 
   window.DB = DB;

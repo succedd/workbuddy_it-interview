@@ -235,8 +235,8 @@
         <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
         <div class="muted" style="font-size:12px">${c.count} 题 · ${c.era || ""}</div>
       </a>`).join("");
-    const stageCards = posByStage.map(s => `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
-        <div class="pill-row">${s.list.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(p.name)}</a>`).join("")}${s.list.length > 8 ? `<span class="muted">+${s.list.length - 8}</span>` : ""}</div></div>`).join("");
+    const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
+        <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(p.name)}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
     setMain(`
       <section class="hero">
@@ -347,8 +347,12 @@
   /* ============================ 岗位体系页 ============================ */
   async function pagePositions() {
     const byStage = Services.positionsByStage();
-    const html = byStage.map(s => `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag tag-ai">${U.esc(s.list[0] ? s.list[0].tag : "")}</span></div>
-      <div class="grid grid-cols-auto">${s.list.map(p => {
+    const html = byStage.map(s => {
+      // 按名字去重：同名岗位只显示第一个（防止 seed 重复写入或树节点重名）
+      const seen = new Set();
+      const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; });
+      return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag tag-ai">${U.esc(s.list[0] ? s.list[0].tag : "")}</span></div>
+      <div class="grid grid-cols-auto">${uniq.map(p => {
         const qn = Services.questionCountForPosition(p.name);
         const skillN = Services.skillsOf(p.id).length;
         const demand = p.demand || "中";
@@ -361,7 +365,8 @@
             <span class="tag ${demand === "高" ? "tag-success" : demand === "低" ? "tag-warning" : ""}">热度 ${U.esc(demand)}</span>
           </div>
         </a>`;
-      }).join("")}</div>`).join("");
+      }).join("")}</div>`;
+    }).join("");
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>岗位体系</span></div>
       <h1 style="margin-bottom:6px">岗位体系</h1><p class="secondary">按 IT 行业岗位出现的先后顺序组织，点击岗位查看必考/加分技术栈与题目。</p>${html}`);
   }
@@ -642,7 +647,7 @@
   /* ============================ 模拟面试 ============================ */
   async function pageMock() {
     const byStage = Services.positionsByStage();
-    const posOpts = byStage.map(s => `<optgroup label="${U.esc(s.stage)}">${s.list.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`).join("");
+    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
     const years = ["校招/实习", "0-1年", "1-3年", "3-5年", "5年以上"];
     const url = new URL(location.href);
     const posId = url.searchParams.get("pos");
@@ -1057,10 +1062,11 @@
     const byStage = Services.positionsByStage();
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>岗位管理</span></div>
       <div class="section-head"><h2>岗位管理</h2><button class="btn btn-primary btn-sm" id="add-pos">${U.icon("plus")} 新增岗位</button></div>
-      <div id="pos-wrap">${byStage.map(s => `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
-        <div class="grid grid-cols-auto">${s.list.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${U.esc(p.name)}</b>
+      <div id="pos-wrap">${byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
+        <div class="grid grid-cols-auto">${uniq.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${U.esc(p.name)}</b>
           <span class="row" style="gap:4px"><button class="icon-btn" data-sk="${p.id}" title="技术栈">${U.icon("star")}</button><button class="icon-btn" data-edit="${p.id}">${U.icon("edit")}</button><button class="icon-btn" data-del="${p.id}">${U.icon("trash")}</button></span></div>
-          <div class="muted" style="font-size:12px">${U.esc(p.category || "")} · 题目 ${Services.questionCountForPosition(p.name)} · 技术栈 ${Services.skillsOf(p.id).length}</div></div>`).join("")}</div>`).join("")}</div>`);
+          <div class="muted" style="font-size:12px">${U.esc(p.category || "")} · 题目 ${Services.questionCountForPosition(p.name)} · 技术栈 ${Services.skillsOf(p.id).length}</div></div>`).join("")}</div>`;
+    }).join("")}</div>`);
     $("#add-pos").onclick = () => editPos(null);
     $$("[data-edit]").forEach(b => b.onclick = () => editPos(parseInt(b.dataset.edit)));
     $$("[data-del]").forEach(b => b.onclick = async () => { if (await U.confirm("删除该岗位？关联技术栈也会删除。", { danger: true })) { await Services.deletePosition(parseInt(b.dataset.del)); await Services.reload(); U.toast("已删除", "success"); pageAdminPositions(); renderSidebar(parseHash()); } });
@@ -1117,7 +1123,7 @@
   /* ============================ 管理员：AI 出题 ============================ */
   async function pageAdminAI() {
     const byStage = Services.positionsByStage();
-    const posOpts = byStage.map(s => `<optgroup label="${U.esc(s.stage)}">${s.list.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`).join("");
+    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
     const steps = ["粘贴JD", "AI解析", "配置参数", "生成中", "预览入库"];
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>AI 出题</span></div>
       <div class="steps" id="steps">${steps.map((s, i) => `<div class="step" data-i="${i}"><span class="dot">${i + 1}</span>${s}</div>`).join("")}</div>
@@ -1594,6 +1600,7 @@
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
     try { await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
+    try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
     await Services.reload();
     if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
     window.addEventListener("hashchange", () => { renderTopbar(); route(); });
