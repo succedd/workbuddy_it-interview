@@ -15,7 +15,7 @@
   function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
   function ssSet(k, v) { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) {} }
 
-  API.defaults = { base: "https://api.deepseek.com/v1", model: "deepseek-chat", timeout: 60, temp: 0.7, max: 20, store: "local" };
+  API.defaults = { base: "https://api.deepseek.com/v1", model: "deepseek-chat", timeout: 300, temp: 0.7, max: 20, store: "local" };
 
   API.getConfig = function () {
     return {
@@ -42,7 +42,14 @@
   };
   API.clearKey = function () { lsSet(LS.key, null); ssSet(LS.key, null); };
 
-  /* 流式对话，返回完整文本；onToken(delta, full) 可选 */
+  /* 流式对话，返回完整文本。
+   * opts:
+   *   onToken(delta, full) — 每收到一个 token 回调
+   *   onEvent(type, payload) — 生命周期事件：connecting/connected/first/done/error/tick
+   *   maxTokens            — 传给 API 的 max_tokens（不传则不设）
+   *   timeout              — 本次请求覆盖超时（秒），不传用配置值
+   * 返回 AbortController（调用方可 .abort() 取消），以及完整文本。
+   */
   API.streamChat = async function (messages, opts) {
     opts = opts || {};
     const ev = opts.onEvent;
@@ -52,39 +59,54 @@
     const url = (cfg.base || API.defaults.base).replace(/\/$/, "") + "/chat/completions";
     if (ev) ev("connecting", { model: cfg.model || "deepseek-chat" });
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), (cfg.timeout || 60) * 1000);
+    const effectiveTimeout = (opts.timeout || cfg.timeout || 300) * 1000;
+    const timer = setTimeout(() => ctrl.abort(), effectiveTimeout);
+    // 心跳：每 15 秒发一次 tick（含已耗时），让 UI 显示"仍在工作中"
+    let t0 = Date.now(), heartbeat;
+    const startHeartbeat = () => {
+      heartbeat = setInterval(() => {
+        if (ev) ev("tick", { elapsed: Math.round((Date.now() - t0) / 1000), chars: full.length });
+      }, 15000);
+    };
+    const stopHeartbeat = () => { if (heartbeat) { clearInterval(heartbeat); heartbeat = null; } };
     let res;
     try {
+      const body = { model: cfg.model || "deepseek-chat", messages: messages, stream: true, temperature: cfg.temp ?? 0.7 };
+      if (opts.maxTokens) body.max_tokens = opts.maxTokens;
       res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
-        body: JSON.stringify({ model: cfg.model || "deepseek-chat", messages: messages, stream: true, temperature: cfg.temp ?? 0.7 }),
+        body: JSON.stringify(body),
         signal: ctrl.signal
       });
     } catch (e) {
-      clearTimeout(timer);
+      clearTimeout(timer); stopHeartbeat();
       if (e && e.name === "AbortError") {
-        if (ev) ev("error", { code: "TIMEOUT" });
-        const err = new Error("TIMEOUT"); err.code = "TIMEOUT"; throw err;
+        if (ev) ev("error", { code: "CANCELLED" });
+        const err = new Error("CANCELLED"); err.code = "CANCELLED"; throw err;
       }
       if (ev) ev("error", { code: "CORS" });
       const err = new Error("CORS"); err.code = "CORS"; err.raw = e; throw err;
     }
     clearTimeout(timer);
     if (res.status === 401 || res.status === 403) {
+      stopHeartbeat();
       if (ev) ev("error", { code: "INVALID_KEY" });
       const err = new Error("INVALID_KEY"); err.code = "INVALID_KEY"; throw err;
     }
     if (!res.ok) {
+      stopHeartbeat();
       if (ev) ev("error", { code: "HTTP", status: res.status });
       const err = new Error("HTTP_" + res.status); err.code = "HTTP"; err.status = res.status; throw err;
     }
     if (ev) ev("connected", { model: cfg.model || "deepseek-chat" });
+    startHeartbeat();
 
     if (!res.body) {
+      stopHeartbeat();
       const j = await res.json();
       const content = j.choices && j.choices[0] && j.choices[0].message.content;
-      if (ev) ev("done", { chars: (content || "").length });
+      if (ev) ev("done", { chars: (content || "").length, elapsed: Math.round((Date.now() - t0) / 1000) });
       return content;
     }
     const reader = res.body.getReader();
@@ -111,7 +133,10 @@
         } catch (_) {}
       }
     }
-    if (ev) ev("done", { chars: full.length });
+    stopHeartbeat();
+    if (ev) ev("done", { chars: full.length, elapsed: Math.round((Date.now() - t0) / 1000) });
+    // 暴露控制器供外部取消
+    full._ctrl = ctrl;
     return full;
   };
 
@@ -226,9 +251,11 @@
   };
 
   API.generate = async function (spec, onToken, onEvent) {
+    // 每道题预估 2000 token（含正文+答案+追问+元数据），给足空间避免截断
+    const estTokens = Math.max(4000, (spec.count || 10) * 2000);
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.generate(spec) }],
-      { onToken, onEvent }
+      { onToken, onEvent, maxTokens: estTokens }
     );
     return API.parseJSON(text, { asQuestions: true });
   };

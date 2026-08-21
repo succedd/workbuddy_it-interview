@@ -999,7 +999,8 @@
     if (ev === "connecting") log("info", "正在连接 DeepSeek Harness API（模型 " + (p.model || "默认") + "）…");
     else if (ev === "connected") log("ok", "API 连接成功，开始生成");
     else if (ev === "first") log("info", "已收到首个响应片段，开始流式输出");
-    else if (ev === "done") log("ok", "流式输出完成，共接收 " + (p.chars || 0) + " 字符");
+    else if (ev === "tick") log("muted", "仍在生成中… 已耗时 " + (p.elapsed || 0) + " 秒，已接收 " + (p.chars || 0) + " 字符");
+    else if (ev === "done") log("ok", "流式输出完成，共接收 " + (p.chars || 0) + " 字符" + (p.elapsed ? "，耗时 " + p.elapsed + " 秒" : ""));
     else if (ev === "error") log("err", "请求出错（" + errCodeLabel(p.code) + (p.status ? " " + p.status : "") + "）");
   }
   function errMsg(e) { const map = { NO_KEY: "未配置 API Key", INVALID_KEY: "API Key 无效，请检查是否正确填写", TIMEOUT: "请求超时，请检查网络或增大超时时间", CORS: "跨域请求被拒绝（CORS）", HTTP: "接口返回错误 " + (e.status || "") }; return map[e.code] || ("请求失败：" + (e.message || e.code || "")); }
@@ -1214,18 +1215,62 @@
       const log = makeLog($("#gen-log"));
       log("info", "准备生成：岗位「" + (spec.positionName || "-") + "」，目标 " + (spec.count || 10) + " 题");
       const out = $("#gen-out");
-      let qCount = 0;
-      const res = await API.generate(Object.assign({ jd }, spec),
-        (d, f) => {
-          if (out) { out.textContent = f; out.scrollTop = out.scrollHeight; }
-          const pct = Math.min(95, Math.floor((f.length / Math.max(50, (spec.count || 10) * 120)) * 100));
-          const pg = $("#pg"); if (pg) pg.style.width = pct + "%";
-          const pt = $("#pg-t"); if (pt) pt.textContent = "流式接收中 " + f.length + " 字符…";
-          const n = (f.match(/标题/g) || []).length;
-          if (n !== qCount) { qCount = n; log("info", "已检测到 " + n + " 个题目…"); }
-        },
-        (ev, p) => aiEvent(log, ev, p)
-      );
+      let qCount = 0, cancelled = false;
+      // 取消按钮
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn btn-sm btn-danger";
+      cancelBtn.id = "gen-cancel";
+      cancelBtn.textContent = U.icon("x") + " 取消生成";
+      cancelBtn.style.cssText = "margin-top:8px";
+      const toolbar = out ? out.previousElementSibling : null;
+      if (toolbar && toolbar.classList.contains("ai-log-toolbar")) toolbar.appendChild(cancelBtn);
+      // 已耗时计时器
+      let t0 = Date.now(), elapsedTimer = null;
+      const startElapsed = () => {
+        elapsedTimer = setInterval(() => {
+          if (cancelled) return;
+          const el = Math.round((Date.now() - t0) / 1000);
+          const pt = $("#pg-t"); if (pt) pt.textContent = "流式接收中 " + (out ? out.textContent.length : 0) + " 字符 · 已耗时 " + el + "s";
+        }, 1000);
+      };
+      const stopElapsed = () => { if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; } };
+      cancelBtn.onclick = () => {
+        cancelled = true;
+        stopElapsed();
+        log("warn", "用户取消了生成操作");
+        U.toast("已取消生成", "warning");
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = "已取消";
+      };
+      startElapsed();
+      let res;
+      try {
+        res = await API.generate(Object.assign({ jd }, spec),
+          (d, f) => {
+            if (cancelled) return;
+            if (out) { out.textContent = f; out.scrollTop = out.scrollHeight; }
+            const pct = Math.min(95, Math.floor((f.length / Math.max(50, (spec.count || 10) * 120)) * 100));
+            const pg = $("#pg"); if (pg) pg.style.width = pct + "%";
+            const n = (f.match(/标题/g) || []).length;
+            if (n !== qCount) { qCount = n; log("info", "已检测到 " + n + " 个题目…"); }
+          },
+          (ev, p) => { if (!cancelled) aiEvent(log, ev, p); }
+        );
+        // 检查是否通过 _ctrl 取消（streamChat 返回的 full 上挂了控制器引用）
+        if (res && res._ctrl && cancelled) throw { code: "CANCELLED" };
+      } catch (e) {
+        stopElapsed();
+        if (cancelBtn.parentNode) cancelBtn.remove();
+        if (cancelled || (e && e.code === "CANCELLED")) {
+          out.innerHTML = `<span class="tag tag-warning">生成已取消</span><div class="note">已接收部分内容，可复制后手动保存。</div><pre style="white-space:pre-wrap">${U.esc(out ? out.textContent : "")}</pre>`;
+          return;
+        }
+        log("err", errMsg(e));
+        out.innerHTML = `<span class="tag tag-danger">生成失败</span><div class="note">${U.esc(errMsg(e))}</div>`;
+        return;
+      }
+      stopElapsed();
+      if (cancelBtn.parentNode) cancelBtn.remove();
       const pg = $("#pg"); if (pg) pg.style.width = "100%";
       log("ok", "正在解析返回内容…");
       if (!res || res.raw || !Array.isArray(res.questions) || !res.questions.length) {
