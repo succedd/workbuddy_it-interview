@@ -951,6 +951,30 @@
   // 创建一个写入指定容器的日志函数：log(type, msg)，type ∈ info|ok|warn|err|spin
   function makeLog(el) {
     const label = { info: "信息", ok: "完成", warn: "警告", err: "错误", spin: "进行" };
+    let autoScroll = true;
+    if (el && el.parentNode) {
+      const bar = document.createElement("div");
+      bar.className = "ai-log-toolbar";
+      bar.innerHTML = `<button type="button" class="log-btn" data-act="copy">${U.icon("copy")} 复制日志</button>
+        <button type="button" class="log-btn active" data-act="auto">${U.icon("arrowDown")} 自动滚动</button>`;
+      el.parentNode.insertBefore(bar, el);
+      const copyBtn = bar.querySelector('[data-act="copy"]');
+      const autoBtn = bar.querySelector('[data-act="auto"]');
+      autoBtn.onclick = () => {
+        autoScroll = !autoScroll;
+        autoBtn.classList.toggle("active", autoScroll);
+        if (autoScroll && el) el.scrollTop = el.scrollHeight;
+      };
+      copyBtn.onclick = () => {
+        const text = Array.prototype.map.call(el.querySelectorAll(".log-line"), l => l.textContent).join("\n");
+        const done = () => { copyBtn.classList.add("copied"); copyBtn.innerHTML = U.icon("check") + " 已复制"; setTimeout(() => { copyBtn.classList.remove("copied"); copyBtn.innerHTML = U.icon("copy") + " 复制日志"; }, 1400); };
+        const fallback = () => { try { const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.top = "-9999px"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done(); } catch (e2) { U.toast("复制失败，请手动选择文本", "error"); } };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+          else fallback();
+        } catch (e) { fallback(); }
+      };
+    }
     return function log(type, msg) {
       if (!el) return;
       const line = document.createElement("div");
@@ -962,7 +986,7 @@
       if (label[type]) msgEl.textContent = "[" + label[type] + "] " + (msg || ""); else msgEl.textContent = msg || "";
       line.appendChild(tsEl); line.appendChild(dotEl); line.appendChild(msgEl);
       el.appendChild(line);
-      el.scrollTop = el.scrollHeight;
+      if (autoScroll) el.scrollTop = el.scrollHeight;
     };
   }
   function errCodeLabel(code) {
@@ -1097,7 +1121,14 @@
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>AI 出题</span></div>
       <div class="steps" id="steps">${steps.map((s, i) => `<div class="step" data-i="${i}"><span class="dot">${i + 1}</span>${s}</div>`).join("")}</div>
       <div class="card" id="ai-main"></div>`);
-    function setStep(i) { $$("#steps .step").forEach(s => { const n = parseInt(s.dataset.i); s.classList.toggle("active", n === i); s.classList.toggle("done", n < i); }); }
+    function setStep(i) {
+      const steps = $$("#steps .step");
+      const total = steps.length || 1;
+      const prog = total > 1 ? (i / (total - 1)) * 100 : 0;
+      const wrap = $("#steps");
+      if (wrap) wrap.style.setProperty("--step-progress", prog + "%");
+      steps.forEach(s => { const n = parseInt(s.dataset.i); s.classList.toggle("active", n === i); s.classList.toggle("done", n < i); });
+    }
     const main = $("#ai-main");
     if (!API.getKey()) {
       main.innerHTML = `<div class="note ai">${U.icon("sparkles")} 尚未配置 DeepSeek Harness API Key。请先在系统设置填写后使用 AI 功能。</div>

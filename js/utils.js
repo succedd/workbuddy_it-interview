@@ -29,6 +29,7 @@
     upload: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M12 21V9M7 14l5-5 5 5"/><path d="M5 3h14"/></svg>`,
     chevronRight: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="m9 6 6 6-6 6"/></svg>`,
     chevronDown: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="m6 9 6 6 6-6"/></svg>`,
+    arrowDown: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M12 5v14M6 13l6 6 6-6"/></svg>`,
     x: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M6 6l12 12M18 6 6 18"/></svg>`,
     eye: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`,
     eyeOff: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M3 3l18 18"/><path d="M10.6 10.6a3 3 0 0 0 4.2 4.2"/><path d="M9.4 5.2A9.7 9.7 0 0 1 12 5c6.5 0 10 7 10 7a13 13 0 0 1-2.2 3M6.1 6.1A13 13 0 0 0 2 12s3.5 7 10 7a9.6 9.6 0 0 0 3.3-.6"/></svg>`,
