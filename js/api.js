@@ -135,8 +135,8 @@
     }
     stopHeartbeat();
     if (ev) ev("done", { chars: full.length, elapsed: Math.round((Date.now() - t0) / 1000) });
-    // 暴露控制器供外部取消
-    full._ctrl = ctrl;
+    // 暴露控制器供外部取消（挂在 opts 对象上，避免对字符串基本类型赋值报错）
+    opts._ctrl = ctrl;
     return full;
   };
 
@@ -310,37 +310,50 @@
   };
 
   API.analyzeJD = async function (jd, years, onToken, onEvent) {
+    const opts = { onToken, onEvent };
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.analyzeJD(jd, years) }],
-      { onToken, onEvent }
+      opts
     );
-    return API.parseJSON(text);
+    const parsed = API.parseJSON(text) || { raw: text };
+    parsed._ctrl = opts._ctrl;
+    return parsed;
   };
 
-  API.generate = async function (spec, onToken, onEvent) {
+  API.generate = async function (spec, onToken, onEvent, extra) {
     // 每道题预估 2000 token（含正文+答案+追问+元数据），给足空间避免截断
     const estTokens = Math.max(4000, (spec.count || 10) * 2000);
+    const opts = { onToken, onEvent, maxTokens: estTokens };
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.generate(spec) }],
-      { onToken, onEvent, maxTokens: estTokens }
+      opts
     );
-    return API.parseJSON(text, { asQuestions: true });
+    if (extra && extra.onCtrl) extra.onCtrl(opts._ctrl);
+    const parsed = API.parseJSON(text, { asQuestions: true });
+    parsed._ctrl = opts._ctrl;
+    return parsed;
   };
 
   API.optimize = async function (question, action, onToken, onEvent) {
+    const opts = { onToken, onEvent };
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.optimize(question, action) }],
-      { onToken, onEvent }
+      opts
     );
-    return API.parseJSON(text);
+    const parsed = API.parseJSON(text) || { raw: text };
+    parsed._ctrl = opts._ctrl;
+    return parsed;
   };
 
   API.completeness = async function (categories, onToken, onEvent) {
+    const opts = { onToken, onEvent };
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.completeness(categories) }],
-      { onToken, onEvent }
+      opts
     );
-    return API.parseJSON(text);
+    const parsed = API.parseJSON(text) || { raw: text };
+    parsed._ctrl = opts._ctrl;
+    return parsed;
   };
 
   window.API = API;

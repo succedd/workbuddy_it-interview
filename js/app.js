@@ -1240,8 +1240,10 @@
         }, 1000);
       };
       const stopElapsed = () => { if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; } };
+      let ctrlRef = null;
       cancelBtn.onclick = () => {
         cancelled = true;
+        if (ctrlRef) ctrlRef.abort();
         stopElapsed();
         log("warn", "用户取消了生成操作");
         U.toast("已取消生成", "warning");
@@ -1260,10 +1262,9 @@
             const n = (f.match(/标题/g) || []).length;
             if (n !== qCount) { qCount = n; log("info", "已检测到 " + n + " 个题目…"); }
           },
-          (ev, p) => { if (!cancelled) aiEvent(log, ev, p); }
+          (ev, p) => { if (!cancelled) aiEvent(log, ev, p); },
+          { onCtrl: c => { ctrlRef = c; } }
         );
-        // 检查是否通过 _ctrl 取消（streamChat 返回的 full 上挂了控制器引用）
-        if (res && res._ctrl && cancelled) throw { code: "CANCELLED" };
       } catch (e) {
         stopElapsed();
         if (cancelBtn.parentNode) cancelBtn.remove();
