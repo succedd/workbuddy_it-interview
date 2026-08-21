@@ -727,8 +727,8 @@
   }
 
   /* ============================ 管理员：登录 ============================ */
-  function openAdminLogin() {
-    if (!Auth.hasAdmin()) {
+  async function openAdminLogin() {
+    if (!(await Auth.hasAdmin())) {
       const m = U.modal({ title: "设置管理员密码", closable: true });
       m.body.innerHTML = `<div class="note">首次使用，请设置管理员密码。该密码仅用于当前浏览器本地权限隔离，使用浏览器 Crypto API 哈希后保存，不会以明文存储，也非服务端安全认证。</div>
         <label class="field"><span>管理员密码</span><input type="password" id="pw1" /></label>
