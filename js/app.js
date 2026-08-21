@@ -1228,7 +1228,12 @@
       );
       const pg = $("#pg"); if (pg) pg.style.width = "100%";
       log("ok", "正在解析返回内容…");
-      if (!res || res.raw) { log("warn", "AI 返回非标准 JSON，已展示原始内容"); out.innerHTML = `<span class="tag tag-warning">AI 返回非标准 JSON</span><div class="note">已展示原始内容，您可复制后手动编辑保存为题目。</div><pre style="white-space:pre-wrap">${U.esc(res ? res.raw : "")}</pre>`; return; }
+      if (!res || res.raw || !Array.isArray(res.questions) || !res.questions.length) {
+        log("warn", "AI 未返回有效题目，已展示原始内容");
+        const dump = res && res.raw ? res.raw : (res ? JSON.stringify(res, null, 2) : "");
+        out.innerHTML = `<span class="tag tag-warning">AI 未返回有效题目</span><div class="note">已展示原始内容，您可复制后手动编辑保存为题目。</div><pre style="white-space:pre-wrap">${U.esc(dump)}</pre>`;
+        return;
+      }
       log("ok", "解析成功，共 " + ((res.questions || []).length) + " 道题目");
       setStep(4);
       showResult(res, spec, log);

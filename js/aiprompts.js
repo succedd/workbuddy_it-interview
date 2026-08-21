@@ -23,7 +23,7 @@ ${jd}
 """
 目标工作年限：${years || "未指定"}
 
-只返回JSON。`;
+ 只返回JSON。严禁使用 markdown 代码块围栏，不要输出任何解释性文字，必须直接以 { 开头、以 } 结尾。`;
   };
 
   P.generate = function (spec) {
@@ -63,7 +63,7 @@ ${spec.followup ? "为每道题生成2-3个面试追问问题。" : ""}
   ]
 }
 
-只返回JSON。`;
+只返回JSON。严禁使用 markdown 代码块围栏，不要输出任何解释性文字，必须直接以 { 开头、以 } 结尾。`;
   };
 
   P.optimize = function (question, action) {
@@ -77,7 +77,7 @@ ${spec.followup ? "为每道题生成2-3个面试追问问题。" : ""}
       "rubric": "请为以下题目生成面试官评分参考标准（按要点给分）。"
     };
     return `${map[action] || map.optimize}
-请以JSON返回：{"result": "你的输出内容"}，不要输出JSON以外的文字。
+请以JSON返回：{"result": "你的输出内容"}，不要输出JSON以外的文字，严禁使用 markdown 代码块围栏，必须直接以 { 开头、以 } 结尾。
 
 题目：
 标题：${question.title}
@@ -97,7 +97,7 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
   "insufficient": [{"name":"题目不足的分类","count":当前数量,"suggest":建议数量}],
   "issues": [{"name":"分类名","problem":"规范性问题说明"}]
 }
-只返回JSON。`;
+只返回JSON。严禁使用 markdown 代码块围栏，不要输出任何解释性文字，必须直接以 { 开头、以 } 结尾。`;
   };
 
   window.AIPrompts = P;
