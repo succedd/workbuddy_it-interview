@@ -912,20 +912,28 @@
     const m = U.modal({ title: "AI 题目优化", wide: true });
     m.body.innerHTML = `<div class="note ai">${U.icon("sparkles")} 调用 DeepSeek Harness 对题目进行优化。请确保已在「系统设置」填写可用的 API Key。</div>
       <div class="pill-row" id="acts">${actions.map(a => `<button class="btn btn-ai btn-sm" data-a="${a[0]}">${a[1]}</button>`).join("")}</div>
+      <div class="ai-log" id="opt-log"></div>
       <div class="ai-stream" id="out" style="margin-top:12px;min-height:120px">选择上方操作开始…</div>`;
     m.foot.innerHTML = `<button class="btn" id="apply" style="display:none">${U.icon("check")} 应用到编辑区</button>`;
     let lastResult = null;
     $$("#acts button", m.body).forEach(b => b.onclick = async () => {
       if (!API.getKey()) { U.toast("请先到系统设置填写 API Key", "warn"); App.go("/admin/settings"); return; }
       const out = $("#out"); out.classList.add("cursor-blink"); out.textContent = "生成中…";
+      const olog = makeLog($("#opt-log"));
+      olog("info", "开始执行：" + (b.textContent || b.dataset.a));
       try {
-        const text = await API.optimize(q, b.dataset.a, (delta, full) => { out.textContent = full; out.scrollTop = out.scrollHeight; });
+        const text = await API.optimize(q, b.dataset.a,
+          (delta, full) => { out.textContent = full; out.scrollTop = out.scrollHeight; },
+          (ev, p) => aiEvent(olog, ev, p)
+        );
         const parsed = API.parseJSON(text);
         lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : text);
         out.classList.remove("cursor-blink"); out.innerHTML = U.md(lastResult);
+        olog("ok", "优化完成");
         const apply = $("#apply"); apply.style.display = fromEdit ? "inline-flex" : "none";
       } catch (e) {
         out.classList.remove("cursor-blink");
+        olog("err", errMsg(e));
         out.innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e);
         if (e.code === "CORS") out.innerHTML += `<div class="note">当前 API 服务不允许浏览器跨域直接调用，纯静态项目无法绕过该限制，请确认接口支持 CORS 或使用本地代理。</div>`;
       }
@@ -938,6 +946,37 @@
       if (ta && aa) { aa.value = lastResult; aa.dispatchEvent(new Event("input")); }
       m.close(); U.toast("已应用到参考答案", "success");
     };
+  }
+  /* ============================ AI 实时进度日志 ============================ */
+  // 创建一个写入指定容器的日志函数：log(type, msg)，type ∈ info|ok|warn|err|spin
+  function makeLog(el) {
+    const label = { info: "信息", ok: "完成", warn: "警告", err: "错误", spin: "进行" };
+    return function log(type, msg) {
+      if (!el) return;
+      const line = document.createElement("div");
+      line.className = "log-line" + (type && type !== "info" ? " " + type : "");
+      const ts = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+      const tsEl = document.createElement("span"); tsEl.className = "log-ts"; tsEl.textContent = ts;
+      const dotEl = document.createElement("span"); dotEl.className = "log-dot";
+      const msgEl = document.createElement("span"); msgEl.className = "log-msg";
+      if (label[type]) msgEl.textContent = "[" + label[type] + "] " + (msg || ""); else msgEl.textContent = msg || "";
+      line.appendChild(tsEl); line.appendChild(dotEl); line.appendChild(msgEl);
+      el.appendChild(line);
+      el.scrollTop = el.scrollHeight;
+    };
+  }
+  function errCodeLabel(code) {
+    const m = { NO_KEY: "未配置 API Key", INVALID_KEY: "API Key 无效", TIMEOUT: "请求超时", CORS: "跨域被拒绝", HTTP: "接口返回错误" };
+    return m[code] || code;
+  }
+  function aiEvent(log, ev, p) {
+    if (!log) return;
+    p = p || {};
+    if (ev === "connecting") log("info", "正在连接 DeepSeek Harness API（模型 " + (p.model || "默认") + "）…");
+    else if (ev === "connected") log("ok", "API 连接成功，开始生成");
+    else if (ev === "first") log("info", "已收到首个响应片段，开始流式输出");
+    else if (ev === "done") log("ok", "流式输出完成，共接收 " + (p.chars || 0) + " 字符");
+    else if (ev === "error") log("err", "请求出错（" + errCodeLabel(p.code) + (p.status ? " " + p.status : "") + "）");
   }
   function errMsg(e) { const map = { NO_KEY: "未配置 API Key", INVALID_KEY: "API Key 无效，请检查是否正确填写", TIMEOUT: "请求超时，请检查网络或增大超时时间", CORS: "跨域请求被拒绝（CORS）", HTTP: "接口返回错误 " + (e.status || "") }; return map[e.code] || ("请求失败：" + (e.message || e.code || "")); }
 
@@ -1086,11 +1125,17 @@
     async function doParse(name, years, jd) {
       if (!jd) { U.toast("请粘贴岗位 JD", "warn"); return; }
       setStep(1);
-      main.innerHTML = `<h2>AI 解析中…</h2><div class="ai-stream" id="parse-out">调用 DeepSeek Harness 解析 JD…</div>`;
+      main.innerHTML = `<h2>AI 解析中…</h2><div class="ai-log" id="parse-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="parse-out">调用 DeepSeek Harness 解析 JD…</div></details>`;
+      const plog = makeLog($("#parse-log"));
+      plog("info", "开始解析岗位 JD（工作年限：" + years + "）");
       try {
-        const res = await API.analyzeJD(jd, years, (d, f) => { $("#parse-out").textContent = f; $("#parse-out").scrollTop = $("#parse-out").scrollHeight; });
+        const res = await API.analyzeJD(jd, years,
+          (d, f) => { const o = $("#parse-out"); if (o) { o.textContent = f; o.scrollTop = o.scrollHeight; } },
+          (ev, p) => aiEvent(plog, ev, p)
+        );
         if (!res || res.raw) throw new Error("解析失败");
         setStep(2);
+        plog("ok", "JD 解析完成，已提取技术栈与软技能标签");
         const tagsHtml = (arr, key) => (arr || []).map(t => `<span class="chip" data-k="${key}" data-v="${U.esc(t)}">${U.esc(t)}<span class="x">${U.icon("x")}</span></span>`).join("");
         main.innerHTML = `<h2>解析结果（可增删标签）</h2>
           <div class="field"><span>岗位名称</span><input id="p-name" value="${U.esc(res.positionName || name)}" /></div>
@@ -1111,6 +1156,7 @@
           generate(spec, jd);
         };
       } catch (e) {
+        plog("err", errMsg(e));
         $("#parse-out").innerHTML = `<span class="tag tag-danger">解析出错</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">当前 API 服务不允许浏览器跨域直接调用，纯静态项目无法绕过该限制，请确认接口支持 CORS 或使用本地代理。</div>` : "");
       }
     }
@@ -1120,7 +1166,7 @@
       const skills = Services.skillsOf(posId);
       const techList = skills.map(s => ({ tech: s.techName, n: s.stars }));
       setStep(3);
-      main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-stream" id="gen-out"></div>`;
+      main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-log" id="gen-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="gen-out"></div></details>`;
       try {
         await runGenerate({ positionName: pos.name, years, count: num, techList, answer: true, followup: true }, null);
       } catch (e) { $("#gen-out").innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e); }
@@ -1128,26 +1174,36 @@
 
     async function generate(spec, jd) {
       setStep(3);
-      main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-stream" id="gen-out"></div>`;
+      main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-log" id="gen-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="gen-out"></div></details>`;
       try { await runGenerate(spec, jd); }
       catch (e) { $("#gen-out").innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">跨域受限：请确认 DeepSeek Harness 接口支持 CORS，或使用本地代理。</div>` : ""); }
     }
 
     async function runGenerate(spec, jd) {
+      const log = makeLog($("#gen-log"));
+      log("info", "准备生成：岗位「" + (spec.positionName || "-") + "」，目标 " + (spec.count || 10) + " 题");
       const out = $("#gen-out");
-      const res = await API.generate(Object.assign({ jd }, spec), (d, f) => {
-        out.textContent = f; out.scrollTop = out.scrollHeight;
-        const pct = Math.min(95, Math.floor((f.length / Math.max(50, (spec.count || 10) * 120)) * 100));
-        const pg = $("#pg"); if (pg) pg.style.width = pct + "%";
-        const pt = $("#pg-t"); if (pt) pt.textContent = "已生成 " + (f.match(/标题/g) || []).length + " 处…";
-      });
+      let qCount = 0;
+      const res = await API.generate(Object.assign({ jd }, spec),
+        (d, f) => {
+          if (out) { out.textContent = f; out.scrollTop = out.scrollHeight; }
+          const pct = Math.min(95, Math.floor((f.length / Math.max(50, (spec.count || 10) * 120)) * 100));
+          const pg = $("#pg"); if (pg) pg.style.width = pct + "%";
+          const pt = $("#pg-t"); if (pt) pt.textContent = "流式接收中 " + f.length + " 字符…";
+          const n = (f.match(/标题/g) || []).length;
+          if (n !== qCount) { qCount = n; log("info", "已检测到 " + n + " 个题目…"); }
+        },
+        (ev, p) => aiEvent(log, ev, p)
+      );
       const pg = $("#pg"); if (pg) pg.style.width = "100%";
-      if (!res || res.raw) { out.innerHTML = `<span class="tag tag-warning">AI 返回非标准 JSON</span><div class="note">已展示原始内容，您可复制后手动编辑保存为题目。</div><pre style="white-space:pre-wrap">${U.esc(res ? res.raw : "")}</pre>`; return; }
+      log("ok", "正在解析返回内容…");
+      if (!res || res.raw) { log("warn", "AI 返回非标准 JSON，已展示原始内容"); out.innerHTML = `<span class="tag tag-warning">AI 返回非标准 JSON</span><div class="note">已展示原始内容，您可复制后手动编辑保存为题目。</div><pre style="white-space:pre-wrap">${U.esc(res ? res.raw : "")}</pre>`; return; }
+      log("ok", "解析成功，共 " + ((res.questions || []).length) + " 道题目");
       setStep(4);
-      showResult(res, spec);
+      showResult(res, spec, log);
     }
 
-    function showResult(res, spec) {
+    function showResult(res, spec, log) {
       const questions = res.questions || [];
       const missing = res.missingCategories || [];
       const nameToCat = new Map(); Services.categories.forEach(c => nameToCat.set(c.name, c.id));
@@ -1178,12 +1234,14 @@
         U.highlightAll(main);
         $$("#rows input[type=checkbox]").forEach(c => c.onchange = () => { rows[parseInt(c.dataset.i)].selected = c.checked; });
         $$(".sel-cat").forEach(s => s.onchange = () => { const i = parseInt(s.dataset.i); rows[i].chosen = s.value ? parseInt(s.value) : null; rows[i].status = s.value ? "matched" : "missing"; });
-        $$("[data-miss]").forEach(b => b.onclick = async () => { await Services.addCategory(0, { name: b.dataset.miss, icon: "🆕" }); await Services.reload(); U.toast("已新增分类", "success"); showResult(res); });
+        $$("[data-miss]").forEach(b => b.onclick = async () => { await Services.addCategory(0, { name: b.dataset.miss, icon: "🆕" }); await Services.reload(); U.toast("已新增分类", "success"); showResult(res, spec, log); });
         $("#sel-all").onclick = () => { rows.forEach(r => r.selected = true); renderRows(); };
         $("#sel-inv").onclick = () => { rows.forEach(r => r.selected = !r.selected); renderRows(); };
         $("#sel-matched").onclick = () => { rows.forEach(r => r.selected = r.status === "matched"); renderRows(); };
         $("#batch").onclick = async () => {
           let okN = 0;
+          const total = rows.filter(r => r.selected).length;
+          if (log) log("info", "开始批量入库，共选中 " + total + " 题");
           for (const r of rows) {
             if (!r.selected) continue;
             const q = r.q;
@@ -1191,12 +1249,14 @@
               categoryId: r.chosen, title: q.title, body: q.body, answer: q.answer,
               difficulty: ["初级", "中级", "高级", "专家"].indexOf(q.difficulty) >= 0 ? q.difficulty : "中级",
               type: q.type || "简答题", positionNames: res.positionName ? [res.positionName] : (q.tags || []).slice(0, 3),
-              years: q.years || spec.years || "", tags: q.tags || [], source: "ai", aiScore: 85, status: "published"
+              years: q.years || (spec && spec.years) || "", tags: q.tags || [], source: "ai", aiScore: 85, status: "published"
             });
             okN++;
+            if (log && (okN % 5 === 0 || okN === total)) log("ok", "已入库 " + okN + " / " + total + " 题");
           }
           await Services.reload();
           await Services.logAI({ positionName: res.positionName, genCount: okN, techStack: (res.techStack || []).join(",") });
+          if (log) log("ok", "全部完成，成功入库 " + okN + " 道题目");
           U.toast(`成功入库 ${okN} 道题目`, "success");
           App.go("/admin/questions");
         };

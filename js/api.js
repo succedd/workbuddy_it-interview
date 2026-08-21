@@ -45,10 +45,12 @@
   /* 流式对话，返回完整文本；onToken(delta, full) 可选 */
   API.streamChat = async function (messages, opts) {
     opts = opts || {};
+    const ev = opts.onEvent;
     const cfg = API.getConfig();
     const key = API.getKey();
     if (!key) { const e = new Error("NO_KEY"); e.code = "NO_KEY"; throw e; }
     const url = (cfg.base || API.defaults.base).replace(/\/$/, "") + "/chat/completions";
+    if (ev) ev("connecting", { model: cfg.model || "deepseek-chat" });
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), (cfg.timeout || 60) * 1000);
     let res;
@@ -61,20 +63,33 @@
       });
     } catch (e) {
       clearTimeout(timer);
-      if (e && e.name === "AbortError") { const err = new Error("TIMEOUT"); err.code = "TIMEOUT"; throw err; }
+      if (e && e.name === "AbortError") {
+        if (ev) ev("error", { code: "TIMEOUT" });
+        const err = new Error("TIMEOUT"); err.code = "TIMEOUT"; throw err;
+      }
+      if (ev) ev("error", { code: "CORS" });
       const err = new Error("CORS"); err.code = "CORS"; err.raw = e; throw err;
     }
     clearTimeout(timer);
-    if (res.status === 401 || res.status === 403) { const err = new Error("INVALID_KEY"); err.code = "INVALID_KEY"; throw err; }
-    if (!res.ok) { const err = new Error("HTTP_" + res.status); err.code = "HTTP"; err.status = res.status; throw err; }
+    if (res.status === 401 || res.status === 403) {
+      if (ev) ev("error", { code: "INVALID_KEY" });
+      const err = new Error("INVALID_KEY"); err.code = "INVALID_KEY"; throw err;
+    }
+    if (!res.ok) {
+      if (ev) ev("error", { code: "HTTP", status: res.status });
+      const err = new Error("HTTP_" + res.status); err.code = "HTTP"; err.status = res.status; throw err;
+    }
+    if (ev) ev("connected", { model: cfg.model || "deepseek-chat" });
 
     if (!res.body) {
       const j = await res.json();
-      return j.choices && j.choices[0] && j.choices[0].message.content;
+      const content = j.choices && j.choices[0] && j.choices[0].message.content;
+      if (ev) ev("done", { chars: (content || "").length });
+      return content;
     }
     const reader = res.body.getReader();
     const dec = new TextDecoder();
-    let buf = "", full = "";
+    let buf = "", full = "", first = true;
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -89,10 +104,14 @@
         try {
           const j = JSON.parse(data);
           const c = j.choices && j.choices[0];
-          if (c && c.delta && c.delta.content) { full += c.delta.content; if (opts.onToken) opts.onToken(c.delta.content, full); }
+          if (c && c.delta && c.delta.content) {
+            if (first) { first = false; if (ev) ev("first", {}); }
+            full += c.delta.content; if (opts.onToken) opts.onToken(c.delta.content, full);
+          }
         } catch (_) {}
       }
     }
+    if (ev) ev("done", { chars: full.length });
     return full;
   };
 
@@ -121,34 +140,34 @@
     return { ok: !!r, sample: (r || "").slice(0, 50) };
   };
 
-  API.analyzeJD = async function (jd, years, onToken) {
+  API.analyzeJD = async function (jd, years, onToken, onEvent) {
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.analyzeJD(jd, years) }],
-      { onToken }
+      { onToken, onEvent }
     );
     return API.parseJSON(text);
   };
 
-  API.generate = async function (spec, onToken) {
+  API.generate = async function (spec, onToken, onEvent) {
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.generate(spec) }],
-      { onToken }
+      { onToken, onEvent }
     );
     return API.parseJSON(text);
   };
 
-  API.optimize = async function (question, action, onToken) {
+  API.optimize = async function (question, action, onToken, onEvent) {
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.optimize(question, action) }],
-      { onToken }
+      { onToken, onEvent }
     );
     return API.parseJSON(text);
   };
 
-  API.completeness = async function (categories, onToken) {
+  API.completeness = async function (categories, onToken, onEvent) {
     const text = await API.streamChat(
       [{ role: "system", content: AIPrompts.SYSTEM }, { role: "user", content: AIPrompts.completeness(categories) }],
-      { onToken }
+      { onToken, onEvent }
     );
     return API.parseJSON(text);
   };
