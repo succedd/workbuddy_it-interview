@@ -41,7 +41,9 @@ ${jd}
 ${spec.answer !== false ? "为每道题生成标准答案。" : "不生成答案。"}
 ${spec.followup ? "为每道题生成2-3个面试追问问题。" : ""}
 
-返回JSON结构：
+重要输出顺序要求：必须先输出完整的 questions 数组（这是核心内容），再输出其他字段。如果输出长度接近上限，优先保证 questions 完整，missingCategories 可省略。
+
+返回JSON结构（按此顺序输出）：
 {
   "positionName": "岗位名称",
   "techStack": ["识别到的技术栈"],
@@ -50,7 +52,7 @@ ${spec.followup ? "为每道题生成2-3个面试追问问题。" : ""}
       "title": "题目标题",
       "body": "题目正文（Markdown）",
       "answer": "参考答案（Markdown，含代码示例）",
-      "categoryPath": ["建议技术分类路径，如 数据库与数据存储 > MySQL],
+      "categoryPath": ["建议技术分类路径"],
       "difficulty": "初级|中级|高级|专家",
       "type": "单选题|多选题|判断题|填空题|简答题|编程题|场景题|故障排查题|系统设计题|开放讨论题",
       "tags": ["技术标签"],
@@ -63,7 +65,7 @@ ${spec.followup ? "为每道题生成2-3个面试追问问题。" : ""}
   ]
 }
 
-只返回JSON。严禁使用 markdown 代码块围栏，不要输出任何解释性文字，必须直接以 { 开头、以 } 结尾。`;
+只返回JSON。严禁使用 markdown 代码块围栏，不要输出任何解释性文字，必须直接以 { 开头。`;
   };
 
   P.optimize = function (question, action) {

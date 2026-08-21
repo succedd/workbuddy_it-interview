@@ -1273,10 +1273,21 @@
       if (cancelBtn.parentNode) cancelBtn.remove();
       const pg = $("#pg"); if (pg) pg.style.width = "100%";
       log("ok", "正在解析返回内容…");
+      // 尽力提取成功（但可能不完整）
+      if (res && res._extracted && Array.isArray(res.questions) && res.questions.length) {
+        log("ok", "通过尽力提取恢复 " + res.questions.length + " 道题目（原始 JSON 可能被截断）");
+        setStep(4);
+        showResult(res, spec, log);
+        return;
+      }
       if (!res || res.raw || !Array.isArray(res.questions) || !res.questions.length) {
         log("warn", "AI 未返回有效题目，已展示原始内容");
         const dump = res && res.raw ? res.raw : (res ? JSON.stringify(res, null, 2) : "");
-        out.innerHTML = `<span class="tag tag-warning">AI 未返回有效题目</span><div class="note">已展示原始内容，您可复制后手动编辑保存为题目。</div><pre style="white-space:pre-wrap">${U.esc(dump)}</pre>`;
+        const head = dump.slice(0, 500);
+        const tail = dump.length > 500 ? " …（共 " + dump.length + " 字符，尾部省略）" : "";
+        out.innerHTML = `<span class="tag tag-warning">AI 未返回有效题目</span>
+          <div class="note">已展示原始内容（前500字符），您可复制后手动编辑保存为题目。如果内容被截断，可尝试减少题目数量后重新生成。</div>
+          <details open><summary style="cursor:pointer;font-weight:600;margin-bottom:6px">查看原始输出 (${dump.length} 字符)</summary><pre style="white-space:pre-wrap;max-height:400px;overflow:auto">${U.esc(head)}${U.esc(tail)}</pre></details>`;
         return;
       }
       log("ok", "解析成功，共 " + ((res.questions || []).length) + " 道题目");

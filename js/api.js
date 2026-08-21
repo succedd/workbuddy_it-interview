@@ -157,16 +157,16 @@
   }
 
   // 从文本中截取出最外层平衡括号包裹的区域。
-  // 同时尝试 { 与 [ 作为起点，取能配平且跨度最大的那个（即真正的顶层结构）。
+  // 策略：优先尝试 {（对象），其次 [（数组）；取能配平且跨度最大的那个。
   function _extractBalanced(s) {
-    const candidates = [];
-    const bi = s.indexOf("{"), ai = s.indexOf("[");
-    if (bi >= 0) candidates.push(bi);
-    if (ai >= 0) candidates.push(ai);
     let best = null;
-    for (const start of candidates) {
-      const openCh = s[start];
-      const closeCh = openCh === "{" ? "}" : "]";
+    // 按优先级尝试：先 { 后 [
+    const attempts = [];
+    const bi = s.indexOf("{");
+    if (bi >= 0) attempts.push({ start: bi, openCh: "{", closeCh: "}" });
+    const ai = s.indexOf("[");
+    if (ai >= 0) attempts.push({ start: ai, openCh: "[", closeCh: "]" });
+    for (const { start, openCh, closeCh } of attempts) {
       let depth = 0, inStr = false, escaped = false, end = -1;
       for (let i = start; i < s.length; i++) {
         const c = s[i];
@@ -179,7 +179,9 @@
       }
       if (end >= 0) {
         const region = s.slice(start, end + 1);
-        if (!best || region.length > best.length) best = region;
+        // 对象类型优先（同样大小时优先选 { 开头的）
+        const isObj = openCh === "{";
+        if (!best || (region.length > best.length) || (region.length === best.length && isObj)) best = region;
       }
     }
     return best;
@@ -230,12 +232,77 @@
         if (obj === _UNSET) obj = _tryParseFull(_cleanJSON(region)); // 容错清洗后重试
       }
     }
+    // 4) 尽力提取：当 asQuestions 但结果中没有 questions 数组时，尝试从原始文本中暴力提取
+    if (opts.asQuestions && (obj === _UNSET || !Array.isArray(obj.questions))) {
+      const extracted = _extractQuestions(s);
+      if (extracted !== _UNSET) obj = extracted;
+    }
     if (obj === _UNSET) return { raw: text };
 
     // 顶层为数组时，按需包装成 { questions: [...] }
     if (opts.asQuestions && Array.isArray(obj)) obj = { questions: obj };
     return obj;
   };
+
+  /* 从可能残缺的文本中尽力提取 questions 数组。
+   * 策略：
+   *   a) 找 "questions": [ ... ] 并尝试解析为对象数组
+   *   b) 如果 a 失败，找每个独立的 { "title": ... } 对象块逐个解析
+   * 返回 { questions: [...] } 或 _UNSET
+   */
+  function _extractQuestions(text) {
+    // 策略 a：提取 "questions" 键值对应的数组内容
+    const qMatch = text.match(/"questions"\s*:\s*\[/);
+    if (qMatch) {
+      const start = qMatch.index + qMatch[0].length - 1; // [ 的位置
+      // 从 [ 开始向前找匹配的 ]
+      let depth = 0, inStr = false, escaped = false, end = -1;
+      for (let i = start; i < text.length; i++) {
+        const c = text[i];
+        if (escaped) { escaped = false; continue; }
+        if (c === "\\") { escaped = true; continue; }
+        if (c === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (c === "[") depth++;
+        else if (c === "]") { depth--; if (depth === 0) { end = i; break; } }
+      }
+      if (end > start) {
+        let arrText = text.slice(start, end + 1);
+        // 先尝试直接解析
+        let arr = _tryParseFull(arrText);
+        if (arr === _UNSET) arr = _tryParseFull(_cleanJSON(arrText));
+        if (arr !== _UNSET && Array.isArray(arr)) return { questions: arr, _extracted: true };
+      }
+    }
+
+    // 策略 b：逐个提取 { "title": "..." } 对象块
+    const objs = [];
+    const re = /\{\s*"title"\s*:\s*"[^"]*"/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const objStart = m.index;
+      // 从这个 { 开始找配平的 }
+      let depth = 0, inStr2 = false, escaped2 = false, objEnd = -1;
+      for (let i = objStart; i < text.length; i++) {
+        const c = text[i];
+        if (escaped2) { escaped2 = false; continue; }
+        if (c === "\\") { escaped2 = true; continue; }
+        if (c === '"') { inStr2 = !inStr2; continue; }
+        if (inStr2) continue;
+        if (c === "{") depth++;
+        else if (c === "}") { depth--; if (depth === 0) { objEnd = i; break; } }
+      }
+      if (objEnd > objStart) {
+        const chunk = text.slice(objStart, objEnd + 1);
+        let o = _tryParseFull(chunk);
+        if (o === _UNSET) o = _tryParseFull(_cleanJSON(chunk));
+        if (o !== _UNSET && typeof o === "object" && !Array.isArray(o)) objs.push(o);
+      }
+    }
+    if (objs.length > 0) return { questions: objs, _extracted: true };
+
+    return _UNSET;
+  }
 
   API.testConnection = async function () {
     const r = await API.streamChat([{ role: "user", content: "ping，只回复 OK" }]);
