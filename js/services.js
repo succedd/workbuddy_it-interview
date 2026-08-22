@@ -76,13 +76,19 @@
     return Array.from(map.entries()).map(([stage, list]) => ({ stage, list }));
   };
   S.getPosition = id => S.posMap.get(id);
+  /* 岗位完整显示名：含细分方向时为「岗位名·方向」，否则为岗位名 */
+  S.posFullName = function (p) { if (!p) return ""; return p.direction ? (p.name || "") + "·" + p.direction : (p.name || ""); };
+  /* 去重 key：名字 + 细分方向，同名异方向视为不同岗位 */
+  S.posKey = function (p) { return (p.name || "") + "|" + (p.direction || ""); };
   S.skillsOf = function (positionId) { return S.positionSkills.filter(s => s.positionId === positionId); };
   S.matchPosition = function (q, pos) {
     if (!pos) return false;
-    const names = q.positionNames || [];
-    if (pos.name != null && names.indexOf(pos.name) >= 0) return true;
+    // 优先按 id 精确匹配（方向岗位各自独立题库）
     const ids = q.positionIds || [];
     if (pos.id != null && ids.indexOf(pos.id) >= 0) return true;
+    // 名字匹配仅在岗位无细分方向时生效，避免同名异方向岗位互相串题
+    const names = q.positionNames || [];
+    if (!pos.direction && pos.name != null && names.indexOf(pos.name) >= 0) return true;
     return false;
   };
   S.questionCountForPosition = function (pos) {
@@ -242,7 +248,7 @@
   S.addPosition = async function (data) {
     const categoryId = data.categoryId != null ? data.categoryId : null;
     const category = categoryId != null ? (S.catName(categoryId) || data.category || "") : (data.category || "");
-    return await db.positions.add({ name: data.name, stage: data.stage || "未分类", tag: data.tag || "", category: category, categoryId: categoryId, description: data.description || "", demand: data.demand || "中", sort: 0, status: "active" });
+    return await db.positions.add({ name: data.name, direction: data.direction || "", stage: data.stage || "未分类", tag: data.tag || "", category: category, categoryId: categoryId, description: data.description || "", demand: data.demand || "中", sort: 0, status: "active" });
   };
   S.updatePosition = async function (id, data) {
     if (data.categoryId != null) data.category = S.catName(data.categoryId) || data.category || "";

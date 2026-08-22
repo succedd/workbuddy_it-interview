@@ -172,20 +172,21 @@
 
   /* 迁移：清理重复岗位记录（同名岗位只保留 id 最小的一条） */
   DB.migrateDedupPositions = async function () {
-    const MIGRATION_KEY = "migrated_dedup_positions_v1";
+    const MIGRATION_KEY = "migrated_dedup_positions_v2";
     if (await DB.getSetting(MIGRATION_KEY)) return 0;
     const all = await db.positions.toArray();
-    const byName = new Map();
+    const byKey = new Map();
     for (const p of all) {
-      if (!byName.has(p.name)) byName.set(p.name, []);
-      byName.get(p.name).push(p);
+      // 去重 key 同时看名字与细分方向：同名但方向不同的岗位视为不同岗位，保留
+      const key = (p.name || "") + "|" + (p.direction || "");
+      if (!byKey.has(key)) byKey.set(key, []);
+      byKey.get(key).push(p);
     }
     let removed = 0;
-    for (const [name, list] of byName) {
+    for (const [key, list] of byKey) {
       if (list.length <= 1) continue;
-      // 按 id 升序，保留第一条，删除其余
+      // 按 id 升序，保留第一条，删除其余（仅删除真正同名字同方向的重复）
       list.sort((a, b) => a.id - b.id);
-      const keepId = list[0].id;
       const dupIds = list.slice(1).map(p => p.id);
       for (const did of dupIds) {
         await db.positions.delete(did);
