@@ -91,10 +91,28 @@
     return S.questions.filter(q => S.matchPosition(q, target)).length;
   };
   S.getCategoryByName = function (name) { return S.categories.find(c => c.name === name); };
+  /* 从当前 seed.js 的 categoryTree 展开出所有分类名（兜底，防止 IndexedDB 分类表过旧未包含新增叶子） */
+  S.categoryNamesFromSeed = function () {
+    if (typeof window === "undefined" || !window.SEED || !window.SEED.categoryTree) return new Set();
+    const names = new Set();
+    const walk = (nodes) => {
+      for (const n of nodes || []) {
+        if (n.name) names.add(n.name);
+        if (n.children) walk(n.children);
+      }
+    };
+    walk(window.SEED.categoryTree);
+    return names;
+  };
+  /* 判断一个名字是否对应任何分类（DB 中已有或当前 seed 中存在） */
+  S.isCategoryName = function (name) {
+    if (!name) return false;
+    return !!S.getCategoryByName(name) || S.categoryNamesFromSeed().has(name);
+  };
   /* 隐藏岗位：岗位名与某个分类名相同，就不应该在岗位体系/岗位管理里显示（它是分类，不是岗位） */
   S.isHiddenPosition = function (p) {
     if (!p || !p.name) return false;
-    return !!S.getCategoryByName(p.name);
+    return S.isCategoryName(p.name);
   };
   /* 伪岗位检测：岗位名与某个分类名相同，且没有实质关联内容（无题目、无技术栈），可安全删除 */
   S.isFakePosition = function (p) {

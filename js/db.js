@@ -201,8 +201,18 @@
      注意：此清理每次启动都会执行（不做一次性开关），确保任何时期误建的空岗位都能被及时清除。
      仅删除「名字与分类冲突 + 无题目 + 无技术栈」的岗位，已有关联内容的岗位不会被误删（仅在前端隐藏）。 */
   DB.migrateRemoveFakePositions = async function () {
+    // 分类名同时以 IndexedDB 和当前 seed.js 的 categoryTree 为准，防止 DB 分类表过旧
     const cats = await db.categories.toArray();
     const catNameSet = new Set(cats.map(c => c.name));
+    if (typeof window !== "undefined" && window.SEED && Array.isArray(window.SEED.categoryTree)) {
+      const walk = (nodes) => {
+        for (const n of nodes || []) {
+          if (n.name) catNameSet.add(n.name);
+          if (n.children) walk(n.children);
+        }
+      };
+      walk(window.SEED.categoryTree);
+    }
     const allPositions = await db.positions.toArray();
     const allQuestions = await db.questions.toArray();
     const allSkills = await db.positionSkills.toArray();
