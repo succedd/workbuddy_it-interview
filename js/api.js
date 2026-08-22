@@ -215,6 +215,7 @@
 
   API.parseJSON = function (text, opts) {
     opts = opts || {};
+    if (typeof text !== "string") text = String(text);
     if (!text || !text.trim()) return null;
     let s = text.trim();
 

@@ -927,12 +927,11 @@
       const olog = makeLog($("#opt-log"));
       olog("info", "开始执行：" + (b.textContent || b.dataset.a));
       try {
-        const text = await API.optimize(q, b.dataset.a,
+        const parsed = await API.optimize(q, b.dataset.a,
           (delta, full) => { out.textContent = full; out.scrollTop = out.scrollHeight; },
           (ev, p) => aiEvent(olog, ev, p)
         );
-        const parsed = API.parseJSON(text);
-        lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : text);
+        lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : String(parsed));
         out.classList.remove("cursor-blink"); out.innerHTML = U.md(lastResult);
         olog("ok", "优化完成");
         const apply = $("#apply"); apply.style.display = fromEdit ? "inline-flex" : "none";

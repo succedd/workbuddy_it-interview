@@ -1,0 +1,27 @@
+--- app.js.orig	2026-08-22 09:58:47.565626900 +0800
++++ app.js	2026-08-22 09:58:25.935289300 +0800
+@@ -927,12 +927,11 @@
+       const olog = makeLog($("#opt-log"));
+       olog("info", "开始执行：" + (b.textContent || b.dataset.a));
+       try {
+-        const text = await API.optimize(q, b.dataset.a,
++        const parsed = await API.optimize(q, b.dataset.a,
+           (delta, full) => { out.textContent = full; out.scrollTop = out.scrollHeight; },
+           (ev, p) => aiEvent(olog, ev, p)
+         );
+-        const parsed = API.parseJSON(text);
+-        lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : text);
++        lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : String(parsed));
+         out.classList.remove("cursor-blink"); out.innerHTML = U.md(lastResult);
+         olog("ok", "优化完成");
+         const apply = $("#apply"); apply.style.display = fromEdit ? "inline-flex" : "none";
+--- api.js.orig	2026-08-22 09:58:52.948682500 +0800
++++ api.js	2026-08-22 09:58:34.027566000 +0800
+@@ -215,6 +215,7 @@
+ 
+   API.parseJSON = function (text, opts) {
+     opts = opts || {};
++    if (typeof text !== "string") text = String(text);
+     if (!text || !text.trim()) return null;
+     let s = text.trim();
+ 
