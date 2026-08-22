@@ -1730,6 +1730,23 @@
         </div>
         <div id="baidu-out" class="muted" style="margin-top:8px"></div></div>
 
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("upload")} 云端共享题库（发布）</h2>
+        <p class="secondary">所有访客共享同一份题库：配置发布 Token 后，点「发布题库」将当前本机题库推送到 GitHub，约 1-2 分钟后所有访客自动看到最新版。仅持有仓库写权限的 Token 才能发布，访客为只读。</p>
+        <div class="note ai">Token 请使用 GitHub Fine-grained Token，仅授权本仓库的 Contents 读写权限，保存在当前浏览器本地，请勿在公共设备使用。创建步骤见仓库 README 或询问管理员。</div>
+        <label class="field"><span>发布 Token（GitHub Fine-grained PAT）</span>
+          <div class="input-with-action"><input type="password" id="pub-token" value="${Cloud.token() ? "************" : ""}" placeholder="github_pat_ 开头，仅授权本仓库 Contents 读写" />
+          <button class="icon-btn trail" id="pub-show">${U.icon("eye")}</button></div></label>
+        <div class="grid grid-cols-2">
+          <label class="field"><span>仓库（owner/repo）</span><input id="pub-repo" value="${U.esc(Cloud.repo())}" /></label>
+          <label class="field"><span>分支</span><input id="pub-branch" value="${U.esc(Cloud.branch())}" /></label>
+        </div>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="pub-save">${U.icon("check")} 保存配置</button>
+          <button class="btn" id="pub-publish">${U.icon("upload")} 发布题库到线上</button>
+          <button class="btn" id="pub-sync">${U.icon("refresh")} 从云端拉取到本机</button>
+        </div>
+        <div id="pub-out" class="muted" style="margin-top:8px"></div></div>
+
       <div class="card"><h2 style="font-size:16px">${U.icon("shield")} Cloudflare Worker（可选·高级）</h2>
         <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。</p>
         <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.cfApi())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
@@ -1764,6 +1781,43 @@
       catch (e) { out.innerHTML = `<span class="tag tag-danger">失败</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">接口未开启 CORS 跨域，纯静态无法绕过，请用支持 CORS 的接口或本地代理。</div>` : ""); }
     };
     $("#baidu-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("baidu_tid", $("#baidu-tid").value.trim()); } U.toast("百度统计已保存，刷新页面后生效", "success"); };
+    /* 云端共享题库 */
+    const pubTokenInput = $("#pub-token"); let pubTokenTouched = false;
+    pubTokenInput.addEventListener("input", () => pubTokenTouched = true);
+    $("#pub-show").onclick = () => { pubTokenInput.type = pubTokenInput.type === "password" ? "text" : "password"; };
+    $("#pub-save").onclick = () => {
+      const tok = pubTokenTouched && pubTokenInput.value && pubTokenInput.value !== "************" ? pubTokenInput.value.trim() : Cloud.token();
+      Cloud.saveConfig(tok, $("#pub-repo").value.trim(), $("#pub-branch").value.trim());
+      U.toast("发布配置已保存", "success");
+    };
+    $("#pub-publish").onclick = async () => {
+      const out = $("#pub-out");
+      if (!Cloud.token()) { out.innerHTML = '<span class="tag tag-warning">请先填写并保存发布 Token</span>'; return; }
+      if (!(await U.confirm("将当前本机题库发布到线上？发布后约 1-2 分钟所有访客可见（以本机数据为准覆盖云端）。", { okText: "发布" }))) return;
+      out.textContent = "正在导出并提交到 GitHub…";
+      try {
+        const r = await Cloud.publish();
+        out.innerHTML = `<span class="tag tag-success">发布成功</span> ${r.count} 题 / ${r.positions} 岗位已上线，约 1-2 分钟后对所有访客生效`;
+        U.toast("题库已发布", "success");
+      } catch (e) {
+        out.innerHTML = `<span class="tag tag-danger">发布失败</span> ` + U.esc(String(e && e.message || e)) +
+          `<div class="note">请确认 Token 有效（Fine-grained，勾选本仓库 Contents: Read and write）、仓库名与分支正确。</div>`;
+      }
+    };
+    $("#pub-sync").onclick = async () => {
+      const out = $("#pub-out");
+      if (!(await U.confirm("用云端题库覆盖本机题库？本机的题目改动将丢失（收藏与浏览历史保留）。", { danger: true, okText: "覆盖同步" }))) return;
+      out.textContent = "正在拉取云端题库…";
+      try {
+        const d = await Cloud.syncNow();
+        await Services.reload();
+        renderSidebar(parseHash());
+        out.innerHTML = `<span class="tag tag-success">同步成功</span> 云端版本（${(d.questions || []).length} 题）已覆盖本机`;
+        U.toast("已从云端同步题库", "success");
+      } catch (e) {
+        out.innerHTML = `<span class="tag tag-danger">同步失败</span> ` + U.esc(String(e && e.message || e));
+      }
+    };
     $("#stats-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("stats_api", $("#stats-api").value.trim()); localStorage.setItem("stats_key", $("#stats-key").value.trim()); } U.toast("Worker 接口已保存", "success"); renderTopbar(); };
     $("#stats-test").onclick = async () => { const out = $("#stats-out"); if (!Stats.cfApi()) { out.innerHTML = '<span class="tag tag-warning">请先填写接口地址</span>'; return; } out.textContent = "测试中…"; const j = await Stats.cfGetStats(true); out.innerHTML = j ? `<span class="tag tag-success">连接成功</span> 累计 ${j.total || 0} · 今日 ${j.today || 0}` : `<span class="tag tag-danger">连接失败</span>`; };
     $("#restore-seed").onclick = async () => {
@@ -1979,12 +2033,20 @@
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
     Boot.start();
+    let cloudPending = null;
     try {
-      try { await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
+      let justSeeded = false;
+      try { justSeeded = await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
       Boot.set(35, "加载岗位与技术体系…");
       try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
       try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
       try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
+      Boot.set(55, "检查云端题库更新…");
+      try {
+        const r = await Cloud.syncIfNeeded(justSeeded);
+        if (r && r.applied) U.toast("已同步云端题库最新版（共 " + r.count + " 题）", "success");
+        if (r && r.pending) cloudPending = r;
+      } catch (e) { console.warn("cloud sync error", e); }
       Boot.set(60, "迁移与预置数据…");
       await Services.reload();
       Boot.set(85, "渲染界面…");
@@ -1992,6 +2054,7 @@
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
       if (!location.hash) location.hash = "/";
       route();
+      if (cloudPending) U.toast("检测到云端共享题库（" + cloudPending.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
       Stats.recordVisit();
       refreshVisitorStats();
       setInterval(refreshVisitorStats, 60000);
