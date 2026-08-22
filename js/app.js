@@ -235,7 +235,7 @@
         <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
         <div class="muted" style="font-size:12px">${c.count} 题 · ${c.era || ""}</div>
       </a>`).join("");
-    const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
+    const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(p.name)}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
     setMain(`
@@ -676,7 +676,7 @@
   /* ============================ 模拟面试 ============================ */
   async function pageMock() {
     const byStage = Services.positionsByStage();
-    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
+    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
     const years = ["校招/实习", "0-1年", "1-3年", "3-5年", "5年以上"];
     const url = new URL(location.href);
     const posId = url.searchParams.get("pos");
@@ -876,7 +876,7 @@
       const byStage = Services.positionsByStage();
       return byStage.map(s => {
         const seen = new Set();
-        const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; });
+        const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(p.name)) return false; seen.add(p.name); return true; });
         if (!uniq.length) return "";
         return `<div style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">${U.esc(s.stage)}</div><div class="row" style="flex-wrap:wrap;gap:8px">${uniq.map(p => `<label class="chip" style="cursor:pointer;user-select:none"><input type="checkbox" name="f-pos" value="${p.id}" ${posSelIds.indexOf(p.id) >= 0 ? "checked" : ""} style="margin-right:4px">${U.esc(p.name)}</label>`).join("")}</div></div>`;
       }).join("");
@@ -1192,7 +1192,7 @@
   /* ============================ 管理员：AI 出题 ============================ */
   async function pageAdminAI() {
     const byStage = Services.positionsByStage();
-    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
+    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
     const steps = ["粘贴JD", "AI解析", "配置参数", "生成中", "预览入库"];
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>AI 出题</span></div>
       <div class="steps" id="steps">${steps.map((s, i) => `<div class="step" data-i="${i}"><span class="dot">${i + 1}</span>${s}</div>`).join("")}</div>
