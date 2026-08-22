@@ -1,0 +1,12 @@
+name = "it-interview-stats"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# KV 命名空间：先在 Cloudflare 后台创建一个 KV，把下面两处的 id 替换为真实 id
+[[kv_namespaces]]
+binding = "STATS"
+id = "REPLACE_WITH_YOUR_KV_ID"
+
+# 可选：设置后，前端与 Worker 通信需要带 ?k= 一致的值（防刷）
+# [vars]
+# STATS_KEY = "改成你自己的随机字符串"
