@@ -196,7 +196,7 @@
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
     const tags = (q.tags || []).slice(0, 4).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
-    const pos = (q.positionNames || []).slice(0, 3).map(p => `<span class="tag tag-outline">${U.esc(p)}</span>`).join("");
+    const pos = (q.positionNames || []).slice(0, 3).map(p => `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(p)}'">${U.esc(p)}</span>`).join("");
     return `<a class="card card-hover q-card" href="#/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
       <div class="q-excerpt">${hl((q.body || "").replace(/[#*`>]/g, "").slice(0, 100), "body")}</div>
@@ -353,12 +353,13 @@
       const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; });
       return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag tag-ai">${U.esc(s.list[0] ? s.list[0].tag : "")}</span></div>
       <div class="grid grid-cols-auto">${uniq.map(p => {
-        const qn = Services.questionCountForPosition(p.name);
+        const qn = Services.questionCountForPosition(p);
         const skillN = Services.skillsOf(p.id).length;
         const demand = p.demand || "中";
+        const catLink = p.categoryId ? `<a href="#/category?cat=${p.categoryId}">${U.esc(p.category || "")}</a>` : U.esc(p.category || "");
         return `<a class="card card-hover" href="#/position/${p.id}" style="text-decoration:none">
           <div style="font-weight:700">${U.esc(p.name)}</div>
-          <div class="muted" style="font-size:12px;margin-top:4px">${U.esc(p.category || "")}</div>
+          <div class="muted" style="font-size:12px;margin-top:4px">${catLink}</div>
           <div class="q-meta" style="margin-top:10px">
             <span class="tag">${qn} 题</span>
             <span class="tag tag-outline">${skillN} 技术栈</span>
@@ -378,10 +379,11 @@
     const skills = Services.skillsOf(p.id);
     const required = skills.filter(s => s.required);
     const bonus = skills.filter(s => !s.required);
-    const qn = Services.questionCountForPosition(p.name);
+    const qn = Services.questionCountForPosition(p);
     // 难度分布
+    const posQs = Services.questions.filter(q => Services.matchPosition(q, p));
     const dist = { "初级": 0, "中级": 0, "高级": 0, "专家": 0 };
-    Services.questions.filter(q => (q.positionNames || []).indexOf(p.name) >= 0).forEach(q => { if (dist[q.difficulty] != null) dist[q.difficulty]++; });
+    posQs.forEach(q => { if (dist[q.difficulty] != null) dist[q.difficulty]++; });
     const skillCard = (s) => {
       const onClick = s.categoryId != null ? `onclick="location.hash='/category?cat=${s.categoryId}'"` : `onclick="location.hash='/questions?q=${encodeURIComponent(s.techName)}'"`;
       return `<div class="skill-card ${s.required ? "" : "bonus"}" style="cursor:pointer" ${onClick}>
@@ -391,7 +393,7 @@
         <div class="muted" style="font-size:12px;margin-top:4px">题库相关题：${Services.questions.filter(q => (q.tags || []).indexOf(s.techName) >= 0 || (q.catName === s.techName)).length}</div>
       </div>`;
     };
-    const hot = Services.questions.filter(q => (q.positionNames || []).indexOf(p.name) >= 0).sort((a, b) => (b.views || 0) + (b.favorites || 0) - (a.views || 0) - (a.favorites || 0)).slice(0, 6);
+    const hot = posQs.slice().sort((a, b) => (b.views || 0) + (b.favorites || 0) - (a.views || 0) - (a.favorites || 0)).slice(0, 6);
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/position">岗位体系</a><span class="sep">/</span><span>${U.esc(p.name)}</span></div>
       <h1>${U.esc(p.name)} <span class="tag tag-ai">${U.esc(p.stage)}</span></h1>
@@ -429,7 +431,11 @@
     const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
     let base = Services.questions.slice();
     if (q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); base = base.filter(x => ids.indexOf(x.categoryId) >= 0); }
-    if (q.pos) { base = base.filter(x => (x.positionNames || []).indexOf(decodeURIComponent(q.pos)) >= 0); }
+    if (q.pos) {
+      const posName = decodeURIComponent(q.pos);
+      const pos = Services.positions.find(x => x.name === posName) || { name: posName };
+      base = base.filter(x => Services.matchPosition(x, pos));
+    }
 
     const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "" };
     const sortBy = q.sort || "updated";
@@ -501,7 +507,11 @@
     const fav = await Services.isFavorite(q.id);
     const related = (q.relatedIds || []).map(rid => Services.questions.find(x => x.id === rid)).filter(Boolean);
     if (!related.length) related.push(...Services.questions.filter(x => x.id !== q.id && x.categoryId === q.categoryId).slice(0, 4));
-    const posTags = (q.positionNames || []).map(n => `<span class="tag tag-outline">${U.esc(n)}</span>`).join("");
+    const posByName = new Map(Services.positions.map(p => [p.name, p]));
+    const posTags = (q.positionNames || []).map(n => {
+      const pos = posByName.get(n);
+      return pos ? `<a class="tag tag-outline" href="#/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="#/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
+    }).join("");
     const techTags = (q.tags || []).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
     const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
@@ -671,7 +681,7 @@
       // 按技术栈权重抽取
       const weighted = [];
       skills.forEach(s => { const w = s.stars * (s.required ? 2 : 1); for (let k = 0; k < w; k++) weighted.push(s.techName); });
-      const matched = Services.questions.filter(q => (q.positionNames || []).indexOf(pos.name) >= 0);
+      const matched = Services.questions.filter(q => Services.matchPosition(q, pos));
       if (matched.length >= num) pool = matched;
       else {
         pool = matched.slice();
@@ -840,7 +850,11 @@
     const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
     const allPos = Services.positions;
     const tagInput = (arr) => `<div class="tag-input" id="tag-box">${arr.map(t => `<span class="chip">${U.esc(t)}<span class="x" data-t="${U.esc(t)}">${U.icon("x")}</span></span>`).join("")}<input id="tag-add" placeholder="输入标签回车添加" /></div>`;
-    const posInput = (arr) => `<div class="tag-input" id="pos-box">${arr.map(t => `<span class="chip">${U.esc(t)}<span class="x" data-p="${U.esc(t)}">${U.icon("x")}</span></span>`).join("")}<input id="pos-add" placeholder="输入岗位名回车添加" /></div>`;
+    const posByName = new Map(allPos.map(p => [p.name, p]));
+    const posSelIds = (q.positionIds || []).slice();
+    (q.positionNames || []).forEach(n => { const pos = posByName.get(n); if (pos && posSelIds.indexOf(pos.id) < 0) posSelIds.push(pos.id); });
+    const posOpts = (selectedIds) => Services.positionsByStage().map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}" ${selectedIds.indexOf(p.id) >= 0 ? "selected" : ""}>${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
+    const posInput = () => `<select id="f-pos" class="full" multiple style="min-height:120px">${posOpts(posSelIds)}</select><div class="muted" style="font-size:12px;margin-top:4px">按住 Ctrl / Command 多选已有关岗位</div>`;
 
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/questions">题目管理</a><span class="sep">/</span><span>${isNew ? "新增" : "编辑"}</span></div>
       <div class="row" style="justify-content:space-between;margin-bottom:12px">
@@ -860,7 +874,7 @@
         <label class="field"><span>状态</span><select id="f-status" class="full"><option value="draft" ${q.status === "draft" ? "selected" : ""}>草稿</option><option value="published" ${q.status === "published" ? "selected" : ""}>已发布</option><option value="offline" ${q.status === "offline" ? "selected" : ""}>下线</option></select></label>
         <label class="field"><span>技术标签</span>${tagInput(q.tags || [])}</label>
       </div>
-      <label class="field"><span>适用岗位（回车添加）</span>${posInput(q.positionNames || [])}</label>
+      <label class="field"><span>适用岗位</span>${posInput()}</label>
       <div class="grid grid-cols-2" style="gap:16px">
         <div class="field"><span>题目正文（Markdown）</span><div class="editor-split">
           <div class="editor-pane"><div class="pane-head"><span>编辑</span></div><textarea id="f-body">${U.esc(q.body || "")}</textarea></div>
@@ -877,18 +891,19 @@
       const upd = () => { $("#prev-body").innerHTML = U.md($("#f-body").value); $("#prev-answer").innerHTML = U.md($("#f-answer").value); U.highlightAll($("#prev-answer")); };
       $("#f-body").addEventListener("input", upd); $("#f-answer").addEventListener("input", upd); upd();
       wireTagInput("#tag-box", "#tag-add");
-      wireTagInput("#pos-box", "#pos-add");
     });
 
     async function save(status) {
       const tags = $$("#tag-box .chip").map(c => c.dataset.t);
-      const posNames = $$("#pos-box .chip").map(c => c.dataset.p);
+      const posOpts = Array.from($("#f-pos").selectedOptions);
+      const posIds = posOpts.map(o => parseInt(o.value));
+      const posNames = posOpts.map(o => o.text);
       const data = {
         title: $("#f-title").value.trim() || "未命名题目",
         body: $("#f-body").value, answer: $("#f-answer").value,
         categoryId: $("#f-cat").value ? parseInt($("#f-cat").value) : null,
         difficulty: $("#f-diff").value, type: $("#f-type").value, years: $("#f-years").value.trim(),
-        status: status, tags: tags, positionNames: posNames, remark: $("#f-remark").value.trim()
+        status: status, tags: tags, positionIds: posIds, positionNames: posNames, remark: $("#f-remark").value.trim()
       };
       if (isNew) { const nid = await Services.addQuestion(Object.assign(data, { source: "manual" })); await Services.reload(); U.toast("已保存", "success"); App.go("/admin/question/" + nid); }
       else { await Services.updateQuestion(q.id, data); await Services.reload(); U.toast("已保存并生成版本", "success"); }
@@ -1079,7 +1094,7 @@
       <div id="pos-wrap">${byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
         <div class="grid grid-cols-auto">${uniq.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${U.esc(p.name)}</b>
           <span class="row" style="gap:4px"><button class="icon-btn" data-sk="${p.id}" title="技术栈">${U.icon("star")}</button><button class="icon-btn" data-edit="${p.id}">${U.icon("edit")}</button><button class="icon-btn" data-del="${p.id}">${U.icon("trash")}</button></span></div>
-          <div class="muted" style="font-size:12px">${U.esc(p.category || "")} · 题目 ${Services.questionCountForPosition(p.name)} · 技术栈 ${Services.skillsOf(p.id).length}</div></div>`).join("")}</div>`;
+          <div class="muted" style="font-size:12px">${U.esc(p.category || "")} · 题目 ${Services.questionCountForPosition(p)} · 技术栈 ${Services.skillsOf(p.id).length}</div></div>`).join("")}</div>`;
     }).join("")}</div>`);
     $("#add-pos").onclick = () => editPos(null);
     $$("[data-edit]").forEach(b => b.onclick = () => editPos(parseInt(b.dataset.edit)));
@@ -1088,16 +1103,18 @@
     function editPos(id) {
       const p = id != null ? Services.getPosition(id) : null;
       const m = U.modal({ title: p ? "编辑岗位" : "新增岗位" });
+      const catOptions = (sel) => { const build = (pid, depth) => Services.childrenOf(pid).map(c => `<option value="${c.id}" ${sel === c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)}</option>` + build(c.id, depth + 1)).join(""); return build(0, 0); };
       m.body.innerHTML = `<label class="field"><span>岗位名称</span><input id="pn" value="${p ? U.esc(p.name) : ""}" /></label>
         <label class="field"><span>所属阶段</span><input id="ps" value="${p ? U.esc(p.stage) : ""}" placeholder="如 互联网时代" /></label>
-        <label class="field"><span>分类/方向</span><input id="pcat" value="${p ? U.esc(p.category || "") : ""}" /></label>
+        <label class="field"><span>分类/方向</span><select id="pcat" class="full"><option value="">未选择</option>${catOptions(p && p.categoryId)}</select></label>
         <label class="field"><span>市场需求热度</span><select id="pdmd" class="full"><option value="高" ${p && p.demand === "高" ? "selected" : ""}>高</option><option value="中" ${p && p.demand !== "高" && p.demand !== "低" ? "selected" : ""}>中</option><option value="低" ${p && p.demand === "低" ? "selected" : ""}>低</option></select></label>
         <label class="field"><span>描述</span><textarea id="pdesc">${p ? U.esc(p.description || "") : ""}</textarea></label>`;
       const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "保存";
       const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消";
       m.foot.appendChild(cancel); m.foot.appendChild(ok);
       ok.onclick = async () => {
-        const data = { name: $("#pn").value.trim(), stage: $("#ps").value.trim() || "未分类", category: $("#pcat").value.trim(), demand: $("#pdmd").value, description: $("#pdesc").value.trim() };
+        const categoryId = $("#pcat").value ? parseInt($("#pcat").value) : null;
+        const data = { name: $("#pn").value.trim(), stage: $("#ps").value.trim() || "未分类", categoryId: categoryId, demand: $("#pdmd").value, description: $("#pdesc").value.trim() };
         if (!data.name) { U.toast("请输入名称", "warn"); return; }
         if (p) await Services.updatePosition(p.id, data); else await Services.addPosition(data);
         await Services.reload(); m.close(); U.toast("已保存", "success"); pageAdminPositions(); renderSidebar(parseHash());
@@ -1199,8 +1216,11 @@
           <button class="btn btn-ai" id="gen">${U.icon("sparkles")} 立即生成</button>`;
         [["#req-box"], ["#bon-box"], ["#soft-box"]].forEach(([sel]) => { $(sel).querySelectorAll(".x").forEach(x => x.onclick = () => x.parentElement.remove()); });
         $("#gen").onclick = () => {
+          const pname = $("#p-name").value.trim();
+          const matchedPos = Services.positions.find(p => p.name === pname);
           const spec = {
-            positionName: $("#p-name").value.trim(), years: $("#p-years").value.trim(),
+            positionName: pname, positionId: matchedPos ? matchedPos.id : null,
+            years: $("#p-years").value.trim(),
             count: parseInt($("#p-num").value) || 10,
             techList: $$("#req-box .chip").map(c => c.dataset.v).concat($$("#bon-box .chip").map(c => c.dataset.v)),
             answer: true, followup: true
@@ -1220,7 +1240,7 @@
       setStep(3);
       main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-log" id="gen-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="gen-out"></div></details>`;
       try {
-        await runGenerate({ positionName: pos.name, years, count: num, techList, answer: true, followup: true }, null);
+        await runGenerate({ positionName: pos.name, positionId: pos.id, years, count: num, techList, answer: true, followup: true }, null);
       } catch (e) { $("#gen-out").innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e); }
     }
 
@@ -1358,10 +1378,12 @@
           for (const r of rows) {
             if (!r.selected) continue;
             const q = r.q;
+            const posNames = spec.positionName ? [spec.positionName] : (res.positionName ? [res.positionName] : (q.tags || []).slice(0, 3));
+            const posIds = spec.positionId ? [spec.positionId] : [];
             await Services.addQuestion({
               categoryId: r.chosen, title: q.title, body: q.body, answer: q.answer,
               difficulty: ["初级", "中级", "高级", "专家"].indexOf(q.difficulty) >= 0 ? q.difficulty : "中级",
-              type: q.type || "简答题", positionNames: res.positionName ? [res.positionName] : (q.tags || []).slice(0, 3),
+              type: q.type || "简答题", positionNames: posNames, positionIds: posIds,
               years: q.years || (spec && spec.years) || "", tags: q.tags || [], source: "ai", aiScore: 85, status: "published"
             });
             okN++;

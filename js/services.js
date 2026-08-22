@@ -77,8 +77,18 @@
   };
   S.getPosition = id => S.posMap.get(id);
   S.skillsOf = function (positionId) { return S.positionSkills.filter(s => s.positionId === positionId); };
-  S.questionCountForPosition = function (positionName) {
-    return S.questions.filter(q => (q.positionNames || []).indexOf(positionName) >= 0).length;
+  S.matchPosition = function (q, pos) {
+    if (!pos) return false;
+    const names = q.positionNames || [];
+    if (pos.name != null && names.indexOf(pos.name) >= 0) return true;
+    const ids = q.positionIds || [];
+    if (pos.id != null && ids.indexOf(pos.id) >= 0) return true;
+    return false;
+  };
+  S.questionCountForPosition = function (pos) {
+    if (!pos) return 0;
+    const target = typeof pos === "string" ? { name: pos } : pos;
+    return S.questions.filter(q => S.matchPosition(q, target)).length;
   };
 
   /* 题目查询 */
@@ -199,9 +209,14 @@
     return { ok: true };
   };
   S.addPosition = async function (data) {
-    return await db.positions.add({ name: data.name, stage: data.stage || "未分类", tag: data.tag || "", category: data.category || "", description: data.description || "", demand: data.demand || "中", sort: 0, status: "active" });
+    const categoryId = data.categoryId != null ? data.categoryId : null;
+    const category = categoryId != null ? (S.catName(categoryId) || data.category || "") : (data.category || "");
+    return await db.positions.add({ name: data.name, stage: data.stage || "未分类", tag: data.tag || "", category: category, categoryId: categoryId, description: data.description || "", demand: data.demand || "中", sort: 0, status: "active" });
   };
-  S.updatePosition = async function (id, data) { await db.positions.update(id, data); };
+  S.updatePosition = async function (id, data) {
+    if (data.categoryId != null) data.category = S.catName(data.categoryId) || data.category || "";
+    await db.positions.update(id, data);
+  };
   S.deletePosition = async function (id) { await db.positions.delete(id); await db.positionSkills.where("positionId").equals(id).delete(); };
   S.addPositionSkill = async function (data) { return await db.positionSkills.add(data); };
   S.deletePositionSkill = async function (id) { await db.positionSkills.delete(id); };
