@@ -197,10 +197,10 @@
     return removed;
   };
 
-  /* 迁移：清理与分类同名的伪岗位（如把“腾讯云”误建成岗位） */
+  /* 迁移：清理与分类同名的伪岗位（如把“腾讯云”误建成岗位）
+     注意：此清理每次启动都会执行（不做一次性开关），确保任何时期误建的空岗位都能被及时清除。
+     仅删除「名字与分类冲突 + 无题目 + 无技术栈」的岗位，已有关联内容的岗位不会被误删（仅在前端隐藏）。 */
   DB.migrateRemoveFakePositions = async function () {
-    const MIGRATION_KEY = "migrated_remove_fake_positions_v1";
-    if (await DB.getSetting(MIGRATION_KEY)) return 0;
     const cats = await db.categories.toArray();
     const catNameSet = new Set(cats.map(c => c.name));
     const allPositions = await db.positions.toArray();
@@ -220,7 +220,6 @@
       await db.positions.delete(p.id);
       removed++;
     }
-    if (removed > 0) await DB.setSetting(MIGRATION_KEY, true);
     return removed;
   };
 
