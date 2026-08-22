@@ -276,6 +276,15 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .tag-input .chip .x:hover { opacity: 1; background: rgba(0,0,0,.10); }
 .tag-input .chip .x .ic { width: 12px; height: 12px; display: block; }
 
+/* ============ Combo（可搜索分类下拉） ============ */
+.combo { position: relative; }
+.combo > input { width: 100%; cursor: text; }
+.combo-list { position: absolute; z-index: 50; top: calc(100% + 4px); left: 0; right: 0; max-height: 280px; overflow-y: auto; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0,0,0,.14); padding: 4px; }
+.combo-item { padding: 7px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.combo-item:hover { background: var(--c-primary-50); }
+.combo-item.active { background: var(--c-primary-50); color: var(--c-primary); font-weight: 600; }
+.combo-item.muted { color: var(--muted); cursor: default; }
+
 /* ============ Steps（醒目步骤条 + 进度连线动画） ============ */
 .steps { position: relative; display: flex; gap: 4px; margin-bottom: 22px; flex-wrap: wrap; align-items: flex-start; padding: 4px 0; }
 /* 背景轨道 */

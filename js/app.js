@@ -869,6 +869,7 @@
     const q = isNew ? { title: "", body: "", answer: "", difficulty: "中级", type: "简答题", status: "draft", tags: [], positionNames: [], years: "", remark: "", categoryId: null } : await Services.getQuestion(parseInt(id));
     if (!q) { setMain(`<div class="empty">未找到题目</div>`); return; }
     const catOpts = (sel) => { const build = (pid, depth) => Services.childrenOf(pid).map(c => `<option value="${c.id}" ${sel === c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)}</option>` + build(c.id, depth + 1)).join(""); return `<option value="">未分类</option>` + build(0, 0); };
+    const flatCats = []; (function walk(nodes, prefix) { nodes.forEach(n => { const path = prefix ? prefix + " / " + n.name : n.name; flatCats.push({ id: n.id, name: n.name, path: path }); if (n.children && n.children.length) walk(n.children, path); }); })(Services.categoryTree(), "");
     const diffs = ["初级", "中级", "高级", "专家"];
     const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
     const allPos = Services.positions;
@@ -897,7 +898,12 @@
       </div>
       <label class="field"><span>题目标题</span><input id="f-title" value="${U.esc(q.title)}" /></label>
       <div class="grid grid-cols-2" style="gap:16px">
-        <label class="field"><span>技术分类</span><select id="f-cat" class="full">${catOpts(q.categoryId)}</select></label>
+        <label class="field"><span>技术分类（可搜索）</span>
+          <div class="combo" id="cat-combo">
+            <input id="f-cat-text" class="full" placeholder="输入关键词搜索分类…" autocomplete="off" />
+            <input type="hidden" id="f-cat" value="${q.categoryId != null ? q.categoryId : ""}" />
+            <div class="combo-list" id="cat-list" style="display:none"></div>
+          </div></label>
         <label class="field"><span>难度</span><select id="f-diff" class="full">${diffs.map(d => `<option ${q.difficulty === d ? "selected" : ""}>${d}</option>`).join("")}</select></label>
         <label class="field"><span>题型</span><select id="f-type" class="full">${types.map(t => `<option ${q.type === t ? "selected" : ""}>${t}</option>`).join("")}</select></label>
         <label class="field"><span>工作年限</span><input id="f-years" value="${U.esc(q.years || "")}" placeholder="如 1-3年" /></label>
@@ -921,6 +927,7 @@
       const upd = () => { $("#prev-body").innerHTML = U.md($("#f-body").value); $("#prev-answer").innerHTML = U.md($("#f-answer").value); U.highlightAll($("#prev-answer")); };
       $("#f-body").addEventListener("input", upd); $("#f-answer").addEventListener("input", upd); upd();
       wireTagInput("#tag-box", "#tag-add");
+      wireCombo("#f-cat-text", "#f-cat", "#cat-list", flatCats);
     });
 
     async function save(status) {
@@ -958,6 +965,42 @@
         box.insertBefore(chip, input); input.value = "";
       }
     });
+  }
+
+  // 可搜索分类组合框：input 显示路径（父/子/孙），隐藏 input 存 categoryId
+  function wireCombo(inputSel, hiddenSel, listSel, items) {
+    const input = $(inputSel), hidden = $(hiddenSel), list = $(listSel);
+    if (!input || !hidden || !list) return;
+    let picked = hidden.value ? parseInt(hidden.value) : null;
+    const dataOf = (id) => items.find(it => String(it.id) === String(id));
+    function render(q) {
+      q = (q || "").trim().toLowerCase();
+      const filtered = items.filter(it => !q || it.name.toLowerCase().indexOf(q) >= 0 || it.path.toLowerCase().indexOf(q) >= 0);
+      const head = `<div class="combo-item ${picked == null ? "active" : ""}" data-id="">未分类</div>`;
+      const body = filtered.length
+        ? filtered.map(it => `<div class="combo-item ${it.id === picked ? "active" : ""}" data-id="${it.id}">${U.esc(it.path)}</div>`).join("")
+        : `<div class="combo-item muted" style="cursor:default">无匹配分类</div>`;
+      list.innerHTML = head + body;
+      list.querySelectorAll(".combo-item[data-id]").forEach(el => {
+        el.onclick = () => {
+          const id = el.dataset.id;
+          if (id === "") { picked = null; hidden.value = ""; input.value = ""; }
+          else { picked = parseInt(id); hidden.value = id; input.value = el.textContent; }
+          list.style.display = "none";
+        };
+      });
+    }
+    input.addEventListener("focus", () => { render(""); list.style.display = "block"; });
+    input.addEventListener("input", () => { picked = null; render(input.value); list.style.display = "block"; });
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        list.style.display = "none";
+        const it = dataOf(hidden.value);
+        input.value = it ? it.path : "";
+      }, 150);
+    });
+    const init = dataOf(hidden.value);
+    if (init) input.value = init.path;
   }
 
   /* AI 优化弹窗（题目详情/编辑通用） */
