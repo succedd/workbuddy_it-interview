@@ -1867,7 +1867,8 @@
   /* ============================ 访客统计（本地计数 + 百度统计 + 可选 Cloudflare Worker） ============================ */
   const Stats = (() => {
     /* --- 百度统计 --- */
-    const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || "") : "");
+    const DEFAULT_TID = "90b0860f910ed25873ab7fd6995e8af2";
+    const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || DEFAULT_TID) : DEFAULT_TID);
     function trackBaidu(url) {
       if (baiduId() && typeof _hmt !== "undefined" && _hmt) {
         try { _hmt.push(["_trackPageview", url]); } catch (e) {}
@@ -1875,6 +1876,7 @@
     }
     function loadBaiduScript() {
       const tid = baiduId(); if (!tid) return;
+      if (tid === DEFAULT_TID && typeof _hmt !== "undefined" && _hmt.length >= 0) return;
       window._hmt = window._hmt || [];
       (function () {
         var hm = document.createElement("script");
