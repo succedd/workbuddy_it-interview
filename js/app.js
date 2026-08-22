@@ -1853,13 +1853,18 @@
     const key = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("stats_key") || "") : "");
     const baseUrl = () => api().replace(/\/+$/, "");
     function enabled() { return !!api(); }
+    function fetchWithTimeout(url, opts = {}, ms = 3000) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), ms);
+      return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
+    }
     async function post(path, params) {
       const b = baseUrl(); if (!b) return null;
       try {
         const u = new URL(b + path);
         if (key()) u.searchParams.set("k", key());
         if (params) for (const k in params) u.searchParams.set(k, String(params[k]));
-        const r = await fetch(u.toString(), { method: "POST", mode: "cors" });
+        const r = await fetchWithTimeout(u.toString(), { method: "POST", mode: "cors" });
         return await r.json().catch(() => null);
       } catch (e) { return null; }
     }
@@ -1870,7 +1875,7 @@
       try {
         const u = new URL(b + "/stats");
         if (key()) u.searchParams.set("k", key());
-        const r = await fetch(u.toString(), { mode: "cors" });
+        const r = await fetchWithTimeout(u.toString(), { mode: "cors" });
         const j = await r.json();
         cache = j; cacheAt = Date.now();
         return j;
