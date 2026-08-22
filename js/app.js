@@ -1721,6 +1721,86 @@
   }
 
   /* ============================ 启动 ============================ */
+  /* ============================ 首次进入加载动效 ============================ */
+  const Boot = (() => {
+    let started = 0, target = 0, raf = 0, rainRaf = 0, finished = false, readyResolve;
+    const ready = new Promise(r => readyResolve = r);
+    const el = id => document.getElementById(id);
+    const NAMES = ["前端工程师","后端工程师","全栈工程师","测试工程师","测试开发工程师","运维工程师","SRE工程师","DevOps工程师","数据分析师","算法工程师","机器学习工程师","深度学习工程师","数据科学家","产品经理","网络安全工程师","渗透测试工程师","大数据开发工程师","云架构师","解决方案架构师","数据库管理员","人工智能工程师","移动端开发","iOS开发","Android开发","游戏开发工程师","嵌入式工程师","区块链工程师","爬虫工程师","推荐算法工程师","搜索算法工程师","音视频开发","性能测试工程师","自动化测试工程师","UI设计师","交互设计师","售前工程师","技术项目经理","视觉算法工程师","鸿蒙开发工程师","Go开发工程师","Java开发工程师","Python开发工程师","C++开发工程师","前端架构师","后端架构师","数据工程师","ETL工程师","BI工程师","运维开发工程师","大模型应用工程师","AIGC工程师"];
+    function start() {
+      const ov = el("boot-loader"); if (!ov) return;
+      ov.style.display = "flex"; started = Date.now();
+      try { initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
+      loop();
+    }
+    function initRain() {
+      const c = el("boot-rain"); if (!c) return;
+      const ctx = c.getContext("2d");
+      const resize = () => { c.width = innerWidth; c.height = innerHeight; };
+      resize();
+      const chars = "01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ{}[]<>+=*/;constfunctionreturnimportexportclassasyncawait".split("");
+      const fontSize = 14;
+      let drops = [];
+      const reset = () => { const cols = Math.floor(c.width / fontSize); drops = new Array(cols).fill(1); };
+      reset();
+      const draw = () => {
+        ctx.fillStyle = "rgba(6,10,16,0.10)"; ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillStyle = "#1fae74"; ctx.font = fontSize + "px monospace";
+        for (let i = 0; i < drops.length; i++) {
+          const t = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(t, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i]++;
+        }
+        rainRaf = requestAnimationFrame(draw);
+      };
+      draw();
+      addEventListener("resize", reset);
+    }
+    function initNames() {
+      const box = el("boot-names"); if (!box) return;
+      const N = Math.min(24, Math.max(12, Math.floor(innerWidth / 88)));
+      for (let i = 0; i < N; i++) {
+        const s = document.createElement("span");
+        s.className = "boot-name";
+        s.textContent = NAMES[Math.floor(Math.random() * NAMES.length)];
+        s.style.top = (Math.random() * 100) + "vh";
+        s.style.animationDuration = (13 + Math.random() * 18) + "s";
+        s.style.animationDelay = (-Math.random() * 26) + "s";
+        s.style.fontSize = (12 + Math.random() * 18) + "px";
+        s.style.opacity = (0.16 + Math.random() * 0.30).toFixed(2);
+        box.appendChild(s);
+      }
+    }
+    function set(pct, status) {
+      target = Math.max(target, pct);
+      const s = el("boot-status"); if (s && status) s.textContent = status;
+    }
+    function loop() {
+      const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
+      const cur = parseFloat((fill && fill.dataset.v) || "0");
+      const next = cur + (target - cur) * 0.09;
+      if (fill) { fill.dataset.v = next; fill.style.width = next + "%"; }
+      if (pctEl) pctEl.textContent = Math.round(next) + "%";
+      raf = requestAnimationFrame(loop);
+    }
+    function finish() {
+      if (finished) return; finished = true;
+      target = 100;
+      const elapsed = Date.now() - started;
+      const wait = Math.max(0, 1100 - elapsed);
+      setTimeout(() => {
+        const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
+        if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
+        const ov = el("boot-loader");
+        cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
+        if (ov) { ov.classList.add("done"); setTimeout(() => { ov.style.display = "none"; }, 600); }
+        if (readyResolve) readyResolve();
+      }, wait);
+    }
+    return { start, set, finish, ready };
+  })();
+
   async function init() {
     applyTheme();
     if (!window.indexedDB) {
@@ -1729,15 +1809,26 @@
     }
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
-    try { await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
-    try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
-    try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
-    try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
-    await Services.reload();
-    if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
-    window.addEventListener("hashchange", () => { renderTopbar(); route(); });
-    if (!location.hash) location.hash = "/";
-    route();
+    Boot.start();
+    try {
+      try { await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
+      Boot.set(35, "加载岗位与技术体系…");
+      try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
+      try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
+      try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
+      Boot.set(60, "迁移与预置数据…");
+      await Services.reload();
+      Boot.set(85, "渲染界面…");
+      if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
+      window.addEventListener("hashchange", () => { renderTopbar(); route(); });
+      if (!location.hash) location.hash = "/";
+      route();
+    } catch (e) {
+      console.error("init error", e);
+      U.toast("页面初始化出错，请刷新重试", "error");
+    } finally {
+      Boot.finish();
+    }
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
