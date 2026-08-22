@@ -122,7 +122,7 @@
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
         ${adminHtml}
-        ${`<span class="vis-chip" title="本机浏览次数（当前浏览器统计）">${U.icon("eye")}<span class="vic">今日 <b id="vis-today">–</b></span><span class="vic">累计 <b id="vis-total">–</b></span></span>`}
+        ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
@@ -1959,11 +1959,14 @@
   const COUNTRY_NAMES = { CN: "中国", HK: "中国香港", TW: "中国台湾", MO: "中国澳门", US: "美国", JP: "日本", KR: "韩国", SG: "新加坡", GB: "英国", DE: "德国", FR: "法国", IN: "印度", CA: "加拿大", AU: "澳大利亚", RU: "俄罗斯", BR: "巴西", NL: "荷兰", ES: "西班牙", IT: "意大利", TH: "泰国", MY: "马来西亚", VN: "越南", ID: "印度尼西亚", PH: "菲律宾", NZ: "新西兰", SE: "瑞典", CH: "瑞士", AE: "阿联酋", ZA: "南非", XX: "未知地区" };
   function countryName(code) { return COUNTRY_NAMES[code] || code; }
 
+  function flashVis(el) { if (!el) return; el.classList.remove("vis-flash"); void el.offsetWidth; el.classList.add("vis-flash"); }
   async function refreshVisitorStats() {
     const j = Stats.getLocalStats();
     const t = document.getElementById("vis-today"); const tot = document.getElementById("vis-total");
-    if (t) t.textContent = (j.todayCount || 0).toLocaleString();
-    if (tot) tot.textContent = (j.total || 0).toLocaleString();
+    const tv = (j.todayCount || 0).toLocaleString();
+    const tt = (j.total || 0).toLocaleString();
+    if (t && t.textContent !== tv) { t.textContent = tv; flashVis(t); }
+    if (tot && tot.textContent !== tt) { tot.textContent = tt; flashVis(tot); }
   }
 
   async function init() {

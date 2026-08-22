@@ -380,9 +380,13 @@ table.data tr:hover td { background: var(--bg-hover); }
 
 /* 顶部访问统计胶囊 */
 .vis-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.18); font-size: 12px; color: #475569; white-space: nowrap; }
-.vis-chip .ic { width: 15px; height: 15px; opacity: .7; flex: none; }
+.vis-chip .ic { width: 15px; height: 15px; opacity: .7; flex: none; animation: vis-pulse 2.5s ease-in-out infinite; }
 .vis-chip .vic { line-height: 1; }
 .vis-chip .vic b { color: #2563EB; font-weight: 700; }
+.vis-chip .vis-num { display: inline-block; padding: 0 3px; border-radius: 4px; }
+.vis-chip .vis-flash { animation: vis-flash .6s ease; }
+@keyframes vis-pulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes vis-flash { 0% { background: rgba(37,99,235,.35); transform: scale(1.15); } 100% { background: transparent; transform: scale(1); } }
 html[data-theme="dark"] .vis-chip { background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.22); color: #aeb9c9; }
 html[data-theme="dark"] .vis-chip .vic b { color: #38bdf8; }
 @media (max-width: 720px) { .vis-chip { display: none; } }
