@@ -1822,17 +1822,27 @@
     }
     function finish() {
       if (finished) return; finished = true;
-      target = 100;
+      const ov = el("boot-loader");
+      const skip = el("boot-skip"); if (skip) skip.style.opacity = "1";
       const elapsed = Date.now() - started;
-      const wait = Math.max(0, 1100 - elapsed);
-      setTimeout(() => {
-        const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
-        if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
-        const ov = el("boot-loader");
-        cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
-        if (ov) { ov.classList.add("done"); setTimeout(() => { ov.style.display = "none"; }, 600); }
-        if (readyResolve) readyResolve();
-      }, wait);
+      const MIN = 3200; // 最短展示时长，确保动效能看完
+      const wait = Math.max(0, MIN - elapsed);
+      target = Math.min(target, 92); // 加载期间进度停在 ~92%，结束瞬间补满，避免早早钉在 100%
+      let revealed = false;
+      const reveal = () => {
+        if (revealed) return; revealed = true;
+        target = 100;
+        setTimeout(() => {
+          const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
+          if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
+          const o = el("boot-loader");
+          cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
+          if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 600); }
+          if (readyResolve) readyResolve();
+        }, 520);
+      };
+      setTimeout(reveal, wait);
+      if (ov) ov.addEventListener("click", reveal);
     }
     return { start, set, finish, ready };
   })();
