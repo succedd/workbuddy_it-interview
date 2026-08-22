@@ -62,23 +62,29 @@
     if (onProgress) onProgress("写入技术分类…");
     await seedCat(S.categoryTree, 0, 0);
 
-    // 2) 岗位（树中所有节点都建记录，便于引用）
+    // 2) 岗位（树中所有节点都建记录，便于引用；支持细分方向 direction）
     const flatPos = [];
     const walkPos = (nodes, stage, tag, parentName) => {
       nodes.forEach(n => {
-        flatPos.push({ name: n.name, stage, tag, category: parentName || "", description: "", demand: "中" });
-        if (n.children) walkPos(n.children, stage, tag, n.name);
+        const isObj = typeof n === "object";
+        const nm = isObj ? n.name : n;
+        const dir = isObj ? (n.direction || "") : "";
+        flatPos.push({ name: nm, stage, tag, category: parentName || "", direction: dir, description: "", demand: "中" });
+        if (isObj && n.children) walkPos(n.children, stage, tag, nm);
       });
     };
     S.positionStages.forEach(st => walkPos(st.children, st.stage, st.tag, ""));
     if (onProgress) onProgress("写入岗位体系…");
+    const seenPosKeys = new Set();
     for (const p of flatPos) {
-      if (nameToPos.has(p.name)) continue; // 同名岗位只写入一次（防止树中重名或重复 seed）
+      const key = (p.name || "") + "|" + (p.direction || "");
+      if (seenPosKeys.has(key)) continue; // 同名且同方向只写入一次
+      seenPosKeys.add(key);
       const id = await db.positions.add({
         name: p.name, stage: p.stage, tag: p.tag, category: p.category,
-        description: p.description, demand: p.demand, sort: 0, status: "active"
+        direction: p.direction || "", description: p.description, demand: p.demand, sort: 0, status: "active"
       });
-      nameToPos.set(p.name, id);
+      if (!nameToPos.has(p.name)) nameToPos.set(p.name, id); // 首条同名岗位供技术栈关联使用
     }
 
     // 3) 岗位技术栈
@@ -232,6 +238,55 @@
       removed++;
     }
     return removed;
+  };
+
+  /* 迁移：为“公有云售后技术支持”预置细分方向示例岗位（大客户答疑 / 监控运维 / 售前技术咨询 / 驻场交付）
+     仅针对已有该基础岗位的用户库追加方向细分，方便直接看到“一岗多向”效果；已存在同名同方向的岗位则跳过（幂等）。 */
+  DB.migrateSeedDirectionExamples = async function () {
+    const MIGRATION_KEY = "migrated_direction_examples_v1";
+    if (await DB.getSetting(MIGRATION_KEY)) return 0;
+    const baseName = "公有云售后技术支持";
+    const dirs = [
+      { d: "大客户答疑", tag: "售后支持", desc: "纯解答大客户的产品售后问题、工单处理与客情维护" },
+      { d: "监控运维", tag: "售后支持", desc: "盯监控、告警响应、稳定性保障与故障排查" },
+      { d: "售前技术咨询", tag: "售后支持", desc: "技术方案咨询、POC 支持，配合销售打单" },
+      { d: "驻场交付", tag: "售后支持", desc: "驻客户现场实施交付、环境部署与培训" }
+    ];
+    const all = await db.positions.toArray();
+    const base = all.find(p => p.name === baseName && (!p.direction || p.direction === ""));
+    if (!base) { await DB.setSetting(MIGRATION_KEY, true); return 0; }
+    const existKeys = new Set(
+      all.filter(p => p.name === baseName && p.direction)
+         .map(p => p.name + "|" + p.direction)
+    );
+    let added = 0;
+    for (const item of dirs) {
+      const key = baseName + "|" + item.d;
+      if (existKeys.has(key)) continue;
+      const id = await db.positions.add({
+        name: baseName,
+        stage: base.stage || "大数据与云计算时代",
+        tag: item.tag,
+        category: base.category || "",
+        categoryId: base.categoryId != null ? base.categoryId : null,
+        direction: item.d,
+        description: item.desc,
+        demand: base.demand || "中",
+        sort: 0,
+        status: "active"
+      });
+      // 复制基础岗位的技术栈，方便直接看到结构
+      const skills = await db.positionSkills.where("positionId").equals(base.id).toArray();
+      for (const sk of skills) {
+        await db.positionSkills.add({
+          positionId: id, categoryId: sk.categoryId != null ? sk.categoryId : null,
+          techName: sk.techName, stars: sk.stars || 3, depth: sk.depth || "了解", required: sk.required
+        });
+      }
+      added++;
+    }
+    if (added > 0) await DB.setSetting(MIGRATION_KEY, true);
+    return added;
   };
 
   window.DB = DB;

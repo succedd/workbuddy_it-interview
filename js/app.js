@@ -1682,6 +1682,7 @@
     try { await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
     try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
     try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
+    try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
     await Services.reload();
     if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
     window.addEventListener("hashchange", () => { renderTopbar(); route(); });
