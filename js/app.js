@@ -122,7 +122,7 @@
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
         ${adminHtml}
-        ${`<span class="vis-chip" title="本机浏览统计"><span class="vic">今日 <b id="vis-today">–</b></span><span class="vic">累计 <b id="vis-total">–</b></span></span>`}
+        ${`<span class="vis-chip" title="本机浏览次数（当前浏览器统计）">${U.icon("eye")}<span class="vic">今日 <b id="vis-today">–</b></span><span class="vic">累计 <b id="vis-total">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
