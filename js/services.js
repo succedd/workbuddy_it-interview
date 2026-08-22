@@ -90,6 +90,17 @@
     const target = typeof pos === "string" ? { name: pos } : pos;
     return S.questions.filter(q => S.matchPosition(q, target)).length;
   };
+  S.getCategoryByName = function (name) { return S.categories.find(c => c.name === name); };
+  /* 伪岗位检测：岗位名与某个分类名相同，但没有实质内容（无题目、无技术栈、无 categoryId） */
+  S.isFakePosition = function (p) {
+    if (!p || !p.name) return false;
+    const cat = S.getCategoryByName(p.name);
+    if (!cat) return false;                 // 名字不与任何分类冲突，不是伪岗位
+    if (p.categoryId && p.categoryId !== cat.id) return false; // 已明确关联到其它分类
+    if (S.questionCountForPosition(p) > 0) return false;
+    if (S.skillsOf(p.id).length > 0) return false;
+    return true;
+  };
 
   /* 题目查询 */
   S.getQuestion = async function (id) { return await db.questions.get(id); };

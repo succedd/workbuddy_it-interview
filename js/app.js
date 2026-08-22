@@ -347,10 +347,18 @@
   /* ============================ 岗位体系页 ============================ */
   async function pagePositions() {
     const byStage = Services.positionsByStage();
+    const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
+    const hasFake = fakeIds.size > 0;
     const html = byStage.map(s => {
       // 按名字去重：同名岗位只显示第一个（防止 seed 重复写入或树节点重名）
       const seen = new Set();
-      const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; });
+      const uniq = s.list.filter(p => {
+        if (fakeIds.has(p.id)) return false;          // 隐藏与分类同名的伪岗位
+        if (seen.has(p.name)) return false;
+        seen.add(p.name);
+        return true;
+      });
+      if (!uniq.length) return "";
       return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag tag-ai">${U.esc(s.list[0] ? s.list[0].tag : "")}</span></div>
       <div class="grid grid-cols-auto">${uniq.map(p => {
         const qn = Services.questionCountForPosition(p);
@@ -368,8 +376,18 @@
         </a>`;
       }).join("")}</div>`;
     }).join("");
+    const cleanBtn = hasFake ? `<button id="clean-fake-pos" class="btn btn-secondary" style="margin-left:auto">清理 ${fakeIds.size} 条无效岗位</button>` : "";
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>岗位体系</span></div>
-      <h1 style="margin-bottom:6px">岗位体系</h1><p class="secondary">按 IT 行业岗位出现的先后顺序组织，点击岗位查看必考/加分技术栈与题目。</p>${html}`);
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><h1 style="margin:0">岗位体系</h1>${cleanBtn}</div>
+      <p class="secondary">按 IT 行业岗位出现的先后顺序组织，点击岗位查看必考/加分技术栈与题目。</p>${html}`);
+    if (hasFake) {
+      $("#clean-fake-pos").onclick = async () => {
+        const n = await DB.migrateRemoveFakePositions();
+        await Services.reload();
+        U.toast("已清理 " + n + " 条无效岗位", "success");
+        pagePositions();
+      };
+    }
   }
 
   /* ============================ 岗位详情页 ============================ */
@@ -1116,6 +1134,14 @@
         const categoryId = $("#pcat").value ? parseInt($("#pcat").value) : null;
         const data = { name: $("#pn").value.trim(), stage: $("#ps").value.trim() || "未分类", categoryId: categoryId, demand: $("#pdmd").value, description: $("#pdesc").value.trim() };
         if (!data.name) { U.toast("请输入名称", "warn"); return; }
+        const conflictCat = Services.getCategoryByName(data.name);
+        if (conflictCat) {
+          const linkedToItself = data.categoryId === conflictCat.id;
+          if (!linkedToItself || !p) {
+            U.toast(`「${data.name}」是技术分类名称，不能作为岗位名。请改为具体岗位（如「公有云售后技术支持」）`, "warn");
+            return;
+          }
+        }
         if (p) await Services.updatePosition(p.id, data); else await Services.addPosition(data);
         await Services.reload(); m.close(); U.toast("已保存", "success"); pageAdminPositions(); renderSidebar(parseHash());
       };
@@ -1638,6 +1664,7 @@
     renderTopbar();
     try { await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
     try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
+    try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
     await Services.reload();
     if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
     window.addEventListener("hashchange", () => { renderTopbar(); route(); });

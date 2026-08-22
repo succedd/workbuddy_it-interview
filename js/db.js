@@ -197,5 +197,32 @@
     return removed;
   };
 
+  /* 迁移：清理与分类同名的伪岗位（如把“腾讯云”误建成岗位） */
+  DB.migrateRemoveFakePositions = async function () {
+    const MIGRATION_KEY = "migrated_remove_fake_positions_v1";
+    if (await DB.getSetting(MIGRATION_KEY)) return 0;
+    const cats = await db.categories.toArray();
+    const catNameSet = new Set(cats.map(c => c.name));
+    const allPositions = await db.positions.toArray();
+    const allQuestions = await db.questions.toArray();
+    const allSkills = await db.positionSkills.toArray();
+    let removed = 0;
+    for (const p of allPositions) {
+      if (!catNameSet.has(p.name)) continue;                 // 名字不与分类冲突
+      if (p.categoryId && cats.some(c => c.id === p.categoryId && c.name !== p.name)) continue; // 已关联到其它分类
+      const hasQ = allQuestions.some(q =>
+        (q.positionNames || []).indexOf(p.name) >= 0 ||
+        (q.positionIds || []).indexOf(p.id) >= 0
+      );
+      if (hasQ) continue;
+      const hasSkill = allSkills.some(s => s.positionId === p.id);
+      if (hasSkill) continue;
+      await db.positions.delete(p.id);
+      removed++;
+    }
+    if (removed > 0) await DB.setSetting(MIGRATION_KEY, true);
+    return removed;
+  };
+
   window.DB = DB;
 })();
