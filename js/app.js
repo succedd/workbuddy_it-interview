@@ -122,7 +122,7 @@
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
         ${adminHtml}
-        ${Stats.enabled() ? `<span class="vis-chip" title="访问统计"><span class="vic">今日 <b id="vis-today">–</b></span><span class="vic">累计 <b id="vis-total">–</b></span></span>` : ""}
+        ${`<span class="vis-chip" title="本机浏览统计"><span class="vic">今日 <b id="vis-today">–</b></span><span class="vic">累计 <b id="vis-total">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
@@ -826,8 +826,13 @@
         <div class="card"><h2 style="font-size:16px">收藏排行</h2>${s.topFav.length ? `<table class="data">${s.topFav.map(q => `<tr><td><a href="#/question/${q.id}">${U.esc(q.title)}</a></td><td>${q.favorites}</td></tr>`).join("")}</table>` : '<div class="muted">暂无</div>'}</div>
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
-        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">访客来源（国家/地区）</h2></div>${Stats.enabled() ? `<div id="c-geo" style="height:300px"></div>` : '<div class="muted">未配置统计接口，请在「系统设置」填写 Worker 地址</div>'}</div>
-        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">最受关注题目 Top</h2></div><div id="c-topq">${Stats.enabled() ? '<div class="muted">加载中…</div>' : '<div class="muted">未配置统计接口</div>'}</div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">访问统计</h2></div>
+          ${Stats.baiduId()
+            ? `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">访客地域分布、来源分析、趋势报表</p><a class="btn btn-primary" href="https://tongji.baidu.com" target="_blank" rel="noopener">查看百度统计后台 →</a></div>`
+            : `<div style="text-align:center;padding:24px 16px"><div class="muted" style="margin-bottom:12px">配置「百度统计」后可查看访客地域分布、来源分析、趋势报表</div><a class="btn" href="#/admin/settings">前往配置 →</a></div>`}
+          ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"></div>` : ""}
+        </div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
       </div>
     `, () => {
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
@@ -836,20 +841,23 @@
       mk("#c2", "pie", Object.entries(s.byDiff), "难度");
       mk("#c3", "bar", Object.entries(s.byType), "题型");
       mk("#c4", "pie", Object.entries(s.byAiBand), "AI评分");
-      if (Stats.enabled()) {
-        Stats.getStats(true).then(st => {
+      /* 本地浏览最多题目 */
+      const localStats = Stats.getLocalStats();
+      const tq = localStats.topQuestions || [];
+      const topBox = document.getElementById("c-topq");
+      if (topBox) {
+        if (!tq.length) topBox.innerHTML = '<div class="muted">暂无浏览记录</div>';
+        else topBox.innerHTML = `<table class="data"><thead><tr><th>#</th><th>题目</th><th>浏览</th></tr></thead><tbody>${tq.slice(0, 15).map((x, i) => { const q = Services.questions.find(z => z.id === parseInt(x.id)); return `<tr><td>${i + 1}</td><td>${q ? `<a href="#/question/${q.id}">${U.esc(q.title)}</a>` : "题目#" + U.esc(x.id)}</td><td>${x.views}</td></tr>`; }).join("")}</tbody></table>`;
+      }
+      /* 可选 Cloudflare Worker 地域分布 */
+      if (Stats.cfEnabled()) {
+        Stats.cfGetStats(true).then(st => {
           const geo = (st && st.byCountry) || {};
           const geoArr = Object.entries(geo).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
           const geoBox = document.getElementById("c-geo");
           if (geoBox) {
             if (geoArr.length) { const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
-            else geoBox.innerHTML = '<div class="muted">暂无访客数据</div>';
-          }
-          const tq = (st && st.topQuestions) || [];
-          const box = document.getElementById("c-topq");
-          if (box) {
-            if (!tq.length) box.innerHTML = '<div class="muted">暂无浏览数据</div>';
-            else box.innerHTML = `<table class="data"><thead><tr><th>#</th><th>题目</th><th>浏览</th></tr></thead><tbody>${tq.slice(0, 15).map((x, i) => { const q = Services.questions.find(z => z.id === parseInt(x.id)); return `<tr><td>${i + 1}</td><td>${q ? `<a href="#/question/${q.id}">${U.esc(q.title)}</a>` : "题目#" + U.esc(x.id)}</td><td>${x.views}</td></tr>`; }).join("")}</tbody></table>`;
+            else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
           }
         }).catch(() => {});
       }
@@ -1714,10 +1722,18 @@
         </div>
         <div id="ai-test-out" class="muted" style="margin-top:8px"></div></div>
 
-      <div class="card"><h2 style="font-size:16px">${U.icon("globe")} 访问统计（Cloudflare Worker）</h2>
-        <p class="secondary">配置后端统计接口后，顶部显示实时访问人数，仪表盘显示访客来源与最受关注题目。留空则不使用。Worker 代码见仓库 cloudflare/ 目录。</p>
-        <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.api())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
-        <label class="field"><span>访问密钥(可选)</span><input id="stats-key" value="${U.esc((typeof localStorage !== "undefined" && localStorage.getItem("stats_key")) || "")}" placeholder="与 Worker 的 STATS_KEY 一致，留空不校验" /></label>
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("barChart")} 百度统计</h2>
+        <p class="secondary">配置百度统计 Tracking ID 后，网站自动上报页面浏览与题目浏览数据。详细的地域分布、来源分析、趋势报表请在 <a href="https://tongji.baidu.com" target="_blank" rel="noopener">tongji.baidu.com</a> 查看。</p>
+        <label class="field"><span>Tracking ID</span><input id="baidu-tid" value="${U.esc(Stats.baiduId())}" placeholder="格式如 a1b2c3d4e5f6g7h8（百度统计后台获取）" /></label>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="baidu-save">${U.icon("check")} 保存并生效</button>
+        </div>
+        <div id="baidu-out" class="muted" style="margin-top:8px"></div></div>
+
+      <div class="card"><h2 style="font-size:16px">${U.icon("shield")} Cloudflare Worker（可选·高级）</h2>
+        <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。</p>
+        <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.cfApi())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
+        <label class="field"><span>访问密钥(可选)</span><input id="stats-key" value="${U.esc((typeof localStorage !== "undefined" && localStorage.getItem("stats_key")) || "")}" placeholder="与 Worker 的 STATS_KEY 一致" /></label>
         <div class="pill-row">
           <button class="btn" id="stats-save">${U.icon("check")} 保存</button>
           <button class="btn" id="stats-test">${U.icon("play")} 测试连接</button>
@@ -1747,8 +1763,9 @@
       try { const r = await API.testConnection(); out.innerHTML = `<span class="tag tag-success">连接成功</span> 响应 ${Date.now() - t0}ms`; }
       catch (e) { out.innerHTML = `<span class="tag tag-danger">失败</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">接口未开启 CORS 跨域，纯静态无法绕过，请用支持 CORS 的接口或本地代理。</div>` : ""); }
     };
-    $("#stats-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("stats_api", $("#stats-api").value.trim()); localStorage.setItem("stats_key", $("#stats-key").value.trim()); } U.toast("统计接口已保存", "success"); renderTopbar(); };
-    $("#stats-test").onclick = async () => { const out = $("#stats-out"); if (!Stats.api()) { out.innerHTML = '<span class="tag tag-warning">请先填写接口地址</span>'; return; } out.textContent = "测试中…"; const j = await Stats.getStats(true); out.innerHTML = j ? `<span class="tag tag-success">连接成功</span> 累计 ${j.total || 0} · 今日 ${j.today || 0}` : `<span class="tag tag-danger">连接失败</span>`; };
+    $("#baidu-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("baidu_tid", $("#baidu-tid").value.trim()); } U.toast("百度统计已保存，刷新页面后生效", "success"); };
+    $("#stats-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("stats_api", $("#stats-api").value.trim()); localStorage.setItem("stats_key", $("#stats-key").value.trim()); } U.toast("Worker 接口已保存", "success"); renderTopbar(); };
+    $("#stats-test").onclick = async () => { const out = $("#stats-out"); if (!Stats.cfApi()) { out.innerHTML = '<span class="tag tag-warning">请先填写接口地址</span>'; return; } out.textContent = "测试中…"; const j = await Stats.cfGetStats(true); out.innerHTML = j ? `<span class="tag tag-success">连接成功</span> 累计 ${j.total || 0} · 今日 ${j.today || 0}` : `<span class="tag tag-danger">连接失败</span>`; };
     $("#restore-seed").onclick = async () => {
       if (await U.confirm("将初始示例题目追加合并到当前题库（不覆盖现有数据）？", { okText: "追加" })) {
         const n = await DB.resetSeedAppend(); await Services.reload(); U.toast("已追加 " + n + " 道示例题目", "success"); renderSidebar(parseHash());
@@ -1847,59 +1864,109 @@
     return { start, set, finish, ready };
   })();
 
-  /* ============================ 访客统计（Cloudflare Worker 后端） ============================ */
+  /* ============================ 访客统计（本地计数 + 百度统计 + 可选 Cloudflare Worker） ============================ */
   const Stats = (() => {
-    const api = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("stats_api") || "") : "");
-    const key = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("stats_key") || "") : "");
-    const baseUrl = () => api().replace(/\/+$/, "");
-    function enabled() { return !!api(); }
+    /* --- 百度统计 --- */
+    const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || "") : "");
+    function trackBaidu(url) {
+      if (baiduId() && typeof _hmt !== "undefined" && _hmt) {
+        try { _hmt.push(["_trackPageview", url]); } catch (e) {}
+      }
+    }
+    function loadBaiduScript() {
+      const tid = baiduId(); if (!tid) return;
+      window._hmt = window._hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.async = true;
+        hm.src = "https://hm.baidu.com/hm.js?" + tid;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    }
+    /* --- 本地计数（localStorage） --- */
+    function readLocal() {
+      try { return JSON.parse(localStorage.getItem("local_stats") || '{"total":0,"daily":{},"views":{}}'); }
+      catch (e) { return { total: 0, daily: {}, views: {} }; }
+    }
+    function writeLocal(d) {
+      try { localStorage.setItem("local_stats", JSON.stringify(d)); } catch (e) {}
+    }
+    function recordVisit() {
+      const today = new Date().toISOString().slice(0, 10);
+      const d = readLocal();
+      d.total = (d.total || 0) + 1;
+      d.daily[today] = (d.daily[today] || 0) + 1;
+      writeLocal(d);
+      trackBaidu(location.hash || "/");
+    }
+    function recordView(id) {
+      if (id == null) return;
+      const d = readLocal();
+      const k = String(id);
+      d.views[k] = (d.views[k] || 0) + 1;
+      writeLocal(d);
+      trackBaidu("/question/" + id);
+    }
+    function getLocalStats() {
+      const today = new Date().toISOString().slice(0, 10);
+      const d = readLocal();
+      const views = Object.entries(d.views || {})
+        .map(([id, n]) => ({ id, views: n }))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 20);
+      return { total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views };
+    }
+    /* --- 可选 Cloudflare Worker（高级用户） --- */
+    const cfApi = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("stats_api") || "") : "");
+    function cfEnabled() { return !!cfApi(); }
     function fetchWithTimeout(url, opts = {}, ms = 3000) {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), ms);
       return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
     }
-    async function post(path, params) {
-      const b = baseUrl(); if (!b) return null;
+    async function cfPost(path, params) {
+      const b = cfApi().replace(/\/+$/, ""); if (!b) return null;
       try {
         const u = new URL(b + path);
-        if (key()) u.searchParams.set("k", key());
-        if (params) for (const k in params) u.searchParams.set(k, String(params[k]));
+        const k = localStorage.getItem("stats_key") || "";
+        if (k) u.searchParams.set("k", k);
+        if (params) for (const kk in params) u.searchParams.set(kk, String(params[kk]));
         const r = await fetchWithTimeout(u.toString(), { method: "POST", mode: "cors" });
         return await r.json().catch(() => null);
       } catch (e) { return null; }
     }
-    let cache = null, cacheAt = 0;
-    async function getStats(force) {
-      const b = baseUrl(); if (!b) return null;
-      if (!force && cache && Date.now() - cacheAt < 60000) return cache;
+    let cfCache = null, cfCacheAt = 0;
+    async function cfGetStats(force) {
+      const b = cfApi().replace(/\/+$/, ""); if (!b) return null;
+      if (!force && cfCache && Date.now() - cfCacheAt < 60000) return cfCache;
       try {
         const u = new URL(b + "/stats");
-        if (key()) u.searchParams.set("k", key());
+        const k = localStorage.getItem("stats_key") || "";
+        if (k) u.searchParams.set("k", k);
         const r = await fetchWithTimeout(u.toString(), { mode: "cors" });
         const j = await r.json();
-        cache = j; cacheAt = Date.now();
+        cfCache = j; cfCacheAt = Date.now();
         return j;
-      } catch (e) { return cache; }
+      } catch (e) { return cfCache; }
     }
-    function recordVisit() { return post("/visit"); }
-    function recordView(id) { if (id == null) return null; return post("/view", { id: String(id) }); }
-    return { enabled, api, recordVisit, recordView, getStats };
+    function enabled() { return true; }
+    return { enabled, recordVisit, recordView, getLocalStats, baiduId, loadBaiduScript, cfEnabled, cfApi, cfPost, cfGetStats };
   })();
 
   const COUNTRY_NAMES = { CN: "中国", HK: "中国香港", TW: "中国台湾", MO: "中国澳门", US: "美国", JP: "日本", KR: "韩国", SG: "新加坡", GB: "英国", DE: "德国", FR: "法国", IN: "印度", CA: "加拿大", AU: "澳大利亚", RU: "俄罗斯", BR: "巴西", NL: "荷兰", ES: "西班牙", IT: "意大利", TH: "泰国", MY: "马来西亚", VN: "越南", ID: "印度尼西亚", PH: "菲律宾", NZ: "新西兰", SE: "瑞典", CH: "瑞士", AE: "阿联酋", ZA: "南非", XX: "未知地区" };
   function countryName(code) { return COUNTRY_NAMES[code] || code; }
 
   async function refreshVisitorStats() {
-    if (!Stats.enabled()) return;
-    const j = await Stats.getStats();
-    if (!j) return;
+    const j = Stats.getLocalStats();
     const t = document.getElementById("vis-today"); const tot = document.getElementById("vis-total");
-    if (t) t.textContent = (j.today || 0).toLocaleString();
+    if (t) t.textContent = (j.todayCount || 0).toLocaleString();
     if (tot) tot.textContent = (j.total || 0).toLocaleString();
   }
 
   async function init() {
     applyTheme();
+    Stats.loadBaiduScript();
     if (!window.indexedDB) {
       document.body.innerHTML = `<div class="empty" style="padding:80px"><div class="em-ic">${U.icon("alert")}</div><h3>当前浏览器不支持 IndexedDB</h3><p>请使用 Chrome / Firefox / Edge 等现代浏览器。</p></div>`;
       return;
