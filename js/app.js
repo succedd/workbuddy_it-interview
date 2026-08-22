@@ -347,13 +347,14 @@
   /* ============================ 岗位体系页 ============================ */
   async function pagePositions() {
     const byStage = Services.positionsByStage();
+    const hiddenIds = new Set(Services.positions.filter(p => Services.isHiddenPosition(p)).map(p => p.id));
     const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
     const hasFake = fakeIds.size > 0;
     const html = byStage.map(s => {
       // 按名字去重：同名岗位只显示第一个（防止 seed 重复写入或树节点重名）
       const seen = new Set();
       const uniq = s.list.filter(p => {
-        if (fakeIds.has(p.id)) return false;          // 隐藏与分类同名的伪岗位
+        if (hiddenIds.has(p.id)) return false;        // 隐藏与分类同名的岗位（它是分类，不是岗位）
         if (seen.has(p.name)) return false;
         seen.add(p.name);
         return true;
@@ -871,8 +872,15 @@
     const posByName = new Map(allPos.map(p => [p.name, p]));
     const posSelIds = (q.positionIds || []).slice();
     (q.positionNames || []).forEach(n => { const pos = posByName.get(n); if (pos && posSelIds.indexOf(pos.id) < 0) posSelIds.push(pos.id); });
-    const posOpts = (selectedIds) => Services.positionsByStage().map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}" ${selectedIds.indexOf(p.id) >= 0 ? "selected" : ""}>${U.esc(p.name)}</option>`).join("")}</optgroup>`; }).join("");
-    const posInput = () => `<select id="f-pos" class="full" multiple style="min-height:120px">${posOpts(posSelIds)}</select><div class="muted" style="font-size:12px;margin-top:4px">按住 Ctrl / Command 多选已有关岗位</div>`;
+    const posInput = () => {
+      const byStage = Services.positionsByStage();
+      return byStage.map(s => {
+        const seen = new Set();
+        const uniq = s.list.filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; });
+        if (!uniq.length) return "";
+        return `<div style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">${U.esc(s.stage)}</div><div class="row" style="flex-wrap:wrap;gap:8px">${uniq.map(p => `<label class="chip" style="cursor:pointer;user-select:none"><input type="checkbox" name="f-pos" value="${p.id}" ${posSelIds.indexOf(p.id) >= 0 ? "checked" : ""} style="margin-right:4px">${U.esc(p.name)}</label>`).join("")}</div></div>`;
+      }).join("");
+    };
 
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/questions">题目管理</a><span class="sep">/</span><span>${isNew ? "新增" : "编辑"}</span></div>
       <div class="row" style="justify-content:space-between;margin-bottom:12px">
@@ -913,9 +921,9 @@
 
     async function save(status) {
       const tags = $$("#tag-box .chip").map(c => c.dataset.t);
-      const posOpts = Array.from($("#f-pos").selectedOptions);
-      const posIds = posOpts.map(o => parseInt(o.value));
-      const posNames = posOpts.map(o => o.text);
+      const posBoxes = $$("input[name='f-pos']:checked");
+      const posIds = posBoxes.map(cb => parseInt(cb.value));
+      const posNames = posBoxes.map(cb => { const pos = Services.getPosition(parseInt(cb.value)); return pos ? pos.name : ""; }).filter(Boolean);
       const data = {
         title: $("#f-title").value.trim() || "未命名题目",
         body: $("#f-body").value, answer: $("#f-answer").value,
@@ -1107,12 +1115,13 @@
   /* ============================ 管理员：岗位管理 ============================ */
   async function pageAdminPositions() {
     const byStage = Services.positionsByStage();
+    const hiddenIds = new Set(Services.positions.filter(p => Services.isHiddenPosition(p)).map(p => p.id));
     const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
-    const totalHidden = fakeIds.size;
-    const notice = totalHidden > 0 ? `<div style="margin-bottom:12px;padding:8px 12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;color:#0369a1;font-size:13px">已隐藏 ${totalHidden} 条与分类同名的无效岗位，可在「岗位体系」页清理。</div>` : "";
+    const totalHidden = hiddenIds.size;
+    const notice = totalHidden > 0 ? `<div style="margin-bottom:12px;padding:8px 12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;color:#0369a1;font-size:13px">已隐藏 ${totalHidden} 条与分类同名的无效岗位（其中 ${fakeIds.size} 条可安全清理），可在「岗位体系」页点击清理。</div>` : "";
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>岗位管理</span></div>
       <div class="section-head"><h2>岗位管理</h2><button class="btn btn-primary btn-sm" id="add-pos">${U.icon("plus")} 新增岗位</button></div>${notice}
-      <div id="pos-wrap">${byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (fakeIds.has(p.id)) return false; if (seen.has(p.name)) return false; seen.add(p.name); return true; }); if (!uniq.length) return ""; return `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
+      <div id="pos-wrap">${byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (hiddenIds.has(p.id)) return false; if (seen.has(p.name)) return false; seen.add(p.name); return true; }); if (!uniq.length) return ""; return `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
         <div class="grid grid-cols-auto">${uniq.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${U.esc(p.name)}</b>
           <span class="row" style="gap:4px"><button class="icon-btn" data-sk="${p.id}" title="技术栈">${U.icon("star")}</button><button class="icon-btn" data-edit="${p.id}">${U.icon("edit")}</button><button class="icon-btn" data-del="${p.id}">${U.icon("trash")}</button></span></div>
           <div class="muted" style="font-size:12px">${U.esc(p.category || "")} · 题目 ${Services.questionCountForPosition(p)} · 技术栈 ${Services.skillsOf(p.id).length}</div></div>`).join("")}</div>`;
