@@ -921,6 +921,20 @@
       <div class="ai-stream" id="out" style="margin-top:12px;min-height:120px">选择上方操作开始…</div>`;
     m.foot.innerHTML = `<button class="btn" id="apply" style="display:none">${U.icon("check")} 应用到编辑区</button>`;
     let lastResult = null;
+    function normalizeResult(v) {
+      if (Array.isArray(v)) {
+        return v.map((item, i) => {
+          if (typeof item === "string") return (i + 1) + ". " + item;
+          const lines = [];
+          if (item.title) lines.push("**" + (i + 1) + ". " + item.title + "**");
+          if (item.body) lines.push(item.body);
+          if (item.question && !item.body) lines.push(item.question);
+          if (item.answer) lines.push("**参考答案：**\n" + item.answer);
+          return lines.join("\n\n");
+        }).join("\n\n---\n\n");
+      }
+      return String(v);
+    }
     $$("#acts button", m.body).forEach(b => b.onclick = async () => {
       if (!API.getKey()) { U.toast("请先到系统设置填写 API Key", "warn"); App.go("/admin/settings"); return; }
       const out = $("#out"); out.classList.add("cursor-blink"); out.textContent = "生成中…";
@@ -932,7 +946,8 @@
           (ev, p) => aiEvent(olog, ev, p)
         );
         lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : String(parsed));
-        out.classList.remove("cursor-blink"); out.innerHTML = U.md(lastResult);
+        const displayText = normalizeResult(lastResult);
+        out.classList.remove("cursor-blink"); out.innerHTML = U.md(displayText);
         olog("ok", "优化完成");
         const apply = $("#apply"); apply.style.display = fromEdit ? "inline-flex" : "none";
       } catch (e) {
@@ -947,7 +962,7 @@
       if (b && 0) {}
       // 仅编辑模式可写回：尝试更新 body/answer 文本域
       const ta = document.getElementById("f-body"), aa = document.getElementById("f-answer");
-      if (ta && aa) { aa.value = lastResult; aa.dispatchEvent(new Event("input")); }
+      if (ta && aa) { aa.value = normalizeResult(lastResult); aa.dispatchEvent(new Event("input")); }
       m.close(); U.toast("已应用到参考答案", "success");
     };
   }
