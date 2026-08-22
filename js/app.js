@@ -943,14 +943,18 @@
     $("#ai-opt").onclick = () => openOptimizeModal(q, true);
   }
   function wireTagInput(boxSel, inputSel) {
-    const box = $(boxSel); const input = $(inputSel);
-    box.querySelectorAll(".x").forEach(x => x.onclick = () => x.parentElement.remove());
-    input.addEventListener("keydown", e => {
+    const box = $(boxSel); if (!box) return;
+    // 事件委托：无论初始渲染还是动态添加的标签，点击 .x 即可删除对应 chip（覆盖 SVG 命中/穿透问题）
+    box.addEventListener("click", e => {
+      const x = e.target.closest(".x");
+      if (x) { const chip = x.closest(".chip"); if (chip) chip.remove(); }
+    });
+    const input = inputSel ? $(inputSel) : null;
+    if (input) input.addEventListener("keydown", e => {
       if (e.key === "Enter" && input.value.trim()) {
         const v = input.value.trim(); e.preventDefault();
         const chip = document.createElement("span"); chip.className = "chip"; chip.dataset.t = v;
         chip.innerHTML = U.esc(v) + `<span class="x">${U.icon("x")}</span>`;
-        chip.querySelector(".x").onclick = () => chip.remove();
         box.insertBefore(chip, input); input.value = "";
       }
     });
@@ -1257,7 +1261,10 @@
           <div class="field"><span>软技能</span><div class="tag-input" id="soft-box">${tagsHtml(res.soft, "soft")}</div></div>
           <div class="field"><span>生成总数</span><select id="p-num" class="full"><option>5</option><option selected>10</option><option>20</option><option>30</option><option>自定义</option></select></div>
           <button class="btn btn-ai" id="gen">${U.icon("sparkles")} 立即生成</button>`;
-        [["#req-box"], ["#bon-box"], ["#soft-box"]].forEach(([sel]) => { $(sel).querySelectorAll(".x").forEach(x => x.onclick = () => x.parentElement.remove()); });
+        [["#req-box"], ["#bon-box"], ["#soft-box"]].forEach(([sel]) => {
+          const box = $(sel); if (!box) return;
+          box.addEventListener("click", e => { const x = e.target.closest(".x"); if (x) { const c = x.closest(".chip"); if (c) c.remove(); } });
+        });
         $("#gen").onclick = () => {
           const pname = $("#p-name").value.trim();
           const matchedPos = Services.positions.find(p => p.name === pname);

@@ -272,8 +272,9 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .tag-input { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elevated); }
 .tag-input input { border: none; outline: none; flex: 1; min-width: 120px; background: transparent; color: var(--text); padding: 2px; }
 .tag-input .chip { display: inline-flex; align-items: center; gap: 5px; background: var(--c-primary-50); color: var(--c-primary); padding: 2px 8px; border-radius: 999px; font-size: 12px; }
-.tag-input .chip .x { cursor: pointer; opacity: .7; }
-.tag-input .chip .x:hover { opacity: 1; }
+.tag-input .chip .x { cursor: pointer; opacity: .7; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; margin-left: 2px; flex: none; }
+.tag-input .chip .x:hover { opacity: 1; background: rgba(0,0,0,.10); }
+.tag-input .chip .x .ic { width: 12px; height: 12px; display: block; }
 
 /* ============ Steps（醒目步骤条 + 进度连线动画） ============ */
 .steps { position: relative; display: flex; gap: 4px; margin-bottom: 22px; flex-wrap: wrap; align-items: flex-start; padding: 4px 0; }
