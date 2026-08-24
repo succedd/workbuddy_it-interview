@@ -1758,8 +1758,8 @@
         </div>
         <div id="auto-pub-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：需先在上方配置发布 Token 后生效。"}</div></div>
 
-      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("shield")} 本地数据加密云备份</h2>
-        <p class="secondary">把只存在本机、清缓存即丢的数据——发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史——用密码加密后备份到仓库 <code>data/local-backup.json</code>。仓库是公开的，但文件为 AES-256-GCM 密文，无密码无法解密。清缓存/换设备后，凭<strong>备份密码</strong>即可一键恢复全部配置。备份会随每次自动发布同步更新。</p>
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("shield")} 本地数据加密云备份 <span id="bk-chip" class="vis-chip bk ok" style="display:none"></span></h2>
+        <p class="secondary">把只存在本机、清缓存即丢的数据——发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史——用密码加密后备份到仓库 <code>data/local-backup.json</code>。仓库是公开的，但文件为 AES-256-GCM 密文，无密码无法解密。清缓存/换设备后，凭<strong>备份密码</strong>即可一键恢复全部配置。<strong>设好密码后完全自动</strong>：题目改动、设置修改、收藏/历史更新都会在 12 秒后自动加密备份，无需手动。顶栏/标题处的徽章显示备份状态。</p>
         <div class="note ai"><strong>请牢记备份密码</strong>：密码只存在本机，不随备份上传（密文由它解开）。忘记密码 = 备份无法恢复。建议同时把密码记到密码管理器。</div>
         <label class="field"><span>备份密码（至少 6 位）</span>
           <div class="input-with-action"><input type="password" id="bk-pass" value="${Backup.hasPassphrase() ? "************" : ""}" placeholder="用于加密本地数据备份" />
@@ -1857,8 +1857,10 @@
     $("#bk-save").onclick = () => {
       const v = bkPassTouched && bkPassInput.value && bkPassInput.value !== "************" ? bkPassInput.value : (Backup.hasPassphrase() ? Backup.getPassphrase() : "");
       if (v && v.length < 6) { U.toast("备份密码至少 6 位", "error"); return; }
+      const firstSet = v && !Backup.hasPassphrase();
       Backup.setPassphrase(v);
-      U.toast(v ? "备份密码已保存到本机（下次发布时自动加密备份）" : "已清除备份密码", "success");
+      U.toast(v ? "备份密码已保存：本机数据改动将自动加密备份到云端" : "已清除备份密码", "success");
+      if (firstSet && Cloud.isEditor()) Backup.scheduleBackup();   // 首次设密码立即备一份当前状态
     };
     $("#bk-now").onclick = async () => {
       const out = $("#bk-out");
@@ -2126,6 +2128,7 @@
       refreshVisitorStats();
       setInterval(refreshVisitorStats, 60000);
       try { Cloud.initAuto(); } catch (e) { console.warn("autopub init error", e); }
+      try { Backup.initAuto(); } catch (e) { console.warn("auto backup init error", e); }
     } catch (e) {
       console.error("init error", e);
       U.toast("页面初始化出错，请刷新重试", "error");

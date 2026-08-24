@@ -118,6 +118,8 @@
     }
     /* 2) IndexedDB：settings / favorites / histories */
     const db = DB.db;
+    B._suppress++;
+    try {
     await db.transaction("rw", [db.settings, db.favorites, db.histories], async () => {
       if (Array.isArray(data.settings)) await db.settings.bulkPut(data.settings);
       if (Array.isArray(data.favorites)) {
@@ -129,6 +131,7 @@
         if (data.histories.length) await db.histories.bulkAdd(data.histories);
       }
     });
+    } finally { B._suppress--; }
     return {
       savedAt: data.savedAt || payload.savedAt || 0,
       settings: (data.settings || []).length,
@@ -136,6 +139,78 @@
       histories: (data.histories || []).length,
       hasToken: !!(data.localStorage && data.localStorage.gh_publish_token)
     };
+  };
+
+  /* ---------- 自动备份引擎（v20260824b）：不依赖题目发布 ---------- */
+  B._timer = 0; B._backing = false; B._suppress = 0;
+  B._state = "idle";        // idle | dirty | backing | error
+  B._lastError = ""; B._lastAt = 0;
+  B._hooked = false; B._lsWrapped = false;
+  const BACKUP_DELAY = 12000, BACKUP_RETRY = 90000;
+
+  B.scheduleBackup = function () {
+    if (!B.hasPassphrase() || !Cloud || !Cloud.isEditor()) return;
+    B._state = "dirty"; B._emit();
+    clearTimeout(B._timer);
+    B._timer = setTimeout(() => B._runBackup(), BACKUP_DELAY);
+  };
+
+  B._emit = function () {
+    try {
+      const chip = document.getElementById("bk-chip");
+      if (!chip) return;
+      chip.style.display = "";
+      if (B._state === "backing") { chip.textContent = "⏳ 备份中"; chip.className = "vis-chip bk backing"; }
+      else if (B._state === "dirty") { chip.textContent = "● 待备份"; chip.className = "vis-chip bk dirty"; }
+      else if (B._state === "error") { chip.textContent = "⚠ 备份失败"; chip.className = "vis-chip bk error"; chip.title = B._lastError; }
+      else { chip.textContent = "✓ 已备云端"; chip.className = "vis-chip bk ok"; }
+    } catch (e) {}
+  };
+
+  B._runBackup = async function () {
+    if (B._backing || !B.hasPassphrase() || !Cloud || !Cloud.isEditor()) return;
+    B._backing = true; B._state = "backing"; B._emit();
+    try {
+      await B.publishBackup();
+      B._state = "idle"; B._lastAt = Date.now(); B._lastError = "";
+      try { U.toast("本地数据已自动加密备份到云端", "success"); } catch (e) {}
+    } catch (e) {
+      B._state = "error"; B._lastError = String((e && e.message) || e);
+      console.warn("自动备份失败", e);
+      clearTimeout(B._timer);
+      B._timer = setTimeout(() => B._runBackup(), BACKUP_RETRY);
+    } finally { B._backing = false; B._emit(); }
+  };
+
+  B.initAuto = function () {
+    if (!B.hasPassphrase() || !Cloud || !Cloud.isEditor()) return;
+    /* Dexie 钩子：设置 / 收藏 / 历史 任意增删改 */
+    if (!B._hooked && typeof Dexie !== "undefined" && DB && DB.db) {
+      const db = DB.db;
+      const hook = (t) => {
+        if (!t) return;
+        try {
+          t.hook("creating", () => { if (B._suppress <= 0) B.scheduleBackup(); });
+          t.hook("updating", () => { if (B._suppress <= 0) B.scheduleBackup(); });
+          t.hook("deleting", () => { if (B._suppress <= 0) B.scheduleBackup(); });
+        } catch (e) {}
+      };
+      [db.settings, db.favorites, db.histories].forEach(hook);
+      B._hooked = true;
+    }
+    /* 包装 localStorage.setItem：配置类键被写入时顺带备份 */
+    if (!B._lsWrapped && typeof localStorage !== "undefined" && localStorage.setItem) {
+      try {
+        const _set = localStorage.setItem.bind(localStorage);
+        localStorage.setItem = function (k, v) {
+          const ret = _set(k, v);
+          if (B._suppress <= 0 && LS_KEYS.indexOf(k) >= 0) B.scheduleBackup();
+          return ret;
+        };
+        B._lsWrapped = true;
+      } catch (e) { console.warn("无法包装 localStorage", e); }
+    }
+    B._emit();
   };
 
   if (typeof window !== "undefined") window.Backup = B;
