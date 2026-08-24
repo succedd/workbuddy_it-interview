@@ -170,11 +170,16 @@
     return out;
   };
 
-  /* 薄弱题本：标记「不熟悉 / 不会」的题目持久化收集 */
+  /* 薄弱题本：标记「不熟悉 / 不会」的题目持久化收集
+     关联键同时存 questionId 与 title 双重冗余：题目以 Dexie 自增主键(id)入库，
+     云端同步 clear+bulkAdd 或本地重建都可能让 id 错位于"另一道题"，
+     因此取回时若按 id 找不到（或题目已被删除），用 title 兜底定位原题。 */
   S.addWeak = async function (qid, marked) {
+    const q = await db.questions.get(qid);
+    const title = q ? (q.title || "") : "";
     const existing = await db.weakBank.where("questionId").equals(qid).first();
-    if (existing) await db.weakBank.update(existing.id, { marked, updatedAt: Date.now() });
-    else await db.weakBank.add({ questionId: qid, marked, createdAt: Date.now(), updatedAt: Date.now() });
+    if (existing) await db.weakBank.update(existing.id, { marked, title, updatedAt: Date.now() });
+    else await db.weakBank.add({ questionId: qid, title, marked, createdAt: Date.now(), updatedAt: Date.now() });
     S.weakCount = await db.weakBank.count();
   };
   S.removeWeak = async function (qid) {
@@ -183,9 +188,19 @@
   };
   S.isWeak = async function (qid) { const r = await db.weakBank.where("questionId").equals(qid).first(); return !!r; };
   S.getWeakQuestions = async function () {
-    const ws = await db.weakBank.orderBy("updatedAt").reverse().toArray();
-    const out = [];
-    for (const w of ws) { const q = await db.questions.get(w.questionId); if (q && q.status === "published") out.push(q); }
+    const ws = await db.weakBank.orderBy("updatedAt").reverse().toArray();   // 最近标记的在最前
+    const out = [], seen = new Set();
+    for (const w of ws) {
+      let q = null;
+      if (w.questionId != null) q = await db.questions.get(w.questionId);     // 主关联：稳定 id
+      if (!q && w.title) q = await db.questions.where("title").equals(w.title).first();  // 兜底：title
+      if (q && q.status === "published") {
+        if (seen.has(q.id)) continue;
+        seen.add(q.id);
+        q._weakMarked = w.marked;   // 标记类型（familiar/unknown），供前端展示
+        out.push(q);
+      }
+    }
     return out;
   };
   S.clearWeak = async function () { await db.weakBank.clear(); S.weakCount = 0; };

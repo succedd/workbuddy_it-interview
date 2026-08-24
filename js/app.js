@@ -625,6 +625,7 @@
     const mode = q.mode || "random";
     const diffs = ["初级", "中级", "高级", "专家"];
     const scope = q.scope || (q.cat ? "cat" : q.pos ? "pos" : "all");
+    if (scope === "weak" && !q.mode) mode = "seq";   // 薄弱题本默认按「最近标记优先」顺序
 
     /* 构建分类树 options */
     const buildCatOpts = (nodes, depth = 0) => nodes.map(c =>
@@ -661,8 +662,14 @@
 
     const start = (order) => {
       let list = pool.slice();
-      if (order === "random") list.sort(() => Math.random() - 0.5);
-      if (order === "seq") list.sort((a, b) => (a.categoryId || 0) - (b.categoryId || 0));
+      if (scope === "weak") {
+        // 薄弱题本：保持「最近标记优先」原序（getWeakQuestions 已按 updatedAt 倒序），
+        // 仅随机模式打乱；顺序模式不按分类重排，确保刚标记的题立即可见
+        if (order === "random") list.sort(() => Math.random() - 0.5);
+      } else {
+        if (order === "random") list.sort(() => Math.random() - 0.5);
+        if (order === "seq") list.sort((a, b) => (a.categoryId || 0) - (b.categoryId || 0));
+      }
       runPractice(list);
     };
 
@@ -763,7 +770,9 @@
     let i = 0, mastered = 0, weak = 0;
     const show = () => {
       const q = list[i];
+      const weakTag = q._weakMarked ? `<div class="tag tag-warning" style="margin:0 0 10px">${q._weakMarked === "unknown" ? "不会" : "不熟悉"} · 来自薄弱题本</div>` : "";
       setMain(`<div class="breadcrumb"><a href="#/practice">刷题练习</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
+        ${weakTag}
         <div class="card qd-body md">${U.md(q.body)}</div>
         <div style="margin:12px 0"><button class="btn btn-primary" id="sa">${U.icon("eye")} 显示答案</button></div>
         <div class="qd-answer md" id="ab" style="display:none">${U.md(q.answer)}</div>
