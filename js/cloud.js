@@ -4,7 +4,7 @@
  *        访客每次打开自动拉取最新版；配置了发布 Token 的浏览器视为编辑端
  *        （本地为主，不自动覆盖），编辑后自动/手动把本地题库推送到 GitHub。
  *
- *  v20260824a 新增：
+ *  v20260824c 修复：
  *   - 自动发布：编辑端题目增删改 10 秒后自动推送到 GitHub（可关闭），
  *     通过 Dexie 表钩子监听所有写入路径（含批量导入 / AI 出题）。
  *   - 顶栏状态徽章：未发布 / 发布中 / 失败。
@@ -67,33 +67,48 @@
       .finally(() => clearTimeout(t));
   }
 
-  /* ---------- 通用文件上传（GitHub Contents API） ---------- */
+  /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ---------- */
   C.putFile = async function (path, content, message) {
     const tok = C.token();
     if (!tok) throw new Error("尚未配置发布 Token");
     const b64 = btoa(unescape(encodeURIComponent(content)));
     const api = "https://api.github.com/repos/" + C.repo() + "/contents/" + path;
-    let sha = null;
-    try {
-      const r = await fetchT(api + "?ref=" + encodeURIComponent(C.branch()), {
-        headers: { "Authorization": "Bearer " + tok, "Accept": "application/vnd.github+json" }
-      }, 10000);
-      if (r.ok) { const j = await r.json(); sha = j.sha || null; }
-    } catch (e) { /* 网络问题继续尝试提交 */ }
-    const body = { message: message, content: b64, branch: C.branch() };
-    if (sha) body.sha = sha;
-    const r = await fetchT(api, {
-      method: "PUT",
-      headers: {
-        "Authorization": "Bearer " + tok,
-        "Accept": "application/vnd.github+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    }, 30000);
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error((j && j.message) ? ("GitHub：" + j.message) : ("HTTP " + r.status));
-    return j;
+    let lastErr = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      /* 每次尝试都重新取最新 sha，避免多标签页 / 并发提交造成的 stale sha */
+      let sha = null;
+      try {
+        const r = await fetchT(api + "?ref=" + encodeURIComponent(C.branch()), {
+          headers: { "Authorization": "Bearer " + tok, "Accept": "application/vnd.github+json" }
+        }, 10000);
+        if (r.ok) { const j = await r.json(); sha = j.sha || null; }
+      } catch (e) { /* 网络抖动：sha 为 null，下面走创建路径 */ }
+      const body = { message: message, content: b64, branch: C.branch() };
+      if (sha) body.sha = sha;   // 文件存在才带 sha，否则创建
+      try {
+        const r = await fetchT(api, {
+          method: "PUT",
+          headers: {
+            "Authorization": "Bearer " + tok,
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        }, 30000);
+        if (r.ok) return await r.json().catch(() => ({}));
+        const j = await r.json().catch(() => ({}));
+        const msg = (j && j.message) ? String(j.message) : ("HTTP " + r.status);
+        lastErr = new Error("GitHub：" + msg);
+        /* 仅冲突类错误重试：sha 不匹配 / 缺 sha（文件已存在但 GET 失败） / 分支问题 */
+        const retryable = /does not match|sha.*(wasn't|was not) supplied|branch.*(not found|did not match)/i.test(msg);
+        if (!retryable || attempt === 4) throw lastErr;
+      } catch (e) {
+        lastErr = e;
+        if (attempt === 4) throw e;
+      }
+      await new Promise(res => setTimeout(res, 700 * (attempt + 1)));  // 退避后重取最新 sha
+    }
+    throw lastErr;
   };
 
   /* ---------- 拉取云端快照 ---------- */
@@ -173,7 +188,9 @@
   };
 
   /* ---------- 发布到 GitHub（编辑端） ---------- */
-  C.publish = async function () {
+  /* 同标签页串行化：手动发布与自动发布可能同时触发，排队避免并发 PUT 同一文件 */
+  C._publishChain = Promise.resolve();
+  C._publishInner = async function () {
     const data = await C.exportAll();
     await C.putFile(FILE_PATH, JSON.stringify(data),
       "发布题库 " + new Date(data.publishedAt).toLocaleString("zh-CN") +
@@ -184,6 +201,11 @@
       if (window.Backup && Backup.hasPassphrase()) await Backup.publishBackup();
     } catch (e) { console.warn("备份未完成", e); }
     return { count: data.questions.length, positions: data.positions.length };
+  };
+  C.publish = async function () {
+    const task = C._publishChain.then(() => C._publishInner());
+    C._publishChain = task.then(() => {}, () => {});   // 单个失败不阻断后续排队
+    return task;
   };
 
   /* ================= 自动发布引擎（v20260824a） ================= */
