@@ -3,7 +3,7 @@
  *  作用：把「只存在本机、清缓存即丢」的数据完整加密备份到 GitHub 仓库：
  *    - localStorage：发布 Token / 仓库分支 / AI Key 与配置 / 统计配置 / 主题
  *    - IndexedDB settings 表：管理员密码哈希等
- *    - IndexedDB favorites / histories：收藏与浏览历史
+ *    - IndexedDB favorites / histories / weakBank：收藏、浏览历史、薄弱题本
  *  安全：文件以 AES-256-GCM 加密（PBKDF2 派生密钥），仓库公开也只有密文；
  *        备份密码只存在本机 localStorage，清缓存后需凭记忆的密码恢复。
  *  位置：data/local-backup.json（与题库快照 data/published.json 并列）
@@ -57,13 +57,13 @@
       const v = (typeof localStorage !== "undefined") ? localStorage.getItem(k) : null;
       if (v != null) ls[k] = v;
     });
-    const [settings, favorites, histories] = await Promise.all([
-      db.settings.toArray(), db.favorites.toArray(), db.histories.toArray()
+    const [settings, favorites, histories, weakBank] = await Promise.all([
+      db.settings.toArray(), db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray()
     ]);
     return {
       version: 1, savedAt: Date.now(),
       localStorage: ls,
-      settings: settings, favorites: favorites, histories: histories
+      settings: settings, favorites: favorites, histories: histories, weakBank: weakBank
     };
   };
 
@@ -116,11 +116,11 @@
     if (typeof localStorage !== "undefined" && data.localStorage) {
       Object.keys(data.localStorage).forEach(k => localStorage.setItem(k, data.localStorage[k]));
     }
-    /* 2) IndexedDB：settings / favorites / histories */
+    /* 2) IndexedDB：settings / favorites / histories / weakBank */
     const db = DB.db;
     B._suppress++;
     try {
-    await db.transaction("rw", [db.settings, db.favorites, db.histories], async () => {
+    await db.transaction("rw", [db.settings, db.favorites, db.histories, db.weakBank], async () => {
       if (Array.isArray(data.settings)) await db.settings.bulkPut(data.settings);
       if (Array.isArray(data.favorites)) {
         await db.favorites.clear();
@@ -130,6 +130,10 @@
         await db.histories.clear();
         if (data.histories.length) await db.histories.bulkAdd(data.histories);
       }
+      if (Array.isArray(data.weakBank)) {
+        await db.weakBank.clear();
+        if (data.weakBank.length) await db.weakBank.bulkAdd(data.weakBank);
+      }
     });
     } finally { B._suppress--; }
     return {
@@ -137,6 +141,7 @@
       settings: (data.settings || []).length,
       favorites: (data.favorites || []).length,
       histories: (data.histories || []).length,
+      weakBank: (data.weakBank || []).length,
       hasToken: !!(data.localStorage && data.localStorage.gh_publish_token)
     };
   };
@@ -195,7 +200,7 @@
           t.hook("deleting", () => { if (B._suppress <= 0) B.scheduleBackup(); });
         } catch (e) {}
       };
-      [db.settings, db.favorites, db.histories].forEach(hook);
+      [db.settings, db.favorites, db.histories, db.weakBank].forEach(hook);
       B._hooked = true;
     }
     /* 包装 localStorage.setItem：配置类键被写入时顺带备份 */
