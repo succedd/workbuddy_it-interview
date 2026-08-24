@@ -121,6 +121,7 @@
         <a class="icon-btn" href="#/mock" title="模拟面试">${U.icon("play")}</a>
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
+        ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         ${adminHtml}
         ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
@@ -1747,6 +1748,29 @@
         </div>
         <div id="pub-out" class="muted" style="margin-top:8px"></div></div>
 
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("refresh")} 自动发布</h2>
+        <p class="secondary">开启后，题目/分类/岗位的任何增删改（含 AI 出题、批量导入）在停止操作 10 秒后自动推送到 GitHub，无需手动点「发布」。关闭或刷新页面前请留意顶栏状态徽章，确保显示「已同步云端」再离开。</p>
+        <div class="pill-row">
+          <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="auto-pub-toggle" ${Cloud.autoEnabled() ? "checked" : ""} style="width:16px;height:16px" />
+            <span>改动后自动发布到云端</span>
+          </label>
+        </div>
+        <div id="auto-pub-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：需先在上方配置发布 Token 后生效。"}</div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("shield")} 本地数据加密云备份</h2>
+        <p class="secondary">把只存在本机、清缓存即丢的数据——发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史——用密码加密后备份到仓库 <code>data/local-backup.json</code>。仓库是公开的，但文件为 AES-256-GCM 密文，无密码无法解密。清缓存/换设备后，凭<strong>备份密码</strong>即可一键恢复全部配置。备份会随每次自动发布同步更新。</p>
+        <div class="note ai"><strong>请牢记备份密码</strong>：密码只存在本机，不随备份上传（密文由它解开）。忘记密码 = 备份无法恢复。建议同时把密码记到密码管理器。</div>
+        <label class="field"><span>备份密码（至少 6 位）</span>
+          <div class="input-with-action"><input type="password" id="bk-pass" value="${Backup.hasPassphrase() ? "************" : ""}" placeholder="用于加密本地数据备份" />
+          <button class="icon-btn trail" id="bk-show">${U.icon("eye")}</button></div></label>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="bk-save">${U.icon("check")} 保存备份密码</button>
+          <button class="btn" id="bk-now">${U.icon("upload")} 立即备份到云端</button>
+          <button class="btn" id="bk-restore">${U.icon("refresh")} 从云端恢复到本机</button>
+        </div>
+        <div id="bk-out" class="muted" style="margin-top:8px"></div></div>
+
       <div class="card"><h2 style="font-size:16px">${U.icon("shield")} Cloudflare Worker（可选·高级）</h2>
         <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。</p>
         <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.cfApi())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
@@ -1819,6 +1843,49 @@
       }
     };
     $("#stats-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("stats_api", $("#stats-api").value.trim()); localStorage.setItem("stats_key", $("#stats-key").value.trim()); } U.toast("Worker 接口已保存", "success"); renderTopbar(); };
+    /* 自动发布开关 */
+    $("#auto-pub-toggle").onchange = function () {
+      Cloud.setAutoEnabled(this.checked);
+      $("#auto-pub-out").textContent = this.checked ? "已开启：改动停止 10 秒后自动发布。" : "已关闭：请手动点「发布题库到线上」。";
+      U.toast(this.checked ? "自动发布已开启" : "自动发布已关闭", "success");
+      Cloud._renderChip();
+    };
+    /* 本地数据加密备份 */
+    const bkPassInput = $("#bk-pass"); let bkPassTouched = false;
+    bkPassInput.addEventListener("input", () => bkPassTouched = true);
+    $("#bk-show").onclick = () => { bkPassInput.type = bkPassInput.type === "password" ? "text" : "password"; };
+    $("#bk-save").onclick = () => {
+      const v = bkPassTouched && bkPassInput.value && bkPassInput.value !== "************" ? bkPassInput.value : (Backup.hasPassphrase() ? Backup.getPassphrase() : "");
+      if (v && v.length < 6) { U.toast("备份密码至少 6 位", "error"); return; }
+      Backup.setPassphrase(v);
+      U.toast(v ? "备份密码已保存到本机（下次发布时自动加密备份）" : "已清除备份密码", "success");
+    };
+    $("#bk-now").onclick = async () => {
+      const out = $("#bk-out");
+      if (!Cloud.token()) { out.innerHTML = '<span class="tag tag-warning">请先在上方配置发布 Token</span>'; return; }
+      if (!Backup.hasPassphrase()) { out.innerHTML = '<span class="tag tag-warning">请先填写并保存备份密码</span>'; return; }
+      out.textContent = "正在加密并上传备份…";
+      try {
+        const r = await Backup.publishBackup();
+        out.innerHTML = `<span class="tag tag-success">备份成功</span> ${new Date(r.savedAt).toLocaleString("zh-CN")} 的本机数据已加密上传`;
+        U.toast("本地数据已加密备份到云端", "success");
+      } catch (e) { out.innerHTML = `<span class="tag tag-danger">备份失败</span> ` + U.esc(String(e && e.message || e)); }
+    };
+    $("#bk-restore").onclick = async () => {
+      const out = $("#bk-out");
+      let pass = Backup.hasPassphrase() ? Backup.getPassphrase() : "";
+      pass = prompt("请输入备份密码（恢复云端加密备份到本机）", pass);
+      if (pass == null || pass === "") return;
+      if (!(await U.confirm("从云端解密备份并覆盖本机配置（Token、AI 配置、管理员密码、收藏、历史）？", { okText: "恢复" }))) return;
+      out.textContent = "正在拉取并解密云端备份…";
+      try {
+        const r = await Backup.restore(pass);
+        Backup.setPassphrase(pass);
+        out.innerHTML = `<span class="tag tag-success">恢复成功</span> ${new Date(r.savedAt).toLocaleString("zh-CN")} 的备份：${r.settings} 项设置 / ${r.favorites} 收藏 / ${r.histories} 历史${r.hasToken ? "（含发布 Token，刷新后本机即恢复为编辑端）" : ""}。<b>3 秒后自动刷新页面…</b>`;
+        U.toast("本地数据已从云端恢复", "success");
+        setTimeout(() => location.reload(), 3000);
+      } catch (e) { out.innerHTML = `<span class="tag tag-danger">恢复失败</span> ` + U.esc(String(e && e.message || e)); }
+    };
     $("#stats-test").onclick = async () => { const out = $("#stats-out"); if (!Stats.cfApi()) { out.innerHTML = '<span class="tag tag-warning">请先填写接口地址</span>'; return; } out.textContent = "测试中…"; const j = await Stats.cfGetStats(true); out.innerHTML = j ? `<span class="tag tag-success">连接成功</span> 累计 ${j.total || 0} · 今日 ${j.today || 0}` : `<span class="tag tag-danger">连接失败</span>`; };
     $("#restore-seed").onclick = async () => {
       if (await U.confirm("将初始示例题目追加合并到当前题库（不覆盖现有数据）？", { okText: "追加" })) {
@@ -2058,6 +2125,7 @@
       Stats.recordVisit();
       refreshVisitorStats();
       setInterval(refreshVisitorStats, 60000);
+      try { Cloud.initAuto(); } catch (e) { console.warn("autopub init error", e); }
     } catch (e) {
       console.error("init error", e);
       U.toast("页面初始化出错，请刷新重试", "error");
