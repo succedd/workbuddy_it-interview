@@ -775,9 +775,11 @@
         <div class="pill-row" style="margin-top:14px"><button class="btn" id="prev">← 上一题</button><button class="btn btn-primary" id="next">下一题 →</button></div>`);
       U.highlightAll(main);
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
-      const mark = (m) => {
-        if (m === "master") { mastered++; S.removeWeak(q.id); }
-        else { weak++; S.addWeak(q.id, m); }
+      const mark = async (m) => {
+        try {
+          if (m === "master") { mastered++; await Services.removeWeak(q.id); U.toast("已标记为掌握", "success"); }
+          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入薄弱题本 · 练习页可专练", "warn"); }
+        } catch (e) { console.warn("mark error", e); U.toast("标记失败：" + (e && e.message), "error"); }
         next();
       };
       $$("#mark button").forEach(b => b.onclick = () => mark(b.dataset.m));
@@ -789,6 +791,7 @@
   function finishPractice(total, mastered, weak) {
     setMain(`<div class="empty"><div class="em-ic">${U.icon("check")}</div>
       <h2>刷题完成</h2><p>共 ${total} 题 · 掌握 ${mastered} · 待加强 ${weak}</p>
+      ${weak ? `<p class="muted">${weak} 道已加入薄弱题本，<a href="#/practice">返回练习页</a>选择「薄弱题本」可专练这些题。</p>` : ""}
       <a class="btn btn-primary" href="#/practice">${U.icon("refresh")} 再来一轮</a></div>`);
   }
 
