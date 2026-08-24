@@ -27,6 +27,7 @@
     S._computeCounts();
     S.questions.forEach(q => { q.catName = S.catName(q.categoryId); q.catPath = S.categoryPath(q.categoryId); });
     S.fuse = Search.build(S.questions);
+    S.weakCount = await db.weakBank.count();
   };
 
   S._computeCounts = function () {
@@ -168,6 +169,26 @@
     for (const h of hs) { const q = await db.questions.get(h.questionId); if (q) out.push({ q, at: h.createdAt }); }
     return out;
   };
+
+  /* 薄弱题本：标记「不熟悉 / 不会」的题目持久化收集 */
+  S.addWeak = async function (qid, marked) {
+    const existing = await db.weakBank.where("questionId").equals(qid).first();
+    if (existing) await db.weakBank.update(existing.id, { marked, updatedAt: Date.now() });
+    else await db.weakBank.add({ questionId: qid, marked, createdAt: Date.now(), updatedAt: Date.now() });
+    S.weakCount = await db.weakBank.count();
+  };
+  S.removeWeak = async function (qid) {
+    const existing = await db.weakBank.where("questionId").equals(qid).first();
+    if (existing) { await db.weakBank.delete(existing.id); S.weakCount = await db.weakBank.count(); }
+  };
+  S.isWeak = async function (qid) { const r = await db.weakBank.where("questionId").equals(qid).first(); return !!r; };
+  S.getWeakQuestions = async function () {
+    const ws = await db.weakBank.orderBy("updatedAt").reverse().toArray();
+    const out = [];
+    for (const w of ws) { const q = await db.questions.get(w.questionId); if (q && q.status === "published") out.push(q); }
+    return out;
+  };
+  S.clearWeak = async function () { await db.weakBank.clear(); S.weakCount = 0; };
   S.incViews = async function (qid) { const q = await db.questions.get(qid); if (q) await db.questions.update(qid, { views: (q.views || 0) + 1 }); };
 
   /* 题目版本与 CRUD */

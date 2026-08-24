@@ -21,6 +21,20 @@
     backups: "++id, createdAt",
     settings: "key"
   });
+  db.version(2).stores({
+    categories: "++id, parentId, name, depth, status",
+    positions: "++id, name, stage",
+    positionSkills: "++id, positionId, categoryId, techName",
+    questions: "++id, categoryId, difficulty, type, status, source, aiScore, createdAt, updatedAt, title",
+    questionVersions: "++id, questionId, version",
+    favorites: "++id, questionId, createdAt",
+    histories: "++id, questionId, createdAt",
+    aiGenerateLogs: "++id, createdAt",
+    importLogs: "++id, createdAt",
+    backups: "++id, createdAt",
+    settings: "key",
+    weakBank: "++id, questionId, createdAt"
+  });
 
   const DB = { db };
 

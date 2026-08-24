@@ -649,9 +649,14 @@
     }).join("");
 
     /* 计算题目池 */
-    let pool = Services.published().slice();
-    if (scope === "cat" && q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
-    if (scope === "pos" && q.pos) { const pos = Services.getPosition(parseInt(q.pos)); pool = pool.filter(x => Services.matchPosition(x, pos)); }
+    let pool = [];
+    if (scope === "weak") {
+      pool = await Services.getWeakQuestions();
+    } else {
+      pool = Services.published().slice();
+      if (scope === "cat" && q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
+      if (scope === "pos" && q.pos) { const pos = Services.getPosition(parseInt(q.pos)); pool = pool.filter(x => Services.matchPosition(x, pos)); }
+    }
     if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
 
     const start = (order) => {
@@ -671,6 +676,8 @@
       return "/practice?" + p.toString();
     };
 
+    const weakN = Services.weakCount || 0;
+
     const selectedCatLabel = scope === "cat" && q.cat ? U.esc(Services.catName(parseInt(q.cat))) : "";
     const selectedPosLabel = scope === "pos" && q.pos ? U.esc(Services.posFullName(Services.getPosition(parseInt(q.pos)))) : "";
 
@@ -689,7 +696,9 @@
             <button type="button" class="btn btn-sm ${scope === "all" ? "btn-primary" : "btn-secondary"}" data-scope="all">全部题目</button>
             <button type="button" class="btn btn-sm ${scope === "cat" ? "btn-primary" : "btn-secondary"}" data-scope="cat">${U.icon("layers")} 技术体系</button>
             <button type="button" class="btn btn-sm ${scope === "pos" ? "btn-primary" : "btn-secondary"}" data-scope="pos">${U.icon("briefcase")} 岗位体系</button>
+            <button type="button" class="btn btn-sm ${scope === "weak" ? "btn-primary" : "btn-secondary"}" data-scope="weak">${U.icon("alert")} 薄弱题本 (${weakN})</button>
           </div>
+          ${scope === "weak" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">仅练习标记为「不熟悉」或「不会」的题目。${weakN ? "" : " 当前为空，去全部题目里标记吧。"}</span>${weakN ? `<button class="btn btn-sm btn-danger" id="clear-weak" style="margin-left:auto">清空薄弱题本</button>` : ""}</div>` : ""}
         </div>
 
         <div id="cat-panel" class="field ${scope === "cat" ? "" : "hidden"}">
@@ -736,6 +745,14 @@
     bindSearch("#pcat-search", "#pcat");
     bindSearch("#ppos-search", "#ppos");
 
+    const $clearWeak = $("#clear-weak");
+    if ($clearWeak) $clearWeak.onclick = async () => {
+      if (!(await U.confirm("确定清空薄弱题本？所有「不熟悉 / 不会」标记将移除", { danger: true }))) return;
+      await Services.clearWeak();
+      U.toast("已清空薄弱题本", "success");
+      pagePractice({ mode: $("#pm").value, scope: "all" });
+    };
+
     $("#pd").onchange = e => App.go(scopeUrl(scope));
     $("#pm").onchange = e => App.go(scopeUrl(scope));
     $("#start-p").onclick = () => start($("#pm").value);
@@ -758,7 +775,11 @@
         <div class="pill-row" style="margin-top:14px"><button class="btn" id="prev">← 上一题</button><button class="btn btn-primary" id="next">下一题 →</button></div>`);
       U.highlightAll(main);
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
-      const mark = (m) => { if (m === "master") mastered++; else weak++; next(); };
+      const mark = (m) => {
+        if (m === "master") { mastered++; S.removeWeak(q.id); }
+        else { weak++; S.addWeak(q.id, m); }
+        next();
+      };
       $$("#mark button").forEach(b => b.onclick = () => mark(b.dataset.m));
       $("#next").onclick = next; $("#prev").onclick = () => { if (i > 0) { i--; show(); } };
       function next() { if (i < list.length - 1) { i++; show(); } else { finishPractice(list.length, mastered, weak); } }
