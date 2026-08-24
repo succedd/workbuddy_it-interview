@@ -624,30 +624,120 @@
   async function pagePractice(q) {
     const mode = q.mode || "random";
     const diffs = ["初级", "中级", "高级", "专家"];
+    const scope = q.scope || (q.cat ? "cat" : q.pos ? "pos" : "all");
+
+    /* 构建分类树 options */
+    const buildCatOpts = (nodes, depth = 0) => nodes.map(c =>
+      `<option value="${c.id}" ${q.cat == c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)} (${c.count || 0})</option>` +
+      buildCatOpts(c.children || [], depth + 1)
+    ).join("");
+    const catOpts = buildCatOpts(Services.categoryTree());
+
+    /* 构建岗位 options（按 stage 分组，排除隐藏/伪岗位，同名去重） */
+    const byStage = Services.positionsByStage();
+    const posSeen = new Set();
+    const posOpts = byStage.map(s => {
+      const uniq = s.list.filter(p => {
+        if (Services.isHiddenPosition(p)) return false;
+        const key = Services.posKey(p);
+        if (posSeen.has(key)) return false;
+        posSeen.add(key);
+        return true;
+      });
+      if (!uniq.length) return "";
+      return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}" ${q.pos == p.id ? "selected" : ""}>${U.esc(Services.posFullName(p))} (${Services.questionCountForPosition(p)})</option>`).join("")}</optgroup>`;
+    }).join("");
+
+    /* 计算题目池 */
     let pool = Services.published().slice();
-    if (q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
+    if (scope === "cat" && q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
+    if (scope === "pos" && q.pos) { const pos = Services.getPosition(parseInt(q.pos)); pool = pool.filter(x => Services.matchPosition(x, pos)); }
     if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
+
     const start = (order) => {
       let list = pool.slice();
       if (order === "random") list.sort(() => Math.random() - 0.5);
       if (order === "seq") list.sort((a, b) => (a.categoryId || 0) - (b.categoryId || 0));
       runPractice(list);
     };
+
+    const scopeUrl = (s) => {
+      const p = new URLSearchParams();
+      p.set("mode", $("#pm").value);
+      if ($("#pd").value) p.set("diff", $("#pd").value);
+      if (s !== "all") p.set("scope", s);
+      if (s === "cat" && $("#pcat").value) p.set("cat", $("#pcat").value);
+      if (s === "pos" && $("#ppos").value) p.set("pos", $("#ppos").value);
+      return "/practice?" + p.toString();
+    };
+
+    const selectedCatLabel = scope === "cat" && q.cat ? U.esc(Services.catName(parseInt(q.cat))) : "";
+    const selectedPosLabel = scope === "pos" && q.pos ? U.esc(Services.posFullName(Services.getPosition(parseInt(q.pos)))) : "";
+
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题练习</span></div>
       <h1>刷题练习</h1>
       <p class="secondary">共 ${pool.length} 道可用题目。选择模式开始。</p>
-      <div class="card" style="max-width:520px">
+      <div class="card" style="max-width:560px">
         <label class="field"><span>刷题模式</span>
           <select id="pm" class="full">
             <option value="random" ${mode === "random" ? "selected" : ""}>随机刷题</option>
             <option value="seq" ${mode === "seq" ? "selected" : ""}>顺序刷题（按分类）</option>
           </select></label>
+
+        <div class="field" style="margin-bottom:14px"><span>练习范围</span>
+          <div class="scope-seg" id="psc">
+            <button type="button" class="btn btn-sm ${scope === "all" ? "btn-primary" : "btn-secondary"}" data-scope="all">全部题目</button>
+            <button type="button" class="btn btn-sm ${scope === "cat" ? "btn-primary" : "btn-secondary"}" data-scope="cat">${U.icon("layers")} 技术体系</button>
+            <button type="button" class="btn btn-sm ${scope === "pos" ? "btn-primary" : "btn-secondary"}" data-scope="pos">${U.icon("briefcase")} 岗位体系</button>
+          </div>
+        </div>
+
+        <div id="cat-panel" class="field ${scope === "cat" ? "" : "hidden"}">
+          <span>选择技术分类 ${selectedCatLabel ? `<span class="tag tag-primary">${selectedCatLabel}</span>` : ""}</span>
+          <input id="pcat-search" class="full" type="search" placeholder="搜索分类名称…" style="margin-bottom:8px">
+          <select id="pcat" class="full" size="6">${catOpts}</select>
+        </div>
+
+        <div id="pos-panel" class="field ${scope === "pos" ? "" : "hidden"}">
+          <span>选择岗位 ${selectedPosLabel ? `<span class="tag tag-primary">${selectedPosLabel}</span>` : ""}</span>
+          <input id="ppos-search" class="full" type="search" placeholder="搜索岗位名称或方向…" style="margin-bottom:8px">
+          <select id="ppos" class="full" size="6">${posOpts}</select>
+        </div>
+
         <label class="field"><span>难度筛选（可选）</span>
           <select id="pd" class="full"><option value="">全部</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select></label>
         <button class="btn btn-primary btn-lg full" id="start-p">${U.icon("play")} 开始刷题</button>
       </div>`);
-    $("#pd").onchange = e => App.go("/practice?mode=" + $("#pm").value + (e.target.value ? "&diff=" + e.target.value : ""));
-    $("#pm").onchange = e => App.go("/practice?mode=" + e.target.value + ($("#pd").value ? "&diff=" + $("#pd").value : ""));
+
+    /* 范围切换 */
+    $$("#psc button").forEach(b => b.onclick = () => App.go(scopeUrl(b.dataset.scope)));
+
+    /* 分类/岗位选择后更新 URL */
+    const $cat = $("#pcat"), $pos = $("#ppos");
+    if ($cat) $cat.onchange = () => App.go(scopeUrl("cat"));
+    if ($pos) $pos.onchange = () => App.go(scopeUrl("pos"));
+
+    /* 搜索过滤 select 选项（不影响已选值） */
+    function bindSearch(inputId, selectId) {
+      const input = $(inputId), sel = $(selectId);
+      if (!input || !sel) return;
+      input.oninput = () => {
+        const v = input.value.trim().toLowerCase();
+        Array.from(sel.options).forEach(opt => {
+          if (opt.disabled) return;
+          opt.style.display = !v || opt.textContent.toLowerCase().includes(v) ? "" : "none";
+        });
+        Array.from(sel.getElementsByTagName("optgroup")).forEach(g => {
+          const visible = Array.from(g.querySelectorAll("option")).some(o => o.style.display !== "none");
+          g.style.display = visible ? "" : "none";
+        });
+      };
+    }
+    bindSearch("#pcat-search", "#pcat");
+    bindSearch("#ppos-search", "#ppos");
+
+    $("#pd").onchange = e => App.go(scopeUrl(scope));
+    $("#pm").onchange = e => App.go(scopeUrl(scope));
     $("#start-p").onclick = () => start($("#pm").value);
   }
 
