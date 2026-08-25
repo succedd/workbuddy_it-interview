@@ -24,6 +24,7 @@
 - **管理员登录/首次设置密码**：基于 Web Crypto PBKDF2 哈希，登录态保存在 `sessionStorage`。
 - **仪表盘**：题目数量、分类分布、岗位覆盖、访问统计等图表。
 - **题目管理**：增删改查题目，字段包含标题、题干、答案、难度、题型、分类、适用岗位、工作年限、标签。
+- **编辑器支持直接粘贴图片**：在「题目正文」「参考答案」编辑框中直接 `Ctrl/Cmd+V` 粘贴截图，自动压缩（长边 ≤1400px、JPEG 质量 0.85，超 500KB 自动降档重压）并以 Markdown 图片（data URL）插入光标处，右侧预览即时可见；图片随题目保存，并随题库发布到 `data/published.json`，所有访客可见。单图压缩后上限 500KB，超限会提示。Markdown 内容区图片自适应（`max-width:100%`）。
 - **分类管理**：维护技术分类树。
 - **岗位管理**：维护岗位体系与岗位方向。
 - **AI 出题**：可配置 OpenAI API Key，通过大模型按分类/岗位/难度批量生成题目。
@@ -155,6 +156,7 @@ node tools/gen-published.js
 - refactor: `cloud.js` 抽出通用 `putFile` 上传助手供题库发布与加密备份共用。
 
 ### 2026-08-25
+- feat: 题目编辑器（题目正文 / 参考答案）支持**直接粘贴图片**——`Ctrl/Cmd+V` 粘贴剪贴板截图，自动压缩为 JPEG data URL（长边 ≤1400px、质量 0.85，超 500KB 自动降档），以 Markdown 图片插入光标处并即时预览；图片随题目保存、随题库发布同步到云端，所有访客可见。新增 `.md img` 自适应样式防止大图撑破布局（`js/app.js` + `css/style.css`）。
 - security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
 - docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
 - docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。

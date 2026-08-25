@@ -173,8 +173,10 @@
 
   IE.exportExcel = async function () {
     const qs = Services.questions;
+    /* Excel 单元格上限 32767 字符：内嵌 base64 图片的答案会超限，截断并标注（完整数据走 JSON 备份） */
+    const clip = v => typeof v === "string" && v.length > 32000 ? v.slice(0, 32000) + "\n…（内容过长已截断，图片等完整数据请用 JSON 导出）" : v;
     const rows = qs.map(q => ({
-      "题目标题": q.title, "题目内容": q.body, "参考答案": q.answer,
+      "题目标题": clip(q.title), "题目内容": clip(q.body), "参考答案": clip(q.answer),
       "一级技术分类": (q.catPath && q.catPath[0]) || "", "二级技术分类": (q.catPath && q.catPath[1]) || "",
       "三级技术分类": (q.catPath && q.catPath[2]) || "", "难度": q.difficulty, "题型": q.type,
       "适用岗位": (q.positionNames || []).join(","), "工作年限": q.years, "技术标签": (q.tags || []).join(","),

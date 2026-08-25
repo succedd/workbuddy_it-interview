@@ -1068,12 +1068,12 @@
       </div>
       <label class="field"><span>适用岗位</span>${posInput()}</label>
       <div class="grid grid-cols-2" style="gap:16px">
-        <div class="field"><span>题目正文（Markdown）</span><div class="editor-split">
-          <div class="editor-pane"><div class="pane-head"><span>编辑</span></div><textarea id="f-body">${U.esc(q.body || "")}</textarea></div>
+        <div class="field"><span>题目正文（Markdown，支持直接粘贴图片）</span><div class="editor-split">
+          <div class="editor-pane"><div class="pane-head"><span>编辑（可直接粘贴图片）</span></div><textarea id="f-body">${U.esc(q.body || "")}</textarea></div>
           <div class="editor-pane"><div class="pane-head"><span>预览</span></div><div class="preview-pane md" id="prev-body"></div></div>
         </div></div>
-        <div class="field"><span>参考答案（Markdown）</span><div class="editor-split">
-          <div class="editor-pane"><div class="pane-head"><span>编辑</span></div><textarea id="f-answer">${U.esc(q.answer || "")}</textarea></div>
+        <div class="field"><span>参考答案（Markdown，支持直接粘贴图片）</span><div class="editor-split">
+          <div class="editor-pane"><div class="pane-head"><span>编辑（可直接粘贴图片）</span></div><textarea id="f-answer">${U.esc(q.answer || "")}</textarea></div>
           <div class="editor-pane"><div class="pane-head"><span>预览</span></div><div class="preview-pane md" id="prev-answer"></div></div>
         </div></div>
       </div>
@@ -1082,6 +1082,7 @@
     `, () => {
       const upd = () => { $("#prev-body").innerHTML = U.md($("#f-body").value); $("#prev-answer").innerHTML = U.md($("#f-answer").value); U.highlightAll($("#prev-answer")); };
       $("#f-body").addEventListener("input", upd); $("#f-answer").addEventListener("input", upd); upd();
+      wireImagePaste("#f-body"); wireImagePaste("#f-answer");
       wireTagInput("#tag-box", "#tag-add");
       wireCombo("#f-cat-text", "#f-cat", "#cat-list", flatCats);
     });
@@ -1104,6 +1105,59 @@
     $("#save-draft").onclick = () => save("draft");
     $("#save-pub").onclick = () => save($("#f-status").value || "published");
     $("#ai-opt").onclick = () => openOptimizeModal(q, true);
+  }
+  /* ---------- 编辑器粘贴图片：压缩为 JPEG data URL，以 Markdown 图片插入光标处 ---------- */
+  function pasteLoadImage(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("图片文件无法读取")); };
+      img.src = url;
+    });
+  }
+  function pasteCompress(file, maxDim, quality) {
+    return pasteLoadImage(file).then(img => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      return { dataUrl: c.toDataURL("image/jpeg", quality), w: w, h: h };
+    });
+  }
+  function pasteInsert(ta, text) {
+    const s = ta.selectionStart == null ? ta.value.length : ta.selectionStart;
+    const e = ta.selectionEnd == null ? ta.value.length : ta.selectionEnd;
+    ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
+    const pos = s + text.length;
+    ta.selectionStart = ta.selectionEnd = pos;
+    ta.focus();
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  function wireImagePaste(sel) {
+    const ta = $(sel); if (!ta) return;
+    ta.addEventListener("paste", e => {
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      let file = null;
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        if (it.kind === "file" && it.type && it.type.indexOf("image/") === 0) { file = it.getAsFile(); if (file) break; }
+      }
+      if (!file) return;  // 纯文本粘贴走默认行为
+      e.preventDefault();
+      pasteCompress(file, 1400, 0.85)
+        .then(r => r.dataUrl.length > 500 * 1024 ? pasteCompress(file, 1000, 0.7) : r)
+        .then(r => {
+          if (r.dataUrl.length > 500 * 1024) { U.toast("图片过大（" + U.fmtSize(r.dataUrl.length) + "），已尝试压缩仍超 500KB，请缩小后再粘贴", "warn"); return null; }
+          return r;
+        })
+        .then(r => {
+          if (!r) return;
+          pasteInsert(ta, "\n![粘贴图片](" + r.dataUrl + ")\n");
+          U.toast("已插入图片 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + "）", "success");
+        })
+        .catch(err => U.toast("图片处理失败：" + err.message, "error"));
+    });
   }
   function wireTagInput(boxSel, inputSel) {
     const box = $(boxSel); if (!box) return;
