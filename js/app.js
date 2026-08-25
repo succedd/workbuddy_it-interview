@@ -1019,6 +1019,31 @@
     render("");
   }
 
+  /* ============================ 标题查重（新增/AI生成入库前提示，不强制拦截） ============================ */
+  function normTitleKey(t) { return String(t || "").replace(/\s+/g, "").replace(/[？?！!，,。．.；;：:、·\-—＿_（）()\[\]【】"]/g, "").toLowerCase(); }
+  function findTitleDups(titles, excludeId) {
+    const lib = new Map();
+    Services.questions.forEach(q => { const k = normTitleKey(q.title); if (!lib.has(k)) lib.set(k, []); lib.get(k).push(q); });
+    const statusText = s => s === "published" ? "已发布" : (s === "draft" ? "草稿" : "已下线");
+    const seen = new Set();
+    const dups = [];
+    titles.forEach(t => {
+      const k = normTitleKey(t);
+      const reasons = [];
+      (lib.get(k) || []).forEach(q => { if (q.id !== excludeId) reasons.push("题库已有 ID " + q.id + "《" + q.title + "》（" + statusText(q.status) + "）"); });
+      if (seen.has(k)) reasons.push("与本批次其它题目重复");
+      seen.add(k);
+      if (reasons.length) dups.push({ title: t, reasons: reasons });
+    });
+    return dups;
+  }
+  async function confirmTitleDups(dups, okText) {
+    if (!dups || !dups.length) return true;
+    const lines = dups.slice(0, 8).map(d => "·《" + d.title + "》" + d.reasons.map(r => " → " + r).join("；"));
+    const more = dups.length > 8 ? "（其余 " + (dups.length - 8) + " 条略）" : "";
+    return U.confirm("发现 " + dups.length + " 个疑似重复标题" + (dups.length > 8 ? "（仅列前 8 条）" : "") + "：", { okText: okText || "仍要保存", note: lines.join("；") + more });
+  }
+
   /* ============================ 管理员：题目编辑 ============================ */
   async function pageAdminQuestionEdit(id) {
     const isNew = !id || id === "new";
@@ -1099,6 +1124,8 @@
         difficulty: $("#f-diff").value, type: $("#f-type").value, years: $("#f-years").value.trim(),
         status: status, tags: tags, positionIds: posIds, positionNames: posNames, remark: $("#f-remark").value.trim()
       };
+      const dup = findTitleDups([data.title], isNew ? null : q.id);
+      if (dup.length && !(await confirmTitleDups(dup))) { U.toast("已取消保存，请检查重复题目", "warn"); return; }
       if (isNew) { const nid = await Services.addQuestion(Object.assign(data, { source: "manual" })); await Services.reload(); U.toast("已保存", "success"); App.go("/admin/question/" + nid); }
       else { await Services.updateQuestion(q.id, data); await Services.reload(); U.toast("已保存并生成版本", "success"); }
     }
@@ -1675,8 +1702,11 @@
         $("#sel-inv").onclick = () => { rows.forEach(r => r.selected = !r.selected); renderRows(); };
         $("#sel-matched").onclick = () => { rows.forEach(r => r.selected = r.status === "matched"); renderRows(); };
         $("#batch").onclick = async () => {
+          const sel = rows.filter(r => r.selected);
+          const dups = findTitleDups(sel.map(r => r.q.title), null);
+          if (dups.length && !(await confirmTitleDups(dups, "仍要全部入库"))) { if (log) log("warn", "已取消入库：存在 " + dups.length + " 个疑似重复标题"); return; }
           let okN = 0;
-          const total = rows.filter(r => r.selected).length;
+          const total = sel.length;
           if (log) log("info", "开始批量入库，共选中 " + total + " 题");
           for (const r of rows) {
             if (!r.selected) continue;
