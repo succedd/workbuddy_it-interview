@@ -1,10 +1,11 @@
 /* =========================================================================
- *  backup.js  —  本地数据加密云备份（v20260824a）
+ *  backup.js  —  本地数据加密云备份（v20260825a）
  *  作用：把「只存在本机、清缓存即丢」的数据完整加密备份到 GitHub 仓库：
  *    - localStorage：发布 Token / 仓库分支 / AI Key 与配置 / 统计配置 / 主题
  *    - IndexedDB settings 表：管理员密码哈希等
  *    - IndexedDB favorites / histories / weakBank：收藏、浏览历史、薄弱题本
- *  安全：文件以 AES-256-GCM 加密（PBKDF2 派生密钥），仓库公开也只有密文；
+ *  安全：文件以 AES-256-GCM 加密（PBKDF2-SHA256 派生密钥，默认 600,000 迭代，
+ *        旧备份 iter 字段缺失时回退 150,000 以保证向后兼容），仓库公开也只有密文；
  *        备份密码只存在本机 localStorage，清缓存后需凭记忆的密码恢复。
  *  位置：data/local-backup.json（与题库快照 data/published.json 并列）
  * ========================================================================= */
@@ -32,10 +33,11 @@
   function b64dec(str) { const s = atob(str); const u8 = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u8[i] = s.charCodeAt(i); return u8; }
 
   /* ---------- 密钥派生：PBKDF2 -> AES-256-GCM ---------- */
-  async function deriveKey(pass, salt) {
+  // iterations 默认 150000 以保证旧备份（无 iter 字段）向后兼容；新加密传 600000
+  async function deriveKey(pass, salt, iterations = 150000) {
     const km = await crypto.subtle.importKey("raw", enc.encode(pass), "PBKDF2", false, ["deriveKey"]);
     return crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: salt, iterations: 150000, hash: "SHA-256" },
+      { name: "PBKDF2", salt: salt, iterations: iterations, hash: "SHA-256" },
       km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
     );
   }
@@ -71,18 +73,20 @@
   B.encrypt = async function (plainObj, pass) {
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const key = await deriveKey(pass, salt);
+    const ITER = 600000;
+    const key = await deriveKey(pass, salt, ITER);
     const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(JSON.stringify(plainObj)));
     return {
-      v: 1, alg: "AES-256-GCM/PBKDF2-SHA256-150k",
+      v: 1, alg: "AES-256-GCM/PBKDF2-SHA256-600k",
       savedAt: plainObj.savedAt || Date.now(),
+      iter: ITER,
       salt: b64enc(salt), iv: b64enc(iv), ciphertext: b64enc(new Uint8Array(ct))
     };
   };
 
   B.decrypt = async function (payload, pass) {
     if (!payload || payload.v !== 1 || !payload.ciphertext) throw new Error("备份文件格式不正确");
-    const key = await deriveKey(pass, b64dec(payload.salt));
+    const key = await deriveKey(pass, b64dec(payload.salt), payload.iter || 150000);
     let plain;
     try {
       plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64dec(payload.iv) }, key, b64dec(payload.ciphertext));
