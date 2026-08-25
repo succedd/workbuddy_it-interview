@@ -43,12 +43,22 @@
 - **本地数据加密云备份**（v20260825a）：设置页可配置备份密码，把只存本机的数据（发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史）以 AES-256-GCM（PBKDF2-SHA256 派生密钥，**迭代次数 600,000**）加密后备份到 `data/local-backup.json`（公开仓库上只有密文），随每次自动发布同步更新；清缓存/换设备后凭备份密码一键恢复。密文 payload 内含 `iter` 字段记录派生迭代次数，旧备份（无 `iter`、按 150,000 回退）仍可正常解密，升级不破坏历史备份。
 - **数据保护**：本机已有历史数据但从未同步过的用户，不会自动覆盖，会提示手动同步（避免误删个人数据）。
 
+### Token 安全（发布 PAT 最小权限原则）
+- **代码实际用到的 API 只有一个**：GitHub Contents API 的 `GET`（取文件 sha 做乐观锁）和 `PUT`（写入 `data/published.json` / `data/local-backup.json`），无任何 DELETE 或跨仓库操作。
+- **推荐 Token 配置**（Fine-grained PAT）：
+  - Repository access：**Only select repositories** → 只选 `workbuddy_it-interview`
+  - Repository permissions：只开 **Contents: Read and Write**，其余（Administration / Issues / PR / Workflows 等）一律 No access
+  - 过期时间建议 ≤ 90 天，到期前到 GitHub Settings → Developer settings → Personal access tokens 轮换
+- **切勿用 Classic PAT（带 `repo` scope）充当发布 Token**：Classic PAT 的 `repo` scope 对**所有仓库**都有完整读写权限，一旦泄露（如备份密码被破解）风险范围远超本仓库。创建入口：<https://github.com/settings/personal-access-tokens/new>
+- **泄露影响评估**：即使 Fine-grained PAT 泄露，攻击者也只能改本仓库的题库内容（`data/*.json`），碰不到你其他仓库、也拿不到仓库 Settings/Administration 权限。
+
 ### 统计
 - **百度统计**：`index.html` 内联百度统计代码，Tracking ID 为 `856d2b08330e4b9f225cf101d6f14103`。
 - **Cloudflare Worker 访问统计**（可选）：
   - 接口：`/visit`、`/view?id=123`、`/stats`
   - 功能：全局访问计数、当日访问、访客国家地理分布、热门城市、热门题目。
   - 代码在 `cloudflare/worker.js`，需绑定 KV `STATS`。
+  - 前端对接已就绪（设置页「Cloudflare Worker」填接口地址即启用）；**部署步骤见 [`cloudflare/部署指南.md`](cloudflare/部署指南.md)**。
 
 ## 部署与自定义域名
 
@@ -56,6 +66,12 @@
 - **自定义域名（非跳转）**：线上域名为 `it-interview.is-a.dev`，是 GitHub Pages 的**自定义域名**（在仓库 Settings → Pages 中配置），**并非跳转到 `github.io`**——浏览器地址栏始终显示 `it-interview.is-a.dev`，内容由 GitHub 直接以该域名返回。仓库根目录 `CNAME` 文件声明该域名，DNS 层 `it-interview.is-a.dev` CNAME 指向 `succedd.github.io`。
 - **CDN 分发**：GitHub Pages 内容经 **Fastly 全球边缘节点**分发（响应头 `X-Fastly-Request-ID` / `Via: varnish` 为证），访客就近访问、不回源；云端题库 `data/published.json` 同样走 CDN，并带 `Cache-Control: max-age=600`（边缘缓存 10 分钟）。
 - **域名来源**：`is-a.dev` 为免费域名服务申请的子域名。
+
+### 部署 Cloudflare Worker（可选·访问统计）
+- 仓库 `cloudflare/` 目录含 `worker.js`（统计后端）+ `wrangler.toml`（配置模板，KV id 待填）+ **[`部署指南.md`](cloudflare/部署指南.md)**。
+- 概览：注册 Cloudflare 免费账号 → 本机 `wrangler login` → `wrangler kv namespace create STATS` 建 KV → 把 id 填进 `wrangler.toml` → `wrangler deploy` → 把 `*.workers.dev` 地址填进站点设置页即生效。
+- 该 Worker 与百度统计并存：百度统计负责地域/来源/趋势，Worker 额外提供「全站累计访问数」与「跨访客热门题目榜」。
+- 免费额度足够（Worker 10 万请求/天、KV 10 万读/1 千写/天）。
 
 ## 项目结构
 
@@ -108,7 +124,7 @@ npx serve .
 
 ### 4. 配置云端发布（可选）
 如果你是题库维护者，进入 `#/admin/settings`：
-- 填入 GitHub Personal Access Token（需要 `repo` 权限）。
+- 填入 GitHub Personal Access Token（推荐 Fine-grained PAT，仅授权本仓库 Contents 读写，详见上方「Token 安全」）。
 - 仓库默认 `succedd/workbuddy_it-interview`，分支默认 `main`。
 - 本地编辑后点击"发布"即可推送 `data/published.json` 到 GitHub。
 
@@ -140,7 +156,9 @@ node tools/gen-published.js
 
 ### 2026-08-25
 - security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
+- docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
 - docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
+- docs: 新增 `cloudflare/部署指南.md`（注册 Cloudflare → 建 KV → deploy → 前端接入全流程），README 统计与部署章节同步指向。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
