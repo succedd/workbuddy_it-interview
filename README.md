@@ -50,6 +50,13 @@
   - 功能：全局访问计数、当日访问、访客国家地理分布、热门城市、热门题目。
   - 代码在 `cloudflare/worker.js`，需绑定 KV `STATS`。
 
+## 部署与自定义域名
+
+- **托管**：本站为纯静态站点，托管于 **GitHub Pages**（仓库 `succedd/workbuddy_it-interview` 的 `main` 分支）；推送到 `main` 即触发 Pages 重新构建发布，约 1 分钟全站生效。
+- **自定义域名（非跳转）**：线上域名为 `it-interview.is-a.dev`，是 GitHub Pages 的**自定义域名**（在仓库 Settings → Pages 中配置），**并非跳转到 `github.io`**——浏览器地址栏始终显示 `it-interview.is-a.dev`，内容由 GitHub 直接以该域名返回。仓库根目录 `CNAME` 文件声明该域名，DNS 层 `it-interview.is-a.dev` CNAME 指向 `succedd.github.io`。
+- **CDN 分发**：GitHub Pages 内容经 **Fastly 全球边缘节点**分发（响应头 `X-Fastly-Request-ID` / `Via: varnish` 为证），访客就近访问、不回源；云端题库 `data/published.json` 同样走 CDN，并带 `Cache-Control: max-age=600`（边缘缓存 10 分钟）。
+- **域名来源**：`is-a.dev` 为免费域名服务申请的子域名。
+
 ## 项目结构
 
 ```
@@ -133,6 +140,7 @@ node tools/gen-published.js
 
 ### 2026-08-25
 - security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
+- docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
