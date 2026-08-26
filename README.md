@@ -152,6 +152,15 @@ node tools/gen-published.js
 
 ## 更新日志
 
+### 2026-08-26
+
+- perf: **首屏提速**——启动动效分级，仅首次访问完整展示（约 2s），回访快速通过（约 450ms，localStorage 记忆）；云端题库拉取改走 HTTP 缓存（ETag/304），去掉 `cache:"no-store"` + 时间戳强刷，回访不再每次全量重下 546KB 的 `published.json`；云端同步移出启动阻塞路径改为后台执行，拉到新版后原地刷新当前页（`js/app.js` Boot/init + `js/cloud.js` fetchRemote）。
+- fix: **移动端顶栏修复**——logo 在窄屏换行成三行的问题（`.brand` 补 `white-space:nowrap; flex-shrink:0`）；顶栏搜索入口移入侧边抽屉（新增 `.drawer-search`，回车搜索可用），本机访问计数（`.vis-stats`）小屏隐藏（`css/style.css` + `css/responsive.css`）。
+- feat: **空分类灰态**——首页 0 题的技术分类卡片半透明 + 「即将上线」角标，文案改为「题目录入中」，不再以空卡片误导访客。
+- feat: **图片自动外置**——配置发布 Token 的编辑端，粘贴图片自动上传为仓库独立文件 `assets/q/<名>.jpg`，Markdown 以 URL 引用，`data/published.json` 不再随贴图膨胀且图片可被浏览器缓存；上传失败自动回退内嵌 data URL，非编辑端行为不变。`putFile` 扩展支持 Uint8Array 二进制（分块转 base64 防栈溢出）（`js/cloud.js` + `js/app.js`）。
+- feat: **存量图片一键迁移**——「系统设置 → 题目图片外置」支持扫描题库内嵌 base64 图片（数量/体积统计）并批量迁移为 `assets/q/` 文件 + URL 引用；中断可续跑（已迁移自动跳过），完成后随自动发布上线。
+- docs: README 功能清单、Token 安全（API 用途新增 `assets/q/*` 图片写入）章节同步更新；缓存版本号升级至 `?v=20260826b`。
+
 ### 2026-08-24
 
 - feat: 自动发布——编辑端题目/分类/岗位增删改（含 AI 出题、批量导入，经 Dexie 表钩子全路径监听）停止 10 秒后自动推送 GitHub，失败自动重试，关页前未发布提醒，顶栏新增状态徽章（可关闭）。
