@@ -231,5 +231,22 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
+  /* ---- 第三方大库按需加载（echarts / xlsx 首屏不再全量下载） ---- */
+  const _scriptCache = {};
+  U.loadScript = function (name, url) {
+    if (window[name]) return Promise.resolve(window[name]);
+    if (_scriptCache[name]) return _scriptCache[name];
+    _scriptCache[name] = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = url; s.async = true;
+      s.onload = () => resolve(window[name]);
+      s.onerror = () => { delete _scriptCache[name]; reject(new Error("脚本加载失败：" + name)); };
+      document.head.appendChild(s);
+    });
+    return _scriptCache[name];
+  };
+  U.ECHARTS_URL = "https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js";
+  U.XLSX_URL = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+
   window.U = U;
 })();

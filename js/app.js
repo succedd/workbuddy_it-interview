@@ -102,6 +102,11 @@
   }
 
   /* ============================ 顶部栏 ============================ */
+  /* 管理员下拉菜单：点击空白处收起（只绑定一次，修复路由切换导致的监听器累积泄漏） */
+  document.addEventListener("click", (e) => {
+    const m = document.getElementById("admin-menu");
+    if (m && !e.target.closest("#admin-menu") && !e.target.closest("#admin-btn")) m.style.display = "none";
+  });
   function renderTopbar() {
     const theme = App.getTheme();
     const themeIcon = theme === "dark" ? "sun" : theme === "system" ? "monitor" : "moon";
@@ -145,7 +150,7 @@
     if (Auth.isAdmin()) {
       const ab = $("#admin-btn"); const menu = $("#admin-menu");
       ab.onclick = (e) => { e.stopPropagation(); menu.style.display = menu.style.display === "none" ? "block" : "none"; };
-      document.addEventListener("click", () => { menu.style.display = "none"; });
+      /* 收起逻辑已改为全局一次性绑定，避免每次路由切换重复注册监听器 */
       $("#admin-logout").onclick = (e) => { e.preventDefault(); Auth.logout(); U.toast("已退出管理员模式", "info"); renderTopbar(); renderSidebar(parseHash()); };
     } else {
       $("#admin-login-btn").onclick = openAdminLogin;
@@ -475,11 +480,15 @@
         <a class="btn" href="#/questions?posid=${p.id}">查看全部题目</a>
       </div>
     `, () => {
-      const chart = echarts.init($("#pos-chart"));
-      charts.push(chart);
-      chart.setOption({
-        tooltip: { trigger: "item" },
-        series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
+      /* echarts 按需加载：进入岗位页才拉取图表库 */
+      U.loadScript("echarts", U.ECHARTS_URL).catch(() => {}).then(() => {
+        if (!window.echarts || !document.getElementById("pos-chart")) return;
+        const chart = echarts.init($("#pos-chart"));
+        charts.push(chart);
+        chart.setOption({
+          tooltip: { trigger: "item" },
+          series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
+        });
       });
     });
   }
@@ -1011,6 +1020,9 @@
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
       </div>
     `, () => {
+      /* echarts 按需加载：仅仪表盘需要图表库 */
+      U.loadScript("echarts", U.ECHARTS_URL).catch(() => {}).then(() => {
+      if (!window.echarts || !document.getElementById("c1")) return;
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
       const mk = (id, type, data, name) => { const c = echarts.init($(id)); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
       mk("#c1", "bar", Object.entries(s.byCat).filter(([, v]) => v > 0).slice(0, 12), "题目数");
@@ -1037,6 +1049,7 @@
           }
         }).catch(() => {});
       }
+      });
     });
   }
 
@@ -1887,7 +1900,8 @@
       };
     }
   }
-  function downloadTemplateXlsx() {
+  async function downloadTemplateXlsx() {
+    await U.loadScript("XLSX", U.XLSX_URL); /* xlsx 库按需加载 */
     const headers = ["题目标题", "题目内容", "参考答案", "一级技术分类", "二级技术分类", "三级技术分类", "难度", "题型", "适用岗位", "工作年限", "技术标签", "状态", "管理员备注"];
     const ws = XLSX.utils.aoa_to_sheet([headers, ["示例：什么是索引", "请解释数据库索引的作用", "索引用于加速查询…", "数据库与数据存储", "关系型数据库", "MySQL", "初级", "简答题", "Java后端工程师", "0-1年", "MySQL,索引", "published", ""]]);
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "题目");
@@ -2351,7 +2365,7 @@
   /* ============================ 访客统计（本地计数 + 百度统计 + 可选 Cloudflare Worker） ============================ */
   const Stats = (() => {
     /* --- 百度统计 --- */
-    const DEFAULT_TID = "90b0860f910ed25873ab7fd6995e8af2";
+    const DEFAULT_TID = "856d2b08330e4b9f225cf101d6f14103";
     const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || DEFAULT_TID) : DEFAULT_TID);
     function trackBaidu(url) {
       if (baiduId() && typeof _hmt !== "undefined" && _hmt) {

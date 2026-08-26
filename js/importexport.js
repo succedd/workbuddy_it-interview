@@ -46,6 +46,7 @@
             const text = typeof buf === "string" ? buf : new TextDecoder().decode(buf);
             resolve({ kind: "csv", ...csvToRows(text) });
           } else if (ext === "xlsx" || ext === "xls") {
+            await U.loadScript("XLSX", U.XLSX_URL); /* xlsx 库按需加载 */
             const wb = XLSX.read(buf, { type: "array" });
             const ws = wb.Sheets[wb.SheetNames[0]];
             const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
@@ -172,6 +173,7 @@
   };
 
   IE.exportExcel = async function () {
+    await U.loadScript("XLSX", U.XLSX_URL); /* xlsx 库按需加载 */
     const qs = Services.questions;
     /* Excel 单元格上限 32767 字符：内嵌 base64 图片的答案会超限，截断并标注（完整数据走 JSON 备份） */
     const clip = v => typeof v === "string" && v.length > 32000 ? v.slice(0, 32000) + "\n…（内容过长已截断，图片等完整数据请用 JSON 导出）" : v;
