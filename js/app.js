@@ -96,6 +96,7 @@
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
       case "practice": return pagePractice(r.q);
+      case "review": return pageReview();
       case "mock": return pageMock();
       default: return pageHome();
     }
@@ -171,6 +172,7 @@
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
       ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
+      ${navItem("#/review", "alert", "错题重练" + (App.reviewDue ? " (" + App.reviewDue + ")" : ""), p0 === "review")}
       ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
       <div class="nav-section-title">技术分类</div>
@@ -251,6 +253,43 @@
     U.highlightAll(main);
   }
 
+  /* ============================ 今日5题 & 学习打卡 ============================ */
+  function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  /* 今日5题：以日期字符串为种子的确定性抽样——当天所有人/全程固定，次日自动更换 */
+  function todayFive() {
+    const pool = Services.questions.filter(q => q.status === "published").map(q => q.id);
+    const dk = dateKey();
+    let h = 2166136261;
+    for (let i = 0; i < dk.length; i++) { h ^= dk.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const rnd = mulberry32(h >>> 0);
+    const arr = pool.slice();
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+    return arr.slice(0, Math.min(5, arr.length));
+  }
+  function dailyDone() { try { return JSON.parse(localStorage.getItem("daily_done_" + dateKey()) || "[]"); } catch (e) { return []; } }
+  function markDailyDone(id) {
+    const five = todayFive();
+    if (five.indexOf(Number(id)) < 0 && five.indexOf(id) < 0) return false;
+    const done = dailyDone(); const v = Number(id);
+    if (done.indexOf(v) < 0) { done.push(v); localStorage.setItem("daily_done_" + dateKey(), JSON.stringify(done)); }
+    return true;
+  }
+  /* 打卡：基于本地统计的每日访问记录推导连续天数与热力图 */
+  function streakInfo() {
+    const st = Stats.getLocalStats(); const daily = st.daily || {};
+    const total = Object.keys(daily).length;
+    const has = k => !!daily[k];
+    let streak = 0;
+    const d = new Date();
+    if (!has(dateKey(d))) d.setDate(d.getDate() - 1);
+    while (has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    const cells = [];
+    const c = new Date(); c.setDate(c.getDate() - 34);
+    for (let i = 0; i < 35; i++) { const k = dateKey(c); cells.push({ k, n: daily[k] || 0 }); c.setDate(c.getDate() + 1); }
+    return { streak, total, cells };
+  }
+
   /* ============================ 首页 ============================ */
   async function pageHome() {
     const stats = await Services.stats();
@@ -271,6 +310,35 @@
     const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
+    /* —— 今日5题 & 打卡卡数据 —— */
+    const five = todayFive(); const doneSet = dailyDone();
+    const fiveLeft = five.filter(id => doneSet.indexOf(id) < 0);
+    const qById = id => Services.questions.find(x => x.id === id);
+    let fiveHtml = "";
+    if (five.length) {
+      const rows = five.map(id => {
+        const q = qById(id); if (!q) return "";
+        const ok = doneSet.indexOf(id) >= 0;
+        return `<a href="#/question/${id}" style="text-decoration:none;display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--border)">
+          <span>${ok ? "✅" : "⬜"}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`;
+      }).join("");
+      fiveHtml = `<div class="card" style="padding:16px 18px">
+        <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🎯</span><b style="margin-left:8px">今日 5 题</b>
+          <span class="tag ${fiveLeft.length ? "tag-primary" : "tag-success"}" style="margin-left:auto">${doneSet.filter(id => five.indexOf(id) >= 0).length}/${five.length}</span></div>
+        <div class="daily-list">${rows}</div>
+        ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="#/question/${fiveLeft[0]}">开始刷题 →</a>`
+                          : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
+      </div>`;
+    }
+    const sk = streakInfo();
+    const heatHtml = sk.cells.map(c => `<span class="heat-cell h${c.n === 0 ? 0 : c.n <= 2 ? 1 : c.n <= 4 ? 2 : c.n <= 8 ? 3 : 4}" title="${c.k} · ${c.n} 次"></span>`).join("");
+    const streakHtml = `<div class="card" style="padding:16px 18px">
+      <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🔥</span><b style="margin-left:8px">学习打卡</b>
+        <span class="muted" style="margin-left:auto;font-size:12px">累计 ${sk.total} 天</span></div>
+      <div style="font-size:26px;font-weight:700;color:#f59e0b">连续 ${sk.streak} 天</div>
+      <div class="heat-grid" style="margin-top:10px">${heatHtml}</div>
+      <div class="muted" style="font-size:11px;margin-top:6px">最近 35 天 · 打开即打卡</div>
+    </div>`;
     let resumeHtml = "";
     try {
       const lq = JSON.parse(localStorage.getItem("last_question") || "null");
@@ -300,6 +368,7 @@
       </section>
 
       ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
+      ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>
@@ -605,6 +674,7 @@
       <div class="qd-body md">${U.md(q.body)}</div>
       <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
         <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
+        <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
         ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
           <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
@@ -624,6 +694,14 @@
       $("#fav-btn").innerHTML = nowFav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏";
       U.toast(nowFav ? "已收藏" : "已取消收藏", "success");
     };
+    $("#weak-btn").onclick = async () => {
+      if (await Services.isWeak(q.id)) { U.toast("该题已在错题重练中，可到「错题重练」页复习", "info"); return; }
+      await Services.addWeak(q.id, "unknown");
+      App.reviewDue = (App.reviewDue || 0) + 1;
+      renderSidebar(parseHash());
+      U.toast("已加入错题重练，到期会提醒复习", "warn");
+    };
+    markDailyDone(q.id);   // 若属于今日5题则记完成
     if (Auth.isAdmin()) {
       $("#del-btn").onclick = async () => {
         if (await U.confirm("确定删除该题？此操作不可逆。", { danger: true, okText: "删除" })) {
@@ -847,8 +925,12 @@
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
       const mark = async (m) => {
         try {
-          if (m === "master") { mastered++; await Services.removeWeak(q.id); U.toast("已标记为掌握", "success"); }
-          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入薄弱题本 · 练习页可专练", "warn"); }
+          if (m === "master") {
+            mastered++;
+            if (await Services.isWeak(q.id)) { await Services.weakGrade(q.id, true); U.toast("已掌握 · 复习间隔已拉长", "success"); }
+            else U.toast("已标记为掌握", "success");
+          }
+          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入错题重练 · 按记忆曲线安排复习", "warn"); }
         } catch (e) { console.warn("mark error", e); U.toast("标记失败：" + (e && e.message), "error"); }
         next();
       };
@@ -863,6 +945,48 @@
       <h2>刷题完成</h2><p>共 ${total} 题 · 掌握 ${mastered} · 待加强 ${weak}</p>
       ${weak ? `<p class="muted">${weak} 道已加入薄弱题本，<a href="#/practice">返回练习页</a>选择「薄弱题本」可专练这些题。</p>` : ""}
       <a class="btn btn-primary" href="#/practice">${U.icon("refresh")} 再来一轮</a></div>`);
+  }
+
+  /* ============================ 错题重练 ============================ */
+  async function pageReview() {
+    const { due, upcoming } = await Services.weakList();
+    App.reviewDue = due.length;
+    renderSidebar(parseHash());
+    const ivlLabel = w => Services.EBBS_LABEL[Math.min(w.box || 0, Services.EBBS_LABEL.length - 1)];
+    const fmtTime = ts => { const d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+    const cardOf = (w, isDue) => {
+      const q = w._q;
+      return `<div class="card rv-card" data-qid="${q.id}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
+          <span class="tag ${isDue ? "tag-warning" : ""}">${isDue ? "第 " + ((w.box || 0) + 1) + " 次 · 待复习" : ivlLabel(w) + "后"}</span>
+        </div>
+        <div class="muted" style="font-size:12px;margin-top:4px">${w.marked === "unknown" ? "不会" : "不熟悉"} · 排期 ${fmtTime(w.dueAt)}${w.lastOkAt ? " · 上次会了 " + fmtTime(w.lastOkAt) : ""}</div>
+        <div class="pill-row" style="margin-top:10px">
+          ${isDue ? `<button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
+          <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>` : ""}
+          <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出</button>
+        </div>
+      </div>`;
+    };
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
+      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 会了拉长间隔 / 还不会 5 分钟后重来</span></div>
+      ${due.length
+        ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
+        : `<div class="note" style="margin-top:14px">🎉 当前没有到期的复习任务。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里按记忆曲线排期。</div>`}
+      ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
+    `);
+    $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
+      const qid = parseInt(b.closest(".rv-card").dataset.qid);
+      const act = b.dataset.act;
+      if (act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
+      else {
+        await Services.weakGrade(qid, act === "ok");
+        U.toast(act === "ok" ? "👍 已掌握，下次复习时间已顺延" : "好的，5 分钟后再次提醒", act === "ok" ? "success" : "warn");
+      }
+      pageReview();
+    });
   }
 
   /* ============================ 模拟面试 ============================ */
@@ -2477,6 +2601,8 @@
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
     U.initLightbox();
+    /* 待复习数预载（供侧边栏角标） */
+    Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
     /* Markdown 内容图片点击放大（事件委托，覆盖详情页/练习/模拟面试等所有 .md 区域） */
     main.addEventListener("click", e => {
       const img = e.target.closest(".md img");

@@ -462,3 +462,15 @@ html[data-theme="dark"] .bk.backing { color: #60a5fa; }
 html[data-theme="dark"] .bk.error { color: #f87171; border-color: rgba(248,113,113,.3); }
 html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.28); }
 .bk.dirty { animation: vis-pulse 2s ease-in-out infinite; }
+
+/* ---- 批次3：每日5题 / 学习打卡 / 错题重练 ---- */
+.daily-list a:last-child { border-bottom: none !important; }
+.heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 240px; }
+.heat-cell { display: block; aspect-ratio: 1 / 1; border-radius: 3px; background: var(--border, #e2e8f0); opacity: .55; }
+.heat-cell.h1 { background: #bfdbfe; opacity: 1; }
+.heat-cell.h2 { background: #93c5fd; opacity: 1; }
+.heat-cell.h3 { background: #3b82f6; opacity: 1; }
+.heat-cell.h4 { background: #1d4ed8; opacity: 1; }
+[data-theme="dark"] .heat-cell.h1 { background: #1e3a8a; }
+[data-theme="dark"] .heat-cell.h2 { background: #1d4ed8; }
+.rv-card { padding: 14px 16px; }

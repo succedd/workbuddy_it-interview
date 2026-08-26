@@ -174,12 +174,18 @@
      关联键同时存 questionId 与 title 双重冗余：题目以 Dexie 自增主键(id)入库，
      云端同步 clear+bulkAdd 或本地重建都可能让 id 错位于"另一道题"，
      因此取回时若按 id 找不到（或题目已被删除），用 title 兜底定位原题。 */
+  /* ---------- 错题重练（艾宾浩斯记忆曲线调度） ----------
+     间隔序列：5分钟 → 30分钟 → 12小时 → 1天 → 2天 → 4天 → 7天 → 15天
+     会了：box+1 并按新间隔排期；还不会：回到 box=0，5分钟后重来。 */
+  S.EBBS = [5 * 60e3, 30 * 60e3, 12 * 3600e3, 864e5, 2 * 864e5, 4 * 864e5, 7 * 864e5, 15 * 864e5];
+  S.EBBS_LABEL = ["5分钟", "30分钟", "12小时", "1天", "2天", "4天", "7天", "15天"];
   S.addWeak = async function (qid, marked) {
     const q = await db.questions.get(qid);
     const title = q ? (q.title || "") : "";
+    const now = Date.now();
     const existing = await db.weakBank.where("questionId").equals(qid).first();
-    if (existing) await db.weakBank.update(existing.id, { marked, title, updatedAt: Date.now() });
-    else await db.weakBank.add({ questionId: qid, title, marked, createdAt: Date.now(), updatedAt: Date.now() });
+    if (existing) await db.weakBank.update(existing.id, { marked, title, updatedAt: now });
+    else await db.weakBank.add({ questionId: qid, title, marked, createdAt: now, updatedAt: now, box: 0, dueAt: now + S.EBBS[0] });
     S.weakCount = await db.weakBank.count();
   };
   S.removeWeak = async function (qid) {
@@ -204,6 +210,29 @@
     return out;
   };
   S.clearWeak = async function () { await db.weakBank.clear(); S.weakCount = 0; };
+  S.weakList = async function () {
+    const ws = await db.weakBank.toArray();
+    const now = Date.now(); const due = [], upcoming = [];
+    for (const w of ws) {
+      if (!w.dueAt) { w.box = 0; w.dueAt = (w.createdAt || now) + S.EBBS[0]; db.weakBank.update(w.id, { box: 0, dueAt: w.dueAt }); }
+      let q = null;
+      if (w.questionId != null) q = await db.questions.get(w.questionId);
+      if (!q && w.title) q = await db.questions.where("title").equals(w.title).first();
+      if (!q || q.status !== "published") continue;
+      w._q = q;
+      (w.dueAt <= now ? due : upcoming).push(w);
+    }
+    due.sort((a, b) => a.dueAt - b.dueAt);
+    upcoming.sort((a, b) => a.dueAt - b.dueAt);
+    return { due, upcoming };
+  };
+  S.weakGrade = async function (qid, ok) {
+    const w = await db.weakBank.where("questionId").equals(qid).first();
+    if (!w) return;
+    const now = Date.now();
+    if (ok) { const nb = Math.min((w.box || 0) + 1, S.EBBS.length - 1); await db.weakBank.update(w.id, { box: nb, dueAt: now + S.EBBS[nb], lastOkAt: now, updatedAt: now }); }
+    else await db.weakBank.update(w.id, { box: 0, dueAt: now + S.EBBS[0], updatedAt: now });
+  };
   S.incViews = async function (qid) { const q = await db.questions.get(qid); if (q) await db.questions.update(qid, { views: (q.views || 0) + 1 }); };
 
   /* 题目版本与 CRUD */
