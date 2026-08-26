@@ -68,6 +68,49 @@
     return !!(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable));
   }
 
+  /* ---- 搜索与发现：历史记录 / 热词下拉 ---- */
+  const SH_KEY = "search_history";
+  const HOT_TERMS = ["Redis", "MySQL 索引", "消息队列", "JVM", "TCP 三次握手", "分布式事务", "操作系统", "算法"];
+  function shGet() { try { return JSON.parse(localStorage.getItem(SH_KEY) || "[]"); } catch (e) { return []; } }
+  function shPush(term) {
+    const t = (term || "").trim(); if (!t) return;
+    const list = shGet().filter(x => x.q !== t);
+    list.unshift({ q: t, at: Date.now() });
+    try { localStorage.setItem(SH_KEY, JSON.stringify(list.slice(0, 10))); } catch (e) {}
+  }
+  function attachHistory(input, onGo) {
+    if (!input) return;
+    let dd = null;
+    const close = () => { if (dd) { dd.remove(); dd = null; } };
+    const open = () => {
+      close();
+      const hist = shGet();
+      dd = document.createElement("div");
+      dd.className = "search-dd";
+      let h;
+      if (hist.length) {
+        h = `<div class="sd-head"><span>最近搜索</span><button type="button" class="sd-clear">清空</button></div>`
+          + hist.map(x => `<div class="sd-item" data-q="${U.esc(x.q)}"><span class="sd-ic">${U.icon("history")}</span><span class="sd-q">${U.esc(x.q)}</span><button type="button" class="sd-del" data-del="${U.esc(x.q)}" title="删除这条">×</button></div>`).join("");
+      } else {
+        h = `<div class="sd-head"><span>热门搜索</span></div><div class="sd-hot">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-q="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>`;
+      }
+      dd.innerHTML = h;
+      input.parentNode.appendChild(dd);
+      dd.addEventListener("click", (e) => {
+        const del = e.target.closest(".sd-del");
+        if (del) { e.stopPropagation(); localStorage.setItem(SH_KEY, JSON.stringify(shGet().filter(x => x.q !== del.dataset.del))); open(); return; }
+        if (e.target.closest(".sd-clear")) { localStorage.removeItem(SH_KEY); open(); return; }
+        const it = e.target.closest("[data-q]");
+        if (it && it.dataset.q != null) { input.value = it.dataset.q; close(); onGo(it.dataset.q); }
+      });
+    };
+    input.addEventListener("focus", open);
+    input.addEventListener("input", close);
+    input.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    /* 点击别处收起 */
+    document.addEventListener("click", (e) => { if (dd && !e.target.closest(".search-dd") && e.target !== input) close(); });
+  }
+
   async function route() {
     setPageKeys(null);
     clearCharts();
@@ -97,6 +140,10 @@
       case "history": return pageHistory();
       case "practice": return pagePractice(r.q);
       case "review": return pageReview();
+      case "random": {
+        const pool = Services.questions.filter(x => x.status === "published");
+        return pool.length ? App.go("/question/" + pool[Math.floor(Math.random() * pool.length)].id) : pageHome();
+      }
       case "mock": return pageMock();
       default: return pageHome();
     }
@@ -145,7 +192,8 @@
         ${`<span class="vis-chip vis-stats" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
-    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
+    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
+    attachHistory(gs, term => App.go("/questions?q=" + encodeURIComponent(term)));
     $("#theme-btn").onclick = cycleTheme;
     $("#menu-toggle").onclick = () => { document.body.classList.toggle("drawer-open"); };
     if (Auth.isAdmin()) {
@@ -172,6 +220,7 @@
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
       ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
+      ${navItem("#/random", "dice", "随机一题", p0 === "random")}
       ${navItem("#/review", "alert", "错题重练" + (App.reviewDue ? " (" + App.reviewDue + ")" : ""), p0 === "review")}
       ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
@@ -185,13 +234,12 @@
         ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
     }
     sidebar.innerHTML = html;
+    const dsiGo = (term) => { term = (term || "").trim(); if (!term) return; document.body.classList.remove("drawer-open"); shPush(term); App.go("/questions?q=" + encodeURIComponent(term)); };
     const dsi = $("#drawer-search-input");
-    if (dsi) dsi.addEventListener("keydown", e => {
-      if (e.key === "Enter" && dsi.value.trim()) {
-        document.body.classList.remove("drawer-open");
-        App.go("/questions?q=" + encodeURIComponent(dsi.value.trim()));
-      }
-    });
+    if (dsi) {
+      dsi.addEventListener("keydown", e => { if (e.key === "Enter") dsiGo(dsi.value); });
+      attachHistory(dsi, dsiGo);
+    }
     $$("#side-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
         if (e.target.closest(".twist")) {
@@ -226,7 +274,7 @@
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
-    const tags = (q.tags || []).slice(0, 4).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
+    const tags = (q.tags || []).slice(0, 4).map(t => `<span class="tag tag-link" data-tag="${U.esc(t)}" title="点击搜索该标签">${U.esc(t)}</span>`).join("");
     const pos = (q.positionNames || []).slice(0, 3).map(p => `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(p)}'">${U.esc(p)}</span>`).join("");
     return `<a class="card card-hover q-card" href="#/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
@@ -356,6 +404,7 @@
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
+          <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
@@ -384,8 +433,10 @@
 
       <div class="note" style="margin-top:24px">提示：本项目为纯静态本地版，所有数据保存在当前浏览器（IndexedDB）。首次使用可在「系统设置」配置 AI（DeepSeek Harness）以启用智能出题。管理员密码仅用于本机权限隔离，非服务端安全认证。</div>
     `);
-    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) App.go("/questions?q=" + encodeURIComponent(e.target.value.trim())); });
-    $("#hero-go").onclick = () => { const v = $("#hero-search").value.trim(); if (v) App.go("/questions?q=" + encodeURIComponent(v)); };
+    const heroGo = (v) => { v = (v || "").trim(); if (!v) return; shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); };
+    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter") heroGo(e.target.value); });
+    $("#hero-go").onclick = () => heroGo($("#hero-search").value);
+    attachHistory($("#hero-search"), heroGo);
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
   }
@@ -590,7 +641,17 @@
     };
     const renderGrid = (arr) => {
       const grid = $("#q-grid");
-      if (!arr.length) { grid.innerHTML = `<div class="empty">${U.icon("search")}<p>没有匹配的题目</p></div>`; $("#q-count").textContent = "0"; return; }
+      if (!arr.length) {
+        grid.innerHTML = `<div class="empty">${U.icon("search")}<p>没有匹配的题目</p>
+          <p class="muted" style="font-size:13px;margin-top:6px">试试更短的关键词，或换个角度：</p>
+          <div class="pill-row" style="justify-content:center;margin-top:10px">
+            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机来一题</a>
+            <a class="btn btn-sm" href="#/questions">清除筛选看全部</a>
+          </div>
+          <div class="pill-row" style="justify-content:center;margin-top:10px">${HOT_TERMS.slice(0, 5).map(t => `<span class="tag tag-link" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
+        </div>`;
+        $("#q-count").textContent = "0"; return;
+      }
       $("#q-count").textContent = arr.length;
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
       grid.innerHTML = arr.slice((page - 1) * 20, page * 20).map(x => qCard(x, fuseMap ? fuseMap.get(x.id) : null)).join("");
@@ -614,6 +675,7 @@
         <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
         <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option></select>
         ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
+        <a class="btn btn-sm" href="#/random" title="从全部已发布题目中随机抽一题">${U.icon("dice")} 随机一题</a>
         <span class="spacer"></span>
         <div class="seg" id="sort-seg">
           <button data-s="updated" class="${sortBy === "updated" ? "active" : ""}">最新</button>
@@ -655,7 +717,7 @@
       const pos = posByName.get(n);
       return pos ? `<a class="tag tag-outline" href="#/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="#/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
     }).join("");
-    const techTags = (q.tags || []).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
+    const techTags = (q.tags || []).map(t => `<span class="tag tag-link" data-tag="${U.esc(t)}" title="点击搜索该标签">${U.esc(t)}</span>`).join("");
     const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
     const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
     setMain(`
@@ -2603,6 +2665,11 @@
     U.initLightbox();
     /* 待复习数预载（供侧边栏角标） */
     Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
+    /* 标签点击即搜（事件委托；首页热词区有独立处理，跳过） */
+    document.getElementById("main").addEventListener("click", (e) => {
+      const tg = e.target.closest(".tag[data-tag]");
+      if (tg && !e.target.closest(".hot-tags")) { e.preventDefault(); e.stopPropagation(); shPush(tg.dataset.tag); App.go("/questions?q=" + encodeURIComponent(tg.dataset.tag)); }
+    });
     /* Markdown 内容图片点击放大（事件委托，覆盖详情页/练习/模拟面试等所有 .md 区域） */
     main.addEventListener("click", e => {
       const img = e.target.closest(".md img");

@@ -474,3 +474,25 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 [data-theme="dark"] .heat-cell.h1 { background: #1e3a8a; }
 [data-theme="dark"] .heat-cell.h2 { background: #1d4ed8; }
 .rv-card { padding: 14px 16px; }
+
+/* ---- 批次4：搜索与发现 ---- */
+.topbar-search, .drawer-search, .hero-search { position: relative; }
+.search-dd {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 6px; min-width: 230px; z-index: 70;
+  animation: dropdownIn .14s ease;
+}
+.sd-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-secondary); padding: 4px 8px 6px; }
+.sd-head button { border: none; background: none; cursor: pointer; color: #2563EB; font-size: 12px; padding: 0; }
+.sd-item { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text); }
+.sd-item:hover { background: var(--bg-hover); }
+.sd-ic { display: inline-flex; color: var(--text-secondary); }
+.sd-ic svg { width: 14px; height: 14px; flex: none; }
+.sd-q { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-del { border: none; background: none; color: var(--text-secondary); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; }
+.sd-del:hover { color: #E24B4A; }
+.sd-hot { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 8px 6px; }
+.tag-link { cursor: pointer; transition: color .12s ease, border-color .12s ease; }
+.tag-link:hover { color: #2563EB; border-color: #93c5fd; }
+.hero-search .btn { white-space: nowrap; }
