@@ -67,11 +67,22 @@
       .finally(() => clearTimeout(t));
   }
 
-  /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ---------- */
+  /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ----------
+     content 支持字符串（自动 UTF-8 编码）或 Uint8Array（二进制，如图片外置） */
   C.putFile = async function (path, content, message) {
     const tok = C.token();
     if (!tok) throw new Error("尚未配置发布 Token");
-    const b64 = btoa(unescape(encodeURIComponent(content)));
+    let b64;
+    if (content instanceof Uint8Array) {
+      let bin = "";
+      const CHUNK = 0x8000;   // 分块转二进制串，避免 apply 栈溢出
+      for (let i = 0; i < content.length; i += CHUNK) {
+        bin += String.fromCharCode.apply(null, content.subarray(i, i + CHUNK));
+      }
+      b64 = btoa(bin);
+    } else {
+      b64 = btoa(unescape(encodeURIComponent(content)));
+    }
     const api = "https://api.github.com/repos/" + C.repo() + "/contents/" + path;
     let lastErr = null;
     for (let attempt = 0; attempt < 5; attempt++) {

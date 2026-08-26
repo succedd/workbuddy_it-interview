@@ -25,7 +25,9 @@
 - **仪表盘**：题目数量、分类分布、岗位覆盖、访问统计等图表。
 - **题目管理**：增删改查题目，字段包含标题、题干、答案、难度、题型、分类、适用岗位、工作年限、标签。
 - **标题查重提示**：新增/编辑题目保存时、AI 批量入库前，自动按**标题规范化匹配**（忽略大小写、空白与全半角标点）扫描既有题库与本批次，发现疑似重复即弹窗列出冲突题目（ID、标题、状态），确认后才入库——只提示不拦截，避免误存重复题。
-- **编辑器支持直接粘贴图片**：在「题目正文」「参考答案」编辑框中直接 `Ctrl/Cmd+V` 粘贴截图，自动压缩（长边 ≤1400px、JPEG 质量 0.85，超 500KB 自动降档重压）并以 Markdown 图片（data URL）插入光标处，右侧预览即时可见；图片随题目保存，并随题库发布到 `data/published.json`，所有访客可见。单图压缩后上限 500KB，超限会提示。Markdown 内容区图片自适应（`max-width:100%`）。
+- **编辑器支持直接粘贴图片**：在「题目正文」「参考答案」编辑框中直接 `Ctrl/Cmd+V` 粘贴截图，自动压缩（长边 ≤1400px、JPEG 质量 0.85，超 500KB 自动降档重压）后插入光标处，右侧预览即时可见。单图压缩后上限 500KB，超限会提示。Markdown 内容区图片自适应（`max-width:100%`）。
+- **图片自动外置**（v20260826b）：配置发布 Token 的编辑端，粘贴的图片自动上传为仓库独立文件 `assets/q/<名>.jpg`，Markdown 以 URL 引用（不再内嵌 base64）——`data/published.json` 不再随图片膨胀，图片可被浏览器 CDN 缓存。上传失败自动回退内嵌 data URL，不影响编辑流程。
+- **存量图片一键迁移**（v20260826b）：「系统设置 → 题目图片外置」可扫描题库中所有内嵌 base64 图片并显示数量与体积，一键批量上传到 `assets/q/` 并替换对应题目的 Markdown 引用；支持中断续跑（已迁移自动跳过），完成后随自动发布上线。
 - **分类管理**：维护技术分类树。
 - **岗位管理**：维护岗位体系与岗位方向。
 - **AI 出题**：可配置 OpenAI API Key，通过大模型按分类/岗位/难度批量生成题目。
@@ -46,7 +48,7 @@
 - **数据保护**：本机已有历史数据但从未同步过的用户，不会自动覆盖，会提示手动同步（避免误删个人数据）。
 
 ### Token 安全（发布 PAT 最小权限原则）
-- **代码实际用到的 API 只有一个**：GitHub Contents API 的 `GET`（取文件 sha 做乐观锁）和 `PUT`（写入 `data/published.json` / `data/local-backup.json`），无任何 DELETE 或跨仓库操作。
+- **代码实际用到的 API 只有一个**：GitHub Contents API 的 `GET`（取文件 sha 做乐观锁）和 `PUT`（写入 `data/published.json` / `data/local-backup.json` / `assets/q/*` 图片外置），无任何 DELETE 或跨仓库操作。
 - **推荐 Token 配置**（Fine-grained PAT）：
   - Repository access：**Only select repositories** → 只选 `workbuddy_it-interview`
   - Repository permissions：只开 **Contents: Read and Write**，其余（Administration / Issues / PR / Workflows 等）一律 No access
