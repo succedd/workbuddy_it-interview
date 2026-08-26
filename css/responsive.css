@@ -17,7 +17,10 @@
   .drawer-mask { position: fixed; inset: var(--topbar-h) 0 0 0; background: rgba(15,23,42,.45); z-index: 70; }
   .main { padding: 16px 14px 50px; }
   .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-auto { grid-template-columns: 1fr; }
-  .topbar-search { max-width: none; }
+  /* 顶栏空间有限：搜索入口移入抽屉，本机访问计数隐藏 */
+  .topbar-search { display: none; }
+  .drawer-search { display: block; }
+  .vis-chip.vis-stats { display: none; }
   .hero h1 { font-size: 26px; }
   .menu-toggle { display: grid !important; }
   .desktop-only { display: none !important; }

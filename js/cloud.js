@@ -111,10 +111,12 @@
     throw lastErr;
   };
 
-  /* ---------- 拉取云端快照 ---------- */
-  C.fetchRemote = async function () {
+  /* ---------- 拉取云端快照 ----------
+     默认走浏览器 HTTP 缓存（GitHub Pages 自带 ETag / max-age）：内容未变化时命中缓存或 304，
+     避免每次打开都全量重下快照。手动同步传 force=true 跳过缓存强制拉取最新。 */
+  C.fetchRemote = async function (force) {
     try {
-      const r = await fetchT(FILE_PATH + "?v=" + Date.now(), { cache: "no-store" }, 8000);
+      const r = await fetchT(FILE_PATH, force ? { cache: "reload" } : null, 8000);
       if (!r.ok) return null;
       const j = await r.json();
       if (j && j.version === 1 && Array.isArray(j.questions)) return j;
@@ -163,9 +165,9 @@
     return { applied: true, count: (data.questions || []).length };
   };
 
-  /* 手动立即同步（设置页按钮）：强制采用云端版本，覆盖本地题库 */
+  /* 手动立即同步（设置页按钮）：强制跳过缓存拉取最新，并覆盖本地题库 */
   C.syncNow = async function () {
-    const data = await C.fetchRemote();
+    const data = await C.fetchRemote(true);
     if (!data) throw new Error("云端题库不存在或无法访问");
     await C.applyRemote(data);
     return data;

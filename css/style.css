@@ -38,7 +38,7 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--text); }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--text); white-space: nowrap; flex-shrink: 0; }
 .brand:hover { text-decoration: none; }
 .brand .logo {
   width: 32px; height: 32px; border-radius: 8px;
@@ -56,6 +56,24 @@ button { font-family: inherit; cursor: pointer; }
 .topbar-search input:focus { outline: none; border-color: var(--c-primary); background: var(--bg-elevated); }
 .topbar-search .icon { position: absolute; left: 13px; top: 9px; color: var(--text-muted); }
 .topbar-actions { display: flex; align-items: center; gap: 6px; }
+
+/* 侧边抽屉搜索框（仅移动端显示，见 responsive.css） */
+.drawer-search { display: none; position: relative; margin-bottom: 12px; }
+.drawer-search input {
+  width: 100%; height: 38px; padding: 0 14px 0 38px;
+  border: 1px solid var(--border); border-radius: 999px;
+  background: var(--bg-subtle); color: var(--text); font-size: 14px;
+}
+.drawer-search input:focus { outline: none; border-color: var(--c-primary); background: var(--bg-elevated); }
+.drawer-search .icon { position: absolute; left: 13px; top: 9px; color: var(--text-muted); pointer-events: none; }
+
+/* 空分类（0 题）灰态卡片 */
+.card.cat-empty { opacity: .55; position: relative; }
+.soon-chip {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  font-size: 11px; line-height: 1; padding: 4px 8px; border-radius: 999px;
+  background: var(--bg-subtle); border: 1px dashed var(--border); color: var(--text-muted);
+}
 
 /* ============ Buttons ============ */
 .btn {

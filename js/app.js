@@ -123,7 +123,7 @@
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         ${adminHtml}
-        ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
+        ${`<span class="vis-chip vis-stats" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
@@ -146,6 +146,7 @@
       `<a class="side-nav-item ${active ? "active" : ""}" href="${href}">${U.icon(icon)}<span>${label}</span></a>`;
     const p0 = r.parts[0] || "home";
     let html = `
+      <div class="drawer-search"><span class="icon">${U.icon("search")}</span><input id="drawer-search-input" type="text" placeholder="搜索题目、技术、岗位…" /></div>
       <div class="nav-section-title">导航</div>
       ${navItem("#/", "home", "首页", p0 === "home")}
       ${navItem("#/category", "layers", "技术体系", p0 === "category")}
@@ -164,6 +165,13 @@
         ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
     }
     sidebar.innerHTML = html;
+    const dsi = $("#drawer-search-input");
+    if (dsi) dsi.addEventListener("keydown", e => {
+      if (e.key === "Enter" && dsi.value.trim()) {
+        document.body.classList.remove("drawer-open");
+        App.go("/questions?q=" + encodeURIComponent(dsi.value.trim()));
+      }
+    });
     $$("#side-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
         if (e.target.closest(".twist")) {
@@ -233,11 +241,15 @@
     const hotTags = ["Java", "MySQL", "Redis", "Spring Boot", "Vue3", "React", "Docker", "Kubernetes", "TCP", "算法", "Python", "AI大模型"];
     const recent = stats.recent.slice(0, 6);
     const best = Services.questions.slice().sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)).slice(0, 6);
-    const catCards = tree.map(c => `<a class="card card-hover" href="#/category?cat=${c.id}" style="text-decoration:none">
+    const catCards = tree.map(c => {
+      const empty = !c.count;
+      return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
+        ${empty ? `<span class="soon-chip">即将上线</span>` : ""}
         <div style="font-size:24px">${U.esc(c.icon || "📁")}</div>
         <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
-        <div class="muted" style="font-size:12px">${c.count} 题 · ${c.era || ""}</div>
-      </a>`).join("");
+        <div class="muted" style="font-size:12px">${empty ? "题目录入中" : c.count + " 题 · " + (c.era || "")}</div>
+      </a>`;
+    }).join("");
     const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
@@ -2109,6 +2121,12 @@
     let started = 0, target = 0, raf = 0, rainRaf = 0, finished = false, readyResolve;
     const ready = new Promise(r => readyResolve = r);
     const el = id => document.getElementById(id);
+    /* 首次访问完整展示动效；回访用户快速通过，避免每次进入都等待动画 */
+    let firstVisit = true;
+    try {
+      firstVisit = !localStorage.getItem("boot_seen");
+      localStorage.setItem("boot_seen", "1");
+    } catch (e) {}
     const NAMES = ["前端工程师","后端工程师","全栈工程师","测试工程师","测试开发工程师","运维工程师","SRE工程师","DevOps工程师","数据分析师","算法工程师","机器学习工程师","深度学习工程师","数据科学家","产品经理","网络安全工程师","渗透测试工程师","大数据开发工程师","云架构师","解决方案架构师","数据库管理员","人工智能工程师","移动端开发","iOS开发","Android开发","游戏开发工程师","嵌入式工程师","区块链工程师","爬虫工程师","推荐算法工程师","搜索算法工程师","音视频开发","性能测试工程师","自动化测试工程师","UI设计师","交互设计师","售前工程师","技术项目经理","视觉算法工程师","鸿蒙开发工程师","Go开发工程师","Java开发工程师","Python开发工程师","C++开发工程师","前端架构师","后端架构师","数据工程师","ETL工程师","BI工程师","运维开发工程师","大模型应用工程师","AIGC工程师"];
     function start() {
       const ov = el("boot-loader"); if (!ov) return;
@@ -2172,7 +2190,7 @@
       const ov = el("boot-loader");
       const skip = el("boot-skip"); if (skip) skip.style.opacity = "1";
       const elapsed = Date.now() - started;
-      const MIN = 3200; // 最短展示时长，确保动效能看完
+      const MIN = firstVisit ? 2000 : 450; // 首访保证动效可看完，回访快速通过
       const wait = Math.max(0, MIN - elapsed);
       target = Math.min(target, 92); // 加载期间进度停在 ~92%，结束瞬间补满，避免早早钉在 100%
       let revealed = false;
@@ -2309,7 +2327,6 @@
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
     Boot.start();
-    let cloudPending = null;
     try {
       let justSeeded = false;
       try { justSeeded = await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
@@ -2317,20 +2334,24 @@
       try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
       try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
       try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
-      Boot.set(55, "检查云端题库更新…");
-      try {
-        const r = await Cloud.syncIfNeeded(justSeeded);
-        if (r && r.applied) U.toast("已同步云端题库最新版（共 " + r.count + " 题）", "success");
-        if (r && r.pending) cloudPending = r;
-      } catch (e) { console.warn("cloud sync error", e); }
-      Boot.set(60, "迁移与预置数据…");
+      Boot.set(55, "加载题库数据…");
       await Services.reload();
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
       if (!location.hash) location.hash = "/";
       route();
-      if (cloudPending) U.toast("检测到云端共享题库（" + cloudPending.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
+      /* 云端题库同步改为后台执行：不阻塞首屏渲染；
+         应用了新数据后原地刷新当前页，pending 场景仍走提示引导手动同步 */
+      Cloud.syncIfNeeded(justSeeded).then(async r => {
+        if (r && r.applied) {
+          U.toast("已同步云端题库最新版（共 " + r.count + " 题）", "success");
+          await Services.reload();
+          route();
+        } else if (r && r.pending) {
+          U.toast("检测到云端共享题库（" + r.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
+        }
+      }).catch(e => console.warn("cloud sync error", e));
       Stats.recordVisit();
       refreshVisitorStats();
       setInterval(refreshVisitorStats, 60000);
