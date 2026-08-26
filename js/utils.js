@@ -90,6 +90,52 @@
     if (window.hljs) {
       U.qsa("pre code", root || document).forEach(b => { try { hljs.highlightElement(b); } catch (e) {} });
     }
+    U.addCodeCopy(root);
+  };
+  /* ---------- 代码块一键复制：pre 右上角悬浮复制钮（幂等，随 highlightAll 自动挂载） ---------- */
+  U.addCodeCopy = function (root) {
+    U.qsa("pre", root || document).forEach(pre => {
+      if (pre.querySelector(".code-copy")) return;
+      pre.style.position = "relative";
+      const btn = document.createElement("button");
+      btn.className = "code-copy";
+      btn.type = "button";
+      btn.textContent = "复制";
+      btn.onclick = async () => {
+        const text = ((pre.querySelector("code") || pre).innerText || "").replace(/\n+$/, "");
+        let ok = false;
+        try { await navigator.clipboard.writeText(text); ok = true; }
+        catch (e) {
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+            document.body.appendChild(ta); ta.select();
+            ok = document.execCommand("copy"); ta.remove();
+          } catch (_) {}
+        }
+        btn.textContent = ok ? "已复制" : "失败";
+        setTimeout(() => { btn.textContent = "复制"; }, 1500);
+      };
+      pre.appendChild(btn);
+    });
+  };
+  /* ---------- 图片灯箱（点击 Markdown 内容图片全屏预览） ---------- */
+  U.initLightbox = function () {
+    if (document.getElementById("lightbox")) return;
+    const mask = document.createElement("div");
+    mask.id = "lightbox";
+    mask.className = "lightbox-mask";
+    mask.innerHTML = '<img alt="图片预览" />';
+    mask.addEventListener("click", () => { mask.classList.remove("open"); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") mask.classList.remove("open"); });
+    document.body.appendChild(mask);
+  };
+  U.openLightbox = function (src, alt) {
+    const mask = document.getElementById("lightbox");
+    if (!mask || !src) return;
+    const img = mask.querySelector("img");
+    img.src = src; img.alt = alt || "图片预览";
+    mask.classList.add("open");
   };
 
   /* ---------- Toast ---------- */

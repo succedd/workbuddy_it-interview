@@ -56,7 +56,20 @@
 
   function clearCharts() { charts.forEach(c => { try { c.dispose(); } catch (e) {} }); charts = []; }
 
+  /* 页面级键盘快捷键：每次路由切换自动清理，避免监听器泄漏 */
+  let pageKeyHandler = null;
+  function setPageKeys(handler) {
+    if (pageKeyHandler) document.removeEventListener("keydown", pageKeyHandler);
+    pageKeyHandler = handler || null;
+    if (handler) document.addEventListener("keydown", handler);
+  }
+  function typingInField(e) {
+    const t = e.target;
+    return !!(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable));
+  }
+
   async function route() {
+    setPageKeys(null);
     clearCharts();
     const r = parseHash();
     renderSidebar(r);
@@ -253,6 +266,16 @@
     const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
+    let resumeHtml = "";
+    try {
+      const lq = JSON.parse(localStorage.getItem("last_question") || "null");
+      if (lq && lq.id && lq.title && Services.questions.some(x => x.id === lq.id)) {
+        resumeHtml = `<a class="card card-hover" href="#/question/${lq.id}" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px 18px">
+          <span style="font-size:22px">📖</span>
+          <span style="flex:1;min-width:0"><b>继续上次</b><span class="muted" style="margin-left:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:70%;vertical-align:bottom">${U.esc(lq.title)}</span></span>
+          <span class="tag tag-primary">继续 →</span></a>`;
+      }
+    } catch (e) {}
     setMain(`
       <section class="hero">
         <h1>IT 面试题库管理系统</h1>
@@ -270,6 +293,8 @@
         <div class="stat"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></div>
         <div class="stat ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></div>
       </section>
+
+      ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>
@@ -543,6 +568,7 @@
     await Services.incViews(id); await Services.reload();
     await Services.addHistory(id);
     Stats.recordView(id);
+    try { localStorage.setItem("last_question", JSON.stringify({ id: q.id, title: q.title, at: Date.now() })); } catch (e) {}
     const fav = await Services.isFavorite(q.id);
     const related = (q.relatedIds || []).map(rid => Services.questions.find(x => x.id === rid)).filter(Boolean);
     if (!related.length) related.push(...Services.questions.filter(x => x.id !== q.id && x.categoryId === q.categoryId).slice(0, 4));
@@ -603,6 +629,20 @@
       $("#next-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
       $("#prev-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
+    /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应） */
+    const kbHint = document.createElement("div");
+    kbHint.className = "muted";
+    kbHint.style.cssText = "font-size:12px;margin-top:8px";
+    kbHint.textContent = "快捷键：← / → 切换题目 · 空格 展开或收起答案 · S 收藏";
+    $(".pill-row").appendChild(kbHint);
+    setPageKeys(e => {
+      if (typingInField(e)) return;
+      if (document.querySelector("#modal-root .modal-mask") || document.querySelector("#modal-root .modal")) return;
+      if (e.key === "ArrowLeft" && $("#prev-btn").style.display !== "none") { $("#prev-btn").click(); }
+      else if (e.key === "ArrowRight" && $("#next-btn").style.display !== "none") { $("#next-btn").click(); }
+      else if (e.key === " " || e.code === "Space") { e.preventDefault(); $("#show-answer").click(); }
+      else if (e.key === "s" || e.key === "S") { $("#fav-btn").click(); }
+    });
   }
 
   /* ============================ 收藏夹 ============================ */
@@ -2422,6 +2462,12 @@
     }
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
+    U.initLightbox();
+    /* Markdown 内容图片点击放大（事件委托，覆盖详情页/练习/模拟面试等所有 .md 区域） */
+    main.addEventListener("click", e => {
+      const img = e.target.closest(".md img");
+      if (img && img.getAttribute("src")) { e.preventDefault(); U.openLightbox(img.getAttribute("src"), img.alt); }
+    });
     Boot.start();
     try {
       let justSeeded = false;
