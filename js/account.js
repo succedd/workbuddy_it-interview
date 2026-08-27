@@ -6,6 +6,14 @@
  * ========================================================================= */
 (function () {
   "use strict";
+  /* app.js 是 IIFE，setMain/route/renderTopbar 等在其闭包内。
+     通过 App._internals 取用（app.js 末尾挂载）；U/DB/Services 本身就是 window 全局。 */
+  const _i = (window.App && window.App._internals) || {};
+  const $ = _i.$ || U.qs;
+  const setMain = _i.setMain;
+  const route = _i.route || (() => { location.hash = "#/"; });
+  const renderTopbar = _i.renderTopbar;
+
   const A = {};
   const LS = { token: "acc_token", user: "acc_user", syncAt: "acc_sync_at" };
   const API_DEFAULT = "https://it-interview-stats.iti-interview.workers.dev";
