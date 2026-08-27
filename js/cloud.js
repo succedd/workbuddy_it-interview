@@ -67,22 +67,11 @@
       .finally(() => clearTimeout(t));
   }
 
-  /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ----------
-     content 支持字符串（自动 UTF-8 编码）或 Uint8Array（二进制，如图片外置） */
+  /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ---------- */
   C.putFile = async function (path, content, message) {
     const tok = C.token();
     if (!tok) throw new Error("尚未配置发布 Token");
-    let b64;
-    if (content instanceof Uint8Array) {
-      let bin = "";
-      const CHUNK = 0x8000;   // 分块转二进制串，避免 apply 栈溢出
-      for (let i = 0; i < content.length; i += CHUNK) {
-        bin += String.fromCharCode.apply(null, content.subarray(i, i + CHUNK));
-      }
-      b64 = btoa(bin);
-    } else {
-      b64 = btoa(unescape(encodeURIComponent(content)));
-    }
+    const b64 = btoa(unescape(encodeURIComponent(content)));
     const api = "https://api.github.com/repos/" + C.repo() + "/contents/" + path;
     let lastErr = null;
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -122,15 +111,15 @@
     throw lastErr;
   };
 
-  /* ---------- 拉取云端快照 ----------
-     默认走浏览器 HTTP 缓存（GitHub Pages 自带 ETag / max-age）：内容未变化时命中缓存或 304，
-     避免每次打开都全量重下快照。手动同步传 force=true 跳过缓存强制拉取最新。 */
-  C.fetchRemote = async function (force) {
+  /* ---------- 拉取云端快照 ---------- */
+  C.fetchRemote = async function () {
     try {
-      const r = await fetchT(FILE_PATH, force ? { cache: "reload" } : null, 8000);
+      const r = await fetchT(FILE_PATH + "?v=" + Date.now(), { cache: "no-store" }, 8000);
       if (!r.ok) return null;
       const j = await r.json();
-      if (j && j.version === 1 && Array.isArray(j.questions)) return j;
+      /* version 兼容：历史快照恒为 1；2026-08-27 起扩充流水线每次合并会递增，
+         因此只要求是正整数，不再限定 ===1 */
+      if (j && Number.isInteger(j.version) && j.version >= 1 && Array.isArray(j.questions)) return j;
       return null;
     } catch (e) { return null; }
   };
@@ -176,9 +165,9 @@
     return { applied: true, count: (data.questions || []).length };
   };
 
-  /* 手动立即同步（设置页按钮）：强制跳过缓存拉取最新，并覆盖本地题库 */
+  /* 手动立即同步（设置页按钮）：强制采用云端版本，覆盖本地题库 */
   C.syncNow = async function () {
-    const data = await C.fetchRemote(true);
+    const data = await C.fetchRemote();
     if (!data) throw new Error("云端题库不存在或无法访问");
     await C.applyRemote(data);
     return data;
