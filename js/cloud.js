@@ -173,6 +173,55 @@
     return data;
   };
 
+  /* ---------- 编辑端增量吸收（2026-08-27） ----------
+   * 编辑端不做全量覆盖（会冲掉本地未发布的改动），但云端自动扩充的新题
+   * 也需要让编辑端及时看到——否则编辑端标题查重/发布统计都基于旧库。
+   * 策略：启动时对比云端快照，只把「本机不存在的题目、分类、岗位」追加进来：
+   * - 按 title 归一化判重 + ID 判重，双保险
+   * - 已存在的题目/分类/岗位一概不动（保留本地编辑）
+   * - 记录 absorbedRemoteAt，同一快照只吸一次
+   */
+  C.absorbRemote = async function (force) {
+    const db = DB.db;
+    const remote = await C.fetchRemote();
+    if (!remote || !Array.isArray(remote.questions)) return { added: 0, reason: "noCloud" };
+    const last = await DB.getSetting("absorbedRemoteAt") || 0;
+    if (!force && (remote.publishedAt || 0) <= last) return { added: 0, reason: "upToDate" };
+
+    const norm = s => String(s || "").toLowerCase().replace(/[\s\W_]+/g, "");
+    let addedQ = 0;
+    await db.transaction("rw", [db.categories, db.positions, db.positionSkills, db.questions], async () => {
+      // 题目：title 归一化 + id 双重去重后追加
+      const locals = await db.questions.toArray();
+      const localIds = new Set(locals.map(q => q.id));
+      const localTitles = new Set(locals.map(q => norm(q.title)));
+      const newQuestions = remote.questions.filter(
+        q => q && !localIds.has(q.id) && !localTitles.has(norm(q.title))
+      );
+      if (newQuestions.length) {
+        await db.questions.bulkAdd(newQuestions);
+        addedQ += newQuestions.length;
+      }
+      // 分类：按 id 追加缺失的（空壳分类也能补齐树结构）
+      const localCatIds = new Set((await db.categories.toArray()).map(c => c.id));
+      const newCats = (remote.categories || []).filter(c => c && !localCatIds.has(c.id));
+      if (newCats.length) { await db.categories.bulkAdd(newCats); }
+      // 岗位：按 id 追加缺失的
+      const localPosIds = new Set((await db.positions.toArray()).map(p => p.id));
+      const newPositions = (remote.positions || []).filter(p => p && !localPosIds.has(p.id));
+      if (newPositions.length) {
+        await db.positions.bulkAdd(newPositions);
+        // 同步补岗位技能表（该岗位下无技能才补）
+        const skills = remote.positionSkills || [];
+        const localSkillKeys = new Set((await db.positionSkills.toArray()).map(s => s.positionId + ":" + s.categoryId));
+        const newSkills = skills.filter(s => s && !localSkillKeys.has(s.positionId + ":" + s.categoryId));
+        if (newSkills.length) await db.positionSkills.bulkAdd(newSkills);
+      }
+    });
+    await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
+    return { added: addedQ };
+  };
+
   /* ---------- 导出本地全量题库 ---------- */
   C.exportAll = async function () {
     const db = DB.db;
