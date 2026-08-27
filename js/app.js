@@ -2231,6 +2231,7 @@
       d.daily[today] = (d.daily[today] || 0) + 1;
       writeLocal(d);
       trackBaidu(location.hash || "/");
+      cfPost("/visit");   /* 上报全局访问到 Cloudflare Worker（fire-and-forget） */
     }
     function recordView(id) {
       if (id == null) return;
@@ -2239,6 +2240,7 @@
       d.views[k] = (d.views[k] || 0) + 1;
       writeLocal(d);
       trackBaidu("/question/" + id);
+      cfPost("/view", { id });   /* 上报题目浏览到 Cloudflare Worker（fire-and-forget） */
     }
     function getLocalStats() {
       const today = new Date().toISOString().slice(0, 10);
@@ -2249,8 +2251,12 @@
         .slice(0, 20);
       return { total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views };
     }
-    /* --- 可选 Cloudflare Worker（高级用户） --- */
-    const cfApi = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("stats_api") || "") : "");
+    /* --- 可选 Cloudflare Worker（2026-08-27 起已部署，默认启用） ---
+       默认地址指向本站官方 Worker（it-interview-stats.iti-interview.workers.dev）；
+       管理员仍可在系统设置里用自己的地址覆盖（localStorage.stats_api）。 */
+    const DEFAULT_STATS_API = "https://it-interview-stats.iti-interview.workers.dev";
+    const cfApi = () => (typeof localStorage !== "undefined"
+      ? (localStorage.getItem("stats_api") || DEFAULT_STATS_API) : DEFAULT_STATS_API);
     function cfEnabled() { return !!cfApi(); }
     function fetchWithTimeout(url, opts = {}, ms = 3000) {
       const ctrl = new AbortController();
