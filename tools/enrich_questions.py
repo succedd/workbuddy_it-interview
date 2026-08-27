@@ -77,6 +77,22 @@ def norm_title(s):
     return s
 
 
+# 模糊去重阈值：归一化标题相似度 ≥ 该值视为疑似重复，直接跳过（宁可漏收，不可重复）
+FUZZY_DUP_CUTOFF = float(os.environ.get("FUZZY_DUP_CUTOFF") or "0.85")
+
+
+def find_similar(nt, exist_norm):
+    """在现有题库中找与 nt 相似度最高的标题，返回 (标题, 相似度)；无匹配返回 None。"""
+    best, best_ratio = None, 0.0
+    for t in exist_norm:
+        if not t:
+            continue
+        r = difflib.SequenceMatcher(None, nt, t).ratio()
+        if r > best_ratio:
+            best, best_ratio = t, r
+    return (best, best_ratio) if best and best_ratio >= FUZZY_DUP_CUTOFF else None
+
+
 def load_published():
     with open(PUBLISHED, encoding="utf-8") as f:
         return json.load(f)
@@ -141,8 +157,13 @@ def build_question(item, next_id, now, cat_by_name, pos_by_name, exist_norm):
         raise ValueError("题目缺少 answer：%s" % title[:40])
     if not source:
         raise ValueError("题目缺少 source（权威出处）：%s" % title[:40])
-    if norm_title(title) in exist_norm:
+    nt = norm_title(title)
+    if nt in exist_norm:
         raise ValueError("与现有题目重复（标题归一化相同）：%s" % title[:40])
+    similar = find_similar(nt, exist_norm)
+    if similar:
+        raise ValueError("与现有题目疑似重复（相似度 %.2f）：%s ≈《%s》"
+                         % (similar[1], title[:30], similar[0][:30]))
 
     cat_id = resolve_category(item, cat_by_name)
     pos_ids, pos_names = resolve_positions(item, pos_by_name)
@@ -198,7 +219,11 @@ def process_batch(path, data, cat_by_name, pos_by_name, exist_norm, next_id, dry
 
 
 def write_published(data):
-    # 与线上一致：minified、ensure_ascii=False
+    # 与线上一致：minified、ensure_ascii=False。
+    # 每次真实合并都递增 version 并刷新 publishedAt —— 前端/编辑端据此感知「云端有更新」，
+    # 避免旧快照一直停留在访客本地。
+    data["version"] = int(data.get("version", 1)) + 1
+    data["publishedAt"] = int(time.time() * 1000)
     with open(PUBLISHED, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
 
