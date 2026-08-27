@@ -2369,5 +2369,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 
+  /* ---- 暴露给 account.js 等兄弟模块的内部函数（app.js 是 IIFE，默认不外泄） ---- */
+  App._internals = { $, setMain, route, renderTopbar, refreshVisitorStats };
   window.App = App;
 })();
