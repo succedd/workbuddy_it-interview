@@ -72,6 +72,7 @@
       if (sub === "import") return pageAdminImport();
       if (sub === "backup") return pageAdminBackup();
       if (sub === "settings") return pageAdminSettings();
+      if (sub === "users") return window.Account ? Account.renderAdminPage() : pageAdminDashboard();
       return pageAdminDashboard();
     }
     switch (r.parts[0]) {
@@ -84,6 +85,7 @@
       case "history": return pageHistory();
       case "practice": return pagePractice(r.q);
       case "mock": return pageMock();
+      case "account": return window.Account ? Account.renderLoginPage() : pageHome();
       default: return pageHome();
     }
   }
@@ -103,6 +105,7 @@
            <a href="#/admin/ai">${U.icon("sparkles")} AI 出题</a>
            <a href="#/admin/import">${U.icon("upload")} 批量导入</a>
            <a href="#/admin/backup">${U.icon("database")} 备份恢复</a>
+           <a href="#/admin/users">${U.icon("users")||U.icon("user")} 帐号管理</a>
            <a href="#/admin/settings">${U.icon("settings")||U.icon("user")} 系统设置</a>
            <div class="sep"></div>
            <a href="#" id="admin-logout">${U.icon("x")} 退出管理</a>
@@ -122,6 +125,7 @@
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
+        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} ${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
         ${adminHtml}
         ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
@@ -2353,6 +2357,7 @@
       setInterval(refreshVisitorStats, 60000);
       try { Cloud.initAuto(); } catch (e) { console.warn("autopub init error", e); }
       try { Backup.initAuto(); } catch (e) { console.warn("auto backup init error", e); }
+      try { Account.autoSyncIfDue(); } catch (e) { console.warn("account autosync error", e); }   // 登录用户静默云同步个人数据
     } catch (e) {
       console.error("init error", e);
       U.toast("页面初始化出错，请刷新重试", "error");
