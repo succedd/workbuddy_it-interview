@@ -196,6 +196,7 @@ node tools/gen-published.js
 - feat: **扩充流水线增强**——① 合并时自动递增 `published.json` 的 `version`/`publishedAt`，前端与编辑端可感知云端更新；② 模糊去重：归一化标题相似度 ≥0.85 判为疑似重复直接跳过，杜绝跨批次近似题；③ 新增 `tools/coverage_report.py` 覆盖度报告（各域题量、空叶子分类统计 → `tools/coverage.md`）；④ 自动化频率提升至每周一/三/五 10:00 三次，取材前参考覆盖度优先补空置分类。
 - fix: **云端同步不拉新**——`fetchRemote` 版本校验从 `===1` 放宽为正整数（兼容流水线递增 version）；线上快照补递增 `version`/`publishedAt` 触发全量访客重新同步。
 - feat: **编辑端自动增量吸收云端新题**——启动时自动拉云端快照，按 id + 标题归一化双重去重只追加本机缺失的题目/分类/岗位（不改动本地已有内容与收藏记录），同一快照只吸收一次；管理员无需再到设置页手动「从云端拉取」。手动全量覆盖按钮保留。
+- feat: **Cloudflare Worker 访问统计上线并默认接入**——部署 `it-interview-stats`（KV 绑定 STATS）至 `https://it-interview-stats.iti-interview.workers.dev`，提供全局访问计数、当日访问、访客国家/城市分布、热门题目榜；前端 Stats 模块内置该地址（开箱即用，管理员仍可在系统设置覆盖），首页访问与题目浏览自动上报，管理后台仪表盘显示地域分布饼图。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
