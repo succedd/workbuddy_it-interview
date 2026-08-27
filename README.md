@@ -178,14 +178,8 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+
 ### 2026-08-27
-- feat: **题库定期自动扩充流水线**——新增 `tools/enrich_questions.py`（批次校验 / 标题去重 / 分类·岗位名自动解析为 ID / 顺序 ID 自增 / `--dry`·`--all`·`--push` 推送 Pages 分支）、`tools/intake-plan.md`（权威来源白名单 + 21 域周轮换表）、`tools/batches/` 批次目录；首批 `2026-08-27-a.json` 入库 10 题（CAP/索引/三次握手/单例/HTTP 缓存/微服务/消息队列/事务隔离/进程线程/一致性哈希），题库总数 239 → 249。
-- feat: **定期自动化「题库定期自动扩充」**——按轮转表联网取材、合并、发布，实现用户提出的「定期自动抓取权威面试题并归档到各类别及岗位」。
-- feat: **扩充流水线增强**——① 合并时自动递增 `published.json` 的 `version`/`publishedAt`，前端与编辑端可感知云端更新；② 模糊去重：归一化标题相似度 ≥0.85 判为疑似重复直接跳过，杜绝跨批次近似题；③ 新增 `tools/coverage_report.py` 覆盖度报告（各域题量、空叶子分类统计 → `tools/coverage.md`）；④ 自动化频率提升至每周一/三/五 10:00 三次，取材前参考覆盖度优先补空置分类。
-- fix: **云端同步不拉新**——`fetchRemote` 版本校验从 `===1` 放宽为正整数（兼容流水线递增 version）；线上快照补递增 `version`/`publishedAt` 触发全量访客重新同步。
-- feat: **编辑端自动增量吸收云端新题**——启动时自动拉云端快照，按 id + 标题归一化双重去重只追加本机缺失的题目/分类/岗位（不改动本地已有内容与收藏记录），同一快照只吸收一次；管理员无需再到设置页手动「从云端拉取」。手动全量覆盖按钮保留。
-- feat: **Cloudflare Worker 访问统计上线并默认接入**——部署 `it-interview-stats`（KV 绑定 STATS）至 `https://it-interview-stats.iti-interview.workers.dev`，提供全局访问计数、当日访问、访客国家/城市分布、热门题目榜；前端 Stats 模块内置该地址（开箱即用，管理员仍可在系统设置覆盖），首页访问与题目浏览自动上报，管理后台仪表盘显示地域分布饼图。
-- feat: **用户帐号系统（D1）**——新增 D1 数据库 `it-interview-users` 绑定 Worker（binding `USERS`）：开放注册/登录/退出（PBKDF2-SHA256 10 万次迭代加盐哈希，Bearer token 会话 30 天，IP 限流防刷，首个注册用户自动成为管理员）；个人数据云同步——收藏、刷题历史、错题本按用户存储，登录自动合并云端与本机数据，换设备登录即恢复；顶部栏「登录」入口 → `#/account`；**管理员帐号管理页** `#/admin/users`：用户列表/搜索、禁用（即时踢下线）/启用、重置密码。密码字段永不返回前端。
 - fix: **恢复被帐号系统部署覆盖丢失的功能**（`55a15ec`，基于线上 release 基线 `b1aa1ba` 移植）：
   - **今日 5 题**——首页卡片按日期确定性抽样（FNV-1a + mulberry32）当天固定 5 题、次日自动更换，完成打勾、进度 x/5；
   - **随机一题**——侧边栏入口 + 首页 Hero「随机一题」按钮（`#/random` 随机跳转已发布题目）；
@@ -193,40 +187,45 @@ node tools/gen-published.js
   - **最近搜索下拉**——顶栏全局搜索、首页 Hero 搜索、题目列表筛选框聚焦时展示最近搜索（可删单条/清空）或热门搜索词，回车自动记入历史（localStorage `search_history`，上限 10 条）;
   - **搜索无结果建议**——题目列表空态显示「没有匹配的题目：xxx」+ 热门关键词一键重搜按钮；
   - **学习打卡热力图 & 继续上次**——首页基于本地统计渲染近 35 天打卡热力图与连续天数；详情页浏览自动记录「继续上次」恢复入口。
+- feat: **用户帐号系统（D1）**——新增 D1 数据库 `it-interview-users` 绑定 Worker（binding `USERS`）：开放注册/登录/退出（PBKDF2-SHA256 10 万次迭代加盐哈希，Bearer token 会话 30 天，IP 限流防刷，首个注册用户自动成为管理员）；个人数据云同步——收藏、刷题历史、错题本按用户存储，登录自动合并云端与本机数据，换设备登录即恢复；顶部栏「登录」入口 → `#/account`；**管理员帐号管理页** `#/admin/users`：用户列表/搜索、禁用（即时踢下线）/启用、重置密码。密码字段永不返回前端。
+- feat: **Cloudflare Worker 访问统计上线并默认接入**——部署 `it-interview-stats`（KV 绑定 STATS）至 `https://it-interview-stats.iti-interview.workers.dev`，提供全局访问计数、当日访问、访客国家/城市分布、热门题目榜；前端 Stats 模块内置该地址（开箱即用，管理员仍可在系统设置覆盖），首页访问与题目浏览自动上报，管理后台仪表盘显示地域分布饼图。
+- feat: **编辑端自动增量吸收云端新题**——启动时自动拉云端快照，按 id + 标题归一化双重去重只追加本机缺失的题目/分类/岗位（不改动本地已有内容与收藏记录），同一快照只吸收一次；管理员无需再到设置页手动「从云端拉取」。手动全量覆盖按钮保留。
+- fix: **云端同步不拉新**——`fetchRemote` 版本校验从 `===1` 放宽为正整数（兼容流水线递增 version）；线上快照补递增 `version`/`publishedAt` 触发全量访客重新同步。
+- feat: **扩充流水线增强**——① 合并时自动递增 `published.json` 的 `version`/`publishedAt`，前端与编辑端可感知云端更新；② 模糊去重：归一化标题相似度 ≥0.85 判为疑似重复直接跳过，杜绝跨批次近似题；③ 新增 `tools/coverage_report.py` 覆盖度报告（各域题量、空叶子分类统计 → `tools/coverage.md`）；④ 自动化频率提升至每周一/三/五 10:00 三次，取材前参考覆盖度优先补空置分类。
+- feat: **定期自动化「题库定期自动扩充」**——按轮转表联网取材、合并、发布，实现用户提出的「定期自动抓取权威面试题并归档到各类别及岗位」。
+- feat: **题库定期自动扩充流水线**——新增 `tools/enrich_questions.py`（批次校验 / 标题去重 / 分类·岗位名自动解析为 ID / 顺序 ID 自增 / `--dry`·`--all`·`--push` 推送 Pages 分支）、`tools/intake-plan.md`（权威来源白名单 + 21 域周轮换表）、`tools/batches/` 批次目录；首批 `2026-08-27-a.json` 入库 10 题（CAP/索引/三次握手/单例/HTTP 缓存/微服务/消息队列/事务隔离/进程线程/一致性哈希），题库总数 239 → 249。
 
 ### 2026-08-25
-- feat: 新增**标题查重提示**——手动新增/编辑题目保存时、AI 生成批量入库前，按标题规范化匹配（去空白、转小写、全半角标点归一化）扫描既有题库与本批次，命中即弹确认框列出冲突题目（ID / 标题 / 状态），取消可中止保存，仅提示不强制拦截（`js/app.js` 新增 `normTitleKey / findTitleDups / confirmTitleDups`）。批量导入（Excel/CSV）原有查重策略不变。
-- feat: 题目编辑器（题目正文 / 参考答案）支持**直接粘贴图片**——`Ctrl/Cmd+V` 粘贴剪贴板截图，自动压缩为 JPEG data URL（长边 ≤1400px、质量 0.85，超 500KB 自动降档），以 Markdown 图片插入光标处并即时预览；图片随题目保存、随题库发布同步到云端，所有访客可见。新增 `.md img` 自适应样式防止大图撑破布局（`js/app.js` + `css/style.css`）。
-- security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
-- docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
-- docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
 - docs: 新增 `cloudflare/部署指南.md`（注册 Cloudflare → 建 KV → deploy → 前端接入全流程），README 统计与部署章节同步指向。
+- docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
+- docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
+- security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
+- feat: 题目编辑器（题目正文 / 参考答案）支持**直接粘贴图片**——`Ctrl/Cmd+V` 粘贴剪贴板截图，自动压缩为 JPEG data URL（长边 ≤1400px、质量 0.85，超 500KB 自动降档），以 Markdown 图片插入光标处并即时预览；图片随题目保存、随题库发布同步到云端，所有访客可见。新增 `.md img` 自适应样式防止大图撑破布局（`js/app.js` + `css/style.css`）。
+- feat: 新增**标题查重提示**——手动新增/编辑题目保存时、AI 生成批量入库前，按标题规范化匹配（去空白、转小写、全半角标点归一化）扫描既有题库与本批次，命中即弹确认框列出冲突题目（ID / 标题 / 状态），取消可中止保存，仅提示不强制拦截（`js/app.js` 新增 `normTitleKey / findTitleDups / confirmTitleDups`）。批量导入（Excel/CSV）原有查重策略不变。
 
 ### 2026-08-24
-
-- feat: 自动发布——编辑端题目/分类/岗位增删改（含 AI 出题、批量导入，经 Dexie 表钩子全路径监听）停止 10 秒后自动推送 GitHub，失败自动重试，关页前未发布提醒，顶栏新增状态徽章（可关闭）。
-- feat: 本地数据加密云备份——新增 `js/backup.js`，发布 Token、AI 配置、管理员密码、统计配置、收藏、历史经 AES-256-GCM（PBKDF2 派生密钥）加密后备份到 `data/local-backup.json`，设置页支持设置备份密码、立即备份、凭密码一键恢复。
 - refactor: `cloud.js` 抽出通用 `putFile` 上传助手供题库发布与加密备份共用。
+- feat: 本地数据加密云备份——新增 `js/backup.js`，发布 Token、AI 配置、管理员密码、统计配置、收藏、历史经 AES-256-GCM（PBKDF2 派生密钥）加密后备份到 `data/local-backup.json`，设置页支持设置备份密码、立即备份、凭密码一键恢复。
+- feat: 自动发布——编辑端题目/分类/岗位增删改（含 AI 出题、批量导入，经 Dexie 表钩子全路径监听）停止 10 秒后自动推送 GitHub，失败自动重试，关页前未发布提醒，顶栏新增状态徽章（可关闭）。
 
 ### 2026-08-23
-- `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
-- `333a3c3` restore: 从旧浏览器 IndexedDB WAL 抢救恢复 126 道历史题目，题库总数 225 道。
-- `6fb7f71` 恢复 CNAME：旧浏览器数据导出完成，正式域名重新上线。
 - `37b0a2d` 添加 CNAME 文件，绑定正式域名 `it-interview.is-a.dev`。
+- `6fb7f71` 恢复 CNAME：旧浏览器数据导出完成，正式域名重新上线。
+- `333a3c3` restore: 从旧浏览器 IndexedDB WAL 抢救恢复 126 道历史题目，题库总数 225 道。
+- `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
 
 ### 2026-08-22
-- `a51d7f5` feat: 云端共享题库——访客自动同步 + 管理员一键发布到 GitHub。
-- `0fa80d2` feat: 集成百度统计。
-- `8a0af25` feat: 接入 Cloudflare Worker 访客统计，支持实时人数、地理分布、题目热度。
-- `a756d93` feat: 首次进入加载动效（进度条 + 代码雨 + IT 岗位名飘动）。
-- `6e47a4e` feat: 编辑题目技术分类改为可搜索组合框。
-- `1f210de` feat: 岗位支持细分方向（direction）。
-- `172f920` feat: 岗位与分类/题目关联改造。
 - 大量 AI 出题体验优化：实时日志、进度动画、生成提速、JSON 解析健壮化、取消按钮等。
+- `172f920` feat: 岗位与分类/题目关联改造。
+- `1f210de` feat: 岗位支持细分方向（direction）。
+- `6e47a4e` feat: 编辑题目技术分类改为可搜索组合框。
+- `a756d93` feat: 首次进入加载动效（进度条 + 代码雨 + IT 岗位名飘动）。
+- `8a0af25` feat: 接入 Cloudflare Worker 访客统计，支持实时人数、地理分布、题目热度。
+- `0fa80d2` feat: 集成百度统计。
+- `a51d7f5` feat: 云端共享题库——访客自动同步 + 管理员一键发布到 GitHub。
 
 ### 2026-08-21
 - `3c7c807` feat: IT 面试题库管理系统纯静态站点完整实现。
-
 ## 技术栈
 
 - 原生 HTML5 / CSS3 / ES6+（无框架）
