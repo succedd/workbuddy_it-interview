@@ -31,7 +31,29 @@
   async function call(method, path, body) {
     const h = { "Content-Type": "application/json" };
     if (A.getToken()) h["Authorization"] = "Bearer " + A.getToken();
-    const r = await fetch(apiBase() + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined });
+    /* 带 12s 超时与 1 次自动重试：workers.dev 在部分网络下丢包/超时（Failed to fetch），
+       重试通常能成功；仍失败时抛出可读错误而非裸 TypeError */
+    const once = async () => {
+      const ctl = ("AbortController" in window) ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, 12000) : null;
+      try {
+        return await fetch(apiBase() + path, {
+          method, headers: h, body: body ? JSON.stringify(body) : undefined, signal: ctl && ctl.signal,
+        });
+      } finally { if (timer) clearTimeout(timer); }
+    };
+    let r;
+    try {
+      r = await once();
+    } catch (e1) {
+      await new Promise(res => setTimeout(res, 800));   // 稍候重试一次
+      try { r = await once(); }
+      catch (e2) {
+        const err = new Error("网络连接失败（API 暂不可达）：请检查网络后点「刷新」重试；若持续失败，可能需要切换网络/代理");
+        err.network = true;
+        throw err;
+      }
+    }
     let j = null; try { j = await r.json(); } catch (_) {}
     if (!r.ok) { const e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
     return j;
@@ -231,7 +253,13 @@
           };
         });
       } catch (e) {
-        tb.innerHTML = `<tr><td colspan="7">加载失败：${U.esc(e.message)}</td></tr>`;
+        tb.innerHTML = `<tr><td colspan="7">
+          <div style="padding:10px 4px">
+            <span class="tag tag-danger">加载失败</span> ${U.esc(e.message || "未知错误")}
+            <div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="u-retry">${U.icon("refresh")} 重试</button></div>
+          </div></td></tr>`;
+        const rb = tb.querySelector("#u-retry");
+        if (rb) rb.onclick = () => { tb.innerHTML = '<tr><td colspan="7">加载中…</td></tr>'; load(q); };
       }
     };
     $("#u-refresh").onclick = () => load("");
