@@ -25,9 +25,7 @@
 - **仪表盘**：题目数量、分类分布、岗位覆盖、访问统计等图表。
 - **题目管理**：增删改查题目，字段包含标题、题干、答案、难度、题型、分类、适用岗位、工作年限、标签。
 - **标题查重提示**：新增/编辑题目保存时、AI 批量入库前，自动按**标题规范化匹配**（忽略大小写、空白与全半角标点）扫描既有题库与本批次，发现疑似重复即弹窗列出冲突题目（ID、标题、状态），确认后才入库——只提示不拦截，避免误存重复题。
-- **编辑器支持直接粘贴图片**：在「题目正文」「参考答案」编辑框中直接 `Ctrl/Cmd+V` 粘贴截图，自动压缩（长边 ≤1400px、JPEG 质量 0.85，超 500KB 自动降档重压）后插入光标处，右侧预览即时可见。单图压缩后上限 500KB，超限会提示。Markdown 内容区图片自适应（`max-width:100%`）。
-- **图片自动外置**（v20260826b）：配置发布 Token 的编辑端，粘贴的图片自动上传为仓库独立文件 `assets/q/<名>.jpg`，Markdown 以 URL 引用（不再内嵌 base64）——`data/published.json` 不再随图片膨胀，图片可被浏览器 CDN 缓存。上传失败自动回退内嵌 data URL，不影响编辑流程。
-- **存量图片一键迁移**（v20260826b）：「系统设置 → 题目图片外置」可扫描题库中所有内嵌 base64 图片并显示数量与体积，一键批量上传到 `assets/q/` 并替换对应题目的 Markdown 引用；支持中断续跑（已迁移自动跳过），完成后随自动发布上线。
+- **编辑器支持直接粘贴图片**：在「题目正文」「参考答案」编辑框中直接 `Ctrl/Cmd+V` 粘贴截图，自动压缩（长边 ≤1400px、JPEG 质量 0.85，超 500KB 自动降档重压）并以 Markdown 图片（data URL）插入光标处，右侧预览即时可见；图片随题目保存，并随题库发布到 `data/published.json`，所有访客可见。单图压缩后上限 500KB，超限会提示。Markdown 内容区图片自适应（`max-width:100%`）。
 - **分类管理**：维护技术分类树。
 - **岗位管理**：维护岗位体系与岗位方向。
 - **AI 出题**：可配置 OpenAI API Key，通过大模型按分类/岗位/难度批量生成题目。
@@ -48,7 +46,7 @@
 - **数据保护**：本机已有历史数据但从未同步过的用户，不会自动覆盖，会提示手动同步（避免误删个人数据）。
 
 ### Token 安全（发布 PAT 最小权限原则）
-- **代码实际用到的 API 只有一个**：GitHub Contents API 的 `GET`（取文件 sha 做乐观锁）和 `PUT`（写入 `data/published.json` / `data/local-backup.json` / `assets/q/*` 图片外置），无任何 DELETE 或跨仓库操作。
+- **代码实际用到的 API 只有一个**：GitHub Contents API 的 `GET`（取文件 sha 做乐观锁）和 `PUT`（写入 `data/published.json` / `data/local-backup.json`），无任何 DELETE 或跨仓库操作。
 - **推荐 Token 配置**（Fine-grained PAT）：
   - Repository access：**Only select repositories** → 只选 `workbuddy_it-interview`
   - Repository permissions：只开 **Contents: Read and Write**，其余（Administration / Issues / PR / Workflows 等）一律 No access
@@ -63,6 +61,28 @@
   - 功能：全局访问计数、当日访问、访客国家地理分布、热门城市、热门题目。
   - 代码在 `cloudflare/worker.js`，需绑定 KV `STATS`。
   - 前端对接已就绪（设置页「Cloudflare Worker」填接口地址即启用）；**部署步骤见 [`cloudflare/部署指南.md`](cloudflare/部署指南.md)**。
+
+## 题库自动扩充（定期取材）
+
+为解决「题量偏少、人工补充慢」的问题，项目内置一套**定期自动扩充流水线**：按轮转计划从权威来源取材、整理成无错误的结构化面试题，自动合并进 `data/published.json` 并发布到线上。
+
+- **取材来源白名单**：仅限 CS-Notes、JavaGuide、小林coding、各技术官方文档等权威、可溯源站点（`tools/intake-plan.md`），每题必须带真实 `source` URL，**禁止无出处编造**。
+- **轮转计划**：21 个顶层技术域按周轮换（`ISO 周号 % 21`），优先填满 235 个空叶子分类，再对已有分类做深度补充；每批 6–10 题，难度初中高搭配。
+- **合并引擎 `tools/enrich_questions.py`**：
+  - 批次文件用「分类名 / 岗位名」引用，脚本自动解析为 `categoryId` / `positionIds`；名字写错会给出近似建议并跳过该题，不会脏写；
+  - 严格字段校验 + 按归一化标题（去空白/小写/全半角标点）去重，保证「整理无错误」；
+  - ID 顺序自增（`max(id)+1`），不与现有题目冲突；
+  - 支持 `--dry` 只校验不落盘、`--all` 批量处理、`--push` 通过 GitHub Contents API（与线上编辑端同源）推到 Pages 源分支（`release,main` 双写）。
+- **定期自动化**：WorkBuddy 定时任务「题库定期自动扩充」每周一 10:00 运行——下载线上最新题库 → 按轮转表联网取材 → 写批次 → 校验合并 → 提交并发布（配置 `GH_PUBLISH_TOKEN` 环境变量后自动推送到 `main`/`release`）。
+- **手动运行**：`python tools/enrich_questions.py tools/batches/2026-08-27-a.json`
+
+> 说明：流水线只改动 `data/published.json`；真正的「发布到线上」由 GitHub Pages（源分支 `main`）分发，访客下次打开即见新题。若未配置 `GH_PUBLISH_TOKEN` 且无 git 凭据，自动化会保留本地提交并提示手动推送 / 用编辑器发布。
+
+### 自动扩充记录
+
+| 日期 | 批号 | 技术域 | 新增题数 |
+|------|------|--------|----------|
+| 2026-08-27 | 2026-08-27-a | 分布式 / 数据库 / 网络 / 设计模式 | +10 |
 
 ## 部署与自定义域名
 
@@ -100,7 +120,10 @@
 │   └── utils.js            # 通用工具函数与图标
 ├── css/                    # 样式文件
 ├── tools/
-│   └── gen-published.js    # 由 seed.js 生成初始 published.json
+│   ├── gen-published.js    # 由 seed.js 生成初始 published.json
+│   ├── enrich_questions.py # 题库自动扩充流水线：校验/去重/归并批次到 published.json
+│   ├── intake-plan.md      # 取材来源白名单 + 21 域轮转表（驱动定期自动化）
+│   └── batches/            # 各批次题目 JSON（YYYY-MM-DD-a.json）
 └── cloudflare/
     ├── worker.js           # 访问统计 Cloudflare Worker
     └── wrangler.toml       # Wrangler 配置示例
@@ -146,46 +169,11 @@ node tools/gen-published.js
 **不需要。**
 
 - 管理员密码是**本地功能**，只控制当前浏览器能否进入管理后台。
-- 普通访客打开网站后，只要第一次拉取到云端 `data/published.json`，就能直接浏览 225 道题、搜索、刷题、收藏。
+- 普通访客打开网站后，只要第一次拉取到云端 `data/published.json`，就能直接浏览 200+ 道题、搜索、刷题、收藏。
 - 每个浏览器都有自己独立的管理员密码（以及收藏、历史等个人数据），互不影响。
 - 只有当你想"编辑题库并发布到 GitHub"时，才需要配置 GitHub Token（这个 Token 也只存在当前浏览器 localStorage）。
 
 ## 更新日志
-
-### 2026-08-27
-
-- perf/rel: **第三方库本地托管**——Dexie / Marked / highlight.js / Fuse.js / DOMPurify 全部改为项目内 `vendor/` 本地文件引用（原有 jsdelivr CDN 6 处引用移除），国内访问不再受海外 CDN 抖动影响，站点渲染不再因「Dexie 未加载」整页白屏。
-- sec: **Markdown 渲染防 XSS**——题目/答案 Markdown 经 `marked` 解析后由 DOMPurify 消毒（`js/utils.js` `U.md`），消除注入风险。
-- docs: 缓存版本号升级至 `?v=20260827a`。
-
-### 2026-08-26
-
-- perf: **首屏提速**——启动动效分级，仅首次访问完整展示（约 2s），回访快速通过（约 450ms，localStorage 记忆）；云端题库拉取改走 HTTP 缓存（ETag/304），去掉 `cache:"no-store"` + 时间戳强刷，回访不再每次全量重下 546KB 的 `published.json`；云端同步移出启动阻塞路径改为后台执行，拉到新版后原地刷新当前页（`js/app.js` Boot/init + `js/cloud.js` fetchRemote）。
-- fix: **移动端顶栏修复**——logo 在窄屏换行成三行的问题（`.brand` 补 `white-space:nowrap; flex-shrink:0`）；顶栏搜索入口移入侧边抽屉（新增 `.drawer-search`，回车搜索可用），本机访问计数（`.vis-stats`）小屏隐藏（`css/style.css` + `css/responsive.css`）。
-- feat: **空分类灰态**——首页 0 题的技术分类卡片半透明 + 「即将上线」角标，文案改为「题目录入中」，不再以空卡片误导访客。
-- feat: **图片自动外置**——配置发布 Token 的编辑端，粘贴图片自动上传为仓库独立文件 `assets/q/<名>.jpg`，Markdown 以 URL 引用，`data/published.json` 不再随贴图膨胀且图片可被浏览器缓存；上传失败自动回退内嵌 data URL，非编辑端行为不变。`putFile` 扩展支持 Uint8Array 二进制（分块转 base64 防栈溢出）（`js/cloud.js` + `js/app.js`）。
-- feat: **存量图片一键迁移**——「系统设置 → 题目图片外置」支持扫描题库内嵌 base64 图片（数量/体积统计）并批量迁移为 `assets/q/` 文件 + URL 引用；中断可续跑（已迁移自动跳过），完成后随自动发布上线。
-- docs: README 功能清单、Token 安全（API 用途新增 `assets/q/*` 图片写入）章节同步更新；缓存版本号升级至 `?v=20260826b`。
-
-- feat: **键盘快捷键刷题**——题目详情页 `←`/`→` 切换上/下一题、空格显示/收起答案、`S` 收藏；输入框聚焦或弹窗打开时自动失效，路由切换即注销，无泄漏（`js/app.js` setPageKeys）。
-- feat: **代码块一键复制**——Markdown 渲染的所有代码块右上角悬浮复制按钮，成功后按钮短暂变「已复制」（`js/utils.js` addCodeCopy）。
-- feat: **图片灯箱预览**——题目内容里的图片点击放大全屏预览，Esc / 点击遮罩关闭（#main 事件委托，无需逐图绑定）。
-- feat: **继续上次刷题**——首页新增「📖 继续上次」恢复卡片，展示最近浏览的题目并可一键跳回（localStorage 记忆，关闭浏览器也有效）。
-- perf: **echarts / xlsx 按需懒加载**——两大库（合计约 1.9MB）不再随首屏全量下载：进入岗位详情/管理仪表盘才加载 echarts，Excel 导入/导出/模板下载时才加载 xlsx（`js/utils.js` 新增 `loadScript` 单例加载器），首屏请求数 -2、传输量显著下降。
-- fix: **百度统计 TID 双硬编码统一**——`app.js` 内置旧站点 ID 与 `index.html` 当前站点 ID 不一致导致 PV 可能分裂统计，现统一为同一 ID。
-- fix: **管理菜单监听器泄漏**——管理员下拉菜单的 document 点击收起处理由每次 `renderTopbar()` 重复注册改为全局一次性绑定，长会话多页切换不再累积监听器。
-- seo: 页面标题去「管理系统」改为面向访客的描述；新增 OG 标签（og:title/description/url/site_name）、robots.txt 与 sitemap.xml；缓存版本号升级至 `?v=20260826d`。
-
-- feat: **每日 5 题**——首页「🎯 今日 5 题」卡片：按日期种子确定性抽取 5 道已发布题目（当天固定、次日自动更换），浏览即打勾、进度 x/5、一键从未完成的第一题开始刷。
-- feat: **错题重练（艾宾浩斯）**——题目详情新增「不太会」按钮，刷题练习标「不会/不熟悉」自动入本；新页面 `#/review` 按记忆曲线排期：5分钟 → 30分钟 → 12小时 → 1天 → 2天 → 4天 → 7天 → 15天，「会了」拉长间隔、「还不会」5 分钟后重来；侧边栏实时显示待复习角标；旧薄弱题本记录自动纳入排期；随加密云备份同步。
-- feat: **学习打卡**——首页「🔥 学习打卡」卡片：连续打卡天数、累计天数、最近 35 天热力图（打开即打卡）。
-- docs: 缓存版本号升级至 `?v=20260826e`。
-
-- feat: **搜索历史与热词**——顶部、首页、抽屉三处搜索框聚焦即弹出面板：显示最近搜索（单条删除 ×、一键清空），无历史时展示热门关键词，点一下直接搜。
-- feat: **随机一题**——侧边栏新增「随机一题」，首页搜索框旁和题目列表工具条也有入口，一键跳到任意已发布题目，适合碎片时间随手练。
-- feat: **标签点击即搜**——题目卡片与详情页的技术标签变为可点击，一点即搜同标签下的全部题目。
-- feat: **空结果智能建议**——搜索无结果时给出更短关键词提示、热门标签快捷入口、「随机来一题」与「清除筛选」按钮。
-- docs: 缓存版本号升级至 `?v=20260826f`。
 
 ### 2026-08-24
 
@@ -200,6 +188,10 @@ node tools/gen-published.js
 - docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
 - docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
 - docs: 新增 `cloudflare/部署指南.md`（注册 Cloudflare → 建 KV → deploy → 前端接入全流程），README 统计与部署章节同步指向。
+
+### 2026-08-27
+- feat: **题库定期自动扩充流水线**——新增 `tools/enrich_questions.py`（批次校验 / 标题去重 / 分类·岗位名自动解析为 ID / 顺序 ID 自增 / `--dry`·`--all`·`--push` 推送 Pages 分支）、`tools/intake-plan.md`（权威来源白名单 + 21 域周轮换表）、`tools/batches/` 批次目录；首批 `2026-08-27-a.json` 入库 10 题（CAP/索引/三次握手/单例/HTTP 缓存/微服务/消息队列/事务隔离/进程线程/一致性哈希），题库总数 239 → 249。
+- feat: **定期自动化「题库定期自动扩充」**——每周一 10:00 按轮转表联网取材、合并、发布，实现用户提出的「定期自动抓取权威面试题并归档到各类别及岗位」。需配置 `GH_PUBLISH_TOKEN`（Fine-grained PAT，仅本仓库 Contents 读写）以自动推送到 `main`/`release`。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
