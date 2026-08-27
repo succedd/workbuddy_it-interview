@@ -197,6 +197,7 @@ node tools/gen-published.js
 - fix: **云端同步不拉新**——`fetchRemote` 版本校验从 `===1` 放宽为正整数（兼容流水线递增 version）；线上快照补递增 `version`/`publishedAt` 触发全量访客重新同步。
 - feat: **编辑端自动增量吸收云端新题**——启动时自动拉云端快照，按 id + 标题归一化双重去重只追加本机缺失的题目/分类/岗位（不改动本地已有内容与收藏记录），同一快照只吸收一次；管理员无需再到设置页手动「从云端拉取」。手动全量覆盖按钮保留。
 - feat: **Cloudflare Worker 访问统计上线并默认接入**——部署 `it-interview-stats`（KV 绑定 STATS）至 `https://it-interview-stats.iti-interview.workers.dev`，提供全局访问计数、当日访问、访客国家/城市分布、热门题目榜；前端 Stats 模块内置该地址（开箱即用，管理员仍可在系统设置覆盖），首页访问与题目浏览自动上报，管理后台仪表盘显示地域分布饼图。
+- feat: **用户帐号系统（D1）**——新增 D1 数据库 `it-interview-users` 绑定 Worker（binding `USERS`）：开放注册/登录/退出（PBKDF2-SHA256 10 万次迭代加盐哈希，Bearer token 会话 30 天，IP 限流防刷，首个注册用户自动成为管理员）；个人数据云同步——收藏、刷题历史、错题本按用户存储，登录自动合并云端与本机数据，换设备登录即恢复；顶部栏「登录」入口 → `#/account`；**管理员帐号管理页** `#/admin/users`：用户列表/搜索、禁用（即时踢下线）/启用、重置密码。密码字段永不返回前端。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
