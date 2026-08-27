@@ -56,63 +56,7 @@
 
   function clearCharts() { charts.forEach(c => { try { c.dispose(); } catch (e) {} }); charts = []; }
 
-  /* 页面级键盘快捷键：每次路由切换自动清理，避免监听器泄漏 */
-  let pageKeyHandler = null;
-  function setPageKeys(handler) {
-    if (pageKeyHandler) document.removeEventListener("keydown", pageKeyHandler);
-    pageKeyHandler = handler || null;
-    if (handler) document.addEventListener("keydown", handler);
-  }
-  function typingInField(e) {
-    const t = e.target;
-    return !!(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable));
-  }
-
-  /* ---- 搜索与发现：历史记录 / 热词下拉 ---- */
-  const SH_KEY = "search_history";
-  const HOT_TERMS = ["Redis", "MySQL 索引", "消息队列", "JVM", "TCP 三次握手", "分布式事务", "操作系统", "算法"];
-  function shGet() { try { return JSON.parse(localStorage.getItem(SH_KEY) || "[]"); } catch (e) { return []; } }
-  function shPush(term) {
-    const t = (term || "").trim(); if (!t) return;
-    const list = shGet().filter(x => x.q !== t);
-    list.unshift({ q: t, at: Date.now() });
-    try { localStorage.setItem(SH_KEY, JSON.stringify(list.slice(0, 10))); } catch (e) {}
-  }
-  function attachHistory(input, onGo) {
-    if (!input) return;
-    let dd = null;
-    const close = () => { if (dd) { dd.remove(); dd = null; } };
-    const open = () => {
-      close();
-      const hist = shGet();
-      dd = document.createElement("div");
-      dd.className = "search-dd";
-      let h;
-      if (hist.length) {
-        h = `<div class="sd-head"><span>最近搜索</span><button type="button" class="sd-clear">清空</button></div>`
-          + hist.map(x => `<div class="sd-item" data-q="${U.esc(x.q)}"><span class="sd-ic">${U.icon("history")}</span><span class="sd-q">${U.esc(x.q)}</span><button type="button" class="sd-del" data-del="${U.esc(x.q)}" title="删除这条">×</button></div>`).join("");
-      } else {
-        h = `<div class="sd-head"><span>热门搜索</span></div><div class="sd-hot">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-q="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>`;
-      }
-      dd.innerHTML = h;
-      input.parentNode.appendChild(dd);
-      dd.addEventListener("click", (e) => {
-        const del = e.target.closest(".sd-del");
-        if (del) { e.stopPropagation(); localStorage.setItem(SH_KEY, JSON.stringify(shGet().filter(x => x.q !== del.dataset.del))); open(); return; }
-        if (e.target.closest(".sd-clear")) { localStorage.removeItem(SH_KEY); open(); return; }
-        const it = e.target.closest("[data-q]");
-        if (it && it.dataset.q != null) { input.value = it.dataset.q; close(); onGo(it.dataset.q); }
-      });
-    };
-    input.addEventListener("focus", open);
-    input.addEventListener("input", close);
-    input.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-    /* 点击别处收起 */
-    document.addEventListener("click", (e) => { if (dd && !e.target.closest(".search-dd") && e.target !== input) close(); });
-  }
-
   async function route() {
-    setPageKeys(null);
     clearCharts();
     const r = parseHash();
     renderSidebar(r);
@@ -139,22 +83,12 @@
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
       case "practice": return pagePractice(r.q);
-      case "review": return pageReview();
-      case "random": {
-        const pool = Services.questions.filter(x => x.status === "published");
-        return pool.length ? App.go("/question/" + pool[Math.floor(Math.random() * pool.length)].id) : pageHome();
-      }
       case "mock": return pageMock();
       default: return pageHome();
     }
   }
 
   /* ============================ 顶部栏 ============================ */
-  /* 管理员下拉菜单：点击空白处收起（只绑定一次，修复路由切换导致的监听器累积泄漏） */
-  document.addEventListener("click", (e) => {
-    const m = document.getElementById("admin-menu");
-    if (m && !e.target.closest("#admin-menu") && !e.target.closest("#admin-btn")) m.style.display = "none";
-  });
   function renderTopbar() {
     const theme = App.getTheme();
     const themeIcon = theme === "dark" ? "sun" : theme === "system" ? "monitor" : "moon";
@@ -189,17 +123,16 @@
         <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         ${adminHtml}
-        ${`<span class="vis-chip vis-stats" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
+        ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
-    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
-    attachHistory(gs, term => App.go("/questions?q=" + encodeURIComponent(term)));
+    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
     $("#theme-btn").onclick = cycleTheme;
     $("#menu-toggle").onclick = () => { document.body.classList.toggle("drawer-open"); };
     if (Auth.isAdmin()) {
       const ab = $("#admin-btn"); const menu = $("#admin-menu");
       ab.onclick = (e) => { e.stopPropagation(); menu.style.display = menu.style.display === "none" ? "block" : "none"; };
-      /* 收起逻辑已改为全局一次性绑定，避免每次路由切换重复注册监听器 */
+      document.addEventListener("click", () => { menu.style.display = "none"; });
       $("#admin-logout").onclick = (e) => { e.preventDefault(); Auth.logout(); U.toast("已退出管理员模式", "info"); renderTopbar(); renderSidebar(parseHash()); };
     } else {
       $("#admin-login-btn").onclick = openAdminLogin;
@@ -213,15 +146,12 @@
       `<a class="side-nav-item ${active ? "active" : ""}" href="${href}">${U.icon(icon)}<span>${label}</span></a>`;
     const p0 = r.parts[0] || "home";
     let html = `
-      <div class="drawer-search"><span class="icon">${U.icon("search")}</span><input id="drawer-search-input" type="text" placeholder="搜索题目、技术、岗位…" /></div>
       <div class="nav-section-title">导航</div>
       ${navItem("#/", "home", "首页", p0 === "home")}
       ${navItem("#/category", "layers", "技术体系", p0 === "category")}
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
       ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
-      ${navItem("#/random", "dice", "随机一题", p0 === "random")}
-      ${navItem("#/review", "alert", "错题重练" + (App.reviewDue ? " (" + App.reviewDue + ")" : ""), p0 === "review")}
       ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
       <div class="nav-section-title">技术分类</div>
@@ -234,12 +164,6 @@
         ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
     }
     sidebar.innerHTML = html;
-    const dsiGo = (term) => { term = (term || "").trim(); if (!term) return; document.body.classList.remove("drawer-open"); shPush(term); App.go("/questions?q=" + encodeURIComponent(term)); };
-    const dsi = $("#drawer-search-input");
-    if (dsi) {
-      dsi.addEventListener("keydown", e => { if (e.key === "Enter") dsiGo(dsi.value); });
-      attachHistory(dsi, dsiGo);
-    }
     $$("#side-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
         if (e.target.closest(".twist")) {
@@ -274,7 +198,7 @@
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
-    const tags = (q.tags || []).slice(0, 4).map(t => `<span class="tag tag-link" data-tag="${U.esc(t)}" title="点击搜索该标签">${U.esc(t)}</span>`).join("");
+    const tags = (q.tags || []).slice(0, 4).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const pos = (q.positionNames || []).slice(0, 3).map(p => `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(p)}'">${U.esc(p)}</span>`).join("");
     return `<a class="card card-hover q-card" href="#/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
@@ -301,43 +225,6 @@
     U.highlightAll(main);
   }
 
-  /* ============================ 今日5题 & 学习打卡 ============================ */
-  function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
-  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  /* 今日5题：以日期字符串为种子的确定性抽样——当天所有人/全程固定，次日自动更换 */
-  function todayFive() {
-    const pool = Services.questions.filter(q => q.status === "published").map(q => q.id);
-    const dk = dateKey();
-    let h = 2166136261;
-    for (let i = 0; i < dk.length; i++) { h ^= dk.charCodeAt(i); h = Math.imul(h, 16777619); }
-    const rnd = mulberry32(h >>> 0);
-    const arr = pool.slice();
-    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
-    return arr.slice(0, Math.min(5, arr.length));
-  }
-  function dailyDone() { try { return JSON.parse(localStorage.getItem("daily_done_" + dateKey()) || "[]"); } catch (e) { return []; } }
-  function markDailyDone(id) {
-    const five = todayFive();
-    if (five.indexOf(Number(id)) < 0 && five.indexOf(id) < 0) return false;
-    const done = dailyDone(); const v = Number(id);
-    if (done.indexOf(v) < 0) { done.push(v); localStorage.setItem("daily_done_" + dateKey(), JSON.stringify(done)); }
-    return true;
-  }
-  /* 打卡：基于本地统计的每日访问记录推导连续天数与热力图 */
-  function streakInfo() {
-    const st = Stats.getLocalStats(); const daily = st.daily || {};
-    const total = Object.keys(daily).length;
-    const has = k => !!daily[k];
-    let streak = 0;
-    const d = new Date();
-    if (!has(dateKey(d))) d.setDate(d.getDate() - 1);
-    while (has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1); }
-    const cells = [];
-    const c = new Date(); c.setDate(c.getDate() - 34);
-    for (let i = 0; i < 35; i++) { const k = dateKey(c); cells.push({ k, n: daily[k] || 0 }); c.setDate(c.getDate() + 1); }
-    return { streak, total, cells };
-  }
-
   /* ============================ 首页 ============================ */
   async function pageHome() {
     const stats = await Services.stats();
@@ -346,57 +233,14 @@
     const hotTags = ["Java", "MySQL", "Redis", "Spring Boot", "Vue3", "React", "Docker", "Kubernetes", "TCP", "算法", "Python", "AI大模型"];
     const recent = stats.recent.slice(0, 6);
     const best = Services.questions.slice().sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)).slice(0, 6);
-    const catCards = tree.map(c => {
-      const empty = !c.count;
-      return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
-        ${empty ? `<span class="soon-chip">即将上线</span>` : ""}
+    const catCards = tree.map(c => `<a class="card card-hover" href="#/category?cat=${c.id}" style="text-decoration:none">
         <div style="font-size:24px">${U.esc(c.icon || "📁")}</div>
         <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
-        <div class="muted" style="font-size:12px">${empty ? "题目录入中" : c.count + " 题 · " + (c.era || "")}</div>
-      </a>`;
-    }).join("");
+        <div class="muted" style="font-size:12px">${c.count} 题 · ${c.era || ""}</div>
+      </a>`).join("");
     const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
-    /* —— 今日5题 & 打卡卡数据 —— */
-    const five = todayFive(); const doneSet = dailyDone();
-    const fiveLeft = five.filter(id => doneSet.indexOf(id) < 0);
-    const qById = id => Services.questions.find(x => x.id === id);
-    let fiveHtml = "";
-    if (five.length) {
-      const rows = five.map(id => {
-        const q = qById(id); if (!q) return "";
-        const ok = doneSet.indexOf(id) >= 0;
-        return `<a href="#/question/${id}" style="text-decoration:none;display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--border)">
-          <span>${ok ? "✅" : "⬜"}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`;
-      }).join("");
-      fiveHtml = `<div class="card" style="padding:16px 18px">
-        <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🎯</span><b style="margin-left:8px">今日 5 题</b>
-          <span class="tag ${fiveLeft.length ? "tag-primary" : "tag-success"}" style="margin-left:auto">${doneSet.filter(id => five.indexOf(id) >= 0).length}/${five.length}</span></div>
-        <div class="daily-list">${rows}</div>
-        ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="#/question/${fiveLeft[0]}">开始刷题 →</a>`
-                          : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
-      </div>`;
-    }
-    const sk = streakInfo();
-    const heatHtml = sk.cells.map(c => `<span class="heat-cell h${c.n === 0 ? 0 : c.n <= 2 ? 1 : c.n <= 4 ? 2 : c.n <= 8 ? 3 : 4}" title="${c.k} · ${c.n} 次"></span>`).join("");
-    const streakHtml = `<div class="card" style="padding:16px 18px">
-      <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🔥</span><b style="margin-left:8px">学习打卡</b>
-        <span class="muted" style="margin-left:auto;font-size:12px">累计 ${sk.total} 天</span></div>
-      <div style="font-size:26px;font-weight:700;color:#f59e0b">连续 ${sk.streak} 天</div>
-      <div class="heat-grid" style="margin-top:10px">${heatHtml}</div>
-      <div class="muted" style="font-size:11px;margin-top:6px">最近 35 天 · 打开即打卡</div>
-    </div>`;
-    let resumeHtml = "";
-    try {
-      const lq = JSON.parse(localStorage.getItem("last_question") || "null");
-      if (lq && lq.id && lq.title && Services.questions.some(x => x.id === lq.id)) {
-        resumeHtml = `<a class="card card-hover" href="#/question/${lq.id}" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px 18px">
-          <span style="font-size:22px">📖</span>
-          <span style="flex:1;min-width:0"><b>继续上次</b><span class="muted" style="margin-left:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:70%;vertical-align:bottom">${U.esc(lq.title)}</span></span>
-          <span class="tag tag-primary">继续 →</span></a>`;
-      }
-    } catch (e) {}
     setMain(`
       <section class="hero">
         <h1>IT 面试题库管理系统</h1>
@@ -404,7 +248,6 @@
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
-          <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
@@ -415,9 +258,6 @@
         <div class="stat"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></div>
         <div class="stat ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></div>
       </section>
-
-      ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
-      ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>
@@ -433,10 +273,8 @@
 
       <div class="note" style="margin-top:24px">提示：本项目为纯静态本地版，所有数据保存在当前浏览器（IndexedDB）。首次使用可在「系统设置」配置 AI（DeepSeek Harness）以启用智能出题。管理员密码仅用于本机权限隔离，非服务端安全认证。</div>
     `);
-    const heroGo = (v) => { v = (v || "").trim(); if (!v) return; shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); };
-    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter") heroGo(e.target.value); });
-    $("#hero-go").onclick = () => heroGo($("#hero-search").value);
-    attachHistory($("#hero-search"), heroGo);
+    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) App.go("/questions?q=" + encodeURIComponent(e.target.value.trim())); });
+    $("#hero-go").onclick = () => { const v = $("#hero-search").value.trim(); if (v) App.go("/questions?q=" + encodeURIComponent(v)); };
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
   }
@@ -600,15 +438,11 @@
         <a class="btn" href="#/questions?posid=${p.id}">查看全部题目</a>
       </div>
     `, () => {
-      /* echarts 按需加载：进入岗位页才拉取图表库 */
-      U.loadScript("echarts", U.ECHARTS_URL).catch(() => {}).then(() => {
-        if (!window.echarts || !document.getElementById("pos-chart")) return;
-        const chart = echarts.init($("#pos-chart"));
-        charts.push(chart);
-        chart.setOption({
-          tooltip: { trigger: "item" },
-          series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
-        });
+      const chart = echarts.init($("#pos-chart"));
+      charts.push(chart);
+      chart.setOption({
+        tooltip: { trigger: "item" },
+        series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
       });
     });
   }
@@ -641,17 +475,7 @@
     };
     const renderGrid = (arr) => {
       const grid = $("#q-grid");
-      if (!arr.length) {
-        grid.innerHTML = `<div class="empty">${U.icon("search")}<p>没有匹配的题目</p>
-          <p class="muted" style="font-size:13px;margin-top:6px">试试更短的关键词，或换个角度：</p>
-          <div class="pill-row" style="justify-content:center;margin-top:10px">
-            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机来一题</a>
-            <a class="btn btn-sm" href="#/questions">清除筛选看全部</a>
-          </div>
-          <div class="pill-row" style="justify-content:center;margin-top:10px">${HOT_TERMS.slice(0, 5).map(t => `<span class="tag tag-link" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
-        </div>`;
-        $("#q-count").textContent = "0"; return;
-      }
+      if (!arr.length) { grid.innerHTML = `<div class="empty">${U.icon("search")}<p>没有匹配的题目</p></div>`; $("#q-count").textContent = "0"; return; }
       $("#q-count").textContent = arr.length;
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
       grid.innerHTML = arr.slice((page - 1) * 20, page * 20).map(x => qCard(x, fuseMap ? fuseMap.get(x.id) : null)).join("");
@@ -675,7 +499,6 @@
         <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
         <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option></select>
         ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
-        <a class="btn btn-sm" href="#/random" title="从全部已发布题目中随机抽一题">${U.icon("dice")} 随机一题</a>
         <span class="spacer"></span>
         <div class="seg" id="sort-seg">
           <button data-s="updated" class="${sortBy === "updated" ? "active" : ""}">最新</button>
@@ -708,7 +531,6 @@
     await Services.incViews(id); await Services.reload();
     await Services.addHistory(id);
     Stats.recordView(id);
-    try { localStorage.setItem("last_question", JSON.stringify({ id: q.id, title: q.title, at: Date.now() })); } catch (e) {}
     const fav = await Services.isFavorite(q.id);
     const related = (q.relatedIds || []).map(rid => Services.questions.find(x => x.id === rid)).filter(Boolean);
     if (!related.length) related.push(...Services.questions.filter(x => x.id !== q.id && x.categoryId === q.categoryId).slice(0, 4));
@@ -717,7 +539,7 @@
       const pos = posByName.get(n);
       return pos ? `<a class="tag tag-outline" href="#/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="#/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
     }).join("");
-    const techTags = (q.tags || []).map(t => `<span class="tag tag-link" data-tag="${U.esc(t)}" title="点击搜索该标签">${U.esc(t)}</span>`).join("");
+    const techTags = (q.tags || []).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
     const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
     setMain(`
@@ -736,7 +558,6 @@
       <div class="qd-body md">${U.md(q.body)}</div>
       <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
         <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
-        <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
         ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
           <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
@@ -756,14 +577,6 @@
       $("#fav-btn").innerHTML = nowFav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏";
       U.toast(nowFav ? "已收藏" : "已取消收藏", "success");
     };
-    $("#weak-btn").onclick = async () => {
-      if (await Services.isWeak(q.id)) { U.toast("该题已在错题重练中，可到「错题重练」页复习", "info"); return; }
-      await Services.addWeak(q.id, "unknown");
-      App.reviewDue = (App.reviewDue || 0) + 1;
-      renderSidebar(parseHash());
-      U.toast("已加入错题重练，到期会提醒复习", "warn");
-    };
-    markDailyDone(q.id);   // 若属于今日5题则记完成
     if (Auth.isAdmin()) {
       $("#del-btn").onclick = async () => {
         if (await U.confirm("确定删除该题？此操作不可逆。", { danger: true, okText: "删除" })) {
@@ -778,20 +591,6 @@
       $("#next-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
       $("#prev-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
-    /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应） */
-    const kbHint = document.createElement("div");
-    kbHint.className = "muted";
-    kbHint.style.cssText = "font-size:12px;margin-top:8px";
-    kbHint.textContent = "快捷键：← / → 切换题目 · 空格 展开或收起答案 · S 收藏";
-    $(".pill-row").appendChild(kbHint);
-    setPageKeys(e => {
-      if (typingInField(e)) return;
-      if (document.querySelector("#modal-root .modal-mask") || document.querySelector("#modal-root .modal")) return;
-      if (e.key === "ArrowLeft" && $("#prev-btn").style.display !== "none") { $("#prev-btn").click(); }
-      else if (e.key === "ArrowRight" && $("#next-btn").style.display !== "none") { $("#next-btn").click(); }
-      else if (e.key === " " || e.code === "Space") { e.preventDefault(); $("#show-answer").click(); }
-      else if (e.key === "s" || e.key === "S") { $("#fav-btn").click(); }
-    });
   }
 
   /* ============================ 收藏夹 ============================ */
@@ -987,12 +786,8 @@
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
       const mark = async (m) => {
         try {
-          if (m === "master") {
-            mastered++;
-            if (await Services.isWeak(q.id)) { await Services.weakGrade(q.id, true); U.toast("已掌握 · 复习间隔已拉长", "success"); }
-            else U.toast("已标记为掌握", "success");
-          }
-          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入错题重练 · 按记忆曲线安排复习", "warn"); }
+          if (m === "master") { mastered++; await Services.removeWeak(q.id); U.toast("已标记为掌握", "success"); }
+          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入薄弱题本 · 练习页可专练", "warn"); }
         } catch (e) { console.warn("mark error", e); U.toast("标记失败：" + (e && e.message), "error"); }
         next();
       };
@@ -1007,48 +802,6 @@
       <h2>刷题完成</h2><p>共 ${total} 题 · 掌握 ${mastered} · 待加强 ${weak}</p>
       ${weak ? `<p class="muted">${weak} 道已加入薄弱题本，<a href="#/practice">返回练习页</a>选择「薄弱题本」可专练这些题。</p>` : ""}
       <a class="btn btn-primary" href="#/practice">${U.icon("refresh")} 再来一轮</a></div>`);
-  }
-
-  /* ============================ 错题重练 ============================ */
-  async function pageReview() {
-    const { due, upcoming } = await Services.weakList();
-    App.reviewDue = due.length;
-    renderSidebar(parseHash());
-    const ivlLabel = w => Services.EBBS_LABEL[Math.min(w.box || 0, Services.EBBS_LABEL.length - 1)];
-    const fmtTime = ts => { const d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
-    const cardOf = (w, isDue) => {
-      const q = w._q;
-      return `<div class="card rv-card" data-qid="${q.id}">
-        <div style="display:flex;align-items:center;gap:10px">
-          <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
-          <span class="tag ${isDue ? "tag-warning" : ""}">${isDue ? "第 " + ((w.box || 0) + 1) + " 次 · 待复习" : ivlLabel(w) + "后"}</span>
-        </div>
-        <div class="muted" style="font-size:12px;margin-top:4px">${w.marked === "unknown" ? "不会" : "不熟悉"} · 排期 ${fmtTime(w.dueAt)}${w.lastOkAt ? " · 上次会了 " + fmtTime(w.lastOkAt) : ""}</div>
-        <div class="pill-row" style="margin-top:10px">
-          ${isDue ? `<button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
-          <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>` : ""}
-          <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出</button>
-        </div>
-      </div>`;
-    };
-    setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
-      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 会了拉长间隔 / 还不会 5 分钟后重来</span></div>
-      ${due.length
-        ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
-        : `<div class="note" style="margin-top:14px">🎉 当前没有到期的复习任务。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里按记忆曲线排期。</div>`}
-      ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
-    `);
-    $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
-      const qid = parseInt(b.closest(".rv-card").dataset.qid);
-      const act = b.dataset.act;
-      if (act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
-      else {
-        await Services.weakGrade(qid, act === "ok");
-        U.toast(act === "ok" ? "👍 已掌握，下次复习时间已顺延" : "好的，5 分钟后再次提醒", act === "ok" ? "success" : "warn");
-      }
-      pageReview();
-    });
   }
 
   /* ============================ 模拟面试 ============================ */
@@ -1206,9 +959,6 @@
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
       </div>
     `, () => {
-      /* echarts 按需加载：仅仪表盘需要图表库 */
-      U.loadScript("echarts", U.ECHARTS_URL).catch(() => {}).then(() => {
-      if (!window.echarts || !document.getElementById("c1")) return;
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
       const mk = (id, type, data, name) => { const c = echarts.init($(id)); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
       mk("#c1", "bar", Object.entries(s.byCat).filter(([, v]) => v > 0).slice(0, 12), "题目数");
@@ -1235,7 +985,6 @@
           }
         }).catch(() => {});
       }
-      });
     });
   }
 
@@ -1412,23 +1161,6 @@
     ta.focus();
     ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
-  /* ---------- 图片外置助手：data URL → 二进制 → 仓库文件 assets/q/ ---------- */
-  function dataUrlToBytes(dataUrl) {
-    const b64 = dataUrl.split(",")[1] || "";
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return bytes;
-  }
-  const IMG_EXT = { "jpeg": "jpg", "jpg": "jpg", "png": "png", "webp": "webp", "gif": "gif", "svg+xml": "svg" };
-  async function uploadImageAsset(dataUrl, qId) {
-    const m = /^data:image\/([a-z+.-]+);/i.exec(dataUrl);
-    const ext = IMG_EXT[(m && m[1] || "jpeg").toLowerCase()] || "jpg";
-    const name = (qId ? "q" + qId + "-" : "") + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6) + "." + ext;
-    const path = "assets/q/" + name;
-    await Cloud.putFile(path, dataUrlToBytes(dataUrl), "外置题目图片 " + name);
-    return path;   // 站内相对路径，GitHub Pages 根路径部署下即线上 URL
-  }
   function wireImagePaste(sel) {
     const ta = $(sel); if (!ta) return;
     ta.addEventListener("paste", e => {
@@ -1446,22 +1178,8 @@
           if (r.dataUrl.length > 500 * 1024) { U.toast("图片过大（" + U.fmtSize(r.dataUrl.length) + "），已尝试压缩仍超 500KB，请缩小后再粘贴", "warn"); return null; }
           return r;
         })
-        .then(async r => {
+        .then(r => {
           if (!r) return;
-          /* 编辑端（已配置发布 Token）：图片外置为仓库文件，Markdown 引用 URL，
-             避免快照膨胀且可被浏览器缓存；上传失败或非编辑端回退内嵌 data URL（与旧版一致） */
-          if (Cloud.isEditor()) {
-            try {
-              U.toast("正在上传图片到仓库 assets/q/…", "info");
-              const url = await uploadImageAsset(r.dataUrl);
-              pasteInsert(ta, "\n![粘贴图片](" + url + ")\n");
-              U.toast("已外置插入 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + " → " + url + "）", "success");
-              return;
-            } catch (err) {
-              console.warn("图片外置失败，回退内嵌 data URL", err);
-              U.toast("图片上传失败，已回退内嵌模式：" + (err.message || err), "warn");
-            }
-          }
           pasteInsert(ta, "\n![粘贴图片](" + r.dataUrl + ")\n");
           U.toast("已插入图片 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + "）", "success");
         })
@@ -2086,8 +1804,7 @@
       };
     }
   }
-  async function downloadTemplateXlsx() {
-    await U.loadScript("XLSX", U.XLSX_URL); /* xlsx 库按需加载 */
+  function downloadTemplateXlsx() {
     const headers = ["题目标题", "题目内容", "参考答案", "一级技术分类", "二级技术分类", "三级技术分类", "难度", "题型", "适用岗位", "工作年限", "技术标签", "状态", "管理员备注"];
     const ws = XLSX.utils.aoa_to_sheet([headers, ["示例：什么是索引", "请解释数据库索引的作用", "索引用于加速查询…", "数据库与数据存储", "关系型数据库", "MySQL", "初级", "简答题", "Java后端工程师", "0-1年", "MySQL,索引", "published", ""]]);
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "题目");
@@ -2248,14 +1965,6 @@
         </div>
         <div id="auto-pub-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：需先在上方配置发布 Token 后生效。"}</div></div>
 
-      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("fileText")} 题目图片外置</h2>
-        <p class="secondary">把题目里内嵌的 base64 图片（data URL）迁移为仓库独立文件 <code>assets/q/</code>，Markdown 改为 URL 引用：显著减小 data/published.json 体积，图片可被浏览器缓存。新粘贴的图片在配置发布 Token 后会自动外置，此工具用于迁移<strong>历史存量</strong>图片。迁移可重复执行，已迁移的自动跳过。</p>
-        <div class="pill-row">
-          <button class="btn" id="img-scan">${U.icon("search")} 扫描内嵌图片</button>
-          <button class="btn btn-primary" id="img-migrate" style="display:none">${U.icon("upload")} 一键迁移</button>
-        </div>
-        <div id="img-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：迁移需先在上方配置发布 Token。"}</div></div>
-
       <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("shield")} 本地数据加密云备份 <span id="bk-chip" class="vis-chip bk ok" style="display:none"></span></h2>
         <p class="secondary">把只存在本机、清缓存即丢的数据——发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史——用密码加密后备份到仓库 <code>data/local-backup.json</code>。仓库是公开的，但文件为 AES-256-GCM 密文，无密码无法解密。清缓存/换设备后，凭<strong>备份密码</strong>即可一键恢复全部配置。<strong>设好密码后完全自动</strong>：题目改动、设置修改、收藏/历史更新都会在 12 秒后自动加密备份，无需手动。顶栏/标题处的徽章显示备份状态。</p>
         <div class="note ai"><strong>请牢记备份密码</strong>：密码只存在本机，不随备份上传（密文由它解开）。忘记密码 = 备份无法恢复。建议同时把密码记到密码管理器。</div>
@@ -2348,63 +2057,6 @@
       U.toast(this.checked ? "自动发布已开启" : "自动发布已关闭", "success");
       Cloud._renderChip();
     };
-    /* ---------- 题目图片外置：扫描 + 迁移 ---------- */
-    const IMG_INLINE_RE = /!\[[^\]]*\]\(data:image\/([a-zA-Z+.-]+);base64,([A-Za-z0-9+/=]+)\)/g;
-    const scanInlineImages = () => {
-      const found = [];
-      Services.questions.forEach(q => {
-        ["body", "answer"].forEach(k => {
-          const text = q[k] || "";
-          IMG_INLINE_RE.lastIndex = 0;
-          let m;
-          while ((m = IMG_INLINE_RE.exec(text))) {
-            found.push({ q, field: k, full: m[0], mime: m[1], b64: m[2], size: Math.round(m[2].length * 0.75) });
-          }
-        });
-      });
-      return found;
-    };
-    $("#img-scan").onclick = () => {
-      const out = $("#img-out"), btn = $("#img-migrate");
-      if (!Cloud.isEditor()) { out.innerHTML = "<span class='tag tag-warning'>尚未配置发布 Token</span> 请先在上方「云端共享题库」配置 Token 再扫描迁移。"; return; }
-      const list = scanInlineImages();
-      if (!list.length) {
-        out.innerHTML = "<span class='tag tag-success'>未发现内嵌 base64 图片</span> 题库很干净。";
-        btn.style.display = "none"; return;
-      }
-      const total = list.reduce((s, x) => s + x.size, 0);
-      out.innerHTML = "发现 <b>" + list.length + "</b> 张内嵌图片（约 " + U.fmtSize(total) + "），将逐张上传到 <code>assets/q/</code> 并替换为 URL 引用。";
-      btn.style.display = "";
-    };
-    $("#img-migrate").onclick = async () => {
-      const out = $("#img-out"), btn = $("#img-migrate");
-      if (!Cloud.isEditor()) { U.toast("请先配置发布 Token", "warn"); return; }
-      if (!(await U.confirm("确认迁移内嵌图片？将逐张上传到仓库 assets/q/ 并更新对应题目，完成后自动发布。", { okText: "开始迁移" }))) return;
-      const list = scanInlineImages();
-      if (!list.length) { out.textContent = "没有需要迁移的图片。"; btn.style.display = "none"; return; }
-      btn.disabled = true;
-      let done = 0;
-      for (const item of list) {
-        out.textContent = "迁移中… " + (done + 1) + "/" + list.length;
-        try {
-          const url = await uploadImageAsset("data:image/" + item.mime + ";base64," + item.b64, item.q.id);
-          const patch = {};
-          patch[item.field] = (item.q[item.field] || "").split(item.full).join("![图片](" + url + ")");
-          await Services.updateQuestion(item.q.id, patch);
-          done++;
-        } catch (e) {
-          console.warn("图片迁移失败", e);
-          out.innerHTML = "<span class='tag tag-danger'>迁移中断</span> 第 " + (done + 1) + " 张失败：" + U.esc(String(e && e.message || e)) +
-            "。已完成 " + done + " 张；稍后可重试，已迁移的会自动跳过。";
-          btn.disabled = false;
-          return;
-        }
-      }
-      btn.disabled = false;
-      const pubTip = Cloud.autoEnabled() ? "稍后自动发布生效" : "请手动点「发布题库到线上」生效";
-      out.innerHTML = "<span class='tag tag-success'>迁移完成</span> 共 " + done + " 张图片外置到 assets/q/，" + pubTip + "。";
-      U.toast("图片外置迁移完成：" + done + " 张", "success");
-    };
     /* 本地数据加密备份 */
     const bkPassInput = $("#bk-pass"); let bkPassTouched = false;
     bkPassInput.addEventListener("input", () => bkPassTouched = true);
@@ -2457,12 +2109,6 @@
     let started = 0, target = 0, raf = 0, rainRaf = 0, finished = false, readyResolve;
     const ready = new Promise(r => readyResolve = r);
     const el = id => document.getElementById(id);
-    /* 首次访问完整展示动效；回访用户快速通过，避免每次进入都等待动画 */
-    let firstVisit = true;
-    try {
-      firstVisit = !localStorage.getItem("boot_seen");
-      localStorage.setItem("boot_seen", "1");
-    } catch (e) {}
     const NAMES = ["前端工程师","后端工程师","全栈工程师","测试工程师","测试开发工程师","运维工程师","SRE工程师","DevOps工程师","数据分析师","算法工程师","机器学习工程师","深度学习工程师","数据科学家","产品经理","网络安全工程师","渗透测试工程师","大数据开发工程师","云架构师","解决方案架构师","数据库管理员","人工智能工程师","移动端开发","iOS开发","Android开发","游戏开发工程师","嵌入式工程师","区块链工程师","爬虫工程师","推荐算法工程师","搜索算法工程师","音视频开发","性能测试工程师","自动化测试工程师","UI设计师","交互设计师","售前工程师","技术项目经理","视觉算法工程师","鸿蒙开发工程师","Go开发工程师","Java开发工程师","Python开发工程师","C++开发工程师","前端架构师","后端架构师","数据工程师","ETL工程师","BI工程师","运维开发工程师","大模型应用工程师","AIGC工程师"];
     function start() {
       const ov = el("boot-loader"); if (!ov) return;
@@ -2526,7 +2172,7 @@
       const ov = el("boot-loader");
       const skip = el("boot-skip"); if (skip) skip.style.opacity = "1";
       const elapsed = Date.now() - started;
-      const MIN = firstVisit ? 2000 : 450; // 首访保证动效可看完，回访快速通过
+      const MIN = 3200; // 最短展示时长，确保动效能看完
       const wait = Math.max(0, MIN - elapsed);
       target = Math.min(target, 92); // 加载期间进度停在 ~92%，结束瞬间补满，避免早早钉在 100%
       let revealed = false;
@@ -2551,7 +2197,7 @@
   /* ============================ 访客统计（本地计数 + 百度统计 + 可选 Cloudflare Worker） ============================ */
   const Stats = (() => {
     /* --- 百度统计 --- */
-    const DEFAULT_TID = "856d2b08330e4b9f225cf101d6f14103";
+    const DEFAULT_TID = "90b0860f910ed25873ab7fd6995e8af2";
     const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || DEFAULT_TID) : DEFAULT_TID);
     function trackBaidu(url) {
       if (baiduId() && typeof _hmt !== "undefined" && _hmt) {
@@ -2662,20 +2308,8 @@
     }
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
-    U.initLightbox();
-    /* 待复习数预载（供侧边栏角标） */
-    Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
-    /* 标签点击即搜（事件委托；首页热词区有独立处理，跳过） */
-    document.getElementById("main").addEventListener("click", (e) => {
-      const tg = e.target.closest(".tag[data-tag]");
-      if (tg && !e.target.closest(".hot-tags")) { e.preventDefault(); e.stopPropagation(); shPush(tg.dataset.tag); App.go("/questions?q=" + encodeURIComponent(tg.dataset.tag)); }
-    });
-    /* Markdown 内容图片点击放大（事件委托，覆盖详情页/练习/模拟面试等所有 .md 区域） */
-    main.addEventListener("click", e => {
-      const img = e.target.closest(".md img");
-      if (img && img.getAttribute("src")) { e.preventDefault(); U.openLightbox(img.getAttribute("src"), img.alt); }
-    });
     Boot.start();
+    let cloudPending = null;
     try {
       let justSeeded = false;
       try { justSeeded = await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
@@ -2683,24 +2317,31 @@
       try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
       try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
       try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
-      Boot.set(55, "加载题库数据…");
+      Boot.set(55, "检查云端题库更新…");
+      try {
+        const r = await Cloud.syncIfNeeded(justSeeded);
+        if (r && r.applied) U.toast("已同步云端题库最新版（共 " + r.count + " 题）", "success");
+        if (r && r.pending) cloudPending = r;
+        /* 编辑端（配置过 Token）：不做全量同步，但增量吸收云端自动扩充的新题，
+           避免本地题库落后于线上而不自知。失败不影响启动。 */
+        if (r && r.skipped && r.reason === "editor") {
+          try {
+            const a = await Cloud.absorbRemote();
+            if (a && a.added > 0) {
+              U.toast("已从云端自动吸收 " + a.added + " 道新题（不改动本地已有题目）", "success");
+              console.log("absorbRemote: +" + a.added + " questions from cloud snapshot");
+            }
+          } catch (e2) { console.warn("absorbRemote error", e2); }
+        }
+      } catch (e) { console.warn("cloud sync error", e); }
+      Boot.set(60, "迁移与预置数据…");
       await Services.reload();
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
       if (!location.hash) location.hash = "/";
       route();
-      /* 云端题库同步改为后台执行：不阻塞首屏渲染；
-         应用了新数据后原地刷新当前页，pending 场景仍走提示引导手动同步 */
-      Cloud.syncIfNeeded(justSeeded).then(async r => {
-        if (r && r.applied) {
-          U.toast("已同步云端题库最新版（共 " + r.count + " 题）", "success");
-          await Services.reload();
-          route();
-        } else if (r && r.pending) {
-          U.toast("检测到云端共享题库（" + r.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
-        }
-      }).catch(e => console.warn("cloud sync error", e));
+      if (cloudPending) U.toast("检测到云端共享题库（" + cloudPending.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
       Stats.recordVisit();
       refreshVisitorStats();
       setInterval(refreshVisitorStats, 60000);
