@@ -122,6 +122,7 @@
 ├── tools/
 │   ├── gen-published.js    # 由 seed.js 生成初始 published.json
 │   ├── enrich_questions.py # 题库自动扩充流水线：校验/去重/归并批次到 published.json
+│   ├── coverage_report.py  # 覆盖度统计：各技术域题量、空叶子分类 → tools/coverage.md
 │   ├── intake-plan.md      # 取材来源白名单 + 21 域轮转表（驱动定期自动化）
 │   └── batches/            # 各批次题目 JSON（YYYY-MM-DD-a.json）
 └── cloudflare/
@@ -191,7 +192,8 @@ node tools/gen-published.js
 
 ### 2026-08-27
 - feat: **题库定期自动扩充流水线**——新增 `tools/enrich_questions.py`（批次校验 / 标题去重 / 分类·岗位名自动解析为 ID / 顺序 ID 自增 / `--dry`·`--all`·`--push` 推送 Pages 分支）、`tools/intake-plan.md`（权威来源白名单 + 21 域周轮换表）、`tools/batches/` 批次目录；首批 `2026-08-27-a.json` 入库 10 题（CAP/索引/三次握手/单例/HTTP 缓存/微服务/消息队列/事务隔离/进程线程/一致性哈希），题库总数 239 → 249。
-- feat: **定期自动化「题库定期自动扩充」**——每周一 10:00 按轮转表联网取材、合并、发布，实现用户提出的「定期自动抓取权威面试题并归档到各类别及岗位」。需配置 `GH_PUBLISH_TOKEN`（Fine-grained PAT，仅本仓库 Contents 读写）以自动推送到 `main`/`release`。
+- feat: **定期自动化「题库定期自动扩充」**——按轮转表联网取材、合并、发布，实现用户提出的「定期自动抓取权威面试题并归档到各类别及岗位」。
+- feat: **扩充流水线增强**——① 合并时自动递增 `published.json` 的 `version`/`publishedAt`，前端与编辑端可感知云端更新；② 模糊去重：归一化标题相似度 ≥0.85 判为疑似重复直接跳过，杜绝跨批次近似题；③ 新增 `tools/coverage_report.py` 覆盖度报告（各域题量、空叶子分类统计 → `tools/coverage.md`）；④ 自动化频率提升至每周一/三/五 10:00 三次，取材前参考覆盖度优先补空置分类。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
