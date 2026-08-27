@@ -56,8 +56,21 @@
 
   function clearCharts() { charts.forEach(c => { try { c.dispose(); } catch (e) {} }); charts = []; }
 
+  /* 页面级键盘快捷键：每次路由切换自动清理，避免监听器泄漏 */
+  let pageKeyHandler = null;
+  function setPageKeys(handler) {
+    if (pageKeyHandler) document.removeEventListener("keydown", pageKeyHandler);
+    pageKeyHandler = handler || null;
+    if (handler) document.addEventListener("keydown", handler);
+  }
+  function typingInField(e) {
+    const t = e.target;
+    return !!(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable));
+  }
+
   async function route() {
     clearCharts();
+    setPageKeys(null);
     const r = parseHash();
     renderSidebar(r);
     if (r.parts[0] === "admin") {
@@ -701,6 +714,7 @@
       <div class="qd-body md">${U.md(q.body)}</div>
       <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
         <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
+        <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
         ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
           <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
@@ -720,6 +734,13 @@
       $("#fav-btn").innerHTML = nowFav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏";
       U.toast(nowFav ? "已收藏" : "已取消收藏", "success");
     };
+    $("#weak-btn").onclick = async () => {
+      if (await Services.isWeak(q.id)) { U.toast("该题已在错题重练中，可到「错题重练」页复习", "info"); return; }
+      await Services.addWeak(q.id, "unknown");
+      App.reviewDue = (App.reviewDue || 0) + 1;
+      renderSidebar(parseHash());
+      U.toast("已加入错题重练，到期会提醒复习", "warn");
+    };
     if (Auth.isAdmin()) {
       $("#del-btn").onclick = async () => {
         if (await U.confirm("确定删除该题？此操作不可逆。", { danger: true, okText: "删除" })) {
@@ -734,33 +755,60 @@
       $("#next-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
       $("#prev-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
+    /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应） */
+    const kbHint = document.createElement("div");
+    kbHint.className = "muted";
+    kbHint.style.cssText = "font-size:12px;margin-top:8px";
+    kbHint.textContent = "快捷键：← / → 切换题目 · 空格 展开或收起答案 · S 收藏";
+    $(".pill-row").appendChild(kbHint);
+    setPageKeys(e => {
+      if (typingInField(e)) return;
+      if (document.querySelector("#modal-root .modal-mask") || document.querySelector("#modal-root .modal")) return;
+      if (e.key === "ArrowLeft" && $("#prev-btn").style.display !== "none") { $("#prev-btn").click(); }
+      else if (e.key === "ArrowRight" && $("#next-btn").style.display !== "none") { $("#next-btn").click(); }
+      else if (e.key === " " || e.code === "Space") { e.preventDefault(); $("#show-answer").click(); }
+      else if (e.key === "s" || e.key === "S") { $("#fav-btn").click(); }
+    });
   }
 
-  /* ============================ 错题重练 ============================ */
+  /* ============================ 错题重练（艾宾浩斯记忆曲线） ============================ */
   async function pageReview() {
-    const ws = await Services.getWeakQuestions();
-    App.reviewDue = ws.length;
+    const { due, upcoming } = await Services.weakList();
+    App.reviewDue = due.length;
     renderSidebar(parseHash());
-    const cardOf = (q) => `<div class="card rv-card" data-qid="${q.id}">
-      <div style="display:flex;align-items:center;gap:10px">
-        <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
-        <span class="tag ${q._weakMarked === "unknown" ? "tag-warning" : ""}">${q._weakMarked === "unknown" ? "不会" : "不熟悉"}</span>
-      </div>
-      <div class="pill-row" style="margin-top:10px">
-        <button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
-        <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出错题本</button>
-      </div>
-    </div>`;
+    const ivlLabel = w => Services.EBBS_LABEL[Math.min(w.box || 0, Services.EBBS_LABEL.length - 1)];
+    const fmtTime = ts => { const d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+    const cardOf = (w, isDue) => {
+      const q = w._q;
+      return `<div class="card rv-card" data-qid="${q.id}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
+          <span class="tag ${isDue ? "tag-warning" : ""}">${isDue ? "第 " + ((w.box || 0) + 1) + " 次 · 待复习" : ivlLabel(w) + "后"}</span>
+        </div>
+        <div class="muted" style="font-size:12px;margin-top:4px">${w.marked === "unknown" ? "不会" : "不熟悉"} · 排期 ${fmtTime(w.dueAt)}${w.lastOkAt ? " · 上次会了 " + fmtTime(w.lastOkAt) : ""}</div>
+        <div class="pill-row" style="margin-top:10px">
+          ${isDue ? `<button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
+          <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>` : ""}
+          <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出</button>
+        </div>
+      </div>`;
+    };
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
-      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">来自你标记「不会 / 不熟悉」的题目（${ws.length}）</span></div>
-      ${ws.length ? `<div style="display:grid;gap:10px">${ws.map(cardOf).join("")}</div>`
-        : `<div class="note" style="margin-top:14px">🎉 错题本是空的。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里。</div>`}
+      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 会了拉长间隔 / 还不会 5 分钟后重来</span></div>
+      ${due.length
+        ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
+        : `<div class="note" style="margin-top:14px">🎉 当前没有到期的复习任务。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里按记忆曲线排期。</div>`}
+      ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
     `);
     $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
       const qid = parseInt(b.closest(".rv-card").dataset.qid);
-      if (b.dataset.act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
-      else { await Services.removeWeak(qid); U.toast("👍 已掌握，移出错题本", "success"); }
+      const act = b.dataset.act;
+      if (act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
+      else {
+        await Services.weakGrade(qid, act === "ok");
+        U.toast(act === "ok" ? "👍 已掌握，下次复习时间已顺延" : "好的，5 分钟后再次提醒", act === "ok" ? "success" : "warn");
+      }
       pageReview();
     });
   }
@@ -958,8 +1006,12 @@
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
       const mark = async (m) => {
         try {
-          if (m === "master") { mastered++; await Services.removeWeak(q.id); U.toast("已标记为掌握", "success"); }
-          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入薄弱题本 · 练习页可专练", "warn"); }
+          if (m === "master") {
+            mastered++;
+            if (await Services.isWeak(q.id)) { await Services.weakGrade(q.id, true); U.toast("已掌握 · 复习间隔已拉长", "success"); }
+            else U.toast("已标记为掌握", "success");
+          }
+          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入错题重练 · 按记忆曲线安排复习", "warn"); }
         } catch (e) { console.warn("mark error", e); U.toast("标记失败：" + (e && e.message), "error"); }
         next();
       };
@@ -1333,6 +1385,23 @@
     ta.focus();
     ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
+  /* ---------- 图片外置助手：data URL → 二进制 → 仓库文件 assets/q/ ---------- */
+  function dataUrlToBytes(dataUrl) {
+    const b64 = dataUrl.split(",")[1] || "";
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+  const IMG_EXT = { "jpeg": "jpg", "jpg": "jpg", "png": "png", "webp": "webp", "gif": "gif", "svg+xml": "svg" };
+  async function uploadImageAsset(dataUrl, qId) {
+    const m = /^data:image\/([a-z+.-]+);/i.exec(dataUrl);
+    const ext = IMG_EXT[(m && m[1] || "jpeg").toLowerCase()] || "jpg";
+    const name = (qId ? "q" + qId + "-" : "") + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6) + "." + ext;
+    const path = "assets/q/" + name;
+    await Cloud.putFile(path, dataUrlToBytes(dataUrl), "外置题目图片 " + name);
+    return path;   // 站内相对路径，GitHub Pages 根路径部署下即线上 URL
+  }
   function wireImagePaste(sel) {
     const ta = $(sel); if (!ta) return;
     ta.addEventListener("paste", e => {
@@ -1350,8 +1419,22 @@
           if (r.dataUrl.length > 500 * 1024) { U.toast("图片过大（" + U.fmtSize(r.dataUrl.length) + "），已尝试压缩仍超 500KB，请缩小后再粘贴", "warn"); return null; }
           return r;
         })
-        .then(r => {
+        .then(async r => {
           if (!r) return;
+          /* 编辑端（已配置发布 Token）：图片外置为仓库文件，Markdown 引用 URL，
+             避免快照膨胀且可被浏览器缓存；上传失败或非编辑端回退内嵌 data URL（与旧版一致） */
+          if (Cloud.isEditor()) {
+            try {
+              U.toast("正在上传图片到仓库 assets/q/…", "info");
+              const url = await uploadImageAsset(r.dataUrl);
+              pasteInsert(ta, "\n![粘贴图片](" + url + ")\n");
+              U.toast("已外置插入 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + " → " + url + "）", "success");
+              return;
+            } catch (err) {
+              console.warn("图片外置失败，回退内嵌 data URL", err);
+              U.toast("图片上传失败，已回退内嵌模式：" + (err.message || err), "warn");
+            }
+          }
           pasteInsert(ta, "\n![粘贴图片](" + r.dataUrl + ")\n");
           U.toast("已插入图片 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + "）", "success");
         })
@@ -2137,6 +2220,14 @@
         </div>
         <div id="auto-pub-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：需先在上方配置发布 Token 后生效。"}</div></div>
 
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("fileText")} 题目图片外置</h2>
+        <p class="secondary">把题目里内嵌的 base64 图片（data URL）迁移为仓库独立文件 <code>assets/q/</code>，Markdown 改为 URL 引用：显著减小 data/published.json 体积，图片可被浏览器缓存。新粘贴的图片在配置发布 Token 后会自动外置，此工具用于迁移<strong>历史存量</strong>图片。迁移可重复执行，已迁移的自动跳过。</p>
+        <div class="pill-row">
+          <button class="btn" id="img-scan">${U.icon("search")} 扫描内嵌图片</button>
+          <button class="btn btn-primary" id="img-migrate" style="display:none">${U.icon("upload")} 一键迁移</button>
+        </div>
+        <div id="img-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：迁移需先在上方配置发布 Token。"}</div></div>
+
       <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("shield")} 本地数据加密云备份 <span id="bk-chip" class="vis-chip bk ok" style="display:none"></span></h2>
         <p class="secondary">把只存在本机、清缓存即丢的数据——发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史——用密码加密后备份到仓库 <code>data/local-backup.json</code>。仓库是公开的，但文件为 AES-256-GCM 密文，无密码无法解密。清缓存/换设备后，凭<strong>备份密码</strong>即可一键恢复全部配置。<strong>设好密码后完全自动</strong>：题目改动、设置修改、收藏/历史更新都会在 12 秒后自动加密备份，无需手动。顶栏/标题处的徽章显示备份状态。</p>
         <div class="note ai"><strong>请牢记备份密码</strong>：密码只存在本机，不随备份上传（密文由它解开）。忘记密码 = 备份无法恢复。建议同时把密码记到密码管理器。</div>
@@ -2228,6 +2319,63 @@
       $("#auto-pub-out").textContent = this.checked ? "已开启：改动停止 10 秒后自动发布。" : "已关闭：请手动点「发布题库到线上」。";
       U.toast(this.checked ? "自动发布已开启" : "自动发布已关闭", "success");
       Cloud._renderChip();
+    };
+    /* ---------- 题目图片外置：扫描 + 迁移 ---------- */
+    const IMG_INLINE_RE = /!\[[^\]]*\]\(data:image\/([a-zA-Z+.-]+);base64,([A-Za-z0-9+/=]+)\)/g;
+    const scanInlineImages = () => {
+      const found = [];
+      Services.questions.forEach(q => {
+        ["body", "answer"].forEach(k => {
+          const text = q[k] || "";
+          IMG_INLINE_RE.lastIndex = 0;
+          let m;
+          while ((m = IMG_INLINE_RE.exec(text))) {
+            found.push({ q, field: k, full: m[0], mime: m[1], b64: m[2], size: Math.round(m[2].length * 0.75) });
+          }
+        });
+      });
+      return found;
+    };
+    $("#img-scan").onclick = () => {
+      const out = $("#img-out"), btn = $("#img-migrate");
+      if (!Cloud.isEditor()) { out.innerHTML = "<span class='tag tag-warning'>尚未配置发布 Token</span> 请先在上方「云端共享题库」配置 Token 再扫描迁移。"; return; }
+      const list = scanInlineImages();
+      if (!list.length) {
+        out.innerHTML = "<span class='tag tag-success'>未发现内嵌 base64 图片</span> 题库很干净。";
+        btn.style.display = "none"; return;
+      }
+      const total = list.reduce((s, x) => s + x.size, 0);
+      out.innerHTML = "发现 <b>" + list.length + "</b> 张内嵌图片（约 " + U.fmtSize(total) + "），将逐张上传到 <code>assets/q/</code> 并替换为 URL 引用。";
+      btn.style.display = "";
+    };
+    $("#img-migrate").onclick = async () => {
+      const out = $("#img-out"), btn = $("#img-migrate");
+      if (!Cloud.isEditor()) { U.toast("请先配置发布 Token", "warn"); return; }
+      if (!(await U.confirm("确认迁移内嵌图片？将逐张上传到仓库 assets/q/ 并更新对应题目，完成后自动发布。", { okText: "开始迁移" }))) return;
+      const list = scanInlineImages();
+      if (!list.length) { out.textContent = "没有需要迁移的图片。"; btn.style.display = "none"; return; }
+      btn.disabled = true;
+      let done = 0;
+      for (const item of list) {
+        out.textContent = "迁移中… " + (done + 1) + "/" + list.length;
+        try {
+          const url = await uploadImageAsset("data:image/" + item.mime + ";base64," + item.b64, item.q.id);
+          const patch = {};
+          patch[item.field] = (item.q[item.field] || "").split(item.full).join("![图片](" + url + ")");
+          await Services.updateQuestion(item.q.id, patch);
+          done++;
+        } catch (e) {
+          console.warn("图片迁移失败", e);
+          out.innerHTML = "<span class='tag tag-danger'>迁移中断</span> 第 " + (done + 1) + " 张失败：" + U.esc(String(e && e.message || e)) +
+            "。已完成 " + done + " 张；稍后可重试，已迁移的会自动跳过。";
+          btn.disabled = false;
+          return;
+        }
+      }
+      btn.disabled = false;
+      const pubTip = Cloud.autoEnabled() ? "稍后自动发布生效" : "请手动点「发布题库到线上」生效";
+      out.innerHTML = "<span class='tag tag-success'>迁移完成</span> 共 " + done + " 张图片外置到 assets/q/，" + pubTip + "。";
+      U.toast("图片外置迁移完成：" + done + " 张", "success");
     };
     /* 本地数据加密备份 */
     const bkPassInput = $("#bk-pass"); let bkPassTouched = false;
@@ -2486,6 +2634,13 @@
     }
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
+    /* 待复习数预载（供侧边栏角标） */
+    Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
+    /* 标签点击即搜（事件委托；首页热词区有独立处理，跳过） */
+    document.getElementById("main").addEventListener("click", (e) => {
+      const tg = e.target.closest(".tag[data-tag]");
+      if (tg && !e.target.closest(".hot-tags")) { e.preventDefault(); e.stopPropagation(); shPush(tg.dataset.tag); App.go("/questions?q=" + encodeURIComponent(tg.dataset.tag)); }
+    });
     Boot.start();
     let cloudPending = null;
     try {
