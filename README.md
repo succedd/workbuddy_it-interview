@@ -176,19 +176,7 @@ node tools/gen-published.js
 
 ## 更新日志
 
-### 2026-08-24
-
-- feat: 自动发布——编辑端题目/分类/岗位增删改（含 AI 出题、批量导入，经 Dexie 表钩子全路径监听）停止 10 秒后自动推送 GitHub，失败自动重试，关页前未发布提醒，顶栏新增状态徽章（可关闭）。
-- feat: 本地数据加密云备份——新增 `js/backup.js`，发布 Token、AI 配置、管理员密码、统计配置、收藏、历史经 AES-256-GCM（PBKDF2 派生密钥）加密后备份到 `data/local-backup.json`，设置页支持设置备份密码、立即备份、凭密码一键恢复。
-- refactor: `cloud.js` 抽出通用 `putFile` 上传助手供题库发布与加密备份共用。
-
-### 2026-08-25
-- feat: 新增**标题查重提示**——手动新增/编辑题目保存时、AI 生成批量入库前，按标题规范化匹配（去空白、转小写、全半角标点归一化）扫描既有题库与本批次，命中即弹确认框列出冲突题目（ID / 标题 / 状态），取消可中止保存，仅提示不强制拦截（`js/app.js` 新增 `normTitleKey / findTitleDups / confirmTitleDups`）。批量导入（Excel/CSV）原有查重策略不变。
-- feat: 题目编辑器（题目正文 / 参考答案）支持**直接粘贴图片**——`Ctrl/Cmd+V` 粘贴剪贴板截图，自动压缩为 JPEG data URL（长边 ≤1400px、质量 0.85，超 500KB 自动降档），以 Markdown 图片插入光标处并即时预览；图片随题目保存、随题库发布同步到云端，所有访客可见。新增 `.md img` 自适应样式防止大图撑破布局（`js/app.js` + `css/style.css`）。
-- security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
-- docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
-- docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
-- docs: 新增 `cloudflare/部署指南.md`（注册 Cloudflare → 建 KV → deploy → 前端接入全流程），README 统计与部署章节同步指向。
+> 按时间**逆序**记录（最新在最上方）。
 
 ### 2026-08-27
 - feat: **题库定期自动扩充流水线**——新增 `tools/enrich_questions.py`（批次校验 / 标题去重 / 分类·岗位名自动解析为 ID / 顺序 ID 自增 / `--dry`·`--all`·`--push` 推送 Pages 分支）、`tools/intake-plan.md`（权威来源白名单 + 21 域周轮换表）、`tools/batches/` 批次目录；首批 `2026-08-27-a.json` 入库 10 题（CAP/索引/三次握手/单例/HTTP 缓存/微服务/消息队列/事务隔离/进程线程/一致性哈希），题库总数 239 → 249。
@@ -205,6 +193,20 @@ node tools/gen-published.js
   - **最近搜索下拉**——顶栏全局搜索、首页 Hero 搜索、题目列表筛选框聚焦时展示最近搜索（可删单条/清空）或热门搜索词，回车自动记入历史（localStorage `search_history`，上限 10 条）;
   - **搜索无结果建议**——题目列表空态显示「没有匹配的题目：xxx」+ 热门关键词一键重搜按钮；
   - **学习打卡热力图 & 继续上次**——首页基于本地统计渲染近 35 天打卡热力图与连续天数；详情页浏览自动记录「继续上次」恢复入口。
+
+### 2026-08-25
+- feat: 新增**标题查重提示**——手动新增/编辑题目保存时、AI 生成批量入库前，按标题规范化匹配（去空白、转小写、全半角标点归一化）扫描既有题库与本批次，命中即弹确认框列出冲突题目（ID / 标题 / 状态），取消可中止保存，仅提示不强制拦截（`js/app.js` 新增 `normTitleKey / findTitleDups / confirmTitleDups`）。批量导入（Excel/CSV）原有查重策略不变。
+- feat: 题目编辑器（题目正文 / 参考答案）支持**直接粘贴图片**——`Ctrl/Cmd+V` 粘贴剪贴板截图，自动压缩为 JPEG data URL（长边 ≤1400px、质量 0.85，超 500KB 自动降档），以 Markdown 图片插入光标处并即时预览；图片随题目保存、随题库发布同步到云端，所有访客可见。新增 `.md img` 自适应样式防止大图撑破布局（`js/app.js` + `css/style.css`）。
+- security: 加密备份密钥派生 PBKDF2-SHA256 迭代次数由 150,000 提升至 600,000（`js/backup.js` v20260825a）；`deriveKey` 新增 `iterations` 参数，加密 payload 写入 `iter` 字段、解密按 `payload.iter` 读取（缺失回退 150,000），保证仓库内既有旧备份向后兼容、升级不会导致历史备份无法解密。
+- docs: README 新增「Token 安全（发布 PAT 最小权限原则）」章节——代码实际仅调用 Contents API（GET sha + PUT 文件），推荐 Fine-grained PAT 只限本仓库 + Contents 读写，明确禁用 Classic PAT（`repo` scope 全仓库可写）作为发布 Token，附泄露影响评估与轮换建议。
+- docs: 新增「部署与自定义域名」章节，说明站点托管于 GitHub Pages（`main` 分支）、`it-interview.is-a.dev` 为自定义域名（CNAME 指向 `succedd.github.io`、非跳转）、内容经 Fastly CDN 分发、域名来自 is-a.dev 免费服务。
+- docs: 新增 `cloudflare/部署指南.md`（注册 Cloudflare → 建 KV → deploy → 前端接入全流程），README 统计与部署章节同步指向。
+
+### 2026-08-24
+
+- feat: 自动发布——编辑端题目/分类/岗位增删改（含 AI 出题、批量导入，经 Dexie 表钩子全路径监听）停止 10 秒后自动推送 GitHub，失败自动重试，关页前未发布提醒，顶栏新增状态徽章（可关闭）。
+- feat: 本地数据加密云备份——新增 `js/backup.js`，发布 Token、AI 配置、管理员密码、统计配置、收藏、历史经 AES-256-GCM（PBKDF2 派生密钥）加密后备份到 `data/local-backup.json`，设置页支持设置备份密码、立即备份、凭密码一键恢复。
+- refactor: `cloud.js` 抽出通用 `putFile` 上传助手供题库发布与加密备份共用。
 
 ### 2026-08-23
 - `5ef58ec` analytics: 百度统计切换为 it-interview.is-a.dev 新站点 Tracking ID `856d2b...`。
