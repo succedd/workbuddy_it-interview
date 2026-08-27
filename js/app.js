@@ -84,6 +84,11 @@
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
       case "practice": return pagePractice(r.q);
+      case "review": return pageReview();
+      case "random": {
+        const pool = Services.questions.filter(x => x.status === "published");
+        return pool.length ? App.go("/question/" + pool[Math.floor(Math.random() * pool.length)].id) : pageHome();
+      }
       case "mock": return pageMock();
       case "account": return window.Account ? Account.renderLoginPage() : pageHome();
       default: return pageHome();
@@ -130,7 +135,8 @@
         ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
-    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); });
+    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
+    attachHistory(gs, t => { shPush(t); App.go("/questions?q=" + encodeURIComponent(t)); });
     $("#theme-btn").onclick = cycleTheme;
     $("#menu-toggle").onclick = () => { document.body.classList.toggle("drawer-open"); };
     if (Auth.isAdmin()) {
@@ -155,9 +161,11 @@
       ${navItem("#/category", "layers", "技术体系", p0 === "category")}
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
       ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
+      ${navItem("#/random", "dice", "随机一题", p0 === "random")}
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
       ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
+      ${navItem("#/review", "alert", "错题重练" + (App.reviewDue ? " (" + App.reviewDue + ")" : ""), p0 === "review")}
       <div class="nav-section-title">技术分类</div>
       <div id="side-tree">${renderTree(0, r)}</div>`;
     if (Auth.isAdmin()) {
@@ -230,6 +238,79 @@
   }
 
   /* ============================ 首页 ============================ */
+  /* ============================ 今日5题 & 学习打卡 & 最近搜索 ============================ */
+  const SH_KEY = "search_history";
+  const HOT_TERMS = ["Redis", "MySQL 索引", "消息队列", "JVM", "TCP 三次握手", "分布式事务", "操作系统", "算法"];
+  function shGet() { try { return JSON.parse(localStorage.getItem(SH_KEY) || "[]"); } catch (e) { return []; } }
+  function shPush(q) { if (!q) return; const arr = shGet().filter(x => x.q !== q); arr.unshift({ q, t: Date.now() }); localStorage.setItem(SH_KEY, JSON.stringify(arr.slice(0, 10))); }
+  function attachHistory(input, onGo) {
+    if (!input) return;
+    let dd = null;
+    const close = () => { if (dd) { dd.remove(); dd = null; } };
+    const open = () => {
+      close();
+      const hist = shGet();
+      dd = document.createElement("div");
+      dd.className = "search-dd";
+      let h;
+      if (hist.length) {
+        h = `<div class="sd-head"><span>最近搜索</span><button type="button" class="sd-clear">清空</button></div>`
+          + hist.map(x => `<div class="sd-item" data-q="${U.esc(x.q)}"><span class="sd-ic">${U.icon("history")}</span><span class="sd-q">${U.esc(x.q)}</span><button type="button" class="sd-del" data-del="${U.esc(x.q)}" title="删除这条">×</button></div>`).join("");
+      } else {
+        h = `<div class="sd-head"><span>热门搜索</span></div><div class="sd-hot">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-q="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>`;
+      }
+      dd.innerHTML = h;
+      input.parentNode.appendChild(dd);
+      dd.addEventListener("click", (e) => {
+        const del = e.target.closest(".sd-del");
+        if (del) { e.stopPropagation(); localStorage.setItem(SH_KEY, JSON.stringify(shGet().filter(x => x.q !== del.dataset.del))); open(); return; }
+        if (e.target.closest(".sd-clear")) { localStorage.removeItem(SH_KEY); open(); return; }
+        const it = e.target.closest("[data-q]");
+        if (it && it.dataset.q != null) { input.value = it.dataset.q; close(); onGo(it.dataset.q); }
+      });
+    };
+    input.addEventListener("focus", open);
+    input.addEventListener("input", close);
+    input.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    document.addEventListener("click", (e) => { if (dd && !e.target.closest(".search-dd") && e.target !== input) close(); });
+  }
+
+  function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  /* 今日5题：以日期字符串为种子的确定性抽样——当天固定，次日自动更换 */
+  function todayFive() {
+    const pool = Services.questions.filter(q => q.status === "published").map(q => q.id);
+    const dk = dateKey();
+    let h = 2166136261;
+    for (let i = 0; i < dk.length; i++) { h ^= dk.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const rnd = mulberry32(h >>> 0);
+    const arr = pool.slice();
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+    return arr.slice(0, Math.min(5, arr.length));
+  }
+  function dailyDone() { try { return JSON.parse(localStorage.getItem("daily_done_" + dateKey()) || "[]"); } catch (e) { return []; } }
+  function markDailyDone(id) {
+    const five = todayFive();
+    if (five.indexOf(Number(id)) < 0 && five.indexOf(id) < 0) return false;
+    const done = dailyDone(); const v = Number(id);
+    if (done.indexOf(v) < 0) { done.push(v); localStorage.setItem("daily_done_" + dateKey(), JSON.stringify(done)); }
+    return true;
+  }
+  /* 打卡：基于本地统计的每日访问记录推导连续天数与热力图 */
+  function streakInfo() {
+    const st = Stats.getLocalStats(); const daily = st.daily || {};
+    const total = Object.keys(daily).length;
+    const has = k => !!daily[k];
+    let streak = 0;
+    const d = new Date();
+    if (!has(dateKey(d))) d.setDate(d.getDate() - 1);
+    while (has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    const cells = [];
+    const c = new Date(); c.setDate(c.getDate() - 34);
+    for (let i = 0; i < 35; i++) { const k = dateKey(c); cells.push({ k, n: daily[k] || 0 }); c.setDate(c.getDate() + 1); }
+    return { streak, total, cells };
+  }
+
   async function pageHome() {
     const stats = await Services.stats();
     const tree = Services.categoryTree();
@@ -245,6 +326,45 @@
     const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
+    /* —— 今日5题 & 学习打卡 & 继续上次 —— */
+    const five = todayFive(); const doneSet = dailyDone();
+    const fiveLeft = five.filter(id => doneSet.indexOf(id) < 0);
+    const qById = id => Services.questions.find(x => x.id === id);
+    let fiveHtml = "";
+    if (five.length) {
+      const rows = five.map(id => {
+        const q = qById(id); if (!q) return "";
+        const ok = doneSet.indexOf(id) >= 0;
+        return `<a href="#/question/${id}" style="text-decoration:none;display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--border)">
+          <span>${ok ? "✅" : "⬜"}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`;
+      }).join("");
+      fiveHtml = `<div class="card" style="padding:16px 18px">
+        <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🎯</span><b style="margin-left:8px">今日 5 题</b>
+          <span class="tag ${fiveLeft.length ? "tag-primary" : "tag-success"}" style="margin-left:auto">${doneSet.filter(id => five.indexOf(id) >= 0).length}/${five.length}</span></div>
+        <div class="daily-list">${rows}</div>
+        ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="#/question/${fiveLeft[0]}">开始刷题 →</a>`
+                          : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
+      </div>`;
+    }
+    const sk = streakInfo();
+    const heatHtml = sk.cells.map(c => `<span class="heat-cell h${c.n === 0 ? 0 : c.n <= 2 ? 1 : c.n <= 4 ? 2 : c.n <= 8 ? 3 : 4}" title="${c.k} · ${c.n} 次"></span>`).join("");
+    const streakHtml = `<div class="card" style="padding:16px 18px">
+      <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🔥</span><b style="margin-left:8px">学习打卡</b>
+        <span class="muted" style="margin-left:auto;font-size:12px">累计 ${sk.total} 天</span></div>
+      <div style="font-size:26px;font-weight:700;color:#f59e0b">连续 ${sk.streak} 天</div>
+      <div class="heat-grid" style="margin-top:10px">${heatHtml}</div>
+      <div class="muted" style="font-size:11px;margin-top:6px">最近 35 天 · 打开即打卡</div>
+    </div>`;
+    let resumeHtml = "";
+    try {
+      const lq = JSON.parse(localStorage.getItem("last_question") || "null");
+      if (lq && lq.id && lq.title && Services.questions.some(x => x.id === lq.id)) {
+        resumeHtml = `<a class="card card-hover" href="#/question/${lq.id}" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px 18px">
+          <span style="font-size:22px">📖</span>
+          <span style="flex:1;min-width:0"><b>继续上次</b><span class="muted" style="margin-left:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:70%;vertical-align:bottom">${U.esc(lq.title)}</span></span>
+          <span class="tag tag-primary">继续 →</span></a>`;
+      }
+    } catch (e) {}
     setMain(`
       <section class="hero">
         <h1>IT 面试题库管理系统</h1>
@@ -252,6 +372,7 @@
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
+          <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
@@ -262,6 +383,9 @@
         <div class="stat"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></div>
         <div class="stat ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></div>
       </section>
+
+      ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
+      ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>
@@ -277,8 +401,10 @@
 
       <div class="note" style="margin-top:24px">提示：本项目为纯静态本地版，所有数据保存在当前浏览器（IndexedDB）。首次使用可在「系统设置」配置 AI（DeepSeek Harness）以启用智能出题。管理员密码仅用于本机权限隔离，非服务端安全认证。</div>
     `);
-    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) App.go("/questions?q=" + encodeURIComponent(e.target.value.trim())); });
-    $("#hero-go").onclick = () => { const v = $("#hero-search").value.trim(); if (v) App.go("/questions?q=" + encodeURIComponent(v)); };
+    const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); } };
+    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
+    $("#hero-go").onclick = () => heroGo();
+    attachHistory($("#hero-search"), heroGo);
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
   }
@@ -479,7 +605,13 @@
     };
     const renderGrid = (arr) => {
       const grid = $("#q-grid");
-      if (!arr.length) { grid.innerHTML = `<div class="empty">${U.icon("search")}<p>没有匹配的题目</p></div>`; $("#q-count").textContent = "0"; return; }
+      if (!arr.length) {
+        const term = filters.q;
+        const hot = term ? `<div class="sd-hot" style="margin-top:10px;justify-content:flex-start">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>` : "";
+        grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}</div>`;
+        $$("#q-grid [data-sug]").forEach(b => b.onclick = () => { $("#q-search").value = b.dataset.sug; filters.q = b.dataset.sug; apply(); });
+        $("#q-count").textContent = "0"; return;
+      }
       $("#q-count").textContent = arr.length;
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
       grid.innerHTML = arr.slice((page - 1) * 20, page * 20).map(x => qCard(x, fuseMap ? fuseMap.get(x.id) : null)).join("");
@@ -516,6 +648,7 @@
     `);
     const reSort = (s) => { Object.keys({ updated: 1, views: 1, favorites: 1, aiScore: 1 }).forEach(k => {}); };
     $("#q-search").addEventListener("input", U.debounce(e => { filters.q = e.target.value.trim(); apply(); }, 300));
+    attachHistory($("#q-search"), t => { $("#q-search").value = t; filters.q = t; apply(); });
     $("#f-diff").onchange = e => { filters.difficulty = e.target.value ? [e.target.value] : []; apply(); };
     $("#f-type").onchange = e => { filters.type = e.target.value ? [e.target.value] : []; apply(); };
     $("#f-source").onchange = e => { filters.source = e.target.value ? [e.target.value] : []; apply(); };
@@ -535,6 +668,8 @@
     await Services.incViews(id); await Services.reload();
     await Services.addHistory(id);
     Stats.recordView(id);
+    markDailyDone(q.id);
+    try { localStorage.setItem("last_question", JSON.stringify({ id: q.id, title: q.title })); } catch (e) {}
     const fav = await Services.isFavorite(q.id);
     const related = (q.relatedIds || []).map(rid => Services.questions.find(x => x.id === rid)).filter(Boolean);
     if (!related.length) related.push(...Services.questions.filter(x => x.id !== q.id && x.categoryId === q.categoryId).slice(0, 4));
@@ -595,6 +730,35 @@
       $("#next-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
       $("#prev-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
+  }
+
+  /* ============================ 错题重练 ============================ */
+  async function pageReview() {
+    const ws = await Services.getWeakQuestions();
+    App.reviewDue = ws.length;
+    renderSidebar(parseHash());
+    const cardOf = (q) => `<div class="card rv-card" data-qid="${q.id}">
+      <div style="display:flex;align-items:center;gap:10px">
+        <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
+        <span class="tag ${q._weakMarked === "unknown" ? "tag-warning" : ""}">${q._weakMarked === "unknown" ? "不会" : "不熟悉"}</span>
+      </div>
+      <div class="pill-row" style="margin-top:10px">
+        <button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
+        <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出错题本</button>
+      </div>
+    </div>`;
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
+      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">来自你标记「不会 / 不熟悉」的题目（${ws.length}）</span></div>
+      ${ws.length ? `<div style="display:grid;gap:10px">${ws.map(cardOf).join("")}</div>`
+        : `<div class="note" style="margin-top:14px">🎉 错题本是空的。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里。</div>`}
+    `);
+    $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
+      const qid = parseInt(b.closest(".rv-card").dataset.qid);
+      if (b.dataset.act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
+      else { await Services.removeWeak(qid); U.toast("👍 已掌握，移出错题本", "success"); }
+      pageReview();
+    });
   }
 
   /* ============================ 收藏夹 ============================ */

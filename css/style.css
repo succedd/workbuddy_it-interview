@@ -388,6 +388,29 @@ table.data tr:hover td { background: var(--bg-hover); }
 /* ============ Misc ============ */
 .note { font-size: 12px; color: var(--text-muted); background: var(--bg-subtle); border-left: 3px solid var(--c-warning); padding: 8px 12px; border-radius: 0 8px 8px 0; margin: 10px 0; }
 .note.ai { border-left-color: var(--c-ai); background: var(--c-ai-50); }
+
+/* ============ 今日5题 & 学习打卡 & 搜索下拉（v20260827h） ============ */
+.daily-list a:last-child { border-bottom: none !important; }
+.heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 240px; }
+.heat-cell { width: 100%; aspect-ratio: 1; border-radius: 3px; background: var(--bg-subtle); }
+.heat-cell.h1 { background: #bbf7d0; } .heat-cell.h2 { background: #6ee7b7; } .heat-cell.h3 { background: #10b981; } .heat-cell.h4 { background: #059669; }
+[data-theme="dark"] .heat-cell.h1 { background: #14532d66; } [data-theme="dark"] .heat-cell.h2 { background: #16653488; } [data-theme="dark"] .heat-cell.h3 { background: #16a34abb; } [data-theme="dark"] .heat-cell.h4 { background: #22c55e; }
+.rv-card { padding: 14px 16px; }
+.search-dd { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; min-width: 230px; z-index: 70; box-shadow: var(--shadow-md); }
+.sd-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); padding: 4px 8px 6px; }
+.sd-clear { border: 0; background: none; color: var(--c-primary); cursor: pointer; font-size: 11px; padding: 0; }
+.sd-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text); }
+.sd-item:hover { background: var(--bg-hover); }
+.sd-ic { display: inline-flex; color: var(--text-muted); flex: none; }
+.sd-q { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-del { border: 0; background: none; color: var(--text-muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; visibility: hidden; }
+.sd-item:hover .sd-del { visibility: visible; }
+.sd-hot { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 6px 6px; }
+.tag-link { cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); }
+.tag-link:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.hero-search { position: relative; }
+.topbar-search { position: relative; }
+.toolbar { position: relative; }
 .divider { height: 1px; background: var(--border); margin: 16px 0; }
 .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .row { display: flex; align-items: center; gap: 10px; }
