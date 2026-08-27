@@ -152,6 +152,12 @@ node tools/gen-published.js
 
 ## 更新日志
 
+### 2026-08-27
+
+- perf/rel: **第三方库本地托管**——Dexie / Marked / highlight.js / Fuse.js / DOMPurify 全部改为项目内 `vendor/` 本地文件引用（原有 jsdelivr CDN 6 处引用移除），国内访问不再受海外 CDN 抖动影响，站点渲染不再因「Dexie 未加载」整页白屏。
+- sec: **Markdown 渲染防 XSS**——题目/答案 Markdown 经 `marked` 解析后由 DOMPurify 消毒（`js/utils.js` `U.md`），消除注入风险。
+- docs: 缓存版本号升级至 `?v=20260827a`。
+
 ### 2026-08-26
 
 - perf: **首屏提速**——启动动效分级，仅首次访问完整展示（约 2s），回访快速通过（约 450ms，localStorage 记忆）；云端题库拉取改走 HTTP 缓存（ETag/304），去掉 `cache:"no-store"` + 时间戳强刷，回访不再每次全量重下 546KB 的 `published.json`；云端同步移出启动阻塞路径改为后台执行，拉到新版后原地刷新当前页（`js/app.js` Boot/init + `js/cloud.js` fetchRemote）。

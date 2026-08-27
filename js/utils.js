@@ -84,7 +84,8 @@
     if (!text) return "";
     try {
       marked.setOptions({ breaks: true, gfm: true });
-      return marked.parse(text);
+      var html = marked.parse(text);
+      return window.DOMPurify ? DOMPurify.sanitize(html) : html;
     } catch (e) { return U.esc(text); }
   };
   U.highlightAll = function (root) {

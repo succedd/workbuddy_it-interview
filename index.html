@@ -12,14 +12,14 @@
   <meta property="og:url" content="https://it-interview.is-a.dev/" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563EB'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='monospace' font-weight='bold'%3EI%3C/text%3E%3C/svg%3E" />
   <!-- highlight.js theme (light + dark, toggled by theme) -->
-  <link id="hljs-light" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/github.min.css" />
-  <link id="hljs-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css" disabled />
+  <link id="hljs-light" rel="stylesheet" href="vendor/github.min.css" />
+  <link id="hljs-dark" rel="stylesheet" href="vendor/github-dark.min.css" disabled />
   <!-- App styles -->
-  <link rel="stylesheet" href="css/variables.css?v=20260826f" />
-  <link rel="stylesheet" href="css/style.css?v=20260826f" />
-  <link rel="stylesheet" href="css/animations.css?v=20260826f" />
-  <link rel="stylesheet" href="css/responsive.css?v=20260826f" />
-  <link rel="stylesheet" href="css/loader.css?v=20260826f" />
+  <link rel="stylesheet" href="css/variables.css?v=20260827a" />
+  <link rel="stylesheet" href="css/style.css?v=20260827a" />
+  <link rel="stylesheet" href="css/animations.css?v=20260827a" />
+  <link rel="stylesheet" href="css/responsive.css?v=20260827a" />
+  <link rel="stylesheet" href="css/loader.css?v=20260827a" />
   <!-- 百度统计 -->
   <script>
     var _hmt = _hmt || [];
@@ -65,25 +65,26 @@
   <!-- Modal root -->
   <div id="modal-root"></div>
 
-  <!-- Third-party libraries (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.7/dist/dexie.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <!-- Third-party libraries (locally hosted) -->
+  <script src="vendor/dexie.min.js?v=20260827a"></script>
+  <script src="vendor/marked.min.js?v=20260827a"></script>
+  <script src="vendor/highlight.min.js?v=20260827a"></script>
+  <script src="vendor/fuse.min.js?v=20260827a"></script>
+  <script src="vendor/purify.min.js?v=20260827a"></script>
 
   <!-- App modules (plain scripts, shared window.App namespace) -->
   <!-- 注意：每次改动 js/ 或 data/ 后请同步把下方的 ?v= 版本号往上加，强制浏览器刷新缓存 -->
-  <script src="data/seed.js?v=20260826f"></script>
-  <script src="js/utils.js?v=20260826f"></script>
-  <script src="js/db.js?v=20260826f"></script>
-  <script src="js/auth.js?v=20260826f"></script>
-  <script src="js/search.js?v=20260826f"></script>
-  <script src="js/aiprompts.js?v=20260826f"></script>
-  <script src="js/api.js?v=20260826f"></script>
-  <script src="js/services.js?v=20260826f"></script>
-  <script src="js/cloud.js?v=20260826f"></script>
-  <script src="js/backup.js?v=20260826f"></script>
-  <script src="js/importexport.js?v=20260826f"></script>
-  <script src="js/app.js?v=20260826f"></script>
+  <script src="data/seed.js?v=20260827a"></script>
+  <script src="js/utils.js?v=20260827a"></script>
+  <script src="js/db.js?v=20260827a"></script>
+  <script src="js/auth.js?v=20260827a"></script>
+  <script src="js/search.js?v=20260827a"></script>
+  <script src="js/aiprompts.js?v=20260827a"></script>
+  <script src="js/api.js?v=20260827a"></script>
+  <script src="js/services.js?v=20260827a"></script>
+  <script src="js/cloud.js?v=20260827a"></script>
+  <script src="js/backup.js?v=20260827a"></script>
+  <script src="js/importexport.js?v=20260827a"></script>
+  <script src="js/app.js?v=20260827a"></script>
 </body>
 </html>
