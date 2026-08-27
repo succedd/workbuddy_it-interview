@@ -318,11 +318,15 @@
     const hotTags = ["Java", "MySQL", "Redis", "Spring Boot", "Vue3", "React", "Docker", "Kubernetes", "TCP", "算法", "Python", "AI大模型"];
     const recent = stats.recent.slice(0, 6);
     const best = Services.questions.slice().sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)).slice(0, 6);
-    const catCards = tree.map(c => `<a class="card card-hover" href="#/category?cat=${c.id}" style="text-decoration:none">
+    const catCards = tree.map(c => {
+      const empty = !c.count;
+      return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
+        ${empty ? `<span class="soon-chip">即将上线</span>` : ""}
         <div style="font-size:24px">${U.esc(c.icon || "📁")}</div>
         <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
-        <div class="muted" style="font-size:12px">${c.count} 题 · ${c.era || ""}</div>
-      </a>`).join("");
+        <div class="muted" style="font-size:12px">${empty ? "题目录入中" : c.count + " 题 · " + (c.era || "")}</div>
+      </a>`;
+    }).join("");
     const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
