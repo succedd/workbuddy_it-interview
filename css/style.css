@@ -110,6 +110,9 @@ pre:hover .code-copy, .code-copy:focus-visible { opacity: 1; }
 .btn:hover { background: var(--bg-hover); }
 .btn:active { transform: scale(.96); }
 .btn .ic { width: 16px; height: 16px; }
+/* 全局图标兜底：SVG.ic 无 width/height 属性时默认撑满父容器宽度（会把 h2 里的裸图标渲染成上千px巨型图形）。
+   统一给默认 16px，容器内已有更具体规则（.btn .ic 等）不受影响。 */
+svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 .btn-primary { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
 .btn-primary:hover { background: var(--c-primary-600); }
 .btn-ai { background: var(--c-ai); border-color: var(--c-ai); color: #fff; }
@@ -152,6 +155,7 @@ pre:hover .code-copy, .code-copy:focus-visible { opacity: 1; }
 .tree-row.active { background: var(--c-primary-50); color: var(--c-primary); font-weight: 600; }
 .tree-row .twist { width: 14px; transition: transform .2s; color: var(--text-muted); flex-shrink: 0; }
 .tree-row.open .twist { transform: rotate(90deg); }
+.tree-row .twist svg.ic { width: 12px; height: 12px; }
 .tree-children { margin-left: 12px; border-left: 1px dashed var(--border); padding-left: 4px; }
 .tree-count { margin-left: auto; font-size: 11px; color: var(--text-muted); background: var(--bg-subtle); padding: 1px 7px; border-radius: 999px; }
 .side-nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; color: var(--text-secondary); font-size: 13px; cursor: pointer; }
@@ -271,6 +275,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 /* ============ Empty state ============ */
 .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 .empty .em-ic { width: 56px; height: 56px; opacity: .4; margin-bottom: 12px; }
+.empty .em-ic svg.ic { width: 100%; height: 100%; }   /* 大图标容器内恢复撑满（56px） */
 
 /* ============ Skill card (position detail) ============ */
 .skill-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: var(--bg-elevated); cursor: pointer; transition: transform .15s, box-shadow .15s; }
