@@ -1256,12 +1256,14 @@
       const all = (window.Account && Account.isLoggedIn()) ? (await Account.getReports()) : [];
       const pct = r => (r.total ? Math.round(r.master / r.total * 100) : 0);
       if (all.length > 1) {
-        const rows = all.slice(0, 6).map(r => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
+        const rowHtml = r => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
             <span class="muted" style="font-size:12px;min-width:84px">${U.fmtDate(r.at)}</span>
             <span style="flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.18);overflow:hidden"><span style="display:block;height:100%;width:${pct(r)}%;background:var(--c-success,#16A34A)"></span></span>
             <b style="min-width:40px;text-align:right">${pct(r)}%</b>
             <span class="muted" style="font-size:12px;min-width:70px;text-align:right">${r.master}/${r.total}</span>
-          </div>`).join("");
+          </div>`;
+        const collapsed = all.length > 6;
+        const rows = all.slice(0, 6).map(rowHtml).join("");
         const delta = pct(all[0]) - pct(all[all.length - 1]);
         histHtml = `<div style="max-width:520px;margin:20px auto 0;text-align:left">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -1269,10 +1271,14 @@
             <span class="tag ${delta > 0 ? "tag-success" : delta < 0 ? "tag-danger" : "tag-warning"}">${delta > 0 ? "↑ 提升 " + delta + "%" : delta < 0 ? "↓ 下降 " + Math.abs(delta) + "%" : "持平"}</span>
           </div>
           ${rows}
-          <div class="muted" style="font-size:12px;margin-top:8px">共 ${all.length} 次记录${saved ? " · 本次已存云端" : ""}</div>
+          ${collapsed ? `<div id="hist-extra" style="display:none">${all.slice(6).map(rowHtml).join("")}</div>` : ""}
+          <div class="muted" style="font-size:12px;margin-top:8px">共 ${all.length} 次记录${saved ? " · 本次已存云端" : ""}${collapsed ? ` · <a href="#" id="hist-more" style="color:var(--c-primary)">查看全部</a>` : ""}</div>
         </div>`;
       } else if (saved) {
         histHtml = `<div class="muted" style="font-size:13px;margin-top:14px">本次成绩已存到云端，再面一次就能看到趋势对比</div>`;
+      } else {
+        /* 未登录：结果页云端功能处原本「隐身」，补引导避免用户困惑 */
+        histHtml = `<div class="muted" style="font-size:13px;margin-top:14px">登录后可保存成绩到云端，并留存历次趋势对比 · <a href="#/account" style="color:var(--c-primary)">去登录 →</a></div>`;
       }
     } catch (e) {}
     setMain(`<div class="empty" style="text-align:left">
@@ -1290,6 +1296,14 @@
         <a class="btn" href="#/mock">${U.icon("refresh")} 再面一次</a>
       </div></div>`);
     $("#exp").onclick = () => U.download("模拟面试报告.md", md, "text/markdown");
+    const histMore = $("#hist-more");
+    if (histMore) histMore.onclick = (e) => {
+      e.preventDefault();
+      const ex = $("#hist-extra");
+      const open = ex.style.display === "none";
+      ex.style.display = open ? "block" : "none";
+      histMore.textContent = open ? "收起" : "查看全部";
+    };
   }
 
   /* ============================ 管理员：登录 ============================ */
