@@ -6,12 +6,14 @@
   const U = {};
 
   /* ---------- 图标（内联 SVG，stroke 用 currentColor） ---------- */
-  const P = 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+  /* width/height 属性直接写在 svg 上：无 CSS 或 CSS 异常时也不会撑满容器渲染成巨型图形（比纯 CSS 兜底更彻底），
+     实际尺寸仍由 CSS .btn .ic 等规则覆盖，此处仅为默认保底值 */
+  const P = 'width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
   U.ICONS = {
     search: `<svg class="ic" viewBox="0 0 24 24" ${P}><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`,
     home: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>`,
     bookmark: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M6 4h12v16l-6-4-6 4z"/></svg>`,
-    bookmarkFill: `<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 4h12v16l-6-4-6 4z"/></svg>`,
+    bookmarkFill: `<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 4h12v16l-6-4-6 4z"/></svg>`,
     history: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>`,
     dice: `<svg class="ic" viewBox="0 0 24 24" ${P}><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.3" cy="8.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="15.7" cy="15.7" r="1.5" fill="currentColor" stroke="none"/></svg>`,
     grid: `<svg class="ic" viewBox="0 0 24 24" ${P}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`,
