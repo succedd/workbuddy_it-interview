@@ -25,8 +25,8 @@ const MAX_TOP = 20;
 function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
   };
 }
 
@@ -154,15 +154,25 @@ function publicUser(u) {
            createdAt: u.created_at, lastLoginAt: u.last_login_at };
 }
 
-/* 从 Authorization: Bearer 解析会话，返回 user 行或 null */
-async function sessionUser(db, request) {
+/* 解析会话 token：优先 Authorization: Bearer（64 位 hex），
+   兼容 ?token= 查询参数（sendBeacon 无法携带自定义 header，兜底上传用）。
+   两处均用 64 位 hex 白名单校验，杜绝注入风险。 */
+function extractToken(request) {
   const h = request.headers.get("Authorization") || "";
   const m = /^Bearer\s+([0-9a-f]{64})$/i.exec(h.trim());
-  if (!m) return null;
+  if (m) return m[1];
+  const t = new URL(request.url).searchParams.get("token") || "";
+  return /^[0-9a-f]{64}$/i.test(t) ? t : null;
+}
+
+/* 从 Authorization/查询参数解析会话，返回 user 行或 null */
+async function sessionUser(db, request) {
+  const token = extractToken(request);
+  if (!token) return null;
   const now = Date.now();
   const row = await db.prepare(
     "SELECT u.* , s.expires_at AS sess_exp FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ?")
-    .bind(m[1]).first();
+    .bind(token).first();
   if (!row || row.sess_exp < now || row.status !== 1) return null;
   return row;
 }

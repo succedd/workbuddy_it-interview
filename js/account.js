@@ -90,11 +90,13 @@
     const [fav, his, weak] = await Promise.all([
       db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray(),
     ]);
-    return {
+    const snap = {
       favorites: fav.map(x => ({ id: x.questionId, at: x.createdAt })),
       histories: his.map(x => ({ id: x.questionId, views: x.views || 1, at: x.viewedAt || x.createdAt || Date.now() })),
       weak: weak.map(x => ({ id: x.questionId, at: x.createdAt })),
     };
+    A._rememberSnapshot(snap);   // 缓存快照，供关闭页面时 sendBeacon 兜底使用
+    return snap;
   }
 
   A.syncUp = syncUp;
@@ -103,6 +105,39 @@
     const payload = await collectLocal();
     return call("PUT", "/me/data", payload);
   }
+
+  /* ---------------- 关闭/隐藏页面时的兜底上传（sendBeacon） ----------------
+   * 场景：用户刷完题直接关标签页/切后台，常规 fetch 可能被浏览器取消，
+   * 导致最后一次学习数据没传上去。sendBeacon 专为这种场景设计，
+   * 失败时降级为 keepalive fetch。token 走查询参数（sendBeacon 无法带自定义 header）。
+   ----------------------------------------------- */
+  let lastLocalSnapshot = null;
+  A._rememberSnapshot = function (snap) { lastLocalSnapshot = snap; };
+
+  A.beaconSync = function () {
+    try {
+      if (!A.isLoggedIn() || !lastLocalSnapshot) return;
+      const payload = JSON.stringify(lastLocalSnapshot);
+      const url = apiBase() + "/me/data?token=" + encodeURIComponent(A.getToken());
+      let ok = false;
+      if (navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: "application/json" });
+        ok = navigator.sendBeacon(url, blob);
+      }
+      if (!ok) {
+        fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch (_) { /* 兜底逻辑，任何异常静默 */ }
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") A.beaconSync();
+  });
+  window.addEventListener("pagehide", () => A.beaconSync());
 
   A.mergeFromCloud = mergeFromCloud;
   async function mergeFromCloud() {
