@@ -50,6 +50,26 @@
   };
   U.icon = function (name) { return U.ICONS[name] || ""; };
 
+  /* 复制文本到剪贴板：优先 Clipboard API，失败降级 textarea + execCommand，返回是否成功 */
+  U.copyText = async function (text) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (e) { /* 权限被拒或非安全上下文，继续降级 */ }
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.top = "-9999px"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return !!ok;
+    } catch (e2) { return false; }
+  };
+
   /* ---------- DOM 与字符串 ---------- */
   U.qs = (s, r) => (r || document).querySelector(s);
   U.qsa = (s, r) => Array.from((r || document).querySelectorAll(s));

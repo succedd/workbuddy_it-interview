@@ -142,6 +142,20 @@
   });
   window.addEventListener("pagehide", () => A.beaconSync());
 
+  /* 模拟面试报告：保存一条到云端（登录后），失败静默，绝不打断面试流程 */
+  A.saveReport = async function (r) {
+    if (!A.isLoggedIn()) return false;
+    try { const res = await call("POST", "/me/reports", r); return !!(res && res.ok); }
+    catch (e) { return false; }
+  };
+
+  /* 拉取历次模拟面试报告（最近 20 次），未登录或接口不可用时返回空数组 */
+  A.getReports = async function () {
+    if (!A.isLoggedIn()) return [];
+    try { const res = await call("GET", "/me/reports"); return (res && res.reports) || []; }
+    catch (e) { return []; }
+  };
+
   A.mergeFromCloud = mergeFromCloud;
   async function mergeFromCloud() {
     if (!A.isLoggedIn()) return;

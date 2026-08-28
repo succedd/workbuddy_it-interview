@@ -180,8 +180,8 @@
 
   /* ============================ 侧边栏 ============================ */
   function renderSidebar(r) {
-    const navItem = (href, icon, label, active) =>
-      `<a class="side-nav-item ${active ? "active" : ""}" href="${href}">${U.icon(icon)}<span>${label}</span></a>`;
+    const navItem = (href, icon, label, active, badge) =>
+      `<a class="side-nav-item ${active ? "active" : ""}${badge ? " has-due" : ""}" href="${href}">${U.icon(icon)}<span>${label}</span>${badge ? `<span class="due-badge">${badge}</span>` : ""}</a>`;
     const p0 = r.parts[0] || "home";
     let html = `
       <div class="nav-section-title">导航</div>
@@ -193,7 +193,7 @@
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
       ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
-      ${navItem("#/review", "alert", "错题重练" + (App.reviewDue ? " (" + App.reviewDue + ")" : ""), p0 === "review")}
+      ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
       <div class="nav-section-title">技术分类</div>
       <div id="side-tree">${renderTree(0, r)}</div>`;
     if (Auth.isAdmin()) {
@@ -451,6 +451,20 @@
         <div style="margin-top:12px;font-size:13px">薄弱分类 Top3：${catTop3}</div>
       </div>`;
     } catch (e) { weekHtml = ""; }
+    /* —— 到期复习横幅：有到期题时在首页最顶部醒目提醒（比侧边栏小圆点显眼得多） —— */
+    let dueBannerHtml = "";
+    try {
+      const wl = await Services.weakList();
+      const dn = (wl.due || []).length;
+      App.reviewDue = dn;
+      if (dn > 0) {
+        dueBannerHtml = `<a class="card card-hover review-banner" href="#/review" style="margin-top:20px">
+          <span class="rb-ic">📚</span>
+          <span class="rb-txt"><b style="font-size:16px">今天有 ${dn} 道题到复习时间了</b>
+            <div class="muted" style="font-size:13px;margin-top:3px">趁还记得赶紧巩固，错过这次复习间隔会拉得更长</div></span>
+          <span class="tag tag-warning" style="white-space:nowrap">立即复习 →</span></a>`;
+      }
+    } catch (e) {}
     setMain(`
       <section class="hero">
         <h1>IT 面试题库管理系统</h1>
@@ -470,6 +484,7 @@
         <div class="stat ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></div>
       </section>
 
+      ${dueBannerHtml}
       ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
       ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
       ${weekHtml}
@@ -790,6 +805,7 @@
       <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
         <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
         <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
+        <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
         ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
         ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
@@ -818,6 +834,17 @@
       U.toast("已加入错题重练，到期会提醒复习", "warn");
       const info = await Services.weakInfo(q.id);
       if (info) { const st = $("#weak-status"); if (!st) { const b = $("#weak-btn"); b.insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status">📅 复习中 · ${Services.EBBS_LABEL[info.box]} 后</span>`); } }
+    };
+    /* 分享：手机优先调起系统分享面板，桌面降级为复制链接；用户主动取消分享时不降级 */
+    $("#share-btn").onclick = async () => {
+      const url = location.origin + location.pathname + "#/question/" + q.id;
+      const title = q.title + " · IT面试题库";
+      if (navigator.share) {
+        try { await navigator.share({ title, text: q.title, url }); return; }
+        catch (e) { if (e && (e.name === "AbortError" || e.name === "NotAllowedError")) return; }
+      }
+      const ok = await U.copyText(url);
+      U.toast(ok ? "链接已复制，粘贴即可分享给朋友" : "复制失败，请手动复制地址栏链接", ok ? "success" : "error");
     };
     if (Auth.isAdmin()) {
       $("#del-btn").onclick = async () => {
@@ -1208,10 +1235,46 @@
     };
     show();
   }
-  function finishMock(pos, years, pool, mastery, unknownList, cov, t0) {
+  async function finishMock(pos, years, pool, mastery, unknownList, cov, t0) {
     const sec = Math.floor((Date.now() - t0) / 1000);
     const covKeys = Object.keys(cov);
     let md = `# 模拟面试报告\n\n- 岗位：${pos ? pos.name : "通用"}\n- 年限：${years}\n- 题目数：${pool.length}\n- 用时：${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}\n- 掌握：${mastery.master} 不熟悉：${mastery.familiar} 不会：${mastery.unknown}\n- 技术覆盖：${covKeys.join("、")}\n\n## 需加强的题目\n${unknownList.length ? unknownList.map(t => "- " + t).join("\n") : "（无）"}\n`;
+    /* 云端保存：登录后写入，失败静默，绝不打断面试结果展示 */
+    let saved = false;
+    try {
+      if (window.Account && Account.isLoggedIn()) {
+        saved = await Account.saveReport({
+          position: pos ? pos.name : "通用", years: String(years || ""),
+          total: pool.length, master: mastery.master, familiar: mastery.familiar,
+          unknown: mastery.unknown, duration: sec, coverage: covKeys.join("、"),
+        });
+      }
+    } catch (e) { saved = false; }
+    /* 历次成绩趋势：拉取云端历史做对比（未登录或接口不可用时静默跳过） */
+    let histHtml = "";
+    try {
+      const all = (window.Account && Account.isLoggedIn()) ? (await Account.getReports()) : [];
+      const pct = r => (r.total ? Math.round(r.master / r.total * 100) : 0);
+      if (all.length > 1) {
+        const rows = all.slice(0, 6).map(r => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
+            <span class="muted" style="font-size:12px;min-width:84px">${U.fmtDate(r.at)}</span>
+            <span style="flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.18);overflow:hidden"><span style="display:block;height:100%;width:${pct(r)}%;background:var(--c-success,#16A34A)"></span></span>
+            <b style="min-width:40px;text-align:right">${pct(r)}%</b>
+            <span class="muted" style="font-size:12px;min-width:70px;text-align:right">${r.master}/${r.total}</span>
+          </div>`).join("");
+        const delta = pct(all[0]) - pct(all[all.length - 1]);
+        histHtml = `<div style="max-width:520px;margin:20px auto 0;text-align:left">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <b style="font-size:15px">历次成绩趋势</b>
+            <span class="tag ${delta > 0 ? "tag-success" : delta < 0 ? "tag-danger" : "tag-warning"}">${delta > 0 ? "↑ 提升 " + delta + "%" : delta < 0 ? "↓ 下降 " + Math.abs(delta) + "%" : "持平"}</span>
+          </div>
+          ${rows}
+          <div class="muted" style="font-size:12px;margin-top:8px">共 ${all.length} 次记录${saved ? " · 本次已存云端" : ""}</div>
+        </div>`;
+      } else if (saved) {
+        histHtml = `<div class="muted" style="font-size:13px;margin-top:14px">本次成绩已存到云端，再面一次就能看到趋势对比</div>`;
+      }
+    } catch (e) {}
     setMain(`<div class="empty" style="text-align:left">
       <h2>${U.icon("check")} 面试完成</h2>
       <div class="grid grid-cols-2" style="max-width:520px;margin:16px auto">
@@ -1221,6 +1284,7 @@
         <div class="card"><div class="num" style="color:var(--c-danger)">${mastery.unknown}</div><div class="label">不会</div></div>
       </div>
       <p class="secondary">技术方向覆盖：${covKeys.join("、") || "—"}</p>
+      ${histHtml}
       <div class="pill-row" style="justify-content:center">
         <button class="btn btn-primary" id="exp">${U.icon("download")} 导出报告(MD)</button>
         <a class="btn" href="#/mock">${U.icon("refresh")} 再面一次</a>
@@ -2827,8 +2891,10 @@
           U.toast("📚 有 " + fresh.length + " 道题到复习时间了，去「错题重练」巩固记忆", "info", 6000);
           fresh.forEach(w => notified.add(w.questionId));
         }
-        const badge = document.querySelector('.side-nav-item[href="#/review"]');
-        if (badge && due.length) badge.classList.add("nav-pulse");
+        const item = document.querySelector('.side-nav-item[href="#/review"]');
+        if (item && due.length) item.classList.add("nav-pulse");
+        /* 徽章数字实时更新：用户停留在任意页面时，新到期的题也能反映到侧边栏 */
+        if (App.reviewDue !== due.length) { App.reviewDue = due.length; renderSidebar(parseHash()); }
       } catch (_) {}
     };
     check();

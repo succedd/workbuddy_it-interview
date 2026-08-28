@@ -63,3 +63,20 @@ CREATE TABLE IF NOT EXISTS rl_auth (
   cnt          INTEGER NOT NULL DEFAULT 0,
   window_start INTEGER NOT NULL
 );
+
+-- 模拟面试报告（历次成绩，用于趋势对比）
+CREATE TABLE IF NOT EXISTS mock_reports (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    INTEGER NOT NULL,
+  created_at INTEGER NOT NULL,               -- epoch ms
+  position   TEXT NOT NULL DEFAULT '',       -- 岗位名
+  years      TEXT NOT NULL DEFAULT '',       -- 年限
+  total      INTEGER NOT NULL DEFAULT 0,     -- 题目数
+  master     INTEGER NOT NULL DEFAULT 0,     -- 掌握
+  familiar   INTEGER NOT NULL DEFAULT 0,     -- 不熟悉
+  unknown    INTEGER NOT NULL DEFAULT 0,     -- 不会
+  duration   INTEGER NOT NULL DEFAULT 0,     -- 用时（秒）
+  coverage   TEXT NOT NULL DEFAULT ''        -- 技术覆盖，顿号分隔
+);
+
+CREATE INDEX IF NOT EXISTS idx_reports_user ON mock_reports(user_id, created_at);

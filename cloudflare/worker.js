@@ -340,6 +340,45 @@ async function handlePutMyData(env, request) {
 
 /* ---------- 管理员接口 ---------- */
 
+/* ---------- 模拟面试报告：云端保存 + 历次成绩 ---------- */
+/* 注意：mock_reports 表若尚未创建，全部静默降级（返回空/跳过保存），
+   绝不影响收藏/历史/错题等核心同步，也不打断面试流程。 */
+
+async function handleGetReports(env, request) {
+  const db = env.USERS;
+  const u = await sessionUser(db, request);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  try {
+    const r = await db.prepare(
+      "SELECT id, created_at AS at, position, years, total, master, familiar, unknown, duration, coverage " +
+      "FROM mock_reports WHERE user_id = ? ORDER BY created_at DESC LIMIT 20").bind(u.id).all();
+    return jsonResp({ reports: r.results || [] });
+  } catch (e) {
+    return jsonResp({ reports: [], note: "reports_unavailable" });
+  }
+}
+
+async function handleSaveReport(env, request) {
+  const db = env.USERS;
+  const u = await sessionUser(db, request);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  let b = {};
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  const num = (v, d) => { const n = parseInt(v); return isNaN(n) ? d : n; };
+  try {
+    await db.prepare(
+      "INSERT INTO mock_reports (user_id, created_at, position, years, total, master, familiar, unknown, duration, coverage) " +
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .bind(u.id, Date.now(),
+        String(b.position || "").slice(0, 60), String(b.years || "").slice(0, 20),
+        num(b.total, 0), num(b.master, 0), num(b.familiar, 0), num(b.unknown, 0), num(b.duration, 0),
+        String(b.coverage || "").slice(0, 400)).run();
+    return jsonResp({ ok: true });
+  } catch (e) {
+    return jsonResp({ ok: false, note: "save_skipped" });
+  }
+}
+
 async function handleAdminUsers(env, request) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
@@ -416,6 +455,8 @@ export default {
         if (p === "/auth/me" && request.method === "GET") return await handleMe(env, request);
         if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request);
         if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request);
+        if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request);
+        if (p === "/me/reports" && request.method === "POST") return await handleSaveReport(env, request);
         if ((m = /^\/admin\/users\/(\d+)\/status$/.exec(p)) && request.method === "POST")
           return await handleAdminUserStatus(env, request, parseInt(m[1]));
         if ((m = /^\/admin\/users\/(\d+)\/reset$/.exec(p)) && request.method === "POST")

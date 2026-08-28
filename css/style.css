@@ -520,7 +520,16 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 .tag-link:hover { color: #2563EB; border-color: #93c5fd; }
 .hero-search .btn { white-space: nowrap; }
 
-/* 错题重练侧边栏入口：有到期题时的脉冲提醒 */
-.side-nav-item.nav-pulse { position: relative; }
-.side-nav-item.nav-pulse::after { content: ""; position: absolute; left: 4px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--c-warning, #F59E0B); animation: navPulse 1.6s ease-in-out infinite; }
-@keyframes navPulse { 0%, 100% { opacity: .35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.45); } }
+/* 错题重练侧边栏入口：有到期题时的脉冲提醒（光晕扩散 + 整行呼吸，远比单纯缩放醒目） */
+.side-nav-item.nav-pulse { position: relative; animation: navPulseRow 1.8s ease-in-out infinite; }
+.side-nav-item.nav-pulse::after { content: ""; position: absolute; left: 5px; top: 50%; width: 11px; height: 11px; margin-top: -5.5px; border-radius: 50%; background: var(--c-warning, #F59E0B); animation: navPulse 1.5s ease-out infinite; }
+@keyframes navPulse { 0% { transform: scale(.8); box-shadow: 0 0 0 0 rgba(245,158,11,.7); } 70% { transform: scale(1.28); box-shadow: 0 0 0 10px rgba(245,158,11,0); } 100% { transform: scale(.8); box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
+@keyframes navPulseRow { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(245,158,11,.16); } }
+/* 到期数量徽章（侧边栏「错题重练」右侧） */
+.due-badge { margin-left: auto; min-width: 20px; padding: 1px 7px; border-radius: 10px; background: var(--c-warning, #F59E0B); color: #fff; font-size: 12px; font-weight: 700; line-height: 18px; text-align: center; animation: badgeBob 1.8s ease-in-out infinite; }
+@keyframes badgeBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+/* 首页到期复习横幅（最醒目的一层提醒） */
+.review-banner { display: flex; align-items: center; gap: 14px; padding: 16px 20px; text-decoration: none; border: 1px solid rgba(245,158,11,.45); background: linear-gradient(90deg, rgba(245,158,11,.14), rgba(245,158,11,.03)); animation: bannerGlow 2.4s ease-in-out infinite; }
+.review-banner .rb-ic { font-size: 26px; animation: badgeBob 1.8s ease-in-out infinite; }
+.review-banner .rb-txt { flex: 1; min-width: 0; }
+@keyframes bannerGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.3); } 50% { box-shadow: 0 0 0 7px rgba(245,158,11,0); } }
