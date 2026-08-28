@@ -1275,10 +1275,10 @@
           <div class="muted" style="font-size:12px;margin-top:8px">共 ${all.length} 次记录${saved ? " · 本次已存云端" : ""}${collapsed ? ` · <a href="#" id="hist-more" style="color:var(--c-primary)">查看全部</a>` : ""}</div>
         </div>`;
       } else if (saved) {
-        histHtml = `<div class="muted" style="font-size:13px;margin-top:14px">本次成绩已存到云端，再面一次就能看到趋势对比</div>`;
+        histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>本次成绩已存到云端，再面一次就能看到趋势对比</div>`;
       } else {
-        /* 未登录：结果页云端功能处原本「隐身」，补引导避免用户困惑 */
-        histHtml = `<div class="muted" style="font-size:13px;margin-top:14px">登录后可保存成绩到云端，并留存历次趋势对比 · <a href="#/account" style="color:var(--c-primary)">去登录 →</a></div>`;
+        /* 未登录：结果页云端功能处原本「隐身」，补引导避免用户困惑；升级为醒目提示条，避免低调灰字被忽略 */
+        histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>登录后可保存成绩到云端，并留存历次趋势对比 · <a href="#/account" style="color:var(--c-primary,#2563EB);font-weight:600">去登录 →</a></div>`;
       }
     } catch (e) {}
     setMain(`<div class="empty" style="text-align:left">
