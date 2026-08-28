@@ -5,7 +5,7 @@
  *  - 跨域资源（jsdelivr CDN、百度统计、API worker）：不拦截，交由浏览器正常处理
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260827s";
+const VERSION = "20260827t";
 const CACHE = "iti-pwa-v" + VERSION;
 const APP_SHELL = [
   "/", "/index.html",
@@ -45,7 +45,9 @@ self.addEventListener("fetch", (event) => {
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
-        const net = await fetch(req);
+        /* cache:"reload" 强制绕过 HTTP 缓存（GitHub Pages HTML 固定 max-age=600），
+           否则 network-first 的 fetch 仍会命中 10 分钟缓存，发版后用户要等 10 分钟才能拿到新版 */
+        const net = await fetch(req, { cache: "reload" });
         const cache = await caches.open(CACHE);
         cache.put("/", net.clone()).catch(() => {});
         cache.put("/index.html", net.clone()).catch(() => {});

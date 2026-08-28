@@ -179,6 +179,10 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-08-28 · SW 导航请求绕过 HTTP 缓存，发版即生效（缓存版本 `20260827t`）
+- SW 导航请求 `fetch(req, { cache: "reload" })` 强制绕过 HTTP 缓存——此前虽是 network-first，但 `fetch` 默认仍会命中 GitHub Pages 的 HTML `max-age=600`，导致每次发版后用户最多要等 10 分钟才拿到新版（本次排查「看不到提示」的次生原因）。
+- 纯前端改动，无需域名/Cloudflare；此后部署即对 returning 用户生效（首次访问用户本就无缓存）。
+
 ### 2026-08-28 · 图标尺寸写进 SVG 属性，彻底根治巨型图标（缓存版本 `20260827s`）
 - `U.icon` 生成的所有 SVG 直接带上 `width="16" height="16"` **属性**（`bookmarkFill` 单独补写）——即使 CSS 被旧缓存拦截或加载失败，图标也绝不撑满容器；实际尺寸仍由 `.btn .ic` 等规则覆盖，视觉不变。
 - 背景：版本 r 上线后仍有用户浏览器卡在 q 版（HTML `Cache-Control: max-age=600` + SW 双重缓存），q 版存在巨型图标 bug。本次 bump s 强制全部缓存失效，双保险根治。
