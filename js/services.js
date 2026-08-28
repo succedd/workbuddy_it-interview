@@ -152,9 +152,10 @@
   };
   S.getFavorites = async function () {
     const fs = await db.favorites.orderBy("createdAt").reverse().toArray();
-    const out = [];
-    for (const f of fs) { const q = await db.questions.get(f.questionId); if (q) out.push(q); }
-    return out;
+    /* bulkGet 一次取全部题目，替代逐条 await get 的 N+1 查询 */
+    const qs = await db.questions.bulkGet(fs.map(f => f.questionId));
+    const qmap = new Map(); qs.forEach(q => { if (q) qmap.set(q.id, q); });
+    return fs.filter(f => qmap.has(f.questionId)).map(f => qmap.get(f.questionId));
   };
   S.addHistory = async function (qid) {
     const existing = await db.histories.where("questionId").equals(qid).first();
@@ -165,9 +166,10 @@
   };
   S.getHistories = async function () {
     const hs = await db.histories.orderBy("createdAt").reverse().toArray();
-    const out = [];
-    for (const h of hs) { const q = await db.questions.get(h.questionId); if (q) out.push({ q, at: h.createdAt }); }
-    return out;
+    /* bulkGet 一次取全部题目，替代逐条 await get 的 N+1 查询 */
+    const qs = await db.questions.bulkGet(hs.map(h => h.questionId));
+    const qmap = new Map(); qs.forEach(q => { if (q) qmap.set(q.id, q); });
+    return hs.filter(h => qmap.has(h.questionId)).map(h => ({ q: qmap.get(h.questionId), at: h.createdAt }));
   };
 
   /* 薄弱题本：标记「不熟悉 / 不会」的题目持久化收集
@@ -193,6 +195,13 @@
     if (existing) { await db.weakBank.delete(existing.id); S.weakCount = await db.weakBank.count(); }
   };
   S.isWeak = async function (qid) { const r = await db.weakBank.where("questionId").equals(qid).first(); return !!r; };
+  /* 单题复习详情：详情页展示记忆曲线状态用（box 阶段 / 下次到期时间） */
+  S.weakInfo = async function (qid) {
+    const w = await db.weakBank.where("questionId").equals(qid).first();
+    if (!w) return null;
+    if (!w.dueAt) { w.box = 0; w.dueAt = (w.createdAt || Date.now()) + S.EBBS[0]; }
+    return { box: w.box || 0, dueAt: w.dueAt, marked: w.marked || "" };
+  };
   S.getWeakQuestions = async function () {
     const ws = await db.weakBank.orderBy("updatedAt").reverse().toArray();   // 最近标记的在最前
     const out = [], seen = new Set();

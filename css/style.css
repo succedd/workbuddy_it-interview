@@ -519,3 +519,8 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 .tag-link { cursor: pointer; transition: color .12s ease, border-color .12s ease; }
 .tag-link:hover { color: #2563EB; border-color: #93c5fd; }
 .hero-search .btn { white-space: nowrap; }
+
+/* 错题重练侧边栏入口：有到期题时的脉冲提醒 */
+.side-nav-item.nav-pulse { position: relative; }
+.side-nav-item.nav-pulse::after { content: ""; position: absolute; left: 4px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--c-warning, #F59E0B); animation: navPulse 1.6s ease-in-out infinite; }
+@keyframes navPulse { 0%, 100% { opacity: .35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.45); } }

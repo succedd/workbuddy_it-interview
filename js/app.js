@@ -73,6 +73,8 @@
     setPageKeys(null);
     const r = parseHash();
     renderSidebar(r);
+    /* 动态 document.title：浏览器标签/历史/收藏可区分页面（404 与详情页会再覆盖） */
+    document.title = "IT面试题库管理系统";
     if (r.parts[0] === "admin") {
       if (!App.requireAdmin()) return;
       const sub = r.parts[1] || "dashboard";
@@ -104,8 +106,21 @@
       }
       case "mock": return pageMock();
       case "account": return window.Account ? Account.renderLoginPage() : pageHome();
-      default: return pageHome();
+      default: return page404(r.parts.join("/"));
     }
+  }
+
+  /* ============================ 404 页 ============================ */
+  function page404(path) {
+    document.title = "页面不存在 · IT面试题库";
+    setMain(`<div class="empty" style="padding:60px 0">
+      <div style="font-size:56px;font-weight:700;color:var(--c-primary);opacity:.25">404</div>
+      <h2>页面不存在</h2>
+      <p class="secondary">访问的地址 <code>${U.esc("#/" + (path || ""))}</code> 不存在或已被移动。</p>
+      <div class="pill-row" style="justify-content:center;margin-top:16px">
+        <a class="btn btn-primary" href="#/">${U.icon("home")} 返回首页</a>
+        <a class="btn" href="#/questions">${U.icon("layers")} 浏览题目</a>
+      </div></div>`);
   }
 
   /* ============================ 顶部栏 ============================ */
@@ -428,6 +443,7 @@
 
   /* ============================ 技术体系页 ============================ */
   async function pageCategory(q) {
+    document.title = "技术体系 · IT面试题库";
     const catId = q.cat ? parseInt(q.cat) : null;
     const tree = Services.categoryTree();
     const childrenOfId = id => Services.childrenOf(id);
@@ -496,6 +512,7 @@
 
   /* ============================ 岗位体系页 ============================ */
   async function pagePositions() {
+    document.title = "岗位体系 · IT面试题库";
     const byStage = Services.positionsByStage();
     const hiddenIds = new Set(Services.positions.filter(p => Services.isHiddenPosition(p)).map(p => p.id));
     const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
@@ -596,6 +613,7 @@
 
   /* ============================ 题目列表页 ============================ */
   async function pageQuestions(q) {
+    document.title = "题目列表 · IT面试题库";
     const diffs = ["初级", "中级", "高级", "专家"];
     const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
     let base = Services.questions.slice();
@@ -682,12 +700,14 @@
   async function pageQuestionDetail(id) {
     const q = await Services.getQuestion(parseInt(id));
     if (!q) { setMain(`<div class="empty">未找到该题目</div>`); return; }
+    document.title = q.title + " · IT面试题库";   // 详情页 title 用题目标题
     await Services.incViews(id); await Services.reload();
     await Services.addHistory(id);
     Stats.recordView(id);
     markDailyDone(q.id);
     try { localStorage.setItem("last_question", JSON.stringify({ id: q.id, title: q.title })); } catch (e) {}
     const fav = await Services.isFavorite(q.id);
+    const weakInfo = await Services.weakInfo(q.id);   // 该题的复习状态（null=不在错题本）
     const related = (q.relatedIds || []).map(rid => Services.questions.find(x => x.id === rid)).filter(Boolean);
     if (!related.length) related.push(...Services.questions.filter(x => x.id !== q.id && x.categoryId === q.categoryId).slice(0, 4));
     const posByName = new Map(); Services.positions.forEach(p => { posByName.set(p.name, p); if (p.direction) posByName.set(Services.posFullName(p), p); });
@@ -715,6 +735,7 @@
       <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
         <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
         <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
+        ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
         ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
           <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
@@ -735,11 +756,13 @@
       U.toast(nowFav ? "已收藏" : "已取消收藏", "success");
     };
     $("#weak-btn").onclick = async () => {
-      if (await Services.isWeak(q.id)) { U.toast("该题已在错题重练中，可到「错题重练」页复习", "info"); return; }
+      if (weakInfo) { U.toast("该题已在错题重练（第 " + (weakInfo.box + 1) + "/8 阶段），到「错题重练」页复习即可", "info"); return; }
       await Services.addWeak(q.id, "unknown");
       App.reviewDue = (App.reviewDue || 0) + 1;
       renderSidebar(parseHash());
       U.toast("已加入错题重练，到期会提醒复习", "warn");
+      const info = await Services.weakInfo(q.id);
+      if (info) { const st = $("#weak-status"); if (!st) { const b = $("#weak-btn"); b.insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status">📅 复习中 · ${Services.EBBS_LABEL[info.box]} 后</span>`); } }
     };
     if (Auth.isAdmin()) {
       $("#del-btn").onclick = async () => {
@@ -773,6 +796,7 @@
 
   /* ============================ 错题重练（艾宾浩斯记忆曲线） ============================ */
   async function pageReview() {
+    document.title = "错题重练 · IT面试题库";
     const { due, upcoming } = await Services.weakList();
     App.reviewDue = due.length;
     renderSidebar(parseHash());
@@ -815,14 +839,24 @@
 
   /* ============================ 收藏夹 ============================ */
   async function pageFavorites() {
+    document.title = "收藏夹 · IT面试题库";
     const favs = await Services.getFavorites();
+    const PAGE = 40; let shown = Math.min(PAGE, favs.length);
+    const renderGrid = () => {
+      $("#fav-grid").innerHTML = favs.length
+        ? favs.slice(0, shown).map(q => qCard(q)).join("") + (shown < favs.length ? `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="fav-more">加载更多（${favs.length - shown}）</button></div>` : "")
+        : '<div class="empty">还没有收藏任何题目</div>';
+      const mb = $("#fav-more");
+      if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, favs.length); renderGrid(); };
+    };
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>收藏夹</span></div>
       <div class="section-head"><h2>我的收藏（${favs.length}）</h2>
         <div><button class="btn btn-sm" id="exp-md">${U.icon("download")} 导出MD</button>
         <button class="btn btn-sm btn-danger" id="clear-fav">${U.icon("trash")} 清空</button></div></div>
-      <div class="grid grid-cols-2">${favs.length ? favs.map(q => qCard(q)).join("") : '<div class="empty">还没有收藏任何题目</div>'}</div>`);
+      <div class="grid grid-cols-2" id="fav-grid"></div>`);
+    renderGrid();
     $("#exp-md").onclick = () => exportFavMarkdown(favs);
-    $("#clear-fav").onclick = async () => { if (await U.confirm("确定清空全部收藏？", { danger: true })) { for (const f of favs) await Services.toggleFavorite(f.id); U.toast("已清空收藏", "success"); pageFavorites(); } };
+    $("#clear-fav").onclick = async () => { if (await U.confirm("确定清空全部收藏？", { danger: true })) { await db.favorites.clear(); await Services.reload(); U.toast("已清空收藏", "success"); pageFavorites(); } };
   }
   function exportFavMarkdown(favs) {
     let md = "# 我的收藏题目\n\n";
@@ -832,16 +866,28 @@
 
   /* ============================ 浏览历史 ============================ */
   async function pageHistory() {
+    document.title = "浏览历史 · IT面试题库";
     const hs = await Services.getHistories();
+    const PAGE = 40; let shown = Math.min(PAGE, hs.length);
+    const hisCard = ({ q, at }) => `<div class="card card-hover" style="cursor:pointer" onclick="location.hash='/question/${q.id}'">${qCard(q).replace('href="#/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}<div class="muted" style="font-size:12px;margin-top:6px">浏览于 ${U.fmtDate(at)}</div></div>`;
+    const renderGrid = () => {
+      $("#his-grid").innerHTML = hs.length
+        ? hs.slice(0, shown).map(hisCard).join("") + (shown < hs.length ? `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="his-more">加载更多（${hs.length - shown}）</button></div>` : "")
+        : '<div class="empty">暂无浏览记录</div>';
+      const mb = $("#his-more");
+      if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, hs.length); renderGrid(); };
+    };
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>浏览历史</span></div>
       <div class="section-head"><h2>浏览历史（${hs.length}）</h2>
         <button class="btn btn-sm btn-danger" id="clear-h">${U.icon("trash")} 清空</button></div>
-      <div class="grid grid-cols-2">${hs.length ? hs.map(({ q, at }) => `<div class="card card-hover" style="cursor:pointer" onclick="location.hash='/question/${q.id}'">${qCard(q).replace('href="#/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}<div class="muted" style="font-size:12px;margin-top:6px">浏览于 ${U.fmtDate(at)}</div></div>`).join("") : '<div class="empty">暂无浏览记录</div>'}</div>`);
+      <div class="grid grid-cols-2" id="his-grid"></div>`);
+    renderGrid();
     $("#clear-h").onclick = async () => { if (await U.confirm("确定清空浏览历史？", { danger: true })) { await DB.db.histories.clear(); U.toast("已清空", "success"); pageHistory(); } };
   }
 
   /* ============================ 刷题练习 ============================ */
   async function pagePractice(q) {
+    document.title = "刷题练习 · IT面试题库";
     const mode = q.mode || "random";
     const diffs = ["初级", "中级", "高级", "专家"];
     const scope = q.scope || (q.cat ? "cat" : q.pos ? "pos" : "all");
@@ -1030,6 +1076,7 @@
 
   /* ============================ 模拟面试 ============================ */
   async function pageMock() {
+    document.title = "模拟面试 · IT面试题库";
     const byStage = Services.positionsByStage();
     const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</optgroup>`; }).join("");
     const years = ["校招/实习", "0-1年", "1-3年", "3-5年", "5年以上"];
@@ -1088,7 +1135,18 @@
       U.highlightAll(main);
       const tick = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $("#timer").innerHTML = U.icon("clock") + " " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }, 1000);
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
-      const mk = (m) => { mastery[m]++; if (m === "unknown") unknownList.push(q.title); clearInterval(tick); next(); };
+      const mk = async (m) => {
+        mastery[m]++;
+        /* 标「不会/不熟悉」的题同步进错题本，纳入艾宾浩斯复习闭环（与练习页行为一致） */
+        if (m === "unknown" || m === "familiar") {
+          try {
+            if (!(await Services.isWeak(q.id))) await Services.addWeak(q.id, m === "unknown" ? "不会" : "不熟悉");
+            else if (m === "unknown") await Services.weakGrade(q.id, false);   // 再次不会：复习间隔重置
+          } catch (_) {}
+        }
+        if (m === "unknown") unknownList.push(q.title);
+        clearInterval(tick); next();
+      };
       $$("#mark button").forEach(b => b.onclick = () => mk(b.dataset.m));
       const next = () => { clearInterval(tick); if (i < pool.length - 1) { i++; show(); } else finishMock(pos, years, pool, mastery, unknownList, cov, t0); };
       $("#next").onclick = next;
@@ -2681,6 +2739,7 @@
       try { Cloud.initAuto(); } catch (e) { console.warn("autopub init error", e); }
       try { Backup.initAuto(); } catch (e) { console.warn("auto backup init error", e); }
       try { Account.autoSyncIfDue(); } catch (e) { console.warn("account autosync error", e); }   // 登录用户静默云同步个人数据
+      try { startReviewWatcher(); } catch (e) { console.warn("review watcher error", e); }   // 艾宾浩斯到期复习提醒
     } catch (e) {
       console.error("init error", e);
       U.toast("页面初始化出错，请刷新重试", "error");
@@ -2692,7 +2751,36 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 
+  /* ============================ 到期复习提醒 ============================
+   * 艾宾浩斯到期题目前只是侧边栏角标数字，用户不点开就不知道该复习了。
+   * 启动 + 每 5 分钟轮询：发现新到期题（相对上次提醒增量）时 toast 提醒，
+   * 并给侧边栏「错题重练」角标加脉冲动画。会话内同题只提醒一次，避免打扰。 */
+  let reviewWatchTimer = null;
+  function startReviewWatcher() {
+    if (reviewWatchTimer) return;
+    const notified = new Set();   // 本会话已提醒过的 questionId
+    let firstRun = true;
+    const check = async () => {
+      try {
+        if (!Services.questions || !Services.questions.length) return;
+        const { due } = await Services.weakList();
+        if (!due.length) { firstRun = false; return; }
+        due.forEach(w => notified.add(w.questionId));   // 启动时已有的一律静默，不打扰打开页面
+        const fresh = firstRun ? [] : due.filter(w => !notified.has(w.questionId));
+        firstRun = false;
+        if (fresh.length) {
+          U.toast("📚 有 " + fresh.length + " 道题到复习时间了，去「错题重练」巩固记忆", "info", 6000);
+          fresh.forEach(w => notified.add(w.questionId));
+        }
+        const badge = document.querySelector('.side-nav-item[href="#/review"]');
+        if (badge && due.length) badge.classList.add("nav-pulse");
+      } catch (_) {}
+    };
+    check();
+    reviewWatchTimer = setInterval(check, 5 * 60 * 1000);
+  }
+
   /* ---- 暴露给 account.js 等兄弟模块的内部函数（app.js 是 IIFE，默认不外泄） ---- */
   App._internals = { $, setMain, route, renderTopbar, refreshVisitorStats };
   window.App = App;
-})();
+})();
