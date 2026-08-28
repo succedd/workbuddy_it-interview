@@ -36,6 +36,23 @@
     weakBank: "++id, questionId, createdAt"
   });
 
+  /* v3：每日打卡表（今日5题完成记录），随个人数据云同步，换设备不丢 */
+  db.version(3).stores({
+    categories: "++id, parentId, name, depth, status",
+    positions: "++id, name, stage",
+    positionSkills: "++id, positionId, categoryId, techName",
+    questions: "++id, categoryId, difficulty, type, status, source, aiScore, createdAt, updatedAt, title",
+    questionVersions: "++id, questionId, version",
+    favorites: "++id, questionId, createdAt",
+    histories: "++id, questionId, createdAt",
+    aiGenerateLogs: "++id, createdAt",
+    importLogs: "++id, createdAt",
+    backups: "++id, createdAt",
+    settings: "key",
+    weakBank: "++id, questionId, createdAt",
+    dailyDone: "++id, day"
+  });
+
   const DB = { db };
 
   DB.getSetting = async function (key) {

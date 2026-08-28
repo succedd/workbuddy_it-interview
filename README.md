@@ -180,6 +180,13 @@ node tools/gen-published.js
 > 按时间**逆序**记录（最新在最上方）。
 
 
+### 2026-08-28 · P2 体验增强（缓存版本 `20260827n`）
+- feat: **学习周报卡片**——首页新增「本周学习周报」：本周刷题次数、打卡天数、新增薄弱题数，以及薄弱分类 Top3（按错题本分类聚合），让学习数据产生回访动力。
+- feat: **今日 5 题打卡上云**——打卡记录从 `localStorage` 迁移到 IndexedDB `dailyDone` 表，并随个人数据云同步（Worker `/me/data` 扩展 `daily` 字段、D1 新增 `daily_done` 表，按天并集合并，换设备不丢）；旧 `localStorage` 当日记录首次运行自动迁移。
+- feat: **PWA 离线化**——新增 `manifest.json` + `sw.js`：导航请求 network-first（离线回退缓存首页）、同源静态资源 cache-first + 运行时补缓存；可「添加到主屏幕」、断网照常刷题（题库本就在 IndexedDB）。Service Worker 版本化，更新自动生效。
+- feat: **SEO 补强**——`index.html` 增加 canonical + Open Graph / Twitter Card 分享卡片（链接分享到微信/QQ 有标题与描述）；`sitemap.xml` 扩充首页 + 主要栏目锚点、更新日期。
+- feat: **无障碍标注**——`#toast-root` 加 `role="status" aria-live="polite"`（屏幕阅读器播报提示）、modal 加 `role="dialog" aria-modal`、顶栏与侧边栏加 `role="navigation"`/`banner`/`main`、图标按钮（菜单/主题）加 `aria-label`、toast 关闭按钮可键盘操作。
+
 ### 2026-08-28
 - feat: **复习闭环补全 + 体验优化一批**（缓存版本 `20260827m`）：
   - **模拟面试标「不会/不熟悉」的题自动进错题本**——此前只写进报告文本，记忆曲线闭环在模拟面试断裂；现在与练习页行为一致（首次标记入错题本，再次「不会」重置复习间隔）。

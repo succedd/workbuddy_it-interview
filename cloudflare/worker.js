@@ -261,7 +261,7 @@ async function handleMe(env, request) {
   return jsonResp({ user: publicUser(u) });
 }
 
-/* ---------- 个人数据云同步：favorites / histories / weak ---------- */
+/* ---------- 个人数据云同步：favorites / histories / weak / daily（每日打卡） ---------- */
 
 async function handleGetMyData(env, request) {
   const db = env.USERS;
@@ -272,9 +272,14 @@ async function handleGetMyData(env, request) {
     db.prepare("SELECT question_id AS id, views, viewed_at AS at FROM histories WHERE user_id = ?").bind(u.id),
     db.prepare("SELECT question_id AS id, created_at AS at FROM weak_bank WHERE user_id = ?").bind(u.id),
   ]);
+  let daily = [];
+  try {
+    const dr = await db.prepare("SELECT day, question_ids AS ids FROM daily_done WHERE user_id = ?").bind(u.id).all();
+    daily = (dr.results || []).map(r => ({ day: r.day, ids: (() => { try { return JSON.parse(r.ids || "[]"); } catch (_) { return []; } })() }));
+  } catch (_) { /* daily_done 表尚未建立时静默降级 */ }
   return jsonResp({
     favorites: fav.results || [], histories: his.results || [], weak: weak.results || [],
-    syncedAt: Date.now(),
+    daily, syncedAt: Date.now(),
   });
 }
 
@@ -310,8 +315,27 @@ async function handlePutMyData(env, request) {
       "INSERT INTO weak_bank (user_id, question_id, created_at) VALUES (?, ?, ?) " +
       "ON CONFLICT(user_id, question_id) DO NOTHING").bind(u.id, qid, parseInt(w.at) || now));
   }
-  if (stmts.length) await db.batch(stmts.slice(0, 1500));   // D1 单批上限保险
-  return jsonResp({ ok: true, applied: stmts.length });
+  if (stmts.length) await db.batch(stmts.slice(0, 1500));   // D1 单批上限保险；核心同步（收藏/历史/错题）独立成批
+  /* 每日打卡：独立批处理 + 按天并集，即使 daily_done 表缺失也不影响上面核心同步 */
+  let dailyApplied = 0;
+  try {
+    const dayRe = /^\d{4}-\d{2}-\d{2}$/;
+    const existing = await db.prepare("SELECT day, question_ids AS ids FROM daily_done WHERE user_id = ?").bind(u.id).all();
+    const map = {};
+    for (const r of (existing.results || [])) { try { map[r.day] = JSON.parse(r.ids || "[]"); } catch (_) { map[r.day] = []; } }
+    for (const d of (Array.isArray(body.daily) ? body.daily.slice(0, 400) : [])) {
+      const day = String(d.day || "");
+      if (!dayRe.test(day)) continue;
+      const set = new Set([...(map[day] || []), ...(Array.isArray(d.ids) ? d.ids : []).map(v => parseInt(v)).filter(v => v > 0)]);
+      map[day] = Array.from(set).slice(0, 50);
+    }
+    const dStmts = Object.keys(map).map(day => db.prepare(
+      "INSERT INTO daily_done (user_id, day, question_ids, updated_at) VALUES (?, ?, ?, ?) " +
+      "ON CONFLICT(user_id, day) DO UPDATE SET question_ids = excluded.question_ids, updated_at = excluded.updated_at")
+      .bind(u.id, day, JSON.stringify(map[day]), now));
+    if (dStmts.length) { await db.batch(dStmts.slice(0, 500)); dailyApplied = dStmts.length; }
+  } catch (e) { console.warn("daily sync skipped:", e.message); }
+  return jsonResp({ ok: true, applied: stmts.length, dailyApplied });
 }
 
 /* ---------- 管理员接口 ---------- */

@@ -148,9 +148,12 @@
     const ic = type === "success" ? U.icon("check") : type === "warn" ? U.icon("alert") : type === "error" ? U.icon("alert") : U.icon("info");
     const el = document.createElement("div");
     el.className = "toast " + type;
-    el.innerHTML = `<span class="t-ic">${ic}</span><span class="t-msg">${U.esc(msg)}</span><span class="t-close">${U.icon("x")}</span>`;
+    el.setAttribute("role", "status");
+    el.innerHTML = `<span class="t-ic">${ic}</span><span class="t-msg">${U.esc(msg)}</span><span class="t-close" role="button" tabindex="0" aria-label="关闭提示">${U.icon("x")}</span>`;
     const close = () => { el.classList.add("out"); setTimeout(() => el.remove(), 250); };
-    el.querySelector(".t-close").onclick = close;
+    const tclose = el.querySelector(".t-close");
+    tclose.onclick = close;
+    tclose.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); close(); } };
     root.appendChild(el);
     setTimeout(close, timeout || 3000);
   };
@@ -162,8 +165,8 @@
     const mask = document.createElement("div");
     mask.className = "modal-mask";
     const wide = opts.wide ? " wide" : "";
-    mask.innerHTML = `<div class="modal${wide}">
-      <div class="modal-head"><h3>${U.esc(opts.title || "")}</h3><button class="icon-btn" data-close>${U.icon("x")}</button></div>
+    mask.innerHTML = `<div class="modal${wide}" role="dialog" aria-modal="true"${opts.title ? ` aria-label="${U.esc(opts.title)}"` : ""}>
+      <div class="modal-head"><h3>${U.esc(opts.title || "")}</h3><button class="icon-btn" data-close aria-label="关闭对话框">${U.icon("x")}</button></div>
       <div class="modal-body">${opts.body || ""}</div>
       ${opts.footer !== false ? '<div class="modal-foot"></div>' : ""}
     </div>`;

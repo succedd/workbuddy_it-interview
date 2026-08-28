@@ -145,7 +145,7 @@
          </div></div>`
       : `<button class="btn btn-ghost btn-sm" id="admin-login-btn">${U.icon("user")} 管理员</button>`;
     topbar.innerHTML = `
-      <button class="icon-btn menu-toggle" id="menu-toggle">${U.icon("menu")}</button>
+      <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="打开菜单">${U.icon("menu")}</button>
       <a class="brand" href="#/"><span class="logo">I</span> IT面试题库</a>
       <div class="topbar-search">
         <span class="icon">${U.icon("search")}</span>
@@ -156,7 +156,7 @@
         <a class="icon-btn" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
         <a class="icon-btn" href="#/mock" title="模拟面试">${U.icon("play")}</a>
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
-        <button class="icon-btn" id="theme-btn" title="${themeLabel}">${U.icon(themeIcon)}</button>
+        <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} ${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
         ${adminHtml}
@@ -316,12 +316,38 @@
     for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
     return arr.slice(0, Math.min(5, arr.length));
   }
-  function dailyDone() { try { return JSON.parse(localStorage.getItem("daily_done_" + dateKey()) || "[]"); } catch (e) { return []; } }
-  function markDailyDone(id) {
+  /* —— 今日5题完成记录：IndexedDB dailyDone 表（随个人数据云同步，换设备不丢） ——
+   * 兼容：首次运行时把旧版 localStorage 的当日记录迁移进 IDB。 */
+  async function dailyDoneGet(day) {
+    day = day || dateKey();
+    try {
+      const rows = await DB.db.dailyDone.where("day").equals(day).toArray();
+      if (rows.length) return rows[0].ids || [];
+      /* 迁移：旧数据在 localStorage daily_done_<day>，只迁今天这一天（历史记录无从补齐） */
+      let legacy = [];
+      try { legacy = JSON.parse(localStorage.getItem("daily_done_" + day) || "[]"); } catch (e) {}
+      if (legacy.length) await DB.db.dailyDone.add({ day, ids: legacy, updatedAt: Date.now() });
+      return legacy;
+    } catch (e) { return []; }
+  }
+  async function dailyDoneAdd(id) {
+    try {
+      const day = dateKey();
+      const rows = await DB.db.dailyDone.where("day").equals(day).toArray();
+      const row = rows[0];
+      const ids = (row && row.ids) || [];
+      if (ids.indexOf(id) < 0) {
+        ids.push(id);
+        if (row) await DB.db.dailyDone.update(row.id, { ids, updatedAt: Date.now() });
+        else await DB.db.dailyDone.add({ day, ids, updatedAt: Date.now() });
+      }
+    } catch (e) {}
+  }
+  async function markDailyDone(id) {
     const five = todayFive();
     if (five.indexOf(Number(id)) < 0 && five.indexOf(id) < 0) return false;
-    const done = dailyDone(); const v = Number(id);
-    if (done.indexOf(v) < 0) { done.push(v); localStorage.setItem("daily_done_" + dateKey(), JSON.stringify(done)); }
+    const v = Number(id);
+    await dailyDoneAdd(v);
     return true;
   }
   /* 打卡：基于本地统计的每日访问记录推导连续天数与热力图 */
@@ -359,7 +385,7 @@
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
     /* —— 今日5题 & 学习打卡 & 继续上次 —— */
-    const five = todayFive(); const doneSet = dailyDone();
+    const five = todayFive(); const doneSet = await dailyDoneGet();
     const fiveLeft = five.filter(id => doneSet.indexOf(id) < 0);
     const qById = id => Services.questions.find(x => x.id === id);
     let fiveHtml = "";
@@ -397,6 +423,34 @@
           <span class="tag tag-primary">继续 →</span></a>`;
       }
     } catch (e) {}
+    /* —— 学习周报：本周刷题 / 打卡天数 / 新增薄弱 / 薄弱分类 Top3 —— */
+    let weekHtml = "";
+    try {
+      const db = DB.db;
+      const now = new Date();
+      const dow = (now.getDay() + 6) % 7;   // 0=周一
+      const ws = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow).setHours(0, 0, 0, 0);
+      const [hisAll, weakAll, dailyRows] = await Promise.all([db.histories.toArray(), db.weakBank.toArray(), db.dailyDone.toArray()]);
+      const weekHist = hisAll.filter(h => (h.createdAt || 0) >= ws).length;
+      const weekWeakNew = weakAll.filter(w => (w.createdAt || 0) >= ws).length;
+      const weekDays = new Set(dailyRows.filter(r => Date.parse(r.day + "T00:00:00") >= ws).map(r => r.day)).size;
+      const weakCats = {};
+      for (const w of weakAll) { const q = Services.questions.find(x => x.id === w.questionId); if (q && q.categoryId != null) weakCats[q.categoryId] = (weakCats[q.categoryId] || 0) + 1; }
+      const topCats = Object.entries(weakCats).sort((a, b) => b[1] - a[1]).slice(0, 3)
+        .map(([cid, n]) => { const c = Services.catMap.get(parseInt(cid)) || Services.catMap.get(cid); return { name: c ? c.name : ("#" + cid), n }; });
+      const catTop3 = topCats.length ? topCats.map(c => `<span class="tag tag-outline">${U.esc(c.name)} <b>${c.n}</b></span>`).join(" ")
+                                     : '<span class="muted">暂无，保持住！</span>';
+      weekHtml = `<div class="card" style="padding:16px 18px;margin-top:20px;background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(16,185,129,.06))">
+        <div style="display:flex;align-items:center;margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px">本周学习周报</b>
+          <span class="muted" style="margin-left:auto;font-size:12px">${dow + 1} 天前起算本周</span></div>
+        <div class="grid grid-cols-3" style="gap:12px;text-align:center">
+          <div><div style="font-size:24px;font-weight:700;color:#2563EB">${weekHist}</div><div class="muted" style="font-size:12px">刷题次数</div></div>
+          <div><div style="font-size:24px;font-weight:700;color:#f59e0b">${weekDays}</div><div class="muted" style="font-size:12px">打卡天数</div></div>
+          <div><div style="font-size:24px;font-weight:700;color:#DC2626">${weekWeakNew}</div><div class="muted" style="font-size:12px">新增薄弱</div></div>
+        </div>
+        <div style="margin-top:12px;font-size:13px">薄弱分类 Top3：${catTop3}</div>
+      </div>`;
+    } catch (e) { weekHtml = ""; }
     setMain(`
       <section class="hero">
         <h1>IT 面试题库管理系统</h1>
@@ -418,6 +472,7 @@
 
       ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
       ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
+      ${weekHtml}
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>

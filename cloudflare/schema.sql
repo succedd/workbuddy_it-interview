@@ -45,6 +45,15 @@ CREATE TABLE IF NOT EXISTS weak_bank (
   PRIMARY KEY (user_id, question_id)
 );
 
+-- 每日打卡（今日5题完成记录）：每用户每天一行，question_ids 为 JSON 数组文本
+CREATE TABLE IF NOT EXISTS daily_done (
+  user_id      INTEGER NOT NULL,
+  day          TEXT NOT NULL,               -- YYYY-MM-DD (本地时区)
+  question_ids TEXT NOT NULL DEFAULT '[]',  -- JSON 数组：完成的题目 id
+  updated_at   INTEGER NOT NULL,
+  PRIMARY KEY (user_id, day)
+);
+
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_exp  ON sessions(expires_at);
 

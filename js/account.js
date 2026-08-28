@@ -87,6 +87,8 @@
    ----------------------------------------------- */
   async function collectLocal() {
     const db = DB.db;
+    let dailyRows = [];
+    try { dailyRows = await db.dailyDone.toArray(); } catch (_) { /* 旧版 DB 尚未升级时跳过 */ }
     const [fav, his, weak] = await Promise.all([
       db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray(),
     ]);
@@ -94,6 +96,7 @@
       favorites: fav.map(x => ({ id: x.questionId, at: x.createdAt })),
       histories: his.map(x => ({ id: x.questionId, views: x.views || 1, at: x.viewedAt || x.createdAt || Date.now() })),
       weak: weak.map(x => ({ id: x.questionId, at: x.createdAt })),
+      daily: dailyRows.map(r => ({ day: r.day, ids: r.ids || [] })),
     };
     A._rememberSnapshot(snap);   // 缓存快照，供关闭页面时 sendBeacon 兜底使用
     return snap;
@@ -145,7 +148,7 @@
     const remote = await call("GET", "/me/data");
     const db = DB.db;
     const now = Date.now();
-    await db.transaction("rw", [db.favorites, db.histories, db.weakBank], async () => {
+    await db.transaction("rw", [db.favorites, db.histories, db.weakBank, db.dailyDone], async () => {
       // favorites
       const favKeys = new Set((await db.favorites.toArray()).map(x => x.questionId));
       const newFav = (remote.favorites || []).filter(f => !favKeys.has(f.id))
@@ -165,6 +168,19 @@
       const newWeak = (remote.weak || []).filter(w => !weakKeys.has(w.id))
         .map(w => ({ questionId: w.id, createdAt: w.at || now }));
       if (newWeak.length) await db.weakBank.bulkAdd(newWeak);
+      // 每日打卡：按天并集，不丢任一设备的记录
+      const dayRe = /^\d{4}-\d{2}-\d{2}$/;
+      const dMap = new Map((await db.dailyDone.toArray()).map(x => [x.day, x]));
+      const newDaily = [];
+      for (const d of (remote.daily || [])) {
+        const day = String(d.day || "");
+        if (!dayRe.test(day)) continue;
+        const ids = new Set([...(dMap.get(day) ? (dMap.get(day).ids || []) : []), ...(Array.isArray(d.ids) ? d.ids : [])]);
+        const arr = Array.from(ids).filter(v => v > 0);
+        if (dMap.has(day)) { const row = dMap.get(day); row.ids = arr; await db.dailyDone.put(row); }
+        else newDaily.push({ day, ids: arr, updatedAt: now });
+      }
+      if (newDaily.length) await db.dailyDone.bulkAdd(newDaily);
     });
     await Services.reload();
     ls(LS.syncAt, String(now));
