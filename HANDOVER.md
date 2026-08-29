@@ -27,16 +27,36 @@
 
 - **纯静态零构建**：HTML + 原生 JS（hash 路由 `#/question/<id>`）+ IndexedDB，无框架无打包，改文件即开发
 - 行尾是 CRLF：node 脚本批量改文件需归一化 `\r\n`，否则 diff 爆炸；优先用逐处编辑工具
-- 后端：Cloudflare Worker（`cloudflare/worker.js`）；部署必须 `wrangler deploy --config cloudflare/wrangler.toml`（根目录 wrangler.jsonc 是历史事故元凶，已进 .gitignore，勿动）
-- D1 数据库 `it-interview-users`：表 users / sessions / daily_done / mock_reports
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
 - 静态分享页：`tools/gen-share-pages.js` 生成 258 个 `q/<id>.html`（per-question OG 标签 + 自动跳回 SPA）——**新增题目后需重跑一次**
 - 域名 `it-interview.is-a.dev`（is-a.dev 子域名，CNAME 已配）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
+
+## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
+
+后端代码全在 `cloudflare/` 目录，是独立的一层，**改动它不走 GitHub Pages**，走 wrangler 部署：
+
+- **文件**：`cloudflare/worker.js`（全部逻辑）+ `cloudflare/schema.sql`（建表语句）+ `cloudflare/wrangler.toml`（配置）+ `cloudflare/部署指南.md`（完整部署教程）
+- **资源绑定**（wrangler.toml，勿改 id）：
+  - Worker 名称：`it-interview-stats`
+  - KV `STATS`（访问统计）id `ef5539a2537d417c83141dd771c98454`
+  - D1 `USERS` 数据库 `it-interview-users`，database_id `111f4eda-55e2-475d-b199-27e962dec4fc`
+  - 表：users / sessions / favorites / histories / weak（错题本）/ daily_done / mock_reports
+- **线上 API 地址**（前端 `js/account.js:19` `API_DEFAULT` 写死）：`https://it-interview-stats.iti-interview.workers.dev`
+  - 前端设置页（`js/app.js` stats-api 输入框）可覆盖默认地址
+- **部署命令（铁律）**：必须 `wrangler deploy --config cloudflare/wrangler.toml`
+  - 根目录曾有 `wrangler.jsonc` 元凶把静态站误部署成 worker（已进 .gitignore，勿动/勿提交）
+- **本机环境**：wrangler 已全局安装（`C:\Users\Life\AppData\Roaming\npm\wrangler`）；Cloudflare OAuth 已登录过，若过期重新 `wrangler login --config cloudflare/wrangler.toml`（国内网络下可能需代理/重试）
+- **D1 建表/查数据**：
+  `wrangler d1 execute it-interview-users --remote --config cloudflare/wrangler.toml --command "SQL"`
+- **改 worker.js 后**：不需要 bump 前端版本号（worker 独立部署即时生效）；但 CORS 在 worker 内自管，新增接口记得走 `corsHeaders`
+- **容错约定**：D1 新表缺失时 worker 静默降级（返回空/跳过保存），不影响核心同步——新增表照此模式写
+- **本地调试**：`wrangler dev --config cloudflare/wrangler.toml`（注意本地 dev 的 D1 是空库，登录功能要 `--remote` 或先建表）
 
 ## 4. 本机网络（在用户这台 Windows 机器上跑命令时）
 
 - git 推拉需显式代理：`git -c http.proxy=http://127.0.0.1:7897 fetch/push`（环境变量代理对 git 不生效；无代理直连 GitHub 间歇性超时，失败重试 2-3 次）
 - curl 走代理正常；curl `-o` 落盘需写入工作目录（沙箱限制）
+- workers.dev 域名在国内 DNS 污染是常态（本机 curl 它可能失败）——**验证 Worker 接口用 `git push`/`wrangler` 通道即可，别用 curl 直连 workers.dev 判生死**
 
 ## 5. 验证与回归（发版后必做）
 
@@ -49,10 +69,11 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 13:24
-- **最新 commit**：`99f83b4`（缓存版本 `20260827v`）——微信内置浏览器分享适配：长按大图发送给朋友
-- **线上**：release = main = `99f83b4`，站点已验证
-- **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线/无障碍/题目分享卡片（canvas 图片 + 258 个静态 OG 分享页）/sendBeacon 兜底同步/图片外置上传
+- **最后更新**：2026-08-29 13:38
+- **最新 commit**：`4a06571`（缓存版本 `20260827v`）——HANDOVER.md 交接卡建立
+- **线上**：release = main = `4a06571`；站点 + Worker 均正常
+- **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports），API `https://it-interview-stats.iti-interview.workers.dev`（国内 curl 直连 workers.dev 受 DNS 污染，属网络问题非服务故障）
+- **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线/无障碍/题目分享卡片（canvas 图片 + 258 个静态 OG 分享页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
 - **进行中/待办**：
   - P1：登录时顺手清理自己已过期的旧会话（防 sessions 表膨胀）
   - P1：eu.org 自有域名审核中（automation 每天 10:00 检查）
