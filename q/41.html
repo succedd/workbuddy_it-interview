@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何用 Redis 实现分布式锁？有什么坑？ · IT面试题库</title>
+  <meta name="description" content="基本实现：SET lock:key value NX PX 30000——原子地“不存在才设+带过期”，避免 SETNX 与 EXPIRE 分两步的竞态。 坑： 1. 误删：A 锁过期，B 拿到锁，A 执行完删了 B 的锁 → 用唯一 value（UUID），删除时 Lua 脚本校验归属。 2. 过期时间内未执行…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="如何用 Redis 实现分布式锁？有什么坑？ · IT面试题库">
+  <meta property="og:description" content="基本实现：SET lock:key value NX PX 30000——原子地“不存在才设+带过期”，避免 SETNX 与 EXPIRE 分两步的竞态。 坑： 1. 误删：A 锁过期，B 拿到锁，A 执行完删了 B 的锁 → 用唯一 value（UUID），删除时 Lua 脚本校验归属。 2. 过期时间内未执行…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/41.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="如何用 Redis 实现分布式锁？有什么坑？ · IT面试题库">
+  <meta name="twitter:description" content="基本实现：SET lock:key value NX PX 30000——原子地“不存在才设+带过期”，避免 SETNX 与 EXPIRE 分两步的竞态。 坑： 1. 误删：A 锁过期，B 拿到锁，A 执行完删了 B 的锁 → 用唯一 value（UUID），删除时 Lua 脚本校验归属。 2. 过期时间内未执行…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/41.html">
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
+  <script>location.replace("/#/question/41");</script>
+</head>
+<body>
+  <h1>如何用 Redis 实现分布式锁？有什么坑？</h1>
+  <p>正在跳转至 IT 面试题库…</p>
+  <p>若未自动跳转，<a href="/#/question/41">请点击此处</a>。</p>
+</body>
+</html>

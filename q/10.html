@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设计一个线程安全的单例（双重检查锁）。 · IT面试题库</title>
+  <meta name="description" content="volatile 的必要性：instance = new Singleton() 实际分三步（分配内存→初始化对象→赋值引用）。没有 volatile 时编译器/CPU 可能重排为 分配→赋值→初始化，导致其他线程拿到未初始化完成的对象。volatile 禁止该重排，保证可见且有序。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="设计一个线程安全的单例（双重检查锁）。 · IT面试题库">
+  <meta property="og:description" content="volatile 的必要性：instance = new Singleton() 实际分三步（分配内存→初始化对象→赋值引用）。没有 volatile 时编译器/CPU 可能重排为 分配→赋值→初始化，导致其他线程拿到未初始化完成的对象。volatile 禁止该重排，保证可见且有序。">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/10.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="设计一个线程安全的单例（双重检查锁）。 · IT面试题库">
+  <meta name="twitter:description" content="volatile 的必要性：instance = new Singleton() 实际分三步（分配内存→初始化对象→赋值引用）。没有 volatile 时编译器/CPU 可能重排为 分配→赋值→初始化，导致其他线程拿到未初始化完成的对象。volatile 禁止该重排，保证可见且有序。">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/10.html">
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
+  <script>location.replace("/#/question/10");</script>
+</head>
+<body>
+  <h1>设计一个线程安全的单例（双重检查锁）。</h1>
+  <p>正在跳转至 IT 面试题库…</p>
+  <p>若未自动跳转，<a href="/#/question/10">请点击此处</a>。</p>
+</body>
+</html>

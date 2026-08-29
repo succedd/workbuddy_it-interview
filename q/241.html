@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库</title>
+  <meta name="description" content="关系型数据库索引选择 B+ 树，核心原因是它契合磁盘的块式访问特性并天然支持范围查询： 1. 矮胖的树高，减少磁盘 IO：B+ 树一个节点存很多关键字（通常一页 16KB 可放数百个），三层即可索引上千万行，而二叉搜索树高度 log2(n) 太大、随机 IO 多。 2. 所有数据在叶子节点且用链表串联：范围查询（…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库">
+  <meta property="og:description" content="关系型数据库索引选择 B+ 树，核心原因是它契合磁盘的块式访问特性并天然支持范围查询： 1. 矮胖的树高，减少磁盘 IO：B+ 树一个节点存很多关键字（通常一页 16KB 可放数百个），三层即可索引上千万行，而二叉搜索树高度 log2(n) 太大、随机 IO 多。 2. 所有数据在叶子节点且用链表串联：范围查询（…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/241.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库">
+  <meta name="twitter:description" content="关系型数据库索引选择 B+ 树，核心原因是它契合磁盘的块式访问特性并天然支持范围查询： 1. 矮胖的树高，减少磁盘 IO：B+ 树一个节点存很多关键字（通常一页 16KB 可放数百个），三层即可索引上千万行，而二叉搜索树高度 log2(n) 太大、随机 IO 多。 2. 所有数据在叶子节点且用链表串联：范围查询（…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/241.html">
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
+  <script>location.replace("/#/question/241");</script>
+</head>
+<body>
+  <h1>为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？</h1>
+  <p>正在跳转至 IT 面试题库…</p>
+  <p>若未自动跳转，<a href="/#/question/241">请点击此处</a>。</p>
+</body>
+</html>

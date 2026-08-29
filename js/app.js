@@ -840,7 +840,8 @@
 
     /* 分享弹窗：生成题目卡片预览，支持「分享/保存图片」与「复制链接」 */
     async function openShareDialog(q) {
-      const url = location.origin + location.pathname + "#/question/" + q.id;
+      /* 优先分享 /q/<id>.html：含 per-question og:title/description/image，微信会渲染成带缩略图的链接卡片 */
+      const url = location.origin + "/q/" + q.id + ".html";
       const m = U.modal({ title: "分享这道题", closable: true });
       m.body.innerHTML = `<div id="sc-preview" class="muted" style="text-align:center;padding:30px 0">正在生成卡片…</div>
         <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑点「保存图片」下载后发送</div>`;
