@@ -459,32 +459,100 @@
           <span class="tag tag-primary">继续 →</span></a>`;
       }
     } catch (e) {}
-    /* —— 学习周报：本周刷题 / 打卡天数 / 新增薄弱 / 薄弱分类 Top3 —— */
+    /* —— 学习周报：口径修正（真实可解释）+ 环比上周 + 一周柱状图 + 行动入口 ——
+       口径说明：
+       - 刷题数 = 本周浏览的不同题数（浏览历史按题去重，createdAt=最后一次浏览时间）
+       - 完成5题天数 = dailyDone 记录天数（做完当日 5 题才算，与打卡卡的「打开即打卡」不同口径）
+       - 新增薄弱 = 本周新进错题本的题数；薄弱分类 Top 优先本周，无则回退累计并标注 */
     let weekHtml = "";
     try {
       const db = DB.db;
       const now = new Date();
       const dow = (now.getDay() + 6) % 7;   // 0=周一
-      const ws = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow).setHours(0, 0, 0, 0);
+      const day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).setHours(0, 0, 0, 0);
+      const ws = day0 - dow * 864e5;             // 本周一 0 点
+      const wPrev = ws - 7 * 864e5;              // 上周一 0 点
+      const we = day0 + 864e5;                   // 本周区间终点（明天 0 点）
+      const mmdd = t => { const d = new Date(t); return String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
       const [hisAll, weakAll, dailyRows] = await Promise.all([db.histories.toArray(), db.weakBank.toArray(), db.dailyDone.toArray()]);
-      const weekHist = hisAll.filter(h => (h.createdAt || 0) >= ws).length;
-      const weekWeakNew = weakAll.filter(w => (w.createdAt || 0) >= ws).length;
-      const weekDays = new Set(dailyRows.filter(r => Date.parse(r.day + "T00:00:00") >= ws).map(r => r.day)).size;
-      const weakCats = {};
-      for (const w of weakAll) { const q = Services.questions.find(x => x.id === w.questionId); if (q && q.categoryId != null) weakCats[q.categoryId] = (weakCats[q.categoryId] || 0) + 1; }
-      const topCats = Object.entries(weakCats).sort((a, b) => b[1] - a[1]).slice(0, 3)
-        .map(([cid, n]) => { const c = Services.catMap.get(parseInt(cid)) || Services.catMap.get(cid); return { name: c ? c.name : ("#" + cid), n }; });
-      const catTop3 = topCats.length ? topCats.map(c => `<span class="tag tag-outline">${U.esc(c.name)} <b>${c.n}</b></span>`).join(" ")
-                                     : '<span class="muted">暂无，保持住！</span>';
+
+      const weekViewsRows = hisAll.filter(h => (h.createdAt || 0) >= ws && (h.createdAt || 0) < we);
+      const prevViewsRows = hisAll.filter(h => (h.createdAt || 0) >= wPrev && (h.createdAt || 0) < ws);
+      const weekQs = new Set(weekViewsRows.map(h => h.questionId)).size;
+      const prevQs = new Set(prevViewsRows.map(h => h.questionId)).size;
+      const weekWeakNew = weakAll.filter(w => (w.createdAt || 0) >= ws && (w.createdAt || 0) < we).length;
+      const prevWeakNew = weakAll.filter(w => (w.createdAt || 0) >= wPrev && (w.createdAt || 0) < ws).length;
+      const weekDays = new Set(dailyRows.filter(r => Date.parse(r.day + "T00:00:00") >= ws && Date.parse(r.day + "T00:00:00") < we).map(r => r.day)).size;
+      const prevDays = new Set(dailyRows.filter(r => { const t = Date.parse(r.day + "T00:00:00"); return t >= wPrev && t < ws; }).map(r => r.day)).size;
+
+      /* 环比徽章：goodWhenDown 用于「新增薄弱」这类越少越好的指标 */
+      const trendBadge = (cur, prev, goodWhenDown) => {
+        if (!prev) return cur > 0 ? '<span class="tag tag-success" style="margin-left:4px">新增</span>' : "";
+        const pct = Math.round((cur - prev) / prev * 100);
+        if (pct === 0) return '<span class="muted" style="font-size:11px;margin-left:4px">持平</span>';
+        const up = pct > 0;
+        const good = goodWhenDown ? !up : up;
+        return `<span class="tag ${good ? "tag-success" : "tag-warning"}" style="margin-left:4px">${up ? "↑" : "↓"} ${Math.abs(pct)}%</span>`;
+      };
+
+      /* 一周迷你柱状图：每天刷题数（不同题，按最后浏览时间计） */
+      const dayNames = ["一", "二", "三", "四", "五", "六", "日"];
+      const perDay = Array.from({ length: 7 }, (_, i) => {
+        const a = ws + i * 864e5, b = a + 864e5;
+        return { i, n: i <= dow ? hisAll.filter(h => (h.createdAt || 0) >= a && (h.createdAt || 0) < b).length : -1, future: i > dow };
+      });
+      const maxN = Math.max(1, ...perDay.map(d => d.n));
+      const bars = perDay.map(d => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:100%;max-width:30px;height:44px;display:flex;align-items:flex-end;justify-content:center;background:var(--bg-subtle);border-radius:6px">
+          ${d.future ? "" : `<div style="width:72%;height:${d.n ? Math.max(10, Math.round(d.n / maxN * 100)) : 0}%;min-height:${d.n ? 4 : 0}px;background:${d.i === dow ? "var(--c-primary)" : "var(--c-ai)"};opacity:${d.i === dow ? 1 : .5};border-radius:6px" title="${d.n} 题"></div>`}
+        </div>
+        <span class="muted" style="font-size:11px">${d.future ? "" : (d.i === dow ? "今" : dayNames[d.i])}</span>
+      </div>`).join("");
+
+      /* 薄弱分类：优先本周新增，无则回退累计；标签可点击跳分类刷题 */
+      const weakCatsWeek = {}, weakCatsAll = {};
+      for (const w of weakAll) {
+        const q = Services.questions.find(x => x.id === w.questionId);
+        if (!q || q.categoryId == null) continue;
+        weakCatsAll[q.categoryId] = (weakCatsAll[q.categoryId] || 0) + 1;
+        if ((w.createdAt || 0) >= ws) weakCatsWeek[q.categoryId] = (weakCatsWeek[q.categoryId] || 0) + 1;
+      }
+      const catTag = ([cid, n]) => { const c = Services.catMap.get(parseInt(cid)) || Services.catMap.get(cid); const name = c ? c.name : ("#" + cid); return `<a class="tag tag-outline" href="#/questions?cat=${cid}">${U.esc(name)} <b>${n}</b></a>`; };
+      const weekTop = Object.entries(weakCatsWeek).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const allTop = Object.entries(weakCatsAll).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const catTop3 = weekTop.length
+        ? weekTop.map(catTag).join(" ")
+        : (allTop.length ? '<span class="muted" style="font-size:12px">本周无新增，累计薄弱分类：</span>' + allTop.map(catTag).join(" ")
+                         : '<span class="muted">暂无，保持住！</span>');
+
+      /* 本周标记不会的题（最近 5 道，可点击） */
+      const weekWeakQs = weakAll.filter(w => (w.createdAt || 0) >= ws && (w.createdAt || 0) < we)
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 5)
+        .map(w => Services.questions.find(x => x.id === w.questionId)).filter(Boolean);
+      const weakList = weekWeakQs.length
+        ? `<div style="margin-top:12px;font-size:13px"><b>本周标记不会的题</b>${weekWeakNew > 5 ? `<span class="muted" style="font-size:12px">（共 ${weekWeakNew} 道，显示最近 5 道）</span>` : ""}
+           <div style="margin-top:4px">${weekWeakQs.map(q => `<a href="#/question/${q.id}" style="text-decoration:none;display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border)"><span>❌</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`).join("")}
+           <a href="#/review" class="muted" style="font-size:12px;display:inline-block;margin-top:6px">全部都在错题重练 →</a></div></div>`
+        : "";
+
+      const allZero = weekQs === 0 && weekDays === 0 && weekWeakNew === 0;
+      const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
       weekHtml = `<div class="card" style="padding:16px 18px;margin-top:20px;background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(16,185,129,.06))">
         <div style="display:flex;align-items:center;margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px">本周学习周报</b>
-          <span class="muted" style="margin-left:auto;font-size:12px">${dow + 1} 天前起算本周</span></div>
-        <div class="grid grid-cols-3" style="gap:12px;text-align:center">
-          <div><div style="font-size:24px;font-weight:700;color:#2563EB">${weekHist}</div><div class="muted" style="font-size:12px">刷题次数</div></div>
-          <div><div style="font-size:24px;font-weight:700;color:#f59e0b">${weekDays}</div><div class="muted" style="font-size:12px">打卡天数</div></div>
-          <div><div style="font-size:24px;font-weight:700;color:#DC2626">${weekWeakNew}</div><div class="muted" style="font-size:12px">新增薄弱</div></div>
-        </div>
-        <div style="margin-top:12px;font-size:13px">薄弱分类 Top3：${catTop3}</div>
+          <span class="muted" style="margin-left:auto;font-size:12px">${rangeLabel}</span></div>
+        ${allZero
+          ? `<div style="text-align:center;padding:6px 0 2px"><div style="font-size:15px">本周还没开始，随时可以出发 💪</div><div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="#/random">随机来一题 →</a> <a class="btn btn-sm" href="#/practice">进入刷题</a></div></div>`
+          : `<div class="grid grid-cols-3" style="gap:12px;text-align:center">
+              <div><div style="font-size:24px;font-weight:700;color:var(--c-primary)">${weekQs}</div><div class="muted" style="font-size:12px">刷题数（不同题）</div>${trendBadge(weekQs, prevQs, false)}</div>
+              <div><div style="font-size:24px;font-weight:700;color:var(--c-warning)">${weekDays}</div><div class="muted" style="font-size:12px">完成5题天数</div>${trendBadge(weekDays, prevDays, false)}</div>
+              <div><div style="font-size:24px;font-weight:700;color:var(--c-danger)">${weekWeakNew}</div><div class="muted" style="font-size:12px">新增薄弱</div>${trendBadge(weekWeakNew, prevWeakNew, true)}</div>
+            </div>
+            <div style="margin-top:14px">
+              <div class="muted" style="font-size:11px;margin-bottom:4px">每日刷题（不同题）</div>
+              <div style="display:flex;gap:6px">${bars}</div>
+            </div>
+            <div style="margin-top:12px;font-size:13px">${weekTop.length ? "本周新增薄弱分类：" : ""}${catTop3}</div>
+            ${weakList}`}
       </div>`;
     } catch (e) { weekHtml = ""; }
     /* —— 到期复习横幅：有到期题时在首页最顶部醒目提醒（比侧边栏小圆点显眼得多） —— */
