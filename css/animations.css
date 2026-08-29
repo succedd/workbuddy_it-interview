@@ -1,3 +1,8 @@
+/* =========================================================================
+ *  animations.css — 动效集中定义
+ *  原则：动画是点缀不是主角；系统开启「减弱动态效果」时全部静止（见底部守卫）
+ * ========================================================================= */
+
 /* Page transition */
 .page-enter { animation: page-in .2s ease both; }
 @keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -14,10 +19,23 @@
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes modal-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
 
-/* Toast */
+/* Toast（移动端由 responsive.css 重定位到底部居中，使用上/下滑出变体） */
 @keyframes toast-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes toast-out { to { opacity: 0; transform: translateX(40px); } }
+@keyframes toast-in-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out-down { to { opacity: 0; transform: translateY(16px); } }
 .toast.out { animation: toast-out .25s ease forwards; }
+
+/* 全局「减弱动态效果」守卫：尊重系统设置，关闭所有非必要动画与过渡
+   （无障碍 + 省电；loader/boot 动画同样被此规则静止） */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* Blink */
 @keyframes blink { 0%,50% { opacity: 1; } 50.01%,100% { opacity: 0; } }

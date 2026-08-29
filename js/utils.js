@@ -195,8 +195,16 @@
       ${opts.footer !== false ? '<div class="modal-foot"></div>' : ""}
     </div>`;
     root.appendChild(mask);
+    /* 滚动锁：弹窗打开时锁住背景滚动（计数支持嵌套弹窗），关闭时按计数恢复 */
+    U._openModals = (U._openModals || 0) + 1;
+    document.body.classList.add("modal-open");
     const modalEl = mask.querySelector(".modal");
-    const close = () => { mask.remove(); document.removeEventListener("keydown", onKey); };
+    const close = () => {
+      mask.remove();
+      document.removeEventListener("keydown", onKey);
+      U._openModals = Math.max(0, (U._openModals || 1) - 1);
+      if (!U._openModals) document.body.classList.remove("modal-open");
+    };
     const onKey = e => { if (e.key === "Escape" && opts.closable !== false) close(); };
     mask.querySelector("[data-close]").onclick = () => { if (opts.closable !== false) close(); };
     mask.addEventListener("click", e => { if (e.target === mask && opts.closable !== false) close(); });

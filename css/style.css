@@ -249,6 +249,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 
 /* ============ Modal ============ */
 .modal-mask { position: fixed; inset: 0; background: rgba(15,23,42,.5); backdrop-filter: blur(2px); z-index: 100; display: grid; place-items: center; padding: 20px; }
+/* 弹窗滚动锁（U.modal 开关时挂/摘）：锁背景滚动，scrollbar-gutter 防桌面端宽度跳动 */
+body.modal-open { overflow: hidden; scrollbar-gutter: stable; }
 .modal { background: var(--bg-elevated); border-radius: var(--radius-lg); width: 100%; max-width: 560px; max-height: 88vh; overflow: auto; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
 .modal.wide { max-width: 920px; }
 .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-elevated); z-index: 2; }
@@ -294,6 +296,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .md h1,.md h2,.md h3 { margin: 1em 0 .4em; }
 .md code { font-family: var(--font-mono); background: var(--bg-subtle); padding: 2px 5px; border-radius: 5px; font-size: .9em; }
 .md pre { background: #0f172a; color: #e2e8f0; padding: 14px 16px; border-radius: 10px; overflow: auto; }
+/* 暗色下页面背景与 #0f172a 同色，代码块加深 + 描边避免糊成一片 */
+html[data-theme="dark"] .md pre { background: #0b1220; border: 1px solid var(--border); }
 .md pre code { background: transparent; padding: 0; color: inherit; }
 .md blockquote { border-left: 3px solid var(--c-primary); margin: 1em 0; padding: 4px 14px; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 0 8px 8px 0; }
 .md table { border-collapse: collapse; width: 100%; margin: 1em 0; }
@@ -432,6 +436,14 @@ table.data tr:hover td { background: var(--bg-hover); }
 .foot-note { text-align: center; color: var(--text-muted); font-size: 12px; padding: 24px; }
 .kbd { font-family: var(--font-mono); background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; font-size: 12px; }
 
+/* ============ 键盘焦点可见性（无障碍）与触屏按压反馈 ============ */
+/* 键盘 Tab 导航时焦点清晰可见（输入框有自己的 focus 环，特异性更高不受影响） */
+:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; border-radius: 4px; }
+/* 触屏按压反馈：hover 在移动端无效，按压给瞬时缩放 */
+.q-card:active, .side-nav-item:active, .skill-card:active, .tree-row:active { transform: scale(.985); }
+.card-hover:active { transform: scale(.99); }
+.side-nav-item, .q-card, .skill-card, .tree-row { transition: transform .1s ease; }
+
 /* ============ Admin dropdown menu ============ */
 .dropdown-wrap { position: relative; }
 .dropdown {
@@ -535,7 +547,7 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 .due-badge { margin-left: auto; min-width: 20px; padding: 1px 7px; border-radius: 10px; background: var(--c-warning, #F59E0B); color: #fff; font-size: 12px; font-weight: 700; line-height: 18px; text-align: center; animation: badgeBob 1.8s ease-in-out infinite; }
 @keyframes badgeBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 /* 首页到期复习横幅（最醒目的一层提醒） */
-.review-banner { display: flex; align-items: center; gap: 14px; padding: 16px 20px; text-decoration: none; border: 1px solid rgba(245,158,11,.45); background: linear-gradient(90deg, rgba(245,158,11,.14), rgba(245,158,11,.03)); animation: bannerGlow 2.4s ease-in-out infinite; }
+.review-banner { display: flex; align-items: center; gap: 14px; padding: 16px 20px; text-decoration: none; border: 1px solid rgba(245,158,11,.45); background: linear-gradient(90deg, rgba(245,158,11,.14), rgba(245,158,11,.03)); }
 .review-banner .rb-ic { font-size: 26px; animation: badgeBob 1.8s ease-in-out infinite; }
 .review-banner .rb-txt { flex: 1; min-width: 0; }
 @keyframes bannerGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.3); } 50% { box-shadow: 0 0 0 7px rgba(245,158,11,0); } }

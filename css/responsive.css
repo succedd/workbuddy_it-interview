@@ -50,3 +50,10 @@
 /* 离线徽章（顶栏，亮暗主题通用琥珀色） */
 .vis-chip.net-off { background: rgba(217,119,6,.12); border-color: rgba(217,119,6,.35); color: #b45309; }
 html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); border-color: rgba(251,191,36,.3); color: #fbbf24; }
+
+/* Toast 移动端改底部居中（拇指区，不遮标题），进出场改上/下滑 */
+@media (max-width: 720px) {
+  .toast-root { top: auto; left: 16px; right: 16px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); align-items: center; max-width: none; }
+  .toast { animation-name: toast-in-up; }
+  .toast.out { animation-name: toast-out-down; }
+}

@@ -684,7 +684,9 @@
     `, () => {
       /* echarts 大库按需加载（加载失败静默，图表区留白不影响页面） */
       U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-        const chart = echarts.init($("#pos-chart"));
+        const posBox = $("#pos-chart");
+        posBox.classList.add("chart-fade");
+        const chart = echarts.init(posBox);
         charts.push(chart);
         chart.setOption({
           tooltip: { trigger: "item" },
@@ -1476,7 +1478,7 @@
       }
       /* 图表区统一走按需加载的 echarts（失败静默，不影响面板其余内容） */
       U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-        const mk = (id, type, data, name) => { const c = echarts.init($(id)); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
+        const mk = (id, type, data, name) => { const box = $(id); box.classList.add("chart-fade"); const c = echarts.init(box); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
         mk("#c1", "bar", Object.entries(s.byCat).filter(([, v]) => v > 0).slice(0, 12), "题目数");
         mk("#c2", "pie", Object.entries(s.byDiff), "难度");
         mk("#c3", "bar", Object.entries(s.byType), "题型");
@@ -1488,7 +1490,7 @@
             const geoArr = Object.entries(geo).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
             const geoBox = document.getElementById("c-geo");
             if (geoBox) {
-              if (geoArr.length) { const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
+              if (geoArr.length) { geoBox.classList.add("chart-fade"); const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
               else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
             }
           }).catch(() => {});
