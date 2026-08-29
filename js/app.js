@@ -851,6 +851,12 @@
       btnSave.className = "btn"; btnSave.textContent = "保存图片"; btnSave.disabled = true;
       const btnCopy = document.createElement("button");
       btnCopy.className = "btn"; btnCopy.textContent = "复制链接";
+      /* 微信内置浏览器：navigator.share 文件分享不可用、a[download] 也不可靠；
+         正确姿势是长按预览大图 →「发送给朋友/保存图片」，全屏大图点击可关闭 */
+      const isWx = /MicroMessenger/i.test(navigator.userAgent);
+      if (isWx) {
+        btnSave.style.display = "none"; btnShare.style.display = "none";
+      }
       m.foot.appendChild(btnCopy);
       m.foot.appendChild(btnSave);
       m.foot.appendChild(btnShare);
@@ -871,8 +877,29 @@
         img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
         box.appendChild(img);
         file = await window.ShareCard.toFile(canvas, "IT面试题库-" + (q.title || "题目").slice(0, 20) + ".png");
-        btnSave.disabled = false;
-        btnShare.disabled = false;
+        if (isWx) {
+          /* 微信环境：点击预览图放大为全屏图（长按即可发送给朋友/保存到相册） */
+          const hint = document.createElement("div");
+          hint.className = "muted"; hint.style.cssText = "font-size:13px;margin-top:6px;text-align:center";
+          hint.textContent = "👆 点击图片放大后，长按选择「发送给朋友」直接分享到微信";
+          box.appendChild(hint);
+          img.style.cursor = "zoom-in";
+          img.onclick = () => {
+            const ov = document.createElement("div");
+            ov.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px;cursor:zoom-out";
+            const big = document.createElement("img");
+            big.src = img.src;
+            big.style.cssText = "max-width:94vw;max-height:82vh;border-radius:12px";
+            const tip = document.createElement("div");
+            tip.style.cssText = "color:#e2e8f0;font-size:14px;margin-top:12px;text-align:center";
+            tip.innerHTML = "长按图片 → <b>发送给朋友</b> 或 <b>保存图片</b><br><span style='font-size:12px;opacity:.75'>点击任意处关闭</span>";
+            ov.appendChild(big); ov.appendChild(tip);
+            ov.onclick = () => ov.remove();
+            document.body.appendChild(ov);
+          };
+        } else {
+          btnSave.disabled = false; btnShare.disabled = false;
+        }
       } catch (e) {
         m.body.querySelector("#sc-preview").innerHTML = `<div class="muted">卡片生成失败，可直接复制链接分享。</div>`;
       }
