@@ -786,8 +786,8 @@
     const q = await Services.getQuestion(parseInt(id));
     if (!q) { setMain(`<div class="empty">未找到该题目</div>`); return; }
     document.title = q.title + " · IT面试题库";   // 详情页 title 用题目标题
-    await Services.incViews(id); await Services.reload();
-    await Services.addHistory(id);
+    await Services.incViews(q.id); await Services.reload();
+    await Services.addHistory(q.id);   // 必须用数字 id：路由里的字符串 id 写进 IndexedDB 后类型不匹配，读取永远查不到
     Stats.recordView(id);
     markDailyDone(q.id);
     try { localStorage.setItem("last_question", JSON.stringify({ id: q.id, title: q.title })); } catch (e) {}
@@ -2966,6 +2966,7 @@
         }
       } catch (e) { console.warn("cloud sync error", e); }
       Boot.set(60, "迁移与预置数据…");
+      try { const n = await Services.repairHistoryIds(); if (n > 0) console.log("已修复", n, "条字符串 id 的浏览历史记录"); } catch (_) {}
       await Services.reload();
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });

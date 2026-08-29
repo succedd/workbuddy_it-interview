@@ -171,6 +171,22 @@
     const qmap = new Map(); qs.forEach(q => { if (q) qmap.set(q.id, q); });
     return hs.filter(h => qmap.has(h.questionId)).map(h => ({ q: qmap.get(h.questionId), at: h.createdAt }));
   };
+  /* 一次性修复：历史上路由字符串 id 被直接写入 histories（questionId 为字符串），
+     导致读取时 bulkGet 数字主键全部 miss（浏览历史页永远为空）。
+     把字符串 questionId 转为数字并去重（已存在数字行只保留最早/既有行，删字符串行）。 */
+  S.repairHistoryIds = async function () {
+    const rows = await db.histories.toArray();
+    const bad = rows.filter(h => typeof h.questionId !== "number" && /^\d+$/.test(String(h.questionId)));
+    if (!bad.length) return 0;
+    const numIds = new Set(rows.filter(h => typeof h.questionId === "number").map(h => h.questionId));
+    let fixed = 0;
+    for (const b of bad) {
+      await db.histories.delete(b.id);
+      const nid = parseInt(b.questionId);
+      if (!numIds.has(nid)) { numIds.add(nid); await db.histories.add({ questionId: nid, createdAt: b.createdAt }); fixed++; }
+    }
+    return fixed;
+  };
 
   /* 薄弱题本：标记「不熟悉 / 不会」的题目持久化收集
      关联键同时存 questionId 与 title 双重冗余：题目以 Dexie 自增主键(id)入库，
