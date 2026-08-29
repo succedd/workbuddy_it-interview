@@ -12,10 +12,12 @@ node_modules/
 
 # 防御性防护：根目录 wrangler.jsonc 是把静态站误部署成 worker 的元凶，
 # .wrangler/ 是本机 wrangler 缓存，tools/batches/ 是临时批处理记录，
-# 三者都不应进仓库（git add -A 会误带，导致推送/部署灾难）。
+# tools/.last-new-ids.json 是扩充流水线的待推分享页清单，
+# 四者都不应进仓库（git add -A 会误带，导致推送/部署灾难）。
 wrangler.jsonc
 .wrangler/
 tools/batches/
-  
-# Python �ֽ��뻺��  
-__pycache__/ 
+tools/.last-new-ids.json
+
+# Python 字节码缓存
+__pycache__/

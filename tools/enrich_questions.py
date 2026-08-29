@@ -58,6 +58,23 @@ import urllib.parse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUBLISHED = os.path.join(ROOT, "data", "published.json")
 BATCHES_DIR = os.path.join(ROOT, "tools", "batches")
+MARKER = os.path.join(ROOT, "tools", ".last-new-ids.json")
+
+# 轮转域 → 推荐来源（与 tools/intake-plan.md 轮转表对应，供 --next 输出）
+DOMAIN_SOURCES = {
+    "计算机科学基础": "https://github.com/CyC2018/CS-Notes",
+    "编程语言与编程基础": "https://github.com/Snailclimb/JavaGuide",
+    "数据库与数据存储": "https://www.xiaolincoding.com",
+    "操作系统与系统运维": "https://www.xiaolincoding.com",
+    "计算机网络与协议": "https://www.xiaolincoding.com",
+    "Web前端开发": "https://developer.mozilla.org/zh-CN/",
+    "后端开发与服务端框架": "https://github.com/Snailclimb/JavaGuide",
+    "软件工程与设计模式": "https://github.com/Snailclimb/JavaGuide",
+    "分布式系统与微服务": "https://tech.meituan.com/",
+    "云原生与DevOps": "https://kubernetes.io/zh-cn/docs/home/",
+    "信息安全与网络安全": "https://owasp.org/",
+    "移动端与跨平台开发": "https://developer.android.com/guide",
+}
 
 # 推送目标分支（Pages 源分支，双写保险）。可用环境变量 PUSH_BRANCHES 覆盖。
 DEFAULT_BRANCHES = (os.environ.get("PUSH_BRANCHES") or "release,main").split(",")
@@ -175,6 +192,17 @@ def build_question(item, next_id, now, cat_by_name, pos_by_name, exist_norm):
     years = item.get("years") or "不限"
     tags = item.get("tags") or []
 
+    # ---- 质检闸门：答案有效内容过短 / 引用不存在的本地图片，直接拒绝 ----
+    if len(re.sub(r"```[\s\S]*?```|[#>*`\-\|]", " ", answer).strip()) < 30:
+        raise ValueError("参考答案过短（有效内容 < 30 字）：%s" % title[:40])
+    for m in re.finditer(r"!\[[^\]]*\]\(([^)\s]+)[^)]*\)|<img[^>]+src=[\"']([^\"']+)[\"']", body + "\n" + answer):
+        src = m.group(1) or m.group(2)
+        if not src or re.match(r"^(https?:|data:)", src, re.I):
+            continue
+        rel = src.lstrip("/").split("?")[0]
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            raise ValueError("引用的本地图片不存在（%s）：%s" % (src, title[:40]))
+
     return {
         "id": next_id,
         "title": title,
@@ -220,6 +248,21 @@ def process_batch(path, data, cat_by_name, pos_by_name, exist_norm, next_id, dry
     return added, skipped
 
 
+def quota_warnings(stats):
+    """软性配额提醒：题型/难度过度单一时提示，不阻断。"""
+    meta = stats.get("added_meta") or []
+    if len(meta) < 3:
+        return
+    types = set(t for _, t in meta)
+    diffs = set(d for d, _ in meta)
+    if types == {"简答题"}:
+        log("! 配额提醒：本批全部为简答题，建议下批补充编程/场景/故障排查类题目")
+    for need in ("初级", "中级", "高级"):
+        if need not in diffs:
+            log("! 配额提醒：本批缺少「%s」难度题目" % need)
+            break
+
+
 def write_published(data):
     # 与线上一致：minified、ensure_ascii=False。
     # 每次真实合并都递增 version 并刷新 publishedAt —— 前端/编辑端据此感知「云端有更新」，
@@ -228,6 +271,27 @@ def write_published(data):
     data["publishedAt"] = int(time.time() * 1000)
     with open(PUBLISHED, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+
+
+def load_marker():
+    """待推送分享页的题目 id 集合（跨两次调用的持久化：先合并、后 --push 是两步流程）。"""
+    try:
+        with open(MARKER, encoding="utf-8") as f:
+            return set(int(x) for x in json.load(f).get("ids", []) or [])
+    except Exception:
+        return set()
+
+
+def save_marker(ids):
+    with open(MARKER, "w", encoding="utf-8") as f:
+        json.dump({"ids": sorted(ids), "updatedAt": int(time.time() * 1000)}, f)
+
+
+def clear_marker():
+    try:
+        os.remove(MARKER)
+    except OSError:
+        pass
 
 
 def github_put(path, content, branch, message):
@@ -272,11 +336,12 @@ def regen_and_push_share_pages(new_ids, branches):
     """新题合并后：重生成静态分享页 q/<id>.html 并推送新增页面。
 
     - 分享页是 SEO 增强，任何失败都只告警，绝不让题库发布主流程翻车；
-    - 页面内容由 published.json 确定性生成，存量页不变，只需推送本次新增 id；
+    - 页面内容由 published.json 确定性生成，存量页不变，只需推送待推清单里的 id；
     - node 不可用 / 未配 Token 时降级为「仅本地生成」或「跳过」。
+    - 返回 True 表示待推清单全部推送成功（或无需推送）。
     """
     if not new_ids:
-        return
+        return True
     script = os.path.join(ROOT, "tools", "gen-share-pages.js")
     try:
         subprocess.run(["node", script], cwd=ROOT, check=True, timeout=180,
@@ -284,12 +349,12 @@ def regen_and_push_share_pages(new_ids, branches):
         log("✓ 已重生成分享页（q/<id>.html，含 %d 个新题页面）" % len(new_ids))
     except Exception as e:
         log("  ! 分享页生成失败（跳过，不影响题库）：%s" % e)
-        return
+        return False
     if not branches:
-        return
+        return True
     if not TOKEN:
         log("  ! 未配置 GH_PUBLISH_TOKEN，分享页仅在本地生成未推送")
-        return
+        return False
     msg = "自动扩充：补充 %d 个新题分享页" % len(new_ids)
     pushed = 0
     for qid in new_ids:
@@ -309,6 +374,57 @@ def regen_and_push_share_pages(new_ids, branches):
         if ok:
             pushed += 1
     log("✓ 新题分享页推送完成：%d/%d" % (pushed, len(new_ids)))
+    return pushed == len(new_ids)
+
+
+def cmd_next(data):
+    """数据驱动选域：按空叶子分类数排序推荐本轮扩充域。"""
+    cats = {c["id"]: c for c in data.get("categories", []) if c.get("id") is not None}
+    children = {}
+    for c in cats.values():
+        children.setdefault(c.get("parentId") or 0, []).append(c["id"])
+    count = {}
+    for q in data.get("questions", []):
+        cid = q.get("categoryId")
+        count[cid] = count.get(cid, 0) + 1
+
+    def top_ancestor(cid):
+        seen = set()
+        while cid in cats:
+            p = cats[cid].get("parentId") or 0
+            if p == 0 or p not in cats or cid in seen:
+                return cid
+            seen.add(cid)
+            cid = p
+        return cid
+
+    leaves = [cid for cid in cats if cid not in children]
+    agg = {}
+    for cid in leaves:
+        root = top_ancestor(cid)
+        n = count.get(cid, 0)
+        a = agg.setdefault(root, {"empty": 0, "thin": 0, "empty_names": []})
+        if n == 0:
+            a["empty"] += 1
+            a["empty_names"].append(cats[cid]["name"])
+        elif n < 3:
+            a["thin"] += 1
+    rows = sorted(agg.items(), key=lambda kv: (-kv[1]["empty"], -kv[1]["thin"]))[:3]
+    log("覆盖度概览（按空叶子数排序，当前共 %d 题）：" % len(data.get("questions", [])))
+    for root, a in rows:
+        name = cats.get(root, {}).get("name", "#" + str(root))
+        log("  %s —— 空叶子 %d 个，瘦叶子（<3题）%d 个" % (name, a["empty"], a["thin"]))
+    if not rows:
+        return
+    root, a = rows[0]
+    name = cats.get(root, {}).get("name", "#" + str(root))
+    log("")
+    log("建议本轮扩充域：%s" % name)
+    if a["empty_names"]:
+        log("优先填充叶子分类：%s" % "、".join(a["empty_names"][:8]))
+    src = DOMAIN_SOURCES.get(name)
+    if src:
+        log("推荐来源：%s" % src)
 
 
 def main():
@@ -319,7 +435,13 @@ def main():
     ap.add_argument("--push", action="store_true", help="合并后通过 API 推送到 Pages 分支")
     ap.add_argument("--branches", default=",".join(DEFAULT_BRANCHES),
                     help="推送目标分支，逗号分隔（默认 release,main）")
+    ap.add_argument("--next", action="store_true",
+                    help="数据驱动选域：按空叶子分类数输出推荐扩充域，不合并不推送")
     args = ap.parse_args()
+
+    if args.next:
+        cmd_next(load_published())
+        return
 
     if not args.batch and not args.all:
         ap.error("需指定批次文件或使用 --all")
@@ -349,21 +471,35 @@ def main():
 
     log("统计：新增 %d，跳过 %d，校验后总计 %d 题" %
         (stats["added"], stats["skipped"], len(data["questions"])))
+    quota_warnings(stats)
 
     if args.dry:
         log("[dry] 未写入文件。")
         return
 
-    write_published(data)
-    log("✓ 已写入 %s" % os.path.relpath(PUBLISHED, ROOT))
+    # 两步流程兼容：自动化先「合并」再「--push 同一批次」。
+    # --push 时批次已全部去重跳过（added=0），此时不重复写文件/不重复自增 version，
+    # 直接推送第 8 步已合并的 published.json。
+    if stats["added"] > 0:
+        write_published(data)
+        log("✓ 已写入 %s" % os.path.relpath(PUBLISHED, ROOT))
+    else:
+        log("本批次无新增（已全部合并过），直接推送现有题库文件")
+
+    # 待推分享页清单：跨调用持久化（合并步写入，推送步消费），避免新题 id 在两次调用间丢失
+    pending = load_marker() | set(stats.get("new_ids") or [])
 
     if args.push:
         branches = [b.strip() for b in args.branches.split(",") if b.strip()]
         push_all(data, branches)
-        regen_and_push_share_pages(stats.get("new_ids") or [], branches)
+        if regen_and_push_share_pages(sorted(pending), branches):
+            if pending:
+                clear_marker()
+        else:
+            save_marker(pending)   # 保留待推清单，下次 --push 重试
     else:
-        # 本地合并（未开 --push）：也顺手生成分享页，保持工作区完整
-        regen_and_push_share_pages(stats.get("new_ids") or [], [])
+        save_marker(pending)       # 本地合并：记录待推，等下一次 --push 一起发
+        regen_and_push_share_pages(sorted(pending) if pending else [], [])
 
 
 if __name__ == "__main__":
