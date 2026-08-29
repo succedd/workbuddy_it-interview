@@ -59,6 +59,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUBLISHED = os.path.join(ROOT, "data", "published.json")
 BATCHES_DIR = os.path.join(ROOT, "tools", "batches")
 MARKER = os.path.join(ROOT, "tools", ".last-new-ids.json")
+TOPICS = os.path.join(ROOT, "tools", "classic-topics.json")
 
 # 轮转域 → 推荐来源（与 tools/intake-plan.md 轮转表对应，供 --next 输出）
 DOMAIN_SOURCES = {
@@ -294,6 +295,34 @@ def clear_marker():
         pass
 
 
+def load_topics():
+    with open(TOPICS, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def cmd_topic_next():
+    """输出第一个未完成的经典主题（JSON），供自动化按链生成批次。"""
+    t = load_topics()
+    todo = [x for x in t.get("topics", []) if not x.get("done")]
+    log("经典主题进度：%d/%d 已完成" % (len(t.get("topics", [])) - len(todo), len(t.get("topics", []))))
+    if not todo:
+        log("🎉 全部完成！可对已 done 主题做深度补充，或扩充 classic-topics.json")
+        return
+    log(json.dumps(todo[0], ensure_ascii=False, indent=2))
+
+
+def cmd_topic_done(tid, batch):
+    t = load_topics()
+    for x in t.get("topics", []):
+        if x.get("id") == tid:
+            x["done"] = True
+            x["batch"] = batch or ""
+            save_topics(t)
+            log("✓ 已标记主题 %s 完成（批次：%s）" % (tid, batch or "-"))
+            return
+    log("! 未找到主题 %s" % tid)
+
+
 def github_put(path, content, branch, message):
     """通过 Contents API 推送单文件（乐观锁重试），与线上编辑端同源。"""
     if not TOKEN:
@@ -437,10 +466,18 @@ def main():
                     help="推送目标分支，逗号分隔（默认 release,main）")
     ap.add_argument("--next", action="store_true",
                     help="数据驱动选域：按空叶子分类数输出推荐扩充域，不合并不推送")
+    ap.add_argument("--topic-next", action="store_true",
+                    help="输出第一个未完成的经典主题（classic-topics.json），供追问链批次生成")
+    ap.add_argument("--topic-done", metavar="TID",
+                    help="把指定主题标记为已完成（如 --topic-done T001）")
+    ap.add_argument("--topic-batch", default="", help="配合 --topic-done 记录批次号")
     args = ap.parse_args()
 
-    if args.next:
-        cmd_next(load_published())
+    if args.topic_next:
+        cmd_topic_next()
+        return
+    if args.topic_done:
+        cmd_topic_done(args.topic_done, args.topic_batch)
         return
 
     if not args.batch and not args.all:
