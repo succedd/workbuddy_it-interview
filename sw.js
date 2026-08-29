@@ -5,7 +5,7 @@
  *  - 跨域资源（jsdelivr CDN、百度统计、API worker）：不拦截，交由浏览器正常处理
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260827t";
+const VERSION = "20260827u";
 const CACHE = "iti-pwa-v" + VERSION;
 const APP_SHELL = [
   "/", "/index.html",
@@ -15,7 +15,7 @@ const APP_SHELL = [
   "/js/utils.js?v=" + VERSION, "/js/db.js?v=" + VERSION, "/js/auth.js?v=" + VERSION,
   "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
   "/js/services.js?v=" + VERSION, "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
-  "/js/importexport.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
+  "/js/importexport.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
   "/data/seed.js?v=" + VERSION
 ];
 
@@ -48,9 +48,13 @@ self.addEventListener("fetch", (event) => {
         /* cache:"reload" 强制绕过 HTTP 缓存（GitHub Pages HTML 固定 max-age=600），
            否则 network-first 的 fetch 仍会命中 10 分钟缓存，发版后用户要等 10 分钟才能拿到新版 */
         const net = await fetch(req, { cache: "reload" });
-        const cache = await caches.open(CACHE);
-        cache.put("/", net.clone()).catch(() => {});
-        cache.put("/index.html", net.clone()).catch(() => {});
+        /* 只缓存首页：否则 /q/<id>.html 等分享页会被写进 "/" 缓存键，污染离线首页 */
+        const p = new URL(req.url).pathname;
+        if (p === "/" || p === "/index.html") {
+          const cache = await caches.open(CACHE);
+          cache.put("/", net.clone()).catch(() => {});
+          cache.put("/index.html", net.clone()).catch(() => {});
+        }
         return net;
       } catch (_) {
         return (await caches.match("/index.html")) || (await caches.match("/")) || Response.error();

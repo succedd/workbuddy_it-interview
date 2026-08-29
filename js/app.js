@@ -835,17 +835,66 @@
       const info = await Services.weakInfo(q.id);
       if (info) { const st = $("#weak-status"); if (!st) { const b = $("#weak-btn"); b.insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status">📅 复习中 · ${Services.EBBS_LABEL[info.box]} 后</span>`); } }
     };
-    /* 分享：手机优先调起系统分享面板，桌面降级为复制链接；用户主动取消分享时不降级 */
-    $("#share-btn").onclick = async () => {
+    /* 分享：弹窗预览精美卡片图 → 可直接分享到微信；同时提供复制链接（用户主动取消分享时不降级） */
+    $("#share-btn").onclick = () => openShareDialog(q);
+
+    /* 分享弹窗：生成题目卡片预览，支持「分享/保存图片」与「复制链接」 */
+    async function openShareDialog(q) {
       const url = location.origin + location.pathname + "#/question/" + q.id;
-      const title = q.title + " · IT面试题库";
-      if (navigator.share) {
-        try { await navigator.share({ title, text: q.title, url }); return; }
-        catch (e) { if (e && (e.name === "AbortError" || e.name === "NotAllowedError")) return; }
+      const m = U.modal({ title: "分享这道题", closable: true });
+      m.body.innerHTML = `<div id="sc-preview" class="muted" style="text-align:center;padding:30px 0">正在生成卡片…</div>
+        <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑点「保存图片」下载后发送</div>`;
+      const btnShare = document.createElement("button");
+      btnShare.className = "btn btn-primary"; btnShare.textContent = "分享图片"; btnShare.disabled = true;
+      const btnSave = document.createElement("button");
+      btnSave.className = "btn"; btnSave.textContent = "保存图片"; btnSave.disabled = true;
+      const btnCopy = document.createElement("button");
+      btnCopy.className = "btn"; btnCopy.textContent = "复制链接";
+      m.foot.appendChild(btnCopy);
+      m.foot.appendChild(btnSave);
+      m.foot.appendChild(btnShare);
+
+      btnCopy.onclick = async () => {
+        const ok = await U.copyText(url);
+        U.toast(ok ? "链接已复制，粘贴即可分享给朋友" : "复制失败，请手动复制地址栏链接", ok ? "success" : "error");
+      };
+
+      let file = null;
+      try {
+        const { canvas } = await window.ShareCard.render(q, url);
+        const box = m.body.querySelector("#sc-preview");
+        box.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = canvas.toDataURL("image/png");
+        img.alt = "题目分享卡片预览";
+        img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
+        box.appendChild(img);
+        file = await window.ShareCard.toFile(canvas, "IT面试题库-" + (q.title || "题目").slice(0, 20) + ".png");
+        btnSave.disabled = false;
+        btnShare.disabled = false;
+      } catch (e) {
+        m.body.querySelector("#sc-preview").innerHTML = `<div class="muted">卡片生成失败，可直接复制链接分享。</div>`;
       }
-      const ok = await U.copyText(url);
-      U.toast(ok ? "链接已复制，粘贴即可分享给朋友" : "复制失败，请手动复制地址栏链接", ok ? "success" : "error");
-    };
+
+      btnSave.onclick = () => {
+        if (!file) return;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(file); a.download = file.name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        U.toast("图片已保存", "success");
+      };
+      btnShare.onclick = async () => {
+        if (!file) return;
+        const payload = { files: [file], title: q.title + " · IT面试题库", text: q.title };
+        if (navigator.canShare && navigator.canShare(payload)) {
+          try { await navigator.share(payload); return; }
+          catch (e) { if (e && (e.name === "AbortError" || e.name === "NotAllowedError")) return; }
+        }
+        // 不支持文件分享（多数桌面浏览器）→ 降级为保存
+        btnSave.click();
+      };
+    }
     if (Auth.isAdmin()) {
       $("#del-btn").onclick = async () => {
         if (await U.confirm("确定删除该题？此操作不可逆。", { danger: true, okText: "删除" })) {
