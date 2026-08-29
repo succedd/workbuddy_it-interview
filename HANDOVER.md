@@ -26,6 +26,7 @@
 ## 3. 技术栈与结构
 
 - **纯静态零构建**：HTML + 原生 JS（hash 路由 `#/question/<id>`）+ IndexedDB，无框架无打包，改文件即开发
+- **第三方库已本地化 vendor/**（dexie/marked/purify/highlight/fuse + hljs 主题 css 进 SW 壳缓存；echarts/xlsx 大库按需加载 `U.loadScript`）——新增库要同步 sw.js 的 APP_SHELL；vendor 库无版本参数，缓存失效靠 SW VERSION 整体 bump
 - 行尾是 CRLF：node 脚本批量改文件需归一化 `\r\n`，否则 diff 爆炸；优先用逐处编辑工具
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
 - 静态分享页：`tools/gen-share-pages.js` 生成 258 个 `q/<id>.html`（per-question OG 标签 + 自动跳回 SPA）——**新增题目后需重跑一次**
@@ -52,14 +53,17 @@
 - **容错约定**：D1 新表缺失时 worker 静默降级（返回空/跳过保存），不影响核心同步——新增表照此模式写
 - **本地调试**：`wrangler dev --config cloudflare/wrangler.toml`（注意本地 dev 的 D1 是空库，登录功能要 `--remote` 或先建表）
 
-## 4. 本机网络（在用户这台 Windows 机器上跑命令时）
+## 4. 本机网络与 git 环境（在用户这台 Windows 机器上跑命令时）
 
-- git 推拉需显式代理：`git -c http.proxy=http://127.0.0.1:7897 fetch/push`（环境变量代理对 git 不生效；无代理直连 GitHub 间歇性超时，失败重试 2-3 次）
-- curl 走代理正常；curl `-o` 落盘需写入工作目录（沙箱限制）
-- workers.dev 域名在国内 DNS 污染是常态（本机 curl 它可能失败）——**验证 Worker 接口用 `git push`/`wrangler` 通道即可，别用 curl 直连 workers.dev 判生死**
+- **本机未装系统级 git**（PATH 无 `git` 命令，勿浪费时间找）：用 WorkBuddy 便携版 `C:\Users\Life\.workbuddy\binaries\PortableGit\versions\1.2.0\cmd\git.exe`
+- **GitHub 连接已持久化**（2026-08-29）：PAT 已写入本仓库 `.git/config` 的 origin URL，代理已写入仓库级 `http.proxy`——在本目录内 fetch/push 直接跑即可（token 本体勿写进任何会被提交的文件）
+- curl/wrangler 走代理正常：curl 加 `-x http://127.0.0.1:7897`；wrangler 前置 `set HTTPS_PROXY=http://127.0.0.1:7897`
+- curl `-o` 落盘需写入工作目录（沙箱限制），不能写 /dev/null
+- workers.dev 域名在国内 DNS 污染是常态——但带代理 curl 实测可达（2026-08-29 验证过 /stats 200）；判生死优先用 wrangler 部署输出 + 带代理 curl
 
 ## 5. 验证与回归（发版后必做）
 
+- **发版前**：`node tools/smoke-test.js`（25 用例纯函数回归）+ `node tools/data-audit.js`（题库体检：缺字段/重复题/瘦分类/图片缺失）
 - **上线新功能绝不允许覆盖/丢失原有功能**：发版后逐项 grep 旧功能标记词验证仍在（如 pageReview / todayFive / weakGrade / nav-pulse / review-banner / share-btn / beaconSync / uploadImageAsset 等）
 - 用户反馈的问题必须追根修复，不做表面处理
 - 微信环境认知（已实测确认）：
@@ -69,14 +73,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 13:38
-- **最新 commit**：`4a06571`（缓存版本 `20260827v`）——HANDOVER.md 交接卡建立
-- **线上**：release = main = `4a06571`；站点 + Worker 均正常
-- **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports），API `https://it-interview-stats.iti-interview.workers.dev`（国内 curl 直连 workers.dev 受 DNS 污染，属网络问题非服务故障）
-- **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线/无障碍/题目分享卡片（canvas 图片 + 258 个静态 OG 分享页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
+- **最后更新**：2026-08-29 14:40
+- **最新 commit**：`6fbbc72`（缓存版本 `20260827w`）——安全+性能+SEO 三线升级：DOMPurify 补加载、第三方库本地化、echarts/xlsx 懒加载、开场动画回访跳过、q 页内容化+JSON-LD、Worker 加固（已部署 `85b4abca`）
+- **线上**：release = main = `6fbbc72`，站点已验证（新标题/v=w/vendor 200/q 页 JSON-LD/Worker /stats 200）；旧功能标记词 grep 全过；smoke-test 25 用例全过
+- **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
+- **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
 - **进行中/待办**：
-  - P1：登录时顺手清理自己已过期的旧会话（防 sessions 表膨胀）
+  - ~~P1：登录时顺手清理过期会话~~（已完成：worker.js handleLogin 内 DELETE 过期会话，线上已生效）
   - P1：eu.org 自有域名审核中（automation 每天 10:00 检查）
-  - P2：题目查重机制仅覆盖 Excel/CSV 批量导入，手动新增与 AI 生成无查重
+  - P1：题目数据修补（体检报告：缺题干 10 题 #211~#233、未分类 3 题 #229/#233/#239、瘦分类 33 个——在管理端补数据后重新发布导出）
+  - P2：题目查重机制仅覆盖 Excel/CSV 批量导入，手动新增与 AI 生成无查重（可用 data-audit.js 重复标题检查兜底）
   - P2：ima 知识库订阅内容作为题库数据源的探索
   - P2：可访问性补齐（卡片内图标按钮 aria-label）
+  - P3：app.js 209KB 巨石渐进拆 ES modules（先有 smoke-test 兜底再动）
