@@ -47,6 +47,7 @@ import base64
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 import difflib
@@ -210,6 +211,7 @@ def process_batch(path, data, cat_by_name, pos_by_name, exist_norm, next_id, dry
                 data["questions"].append(q)
                 exist_norm.add(norm_title(q["title"]))
             added.append(q["title"])
+            stats.setdefault("new_ids", []).append(q["id"])
             next_id += 1
         except ValueError as e:
             skipped.append(str(e))
@@ -266,6 +268,49 @@ def push_all(data, branches):
         log("  ✓ 已推送至 %s 分支 (HTTP %s)" % (b, st))
 
 
+def regen_and_push_share_pages(new_ids, branches):
+    """新题合并后：重生成静态分享页 q/<id>.html 并推送新增页面。
+
+    - 分享页是 SEO 增强，任何失败都只告警，绝不让题库发布主流程翻车；
+    - 页面内容由 published.json 确定性生成，存量页不变，只需推送本次新增 id；
+    - node 不可用 / 未配 Token 时降级为「仅本地生成」或「跳过」。
+    """
+    if not new_ids:
+        return
+    script = os.path.join(ROOT, "tools", "gen-share-pages.js")
+    try:
+        subprocess.run(["node", script], cwd=ROOT, check=True, timeout=180,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        log("✓ 已重生成分享页（q/<id>.html，含 %d 个新题页面）" % len(new_ids))
+    except Exception as e:
+        log("  ! 分享页生成失败（跳过，不影响题库）：%s" % e)
+        return
+    if not branches:
+        return
+    if not TOKEN:
+        log("  ! 未配置 GH_PUBLISH_TOKEN，分享页仅在本地生成未推送")
+        return
+    msg = "自动扩充：补充 %d 个新题分享页" % len(new_ids)
+    pushed = 0
+    for qid in new_ids:
+        p = os.path.join(ROOT, "q", "%s.html" % qid)
+        if not os.path.exists(p):
+            log("  ! 分享页缺失：q/%s.html" % qid)
+            continue
+        with open(p, encoding="utf-8") as f:
+            content = f.read()
+        ok = True
+        for b in branches:
+            try:
+                github_put("q/%s.html" % qid, content, b, msg)
+            except Exception as e:
+                ok = False
+                log("  ! 分享页推送失败 q/%s.html → %s：%s" % (qid, b, e))
+        if ok:
+            pushed += 1
+    log("✓ 新题分享页推送完成：%d/%d" % (pushed, len(new_ids)))
+
+
 def main():
     ap = argparse.ArgumentParser(description="题库自动扩充流水线")
     ap.add_argument("batch", nargs="?", help="批次 JSON 路径；与 --all 二选一")
@@ -315,6 +360,10 @@ def main():
     if args.push:
         branches = [b.strip() for b in args.branches.split(",") if b.strip()]
         push_all(data, branches)
+        regen_and_push_share_pages(stats.get("new_ids") or [], branches)
+    else:
+        # 本地合并（未开 --push）：也顺手生成分享页，保持工作区完整
+        regen_and_push_share_pages(stats.get("new_ids") or [], [])
 
 
 if __name__ == "__main__":

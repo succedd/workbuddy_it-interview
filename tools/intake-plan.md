@@ -59,7 +59,9 @@
 5. **合并与发布**：
    - 本地调试用 `--dry` 校验；
    - 正式合并后提交 git；
-   - 若配置了 `GH_PUBLISH_TOKEN`，用 `--push` 推到 Pages 源分支（默认 `release,main` 双写）以更新线上。
+   - 若配置了 `GH_PUBLISH_TOKEN`，用 `--push` 推到 Pages 源分支（默认 `release,main` 双写）以更新线上；
+   - **分享页自动跟发（2026-08-29 起）**：`--push` 在题库推送成功后自动重跑 `gen-share-pages.js`，并把本次新增题的 `q/<id>.html` 推上同样的两个分支；本地合并（不带 `--push`）也会重生成分享页但不推送。分享页生成/推送失败只告警，绝不影响题库发布主流程。
+   - 本机 Python：用 uv 管理的 `C:\Users\Life\AppData\Roaming\uv\python\cpython-3.12.13-windows-x86_64-none\python.exe`（注册表里的 3.11.4 已卸载，只剩残留目录）。
 6. **节奏**：每周一次，单批 6–10 题；空分类填满后转为「深度补充 + 校订已有题答案」。
 7. **记录**：每次扩充后在 README 的「自动扩充记录」追加一行（日期 / 批号 / 域 / 题数）。
 
