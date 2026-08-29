@@ -73,9 +73,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 18:00
-- **最新 commit**：`b17c329`（缓存版本 `20260829c`）——**周报布局精修**：紧凑三段式（三列统计带分隔线、趋势徽章内联数字旁、等高对齐）、柱状图变薄、「本周标记不会的题」收进 details 折叠、去渐变底统一卡片风格、样式收敛 `wk-*` 类、窄屏 ≤480px 字号自适应。同日早前：周报重做（b）、浏览历史升级（a）、历史类型 bug 修复（z）、动效样式（y）、体验修正（x）、安全性能 SEO（w）、流水线增强
-- **线上**：release = main = `b17c329`，已验证（v=20260829c、wk-stats 样式与精修模板均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS
+- **最后更新**：2026-08-29 18:20
+- **最新 commit**：`4479974`（缓存版本 `20260829d`）——**修复学习打卡永远 0 天**：getLocalStats 漏返回 daily 字段（streakInfo 推导连续/累计/热力图全靠它，上线以来恒为 0）；打卡日期改本地时区（原 UTC 早 8 点前记到昨天）；看题计入当日活跃。同日早前：周报布局精修（c）、周报重做（b）、浏览历史升级（a）、历史类型 bug 修复（z）、动效样式（y）、体验修正（x）、安全性能 SEO（w）、流水线增强
+- **线上**：release = main = `4479974`，已验证（v=20260829d、daily 字段/本地时区均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS
 - **扩充流水线注意**：自动化「题库定期自动扩充」每周一/三/五 10:00 跑，**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ `--next` 数据驱动选域 + 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
