@@ -98,6 +98,7 @@
       case "question": return pageQuestionDetail(r.parts[1]);
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
+      case "help": return pageHelp();
       case "practice": return pagePractice(r.q);
       case "review": return pageReview();
       case "random": {
@@ -204,6 +205,7 @@
       ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
       ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
+      ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
       <div class="nav-section-title">技术分类</div>
       <div id="side-tree">${renderTree(0, r)}</div>`;
     if (Auth.isAdmin()) {
@@ -1228,6 +1230,87 @@
       pageHistory();
     };
     renderGrid();
+  }
+
+  /* ============================ 使用指南 ============================ */
+  async function pageHelp() {
+    document.title = "使用指南 · IT面试题库";
+    const toc = [
+      ["quick", "🚀 快速上手"], ["find", "🔍 找题与浏览"], ["daily", "📚 日常学习"],
+      ["review", "🔁 复习与错题"], ["mock", "🎙️ 模拟面试"], ["account", "👤 账号与数据"],
+      ["share", "📤 分享"], ["admin", "🛠️ 管理员"], ["faq", "❓ 常见问题"],
+    ];
+    const sec = (id, title, body) => `<div class="card" id="help-${id}" style="margin-top:14px"><h2 style="font-size:16px;margin-bottom:10px">${title}</h2>${body}</div>`;
+    const li = (t, d) => `<div style="display:flex;gap:8px;padding:5px 0;line-height:1.65"><span style="flex:none">•</span><span><b>${t}</b>${d ? `<span class="muted"> —— ${d}</span>` : ""}</span></div>`;
+    setMain(`
+      <div class="hero" style="padding:28px 16px 20px">
+        <h1 style="font-size:22px">📖 使用指南</h1>
+        <p>5 分钟了解全部功能。数据存于本机浏览器，登录后云端同步，支持离线使用。</p>
+        <div class="hot-tags">${toc.map(([id, label]) => `<span class="tag" style="cursor:pointer" data-go="help-${id}">${label}</span>`).join("")}</div>
+      </div>
+      ${sec("quick", "🚀 快速上手", `
+        ${li("打开就能用", "无需注册登录，首次打开自动加载题库，直接刷题")}
+        ${li("三种开始方式", "顶部搜索框直接搜 · 「技术体系 / 岗位体系」分类浏览 · 「随机一题」随缘学习")}
+        ${li("数据在哪", "学习记录默认存在本机浏览器；注册登录后自动云端同步，换设备不丢")}
+        ${li("装到手机桌面", "浏览器菜单选「添加到主屏幕」，之后像 App 一样打开，断网也能刷题")}
+      `)}
+      ${sec("find", "🔍 找题与浏览", `
+        ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词")}
+        ${li("技术体系", "279 个分类的树状目录，从「计算机科学基础」到「大模型」，逐层展开找题")}
+        ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
+        ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序")}
+      `)}
+      ${sec("daily", "📚 日常学习", `
+        ${li("刷题练习", "选分类 / 岗位 / 难度开一局，支持随机与顺序两种模式")}
+        ${li("键盘快捷键", "详情页里 ← → 切换上下一题，空格展开 / 收起答案，S 收藏（手机长按无此烦恼，直接点按钮）")}
+        ${li("今日 5 题", "每天固定 5 道题，做完自动打勾；打开「温故知新」还会混入 3 天前看过但没掌握的题")}
+        ${li("学习打卡", "打开网站即打卡，热力图展示最近 35 天；连续天数看着数字涨很有成就感")}
+        ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比和每日柱状图；薄弱分类可直接点击去刷")}
+      `)}
+      ${sec("review", "🔁 复习与错题（艾宾浩斯记忆曲线）", `
+        ${li("怎么进错题本", "刷题或模拟面试中点「不太会 / 不会」，或在题目详情页点「不太会」按钮")}
+        ${li("复习节奏", "系统按记忆曲线安排：5 分钟 → 30 分钟 → 12 小时 → 1 天 → 2 天 → 4 天 → 7 天 → 15 天，到期自动提醒")}
+        ${li("错题重练页", "「📌 待复习」放到期题，「🕒 已排程」看未来安排；答对点「会了」顺延间隔，答错重新来")}
+        ${li("浏览历史", "按今天 / 昨天 / 本周分组，支持单条删除、关键词搜索；「看过 N 次」多的题往往就是没吃透的题；顶部「重刷历史」一键把看过的题再刷一遍")}
+        ${li("状态角标", "历史卡片上的 📅 复习中 = 已在错题本，★ = 已收藏，帮你区分看懂的和没看懂的")}
+      `)}
+      ${sec("mock", "🎙️ 模拟面试", `
+        ${li("流程", "选岗位 + 工作年限 → 系统抽题逐题提问 → 每题自评「掌握 / 不熟悉 / 不会」→ 生成报告")}
+        ${li("报告内容", "掌握率、用时、技术覆盖度；登录后自动存云端，并可看历次成绩趋势对比")}
+        ${li("与错题本联动", "标「不熟悉 / 不会」的题自动进错题本，按记忆曲线安排复习")}
+      `)}
+      ${sec("account", "👤 账号与数据", `
+        ${li("注册 / 登录", "邮箱 + 密码即可，密码加密存储；登录后收藏、浏览历史、错题本、今日打卡、面试报告全部云端同步")}
+        ${li("换设备", "新设备登录同一账号，学习记录自动合并恢复")}
+        ${li("关闭页面也不丢", "关闭标签页时自动兜底上传一次，最大程度保护学习数据")}
+        ${li("加密备份", "系统设置里可开启备份密码，本机配置（Token、AI Key 等）加密后存云端，凭密码一键恢复")}
+      `)}
+      ${sec("share", "📤 分享", `
+        ${li("分享卡片", "题目详情页点「分享」，自动生成精美卡片图（标题 + 标签 + 答案摘要 + 二维码）")}
+        ${li("微信里分享", "微信内点图片放大后长按 → 「发送给朋友」；每道题还有独立分享页，聊天里发链接直接显示题卡")}
+        ${li("复制链接", "桌面端可直接复制题目链接发给同学同事")}
+      `)}
+      ${sec("admin", "🛠️ 管理员（可选）", `
+        ${li("本地密码", "首次进入管理页设置密码，只保存在当前浏览器，换浏览器需重设；访客完全不需要管这个")}
+        ${li("题目管理", "增删改查、直接粘贴截图进题干和答案、标题查重提示")}
+        ${li("AI 出题", "配置 API Key 后按分类 / 岗位 / 难度批量生成题目")}
+        ${li("批量导入 / 备份", "支持 Excel / CSV / JSON / Markdown 导入；本地数据可加密备份到云端")}
+        ${li("发布", "配置 GitHub Token 后，题目改动 10 秒自动发布到线上题库，所有访客同步更新")}
+      `)}
+      ${sec("faq", "❓ 常见问题", `
+        ${li("需要注册吗？", "不需要，打开就能刷；注册只是为了多设备同步学习记录")}
+        ${li("别人访问要设管理员密码吗？", "不用，管理员是本地概念，只管「你这个人」能不能编辑题库")}
+        ${li("换电脑 / 浏览器数据还在吗？", "登录用户自动恢复；未登录用户的数据只在本机浏览器里，建议注册或用备份功能")}
+        ${li("离线能用吗？", "能。安装到主屏幕后断网照常刷题（联网时会自动同步数据）")}
+        ${li("页面显示异常 / 数据不对？", "先强制刷新（电脑 Ctrl+Shift+R，手机清一下浏览器缓存）；仍有问题联系管理员")}
+        ${li("题目答案有误？", "欢迎反馈给管理员纠错，题库会持续迭代")}
+      `)}
+      <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-08-29 · 更详细的开发文档见 GitHub 仓库 README</div>
+    `);
+    $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
+      const el = document.getElementById(t.dataset.go);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   /* ============================ 刷题练习 ============================ */
@@ -3108,6 +3191,12 @@
     }
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
     renderTopbar();
+    /* 页脚：使用指南入口 + 仓库链接（首次填充，之后静态） */
+    const footEl = document.getElementById("footer");
+    if (footEl && !footEl.dataset.filled) {
+      footEl.dataset.filled = "1";
+      footEl.innerHTML = `<a href="#/help">${U.icon("fileText")} 使用指南</a><span class="sep">·</span><a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">GitHub</a><span class="sep">·</span><span>数据存于本机浏览器 · 登录后云端同步</span>`;
+    }
     /* 待复习数预载（供侧边栏角标） */
     Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
     /* 标签点击即搜（事件委托；首页热词区有独立处理，跳过） */
