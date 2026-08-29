@@ -1,7 +1,7 @@
 # HANDOVER — 开发交接卡
 
 > 本文件供 AI 编码工具（zcode 等）无缝接入开发使用。
-> **维护规则：在 WorkBuddy 内每次完成开发/部署后，必须同步刷新第 6 节「当前状态」并更新时间戳，同时在 README.md「更新日志」顶部追加本次变更条目（时间逆序，含缓存版本号）。**
+> **维护规则：在 WorkBuddy 内每次完成开发/部署后，必须同步刷新第 6 节「当前状态」并更新时间戳，同时在 README.md「更新日志」顶部追加本次变更（时间逆序，含缓存版本号）；同一天的变更合并在同一天条目下，不单开新日期标题。**
 
 ## 1. 仓库与分支
 
@@ -73,9 +73,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 16:05
-- **最新 commit**：`36a6a69`（缓存版本 `20260827y`）——样式与动效体验优化：全局 prefers-reduced-motion 守卫、复习横幅去无限发光、弹窗滚动锁（body.modal-open）、全局 :focus-visible 键盘焦点环、触屏按压反馈（:active）、暗色 --c-primary-50 保持主色相 + .md pre 加深描边、chart-fade 接线三处图表、移动端 toast 底部居中
-- **线上**：release = main = `36a6a69`，已验证（v=y/animations 守卫/滚动锁均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS
+- **最后更新**：2026-08-29 16:40
+- **最新 commit**：`2c4bdfb`（缓存版本 `20260827z`）——**修复浏览历史永远为空 + 本地浏览计数不生效**：详情页曾把路由字符串 id 传给 incViews/addHistory，IndexedDB 键类型敏感致读取全 miss；改传数字 q.id + 启动时一次性 repairHistoryIds 修复存量字符串行
+- **线上**：release = main = `2c4bdfb`，已验证（v=z、incViews(q.id)/addHistory(q.id)/repairHistoryIds 均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS；同日前序发版：y 动效优化 / x 体验修正 / w 安全性能 SEO / 流水线增强
 - **扩充流水线注意**：自动化「题库定期自动扩充」每周一/三/五 10:00 跑，**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ `--next` 数据驱动选域 + 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
