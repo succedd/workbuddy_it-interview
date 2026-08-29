@@ -74,3 +74,4 @@
 
 `tools/batches/YYYY-MM-DD-<序号>.json`（如 `2026-08-27-a.json`），
 与 `enrich_questions.py` 的 `--all` 模式兼容，可一次性补齐多批。
+可选字段 `"chain": true`：合并后自动把本批所有题目的 `relatedIds` 互相串联——追问链主题批次务必开启，详情页「相关题推荐」即可沿链刷题。

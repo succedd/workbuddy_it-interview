@@ -232,6 +232,7 @@ def process_batch(path, data, cat_by_name, pos_by_name, exist_norm, next_id, dry
     with open(path, encoding="utf-8") as f:
         batch = json.load(f)
     added, skipped = [], []
+    added_objs = []
     for item in batch.get("questions", []):
         try:
             q = build_question(item, next_id, int(time.time() * 1000),
@@ -240,11 +241,17 @@ def process_batch(path, data, cat_by_name, pos_by_name, exist_norm, next_id, dry
                 data["questions"].append(q)
                 exist_norm.add(norm_title(q["title"]))
             added.append(q["title"])
+            added_objs.append(q)
             stats.setdefault("new_ids", []).append(q["id"])
+            stats.setdefault("added_meta", []).append((q["difficulty"], q["type"]))
             next_id += 1
         except ValueError as e:
             skipped.append(str(e))
             stats["skipped"] += 1
+    # 追问链：chain 批次内的题互相关联（relatedIds 指向同批其他题），详情页「相关题」直接成链
+    if batch.get("chain") and len(added_objs) >= 2:
+        for q in added_objs:
+            q["relatedIds"] = [x["id"] for x in added_objs if x["id"] != q["id"]]
     stats["added"] += len(added)
     return added, skipped
 
