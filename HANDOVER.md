@@ -73,9 +73,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 14:55
-- **最新 commit**：`6fbbc72`（缓存版本 `20260827w`）——安全+性能+SEO 三线升级：DOMPurify 补加载、第三方库本地化、echarts/xlsx 懒加载、开场动画回访跳过、q 页内容化+JSON-LD、Worker 加固（已部署 `85b4abca`）；另 enrich_questions.py 扩充流水线已接入分享页自动跟发（见 tools/intake-plan.md 第 5 条）
-- **线上**：release = main = `6fbbc72`，站点已验证（新标题/v=w/vendor 200/q 页 JSON-LD/Worker /stats 200）；旧功能标记词 grep 全过；smoke-test 25 用例全过
+- **最后更新**：2026-08-29 15:35
+- **最新 commit**：`6e9de1b`（缓存版本 `20260827x`）——前端体验修正四项：首页文案用户化（H1/副文案/底部提示）、详情页上下题改同分类顺序循环、iOS 安全区适配（viewport-fit=cover + safe-area + PWA 独立窗口顶栏）、apple-touch-icon（180x180 PNG）+ theme-color 暗色、离线徽章（net-chip）、题内图片懒加载
+- **线上**：release = main = `6e9de1b`，已验证（v=x、viewport-fit、apple-touch-icon 200、net-chip/顺序上下题/新文案均命中）；smoke-test 26 用例全过；旧功能标记词 10/10
 - **扩充流水线注意**：自动化「题库定期自动扩充」每周一/三/五 10:00 跑，**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ `--next` 数据驱动选域 + 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
