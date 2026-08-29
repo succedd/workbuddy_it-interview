@@ -57,3 +57,10 @@ html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); bo
   .toast { animation-name: toast-in-up; }
   .toast.out { animation-name: toast-out-down; }
 }
+
+/* 窄屏：周报三列数字收窄防换行拥挤 */
+@media (max-width: 480px) {
+  .wk-num { font-size: 19px; gap: 4px; }
+  .wk-trend { font-size: 10px; padding: 0 5px; }
+  .wk-stat { padding: 0 4px; }
+}
