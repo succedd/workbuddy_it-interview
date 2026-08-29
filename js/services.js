@@ -160,16 +160,20 @@
   S.addHistory = async function (qid) {
     const existing = await db.histories.where("questionId").equals(qid).first();
     if (existing) await db.histories.delete(existing.id);
-    await db.histories.add({ questionId: qid, createdAt: Date.now() });
+    /* views：重访计数（第 1 次访问记 1），「看过 N 次」是薄弱信号 */
+    await db.histories.add({ questionId: qid, createdAt: Date.now(), views: ((existing && existing.views) || 0) + 1 });
     const all = await db.histories.toArray();
-    if (all.length > 100) { all.sort((a, b) => a.createdAt - b.createdAt); for (const h of all.slice(0, all.length - 100)) await db.histories.delete(h.id); }
+    if (all.length > 300) { all.sort((a, b) => a.createdAt - b.createdAt); for (const h of all.slice(0, all.length - 300)) await db.histories.delete(h.id); }
+  };
+  S.removeHistory = async function (qid) {
+    await db.histories.where("questionId").equals(qid).delete();
   };
   S.getHistories = async function () {
     const hs = await db.histories.orderBy("createdAt").reverse().toArray();
     /* bulkGet 一次取全部题目，替代逐条 await get 的 N+1 查询 */
     const qs = await db.questions.bulkGet(hs.map(h => h.questionId));
     const qmap = new Map(); qs.forEach(q => { if (q) qmap.set(q.id, q); });
-    return hs.filter(h => qmap.has(h.questionId)).map(h => ({ q: qmap.get(h.questionId), at: h.createdAt }));
+    return hs.filter(h => qmap.has(h.questionId)).map(h => ({ q: qmap.get(h.questionId), at: h.createdAt, views: h.views || 1 }));
   };
   /* 一次性修复：历史上路由字符串 id 被直接写入 histories（questionId 为字符串），
      导致读取时 bulkGet 数字主键全部 miss（浏览历史页永远为空）。

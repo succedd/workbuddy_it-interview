@@ -326,6 +326,31 @@
     for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
     return arr.slice(0, Math.min(5, arr.length));
   }
+  /* 温故知新：3-30 天前浏览过、未进错题本、今日未打卡的题，混入今日清单前 2 位
+     （设置开关 review_stale，默认关；候选按「最久未看优先」，同日内稳定） */
+  async function buildDailyList() {
+    const base = todayFive();
+    try {
+      if (localStorage.getItem("review_stale") === "1" && DB.db) {
+        const [rows, weakRows, done] = await Promise.all([
+          DB.db.histories.toArray(), DB.db.weakBank.toArray(), dailyDoneGet()
+        ]);
+        const weakIds = new Set(weakRows.map(w => w.questionId));
+        const doneSet = new Set(done);
+        const now = Date.now();
+        const stale = rows
+          .filter(h => typeof h.questionId === "number" && now - h.createdAt >= 3 * 864e5 && now - h.createdAt <= 30 * 864e5
+            && !weakIds.has(h.questionId) && !doneSet.has(h.questionId))
+          .sort((a, b) => a.createdAt - b.createdAt || a.questionId - b.questionId)
+          .map(h => Services.questions.find(q => q.id === h.questionId && q.status === "published"))
+          .filter(Boolean)
+          .map(q => q.id)
+          .filter(id => base.indexOf(id) < 0);
+        return stale.slice(0, 2).concat(base);
+      }
+    } catch (e) {}
+    return base;
+  }
   /* —— 今日5题完成记录：IndexedDB dailyDone 表（随个人数据云同步，换设备不丢） ——
    * 兼容：首次运行时把旧版 localStorage 的当日记录迁移进 IDB。 */
   async function dailyDoneGet(day) {
@@ -354,7 +379,7 @@
     } catch (e) {}
   }
   async function markDailyDone(id) {
-    const five = todayFive();
+    const five = (App.dailyList && App.dailyList.length) ? App.dailyList : todayFive();
     if (five.indexOf(Number(id)) < 0 && five.indexOf(id) < 0) return false;
     const v = Number(id);
     await dailyDoneAdd(v);
@@ -395,7 +420,7 @@
         <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
     /* —— 今日5题 & 学习打卡 & 继续上次 —— */
-    const five = todayFive(); const doneSet = await dailyDoneGet();
+    const five = (App.dailyList && App.dailyList.length) ? App.dailyList : todayFive(); const doneSet = await dailyDoneGet();
     const fiveLeft = five.filter(id => doneSet.indexOf(id) < 0);
     const qById = id => Services.questions.find(x => x.id === id);
     let fiveHtml = "";
@@ -412,6 +437,7 @@
         <div class="daily-list">${rows}</div>
         ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="#/question/${fiveLeft[0]}">开始刷题 →</a>`
                           : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
+        <label style="margin-top:10px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
       </div>`;
     }
     const sk = streakInfo();
@@ -517,6 +543,13 @@
     $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
     $("#hero-go").onclick = () => heroGo();
     attachHistory($("#hero-search"), heroGo);
+    const staleToggle = $("#stale-toggle");
+    if (staleToggle) staleToggle.onchange = async () => {
+      try { localStorage.setItem("review_stale", staleToggle.checked ? "1" : "0"); } catch (e) {}
+      App.dailyList = await buildDailyList();
+      U.toast(staleToggle.checked ? "已开启温故知新：3 天前看过的题会混入今日清单" : "已关闭温故知新", "info");
+      pageHome();
+    };
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
   }
@@ -1042,22 +1075,91 @@
   /* ============================ 浏览历史 ============================ */
   async function pageHistory() {
     document.title = "浏览历史 · IT面试题库";
-    const hs = await Services.getHistories();
-    const PAGE = 40; let shown = Math.min(PAGE, hs.length);
-    const hisCard = ({ q, at }) => `<div class="card card-hover" style="cursor:pointer" onclick="location.hash='/question/${q.id}'">${qCard(q).replace('href="#/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}<div class="muted" style="font-size:12px;margin-top:6px">浏览于 ${U.fmtDate(at)}</div></div>`;
+    const all = await Services.getHistories();   /* [{q, at, views}] 按浏览时间倒序 */
+    const [weakRows, favRows] = await Promise.all([DB.db.weakBank.toArray(), DB.db.favorites.toArray()]);
+    const weakSet = new Set(weakRows.map(w => w.questionId));
+    const favSet = new Set(favRows.map(f => f.questionId));
+    const PAGE = 40; let shown = Math.min(PAGE, all.length);
+    let term = "";
+
+    const hisCard = ({ q, at, views }) => {
+      const badges = [];
+      if (weakSet.has(q.id)) badges.push('<span class="tag tag-warning">📅 复习中</span>');
+      if (favSet.has(q.id)) badges.push('<span class="tag tag-primary">★ 已收藏</span>');
+      if ((views || 1) > 1) badges.push(`<span class="tag">看过 ${views} 次</span>`);
+      return `<div class="card card-hover" style="position:relative;cursor:pointer" onclick="location.hash='/question/${q.id}'">
+        <button class="icon-btn" data-del="${q.id}" title="删除这条记录" aria-label="删除这条浏览记录" style="position:absolute;top:10px;right:10px;z-index:2">${U.icon("x")}</button>
+        ${qCard(q).replace('href="#/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}
+        <div class="muted" style="font-size:12px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span>浏览于 ${U.fmtDate(at)}</span>${badges.join("")}</div>
+      </div>`;
+    };
+    const groupOf = (at) => {
+      const now = new Date();
+      const day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      if (at >= day0) return "今天";
+      if (at >= day0 - 86400000) return "昨天";
+      if (at >= day0 - 6 * 86400000) return "本周更早";
+      return "更早";
+    };
     const renderGrid = () => {
-      $("#his-grid").innerHTML = hs.length
-        ? hs.slice(0, shown).map(hisCard).join("") + (shown < hs.length ? `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="his-more">加载更多（${hs.length - shown}）</button></div>` : "")
-        : '<div class="empty">暂无浏览记录</div>';
+      const t = term.trim().toLowerCase();
+      const view = !t ? all : all.filter(({ q }) => ((q.title || "") + " " + (q.tags || []).join(" ")).toLowerCase().indexOf(t) >= 0);
+      let html = "";
+      if (!view.length) {
+        html = term
+          ? '<div class="empty" style="grid-column:1/-1">没有匹配的浏览记录</div>'
+          : `<div class="empty" style="grid-column:1/-1"><div class="em-ic">${U.icon("history")}</div>暂无浏览记录<div style="margin-top:12px"><a class="btn btn-primary" href="#/questions">去看几道题试试 →</a></div></div>`;
+      } else {
+        let last = null;
+        view.slice(0, shown).forEach(item => {
+          const g = groupOf(item.at);
+          if (g !== last) { html += `<div class="muted" style="grid-column:1/-1;font-size:12px;font-weight:700;letter-spacing:.08em;margin-top:4px">— ${g} —</div>`; last = g; }
+          html += hisCard(item);
+        });
+        if (shown < view.length) html += `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="his-more">加载更多（${view.length - shown}）</button></div>`;
+      }
+      $("#his-grid").innerHTML = html;
       const mb = $("#his-more");
-      if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, hs.length); renderGrid(); };
+      if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, view.length); renderGrid(); };
+      $$("#his-grid [data-del]").forEach(b => b.onclick = async (e) => {
+        e.stopPropagation();
+        await Services.removeHistory(parseInt(b.dataset.del));
+        U.toast("已删除该条记录", "info");
+        pageHistory();
+      });
     };
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>浏览历史</span></div>
-      <div class="section-head"><h2>浏览历史（${hs.length}）</h2>
-        <button class="btn btn-sm btn-danger" id="clear-h">${U.icon("trash")} 清空</button></div>
+      <div class="section-head"><h2>浏览历史（${all.length}）</h2>
+        <div style="display:flex;gap:8px">
+          <a class="btn btn-sm btn-primary" href="#/practice?scope=hist" title="把历史题目作为题池开始刷题">${U.icon("play")} 重刷历史</a>
+          <button class="btn btn-sm btn-danger" id="clear-h">${U.icon("trash")} 清空</button></div></div>
+      <input id="his-q" class="full" style="max-width:280px;margin-bottom:12px" placeholder="在历史中搜索标题 / 标签…" />
       <div class="grid grid-cols-2" id="his-grid"></div>`);
+    $("#his-q").addEventListener("input", U.debounce(e => { term = e.target.value; shown = PAGE; renderGrid(); }, 250));
+    $("#clear-h").onclick = async () => {
+      if (!all.length) return;
+      if (!(await U.confirm("确定清空全部浏览历史？（8 秒内可撤销）", { danger: true }))) return;
+      const backup = await DB.db.histories.toArray();
+      await DB.db.histories.clear();
+      U.toast("已清空浏览历史（8 秒内可撤销）", "info", 8000);
+      const root = document.getElementById("toast-root");
+      if (root && backup.length) {
+        const el = document.createElement("div");
+        el.className = "toast";
+        el.style.borderLeftColor = "var(--c-warning)";
+        el.innerHTML = '<span style="flex:1">误删了？点这撤销</span><button class="btn btn-sm" type="button">撤销清空</button>';
+        el.querySelector("button").onclick = async () => {
+          try { await DB.db.histories.bulkAdd(backup); } catch (e) {}
+          el.remove();
+          U.toast("已恢复 " + backup.length + " 条浏览记录", "success");
+          if (location.hash === "#/history" || location.hash === "") pageHistory();
+        };
+        root.appendChild(el);
+        setTimeout(() => { el.remove(); }, 8000);
+      }
+      pageHistory();
+    };
     renderGrid();
-    $("#clear-h").onclick = async () => { if (await U.confirm("确定清空浏览历史？", { danger: true })) { await DB.db.histories.clear(); U.toast("已清空", "success"); pageHistory(); } };
   }
 
   /* ============================ 刷题练习 ============================ */
@@ -1094,6 +1196,9 @@
     let pool = [];
     if (scope === "weak") {
       pool = await Services.getWeakQuestions();
+    } else if (scope === "hist") {
+      /* 浏览历史作为题池：最近看过的在前，重刷温故 */
+      pool = (await Services.getHistories()).map(h => h.q);
     } else {
       pool = Services.published().slice();
       if (scope === "cat" && q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
@@ -2968,6 +3073,7 @@
       Boot.set(60, "迁移与预置数据…");
       try { const n = await Services.repairHistoryIds(); if (n > 0) console.log("已修复", n, "条字符串 id 的浏览历史记录"); } catch (_) {}
       await Services.reload();
+      App.dailyList = await buildDailyList();   /* 今日清单（含可选的温故知新混入），供首页与打卡判定共用 */
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
