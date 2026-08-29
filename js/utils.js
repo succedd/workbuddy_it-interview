@@ -272,8 +272,8 @@
     });
     return _scriptCache[name];
   };
-  U.ECHARTS_URL = "https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js";
-  U.XLSX_URL = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+  U.ECHARTS_URL = "vendor/echarts.min.js";
+  U.XLSX_URL = "vendor/xlsx.full.min.js";
 
   window.U = U;
 })();

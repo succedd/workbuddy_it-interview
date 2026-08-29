@@ -16,12 +16,60 @@
   <meta name="twitter:description" content="ANSI 定义四种隔离级别，逐步增强： 读未提交 Read Uncommitted：最低，可能脏读（读到未提交就被回滚的数据），三种异常都不防。 读已提交 Read Committed：防脏读；但同一事务内两次读可能结果不同（不可重复读）。 可重复读 Repeatable Read：防脏读 + 不可重复读；Inn…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/247.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/247");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库事务的四种隔离级别分别解决了哪些并发问题？","text":"说明读未提交、读已提交、可重复读、串行化各自能避免脏读、不可重复读、幻读中的哪些。","answerCount":1,"datePublished":"2026-08-27T01:34:16.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"ANSI 定义四种隔离级别，逐步增强： 读未提交 Read Uncommitted：最低，可能脏读（读到未提交就被回滚的数据），三种异常都不防。 读已提交 Read Committed：防脏读；但同一事务内两次读可能结果不同（不可重复读）。 可重复读 Repeatable Read：防脏读 + 不可重复读；InnoDB 通过 MVCC + 间隙锁还防幻读。 串行化 Serializable：最高，事务串行执行，防全部异常，但并发性能最差。 对应异常：脏读（读未提交数据）、不可重复读（同事务内同行的两次读值不同，侧重 UPDATE）、幻读（同查询条件两次返回的行集不同，侧重 INSERT/DELETE）。MySQL InnoDB 默认隔离级别为可重复读。","url":"https://it-interview.is-a.dev/#/question/247"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/247");},2500);</script>
 </head>
 <body>
-  <h1>数据库事务的四种隔离级别分别解决了哪些并发问题？</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/247">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>数据库事务的四种隔离级别分别解决了哪些并发问题？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">事务</span><span class="chip tag">隔离级别</span><span class="chip tag">数据库</span></div>
+    <div class="card"><h2>题目</h2><p>说明读未提交、读已提交、可重复读、串行化各自能避免脏读、不可重复读、幻读中的哪些。</p></div>
+    <div class="card"><h2>参考答案</h2><p>ANSI 定义四种隔离级别，逐步增强：</p>
+<ul>
+<li><strong>读未提交 Read Uncommitted</strong>：最低，可能脏读（读到未提交就被回滚的数据），三种异常都不防。</li>
+<li><strong>读已提交 Read Committed</strong>：防<strong>脏读</strong>；但同一事务内两次读可能结果不同（不可重复读）。</li>
+<li><strong>可重复读 Repeatable Read</strong>：防<strong>脏读 + 不可重复读</strong>；InnoDB 通过 MVCC + 间隙锁还防<strong>幻读</strong>。</li>
+<li><strong>串行化 Serializable</strong>：最高，事务串行执行，防全部异常，但并发性能最差。</li>
+</ul>
+<p>对应异常：脏读（读未提交数据）、不可重复读（同事务内同行的两次读值不同，侧重 UPDATE）、幻读（同查询条件两次返回的行集不同，侧重 INSERT/DELETE）。MySQL InnoDB 默认隔离级别为可重复读。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/247">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

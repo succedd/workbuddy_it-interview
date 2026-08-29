@@ -16,12 +16,60 @@
   <meta name="twitter:description" content="结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/252.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/252");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","text":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","answerCount":1,"datePublished":"2026-08-28T06:18:20.509Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象、引用计数 +1；只要还有一个 strong 引用存在，对象就不会释放。适用于“拥有”关系，如 ViewController 持有 ViewModel。 weak：不增加引用计数；当对象只剩 weak 引用时被释放，且所有 weak 引用自动置为 nil。必须声明为可选。常用于代理（delegate）、打破循环引用。 unowned：同样不增加计数，但假设引用对象生命周期一定不短于自己、不会自动置 nil；若对象已释放仍访问会崩溃。适用于非可选、生命周期确定的关系（如 Card 必有 owner）。 循环引用（retain cycle）：两个对象互相 strong 引用，计数永不为 0 → 内存泄漏。解决：把其中一方改为 weak 或 unowned；闭包捕获 self 时也应使用 [weak self]。","url":"https://it-interview.is-a.dev/#/question/252"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/252");},2500);</script>
 </head>
 <body>
-  <h1>iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/252">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">iOS开发工程师</span><span class="chip tag">ARC</span><span class="chip tag">内存管理</span><span class="chip tag">循环引用</span></div>
+    <div class="card"><h2>题目</h2><p>iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</p></div>
+    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+<p>ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。</p>
+<ul>
+<li><strong>strong（默认）</strong>：持有对象、引用计数 +1；只要还有一个 strong 引用存在，对象就不会释放。适用于“拥有”关系，如 ViewController 持有 ViewModel。</li>
+<li><strong>weak</strong>：不增加引用计数；当对象只剩 weak 引用时被释放，且所有 weak 引用自动置为 nil。必须声明为可选。常用于代理（delegate）、打破循环引用。</li>
+<li><strong>unowned</strong>：同样不增加计数，但假设引用对象生命周期一定不短于自己、不会自动置 nil；若对象已释放仍访问会崩溃。适用于非可选、生命周期确定的关系（如 Card 必有 owner）。</li>
+</ul>
+<p><strong>循环引用（retain cycle）</strong>：两个对象互相 strong 引用，计数永不为 0 → 内存泄漏。解决：把其中一方改为 weak 或 unowned；闭包捕获 self 时也应使用 <code>[weak self]</code>。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/252">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

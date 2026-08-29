@@ -16,12 +16,80 @@
   <meta name="twitter:description" content="Pending 是 K8s Pod 的一种状态，表示 Pod 已经被 K8s 接收了，但还没能正常运行起来——相当于&quot;排队等候中&quot;。 --- Pod 的几种常见状态 | 状态 | 含义 | 类比 | |------|------|------| | Pending | 已提交，但还没启动 | 你取了号，但还在等叫…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/226.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/226");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Pod 为什么会在 Pending 状态卡住？","text":"Pod 为什么会在 Pending 状态卡住？","answerCount":1,"datePublished":"2026-08-24T09:04:05.325Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Pending 是 K8s Pod 的一种状态，表示 Pod 已经被 K8s 接收了，但还没能正常运行起来——相当于\"排队等候中\"。 --- Pod 的几种常见状态 | 状态 | 含义 | 类比 | |------|------|------| | Pending | 已提交，但还没启动 | 你取了号，但还在等叫号 | | Running | 正常运行中 | 正在吃饭 | | Succeeded | 任务完成（一次性任务） | 吃完了走人 | | Failed | 出错了 | 饭没做好 | | CrashLoopBackOff | 启动→崩溃→重启→崩溃循环 | 吃了吐、吐了吃 | | Unknown | 联系不上 Pod 了 | 人不见了 | --- Pod 为什么会在 Pending 状态卡住？ Pending 说白了就是资源不够或者条件不满足，常见原因： | 原因 | 具体说明 | |------|---------| | CPU/内存不足 | 集群没有足够的资源来运行这个 Pod | | GPU 资源不够 | 你要用 GPU 卡，但集群里没空余的 | | 镜像拉不下来 | 镜像不存在、仓库认证失败、网络不通 | | PVC 未就绪 | 申请的持久化存储还没准备好 | | 节点选择器不匹配 | 你指定了要在某类节点上跑，但没有符合条件的节点 | | 污点/容忍度 | 节点有污点（Taints），Pod 没有对应的容忍度（Tolerations） | --- 面试中可以怎么讲？ 结合你的简历，可以这样说： \"在电信项目运维 K8s 平台时，我经常需要排查 Pod 处于 Pending 状态的问题。通常先用 kubectl describe pod 查看 Events，定位具体原因——比如是资源不足就申请扩容节点，是镜像拉取失败就检查仓库配置和网络策略。定位到根因后，协调对应资源解决，确保业务 Pod 尽快进入 Running 状态。\" --- 一句话总结：Pending 就是 Pod 在\"排队等资源\"，用 kubectl describe pod 看 Events 就能知道它卡在哪一步了～😊","url":"https://it-interview.is-a.dev/#/question/226"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/226");},2500);</script>
 </head>
 <body>
-  <h1>Pod 为什么会在 Pending 状态卡住？</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/226">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Pod 为什么会在 Pending 状态卡住？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">前端开发工程师</span><span class="chip">公有云售后技术支持·大客户答疑</span><span class="chip">公有云售后技术支持·监控运维</span><span class="chip tag">k8s</span><span class="chip tag">pending</span></div>
+    <div class="card"><h2>题目</h2><p>Pod 为什么会在 Pending 状态卡住？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>Pending</strong> 是 K8s Pod 的一种状态，表示 Pod <strong>已经被 K8s 接收了，但还没能正常运行起来</strong>——相当于&quot;排队等候中&quot;。</p>
+<p>---</p>
+<h4>Pod 的几种常见状态</h4>
+<p>| 状态 | 含义 | 类比 |</p>
+<p>|------|------|------|</p>
+<p>| <strong>Pending</strong> | 已提交，但还没启动 | 你取了号，但还在等叫号 |</p>
+<p>| <strong>Running</strong> | 正常运行中 | 正在吃饭 |</p>
+<p>| <strong>Succeeded</strong> | 任务完成（一次性任务） | 吃完了走人 |</p>
+<p>| <strong>Failed</strong> | 出错了 | 饭没做好 |</p>
+<p>| <strong>CrashLoopBackOff</strong> | 启动→崩溃→重启→崩溃循环 | 吃了吐、吐了吃 |</p>
+<p>| <strong>Unknown</strong> | 联系不上 Pod 了 | 人不见了 |</p>
+<p>---</p>
+<h4>Pod 为什么会在 Pending 状态卡住？</h4>
+<p>Pending 说白了就是<strong>资源不够或者条件不满足</strong>，常见原因：</p>
+<p>| 原因 | 具体说明 |</p>
+<p>|------|---------|</p>
+<p>| <strong>CPU/内存不足</strong> | 集群没有足够的资源来运行这个 Pod |</p>
+<p>| <strong>GPU 资源不够</strong> | 你要用 GPU 卡，但集群里没空余的 |</p>
+<p>| <strong>镜像拉不下来</strong> | 镜像不存在、仓库认证失败、网络不通 |</p>
+<p>| <strong>PVC 未就绪</strong> | 申请的持久化存储还没准备好 |</p>
+<p>| <strong>节点选择器不匹配</strong> | 你指定了要在某类节点上跑，但没有符合条件的节点 |</p>
+<p>| <strong>污点/容忍度</strong> | 节点有污点（Taints），Pod 没有对应的容忍度（Tolerations） |</p>
+<p>---</p>
+<h4>面试中可以怎么讲？</h4>
+<p>结合你的简历，可以这样说：</p>
+<blockquote>&quot;在电信项目运维 K8s 平台时，我经常需要排查 Pod 处于 Pending 状态的问题。通常先用 <code>kubectl describe pod</code> 查看 Events，定位具体原因——比如是资源不足就申请扩容节点，是镜像拉取失败就检查仓库配置和网络策略。定位到根因后，协调对应资源解决，确保业务 Pod 尽快进入 Running 状态。&quot;</blockquote>
+<p>---</p>
+<p><strong>一句话总结</strong>：Pending 就是 Pod 在&quot;排队等资源&quot;，用 <code>kubectl describe pod</code> 看 Events 就能知道它卡在哪一步了～😊</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/226">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

@@ -672,12 +672,15 @@
         <a class="btn" href="#/questions?posid=${p.id}">查看全部题目</a>
       </div>
     `, () => {
-      const chart = echarts.init($("#pos-chart"));
-      charts.push(chart);
-      chart.setOption({
-        tooltip: { trigger: "item" },
-        series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
-      });
+      /* echarts 大库按需加载（加载失败静默，图表区留白不影响页面） */
+      U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+        const chart = echarts.init($("#pos-chart"));
+        charts.push(chart);
+        chart.setOption({
+          tooltip: { trigger: "item" },
+          series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
+        });
+      }).catch(() => {});
     });
   }
 
@@ -1452,12 +1455,7 @@
       </div>
     `, () => {
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
-      const mk = (id, type, data, name) => { const c = echarts.init($(id)); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
-      mk("#c1", "bar", Object.entries(s.byCat).filter(([, v]) => v > 0).slice(0, 12), "题目数");
-      mk("#c2", "pie", Object.entries(s.byDiff), "难度");
-      mk("#c3", "bar", Object.entries(s.byType), "题型");
-      mk("#c4", "pie", Object.entries(s.byAiBand), "AI评分");
-      /* 本地浏览最多题目 */
+      /* 本地浏览最多题目（不依赖 echarts，同步渲染） */
       const localStats = Stats.getLocalStats();
       const tq = localStats.topQuestions || [];
       const topBox = document.getElementById("c-topq");
@@ -1465,18 +1463,26 @@
         if (!tq.length) topBox.innerHTML = '<div class="muted">暂无浏览记录</div>';
         else topBox.innerHTML = `<table class="data"><thead><tr><th>#</th><th>题目</th><th>浏览</th></tr></thead><tbody>${tq.slice(0, 15).map((x, i) => { const q = Services.questions.find(z => z.id === parseInt(x.id)); return `<tr><td>${i + 1}</td><td>${q ? `<a href="#/question/${q.id}">${U.esc(q.title)}</a>` : "题目#" + U.esc(x.id)}</td><td>${x.views}</td></tr>`; }).join("")}</tbody></table>`;
       }
-      /* 可选 Cloudflare Worker 地域分布 */
-      if (Stats.cfEnabled()) {
-        Stats.cfGetStats(true).then(st => {
-          const geo = (st && st.byCountry) || {};
-          const geoArr = Object.entries(geo).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
-          const geoBox = document.getElementById("c-geo");
-          if (geoBox) {
-            if (geoArr.length) { const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
-            else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
-          }
-        }).catch(() => {});
-      }
+      /* 图表区统一走按需加载的 echarts（失败静默，不影响面板其余内容） */
+      U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+        const mk = (id, type, data, name) => { const c = echarts.init($(id)); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
+        mk("#c1", "bar", Object.entries(s.byCat).filter(([, v]) => v > 0).slice(0, 12), "题目数");
+        mk("#c2", "pie", Object.entries(s.byDiff), "难度");
+        mk("#c3", "bar", Object.entries(s.byType), "题型");
+        mk("#c4", "pie", Object.entries(s.byAiBand), "AI评分");
+        /* 可选 Cloudflare Worker 地域分布 */
+        if (Stats.cfEnabled()) {
+          Stats.cfGetStats(true).then(st => {
+            const geo = (st && st.byCountry) || {};
+            const geoArr = Object.entries(geo).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
+            const geoBox = document.getElementById("c-geo");
+            if (geoBox) {
+              if (geoArr.length) { const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
+              else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
+            }
+          }).catch(() => {});
+        }
+      }).catch(() => {});
     });
   }
 
@@ -2327,7 +2333,8 @@
       };
     }
   }
-  function downloadTemplateXlsx() {
+  async function downloadTemplateXlsx() {
+    await U.loadScript("XLSX", U.XLSX_URL).catch(() => {});   /* xlsx 大库按需加载 */
     const headers = ["题目标题", "题目内容", "参考答案", "一级技术分类", "二级技术分类", "三级技术分类", "难度", "题型", "适用岗位", "工作年限", "技术标签", "状态", "管理员备注"];
     const ws = XLSX.utils.aoa_to_sheet([headers, ["示例：什么是索引", "请解释数据库索引的作用", "索引用于加速查询…", "数据库与数据存储", "关系型数据库", "MySQL", "初级", "简答题", "Java后端工程师", "0-1年", "MySQL,索引", "published", ""]]);
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "题目");
@@ -2700,6 +2707,16 @@
     const NAMES = ["前端工程师","后端工程师","全栈工程师","测试工程师","测试开发工程师","运维工程师","SRE工程师","DevOps工程师","数据分析师","算法工程师","机器学习工程师","深度学习工程师","数据科学家","产品经理","网络安全工程师","渗透测试工程师","大数据开发工程师","云架构师","解决方案架构师","数据库管理员","人工智能工程师","移动端开发","iOS开发","Android开发","游戏开发工程师","嵌入式工程师","区块链工程师","爬虫工程师","推荐算法工程师","搜索算法工程师","音视频开发","性能测试工程师","自动化测试工程师","UI设计师","交互设计师","售前工程师","技术项目经理","视觉算法工程师","鸿蒙开发工程师","Go开发工程师","Java开发工程师","Python开发工程师","C++开发工程师","前端架构师","后端架构师","数据工程师","ETL工程师","BI工程师","运维开发工程师","大模型应用工程师","AIGC工程师"];
     function start() {
       const ov = el("boot-loader"); if (!ov) return;
+      /* 回访（本会话已看过开场动画）直接跳过，不再强制等待 3.2s */
+      let seen = false;
+      try { seen = sessionStorage.getItem("iti_boot_seen") === "1"; } catch (_) {}
+      if (seen) {
+        ov.style.display = "none";
+        finished = true;
+        if (readyResolve) readyResolve();
+        return;
+      }
+      try { sessionStorage.setItem("iti_boot_seen", "1"); } catch (_) {}
       ov.style.display = "flex"; started = Date.now();
       try { initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
       loop();
@@ -2785,7 +2802,7 @@
   /* ============================ 访客统计（本地计数 + 百度统计 + 可选 Cloudflare Worker） ============================ */
   const Stats = (() => {
     /* --- 百度统计 --- */
-    const DEFAULT_TID = "90b0860f910ed25873ab7fd6995e8af2";
+    const DEFAULT_TID = "856d2b08330e4b9f225cf101d6f14103";   /* 与 index.html 的 hm.js ID 保持一致，避免双账号重复上报 */
     const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || DEFAULT_TID) : DEFAULT_TID);
     function trackBaidu(url) {
       if (baiduId() && typeof _hmt !== "undefined" && _hmt) {

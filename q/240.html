@@ -16,12 +16,59 @@
   <meta name="twitter:description" content="CAP 定理指出：一个分布式系统不可能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三者，在出现网络分区时只能在 C 与 A 之间二选一。 一致性 C：每次读取都能拿到最近一次写入的结果（线性一致）。 可用性 A：每个非故障节点…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/240.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/240");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CAP 定理是什么？为什么分布式系统通常无法同时满足三者？","text":"请解释 CAP 定理的含义，并说明为什么在网络分区发生时只能在一致性和可用性之间取舍。","answerCount":1,"datePublished":"2026-08-27T01:34:16.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CAP 定理指出：一个分布式系统不可能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三者，在出现网络分区时只能在 C 与 A 之间二选一。 一致性 C：每次读取都能拿到最近一次写入的结果（线性一致）。 可用性 A：每个非故障节点收到的请求都必须返回响应（不保证是最新值）。 分区容错 P：网络分区（节点间丢包、延迟）时系统仍能继续工作。 由于分布式系统必然要考虑 P（网络不可靠是常态），因此实践中是在 C 和 A 之间权衡：CP 系统（如 ZooKeeper、etcd）在分区时优先保证一致、牺牲可用；AP 系统（如 Cassandra、Eureka）在分区时优先保证可用、牺牲强一致，采用最终一致性。","url":"https://it-interview.is-a.dev/#/question/240"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/240");},2500);</script>
 </head>
 <body>
-  <h1>CAP 定理是什么？为什么分布式系统通常无法同时满足三者？</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/240">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>CAP 定理是什么？为什么分布式系统通常无法同时满足三者？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">CAP</span><span class="chip tag">分布式</span><span class="chip tag">一致性</span></div>
+    <div class="card"><h2>题目</h2><p>请解释 CAP 定理的含义，并说明为什么在网络分区发生时只能在一致性和可用性之间取舍。</p></div>
+    <div class="card"><h2>参考答案</h2><p>CAP 定理指出：一个分布式系统<strong>不可能同时满足</strong>一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三者，在出现网络分区时只能在 C 与 A 之间二选一。</p>
+<ul>
+<li><strong>一致性 C</strong>：每次读取都能拿到最近一次写入的结果（线性一致）。</li>
+<li><strong>可用性 A</strong>：每个非故障节点收到的请求都必须返回响应（不保证是最新值）。</li>
+<li><strong>分区容错 P</strong>：网络分区（节点间丢包、延迟）时系统仍能继续工作。</li>
+</ul>
+<p>由于分布式系统<strong>必然</strong>要考虑 P（网络不可靠是常态），因此实践中是在 C 和 A 之间权衡：CP 系统（如 ZooKeeper、etcd）在分区时优先保证一致、牺牲可用；AP 系统（如 Cassandra、Eureka）在分区时优先保证可用、牺牲强一致，采用最终一致性。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/240">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

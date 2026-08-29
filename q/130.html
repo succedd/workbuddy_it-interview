@@ -16,12 +16,58 @@
   <meta name="twitter:description" content="B+树索引 特点: 1.所有数据在叶子节点 2.叶子节点形成有序链表 3.非叶子节点只存索引键 4.多路搜索树 vs B树: 叶子节点有链表，范围查询更高效；非叶子节点可存更多索引，树高度更低 vs 红黑树: 多路搜索，树高度更低，磁盘IO更少 聚簇索引: 主键索引，叶子节点存整行数据 二级索引: 叶子节点存主键值">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/130.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/130");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MySQL索引的底层数据结构是什么？","text":"请解释B+树索引的结构和特点。","answerCount":1,"datePublished":"2026-08-11T20:23:06.332Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"B+树索引 特点: 1.所有数据在叶子节点 2.叶子节点形成有序链表 3.非叶子节点只存索引键 4.多路搜索树 vs B树: 叶子节点有链表，范围查询更高效；非叶子节点可存更多索引，树高度更低 vs 红黑树: 多路搜索，树高度更低，磁盘IO更少 聚簇索引: 主键索引，叶子节点存整行数据 二级索引: 叶子节点存主键值","url":"https://it-interview.is-a.dev/#/question/130"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/130");},2500);</script>
 </head>
 <body>
-  <h1>MySQL索引的底层数据结构是什么？</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/130">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>MySQL索引的底层数据结构是什么？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip tag">MySQL</span><span class="chip tag">索引</span><span class="chip tag">B+树</span></div>
+    <div class="card"><h2>题目</h2><p>请解释B+树索引的结构和特点。</p></div>
+    <div class="card"><h2>参考答案</h2><h3>B+树索引</h3>
+<p><strong>特点</strong>: 1.所有数据在叶子节点 2.叶子节点形成有序链表 3.非叶子节点只存索引键 4.多路搜索树</p>
+<p><strong>vs B树</strong>: 叶子节点有链表，范围查询更高效；非叶子节点可存更多索引，树高度更低</p>
+<p><strong>vs 红黑树</strong>: 多路搜索，树高度更低，磁盘IO更少</p>
+<p><strong>聚簇索引</strong>: 主键索引，叶子节点存整行数据</p>
+<p><strong>二级索引</strong>: 叶子节点存主键值</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/130">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

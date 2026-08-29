@@ -16,12 +16,145 @@
   <meta name="twitter:description" content="公有云售后技术支持岗位解析 📌 这个岗位到底干什么的？ 一句话总结： 就是帮大客户&quot;看管&quot;他们在云上的服务器和资源，出了问题负责处理，平时负责盯着不出问题。 具体干这三件事： ① 给大客户&quot;打杂&quot;（但很重要的杂） 客户服务器死机了 → 你去重启 服务器硬件坏了 → 你协调维修 客户要扩容/迁移 → 你去操作 简…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/210.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/210");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"面试重点考察方向","text":"面试重点考察方向","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"公有云售后技术支持岗位解析 📌 这个岗位到底干什么的？ 一句话总结： 就是帮大客户\"看管\"他们在云上的服务器和资源，出了问题负责处理，平时负责盯着不出问题。 具体干这三件事： ① 给大客户\"打杂\"（但很重要的杂） 客户服务器死机了 → 你去重启 服务器硬件坏了 → 你协调维修 客户要扩容/迁移 → 你去操作 简单说：客户的云服务器管家 ② 帮客户调GPU/CPU资源 + 压测 客户要跑AI模型，需要更多GPU卡 你负责帮他们调配资源、测试性能够不够用 简单说：资源调度员 + 性能测试员 ③ 盯监控、写报告 系统报警了 → 你第一时间跟进处理 定期整理：哪些机器故障了、客户有什么需求、资源用了多少 简单说：运维值班 + 写周报月报 --- 🎯 面试重点考察方向 一、云计算基础知识 | 考察点 | 可能的问题 | |--------|-----------| | 云产品认知 | 你用过阿里云/腾讯云/AWS哪些产品？ECS、VPC、OSS分别是什么？ | | 虚拟化概念 | 讲一下云服务器和物理服务器的区别？ | | 常见故障 | 服务器连不上SSH怎么排查？ | 二、Linux运维基础（必考！） 可能问你： 服务器负载高怎么排查？ 磁盘满了怎么处理？ 进程僵死怎么办？ 三、网络基础 TCP/IP、DNS、HTTP基本原理 客户说\"网络慢\"你怎么排查？（ping、traceroute、带宽测试） 防火墙/安全组规则怎么配？ 四、Kubernetes基础（加分项） 可能问： Pod是什么？和容器有什么关系？ Pod起不来怎么排查？ kubectl get pods 看到什么状态说明有问题？ 五、GPU/计算资源（这岗位特色） 可能问： 你了解GPU服务器吗？和普通服务器有什么区别？ 压测是怎么做的？用过哪些工具？ 知道CUDA是什么吗？ 六、软技能考察 客户沟通： 客户很着急骂人，你怎么处理？ 应急处理： 半夜报警了你怎么响应？ 故障复盘： 出了故障怎么写故障报告？ --- 💡 面试准备建议 重点准备这几个问题： \"服务器突然无法访问，你的排查思路是什么？\" \"你做过哪些云上运维工作？\" 没经验就说做过实验/学习项目，重点说思路和学习能力 --- 🔑 总结 这个岗位本质上是： 60% 运维操作（重启、扩容、处理故障） 20% 客户对接（沟通、记录需求） 20% 监控巡检（盯报警、写报告） 适合人群： 喜欢解决实际问题、不排斥值班、想积累云计算实战经验的人","url":"https://it-interview.is-a.dev/#/question/210"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/210");},2500);</script>
 </head>
 <body>
-  <h1>面试重点考察方向</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/210">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>面试重点考察方向</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持·云基础设施的日常运维</span><span class="chip">技术型项目经理</span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span></div>
+    <div class="card"><h2>题目</h2><p>面试重点考察方向</p></div>
+    <div class="card"><h2>参考答案</h2><h2>公有云售后技术支持岗位解析</h2>
+<h3>📌 这个岗位到底干什么的？</h3>
+<p><strong>一句话总结：</strong> 就是帮大客户&quot;看管&quot;他们在云上的服务器和资源，出了问题负责处理，平时负责盯着不出问题。</p>
+<h4>具体干这三件事：</h4>
+<p><strong>① 给大客户&quot;打杂&quot;（但很重要的杂）</strong></p>
+<ul>
+<li>客户服务器死机了 → 你去重启</li>
+<li>服务器硬件坏了 → 你协调维修</li>
+<li>客户要扩容/迁移 → 你去操作</li>
+<li>简单说：<strong>客户的云服务器管家</strong></li>
+</ul>
+<p><strong>② 帮客户调GPU/CPU资源 + 压测</strong></p>
+<ul>
+<li>客户要跑AI模型，需要更多GPU卡</li>
+<li>你负责帮他们调配资源、测试性能够不够用</li>
+<li>简单说：<strong>资源调度员 + 性能测试员</strong></li>
+</ul>
+<p><strong>③ 盯监控、写报告</strong></p>
+<ul>
+<li>系统报警了 → 你第一时间跟进处理</li>
+<li>定期整理：哪些机器故障了、客户有什么需求、资源用了多少</li>
+<li>简单说：<strong>运维值班 + 写周报月报</strong></li>
+</ul>
+<p>---</p>
+<h3>🎯 面试重点考察方向</h3>
+<h4>一、云计算基础知识</h4>
+<p>| 考察点 | 可能的问题 |</p>
+<p>|--------|-----------|</p>
+<p>| 云产品认知 | 你用过阿里云/腾讯云/AWS哪些产品？ECS、VPC、OSS分别是什么？ |</p>
+<p>| 虚拟化概念 | 讲一下云服务器和物理服务器的区别？ |</p>
+<p>| 常见故障 | 服务器连不上SSH怎么排查？ |</p>
+<h4>二、Linux运维基础（必考！）</h4>
+<pre><code class="language-bash"># 这些命令要熟练
+top / htop        # 查看CPU内存
+df -h             # 查看磁盘
+netstat / ss      # 查看网络连接
+systemctl         # 服务管理
+tail -f 日志文件   # 查看日志</code></pre>
+<p><strong>可能问你：</strong></p>
+<ul>
+<li>服务器负载高怎么排查？</li>
+<li>磁盘满了怎么处理？</li>
+<li>进程僵死怎么办？</li>
+</ul>
+<h4>三、网络基础</h4>
+<ul>
+<li>TCP/IP、DNS、HTTP基本原理</li>
+<li>客户说&quot;网络慢&quot;你怎么排查？（ping、traceroute、带宽测试）</li>
+<li>防火墙/安全组规则怎么配？</li>
+</ul>
+<h4>四、Kubernetes基础（加分项）</h4>
+<p><strong>可能问：</strong></p>
+<ul>
+<li>Pod是什么？和容器有什么关系？</li>
+<li>Pod起不来怎么排查？</li>
+<li><code>kubectl get pods</code> 看到什么状态说明有问题？</li>
+</ul>
+<h4>五、GPU/计算资源（这岗位特色）</h4>
+<p><strong>可能问：</strong></p>
+<ul>
+<li>你了解GPU服务器吗？和普通服务器有什么区别？</li>
+<li>压测是怎么做的？用过哪些工具？</li>
+<li>知道CUDA是什么吗？</li>
+</ul>
+<h4>六、软技能考察</h4>
+<ul>
+<li><strong>客户沟通：</strong> 客户很着急骂人，你怎么处理？</li>
+<li><strong>应急处理：</strong> 半夜报警了你怎么响应？</li>
+<li><strong>故障复盘：</strong> 出了故障怎么写故障报告？</li>
+</ul>
+<p>---</p>
+<h3>💡 面试准备建议</h3>
+<h4>重点准备这几个问题：</h4>
+<blockquote><strong>&quot;服务器突然无法访问，你的排查思路是什么？&quot;</strong></blockquote>
+<pre><code>标准答路：
+1. 先ping通不通（网络层）
+2. 看安全组/防火墙有没有拦（规则层）
+3. SSH登录看系统日志（系统层）
+4. 检查对应服务是否在运行（应用层）
+5. 看资源使用：CPU/内存/磁盘是否打满</code></pre>
+<blockquote><strong>&quot;你做过哪些云上运维工作？&quot;</strong></blockquote>
+<ul>
+<li>没经验就说做过实验/学习项目，重点说<strong>思路和学习能力</strong></li>
+</ul>
+<p>---</p>
+<h3>🔑 总结</h3>
+<p>这个岗位本质上是：</p>
+<ul>
+<li><strong>60% 运维操作</strong>（重启、扩容、处理故障）</li>
+<li><strong>20% 客户对接</strong>（沟通、记录需求）</li>
+<li><strong>20% 监控巡检</strong>（盯报警、写报告）</li>
+</ul>
+<p><strong>适合人群：</strong> 喜欢解决实际问题、不排斥值班、想积累云计算实战经验的人</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/210">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

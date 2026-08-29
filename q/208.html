@@ -16,12 +16,252 @@
   <meta name="twitter:description" content="什么是 CrashLoopBackOff？ Pod 启动 → 崩溃退出 → K8s 重启 → 再次崩溃 → 等待时间递增重启 (10s → 20s → 40s → 最大5min) 📋 系统化排查流程 第一步：获取基本信息 查看 Pod 状态概览 kubectl get pod -n 查看详细事件和状态 kube…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/208.html">
-  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#475569;text-align:center;padding:60px 20px 40px;line-height:1.6}</style>
-  <script>location.replace("/#/question/208");</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"K8s 场景：Pod 一直 CrashLoopBackOff，怎么定位问题？","text":"K8s 场景：Pod 一直 CrashLoopBackOff，怎么定位问题？","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"什么是 CrashLoopBackOff？ Pod 启动 → 崩溃退出 → K8s 重启 → 再次崩溃 → 等待时间递增重启 (10s → 20s → 40s → 最大5min) 📋 系统化排查流程 第一步：获取基本信息 查看 Pod 状态概览 kubectl get pod -n 查看详细事件和状态 kubectl describe pod -n 重点关注以下字段： Last State: 上次退出的状态码 Exit Code: 退出码 (关键！) Events: 事件信息 第二步：查看日志（最关键） 查看当前日志 kubectl logs -n ⭐ 查看上一次崩溃的日志（最重要！） kubectl logs -n --previous 实时跟踪日志 kubectl logs -n -f 多容器 Pod 指定容器 kubectl logs -c --previous 🚨 Exit Code 速查表 Exit Code 含义 常见原因 0 正常退出 容器任务执行完毕，不该作为常驻服务 1 通用错误 应用启动报错、配置错误 2 误用命令 Shell 命令错误 137 SIGKILL (128+9) OOM 被杀、手动 kill -9 139 段错误 (128+11) 内存访问违规 143 SIGTERM (128+15) 优雅终止超时 126 权限不足 命令无执行权限 127 命令不存在 镜像内找不到命令 🔧 常见原因及解决方案 原因1：应用启动失败（Exit Code 1） 排查步骤 kubectl logs --previous | tail -50 常见场景 ❌ 配置文件读取失败 ❌ 依赖服务连接失败（DB/Redis等） ❌ 端口被占用 ❌ 环境变量缺失 YAML 验证环境变量是否正确注入 kubectl exec -- env | grep APP_ 或在 Pod Spec 中检查 env: name: DB_HOST valueFrom: secretKeyRef: name: db-secret key: host # ← 确认 secret 和 key 存在 原因2：OOM 内存溢出（Exit Code 137） Bash 确认是否 OOM kubectl describe pod | grep -A5 \"Last State\" 输出示例： Last State: Terminated Reason: OOMKilled ← 确认是 OOM 查看节点内存事件 kubectl describe node | grep -A10 \"Events\" YAML 解决：调整资源限制 resources: requests: memory: \"256Mi\" cpu: \"250m\" limits: memory: \"512Mi\" # ← 适当增大 cpu: \"500m\" 原因3：镜像问题 Bash 查看镜像拉取状态 kubectl describe pod | grep -E \"Image|Pull\" 常见错误 ErrImagePull / ImagePullBackOff → 镜像拉取失败 InvalidImageName → 镜像名称错误 YAML 检查清单 1. 镜像名称和 Tag 是否正确 image: myapp:v1.2.3 # ← 确认 tag 存在 2. 私有仓库需要 imagePullSecrets imagePullSecrets: name: registry-secret 3. 本地测试验证 docker pull 原因4：启动命令/入口错误（Exit Code 127） Bash 模拟容器启动排查 kubectl run debug --image= \\ --command -- sleep 3600 kubectl exec -it debug -- /bin/sh 手动执行启动命令，查看具体报错 YAML 检查 command 和 args 配置 spec: containers: name: app image: myapp:v1 command: [\"/bin/sh\"] # ← 确认路径存在 args: [\"-c\", \"start.sh\"] # ← 确认脚本可执行 原因5：健康检查失败 Bash 查看探针相关事件 kubectl describe pod | grep -E \"Liveness|Readiness|probe\" 常见输出： Liveness probe failed: HTTP probe failed with statuscode: 500 YAML 调整健康检查配置 livenessProbe: httpGet: path: /health port: 8080 initialDelaySeconds: 30 # ← 给应用足够启动时间 periodSeconds: 10 failureThreshold: 3 # ← 失败几次才重启 timeoutSeconds: 5 # ← 超时时间 readinessProbe: httpGet: path: /ready port: 8080 initialDelaySeconds: 10 原因6：权限/安全上下文问题 Bash 查看权限相关错误 kubectl logs --previous | grep -E \"permission|denied|unauthorized\" YAML 检查 SecurityContext 配置 securityContext: runAsUser: 1000 runAsNonRoot: true readOnlyRootFilesystem: true # ← 只读根目录，需确保应用不写根目录 挂载可写目录 volumeMounts: name: tmp-dir mountPath: /tmp # ← 提供可写临时目录 volumes: name: tmp-dir emptyDir: {} 🛠️ 进阶排查工具 临时调试容器（不修改原镜像） Bash K8s 1.23+ 支持 ephemeral container kubectl debug -it \\ --image=busybox \\ --target= 或复制 Pod 进行调试 kubectl debug \\ -it \\ --copy-to=debug-pod \\ --image=busybox \\ -- sh 替换启动命令强制 Pod 存活 YAML 修改 Deployment，先让 Pod 跑起来再排查 spec: containers: name: app image: myapp:v1 command: [\"sleep\"] args: [\"infinity\"] # ← 覆盖原启动命令 进入容器手动执行原启动命令 kubectl exec -it -- /bin/sh 然后手动运行: ./start.sh 查看报错 查看资源使用情况 Bash 实时资源使用（需要 metrics-server） kubectl top pod -n 查看历史事件 kubectl get events -n \\ --sort-by='.lastTimestamp' | grep 📊 排查决策树 text CrashLoopBackOff │ ├── kubectl logs --previous 有输出？ │ ├── YES → 分析应用错误日志 │ │ ├── 配置/连接错误 → 检查 ConfigMap/Secret/网络 │ │ ├── OOM → 增加内存限制 │ │ └── 启动命令错误 → 检查 command/args │ │ │ └── NO → kubectl describe pod 查看 Events │ ├── OOMKilled → 增加内存限制 │ ├── Error Code 137 → 检查内存 │ ├── ImagePullBackOff → 检查镜像 │ └── Liveness probe failed → 调整探针参数 │ └── 无法复现 → 替换 command 为 sleep infinity 进入容器排查 ✅ 排查检查清单 text □ kubectl logs --previous 查看崩溃日志 □ kubectl describe pod 查看 Exit Code 和 Events □ 确认镜像 Tag 正确且可拉取 □ 确认 ConfigMap/Secret 存在且内容正确 □ 确认依赖服务（DB/Redis）可访问 □ 检查资源限制是否合理（尤其内存） □ 检查 LivenessProbe 的 initialDelaySeconds □ 检查文件权限和 SecurityContext □ 检查启动命令路径是否正确 □ 查看 Node 级别事件是否有异常 💡 核心原则：--previous 参数查看崩溃前日志是最高效的定位手段，80% 的问题都能从应用日志直接找到答案。","url":"https://it-interview.is-a.dev/#/question/208"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/208");},2500);</script>
 </head>
 <body>
-  <h1>K8s 场景：Pod 一直 CrashLoopBackOff，怎么定位问题？</h1>
-  <p>正在跳转至 IT 面试题库…</p>
-  <p>若未自动跳转，<a href="/#/question/208">请点击此处</a>。</p>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>K8s 场景：Pod 一直 CrashLoopBackOff，怎么定位问题？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持·大客户答疑</span><span class="chip">公有云售后技术支持·监控运维</span><span class="chip">公有云售后技术支持·云基础设施的日常运维</span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span></div>
+    <div class="card"><h2>题目</h2><p>K8s 场景：Pod 一直 CrashLoopBackOff，怎么定位问题？</p></div>
+    <div class="card"><h2>参考答案</h2><p>什么是 CrashLoopBackOff？</p>
+<p>Pod 启动 → 崩溃退出 → K8s 重启 → 再次崩溃 → 等待时间递增重启</p>
+<p>                                              (10s → 20s → 40s → 最大5min)</p>
+<p>📋 系统化排查流程</p>
+<p>第一步：获取基本信息</p>
+<h2>查看 Pod 状态概览</h2>
+<p>kubectl get pod &lt;pod-name&gt; -n &lt;namespace&gt;</p>
+<h2>查看详细事件和状态</h2>
+<p>kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;</p>
+<h2>重点关注以下字段：</h2>
+<h2>- Last State: 上次退出的状态码</h2>
+<h2>- Exit Code: 退出码 (关键！)</h2>
+<h2>- Events: 事件信息</h2>
+<p>第二步：查看日志（最关键）</p>
+<h2>查看当前日志</h2>
+<p>kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt;</p>
+<h2>⭐ 查看上一次崩溃的日志（最重要！）</h2>
+<p>kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt; --previous</p>
+<h2>实时跟踪日志</h2>
+<p>kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt; -f</p>
+<h2>多容器 Pod 指定容器</h2>
+<p>kubectl logs &lt;pod-name&gt; -c &lt;container-name&gt; --previous</p>
+<p>🚨 Exit Code 速查表</p>
+<p>Exit Code	含义	常见原因</p>
+<p>0	正常退出	容器任务执行完毕，不该作为常驻服务</p>
+<p>1	通用错误	应用启动报错、配置错误</p>
+<p>2	误用命令	Shell 命令错误</p>
+<p>137	SIGKILL (128+9)	OOM 被杀、手动 kill -9</p>
+<p>139	段错误 (128+11)	内存访问违规</p>
+<p>143	SIGTERM (128+15)	优雅终止超时</p>
+<p>126	权限不足	命令无执行权限</p>
+<p>127	命令不存在	镜像内找不到命令</p>
+<p>🔧 常见原因及解决方案</p>
+<p>原因1：应用启动失败（Exit Code 1）</p>
+<h2>排查步骤</h2>
+<p>kubectl logs &lt;pod-name&gt; --previous | tail -50</p>
+<h2>常见场景</h2>
+<h2>❌ 配置文件读取失败</h2>
+<h2>❌ 依赖服务连接失败（DB/Redis等）</h2>
+<h2>❌ 端口被占用</h2>
+<h2>❌ 环境变量缺失</h2>
+<p>YAML</p>
+<h2>验证环境变量是否正确注入</h2>
+<p>kubectl exec &lt;pod-name&gt; -- env | grep APP_</p>
+<h2>或在 Pod Spec 中检查</h2>
+<p>env:</p>
+<p>  - name: DB_HOST</p>
+<p>    valueFrom:</p>
+<p>      secretKeyRef:</p>
+<p>        name: db-secret</p>
+<p>        key: host      # ← 确认 secret 和 key 存在</p>
+<p>原因2：OOM 内存溢出（Exit Code 137）</p>
+<p>Bash</p>
+<h2>确认是否 OOM</h2>
+<p>kubectl describe pod &lt;pod-name&gt; | grep -A5 &quot;Last State&quot;</p>
+<h2>输出示例：</h2>
+<h2>Last State: Terminated</h2>
+<h2>Reason: OOMKilled    ← 确认是 OOM</h2>
+<h2>查看节点内存事件</h2>
+<p>kubectl describe node &lt;node-name&gt; | grep -A10 &quot;Events&quot;</p>
+<p>YAML</p>
+<h2>解决：调整资源限制</h2>
+<p>resources:</p>
+<p>  requests:</p>
+<p>    memory: &quot;256Mi&quot;</p>
+<p>    cpu: &quot;250m&quot;</p>
+<p>  limits:</p>
+<p>    memory: &quot;512Mi&quot;    # ← 适当增大</p>
+<p>    cpu: &quot;500m&quot;</p>
+<p>原因3：镜像问题</p>
+<p>Bash</p>
+<h2>查看镜像拉取状态</h2>
+<p>kubectl describe pod &lt;pod-name&gt; | grep -E &quot;Image|Pull&quot;</p>
+<h2>常见错误</h2>
+<h2>ErrImagePull / ImagePullBackOff → 镜像拉取失败</h2>
+<h2>InvalidImageName → 镜像名称错误</h2>
+<p>YAML</p>
+<h2>检查清单</h2>
+<h2>1. 镜像名称和 Tag 是否正确</h2>
+<p>image: myapp:v1.2.3     # ← 确认 tag 存在</p>
+<h2>2. 私有仓库需要 imagePullSecrets</h2>
+<p>imagePullSecrets:</p>
+<p>  - name: registry-secret</p>
+<h2>3. 本地测试验证</h2>
+<p>docker pull &lt;image-name&gt;</p>
+<p>原因4：启动命令/入口错误（Exit Code 127）</p>
+<p>Bash</p>
+<h2>模拟容器启动排查</h2>
+<p>kubectl run debug --image=&lt;your-image&gt; \</p>
+<p>  --command -- sleep 3600</p>
+<p>kubectl exec -it debug -- /bin/sh</p>
+<h2>手动执行启动命令，查看具体报错</h2>
+<p>YAML</p>
+<h2>检查 command 和 args 配置</h2>
+<p>spec:</p>
+<p>  containers:</p>
+<p>  - name: app</p>
+<p>    image: myapp:v1</p>
+<p>    command: [&quot;/bin/sh&quot;]          # ← 确认路径存在</p>
+<p>    args: [&quot;-c&quot;, &quot;start.sh&quot;]      # ← 确认脚本可执行</p>
+<p>原因5：健康检查失败</p>
+<p>Bash</p>
+<h2>查看探针相关事件</h2>
+<p>kubectl describe pod &lt;pod-name&gt; | grep -E &quot;Liveness|Readiness|probe&quot;</p>
+<h2>常见输出：</h2>
+<h2>Liveness probe failed: HTTP probe failed with statuscode: 500</h2>
+<p>YAML</p>
+<h2>调整健康检查配置</h2>
+<p>livenessProbe:</p>
+<p>  httpGet:</p>
+<p>    path: /health</p>
+<p>    port: 8080</p>
+<p>  initialDelaySeconds: 30   # ← 给应用足够启动时间</p>
+<p>  periodSeconds: 10</p>
+<p>  failureThreshold: 3       # ← 失败几次才重启</p>
+<p>  timeoutSeconds: 5         # ← 超时时间</p>
+<p>readinessProbe:</p>
+<p>  httpGet:</p>
+<p>    path: /ready</p>
+<p>    port: 8080</p>
+<p>  initialDelaySeconds: 10</p>
+<p>原因6：权限/安全上下文问题</p>
+<p>Bash</p>
+<h2>查看权限相关错误</h2>
+<p>kubectl logs &lt;pod-name&gt; --previous | grep -E &quot;permission|denied|unauthorized&quot;</p>
+<p>YAML</p>
+<h2>检查 SecurityContext 配置</h2>
+<p>securityContext:</p>
+<p>  runAsUser: 1000</p>
+<p>  runAsNonRoot: true</p>
+<p>  readOnlyRootFilesystem: true  # ← 只读根目录，需确保应用不写根目录</p>
+<h2>挂载可写目录</h2>
+<p>volumeMounts:</p>
+<p>  - name: tmp-dir</p>
+<p>    mountPath: /tmp             # ← 提供可写临时目录</p>
+<p>volumes:</p>
+<p>  - name: tmp-dir</p>
+<p>    emptyDir: {}</p>
+<p>🛠️ 进阶排查工具</p>
+<p>临时调试容器（不修改原镜像）</p>
+<p>Bash</p>
+<h2>K8s 1.23+ 支持 ephemeral container</h2>
+<p>kubectl debug -it &lt;pod-name&gt; \</p>
+<p>  --image=busybox \</p>
+<p>  --target=&lt;container-name&gt;</p>
+<h2>或复制 Pod 进行调试</h2>
+<p>kubectl debug &lt;pod-name&gt; \</p>
+<p>  -it \</p>
+<p>  --copy-to=debug-pod \</p>
+<p>  --image=busybox \</p>
+<p>  -- sh</p>
+<p>替换启动命令强制 Pod 存活</p>
+<p>YAML</p>
+<h2>修改 Deployment，先让 Pod 跑起来再排查</h2>
+<p>spec:</p>
+<p>  containers:</p>
+<p>  - name: app</p>
+<p>    image: myapp:v1</p>
+<p>    command: [&quot;sleep&quot;]</p>
+<p>    args: [&quot;infinity&quot;]    # ← 覆盖原启动命令</p>
+<h2>进入容器手动执行原启动命令</h2>
+<p>kubectl exec -it &lt;pod-name&gt; -- /bin/sh</p>
+<h2>然后手动运行: ./start.sh 查看报错</h2>
+<p>查看资源使用情况</p>
+<p>Bash</p>
+<h2>实时资源使用（需要 metrics-server）</h2>
+<p>kubectl top pod &lt;pod-name&gt; -n &lt;namespace&gt;</p>
+<h2>查看历史事件</h2>
+<p>kubectl get events -n &lt;namespace&gt; \</p>
+<p>  --sort-by=&#39;.lastTimestamp&#39; | grep &lt;pod-name&gt;</p>
+<p>📊 排查决策树</p>
+<p>text</p>
+<p>CrashLoopBackOff</p>
+<p>│</p>
+<p>├── kubectl logs --previous 有输出？</p>
+<p>│   ├── YES → 分析应用错误日志</p>
+<p>│   │         ├── 配置/连接错误 → 检查 ConfigMap/Secret/网络</p>
+<p>│   │         ├── OOM → 增加内存限制</p>
+<p>│   │         └── 启动命令错误 → 检查 command/args</p>
+<p>│   │</p>
+<p>│   └── NO → kubectl describe pod 查看 Events</p>
+<p>│            ├── OOMKilled → 增加内存限制</p>
+<p>│            ├── Error Code 137 → 检查内存</p>
+<p>│            ├── ImagePullBackOff → 检查镜像</p>
+<p>│            └── Liveness probe failed → 调整探针参数</p>
+<p>│</p>
+<p>└── 无法复现 → 替换 command 为 sleep infinity 进入容器排查</p>
+<p>✅ 排查检查清单</p>
+<p>text</p>
+<p>□ kubectl logs --previous 查看崩溃日志</p>
+<p>□ kubectl describe pod 查看 Exit Code 和 Events</p>
+<p>□ 确认镜像 Tag 正确且可拉取</p>
+<p>□ 确认 ConfigMap/Secret 存在且内容正确</p>
+<p>□ 确认依赖服务（DB/Redis）可访问</p>
+<p>□ 检查资源限制是否合理（尤其内存）</p>
+<p>□ 检查 LivenessProbe 的 initialDelaySeconds</p>
+<p>□ 检查文件权限和 SecurityContext</p>
+<p>□ 检查启动命令路径是否正确</p>
+<p>□ 查看 Node 级别事件是否有异常</p>
+<p>💡 核心原则：--previous 参数查看崩溃前日志是最高效的定位手段，80% 的问题都能从应用日志直接找到答案。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/208">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
 </body>
 </html>

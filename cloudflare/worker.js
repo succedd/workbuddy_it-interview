@@ -22,12 +22,23 @@
 
 const MAX_TOP = 20;
 
+/* CORS 白名单：只对允许的来源回 ACAO（默认本站；可用 ALLOWED_ORIGIN 逗号分隔多个）。
+   同一 isolate 并发请求间存在共享变量读取，但值恒为白名单内来源，
+   未知来源一律拿不到 CORS 头（浏览器拒绝读取），fail-closed。 */
+let _corsOrigin = "";
+function resolveCors(env, request) {
+  const origins = ((env && env.ALLOWED_ORIGIN) || "https://it-interview.is-a.dev")
+    .split(",").map(s => s.trim()).filter(Boolean);
+  const origin = (request && request.headers.get("origin")) || "";
+  _corsOrigin = origin && origins.includes(origin) ? origin : "";
+}
 function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": "*",
+  const h = {
     "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,Authorization",
   };
+  if (_corsOrigin) h["Access-Control-Allow-Origin"] = _corsOrigin;
+  return h;
 }
 
 function dayKey(d = new Date()) {
@@ -205,9 +216,19 @@ async function handleRegister(env, request) {
   const passHash = await hashPassword(password, salt);
   const now = Date.now();
 
-  /* 首个注册用户自动成为管理员，方便开局 */
+  /* 管理员授予策略：
+     - 配置了 ADMIN_EMAIL（secret/var）：只有该邮箱能成为 admin（无论注册顺序），防止换库/清库后陌生邮箱抢注；
+     - 未配置：保留旧行为「首个注册用户自动成为管理员，方便开局」；
+     - 已存在 admin 时永不自动授予。 */
+  const adminEmail = env.ADMIN_EMAIL ? String(env.ADMIN_EMAIL).trim().toLowerCase() : "";
   const any = await db.prepare("SELECT id FROM users LIMIT 1").first();
-  const role = any ? "user" : "admin";
+  let role = "user";
+  if (!any && !adminEmail) {
+    role = "admin";   /* 旧行为：首用户即管理员 */
+  } else if (adminEmail && email === adminEmail) {
+    const hasAdmin = any ? await db.prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1").first() : null;
+    if (!hasAdmin) role = "admin";
+  }
 
   const res = await db.prepare(
     "INSERT INTO users (email, nick, pass_hash, salt, role, status, created_at, last_login_at) " +
@@ -436,9 +457,10 @@ function jsonResp(obj, status = 200) {
 
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const p = url.pathname;
-    if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders() });
+  const url = new URL(request.url);
+  const p = url.pathname;
+  resolveCors(env, request);
+  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders() });
     try {
       if (!authOk(env, request)) return new Response("forbidden", { status: 403, headers: corsHeaders() });
       if (p === "/visit" && request.method === "POST") return await handleVisit(env, request);
@@ -464,7 +486,9 @@ export default {
         if (p === "/admin/users" && request.method === "GET") return await handleAdminUsers(env, request);
       }
     } catch (e) {
-      return new Response("error: " + e.message, { status: 500, headers: corsHeaders() });
+      /* 不把内部错误信息回给客户端（防信息泄漏），只记日志 */
+      console.error("worker error:", e && (e.stack || e.message));
+      return new Response("error", { status: 500, headers: corsHeaders() });
     }
     return new Response("not found", { status: 404, headers: corsHeaders() });
   },

@@ -5,13 +5,18 @@
  *  - 跨域资源（jsdelivr CDN、百度统计、API worker）：不拦截，交由浏览器正常处理
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260827v";
+const VERSION = "20260827w";
 const CACHE = "iti-pwa-v" + VERSION;
 const APP_SHELL = [
   "/", "/index.html",
   "/css/variables.css?v=" + VERSION, "/css/style.css?v=" + VERSION,
   "/css/animations.css?v=" + VERSION, "/css/responsive.css?v=" + VERSION,
   "/css/loader.css?v=" + VERSION,
+  /* 第三方库已本地化（vendor/），必须随壳缓存，否则离线时 Dexie/Marked 等加载失败整站不可用；
+     echarts / xlsx 大库按需加载，由 fetch 运行时缓存补收，不进壳 */
+  "/vendor/dexie.min.js", "/vendor/purify.min.js", "/vendor/marked.min.js",
+  "/vendor/highlight.min.js", "/vendor/fuse.min.js",
+  "/vendor/github.min.css", "/vendor/github-dark.min.css",
   "/js/utils.js?v=" + VERSION, "/js/db.js?v=" + VERSION, "/js/auth.js?v=" + VERSION,
   "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
   "/js/services.js?v=" + VERSION, "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
