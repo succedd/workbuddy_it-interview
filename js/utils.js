@@ -107,7 +107,9 @@
     try {
       marked.setOptions({ breaks: true, gfm: true });
       var html = marked.parse(text);
-      return window.DOMPurify ? DOMPurify.sanitize(html) : html;
+      html = window.DOMPurify ? DOMPurify.sanitize(html) : html;
+      /* 题内图片懒加载（innerHTML 注入无法依赖浏览器原生的 loading 属性来源） */
+      return html.replace(/<img /g, '<img loading="lazy" ');
     } catch (e) { return U.esc(text); }
   };
   U.highlightAll = function (root) {

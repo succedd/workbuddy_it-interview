@@ -158,6 +158,7 @@
         <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
+        <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
         ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} ${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
         ${adminHtml}
         ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
@@ -167,6 +168,7 @@
     attachHistory(gs, t => { shPush(t); App.go("/questions?q=" + encodeURIComponent(t)); });
     $("#theme-btn").onclick = cycleTheme;
     $("#menu-toggle").onclick = () => { document.body.classList.toggle("drawer-open"); };
+    updateNetChip();
     if (Auth.isAdmin()) {
       const ab = $("#admin-btn"); const menu = $("#admin-menu");
       ab.onclick = (e) => { e.stopPropagation(); menu.style.display = menu.style.display === "none" ? "block" : "none"; };
@@ -177,6 +179,14 @@
     }
     refreshVisitorStats();
   }
+
+  /* 离线提示：断网时顶栏常驻「离线」徽章（PWA 离线可用，但需告知数据是本地缓存） */
+  function updateNetChip() {
+    const el = document.getElementById("net-chip");
+    if (el) el.style.display = navigator.onLine ? "none" : "";
+  }
+  window.addEventListener("online", updateNetChip);
+  window.addEventListener("offline", updateNetChip);
 
   /* ============================ 侧边栏 ============================ */
   function renderSidebar(r) {
@@ -467,8 +477,8 @@
     } catch (e) {}
     setMain(`
       <section class="hero">
-        <h1>IT 面试题库管理系统</h1>
-        <p>覆盖完整技术体系与岗位体系，支持本地浏览、搜索、收藏、刷题、模拟面试与 AI 智能出题。纯静态 · 数据存于本机浏览器。</p>
+        <h1>IT 面试题库 · 刷题 / 模拟面试</h1>
+        <p>覆盖完整技术体系与岗位体系的高频面试题库：在线刷题、错题间隔复习、模拟面试与学习周报，支持云端同步与离线使用。</p>
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
@@ -501,7 +511,7 @@
       <div class="section-head"><h2>精选题目（AI 评分最高）</h2><a class="more" href="#/questions?sort=aiScore">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(best)}</div>
 
-      <div class="note" style="margin-top:24px">提示：本项目为纯静态本地版，所有数据保存在当前浏览器（IndexedDB）。首次使用可在「系统设置」配置 AI（DeepSeek Harness）以启用智能出题。管理员密码仅用于本机权限隔离，非服务端安全认证。</div>
+      <div class="note" style="margin-top:24px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
     `);
     const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); } };
     $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
@@ -934,11 +944,12 @@
       };
       $("#opt-btn").onclick = () => openOptimizeModal(q);
     }
-    // 上/下一题（同类随机）
-    const siblings = Services.questions.filter(x => x.categoryId === q.categoryId && x.id !== q.id);
-    if (siblings.length) {
-      $("#next-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
-      $("#prev-btn").onclick = () => App.go("/question/" + siblings[Math.floor(Math.random() * siblings.length)].id);
+    // 上/下一题（同分类内按 id 顺序循环；与刷题页的顺序行为一致）
+    const siblings = Services.questions.filter(x => x.categoryId === q.categoryId).sort((a, b) => a.id - b.id);
+    const sibIdx = siblings.findIndex(x => x.id === q.id);
+    if (sibIdx >= 0 && siblings.length > 1) {
+      $("#next-btn").onclick = () => App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id);
+      $("#prev-btn").onclick = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
     /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应） */
     const kbHint = document.createElement("div");

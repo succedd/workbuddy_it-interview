@@ -30,3 +30,23 @@
 
 .menu-toggle { display: none; }
 @media (min-width: 721px) { .menu-toggle { display: none; } }
+
+/* ============ iOS 安全区（viewport-fit=cover 后生效） ============ */
+/* 底部：home 条不遮内容（移动端主内容与底部弹窗） */
+@media (max-width: 720px) {
+  .main { padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px)); }
+  .modal { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body.drawer-open .sidebar { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .toast-root { top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); }
+}
+/* 顶部：仅 PWA 独立窗口（安装到主屏幕）时页面顶到屏幕最上沿，需给顶栏让出刘海 */
+@media (display-mode: standalone) {
+  #topbar { height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)); padding-top: env(safe-area-inset-top, 0px); }
+  .layout { min-height: calc(100vh - var(--topbar-h) - env(safe-area-inset-top, 0px)); }
+  .sidebar { top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)); height: calc(100vh - var(--topbar-h) - env(safe-area-inset-top, 0px)); }
+  .drawer-mask { top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)); }
+}
+
+/* 离线徽章（顶栏，亮暗主题通用琥珀色） */
+.vis-chip.net-off { background: rgba(217,119,6,.12); border-color: rgba(217,119,6,.35); color: #b45309; }
+html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); border-color: rgba(251,191,36,.3); color: #fbbf24; }

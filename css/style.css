@@ -426,6 +426,7 @@ table.data tr:hover td { background: var(--bg-hover); }
 #pcat, #ppos { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--text); padding: 4px; }
 #pcat option, #ppos option { padding: 5px 8px; border-radius: 4px; }
 #pcat option:hover, #ppos option:hover { background: var(--bg-hover); }
+/* Skeleton（骨架屏）：暂无使用场景（列表均本地同步渲染），如需加载态再启用 */
 .skeleton { background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--bg-hover) 50%, var(--bg-subtle) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
 .ask-item { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 6px; background: var(--bg-elevated); }
 .foot-note { text-align: center; color: var(--text-muted); font-size: 12px; padding: 24px; }

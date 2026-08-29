@@ -58,11 +58,13 @@ assert("uid 不重复", uid1 !== uid2 && uid1.length >= 8);
 /* md：有 DOMPurify → 必须过 sanitize；无 DOMPurify → 原样（此时 marked stub 输出 <p>…</p>） */
 {
   const sbx = loadInSandbox("js/utils.js", {
-    marked: { setOptions() {}, parse: (t) => "<p>" + t + "</p>" },
+    marked: { setOptions() {}, parse: (t) => "<p>" + t.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">') + "</p>" },
     DOMPurify: { sanitize: (h) => h.replace(/<script[\s\S]*?<\/script>/gi, "") },
   });
   const out = sbx.window.U.md('hello<script>alert(1)<\/script>');
   assert("md 走 DOMPurify 清洗", !out.includes("<script>"), out);
+  const img = sbx.window.U.md("![图](/assets/q/x.jpg)");
+  assert("md 图片自动加 loading=lazy", img.includes('<img loading="lazy" src="/assets/q/x.jpg"'), img);
 }
 {
   const sbx = loadInSandbox("js/utils.js", {
