@@ -73,9 +73,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 15:35
-- **最新 commit**：`6e9de1b`（缓存版本 `20260827x`）——前端体验修正四项：首页文案用户化（H1/副文案/底部提示）、详情页上下题改同分类顺序循环、iOS 安全区适配（viewport-fit=cover + safe-area + PWA 独立窗口顶栏）、apple-touch-icon（180x180 PNG）+ theme-color 暗色、离线徽章（net-chip）、题内图片懒加载
-- **线上**：release = main = `6e9de1b`，已验证（v=x、viewport-fit、apple-touch-icon 200、net-chip/顺序上下题/新文案均命中）；smoke-test 26 用例全过；旧功能标记词 10/10
+- **最后更新**：2026-08-29 16:05
+- **最新 commit**：`36a6a69`（缓存版本 `20260827y`）——样式与动效体验优化：全局 prefers-reduced-motion 守卫、复习横幅去无限发光、弹窗滚动锁（body.modal-open）、全局 :focus-visible 键盘焦点环、触屏按压反馈（:active）、暗色 --c-primary-50 保持主色相 + .md pre 加深描边、chart-fade 接线三处图表、移动端 toast 底部居中
+- **线上**：release = main = `36a6a69`，已验证（v=y/animations 守卫/滚动锁均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS
 - **扩充流水线注意**：自动化「题库定期自动扩充」每周一/三/五 10:00 跑，**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ `--next` 数据驱动选域 + 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
