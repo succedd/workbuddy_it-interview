@@ -1,4 +1,4 @@
-# IT 面试题库管理系统
+# IT 面试题库 · 刷题 / 模拟面试
 
 [![Site](https://img.shields.io/badge/在线访问-it--interview.is--a.dev-2563EB)](https://it-interview.is-a.dev)
 [![GitHub](https://img.shields.io/badge/GitHub-succedd/workbuddy__it--interview-181717?logo=github)](https://github.com/succedd/workbuddy_it-interview)
@@ -67,13 +67,13 @@
 为解决「题量偏少、人工补充慢」的问题，项目内置一套**定期自动扩充流水线**：按轮转计划从权威来源取材、整理成无错误的结构化面试题，自动合并进 `data/published.json` 并发布到线上。
 
 - **取材来源白名单**：仅限 CS-Notes、JavaGuide、小林coding、各技术官方文档等权威、可溯源站点（`tools/intake-plan.md`），每题必须带真实 `source` URL，**禁止无出处编造**。
-- **轮转计划**：21 个顶层技术域按周轮换（`ISO 周号 % 21`），优先填满 235 个空叶子分类，再对已有分类做深度补充；每批 6–10 题，难度初中高搭配。
+- **轮转计划**：21 个顶层技术域轮换，优先填满 235 个空叶子分类，再对已有分类做深度补充；每批 6–12 题，难度初中高搭配。选题优先用 `enrich_questions.py --next` 数据驱动推荐（空叶子最多的域 + 优先叶子 + 推荐来源），轮转表兜底。
 - **合并引擎 `tools/enrich_questions.py`**：
   - 批次文件用「分类名 / 岗位名」引用，脚本自动解析为 `categoryId` / `positionIds`；名字写错会给出近似建议并跳过该题，不会脏写；
   - 严格字段校验 + 按归一化标题（去空白/小写/全半角标点）去重，保证「整理无错误」；
   - ID 顺序自增（`max(id)+1`），不与现有题目冲突；
   - 支持 `--dry` 只校验不落盘、`--all` 批量处理、`--push` 通过 GitHub Contents API（与线上编辑端同源）推到 Pages 源分支（`release,main` 双写）。
-- **定期自动化**：WorkBuddy 定时任务「题库定期自动扩充」每周一 10:00 运行——下载线上最新题库 → 按轮转表联网取材 → 写批次 → 校验合并 → 提交并发布（配置 `GH_PUBLISH_TOKEN` 环境变量后自动推送到 `main`/`release`）。
+- **定期自动化**：WorkBuddy 定时任务「题库定期自动扩充」**每周一/三/五 10:00** 运行——下载线上最新题库 → `--next` 选域联网取材 → 写批次 → 校验合并（含质检闸门：答案<30字/图片缺失拒绝）→ 提交并发布（配置 `GH_PUBLISH_TOKEN` 环境变量后自动推送到 `main`/`release`，新题分享页 `q/<id>.html` 自动跟发）。
 - **手动运行**：`python tools/enrich_questions.py tools/batches/2026-08-27-a.json`
 
 > 说明：流水线只改动 `data/published.json`；真正的「发布到线上」由 GitHub Pages（源分支 `main`）分发，访客下次打开即见新题。若未配置 `GH_PUBLISH_TOKEN` 且无 git 凭据，自动化会保留本地提交并提示手动推送 / 用编辑器发布。
@@ -178,6 +178,34 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
+
+### 2026-08-29 · 样式与动效体验优化（缓存版本 `20260827y`）
+- **全局「减弱动态效果」守卫**：`prefers-reduced-motion: reduce` 时静止全站 13 处循环动画（无障碍 + 省电）；复习横幅去掉无限发光，消除同屏多重强调。
+- **弹窗滚动锁**：`U.modal` 打开时锁定背景滚动（计数支持嵌套弹窗），`scrollbar-gutter` 防桌面端宽度跳动。
+- **键盘焦点可见**：全局 `:focus-visible` 主色焦点环（输入框自有 ring 不受影响）；触屏按压反馈：题目卡/侧栏/技能卡/树节点 `:active` 轻缩放。
+- **暗色修正**：`--c-primary-50` 保持主色相（答案卡片恢复蓝色调）；`.md pre` 代码块暗色加深 + 描边。
+- `chart-fade` 接线三处图表懒加载入口；移动端 toast 移至底部居中（上/下滑出场）。
+
+### 2026-08-29 · 前端体验修正（缓存版本 `20260827x`）
+- **首页文案用户化**：页面内 H1/副文案/底部提示去掉「管理系统」开发者口吻（站点改名漏网处）。
+- **详情页上一题/下一题**：同分类随机跳转 → 按 id 顺序循环，与刷题页行为一致（键盘 ←/→ 同步）。
+- **iOS 适配三件套**：`viewport-fit=cover` + safe-area（PWA 独立窗口顶栏让出刘海、底部弹窗/主内容避开 home 条）；新增 `apple-touch-icon`（180×180 PNG，添加到主屏幕显示 logo 而非截图）；`theme-color` 暗色变体。
+- 顶栏新增「⚡ 离线 · 本地缓存」徽章（online/offline 监听）；`U.md` 题内图片自动 `loading=lazy`。
+
+### 2026-08-29 · 安全 + 性能 + SEO 三线升级（缓存版本 `20260827w`）
+- **P0 安全**：加载 DOMPurify（`vendor/purify.min.js`）——修复 Markdown 渲染不过滤的 XSS 缺口。
+- **P0 可用性/PWA**：6 个第三方库全部本地化 `vendor/`（字节级对齐现用版本），核心库进 SW APP_SHELL——真离线可用，不再依赖 jsdelivr；echarts/xlsx（约 1.6MB）改 `U.loadScript` 按需加载，移动端首屏约减 2MB。
+- **P0 体验**：开场动画回访跳过（sessionStorage 标记），首访保留完整动效。
+- **SEO**：258 个 `q/<id>.html` 由「跳转壳」升级为内容落地页（题目+答案全文、QAPage JSON-LD、2.5s 延迟跳回 SPA）。
+- **文案**：站点更名「IT 面试题库 · 刷题 / 模拟面试」（title/OG/Twitter）；统一百度统计 ID 消除双账号重复上报。
+- **Worker 加固**：CORS 白名单、500 防内部信息泄漏、注册 admin 授予加 `ADMIN_EMAIL` 门槛（已部署 `85b4abca`）。
+- **工具**：新增 `tools/data-audit.js` 题库体检、`tools/smoke-test.js` 纯函数回归（26 用例）。
+
+### 2026-08-29 · 扩充流水线增强（工具链）
+- **分享页自动跟发**：`--push` 推完题库后自动重生成 `q/<id>.html` 并推送待推清单（`tools/.last-new-ids.json` 跨「先合并、后 --push」两步调用持久化），失败只告警、绝不影响题库发布主流程。
+- **`--next` 数据驱动选域**：按空叶子分类数输出推荐域 + 优先叶子分类 + 推荐来源。
+- **合并质检闸门**：答案有效内容 <30 字、引用缺失本地图片直接拒绝入库；批次题型/难度单一时打配额提醒。
+- 修复 `--push` 重复自增 `version`（本批无新增时不再写文件）；`.gitignore` 补 `__pycache__`。
 
 ### 2026-08-29 · 微信内分享适配（缓存版本 `20260827v`）
 - 微信内置浏览器中「分享图片」按钮（`navigator.share`）不可用、「保存图片」下载体验差 → 检测 `MicroMessenger` UA 后改为**微信专属路径**：点击预览图放大为全屏大图，**长按图片 → 发送给朋友/保存图片**（微信原生菜单），符合微信用户习惯。
