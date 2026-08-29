@@ -73,9 +73,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 16:40
-- **最新 commit**：`2c4bdfb`（缓存版本 `20260827z`）——**修复浏览历史永远为空 + 本地浏览计数不生效**：详情页曾把路由字符串 id 传给 incViews/addHistory，IndexedDB 键类型敏感致读取全 miss；改传数字 q.id + 启动时一次性 repairHistoryIds 修复存量字符串行
-- **线上**：release = main = `2c4bdfb`，已验证（v=z、incViews(q.id)/addHistory(q.id)/repairHistoryIds 均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS；同日前序发版：y 动效优化 / x 体验修正 / w 安全性能 SEO / 流水线增强
+- **最后更新**：2026-08-29 17:10
+- **最新 commit**：`76b427e`（缓存版本 `20260829a`——版本戳改日期前缀，字母 u→z 已用尽）——**浏览历史升级为学习工具**：单条删除、今天/昨天/本周分组、历史内搜索、「看过 N 次」重访计数（上限 100→300）、📅 复习中/★ 已收藏状态标注、🔁 重刷历史（practice?scope=hist 题池）、清空 8 秒可撤销、温故知新开关（3-30 天前浏览未掌握的题混入今日清单前 2 位，App.dailyList 供首页+打卡共用）。同日早前：浏览历史类型 bug 修复（z）、动效样式优化（y）、体验修正（x）、安全性能 SEO（w）、流水线增强
+- **线上**：release = main = `76b427e`，已验证（v=20260829a、重刷历史/温故知新/dailyList 均命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS（10/10）
 - **扩充流水线注意**：自动化「题库定期自动扩充」每周一/三/五 10:00 跑，**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ `--next` 数据驱动选域 + 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
