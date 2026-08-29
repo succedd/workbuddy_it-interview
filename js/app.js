@@ -1174,6 +1174,8 @@
     const renderGrid = () => {
       const t = term.trim().toLowerCase();
       const view = !t ? all : all.filter(({ q }) => ((q.title || "") + " " + (q.tags || []).join(" ")).toLowerCase().indexOf(t) >= 0);
+      const gCounts = {};
+      view.forEach(item => { const g = groupOf(item.at); gCounts[g] = (gCounts[g] || 0) + 1; });
       let html = "";
       if (!view.length) {
         html = term
@@ -1183,7 +1185,14 @@
         let last = null;
         view.slice(0, shown).forEach(item => {
           const g = groupOf(item.at);
-          if (g !== last) { html += `<div class="muted" style="grid-column:1/-1;font-size:12px;font-weight:700;letter-spacing:.08em;margin-top:4px">— ${g} —</div>`; last = g; }
+          if (g !== last) {
+            html += `<div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:10px">
+              <span class="tag tag-primary" style="font-weight:700;font-size:13px;padding:3px 12px">${g}</span>
+              <span style="flex:1;height:1px;background:var(--border)"></span>
+              <span class="muted" style="font-size:11px;flex:none">${gCounts[g] || 0} 题</span>
+            </div>`;
+            last = g;
+          }
           html += hisCard(item);
         });
         if (shown < view.length) html += `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="his-more">加载更多（${view.length - shown}）</button></div>`;
