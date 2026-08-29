@@ -3016,7 +3016,7 @@
       try { localStorage.setItem("local_stats", JSON.stringify(d)); } catch (e) {}
     }
     function recordVisit() {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = dateKey();   /* 本地日期（原 UTC 会导致早 8 点前记到昨天） */
       const d = readLocal();
       d.total = (d.total || 0) + 1;
       d.daily[today] = (d.daily[today] || 0) + 1;
@@ -3028,19 +3028,22 @@
       if (id == null) return;
       const d = readLocal();
       const k = String(id);
+      const today = dateKey();
+      d.daily[today] = (d.daily[today] || 0) + 1;   /* 看题也算当日活跃，保证打卡/热力图完整 */
       d.views[k] = (d.views[k] || 0) + 1;
       writeLocal(d);
       trackBaidu("/question/" + id);
       cfPost("/view", { id });   /* 上报题目浏览到 Cloudflare Worker（fire-and-forget） */
     }
     function getLocalStats() {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = dateKey();
       const d = readLocal();
       const views = Object.entries(d.views || {})
         .map(([id, n]) => ({ id, views: n }))
         .sort((a, b) => b.views - a.views)
         .slice(0, 20);
-      return { total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views };
+      /* daily 必须返回：streakInfo（学习打卡卡）依赖它推导连续/累计/热力图 */
+      return { total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views, daily: d.daily || {} };
     }
     /* --- 可选 Cloudflare Worker（2026-08-27 起已部署，默认启用） ---
        默认地址指向本站官方 Worker（it-interview-stats.iti-interview.workers.dev）；
