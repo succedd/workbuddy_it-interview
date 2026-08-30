@@ -17,7 +17,7 @@
 
 ## 2. 版本缓存机制（改代码必做）
 
-- `index.html` 所有资源带 `?v=20260829g` 缓存戳（约 21 处）——**改动任何 js/css 后必须整体 bump**：
+- `index.html` 所有资源带 `?v=20260829h` 缓存戳（约 21 处）——**改动任何 js/css 后必须整体 bump**：
   `sed -i 's/v=20260829旧/v=20260829新/g' index.html`（字母递增 u→v→w…）
 - `sw.js` 第 8 行 `const VERSION = "..."` 必须与 index.html 同步 bump（SW 缓存靠它失效）
 - 部署 = `git push origin HEAD:release`，GitHub Pages 约 1 分钟生效
@@ -73,9 +73,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-30 13:05
-- **最新 commit**：`31a61d3`（缓存版本 `20260829g`）——**编辑端发布/吸收链路修复**：① 题库发布双推 release+main（原只推 main，致管理端增删改从不上线）；② absorbRemote 的 norm 改 Unicode 感知（修中文标题查重失效）；③ 吸收期设 `C._suppress` 防自动发布回踩流水线数据；④ 新增 absorbNormVer=v2 自愈重放（各端下次启动自动补回漏吸收的题，本地 261 → 264 自动愈合）。同日早前：自动化扩题每日首跑成功（线上 264 题）+ 数据分叉排查登记 + 恢复 README 08-29 日志段（`01e886f`）；代码线 `aaf757b` 批次追问链、`73bd01c` 经典题快速扩充（频次提至每天）
-- **线上**：release = 264 题数据 + `20260829g` 修复版（发版验证：v=20260829g 命中、smoke-test 26/26 过、data-audit 无新增问题）；main 已按惯例镜像对齐 release（编辑端旧 261 lineage 被覆盖，其浏览器下次启动经 absorbNormVer 自愈，且吸收不再触发自动发布）
+- **最后更新**：2026-08-30 13:35
+- **最新 commit**：`c605519`（缓存版本 `20260829h`）——**深链首访体验修复**：带 hash 深链（分享卡/扫码经 `q/<id>.html` 跳 `#/question/…`）进入 SPA 时跳过首访开场动效，消除「题目→动效→又回题目」绕圈；开场动效仅在首页空路径首访时播放。同日：`31a61d3`（g）编辑端发布/吸收链路修复（双推 release+main、Unicode 查重、吸收抑制、自愈重放）；`01e886f` 自动化扩题首跑登记 + 恢复 README 08-29 日志段；代码线 `aaf757b` 批次追问链、`73bd01c` 经典题快速扩充（频次提至每天）
+- **线上**：release = 264 题数据 + `20260829h`；main 已镜像对齐（编辑端经 absorbNormVer 自愈到 264，吸收不再触发自动发布）；smoke-test 26/26、data-audit 无新增问题、旧功能标记词回归 PASS
 - **扩充流水线注意**：自动化「题库定期自动扩充」**每天 10:00** 跑（08-29 起从每周一/三/五提频），**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ 经典主题轮转（classic-topics.json，T001 云服务售后已跑）+ 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；**合并基线读线上 release（is-a.dev 的 published.json），勿参考 main**；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
