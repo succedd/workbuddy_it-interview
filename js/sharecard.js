@@ -38,6 +38,32 @@
       .trim();
   }
 
+  /* 结构化答案摘要：保留「编号 / 要点 / 分段」的层次。
+     旧版把答案整体 stripMd 成一段再硬折 7 行，编号和段落全糊在一起，观感很差。
+     这里按空行和行首编号/项目符号切块，每块独立折行绘制，块间留缝。 */
+  function answerBlocks(src, maxBlocks) {
+    const text = String(src || "").replace(/```[\s\S]*?```/g, " ").replace(/\r\n/g, "\n");
+    const blocks = [];
+    let cur = "";
+    const flush = () => {
+      const s = stripMd(cur).trim();
+      if (s) blocks.push(s);
+      cur = "";
+    };
+    for (const raw of text.split("\n")) {
+      const line = raw.trim();
+      if (!line) { flush(); continue; }
+      if (/^([0-9]{1,2}[.、)]|[①②③④⑤⑥⑦⑧⑨⑩]|[-*+]\s|#{1,6}\s)/.test(line)) {
+        flush();
+        cur = line;
+      } else {
+        cur = cur ? cur + " " + line : line;
+      }
+    }
+    flush();
+    return blocks.slice(0, maxBlocks);
+  }
+
   /* 逐字符折行（中文无空格，不能按词折行） */
   function wrap(ctx, text, maxW, maxLines) {
     const lines = [];
@@ -135,15 +161,26 @@
       if (px > X0 + CARD_W - 120) break;
     }
 
-    // 参考答案摘要
+    // 参考答案摘要（按编号/要点分块绘制，块间留缝，不再整段糊在一起）
     ctx.fillStyle = "#94A3B8";
     ctx.font = '500 19px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
     ctx.fillText("参考答案", X0 + 40, Y0 + HEAD_H + 128);
     ctx.fillStyle = "#334155";
     ctx.font = '25px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
-    const ansLines = wrap(ctx, meta.answer, CARD_W - 80, meta.answerLines || 7);
     let ay = Y0 + HEAD_H + 162;
-    for (const ln of ansLines) { ctx.fillText(ln, X0 + 40, ay); ay += 42; }
+    let budget = meta.answerLines || 7;
+    for (let bi = 0; bi < meta.answerBlocks.length && budget > 0; bi++) {
+      const isLastBlock = bi === meta.answerBlocks.length - 1;
+      const lines = wrap(ctx, meta.answerBlocks[bi], CARD_W - 80, budget);
+      budget -= lines.length;
+      if (budget <= 0 && !isLastBlock && !/…$/.test(lines[lines.length - 1])) {
+        let last = lines[lines.length - 1];
+        while (last && ctx.measureText(last + "…").width > CARD_W - 80) last = last.slice(0, -1);
+        lines[lines.length - 1] = last + "…";
+      }
+      for (const ln of lines) { ctx.fillText(ln, X0 + 40, ay); ay += 42; }
+      if (budget > 0) ay += 10;   // 块间距
+    }
 
     // 底部分隔线
     const fy = Y0 + CARD_H - 130;
@@ -199,7 +236,7 @@
       return {
         url,
         tags: tags.length ? tags : ["面试题"],
-        answer: stripMd(q.answer || q.body || ""),
+        answerBlocks: answerBlocks(q.answer || q.body || "", 8),
         answerLines: 7
       };
     },
