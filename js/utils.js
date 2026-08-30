@@ -282,6 +282,7 @@
     });
     return _scriptCache[name];
   };
+  U.CONFETTI_URL = "vendor/canvas-confetti.min.js";
   U.ECHARTS_URL = "vendor/echarts.min.js";
   U.XLSX_URL = "vendor/xlsx.full.min.js";
 

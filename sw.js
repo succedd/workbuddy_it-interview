@@ -5,7 +5,7 @@
  *  - 跨域资源（jsdelivr CDN、百度统计、API worker）：不拦截，交由浏览器正常处理
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260829o";
+const VERSION = "20260829p";
 const CACHE = "iti-pwa-v" + VERSION;
 const APP_SHELL = [
   "/", "/index.html",

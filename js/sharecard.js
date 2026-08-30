@@ -278,5 +278,89 @@
     }
   };
 
+  /* ============================ 学习周报分享卡 ============================ */
+  function weekCardRender(st) {
+    st = st || {};
+    return new Promise((resolve, reject) => {
+      const W = 800, H = 1120, S = 2, PAD = 40;
+      const cv = document.createElement("canvas");
+      cv.width = W * S; cv.height = H * S;
+      const ctx = cv.getContext("2d");
+      ctx.scale(S, S); ctx.textBaseline = "alphabetic";
+      const F = (w, px) => w + " " + px + "px -apple-system, \"PingFang SC\", \"Microsoft YaHei\", sans-serif";
+      const CX = PAD, CY = PAD, CW = W - PAD * 2, CH = H - PAD * 2;
+      try {
+        ctx.fillStyle = "#F1F5F9"; ctx.fillRect(0, 0, W, H);
+        ctx.save();
+        rr(ctx, CX, CY, CW, CH, 36); ctx.clip();
+        const g = ctx.createLinearGradient(CX, CY, CX + CW, CY + 320);
+        g.addColorStop(0, "#1E40AF"); g.addColorStop(0.55, "#2563EB"); g.addColorStop(1, "#6D28D9");
+        ctx.fillStyle = g; ctx.fillRect(CX, CY, CW, 320);
+        ctx.fillStyle = "rgba(255,255,255,.07)";
+        ctx.beginPath(); ctx.arc(CX + CW - 50, CY + 30, 120, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = F("700", 24);
+        ctx.fillText("IT 面试题库 · 学习周报", CX + 40, CY + 66);
+        ctx.fillStyle = "rgba(255,255,255,.75)"; ctx.font = F("500", 17);
+        ctx.fillText(String(st.range || ""), CX + 40, CY + 98);
+        ctx.font = F("700", 40);
+        ctx.fillText(String(st.slogan || "坚持就是胜利").slice(0, 15), CX + 40, CY + 210);
+        ctx.fillStyle = "#FFFFFF"; ctx.fillRect(CX, CY + 320, CW, CH - 320);
+        const stats = [["本周刷题", st.total || 0, "#2563EB"], ["打卡天数", st.days || 0, "#D97706"], ["新增薄弱", st.weakNew || 0, "#DC2626"]];
+        stats.forEach((it, i) => {
+          const cx = CX + 40 + (i + 0.5) * (CW - 80) / 3;
+          ctx.textAlign = "center";
+          ctx.fillStyle = it[2]; ctx.font = F("800", 54);
+          ctx.fillText(String(it[1]), cx, CY + 432);
+          ctx.fillStyle = "#94A3B8"; ctx.font = F("500", 18);
+          ctx.fillText(it[0], cx, CY + 464);
+          ctx.textAlign = "left";
+        });
+        ctx.fillStyle = "#94A3B8"; ctx.font = F("500", 17);
+        ctx.fillText("每日刷题分布", CX + 40, CY + 545);
+        const bBase = CY + 705, bMax = 125;
+        const maxN = Math.max(1, ...(st.daily || []).map(d => d.n || 0));
+        (st.daily || []).forEach((d, i) => {
+          const cx = CX + 40 + (i + 0.5) * (CW - 80) / 7;
+          const h = d.n ? Math.max(8, Math.round(d.n / maxN * bMax)) : 4;
+          ctx.fillStyle = d.label === "今" ? "#1D4ED8" : "#93C5FD";
+          rr(ctx, cx - 22, bBase - h, 44, h, 5); ctx.fill();
+          ctx.textAlign = "center";
+          if (d.n) { ctx.fillStyle = "#475569"; ctx.font = F("600", 16); ctx.fillText(String(d.n), cx, bBase - h - 8); }
+          ctx.fillStyle = "#94A3B8"; ctx.font = F("500", 16);
+          ctx.fillText(d.label, cx, bBase + 24);
+          ctx.textAlign = "left";
+        });
+        ctx.fillStyle = "#94A3B8"; ctx.font = F("500", 17);
+        ctx.fillText(st.weakIsWeek ? "本周新增薄弱 Top" : "累计薄弱 Top", CX + 40, CY + 795);
+        let px = CX + 40, py = CY + 838;
+        (st.weakTop || []).slice(0, 3).forEach(w => {
+          const txt = String(w.name || "").slice(0, 12) + " " + (w.n || 0);
+          const pw = drawPill(ctx, px, py - 21, txt, { bg: "#FEF3C7", fg: "#B45309", font: "600 18" });
+          px += pw + 12;
+          if (px > CX + CW - 140) { px = CX + 40; py += 46; }
+        });
+        const fy = CY + CH - 128;
+        ctx.strokeStyle = "#E2E8F0"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(CX + 40, fy); ctx.lineTo(CX + CW - 40, fy); ctx.stroke();
+        ctx.fillStyle = "#64748B"; ctx.font = F("500", 18);
+        ctx.fillText("坚持学习的人，运气都不会太差", CX + 40, fy + 36);
+        ctx.fillStyle = "#2563EB"; ctx.font = F("700", 21);
+        ctx.fillText("it-interview.is-a.dev", CX + 40, fy + 72);
+        ctx.restore();
+      } catch (e) { reject(e); return; }
+      loadQr("https://it-interview.is-a.dev/").then(img => {
+        if (img) {
+          const size = 104, x = CX + CW - 40 - size, y = CY + CH - 122;
+          ctx.save();
+          rr(ctx, x - 6, y - 6, size + 12, size + 12, 12); ctx.fillStyle = "#fff"; ctx.fill();
+          ctx.strokeStyle = "#E2E8F0"; ctx.lineWidth = 2; ctx.stroke();
+          ctx.restore();
+          try { ctx.drawImage(img, x, y, size, size); } catch (e) {}
+        }
+        resolve({ canvas: cv });
+      });
+    });
+  }
+  window.WeekCard = { render: weekCardRender, toFile: ShareCard.toFile };
   window.ShareCard = ShareCard;
 })();

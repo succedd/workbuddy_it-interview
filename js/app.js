@@ -538,10 +538,30 @@
         : "";
 
       const allZero = weekQs === 0 && weekDays === 0 && weekWeakNew === 0;
-      const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
+      const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
+
+      /* 近 8 周日历热力图数据（每日浏览次数，GitHub 贡献墙式） */
+      const CAL_WEEKS = 8;
+      const calStart = ws - (CAL_WEEKS - 1) * 7 * 864e5;
+      const calData = [];
+      for (let t = calStart; t < we; t += 864e5) {
+        const n = hisAll.filter(h => (h.createdAt || 0) >= t && (h.createdAt || 0) < t + 864e5).length;
+        calData.push([new Date(t), n]);
+      }
+      const calMax = Math.max(1, ...calData.map(d => d[1]));
+      /* 周报分享图数据 + 激励语 */
+      const wkSlogan = weekDays >= 5 ? "打卡王者 · 节奏无敌" : weekQs >= 15 ? "稳稳的输入，量变到质变" : weekQs > 0 ? "开始了，就赢过昨天的自己" : "随时可以出发";
+      App._weekStats = {
+        range: `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`,
+        total: weekQs, days: weekDays, weakNew: weekWeakNew,
+        daily: perDay.map(d => ({ n: d.future ? 0 : Math.max(0, d.n || 0), label: d.future ? "" : (d.i === dow ? "今" : dayNames[d.i]) })),
+        weakTop: (weekTop.length ? weekTop : allTop).slice(0, 3).map(([cid, n]) => { const c = Services.catMap.get(parseInt(cid)); return { name: c ? c.name : "#" + cid, n }; }),
+        weakIsWeek: weekTop.length > 0,
+        slogan: wkSlogan
+      };
       weekHtml = `<div class="card" style="padding:16px 18px;margin-top:20px">
         <div style="display:flex;align-items:center;margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px">学习周报</b>
-          <span class="muted" style="margin-left:auto;font-size:12px">${rangeLabel}</span></div>
+          <span class="muted" style="font-size:12px">${rangeLabel}</span><span class="spacer"></span><button id="wk-share-btn" class="btn btn-sm">📸 分享周报</button></div>
         ${allZero
           ? `<div style="text-align:center;padding:6px 0 2px"><div style="font-size:15px">本周还没开始，随时可以出发 💪</div><div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="#/random">随机来一题 →</a> <a class="btn btn-sm" href="#/practice">进入刷题</a></div></div>`
           : `<div class="wk-stats">
@@ -553,9 +573,115 @@
               <div class="muted" style="font-size:11px;margin-bottom:6px">每日刷题（不同题）</div>
               <div class="wk-bars">${bars}</div>
             </div>
+            <div class="wk-sec">
+              <div class="muted" style="font-size:11px;margin-bottom:2px">近 8 周热力图（颜色越深刷得越多）</div>
+              <div id="wk-cal" style="height:150px"></div>
+            </div>
             <div class="wk-sec" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">${catLine}</div>
             ${weakDetails}`}
       </div>`;
+
+      /* —— 周报分享图弹窗（复用卡片生成思路） —— */
+      function openWeekShareDialog(st) {
+        const m = U.modal({ title: "分享我的学习周报", closable: true });
+        m.body.innerHTML = `<div id="wk-share-preview" class="muted" style="text-align:center;padding:30px 0">正在生成周报图…</div>`
+          + `<div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机：长按图片发给朋友；电脑：点「复制图片」后到微信聊天框 Ctrl+V 粘贴</div>`;
+        const btnCopy = document.createElement("button");
+        btnCopy.className = "btn"; btnCopy.textContent = "复制图片"; btnCopy.disabled = true;
+        const btnSave = document.createElement("button");
+        btnSave.className = "btn"; btnSave.textContent = "保存图片"; btnSave.disabled = true;
+        const isWxMobile = /MicroMessenger/i.test(navigator.userAgent) && /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
+        if (isWxMobile) { btnSave.style.display = "none"; btnCopy.style.display = "none"; }
+        m.foot.appendChild(btnSave);
+        m.foot.appendChild(btnCopy);
+        (async () => {
+          try {
+            const { canvas } = await window.WeekCard.render(st);
+            const box = m.body.querySelector("#wk-share-preview");
+            if (!box) return;
+            box.innerHTML = "";
+            const img = document.createElement("img");
+            img.src = canvas.toDataURL("image/png");
+            img.alt = "学习周报分享图";
+            img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
+            box.appendChild(img);
+            const file = await window.WeekCard.toFile(canvas, "学习周报-" + String(st.range || "").replace(/[^\d-~]/g, "") + ".png");
+            if (isWxMobile) {
+              const hint = document.createElement("div");
+              hint.className = "muted"; hint.style.cssText = "font-size:13px;margin-top:6px;text-align:center";
+              hint.textContent = "👆 点击图片放大后，长按选择「发送给朋友」分享到微信";
+              box.appendChild(hint);
+              img.style.cursor = "zoom-in";
+              img.onclick = () => {
+                const ov = document.createElement("div");
+                ov.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px;cursor:zoom-out";
+                const big = document.createElement("img"); big.src = img.src; big.style.cssText = "max-width:94vw;max-height:82vh;border-radius:12px";
+                const tip = document.createElement("div"); tip.style.cssText = "color:#e2e8f0;font-size:14px;margin-top:12px;text-align:center";
+                tip.innerHTML = "长按图片 → <b>发送给朋友</b> 或 <b>保存图片</b><br><span style=\"font-size:12px;opacity:.75\">点击任意处关闭</span>";
+                ov.appendChild(big); ov.appendChild(tip);
+                ov.onclick = () => ov.remove();
+                document.body.appendChild(ov);
+              };
+            } else { btnCopy.disabled = false; }
+            btnSave.disabled = false;
+            btnCopy.onclick = async () => {
+              try {
+                await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]);
+                U.toast("周报图已复制，到微信聊天框 Ctrl+V 粘贴即可发送", "success");
+              } catch (e) { U.toast("复制图片被浏览器拦截，请改用「保存图片」后发送", "error"); }
+            };
+            btnSave.onclick = () => {
+              const a = document.createElement("a");
+              a.href = URL.createObjectURL(file); a.download = file.name;
+              document.body.appendChild(a); a.click(); a.remove();
+              setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+              U.toast("周报图已保存", "success");
+            };
+          } catch (e) {
+            const box = m.body.querySelector("#wk-share-preview");
+            if (box) box.innerHTML = `<div class="muted">周报图生成失败，请稍后再试。</div>`;
+          }
+        })();
+      }
+
+      /* —— 渲染后执行：8 周热力图 + 周目标彩带 —— */
+      App._wkInit = () => {
+        const wsb = $("#wk-share-btn");
+        if (wsb) wsb.onclick = () => openWeekShareDialog(App._weekStats);
+        if (allZero) return;
+        const calBox = $("#wk-cal");
+        if (calBox) U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+          if (!window.echarts || !$("#wk-cal")) return;
+          if (App._wkCalChart) { try { App._wkCalChart.dispose(); } catch (e) {} }
+          const dark = App.getTheme() === "dark";
+          App._wkCalChart = echarts.init(calBox);
+          App._wkCalChart.setOption({
+            visualMap: { show: false, min: 0, max: Math.max(5, calMax), inRange: { color: dark ? ["#1e293b", "#1e40af", "#38bdf8"] : ["#EFF6FF", "#BFDBFE", "#60A5FA", "#1D4ED8"] } },
+            calendar: {
+              orient: "vertical", cellSize: ["auto", "auto"],
+              left: 26, right: 10, top: 22, bottom: 6,
+              range: [new Date(calStart), new Date(we - 864e5)],
+              itemStyle: { color: dark ? "#0f172a" : "#F8FAFC", borderColor: dark ? "#1e293b" : "#E2E8F0", borderWidth: 2, borderRadius: 3 },
+              dayLabel: { show: false }, yearLabel: { show: false }, splitLine: { show: false },
+              monthLabel: { color: dark ? "#94a3b8" : "#64748B", fontSize: 10 }
+            },
+            series: [{ type: "heatmap", coordinateSystem: "calendar", data: calData }]
+          });
+        }).catch(() => {});
+        if ((weekDays >= 5 || weekQs >= 15) && !/MicroMessenger/i.test(navigator.userAgent)) {
+          const key = "iti_confetti_" + rangeLabel;
+          let fire = true;
+          try { if (sessionStorage.getItem(key) === "1") fire = false; } catch (e) {}
+          if (fire) {
+            try { sessionStorage.setItem(key, "1"); } catch (e) {}
+            U.loadScript("confetti", U.CONFETTI_URL).then(() => {
+              if (!window.confetti) return;
+              window.confetti({ particleCount: 150, spread: 78, origin: { y: 0.65 }, colors: ["#2563EB", "#38BDF8", "#F59E0B", "#10B981"] });
+              setTimeout(() => { try { window.confetti({ particleCount: 90, spread: 100, origin: { y: 0.6 }, colors: ["#2563EB", "#F59E0B", "#EC4899"] }); } catch (e) {} }, 350);
+            }).catch(() => {});
+          }
+        }
+      };
     } catch (e) { weekHtml = ""; }
     /* —— 到期复习横幅：有到期题时在首页最顶部醒目提醒（比侧边栏小圆点显眼得多） —— */
     let dueBannerHtml = "";
@@ -608,7 +734,7 @@
       <div class="grid grid-cols-2">${qlist(best)}</div>
 
       <div class="note" style="margin-top:24px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
-    `);
+    `, () => { if (App._wkInit) App._wkInit(); });
     const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); } };
     $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
     $("#hero-go").onclick = () => heroGo();
@@ -1446,7 +1572,8 @@
         ${li("键盘快捷键", "详情页里 ← → 切换上下一题，空格展开 / 收起答案，S 收藏（手机长按无此烦恼，直接点按钮）")}
         ${li("今日 5 题", "每天固定 5 道题，做完自动打勾；打开「温故知新」还会混入 3 天前看过但没掌握的题")}
         ${li("学习打卡", "打开网站即打卡，热力图展示最近 35 天；连续天数看着数字涨很有成就感")}
-        ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比和每日柱状图；薄弱分类可直接点击去刷")}
+        ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比、每日柱状图和近 8 周热力图；薄弱分类可直接点击去刷；达成周目标有彩带庆祝")}
+        ${li("分享周报", "点周报卡片上的「📸 分享周报」生成精美周报图：手机长按发给朋友，电脑复制图片后到微信聊天框 Ctrl+V 粘贴")}
       `)}
       ${sec("review", "🔁 复习与错题（艾宾浩斯记忆曲线）", `
         ${li("怎么进错题本", "刷题或模拟面试中点「不太会 / 不会」，或在题目详情页点「不太会」按钮")}
