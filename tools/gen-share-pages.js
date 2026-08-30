@@ -133,6 +133,12 @@ function page(q) {
   const hashUrl = `${SITE}/#/question/${q.id}`;
   const bodyHtml = q.body ? mdToHtml(q.body) : "";
   const answerHtml = q.answer ? mdToHtml(q.answer) : "";
+  /* 读完引导条：有分类的题连刷同类（含子分类），无分类的退回题目页 */
+  const catId = parseInt(q.categoryId, 10);
+  const guideUrl = catId ? `${SITE}/#/practice?scope=cat&cat=${catId}&mode=random` : hashUrl;
+  const guideText = catId
+    ? "这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好"
+    : "这道题看完了？<b>去刷题模式</b>练起来，趁热打铁效果最好";
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -174,6 +180,17 @@ function page(q) {
     .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
     .cta:active { background:#1d4ed8; }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
     @media (prefers-color-scheme: dark) {
       :root { color-scheme: dark; }
       body { background:#0b1220;color:#cbd5e1; }
@@ -185,6 +202,9 @@ function page(q) {
       .chip.tag { background:#064e3b;color:#a7f3d0; }
       p code, li code { background:#1e293b; }
       blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
     }
   </style>
 </head>
@@ -198,6 +218,12 @@ function page(q) {
     <a class="cta" href="${hashUrl}">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
+  <div class="guide" id="guide">
+    <span class="g-text">${guideText}</span>
+    <a class="g-btn" href="${guideUrl}">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>
 `;
