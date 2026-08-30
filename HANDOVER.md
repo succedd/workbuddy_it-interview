@@ -73,14 +73,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-29 19:10
-- **最新 commit**：`64a1155`（缓存版本 `20260829f`）——**浏览历史分组标题增强**：用户反馈「今天/昨天」标题颜色过淡，改为蓝色胶囊标签 + 横线延伸 + 组内题数（如「今天 ─── 8 题」）；补上轮遗漏的 sw.js VERSION 同步（d→f，纪律：index.html bump 时 sw.js 必须同轮修改）。同日早前：使用指南（e）、打卡 0 天修复（d）、周报精修（c）、周报重做（b）、浏览历史升级（a）、历史 bug 修复（z）、动效样式（y）、体验修正（x）、安全性能 SEO（w）、流水线增强
-- **线上**：release = main = `64a1155`，已验证（v=20260829f、分组胶囊模板命中）；smoke-test 26 用例全过；旧功能标记词回归 PASS
-- **扩充流水线注意**：自动化「题库定期自动扩充」每周一/三/五 10:00 跑，**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ `--next` 数据驱动选域 + 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
+- **最后更新**：2026-08-30 12:25
+- **最新 commit**：本次文档提交——**自动化扩题每日首跑成功 + 数据链路排查登记（无站点代码变更，无需 bump 版本）**：自动化 11:04 以 release 侧 258 基线 +6（云服务售后报障全流程，经典主题 T001，批次 `2026-08-30-a`）→ 线上 264 题（v5），分享页 q/259~264 跟发全部 200；排查清楚「264 vs 261」分叉（见「线上」与待办）；恢复被流水线 `077227a` 误删的 README 2026-08-29 日志段。代码线最新：`aaf757b` 批次追问链支持、`73bd01c` 经典题快速扩充方案（频次提至每天）；08-29 早前：分组标题增强 `64a1155`（f）、使用指南（e）、打卡 0 天修复（d）
+- **线上**：release = 自动化 264 题数据 + 本次文档提交；**main ≠ release（分叉中）**——main 在编辑端浏览器 lineage（261 题 + 加密备份，11:42/11:45 发布）：编辑端 `cloud.js` 默认只推 main 而 Pages 源是 release，管理端发布/删除**目前不上线**（P1 待修，见待办）；本次无 js/css 变更，smoke-test 26 用例与旧功能标记词回归结论不变
+- **扩充流水线注意**：自动化「题库定期自动扩充」**每天 10:00** 跑（08-29 起从每周一/三/五提频），**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ 经典主题轮转（classic-topics.json，T001 云服务售后已跑）+ 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；**合并基线读线上 release（is-a.dev 的 published.json），勿参考 main**；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
 - **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
 - **进行中/待办**：
   - ~~P1：登录时顺手清理过期会话~~（已完成：worker.js handleLogin 内 DELETE 过期会话，线上已生效）
+  - P1：编辑端/流水线数据互踩修复——① `cloud.js` 编辑端发布分支改 `release`（或与流水线一致双推；当前默认只推 main，等于管理端改动不上线）；② `absorbRemote` 吸收期间设 `C._suppress`，防吸收动作触发自动发布回踩流水线数据；③ 修复后两分支数据对账统一
+  - P1：`cloud.js` `absorbRemote` 的 `norm` 中文标题查重失效（`/[\s\W_]+/g` 会剥掉全部中文，纯中文标题归一为空串、混合标题只剩 ASCII 碎片）——改 Unicode 感知归一化（保留 CJK 字符）
   - P1：eu.org 自有域名审核中（automation 每天 10:00 检查）
   - P1：题目数据修补（体检报告：缺题干 10 题 #211~#233、未分类 3 题 #229/#233/#239、瘦分类 33 个——在管理端补数据后重新发布导出）
   - P2：题目查重机制仅覆盖 Excel/CSV 批量导入，手动新增与 AI 生成无查重（可用 data-audit.js 重复标题检查兜底）
