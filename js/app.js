@@ -505,8 +505,8 @@
       });
       const maxN = Math.max(1, ...perDay.map(d => d.n));
       const bars = perDay.map(d => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
-        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${d.future ? "" : (d.n || "")}</span>
-        <div class="bar-track">${d.future ? "" : `<div class="bar-fill${d.i === dow ? " today" : ""}" style="height:${d.n ? Math.max(12, Math.round(d.n / maxN * 100)) : 0}%" title="${d.n} 题"></div>`}</div>
+        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${d.future ? "" : d.n}</span>
+        <div class="bar-track">${d.future ? "" : `<div class="bar-fill${d.i === dow ? " today" : ""}" style="height:${Math.max(6, Math.round((d.n || 0) / maxN * 100))}%" title="${d.n} 题"></div>`}</div>
         <span class="muted" style="font-size:11px">${d.future ? "" : (d.i === dow ? "今" : dayNames[d.i])}</span>
       </div>`).join("");
 
@@ -549,8 +549,8 @@
       });
       const maxW = Math.max(1, ...weeks8.map(w => w.n));
       const weekBars = weeks8.map(w => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
-        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${w.n || ""}</span>
-        <div class="bar-track"><div class="bar-fill${w.cur ? " today" : ""}" style="height:${w.n ? Math.max(12, Math.round(w.n / maxW * 100)) : 4}%" title="${mmdd(w.a)} 那一周：${w.n} 题"></div></div>
+        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${w.n}</span>
+        <div class="bar-track"><div class="bar-fill${w.cur ? " today" : ""}" style="height:${Math.max(6, Math.round((w.n || 0) / maxW * 100))}%" title="${mmdd(w.a)} 那一周：${w.n} 题"></div></div>
         <span class="muted" style="font-size:11px">${w.cur ? "本周" : mmdd(w.a)}</span>
       </div>`).join("");
       /* 周报分享图数据 + 激励语 */
