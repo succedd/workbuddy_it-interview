@@ -541,15 +541,18 @@
       const allZero = weekQs === 0 && weekDays === 0 && weekWeakNew === 0;
       const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
 
-      /* 近 8 周日历热力图数据（每日浏览次数，GitHub 贡献墙式） */
-      const CAL_WEEKS = 8;
-      const calStart = ws - (CAL_WEEKS - 1) * 7 * 864e5;
-      const calData = [];
-      for (let t = calStart; t < we; t += 864e5) {
-        const n = hisAll.filter(h => (h.createdAt || 0) >= t && (h.createdAt || 0) < t + 864e5).length;
-        calData.push([new Date(t), n]);
-      }
-      const calMax = Math.max(1, ...calData.map(d => d[1]));
+      /* 近 8 周每周刷题数（不同题，与周报口径一致） */
+      const weeks8 = Array.from({ length: 8 }, (_, i) => {
+        const a2 = ws - (7 - i) * 7 * 864e5, b2 = a2 + 7 * 864e5;
+        const n = new Set(hisAll.filter(h => (h.createdAt || 0) >= a2 && (h.createdAt || 0) < b2).map(h => h.questionId)).size;
+        return { a: a2, n, cur: i === 7 };
+      });
+      const maxW = Math.max(1, ...weeks8.map(w => w.n));
+      const weekBars = weeks8.map(w => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${w.n || ""}</span>
+        <div class="bar-track"><div class="bar-fill${w.cur ? " today" : ""}" style="height:${w.n ? Math.max(12, Math.round(w.n / maxW * 100)) : 4}%" title="${mmdd(w.a)} 那一周：${w.n} 题"></div></div>
+        <span class="muted" style="font-size:11px">${w.cur ? "本周" : mmdd(w.a)}</span>
+      </div>`).join("");
       /* 周报分享图数据 + 激励语 */
       const wkSlogan = weekDays >= 5 ? "打卡王者 · 节奏无敌" : weekQs >= 15 ? "稳稳的输入，量变到质变" : weekQs > 0 ? "开始了，就赢过昨天的自己" : "随时可以出发";
       App._weekStats = {
@@ -575,8 +578,8 @@
               <div class="wk-bars">${bars}</div>
             </div>
             <div class="wk-sec">
-              <div class="muted" style="font-size:11px;margin-bottom:2px">近 8 周节奏（每格 = 一天 · 颜色越深当天刷得越多 · 点格子看详情）</div>
-              <div id="wk-cal" style="height:150px"></div>
+              <div class="muted" style="font-size:11px;margin-bottom:6px">近 8 周对比（柱子上方数字 = 该周刷的不同题数 · 深色为本周）</div>
+              <div class="wk-bars">${weekBars}</div>
             </div>
             <div class="wk-sec" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">${catLine}</div>
             ${weakDetails}`}
@@ -650,26 +653,7 @@
         const wsb = $("#wk-share-btn");
         if (wsb) wsb.onclick = () => openWeekShareDialog(App._weekStats);
         if (allZero) return;
-        const calBox = $("#wk-cal");
-        if (calBox) U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-          if (!window.echarts || !$("#wk-cal")) return;
-          if (App._wkCalChart) { try { App._wkCalChart.dispose(); } catch (e) {} }
-          const dark = App.getTheme() === "dark";
-          App._wkCalChart = echarts.init(calBox);
-          App._wkCalChart.setOption({
-            tooltip: { formatter: p => (p.value && p.value[0]) ? String(p.value[0]).slice(5) + " 刷了 " + p.value[1] + " 题" : "" },
-            visualMap: { type: "piecewise", splitNumber: 4, min: 0, max: Math.max(5, calMax), orient: "horizontal", right: 2, bottom: 0, itemWidth: 10, itemHeight: 10, itemGap: 4, textStyle: { fontSize: 10, color: dark ? "#94a3b8" : "#64748B" }, inRange: { color: dark ? ["#1e293b", "#1e40af", "#38bdf8"] : ["#EFF6FF", "#BFDBFE", "#60A5FA", "#1D4ED8"] } },
-            calendar: {
-              orient: "vertical", cellSize: ["auto", "auto"],
-              left: 26, right: 10, top: 22, bottom: 24,
-              range: [new Date(calStart), new Date(we - 864e5)],
-              itemStyle: { color: dark ? "#0f172a" : "#F8FAFC", borderColor: dark ? "#1e293b" : "#E2E8F0", borderWidth: 2, borderRadius: 3 },
-              dayLabel: { show: false }, yearLabel: { show: false }, splitLine: { show: false },
-              monthLabel: { color: dark ? "#94a3b8" : "#64748B", fontSize: 10 }
-            },
-            series: [{ type: "heatmap", coordinateSystem: "calendar", data: calData }]
-          });
-        }).catch(() => {});
+
         if ((weekDays >= 5 || weekQs >= 15) && !/MicroMessenger/i.test(navigator.userAgent)) {
           const key = "iti_confetti_" + rangeLabel;
           let fire = true;
@@ -1574,7 +1558,7 @@
         ${li("键盘快捷键", "详情页里 ← → 切换上下一题，空格展开 / 收起答案，S 收藏（手机长按无此烦恼，直接点按钮）")}
         ${li("今日 5 题", "每天固定 5 道题，做完自动打勾；打开「温故知新」还会混入 3 天前看过但没掌握的题")}
         ${li("学习打卡", "打开网站即打卡，热力图展示最近 35 天；连续天数看着数字涨很有成就感")}
-        ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比、每日柱状图和近 8 周热力图；薄弱分类可直接点击去刷；达成周目标有彩带庆祝")}
+        ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比、每日柱状图和近 8 周对比；薄弱分类可直接点击去刷；达成周目标有彩带庆祝")}
         ${li("分享周报", "点周报卡片上的「📸 分享周报」生成精美周报图：手机长按发给朋友，电脑复制图片后到微信聊天框 Ctrl+V 粘贴")}
       `)}
       ${sec("review", "🔁 复习与错题（艾宾浩斯记忆曲线）", `
