@@ -4,6 +4,8 @@
  * ========================================================================= */
 (function () {
   "use strict";
+  const $ = U.qs;
+  const $$ = U.qsa;   // 与 app.js 内部别名一致
 async function pageHelp() {
   document.title = "使用指南 · IT面试题库";
   const toc = [
