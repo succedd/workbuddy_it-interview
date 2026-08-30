@@ -661,7 +661,15 @@
     const renderList = (arr) => {
       const grid = $("#cat-list-grid");
       if (!arr.length) { grid.innerHTML = `<div class="empty">${U.icon("fileText")}<p>该分类下暂无题目</p></div>`; return; }
-      grid.innerHTML = arr.slice(0, 40).map(q => qCard(q)).join("");
+      /* 第一性原理必读题强制置顶（标记：tags 含「第一性原理」） */
+      const isFp = q => (q.tags || []).indexOf("第一性原理") >= 0;
+      const fp = arr.filter(isFp), rest = arr.filter(q => !isFp(q));
+      const fpHtml = fp.length ? `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 4px">
+            <span class="tag" style="background:linear-gradient(135deg,#1E40AF,#6D28D9);color:#fff;border:none;font-weight:700">🧬 第一性原理 · 必读</span>
+            <span class="muted" style="font-size:12px">先明白这门技术因何而生、解决了什么、边界在哪，再看下面的细节题</span>
+          </div>` + fp.map(q => qCard(q)).join("") : "";
+      const restHtml = rest.length ? rest.slice(0, 40).map(q => qCard(q)).join("") : "";
+      grid.innerHTML = fpHtml + restHtml;
     };
 
     /* 技术全景图：有「架构图 | 分支树」双标签——人工精选的域级架构图优先，
@@ -1405,6 +1413,7 @@
       ${sec("find", "🔍 找题与浏览", `
         ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词")}
         ${li("技术体系", "279 个分类的树状目录，逐层展开找题；点开任一分类有「技术全景图」：重点域配有人工分层架构图，架构图节点与分支树末级均可点击直达分类，薄弱分类橙色标记")}
+        ${li("第一性原理必读", "每个技术域的题目列表最前面有一组置顶必读题：这门技术为什么诞生、核心思想是什么、边界在哪——先懂根子再刷细节")}
         ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
         ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序")}
       `)}

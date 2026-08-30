@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>移动端【诞生】同一个 App 为什么要写 iOS、Android 两遍？跨平台框架出现的第一推动力是什么？ · IT面试题库</title>
+  <meta name="description" content="第一推动力是结构性的人力浪费：双端需求同质（九成界面逻辑一样），却要两套团队、两套代码、两次排期，且发版节奏永远对不齐。 压缩路径的三代方案： 1. WebView 壳（Hybrid）：网页套壳，一套代码——但体验差（滚动/手势/性能），只适合内容型； 2. 动态桥接（React Native）：JS 写逻辑，桥…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="移动端【诞生】同一个 App 为什么要写 iOS、Android 两遍？跨平台框架出现的第一推动力是什么？ · IT面试题库">
+  <meta property="og:description" content="第一推动力是结构性的人力浪费：双端需求同质（九成界面逻辑一样），却要两套团队、两套代码、两次排期，且发版节奏永远对不齐。 压缩路径的三代方案： 1. WebView 壳（Hybrid）：网页套壳，一套代码——但体验差（滚动/手势/性能），只适合内容型； 2. 动态桥接（React Native）：JS 写逻辑，桥…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/321.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="移动端【诞生】同一个 App 为什么要写 iOS、Android 两遍？跨平台框架出现的第一推动力是什么？ · IT面试题库">
+  <meta name="twitter:description" content="第一推动力是结构性的人力浪费：双端需求同质（九成界面逻辑一样），却要两套团队、两套代码、两次排期，且发版节奏永远对不齐。 压缩路径的三代方案： 1. WebView 壳（Hybrid）：网页套壳，一套代码——但体验差（滚动/手势/性能），只适合内容型； 2. 动态桥接（React Native）：JS 写逻辑，桥…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/321.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端【诞生】同一个 App 为什么要写 iOS、Android 两遍？跨平台框架出现的第一推动力是什么？","text":"两端需求高度相似（列表、详情、下单），但代码零复用、人力 ×2。这个结构性浪费是怎么被一步步压缩的？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"第一推动力是结构性的人力浪费：双端需求同质（九成界面逻辑一样），却要两套团队、两套代码、两次排期，且发版节奏永远对不齐。 压缩路径的三代方案： 1. WebView 壳（Hybrid）：网页套壳，一套代码——但体验差（滚动/手势/性能），只适合内容型； 2. 动态桥接（React Native）：JS 写逻辑，桥接原生组件渲染——折中，桥的开销与双端一致性是长期痛点； 3. 自绘引擎（Flutter）：自带渲染引擎，不依赖原生控件——体验一致性与性能大幅提升，代价是包体积与「不走原生控件」的适配成本。 每一次演化都在逼近「一套代码 + 接近原生体验」；完全到达很难，因为两端系统本身在持续分化。","url":"https://it-interview.is-a.dev/#/question/321"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>移动端【诞生】同一个 App 为什么要写 iOS、Android 两遍？跨平台框架出现的第一推动力是什么？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">移动端与跨平台开发</span></div>
+    <div class="card"><h2>题目</h2><p>两端需求高度相似（列表、详情、下单），但代码零复用、人力 ×2。这个结构性浪费是怎么被一步步压缩的？</p></div>
+    <div class="card"><h2>参考答案</h2><p>第一推动力是<strong>结构性的人力浪费</strong>：双端需求同质（九成界面逻辑一样），却要两套团队、两套代码、两次排期，且<strong>发版节奏永远对不齐</strong>。</p>
+<p>压缩路径的三代方案：</p>
+<ol>
+<li><strong>WebView 壳（Hybrid）</strong>：网页套壳，一套代码——但体验差（滚动/手势/性能），只适合内容型；</li>
+<li><strong>动态桥接（React Native）</strong>：JS 写逻辑，桥接原生组件渲染——折中，桥的开销与双端一致性是长期痛点；</li>
+<li><strong>自绘引擎（Flutter）</strong>：自带渲染引擎，不依赖原生控件——<strong>体验一致性与性能大幅提升</strong>，代价是包体积与「不走原生控件」的适配成本。</li>
+</ol>
+<p><strong>每一次演化都在逼近「一套代码 + 接近原生体验」</strong>；完全到达很难，因为两端系统本身在持续分化。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/321">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=217&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
