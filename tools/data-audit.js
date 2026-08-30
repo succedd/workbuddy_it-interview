@@ -127,6 +127,15 @@ if (fs.existsSync(qDir)) {
   if (stale.length) info(`分享页缺内容/JSON-LD（需重跑 gen-share-pages.js）：${stale.length} 个`);
 }
 
+/* 9) 第一性原理必读题覆盖（缺口的完整清单见 tools/fp-coverage.js） */
+const fpSet = new Set(qs.filter(q => (q.tags || []).includes("第一性原理")).map(q => q.categoryId));
+const catQ = new Map();
+qs.forEach(q => { if (q.categoryId != null) catQ.set(q.categoryId, (catQ.get(q.categoryId) || 0) + 1); });
+const fpMissing = [...catQ.entries()]
+  .filter(([id, n]) => n >= 3 && !fpSet.has(id))
+  .sort((a, b) => b[1] - a[1]);
+if (fpMissing.length) info(`缺第一性原理必读题的分类 ${fpMissing.length} 个（题量 Top：${fpMissing.slice(0, 8).map(([id, n]) => `${(catMap.get(id) || {}).name || "#" + id}(${n})`).join("，")}）——全量清单跑 tools/fp-coverage.js`);
+
 function ids(arr) { return arr.map(q => "#" + q.id).join("，"); }
 
 /* ============================ 汇总 ============================ */
