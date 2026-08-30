@@ -1109,7 +1109,7 @@
       const url = location.origin + "/q/" + q.id + ".html";
       const m = U.modal({ title: "分享这道题", closable: true });
       m.body.innerHTML = `<div id="sc-preview" class="muted" style="text-align:center;padding:30px 0">正在生成卡片…</div>
-        <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑点「保存图片」下载后发送</div>`;
+        <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑推荐「复制图片」后到微信聊天框 Ctrl+V 粘贴发送</div>`;
       const btnShare = document.createElement("button");
       btnShare.className = "btn btn-primary"; btnShare.textContent = "分享图片"; btnShare.disabled = true;
       const btnSave = document.createElement("button");
@@ -1118,11 +1118,20 @@
       btnCopy.className = "btn"; btnCopy.textContent = "复制链接";
       /* 微信内置浏览器：navigator.share 文件分享不可用、a[download] 也不可靠；
          正确姿势是长按预览大图 →「发送给朋友/保存图片」，全屏大图点击可关闭 */
+      /* 微信内置浏览器：手机端 navigator.share 文件分享不可用、a[download] 也不可靠，
+         走「点图放大 → 长按发送给朋友」专属路径；电脑微信（WindowsWechat）按普通桌面处理 */
       const isWx = /MicroMessenger/i.test(navigator.userAgent);
-      if (isWx) {
+      const isWxMobile = isWx && /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (isWxMobile) {
         btnSave.style.display = "none"; btnShare.style.display = "none";
       }
+      /* 电脑端最顺滑路径：卡片图进剪贴板，微信聊天框 Ctrl+V 直接粘贴发送 */
+      const canClipboardImg = !!(navigator.clipboard && window.ClipboardItem);
+      const btnCopyImg = document.createElement("button");
+      btnCopyImg.className = "btn"; btnCopyImg.textContent = "复制图片"; btnCopyImg.disabled = true;
+      if (!canClipboardImg || isWxMobile) btnCopyImg.style.display = "none";
       m.foot.appendChild(btnCopy);
+      m.foot.appendChild(btnCopyImg);
       m.foot.appendChild(btnSave);
       m.foot.appendChild(btnShare);
 
@@ -1131,6 +1140,15 @@
         U.toast(ok ? "链接已复制，粘贴即可分享给朋友" : "复制失败，请手动复制地址栏链接", ok ? "success" : "error");
       };
 
+      btnCopyImg.onclick = async () => {
+        if (!file) return;
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]);
+          U.toast("卡片图已复制，到微信聊天框 Ctrl+V 粘贴即可发送", "success");
+        } catch (e) {
+          U.toast("复制图片被浏览器拦截，请改用「保存图片」后发送", "error");
+        }
+      };
       let file = null;
       try {
         const { canvas } = await window.ShareCard.render(q, url);
@@ -1142,7 +1160,7 @@
         img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
         box.appendChild(img);
         file = await window.ShareCard.toFile(canvas, "IT面试题库-" + (q.title || "题目").slice(0, 20) + ".png");
-        if (isWx) {
+        if (isWxMobile) {
           /* 微信环境：点击预览图放大为全屏图（长按即可发送给朋友/保存到相册） */
           const hint = document.createElement("div");
           hint.className = "muted"; hint.style.cssText = "font-size:13px;margin-top:6px;text-align:center";
@@ -1164,6 +1182,7 @@
           };
         } else {
           btnSave.disabled = false; btnShare.disabled = false;
+          if (canClipboardImg) btnCopyImg.disabled = false;
         }
       } catch (e) {
         m.body.querySelector("#sc-preview").innerHTML = `<div class="muted">卡片生成失败，可直接复制链接分享。</div>`;
@@ -1182,7 +1201,12 @@
         const payload = { files: [file], title: q.title + " · IT面试题库", text: q.title };
         if (navigator.canShare && navigator.canShare(payload)) {
           try { await navigator.share(payload); return; }
-          catch (e) { if (e && (e.name === "AbortError" || e.name === "NotAllowedError")) return; }
+          catch (e) {
+            if (e && e.name === "AbortError") return;   // 用户主动取消不算失败
+            /* 系统分享不可用（如电脑上没有微信分享目标）→ 降级为保存，绝不空手而归 */
+            btnSave.click();
+            U.toast("系统分享不可用，已保存卡片图片，可直接发送给微信朋友", "info");
+          }
         }
         // 不支持文件分享（多数桌面浏览器）→ 降级为保存
         btnSave.click();
@@ -1445,6 +1469,7 @@
       ${sec("share", "📤 分享", `
         ${li("分享卡片", "题目详情页点「分享」，自动生成精美卡片图（标题 + 标签 + 分层答案摘要 + 二维码），排版清晰适合转发")}
         ${li("微信里分享", "微信内点图片放大后长按 → 「发送给朋友」；每道题都有独立分享页：扫码或点开链接直接读完整题目与答案（单步直达），读完后页面底部可一键进入刷题模式")}
+        ${li("电脑上分享", "点「复制图片」→ 到微信聊天框 Ctrl+V 粘贴发送；或「保存图片」下载卡片后发给朋友。系统分享面板不可用时会自动降级为保存，不会空手而归")}
         ${li("复制链接", "桌面端可直接复制题目链接发给同学同事")}
       `)}
       ${sec("admin", "🛠️ 管理员（可选）", `
