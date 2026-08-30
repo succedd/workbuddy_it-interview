@@ -6,7 +6,10 @@
  *
  *  2026-08-29 重构：由「OG 卡片 + 立即跳转」的壳页升级为可被搜索引擎收录的
  *  内容页——正文/答案在 HTML 源码里真实可抓（百度不执行 JS），同时保留
- *  微信分享卡片所需的 og 标签；2.5s 后自动跳回 SPA，人工可点击链接。
+ *  微信分享卡片所需的 og 标签。
+ *  2026-08-30 体验修正：取消 2.5s 自动跳转——扫码/点卡用户先完整读到题目与答案，
+ *  想刷题/收藏时再点 CTA 手动进入 SPA；消除「看题目→动效/重载→又看一遍题目」的
+ *  绕圈体验（反馈来源：手机扫码首访）。
  * ========================================================================= */
 const fs = require("fs");
 const path = require("path");
@@ -184,7 +187,6 @@ function page(q) {
       blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
     }
   </style>
-  <script>setTimeout(function(){location.replace("${hashUrl}");},2500);</script>
 </head>
 <body>
   <div class="wrap">
@@ -194,7 +196,7 @@ function page(q) {
     ${bodyHtml ? `<div class="card"><h2>题目</h2>${bodyHtml}</div>` : ""}
     ${answerHtml ? `<div class="card"><h2>参考答案</h2>${answerHtml}</div>` : ""}
     <a class="cta" href="${hashUrl}">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
 </body>
 </html>
