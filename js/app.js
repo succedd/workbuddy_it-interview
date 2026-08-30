@@ -625,6 +625,9 @@
   }
 
   /* ============================ 技术体系页 ============================ */
+  let _catMapChart = null;
+  window.addEventListener("resize", () => { if (_catMapChart) _catMapChart.resize(); });
+
   async function pageCategory(q) {
     document.title = "技术体系 · IT面试题库";
     const catId = q.cat ? parseInt(q.cat) : null;
@@ -655,6 +658,65 @@
       grid.innerHTML = arr.slice(0, 40).map(q => qCard(q)).join("");
     };
 
+    /* 技术全景图：以当前分类为根的 ECharts 树（子技术分支 + 题量 + 薄弱标记） */
+    function initCatMap() {
+      const box = $("#catmap-box");
+      if (!box) return;
+      const toggle = $("#catmap-toggle");
+      if (toggle) toggle.onclick = () => {
+        const open = box.style.display !== "none";
+        box.style.display = open ? "none" : "";
+        toggle.textContent = open ? "展开" : "收起";
+        if (!open && _catMapChart) _catMapChart.resize();
+      };
+      Services.getWeakQuestions().then(wq => {
+        const weakMap = new Map();
+        (wq || []).forEach(w => { if (w.categoryId) weakMap.set(w.categoryId, (weakMap.get(w.categoryId) || 0) + 1); });
+        return weakMap;
+      }).catch(() => new Map()).then(weakMap => {
+        U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+          const box2 = $("#catmap-box");
+          if (!box2 || !window.echarts) return;
+          const findNode = (nodes, id) => { for (const n of nodes) { if (n.id === id) return n; if (n.children && n.children.length) { const r = findNode(n.children, id); if (r) return r; } } return null; };
+          const dark = App.getTheme() === "dark";
+          const toData = (node, hlId) => ({
+            name: node.name + " · " + (node.count || 0) + "题",
+            count: node.count || 0,
+            weak: weakMap.get(node.id) || 0,
+            itemStyle: { color: (weakMap.get(node.id) || 0) > 0 ? "#F59E0B" : (node.id === hlId ? "#1D4ED8" : (node.count ? "#3B82F6" : "#CBD5E1")) },
+            label: { color: dark ? "#e2e8f0" : "#334155", fontWeight: node.id === hlId ? 700 : 400 },
+            children: (node.children || []).map(c => toData(c, hlId))
+          });
+          let data, depth = 2;
+          const selfNode = findNode(tree, catId);
+          if (selfNode && selfNode.children && selfNode.children.length) {
+            data = toData(selfNode, catId);
+            data.name = selected.name + " · " + qs.length + "题";   // 根节点显示含子分类的总题数
+          } else {
+            /* 叶子分类：展示它在同级技术中的位置 */
+            const pNode = selected.parentId ? findNode(tree, selected.parentId) : null;
+            data = pNode ? toData(pNode, catId) : { name: "技术体系 · " + qs.length + "题", count: qs.length, weak: 0, itemStyle: { color: "#1D4ED8" }, label: { color: dark ? "#e2e8f0" : "#334155" }, children: tree.map(c => toData(c, catId)) };
+            depth = 1;
+          }
+          if (_catMapChart) { try { _catMapChart.dispose(); } catch (e) {} }
+          _catMapChart = echarts.init(box2);
+          _catMapChart.setOption({
+            tooltip: { trigger: "item", triggerOn: "mousemove", formatter: p => (p.data && p.data.count != null) ? U.esc(String(p.name).replace(/ · \d+题$/, "")) + "：" + p.data.count + " 题" + (p.data.weak ? " · 薄弱 " + p.data.weak + " 题" : "") : "" },
+            series: [{
+              type: "tree", data: [data], orient: "LR", roam: true,
+              left: "1%", right: "22%", top: "2%", bottom: "2%",
+              initialTreeDepth: depth, expandAndCollapse: true, animationDuration: 300,
+              symbol: "circle", symbolSize: 12,
+              lineStyle: { color: dark ? "#334155" : "#BFDBFE", width: 1.3, curveness: 0.5 },
+              label: { position: "left", verticalAlign: "middle", align: "right", fontSize: 12, distance: 5 },
+              leaves: { label: { position: "right", verticalAlign: "middle", align: "left", distance: 5 } },
+              emphasis: { focus: "descendant" }
+            }]
+          });
+        }).catch(() => {});
+      });
+    }
+
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术体系</span></div>
       <div class="layout" style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start">
@@ -665,6 +727,16 @@
         <div>
           <div class="section-head" style="margin-top:0"><h2>${selected ? U.esc(selected.name) : "全部题目"}</h2>
             <span class="muted">${qs.length} 题</span></div>
+          ${selected ? `
+          <div class="card" id="catmap-card" style="margin:0 0 16px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div class="nav-section-title" style="padding-left:0;margin:0">🗺️ 技术全景图</div>
+              <span class="muted" style="font-size:12px">子技术分支 · 题量 · <span style="color:#F59E0B">橙</span>=有薄弱题（来自错题本）</span>
+              <span class="spacer"></span>
+              <button id="catmap-toggle" class="btn btn-sm btn-secondary">收起</button>
+            </div>
+            <div id="catmap-box" class="chart-fade" style="height:min(58vh,480px);margin-top:8px"></div>
+          </div>` : ""}
           <div class="toolbar">
             <div class="seg" id="sort-seg">
               <button data-s="updated" class="active">最新</button>
@@ -678,7 +750,7 @@
           <div class="grid grid-cols-2" id="cat-list-grid"></div>
         </div>
       </div>
-    `);
+    `, selected ? () => initCatMap() : null);
     renderList(qs);
     $$("#page-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
@@ -1265,7 +1337,7 @@
       `)}
       ${sec("find", "🔍 找题与浏览", `
         ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词")}
-        ${li("技术体系", "279 个分类的树状目录，从「计算机科学基础」到「大模型」，逐层展开找题")}
+        ${li("技术体系", "279 个分类的树状目录，从「计算机科学基础」到「大模型」，逐层展开找题；点开任一分类可见「技术全景图」——子技术分支、题量与薄弱标记（橙色）一图概览")}
         ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
         ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序")}
       `)}
@@ -1314,7 +1386,7 @@
         ${li("页面显示异常 / 数据不对？", "先强制刷新（电脑 Ctrl+Shift+R，手机清一下浏览器缓存）；仍有问题联系管理员")}
         ${li("题目答案有误？", "欢迎反馈给管理员纠错，题库会持续迭代")}
       `)}
-      <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-08-29 · 更详细的开发文档见 GitHub 仓库 README</div>
+      <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-08-30 · 更详细的开发文档见 GitHub 仓库 README</div>
     `);
     $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
       const el = document.getElementById(t.dataset.go);
