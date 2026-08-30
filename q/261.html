@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客户反馈 Linux 云服务器 SSH 无法登录，按概率排序的排查路径是什么？ · IT面试题库</title>
+  <meta name="description" content="排查路径 1. 先查资源状态：控制台确认 ECS 是否为「运行中」（被冻结、关机都会导致无法登录）；确认是否绑定弹性公网 IP（未绑定 EIP 则无法公网 SSH 登录，也影响 RDP/MSTSC 方式）。 2. 用 VNC 做第一层隔离：通过控制台「远程登录」（VNC 方式）测试。VNC 能进 → 云平台网络链…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="客户反馈 Linux 云服务器 SSH 无法登录，按概率排序的排查路径是什么？ · IT面试题库">
+  <meta property="og:description" content="排查路径 1. 先查资源状态：控制台确认 ECS 是否为「运行中」（被冻结、关机都会导致无法登录）；确认是否绑定弹性公网 IP（未绑定 EIP 则无法公网 SSH 登录，也影响 RDP/MSTSC 方式）。 2. 用 VNC 做第一层隔离：通过控制台「远程登录」（VNC 方式）测试。VNC 能进 → 云平台网络链…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/261.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="客户反馈 Linux 云服务器 SSH 无法登录，按概率排序的排查路径是什么？ · IT面试题库">
+  <meta name="twitter:description" content="排查路径 1. 先查资源状态：控制台确认 ECS 是否为「运行中」（被冻结、关机都会导致无法登录）；确认是否绑定弹性公网 IP（未绑定 EIP 则无法公网 SSH 登录，也影响 RDP/MSTSC 方式）。 2. 用 VNC 做第一层隔离：通过控制台「远程登录」（VNC 方式）测试。VNC 能进 → 云平台网络链…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/261.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户反馈 Linux 云服务器 SSH 无法登录，按概率排序的排查路径是什么？","text":"客户在工单中反馈：某台 Linux ECS 突然 SSH 连不上，业务中断。请给出从云平台侧到系统内部的排查路径，并说明如何用 VNC 登录做第一层隔离。","answerCount":1,"datePublished":"2026-08-30T03:03:15.957Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查路径 1. 先查资源状态：控制台确认 ECS 是否为「运行中」（被冻结、关机都会导致无法登录）；确认是否绑定弹性公网 IP（未绑定 EIP 则无法公网 SSH 登录，也影响 RDP/MSTSC 方式）。 2. 用 VNC 做第一层隔离：通过控制台「远程登录」（VNC 方式）测试。VNC 能进 → 云平台网络链路基本正常，故障集中在安全组/防火墙/OS 内部/客户端网络；VNC 也进不去 → 优先怀疑平台侧资源状态或平台故障，记录资源 ID 与故障时间后提单。 3. 常见原因（按概率排序）：① 资源被冻结/停止；② 用户名或密码错误（Linux 默认 root，忘记密码可在控制台重置并重启生效；密钥对方式首次登录用 SSH 密钥）；③ 负载过高（CPU/带宽利用率过高会导致无法登录）；④ 未绑定 EIP；⑤ 运营商/ISP 拦截（换手机热点测试）；⑥ 防火墙拦截；⑦ 安全组未放通 22 端口或远程访问端口配置异常；⑧ 配置了 SSH 登录 IP 白名单（启用企业主机安全 HSS 后常见）；⑨ 操作系统内部原因（文件系统损坏等）；⑩ 第三方杀毒软件拦截。 4. VNC 可登而 SSH 不可时，重点核对：安全组入方向 22 端口、sshd 服务状态与配置、防火墙规则、SSH 白名单；有报错信息时按报错提示逐条对照处理。","url":"https://it-interview.is-a.dev/#/question/261"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/261");},2500);</script>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>客户反馈 Linux 云服务器 SSH 无法登录，按概率排序的排查路径是什么？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">ECS</span><span class="chip tag">SSH</span><span class="chip tag">安全组</span><span class="chip tag">VNC</span><span class="chip tag">故障定位</span></div>
+    <div class="card"><h2>题目</h2><p>客户在工单中反馈：某台 Linux ECS 突然 SSH 连不上，业务中断。请给出从云平台侧到系统内部的排查路径，并说明如何用 VNC 登录做第一层隔离。</p></div>
+    <div class="card"><h2>参考答案</h2><h3>排查路径</h3>
+<ol>
+<li><strong>先查资源状态</strong>：控制台确认 ECS 是否为「运行中」（被冻结、关机都会导致无法登录）；确认是否绑定弹性公网 IP（未绑定 EIP 则无法公网 SSH 登录，也影响 RDP/MSTSC 方式）。</li>
+<li><strong>用 VNC 做第一层隔离</strong>：通过控制台「远程登录」（VNC 方式）测试。VNC 能进 → 云平台网络链路基本正常，故障集中在安全组/防火墙/OS 内部/客户端网络；VNC 也进不去 → 优先怀疑平台侧资源状态或平台故障，记录资源 ID 与故障时间后提单。</li>
+<li><strong>常见原因（按概率排序）</strong>：① 资源被冻结/停止；② 用户名或密码错误（Linux 默认 root，忘记密码可在控制台重置并重启生效；密钥对方式首次登录用 SSH 密钥）；③ 负载过高（CPU/带宽利用率过高会导致无法登录）；④ 未绑定 EIP；⑤ 运营商/ISP 拦截（换手机热点测试）；⑥ 防火墙拦截；⑦ 安全组未放通 22 端口或远程访问端口配置异常；⑧ 配置了 SSH 登录 IP 白名单（启用企业主机安全 HSS 后常见）；⑨ 操作系统内部原因（文件系统损坏等）；⑩ 第三方杀毒软件拦截。</li>
+<li><strong>VNC 可登而 SSH 不可</strong>时，重点核对：安全组入方向 22 端口、sshd 服务状态与配置、防火墙规则、SSH 白名单；有报错信息时按报错提示逐条对照处理。</li>
+</ol></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/261">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
+</body>
+</html>
