@@ -691,6 +691,7 @@
             const holder = box.firstElementChild;
             if (!holder || !window.echarts) return;
             const toData = (node, hlId) => ({
+              id: node.id,
               name: node.name + " · " + (node.count || 0) + "题",
               count: node.count || 0,
               weak: weakMap.get(node.id) || 0,
@@ -723,6 +724,11 @@
                 leaves: { label: { position: "right", verticalAlign: "middle", align: "left", distance: 5 } },
                 emphasis: { focus: "descendant" }
               }]
+            });
+            /* 点击末级节点直达对应分类；上层节点保留展开/收起 */
+            _catMapChart.on("click", params => {
+              const d = params.data;
+              if (d && d.id && (!d.children || !d.children.length)) App.go("/category?cat=" + d.id);
             });
           }).catch(() => {});
         };
@@ -792,7 +798,7 @@
           <div class="card" id="catmap-card" style="margin:0 0 16px">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <div class="nav-section-title" style="padding-left:0;margin:0">🗺️ 技术全景图</div>
-              <span class="muted" style="font-size:12px">子技术分支 · 题量 · <span style="color:#F59E0B">橙</span>=有薄弱题（来自错题本）</span>
+              <span class="muted" style="font-size:12px">架构图/分支树：点击末级节点直达分类 · <span style="color:#F59E0B">橙</span>=有薄弱题（来自错题本）</span>
               <span class="spacer"></span>
               <button id="catmap-toggle" class="btn btn-sm btn-secondary">收起</button>
             </div>
