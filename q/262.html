@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>排查发现 CPU 利用率过高导致无法登录，如何区分业务负载与异常进程并处理？ · IT面试题库</title>
+  <meta name="description" content="区分与处理 1. 定位高占用进程：用 top/htop 按 CPU 排序找到占用最高的进程；用 ps -ef 查看进程的启动方式与所属用户；结合监控中 CPU 飙高的时间点与客户业务高峰对比，并与客户确认进程是否属于已知业务。 2. 异常进程特征：进程名陌生或伪装（如随机字符串）、异常外联（netstat/ss …">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="排查发现 CPU 利用率过高导致无法登录，如何区分业务负载与异常进程并处理？ · IT面试题库">
+  <meta property="og:description" content="区分与处理 1. 定位高占用进程：用 top/htop 按 CPU 排序找到占用最高的进程；用 ps -ef 查看进程的启动方式与所属用户；结合监控中 CPU 飙高的时间点与客户业务高峰对比，并与客户确认进程是否属于已知业务。 2. 异常进程特征：进程名陌生或伪装（如随机字符串）、异常外联（netstat/ss …">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/262.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="排查发现 CPU 利用率过高导致无法登录，如何区分业务负载与异常进程并处理？ · IT面试题库">
+  <meta name="twitter:description" content="区分与处理 1. 定位高占用进程：用 top/htop 按 CPU 排序找到占用最高的进程；用 ps -ef 查看进程的启动方式与所属用户；结合监控中 CPU 飙高的时间点与客户业务高峰对比，并与客户确认进程是否属于已知业务。 2. 异常进程特征：进程名陌生或伪装（如随机字符串）、异常外联（netstat/ss …">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/262.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"排查发现 CPU 利用率过高导致无法登录，如何区分业务负载与异常进程并处理？","text":"通过 VNC 登录后确认 ECS 可登录但 SSH 极慢，云监控显示 CPU 利用率持续 100%。如何区分是正常业务负载还是异常进程（如挖矿、入侵）？应急恢复和长期手段分别有哪些？","answerCount":1,"datePublished":"2026-08-30T03:03:15.983Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"区分与处理 1. 定位高占用进程：用 top/htop 按 CPU 排序找到占用最高的进程；用 ps -ef 查看进程的启动方式与所属用户；结合监控中 CPU 飙高的时间点与客户业务高峰对比，并与客户确认进程是否属于已知业务。 2. 异常进程特征：进程名陌生或伪装（如随机字符串）、异常外联（netstat/ss 发现大量向境外地址的连接）、文件或配置被替换、crontab 被植入可疑定时任务、主机安全服务 HSS 有入侵告警——高度疑似挖矿或入侵，应建议立即隔离：收紧安全组入方向、修改密码/轮换密钥、封禁可疑外联 IP，并保留现场证据（进程快照、日志）备查。 3. 应急处理：异常进程先 kill 并清理自启动项与定时任务；正常业务负载导致的高占用，可临时变更规格升级 vCPU/内存、重启恢复（注意先保存/落盘重要数据），若是带宽超限则调整弹性公网 IP 带宽。 4. 长期手段：配置云监控 CES 的 CPU/带宽告警，超阈值自动通知；主机侧启用 HSS、最小化开放端口、改用密钥登录；对业务做容量规划与弹性伸缩（AS），避免单机过载；复盘确认是代码问题还是容量不足，推动根因修复。","url":"https://it-interview.is-a.dev/#/question/262"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+    }
+  </style>
+  <script>setTimeout(function(){location.replace("https://it-interview.is-a.dev/#/question/262");},2500);</script>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>排查发现 CPU 利用率过高导致无法登录，如何区分业务负载与异常进程并处理？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">CPU</span><span class="chip tag">ECS</span><span class="chip tag">挖矿</span><span class="chip tag">云监控</span><span class="chip tag">安全加固</span></div>
+    <div class="card"><h2>题目</h2><p>通过 VNC 登录后确认 ECS 可登录但 SSH 极慢，云监控显示 CPU 利用率持续 100%。如何区分是正常业务负载还是异常进程（如挖矿、入侵）？应急恢复和长期手段分别有哪些？</p></div>
+    <div class="card"><h2>参考答案</h2><h3>区分与处理</h3>
+<ol>
+<li><strong>定位高占用进程</strong>：用 top/htop 按 CPU 排序找到占用最高的进程；用 ps -ef 查看进程的启动方式与所属用户；结合监控中 CPU 飙高的时间点与客户业务高峰对比，并与客户确认进程是否属于已知业务。</li>
+<li><strong>异常进程特征</strong>：进程名陌生或伪装（如随机字符串）、异常外联（netstat/ss 发现大量向境外地址的连接）、文件或配置被替换、crontab 被植入可疑定时任务、主机安全服务 HSS 有入侵告警——高度疑似挖矿或入侵，应建议立即隔离：收紧安全组入方向、修改密码/轮换密钥、封禁可疑外联 IP，并保留现场证据（进程快照、日志）备查。</li>
+<li><strong>应急处理</strong>：异常进程先 kill 并清理自启动项与定时任务；正常业务负载导致的高占用，可临时变更规格升级 vCPU/内存、重启恢复（注意先保存/落盘重要数据），若是带宽超限则调整弹性公网 IP 带宽。</li>
+<li><strong>长期手段</strong>：配置云监控 CES 的 CPU/带宽告警，超阈值自动通知；主机侧启用 HSS、最小化开放端口、改用密钥登录；对业务做容量规划与弹性伸缩（AS），避免单机过载；复盘确认是代码问题还是容量不足，推动根因修复。</li>
+</ol></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/262">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">即将自动进入答题界面，若未跳转请点击上方按钮</p>
+  </div>
+</body>
+</html>
