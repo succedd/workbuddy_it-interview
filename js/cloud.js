@@ -68,9 +68,10 @@
   }
 
   /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ---------- */
-  C.putFile = async function (path, content, message) {
+  C.putFile = async function (path, content, message, branch) {
     const tok = C.token();
     if (!tok) throw new Error("尚未配置发布 Token");
+    const br = branch || C.branch();
     const b64 = btoa(unescape(encodeURIComponent(content)));
     const api = "https://api.github.com/repos/" + C.repo() + "/contents/" + path;
     let lastErr = null;
@@ -78,12 +79,12 @@
       /* 每次尝试都重新取最新 sha，避免多标签页 / 并发提交造成的 stale sha */
       let sha = null;
       try {
-        const r = await fetchT(api + "?ref=" + encodeURIComponent(C.branch()), {
+        const r = await fetchT(api + "?ref=" + encodeURIComponent(br), {
           headers: { "Authorization": "Bearer " + tok, "Accept": "application/vnd.github+json" }
         }, 10000);
         if (r.ok) { const j = await r.json(); sha = j.sha || null; }
       } catch (e) { /* 网络抖动：sha 为 null，下面走创建路径 */ }
-      const body = { message: message, content: b64, branch: C.branch() };
+      const body = { message: message, content: b64, branch: br };
       if (sha) body.sha = sha;   // 文件存在才带 sha，否则创建
       try {
         const r = await fetchT(api, {
@@ -185,40 +186,50 @@
     const db = DB.db;
     const remote = await C.fetchRemote();
     if (!remote || !Array.isArray(remote.questions)) return { added: 0, reason: "noCloud" };
+    /* NORM_VER：norm 规则变更（v2 改 Unicode 感知）后对老本地库强制重放一次吸收，
+       修复旧版把中文标题剥空导致漏吸收的题 */
+    const NORM_VER = 2;
+    let run = !!force;
+    try { if ((await DB.getSetting("absorbNormVer")) !== NORM_VER) run = true; } catch (_) {}
     const last = await DB.getSetting("absorbedRemoteAt") || 0;
-    if (!force && (remote.publishedAt || 0) <= last) return { added: 0, reason: "upToDate" };
+    if (!run && (remote.publishedAt || 0) <= last) return { added: 0, reason: "upToDate" };
 
-    const norm = s => String(s || "").toLowerCase().replace(/[\s\W_]+/g, "");
+    const norm = s => String(s || "").toLowerCase().replace(/[\s\p{P}\p{S}_]+/gu, "");   /* 保留 CJK 等文字与数字，仅剥空白/标点/符号 */
     let addedQ = 0;
-    await db.transaction("rw", [db.categories, db.positions, db.positionSkills, db.questions], async () => {
-      // 题目：title 归一化 + id 双重去重后追加
-      const locals = await db.questions.toArray();
-      const localIds = new Set(locals.map(q => q.id));
-      const localTitles = new Set(locals.map(q => norm(q.title)));
-      const newQuestions = remote.questions.filter(
-        q => q && !localIds.has(q.id) && !localTitles.has(norm(q.title))
-      );
-      if (newQuestions.length) {
-        await db.questions.bulkAdd(newQuestions);
-        addedQ += newQuestions.length;
-      }
-      // 分类：按 id 追加缺失的（空壳分类也能补齐树结构）
-      const localCatIds = new Set((await db.categories.toArray()).map(c => c.id));
-      const newCats = (remote.categories || []).filter(c => c && !localCatIds.has(c.id));
-      if (newCats.length) { await db.categories.bulkAdd(newCats); }
-      // 岗位：按 id 追加缺失的
-      const localPosIds = new Set((await db.positions.toArray()).map(p => p.id));
-      const newPositions = (remote.positions || []).filter(p => p && !localPosIds.has(p.id));
-      if (newPositions.length) {
-        await db.positions.bulkAdd(newPositions);
-        // 同步补岗位技能表（该岗位下无技能才补）
-        const skills = remote.positionSkills || [];
-        const localSkillKeys = new Set((await db.positionSkills.toArray()).map(s => s.positionId + ":" + s.categoryId));
-        const newSkills = skills.filter(s => s && !localSkillKeys.has(s.positionId + ":" + s.categoryId));
-        if (newSkills.length) await db.positionSkills.bulkAdd(newSkills);
-      }
-    });
-    await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
+    /* 吸收期间抑制自动发布：吸收的内容本就来自云端，不能又整包推回去覆盖流水线数据 */
+    C._suppress++;
+    try {
+      await db.transaction("rw", [db.categories, db.positions, db.positionSkills, db.questions], async () => {
+        // 题目：title 归一化 + id 双重去重后追加
+        const locals = await db.questions.toArray();
+        const localIds = new Set(locals.map(q => q.id));
+        const localTitles = new Set(locals.map(q => norm(q.title)));
+        const newQuestions = remote.questions.filter(
+          q => q && !localIds.has(q.id) && !localTitles.has(norm(q.title))
+        );
+        if (newQuestions.length) {
+          await db.questions.bulkAdd(newQuestions);
+          addedQ += newQuestions.length;
+        }
+        // 分类：按 id 追加缺失的（空壳分类也能补齐树结构）
+        const localCatIds = new Set((await db.categories.toArray()).map(c => c.id));
+        const newCats = (remote.categories || []).filter(c => c && !localCatIds.has(c.id));
+        if (newCats.length) { await db.categories.bulkAdd(newCats); }
+        // 岗位：按 id 追加缺失的
+        const localPosIds = new Set((await db.positions.toArray()).map(p => p.id));
+        const newPositions = (remote.positions || []).filter(p => p && !localPosIds.has(p.id));
+        if (newPositions.length) {
+          await db.positions.bulkAdd(newPositions);
+          // 同步补岗位技能表（该岗位下无技能才补）
+          const skills = remote.positionSkills || [];
+          const localSkillKeys = new Set((await db.positionSkills.toArray()).map(s => s.positionId + ":" + s.categoryId));
+          const newSkills = skills.filter(s => s && !localSkillKeys.has(s.positionId + ":" + s.categoryId));
+          if (newSkills.length) await db.positionSkills.bulkAdd(newSkills);
+        }
+      });
+      await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
+      await DB.setSetting("absorbNormVer", NORM_VER);
+    } finally { C._suppress--; }
     return { added: addedQ };
   };
 
@@ -243,9 +254,14 @@
   C._publishChain = Promise.resolve();
   C._publishInner = async function () {
     const data = await C.exportAll();
-    await C.putFile(FILE_PATH, JSON.stringify(data),
-      "发布题库 " + new Date(data.publishedAt).toLocaleString("zh-CN") +
-      "（" + data.questions.length + " 题 / " + data.positions.length + " 岗位）");
+    const msg = "发布题库 " + new Date(data.publishedAt).toLocaleString("zh-CN") +
+      "（" + data.questions.length + " 题 / " + data.positions.length + " 岗位）";
+    /* 题库双推 release+main（与扩充流水线一致）：Pages 发布源是 release，
+       此前编辑端默认只推 main，导致管理端的发布/删除从未出现在线上站点 */
+    const branches = [...new Set(["release", "main", C.branch()])];
+    for (const br of branches) {
+      await C.putFile(FILE_PATH, JSON.stringify(data), msg, br);
+    }
     await DB.setSetting("cloudSyncedAt", data.publishedAt);
     /* 顺带更新加密的本地数据备份（如已设置备份密码） */
     try {
