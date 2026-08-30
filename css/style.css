@@ -462,7 +462,7 @@ html[data-theme="dark"] .wk-trend.bad { background: rgba(245,158,11,.16); color:
 .wk-sec > summary::before { content: "▸ "; color: var(--text-muted); }
 .wk-sec[open] > summary::before { content: "▾ "; }
 .wk-bars { display: flex; gap: 6px; align-items: flex-end; }
-.wk-bars .bar-track { flex: 1; max-width: 34px; height: 40px; display: flex; align-items: flex-end; justify-content: center; background: var(--bg-subtle); border-radius: 6px; }
+.wk-bars .bar-track { width: 100%; max-width: 34px; height: 40px; flex: none; display: flex; align-items: flex-end; justify-content: center; background: var(--bg-hover); border: 1px dashed var(--border); border-radius: 6px; box-sizing: border-box; }
 .wk-bars .bar-fill { width: 72%; background: #93C5FD; border-radius: 6px; transition: height .3s ease; }
 .wk-bars .bar-fill.today { background: var(--c-primary); opacity: 1; }
 
