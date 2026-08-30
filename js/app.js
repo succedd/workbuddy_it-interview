@@ -2988,7 +2988,13 @@
       /* 回访（本会话已看过开场动画）直接跳过，不再强制等待 3.2s */
       let seen = false;
       try { seen = sessionStorage.getItem("iti_boot_seen") === "1"; } catch (_) {}
-      if (seen) {
+      /* 深链进入（分享卡/扫码经 q/<id>.html 跳转 #/question/<id> 等）直接进正题：
+         用户带着明确目的而来，再播 3.2s 开场会形成「题目→动效→又回题目」的绕圈体验；
+         同样按已看过标记，本会话内不再补播 */
+      let deepLink = false;
+      try { deepLink = !!location.hash && location.hash !== "#/" && location.hash !== "#"; } catch (_) {}
+      if (seen || deepLink) {
+        try { sessionStorage.setItem("iti_boot_seen", "1"); } catch (_) {}
         ov.style.display = "none";
         finished = true;
         if (readyResolve) readyResolve();
