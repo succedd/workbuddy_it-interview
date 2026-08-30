@@ -113,9 +113,9 @@
   };
 
   /* ---------- 拉取云端快照 ---------- */
-  C.fetchRemote = async function () {
+  C.fetchRemote = async function (noCache) {
     try {
-      const r = await fetchT(FILE_PATH + "?v=" + Date.now(), { cache: "no-store" }, 8000);
+      const r = await fetchT(FILE_PATH + (noCache ? "?v=" + Date.now() : ""), noCache ? { cache: "no-store" } : undefined, 8000);
       if (!r.ok) return null;
       const j = await r.json();
       /* version 兼容：历史快照恒为 1；2026-08-27 起扩充流水线每次合并会递增，
@@ -168,7 +168,7 @@
 
   /* 手动立即同步（设置页按钮）：强制采用云端版本，覆盖本地题库 */
   C.syncNow = async function () {
-    const data = await C.fetchRemote();
+    const data = await C.fetchRemote(true);
     if (!data) throw new Error("云端题库不存在或无法访问");
     await C.applyRemote(data);
     return data;

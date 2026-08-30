@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="安全组（云厂商提供）： 在云平台层面控制流量 作用在虚拟网卡之前 规则简单：允许/拒绝 + 端口 + 来源IP 不需要登录服务器就能配置 系统防火墙（iptables/firewalld）： 在操作系统内部控制流量 需要登录服务器配置 规则更灵活复杂 实际工作中： 两层都要检查！ 常见问题：安全组开了端口，但系统…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/211.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"安全组和防火墙有什么区别？","text":"安全组和防火墙有什么区别？","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"安全组（云厂商提供）： 在云平台层面控制流量 作用在虚拟网卡之前 规则简单：允许/拒绝 + 端口 + 来源IP 不需要登录服务器就能配置 系统防火墙（iptables/firewalld）： 在操作系统内部控制流量 需要登录服务器配置 规则更灵活复杂 实际工作中： 两层都要检查！ 常见问题：安全组开了端口，但系统防火墙没开 → 还是访问不了","url":"https://it-interview.is-a.dev/#/question/211"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"安全组和防火墙有什么区别？","text":"请围绕「安全组和防火墙有什么区别」作答：说明核心概念与原理，结合实际工作场景举例，并指出常见误区。","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"安全组（云厂商提供）： 在云平台层面控制流量 作用在虚拟网卡之前 规则简单：允许/拒绝 + 端口 + 来源IP 不需要登录服务器就能配置 系统防火墙（iptables/firewalld）： 在操作系统内部控制流量 需要登录服务器配置 规则更灵活复杂 实际工作中： 两层都要检查！ 常见问题：安全组开了端口，但系统防火墙没开 → 还是访问不了","url":"https://it-interview.is-a.dev/#/question/211"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -72,7 +72,7 @@
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>安全组和防火墙有什么区别？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">系统运维工程师</span><span class="chip">全栈开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">安全组</span><span class="chip tag">防火墙</span><span class="chip tag">云服务器</span></div>
-    
+    <div class="card"><h2>题目</h2><p>请围绕「安全组和防火墙有什么区别」作答：说明核心概念与原理，结合实际工作场景举例，并指出常见误区。</p></div>
     <div class="card"><h2>参考答案</h2><p>安全组（云厂商提供）：</p>
 <ul>
 <li>在云平台层面控制流量</li>

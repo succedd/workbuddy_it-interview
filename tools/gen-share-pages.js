@@ -265,6 +265,21 @@ async function main() {
     written++;
   }
   console.log(`已生成 ${written} 个分享页：${path.relative(process.cwd(), OUT_DIR)}/<id>.html`);
+  /* 同步重生成 sitemap.xml：首页 + 主要路由 + 全部分享页，SEO 不再漏新页 */
+  const today = new Date().toISOString().slice(0, 10);
+  const sitemapUrls = [
+    { loc: `${SITE}/`, priority: "1.0", freq: "daily" },
+    { loc: `${SITE}/#/category`, priority: "0.8", freq: "weekly" },
+    { loc: `${SITE}/#/position`, priority: "0.8", freq: "weekly" },
+    { loc: `${SITE}/#/questions`, priority: "0.8", freq: "daily" },
+    { loc: `${SITE}/#/help`, priority: "0.6", freq: "weekly" },
+    ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}.html`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\\n` +
+    sitemapUrls.map(u => `  <url>\\n    <loc>${u.loc}</loc>\\n    <lastmod>${u.lastmod ? new Date(u.lastmod).toISOString().slice(0, 10) : today}</lastmod>\\n    <changefreq>${u.freq}</changefreq>\\n    <priority>${u.priority}</priority>\\n  </url>`).join("\\n") +
+    `\\n</urlset>\\n`;
+  fs.writeFileSync(path.join(__dirname, "..", "sitemap.xml"), xml, "utf8");
+  console.log(`sitemap.xml 已更新（${sitemapUrls.length} 条）`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="第一步：确认是哪段网络慢 → 客户到云服务器？还是云服务器内部之间？ → 还是服务器访问外部数据库慢？ 第二步：基础连通性测试 → ping：测试延迟和丢包 → traceroute：找到哪一跳延迟高 第三步：带宽测试 → 看云控制台：带宽是否打满（监控图表） → 用 iperf3 测试实际带宽 第四步：常见原因…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/216.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户反映网络慢，你怎么排查？","text":"客户反映网络慢，你怎么排查？","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"第一步：确认是哪段网络慢 → 客户到云服务器？还是云服务器内部之间？ → 还是服务器访问外部数据库慢？ 第二步：基础连通性测试 → ping：测试延迟和丢包 → traceroute：找到哪一跳延迟高 第三步：带宽测试 → 看云控制台：带宽是否打满（监控图表） → 用 iperf3 测试实际带宽 第四步：常见原因和处理 → 带宽打满 → 建议客户升级带宽/加CDN → 某一跳丢包 → 网络链路问题，上报网络团队 → 服务器内部应用响应慢 → 不是网络问题，是应用问题 → DNS解析慢 → 检查DNS配置","url":"https://it-interview.is-a.dev/#/question/216"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户反映网络慢，你怎么排查？","text":"请围绕「客户反映网络慢，你怎么排查」作答：说明核心概念与原理，结合实际工作场景举例，并指出常见误区。","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"第一步：确认是哪段网络慢 → 客户到云服务器？还是云服务器内部之间？ → 还是服务器访问外部数据库慢？ 第二步：基础连通性测试 → ping：测试延迟和丢包 → traceroute：找到哪一跳延迟高 第三步：带宽测试 → 看云控制台：带宽是否打满（监控图表） → 用 iperf3 测试实际带宽 第四步：常见原因和处理 → 带宽打满 → 建议客户升级带宽/加CDN → 某一跳丢包 → 网络链路问题，上报网络团队 → 服务器内部应用响应慢 → 不是网络问题，是应用问题 → DNS解析慢 → 检查DNS配置","url":"https://it-interview.is-a.dev/#/question/216"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -72,7 +72,7 @@
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>客户反映网络慢，你怎么排查？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">系统运维工程师</span><span class="chip">全栈开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">网络</span><span class="chip tag">云服务器</span></div>
-    
+    <div class="card"><h2>题目</h2><p>请围绕「客户反映网络慢，你怎么排查」作答：说明核心概念与原理，结合实际工作场景举例，并指出常见误区。</p></div>
     <div class="card"><h2>参考答案</h2><p>第一步：确认是哪段网络慢</p>
 <p>  → 客户到云服务器？还是云服务器内部之间？</p>
 <p>  → 还是服务器访问外部数据库慢？</p>
