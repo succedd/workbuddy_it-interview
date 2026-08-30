@@ -29,7 +29,7 @@
 - **第三方库已本地化 vendor/**（dexie/marked/purify/highlight/fuse + hljs 主题 css 进 SW 壳缓存；echarts/xlsx 大库按需加载 `U.loadScript`）——新增库要同步 sw.js 的 APP_SHELL；vendor 库无版本参数，缓存失效靠 SW VERSION 整体 bump
 - 行尾是 CRLF：node 脚本批量改文件需归一化 `\r\n`，否则 diff 爆炸；优先用逐处编辑工具
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
-- 静态分享页：`tools/gen-share-pages.js` 生成 258 个 `q/<id>.html`（per-question OG 标签 + 自动跳回 SPA）——**新增题目后需重跑一次**
+- 静态分享页：`tools/gen-share-pages.js` 生成 264 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA）——**新增题目后需重跑一次**（脚本已同步桌面副本）
 - 域名 `it-interview.is-a.dev`（is-a.dev 子域名，CNAME 已配）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
 
 ## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
@@ -73,12 +73,12 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-08-30 13:35
-- **最新 commit**：`c605519`（缓存版本 `20260829h`）——**深链首访体验修复**：带 hash 深链（分享卡/扫码经 `q/<id>.html` 跳 `#/question/…`）进入 SPA 时跳过首访开场动效，消除「题目→动效→又回题目」绕圈；开场动效仅在首页空路径首访时播放。同日：`31a61d3`（g）编辑端发布/吸收链路修复（双推 release+main、Unicode 查重、吸收抑制、自愈重放）；`01e886f` 自动化扩题首跑登记 + 恢复 README 08-29 日志段；代码线 `aaf757b` 批次追问链、`73bd01c` 经典题快速扩充（频次提至每天）
-- **线上**：release = 264 题数据 + `20260829h`；main 已镜像对齐（编辑端经 absorbNormVer 自愈到 264，吸收不再触发自动发布）；smoke-test 26/26、data-audit 无新增问题、旧功能标记词回归 PASS
+- **最后更新**：2026-08-30 13:50
+- **最新 commit**：`98e0795`——**分享落地页取消 2.5s 自动跳转（单步直达）**：`q/<id>.html` 本身就是完整内容页，扫码读完题目与答案，CTA 手动进刷题界面；264 页已按新模板重生成（SEO 不受影响）；脚本已同步桌面副本。同日：`c605519`（h）深链进入跳过首访开场动效；`31a61d3`（g）编辑端发布/吸收链路修复（双推 release+main、Unicode 查重、吸收抑制、自愈重放）；`01e886f` 自动化扩题首跑登记；代码线 `aaf757b` 批次追问链、`73bd01c` 经典题快速扩充
+- **线上**：release = 264 题数据 + `20260829h` + 分享页单步直达版；main 镜像对齐；smoke-test 26/26、旧功能标记词回归 PASS（beaconSync 在 account.js）；编辑端自愈与双推已在真实使用中验证（13:21-13:40 用户发布 264 题双分支成功）
 - **扩充流水线注意**：自动化「题库定期自动扩充」**每天 10:00** 跑（08-29 起从每周一/三/五提频），**工作目录在 `C:\Users\Life\Desktop\iti-dedup2`**（独立副本，只 curl 同步数据不同步代码——改 tools/ 下脚本后必须手动同步过去）；脚本内已带质检闸门（答案<30字/图片缺失拒绝）+ 经典主题轮转（classic-topics.json，T001 云服务售后已跑）+ 分享页自动跟发（待推清单 `tools/.last-new-ids.json`，已 gitignore）；**合并基线读线上 release（is-a.dev 的 published.json），勿参考 main**；Python 用 WorkBuddy 自带的 `binaries\python\versions\3.13.12`（3.11.4 已卸载），备选 uv 的 3.12.13
 - **后端当前状态**：Worker `it-interview-stats` 已部署（D1 表齐全：users/sessions/favorites/histories/weak/daily_done/mock_reports + rl_auth 限流表），API `https://it-interview-stats.iti-interview.workers.dev`；已加 CORS 白名单/500 防泄漏/ADMIN_EMAIL secret（admin@iti.local）
-- **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 258 个内容化 SEO 落地页 + 微信长按适配）/sendBeacon 兜底同步/图片外置上传
+- **已上线功能**：题库浏览/搜索/刷题/收藏/错题本（间隔复习）/模拟面试（报告云端+历次趋势）/学习周报/每日打卡上云/PWA 离线（第三方库已本地化，真离线可用）/无障碍/题目分享卡片（canvas 图片 + 264 个内容化 SEO 落地页（单步直达，不自动跳转）+ 微信长按适配）/sendBeacon 兜底同步/图片外置上传
 - **进行中/待办**：
   - ~~P1：登录时顺手清理过期会话~~（已完成：worker.js handleLogin 内 DELETE 过期会话，线上已生效）
   - ~~P1：编辑端/流水线数据互踩修复~~（已完成 `31a61d3`：题库发布双推 release+main；absorbRemote 吸收期设 C._suppress；main 已镜像对齐 release，编辑端经 absorbNormVer 自愈到 264）
