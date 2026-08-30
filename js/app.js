@@ -505,6 +505,7 @@
       });
       const maxN = Math.max(1, ...perDay.map(d => d.n));
       const bars = perDay.map(d => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${d.future ? "" : (d.n || "")}</span>
         <div class="bar-track">${d.future ? "" : `<div class="bar-fill${d.i === dow ? " today" : ""}" style="height:${d.n ? Math.max(12, Math.round(d.n / maxN * 100)) : 0}%" title="${d.n} 题"></div>`}</div>
         <span class="muted" style="font-size:11px">${d.future ? "" : (d.i === dow ? "今" : dayNames[d.i])}</span>
       </div>`).join("");
@@ -570,11 +571,11 @@
               <div class="wk-stat"><div class="wk-num" style="color:var(--c-danger)">${weekWeakNew}${trendBadge(weekWeakNew, prevWeakNew, true)}</div><div class="wk-label">新增薄弱</div></div>
             </div>
             <div class="wk-sec">
-              <div class="muted" style="font-size:11px;margin-bottom:6px">每日刷题（不同题）</div>
+              <div class="muted" style="font-size:11px;margin-bottom:6px">每天刷了几题（柱子上方数字 = 当天题数）</div>
               <div class="wk-bars">${bars}</div>
             </div>
             <div class="wk-sec">
-              <div class="muted" style="font-size:11px;margin-bottom:2px">近 8 周热力图（颜色越深刷得越多）</div>
+              <div class="muted" style="font-size:11px;margin-bottom:2px">近 8 周节奏（每格 = 一天 · 颜色越深当天刷得越多 · 点格子看详情）</div>
               <div id="wk-cal" style="height:150px"></div>
             </div>
             <div class="wk-sec" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">${catLine}</div>
@@ -656,10 +657,11 @@
           const dark = App.getTheme() === "dark";
           App._wkCalChart = echarts.init(calBox);
           App._wkCalChart.setOption({
-            visualMap: { show: false, min: 0, max: Math.max(5, calMax), inRange: { color: dark ? ["#1e293b", "#1e40af", "#38bdf8"] : ["#EFF6FF", "#BFDBFE", "#60A5FA", "#1D4ED8"] } },
+            tooltip: { formatter: p => (p.value && p.value[0]) ? String(p.value[0]).slice(5) + " 刷了 " + p.value[1] + " 题" : "" },
+            visualMap: { type: "piecewise", splitNumber: 4, min: 0, max: Math.max(5, calMax), orient: "horizontal", right: 2, bottom: 0, itemWidth: 10, itemHeight: 10, itemGap: 4, textStyle: { fontSize: 10, color: dark ? "#94a3b8" : "#64748B" }, inRange: { color: dark ? ["#1e293b", "#1e40af", "#38bdf8"] : ["#EFF6FF", "#BFDBFE", "#60A5FA", "#1D4ED8"] } },
             calendar: {
               orient: "vertical", cellSize: ["auto", "auto"],
-              left: 26, right: 10, top: 22, bottom: 6,
+              left: 26, right: 10, top: 22, bottom: 24,
               range: [new Date(calStart), new Date(we - 864e5)],
               itemStyle: { color: dark ? "#0f172a" : "#F8FAFC", borderColor: dark ? "#1e293b" : "#E2E8F0", borderWidth: 2, borderRadius: 3 },
               dayLabel: { show: false }, yearLabel: { show: false }, splitLine: { show: false },
