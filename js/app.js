@@ -627,6 +627,12 @@
   /* ============================ 技术体系页 ============================ */
   let _catMapChart = null;
   window.addEventListener("resize", () => { if (_catMapChart) _catMapChart.resize(); });
+  /* 人工精选的域级架构图（data/tech-maps.json），整个会话只拉一次 */
+  let _techMapsP = null, _techMapsCache = null;
+  function loadTechMaps() {
+    if (!_techMapsP) _techMapsP = fetch("data/tech-maps.json").then(r => r.ok ? r.json() : null).catch(() => null);
+    return _techMapsP;
+  }
 
   async function pageCategory(q) {
     document.title = "技术体系 · IT面试题库";
@@ -658,7 +664,8 @@
       grid.innerHTML = arr.slice(0, 40).map(q => qCard(q)).join("");
     };
 
-    /* 技术全景图：以当前分类为根的 ECharts 树（子技术分支 + 题量 + 薄弱标记） */
+    /* 技术全景图：有「架构图 | 分支树」双标签——人工精选的域级架构图优先，
+       分支树为自动生成的以当前分类为根的 ECharts 树（子技术 + 题量 + 薄弱标记） */
     function initCatMap() {
       const box = $("#catmap-box");
       if (!box) return;
@@ -674,46 +681,100 @@
         (wq || []).forEach(w => { if (w.categoryId) weakMap.set(w.categoryId, (weakMap.get(w.categoryId) || 0) + 1); });
         return weakMap;
       }).catch(() => new Map()).then(weakMap => {
-        U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-          const box2 = $("#catmap-box");
-          if (!box2 || !window.echarts) return;
-          const findNode = (nodes, id) => { for (const n of nodes) { if (n.id === id) return n; if (n.children && n.children.length) { const r = findNode(n.children, id); if (r) return r; } } return null; };
-          const dark = App.getTheme() === "dark";
-          const toData = (node, hlId) => ({
-            name: node.name + " · " + (node.count || 0) + "题",
-            count: node.count || 0,
-            weak: weakMap.get(node.id) || 0,
-            itemStyle: { color: (weakMap.get(node.id) || 0) > 0 ? "#F59E0B" : (node.id === hlId ? "#1D4ED8" : (node.count ? "#3B82F6" : "#CBD5E1")) },
-            label: { color: dark ? "#e2e8f0" : "#334155", fontWeight: node.id === hlId ? 700 : 400 },
-            children: (node.children || []).map(c => toData(c, hlId))
-          });
-          let data, depth = 2;
-          const selfNode = findNode(tree, catId);
-          if (selfNode && selfNode.children && selfNode.children.length) {
-            data = toData(selfNode, catId);
-            data.name = selected.name + " · " + qs.length + "题";   // 根节点显示含子分类的总题数
-          } else {
-            /* 叶子分类：展示它在同级技术中的位置 */
-            const pNode = selected.parentId ? findNode(tree, selected.parentId) : null;
-            data = pNode ? toData(pNode, catId) : { name: "技术体系 · " + qs.length + "题", count: qs.length, weak: 0, itemStyle: { color: "#1D4ED8" }, label: { color: dark ? "#e2e8f0" : "#334155" }, children: tree.map(c => toData(c, catId)) };
-            depth = 1;
-          }
-          if (_catMapChart) { try { _catMapChart.dispose(); } catch (e) {} }
-          _catMapChart = echarts.init(box2);
-          _catMapChart.setOption({
-            tooltip: { trigger: "item", triggerOn: "mousemove", formatter: p => (p.data && p.data.count != null) ? U.esc(String(p.name).replace(/ · \d+题$/, "")) + "：" + p.data.count + " 题" + (p.data.weak ? " · 薄弱 " + p.data.weak + " 题" : "") : "" },
-            series: [{
-              type: "tree", data: [data], orient: "LR", roam: true,
-              left: "1%", right: "22%", top: "2%", bottom: "2%",
-              initialTreeDepth: depth, expandAndCollapse: true, animationDuration: 300,
-              symbol: "circle", symbolSize: 12,
-              lineStyle: { color: dark ? "#334155" : "#BFDBFE", width: 1.3, curveness: 0.5 },
-              label: { position: "left", verticalAlign: "middle", align: "right", fontSize: 12, distance: 5 },
-              leaves: { label: { position: "right", verticalAlign: "middle", align: "left", distance: 5 } },
-              emphasis: { focus: "descendant" }
-            }]
-          });
-        }).catch(() => {});
+        const dark = App.getTheme() === "dark";
+        const findNode = (nodes, id) => { for (const n of nodes) { if (n.id === id) return n; if (n.children && n.children.length) { const r = findNode(n.children, id); if (r) return r; } } return null; };
+        const renderTree = () => {
+          box.style.height = "min(58vh,480px)";
+          box.style.overflowY = "hidden";
+          box.innerHTML = `<div style="width:100%;height:100%"></div>`;
+          U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+            const holder = box.firstElementChild;
+            if (!holder || !window.echarts) return;
+            const toData = (node, hlId) => ({
+              name: node.name + " · " + (node.count || 0) + "题",
+              count: node.count || 0,
+              weak: weakMap.get(node.id) || 0,
+              itemStyle: { color: (weakMap.get(node.id) || 0) > 0 ? "#F59E0B" : (node.id === hlId ? "#1D4ED8" : (node.count ? "#3B82F6" : "#CBD5E1")) },
+              label: { color: dark ? "#e2e8f0" : "#334155", fontWeight: node.id === hlId ? 700 : 400 },
+              children: (node.children || []).map(c => toData(c, hlId))
+            });
+            let data, depth = 2;
+            const selfNode = findNode(tree, catId);
+            if (selfNode && selfNode.children && selfNode.children.length) {
+              data = toData(selfNode, catId);
+              data.name = selected.name + " · " + qs.length + "题";   // 根节点显示含子分类的总题数
+            } else {
+              /* 叶子分类：展示它在同级技术中的位置 */
+              const pNode = selected.parentId ? findNode(tree, selected.parentId) : null;
+              data = pNode ? toData(pNode, catId) : { name: "技术体系 · " + qs.length + "题", count: qs.length, weak: 0, itemStyle: { color: "#1D4ED8" }, label: { color: dark ? "#e2e8f0" : "#334155" }, children: tree.map(c => toData(c, catId)) };
+              depth = 1;
+            }
+            if (_catMapChart) { try { _catMapChart.dispose(); } catch (e) {} }
+            _catMapChart = echarts.init(holder);
+            _catMapChart.setOption({
+              tooltip: { trigger: "item", triggerOn: "mousemove", formatter: p => (p.data && p.data.count != null) ? U.esc(String(p.name).replace(/ · \d+题$/, "")) + "：" + p.data.count + " 题" + (p.data.weak ? " · 薄弱 " + p.data.weak + " 题" : "") : "" },
+              series: [{
+                type: "tree", data: [data], orient: "LR", roam: true,
+                left: "1%", right: "22%", top: "2%", bottom: "2%",
+                initialTreeDepth: depth, expandAndCollapse: true, animationDuration: 300,
+                symbol: "circle", symbolSize: 12,
+                lineStyle: { color: dark ? "#334155" : "#BFDBFE", width: 1.3, curveness: 0.5 },
+                label: { position: "left", verticalAlign: "middle", align: "right", fontSize: 12, distance: 5 },
+                leaves: { label: { position: "right", verticalAlign: "middle", align: "left", distance: 5 } },
+                emphasis: { focus: "descendant" }
+              }]
+            });
+          }).catch(() => {});
+        };
+        const renderTechMap = (key) => {
+          const map = _techMapsCache && _techMapsCache[String(key)];
+          if (!map || !map.layers || !map.layers.length) { renderTree(); return; }
+          box.style.height = "auto";
+          box.style.overflowY = "visible";
+          const PAL = [["rgba(37,99,235,.07)", "#2563EB"], ["rgba(16,185,129,.08)", "#059669"], ["rgba(139,92,246,.08)", "#7C3AED"], ["rgba(245,158,11,.09)", "#D97706"], ["rgba(236,72,153,.07)", "#DB2777"], ["rgba(6,182,212,.08)", "#0891B2"]];
+          const resolveCat = (name) => {
+            if (!name) return 0;
+            const sub = new Set([Number(key)].concat(Services.descendantIds(Number(key))));
+            const hit = Services.categories.find(c => c.name === name && sub.has(c.id)) || Services.categories.find(c => c.name === name);
+            return hit ? hit.id : 0;
+          };
+          const host = $("#catmap-body") || box;
+          host.innerHTML = map.layers.map((L, i) => {
+            const pal = PAL[i % PAL.length];
+            const chips = (L.items || []).map(it => {
+              const cid = resolveCat(it);
+              if (!cid) return `<span class="tm-chip">${U.esc(it)}</span>`;
+              const cnt = Services.catCounts[cid] || 0;
+              const wk = weakMap.get(cid) || 0;
+              return `<span class="tm-chip link${wk ? " has-weak" : ""}" data-cat="${cid}" title="查看「${U.esc(it)}」分类题目">${U.esc(it)}<i>${cnt}题</i>${wk ? `<i class="tm-weak">薄弱${wk}</i>` : ""}</span>`;
+            }).join("");
+            return `<div class="tm-layer" style="background:${pal[0]};border-left-color:${pal[1]}"><div class="tm-name" style="color:${pal[1]}">${U.esc(L.name || "")}</div><div class="tm-items">${chips}</div></div>${i < map.layers.length - 1 ? '<div class="tm-arrow">▼</div>' : ""}`;
+          }).join("") + (map.note ? `<p class="muted" style="font-size:12px;margin:12px 0 0">${U.esc(map.note)}</p>` : "");
+          host.querySelectorAll(".tm-chip.link").forEach(ch => { ch.onclick = () => App.go("/category?cat=" + ch.dataset.cat); });
+        };
+        loadTechMaps().then(maps => {
+          _techMapsCache = maps || {};
+          /* 从当前分类向上找最近的有人工架构图的域（叶子分类也能看到所属域的全景） */
+          let mapKey = null, p = catId, guard = 0;
+          while (p && guard++ < 10) { if (_techMapsCache[String(p)]) { mapKey = String(p); break; } const c = Services.getCategory(p); p = c ? (c.parentId || 0) : 0; }
+          const wireSeg = (active) => {
+            $$("#catmap-seg button").forEach(b => {
+              b.classList.toggle("active", b.dataset.t === active);
+              b.onclick = () => {
+                if (b.classList.contains("active")) return;
+                frame(b.dataset.t);
+                if (b.dataset.t === "map") { if (_catMapChart) { try { _catMapChart.dispose(); } catch (e) {} _catMapChart = null; } renderTechMap(mapKey); }
+                else renderTree();
+              };
+            });
+          };
+          const frame = (active) => {
+            box.innerHTML = `<div class="seg" id="catmap-seg" style="margin-bottom:10px"><button data-t="map"${active === "map" ? ' class="active"' : ""}>架构图</button><button data-t="tree"${active === "tree" ? ' class="active"' : ""}>分支树</button></div><div id="catmap-body"></div>`;
+            wireSeg(active);
+          };
+          if (mapKey) { frame("map"); renderTechMap(mapKey); }
+          else renderTree();
+        });
       });
     }
 
@@ -1337,7 +1398,7 @@
       `)}
       ${sec("find", "🔍 找题与浏览", `
         ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词")}
-        ${li("技术体系", "279 个分类的树状目录，从「计算机科学基础」到「大模型」，逐层展开找题；点开任一分类可见「技术全景图」——子技术分支、题量与薄弱标记（橙色）一图概览")}
+        ${li("技术体系", "279 个分类的树状目录，逐层展开找题；点开任一分类有「技术全景图」：重点域配有人工分层架构图（节点可点击直达分类），其余显示自动分支树，薄弱分类橙色标记")}
         ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
         ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序")}
       `)}
