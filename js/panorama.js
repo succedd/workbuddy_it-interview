@@ -1,393 +1,353 @@
-/* =========================================================================
- *  panorama.js — 题库全景图
- *  入口：首页 4 个统计卡片 → #/panorama?view=all | cat | pos | ai
- *    all  题库全景：力导向星云图，节点大小 = 题目数量，颜色分属 21 个技术体系
- *    cat  技术分类：所有有题分类收进一张网状图，颜色按一级体系分组
- *    pos  覆盖岗位：岗位按 8 个时代阶段聚成星簇，节点大小 = 题目数量
- *    ai   AI 生成题：来源构成 + AI 题目清单（按技术分类归组）
- *  依赖：utils.js(U) / services.js(Services) / app.js(App)，echarts 按需加载
- * ========================================================================= */
+/*
+ * 题库全景图（panorama）
+ * 视图：
+ *   - all : 技术演进轨道图（由内到外：基石 → 系统开发 → 架构工程 → 数据与领域前沿）
+ *   - cat : 同上，但把每个技术体系下的「细分技术点」作为卫星节点收进同一张网
+ *   - pos : 岗位演进轨道图（按 8 个时代阶段由内到外环绕）
+ *   - ai  : 来源构成 + AI 生成题清单
+ * 设计目标：层次清晰（同心环）、按技术/岗位演进逻辑组织（由内到外）、立体（渐变背景 + 节点辉光）、不乱（固定极坐标布局，非力导向随机）
+ * 依赖：utils.js(U) / services.js(Services) / app.js(App)，echarts 按需加载
+ */
 (function () {
-  "use strict";
+  const S = window.Services, U = window.U, App = window.App;
 
-  const U = window.U;
-  const S = window.Services;
-  const App = window.App;
-
-  /* ---------------- 图标：pieChart 为全景图专用，缺失时才补 ---------------- */
+  /* 注册饼图图标（若尚未存在） */
   if (U && U.ICONS && !U.ICONS.pieChart) {
-    U.ICONS.pieChart = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M12 3v9h9a9 9 0 0 0-9-9z"/><path d="M21 15.5A9 9 0 1 1 8.5 3.4"/>' +
-      '<path d="M12 12v9a9 9 0 0 0 9-9h-9z"/></svg>';
+    U.ICONS.pieChart = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12 2.1 5.3a10 10 0 0 0 0 13.4L12 12z"/><path d="M12 12l8 5.7A10 10 0 0 0 22 12a10 10 0 0 0-2-5.7L12 12z"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>';
   }
 
+  /* 四个技术演进层（由内到外） */
+  const LAYERS = [
+    { name: "基石技术", color: "#3b82f6", desc: "一切的地基：组成原理、编程语言、操作系统、计算机网络" },
+    { name: "系统与应用开发", color: "#10b981", desc: "把能力落成系统：数据库、前后端、移动端" },
+    { name: "架构与工程", color: "#f59e0b", desc: "让系统可扩展可交付：分布式、云原生、工程化与测试" },
+    { name: "数据与智能 · 领域前沿", color: "#8b5cf6", desc: "当下与未来：AI、大数据、安全、IoT、图形、区块链等" }
+  ];
+  /* 一级分类名 → 层号（数据稳定，按名映射更稳妥） */
+  const LAYER_BY_NAME = {
+    "计算机科学基础": 0, "编程语言与编程基础": 0, "操作系统与系统运维": 0, "计算机网络与协议": 0,
+    "数据库与数据存储": 1, "后端开发与服务端框架": 1, "Web前端开发": 1, "移动端与跨平台开发": 1,
+    "分布式系统与微服务": 2, "云原生与DevOps": 2, "软件工程与设计模式": 2, "软件测试": 2,
+    "人工智能与机器学习": 3, "大数据与数据工程": 3, "信息安全与网络安全": 3, "嵌入式与物联网": 3,
+    "游戏开发与图形图像": 3, "音视频与流媒体": 3, "区块链与Web3": 3, "产品与项目管理": 3, "通用面试能力与软技能": 3
+  };
+  /* 8 个时代阶段的配色（由内到外） */
+  const STAGE_COLORS = ["#0ea5e9", "#22c55e", "#f97316", "#e11d48", "#a855f7", "#6366f1", "#14b8a6", "#64748b"];
+
+  function layerOf(name) { return LAYER_BY_NAME[name] != null ? LAYER_BY_NAME[name] : 3; }
+  function pct(n, t) { return t ? Math.round((n / t) * 100) + "%" : "0%"; }
+  function esc(s) { return U && U.esc ? U.esc(s) : String(s == null ? "" : s); }
+  function cssVar(n) {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(n);
+      return (v && v.trim()) || getComputedStyle(document.body).getPropertyValue(n).trim();
+    } catch (e) { return ""; }
+  }
+  function hexA(hex, a) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || "");
+    if (!m) return hex;
+    return "rgba(" + parseInt(m[1], 16) + "," + parseInt(m[2], 16) + "," + parseInt(m[3], 16) + "," + a + ")";
+  }
+  function sizeFor(count, k) {
+    k = k || 3.2;
+    return Math.max(16, Math.min(70, 12 + Math.sqrt(count || 0) * k));
+  }
+
+  /* ============================ 对外接口 ============================ */
   const VIEWS = [
-    { id: "all", label: "题库全景", icon: "pieChart", desc: "节点网状漂浮，大小 = 题目数量，颜色分属 21 个技术体系；拖拽可旋转、滚轮可缩放，点击任意节点直达对应题目列表。" },
-    { id: "cat", label: "技术分类", icon: "layers", desc: "所有有题目的技术分类收进一张网状图，颜色按一级体系分组，点击节点查看该分类（含子分类）下的题目。" },
-    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按 8 个时代阶段聚成星簇，节点大小 = 题目数量，点击岗位进入岗位题库。" },
-    { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "AI 生成的题目按技术分类归组，并给出全库题目的来源构成。" }
+    { id: "all", label: "题库全景", icon: "pieChart", desc: "按技术演进由内到外展开的轨道图" },
+    { id: "cat", label: "技术分类", icon: "layers", desc: "21 个技术体系 + 细分技术点，按演进分层" },
+    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按时代阶段由内到外环绕" },
+    { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "来源构成与 AI 生成题清单" }
   ];
 
-  const P = {};
-  window.Panorama = P;
-
-  /* ---------------- 小工具 ---------------- */
-  function norm(v) { return VIEWS.some(x => x.id === v) ? v : "all"; }
-  function esc(s) { return U.esc(s == null ? "" : String(s)); }
-  function pct(n, total) { return total ? (n / total * 100).toFixed(1) + "%" : "0%"; }
-  function isDark() {
-    const t = (App && App.getTheme) ? App.getTheme() : "system";
-    if (t === "dark") return true;
-    if (t === "light") return false;
-    try { return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches); } catch (e) { return false; }
-  }
-  /* 23 色调色板：保证 21 个一级分类颜色区分明显 */
-  const PALETTE = ["#2563EB", "#7C3AED", "#DB2777", "#EA580C", "#16A34A", "#0891B2", "#CA8A04",
-    "#DC2626", "#4F46E5", "#059669", "#D97706", "#9333EA", "#0D9488", "#E11D48", "#65A30D",
-    "#1D4ED8", "#BE185D", "#B45309", "#0F766E", "#6D28D9", "#A16207", "#475569", "#9CA3AF"];
-  function palette(i) { return PALETTE[i % PALETTE.length]; }
-  /* 8 个时代阶段配色 */
-  const STAGE_COLORS = ["#2563EB", "#059669", "#D97706", "#DB2777", "#7C3AED", "#0891B2", "#DC2626", "#65A30D"];
-  /* 题数 → 节点直径（sqrt 缩放，避免大头挤压） */
-  function sizeOf(n) { const v = Math.max(n || 0, 1); return Math.round(12 + Math.sqrt(v) * 5.4); }
-  function catsWithColor(names) { return names.map((n, i) => ({ name: n, itemStyle: { color: palette(i) } })); }
-
-  /* ---------------- 页面骨架 ---------------- */
-  function tabsHtml(cur) {
-    return `<div class="panorama-tabs">${VIEWS.map(v =>
-      `<a class="panorama-tab${v.id === cur ? " active" : ""}" href="#/panorama?view=${v.id}">${U.icon(v.icon)}<span>${esc(v.label)}</span></a>`
-    ).join("")}</div>`;
+  function tabsHtml(active) {
+    return '<div class="panorama-tabs">' + VIEWS.map(v =>
+      '<a class="panorama-tab' + (v.id === active ? " active" : "") + '" href="#/panorama?view=' + v.id + '">' +
+      (U.icon ? U.icon(v.icon) : "") + "<span>" + esc(v.label) + "</span></a>"
+    ).join("") + "</div>";
   }
 
-  P.html = function (view) {
-    const v = norm(view);
-    const cur = VIEWS.find(x => x.id === v) || VIEWS[0];
-    return `
-      <div class="breadcrumb">
-        <a href="#/">首页</a><span class="sep">/</span><span>题库全景</span><span class="sep">/</span><span>${esc(cur.label)}</span>
-      </div>
-      <h1>${U.icon(cur.icon)} 题库全景 · ${esc(cur.label)}</h1>
-      <p class="secondary">${esc(cur.desc)}</p>
-      ${tabsHtml(v)}
-      <div class="panorama-body" id="panorama-body"><div class="pan-loading">正在生成全景图…</div></div>
-    `;
-  };
+  function breadcrumb(view) {
+    const v = VIEWS.filter(x => x.id === view)[0] || VIEWS[0];
+    return '<div class="breadcrumb"><a href="#/">' + U.icon("home") + " 首页</a><span>/</span><span>题库全景</span><span>/</span><b>" + esc(v.label) + "</b></div>";
+  }
 
-  P.afterRender = function (view) {
-    const box = document.getElementById("panorama-body");
-    if (!box) return;
-    const v = norm(view);
-    try {
-      if (v === "cat") renderCat(box);
-      else if (v === "pos") renderPos(box);
-      else if (v === "ai") renderAI(box);
-      else renderAll(box);
-    } catch (e) {
-      box.innerHTML = `<div class="empty"><h3>全景图渲染失败</h3><p class="secondary">${esc(e && e.message || e)}</p></div>`;
-      if (window.console) console.error("[panorama]", e);
-    }
-  };
+  P_html();
 
-  /* ---------------- 力导向图通用装配 ---------------- */
-  function setupGraph(chart, opt) {
-    const dark = !!opt.dark;
-    const labelColor = dark ? "#e2e8f0" : "#334155";
-    const borderColor = dark ? "#0b1220" : "#ffffff";
-    const cats = opt.categories || [];
-    chart.setOption({
-      tooltip: {
-        confine: true,
-        backgroundColor: dark ? "#1e293b" : "#ffffff",
-        borderColor: dark ? "#334155" : "#e2e8f0",
-        textStyle: { color: dark ? "#e2e8f0" : "#334155", fontSize: 12 },
-        formatter: function (p) {
-          const d = p.data || {};
-          if (d.value == null) return esc(d.name || "");
-          return "<b>" + esc(d.name) + "</b><br/>" + d.value + " 题";
-        }
+  function P_html() {
+    window.Panorama = {
+      html: function (view) {
+        view = VIEWS.some(v => v.id === view) ? view : "all";
+        return breadcrumb(view) +
+          '<h1 class="page-title">题库全景</h1>' +
+          '<p class="muted" style="margin:-6px 0 14px">一眼看全 ' + (S.questions ? S.questions.length : "") + ' 道题都分布在哪些技术、哪些岗位；点击任意节点直达题目列表。</p>' +
+          tabsHtml(view) +
+          '<div class="panorama-body" id="panorama-body"></div>';
       },
-      legend: {
-        show: true, type: "scroll", orient: "horizontal", bottom: 2, left: "center",
-        itemWidth: 10, itemHeight: 10, itemGap: 10,
-        textStyle: { color: labelColor, fontSize: 11 }, inactiveColor: "#94a3b8",
-        data: cats.map(c => c.name)
-      },
-      series: [{
-        type: "graph", layout: "force", roam: true, draggable: true,
-        data: opt.nodes, links: opt.links, categories: cats,
-        force: {
-          repulsion: opt.repulsion || 200,
-          edgeLength: opt.edgeLength || [55, 130],
-          gravity: 0.05, friction: 0.12, layoutAnimation: true
-        },
-        scaleLimit: { min: 0.35, max: 4 },
-        label: { show: true, position: "right", fontSize: 10, color: labelColor, formatter: p => p.data.name },
-        lineStyle: { color: "source", opacity: 0.18, curveness: 0.08, width: 1 },
-        emphasis: { focus: "adjacency", label: { fontSize: 13, fontWeight: "bold" }, lineStyle: { width: 2.5, opacity: 0.5 } },
-        itemStyle: { borderColor: borderColor, borderWidth: 1.2, shadowBlur: 10, shadowColor: "rgba(15,23,42,0.20)" }
-      }]
-    });
-    chart.on("click", function (params) {
-      const d = params.data || {};
-      if (d._goto) { App.go(d._goto); return; }
-      if (d._catId != null) { App.go("/category?cat=" + d._catId); return; }
-      if (d._posId != null) { App.go("/position/" + d._posId); return; }
-    });
-  }
-
-  function mountForce(box, build) {
-    U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-      const holder = document.getElementById("panorama-chart");
-      if (!holder || !window.echarts) return;
-      const dark = isDark();
-      if (dark) holder.classList.add("theme-dark");
-      const chart = echarts.init(holder);
-      if (App && App.registerChart) App.registerChart(chart);
-      build(chart, dark);
-      if (window.ResizeObserver) {
-        const ro = new ResizeObserver(() => { try { chart.resize(); } catch (e) {} });
-        ro.observe(holder);
+      afterRender: function (view) {
+        const box = document.getElementById("panorama-body");
+        if (!box) return;
+        view = VIEWS.some(v => v.id === view) ? view : "all";
+        if (view === "all") renderAll(box);
+        else if (view === "cat") renderCat(box);
+        else if (view === "pos") renderPos(box);
+        else renderAI(box);
       }
-    }).catch(() => {
-      const holder = document.getElementById("panorama-chart");
-      if (holder) holder.innerHTML = `<div class="pan-loading muted">图表库加载失败，可使用上方速览卡片</div>`;
-    });
-  }
-
-  /* =======================================================================
-   *  视图一：题库全景（力导向星云图）
-   * ===================================================================== */
-  function renderAll(box) {
-    const qs = S.questions || [];
-    const tree = S.categoryTree();
-    const total = qs.length;
-    const published = qs.filter(q => q.status === "published").length;
-    const topWithQ = tree.filter(c => (c.count || 0) > 0);
-    let subCount = 0;
-    topWithQ.forEach(c => { subCount += (c.children || []).filter(k => (k.count || 0) > 0).length; });
-    const orphan = qs.filter(q => q.categoryId == null);
-
-    box.innerHTML = `
-      <div class="panorama-summary">
-        <div class="pan-sum"><div class="pan-sum-num">${total}</div><div class="pan-sum-label">题目总数</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${published}</div><div class="pan-sum-label">已发布</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${topWithQ.length}</div><div class="pan-sum-label">技术体系（一级）</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${subCount}</div><div class="pan-sum-label">细分技术点（有题）</div></div>
-      </div>
-
-      <div class="card panorama-chart-card">
-        <div class="panorama-chart-head">
-          <div><b>技术体系分布全景（力导向星云图）</b>
-            <div class="muted" style="font-size:12px;line-height:1.5">
-              节点大小 = 题目数量，颜色 = 21 个技术体系；拖拽旋转、滚轮缩放，点击任意节点直达题目列表${orphan.length ? "；灰色「未归类」为尚未挂到任何分类的题目" : ""}。
-            </div>
-          </div>
-        </div>
-        <div id="panorama-chart" class="panorama-chart"></div>
-      </div>
-
-      <div class="section-head"><h2>技术体系速览</h2><a class="more" href="#/panorama?view=cat">查看分类星云 →</a></div>
-      <div class="grid grid-cols-auto">
-        ${topWithQ.sort((a, b) => b.count - a.count).map(c => `
-          <a class="card card-hover pan-chip" href="#/category?cat=${c.id}">
-            <div class="pan-chip-ic">${c.icon ? esc(c.icon) : "📁"}</div>
-            <div class="pan-chip-name">${esc(c.name)}</div>
-            <div class="pan-chip-num">${c.count} 题 · ${pct(c.count, total)}</div>
-          </a>`).join("")}
-        ${orphan.length ? `
-          <a class="card card-hover pan-chip" href="#/questions?nocat=1">
-            <div class="pan-chip-ic">🗃️</div>
-            <div class="pan-chip-name">未归类</div>
-            <div class="pan-chip-num">${orphan.length} 题 · ${pct(orphan.length, total)}</div>
-          </a>` : ""}
-      </div>
-    `;
-
-    mountForce(box, function (chart, dark) {
-      const cats = catsWithColor(topWithQ.map(c => c.name));
-      const nodes = [], links = [];
-      topWithQ.forEach((c, i) => {
-        nodes.push({ id: "c" + c.id, name: c.name, value: c.count, symbolSize: sizeOf(c.count), category: i, _catId: c.id, itemStyle: { borderWidth: 2.4, shadowBlur: 18 } });
-        (c.children || []).filter(k => (k.count || 0) > 0).forEach(sub => {
-          nodes.push({ id: "c" + sub.id, name: sub.name, value: sub.count, symbolSize: sizeOf(sub.count), category: i, _catId: sub.id });
-          links.push({ source: "c" + c.id, target: "c" + sub.id });
-        });
-      });
-      if (orphan.length) {
-        cats.push({ name: "未归类", itemStyle: { color: "#94A3B8" } });
-        nodes.push({ id: "orphan", name: "未归类", value: orphan.length, symbolSize: sizeOf(orphan.length), category: cats.length - 1, _goto: "/questions?nocat=1" });
-      }
-      setupGraph(chart, { nodes: nodes, links: links, categories: cats, dark: dark, repulsion: 210, edgeLength: [60, 140] });
-    });
-  }
-
-  /* =======================================================================
-   *  视图二：技术分类（力导向星云图）
-   * ===================================================================== */
-  function renderCat(box) {
-    const tree = S.categoryTree();
-    let total = 0, withQ = 0;
-    (function walk(ns) { ns.forEach(n => { total++; if ((n.count || 0) > 0) withQ++; walk(n.children || []); }); })(tree);
-
-    box.innerHTML = `
-      <div class="panorama-summary">
-        <div class="pan-sum"><div class="pan-sum-num">${total}</div><div class="pan-sum-label">分类总数</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${withQ}</div><div class="pan-sum-label">已有题目</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${tree.length}</div><div class="pan-sum-label">一级技术体系</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${total - tree.length}</div><div class="pan-sum-label">细分技术点</div></div>
-      </div>
-      <div class="card panorama-chart-card">
-        <div class="panorama-chart-head">
-          <div><b>技术分类星云图</b>
-            <div class="muted" style="font-size:12px;line-height:1.5">所有有题目的分类收进一张网，颜色按一级体系分组；点击节点查看该分类（含子分类）下的题目。底部图例可单独显隐某个体系。</div>
-          </div>
-        </div>
-        <div id="panorama-chart" class="panorama-chart"></div>
-      </div>
-    `;
-
-    mountForce(box, function (chart, dark) {
-      const cats = catsWithColor(tree.map(c => c.name));
-      const nodes = [], links = [];
-      function rec(n, rootIdx, parentId) {
-        if ((n.count || 0) <= 0) return;
-        const isTop = parentId == null;
-        nodes.push({ id: "c" + n.id, name: n.name, value: n.count, symbolSize: sizeOf(n.count), category: rootIdx, _catId: n.id, itemStyle: isTop ? { borderWidth: 2.2, shadowBlur: 16 } : {} });
-        if (parentId) links.push({ source: parentId, target: "c" + n.id });
-        (n.children || []).forEach(c => rec(c, rootIdx, "c" + n.id));
-      }
-      tree.forEach((c, i) => rec(c, i, null));
-      setupGraph(chart, { nodes: nodes, links: links, categories: cats, dark: dark, repulsion: 180, edgeLength: [45, 120] });
-    });
-  }
-
-  /* =======================================================================
-   *  视图三：覆盖岗位（力导向星云图）
-   * ===================================================================== */
-  function renderPos(box) {
-    const stages = S.positionsByStage();
-    const all = S.positions || [];
-    const visible = all.filter(p => !S.isHiddenPosition(p));
-    let covered = 0;
-    visible.forEach(p => { if (S.questionCountForPosition(p) > 0) covered++; });
-
-    box.innerHTML = `
-      <div class="panorama-summary">
-        <div class="pan-sum"><div class="pan-sum-num">${all.length}</div><div class="pan-sum-label">岗位总数</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${covered}</div><div class="pan-sum-label">已有题目</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${stages.length}</div><div class="pan-sum-label">时代阶段</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${visible.length}</div><div class="pan-sum-label">可进入岗位</div></div>
-      </div>
-      <div class="card panorama-chart-card">
-        <div class="panorama-chart-head">
-          <div><b>岗位星云图</b>
-            <div class="muted" style="font-size:12px;line-height:1.5">岗位按 8 个时代阶段聚成星簇，节点大小 = 题目数量；点击岗位进入岗位题库。灰色占位岗位已隐藏入口。</div>
-          </div>
-        </div>
-        <div id="panorama-chart" class="panorama-chart"></div>
-      </div>
-    `;
-
-    mountForce(box, function (chart, dark) {
-      const cats = stages.map((s, i) => ({ name: s.stage, itemStyle: { color: STAGE_COLORS[i % STAGE_COLORS.length] } }));
-      const nodes = [], links = [];
-      stages.forEach((s, i) => {
-        let sum = 0;
-        s.list.forEach(p => { if (!S.isHiddenPosition(p)) sum += S.questionCountForPosition(p); });
-        nodes.push({ id: "stage" + i, name: s.stage, value: sum, symbolSize: 34, category: i, itemStyle: { borderWidth: 2.4, shadowBlur: 16 } });
-        s.list.forEach(p => {
-          if (S.isHiddenPosition(p)) return;
-          const n = S.questionCountForPosition(p);
-          nodes.push({ id: "p" + p.id, name: S.posFullName(p), value: n, symbolSize: sizeOf(n), category: i, _posId: p.id });
-          links.push({ source: "stage" + i, target: "p" + p.id });
-        });
-      });
-      setupGraph(chart, { nodes: nodes, links: links, categories: cats, dark: dark, repulsion: 240, edgeLength: [50, 150] });
-    });
-  }
-
-  /* =======================================================================
-   *  视图四：AI 生成题
-   * ===================================================================== */
-  function renderAI(box) {
-    const all = S.questions || [];
-    const aiQs = all.filter(q => q.source === "ai");
-
-    /* 来源归桶：真实 URL 统一算「外部文档」 */
-    const bucketOf = s => {
-      if (!s) return "other";
-      if (/^https?:\/\//i.test(s)) return "url";
-      if (s === "ai" || s === "manual" || s === "seed" || s === "principles") return s;
-      if (s === "import") return "other";
-      return "other";
     };
-    const B = [
-      { k: "ai", label: "AI 生成", color: "var(--c-ai)", desc: "由 AI 按主题自动产出" },
-      { k: "manual", label: "人工录入", color: "var(--c-primary)", desc: "手工整理录入" },
-      { k: "seed", label: "内置种子", color: "#10B981", desc: "随站点内置的初始题库" },
-      { k: "principles", label: "原理整理", color: "#8B5CF6", desc: "按技术原理体系化整理" },
-      { k: "url", label: "外部文档", color: "#F59E0B", desc: "来源为可访问的官方文档链接" },
-      { k: "other", label: "其他 / 未标注", color: "#94A3B8", desc: "导入或未标注来源" }
-    ];
-    const cnt = {};
-    all.forEach(q => { const k = bucketOf(q.source); cnt[k] = (cnt[k] || 0) + 1; });
-    const max = Math.max.apply(null, B.map(b => cnt[b.k] || 0).concat([1]));
+  }
 
-    /* AI 题目按技术分类归组 */
-    const groups = [];
-    const gmap = new Map();
-    aiQs.forEach(q => {
-      const key = q.catName || (q.catPath && q.catPath[0]) || "未分类";
-      if (!gmap.has(key)) { gmap.set(key, []); groups.push(key); }
-      gmap.get(key).push(q);
+  /* ============================ 通用：轨道图绘制 ============================ */
+  function drawOrbit(box, nodes, links, opt) {
+    opt = opt || {};
+    const holder = document.createElement("div");
+    holder.className = "panorama-chart pan-orbit-chart";
+    const wrap = document.createElement("div");
+    wrap.className = "pan-orbit-wrap";
+    wrap.innerHTML = '<div class="pan-orbit-rings"><span></span><span></span><span></span><span></span></div>';
+    wrap.appendChild(holder);
+    box.appendChild(wrap);
+
+    U.loadScript("echarts", U.ECHARTS_URL).then(function () {
+      if (!holder || !window.echarts) return;
+      const chart = echarts.init(holder, null, { renderer: "canvas" });
+      if (App && App.registerChart) App.registerChart(chart);
+      const labelColor = cssVar("--text") || "#334155";
+      const edgeColor = cssVar("--border") || "#cbd5e1";
+      chart.setOption({
+        backgroundColor: "transparent",
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(15,23,42,.92)",
+          borderWidth: 0,
+          padding: [8, 12],
+          textStyle: { color: "#e5e7eb", fontSize: 12 },
+          formatter: function (p) {
+            const d = p.data || {};
+            if (d._hub) return "<b>IT 技术全景</b><br/>21 个技术体系 · " + (S.questions ? S.questions.length : "") + " 道题";
+            if (d._stage) return "<b>" + esc(d.short) + "</b><br/>该时代的岗位簇";
+            const nm = d.short || d.name || "";
+            const c = d.count != null ? d.count : "";
+            const tag = d._posId != null ? "岗位" : (d._sub ? (d.layer != null ? LAYERS[d.layer].name + " · 细分" : "细分技术") : (d.layer != null ? LAYERS[d.layer].name : "技术体系"));
+            return "<b>" + esc(nm) + "</b><br/>" + esc(tag) + " · " + c + " 题";
+          }
+        },
+        series: [{
+          type: "graph",
+          layout: "none",
+          roam: true,
+          data: nodes,
+          links: links,
+          edgeSymbol: ["none", "none"],
+          lineStyle: { color: edgeColor, opacity: 0.32, width: 1, curveness: 0 },
+          label: {
+            show: true, position: "bottom", fontSize: 11, color: labelColor,
+            formatter: function (p) { return p.data.short || p.data.name; }
+          },
+          labelLayout: { hideOverlap: true },
+          emphasis: { focus: "adjacency", label: { show: true }, lineStyle: { width: 2, opacity: 0.85 } },
+          itemStyle: { borderColor: "#fff", borderWidth: 1 },
+          symbolSize: function (d) { return d.symbolSize || 20; }
+        }]
+      });
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(function () { try { chart.resize(); } catch (e) {} });
+        ro.observe(holder);
+      } else {
+        window.addEventListener("resize", function () { try { chart.resize(); } catch (e) {} });
+      }
+      chart.on("click", function (params) {
+        const d = params.data || {};
+        if (d._catId != null) App.go("/category?cat=" + d._catId);
+        else if (d._posId != null) App.go("/position/" + d._posId);
+      });
     });
+  }
 
-    box.innerHTML = `
-      <div class="panorama-summary">
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${aiQs.length}</div><div class="pan-sum-label">AI 生成题</div></div>
-        <div class="pan-sum"><div class="pan-sum-num">${pct(aiQs.length, all.length)}</div><div class="pan-sum-label">占全库比例</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-primary)">${groups.length}</div><div class="pan-sum-label">覆盖技术体系</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${all.length - aiQs.length}</div><div class="pan-sum-label">其他来源题目</div></div>
-      </div>
+  function legendHtml(layers, note) {
+    return '<div class="pan-legend">' +
+      layers.map(function (l) {
+        return '<span class="pan-legend-item"><i style="background:' + l.color + '"></i><b>' + esc(l.name) + "</b><em>" + esc(l.desc) + "</em></span>";
+      }).join("") +
+      (note ? '<div class="pan-legend-note">' + esc(note) + "</div>" : "") +
+      "</div>";
+  }
 
-      <div class="card" style="padding:18px">
-        <b>全库题目来源构成</b>
-        <div class="pan-src-list">
-          ${B.map(b => {
-            const n = cnt[b.k] || 0;
-            return `<a class="pan-src" href="#/questions?source=${encodeURIComponent(b.k === "url" ? "url" : b.k)}" title="${esc(b.desc)}">
-              <span class="pan-src-dot" style="background:${b.color}"></span>
-              <span class="pan-src-label">${esc(b.label)}</span>
-              <span class="pan-src-bar"><i style="width:${(n / max * 100).toFixed(1)}%;background:${b.color}"></i></span>
-              <span class="pan-src-num">${n}</span>
-            </a>`;
-          }).join("")}
-        </div>
-        <div class="muted" style="font-size:12px;margin-top:10px">点击来源可查看对应题目（外部文档来源按「有链接」筛出）</div>
-      </div>
+  /* ============================ 数据收集 ============================ */
+  function collectTops() {
+    const tree = (S.categoryTree && S.categoryTree()) || [];
+    return tree.map(function (t) {
+      return {
+        id: t.id, name: t.name, count: t.count || 0, layer: layerOf(t.name),
+        children: (t.children || []).map(function (c) { return { id: c.id, name: c.name, count: c.count || 0 }; })
+      };
+    });
+  }
 
-      <div class="section-head" style="margin-top:22px"><h2>AI 生成题目清单</h2><span class="muted" style="font-size:12px">共 ${aiQs.length} 题</span></div>
-      ${aiQs.length
-        ? groups.map(g => `
-            <div class="panorama-ai">
-              <div class="ai-group">
-                <div class="ai-group-title">${U.icon("layers")} ${esc(g)} <span class="muted">(${gmap.get(g).length})</span></div>
-                <div class="grid grid-cols-2">
-                  ${gmap.get(g).map(q => `
-                    <a class="card card-hover q-card" href="#/question/${q.id}">
-                      <div class="q-title">${esc(q.title)}</div>
-                      <div class="q-excerpt">${esc(String(q.body || "").replace(/[#*`>]/g, "").slice(0, 80))}</div>
-                      <div class="q-meta">
-                        <span class="tag diff-${esc(q.difficulty)}">${esc(q.difficulty)}</span>
-                        ${q.catName ? `<span class="tag tag-primary">${esc(q.catName)}</span>` : ""}
-                        ${(q.positionNames || []).slice(0, 2).map(p => `<span class="tag">${esc(p)}</span>`).join("")}
-                      </div>
-                    </a>`).join("")}
-                </div>
-              </div>
-            </div>`).join("")
-        : `<div class="empty"><h3>暂无 AI 生成的题目</h3><p class="secondary">可在管理后台用 AI 生成题目后回到这里查看。</p></div>`}
-    `;
+  /* ============================ 视图：题库全景 / 技术分类 ============================ */
+  function ringRadius(layer) { return [34, 64, 94, 124][layer]; }
+
+  function buildTechNodes(includeSubs) {
+    const tops = collectTops();
+    const nodes = [], links = [];
+    nodes.push({
+      id: "__hub__", name: "IT 技术全景", x: 0, y: 0, symbolSize: 46,
+      itemStyle: { color: "#64748b", shadowBlur: 20, shadowColor: "rgba(100,116,139,.5)" },
+      label: { show: true, position: "inside", color: "#fff", fontWeight: 700, fontSize: 12 },
+      _hub: true, short: "IT 技术全景"
+    });
+    const byLayer = [[], [], [], []];
+    tops.forEach(function (t) { byLayer[t.layer].push(t); });
+    byLayer.forEach(function (grp, L) {
+      const n = grp.length, step = 360 / n, off = L * 16;
+      grp.forEach(function (t, k) {
+        const ang = (off + k * step) * Math.PI / 180;
+        const r = ringRadius(L);
+        const x = +(r * Math.cos(ang)).toFixed(2), y = +(r * Math.sin(ang)).toFixed(2);
+        const color = LAYERS[L].color;
+        nodes.push({
+          id: "top" + t.id, name: t.name, x: x, y: y, symbolSize: sizeFor(t.count),
+          itemStyle: { color: color, shadowBlur: 14, shadowColor: hexA(color, 0.45) },
+          _catId: t.id, short: t.name, count: t.count, layer: L, label: { show: true }
+        });
+        links.push({ source: "__hub__", target: "top" + t.id, lineStyle: { opacity: 0.4, width: 1.2 } });
+      });
+    });
+    if (includeSubs) {
+      tops.forEach(function (t) {
+        const parent = nodes.filter(function (n) { return n._catId === t.id; })[0];
+        if (!parent) return;
+        const subs = (t.children || []).filter(function (s) { return s.count > 0; });
+        const m = subs.length;
+        if (!m) return;
+        const ang0 = Math.atan2(parent.y, parent.x);
+        const pr = ringRadius(t.layer);
+        const totalArc = 34, stepArc = m > 1 ? totalArc / (m - 1) : 0;
+        subs.forEach(function (s, k) {
+          const a = ang0 + (-totalArc / 2 + k * stepArc) * Math.PI / 180;
+          const rr = pr + 16 + (k % 3) * 7;
+          const x = +(rr * Math.cos(a)).toFixed(2), y = +(rr * Math.sin(a)).toFixed(2);
+          const color = LAYERS[t.layer].color;
+          nodes.push({
+            id: "sub" + s.id, name: s.name, x: x, y: y,
+            symbolSize: Math.max(7, Math.min(24, 8 + Math.sqrt(s.count) * 1.7)),
+            itemStyle: { color: color, opacity: 0.82, shadowBlur: 6, shadowColor: hexA(color, 0.3) },
+            _catId: s.id, short: s.name, count: s.count, layer: t.layer, label: { show: false }, _sub: true
+          });
+          links.push({ source: "top" + t.id, target: "sub" + s.id, lineStyle: { opacity: 0.16, width: 0.8 } });
+        });
+      });
+    }
+    return { nodes: nodes, links: links };
+  }
+
+  function summaryHtml() {
+    const tops = collectTops();
+    const total = S.questions ? S.questions.length : 0;
+    const topsWithQ = tops.filter(function (t) { return t.count > 0; }).length;
+    let subWithQ = 0;
+    tops.forEach(function (t) { (t.children || []).forEach(function (c) { if (c.count > 0) subWithQ++; }); });
+    const cards = [
+      { n: total, l: "题目总数" },
+      { n: topsWithQ, l: "有题技术体系" },
+      { n: subWithQ, l: "有题细分技术" },
+      { n: (S.positionsByStage ? S.positionsByStage().reduce(function (a, s) { return a + (s.positions ? s.positions.length : 0); }, 0) : 0), l: "覆盖岗位" }
+    ];
+    return '<div class="panorama-summary">' + cards.map(function (c) {
+      return '<div class="pan-sum"><div class="pan-sum-num">' + c.n + '</div><div class="pan-sum-label">' + esc(c.l) + "</div></div>";
+    }).join("") + "</div>";
+  }
+
+  function renderAll(box) {
+    box.innerHTML = summaryHtml() +
+      legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。点击节点看该方向的全部题目。") +
+      '<div class="pan-loading">轨道图加载中…</div>';
+    const g = buildTechNodes(false);
+    drawOrbit(box, g.nodes, g.links, {});
+  }
+
+  function renderCat(box) {
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系（大节点）周围聚集其细分技术点（小节点），同色即同属一个演进层。点击任意节点直达题目列表。</p>' +
+      legendHtml(LAYERS, "大节点 = 21 个技术体系，小节点 = 细分技术点；由内到外为技术演进层次。") +
+      '<div class="pan-loading">轨道图加载中…</div>';
+    const g = buildTechNodes(true);
+    drawOrbit(box, g.nodes, g.links, {});
+  }
+
+  /* ============================ 视图：覆盖岗位（按时代阶段） ============================ */
+  function renderPos(box) {
+    const stages = (S.positionsByStage && S.positionsByStage()) || [];
+    const nodes = [], links = [];
+    nodes.push({
+      id: "__hub__", name: "岗位全景", x: 0, y: 0, symbolSize: 44,
+      itemStyle: { color: "#64748b", shadowBlur: 20, shadowColor: "rgba(100,116,139,.5)" },
+      label: { show: true, position: "inside", color: "#fff", fontWeight: 700, fontSize: 12 },
+      _hub: true, short: "岗位全景"
+    });
+    const n = stages.length, step = 360 / n, R1 = 66, R2 = 118;
+    stages.forEach(function (st, i) {
+      const ang = (i * step - 90) * Math.PI / 180;
+      const ax = +(R1 * Math.cos(ang)).toFixed(2), ay = +(R1 * Math.sin(ang)).toFixed(2);
+      const color = STAGE_COLORS[i % STAGE_COLORS.length];
+      const anchorId = "stage" + i;
+      nodes.push({
+        id: anchorId, name: st.stage, x: ax, y: ay, symbolSize: 36,
+        itemStyle: { color: color, shadowBlur: 14, shadowColor: hexA(color, 0.4) },
+        short: st.stage, label: { show: true }, _stage: true
+      });
+      links.push({ source: "__hub__", target: anchorId, lineStyle: { opacity: 0.4, width: 1.2 } });
+      const positions = (st.positions || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
+      const m = positions.length, totalArc = Math.min(46, 360 / n * 0.85), stepArc = m > 1 ? totalArc / (m - 1) : 0;
+      positions.forEach(function (p, k) {
+        const a = ang + (-totalArc / 2 + k * stepArc) * Math.PI / 180;
+        const x = +(R2 * Math.cos(a)).toFixed(2), y = +(R2 * Math.sin(a)).toFixed(2);
+        const cnt = (S.questionCountForPosition ? S.questionCountForPosition(p) : 0) || 0;
+        const nm = S.posFullName ? S.posFullName(p) : (p.name || p.id);
+        nodes.push({
+          id: "pos" + p.id, name: nm, x: x, y: y,
+          symbolSize: Math.max(8, Math.min(26, 8 + Math.sqrt(cnt) * 2)),
+          itemStyle: { color: color, opacity: 0.85, shadowBlur: 6, shadowColor: hexA(color, 0.3) },
+          _posId: p.id, short: nm, count: cnt, label: { show: false }, _sub: true
+        });
+        links.push({ source: anchorId, target: "pos" + p.id, lineStyle: { opacity: 0.16, width: 0.8 } });
+      });
+    });
+    const stageLegend = stages.map(function (st, i) {
+      return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.positions ? st.positions.length : 0) + " 个岗位" };
+    });
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」由内到外环绕：中心出发，越往外越是 newer 的方向。</p>' +
+      legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。") +
+      '<div class="pan-loading">轨道图加载中…</div>';
+    drawOrbit(box, nodes, links, {});
+  }
+
+  /* ============================ 视图：AI 生成题 ============================ */
+  function renderAI(box) {
+    const qs = (S.questions || []).filter(function (q) { return q.status === "published" || q.status == null; });
+    const ai = qs.filter(function (q) { return q.source === "ai"; });
+    const groups = {};
+    ai.forEach(function (q) {
+      const key = q.catName || (q.catPath && q.catPath[0]) || "未分类";
+      (groups[key] = groups[key] || []).push(q);
+    });
+    const keys = Object.keys(groups).sort(function (a, b) { return groups[b].length - groups[a].length; });
+    box.innerHTML =
+      '<div class="panorama-summary"><div class="pan-sum"><div class="pan-sum-num">' + ai.length + '</div><div class="pan-sum-label">AI 生成题</div></div>' +
+      '<div class="pan-sum"><div class="pan-sum-num">' + keys.length + '</div><div class="pan-sum-label">涉及技术体系</div></div>' +
+      '<div class="pan-sum"><div class="pan-sum-num">' + qs.length + '</div><div class="pan-sum-label">题库总量</div></div>' +
+      '<div class="pan-sum"><div class="pan-sum-num">' + (qs.length ? Math.round(ai.length / qs.length * 100) : 0) + '%</div><div class="pan-sum-label">AI 占比</div></div></div>' +
+      '<div class="panorama-ai">' +
+      keys.map(function (k) {
+        const list = groups[k].map(function (q) {
+          return '<a class="q-card" href="#/question/' + q.id + '"><span class="q-title">' + esc(q.title) + "</span>" +
+            '<span class="q-meta">AI评分 ' + (q.aiScore || 0) + " · " + esc(q.difficulty || "中等") + "</span></a>";
+        }).join("");
+        return '<div class="ai-group"><div class="ai-group-title">' + (U.icon ? U.icon("layers") : "") + "<span>" + esc(k) + " (" + groups[k].length + ")</span></div>" + list + "</div>";
+      }).join("") +
+      "</div>";
+    const cards = box.querySelectorAll(".q-card");
+    Array.prototype.forEach.call(cards, function (c) {
+      c.onclick = function (e) { e.preventDefault(); App.go(c.getAttribute("href").slice(1)); };
+    });
   }
 })();
