@@ -307,6 +307,13 @@ def load_topics():
         return json.load(f)
 
 
+def save_topics(t):
+    """把更新后的经典主题清单写回 tools/classic-topics.json（保持 2 空格缩进）。"""
+    t["updated"] = time.strftime("%Y-%m-%d", time.localtime())
+    with open(TOPICS, "w", encoding="utf-8") as f:
+        json.dump(t, f, ensure_ascii=False, indent=2)
+
+
 def cmd_topic_next():
     """输出第一个未完成的经典主题（JSON），供自动化按链生成批次。"""
     t = load_topics()
