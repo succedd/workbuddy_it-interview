@@ -1,76 +1,890 @@
 {
   "note": "经典题转写任务清单：自动化每次运行先跑 enrich_questions.py --topic-next 取第一个未完成主题，按追问链生成 5-8 题批次（由浅入深、题间 relatedIds 串联），合并成功后用 --topic-done <id> --batch <批号> 标记完成。cat/positions 必须用 published.json 中真实存在的名称。",
-  "updated": "2026-08-29",
+  "updated": "2026-08-31",
   "topics": [
-    { "id": "T001", "domain": "公有云售后", "topic": "云服务售后：客户报障处理全流程场景题（受理→定位→处理→回访）", "cat": "华为云", "positions": ["公有云售后技术支持", "云计算工程师"], "source": "https://support.huaweicloud.com/", "count": 6, "done": false },
-    { "id": "T002", "domain": "公有云售后", "topic": "云监控告警响应与故障定位场景题（CPU 飙高/磁盘满/服务不可用）", "cat": "华为云", "positions": ["公有云售后技术支持", "系统运维工程师"], "source": "https://support.huaweicloud.com/", "count": 6, "done": false },
-    { "id": "T003", "domain": "公有云售后", "topic": "大客户答疑与投诉升级处理场景题（SLA/沟通/升级路径）", "cat": "华为云", "positions": ["公有云售后技术支持", "公有云售后技术支持"], "source": "https://support.huaweicloud.com/", "count": 5, "done": false },
-    { "id": "T004", "domain": "公有云售后", "topic": "云主机 ECS 日常运维场景题（登录/磁盘扩容/镜像/快照/重置）", "cat": "华为云", "positions": ["公有云售后技术支持", "系统运维工程师"], "source": "https://support.huaweicloud.com/", "count": 6, "done": false },
-    { "id": "T005", "domain": "公有云售后", "topic": "云安全日常：安全组/IAM/勒索防护场景题", "cat": "华为云", "positions": ["公有云售后技术支持", "云计算工程师"], "source": "https://support.huaweicloud.com/", "count": 5, "done": false },
-    { "id": "T006", "domain": "公有云售后", "topic": "负载均衡 ELB 与高可用架构场景题（健康检查/会话保持/跨可用区）", "cat": "华为云", "positions": ["公有云售后技术支持", "DevOps工程师"], "source": "https://support.huaweicloud.com/", "count": 6, "done": false },
-    { "id": "T007", "domain": "Java 后端", "topic": "HashMap 追问链：底层结构→put 流程→扩容→线程安全→ConcurrentHashMap", "cat": "Java", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 8, "done": false },
-    { "id": "T008", "domain": "Java 后端", "topic": "Java 并发基础追问链：线程生命周期→synchronized→锁升级→死锁", "cat": "Java", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 7, "done": false },
-    { "id": "T009", "domain": "Java 后端", "topic": "JUC 追问链：volatile→CAS→AQS→线程池参数与调优", "cat": "Java", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 8, "done": false },
-    { "id": "T010", "domain": "Java 后端", "topic": "JVM 追问链①：内存区域→类加载→双亲委派", "cat": "JVM调优", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 6, "done": false },
-    { "id": "T011", "domain": "Java 后端", "topic": "JVM 追问链②：GC 算法→垃圾收集器→OOM 排查与调优", "cat": "JVM调优", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 7, "done": false },
-    { "id": "T012", "domain": "Java 后端", "topic": "Spring 追问链：IoC 容器→Bean 生命周期→AOP 原理→循环依赖", "cat": "Spring", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 7, "done": false },
-    { "id": "T013", "domain": "Java 后端", "topic": "Spring 事务追问链：传播机制→失效场景→分布式事务衔接", "cat": "Spring", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 6, "done": false },
-    { "id": "T014", "domain": "Java 后端", "topic": "Spring Boot 追问链：自动配置→启动流程→Starter 原理", "cat": "Spring Boot", "positions": ["Java后端工程师"], "source": "https://spring.io/projects/spring-boot", "count": 6, "done": false },
-    { "id": "T015", "domain": "Java 后端", "topic": "MyBatis 追问链：执行流程→缓存→动态 SQL→插件", "cat": "MyBatis", "positions": ["Java后端工程师"], "source": "https://mybatis.org/mybatis-3/zh/", "count": 5, "done": false },
-    { "id": "T016", "domain": "Java 后端", "topic": "Java 基础高频：==与equals→String→异常体系→接口与抽象类", "cat": "Java", "positions": ["Java后端工程师"], "source": "https://github.com/CyC2018/CS-Notes", "count": 8, "done": false },
-    { "id": "T017", "domain": "数据库", "topic": "MySQL 索引追问链：为什么 B+ 树→索引失效→覆盖索引→最左前缀", "cat": "MySQL", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://www.xiaolincoding.com/", "count": 8, "done": false },
-    { "id": "T018", "domain": "数据库", "topic": "MySQL 事务追问链：隔离级别→MVCC→锁机制→幻读", "cat": "MySQL", "positions": ["Java后端工程师"], "source": "https://www.xiaolincoding.com/", "count": 8, "done": false },
-    { "id": "T019", "domain": "数据库", "topic": "MySQL 日志与高可用追问链：redo/undo/binlog→主从复制→读写分离", "cat": "MySQL", "positions": ["Java后端工程师", "系统运维工程师"], "source": "https://www.xiaolincoding.com/", "count": 6, "done": false },
-    { "id": "T020", "domain": "数据库", "topic": "SQL 优化追问链：慢查询定位→explain→深分页→大表优化", "cat": "数据库设计与调优", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://www.xiaolincoding.com/", "count": 6, "done": false },
-    { "id": "T021", "domain": "数据库", "topic": "Redis 数据结构追问链：5 大结构→应用场景→底层编码", "cat": "Redis", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://www.xiaolincoding.com/", "count": 8, "done": false },
-    { "id": "T022", "domain": "数据库", "topic": "Redis 缓存三大问题追问链：穿透→击穿→雪崩→与数据库一致性", "cat": "Redis", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://www.xiaolincoding.com/", "count": 7, "done": false },
-    { "id": "T023", "domain": "数据库", "topic": "Redis 高可用追问链：持久化→主从→哨兵→集群", "cat": "Redis", "positions": ["Java后端工程师", "系统运维工程师"], "source": "https://redis.io/docs/latest/", "count": 6, "done": false },
-    { "id": "T024", "domain": "网络", "topic": "TCP 深入追问链：三次握手→四次挥手→滑动窗口→拥塞控制", "cat": "TCP/IP协议", "positions": ["后端开发工程师", "网络运维工程师"], "source": "https://www.xiaolincoding.com/", "count": 8, "done": false },
-    { "id": "T025", "domain": "网络", "topic": "HTTP 演进追问链：1.0→1.1→2→3→常见状态码与缓存", "cat": "HTTP与HTTPS", "positions": ["前端开发工程师", "后端开发工程师"], "source": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP", "count": 7, "done": false },
-    { "id": "T026", "domain": "网络", "topic": "HTTPS 追问链：对称与非对称→TLS 握手→证书校验→抓包", "cat": "HTTP与HTTPS", "positions": ["后端开发工程师", "前端开发工程师"], "source": "https://www.xiaolincoding.com/", "count": 6, "done": false },
-    { "id": "T027", "domain": "网络", "topic": "DNS/CDN 追问链：递归迭代→缓存层级→CDN 回源与调度", "cat": "DNS原理", "positions": ["系统运维工程师", "后端开发工程师"], "source": "https://www.xiaolincoding.com/", "count": 6, "done": false },
-    { "id": "T028", "domain": "网络", "topic": "经典综合题：从输入 URL 到页面展示，中间发生了什么", "cat": "网络基础", "positions": ["前端开发工程师", "后端开发工程师", "技术经理"], "source": "https://github.com/CyC2018/CS-Notes", "count": 6, "done": false },
-    { "id": "T029", "domain": "操作系统", "topic": "进程线程追问链：区别→通信方式→协程→上下文切换成本", "cat": "操作系统原理", "positions": ["后端开发工程师", "系统运维工程师"], "source": "https://github.com/CyC2018/CS-Notes", "count": 7, "done": false },
-    { "id": "T030", "domain": "操作系统", "topic": "内存管理追问链：虚拟内存→缺页→页面置换算法→零拷贝", "cat": "操作系统原理", "positions": ["后端开发工程师"], "source": "https://github.com/CyC2018/CS-Notes", "count": 6, "done": false },
-    { "id": "T031", "domain": "Linux 运维", "topic": "Linux 高频命令追问链：文本三剑客→查找→权限→磁盘", "cat": "Linux操作系统", "positions": ["系统运维工程师", "公有云售后技术支持"], "source": "http://linux.vbird.org/", "count": 7, "done": false },
-    { "id": "T032", "domain": "Linux 运维", "topic": "Linux 性能排查追问链：CPU→内存→IO→网络（top/vmstat/iostat/sar）", "cat": "系统调优", "positions": ["系统运维工程师", "DevOps工程师"], "source": "https://www.brendangregg.com/linuxperf.html", "count": 6, "done": false },
-    { "id": "T033", "domain": "Linux 运维", "topic": "Shell 脚本追问链：变量→流程控制→函数→定时任务", "cat": "Shell脚本", "positions": ["系统运维工程师"], "source": "http://linux.vbird.org/", "count": 6, "done": false },
-    { "id": "T034", "domain": "Linux 运维", "topic": "系统服务追问链：systemd→journald→日志轮转→开机自启", "cat": "Linux操作系统", "positions": ["系统运维工程师"], "source": "https://www.freedesktop.org/wiki/Software/systemd/", "count": 5, "done": false },
-    { "id": "T035", "domain": "云原生", "topic": "Docker 追问链：镜像分层→容器与虚拟机→网络模式→Dockerfile 优化", "cat": "Docker", "positions": ["DevOps工程师", "系统运维工程师"], "source": "https://docs.docker.com/", "count": 7, "done": false },
-    { "id": "T036", "domain": "云原生", "topic": "K8s 核心追问链：Pod→Deployment→Service→Ingress", "cat": "Kubernetes", "positions": ["DevOps工程师", "云计算工程师"], "source": "https://kubernetes.io/zh-cn/docs/home/", "count": 8, "done": false },
-    { "id": "T037", "domain": "云原生", "topic": "K8s 排查追问链：Pod 起不来→CrashLoopBackOff→服务不通→资源不足", "cat": "Kubernetes", "positions": ["DevOps工程师", "系统运维工程师"], "source": "https://kubernetes.io/zh-cn/docs/home/", "count": 6, "done": false },
-    { "id": "T038", "domain": "云原生", "topic": "CI/CD 追问链：流水线设计→制品管理→灰度发布→回滚", "cat": "GitLab CI/CD", "positions": ["DevOps工程师"], "source": "https://docs.gitlab.com/ee/ci/", "count": 6, "done": false },
-    { "id": "T039", "domain": "云原生", "topic": "监控告警追问链：指标体系→Prometheus 原理→告警规则→Grafana 看板", "cat": "Prometheus", "positions": ["DevOps工程师", "公有云售后技术支持"], "source": "https://prometheus.io/docs/", "count": 6, "done": false },
-    { "id": "T040", "domain": "分布式", "topic": "CAP/BASE 追问链：三者取舍→常见组件归类→一致性算法入门", "cat": "CAP理论", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://github.com/CyC2018/CS-Notes", "count": 6, "done": false },
-    { "id": "T041", "domain": "分布式", "topic": "分布式事务追问链：2PC→TCC→本地消息表→最终一致性", "cat": "分布式事务", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 6, "done": false },
-    { "id": "T042", "domain": "分布式", "topic": "分布式锁与分布式 ID 追问链：Redis 锁→Redisson→看门狗→雪花算法", "cat": "分布式锁", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 5, "done": false },
-    { "id": "T043", "domain": "分布式", "topic": "Kafka 追问链：架构→顺序与重复→消费位移→性能为什么高", "cat": "Kafka", "positions": ["Java后端工程师", "后端开发工程师"], "source": "https://kafka.apache.org/documentation/", "count": 7, "done": false },
-    { "id": "T044", "domain": "分布式", "topic": "微服务追问链：拆分原则→注册发现→网关→配置中心", "cat": "微服务架构", "positions": ["Java后端工程师", "技术经理"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 6, "done": false },
-    { "id": "T045", "domain": "分布式", "topic": "服务治理追问链：熔断→限流→降级→Sentinel 实战", "cat": "服务治理", "positions": ["Java后端工程师"], "source": "https://github.com/alibaba/Sentinel/wiki", "count": 5, "done": false },
-    { "id": "T046", "domain": "前端", "topic": "JS 核心追问链：闭包→原型链→this→继承", "cat": "JavaScript基础", "positions": ["前端开发工程师"], "source": "https://developer.mozilla.org/zh-CN/", "count": 8, "done": false },
-    { "id": "T047", "domain": "前端", "topic": "事件循环追问链：调用栈→宏微任务→Promise→async/await", "cat": "JavaScript基础", "positions": ["前端开发工程师"], "source": "https://developer.mozilla.org/zh-CN/", "count": 7, "done": false },
-    { "id": "T048", "domain": "前端", "topic": "ES6+ 高频追问链：let/const→解构→箭头函数→模块化→Proxy", "cat": "JavaScript基础", "positions": ["前端开发工程师"], "source": "https://developer.mozilla.org/zh-CN/", "count": 6, "done": false },
-    { "id": "T049", "domain": "前端", "topic": "浏览器追问链：渲染流程→重排重绘→跨域→本地存储", "cat": "浏览器原理", "positions": ["前端开发工程师"], "source": "https://developer.mozilla.org/zh-CN/", "count": 7, "done": false },
-    { "id": "T050", "domain": "前端", "topic": "Vue3 追问链：响应式原理→生命周期→diff→组合式 API", "cat": "Vue3", "positions": ["前端开发工程师"], "source": "https://cn.vuejs.org/guide/introduction.html", "count": 7, "done": false },
-    { "id": "T051", "domain": "前端", "topic": "React 追问链：虚拟 DOM→Hooks→Fiber→状态管理", "cat": "React", "positions": ["前端开发工程师"], "source": "https://zh-hans.react.dev/learn", "count": 7, "done": false },
-    { "id": "T052", "domain": "前端", "topic": "前端性能追问链：加载指标→资源优化→渲染优化→监控", "cat": "前端性能优化", "positions": ["前端开发工程师"], "source": "https://web.dev/learn/performance", "count": 6, "done": false },
-    { "id": "T053", "domain": "算法", "topic": "数组与字符串高频题：双指针→滑动窗口→前缀和（含复杂度分析）", "cat": "算法", "positions": ["算法工程师", "Java后端工程师"], "source": "https://leetcode.cn/", "count": 7, "done": false },
-    { "id": "T054", "domain": "算法", "topic": "链表/栈/队列高频题：反转→合并→有效括号→单调栈", "cat": "数据结构", "positions": ["算法工程师", "Java后端工程师"], "source": "https://leetcode.cn/", "count": 6, "done": false },
-    { "id": "T055", "domain": "算法", "topic": "二叉树高频题：遍历→深度→翻转→LCA→层序", "cat": "数据结构", "positions": ["算法工程师", "Java后端工程师"], "source": "https://leetcode.cn/", "count": 6, "done": false },
-    { "id": "T056", "domain": "算法", "topic": "动态规划入门高频题：爬楼梯→打家劫舍→背包→最长子序列", "cat": "算法", "positions": ["算法工程师"], "source": "https://leetcode.cn/", "count": 6, "done": false },
-    { "id": "T057", "domain": "软件工程", "topic": "设计模式追问链：单例→工厂→策略→观察者→真实框架中的影子", "cat": "设计模式", "positions": ["Java后端工程师", "技术经理"], "source": "https://github.com/CyC2018/CS-Notes", "count": 7, "done": false },
-    { "id": "T058", "domain": "软件工程", "topic": "Git 协作追问链：常用操作→分支策略→冲突处理→rebase 与 merge", "cat": "Git版本控制", "positions": ["后端开发工程师", "前端开发工程师"], "source": "https://git-scm.com/book/zh/v2", "count": 5, "done": false },
-    { "id": "T059", "domain": "大模型", "topic": "Transformer 入门追问链：注意力→位置编码→架构对比→为什么有效", "cat": "Transformer架构", "positions": ["算法工程师"], "source": "https://arxiv.org/abs/1706.03762", "count": 6, "done": false },
-    { "id": "T060", "domain": "大模型", "topic": "RAG 追问链：为什么需要→切片与向量化→检索→生成与评估", "cat": "RAG检索增强生成", "positions": ["算法工程师", "后端开发工程师"], "source": "https://python.langchain.com/docs/introduction/", "count": 5, "done": false },
-    { "id": "T061", "domain": "大模型", "topic": "Prompt Engineering 追问链：结构化提示→少样本→思维链→幻觉抑制", "cat": "Prompt Engineering", "positions": ["算法工程师", "后端开发工程师"], "source": "https://platform.openai.com/docs/guides/prompt-engineering", "count": 5, "done": false },
-    { "id": "T062", "domain": "大模型", "topic": "模型部署追问链：量化→推理框架→显存优化→成本权衡", "cat": "模型部署优化", "positions": ["算法工程师"], "source": "https://huggingface.co/docs", "count": 5, "done": false },
-    { "id": "T063", "domain": "场景与软技能", "topic": "线上故障排查综合场景题：CPU 飙高/内存泄漏/OOM 三连", "cat": "系统调优", "positions": ["Java后端工程师", "系统运维工程师"], "source": "https://github.com/CyC2018/CS-Notes", "count": 6, "done": false },
-    { "id": "T064", "domain": "场景与软技能", "topic": "系统设计入门场景题：短链系统→秒杀→ feed 流（容量估算+权衡）", "cat": "软件架构模式", "positions": ["Java后端工程师", "技术经理"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 6, "done": false },
-    { "id": "T065", "domain": "场景与软技能", "topic": "自我介绍与项目表达追问链：STAR 法则→难点挖掘→量化结果", "cat": "自我介绍技巧", "positions": ["技术经理", "公有云售后技术支持"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 5, "done": false },
-    { "id": "T066", "domain": "场景与软技能", "topic": "职业规划与 HR 高频追问链：离职原因→优缺点→薪资谈判", "cat": "职业规划问答", "positions": ["技术经理", "公有云售后技术支持"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 5, "done": false },
-    { "id": "T067", "domain": "前端", "topic": "CSS 追问链：盒模型→BFC→定位→Flex/Grid 布局", "cat": "CSS", "positions": ["前端开发工程师"], "source": "https://developer.mozilla.org/zh-CN/", "count": 6, "done": false },
-    { "id": "T068", "domain": "数据库", "topic": "MongoDB/NoSQL 追问链：与关系型对比→文档模型→索引→适用场景", "cat": "MongoDB", "positions": ["后端开发工程师", "Java后端工程师"], "source": "https://www.mongodb.com/docs/", "count": 5, "done": false },
-    { "id": "T069", "domain": "数据库", "topic": "分库分表追问链：什么时候分→垂直水平→路由→分布式事务衔接", "cat": "数据库设计与调优", "positions": ["Java后端工程师"], "source": "https://github.com/Snailclimb/JavaGuide", "count": 5, "done": false },
-    { "id": "T070", "domain": "公有云售后", "topic": "对象存储与备份容灾追问链：OBS→生命周期→跨区容灾→恢复演练", "cat": "华为云", "positions": ["公有云售后技术支持", "云计算工程师"], "source": "https://support.huaweicloud.com/", "count": 5, "done": false }
+    {
+      "id": "T001",
+      "domain": "公有云售后",
+      "topic": "云服务售后：客户报障处理全流程场景题（受理→定位→处理→回访）",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "云计算工程师"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 6,
+      "done": true,
+      "batch": "2026-08-30-a"
+    },
+    {
+      "id": "T002",
+      "domain": "公有云售后",
+      "topic": "云监控告警响应与故障定位场景题（CPU 飙高/磁盘满/服务不可用）",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "系统运维工程师"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 6,
+      "done": true,
+      "batch": "2026-08-31-a"
+    },
+    {
+      "id": "T003",
+      "domain": "公有云售后",
+      "topic": "大客户答疑与投诉升级处理场景题（SLA/沟通/升级路径）",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "公有云售后技术支持"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T004",
+      "domain": "公有云售后",
+      "topic": "云主机 ECS 日常运维场景题（登录/磁盘扩容/镜像/快照/重置）",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "系统运维工程师"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T005",
+      "domain": "公有云售后",
+      "topic": "云安全日常：安全组/IAM/勒索防护场景题",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "云计算工程师"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T006",
+      "domain": "公有云售后",
+      "topic": "负载均衡 ELB 与高可用架构场景题（健康检查/会话保持/跨可用区）",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "DevOps工程师"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T007",
+      "domain": "Java 后端",
+      "topic": "HashMap 追问链：底层结构→put 流程→扩容→线程安全→ConcurrentHashMap",
+      "cat": "Java",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T008",
+      "domain": "Java 后端",
+      "topic": "Java 并发基础追问链：线程生命周期→synchronized→锁升级→死锁",
+      "cat": "Java",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T009",
+      "domain": "Java 后端",
+      "topic": "JUC 追问链：volatile→CAS→AQS→线程池参数与调优",
+      "cat": "Java",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T010",
+      "domain": "Java 后端",
+      "topic": "JVM 追问链①：内存区域→类加载→双亲委派",
+      "cat": "JVM调优",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T011",
+      "domain": "Java 后端",
+      "topic": "JVM 追问链②：GC 算法→垃圾收集器→OOM 排查与调优",
+      "cat": "JVM调优",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T012",
+      "domain": "Java 后端",
+      "topic": "Spring 追问链：IoC 容器→Bean 生命周期→AOP 原理→循环依赖",
+      "cat": "Spring",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T013",
+      "domain": "Java 后端",
+      "topic": "Spring 事务追问链：传播机制→失效场景→分布式事务衔接",
+      "cat": "Spring",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T014",
+      "domain": "Java 后端",
+      "topic": "Spring Boot 追问链：自动配置→启动流程→Starter 原理",
+      "cat": "Spring Boot",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://spring.io/projects/spring-boot",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T015",
+      "domain": "Java 后端",
+      "topic": "MyBatis 追问链：执行流程→缓存→动态 SQL→插件",
+      "cat": "MyBatis",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://mybatis.org/mybatis-3/zh/",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T016",
+      "domain": "Java 后端",
+      "topic": "Java 基础高频：==与equals→String→异常体系→接口与抽象类",
+      "cat": "Java",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T017",
+      "domain": "数据库",
+      "topic": "MySQL 索引追问链：为什么 B+ 树→索引失效→覆盖索引→最左前缀",
+      "cat": "MySQL",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T018",
+      "domain": "数据库",
+      "topic": "MySQL 事务追问链：隔离级别→MVCC→锁机制→幻读",
+      "cat": "MySQL",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T019",
+      "domain": "数据库",
+      "topic": "MySQL 日志与高可用追问链：redo/undo/binlog→主从复制→读写分离",
+      "cat": "MySQL",
+      "positions": [
+        "Java后端工程师",
+        "系统运维工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T020",
+      "domain": "数据库",
+      "topic": "SQL 优化追问链：慢查询定位→explain→深分页→大表优化",
+      "cat": "数据库设计与调优",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T021",
+      "domain": "数据库",
+      "topic": "Redis 数据结构追问链：5 大结构→应用场景→底层编码",
+      "cat": "Redis",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T022",
+      "domain": "数据库",
+      "topic": "Redis 缓存三大问题追问链：穿透→击穿→雪崩→与数据库一致性",
+      "cat": "Redis",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T023",
+      "domain": "数据库",
+      "topic": "Redis 高可用追问链：持久化→主从→哨兵→集群",
+      "cat": "Redis",
+      "positions": [
+        "Java后端工程师",
+        "系统运维工程师"
+      ],
+      "source": "https://redis.io/docs/latest/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T024",
+      "domain": "网络",
+      "topic": "TCP 深入追问链：三次握手→四次挥手→滑动窗口→拥塞控制",
+      "cat": "TCP/IP协议",
+      "positions": [
+        "后端开发工程师",
+        "网络运维工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T025",
+      "domain": "网络",
+      "topic": "HTTP 演进追问链：1.0→1.1→2→3→常见状态码与缓存",
+      "cat": "HTTP与HTTPS",
+      "positions": [
+        "前端开发工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T026",
+      "domain": "网络",
+      "topic": "HTTPS 追问链：对称与非对称→TLS 握手→证书校验→抓包",
+      "cat": "HTTP与HTTPS",
+      "positions": [
+        "后端开发工程师",
+        "前端开发工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T027",
+      "domain": "网络",
+      "topic": "DNS/CDN 追问链：递归迭代→缓存层级→CDN 回源与调度",
+      "cat": "DNS原理",
+      "positions": [
+        "系统运维工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://www.xiaolincoding.com/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T028",
+      "domain": "网络",
+      "topic": "经典综合题：从输入 URL 到页面展示，中间发生了什么",
+      "cat": "网络基础",
+      "positions": [
+        "前端开发工程师",
+        "后端开发工程师",
+        "技术经理"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T029",
+      "domain": "操作系统",
+      "topic": "进程线程追问链：区别→通信方式→协程→上下文切换成本",
+      "cat": "操作系统原理",
+      "positions": [
+        "后端开发工程师",
+        "系统运维工程师"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T030",
+      "domain": "操作系统",
+      "topic": "内存管理追问链：虚拟内存→缺页→页面置换算法→零拷贝",
+      "cat": "操作系统原理",
+      "positions": [
+        "后端开发工程师"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T031",
+      "domain": "Linux 运维",
+      "topic": "Linux 高频命令追问链：文本三剑客→查找→权限→磁盘",
+      "cat": "Linux操作系统",
+      "positions": [
+        "系统运维工程师",
+        "公有云售后技术支持"
+      ],
+      "source": "http://linux.vbird.org/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T032",
+      "domain": "Linux 运维",
+      "topic": "Linux 性能排查追问链：CPU→内存→IO→网络（top/vmstat/iostat/sar）",
+      "cat": "系统调优",
+      "positions": [
+        "系统运维工程师",
+        "DevOps工程师"
+      ],
+      "source": "https://www.brendangregg.com/linuxperf.html",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T033",
+      "domain": "Linux 运维",
+      "topic": "Shell 脚本追问链：变量→流程控制→函数→定时任务",
+      "cat": "Shell脚本",
+      "positions": [
+        "系统运维工程师"
+      ],
+      "source": "http://linux.vbird.org/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T034",
+      "domain": "Linux 运维",
+      "topic": "系统服务追问链：systemd→journald→日志轮转→开机自启",
+      "cat": "Linux操作系统",
+      "positions": [
+        "系统运维工程师"
+      ],
+      "source": "https://www.freedesktop.org/wiki/Software/systemd/",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T035",
+      "domain": "云原生",
+      "topic": "Docker 追问链：镜像分层→容器与虚拟机→网络模式→Dockerfile 优化",
+      "cat": "Docker",
+      "positions": [
+        "DevOps工程师",
+        "系统运维工程师"
+      ],
+      "source": "https://docs.docker.com/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T036",
+      "domain": "云原生",
+      "topic": "K8s 核心追问链：Pod→Deployment→Service→Ingress",
+      "cat": "Kubernetes",
+      "positions": [
+        "DevOps工程师",
+        "云计算工程师"
+      ],
+      "source": "https://kubernetes.io/zh-cn/docs/home/",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T037",
+      "domain": "云原生",
+      "topic": "K8s 排查追问链：Pod 起不来→CrashLoopBackOff→服务不通→资源不足",
+      "cat": "Kubernetes",
+      "positions": [
+        "DevOps工程师",
+        "系统运维工程师"
+      ],
+      "source": "https://kubernetes.io/zh-cn/docs/home/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T038",
+      "domain": "云原生",
+      "topic": "CI/CD 追问链：流水线设计→制品管理→灰度发布→回滚",
+      "cat": "GitLab CI/CD",
+      "positions": [
+        "DevOps工程师"
+      ],
+      "source": "https://docs.gitlab.com/ee/ci/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T039",
+      "domain": "云原生",
+      "topic": "监控告警追问链：指标体系→Prometheus 原理→告警规则→Grafana 看板",
+      "cat": "Prometheus",
+      "positions": [
+        "DevOps工程师",
+        "公有云售后技术支持"
+      ],
+      "source": "https://prometheus.io/docs/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T040",
+      "domain": "分布式",
+      "topic": "CAP/BASE 追问链：三者取舍→常见组件归类→一致性算法入门",
+      "cat": "CAP理论",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T041",
+      "domain": "分布式",
+      "topic": "分布式事务追问链：2PC→TCC→本地消息表→最终一致性",
+      "cat": "分布式事务",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T042",
+      "domain": "分布式",
+      "topic": "分布式锁与分布式 ID 追问链：Redis 锁→Redisson→看门狗→雪花算法",
+      "cat": "分布式锁",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T043",
+      "domain": "分布式",
+      "topic": "Kafka 追问链：架构→顺序与重复→消费位移→性能为什么高",
+      "cat": "Kafka",
+      "positions": [
+        "Java后端工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://kafka.apache.org/documentation/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T044",
+      "domain": "分布式",
+      "topic": "微服务追问链：拆分原则→注册发现→网关→配置中心",
+      "cat": "微服务架构",
+      "positions": [
+        "Java后端工程师",
+        "技术经理"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T045",
+      "domain": "分布式",
+      "topic": "服务治理追问链：熔断→限流→降级→Sentinel 实战",
+      "cat": "服务治理",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/alibaba/Sentinel/wiki",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T046",
+      "domain": "前端",
+      "topic": "JS 核心追问链：闭包→原型链→this→继承",
+      "cat": "JavaScript基础",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://developer.mozilla.org/zh-CN/",
+      "count": 8,
+      "done": false
+    },
+    {
+      "id": "T047",
+      "domain": "前端",
+      "topic": "事件循环追问链：调用栈→宏微任务→Promise→async/await",
+      "cat": "JavaScript基础",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://developer.mozilla.org/zh-CN/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T048",
+      "domain": "前端",
+      "topic": "ES6+ 高频追问链：let/const→解构→箭头函数→模块化→Proxy",
+      "cat": "JavaScript基础",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://developer.mozilla.org/zh-CN/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T049",
+      "domain": "前端",
+      "topic": "浏览器追问链：渲染流程→重排重绘→跨域→本地存储",
+      "cat": "浏览器原理",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://developer.mozilla.org/zh-CN/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T050",
+      "domain": "前端",
+      "topic": "Vue3 追问链：响应式原理→生命周期→diff→组合式 API",
+      "cat": "Vue3",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://cn.vuejs.org/guide/introduction.html",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T051",
+      "domain": "前端",
+      "topic": "React 追问链：虚拟 DOM→Hooks→Fiber→状态管理",
+      "cat": "React",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://zh-hans.react.dev/learn",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T052",
+      "domain": "前端",
+      "topic": "前端性能追问链：加载指标→资源优化→渲染优化→监控",
+      "cat": "前端性能优化",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://web.dev/learn/performance",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T053",
+      "domain": "算法",
+      "topic": "数组与字符串高频题：双指针→滑动窗口→前缀和（含复杂度分析）",
+      "cat": "算法",
+      "positions": [
+        "算法工程师",
+        "Java后端工程师"
+      ],
+      "source": "https://leetcode.cn/",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T054",
+      "domain": "算法",
+      "topic": "链表/栈/队列高频题：反转→合并→有效括号→单调栈",
+      "cat": "数据结构",
+      "positions": [
+        "算法工程师",
+        "Java后端工程师"
+      ],
+      "source": "https://leetcode.cn/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T055",
+      "domain": "算法",
+      "topic": "二叉树高频题：遍历→深度→翻转→LCA→层序",
+      "cat": "数据结构",
+      "positions": [
+        "算法工程师",
+        "Java后端工程师"
+      ],
+      "source": "https://leetcode.cn/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T056",
+      "domain": "算法",
+      "topic": "动态规划入门高频题：爬楼梯→打家劫舍→背包→最长子序列",
+      "cat": "算法",
+      "positions": [
+        "算法工程师"
+      ],
+      "source": "https://leetcode.cn/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T057",
+      "domain": "软件工程",
+      "topic": "设计模式追问链：单例→工厂→策略→观察者→真实框架中的影子",
+      "cat": "设计模式",
+      "positions": [
+        "Java后端工程师",
+        "技术经理"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 7,
+      "done": false
+    },
+    {
+      "id": "T058",
+      "domain": "软件工程",
+      "topic": "Git 协作追问链：常用操作→分支策略→冲突处理→rebase 与 merge",
+      "cat": "Git版本控制",
+      "positions": [
+        "后端开发工程师",
+        "前端开发工程师"
+      ],
+      "source": "https://git-scm.com/book/zh/v2",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T059",
+      "domain": "大模型",
+      "topic": "Transformer 入门追问链：注意力→位置编码→架构对比→为什么有效",
+      "cat": "Transformer架构",
+      "positions": [
+        "算法工程师"
+      ],
+      "source": "https://arxiv.org/abs/1706.03762",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T060",
+      "domain": "大模型",
+      "topic": "RAG 追问链：为什么需要→切片与向量化→检索→生成与评估",
+      "cat": "RAG检索增强生成",
+      "positions": [
+        "算法工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://python.langchain.com/docs/introduction/",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T061",
+      "domain": "大模型",
+      "topic": "Prompt Engineering 追问链：结构化提示→少样本→思维链→幻觉抑制",
+      "cat": "Prompt Engineering",
+      "positions": [
+        "算法工程师",
+        "后端开发工程师"
+      ],
+      "source": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T062",
+      "domain": "大模型",
+      "topic": "模型部署追问链：量化→推理框架→显存优化→成本权衡",
+      "cat": "模型部署优化",
+      "positions": [
+        "算法工程师"
+      ],
+      "source": "https://huggingface.co/docs",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T063",
+      "domain": "场景与软技能",
+      "topic": "线上故障排查综合场景题：CPU 飙高/内存泄漏/OOM 三连",
+      "cat": "系统调优",
+      "positions": [
+        "Java后端工程师",
+        "系统运维工程师"
+      ],
+      "source": "https://github.com/CyC2018/CS-Notes",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T064",
+      "domain": "场景与软技能",
+      "topic": "系统设计入门场景题：短链系统→秒杀→ feed 流（容量估算+权衡）",
+      "cat": "软件架构模式",
+      "positions": [
+        "Java后端工程师",
+        "技术经理"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T065",
+      "domain": "场景与软技能",
+      "topic": "自我介绍与项目表达追问链：STAR 法则→难点挖掘→量化结果",
+      "cat": "自我介绍技巧",
+      "positions": [
+        "技术经理",
+        "公有云售后技术支持"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T066",
+      "domain": "场景与软技能",
+      "topic": "职业规划与 HR 高频追问链：离职原因→优缺点→薪资谈判",
+      "cat": "职业规划问答",
+      "positions": [
+        "技术经理",
+        "公有云售后技术支持"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T067",
+      "domain": "前端",
+      "topic": "CSS 追问链：盒模型→BFC→定位→Flex/Grid 布局",
+      "cat": "CSS",
+      "positions": [
+        "前端开发工程师"
+      ],
+      "source": "https://developer.mozilla.org/zh-CN/",
+      "count": 6,
+      "done": false
+    },
+    {
+      "id": "T068",
+      "domain": "数据库",
+      "topic": "MongoDB/NoSQL 追问链：与关系型对比→文档模型→索引→适用场景",
+      "cat": "MongoDB",
+      "positions": [
+        "后端开发工程师",
+        "Java后端工程师"
+      ],
+      "source": "https://www.mongodb.com/docs/",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T069",
+      "domain": "数据库",
+      "topic": "分库分表追问链：什么时候分→垂直水平→路由→分布式事务衔接",
+      "cat": "数据库设计与调优",
+      "positions": [
+        "Java后端工程师"
+      ],
+      "source": "https://github.com/Snailclimb/JavaGuide",
+      "count": 5,
+      "done": false
+    },
+    {
+      "id": "T070",
+      "domain": "公有云售后",
+      "topic": "对象存储与备份容灾追问链：OBS→生命周期→跨区容灾→恢复演练",
+      "cat": "华为云",
+      "positions": [
+        "公有云售后技术支持",
+        "云计算工程师"
+      ],
+      "source": "https://support.huaweicloud.com/",
+      "count": 5,
+      "done": false
+    }
   ]
 }
