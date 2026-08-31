@@ -693,3 +693,7 @@ a.stat:active { transform: translateY(0); }
 .panorama-tree.pan-only-q .pan-empty { display: none; }
 .pan-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
 .pan-check input { accent-color: var(--c-primary); width: 15px; height: 15px; }
+
+/* 力导向星云图容器：径向渐变营造空间/星空立体感 */
+.panorama-chart { background: radial-gradient(circle at 50% 38%, #f8fafc 0%, #eef2f7 72%, #e6ecf3 100%); border-radius: 12px; }
+.panorama-chart.theme-dark { background: radial-gradient(circle at 50% 38%, #11315a 0%, #0b1c39 60%, #060e1d 100%); }

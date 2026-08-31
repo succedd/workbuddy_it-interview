@@ -1,9 +1,9 @@
 /* =========================================================================
  *  panorama.js — 题库全景图
  *  入口：首页 4 个统计卡片 → #/panorama?view=all | cat | pos | ai
- *    all  题库全景：ECharts 旭日图，圆环大小 = 题目数量，点色块直达题目
- *    cat  技术分类：可折叠的分类树（思维导图式），点节点看该分类题目
- *    pos  覆盖岗位：阶段 → 岗位族 → 具体岗位，点岗位进岗位题库
+ *    all  题库全景：力导向星云图，节点大小 = 题目数量，颜色分属 21 个技术体系
+ *    cat  技术分类：所有有题分类收进一张网状图，颜色按一级体系分组
+ *    pos  覆盖岗位：岗位按 8 个时代阶段聚成星簇，节点大小 = 题目数量
  *    ai   AI 生成题：来源构成 + AI 题目清单（按技术分类归组）
  *  依赖：utils.js(U) / services.js(Services) / app.js(App)，echarts 按需加载
  * ========================================================================= */
@@ -23,9 +23,9 @@
   }
 
   const VIEWS = [
-    { id: "all", label: "题库全景", icon: "pieChart", desc: "圆环大小 = 题目数量。内圈是技术体系，外圈是细分技术点，点任意色块直达题目列表。" },
-    { id: "cat", label: "技术分类", icon: "layers", desc: "全部技术分类逐层展开（思维导图式），点击任意节点查看该分类下的题目。" },
-    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按「时代阶段 → 岗位族 → 具体岗位」展开，点击进入岗位题库。" },
+    { id: "all", label: "题库全景", icon: "pieChart", desc: "节点网状漂浮，大小 = 题目数量，颜色分属 21 个技术体系；拖拽可旋转、滚轮可缩放，点击任意节点直达对应题目列表。" },
+    { id: "cat", label: "技术分类", icon: "layers", desc: "所有有题目的技术分类收进一张网状图，颜色按一级体系分组，点击节点查看该分类（含子分类）下的题目。" },
+    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按 8 个时代阶段聚成星簇，节点大小 = 题目数量，点击岗位进入岗位题库。" },
     { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "AI 生成的题目按技术分类归组，并给出全库题目的来源构成。" }
   ];
 
@@ -47,6 +47,11 @@
     "#DC2626", "#4F46E5", "#059669", "#D97706", "#9333EA", "#0D9488", "#E11D48", "#65A30D",
     "#1D4ED8", "#BE185D", "#B45309", "#0F766E", "#6D28D9", "#A16207", "#475569", "#9CA3AF"];
   function palette(i) { return PALETTE[i % PALETTE.length]; }
+  /* 8 个时代阶段配色 */
+  const STAGE_COLORS = ["#2563EB", "#059669", "#D97706", "#DB2777", "#7C3AED", "#0891B2", "#DC2626", "#65A30D"];
+  /* 题数 → 节点直径（sqrt 缩放，避免大头挤压） */
+  function sizeOf(n) { const v = Math.max(n || 0, 1); return Math.round(12 + Math.sqrt(v) * 5.4); }
+  function catsWithColor(names) { return names.map((n, i) => ({ name: n, itemStyle: { color: palette(i) } })); }
 
   /* ---------------- 页面骨架 ---------------- */
   function tabsHtml(cur) {
@@ -84,8 +89,74 @@
     }
   };
 
+  /* ---------------- 力导向图通用装配 ---------------- */
+  function setupGraph(chart, opt) {
+    const dark = !!opt.dark;
+    const labelColor = dark ? "#e2e8f0" : "#334155";
+    const borderColor = dark ? "#0b1220" : "#ffffff";
+    const cats = opt.categories || [];
+    chart.setOption({
+      tooltip: {
+        confine: true,
+        backgroundColor: dark ? "#1e293b" : "#ffffff",
+        borderColor: dark ? "#334155" : "#e2e8f0",
+        textStyle: { color: dark ? "#e2e8f0" : "#334155", fontSize: 12 },
+        formatter: function (p) {
+          const d = p.data || {};
+          if (d.value == null) return esc(d.name || "");
+          return "<b>" + esc(d.name) + "</b><br/>" + d.value + " 题";
+        }
+      },
+      legend: {
+        show: true, type: "scroll", orient: "horizontal", bottom: 2, left: "center",
+        itemWidth: 10, itemHeight: 10, itemGap: 10,
+        textStyle: { color: labelColor, fontSize: 11 }, inactiveColor: "#94a3b8",
+        data: cats.map(c => c.name)
+      },
+      series: [{
+        type: "graph", layout: "force", roam: true, draggable: true,
+        data: opt.nodes, links: opt.links, categories: cats,
+        force: {
+          repulsion: opt.repulsion || 200,
+          edgeLength: opt.edgeLength || [55, 130],
+          gravity: 0.05, friction: 0.12, layoutAnimation: true
+        },
+        scaleLimit: { min: 0.35, max: 4 },
+        label: { show: true, position: "right", fontSize: 10, color: labelColor, formatter: p => p.data.name },
+        lineStyle: { color: "source", opacity: 0.18, curveness: 0.08, width: 1 },
+        emphasis: { focus: "adjacency", label: { fontSize: 13, fontWeight: "bold" }, lineStyle: { width: 2.5, opacity: 0.5 } },
+        itemStyle: { borderColor: borderColor, borderWidth: 1.2, shadowBlur: 10, shadowColor: "rgba(15,23,42,0.20)" }
+      }]
+    });
+    chart.on("click", function (params) {
+      const d = params.data || {};
+      if (d._goto) { App.go(d._goto); return; }
+      if (d._catId != null) { App.go("/category?cat=" + d._catId); return; }
+      if (d._posId != null) { App.go("/position/" + d._posId); return; }
+    });
+  }
+
+  function mountForce(box, build) {
+    U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+      const holder = document.getElementById("panorama-chart");
+      if (!holder || !window.echarts) return;
+      const dark = isDark();
+      if (dark) holder.classList.add("theme-dark");
+      const chart = echarts.init(holder);
+      if (App && App.registerChart) App.registerChart(chart);
+      build(chart, dark);
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => { try { chart.resize(); } catch (e) {} });
+        ro.observe(holder);
+      }
+    }).catch(() => {
+      const holder = document.getElementById("panorama-chart");
+      if (holder) holder.innerHTML = `<div class="pan-loading muted">图表库加载失败，可使用上方速览卡片</div>`;
+    });
+  }
+
   /* =======================================================================
-   *  视图一：题库全景（旭日图）
+   *  视图一：题库全景（力导向星云图）
    * ===================================================================== */
   function renderAll(box) {
     const qs = S.questions || [];
@@ -93,9 +164,8 @@
     const total = qs.length;
     const published = qs.filter(q => q.status === "published").length;
     const topWithQ = tree.filter(c => (c.count || 0) > 0);
-    let allWithQ = 0;
-    (function walk(ns) { ns.forEach(n => { if ((n.count || 0) > 0) allWithQ++; walk(n.children || []); }); })(tree);
-    /* 未挂在任何分类下的题目（历史数据残留），单独成环，保证「题目总数」对得上 */
+    let subCount = 0;
+    topWithQ.forEach(c => { subCount += (c.children || []).filter(k => (k.count || 0) > 0).length; });
     const orphan = qs.filter(q => q.categoryId == null);
 
     box.innerHTML = `
@@ -103,22 +173,21 @@
         <div class="pan-sum"><div class="pan-sum-num">${total}</div><div class="pan-sum-label">题目总数</div></div>
         <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${published}</div><div class="pan-sum-label">已发布</div></div>
         <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${topWithQ.length}</div><div class="pan-sum-label">技术体系（一级）</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${Math.max(allWithQ - topWithQ.length, 0)}</div><div class="pan-sum-label">细分技术点（有题）</div></div>
+        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${subCount}</div><div class="pan-sum-label">细分技术点（有题）</div></div>
       </div>
 
       <div class="card panorama-chart-card">
         <div class="panorama-chart-head">
-          <div>
-            <b>技术体系分布全景</b>
+          <div><b>技术体系分布全景（力导向星云图）</b>
             <div class="muted" style="font-size:12px;line-height:1.5">
-              内圈 = 一级技术体系，外圈 = 细分技术点；「综合题」指直接挂在该体系下、不属于任何细分技术点的题目${orphan.length ? "；「未归类」指尚未挂到任何分类的题目" : ""}。点击任意色块直达题目列表。
+              节点大小 = 题目数量，颜色 = 21 个技术体系；拖拽旋转、滚轮缩放，点击任意节点直达题目列表${orphan.length ? "；灰色「未归类」为尚未挂到任何分类的题目" : ""}。
             </div>
           </div>
         </div>
         <div id="panorama-chart" class="panorama-chart"></div>
       </div>
 
-      <div class="section-head"><h2>技术体系速览</h2><a class="more" href="#/panorama?view=cat">树形展开 →</a></div>
+      <div class="section-head"><h2>技术体系速览</h2><a class="more" href="#/panorama?view=cat">查看分类星云 →</a></div>
       <div class="grid grid-cols-auto">
         ${topWithQ.sort((a, b) => b.count - a.count).map(c => `
           <a class="card card-hover pan-chip" href="#/category?cat=${c.id}">
@@ -135,117 +204,26 @@
       </div>
     `;
 
-    /* echarts 大库按需加载；加载失败时上方速览区依然可用 */
-    U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-      const holder = document.getElementById("panorama-chart");
-      if (!holder || !window.echarts) return;
-      holder.classList.add("chart-fade");
-      const dark = isDark();
-      const chart = echarts.init(holder);
-      if (App && App.registerChart) App.registerChart(chart);
-      const data = buildSunburst(topWithQ.slice().sort((a, b) => b.count - a.count));
-      if (orphan.length) {
-        data.push({
-          name: "未归类", value: orphan.length, realCount: orphan.length,
-          goto: "/questions?nocat=1",
-          itemStyle: { color: "#94A3B8" },
-          label: { color: dark ? "#cbd5e1" : "#475569" }
+    mountForce(box, function (chart, dark) {
+      const cats = catsWithColor(topWithQ.map(c => c.name));
+      const nodes = [], links = [];
+      topWithQ.forEach((c, i) => {
+        nodes.push({ id: "c" + c.id, name: c.name, value: c.count, symbolSize: sizeOf(c.count), category: i, _catId: c.id, itemStyle: { borderWidth: 2.4, shadowBlur: 18 } });
+        (c.children || []).filter(k => (k.count || 0) > 0).forEach(sub => {
+          nodes.push({ id: "c" + sub.id, name: sub.name, value: sub.count, symbolSize: sizeOf(sub.count), category: i, _catId: sub.id });
+          links.push({ source: "c" + c.id, target: "c" + sub.id });
         });
-      }
-      chart.setOption({
-        tooltip: {
-          trigger: "item",
-          confine: true,
-          backgroundColor: dark ? "#1e293b" : "#fff",
-          borderColor: dark ? "#334155" : "#e2e8f0",
-          textStyle: { color: dark ? "#e2e8f0" : "#334155", fontSize: 12 },
-          formatter: function (p) {
-            const c = (p.data && p.data.realCount != null) ? p.data.realCount : (p.value || 0);
-            const path = (p.treePathInfo || []).slice(1).map(x => x.name).join(" › ");
-            return "<b>" + esc(p.name) + "</b><br/>" + esc(path) + "<br/>" + c + " 题 · 占全库 " + pct(c, total);
-          }
-        },
-        series: [{
-          type: "sunburst",
-          data: data,
-          radius: [0, "96%"],
-          center: ["50%", "50%"],
-          sort: null,
-          nodeClick: false,
-          emphasis: { focus: "ancestor" },
-          levels: [
-            {},
-            {
-              r0: "16%", r: "50%",
-              label: { rotate: "tangential", fontSize: 11, minAngle: 12 },
-              itemStyle: { borderWidth: 2, borderColor: dark ? "#0f172a" : "#ffffff" }
-            },
-            {
-              r0: "51%", r: "84%",
-              label: { rotate: "radial", fontSize: 10, minAngle: 18 },
-              itemStyle: { borderWidth: 1.5, borderColor: dark ? "#0f172a" : "#ffffff" }
-            },
-            {
-              r0: "85%", r: "92%",
-              label: { position: "outside", fontSize: 9 },
-              itemStyle: { borderWidth: 1, borderColor: dark ? "#0f172a" : "#ffffff" }
-            }
-          ]
-        }]
       });
-      chart.on("click", function (params) {
-        const d = params.data || {};
-        if (d.goto) { App.go(d.goto); return; }
-        if (d.id != null) { App.go("/category?cat=" + d.id); return; }
-        /* 兜底：按名字反查分类 */
-        const c = S.getCategoryByName(String(params.name).replace(/（综合）$/, ""));
-        if (c) App.go("/category?cat=" + c.id);
-      });
-      if (window.ResizeObserver) {
-        const ro = new ResizeObserver(() => { try { chart.resize(); } catch (e) {} });
-        ro.observe(holder);
+      if (orphan.length) {
+        cats.push({ name: "未归类", itemStyle: { color: "#94A3B8" } });
+        nodes.push({ id: "orphan", name: "未归类", value: orphan.length, symbolSize: sizeOf(orphan.length), category: cats.length - 1, _goto: "/questions?nocat=1" });
       }
-    }).catch(() => {
-      const holder = document.getElementById("panorama-chart");
-      if (holder) holder.innerHTML = `<div class="pan-loading muted">图表库加载失败，可直接使用上方「技术体系速览」</div>`;
+      setupGraph(chart, { nodes: nodes, links: links, categories: cats, dark: dark, repulsion: 210, edgeLength: [60, 140] });
     });
   }
 
-  /* 旭日图数据：父节点不设 value，由子节点累加，保证比例精确 */
-  function buildSunburst(tree) {
-    function toNode(c, depth, color) {
-      const kids = (c.children || []).filter(k => (k.count || 0) > 0);
-      const direct = S.catDirect[c.id] || 0;
-      const node = { name: c.name, id: c.id, realCount: c.count || 0 };
-      if (!kids.length) {
-        node.value = Math.max(c.count || 0, 1);
-        if (color) node.itemStyle = { color: color };
-        return node;
-      }
-      node.children = kids.map(k => toNode(k, depth + 1));
-      if (direct > 0) {
-        node.children.push({
-          name: "综合题", id: c.id, value: direct, realCount: direct,
-          itemStyle: { color: color ? shade(color, 34) : undefined, opacity: .72 }
-        });
-      }
-      if (color) node.itemStyle = { color: color };
-      return node;
-    }
-    return tree.map((c, i) => toNode(c, 0, palette(i)));
-  }
-
-  function shade(hex, percent) {
-    const n = parseInt(hex.slice(1), 16);
-    const amt = Math.round(2.55 * percent);
-    const r = Math.min(255, (n >> 16) + amt);
-    const g = Math.min(255, ((n >> 8) & 255) + amt);
-    const b = Math.min(255, (n & 255) + amt);
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-  }
-
   /* =======================================================================
-   *  视图二：技术分类树
+   *  视图二：技术分类（力导向星云图）
    * ===================================================================== */
   function renderCat(box) {
     const tree = S.categoryTree();
@@ -253,70 +231,39 @@
     (function walk(ns) { ns.forEach(n => { total++; if ((n.count || 0) > 0) withQ++; walk(n.children || []); }); })(tree);
 
     box.innerHTML = `
-      <div class="panorama-toolbar">
-        <button class="btn btn-sm" id="pan-expand-all">${U.icon("plus")} 展开全部</button>
-        <button class="btn btn-sm" id="pan-collapse-all">${U.icon("x")} 折叠全部</button>
-        <label class="pan-check"><input type="checkbox" id="pan-only-q"> 只看有题目的分类</label>
-        <span class="muted" style="font-size:12px">共 ${total} 个分类，其中 ${withQ} 个已有题目；点击节点查看该分类下的全部题目（含子分类）</span>
+      <div class="panorama-summary">
+        <div class="pan-sum"><div class="pan-sum-num">${total}</div><div class="pan-sum-label">分类总数</div></div>
+        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${withQ}</div><div class="pan-sum-label">已有题目</div></div>
+        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${tree.length}</div><div class="pan-sum-label">一级技术体系</div></div>
+        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${total - tree.length}</div><div class="pan-sum-label">细分技术点</div></div>
       </div>
-      <div class="panorama-tree" id="pan-cat-tree">${tree.map(n => catNodeHtml(n, 0)).join("")}</div>
+      <div class="card panorama-chart-card">
+        <div class="panorama-chart-head">
+          <div><b>技术分类星云图</b>
+            <div class="muted" style="font-size:12px;line-height:1.5">所有有题目的分类收进一张网，颜色按一级体系分组；点击节点查看该分类（含子分类）下的题目。底部图例可单独显隐某个体系。</div>
+          </div>
+        </div>
+        <div id="panorama-chart" class="panorama-chart"></div>
+      </div>
     `;
 
-    const root = document.getElementById("pan-cat-tree");
-    /* 一级分类默认展开，更利于「一概全貌」 */
-    Array.prototype.forEach.call(root.querySelectorAll(":scope > .pan-node > .pan-row"), row => openRow(row, true));
-
-    root.addEventListener("click", function (e) {
-      const twist = e.target.closest(".twist");
-      if (twist && !twist.classList.contains("twist-empty")) {
-        e.stopPropagation();
-        toggleRow(twist.closest(".pan-row"));
-        return;
+    mountForce(box, function (chart, dark) {
+      const cats = catsWithColor(tree.map(c => c.name));
+      const nodes = [], links = [];
+      function rec(n, rootIdx, parentId) {
+        if ((n.count || 0) <= 0) return;
+        const isTop = parentId == null;
+        nodes.push({ id: "c" + n.id, name: n.name, value: n.count, symbolSize: sizeOf(n.count), category: rootIdx, _catId: n.id, itemStyle: isTop ? { borderWidth: 2.2, shadowBlur: 16 } : {} });
+        if (parentId) links.push({ source: parentId, target: "c" + n.id });
+        (n.children || []).forEach(c => rec(c, rootIdx, "c" + n.id));
       }
-      const row = e.target.closest(".pan-row");
-      if (row && row.dataset.id) App.go("/category?cat=" + row.dataset.id);
-    });
-    document.getElementById("pan-expand-all").onclick = () => setTreeOpen(root, true);
-    document.getElementById("pan-collapse-all").onclick = () => setTreeOpen(root, false);
-    document.getElementById("pan-only-q").onchange = e => root.classList.toggle("pan-only-q", !!e.target.checked);
-  }
-
-  function catNodeHtml(n, depth) {
-    const kids = n.children || [];
-    const cnt = n.count || 0;
-    const hasKids = kids.length > 0;
-    return `<div class="pan-node">
-      <div class="tree-row pan-row${cnt ? "" : " pan-empty"}" data-id="${n.id}" title="${esc(n.name)}${cnt ? "：" + cnt + " 题" : "：暂无题目"}" style="padding-left:${8 + depth * 20}px">
-        ${hasKids
-          ? `<span class="twist">${U.icon("chevronRight")}</span>`
-          : `<span class="twist twist-empty"></span>`}
-        <span class="tree-icon">${n.icon ? esc(n.icon) : (hasKids ? "📁" : "🏷️")}</span>
-        <span class="tree-label">${esc(n.name)}</span>
-        ${cnt
-          ? `<span class="tree-count">${cnt} 题</span>`
-          : `<span class="tree-count tree-count-zero">待补充</span>`}
-      </div>
-      ${hasKids ? `<div class="pan-children hidden">${kids.map(k => catNodeHtml(k, depth + 1)).join("")}</div>` : ""}
-    </div>`;
-  }
-
-  /* 展开/折叠一行：open 类挂在 .pan-row 上（复用侧边栏 .tree-row.open .twist 的旋转样式） */
-  function openRow(row, open) {
-    if (!row) return;
-    const wrap = row.parentElement.querySelector(":scope > .pan-children");
-    if (wrap) wrap.classList.toggle("hidden", !open);
-    row.classList.toggle("open", open);
-  }
-  function toggleRow(row) { if (row) openRow(row, !row.classList.contains("open")); }
-
-  function setTreeOpen(root, open) {
-    Array.prototype.forEach.call(root.querySelectorAll(".pan-row"), row => {
-      if (row.querySelector(":scope > .twist:not(.twist-empty)")) openRow(row, open);
+      tree.forEach((c, i) => rec(c, i, null));
+      setupGraph(chart, { nodes: nodes, links: links, categories: cats, dark: dark, repulsion: 180, edgeLength: [45, 120] });
     });
   }
 
   /* =======================================================================
-   *  视图三：覆盖岗位
+   *  视图三：覆盖岗位（力导向星云图）
    * ===================================================================== */
   function renderPos(box) {
     const stages = S.positionsByStage();
@@ -325,86 +272,39 @@
     let covered = 0;
     visible.forEach(p => { if (S.questionCountForPosition(p) > 0) covered++; });
 
-    const html = stages.map(s => {
-      /* 阶段内按 category（岗位族）归组；category 为空的直接挂在阶段下 */
-      const groups = [];
-      const map = new Map();
-      s.list.forEach(p => {
-        const key = p.category || "";
-        if (!map.has(key)) { map.set(key, []); groups.push(key); }
-        map.get(key).push(p);
-      });
-      const stageCount = s.list.length;
-      return `<div class="pan-node">
-        <div class="tree-row pan-row stage-row">
-          <span class="twist">${U.icon("chevronRight")}</span>
-          <span class="tree-icon">🗂️</span>
-          <span class="tree-label">${esc(s.stage)}</span>
-          <span class="tree-tag">${esc(s.list[0] && s.list[0].tag || "")}</span>
-          <span class="tree-count">${stageCount} 个岗位</span>
-        </div>
-        <div class="pan-children hidden">
-          ${groups.map(g => {
-            const list = map.get(g);
-            return g
-              ? `<div class="pan-node">
-                   <div class="tree-row pan-row group-row" style="padding-left:28px">
-                     <span class="twist">${U.icon("chevronRight")}</span>
-                     <span class="tree-icon">📂</span>
-                     <span class="tree-label">${esc(g)}</span>
-                     <span class="tree-count">${list.length} 个</span>
-                   </div>
-                   <div class="pan-children hidden">${list.map(p => posLeafHtml(p, 48)).join("")}</div>
-                 </div>`
-              : list.map(p => posLeafHtml(p, 28)).join("");
-          }).join("")}
-        </div>
-      </div>`;
-    }).join("");
-
     box.innerHTML = `
       <div class="panorama-summary">
         <div class="pan-sum"><div class="pan-sum-num">${all.length}</div><div class="pan-sum-label">岗位总数</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${covered}</div><div class="pan-sum-label">已有题目的岗位</div></div>
+        <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-success)">${covered}</div><div class="pan-sum-label">已有题目</div></div>
         <div class="pan-sum"><div class="pan-sum-num" style="color:var(--c-ai)">${stages.length}</div><div class="pan-sum-label">时代阶段</div></div>
-        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${visible.length}</div><div class="pan-sum-label">可进入的岗位</div></div>
+        <div class="pan-sum"><div class="pan-sum-num" style="color:#F59E0B">${visible.length}</div><div class="pan-sum-label">可进入岗位</div></div>
       </div>
-      <div class="panorama-toolbar">
-        <button class="btn btn-sm" id="pan-pos-expand">${U.icon("plus")} 展开全部</button>
-        <button class="btn btn-sm" id="pan-pos-collapse">${U.icon("x")} 折叠全部</button>
-        <span class="muted" style="font-size:12px">点击岗位进入岗位题库；灰色岗位为与技术分类同名的占位项，已隐藏入口</span>
+      <div class="card panorama-chart-card">
+        <div class="panorama-chart-head">
+          <div><b>岗位星云图</b>
+            <div class="muted" style="font-size:12px;line-height:1.5">岗位按 8 个时代阶段聚成星簇，节点大小 = 题目数量；点击岗位进入岗位题库。灰色占位岗位已隐藏入口。</div>
+          </div>
+        </div>
+        <div id="panorama-chart" class="panorama-chart"></div>
       </div>
-      <div class="panorama-tree" id="pan-pos-tree">${html}</div>
     `;
 
-    const root = document.getElementById("pan-pos-tree");
-    Array.prototype.forEach.call(root.querySelectorAll(":scope > .pan-node > .pan-row"), row => openRow(row, true));
-
-    root.addEventListener("click", function (e) {
-      const twist = e.target.closest(".twist");
-      if (twist && !twist.classList.contains("twist-empty")) {
-        e.stopPropagation();
-        toggleRow(twist.closest(".pan-row"));
-      }
+    mountForce(box, function (chart, dark) {
+      const cats = stages.map((s, i) => ({ name: s.stage, itemStyle: { color: STAGE_COLORS[i % STAGE_COLORS.length] } }));
+      const nodes = [], links = [];
+      stages.forEach((s, i) => {
+        let sum = 0;
+        s.list.forEach(p => { if (!S.isHiddenPosition(p)) sum += S.questionCountForPosition(p); });
+        nodes.push({ id: "stage" + i, name: s.stage, value: sum, symbolSize: 34, category: i, itemStyle: { borderWidth: 2.4, shadowBlur: 16 } });
+        s.list.forEach(p => {
+          if (S.isHiddenPosition(p)) return;
+          const n = S.questionCountForPosition(p);
+          nodes.push({ id: "p" + p.id, name: S.posFullName(p), value: n, symbolSize: sizeOf(n), category: i, _posId: p.id });
+          links.push({ source: "stage" + i, target: "p" + p.id });
+        });
+      });
+      setupGraph(chart, { nodes: nodes, links: links, categories: cats, dark: dark, repulsion: 240, edgeLength: [50, 150] });
     });
-    document.getElementById("pan-pos-expand").onclick = () => setTreeOpen(root, true);
-    document.getElementById("pan-pos-collapse").onclick = () => setTreeOpen(root, false);
-  }
-
-  function posLeafHtml(p, pad) {
-    const n = S.questionCountForPosition(p);
-    const hidden = S.isHiddenPosition(p);
-    const name = S.posFullName(p);
-    const inner = `
-      <span class="twist twist-empty"></span>
-      <span class="tree-icon">💼</span>
-      <span class="tree-label">${esc(name)}</span>
-      ${p.demand ? `<span class="tree-tag">需求${esc(p.demand)}</span>` : ""}
-      <span class="tree-count">${n} 题</span>`;
-    if (hidden) {
-      return `<div class="tree-row pan-row leaf-row hidden-pos" style="padding-left:${pad}px" title="${esc(name)}：该名称与技术分类同名，已隐藏入口">${inner}</div>`;
-    }
-    return `<a class="tree-row pan-row leaf-row" href="#/position/${p.id}" style="padding-left:${pad}px" title="${esc(name)}：${n} 题">${inner}</a>`;
   }
 
   /* =======================================================================
