@@ -9,9 +9,10 @@
 async function pageHelp() {
   document.title = "使用指南 · IT面试题库";
   const toc = [
-    ["quick", "🚀 快速上手"], ["find", "🔍 找题与浏览"], ["daily", "📚 日常学习"],
-    ["review", "🔁 复习与错题"], ["mock", "🎙️ 模拟面试"], ["account", "👤 账号与数据"],
-    ["share", "📤 分享"], ["admin", "🛠️ 管理员"], ["faq", "❓ 常见问题"],
+    ["quick", "🚀 快速上手"], ["find", "🔍 找题与浏览"], ["panorama", "🌐 题库全景图"],
+    ["daily", "📚 日常学习"], ["review", "🔁 复习与错题"], ["mock", "🎙️ 模拟面试"],
+    ["account", "👤 账号与数据"], ["share", "📤 分享"], ["admin", "🛠️ 管理员"],
+    ["faq", "❓ 常见问题"],
   ];
   const sec = (id, title, body) => `<div class="card" id="help-${id}" style="margin-top:14px"><h2 style="font-size:16px;margin-bottom:10px">${title}</h2>${body}</div>`;
   const li = (t, d) => `<div style="display:flex;gap:8px;padding:5px 0;line-height:1.65"><span style="flex:none">•</span><span><b>${t}</b>${d ? `<span class="muted"> —— ${d}</span>` : ""}</span></div>`;
@@ -33,6 +34,13 @@ async function pageHelp() {
       ${li("第一性原理必读", "每个技术域的题目列表最前面有一组置顶必读题：这门技术为什么诞生、核心思想是什么、边界在哪——先懂根子再刷细节")}
       ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
       ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序")}
+    `)}
+    ${sec("panorama", "🌐 题库全景图", `
+      ${li("首页数字可点", "首页的「技术分类 / 题目总数 / 覆盖岗位 / AI 生成题」四个统计数字都能点，分别跳转到对应全景视图")}
+      ${li("总览 · 旭日图", "「题目总数」视图用旭日图展示所有题目分布：内圈是 21 个一级技术体系，外圈是细分技术点，色块大小代表题目数量；点击任意色块直达该分类的题目列表")}
+      ${li("技术分类 · 思维导图", "「技术分类」视图把 279 个分类按层级展开成树，支持展开/折叠/只看有题目的分类；点击节点查看该分类（含子分类）全部题目")}
+      ${li("覆盖岗位 · 岗位树", "「覆盖岗位」视图按「阶段 → 岗位族 → 具体岗位」三级展开，点岗位进岗位题库，快速看清每个方向的题量")}
+      ${li("AI 生成题 · 来源透视", "「AI 生成题」视图先看全库来源构成（AI / 人工 / 种子 / 原理整理 / 外部文档 / 其他），再看 AI 生成题按技术分类归组的完整清单")}
     `)}
     ${sec("daily", "📚 日常学习", `
       ${li("刷题练习", "选分类 / 岗位 / 难度开一局，支持随机与顺序两种模式")}
@@ -82,7 +90,7 @@ async function pageHelp() {
       ${li("页面显示异常 / 数据不对？", "先强制刷新（电脑 Ctrl+Shift+R，手机清一下浏览器缓存）；仍有问题联系管理员")}
       ${li("题目答案有误？", "欢迎反馈给管理员纠错，题库会持续迭代")}
     `)}
-    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-08-30 · 更详细的开发文档见 GitHub 仓库 README</div>
+    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-08-31 · 更详细的开发文档见 GitHub 仓库 README</div>
   `);
   $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
     const el = document.getElementById(t.dataset.go);
