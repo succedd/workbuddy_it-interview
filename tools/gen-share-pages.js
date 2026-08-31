@@ -275,9 +275,10 @@ async function main() {
     { loc: `${SITE}/#/help`, priority: "0.6", freq: "weekly" },
     ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}.html`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
   ];
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\\n` +
-    sitemapUrls.map(u => `  <url>\\n    <loc>${u.loc}</loc>\\n    <lastmod>${u.lastmod ? new Date(u.lastmod).toISOString().slice(0, 10) : today}</lastmod>\\n    <changefreq>${u.freq}</changefreq>\\n    <priority>${u.priority}</priority>\\n  </url>`).join("\\n") +
-    `\\n</urlset>\\n`;
+  const NL = "\n";
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>${NL}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${NL}` +
+    sitemapUrls.map(u => `  <url>${NL}    <loc>${u.loc}</loc>${NL}    <lastmod>${u.lastmod ? new Date(u.lastmod).toISOString().slice(0, 10) : today}</lastmod>${NL}    <changefreq>${u.freq}</changefreq>${NL}    <priority>${u.priority}</priority>${NL}  </url>`).join(NL) +
+    `${NL}</urlset>${NL}`;
   fs.writeFileSync(path.join(__dirname, "..", "sitemap.xml"), xml, "utf8");
   console.log(`sitemap.xml 已更新（${sitemapUrls.length} 条）`);
 }
