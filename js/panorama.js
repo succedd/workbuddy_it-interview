@@ -102,54 +102,68 @@
     opt = opt || {};
     const holder = document.createElement("div");
     holder.className = "panorama-chart pan-orbit-chart";
+    holder.innerHTML = '<div class="pan-loading">轨道图加载中…</div>';
     const wrap = document.createElement("div");
     wrap.className = "pan-orbit-wrap";
     wrap.innerHTML = '<div class="pan-orbit-rings"><span></span><span></span><span></span><span></span></div>';
     wrap.appendChild(holder);
     box.appendChild(wrap);
 
+    function fail(msg) {
+      holder.innerHTML = '<div class="pan-loading" style="color:#ef4444">轨道图加载失败：' + esc(msg || "未知错误") + '</div>';
+    }
     U.loadScript("echarts", U.ECHARTS_URL).then(function () {
-      if (!holder || !window.echarts) return;
-      const chart = echarts.init(holder, null, { renderer: "canvas" });
+      if (!holder || !window.echarts) { fail("echarts 未就绪"); return; }
+      let chart;
+      try { chart = echarts.init(holder, null, { renderer: "canvas" }); }
+      catch (e) { fail(e.message); return; }
       if (App && App.registerChart) App.registerChart(chart);
+      chart.showLoading({ text: "轨道图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
       const labelColor = cssVar("--text") || "#334155";
       const edgeColor = cssVar("--border") || "#cbd5e1";
-      chart.setOption({
-        backgroundColor: "transparent",
-        tooltip: {
-          trigger: "item",
-          backgroundColor: "rgba(15,23,42,.92)",
-          borderWidth: 0,
-          padding: [8, 12],
-          textStyle: { color: "#e5e7eb", fontSize: 12 },
-          formatter: function (p) {
-            const d = p.data || {};
-            if (d._hub) return "<b>IT 技术全景</b><br/>21 个技术体系 · " + (S.questions ? S.questions.length : "") + " 道题";
-            if (d._stage) return "<b>" + esc(d.short) + "</b><br/>该时代的岗位簇";
-            const nm = d.short || d.name || "";
-            const c = d.count != null ? d.count : "";
-            const tag = d._posId != null ? "岗位" : (d._sub ? (d.layer != null ? LAYERS[d.layer].name + " · 细分" : "细分技术") : (d.layer != null ? LAYERS[d.layer].name : "技术体系"));
-            return "<b>" + esc(nm) + "</b><br/>" + esc(tag) + " · " + c + " 题";
-          }
-        },
-        series: [{
-          type: "graph",
-          layout: "none",
-          roam: true,
-          data: nodes,
-          links: links,
-          edgeSymbol: ["none", "none"],
-          lineStyle: { color: edgeColor, opacity: 0.32, width: 1, curveness: 0 },
-          label: {
-            show: true, position: "bottom", fontSize: 11, color: labelColor,
-            formatter: function (p) { return p.data.short || p.data.name; }
+      try {
+        chart.setOption({
+          backgroundColor: "transparent",
+          tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(15,23,42,.92)",
+            borderWidth: 0,
+            padding: [8, 12],
+            textStyle: { color: "#e5e7eb", fontSize: 12 },
+            formatter: function (p) {
+              const d = p.data || {};
+              if (d._hub) return "<b>IT 技术全景</b><br/>21 个技术体系 · " + (S.questions ? S.questions.length : "") + " 道题";
+              if (d._stage) return "<b>" + esc(d.short) + "</b><br/>该时代的岗位簇";
+              const nm = d.short || d.name || "";
+              const c = d.count != null ? d.count : "";
+              const tag = d._posId != null ? "岗位" : (d._sub ? (d.layer != null ? LAYERS[d.layer].name + " · 细分" : "细分技术") : (d.layer != null ? LAYERS[d.layer].name : "技术体系"));
+              return "<b>" + esc(nm) + "</b><br/>" + esc(tag) + " · " + c + " 题";
+            }
           },
-          labelLayout: { hideOverlap: true },
-          emphasis: { focus: "adjacency", label: { show: true }, lineStyle: { width: 2, opacity: 0.85 } },
-          itemStyle: { borderColor: "#fff", borderWidth: 1 },
-          symbolSize: function (d) { return d.symbolSize || 20; }
-        }]
-      });
+          series: [{
+            type: "graph",
+            layout: "none",
+            roam: true,
+            data: nodes,
+            links: links,
+            edgeSymbol: ["none", "none"],
+            lineStyle: { color: edgeColor, opacity: 0.32, width: 1, curveness: 0 },
+            label: {
+              show: true, position: "bottom", fontSize: 11, color: labelColor,
+              formatter: function (p) { return p.data.short || p.data.name; }
+            },
+            labelLayout: { hideOverlap: true },
+            emphasis: { focus: "adjacency", label: { show: true }, lineStyle: { width: 2, opacity: 0.85 } },
+            itemStyle: { borderColor: "#fff", borderWidth: 1 },
+            symbolSize: function (val, params) { return (params && params.data && params.data.symbolSize) || 20; }
+          }]
+        });
+        chart.hideLoading();
+      } catch (e) {
+        chart.hideLoading();
+        fail(e.message);
+        return;
+      }
       if (window.ResizeObserver) {
         const ro = new ResizeObserver(function () { try { chart.resize(); } catch (e) {} });
         ro.observe(holder);
@@ -161,7 +175,7 @@
         if (d._catId != null) App.go("/category?cat=" + d._catId);
         else if (d._posId != null) App.go("/position/" + d._posId);
       });
-    });
+    }).catch(function (e) { fail(e && e.message); });
   }
 
   function legendHtml(layers, note) {
@@ -260,16 +274,14 @@
 
   function renderAll(box) {
     box.innerHTML = summaryHtml() +
-      legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。点击节点看该方向的全部题目。") +
-      '<div class="pan-loading">轨道图加载中…</div>';
+      legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。点击节点看该方向的全部题目。");
     const g = buildTechNodes(false);
     drawOrbit(box, g.nodes, g.links, {});
   }
 
   function renderCat(box) {
     box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系（大节点）周围聚集其细分技术点（小节点），同色即同属一个演进层。点击任意节点直达题目列表。</p>' +
-      legendHtml(LAYERS, "大节点 = 21 个技术体系，小节点 = 细分技术点；由内到外为技术演进层次。") +
-      '<div class="pan-loading">轨道图加载中…</div>';
+      legendHtml(LAYERS, "大节点 = 21 个技术体系，小节点 = 细分技术点；由内到外为技术演进层次。");
     const g = buildTechNodes(true);
     drawOrbit(box, g.nodes, g.links, {});
   }
@@ -316,8 +328,7 @@
       return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.positions ? st.positions.length : 0) + " 个岗位" };
     });
     box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」由内到外环绕：中心出发，越往外越是 newer 的方向。</p>' +
-      legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。") +
-      '<div class="pan-loading">轨道图加载中…</div>';
+      legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。");
     drawOrbit(box, nodes, links, {});
   }
 
