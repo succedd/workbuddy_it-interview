@@ -94,15 +94,23 @@
     return JSON.parse(dec.decode(plain));
   };
 
-  /* ---------- 发布加密备份到 GitHub ---------- */
+  /* ---------- 发布加密备份到 GitHub ----------
+   * 双推 release + main + 配置分支（与题库发布一致）：恢复端 fetch 的是
+   * 站点同源（Pages 发布分支）的副本，只写单一分支会让恢复读到过期或 404。 */
   B.publishBackup = async function () {
     if (!Cloud || !Cloud.token()) throw new Error("尚未配置发布 Token");
     const pass = B.getPassphrase();
     if (!pass) throw new Error("尚未设置备份密码");
     const payload = await B.encrypt(await B.collect(), pass);
-    await Cloud.putFile(FILE_PATH, JSON.stringify(payload),
-      "备份本地数据（加密） " + new Date(payload.savedAt).toLocaleString("zh-CN"));
-    try { await DB.setSetting("backupAt", payload.savedAt); } catch (e) {}
+    const branches = [...new Set(["release", "main", Cloud.branch()])];
+    for (const br of branches) {
+      await Cloud.putFile(FILE_PATH, JSON.stringify(payload),
+        "备份本地数据（加密） " + new Date(payload.savedAt).toLocaleString("zh-CN"), br);
+    }
+    /* 写「备份时间」本身也是一次 settings 写入：不压制会被本模块自己的
+       settings 表钩子当作数据变化再次拉起备份，形成自触发死循环 */
+    B._suppress++;
+    try { await DB.setSetting("backupAt", payload.savedAt); } catch (e) {} finally { B._suppress--; }
     return { savedAt: payload.savedAt };
   };
 
@@ -182,7 +190,7 @@
     try {
       await B.publishBackup();
       B._state = "idle"; B._lastAt = Date.now(); B._lastError = "";
-      try { U.toast("本地数据已自动加密备份到云端", "success"); } catch (e) {}
+      /* 成功不弹 toast：顶栏徽章已示「✓ 已备云端」，自动备份高频触发时弹窗纯属打扰 */
     } catch (e) {
       B._state = "error"; B._lastError = String((e && e.message) || e);
       console.warn("自动备份失败", e);

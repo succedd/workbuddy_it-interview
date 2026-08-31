@@ -263,10 +263,8 @@
       await C.putFile(FILE_PATH, JSON.stringify(data), msg, br);
     }
     await DB.setSetting("cloudSyncedAt", data.publishedAt);
-    /* 顺带更新加密的本地数据备份（如已设置备份密码） */
-    try {
-      if (window.Backup && Backup.hasPassphrase()) await Backup.publishBackup();
-    } catch (e) { console.warn("备份未完成", e); }
+    /* 不再在此显式调 Backup.publishBackup：cloudSyncedAt 落库会经 settings 表
+       钩子让备份引擎 12 秒后自动接手，显式调用等于同一次改动备份两遍 */
     return { count: data.questions.length, positions: data.positions.length };
   };
   C.publish = async function () {
