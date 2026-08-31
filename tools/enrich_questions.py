@@ -449,15 +449,67 @@ def save_topics(t):
         json.dump(t, f, ensure_ascii=False, indent=2)
 
 
+# 取题轮转状态：记录上一轮命中的领域，保证跨域均匀铺开（避免云题扎堆）
+ROTATION_STATE = os.path.join(ROOT, "tools", ".topic_rotation.json")
+
+
+def _domain_order(t):
+    """领域轮转顺序：按在清单中首次出现的位置稳定排序。"""
+    seen = []
+    for x in t.get("topics", []):
+        d = x.get("domain") or "未分类"
+        if d not in seen:
+            seen.append(d)
+    return seen
+
+
+def _load_rotation():
+    try:
+        with open(ROTATION_STATE, encoding="utf-8") as f:
+            return json.load(f).get("last_domain")
+    except Exception:
+        return None
+
+
+def _save_rotation(domain):
+    try:
+        with open(ROTATION_STATE, "w", encoding="utf-8") as f:
+            json.dump({"last_domain": domain}, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
 def cmd_topic_next():
-    """输出第一个未完成的经典主题（JSON），供自动化按链生成批次。"""
+    """按领域轮转输出下一个未完成经典主题（JSON），使各技术体系均匀铺开。
+
+    轮转规则：从「上一轮命中领域」的下一个域开始，选第一个仍有未完成题的域，
+    取该域内列表顺序的第一道未完成题。状态持久化到 ROTATION_STATE，跨进程/跨天延续。
+    """
     t = load_topics()
     todo = [x for x in t.get("topics", []) if not x.get("done")]
     log("经典主题进度：%d/%d 已完成" % (len(t.get("topics", [])) - len(todo), len(t.get("topics", []))))
     if not todo:
         log("🎉 全部完成！可对已 done 主题做深度补充，或扩充 classic-topics.json")
         return
-    log(json.dumps(todo[0], ensure_ascii=False, indent=2))
+    order = _domain_order(t)
+    last = _load_rotation()
+    # 无状态文件时（含自动化首次/状态丢失），从「最近完成主题的域」之后起步，避免回退重做
+    if last is None or last not in order:
+        done_domains = [x.get("domain") or "未分类" for x in t.get("topics", []) if x.get("done")]
+        last = done_domains[-1] if done_domains else order[0]
+    start = (order.index(last) + 1) % len(order) if last in order else 0
+    chosen = None
+    for i in range(len(order)):
+        d = order[(start + i) % len(order)]
+        if any((x.get("domain") or "未分类") == d for x in todo):
+            chosen = d
+            break
+    if chosen is None:
+        chosen = order[start]
+    pick = next(x for x in todo if (x.get("domain") or "未分类") == chosen)
+    _save_rotation(chosen)
+    log("本轮命中域：%s（轮转序：%s）" % (chosen, " → ".join(order)))
+    log(json.dumps(pick, ensure_ascii=False, indent=2))
 
 
 def cmd_topic_done(tid, batch):
