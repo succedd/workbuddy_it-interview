@@ -112,6 +112,137 @@ def find_similar(nt, exist_norm):
     return (best, best_ratio) if best and best_ratio >= FUZZY_DUP_CUTOFF else None
 
 
+# ==================== 质量闸门（2026-08-31 新增） ====================
+# 闸门 1：来源 URL 可达性 —— 404/410 直接拒；网络异常/反爬降级放行，绝不因抖动卡死流水线
+# 闸门 2：答案结构 —— 只拦「又短又没条理」和「纯代码充数」，不干涉格式自由
+# 闸门 3：抽检回测 —— 独立脚本 tools/audit-sample.py，不在此处执行
+#
+# 阈值由存量 346 题实测标定：要点<2 且有效文字<200 时误伤率 3.8%，
+# 且命中的确实是 56~190 字的敷衍答案。只认 markdown 列表项会误伤 41%（存量主流是
+# 「**要点**：」加粗分段），故列表/加粗/小标题三种形式都计入要点。
+
+MIN_STRUCT_POINTS = int(os.environ.get("MIN_STRUCT_POINTS") or "2")
+STRUCT_PLAIN_TH = int(os.environ.get("STRUCT_PLAIN_TH") or "200")
+CODE_RATIO_TH = float(os.environ.get("CODE_RATIO_TH") or "0.7")
+CODE_PLAIN_TH = int(os.environ.get("CODE_PLAIN_TH") or "80")
+
+# 来源占位符（存量题大量使用：seed/manual/principles/ai），非 URL 时只告警
+# 自动化子进程常不继承 https_proxy，故以项目既定本机代理兜底
+DEFAULT_PROXY = os.environ.get("ITI_PROXY") or "http://127.0.0.1:7897"
+NET_CHECK = os.environ.get("SKIP_NET_CHECK") != "1"
+STRICT_SOURCE = os.environ.get("STRICT_SOURCE") == "1"
+
+RE_BULLET = re.compile(r"^([-*+]|\d+[.、)]|[一二三四五六七八九十]+[、.]"
+                       r"|[①②③④⑤⑥⑦⑧⑨⑩]|第[一二三四五六七八九十]+[、章])\s")
+RE_BOLD_HEAD = re.compile(r"^\*\*[^*]{1,24}\*\*\s*[：:]")
+RE_MD_HEAD = re.compile(r"^#{1,4}\s")
+
+_net_cache = {}
+
+
+def struct_points(answer):
+    """统计答案的结构化要点行数（加粗分段 / 列表项 / 小标题）。"""
+    n = 0
+    for line in answer.split("\n"):
+        s = line.strip()
+        if not s:
+            continue
+        if RE_BULLET.match(s) or RE_BOLD_HEAD.match(s) or RE_MD_HEAD.match(s):
+            n += 1
+    return n
+
+
+def plain_len(answer):
+    """去掉代码块与 markdown 记号后的有效文字长度。"""
+    return len(re.sub(r"```[\s\S]*?```|[#>*`\-|]", " ", answer).strip())
+
+
+def code_ratio(answer):
+    blocks = re.findall(r"```[\s\S]*?```", answer)
+    if not answer or not blocks:
+        return 0.0
+    return sum(len(b) for b in blocks) / len(answer)
+
+
+def check_answer_structure(answer, title):
+    """闸门 2：答案结构。拦「又短又没条理」+「纯代码充数」。"""
+    pl = plain_len(answer)
+    pts = struct_points(answer)
+    if pts < MIN_STRUCT_POINTS and pl < STRUCT_PLAIN_TH:
+        raise ValueError(
+            "答案缺乏结构化要点（要点 %d 个 < %d，有效文字 %d 字 < %d）：%s"
+            % (pts, MIN_STRUCT_POINTS, pl, STRUCT_PLAIN_TH, title[:40]))
+    if code_ratio(answer) > CODE_RATIO_TH and pl < CODE_PLAIN_TH:
+        raise ValueError(
+            "答案几乎全是代码、缺少讲解（代码块占比 > %.0f%%，讲解仅 %d 字）：%s"
+            % (CODE_RATIO_TH * 100, pl, title[:40]))
+
+
+def _proxy():
+    """取 curl 代理参数。
+
+    注意：本脚本常在自动化环境里跑，子进程不一定继承 https_proxy（实测为 None，
+    直连返回 000）。故以项目既定的本机代理 7897 作为兜底，可用 ITI_PROXY 覆盖。
+    """
+    p = (os.environ.get("ITI_PROXY")
+         or os.environ.get("https_proxy")
+         or os.environ.get("HTTPS_PROXY")
+         or DEFAULT_PROXY)
+    return ["-x", p] if p else []
+
+
+def _curl_status(url):
+    """用 curl 取 HTTP 状态码，失败返回 0。
+
+    必须用 curl 而非 urllib：urllib 走本机代理访问部分站点会返回异常状态码
+    （实测华为云文档全线 567），会制造大量假阳性把流水线卡死。
+    """
+    import tempfile
+    proxy = _proxy()
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".out")
+    tmp.close()
+    try:
+        cmd = ["curl", "-s", "-L", "--max-time", "12", "-o", tmp.name,
+               "-w", "%{http_code}", "-A",
+               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) it-interview-bot"]
+        cmd += proxy   # _proxy() 已返回 ["-x", <url>] 或 []
+        cmd.append(url)
+        out = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                             timeout=25, text=True)
+        code = (out.stdout or "").strip()
+        return int(code) if code.isdigit() else 0
+    except Exception:
+        return 0
+    finally:
+        try:
+            os.unlink(tmp.name)
+        except OSError:
+            pass
+
+
+def check_source(source, title):
+    """闸门 1：来源校验。URL 失活（404/410）直接拒；占位符或网络异常只告警。"""
+    src = (source or "").strip()
+    if not re.match(r"^https?://", src, re.I):
+        msg = "来源不是可溯源 URL（%s）：%s" % (src or "空", title[:40])
+        if STRICT_SOURCE:
+            raise ValueError(msg + " —— STRICT_SOURCE=1，已拒绝")
+        log("  ! " + msg + "（设 STRICT_SOURCE=1 可改为拒绝）")
+        return
+    if not NET_CHECK:
+        return
+    if src not in _net_cache:
+        _net_cache[src] = _curl_status(src)
+    code = _net_cache[src]
+    if code in (404, 410):
+        raise ValueError("来源 URL 已失效（HTTP %s）：%s —— %s"
+                         % (code, src[:70], title[:36]))
+    if code == 0:
+        log("  ! 来源可达性探测失败，放行：%s" % src[:70])
+    elif code >= 400:
+        log("  ! 来源返回 HTTP %s（多为反爬/需登录），放行：%s" % (code, src[:70]))
+
+
 def load_published():
     with open(PUBLISHED, encoding="utf-8") as f:
         return json.load(f)
@@ -203,6 +334,10 @@ def build_question(item, next_id, now, cat_by_name, pos_by_name, exist_norm):
         rel = src.lstrip("/").split("?")[0]
         if not os.path.exists(os.path.join(ROOT, rel)):
             raise ValueError("引用的本地图片不存在（%s）：%s" % (src, title[:40]))
+
+    # ---- 质检闸门（2026-08-31 新增）：来源可达性 + 答案结构 ----
+    check_source(source, title)
+    check_answer_structure(answer, title)
 
     return {
         "id": next_id,
