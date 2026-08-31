@@ -5,7 +5,7 @@
  *  - 跨域资源（jsdelivr CDN、百度统计、API worker）：不拦截，交由浏览器正常处理
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260829x";
+const VERSION = "20260831a";
 const CACHE = "iti-pwa-v" + VERSION;
 const APP_SHELL = [
   "/", "/index.html",
@@ -20,7 +20,7 @@ const APP_SHELL = [
   "/js/guide.js?v=" + VERSION, "/js/utils.js?v=" + VERSION, "/js/db.js?v=" + VERSION, "/js/auth.js?v=" + VERSION,
   "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
   "/js/services.js?v=" + VERSION, "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
-  "/js/importexport.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
+  "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
   "/data/seed.js?v=" + VERSION
 ];
 
