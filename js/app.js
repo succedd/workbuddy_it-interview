@@ -540,7 +540,7 @@
         : "";
 
       const allZero = weekQs === 0 && weekDays === 0 && weekWeakNew === 0;
-      const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
+      const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
 
       /* 近 8 周每周刷题数（不同题，与周报口径一致） */
       const weeks8 = Array.from({ length: 8 }, (_, i) => {
@@ -3486,6 +3486,17 @@
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
+      /* hash 路由盲区：点击「目标 hash 与当前 hash 相同」的站内链接（如面试报告页
+         的「再面一次」→ #/mock，报告本就渲染在 #/mock 下）不会触发 hashchange，
+         页面毫无反应；此处补一次与 hashchange 完全一致的重渲染 */
+      document.addEventListener("click", (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const a = e.target.closest && e.target.closest('a[href^="#/"]');
+        if (!a || a.target === "_blank") return;
+        if (a.getAttribute("href") !== location.hash) return;   // hash 有变化，交给原生 hashchange
+        e.preventDefault();
+        renderTopbar(); route();
+      });
       if (!location.hash) location.hash = "/";
       route();
       if (cloudPending) U.toast("检测到云端共享题库（" + cloudPending.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
