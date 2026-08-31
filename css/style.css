@@ -591,3 +591,105 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 .tm-chip i { font-style:normal; font-size:11px; color:var(--text-muted); }
 .tm-chip .tm-weak { color:#b45309; background:rgba(245,158,11,.16); border-radius:4px; padding:0 5px; font-weight:600; }
 .tm-chip.has-weak { border-color:rgba(245,158,11,.55); }
+
+/* ============================ 题库全景图（panorama） ============================ */
+a.stat { display: block; color: inherit; text-decoration: none; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+a.stat:hover { text-decoration: none; transform: translateY(-2px); border-color: var(--c-primary); box-shadow: var(--shadow-md); }
+a.stat.ai:hover { border-color: var(--c-ai); }
+a.stat:active { transform: translateY(0); }
+
+.panorama-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
+.panorama-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 15px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-secondary);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.panorama-tab:hover { text-decoration: none; border-color: var(--c-primary); color: var(--c-primary); }
+.panorama-tab.active { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+.panorama-tab .ic { width: 15px; height: 15px; }
+
+.panorama-body { min-height: 200px; }
+.pan-loading { padding: 40px 0; text-align: center; font-size: 13px; }
+
+.panorama-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+.pan-sum {
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; text-align: center; box-shadow: var(--shadow-sm);
+}
+.pan-sum-num { font-size: 26px; font-weight: 800; color: var(--c-primary); font-family: var(--font-mono); line-height: 1.2; }
+.pan-sum-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+.panorama-chart-card { padding: 18px; }
+.panorama-chart-head { margin-bottom: 6px; }
+.panorama-chart { width: 100%; height: 560px; }
+
+.panorama-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+
+/* ---- 树（思维导图式） ---- */
+.panorama-tree {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-elevated); padding: 8px; box-shadow: var(--shadow-sm);
+}
+.pan-node { user-select: none; }
+.panorama-tree .pan-row {
+  gap: 8px; padding: 7px 8px; border-radius: 8px; font-size: 13px;
+  color: var(--text); cursor: pointer; text-decoration: none; display: flex; align-items: center;
+}
+.panorama-tree .pan-row:hover { background: var(--bg-hover); }
+.panorama-tree a.pan-row:hover { text-decoration: none; background: var(--c-primary-50); color: var(--c-primary); }
+.panorama-tree .stage-row { font-weight: 700; background: var(--bg-subtle); }
+.panorama-tree .group-row { font-weight: 600; color: var(--text-secondary); }
+.panorama-tree .leaf-row { color: var(--text-secondary); }
+.panorama-tree .hidden-pos { opacity: .45; cursor: not-allowed; }
+.panorama-tree .hidden-pos:hover { background: transparent; color: var(--text-secondary); }
+.panorama-tree .pan-empty .tree-label { color: var(--text-muted); }
+.panorama-tree .twist { width: 14px; flex-shrink: 0; color: var(--text-muted); transition: transform .2s; display: inline-flex; }
+.panorama-tree .pan-row.open > .twist { transform: rotate(90deg); }
+.panorama-tree .twist .ic { width: 12px; height: 12px; }
+.panorama-tree .twist-empty { visibility: hidden; }
+.panorama-tree .tree-icon { flex-shrink: 0; font-size: 14px; line-height: 1; }
+.panorama-tree .tree-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panorama-tree .tree-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-subtle);
+  border: 1px solid var(--border); border-radius: 999px; padding: 0 7px; flex-shrink: 0;
+}
+.panorama-tree .tree-count {
+  margin-left: auto; flex-shrink: 0; font-size: 11px; font-weight: 600;
+  color: var(--c-primary); background: var(--c-primary-50); padding: 1px 8px; border-radius: 999px;
+}
+.panorama-tree .tree-count-zero { color: var(--text-muted); background: var(--bg-subtle); font-weight: 500; }
+.pan-children { margin-left: 14px; border-left: 1px dashed var(--border); padding-left: 4px; }
+
+/* ---- 技术体系速览小卡 ---- */
+.pan-chip { text-align: center; padding: 14px 10px; }
+.pan-chip-ic { font-size: 22px; line-height: 1; margin-bottom: 6px; }
+.pan-chip-name { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pan-chip-num { font-size: 12px; color: var(--c-primary); font-family: var(--font-mono); margin-top: 4px; }
+
+/* ---- AI 视图：来源构成条 ---- */
+.pan-src-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.pan-src { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-size: 13px; }
+.pan-src:hover { text-decoration: none; }
+.pan-src:hover .pan-src-label { color: var(--c-primary); }
+.pan-src-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.pan-src-label { width: 96px; flex-shrink: 0; color: var(--text-secondary); }
+.pan-src-bar { flex: 1; height: 8px; border-radius: 999px; background: var(--bg-subtle); overflow: hidden; min-width: 40px; }
+.pan-src-bar i { display: block; height: 100%; border-radius: 999px; }
+.pan-src-num { width: 48px; text-align: right; font-family: var(--font-mono); font-weight: 600; color: var(--text); }
+
+.panorama-ai .ai-group { margin-bottom: 6px; }
+.panorama-ai .ai-group-title {
+  display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700;
+  margin: 14px 0 10px; color: var(--text);
+}
+.panorama-ai .ai-group-title .ic { width: 16px; height: 16px; color: var(--c-primary); }
+
+@media (max-width: 980px) {
+  .panorama-summary { grid-template-columns: repeat(2, 1fr); }
+  .panorama-chart { height: 420px; }
+  .pan-src-label { width: 76px; font-size: 12px; }
+}
+.panorama-tree.pan-only-q .pan-empty { display: none; }
+.pan-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+.pan-check input { accent-color: var(--c-primary); width: 15px; height: 15px; }
