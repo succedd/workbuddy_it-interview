@@ -55,6 +55,7 @@
   };
 
   function clearCharts() { charts.forEach(c => { try { c.dispose(); } catch (e) {} }); charts = []; }
+  App.registerChart = function (chart) { charts.push(chart); };
 
   /* 页面级键盘快捷键：每次路由切换自动清理，避免监听器泄漏 */
   let pageKeyHandler = null;
@@ -106,6 +107,7 @@
         return pool.length ? App.go("/question/" + pool[Math.floor(Math.random() * pool.length)].id) : pageHome();
       }
       case "mock": return pageMock();
+      case "panorama": return pagePanorama(r.q);
       case "account": return window.Account ? Account.renderLoginPage() : pageHome();
       default: return page404(r.parts.join("/"));
     }
@@ -719,10 +721,10 @@
       </section>
 
       <section class="stat-grid" style="margin-top:28px">
-        <div class="stat"><div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div></div>
-        <div class="stat"><div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div></div>
-        <div class="stat"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></div>
-        <div class="stat ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></div>
+        <a class="stat" href="#/panorama?view=cat"><div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div></a>
+        <a class="stat" href="#/panorama?view=all"><div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div></a>
+        <a class="stat" href="#/panorama?view=pos"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></a>
+        <a class="stat ai" href="#/panorama?view=ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></a>
       </section>
 
       ${dueBannerHtml}
@@ -757,6 +759,14 @@
     };
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
+  }
+
+  /* ============================ 题库全景图 ============================ */
+  function pagePanorama(q) {
+    const view = (q && q.view) ? q.view : "all";
+    document.title = "题库全景 · IT面试题库";
+    if (!window.Panorama) { return App.go("/"); }
+    setMain(Panorama.html(view), () => Panorama.afterRender(view));
   }
 
   /* ============================ 技术体系页 ============================ */
@@ -1100,6 +1110,20 @@
 
     const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "" };
     const sortBy = q.sort || "updated";
+    if (q.nocat) base = base.filter(x => x.categoryId == null);   /* 全景图「未归类」节点跳转过来 */
+    /* 来源预筛选（题库全景图来源构成条跳转过来）：?source=ai|manual|import|seed|principles|url|other */
+    if (q.source) {
+      const sv = String(q.source);
+      if (sv === "ai" || sv === "manual" || sv === "import") {
+        filters.source = [sv];                                    // 与来源下拉框口径一致
+      } else if (sv === "url") {
+        base = base.filter(x => /^https?:\/\//i.test(x.source || ""));
+      } else if (sv === "other") {
+        base = base.filter(x => { const s = x.source || ""; return !/^https?:\/\//i.test(s) && ["ai", "manual", "seed", "principles", "import"].indexOf(s) < 0; });
+      } else {
+        base = base.filter(x => (x.source || "") === sv);         // seed / principles 等
+      }
+    }
 
     const apply = () => {
       let arr = Search.filter(base, filters);
@@ -1156,6 +1180,7 @@
     attachHistory($("#q-search"), t => { $("#q-search").value = t; filters.q = t; apply(); });
     $("#f-diff").onchange = e => { filters.difficulty = e.target.value ? [e.target.value] : []; apply(); };
     $("#f-type").onchange = e => { filters.type = e.target.value ? [e.target.value] : []; apply(); };
+    if (filters.source.length) { const f = $("#f-source"); if (f) f.value = filters.source[0]; }   // 同步来源下拉框（?source= 跳转时）
     $("#f-source").onchange = e => { filters.source = e.target.value ? [e.target.value] : []; apply(); };
     if (Auth.isAdmin()) $("#f-status").onchange = e => { filters.status = e.target.value ? [e.target.value] : []; apply(); };
     $$("#sort-seg button").forEach(b => b.onclick = () => {
