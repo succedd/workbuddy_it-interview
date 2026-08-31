@@ -91,6 +91,7 @@ def audit(q, check_source=False):
     row = {
         "id": q.get("id"),
         "title": q.get("title", ""),
+        "category": q.get("category", ""),
         "type": q.get("type", ""),
         "difficulty": q.get("difficulty", ""),
         "source": src,
@@ -152,7 +153,7 @@ def main():
         print()
         print("### #%s %s" % (r["id"], r["title"]))
         print()
-        print("- 分类/题型/难度：%s / %s / %s；入库：%s" % (r["type"], r["difficulty"], r["type"], r["created"]))
+        print("- 分类/题型/难度：%s / %s / %s；入库：%s" % (r["category"], r["type"], r["difficulty"], r["created"]))
         print("- 来源：%s" % (r["source"] or "—"))
         if r["flags"]:
             print("- **初筛提示**：%s" % "、".join(r["flags"]))
