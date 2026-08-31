@@ -18,8 +18,11 @@
 | MDN Web Docs | https://developer.mozilla.org | Web 标准/前端 |
 | LeetCode 题库 | https://leetcode.cn | 算法/编码 |
 | 各数据库官方文档 | PostgreSQL/MySQL/Redis/MongoDB 官网 | 数据存储 |
+| 腾讯云官方文档 | https://cloud.tencent.com/document | 云服务器CVM/负载均衡CLB/对象存储COS/安全组/CAM/服务计划(SLA)等云售后场景 |
 
 **硬性要求**：每题 `source` 必须为上表中的真实 URL（或等价的官方文档），禁止无出处编造。
+
+**云相关题目统一用腾讯云**：公有云售后域的所有题目（classic-topics.json 中 cat=腾讯云 的主题）一律引用腾讯云官方文档，不再引用华为云/AWS/阿里云。云与云概念互通，仅产品名不同（CVM↔ECS、CLB↔ELB、COS↔OBS、CAM↔IAM/RAM），出题时按腾讯云产品名与文档作答。
 
 ## 二、轮转表（按周轮换，21 个顶层技术域）
 
