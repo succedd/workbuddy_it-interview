@@ -389,9 +389,33 @@
         }]
       };
     }
+    /* 左右逻辑图（orthogonal）下，同一层兄弟节点会竖向堆叠；若画布高度不够，
+       标签会互相挤压交叠。按当前展开后「单层中最多节点数」动态给高，保证纵向间距。 */
+    function maxPerLevelVisible() {
+      let maxPer = 1;
+      (function rec(ns) {
+        if (!ns || !ns.length) return;
+        if (ns.length > maxPer) maxPer = ns.length;
+        ns.forEach(function (n) {
+          if (!n.collapsed && n.children && n.children.length) rec(n.children);
+        });
+      })(root.children);
+      return maxPer;
+    }
+    function resizeHolder() {
+      if (!holder) return;
+      if (layout === "orthogonal") {
+        const c = maxPerLevelVisible();
+        const h = Math.max(640, Math.min(3600, c * 26 + 60));
+        holder.style.height = h + "px";
+      } else {
+        holder.style.height = "";   /* 径向图用 CSS 默认高度即可 */
+      }
+    }
     function apply() {
       if (!chart) return;
-      try { chart.setOption(buildOption(), true); } catch (e) {}
+      resizeHolder();
+      try { chart.setOption(buildOption(), true); chart.resize(); } catch (e) {}
     }
     bar.addEventListener("click", function (e) {
       const b = e.target && e.target.closest ? e.target.closest(".pan-mm-btn") : null;
@@ -426,7 +450,8 @@
       catch (e) { fail(e.message); return; }
       if (App && App.registerChart) App.registerChart(chart);
       chart.showLoading({ text: "思维导图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
-      try { chart.setOption(buildOption(), true); chart.hideLoading(); chart.on("click", onNodeClick); }
+      resizeHolder();
+      try { chart.setOption(buildOption(), true); chart.resize(); chart.hideLoading(); chart.on("click", onNodeClick); }
       catch (e) { try { chart.hideLoading(); } catch (e2) {} fail(e.message); return; }
       if (window.ResizeObserver) {
         const ro = new ResizeObserver(function () { try { chart.resize(); } catch (e) {} });
