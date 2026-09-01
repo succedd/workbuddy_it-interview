@@ -739,8 +739,8 @@ body.pan-fs-lock { overflow: hidden; }
     radial-gradient(circle at 50% 46%, rgba(59,130,246,.16), transparent 56%),
     radial-gradient(circle at 50% 46%, transparent 52%, rgba(139,92,246,.14) 100%),
     var(--bg-elevated); }
-.pan-orbit-wrap:fullscreen .pan-orbit-chart,
-.pan-orbit-wrap:-webkit-full-screen .pan-orbit-chart { height: calc(100vh - 8px) !important; }
+.pan-orbit-wrap:fullscreen .pan-orbit-chart:not(.pan-mm-chart),
+.pan-orbit-wrap:-webkit-full-screen .pan-orbit-chart:not(.pan-mm-chart) { height: calc(100vh - 8px) !important; }
 .pan-orbit-wrap:fullscreen .pan-fs-legend,
 .pan-orbit-wrap:-webkit-full-screen .pan-fs-legend { display: flex; }
 
@@ -750,7 +750,7 @@ body.pan-fs-lock { overflow: hidden; }
     radial-gradient(circle at 50% 46%, rgba(59,130,246,.16), transparent 56%),
     radial-gradient(circle at 50% 46%, transparent 52%, rgba(139,92,246,.14) 100%),
     var(--bg-elevated); }
-.pan-orbit-wrap.pan-pseudo-fs .pan-orbit-chart { height: calc(100vh - 8px) !important; }
+.pan-orbit-wrap.pan-pseudo-fs .pan-orbit-chart:not(.pan-mm-chart) { height: calc(100vh - 8px) !important; }
 .pan-orbit-wrap.pan-pseudo-fs .pan-fs-legend { display: flex; }
 
 .pan-orbit-wrap:fullscreen .pan-fs-legend,
@@ -761,7 +761,7 @@ body.pan-fs-lock { overflow: hidden; }
   background: var(--bg-elevated); box-shadow: 0 4px 18px rgba(15,23,42,.1); }
 
 /* 左右逻辑图纵向堆叠，给更高的画布 */
-.pan-orbit-wrap.pan-mm-tall .pan-mm-chart { height: 900px; }
+.pan-orbit-wrap.pan-mm-tall .pan-mm-chart { height: 1600px; }
 @media (max-width: 980px) { .pan-orbit-wrap.pan-mm-tall .pan-mm-chart { height: 720px; } }
 
 /* 思维导图工具条（布局切换 / 展开收起 / 复位） */
