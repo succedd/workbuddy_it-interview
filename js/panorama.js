@@ -330,6 +330,7 @@
 
   function drawMindMap(box, root, opt) {
     opt = opt || {};
+    let layout = opt.layout === "orthogonal" ? "orthogonal" : "radial";
     const wrap = document.createElement("div");
     wrap.className = "pan-orbit-wrap pan-mm-wrap";
     wrap.innerHTML = '<div class="pan-orbit-rings"><span></span><span></span><span></span><span></span></div>';
@@ -341,7 +342,7 @@
     const bar = document.createElement("div");
     bar.className = "pan-mm-bar";
     bar.innerHTML =
-      '<button type="button" class="pan-mm-btn" data-act="layout">切为左右逻辑图</button>' +
+      '<button type="button" class="pan-mm-btn" data-act="layout">' + (layout === "radial" ? "切为左右逻辑图" : "切为径向图") + '</button>' +
       '<button type="button" class="pan-mm-btn" data-act="expand">展开全部</button>' +
       '<button type="button" class="pan-mm-btn" data-act="collapse">只看主干</button>' +
       '<button type="button" class="pan-mm-btn" data-act="fit">复位</button>' +
@@ -356,7 +357,7 @@
     box.appendChild(wrap);
 
     let chart = null;
-    let layout = "radial";
+
     let depth = opt.depth != null ? opt.depth : 2;
     const maxDepth = opt.maxDepth != null ? opt.maxDepth : 3;
     const fs = attachFullscreen(wrap, function () { return chart; }, [12, 14]);
@@ -848,7 +849,7 @@
       '<div class="pan-sum"><div class="pan-sum-num">' + (qs.length ? Math.round(ai.length / qs.length * 100) : 0) + '%</div><div class="pan-sum-label">AI 占比</div></div></div>' +
       '<p class="muted" style="margin:0 0 12px">仅展示 <b>AI 生成</b> 的题目（已与其他来源分开），按技术体系归类成思维导图：中心是 AI 题总量，往外一层是技术体系，再点开就是具体题目。点体系直达该体系题单，点题目直达详情。</p>';
     drawMindMap(box, buildAITree(), {
-      depth: 2, maxDepth: 3,
+      layout: "orthogonal", depth: 3, maxDepth: 3,
       note: "点技术体系节点直达该体系题单；点具体题目直达详情；结构节点（中心）点击展开/收起"
     });
   }
