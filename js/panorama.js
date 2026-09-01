@@ -318,6 +318,26 @@
     const maxDepth = opt.maxDepth != null ? opt.maxDepth : 3;
     const fs = attachFullscreen(wrap, function () { return chart; }, [12, 14]);
 
+    /* 用节点 collapsed 属性控制展开/收起：initialTreeDepth 在 data 引用不变时
+       ECharts 不会重算折叠状态，故展开/收起/复位改为直接改 collapsed（可靠生效）。 */
+    function walkClear(n) { if (!n) return; delete n.collapsed; (n.children || []).forEach(walkClear); }
+    function walkDepth(n, limit, cur) {
+      if (!n || !n.children || !n.children.length) return;
+      if (cur >= limit) n.collapsed = true; else delete n.collapsed;
+      n.children.forEach(function (c) { walkDepth(c, limit, cur + 1); });
+    }
+    function onNodeClick(params) {
+      const d = (params && params.data) || {};
+      if (d._qid != null) { fs.exit(); App.go("/question/" + d._qid); return; }
+      if (d.children && d.children.length) {           /* 分支节点：点击展开/收起下级 */
+        if (d.collapsed) delete d.collapsed; else d.collapsed = true;
+        apply();
+        return;
+      }
+      if (d._catId != null) { fs.exit(); App.go("/category?cat=" + d._catId); return; }
+      if (d._posId != null) { fs.exit(); App.go("/position/" + d._posId); return; }
+    }
+
     function fail(msg) {
       holder.innerHTML = '<div class="pan-loading" style="color:#ef4444">思维导图加载失败：' + esc(msg || "未知错误") + "</div>";
     }
@@ -352,7 +372,7 @@
           edgeShape: "curve",
           edgeForkPosition: "58%",
           roam: true,
-          expandAndCollapse: true,
+          expandAndCollapse: false,
           initialTreeDepth: depth,
           animationDuration: 420,
           animationDurationUpdate: 420,
@@ -383,9 +403,15 @@
         /* 左右逻辑图是纵向堆叠，展开后需要更高的画布才不挤 */
         wrap.classList.toggle("pan-mm-tall", layout === "orthogonal");
         apply();
-      } else if (act === "expand") { depth = maxDepth; apply(); }
-      else if (act === "collapse") { depth = 1; apply(); }
-      else if (act === "fit") { apply(); }
+      } else if (act === "expand") { walkClear(root); apply(); }
+      else if (act === "collapse") { walkDepth(root, 1, 0); apply(); }
+      else if (act === "fit") {
+        layout = "radial";
+        b.parentNode.querySelector('[data-act="layout"]').textContent = "切为左右逻辑图";
+        wrap.classList.remove("pan-mm-tall");
+        walkDepth(root, opt.depth != null ? opt.depth : 2, 0);
+        apply();
+      }
     });
     holder.addEventListener("click", function (e) {
       const a = e.target && e.target.closest ? e.target.closest(".pan-tip-link") : null;
@@ -400,7 +426,7 @@
       catch (e) { fail(e.message); return; }
       if (App && App.registerChart) App.registerChart(chart);
       chart.showLoading({ text: "思维导图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
-      try { chart.setOption(buildOption(), true); chart.hideLoading(); }
+      try { chart.setOption(buildOption(), true); chart.hideLoading(); chart.on("click", onNodeClick); }
       catch (e) { try { chart.hideLoading(); } catch (e2) {} fail(e.message); return; }
       if (window.ResizeObserver) {
         const ro = new ResizeObserver(function () { try { chart.resize(); } catch (e) {} });
