@@ -373,7 +373,6 @@
           edgeForkPosition: "58%",
           roam: true,
           expandAndCollapse: false,
-          initialTreeDepth: depth,
           animationDuration: 420,
           animationDurationUpdate: 420,
           symbol: "circle",
@@ -389,24 +388,25 @@
         }]
       };
     }
-    /* 左右逻辑图（orthogonal）下，同一层兄弟节点会竖向堆叠；若画布高度不够，
-       标签会互相挤压交叠。按当前展开后「单层中最多节点数」动态给高，保证纵向间距。 */
-    function maxPerLevelVisible() {
-      let maxPer = 1;
-      (function rec(ns) {
-        if (!ns || !ns.length) return;
-        if (ns.length > maxPer) maxPer = ns.length;
-        ns.forEach(function (n) {
-          if (!n.collapsed && n.children && n.children.length) rec(n.children);
-        });
-      })(root.children);
-      return maxPer;
+    /* 左右逻辑图（orthogonal）下，同一层兄弟节点竖向堆叠，且 ECharts 按「子树叶子数比例」
+       分配高度——若画布不够高，叶子密集的体系下标签必然交叠。故：① 左右图默认比径向图
+       少展开一层（effDepth），避免一上来就 185 个节点铺开；② 画布高度按「当前可见节点数」
+       动态给（≈每节点 32px），ECharts 按叶子比例分配后每个叶子都有足够纵向间距。 */
+    function effDepth() { return layout === "radial" ? depth : Math.max(1, depth - 1); }
+    function visibleNodeCount() {
+      let cnt = 0;
+      (function rec(n) {
+        if (!n) return;
+        cnt++;
+        if (n.collapsed) return;
+        (n.children || []).forEach(rec);
+      })(root);
+      return cnt;
     }
     function resizeHolder() {
       if (!holder) return;
       if (layout === "orthogonal") {
-        const c = maxPerLevelVisible();
-        const h = Math.max(640, Math.min(3600, c * 26 + 60));
+        const h = Math.max(640, Math.min(6000, visibleNodeCount() * 32));
         holder.style.height = h + "px";
       } else {
         holder.style.height = "";   /* 径向图用 CSS 默认高度即可 */
@@ -424,10 +424,15 @@
       if (act === "layout") {
         layout = layout === "radial" ? "orthogonal" : "radial";
         b.textContent = layout === "radial" ? "切为左右逻辑图" : "切为径向图";
-        /* 左右逻辑图是纵向堆叠，展开后需要更高的画布才不挤 */
+        /* 左右逻辑图是纵向堆叠，默认收一层 + 更高画布才不挤 */
         wrap.classList.toggle("pan-mm-tall", layout === "orthogonal");
+        walkDepth(root, effDepth(), 0);   /* 左右图默认收一层，避免一上来就挤成一团 */
         apply();
-      } else if (act === "expand") { walkClear(root); apply(); }
+      } else if (act === "expand") {
+        if (layout === "orthogonal") walkDepth(root, depth, 0);   /* 左右图展开到子类层，不自动铺技术层 */
+        else walkClear(root);
+        apply();
+      }
       else if (act === "collapse") { walkDepth(root, 1, 0); apply(); }
       else if (act === "fit") {
         layout = "radial";
@@ -450,6 +455,7 @@
       catch (e) { fail(e.message); return; }
       if (App && App.registerChart) App.registerChart(chart);
       chart.showLoading({ text: "思维导图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
+      walkDepth(root, effDepth(), 0);   /* 按当前布局设初始展开层级（左右图默认收一层） */
       resizeHolder();
       try { chart.setOption(buildOption(), true); chart.resize(); chart.hideLoading(); chart.on("click", onNodeClick); }
       catch (e) { try { chart.hideLoading(); } catch (e2) {} fail(e.message); return; }
