@@ -59,7 +59,7 @@
     { id: "all", label: "题库全景", icon: "pieChart", desc: "按技术演进由内到外展开的思维导图（可下钻到具体技术）" },
     { id: "cat", label: "技术分类", icon: "layers", desc: "21 个技术体系 → 子类（如关系型数据库）→ 具体技术（如 MySQL），每节点标题数" },
     { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按时代阶段 → 父岗位 → 子岗位三级组织，每节点标题数" },
-    { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "AI 生成题按分类组织的思维导图" }
+    { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "仅 AI 生成题，按技术体系组织的思维导图（点体系看题单、点题看详情）" }
   ];
 
   function tabsHtml(active) {
@@ -285,6 +285,48 @@
     };
   }
 
+  /* AI 生成题思维导图：只取 source==="ai" 的题目，按一级技术体系归类。
+     中心 = AI 题总量，分支 = 技术体系（点击直达该体系题单），叶 = 具体 AI 题（点击直达详情）。
+     与「题目来源」全景不同，本视图专指 AI 生成题，避免把全部来源混在一起。 */
+  function buildAITree() {
+    const qs = (S.questions || []).filter(function (q) { return (q.status === "published" || q.status == null) && q.source === "ai"; });
+    const topMap = buildCatTopMap();
+    const tops = S.categoryTree() || [];
+    const topNameToId = {};
+    tops.forEach(function (t) { topNameToId[t.name] = t.id; });
+    const groups = {};
+    qs.forEach(function (q) { const k = topMap[q.categoryId] || "未分类"; (groups[k] = groups[k] || []).push(q); });
+    const keys = Object.keys(groups).sort(function (a, b) { return groups[b].length - groups[a].length; });
+    return {
+      name: "AI 生成题", short: "AI 生成题  " + qs.length + " 题",
+      count: qs.length, symbolSize: 46,
+      itemStyle: { color: "#8b5cf6", borderColor: "#fff", borderWidth: 1 },
+      label: { color: "#fff", fontWeight: "bold", fontSize: 13 },
+      _hub: true, tip: qs.length + " 道 AI 生成题 · 按技术体系归类",
+      children: keys.map(function (k) {
+        const list = groups[k];
+        return {
+          name: k, short: k + "  " + list.length + " 题",
+          count: list.length,
+          symbolSize: Math.max(14, Math.min(44, 14 + Math.sqrt(list.length) * 2.6)),
+          itemStyle: { color: "#8b5cf6", opacity: 0.9, borderColor: "#fff", borderWidth: 1 },
+          label: { fontSize: 12 },
+          _catId: topNameToId[k] != null ? topNameToId[k] : undefined,
+          tip: k + " · " + list.length + " 道 AI 题",
+          children: list.map(function (q) {
+            const t = q.title || "";
+            return {
+              name: t, short: t.length > 18 ? t.slice(0, 18) + "…" : t,
+              symbolSize: 10, itemStyle: { color: "#a78bfa", opacity: 0.85 },
+              label: { fontSize: 10 },
+              _qid: q.id, tip: (q.difficulty || "中等") + " · 点击查看题目"
+            };
+          })
+        };
+      })
+    };
+  }
+
   function drawMindMap(box, root, opt) {
     opt = opt || {};
     const wrap = document.createElement("div");
@@ -328,14 +370,17 @@
     }
     function onNodeClick(params) {
       const d = (params && params.data) || {};
+      /* 带 id 的实体节点（题目 / 分类 / 岗位）：点击直达对应题单或题目详情。
+         注意顺序：先判 id，带 children 的「数据库」「关系型数据库」等分类/岗位节点
+         也直接跳题单，不再被下面的「展开/收起」吞掉 —— 这是「点节点回不到对应题」的根因。 */
       if (d._qid != null) { fs.exit(); App.go("/question/" + d._qid); return; }
-      if (d.children && d.children.length) {           /* 分支节点：点击展开/收起下级 */
-        if (d.collapsed) delete d.collapsed; else d.collapsed = true;
-        apply();
-        return;
-      }
       if (d._catId != null) { fs.exit(); App.go("/category?cat=" + d._catId); return; }
       if (d._posId != null) { fs.exit(); App.go("/position/" + d._posId); return; }
+      /* 纯结构节点（中心 / 演进层 / 时代阶段 / 来源支 / 体系支，无 id）：点击展开或收起下级 */
+      if (d.children && d.children.length) {
+        if (d.collapsed) delete d.collapsed; else d.collapsed = true;
+        apply();
+      }
     }
 
     function fail(msg) {
@@ -429,8 +474,7 @@
         walkDepth(root, effDepth(), 0);   /* 左右图默认收一层，避免一上来就挤成一团 */
         apply();
       } else if (act === "expand") {
-        if (layout === "orthogonal") walkDepth(root, depth, 0);   /* 左右图展开到子类层，不自动铺技术层 */
-        else walkClear(root);
+        walkClear(root);   /* 展开全部：清除所有 collapsed，一路铺到叶子（含具体题目） */
         apply();
       }
       else if (act === "collapse") { walkDepth(root, 1, 0); apply(); }
@@ -739,7 +783,7 @@
     box.innerHTML = summaryHtml() + lg;
     drawMindMap(box, buildTechTree(), {
       legendHtml: lg, depth: 2, maxDepth: 4,
-      note: "点节点展开下一级（体系 → 子类如「关系型数据库」→ 具体技术如「MySQL」）；滚轮缩放、拖拽平移"
+      note: "点技术体系节点直达该体系题单；结构节点（中心 / 演进层）点击展开下一级；滚轮缩放、拖拽平移"
     });
   }
 
@@ -748,7 +792,7 @@
     box.innerHTML = '<p class="muted" style="margin:0 0 12px">技术分类已细分到底：比如「数据库」下能看到「关系型数据库」「非关系型数据库」，再点开就能看到 MySQL / PostgreSQL / Redis 等具体技术，每个都标了题数。点节点直达题目列表。</p>' + lg;
     drawMindMap(box, buildTechTree(), {
       legendHtml: lg, depth: 3, maxDepth: 4,
-      note: "默认展开到「子类」一层；点具体技术（如 MySQL）再看它下面的题，或点「展开全部」铺开"
+      note: "点任一技术节点直达该分类题单（含其下所有题目）；点「展开全部」铺开结构，再点具体题目直达详情"
     });
   }
 
@@ -762,7 +806,7 @@
     box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」归组，再细分成父子岗位（如「硬件工程师」→「数字电路工程师 / 嵌入式硬件工程师」）。每个岗位都标了题数，点节点直达对应岗位题库。</p>' + lg;
     drawMindMap(box, buildPosTree(), {
       legendHtml: lg, depth: 2, maxDepth: 3,
-      note: "默认展开到父岗位；点父岗位展开它的子岗位（如硬件工程师 → 数字电路工程师）"
+      note: "点任一岗位节点直达该岗位题单；结构节点（中心 / 时代阶段）点击展开下一级"
     });
   }
 
@@ -779,10 +823,10 @@
       '<div class="pan-sum"><div class="pan-sum-num">' + aiTopCount + '</div><div class="pan-sum-label">涉及技术体系</div></div>' +
       '<div class="pan-sum"><div class="pan-sum-num">' + qs.length + '</div><div class="pan-sum-label">题库总量</div></div>' +
       '<div class="pan-sum"><div class="pan-sum-num">' + (qs.length ? Math.round(ai.length / qs.length * 100) : 0) + '%</div><div class="pan-sum-label">AI 占比</div></div></div>' +
-      '<p class="muted" style="margin:0 0 12px">全库题目按来源归类成思维导图：中心是题库总量，往外一层是 6 类来源，再展开是技术体系，最后一层是具体题目。</p>';
-    drawMindMap(box, buildSourceTree(), {
-      depth: 1, maxDepth: 2,
-      note: "点来源支展开技术体系，再点体系展开题目"
+      '<p class="muted" style="margin:0 0 12px">仅展示 <b>AI 生成</b> 的题目（已与其他来源分开），按技术体系归类成思维导图：中心是 AI 题总量，往外一层是技术体系，再点开就是具体题目。点体系直达该体系题单，点题目直达详情。</p>';
+    drawMindMap(box, buildAITree(), {
+      depth: 2, maxDepth: 3,
+      note: "点技术体系节点直达该体系题单；点具体题目直达详情；结构节点（中心）点击展开/收起"
     });
   }
 })();
