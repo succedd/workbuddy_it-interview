@@ -467,17 +467,23 @@
     }
     function resizeHolder() {
       if (!holder) return;
+      const n = visibleNodeCount();
       if (layout === "orthogonal") {
-        const h = Math.max(640, Math.min(6000, visibleNodeCount() * 32));
+        const h = Math.max(640, Math.min(6000, n * 32));
         holder.style.height = h + "px";
       } else {
-        holder.style.height = "";   /* 径向图用 CSS 默认高度即可 */
+        /* 径向图：节点多时也加高画布，让圆更大、放大拖动有空间、页面可滚动看全图；
+           否则固定 640px 视口下放大后内容超出 canvas 被裁，下面看不到 */
+        const h = Math.max(640, Math.min(2400, Math.round(n * 6 + 400)));
+        holder.style.height = h + "px";
       }
     }
     function apply() {
       if (!chart) return;
       resizeHolder();
-      try { chart.setOption(buildOption(), true); chart.resize(); } catch (e) {}
+      /* 先 resize 同步画布尺寸，再 setOption(notMerge) 重建：setOption 内部按新画布布局并读取
+         data.collapsed；若先 setOption 再 resize，resize 触发的重布局会忽略 collapsed 导致全展开 */
+      try { chart.resize(); chart.setOption(buildOption(), true); } catch (e) {}
     }
     bar.addEventListener("click", function (e) {
       const b = e.target && e.target.closest ? e.target.closest(".pan-mm-btn") : null;
