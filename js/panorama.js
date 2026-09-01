@@ -1,11 +1,12 @@
 /*
  * 题库全景图（panorama）
  * 视图：
- *   - all : 技术演进轨道图（由内到外：基石 → 系统开发 → 架构工程 → 数据与领域前沿）
- *   - cat : 同上，但把每个技术体系下的「细分技术点」作为卫星节点收进同一张网
- *   - pos : 岗位演进轨道图（按 8 个时代阶段由内到外环绕）
- *   - ai  : 来源构成 + AI 生成题清单
- * 设计目标：层次清晰（同心环）、按技术/岗位演进逻辑组织（由内到外）、立体（渐变背景 + 节点辉光）、不乱（固定极坐标布局，非力导向随机）
+ *   - all : 技术演进思维导图（中心 → 4 个演进层 → 21 个技术体系）
+ *   - cat : 同上，并展开到每个技术体系下的细分技术点
+ *   - pos : 岗位思维导图（中心 → 8 个时代阶段 → 具体岗位）
+ *   - ai  : AI 生成题思维导图（中心 → 技术体系 → 具体题目）
+ * 设计目标：逻辑直观（树形从属关系，一眼看出谁属于谁）、按技术/岗位演进组织（由内到外）、
+ *           数量再多也不乱（默认只展开主干，逐级下钻；径向 / 左右两种布局可切换）
  * 依赖：utils.js(U) / services.js(Services) / app.js(App)，echarts 按需加载
  */
 (function () {
@@ -55,10 +56,10 @@
 
   /* ============================ 对外接口 ============================ */
   const VIEWS = [
-    { id: "all", label: "题库全景", icon: "pieChart", desc: "按技术演进由内到外展开的轨道图" },
-    { id: "cat", label: "技术分类", icon: "layers", desc: "21 个技术体系 + 细分技术点，按演进分层" },
-    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按时代阶段由内到外环绕" },
-    { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "来源构成与 AI 生成题清单" }
+    { id: "all", label: "题库全景", icon: "pieChart", desc: "按技术演进由内到外展开的思维导图" },
+    { id: "cat", label: "技术分类", icon: "layers", desc: "21 个技术体系 + 细分技术点的思维导图" },
+    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按时代阶段组织的思维导图" },
+    { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "AI 生成题按分类组织的思维导图" }
   ];
 
   function tabsHtml(active) {
@@ -81,7 +82,7 @@
         view = VIEWS.some(v => v.id === view) ? view : "all";
         return breadcrumb(view) +
           '<h1 class="page-title">题库全景</h1>' +
-          '<p class="muted" style="margin:-6px 0 14px">一眼看全 ' + (S.questions ? S.questions.length : "") + ' 道题都分布在哪些技术、哪些岗位；点击任意节点直达题目列表。</p>' +
+          '<p class="muted" style="margin:-6px 0 14px">一张思维导图看全 ' + (S.questions ? S.questions.length : "") + ' 道题都分布在哪些技术、哪些岗位：由内到外是技术演进，逐级展开是从属关系；悬停节点点「查看题目」直达。</p>' +
           tabsHtml(view) +
           '<div class="panorama-body" id="panorama-body"></div>';
       },
@@ -97,10 +98,294 @@
     };
   }
 
+  /* ============================ 思维导图（ECharts tree） ============================ */
+  /* 以「从属关系」组织：中心主题 → 主干（演进层 / 时代阶段）→ 分支（技术体系 / 岗位）→ 叶（细分技术点 / 题目）。
+     折叠下钻天然解决节点过多：默认只展开主干，点分支再展开下一级。支持径向与左右两种布局。 */
+
+  function buildTechTree(includeSubs) {
+    const tops = collectTops();
+    const layerNodes = LAYERS.map(function (L) {
+      return {
+        name: L.name, short: L.name, count: 0, symbolSize: 26,
+        itemStyle: { color: L.color },
+        label: { color: L.color, fontWeight: "bold", fontSize: 13 },
+        _layer: true, tip: L.desc, children: []
+      };
+    });
+    tops.forEach(function (t) {
+      const subs = (t.children || []).filter(function (c) { return c.count > 0; });
+      const node = {
+        name: t.name, short: t.name, count: t.count, symbolSize: sizeFor(t.count),
+        itemStyle: { color: LAYERS[t.layer].color },
+        _catId: t.id, tip: LAYERS[t.layer].name + " · " + t.count + " 题"
+      };
+      if (includeSubs && subs.length) {
+        node.children = subs.map(function (c) {
+          return {
+            name: c.name, short: c.name, count: c.count,
+            symbolSize: Math.max(9, Math.min(24, 9 + Math.sqrt(c.count) * 2)),
+            itemStyle: { color: LAYERS[t.layer].color, opacity: 0.82 },
+            label: { fontSize: 11 },
+            _catId: c.id, _sub: true, tip: t.name + " · " + c.count + " 题"
+          };
+        });
+      }
+      layerNodes[t.layer].children.push(node);
+    });
+    layerNodes.forEach(function (L) {
+      L.count = L.children.reduce(function (s, c) { return s + (c.count || 0); }, 0);
+      L.tip = L.children.length + " 个技术体系 · " + L.count + " 题";
+    });
+    return {
+      name: "IT 技术全景", short: "IT 技术全景",
+      count: (S.questions || []).length, symbolSize: 46,
+      itemStyle: { color: "#64748b" },
+      label: { color: "#fff", fontWeight: "bold", fontSize: 13 },
+      _hub: true, tip: LAYERS.length + " 个演进层 · " + tops.length + " 个技术体系",
+      children: layerNodes
+    };
+  }
+
+  function buildPosTree() {
+    const stages = (S.positionsByStage && S.positionsByStage()) || [];
+    return {
+      name: "岗位全景", short: "岗位全景",
+      count: stages.reduce(function (s, st) { return s + (st.positions ? st.positions.length : 0); }, 0),
+      symbolSize: 42, itemStyle: { color: "#64748b" },
+      label: { color: "#fff", fontWeight: "bold", fontSize: 13 },
+      _hub: true, tip: stages.length + " 个时代阶段",
+      children: stages.map(function (st, i) {
+        const color = STAGE_COLORS[i % STAGE_COLORS.length];
+        const positions = (st.positions || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
+        return {
+          name: st.stage, short: st.stage, symbolSize: 26,
+          itemStyle: { color: color },
+          label: { color: color, fontWeight: "bold", fontSize: 13 },
+          _stage: true, tip: positions.length + " 个岗位",
+          children: positions.map(function (p) {
+            const cnt = (S.questionCountForPosition ? S.questionCountForPosition(p) : 0) || 0;
+            const nm = S.posFullName ? S.posFullName(p) : (p.name || p.id);
+            return {
+              name: nm, short: nm, count: cnt,
+              symbolSize: Math.max(9, Math.min(26, 9 + Math.sqrt(cnt) * 2)),
+              itemStyle: { color: color, opacity: 0.82 },
+              label: { fontSize: 11 },
+              _posId: p.id, tip: st.stage + " · " + cnt + " 题"
+            };
+          })
+        };
+      })
+    };
+  }
+
+  /* 分类 id → 所属一级技术体系名（用于把题目归到体系下） */
+  function buildCatTopMap() {
+    const map = {};
+    const tops = collectTops();
+    tops.forEach(function (t) {
+      map[t.id] = t.name;
+      if (S.descendantIds) {
+        (S.descendantIds(t.id) || []).forEach(function (id) { map[id] = t.name; });
+      } else {
+        (t.children || []).forEach(function (c) { map[c.id] = t.name; });
+      }
+    });
+    return map;
+  }
+
+  function srcBranch(name, color, list, topMap, total) {
+    const groups = {};
+    list.forEach(function (q) {
+      const k = topMap[q.categoryId] || "未分类";
+      (groups[k] = groups[k] || []).push(q);
+    });
+    const keys = Object.keys(groups).sort(function (a, b) { return groups[b].length - groups[a].length; });
+    return {
+      name: name, short: name, count: list.length,
+      symbolSize: Math.max(16, Math.min(48, 14 + Math.sqrt(list.length) * 2.2)),
+      itemStyle: { color: color },
+      label: { color: color, fontWeight: "bold", fontSize: 13 },
+      tip: list.length + " 题 · 占全库 " + pct(list.length, total),
+      children: keys.map(function (k) {
+        return {
+          name: k, short: k, count: groups[k].length,
+          symbolSize: Math.max(12, Math.min(30, 12 + Math.sqrt(groups[k].length) * 3)),
+          itemStyle: { color: color, opacity: 0.85 },
+          label: { fontSize: 12 },
+          tip: k + " · " + groups[k].length + " 题",
+          children: groups[k].map(function (q) {
+            const t = q.title || "";
+            return {
+              name: t, short: t.length > 16 ? t.slice(0, 16) + "…" : t,
+              symbolSize: 10, itemStyle: { color: color, opacity: 0.7 },
+              label: { fontSize: 10 },
+              _qid: q.id, tip: (q.difficulty || "中等") + " · 来源 " + (q.source || "—")
+            };
+          })
+        };
+      })
+    };
+  }
+
+  /* 题目来源思维导图：中心 = 全库，主干 = 来源类型，分支 = 技术体系，叶 = 具体题目 */
+  function buildSourceTree() {
+    const qs = (S.questions || []).filter(function (q) { return q.status === "published" || q.status == null; });
+    const topMap = buildCatTopMap();
+    const SRC = [
+      { name: "AI 生成", color: "#8b5cf6", test: function (q) { return q.source === "ai"; } },
+      { name: "人工录入", color: "#3b82f6", test: function (q) { return q.source === "manual"; } },
+      { name: "内置种子", color: "#10b981", test: function (q) { return q.source === "seed"; } },
+      { name: "原理整理", color: "#f59e0b", test: function (q) { return q.source === "principles"; } },
+      { name: "批量导入", color: "#ec4899", test: function (q) { return q.source === "import"; } },
+      { name: "外部文档", color: "#06b6d4", test: function (q) { return /^https?:\/\//i.test(q.source || ""); } }
+    ];
+    const used = {};
+    const nodes = SRC.map(function (s) {
+      const list = qs.filter(function (q) { if (s.test(q)) { used[q.id] = 1; return true; } return false; });
+      return srcBranch(s.name, s.color, list, topMap, qs.length);
+    });
+    const rest = qs.filter(function (q) { return !used[q.id]; });
+    if (rest.length) nodes.push(srcBranch("其他", "#94a3b8", rest, topMap, qs.length));
+    return {
+      name: "题目来源", short: "题目来源", count: qs.length, symbolSize: 46,
+      itemStyle: { color: "#475569" },
+      label: { color: "#fff", fontWeight: "bold", fontSize: 13 },
+      _hub: true, tip: qs.length + " 道题按来源归类",
+      children: nodes.filter(function (n) { return n.count > 0; })
+    };
+  }
+
+  function drawMindMap(box, root, opt) {
+    opt = opt || {};
+    const wrap = document.createElement("div");
+    wrap.className = "pan-orbit-wrap pan-mm-wrap";
+    wrap.innerHTML = '<div class="pan-orbit-rings"><span></span><span></span><span></span><span></span></div>';
+    const holder = document.createElement("div");
+    holder.className = "panorama-chart pan-orbit-chart pan-mm-chart";
+    holder.innerHTML = '<div class="pan-loading">思维导图加载中…</div>';
+    wrap.appendChild(holder);
+
+    const bar = document.createElement("div");
+    bar.className = "pan-mm-bar";
+    bar.innerHTML =
+      '<button type="button" class="pan-mm-btn" data-act="layout">切为左右逻辑图</button>' +
+      '<button type="button" class="pan-mm-btn" data-act="expand">展开全部</button>' +
+      '<button type="button" class="pan-mm-btn" data-act="collapse">只看主干</button>' +
+      '<button type="button" class="pan-mm-btn" data-act="fit">复位</button>' +
+      (opt.note ? '<span class="pan-mm-note">' + esc(opt.note) + "</span>" : "");
+    wrap.appendChild(bar);
+    if (opt.legendHtml) {
+      const fsLegend = document.createElement("div");
+      fsLegend.className = "pan-fs-legend";
+      fsLegend.innerHTML = opt.legendHtml;
+      wrap.appendChild(fsLegend);
+    }
+    box.appendChild(wrap);
+
+    let chart = null;
+    let layout = "radial";
+    let depth = opt.depth != null ? opt.depth : 2;
+    const maxDepth = opt.maxDepth != null ? opt.maxDepth : 3;
+    const fs = attachFullscreen(wrap, function () { return chart; }, [12, 14]);
+
+    function fail(msg) {
+      holder.innerHTML = '<div class="pan-loading" style="color:#ef4444">思维导图加载失败：' + esc(msg || "未知错误") + "</div>";
+    }
+    function buildOption() {
+      const labelColor = cssVar("--text") || "#334155";
+      const edgeColor = cssVar("--border") || "#cbd5e1";
+      const isRadial = layout === "radial";
+      return {
+        backgroundColor: "transparent",
+        tooltip: {
+          trigger: "item", enterable: true, hideDelay: 240,
+          backgroundColor: "rgba(15,23,42,.94)", borderWidth: 0, padding: [9, 13],
+          textStyle: { color: "#e5e7eb", fontSize: 12 },
+          formatter: function (p) {
+            const d = p.data || {};
+            const out = ["<b>" + esc(d.short || d.name) + "</b>"];
+            if (d.tip) out.push('<span style="color:#cbd5e1">' + esc(d.tip) + "</span>");
+            const href = d._catId != null ? "/category?cat=" + d._catId
+              : d._posId != null ? "/position/" + d._posId
+                : d._qid != null ? "/question/" + d._qid : null;
+            if (href) out.push('<a class="pan-tip-link" data-goto="' + esc(href) + '">查看题目 →</a>');
+            else if (d.children && d.children.length) out.push('<span style="color:#94a3b8">点击节点展开 / 收起下级</span>');
+            return out.join("<br/>");
+          }
+        },
+        series: [{
+          type: "tree",
+          data: [root],
+          left: "6%", right: "14%", top: "4%", bottom: "4%",
+          layout: layout,
+          orient: "LR",
+          edgeShape: "curve",
+          edgeForkPosition: "58%",
+          roam: true,
+          expandAndCollapse: true,
+          initialTreeDepth: depth,
+          animationDuration: 420,
+          animationDurationUpdate: 420,
+          symbol: "circle",
+          symbolSize: function (val, params) { return (params && params.data && params.data.symbolSize) || 14; },
+          itemStyle: { borderColor: "#fff", borderWidth: 1 },
+          lineStyle: { color: edgeColor, width: 1.2, curveness: isRadial ? 0.5 : 0.45 },
+          label: {
+            show: true, position: isRadial ? "outside" : "right", color: labelColor, fontSize: 12,
+            formatter: function (p) { return p.data.short || p.data.name; }
+          },
+          leaves: { label: { position: isRadial ? "outside" : "right" } },
+          emphasis: { focus: "descendant", lineStyle: { width: 2.4 } }
+        }]
+      };
+    }
+    function apply() {
+      if (!chart) return;
+      try { chart.setOption(buildOption(), true); } catch (e) {}
+    }
+    bar.addEventListener("click", function (e) {
+      const b = e.target && e.target.closest ? e.target.closest(".pan-mm-btn") : null;
+      if (!b) return;
+      const act = b.getAttribute("data-act");
+      if (act === "layout") {
+        layout = layout === "radial" ? "orthogonal" : "radial";
+        b.textContent = layout === "radial" ? "切为左右逻辑图" : "切为径向图";
+        /* 左右逻辑图是纵向堆叠，展开后需要更高的画布才不挤 */
+        wrap.classList.toggle("pan-mm-tall", layout === "orthogonal");
+        apply();
+      } else if (act === "expand") { depth = maxDepth; apply(); }
+      else if (act === "collapse") { depth = 1; apply(); }
+      else if (act === "fit") { apply(); }
+    });
+    holder.addEventListener("click", function (e) {
+      const a = e.target && e.target.closest ? e.target.closest(".pan-tip-link") : null;
+      if (!a) return;
+      const to = a.getAttribute("data-goto");
+      if (to) { fs.exit(); App.go(to); }
+    });
+
+    U.loadScript("echarts", U.ECHARTS_URL).then(function () {
+      if (!holder || !window.echarts) { fail("echarts 未就绪"); return; }
+      try { chart = echarts.init(holder, null, { renderer: "canvas" }); }
+      catch (e) { fail(e.message); return; }
+      if (App && App.registerChart) App.registerChart(chart);
+      chart.showLoading({ text: "思维导图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
+      try { chart.setOption(buildOption(), true); chart.hideLoading(); }
+      catch (e) { try { chart.hideLoading(); } catch (e2) {} fail(e.message); return; }
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(function () { try { chart.resize(); } catch (e) {} });
+        ro.observe(holder);
+      } else {
+        window.addEventListener("resize", function () { try { chart.resize(); } catch (e) {} });
+      }
+    }).catch(function (e) { fail(e && e.message); });
+  }
+
   /* ============================ 通用：全屏查看 ============================ */
   /* 优先用原生 Fullscreen API；浏览器不支持（如 iOS Safari）时降级为 fixed 伪全屏。
      返回 { exit } ，跳转前调用可自动退出全屏。 */
-  function attachFullscreen(wrap, getChart) {
+  function attachFullscreen(wrap, getChart, labelFs) {
+    labelFs = labelFs || [11, 14];
     const fsBtn = document.createElement("button");
     fsBtn.type = "button";
     fsBtn.className = "pan-fs-btn";
@@ -123,7 +408,7 @@
       syncFs();
       const chart = getChart ? getChart() : null;
       if (chart) {
-        try { chart.setOption({ series: [{ label: { fontSize: isFs() ? 14 : 11 } }] }); } catch (e) {}
+        try { chart.setOption({ series: [{ label: { fontSize: isFs() ? labelFs[1] : labelFs[0] } }] }); } catch (e) {}
         try { chart.resize(); } catch (e) {}
       }
     }
@@ -176,7 +461,10 @@
     return { exit: exitFs };
   }
 
-  /* ============================ 通用：轨道图绘制 ============================ */
+  /* ============================ 旧版：分层同心轨道图 ============================
+   * v20260901a 及之前的实现，已被上方「思维导图」取代（用户反馈轨道图节点一多就挤、连线缠成一团）。
+   * 当前四个视图都不再调用它，保留在此便于日后若要切回径向轨道图时直接复用。
+   */
   function drawOrbit(box, nodes, links, opt) {
     opt = opt || {};
     const holder = document.createElement("div");
@@ -360,98 +648,54 @@
   }
 
   function renderAll(box) {
-    const lg = legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。点击节点看该方向的全部题目。");
+    const lg = legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。悬停节点后点「查看题目」直达。");
     box.innerHTML = summaryHtml() + lg;
-    const g = buildTechNodes(false);
-    drawOrbit(box, g.nodes, g.links, { legendHtml: lg });
+    drawMindMap(box, buildTechTree(false), {
+      legendHtml: lg, depth: 2, maxDepth: 2,
+      note: "点击彩色圆点展开下一级，滚轮缩放、拖拽平移"
+    });
   }
 
   function renderCat(box) {
-    const lg = legendHtml(LAYERS, "大节点 = 21 个技术体系，小节点 = 细分技术点；由内到外为技术演进层次。");
-    box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系（大节点）周围聚集其细分技术点（小节点），同色即同属一个演进层。点击任意节点直达题目列表。</p>' + lg;
-    const g = buildTechNodes(true);
-    drawOrbit(box, g.nodes, g.links, { legendHtml: lg });
+    const lg = legendHtml(LAYERS, "主干 = 4 个演进层，分支 = 21 个技术体系，叶 = 细分技术点；同色即同属一个演进层。");
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系下挂着自己的细分技术点，从属关系一目了然。悬停节点后点「查看题目」直达题目列表。</p>' + lg;
+    drawMindMap(box, buildTechTree(true), {
+      legendHtml: lg, depth: 3, maxDepth: 3,
+      note: "默认全展开；觉得挤就点「只看主干」，再逐支展开"
+    });
   }
 
   /* ============================ 视图：覆盖岗位（按时代阶段） ============================ */
   function renderPos(box) {
     const stages = (S.positionsByStage && S.positionsByStage()) || [];
-    const nodes = [], links = [];
-    nodes.push({
-      id: "__hub__", name: "岗位全景", x: 0, y: 0, symbolSize: 44,
-      itemStyle: { color: "#64748b", shadowBlur: 20, shadowColor: "rgba(100,116,139,.5)" },
-      label: { show: true, position: "inside", color: "#fff", fontWeight: 700, fontSize: 12 },
-      _hub: true, short: "岗位全景"
-    });
-    const n = stages.length, step = 360 / n, R1 = 66, R2 = 118;
-    stages.forEach(function (st, i) {
-      const ang = (i * step - 90) * Math.PI / 180;
-      const ax = +(R1 * Math.cos(ang)).toFixed(2), ay = +(R1 * Math.sin(ang)).toFixed(2);
-      const color = STAGE_COLORS[i % STAGE_COLORS.length];
-      const anchorId = "stage" + i;
-      nodes.push({
-        id: anchorId, name: st.stage, x: ax, y: ay, symbolSize: 36,
-        itemStyle: { color: color, shadowBlur: 14, shadowColor: hexA(color, 0.4) },
-        short: st.stage, label: { show: true }, _stage: true
-      });
-      links.push({ source: "__hub__", target: anchorId, lineStyle: { opacity: 0.4, width: 1.2 } });
-      const positions = (st.positions || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
-      const m = positions.length, totalArc = Math.min(46, 360 / n * 0.85), stepArc = m > 1 ? totalArc / (m - 1) : 0;
-      positions.forEach(function (p, k) {
-        const a = ang + (-totalArc / 2 + k * stepArc) * Math.PI / 180;
-        const x = +(R2 * Math.cos(a)).toFixed(2), y = +(R2 * Math.sin(a)).toFixed(2);
-        const cnt = (S.questionCountForPosition ? S.questionCountForPosition(p) : 0) || 0;
-        const nm = S.posFullName ? S.posFullName(p) : (p.name || p.id);
-        nodes.push({
-          id: "pos" + p.id, name: nm, x: x, y: y,
-          symbolSize: Math.max(8, Math.min(26, 8 + Math.sqrt(cnt) * 2)),
-          itemStyle: { color: color, opacity: 0.85, shadowBlur: 6, shadowColor: hexA(color, 0.3) },
-          _posId: p.id, short: nm, count: cnt, label: { show: false }, _sub: true
-        });
-        links.push({ source: anchorId, target: "pos" + p.id, lineStyle: { opacity: 0.16, width: 0.8 } });
-      });
-    });
     const stageLegend = stages.map(function (st, i) {
       return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.positions ? st.positions.length : 0) + " 个岗位" };
     });
     const lg = legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。");
-    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」由内到外环绕：中心出发，越往外越是 newer 的方向。</p>' + lg;
-    drawOrbit(box, nodes, links, { legendHtml: lg });
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」归组：中心是岗位全景，往外一层是 8 个时代阶段，再展开是阶段下的具体岗位。悬停节点后点「查看题目」直达。</p>' + lg;
+    drawMindMap(box, buildPosTree(), {
+      legendHtml: lg, depth: 1, maxDepth: 2,
+      note: "默认只展开到时代阶段，点某个阶段展开它下面的岗位"
+    });
   }
 
   /* ============================ 视图：AI 生成题 ============================ */
   function renderAI(box) {
     const qs = (S.questions || []).filter(function (q) { return q.status === "published" || q.status == null; });
     const ai = qs.filter(function (q) { return q.source === "ai"; });
-    const groups = {};
-    ai.forEach(function (q) {
-      const key = q.catName || (q.catPath && q.catPath[0]) || "未分类";
-      (groups[key] = groups[key] || []).push(q);
-    });
-    const keys = Object.keys(groups).sort(function (a, b) { return groups[b].length - groups[a].length; });
-    const aiHtml =
+    const topMap = buildCatTopMap();
+    const aiTops = {};
+    ai.forEach(function (q) { aiTops[topMap[q.categoryId] || "未分类"] = 1; });
+    const aiTopCount = Object.keys(aiTops).length;
+    box.innerHTML =
       '<div class="panorama-summary"><div class="pan-sum"><div class="pan-sum-num">' + ai.length + '</div><div class="pan-sum-label">AI 生成题</div></div>' +
-      '<div class="pan-sum"><div class="pan-sum-num">' + keys.length + '</div><div class="pan-sum-label">涉及技术体系</div></div>' +
+      '<div class="pan-sum"><div class="pan-sum-num">' + aiTopCount + '</div><div class="pan-sum-label">涉及技术体系</div></div>' +
       '<div class="pan-sum"><div class="pan-sum-num">' + qs.length + '</div><div class="pan-sum-label">题库总量</div></div>' +
       '<div class="pan-sum"><div class="pan-sum-num">' + (qs.length ? Math.round(ai.length / qs.length * 100) : 0) + '%</div><div class="pan-sum-label">AI 占比</div></div></div>' +
-      '<div class="panorama-ai">' +
-      keys.map(function (k) {
-        const list = groups[k].map(function (q) {
-          return '<a class="q-card" href="#/question/' + q.id + '"><span class="q-title">' + esc(q.title) + "</span>" +
-            '<span class="q-meta">AI评分 ' + (q.aiScore || 0) + " · " + esc(q.difficulty || "中等") + "</span></a>";
-        }).join("");
-        return '<div class="ai-group"><div class="ai-group-title">' + (U.icon ? U.icon("layers") : "") + "<span>" + esc(k) + " (" + groups[k].length + ")</span></div>" + list + "</div>";
-      }).join("") +
-      "</div>";
-    const pane = document.createElement("div");
-    pane.className = "pan-fs-pane";
-    pane.innerHTML = aiHtml;
-    box.innerHTML = "";
-    box.appendChild(pane);
-    attachFullscreen(pane, null);
-    const cards = pane.querySelectorAll(".q-card");
-    Array.prototype.forEach.call(cards, function (c) {
-      c.onclick = function (e) { e.preventDefault(); App.go(c.getAttribute("href").slice(1)); };
+      '<p class="muted" style="margin:0 0 12px">全库题目按来源归类成思维导图：中心是题库总量，往外一层是 6 类来源，再展开是技术体系，最后一层是具体题目。</p>';
+    drawMindMap(box, buildSourceTree(), {
+      depth: 1, maxDepth: 2,
+      note: "点来源支展开技术体系，再点体系展开题目"
     });
   }
 })();
