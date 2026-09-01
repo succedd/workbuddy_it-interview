@@ -97,6 +97,85 @@
     };
   }
 
+  /* ============================ 通用：全屏查看 ============================ */
+  /* 优先用原生 Fullscreen API；浏览器不支持（如 iOS Safari）时降级为 fixed 伪全屏。
+     返回 { exit } ，跳转前调用可自动退出全屏。 */
+  function attachFullscreen(wrap, getChart) {
+    const fsBtn = document.createElement("button");
+    fsBtn.type = "button";
+    fsBtn.className = "pan-fs-btn";
+    fsBtn.title = "全屏查看（Esc 退出）";
+    fsBtn.innerHTML = '<span class="pan-fs-ic">&#9974;</span><span class="pan-fs-txt">全屏</span>';
+    wrap.appendChild(fsBtn);
+
+    function isNativeFs() {
+      return document.fullscreenElement === wrap || document.webkitFullscreenElement === wrap;
+    }
+    function isFs() { return isNativeFs() || wrap.classList.contains("pan-pseudo-fs"); }
+    function syncFs() {
+      const on = isFs();
+      fsBtn.classList.toggle("on", on);
+      const ic = fsBtn.querySelector(".pan-fs-ic"), tx = fsBtn.querySelector(".pan-fs-txt");
+      if (ic) ic.innerHTML = on ? "&#10005;" : "&#9974;";
+      if (tx) tx.textContent = on ? "退出全屏" : "全屏";
+    }
+    function afterFsChange() {
+      syncFs();
+      const chart = getChart ? getChart() : null;
+      if (chart) {
+        try { chart.setOption({ series: [{ label: { fontSize: isFs() ? 14 : 11 } }] }); } catch (e) {}
+        try { chart.resize(); } catch (e) {}
+      }
+    }
+    function exitFs() {
+      if (!isFs()) return;
+      if (isNativeFs()) {
+        const ex = document.exitFullscreen || document.webkitExitFullscreen;
+        if (ex) { try { ex.call(document); } catch (e) {} }
+      }
+      /* 无论原生是否可用，一并清理伪全屏残留状态，避免两种状态叠加 */
+      if (wrap.classList.contains("pan-pseudo-fs")) {
+        wrap.classList.remove("pan-pseudo-fs");
+        document.body.classList.remove("pan-fs-lock");
+      }
+      afterFsChange();
+    }
+    function enterPseudoFs() {
+      wrap.classList.add("pan-pseudo-fs");
+      document.body.classList.add("pan-fs-lock");
+      afterFsChange();
+    }
+    fsBtn.addEventListener("click", function () {
+      if (isFs()) { exitFs(); return; }
+      const req = wrap.requestFullscreen || wrap.webkitRequestFullscreen || wrap.msRequestFullscreen;
+      if (req) {
+        try {
+          const p = req.call(wrap);
+          if (p && p.catch) p.catch(function () { enterPseudoFs(); });
+        } catch (e) { enterPseudoFs(); return; }
+        setTimeout(function () { if (!isFs()) enterPseudoFs(); }, 400);
+      } else {
+        enterPseudoFs();
+      }
+    });
+    function onFsChangeGlobal() {
+      if (!document.body.contains(wrap)) {
+        document.removeEventListener("fullscreenchange", onFsChangeGlobal);
+        document.removeEventListener("webkitfullscreenchange", onFsChangeGlobal);
+        document.removeEventListener("keydown", onEsc);
+        return;
+      }
+      afterFsChange();
+    }
+    function onEsc(e) {
+      if (e.key === "Escape" && wrap.classList.contains("pan-pseudo-fs")) exitFs();
+    }
+    document.addEventListener("fullscreenchange", onFsChangeGlobal);
+    document.addEventListener("webkitfullscreenchange", onFsChangeGlobal);
+    document.addEventListener("keydown", onEsc);
+    return { exit: exitFs };
+  }
+
   /* ============================ 通用：轨道图绘制 ============================ */
   function drawOrbit(box, nodes, links, opt) {
     opt = opt || {};
@@ -107,14 +186,22 @@
     wrap.className = "pan-orbit-wrap";
     wrap.innerHTML = '<div class="pan-orbit-rings"><span></span><span></span><span></span><span></span></div>';
     wrap.appendChild(holder);
+    if (opt.legendHtml) {
+      const fsLegend = document.createElement("div");
+      fsLegend.className = "pan-fs-legend";
+      fsLegend.innerHTML = opt.legendHtml;
+      wrap.appendChild(fsLegend);
+    }
     box.appendChild(wrap);
+
+    let chart = null;
+    const fs = attachFullscreen(wrap, function () { return chart; });
 
     function fail(msg) {
       holder.innerHTML = '<div class="pan-loading" style="color:#ef4444">轨道图加载失败：' + esc(msg || "未知错误") + '</div>';
     }
     U.loadScript("echarts", U.ECHARTS_URL).then(function () {
       if (!holder || !window.echarts) { fail("echarts 未就绪"); return; }
-      let chart;
       try { chart = echarts.init(holder, null, { renderer: "canvas" }); }
       catch (e) { fail(e.message); return; }
       if (App && App.registerChart) App.registerChart(chart);
@@ -172,8 +259,8 @@
       }
       chart.on("click", function (params) {
         const d = params.data || {};
-        if (d._catId != null) App.go("/category?cat=" + d._catId);
-        else if (d._posId != null) App.go("/position/" + d._posId);
+        if (d._catId != null) { fs.exit(); App.go("/category?cat=" + d._catId); }
+        else if (d._posId != null) { fs.exit(); App.go("/position/" + d._posId); }
       });
     }).catch(function (e) { fail(e && e.message); });
   }
@@ -273,17 +360,17 @@
   }
 
   function renderAll(box) {
-    box.innerHTML = summaryHtml() +
-      legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。点击节点看该方向的全部题目。");
+    const lg = legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。点击节点看该方向的全部题目。");
+    box.innerHTML = summaryHtml() + lg;
     const g = buildTechNodes(false);
-    drawOrbit(box, g.nodes, g.links, {});
+    drawOrbit(box, g.nodes, g.links, { legendHtml: lg });
   }
 
   function renderCat(box) {
-    box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系（大节点）周围聚集其细分技术点（小节点），同色即同属一个演进层。点击任意节点直达题目列表。</p>' +
-      legendHtml(LAYERS, "大节点 = 21 个技术体系，小节点 = 细分技术点；由内到外为技术演进层次。");
+    const lg = legendHtml(LAYERS, "大节点 = 21 个技术体系，小节点 = 细分技术点；由内到外为技术演进层次。");
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系（大节点）周围聚集其细分技术点（小节点），同色即同属一个演进层。点击任意节点直达题目列表。</p>' + lg;
     const g = buildTechNodes(true);
-    drawOrbit(box, g.nodes, g.links, {});
+    drawOrbit(box, g.nodes, g.links, { legendHtml: lg });
   }
 
   /* ============================ 视图：覆盖岗位（按时代阶段） ============================ */
@@ -327,9 +414,9 @@
     const stageLegend = stages.map(function (st, i) {
       return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.positions ? st.positions.length : 0) + " 个岗位" };
     });
-    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」由内到外环绕：中心出发，越往外越是 newer 的方向。</p>' +
-      legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。");
-    drawOrbit(box, nodes, links, {});
+    const lg = legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。");
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」由内到外环绕：中心出发，越往外越是 newer 的方向。</p>' + lg;
+    drawOrbit(box, nodes, links, { legendHtml: lg });
   }
 
   /* ============================ 视图：AI 生成题 ============================ */
@@ -342,7 +429,7 @@
       (groups[key] = groups[key] || []).push(q);
     });
     const keys = Object.keys(groups).sort(function (a, b) { return groups[b].length - groups[a].length; });
-    box.innerHTML =
+    const aiHtml =
       '<div class="panorama-summary"><div class="pan-sum"><div class="pan-sum-num">' + ai.length + '</div><div class="pan-sum-label">AI 生成题</div></div>' +
       '<div class="pan-sum"><div class="pan-sum-num">' + keys.length + '</div><div class="pan-sum-label">涉及技术体系</div></div>' +
       '<div class="pan-sum"><div class="pan-sum-num">' + qs.length + '</div><div class="pan-sum-label">题库总量</div></div>' +
@@ -356,7 +443,13 @@
         return '<div class="ai-group"><div class="ai-group-title">' + (U.icon ? U.icon("layers") : "") + "<span>" + esc(k) + " (" + groups[k].length + ")</span></div>" + list + "</div>";
       }).join("") +
       "</div>";
-    const cards = box.querySelectorAll(".q-card");
+    const pane = document.createElement("div");
+    pane.className = "pan-fs-pane";
+    pane.innerHTML = aiHtml;
+    box.innerHTML = "";
+    box.appendChild(pane);
+    attachFullscreen(pane, null);
+    const cards = pane.querySelectorAll(".q-card");
     Array.prototype.forEach.call(cards, function (c) {
       c.onclick = function (e) { e.preventDefault(); App.go(c.getAttribute("href").slice(1)); };
     });
