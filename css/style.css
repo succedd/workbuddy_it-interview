@@ -788,3 +788,34 @@ body.pan-fs-lock { overflow: hidden; }
 .pan-fs-pane:fullscreen .pan-fs-btn,
 .pan-fs-pane:-webkit-full-screen .pan-fs-btn,
 .pan-fs-pane.pan-pseudo-fs .pan-fs-btn { top: 16px; right: 20px; }
+
+/* ============================ 关于本站 ============================ */
+.about-page { max-width: 880px; margin: 0 auto; padding: 8px 0 24px; }
+.about-hero { padding: 18px 0 22px; }
+.about-eyebrow { font-size: 11px; color: var(--text-muted); letter-spacing: .14em; margin-bottom: 6px; }
+.about-title { font-size: 22px; font-weight: 500; margin: 0 0 18px; line-height: 1.4; color: var(--text); }
+.about-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.about-stat { background: var(--bg-elevated); border: 0.5px solid var(--border); border-radius: var(--radius, 12px); padding: 12px 14px; }
+.about-stat-num { font-size: 22px; font-weight: 500; color: var(--text); }
+.about-stat-num-sm { font-size: 15px; }
+.about-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.about-card { background: var(--bg-elevated); border: 0.5px solid var(--border); border-radius: var(--radius, 12px); padding: 18px 20px; margin-bottom: 14px; }
+.about-card-title { font-size: 16px; font-weight: 500; margin: 0 0 10px; color: var(--text); }
+.about-prose { font-size: 14px; line-height: 1.75; margin: 0 0 10px; color: var(--text); }
+.about-lead { font-size: 14px; margin: 4px 0 8px; color: var(--text); }
+.about-grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 4px 0 14px; }
+.about-tile { background: var(--bg); border-radius: 8px; padding: 12px 14px; border: 0.5px solid var(--border); }
+.about-tile-mark { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 6px; }
+.about-tile-title { font-size: 14px; font-weight: 500; margin-bottom: 3px; color: var(--text); }
+.about-tile-desc { font-size: 13px; color: var(--text-secondary, var(--text-muted)); line-height: 1.6; }
+.about-quote { border-left: 2px solid #534AB7; padding: 4px 0 4px 14px; margin: 10px 0 14px; font-weight: 500; color: var(--text); line-height: 1.7; }
+.about-contact { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.about-contact-list { flex: 1 1 240px; min-width: 0; }
+.about-contact-row { font-size: 14px; line-height: 2.1; color: var(--text); }
+.about-contact-k { display: inline-block; width: 56px; color: var(--text-muted); }
+.about-qr img { width: 200px; max-width: 100%; height: auto; border-radius: 8px; border: 0.5px solid var(--border); display: block; background: #fff; }
+.about-slogan { text-align: center; margin: 24px 0 8px; font-size: 13px; color: var(--text-muted); letter-spacing: .15em; }
+@media (max-width: 640px) {
+  .about-stats { grid-template-columns: repeat(2, 1fr); }
+  .about-qr img { width: 160px; }
+}
