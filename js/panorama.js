@@ -10,7 +10,8 @@
  * 依赖：utils.js(U) / services.js(Services) / app.js(App)，echarts 按需加载
  */
 (function () {
-  const S = window.Services, U = window.U, App = window.App;
+  /* App 不能在此快照：本脚本先于 app.js 加载，window.App 尚未定义（否则点击跳转全部失效），必须运行时经 window.App 取用 */
+  const S = window.Services, U = window.U;
 
   /* 注册饼图图标（若尚未存在） */
   if (U && U.ICONS && !U.ICONS.pieChart) {
@@ -185,7 +186,7 @@
       _hub: true, tip: stages.length + " 个时代阶段",
       children: stages.map(function (st, i) {
         const color = STAGE_COLORS[i % STAGE_COLORS.length];
-        let positions = (st.positions || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
+        let positions = (st.list || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
         const byName = {};
         positions.forEach(function (p) { byName[p.name] = p; });
         const parents = positions.filter(function (p) { return !p.category; });
@@ -368,18 +369,34 @@
       if (cur >= limit) n.collapsed = true; else delete n.collapsed;
       n.children.forEach(function (c) { walkDepth(c, limit, cur + 1); });
     }
+    /* ECharts tree 事件里的 params.data 是副本而非原引用，直接改它的 collapsed 不会影响原树；
+       故给每个节点发唯一 _nid，点击时按 _nid 在原树上找到真节点再切换折叠。 */
+    let nidSeq = 0;
+    (function tagNid(n) { n._nid = ++nidSeq; (n.children || []).forEach(tagNid); })(root);
+    function findNodeByNid(n, id) {
+      if (!n) return null;
+      if (n._nid === id) return n;
+      for (let i = 0; i < (n.children || []).length; i++) {
+        const hit = findNodeByNid(n.children[i], id);
+        if (hit) return hit;
+      }
+      return null;
+    }
     function onNodeClick(params) {
       const d = (params && params.data) || {};
       /* 带 id 的实体节点（题目 / 分类 / 岗位）：点击直达对应题单或题目详情。
          注意顺序：先判 id，带 children 的「数据库」「关系型数据库」等分类/岗位节点
          也直接跳题单，不再被下面的「展开/收起」吞掉 —— 这是「点节点回不到对应题」的根因。 */
-      if (d._qid != null) { fs.exit(); App.go("/question/" + d._qid); return; }
-      if (d._catId != null) { fs.exit(); App.go("/category?cat=" + d._catId); return; }
-      if (d._posId != null) { fs.exit(); App.go("/position/" + d._posId); return; }
+      if (d._qid != null) { fs.exit(); window.App.go("/question/" + d._qid); return; }
+      if (d._catId != null) { fs.exit(); window.App.go("/category?cat=" + d._catId); return; }
+      if (d._posId != null) { fs.exit(); window.App.go("/position/" + d._posId); return; }
       /* 纯结构节点（中心 / 演进层 / 时代阶段 / 来源支 / 体系支，无 id）：点击展开或收起下级 */
       if (d.children && d.children.length) {
-        if (d.collapsed) delete d.collapsed; else d.collapsed = true;
-        apply();
+        const target = findNodeByNid(root, d._nid);
+        if (target) {
+          if (target.collapsed) delete target.collapsed; else target.collapsed = true;
+          apply();
+        }
       }
     }
 
@@ -490,14 +507,14 @@
       const a = e.target && e.target.closest ? e.target.closest(".pan-tip-link") : null;
       if (!a) return;
       const to = a.getAttribute("data-goto");
-      if (to) { fs.exit(); App.go(to); }
+      if (to) { fs.exit(); window.App.go(to); }
     });
 
     U.loadScript("echarts", U.ECHARTS_URL).then(function () {
       if (!holder || !window.echarts) { fail("echarts 未就绪"); return; }
       try { chart = echarts.init(holder, null, { renderer: "canvas" }); }
       catch (e) { fail(e.message); return; }
-      if (App && App.registerChart) App.registerChart(chart);
+      if (window.App && window.App.registerChart) window.App.registerChart(chart);
       chart.showLoading({ text: "思维导图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
       walkDepth(root, effDepth(), 0);   /* 按当前布局设初始展开层级（左右图默认收一层） */
       resizeHolder();
@@ -623,7 +640,7 @@
       if (!holder || !window.echarts) { fail("echarts 未就绪"); return; }
       try { chart = echarts.init(holder, null, { renderer: "canvas" }); }
       catch (e) { fail(e.message); return; }
-      if (App && App.registerChart) App.registerChart(chart);
+      if (window.App && window.App.registerChart) window.App.registerChart(chart);
       chart.showLoading({ text: "轨道图加载中…", color: "#3b82f6", textColor: "#334155", maskColor: "rgba(255,255,255,.55)", fontSize: 13 });
       const labelColor = cssVar("--text") || "#334155";
       const edgeColor = cssVar("--border") || "#cbd5e1";
@@ -678,8 +695,8 @@
       }
       chart.on("click", function (params) {
         const d = params.data || {};
-        if (d._catId != null) { fs.exit(); App.go("/category?cat=" + d._catId); }
-        else if (d._posId != null) { fs.exit(); App.go("/position/" + d._posId); }
+        if (d._catId != null) { fs.exit(); window.App.go("/category?cat=" + d._catId); }
+        else if (d._posId != null) { fs.exit(); window.App.go("/position/" + d._posId); }
       });
     }).catch(function (e) { fail(e && e.message); });
   }
@@ -771,7 +788,7 @@
       { n: total, l: "题目总数" },
       { n: topsWithQ, l: "有题技术体系" },
       { n: subWithQ, l: "有题细分技术" },
-      { n: (S.positionsByStage ? S.positionsByStage().reduce(function (a, s) { return a + (s.positions ? s.positions.length : 0); }, 0) : 0), l: "覆盖岗位" }
+      { n: (S.positionsByStage ? S.positionsByStage().reduce(function (a, s) { return a + (s.list ? s.list.length : 0); }, 0) : 0), l: "覆盖岗位" }
     ];
     return '<div class="panorama-summary">' + cards.map(function (c) {
       return '<div class="pan-sum"><div class="pan-sum-num">' + c.n + '</div><div class="pan-sum-label">' + esc(c.l) + "</div></div>";
@@ -800,7 +817,7 @@
   function renderPos(box) {
     const stages = (S.positionsByStage && S.positionsByStage()) || [];
     const stageLegend = stages.map(function (st, i) {
-      return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.positions ? st.positions.length : 0) + " 个岗位" };
+      return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.list ? st.list.length : 0) + " 个岗位" };
     });
     const lg = legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。节点标注「N 题」即该岗位题数。");
     box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」归组，再细分成父子岗位（如「硬件工程师」→「数字电路工程师 / 嵌入式硬件工程师」）。每个岗位都标了题数，点节点直达对应岗位题库。</p>' + lg;
