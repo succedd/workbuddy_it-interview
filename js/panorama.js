@@ -360,7 +360,7 @@
 
     let depth = opt.depth != null ? opt.depth : 2;
     const maxDepth = opt.maxDepth != null ? opt.maxDepth : 3;
-    const fs = attachFullscreen(wrap, function () { return chart; }, [12, 14]);
+    const fs = attachFullscreen(wrap, function () { return chart; }, [12, 14], function () { apply(); });
 
     /* 用节点 collapsed 属性控制展开/收起：initialTreeDepth 在 data 引用不变时
        ECharts 不会重算折叠状态，故展开/收起/复位改为直接改 collapsed（可靠生效）。 */
@@ -469,13 +469,13 @@
     function resizeHolder() {
       if (!holder) return;
       const n = visibleNodeCount();
+      const inFs = document.fullscreenElement === wrap || wrap.classList.contains("pan-pseudo-fs");
+      const fsMin = inFs ? window.innerHeight : 0;
       if (layout === "orthogonal") {
-        const h = Math.max(640, Math.min(6000, n * 32));
+        const h = Math.max(fsMin || 640, Math.min(6000, n * 32));
         holder.style.height = h + "px";
       } else {
-        /* 径向图：节点多时也加高画布，让圆更大、放大拖动有空间、页面可滚动看全图；
-           否则固定 640px 视口下放大后内容超出 canvas 被裁，下面看不到 */
-        const h = Math.max(640, Math.min(2400, Math.round(n * 6 + 400)));
+        const h = Math.max(fsMin || 640, Math.min(2400, Math.round(n * 6 + 400)));
         holder.style.height = h + "px";
       }
     }
@@ -533,13 +533,14 @@
       } else {
         window.addEventListener("resize", function () { try { chart.resize(); } catch (e) {} });
       }
+
     }).catch(function (e) { fail(e && e.message); });
   }
 
   /* ============================ 通用：全屏查看 ============================ */
   /* 优先用原生 Fullscreen API；浏览器不支持（如 iOS Safari）时降级为 fixed 伪全屏。
      返回 { exit } ，跳转前调用可自动退出全屏。 */
-  function attachFullscreen(wrap, getChart, labelFs) {
+  function attachFullscreen(wrap, getChart, labelFs, onFsChange) {
     labelFs = labelFs || [11, 14];
     const fsBtn = document.createElement("button");
     fsBtn.type = "button";
@@ -566,6 +567,7 @@
         try { chart.setOption({ series: [{ label: { fontSize: isFs() ? labelFs[1] : labelFs[0] } }] }); } catch (e) {}
         try { chart.resize(); } catch (e) {}
       }
+      if (onFsChange) try { onFsChange(); } catch (e) {}
     }
     function exitFs() {
       if (!isFs()) return;
