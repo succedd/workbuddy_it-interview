@@ -3588,59 +3588,105 @@
     const updatedAt = qs.reduce((m, q) => Math.max(m, q.updatedAt || q.createdAt || 0), 0);
     const updStr = updatedAt ? U.fmtDate(updatedAt).slice(0, 10) : "—";
 
+    const stat = (icon, num, label, accent, sm) => `
+      <div class="about-stat" style="--accent:${accent}">
+        <span class="about-stat-ico">${U.icon(icon)}</span>
+        <div class="about-stat-num${sm ? " about-stat-num-sm" : ""}">${num}</div>
+        <div class="about-stat-label">${label}</div>
+      </div>`;
+    const tile = (icon, title, desc, accent) => `
+      <div class="about-tile" style="--accent:${accent}">
+        <span class="about-tile-ico">${U.icon(icon)}</span>
+        <div class="about-tile-title">${title}</div>
+        <div class="about-tile-desc">${desc}</div>
+      </div>`;
+
     const html = `
       <div class="about-page">
         <div class="about-hero">
-          <div class="about-eyebrow">ABOUT</div>
-          <h1 class="about-title">专注 IT 面试准备 · 持续更新的实战题库</h1>
-          <div class="about-stats">
-            <div class="about-stat"><div class="about-stat-num">${qCount}</div><div class="about-stat-label">题目</div></div>
-            <div class="about-stat"><div class="about-stat-num">${catCount}</div><div class="about-stat-label">技术体系</div></div>
-            <div class="about-stat"><div class="about-stat-num">${posCount}</div><div class="about-stat-label">岗位</div></div>
-            <div class="about-stat"><div class="about-stat-num about-stat-num-sm">${updStr}</div><div class="about-stat-label">最近更新</div></div>
-          </div>
+          <span class="about-hero-chip">${U.icon("sparkles")} ABOUT · 关于本站</span>
+          <h1 class="about-hero-title">专注 IT 面试准备<br><span>持续更新的实战题库</span></h1>
+          <p class="about-hero-sub">运维 · 开发 · AI —— 题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
+        </div>
+
+        <div class="about-stats">
+          ${stat("layers", qCount, "题目", "#2563EB")}
+          ${stat("grid", catCount, "技术体系", "#7C3AED")}
+          ${stat("briefcase", posCount, "岗位", "#0EA5A5")}
+          ${stat("clock", updStr, "最近更新", "#F59E0B", true)}
         </div>
 
         <section class="about-card">
-          <div class="about-card-title">关于本站</div>
+          <div class="about-card-head">
+            <span class="about-card-ico" style="--accent:#2563EB">${U.icon("database")}</span>
+            <div>
+              <div class="about-card-title">关于本站</div>
+              <div class="about-card-sub">一份会自己长大的面试题库</div>
+            </div>
+          </div>
           <p class="about-prose">这里是一份持续更新的 IT 面试题库，覆盖 <b>运维、开发、AI</b> 等方向。题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
           <div class="about-lead">希望帮你做到三件事：</div>
           <div class="about-grid3">
-            <div class="about-tile"><div class="about-tile-mark" style="background:#7F77DD"></div><div class="about-tile-title">系统梳理</div><div class="about-tile-desc">按技术体系归类高频考点，告别零散刷题</div></div>
-            <div class="about-tile"><div class="about-tile-mark" style="background:#1D9E75"></div><div class="about-tile-title">快速备战</div><div class="about-tile-desc">按岗位、按分类精准检索，面试前高效突击</div></div>
-            <div class="about-tile"><div class="about-tile-mark" style="background:#EF9F27"></div><div class="about-tile-title">查漏补缺</div><div class="about-tile-desc">从入门到进阶，清楚自己还差在哪一环</div></div>
+            ${tile("grid", "系统梳理", "按技术体系归类高频考点，告别零散刷题", "#2563EB")}
+            ${tile("search", "快速备战", "按岗位、按分类精准检索，面试前高效突击", "#0EA5A5")}
+            ${tile("barChart", "查漏补缺", "从入门到进阶，清楚自己还差在哪一环", "#F59E0B")}
           </div>
-          <p class="about-prose muted">无论你是准备跳槽的工程师、即将毕业的应届生，还是想转岗进阶的 IT 人，都能在这里找到适合的练习内容。</p>
+          <div class="about-fit">
+            <span class="about-fit-item">${U.icon("briefcase")} 准备跳槽的工程师</span>
+            <span class="about-fit-item">${U.icon("star")} 即将毕业的应届生</span>
+            <span class="about-fit-item">${U.icon("sparkles")} 想转岗进阶的 IT 人</span>
+          </div>
         </section>
 
         <section class="about-card">
-          <div class="about-card-title">关于站长</div>
-          <p class="about-prose">我是「<b>阅己书语</b>」公众号主理人，一名 IT 从业者 &amp; 远程工作者，多年深耕 <b>运维、开发与 AI</b> 领域。</p>
-          <blockquote class="about-quote">健康是基石，学习是阶梯，财富是结果。</blockquote>
+          <div class="about-card-head">
+            <span class="about-card-ico" style="--accent:#7C3AED">${U.icon("user")}</span>
+            <div>
+              <div class="about-card-title">关于站长</div>
+              <div class="about-card-sub">阅己书语 · 主理人</div>
+            </div>
+          </div>
+          <div class="about-me">
+            <div class="about-avatar">阅</div>
+            <div class="about-me-info">
+              <p class="about-prose">我是「<b>阅己书语</b>」公众号主理人，一名 IT 从业者 &amp; 远程工作者，多年深耕 <b>运维、开发与 AI</b> 领域。</p>
+              <div class="about-tags">
+                <span class="about-tag">运维</span><span class="about-tag">开发</span><span class="about-tag">AI</span><span class="about-tag">远程办公</span><span class="about-tag">数字游民</span>
+              </div>
+            </div>
+          </div>
+          <blockquote class="about-quote">${U.icon("sparkles")}<span>健康是基石，学习是阶梯，财富是结果。</span></blockquote>
           <div class="about-lead">公众号专注分享三件事：</div>
           <div class="about-grid3">
-            <div class="about-tile"><div class="about-tile-title">健康</div><div class="about-tile-desc">身体是长期主义的本钱</div></div>
-            <div class="about-tile"><div class="about-tile-title">阅读</div><div class="about-tile-desc">持续学习，认知升级</div></div>
-            <div class="about-tile"><div class="about-tile-title">财富</div><div class="about-tile-desc">让能力转化为结果</div></div>
+            ${tile("shield", "健康", "身体是长期主义的本钱", "#10B981")}
+            ${tile("fileText", "阅读", "持续学习，认知升级", "#2563EB")}
+            ${tile("barChart", "财富", "让能力转化为结果", "#F59E0B")}
           </div>
           <p class="about-prose muted">我同样关注 <b>远程办公 / 数字游民</b> 的生活方式，欢迎同路人一起交流。</p>
         </section>
 
         <section class="about-card about-card-contact">
-          <div class="about-card-title">联系我</div>
+          <div class="about-card-head">
+            <span class="about-card-ico" style="--accent:#0EA5A5">${U.icon("link")}</span>
+            <div>
+              <div class="about-card-title">联系我</div>
+              <div class="about-card-sub">扫码或加微信，聊聊技术与远程生活</div>
+            </div>
+          </div>
           <div class="about-contact">
             <div class="about-contact-list">
-              <div class="about-contact-row"><span class="about-contact-k">微信</span><span class="about-contact-v">13750847246</span></div>
-              <div class="about-contact-row"><span class="about-contact-k">公众号</span><span class="about-contact-v">阅己书语</span></div>
-              <div class="about-contact-row"><span class="about-contact-k">站点</span><a href="https://it-interview.is-a.dev" target="_blank" rel="noopener">it-interview.is-a.dev</a></div>
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("user")} 微信</span><span class="about-contact-v">13750847246</span></div>
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("fileText")} 公众号</span><span class="about-contact-v">阅己书语</span></div>
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("link")} 站点</span><a href="https://it-interview.is-a.dev" target="_blank" rel="noopener">it-interview.is-a.dev</a></div>
             </div>
             <a class="about-qr" href="https://it-interview.is-a.dev/assets/qrcode-yueji-shuyu.png" target="_blank" rel="noopener" title="点击查看大图">
               <img src="assets/qrcode-yueji-shuyu.png" alt="阅己书语公众号二维码" loading="lazy" />
+              <span class="about-qr-cap">微信搜一搜 · 阅己书语</span>
             </a>
           </div>
         </section>
 
-        <div class="about-slogan">阅己，方能越己。</div>
+        <div class="about-slogan"><span>阅己，方能越己。</span></div>
       </div>`;
     setMain(html);
   }
