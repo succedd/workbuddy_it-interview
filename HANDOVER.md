@@ -74,8 +74,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-01 21:10
-- **最新 commit（已双推 release+main）**：**全屏下画布未填满视口致拖拽内容被裁（缓存版本 `20260901k`，部署于 2026-09-01 21:10 GMT+8）**——用户反馈「全屏，往下拉，会遮住」：全屏时画布高度仍为 640px 未动态调整到视口高度，ECharts roam 拖拽后内容超出 canvas 被裁。修复：① `resizeHolder()` 检测全屏状态（`document.fullscreenElement === wrap` 或 `pan-pseudo-fs` class），全屏时画布高度下限取 `window.innerHeight` 而非 640；② `attachFullscreen` 加 `onFsChange` 回调参数，`afterFsChange` 中调用，`drawMindMap` 传 `apply()` 确保全屏进入/退出时重算画布高度+重布局。回归 7/7 PASS。
+- **最后更新**：2026-09-01 21:50
+- **最新 commit（已双推 release+main）**：**新增「关于本站」页（缓存版本 `20260902a`，部署于 2026-09-01 21:50 GMT+8）**——用户（IT 面试站主）想做一个「关于本站」页，介绍站点定位、站长公众号「阅己书语」、联系方式（含公众号二维码绿底引导卡）。实现：① 新增 `js/app.js` 的 `pageAbout()` 路由 `#/about`：含 4 个动态统计卡片（题目/技术体系/岗位/最近更新日，数据从 Services 实时读取，每天 10:00 自动扩充后数字自动涨）+ 关于本站/关于站长/联系我三段卡片，文案按「干练、信息密度高」打磨（三大价值点用「四字 + 一句说明」代替短句堆砌、信条抽出做引用条、公众号三件事去 emoji 卡片化）；② 侧边导航「使用指南」后追加「关于本站」入口（icon:info），footer 同步追加入口；③ 新增 `assets/qrcode-yueji-shuyu.png`（公众号绿底引导卡原图直接放，点击放大），宽 200px 圆角 8px；④ 样式 `.about-page/.about-card/.about-grid3/.about-quote/.about-contact/.about-tile` 等约 50 行。设计沿用 site 风格（白底卡片 + 0.5px 淡边框 + var(--bg-elevated)），移动端 .about-stats 折成 2 列。
+- **此前 v20260901k（2026-09-01 21:10 GMT+8）**：**全屏下画布未填满视口致拖拽内容被裁**——用户反馈「全屏，往下拉，会遮住」：全屏时画布高度仍为 640px 未动态调整到视口高度，ECharts roam 拖拽后内容超出 canvas 被裁。修复：① `resizeHolder()` 检测全屏状态（`document.fullscreenElement === wrap` 或 `pan-pseudo-fs` class），全屏时画布高度下限取 `window.innerHeight` 而非 640；② `attachFullscreen` 加 `onFsChange` 回调参数，`afterFsChange` 中调用，`drawMindMap` 传 `apply()` 确保全屏进入/退出时重算画布高度+重布局。回归 7/7 PASS。
 - **此前 v20260901j（`f908b8a`，2026-09-01 20:44 GMT+8）**：**AI 视图默认改左右逻辑图消除标签遮挡**——AI 视图径向布局下题目标题标签长，外圈标签横排重叠/超出画布。修复：`drawMindMap` 新增 `opt.layout` 参数，AI 视图传 `layout:"orthogonal"` 默认左右逻辑图；bar 按钮文字随 layout 动态显示；AI depth 改 3 确保 orthogonal 下题目可见可点；修复 TDZ：`let layout` 声明移到 bar.innerHTML 之前防白屏。回归 7/7 PASS。
 - **此前 v20260901i（`f967cd5`，2026-09-01 19:55 GMT+8）**：**径向图放大拖动后下方被裁看不见**——径向图固定 640px 视口，放大后内容超出 canvas 被裁。修复：径向图也按可见节点数动态加高画布(640~2400)，全屏 wrap overflow:auto 可滚动，apply 顺序改 resize→setOption 防重布局忽略 collapsed。
 - **此前 v20260901h（`0b77901`，2026-09-01 19:40 GMT+8）**：**题库全景图点击无反应三连修**——① `App` 加载时快照为 undefined（panorama.js 先于 app.js 加载），改运行时 `window.App.go`；② 岗位视图误用 `st.positions`（实际 `st.list`）；③ ECharts tree 事件 params.data 是副本非原引用，用 `_nid` 定位原树切换折叠。回归 7/7 PASS。
