@@ -56,9 +56,9 @@
 
   /* ============================ 对外接口 ============================ */
   const VIEWS = [
-    { id: "all", label: "题库全景", icon: "pieChart", desc: "按技术演进由内到外展开的思维导图" },
-    { id: "cat", label: "技术分类", icon: "layers", desc: "21 个技术体系 + 细分技术点的思维导图" },
-    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按时代阶段组织的思维导图" },
+    { id: "all", label: "题库全景", icon: "pieChart", desc: "按技术演进由内到外展开的思维导图（可下钻到具体技术）" },
+    { id: "cat", label: "技术分类", icon: "layers", desc: "21 个技术体系 → 子类（如关系型数据库）→ 具体技术（如 MySQL），每节点标题数" },
+    { id: "pos", label: "覆盖岗位", icon: "briefcase", desc: "岗位按时代阶段 → 父岗位 → 子岗位三级组织，每节点标题数" },
     { id: "ai", label: "AI 生成题", icon: "sparkles", desc: "AI 生成题按分类组织的思维导图" }
   ];
 
@@ -102,76 +102,106 @@
   /* 以「从属关系」组织：中心主题 → 主干（演进层 / 时代阶段）→ 分支（技术体系 / 岗位）→ 叶（细分技术点 / 题目）。
      折叠下钻天然解决节点过多：默认只展开主干，点分支再展开下一级。支持径向与左右两种布局。 */
 
-  function buildTechTree(includeSubs) {
-    const tops = collectTops();
-    const layerNodes = LAYERS.map(function (L) {
-      return {
-        name: L.name, short: L.name, count: 0, symbolSize: 26,
-        itemStyle: { color: L.color },
-        label: { color: L.color, fontWeight: "bold", fontSize: 13 },
-        _layer: true, tip: L.desc, children: []
+  /* 技术分类思维导图：递归整棵分类树（体系 → 子类如「关系型数据库」→ 具体技术如「MySQL」），
+     每节点题数 = 子树题数（与分类页 /category?cat= 点击后的结果一致）；标签直接带题数，连线按分组着色。 */
+  function buildTechTree() {
+    const tree = (S.categoryTree && S.categoryTree()) || [];
+    const direct = {};
+    (S.questions || []).forEach(function (q) { if (q.categoryId != null) direct[q.categoryId] = (direct[q.categoryId] || 0) + 1; });
+    function subCount(node) {
+      let n = direct[node.id] || 0;
+      (node.children || []).forEach(function (c) { n += subCount(c); });
+      node._sub = n;
+      return n;
+    }
+    tree.forEach(subCount);
+
+    function mk(node, layer, depth) {
+      const color = LAYERS[layer].color;
+      const sub = node._sub || 0;
+      const out = {
+        name: node.name,
+        short: node.name + (sub ? "  " + sub + " 题" : ""),
+        count: sub,
+        symbolSize: Math.max(10, Math.min(66, 12 + Math.sqrt(sub) * 3.4)),
+        itemStyle: { color: color, opacity: depth >= 2 ? 0.85 : 1, borderColor: "#fff", borderWidth: 1 },
+        lineStyle: { color: hexA(color, 0.6), width: 2 },
+        label: { fontSize: depth === 0 ? 13 : (depth === 1 ? 12 : 11) },
+        _catId: node.id,
+        tip: LAYERS[layer].name + " · 共 " + sub + " 题"
       };
-    });
-    tops.forEach(function (t) {
-      const subs = (t.children || []).filter(function (c) { return c.count > 0; });
-      const node = {
-        name: t.name, short: t.name, count: t.count, symbolSize: sizeFor(t.count),
-        itemStyle: { color: LAYERS[t.layer].color },
-        _catId: t.id, tip: LAYERS[t.layer].name + " · " + t.count + " 题"
-      };
-      if (includeSubs && subs.length) {
-        node.children = subs.map(function (c) {
-          return {
-            name: c.name, short: c.name, count: c.count,
-            symbolSize: Math.max(9, Math.min(24, 9 + Math.sqrt(c.count) * 2)),
-            itemStyle: { color: LAYERS[t.layer].color, opacity: 0.82 },
-            label: { fontSize: 11 },
-            _catId: c.id, _sub: true, tip: t.name + " · " + c.count + " 题"
-          };
-        });
+      if (node.children && node.children.length) {
+        out.children = node.children.map(function (c) { return mk(c, layer, depth + 1); });
       }
-      layerNodes[t.layer].children.push(node);
-    });
-    layerNodes.forEach(function (L) {
-      L.count = L.children.reduce(function (s, c) { return s + (c.count || 0); }, 0);
-      L.tip = L.children.length + " 个技术体系 · " + L.count + " 题";
+      return out;
+    }
+
+    const layerNodes = LAYERS.map(function (L, li) {
+      const tops = tree.filter(function (t) { return layerOf(t.name) === li; });
+      const total = tops.reduce(function (s, t) { return s + (t._sub || 0); }, 0);
+      return {
+        name: L.name, short: L.name + "  " + total + " 题",
+        count: total, symbolSize: 24,
+        itemStyle: { color: L.color, borderColor: "#fff", borderWidth: 1 },
+        lineStyle: { color: hexA(L.color, 0.65), width: 2.4 },
+        label: { color: L.color, fontWeight: "bold", fontSize: 13 },
+        _layer: true, tip: L.desc,
+        children: tops.map(function (t) { return mk(t, li, 0); })
+      };
     });
     return {
-      name: "IT 技术全景", short: "IT 技术全景",
+      name: "IT 技术全景", short: "IT 技术全景  " + (S.questions ? S.questions.length : 0) + " 题",
       count: (S.questions || []).length, symbolSize: 46,
-      itemStyle: { color: "#64748b" },
+      itemStyle: { color: "#64748b", borderColor: "#fff", borderWidth: 1 },
       label: { color: "#fff", fontWeight: "bold", fontSize: 13 },
-      _hub: true, tip: LAYERS.length + " 个演进层 · " + tops.length + " 个技术体系",
+      _hub: true, tip: LAYERS.length + " 个演进层 · " + tree.length + " 个技术体系",
       children: layerNodes
     };
   }
 
+  /* 岗位思维导图：时代阶段 → 父岗位（category 为空）→ 子岗位（category = 父岗位名），
+     每节点题数 = 该岗位题目数；标签直接带题数，连线按阶段着色。 */
   function buildPosTree() {
     const stages = (S.positionsByStage && S.positionsByStage()) || [];
+    const totalQ = (S.questions || []).filter(function (q) { return q.positionIds && q.positionIds.length; }).length;
+    function mkPos(p, depth, color) {
+      const cnt = (S.questionCountForPosition ? S.questionCountForPosition(p) : 0) || 0;
+      const nm = S.posFullName ? S.posFullName(p) : (p.name || p.id);
+      return {
+        name: nm, short: nm + (cnt ? "  " + cnt + " 题" : ""),
+        count: cnt,
+        symbolSize: Math.max(9, Math.min(30, 9 + Math.sqrt(cnt) * 3)),
+        itemStyle: { color: color, opacity: depth >= 1 ? 0.85 : 1, borderColor: "#fff", borderWidth: 1 },
+        lineStyle: { color: hexA(color, 0.6), width: 2 },
+        label: { fontSize: depth === 0 ? 12 : 11 },
+        _posId: p.id, tip: (p.stage || "") + " · 共 " + cnt + " 题"
+      };
+    }
     return {
-      name: "岗位全景", short: "岗位全景",
-      count: stages.reduce(function (s, st) { return s + (st.positions ? st.positions.length : 0); }, 0),
-      symbolSize: 42, itemStyle: { color: "#64748b" },
+      name: "岗位全景", short: "岗位全景  " + totalQ + " 题",
+      count: totalQ, symbolSize: 42,
+      itemStyle: { color: "#64748b", borderColor: "#fff", borderWidth: 1 },
       label: { color: "#fff", fontWeight: "bold", fontSize: 13 },
       _hub: true, tip: stages.length + " 个时代阶段",
       children: stages.map(function (st, i) {
         const color = STAGE_COLORS[i % STAGE_COLORS.length];
-        const positions = (st.positions || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
+        let positions = (st.positions || []).filter(function (p) { return !(S.isHiddenPosition && S.isHiddenPosition(p)); });
+        const byName = {};
+        positions.forEach(function (p) { byName[p.name] = p; });
+        const parents = positions.filter(function (p) { return !p.category; });
+        const kidsOf = function (p) { return positions.filter(function (c) { return c.category === p.name; }); };
         return {
-          name: st.stage, short: st.stage, symbolSize: 26,
-          itemStyle: { color: color },
+          name: st.stage, short: st.stage + "  " + positions.length + " 岗",
+          symbolSize: 26,
+          itemStyle: { color: color, borderColor: "#fff", borderWidth: 1 },
+          lineStyle: { color: hexA(color, 0.65), width: 2.4 },
           label: { color: color, fontWeight: "bold", fontSize: 13 },
           _stage: true, tip: positions.length + " 个岗位",
-          children: positions.map(function (p) {
-            const cnt = (S.questionCountForPosition ? S.questionCountForPosition(p) : 0) || 0;
-            const nm = S.posFullName ? S.posFullName(p) : (p.name || p.id);
-            return {
-              name: nm, short: nm, count: cnt,
-              symbolSize: Math.max(9, Math.min(26, 9 + Math.sqrt(cnt) * 2)),
-              itemStyle: { color: color, opacity: 0.82 },
-              label: { fontSize: 11 },
-              _posId: p.id, tip: st.stage + " · " + cnt + " 题"
-            };
+          children: parents.map(function (p) {
+            const node = mkPos(p, 0, color);
+            const kids = kidsOf(p);
+            if (kids.length) node.children = kids.map(function (c) { return mkPos(c, 1, color); });
+            return node;
           })
         };
       })
@@ -293,7 +323,7 @@
     }
     function buildOption() {
       const labelColor = cssVar("--text") || "#334155";
-      const edgeColor = cssVar("--border") || "#cbd5e1";
+      const edgeColor = cssVar("--border") || "rgba(71,85,105,.5)";
       const isRadial = layout === "radial";
       return {
         backgroundColor: "transparent",
@@ -329,13 +359,13 @@
           symbol: "circle",
           symbolSize: function (val, params) { return (params && params.data && params.data.symbolSize) || 14; },
           itemStyle: { borderColor: "#fff", borderWidth: 1 },
-          lineStyle: { color: edgeColor, width: 1.2, curveness: isRadial ? 0.5 : 0.45 },
+          lineStyle: { color: edgeColor, width: 2, curveness: isRadial ? 0.5 : 0.45 },
           label: {
             show: true, position: isRadial ? "outside" : "right", color: labelColor, fontSize: 12,
             formatter: function (p) { return p.data.short || p.data.name; }
           },
           leaves: { label: { position: isRadial ? "outside" : "right" } },
-          emphasis: { focus: "descendant", lineStyle: { width: 2.4 } }
+          emphasis: { focus: "descendant", lineStyle: { width: 3.6, opacity: 1 } }
         }]
       };
     }
@@ -648,20 +678,20 @@
   }
 
   function renderAll(box) {
-    const lg = legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。悬停节点后点「查看题目」直达。");
+    const lg = legendHtml(LAYERS, "由内到外 = 技术演进：基石 → 系统开发 → 架构工程 → 数据与智能/领域前沿。节点上的「N 题」即该方向全部题目数，点节点直达题单。");
     box.innerHTML = summaryHtml() + lg;
-    drawMindMap(box, buildTechTree(false), {
-      legendHtml: lg, depth: 2, maxDepth: 2,
-      note: "点击彩色圆点展开下一级，滚轮缩放、拖拽平移"
+    drawMindMap(box, buildTechTree(), {
+      legendHtml: lg, depth: 2, maxDepth: 4,
+      note: "点节点展开下一级（体系 → 子类如「关系型数据库」→ 具体技术如「MySQL」）；滚轮缩放、拖拽平移"
     });
   }
 
   function renderCat(box) {
-    const lg = legendHtml(LAYERS, "主干 = 4 个演进层，分支 = 21 个技术体系，叶 = 细分技术点；同色即同属一个演进层。");
-    box.innerHTML = '<p class="muted" style="margin:0 0 12px">每个技术体系下挂着自己的细分技术点，从属关系一目了然。悬停节点后点「查看题目」直达题目列表。</p>' + lg;
-    drawMindMap(box, buildTechTree(true), {
-      legendHtml: lg, depth: 3, maxDepth: 3,
-      note: "默认全展开；觉得挤就点「只看主干」，再逐支展开"
+    const lg = legendHtml(LAYERS, "主干 = 4 个演进层，分支 = 21 个技术体系，再下钻 = 细分技术点（如 数据库→关系型数据库→MySQL）。节点标注「N 题」即该分类题数。");
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">技术分类已细分到底：比如「数据库」下能看到「关系型数据库」「非关系型数据库」，再点开就能看到 MySQL / PostgreSQL / Redis 等具体技术，每个都标了题数。点节点直达题目列表。</p>' + lg;
+    drawMindMap(box, buildTechTree(), {
+      legendHtml: lg, depth: 3, maxDepth: 4,
+      note: "默认展开到「子类」一层；点具体技术（如 MySQL）再看它下面的题，或点「展开全部」铺开"
     });
   }
 
@@ -671,11 +701,11 @@
     const stageLegend = stages.map(function (st, i) {
       return { name: st.stage, color: STAGE_COLORS[i % STAGE_COLORS.length], desc: (st.positions ? st.positions.length : 0) + " 个岗位" };
     });
-    const lg = legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。");
-    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」归组：中心是岗位全景，往外一层是 8 个时代阶段，再展开是阶段下的具体岗位。悬停节点后点「查看题目」直达。</p>' + lg;
+    const lg = legendHtml(stageLegend, "由内到外 = 技术时代演进：计算机基础 → 软件开发 → 互联网 → 移动互联网 → 云与大数据 → AI/大模型 → 新兴技术 → 综合管理。节点标注「N 题」即该岗位题数。");
+    box.innerHTML = '<p class="muted" style="margin:0 0 12px">岗位按「时代阶段」归组，再细分成父子岗位（如「硬件工程师」→「数字电路工程师 / 嵌入式硬件工程师」）。每个岗位都标了题数，点节点直达对应岗位题库。</p>' + lg;
     drawMindMap(box, buildPosTree(), {
-      legendHtml: lg, depth: 1, maxDepth: 2,
-      note: "默认只展开到时代阶段，点某个阶段展开它下面的岗位"
+      legendHtml: lg, depth: 2, maxDepth: 3,
+      note: "默认展开到父岗位；点父岗位展开它的子岗位（如硬件工程师 → 数字电路工程师）"
     });
   }
 
