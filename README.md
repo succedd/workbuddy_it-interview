@@ -188,6 +188,11 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-01 · 全景图可全屏查看（缓存版本 `20260901a`）
+- feat: **题库全景图四个视图全部支持全屏**——`js/panorama.js` 抽出公共 `attachFullscreen(wrap, getChart)`，轨道图右上角新增「⛶ 全屏」按钮：优先原生 Fullscreen API，浏览器不支持时（如 iOS Safari）自动降级为 `fixed` 伪全屏；Esc 退出、点节点跳转前自动退出全屏、全屏时节点标签字号 11 → 14 并重新 `resize()`；全屏内保留图例浮层（普通态隐藏，不占版面）。`view=ai` 视图同样支持全屏滚动浏览。
+- feat: **非全屏状态也更大**——全景图页容器放宽到 1440px（`.container:has(.panorama-body)`，不支持 `:has()` 的浏览器保持原宽度，无副作用），轨道图高度 560 → 640px（移动端 420 → 460px）。
+- fix: **根治「改完要 Ctrl+F5 才看到新版」的缓存不一致**——此前 `index.html` 里资源的 `?v=` 与 `sw.js` 的 `VERSION` 不同步，Service Worker 预缓存的 URL 与页面实际请求的 URL 对不上，新文件常被旧缓存挡住；现把全部资源 `?v=` 与 SW `VERSION` 统一为 `20260901a`，此后每次改动同步升版本即可即时生效。
+
 ### 2026-08-31 · 题库全景图（首页统计卡片可钻取，缓存版本 `20260831a`）
 - feat: **题库全景图**——新增 `js/panorama.js` 与路由 `#/panorama?view=all|cat|pos|ai`，首页 4 个统计卡片由 `<div class="stat">` 改为 `<a class="stat">`，点击即可钻取：
   - **题库全景**（`view=all`）：ECharts 旭日图，圆环面积 = 题目数量，内圈 21 个一级技术体系、外圈细分技术点；点任意色块跳 `#/category?cat=<id>`。父节点不设 value、由子节点累加，保证比例精确；体系自身直挂的题目单独成「综合题」环。
@@ -196,6 +201,7 @@ node tools/gen-published.js
   - **AI 生成题**（`view=ai`）：全库来源构成条形图（AI / 人工 / 内置种子 / 原理整理 / 外部文档 / 其他）+ AI 题目按分类归组的完整清单。
 - fix: **全景图题数与「题目总数」对不齐**——有 3 道题（id 229 / 233 / 239）`categoryId` 为 `null`，不在任何分类下，旭日图会漏掉；现单列「未归类」环（点进去走 `#/questions?nocat=1`），环上题数合计经校验 = 全库 358，误差 0。
 - feat: **题目列表页筛选参数补两个**——`?source=ai|manual|import|seed|principles|url|other`（来源构成条跳转；`url` 按「来源是 http(s) 链接」筛，`other` 按「不属于已知来源」筛，命中 `ai|manual|import` 时同步选中来源下拉框）、`?nocat=1`（未归类题目）。均为纯加法，不影响原有筛选。
+- fix: **轨道图永久卡"加载中…"紧急修复（缓存版本 `20260831d`）**——`#/panorama` 的 all/cat/pos 三视图上线后一直停在"轨道图加载中…"不渲染；根因同 HANDOVER 第 6 节：`drawOrbit` 的 `symbolSize` 回调首参在 echarts graph 系列里是数据项的 `value` 字段而非数据项本身，节点用 `x,y` 极坐标无 `value` → `undefined.symbolSize` 抛 TypeError 使 `setOption` 失败；修复后回调读 `params.data.symbolSize`，并把"加载中"移入图表内 `showLoading`、渲染失败显示红色错误兜底。
 - chore: 缓存版本 `20260829x` → `20260831a`（index.html 全部资源 + sw.js `VERSION` + APP_SHELL 新增 `js/panorama.js`）；`.gitignore` 追加 `.workbuddy/`、`*.bak*`。
 
 ### 2026-08-31 · 自动备份死循环修复 + 再面一次按钮修复（缓存版本 `20260829x`）
