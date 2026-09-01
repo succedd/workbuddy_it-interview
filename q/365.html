@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>软技能/HR问题 · IT面试题库</title>
-  <meta name="description" content="答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。">
+  <title>进程与线程的区别是什么？为什么有了进程还需要线程？ · IT面试题库</title>
+  <meta name="description" content="要点： 本质区别：进程是资源分配的最小单位（拥有独立虚拟地址空间、文件句柄等）；线程是CPU 调度的最小单位，同一进程内的线程共享地址空间与资源。 地址空间：进程间相互独立，一个崩溃不影响其他进程；线程共享所属进程的内存，一个线程野指针可能拖垮整个进程。 开销与切换：创建/销毁进程、进程间切换涉及地址空间映射切换…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="软技能/HR问题 · IT面试题库">
-  <meta property="og:description" content="答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。">
+  <meta property="og:title" content="进程与线程的区别是什么？为什么有了进程还需要线程？ · IT面试题库">
+  <meta property="og:description" content="要点： 本质区别：进程是资源分配的最小单位（拥有独立虚拟地址空间、文件句柄等）；线程是CPU 调度的最小单位，同一进程内的线程共享地址空间与资源。 地址空间：进程间相互独立，一个崩溃不影响其他进程；线程共享所属进程的内存，一个线程野指针可能拖垮整个进程。 开销与切换：创建/销毁进程、进程间切换涉及地址空间映射切换…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/222.html">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/365.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="软技能/HR问题 · IT面试题库">
-  <meta name="twitter:description" content="答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。">
+  <meta name="twitter:title" content="进程与线程的区别是什么？为什么有了进程还需要线程？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 本质区别：进程是资源分配的最小单位（拥有独立虚拟地址空间、文件句柄等）；线程是CPU 调度的最小单位，同一进程内的线程共享地址空间与资源。 地址空间：进程间相互独立，一个崩溃不影响其他进程；线程共享所属进程的内存，一个线程野指针可能拖垮整个进程。 开销与切换：创建/销毁进程、进程间切换涉及地址空间映射切换…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/222.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"软技能/HR问题","text":"软技能/HR问题","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。","url":"https://it-interview.is-a.dev/#/question/222"}}}</script>
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/365.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"进程与线程的区别是什么？为什么有了进程还需要线程？","text":"考察点：进程是资源分配的基本单位、线程是 CPU 调度的基本单位；地址空间、开销、通信方式、健壮性等维度的对比，是操作系统面试基石题。","answerCount":1,"datePublished":"2026-09-01T09:08:32.019Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质区别：进程是资源分配的最小单位（拥有独立虚拟地址空间、文件句柄等）；线程是CPU 调度的最小单位，同一进程内的线程共享地址空间与资源。 地址空间：进程间相互独立，一个崩溃不影响其他进程；线程共享所属进程的内存，一个线程野指针可能拖垮整个进程。 开销与切换：创建/销毁进程、进程间切换涉及地址空间映射切换，成本高；线程更轻量，切换只需保存少量寄存器，成本更低。 通信方式：进程间需借助 IPC（管道、共享内存等）；线程间可直接读写共享变量，但需同步保护。 为什么需要线程：在保留并发能力的同时，用更轻量的执行流减少上下文开销、提升吞吐，便于在一个进程内并行处理多任务。","url":"https://it-interview.is-a.dev/#/question/365"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,20 +70,23 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>软技能/HR问题</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">软件开发工程师(通用)</span><span class="chip">系统运维工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">云服务器</span><span class="chip tag">GPU</span><span class="chip tag">监控</span><span class="chip tag">告警</span></div>
-    
-    <div class="card"><h2>参考答案</h2><p>答案模板：</p>
-<p>我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景，</p>
-<p>涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。</p>
-<p>相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式，</p>
-<p>售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/222">在线刷题 · 收藏与错题重练 →</a>
+    <h1>进程与线程的区别是什么？为什么有了进程还需要线程？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">进程</span><span class="chip tag">线程</span><span class="chip tag">操作系统</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：进程是资源分配的基本单位、线程是 CPU 调度的基本单位；地址空间、开销、通信方式、健壮性等维度的对比，是操作系统面试基石题。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>本质区别</strong>：进程是<strong>资源分配</strong>的最小单位（拥有独立虚拟地址空间、文件句柄等）；线程是<strong>CPU 调度</strong>的最小单位，同一进程内的线程共享地址空间与资源。</li>
+<li><strong>地址空间</strong>：进程间相互独立，一个崩溃不影响其他进程；线程共享所属进程的内存，一个线程野指针可能拖垮整个进程。</li>
+<li><strong>开销与切换</strong>：创建/销毁进程、进程间切换涉及地址空间映射切换，成本高；线程更轻量，切换只需保存少量寄存器，成本更低。</li>
+<li><strong>通信方式</strong>：进程间需借助 IPC（管道、共享内存等）；线程间可直接读写共享变量，但需同步保护。</li>
+<li><strong>为什么需要线程</strong>：在保留并发能力的同时，用更轻量的执行流减少上下文开销、提升吞吐，便于在一个进程内并行处理多任务。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/365">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=4&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

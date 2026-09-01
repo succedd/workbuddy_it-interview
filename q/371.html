@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>软技能/HR问题 · IT面试题库</title>
-  <meta name="description" content="答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。">
+  <title>Linux “文本三剑客” grep、sed、awk 各自的定位是什么？能举一个典型用法吗？ · IT面试题库</title>
+  <meta name="description" content="要点： grep：文本搜索过滤器，按正则匹配行并输出。grep -i &#39;error&#39; app.log 忽略大小写找出所有 error 行；-r 递归目录，-n 显示行号，-v 反选。 sed：流编辑器，擅长按行做替换/删除/插入。sed &#39;s/old/new/g&#39; file 全局替换；sed -i 直接改文件；s…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="软技能/HR问题 · IT面试题库">
-  <meta property="og:description" content="答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。">
+  <meta property="og:title" content="Linux “文本三剑客” grep、sed、awk 各自的定位是什么？能举一个典型用法吗？ · IT面试题库">
+  <meta property="og:description" content="要点： grep：文本搜索过滤器，按正则匹配行并输出。grep -i &#39;error&#39; app.log 忽略大小写找出所有 error 行；-r 递归目录，-n 显示行号，-v 反选。 sed：流编辑器，擅长按行做替换/删除/插入。sed &#39;s/old/new/g&#39; file 全局替换；sed -i 直接改文件；s…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/222.html">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/371.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="软技能/HR问题 · IT面试题库">
-  <meta name="twitter:description" content="答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。">
+  <meta name="twitter:title" content="Linux “文本三剑客” grep、sed、awk 各自的定位是什么？能举一个典型用法吗？ · IT面试题库">
+  <meta name="twitter:description" content="要点： grep：文本搜索过滤器，按正则匹配行并输出。grep -i &#39;error&#39; app.log 忽略大小写找出所有 error 行；-r 递归目录，-n 显示行号，-v 反选。 sed：流编辑器，擅长按行做替换/删除/插入。sed &#39;s/old/new/g&#39; file 全局替换；sed -i 直接改文件；s…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/222.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"软技能/HR问题","text":"软技能/HR问题","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"答案模板： 我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景， 涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。 相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式， 售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。","url":"https://it-interview.is-a.dev/#/question/222"}}}</script>
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/371.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux “文本三剑客” grep、sed、awk 各自的定位是什么？能举一个典型用法吗？","text":"考察点：三者的职责分工——grep 负责“过滤/查找”、sed 负责“流编辑/替换”、awk 负责“按列处理/统计”；是否理解它们常通过管道组合使用。","answerCount":1,"datePublished":"2026-09-01T09:08:54.262Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： grep：文本搜索过滤器，按正则匹配行并输出。grep -i 'error' app.log 忽略大小写找出所有 error 行；-r 递归目录，-n 显示行号，-v 反选。 sed：流编辑器，擅长按行做替换/删除/插入。sed 's/old/new/g' file 全局替换；sed -i 直接改文件；sed -n '10,20p' 打印指定行范围。 awk：按列（默认空白分隔，用 $1 $2 ... 取值）处理的编程语言，擅长统计。awk '{print $1}' access.log | sort | uniq -c 可统计首列频次；awk -F: '{print $1}' /etc/passwd 指定冒号分隔符。 组合哲学：三者通过管道串联，各司其职——grep 先筛、sed 再改、awk 最后算，构成 Linux 文本处理的基石。","url":"https://it-interview.is-a.dev/#/question/371"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,20 +70,22 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>软技能/HR问题</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">软件开发工程师(通用)</span><span class="chip">系统运维工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">云服务器</span><span class="chip tag">GPU</span><span class="chip tag">监控</span><span class="chip tag">告警</span></div>
-    
-    <div class="card"><h2>参考答案</h2><p>答案模板：</p>
-<p>我对云计算方向很感兴趣，这个岗位能让我接触真实的大客户场景，</p>
-<p>涉及计算、网络、存储、容器等多个技术方向，能快速建立起完整的云运维知识体系。</p>
-<p>相比纯开发岗位，我更喜欢解决实际问题、直接看到成果的工作方式，</p>
-<p>售后技术支持正好符合我的性格特点——有责任心、耐心、愿意沟通协作。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/222">在线刷题 · 收藏与错题重练 →</a>
+    <h1>Linux “文本三剑客” grep、sed、awk 各自的定位是什么？能举一个典型用法吗？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">grep</span><span class="chip tag">sed</span><span class="chip tag">awk</span><span class="chip tag">文本处理</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：三者的职责分工——grep 负责“过滤/查找”、sed 负责“流编辑/替换”、awk 负责“按列处理/统计”；是否理解它们常通过管道组合使用。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>grep</strong>：文本搜索过滤器，按正则匹配行并输出。<code>grep -i &#39;error&#39; app.log</code> 忽略大小写找出所有 error 行；<code>-r</code> 递归目录，<code>-n</code> 显示行号，<code>-v</code> 反选。</li>
+<li><strong>sed</strong>：流编辑器，擅长按行做替换/删除/插入。<code>sed &#39;s/old/new/g&#39; file</code> 全局替换；<code>sed -i</code> 直接改文件；<code>sed -n &#39;10,20p&#39;</code> 打印指定行范围。</li>
+<li><strong>awk</strong>：按列（默认空白分隔，用 <code>$1 $2 ...</code> 取值）处理的编程语言，擅长统计。<code>awk &#39;{print $1}&#39; access.log | sort | uniq -c</code> 可统计首列频次；<code>awk -F: &#39;{print $1}&#39; /etc/passwd</code> 指定冒号分隔符。</li>
+<li><strong>组合哲学</strong>：三者通过管道串联，各司其职——grep 先筛、sed 再改、awk 最后算，构成 Linux 文本处理的基石。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/371">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
