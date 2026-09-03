@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？ · IT面试题库</title>
+  <meta name="description" content="根本原因：多数派是按「当前配置」计算的 成员变更本身也是一条需要达成共识的日志。如果一次性把配置从旧集合直接切到新集合，新旧两个集合的多数派可能互不重叠，就会出现旧配置里选出一个 Leader、新配置里又选出一个 Leader 的脑裂（双主）情况，已提交的日志可能被覆盖。 为什么一次变一个是安全的 以 n → n…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？ · IT面试题库">
+  <meta property="og:description" content="根本原因：多数派是按「当前配置」计算的 成员变更本身也是一条需要达成共识的日志。如果一次性把配置从旧集合直接切到新集合，新旧两个集合的多数派可能互不重叠，就会出现旧配置里选出一个 Leader、新配置里又选出一个 Leader 的脑裂（双主）情况，已提交的日志可能被覆盖。 为什么一次变一个是安全的 以 n → n…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/446.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？ · IT面试题库">
+  <meta name="twitter:description" content="根本原因：多数派是按「当前配置」计算的 成员变更本身也是一条需要达成共识的日志。如果一次性把配置从旧集合直接切到新集合，新旧两个集合的多数派可能互不重叠，就会出现旧配置里选出一个 Leader、新配置里又选出一个 Leader 的脑裂（双主）情况，已提交的日志可能被覆盖。 为什么一次变一个是安全的 以 n → n…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/446.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？","text":"考察点：多数派（quorum）是相对当前配置计算的，新老配置的多数派必须有交集才能保证同一任期只选出一个 Leader。属简答题（高级）。","answerCount":1,"datePublished":"2026-09-03T00:54:10.845Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根本原因：多数派是按「当前配置」计算的 成员变更本身也是一条需要达成共识的日志。如果一次性把配置从旧集合直接切到新集合，新旧两个集合的多数派可能互不重叠，就会出现旧配置里选出一个 Leader、新配置里又选出一个 Leader 的脑裂（双主）情况，已提交的日志可能被覆盖。 为什么一次变一个是安全的 以 n → n+1 为例：旧多数派是 n/2+1，新多数派是 (n+1)/2+1，两者之和必然大于 n+1，因此一定有交集节点，交集节点在一个任期里只能投出一票，不可能形成双主。 反例：3 节点一次扩到 6，旧多数派 2、新多数派 4，2+4=6 不保证交集，就存在双主风险。 etcd 官方给出的运维建议 需要下线或迁移多台机器时逐台操作：先移除一台、等集群稳定、再加入一台，如此循环。 变更请求只有在多数成员健康时才能被处理；删除 Leader 是安全的，但会经历一次选举期间的服务中断。 两节点集群非常危险：2 个节点的多数派仍是 2，移除成员一旦失败集群就无法推进，只能从多数派故障中恢复；生产环境至少 3 节点。 扩缩容的取舍：增大集群规模能提升容错能力和读吞吐；减小集群规模能提升写性能，代价是容错下降。 工程补充 生产实现通常还会开启严格重配置检查（etcd 的 -strict-reconfig-check），主动拒绝会导致 quorum 丢失的变更请求；跨机房场景可先用不参与投票的 learner 节点追平数据再转正，避免新节点拖慢写入。","url":"https://it-interview.is-a.dev/#/question/446"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">Java后端工程师</span><span class="chip tag">Raft</span><span class="chip tag">成员变更</span><span class="chip tag">多数派</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：多数派（quorum）是相对当前配置计算的，新老配置的多数派必须有交集才能保证同一任期只选出一个 Leader。属简答题（高级）。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>根本原因：多数派是按「当前配置」计算的</strong></p>
+<p>成员变更本身也是一条需要达成共识的日志。如果一次性把配置从旧集合直接切到新集合，新旧两个集合的多数派可能<strong>互不重叠</strong>，就会出现旧配置里选出一个 Leader、新配置里又选出一个 Leader 的脑裂（双主）情况，已提交的日志可能被覆盖。</p>
+<p><strong>为什么一次变一个是安全的</strong></p>
+<p>以 n → n+1 为例：旧多数派是 n/2+1，新多数派是 (n+1)/2+1，两者之和必然大于 n+1，因此一定有交集节点，交集节点在一个任期里只能投出一票，不可能形成双主。</p>
+<p>反例：3 节点一次扩到 6，旧多数派 2、新多数派 4，2+4=6 不保证交集，就存在双主风险。</p>
+<p><strong>etcd 官方给出的运维建议</strong></p>
+<ul>
+<li>需要下线或迁移多台机器时<strong>逐台操作</strong>：先移除一台、等集群稳定、再加入一台，如此循环。</li>
+<li>变更请求只有在<strong>多数成员健康</strong>时才能被处理；删除 Leader 是安全的，但会经历一次选举期间的服务中断。</li>
+<li>两节点集群非常危险：2 个节点的多数派仍是 2，移除成员一旦失败集群就无法推进，只能从多数派故障中恢复；生产环境至少 3 节点。</li>
+<li>扩缩容的取舍：增大集群规模能提升容错能力和读吞吐；减小集群规模能提升写性能，代价是容错下降。</li>
+</ul>
+<p><strong>工程补充</strong></p>
+<p>生产实现通常还会开启严格重配置检查（etcd 的 <code>-strict-reconfig-check</code>），主动拒绝会导致 quorum 丢失的变更请求；跨机房场景可先用不参与投票的 learner 节点追平数据再转正，避免新节点拖慢写入。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/446">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=120&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
