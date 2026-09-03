@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vite 的依赖预构建（Dependency Pre-Bundling）到底解决了什么问题？为什么开发环境下必须先做这一步？ · IT面试题库</title>
+  <meta name="description" content="一、背景：dev 阶段直接提供原生 ESM Vite 在开发环境下把源码当作原生 ESM 提供给浏览器，浏览器只请求当前页面真正用到的模块，因此冷启动时间几乎与项目规模无关。但这条路线有两个绕不开的障碍，正是依赖预构建要解决的。 二、它解决的两个问题 1. CommonJS / UMD 兼容性。 浏览器原生 ES…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Vite 的依赖预构建（Dependency Pre-Bundling）到底解决了什么问题？为什么开发环境下必须先做这一步？ · IT面试题库">
+  <meta property="og:description" content="一、背景：dev 阶段直接提供原生 ESM Vite 在开发环境下把源码当作原生 ESM 提供给浏览器，浏览器只请求当前页面真正用到的模块，因此冷启动时间几乎与项目规模无关。但这条路线有两个绕不开的障碍，正是依赖预构建要解决的。 二、它解决的两个问题 1. CommonJS / UMD 兼容性。 浏览器原生 ES…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/431.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vite 的依赖预构建（Dependency Pre-Bundling）到底解决了什么问题？为什么开发环境下必须先做这一步？ · IT面试题库">
+  <meta name="twitter:description" content="一、背景：dev 阶段直接提供原生 ESM Vite 在开发环境下把源码当作原生 ESM 提供给浏览器，浏览器只请求当前页面真正用到的模块，因此冷启动时间几乎与项目规模无关。但这条路线有两个绕不开的障碍，正是依赖预构建要解决的。 二、它解决的两个问题 1. CommonJS / UMD 兼容性。 浏览器原生 ES…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/431.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 的依赖预构建（Dependency Pre-Bundling）到底解决了什么问题？为什么开发环境下必须先做这一步？","text":"第一次启动 Vite 时会先「预构建」依赖再打开页面，控制台会打印 optimizing dependencies。请说明这一步存在的原因、它带来的收益，以及缓存失效与强制重建的机制。","answerCount":1,"datePublished":"2026-09-03T00:53:19.908Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、背景：dev 阶段直接提供原生 ESM Vite 在开发环境下把源码当作原生 ESM 提供给浏览器，浏览器只请求当前页面真正用到的模块，因此冷启动时间几乎与项目规模无关。但这条路线有两个绕不开的障碍，正是依赖预构建要解决的。 二、它解决的两个问题 1. CommonJS / UMD 兼容性。 浏览器原生 ESM 不认识 require/module.exports，而 npm 上大量包仍以 CJS 或 UMD 发布。Vite 必须先把它们转成 ESM；转换时还会做智能导入分析，让对 CJS 模块的具名导入也能正常工作，例如 import React, { useState } from 'react' 在 React 这种导出是动态赋值的包上依然符合预期。 2. 性能：消灭请求风暴。 有些包的 ESM 产物内部被拆成成百上千个互相 import 的小文件，lodash-es 就有 600 多个内部模块。手写一句 import { debounce } from 'lodash-es'，浏览器会同时发出 600+ 个 HTTP 请求，服务端扛得住，浏览器侧却会因连接拥塞导致页面明显变慢。预构建把它打成一个模块，请求数从 600 降到 1。 三、执行与缓存机制 首次启动 vite 时自动、透明地完成；用 esbuild（新版工具链为 Rolldown）这类原生工具执行，速度远快于传统打包器。 入口来自对源码的自动扫描（识别裸模块导入）；运行中若发现缓存里没有的新依赖，会重新预构建并在必要时刷新页面。 文件系统缓存放在 node_modules/.vite，是否重跑取决于：包管理器 lockfile 内容、patches 目录修改时间、vite.config.js 相关字段、NODE_ENV。想强制重跑可用 --force 或直接删除该目录。 浏览器缓存用 max-age=31536000,immutable 强缓存，靠追加的版本 query 失效；调试依赖源码时需临时禁用缓存或加 --force 重启。 四、两个易错点 预构建只在开发模式生效；生产环境仍然要打包，因为嵌套 ESM 的大量网络往返在生产并不划算。 monorepo 里被 link 的同仓依赖会被当作源码处理而不打包，若它不是 ESM 产物，需要显式加进 optimizeDeps.include。","url":"https://it-interview.is-a.dev/#/question/431"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Vite 的依赖预构建（Dependency Pre-Bundling）到底解决了什么问题？为什么开发环境下必须先做这一步？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Vite</span><span class="chip tag">依赖预构建</span><span class="chip tag">ESM</span></div>
+    <div class="card"><h2>题目</h2><p>第一次启动 Vite 时会先「预构建」依赖再打开页面，控制台会打印 optimizing dependencies。请说明这一步存在的原因、它带来的收益，以及缓存失效与强制重建的机制。</p></div>
+    <div class="card"><h2>参考答案</h2><h3>一、背景：dev 阶段直接提供原生 ESM</h3>
+<p>Vite 在开发环境下把源码当作<strong>原生 ESM</strong> 提供给浏览器，浏览器只请求当前页面真正用到的模块，因此冷启动时间几乎与项目规模无关。但这条路线有两个绕不开的障碍，正是依赖预构建要解决的。</p>
+<h3>二、它解决的两个问题</h3>
+<p><strong>1. CommonJS / UMD 兼容性。</strong> 浏览器原生 ESM 不认识 <code>require</code>/<code>module.exports</code>，而 npm 上大量包仍以 CJS 或 UMD 发布。Vite 必须先把它们转成 ESM；转换时还会做<strong>智能导入分析</strong>，让对 CJS 模块的具名导入也能正常工作，例如 <code>import React, { useState } from &#39;react&#39;</code> 在 React 这种导出是动态赋值的包上依然符合预期。</p>
+<p><strong>2. 性能：消灭请求风暴。</strong> 有些包的 ESM 产物内部被拆成成百上千个互相 import 的小文件，<code>lodash-es</code> 就有 600 多个内部模块。手写一句 <code>import { debounce } from &#39;lodash-es&#39;</code>，浏览器会同时发出 600+ 个 HTTP 请求，服务端扛得住，浏览器侧却会因连接拥塞导致页面明显变慢。预构建把它打成<strong>一个模块</strong>，请求数从 600 降到 1。</p>
+<h3>三、执行与缓存机制</h3>
+<ul>
+<li>首次启动 <code>vite</code> 时自动、透明地完成；用 esbuild（新版工具链为 Rolldown）这类原生工具执行，速度远快于传统打包器。</li>
+<li>入口来自对源码的自动扫描（识别裸模块导入）；运行中若发现缓存里没有的新依赖，会重新预构建并在必要时刷新页面。</li>
+<li><strong>文件系统缓存</strong>放在 <code>node_modules/.vite</code>，是否重跑取决于：包管理器 lockfile 内容、patches 目录修改时间、<code>vite.config.js</code> 相关字段、<code>NODE_ENV</code>。想强制重跑可用 <code>--force</code> 或直接删除该目录。</li>
+<li><strong>浏览器缓存</strong>用 <code>max-age=31536000,immutable</code> 强缓存，靠追加的版本 query 失效；调试依赖源码时需临时禁用缓存或加 <code>--force</code> 重启。</li>
+</ul>
+<h3>四、两个易错点</h3>
+<ul>
+<li>预构建<strong>只在开发模式生效</strong>；生产环境仍然要打包，因为嵌套 ESM 的大量网络往返在生产并不划算。</li>
+<li>monorepo 里被 link 的同仓依赖会被当作源码处理而不打包，若它不是 ESM 产物，需要显式加进 <code>optimizeDeps.include</code>。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/431">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=70&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
