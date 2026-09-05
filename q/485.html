@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTTP/3 为什么基于 QUIC/UDP 而不是 TCP？它解决了 HTTP/2 的什么遗留问题？ · IT面试题库</title>
-  <meta name="description" content="要点： 规避 TCP 队头阻塞：HTTP/2 的多路复用共用一条 TCP 连接，任一报文丢失都要等重传，会阻塞该连接上所有流；QUIC 在 UDP 之上为每个流独立管理可靠性与顺序，单个流丢包不影响其他流。 更快的建连与恢复：QUIC 握手可合并传输层与加密层，支持 0-RTT（恢复连接时）和 1-RTT 建连，…">
+  <title>编程题：K 个一组翻转链表（LeetCode 25）：每 k 个节点一组进行翻转，不足 k 个保持原序，返回翻转后的头节点。请说明为什么这道题是「反转链表 + 合并有序结构」两道基础题的综合应用。 · IT面试题库</title>
+  <meta name="description" content="要点：分三步——探边界、组内反转、组间缝合，本质是反复调用「反转一段链表」。 算法骨架： 1. 用 dummy 挂头，groupPrev 指向每组前驱； 2. 从 groupPrev 出发探查 k 步，若不足 k 个直接结束（不足组保持原序）； 3. 记录 groupEnd 与 groupNext，断开后对组内做…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="HTTP/3 为什么基于 QUIC/UDP 而不是 TCP？它解决了 HTTP/2 的什么遗留问题？ · IT面试题库">
-  <meta property="og:description" content="要点： 规避 TCP 队头阻塞：HTTP/2 的多路复用共用一条 TCP 连接，任一报文丢失都要等重传，会阻塞该连接上所有流；QUIC 在 UDP 之上为每个流独立管理可靠性与顺序，单个流丢包不影响其他流。 更快的建连与恢复：QUIC 握手可合并传输层与加密层，支持 0-RTT（恢复连接时）和 1-RTT 建连，…">
+  <meta property="og:title" content="编程题：K 个一组翻转链表（LeetCode 25）：每 k 个节点一组进行翻转，不足 k 个保持原序，返回翻转后的头节点。请说明为什么这道题是「反转链表 + 合并有序结构」两道基础题的综合应用。 · IT面试题库">
+  <meta property="og:description" content="要点：分三步——探边界、组内反转、组间缝合，本质是反复调用「反转一段链表」。 算法骨架： 1. 用 dummy 挂头，groupPrev 指向每组前驱； 2. 从 groupPrev 出发探查 k 步，若不足 k 个直接结束（不足组保持原序）； 3. 记录 groupEnd 与 groupNext，断开后对组内做…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/485.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="HTTP/3 为什么基于 QUIC/UDP 而不是 TCP？它解决了 HTTP/2 的什么遗留问题？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 规避 TCP 队头阻塞：HTTP/2 的多路复用共用一条 TCP 连接，任一报文丢失都要等重传，会阻塞该连接上所有流；QUIC 在 UDP 之上为每个流独立管理可靠性与顺序，单个流丢包不影响其他流。 更快的建连与恢复：QUIC 握手可合并传输层与加密层，支持 0-RTT（恢复连接时）和 1-RTT 建连，…">
+  <meta name="twitter:title" content="编程题：K 个一组翻转链表（LeetCode 25）：每 k 个节点一组进行翻转，不足 k 个保持原序，返回翻转后的头节点。请说明为什么这道题是「反转链表 + 合并有序结构」两道基础题的综合应用。 · IT面试题库">
+  <meta name="twitter:description" content="要点：分三步——探边界、组内反转、组间缝合，本质是反复调用「反转一段链表」。 算法骨架： 1. 用 dummy 挂头，groupPrev 指向每组前驱； 2. 从 groupPrev 出发探查 k 步，若不足 k 个直接结束（不足组保持原序）； 3. 记录 groupEnd 与 groupNext，断开后对组内做…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/485.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HTTP/3 为什么基于 QUIC/UDP 而不是 TCP？它解决了 HTTP/2 的什么遗留问题？","text":"考察点：QUIC 基于 UDP、0-RTT/1-RTT 建连、TCP 队头阻塞、连接迁移（网络切换不中断）。","answerCount":1,"datePublished":"2026-09-03T02:12:26.805Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 规避 TCP 队头阻塞：HTTP/2 的多路复用共用一条 TCP 连接，任一报文丢失都要等重传，会阻塞该连接上所有流；QUIC 在 UDP 之上为每个流独立管理可靠性与顺序，单个流丢包不影响其他流。 更快的建连与恢复：QUIC 握手可合并传输层与加密层，支持 0-RTT（恢复连接时）和 1-RTT 建连，比 TCP+TLS 的三次握手+TLS 协商更快。 连接迁移：QUIC 用连接 ID 而非四元组标识连接，手机从 Wi-Fi 切到 4G 时 IP 变了也不会断连，TCP 则会断。 内建加密：QUIC 默认全程加密（基于 TLS 1.3），TCP 头部仍是明文易被中间件篡改。 代价：UDP 在部分老旧网络/中间设备可能被限速或丢弃，且 QUIC 实现与拥塞控制更复杂。","url":"https://it-interview.is-a.dev/#/question/485"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：K 个一组翻转链表（LeetCode 25）：每 k 个节点一组进行翻转，不足 k 个保持原序，返回翻转后的头节点。请说明为什么这道题是「反转链表 + 合并有序结构」两道基础题的综合应用。","text":"考察点：把前两题的子能力（局部反转、拼接）组合成复杂操作，考查边界处理。追问：如何 O(1) 空间判断「这一组是否凑满 k 个」？","answerCount":1,"datePublished":"2026-09-05T02:44:17.061Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：分三步——探边界、组内反转、组间缝合，本质是反复调用「反转一段链表」。 算法骨架： 1. 用 dummy 挂头，groupPrev 指向每组前驱； 2. 从 groupPrev 出发探查 k 步，若不足 k 个直接结束（不足组保持原序）； 3. 记录 groupEnd 与 groupNext，断开后对组内做标准反转（LeetCode 206 的迭代法），再把 groupPrev.next = 新头、原头.next = groupNext 缝回去； 4. groupPrev 移动到原组头（反转后的组尾），进入下一组。 O(1) 空间判满：探查用计数器走 k 步即可，不需要数组缓存整组节点——很多错误解法先把 k 个节点存进列表再反转，空间退化为 O(k)。 与基础题的关系：组内反转就是 206 的原样复用；组间缝合依赖哑节点技巧（21 的思想）避免头节点特判。面试官出这道题正是在验证你能否把子问题拆解复用，而不是背模板。 复杂度：每个节点最多被访问常数次，时间 O(n)，空间 O(1)。 高频边界：k=1 或 k≥链长时应原样返回；空链表；恰好整除时最后一组也要反转。","url":"https://it-interview.is-a.dev/#/question/485"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,23 +70,29 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>HTTP/3 为什么基于 QUIC/UDP 而不是 TCP？它解决了 HTTP/2 的什么遗留问题？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP3</span><span class="chip tag">QUIC</span><span class="chip tag">UDP</span><span class="chip tag">队头阻塞</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：QUIC 基于 UDP、0-RTT/1-RTT 建连、TCP 队头阻塞、连接迁移（网络切换不中断）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>编程题：K 个一组翻转链表（LeetCode 25）：每 k 个节点一组进行翻转，不足 k 个保持原序，返回翻转后的头节点。请说明为什么这道题是「反转链表 + 合并有序结构」两道基础题的综合应用。</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">链表</span><span class="chip tag">分组反转</span><span class="chip tag">LeetCode25</span><span class="chip tag">边界处理</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：把前两题的子能力（局部反转、拼接）组合成复杂操作，考查边界处理。追问：如何 O(1) 空间判断「这一组是否凑满 k 个」？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：分三步——探边界、组内反转、组间缝合，本质是反复调用「反转一段链表」。</p>
 <ul>
-<li><strong>规避 TCP 队头阻塞</strong>：HTTP/2 的多路复用共用一条 TCP 连接，任一报文丢失都要等重传，会阻塞该连接上所有流；QUIC 在 UDP 之上为每个流独立管理可靠性与顺序，单个流丢包不影响其他流。</li>
-<li><strong>更快的建连与恢复</strong>：QUIC 握手可合并传输层与加密层，支持 0-RTT（恢复连接时）和 1-RTT 建连，比 TCP+TLS 的三次握手+TLS 协商更快。</li>
-<li><strong>连接迁移</strong>：QUIC 用连接 ID 而非四元组标识连接，手机从 Wi-Fi 切到 4G 时 IP 变了也不会断连，TCP 则会断。</li>
-<li><strong>内建加密</strong>：QUIC 默认全程加密（基于 TLS 1.3），TCP 头部仍是明文易被中间件篡改。</li>
-<li><strong>代价</strong>：UDP 在部分老旧网络/中间设备可能被限速或丢弃，且 QUIC 实现与拥塞控制更复杂。</li>
+<li><strong>算法骨架</strong>：</li>
+</ul>
+<p>  1. 用 dummy 挂头，<code>groupPrev</code> 指向每组前驱；</p>
+<p>  2. 从 groupPrev 出发探查 k 步，若不足 k 个直接结束（不足组保持原序）；</p>
+<p>  3. 记录 groupEnd 与 groupNext，断开后对组内做标准反转（LeetCode 206 的迭代法），再把 <code>groupPrev.next = 新头</code>、<code>原头.next = groupNext</code> 缝回去；</p>
+<p>  4. groupPrev 移动到原组头（反转后的组尾），进入下一组。</p>
+<ul>
+<li><strong>O(1) 空间判满</strong>：探查用计数器走 k 步即可，不需要数组缓存整组节点——很多错误解法先把 k 个节点存进列表再反转，空间退化为 O(k)。</li>
+<li><strong>与基础题的关系</strong>：组内反转就是 206 的原样复用；组间缝合依赖哑节点技巧（21 的思想）避免头节点特判。面试官出这道题正是在验证你能否把子问题拆解复用，而不是背模板。</li>
+<li><strong>复杂度</strong>：每个节点最多被访问常数次，时间 O(n)，空间 O(1)。</li>
+<li><strong>高频边界</strong>：k=1 或 k≥链长时应原样返回；空链表；恰好整除时最后一组也要反转。</li>
 </ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/485">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=2&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
