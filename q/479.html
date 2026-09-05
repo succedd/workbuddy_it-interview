@@ -3,44 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。
-
-```js
-console.log(&#39;start&#39;);
-setTimeout(() =&gt; console.log(&#39;timeout&#39;), 0);
-Promise.resolve().then(() =&gt; console.log(&#39;promise1&#39;));
-queueMicrotask(() =&gt; console.log(&#39;micro&#39;));
-console.log(&#39;end&#39;);
-``` · IT面试题库</title>
-  <meta name="description" content="要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log(&#39;start&#39;)、console.log(&#39;end&#39;) 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队…">
+  <title>什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？ · IT面试题库</title>
+  <meta name="description" content="中间人攻击原理： 攻击者在客户端和服务端之间插入自己，分别伪装成「客户端眼中的服务器」和「服务器眼中的客户端」。 具体过程：客户端发起 HTTPS 请求 → 攻击者拦截 → 攻击者假装自己是目标服务器，用自己的证书与客户端握手 → 同时攻击者再假装自己是客户端，与真实服务器握手 → 攻击者同时握有两边的会话密钥，…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。
-
-```js
-console.log(&#39;start&#39;);
-setTimeout(() =&gt; console.log(&#39;timeout&#39;), 0);
-Promise.resolve().then(() =&gt; console.log(&#39;promise1&#39;));
-queueMicrotask(() =&gt; console.log(&#39;micro&#39;));
-console.log(&#39;end&#39;);
-``` · IT面试题库">
-  <meta property="og:description" content="要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log(&#39;start&#39;)、console.log(&#39;end&#39;) 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队…">
+  <meta property="og:title" content="什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？ · IT面试题库">
+  <meta property="og:description" content="中间人攻击原理： 攻击者在客户端和服务端之间插入自己，分别伪装成「客户端眼中的服务器」和「服务器眼中的客户端」。 具体过程：客户端发起 HTTPS 请求 → 攻击者拦截 → 攻击者假装自己是目标服务器，用自己的证书与客户端握手 → 同时攻击者再假装自己是客户端，与真实服务器握手 → 攻击者同时握有两边的会话密钥，…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/479.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。
-
-```js
-console.log(&#39;start&#39;);
-setTimeout(() =&gt; console.log(&#39;timeout&#39;), 0);
-Promise.resolve().then(() =&gt; console.log(&#39;promise1&#39;));
-queueMicrotask(() =&gt; console.log(&#39;micro&#39;));
-console.log(&#39;end&#39;);
-``` · IT面试题库">
-  <meta name="twitter:description" content="要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log(&#39;start&#39;)、console.log(&#39;end&#39;) 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队…">
+  <meta name="twitter:title" content="什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？ · IT面试题库">
+  <meta name="twitter:description" content="中间人攻击原理： 攻击者在客户端和服务端之间插入自己，分别伪装成「客户端眼中的服务器」和「服务器眼中的客户端」。 具体过程：客户端发起 HTTPS 请求 → 攻击者拦截 → 攻击者假装自己是目标服务器，用自己的证书与客户端握手 → 同时攻击者再假装自己是客户端，与真实服务器握手 → 攻击者同时握有两边的会话密钥，…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/479.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。\n\n```js\nconsole.log('start');\nsetTimeout(() => console.log('timeout'), 0);\nPromise.resolve().then(() => console.log('promise1'));\nqueueMicrotask(() => console.log('micro'));\nconsole.log('end');\n```","text":"考察点：能否把「同步代码 → 微任务队列清空 → 下一个宏任务」的调度模型应用到具体代码上。追问：如果把 setTimeout 的延迟改成 0，它能先于 Promise 执行吗？","answerCount":1,"datePublished":"2026-09-05T02:43:33.048Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log('start')、console.log('end') 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队列；Promise.resolve().then 与 queueMicrotask 的回调进入微任务队列。注意：登记 ≠ 执行。 第二轮（排空微任务）：同步代码结束、栈空，事件循环清空微任务队列——按入队顺序执行 promise1、micro。 第三轮（宏任务）：微任务队列已空且渲染机会过后，才取出 setTimeout 的回调输出 timeout。即使 delay 为 0，宏任务也必须等本轮微任务全部清空，且 0ms 只是「最早可用时机」而非立即执行。 常见误区：认为 setTimeout(fn, 0) 比 Promise.then 快——错在把「先登记」当成了「先执行」，队列优先级才是决定因素。","url":"https://it-interview.is-a.dev/#/question/479"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？","text":"什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？","answerCount":1,"datePublished":"2026-09-05T06:18:11.603Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"中间人攻击原理： 攻击者在客户端和服务端之间插入自己，分别伪装成「客户端眼中的服务器」和「服务器眼中的客户端」。 具体过程：客户端发起 HTTPS 请求 → 攻击者拦截 → 攻击者假装自己是目标服务器，用自己的证书与客户端握手 → 同时攻击者再假装自己是客户端，与真实服务器握手 → 攻击者同时握有两边的会话密钥，可以解密、窥探、甚至篡改双向流量。 本质上是「两次独立的 HTTPS 连接」，客户端和服务器都以为自己在和真的一方通信。 HTTPS 能否防止 MITM？ 理论上 HTTPS + 严格证书校验是可以防住的，但前提是客户端必须正确校验证书。 攻击者的证书如果是伪造的（不是可信 CA 签发），浏览器会弹出证书错误警告；只要用户不强行继续访问，MITM 就失败了。 HTTPS 仍可能被攻破的场景： 1. 用户误操作：看到证书警告后点击「继续访问」或「忽略风险」，相当于主动接受伪造证书。 2. 恶意软件/企业内网：电脑被植入恶意根证书（或企业部署安全审计代理），浏览器默认信任这个根证书，攻击者就能签发合法外观的证书进行 MITM。 3. 弱 CA / 签发漏洞：历史上出现过 CA 被入侵、错误签发证书的案例（如 2011 年 DigiNotar 事件），导致攻击者拿到受信任的证书。 4. 协议降级：攻击者强迫客户端和服务端使用较弱的 TLS 版本或密码套件（如降级到 TLS 1.0 + RSA），再利用已知漏洞破解。 防御建议：启用 HSTS（HTTP Strict Transport Security）强制走 HTTPS、关注证书警告不要盲点继续、企业设备尽量用正规颁发的证书、定期更新操作系统根证书库。","url":"https://it-interview.is-a.dev/#/question/479"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -94,31 +70,34 @@ console.log(&#39;end&#39;);
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。
-
-```js
-console.log(&#39;start&#39;);
-setTimeout(() =&gt; console.log(&#39;timeout&#39;), 0);
-Promise.resolve().then(() =&gt; console.log(&#39;promise1&#39;));
-queueMicrotask(() =&gt; console.log(&#39;micro&#39;));
-console.log(&#39;end&#39;);
-```</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">前端开发工程师</span><span class="chip tag">事件循环</span><span class="chip tag">输出顺序</span><span class="chip tag">setTimeout</span><span class="chip tag">Promise</span><span class="chip tag">queueMicrotask</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：能否把「同步代码 → 微任务队列清空 → 下一个宏任务」的调度模型应用到具体代码上。追问：如果把 setTimeout 的延迟改成 0，它能先于 Promise 执行吗？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：输出顺序为 <strong>start → end → promise1 → micro → timeout</strong>。</p>
+    <h1>什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">中间人攻击</span><span class="chip tag">MITM</span><span class="chip tag">HSTS</span><span class="chip tag">安全</span></div>
+    <div class="card"><h2>题目</h2><p>什么是中间人攻击（MITM）？HTTPS 能否完全防止中间人攻击？什么情况下 HTTPS 仍可能被攻破？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>中间人攻击原理：</strong></p>
 <ul>
-<li><strong>第一轮（同步）</strong>：整段脚本作为一个宏任务执行，<code>console.log(&#39;start&#39;)</code>、<code>console.log(&#39;end&#39;)</code> 直接入栈执行，先行输出。</li>
-<li><strong>入队时机</strong>：<code>setTimeout</code> 的回调（0ms 后）进入任务队列；<code>Promise.resolve().then</code> 与 <code>queueMicrotask</code> 的回调进入微任务队列。注意：登记 ≠ 执行。</li>
-<li><strong>第二轮（排空微任务）</strong>：同步代码结束、栈空，事件循环清空微任务队列——按入队顺序执行 <code>promise1</code>、<code>micro</code>。</li>
-<li><strong>第三轮（宏任务）</strong>：微任务队列已空且渲染机会过后，才取出 <code>setTimeout</code> 的回调输出 <code>timeout</code>。即使 delay 为 0，宏任务也必须等本轮微任务全部清空，且 0ms 只是「最早可用时机」而非立即执行。</li>
-<li><strong>常见误区</strong>：认为 setTimeout(fn, 0) 比 Promise.then 快——错在把「先登记」当成了「先执行」，队列优先级才是决定因素。</li>
-</ul></div>
+<li>攻击者在客户端和服务端之间插入自己，分别伪装成「客户端眼中的服务器」和「服务器眼中的客户端」。</li>
+<li>具体过程：客户端发起 HTTPS 请求 → 攻击者拦截 → 攻击者假装自己是目标服务器，用自己的证书与客户端握手 → 同时攻击者再假装自己是客户端，与真实服务器握手 → 攻击者同时握有两边的会话密钥，可以解密、窥探、甚至篡改双向流量。</li>
+<li>本质上是「两次独立的 HTTPS 连接」，客户端和服务器都以为自己在和真的一方通信。</li>
+</ul>
+<p><strong>HTTPS 能否防止 MITM？</strong></p>
+<ul>
+<li>理论上 HTTPS + 严格证书校验是可以防住的，但前提是<strong>客户端必须正确校验证书</strong>。</li>
+<li>攻击者的证书如果是伪造的（不是可信 CA 签发），浏览器会弹出证书错误警告；只要用户不强行继续访问，MITM 就失败了。</li>
+</ul>
+<p><strong>HTTPS 仍可能被攻破的场景：</strong></p>
+<ol>
+<li><strong>用户误操作</strong>：看到证书警告后点击「继续访问」或「忽略风险」，相当于主动接受伪造证书。</li>
+<li><strong>恶意软件/企业内网</strong>：电脑被植入恶意根证书（或企业部署安全审计代理），浏览器默认信任这个根证书，攻击者就能签发合法外观的证书进行 MITM。</li>
+<li><strong>弱 CA / 签发漏洞</strong>：历史上出现过 CA 被入侵、错误签发证书的案例（如 2011 年 DigiNotar 事件），导致攻击者拿到受信任的证书。</li>
+<li><strong>协议降级</strong>：攻击者强迫客户端和服务端使用较弱的 TLS 版本或密码套件（如降级到 TLS 1.0 + RSA），再利用已知漏洞破解。</li>
+</ol>
+<blockquote><strong>防御建议</strong>：启用 HSTS（HTTP Strict Transport Security）强制走 HTTPS、关注证书警告不要盲点继续、企业设备尽量用正规颁发的证书、定期更新操作系统根证书库。</blockquote></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/479">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
