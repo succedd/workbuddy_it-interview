@@ -286,5 +286,51 @@
   U.ECHARTS_URL = "vendor/echarts.min.js";
   U.XLSX_URL = "vendor/xlsx.full.min.js";
 
+  /* ---- Tooltip 浮层（JavaScript 控制，支持多行 / 动态更新 / 自动跟随） ---- */
+  let _tooltipEl = null;
+  let _tooltipTarget = null;
+  let _tooltipTimer = null;
+  U.tooltip = function (el, text, opts) {
+    opts = opts || {};
+    const multiline = !!opts.multiline;
+    const dir = opts.dir || "top";
+    if (!el) return;
+    /* 给元素加 data-tooltip 属性（CSS :hover 也生效），同时用 JS 控制动态内容 */
+    el.setAttribute("data-tooltip", multiline ? "" : text);
+    el.setAttribute("data-tooltip-multiline", multiline ? "1" : "");
+    if (dir === "bottom") el.classList.add("tip-bottom");
+    else el.classList.remove("tip-bottom");
+    /* JS 兜底：支持鼠标进入时更新文案（如动态计数） */
+    el.addEventListener("mouseenter", () => {
+      clearTimeout(_tooltipTimer);
+      _tooltipTimer = setTimeout(() => _showTooltip(el, text, opts), 200);
+    });
+    el.addEventListener("mouseleave", () => { clearTimeout(_tooltipTimer); _hideTooltip(); });
+  };
+  U.updateTooltip = function (el, newText) {
+    if (!el) return;
+    el.setAttribute("data-tooltip", newText);
+  };
+  function _showTooltip(el, text, opts) {
+    _hideTooltip();
+    const t = document.createElement("div");
+    t.className = "js-tooltip";
+    t.style.cssText = `position:fixed;z-index:9999;background:var(--bg-elevated);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 9px;font-size:12px;line-height:1.4;white-space:${opts.multiline ? "normal" : "nowrap"};max-width:${opts.multiline ? "220px" : "none"};pointer-events:none;box-shadow:var(--shadow-sm);opacity:0;transition:opacity .15s;`;
+    t.textContent = text;
+    document.body.appendChild(t);
+    const rect = el.getBoundingClientRect();
+    const isBottom = opts.dir === "bottom";
+    const top = isBottom ? (rect.bottom + 6) : (rect.top - 6 - t.offsetHeight);
+    const left = Math.min(Math.max(rect.left + rect.width / 2 - t.offsetWidth / 2, 4), window.innerWidth - t.offsetWidth - 4);
+    t.style.top = top + "px"; t.style.left = left + "px";
+    requestAnimationFrame(() => { t.style.opacity = "1"; });
+    _tooltipEl = t; _tooltipTarget = el;
+    const hide = () => { clearTimeout(_tooltipTimer); _hideTooltip(); };
+    el.addEventListener("mouseleave", hide, { once: true });
+  }
+  function _hideTooltip() {
+    if (_tooltipEl) { _tooltipEl.remove(); _tooltipEl = null; _tooltipTarget = null; }
+  }
+
   window.U = U;
 })();

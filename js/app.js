@@ -92,7 +92,7 @@
       return pageAdminDashboard();
     }
     switch (r.parts[0]) {
-      case undefined: case "": case "home": return pageHome();
+      case undefined: case "": case "home": document.title = "首页 · IT面试题库"; return pageHome();
       case "category": return pageCategory(r.q);
       case "position": return r.parts[1] ? pagePositionDetail(r.parts[1]) : pagePositions();
       case "questions": return pageQuestions(r.q);
@@ -100,7 +100,6 @@
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
       case "help": return pageHelp();
-      case "about": return pageAbout();
       case "practice": return pagePractice(r.q);
       case "review": return pageReview();
       case "random": {
@@ -209,7 +208,6 @@
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
       ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
       ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
-      ${navItem("#/about", "info", "关于本站", p0 === "about")}
       <div class="nav-section-title">技术分类</div>
       <div id="side-tree">${renderTree(0, r)}</div>`;
     if (Auth.isAdmin()) {
@@ -723,10 +721,34 @@
       </section>
 
       <section class="stat-grid" style="margin-top:28px">
-        <a class="stat" href="#/panorama?view=cat"><div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div></a>
-        <a class="stat" href="#/panorama?view=all"><div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div></a>
-        <a class="stat" href="#/panorama?view=pos"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></a>
-        <a class="stat ai" href="#/panorama?view=ai"><div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div></a>
+        <a class="stat stat-ring" href="#/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-blue" stroke-dasharray="${tree.length}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div>
+        </a>
+        <a class="stat stat-ring" href="#/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-green" stroke-dasharray="${stats.total}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div>
+        </a>
+        <a class="stat stat-ring" href="#/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-purple" stroke-dasharray="${stats.positions}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div>
+        </a>
+        <a class="stat stat-ring ai" href="#/panorama?view=ai" data-tooltip="点击查看 AI 生成题清单，共 ${stats.ai} 道，含来源构成条形图">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-ai" stroke-dasharray="${stats.ai}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div>
+        </a>
       </section>
 
       ${dueBannerHtml}
@@ -914,7 +936,8 @@
           host.querySelectorAll(".tm-chip.link").forEach(ch => { ch.onclick = () => App.go("/category?cat=" + ch.dataset.cat); });
         };
         loadTechMaps().then(maps => {
-          _techMapsCache = maps || {};
+          /* tech-maps.json 结构为 {version,updatedAt,maps:{id:...}}（旧版 id 平铺在根上，两种都兼容） */
+          _techMapsCache = (maps && maps.maps) ? maps.maps : (maps || {});
           /* 从当前分类向上找最近的有人工架构图的域（叶子分类也能看到所属域的全景） */
           let mapKey = null, p = catId, guard = 0;
           while (p && guard++ < 10) { if (_techMapsCache[String(p)]) { mapKey = String(p); break; } const c = Services.getCategory(p); p = c ? (c.parentId || 0) : 0; }
@@ -1398,11 +1421,17 @@
       $("#prev-btn").onclick = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
     /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应） */
-    const kbHint = document.createElement("div");
+    const kbHint = document.createElement("span");
     kbHint.className = "muted";
-    kbHint.style.cssText = "font-size:12px;margin-top:8px";
-    kbHint.textContent = "快捷键：← / → 切换题目 · 空格 展开或收起答案 · S 收藏";
+    kbHint.style.cssText = "font-size:11px;margin-left:8px";
+    kbHint.id = "kb-hint";
+    kbHint.textContent = "快捷键：Space 翻答案 · S 收藏";
     $(".pill-row").appendChild(kbHint);
+    /* 用 tooltip 方式展示快捷键（悬浮高亮） */
+    setTimeout(() => {
+      const btn = $("#show-answer");
+      if (btn) U.tooltip(btn, "空格键：展开/收起答案", { dir: "top" });
+    }, 100);
     setPageKeys(e => {
       if (typingInField(e)) return;
       if (document.querySelector("#modal-root .modal-mask") || document.querySelector("#modal-root .modal")) return;
@@ -1779,20 +1808,97 @@
   async function pageMock() {
     document.title = "模拟面试 · IT面试题库";
     const byStage = Services.positionsByStage();
-    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</optgroup>`; }).join("");
+    const seen = new Set(); const allPos = [];
+    for (const s of byStage) {
+      for (const p of s.list) {
+        if (Services.isHiddenPosition(p)) continue;
+        const key = Services.posKey(p);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        allPos.push(p);
+      }
+    }
+    /* 按岗位名排序，便于搜索匹配 */
+    allPos.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    const datalistId = "m-pos-list";
+    const posIdsAttr = allPos.map(p => p.id).join(",");
     const years = ["校招/实习", "0-1年", "1-3年", "3-5年", "5年以上"];
     const url = new URL(location.href);
     const posId = url.searchParams.get("pos");
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>模拟面试</span></div>
       <h1>模拟面试</h1><p class="secondary">选择目标岗位与年限，系统按技术栈权重随机抽取题目，隐藏答案计时作答。</p>
       <div class="card" style="max-width:560px">
-        <label class="field"><span>目标岗位</span><select id="m-pos" class="full">${posOpts}</select></label>
+        <label class="field"><span>目标岗位</span>
+          <input id="m-pos-input" class="full" list="${datalistId}" placeholder="输入岗位名或关键词搜索…" autocomplete="off">
+          <datalist id="${datalistId}">${allPos.map(p => `<option value="${U.esc(p.name)}" data-id="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</datalist>
+          <input type="hidden" id="m-pos" value="">
+          <div id="m-pos-hint" class="muted" style="font-size:12px;margin-top:4px"></div>
+        </label>
         <label class="field"><span>工作年限</span><select id="m-year" class="full">${years.map(y => `<option>${y}</option>`).join("")}</select></label>
         <label class="field"><span>题目数量</span><select id="m-num" class="full"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></label>
         <button class="btn btn-ai btn-lg full" id="m-start">${U.icon("play")} 开始模拟面试</button>
       </div>`);
-    if (posId) $("#m-pos").value = posId;
-    $("#m-start").onclick = () => startMock(parseInt($("#m-pos").value), $("#m-year").value, parseInt($("#m-num").value));
+    /* 岗位输入：匹配 datalist 选项时把 hidden input 设成 id */
+    const posInput = $("#m-pos-input");
+    const posHidden = $("#m-pos");
+    const posHint = $("#m-pos-hint");
+    const buildOptions = (val) => {
+      const lower = (val || "").toLowerCase();
+      return allPos.filter(p => {
+        const name = Services.posFullName(p);
+        return name.toLowerCase().includes(lower) || p.name.toLowerCase().includes(lower);
+      }).slice(0, 20);
+    };
+    posInput.addEventListener("input", () => {
+      const val = posInput.value.trim();
+      const matches = buildOptions(val);
+      posHint.textContent = matches.length ? `找到 ${matches.length} 个岗位，回车或点击选择` : "";
+      /* 原生 datalist 无法动态过滤，改用自定义下拉 */
+      posInput.setAttribute("list", "");  // 清空内置 datalist，改用自定义
+      let dropdown = document.getElementById("m-pos-dropdown");
+      if (dropdown) dropdown.remove();
+      if (matches.length > 0 && !val) {
+        /* 无输入时显示全部 */
+        renderDropdown(matches);
+      } else if (matches.length > 0) {
+        renderDropdown(matches);
+      }
+    });
+    posInput.addEventListener("blur", () => { setTimeout(() => { const dd = $("#m-pos-dropdown"); if (dd) dd.remove(); }, 150); });
+    posInput.addEventListener("focus", () => { if (!$("#m-pos-dropdown")) renderDropdown(allPos.slice(0, 30)); });
+    function renderDropdown(items) {
+      let dd = document.getElementById("m-pos-dropdown");
+      if (!dd) {
+        dd = document.createElement("div");
+        dd.id = "m-pos-dropdown";
+        dd.style.cssText = "position:absolute;z-index:100;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);max-height:240px;overflow-y:auto;width:100%;";
+        posInput.parentElement.style.position = "relative";
+        posInput.parentElement.appendChild(dd);
+      }
+      dd.innerHTML = items.map(p => {
+        const name = Services.posFullName(p);
+        const active = posHidden.value == p.id ? 'style="background:var(--c-primary-50);color:var(--c-primary)"' : "";
+        return `<div class="mpos-item" data-id="${p.id}" ${active}>${U.esc(name)}</div>`;
+      }).join("");
+      dd.querySelectorAll(".mpos-item").forEach(el => {
+        el.onmouseenter = () => dd.querySelectorAll(".mpos-item").forEach(e => e.style.background = "");
+        el.onmouseleave = () => el.style.background = "";
+        el.onclick = () => {
+          posHidden.value = el.dataset.id;
+          posInput.value = allPos.find(p => p.id == el.dataset.id) ? Services.posFullName(allPos.find(p => p.id == el.dataset.id)) : "";
+          posHint.textContent = "";
+          dd.remove();
+        };
+      });
+    }
+    if (posId) {
+      const p = allPos.find(x => x.id == posId);
+      if (p) { posHidden.value = p.id; posInput.value = Services.posFullName(p); }
+    }
+    $("#m-start").onclick = () => {
+      if (!posHidden.value) { U.toast("请先选择一个目标岗位", "warn"); posInput.focus(); return; }
+      startMock(parseInt(posHidden.value), $("#m-year").value, parseInt($("#m-num").value));
+    };
   }
 
   async function startMock(posId, years, num) {
@@ -3471,7 +3577,7 @@
     const footEl = document.getElementById("footer");
     if (footEl && !footEl.dataset.filled) {
       footEl.dataset.filled = "1";
-      footEl.innerHTML = `<a href="#/help">${U.icon("fileText")} 使用指南</a><span class="sep">·</span><a href="#/about">${U.icon("info")} 关于本站</a><span class="sep">·</span><a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">GitHub</a><span class="sep">·</span><span>数据存于本机浏览器 · 登录后云端同步</span>`;
+      footEl.innerHTML = `<a href="#/help">${U.icon("fileText")} 使用指南</a><span class="sep">·</span><a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">GitHub</a><span class="sep">·</span><span>数据存于本机浏览器 · 登录后云端同步</span>`;
     }
     /* 待复习数预载（供侧边栏角标） */
     Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
@@ -3574,121 +3680,6 @@
     };
     check();
     reviewWatchTimer = setInterval(check, 5 * 60 * 1000);
-  }
-
-  /* ============================ 关于本站 ============================ */
-  /* 关于本站/站长/联系信息；题数、分类数、岗位数、最近更新时间均从 Services 实时读取，
-     每天 10:00 自动扩充流水线跑完后这些数字会自动更新，无需手动维护。 */
-  function pageAbout() {
-    const qs = (Services.questions || []);
-    const published = qs.filter(q => q.status === "published" || q.status == null);
-    const qCount = published.length;
-    const catCount = (Services.categories || []).length;
-    const posCount = (Services.positions || []).length;
-    const updatedAt = qs.reduce((m, q) => Math.max(m, q.updatedAt || q.createdAt || 0), 0);
-    const updStr = updatedAt ? U.fmtDate(updatedAt).slice(0, 10) : "—";
-
-    const stat = (icon, num, label, accent, sm) => `
-      <div class="about-stat" style="--accent:${accent}">
-        <span class="about-stat-ico">${U.icon(icon)}</span>
-        <div class="about-stat-num${sm ? " about-stat-num-sm" : ""}">${num}</div>
-        <div class="about-stat-label">${label}</div>
-      </div>`;
-    const tile = (icon, title, desc, accent) => `
-      <div class="about-tile" style="--accent:${accent}">
-        <span class="about-tile-ico">${U.icon(icon)}</span>
-        <div class="about-tile-title">${title}</div>
-        <div class="about-tile-desc">${desc}</div>
-      </div>`;
-
-    const html = `
-      <div class="about-page">
-        <div class="about-hero">
-          <span class="about-hero-chip">${U.icon("sparkles")} ABOUT · 关于本站</span>
-          <h1 class="about-hero-title">专注 IT 面试准备<br><span>持续更新的实战题库</span></h1>
-          <p class="about-hero-sub">运维 · 开发 · AI —— 题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
-        </div>
-
-        <div class="about-stats">
-          ${stat("layers", qCount, "题目", "#2563EB")}
-          ${stat("grid", catCount, "技术体系", "#7C3AED")}
-          ${stat("briefcase", posCount, "岗位", "#0EA5A5")}
-          ${stat("clock", updStr, "最近更新", "#F59E0B", true)}
-        </div>
-
-        <section class="about-card">
-          <div class="about-card-head">
-            <span class="about-card-ico" style="--accent:#2563EB">${U.icon("database")}</span>
-            <div>
-              <div class="about-card-title">关于本站</div>
-              <div class="about-card-sub">一份会自己长大的面试题库</div>
-            </div>
-          </div>
-          <p class="about-prose">这里是一份持续更新的 IT 面试题库，覆盖 <b>运维、开发、AI</b> 等方向。题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
-          <div class="about-lead">希望帮你做到三件事：</div>
-          <div class="about-grid3">
-            ${tile("grid", "系统梳理", "按技术体系归类高频考点，告别零散刷题", "#2563EB")}
-            ${tile("search", "快速备战", "按岗位、按分类精准检索，面试前高效突击", "#0EA5A5")}
-            ${tile("barChart", "查漏补缺", "从入门到进阶，清楚自己还差在哪一环", "#F59E0B")}
-          </div>
-          <div class="about-fit">
-            <span class="about-fit-item">${U.icon("briefcase")} 准备跳槽的工程师</span>
-            <span class="about-fit-item">${U.icon("star")} 即将毕业的应届生</span>
-            <span class="about-fit-item">${U.icon("sparkles")} 想转岗进阶的 IT 人</span>
-          </div>
-        </section>
-
-        <section class="about-card">
-          <div class="about-card-head">
-            <span class="about-card-ico" style="--accent:#7C3AED">${U.icon("user")}</span>
-            <div>
-              <div class="about-card-title">关于站长</div>
-              <div class="about-card-sub">阅己书语 · 主理人</div>
-            </div>
-          </div>
-          <div class="about-me">
-            <div class="about-avatar">阅</div>
-            <div class="about-me-info">
-              <p class="about-prose">我是「<b>阅己书语</b>」公众号主理人，一名 IT 从业者 &amp; 远程工作者，多年深耕 <b>运维、开发与 AI</b> 领域。</p>
-              <div class="about-tags">
-                <span class="about-tag">运维</span><span class="about-tag">开发</span><span class="about-tag">AI</span><span class="about-tag">远程办公</span><span class="about-tag">数字游民</span>
-              </div>
-            </div>
-          </div>
-          <blockquote class="about-quote">${U.icon("sparkles")}<span>健康是基石，学习是阶梯，财富是结果。</span></blockquote>
-          <div class="about-lead">公众号专注分享三件事：</div>
-          <div class="about-grid3">
-            ${tile("shield", "健康", "身体是长期主义的本钱", "#10B981")}
-            ${tile("fileText", "阅读", "持续学习，认知升级", "#2563EB")}
-            ${tile("barChart", "财富", "让能力转化为结果", "#F59E0B")}
-          </div>
-          <p class="about-prose muted">我同样关注 <b>远程办公 / 数字游民</b> 的生活方式，欢迎同路人一起交流。</p>
-        </section>
-
-        <section class="about-card about-card-contact">
-          <div class="about-card-head">
-            <span class="about-card-ico" style="--accent:#0EA5A5">${U.icon("link")}</span>
-            <div>
-              <div class="about-card-title">联系我</div>
-              <div class="about-card-sub">扫码或加微信，聊聊技术与远程生活</div>
-            </div>
-          </div>
-          <div class="about-contact">
-            <div class="about-contact-list">
-              <div class="about-contact-row"><span class="about-contact-k">${U.icon("user")} 微信</span><span class="about-contact-v">13750847246</span></div>
-              <div class="about-contact-row"><span class="about-contact-k">${U.icon("fileText")} 公众号</span><span class="about-contact-v">阅己书语</span></div>
-              <div class="about-contact-row"><span class="about-contact-k">${U.icon("link")} 站点</span><a href="https://it-interview.is-a.dev" target="_blank" rel="noopener">it-interview.is-a.dev</a></div>
-            </div>
-            <a class="about-qr" href="https://it-interview.is-a.dev/assets/qrcode-yueji-shuyu.png" target="_blank" rel="noopener" title="点击查看大图">
-              <img src="assets/qrcode-yueji-shuyu.png" alt="阅己书语公众号二维码" loading="lazy" />
-              <span class="about-qr-cap">微信搜一搜 · 阅己书语</span>
-            </a>
-          </div>
-        </section>
-
-        <div class="about-slogan"><span>阅己，方能越己。</span></div>
-      </div>`;
-    setMain(html);
   }
 
   /* ---- 暴露给 account.js 等兄弟模块的内部函数（app.js 是 IIFE，默认不外泄） ---- */
