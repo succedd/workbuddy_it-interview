@@ -164,7 +164,7 @@
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
         ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} ${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
         ${adminHtml}
-        ${`<span class="vis-chip" title="本机访问统计（当前浏览器）">${U.icon("eye")}<span class="vic">今日访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计访问 <b id="vis-total" class="vis-num">–</b></span></span>`}
+        ${`<span class="vis-chip" title="本机统计（仅记录当前浏览器的访问次数，非全站 PV）">${U.icon("eye")}<span class="vic">今日 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
@@ -724,28 +724,28 @@
         <a class="stat stat-ring" href="#/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-blue" stroke-dasharray="${tree.length}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-blue" stroke-dasharray="${Math.min(tree.length,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div>
         </a>
         <a class="stat stat-ring" href="#/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-green" stroke-dasharray="${stats.total}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-green" stroke-dasharray="${Math.min(stats.total,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div>
         </a>
         <a class="stat stat-ring" href="#/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-purple" stroke-dasharray="${stats.positions}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-purple" stroke-dasharray="${Math.min(stats.positions,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div>
         </a>
         <a class="stat stat-ring ai" href="#/panorama?view=ai" data-tooltip="点击查看 AI 生成题清单，共 ${stats.ai} 道，含来源构成条形图">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-ai" stroke-dasharray="${stats.ai}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-ai" stroke-dasharray="${Math.min(stats.ai,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div>
         </a>
@@ -1472,6 +1472,7 @@
         ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
         : `<div class="note" style="margin-top:14px">🎉 当前没有到期的复习任务。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里按记忆曲线排期。</div>`}
       ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
+      ${due.length ? `<div class="muted" style="font-size:12px;margin-top:14px">快捷键：回车 确认「会了」· Esc 关闭弹窗</div>` : ""}
     `);
     $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
       const qid = parseInt(b.closest(".rv-card").dataset.qid);
@@ -1866,6 +1867,15 @@
     });
     posInput.addEventListener("blur", () => { setTimeout(() => { const dd = $("#m-pos-dropdown"); if (dd) dd.remove(); }, 150); });
     posInput.addEventListener("focus", () => { if (!$("#m-pos-dropdown")) renderDropdown(allPos.slice(0, 30)); });
+    /* 回车选中第一个匹配项 */
+    posInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const dd = $("#m-pos-dropdown");
+        const first = dd ? dd.querySelector(".mpos-item") : null;
+        if (first) first.click();
+      }
+    });
     function renderDropdown(items) {
       let dd = document.getElementById("m-pos-dropdown");
       if (!dd) {

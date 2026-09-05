@@ -742,3 +742,19 @@ a.stat:active { transform: translateY(0); }
 .ring-fg-purple { stroke: var(--c-purple, #7C3AED); }
 .ring-fg-ai     { stroke: var(--c-ai); }
 .stat-ring .num { margin-top: 36px; }
+
+/* ---- 模拟面试岗位搜索下拉 ---- */
+.mpos-item {
+  padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text);
+  border-bottom: 1px solid var(--border); transition: background .1s;
+}
+.mpos-item:last-child { border-bottom: none; }
+.mpos-item:hover, .mpos-item.active { background: var(--c-primary-50); color: var(--c-primary); }
+#m-pos-dropdown { position: absolute; z-index: 100; background: var(--bg-elevated);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-md); max-height: 280px; overflow-y: auto; width: 100%; }
+@media (max-width: 640px) {
+  #m-pos-dropdown { position: fixed; top: auto; left: 0; right: 0;
+    bottom: 0; max-height: 60vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,.15); }
+}
