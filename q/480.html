@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>什么是覆盖索引？它为什么能提升性能？Extra 里的 Using index 与 Using where 分别表示什么？ · IT面试题库</title>
-  <meta name="description" content="要点： 覆盖索引：查询所需的列（SELECT、WHERE、ORDER BY 用到的）都包含在某个二级索引的叶子节点中（二级索引叶子天然含主键），只需查这一棵 B+ 树即可拿到结果，不需要回表。 为什么快：省掉「二级索引→主键索引」的第二次 B+ 树查找，减少磁盘 I/O 和随机读，高并发大表上收益明显。 Extr…">
+  <title>场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库</title>
+  <meta name="description" content="要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 d…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="什么是覆盖索引？它为什么能提升性能？Extra 里的 Using index 与 Using where 分别表示什么？ · IT面试题库">
-  <meta property="og:description" content="要点： 覆盖索引：查询所需的列（SELECT、WHERE、ORDER BY 用到的）都包含在某个二级索引的叶子节点中（二级索引叶子天然含主键），只需查这一棵 B+ 树即可拿到结果，不需要回表。 为什么快：省掉「二级索引→主键索引」的第二次 B+ 树查找，减少磁盘 I/O 和随机读，高并发大表上收益明显。 Extr…">
+  <meta property="og:title" content="场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库">
+  <meta property="og:description" content="要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 d…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/480.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="什么是覆盖索引？它为什么能提升性能？Extra 里的 Using index 与 Using where 分别表示什么？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 覆盖索引：查询所需的列（SELECT、WHERE、ORDER BY 用到的）都包含在某个二级索引的叶子节点中（二级索引叶子天然含主键），只需查这一棵 B+ 树即可拿到结果，不需要回表。 为什么快：省掉「二级索引→主键索引」的第二次 B+ 树查找，减少磁盘 I/O 和随机读，高并发大表上收益明显。 Extr…">
+  <meta name="twitter:title" content="场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库">
+  <meta name="twitter:description" content="要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 d…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/480.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是覆盖索引？它为什么能提升性能？Extra 里的 Using index 与 Using where 分别表示什么？","text":"考察点：覆盖索引概念、避免回表、EXPLAIN Extra 字段（Using index / Using where / Using index condition）的准确含义。","answerCount":1,"datePublished":"2026-09-03T02:12:18.551Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 覆盖索引：查询所需的列（SELECT、WHERE、ORDER BY 用到的）都包含在某个二级索引的叶子节点中（二级索引叶子天然含主键），只需查这一棵 B+ 树即可拿到结果，不需要回表。 为什么快：省掉「二级索引→主键索引」的第二次 B+ 树查找，减少磁盘 I/O 和随机读，高并发大表上收益明显。 Extra 解读：Using index 表示用到覆盖索引（无需回表）；Using where 表示存储引擎返回数据后，Server 层还要再过滤一次；Using index condition 是索引下推 ICP，在存储引擎层就用索引过滤，减少回表行数。","url":"https://it-interview.is-a.dev/#/question/480"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？","text":"考察点：微任务的工程化价值——用 queueMicrotask 平衡同步/异步分支的执行顺序。追问：为什么不直接把同步分支改成 setTimeout(fn, 0)？","answerCount":1,"datePublished":"2026-09-05T02:43:33.344Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 data 未设置」的竞态。 修复方式： 为什么不用 setTimeout(fn, 0)：宏任务会被事件处理、渲染、其他 timeout 插队，延迟不可控且可能晚于调用方注册的其他回调；微任务保证在「当前脚本退出后、任何下一个任务之前」执行，是最小且确定的延迟。 通用原则：任何「同一操作可能同步也可能异步完成」的 API（缓存、本地存储、幂等请求）都应统一到微任务时序，避免调用方写两套处理逻辑。","url":"https://it-interview.is-a.dev/#/question/480"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,21 +70,38 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>什么是覆盖索引？它为什么能提升性能？Extra 里的 Using index 与 Using where 分别表示什么？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">覆盖索引</span><span class="chip tag">回表</span><span class="chip tag">Using index</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：覆盖索引概念、避免回表、EXPLAIN Extra 字段（Using index / Using where / Using index condition）的准确含义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">queueMicrotask</span><span class="chip tag">时序一致性</span><span class="chip tag">Promise</span><span class="chip tag">工程实践</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：微任务的工程化价值——用 queueMicrotask 平衡同步/异步分支的执行顺序。追问：为什么不直接把同步分支改成 setTimeout(fn, 0)？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：在同步分支中用 <code>queueMicrotask()</code> 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。</p>
 <ul>
-<li><strong>覆盖索引</strong>：查询所需的列（SELECT、WHERE、ORDER BY 用到的）都包含在某个二级索引的叶子节点中（二级索引叶子天然含主键），只需查这一棵 B+ 树即可拿到结果，<strong>不需要回表</strong>。</li>
-<li><strong>为什么快</strong>：省掉「二级索引→主键索引」的第二次 B+ 树查找，减少磁盘 I/O 和随机读，高并发大表上收益明显。</li>
-<li><strong>Extra 解读</strong>：<code>Using index</code> 表示用到覆盖索引（无需回表）；<code>Using where</code> 表示存储引擎返回数据后，Server 层还要再过滤一次；<code>Using index condition</code> 是索引下推 ICP，在存储引擎层就用索引过滤，减少回表行数。</li>
+<li><strong>问题根因</strong>：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 data 未设置」的竞态。</li>
+<li><strong>修复方式</strong>：</li>
+</ul>
+<pre><code class="language-js">function loadImage(url) {
+  if (cache.has(url)) {
+    queueMicrotask(() =&gt; {
+      img.dataset.src = cache.get(url);
+      img.dispatchEvent(new Event(&#39;load&#39;));
+    });
+  } else {
+    fetch(url).then(data =&gt; {
+      cache.set(url, data);
+      img.dataset.src = data;
+      img.dispatchEvent(new Event(&#39;load&#39;));
+    });
+  }
+}</code></pre>
+<ul>
+<li><strong>为什么不用 setTimeout(fn, 0)</strong>：宏任务会被事件处理、渲染、其他 timeout 插队，延迟不可控且可能晚于调用方注册的其他回调；微任务保证在「当前脚本退出后、任何下一个任务之前」执行，是最小且确定的延迟。</li>
+<li><strong>通用原则</strong>：任何「同一操作可能同步也可能异步完成」的 API（缓存、本地存储、幂等请求）都应统一到微任务时序，避免调用方写两套处理逻辑。</li>
 </ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/480">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
