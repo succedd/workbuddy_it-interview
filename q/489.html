@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>从 HTTP/1.0 到 HTTP/3，每一代主要解决了什么性能瓶颈？为什么 HTTP/2 仍存在「队头阻塞」？ · IT面试题库</title>
-  <meta name="description" content="要点： 1.0→1.1：解决「短连接开销大、无法虚拟主机」——引入持久连接、Host 头、管线化、分块传输与更细的缓存控制。 1.1→2：解决「应用层队头阻塞与连接数瓶颈」——二进制分帧 + 多路复用让单连接并发多流、HPACK 压缩头部、Server Push 预推资源。 2→3：解决「TCP 层队头阻塞与建连…">
+  <title>开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库</title>
+  <meta name="description" content="要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="从 HTTP/1.0 到 HTTP/3，每一代主要解决了什么性能瓶颈？为什么 HTTP/2 仍存在「队头阻塞」？ · IT面试题库">
-  <meta property="og:description" content="要点： 1.0→1.1：解决「短连接开销大、无法虚拟主机」——引入持久连接、Host 头、管线化、分块传输与更细的缓存控制。 1.1→2：解决「应用层队头阻塞与连接数瓶颈」——二进制分帧 + 多路复用让单连接并发多流、HPACK 压缩头部、Server Push 预推资源。 2→3：解决「TCP 层队头阻塞与建连…">
+  <meta property="og:title" content="开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库">
+  <meta property="og:description" content="要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/489.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="从 HTTP/1.0 到 HTTP/3，每一代主要解决了什么性能瓶颈？为什么 HTTP/2 仍存在「队头阻塞」？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 1.0→1.1：解决「短连接开销大、无法虚拟主机」——引入持久连接、Host 头、管线化、分块传输与更细的缓存控制。 1.1→2：解决「应用层队头阻塞与连接数瓶颈」——二进制分帧 + 多路复用让单连接并发多流、HPACK 压缩头部、Server Push 预推资源。 2→3：解决「TCP 层队头阻塞与建连…">
+  <meta name="twitter:title" content="开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库">
+  <meta name="twitter:description" content="要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/489.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"从 HTTP/1.0 到 HTTP/3，每一代主要解决了什么性能瓶颈？为什么 HTTP/2 仍存在「队头阻塞」？","text":"考察点：横向串联协议演进主线，区分应用层队头阻塞（HTTP/2 已解决）与传输层队头阻塞（HTTP/2 未解决、HTTP/3 才解决）。开放讨论。","answerCount":1,"datePublished":"2026-09-03T02:12:29.163Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1.0→1.1：解决「短连接开销大、无法虚拟主机」——引入持久连接、Host 头、管线化、分块传输与更细的缓存控制。 1.1→2：解决「应用层队头阻塞与连接数瓶颈」——二进制分帧 + 多路复用让单连接并发多流、HPACK 压缩头部、Server Push 预推资源。 2→3：解决「TCP 层队头阻塞与建连慢」——换到 QUIC/UDP，流级独立可靠、0/1-RTT 建连、连接迁移。 为什么 HTTP/2 仍有队头阻塞：HTTP/2 的多路复用跑在单条 TCP 连接上，TCP 保证字节有序到达，一旦某个报文丢失，整条连接必须等待重传，所有流都被卡住——这是传输层（TCP）的队头阻塞，应用层协议无法跨越；HTTP/3 把可靠性/顺序放到 QUIC（UDP 之上、按流管理）才彻底规避。 小结：演进主线是「连接复用 → 并发多路 → 摆脱 TCP 束缚」，每一代都在更底层解决上一层的瓶颈。","url":"https://it-interview.is-a.dev/#/question/489"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。","text":"考察点：从具体题上升到题型方法论——识别「两侧最近更小/更大元素」信号，并用哨兵简化边界。追问：为什么最大矩形题要在末尾加一个高度为 0 的哨兵柱？","answerCount":1,"datePublished":"2026-09-05T02:44:23.382Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都共享同一栈形。 84 题模型：对每根柱 i，其能构成的最大矩形宽度 = 右侧第一个更矮柱的位置 − 左侧第一个更矮柱的位置 − 1，高度 = heights[i]。单调递增栈让「弹栈瞬间」恰好同时知道两侧边界：弹出的柱 j，其右侧更矮柱是当前 i，左侧更矮柱是新栈顶。 哨兵作用：在数组末尾追加高度 0（开头也可加 -1），保证所有柱子最终都会被弹出结算，否则遍历结束栈里还剩一段递增序列没算；同时免去「栈是否为空」的特判。这是单调栈题的标准收尾技巧。 复杂度：O(n) 时间、O(n) 空间；暴力双重循环为 O(n²)，在 10⁴ 规模即超时。","url":"https://it-interview.is-a.dev/#/question/489"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,23 +70,34 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>从 HTTP/1.0 到 HTTP/3，每一代主要解决了什么性能瓶颈？为什么 HTTP/2 仍存在「队头阻塞」？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">协议演进</span><span class="chip tag">队头阻塞</span><span class="chip tag">HTTP2</span><span class="chip tag">HTTP3</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：横向串联协议演进主线，区分应用层队头阻塞（HTTP/2 已解决）与传输层队头阻塞（HTTP/2 未解决、HTTP/3 才解决）。开放讨论。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">单调栈</span><span class="chip tag">柱状图最大矩形</span><span class="chip tag">LeetCode84</span><span class="chip tag">哨兵</span><span class="chip tag">题型方法论</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：从具体题上升到题型方法论——识别「两侧最近更小/更大元素」信号，并用哨兵简化边界。追问：为什么最大矩形题要在末尾加一个高度为 0 的哨兵柱？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。</p>
 <ul>
-<li><strong>1.0→1.1</strong>：解决「短连接开销大、无法虚拟主机」——引入持久连接、Host 头、管线化、分块传输与更细的缓存控制。</li>
-<li><strong>1.1→2</strong>：解决「应用层队头阻塞与连接数瓶颈」——二进制分帧 + 多路复用让单连接并发多流、HPACK 压缩头部、Server Push 预推资源。</li>
-<li><strong>2→3</strong>：解决「TCP 层队头阻塞与建连慢」——换到 QUIC/UDP，流级独立可靠、0/1-RTT 建连、连接迁移。</li>
-<li><strong>为什么 HTTP/2 仍有队头阻塞</strong>：HTTP/2 的多路复用跑在<strong>单条 TCP 连接</strong>上，TCP 保证字节有序到达，一旦某个报文丢失，整条连接必须等待重传，所有流都被卡住——这是传输层（TCP）的队头阻塞，应用层协议无法跨越；HTTP/3 把可靠性/顺序放到 QUIC（UDP 之上、按流管理）才彻底规避。</li>
-<li><strong>小结</strong>：演进主线是「连接复用 → 并发多路 → 摆脱 TCP 束缚」，每一代都在更底层解决上一层的瓶颈。</li>
+<li><strong>题型识别信号</strong>：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都共享同一栈形。</li>
+<li><strong>84 题模型</strong>：对每根柱 i，其能构成的最大矩形宽度 = 右侧第一个更矮柱的位置 − 左侧第一个更矮柱的位置 − 1，高度 = heights[i]。单调递增栈让「弹栈瞬间」恰好同时知道两侧边界：弹出的柱 j，其右侧更矮柱是当前 i，左侧更矮柱是新栈顶。</li>
+<li><strong>哨兵作用</strong>：在数组末尾追加高度 0（开头也可加 -1），保证所有柱子最终都会被弹出结算，否则遍历结束栈里还剩一段递增序列没算；同时免去「栈是否为空」的特判。这是单调栈题的标准收尾技巧。</li>
+</ul>
+<pre><code class="language-python">def largestRectangleArea(h):
+    h = h + [0]           # 右哨兵：强制清栈
+    stack, ans = [], 0
+    for i, x in enumerate(h):
+        while stack and h[stack[-1]] &gt;= x:
+            height = h[stack.pop()]
+            left = stack[-1] if stack else -1
+            ans = max(ans, height * (i - left - 1))
+        stack.append(i)
+    return ans</code></pre>
+<ul>
+<li><strong>复杂度</strong>：O(n) 时间、O(n) 空间；暴力双重循环为 O(n²)，在 10⁴ 规模即超时。</li>
 </ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/489">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=2&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
