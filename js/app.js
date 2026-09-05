@@ -1501,10 +1501,12 @@
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>收藏夹</span></div>
       <div class="section-head"><h2>我的收藏（${favs.length}）</h2>
         <div><button class="btn btn-sm" id="exp-md">${U.icon("download")} 导出MD</button>
+        <button class="btn btn-sm" id="print-fav">${U.icon("layers")} 打印</button>
         <button class="btn btn-sm btn-danger" id="clear-fav">${U.icon("trash")} 清空</button></div></div>
       <div class="grid grid-cols-2" id="fav-grid"></div>`);
     renderGrid();
     $("#exp-md").onclick = () => exportFavMarkdown(favs);
+    $("#print-fav").onclick = () => window.print();
     $("#clear-fav").onclick = async () => { if (await U.confirm("确定清空全部收藏？", { danger: true })) { await db.favorites.clear(); await Services.reload(); U.toast("已清空收藏", "success"); pageFavorites(); } };
   }
   function exportFavMarkdown(favs) {

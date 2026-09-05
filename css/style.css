@@ -758,3 +758,16 @@ a.stat:active { transform: translateY(0); }
     bottom: 0; max-height: 60vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     box-shadow: 0 -4px 20px rgba(0,0,0,.15); }
 }
+
+/* ---- 打印专用样式 ---- */
+@media print {
+  #topbar, #sidebar, #footer, .vis-chip, .btn, .icon-btn, #drawer-mask, .hot-tags,
+  .section-head > a.more, .pill-row, .grid > .empty, .fav-more-wrap { display: none !important; }
+  body { background: #fff !important; color: #000 !important; font-size: 12px; }
+  .main { width: 100% !important; max-width: none !important; padding: 0 !important; }
+  .grid-cols-2 { grid-template-columns: 1fr 1fr !important; }
+  .stat-grid, .stat-ring, .ring-svg, [data-tooltip]::after { display: none !important; }
+  h1, h2 { page-break-before: avoid; }
+  .card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+  @page { margin: 1.5cm; size: A4; }
+}
