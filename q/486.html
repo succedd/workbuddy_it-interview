@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？ · IT面试题库</title>
-  <meta name="description" content="要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访…">
+  <title>编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？ · IT面试题库</title>
+  <meta name="description" content="要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？ · IT面试题库">
-  <meta property="og:description" content="要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访…">
+  <meta property="og:title" content="编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？ · IT面试题库">
+  <meta property="og:description" content="要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/486.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访…">
+  <meta name="twitter:title" content="编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？ · IT面试题库">
+  <meta name="twitter:description" content="要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/486.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？","text":"考察点：4xx 状态码语义，401 Unauthorized（未认证）vs 403 Forbidden（已认证但无权限），以及实际排查切入点。场景题。","answerCount":1,"datePublished":"2026-09-03T02:12:26.826Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访问该资源的权限。含义是「知道你是你，但不让你看」。常见于角色权限不足、IP 黑名单、CSRF 校验失败。 排查区分：先看响应头 WWW-Authenticate 是否出现（401 常带它提示认证方式）；检查请求是否携带合法 Token（401 多半是鉴权链路问题）；若带上正确管理员 Token 仍 403，则是权限/角色配置问题。 记忆口诀：401=「你是谁」（认证 authentication），403=「不准进」（授权 authorization）。","url":"https://it-interview.is-a.dev/#/question/486"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？","text":"考察点：栈「后进先出」与最近匹配原则的结合，是从链表转向栈类题的衔接点。追问：如果字符串里混入其他字符，如何调整？","answerCount":1,"datePublished":"2026-09-05T02:44:18.447Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不用计数器：([)] 这种交叉嵌套计数器无法识别，栈能保留「未闭合序列」的完整顺序信息。 复杂度：时间 O(n)，空间 O(n)（最坏全是左括号）。奇数长度可提前返回 False 做小优化。","url":"https://it-interview.is-a.dev/#/question/486"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,22 +70,30 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">状态码</span><span class="chip tag">401</span><span class="chip tag">403</span><span class="chip tag">认证授权</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：4xx 状态码语义，401 Unauthorized（未认证）vs 403 Forbidden（已认证但无权限），以及实际排查切入点。场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">栈</span><span class="chip tag">括号匹配</span><span class="chip tag">LeetCode20</span><span class="chip tag">LIFO</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：栈「后进先出」与最近匹配原则的结合，是从链表转向栈类题的衔接点。追问：如果字符串里混入其他字符，如何调整？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。</p>
+<pre><code class="language-python">def isValid(s: str) -&gt; bool:
+    pairs = {&#39;)&#39;: &#39;(&#39;, &#39;]&#39;: &#39;[&#39;, &#39;}&#39;: &#39;{&#39;}
+    stack = []
+    for ch in s:
+        if ch not in pairs:          # 左括号
+            stack.append(ch)
+        elif not stack or stack.pop() != pairs[ch]:
+            return False             # 右括号不匹配/栈空
+    return not stack                 # 必须全部闭合</code></pre>
 <ul>
-<li><strong>401 Unauthorized（未认证）</strong>：客户端<strong>没有提供有效的身份凭证</strong>，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。</li>
-<li><strong>403 Forbidden（已认证但无权限）</strong>：服务器<strong>知道你是谁</strong>，但你的账号没有访问该资源的权限。含义是「知道你是你，但不让你看」。常见于角色权限不足、IP 黑名单、CSRF 校验失败。</li>
-<li><strong>排查区分</strong>：先看响应头 <code>WWW-Authenticate</code> 是否出现（401 常带它提示认证方式）；检查请求是否携带合法 Token（401 多半是鉴权链路问题）；若带上正确管理员 Token 仍 403，则是权限/角色配置问题。</li>
-<li><strong>记忆口诀</strong>：401=「你是谁」（认证 authentication），403=「不准进」（授权 authorization）。</li>
+<li><strong>三个失效场景都要覆盖</strong>：右括号时栈空（如 <code>())</code>）、弹出的类型不匹配（如 <code>(]</code>）、遍历结束栈非空（如 <code>((</code>）。第三个最容易被漏掉，<code>return not stack</code> 而不是 <code>return True</code> 是关键。</li>
+<li><strong>为什么不用计数器</strong>：<code>([)]</code> 这种交叉嵌套计数器无法识别，栈能保留「未闭合序列」的完整顺序信息。</li>
+<li><strong>复杂度</strong>：时间 O(n)，空间 O(n)（最坏全是左括号）。奇数长度可提前返回 False 做小优化。</li>
 </ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/486">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=2&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
