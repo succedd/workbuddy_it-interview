@@ -709,6 +709,120 @@ a.stat:active { transform: translateY(0); }
 .pan-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
 .pan-check input { accent-color: var(--c-primary); width: 15px; height: 15px; }
 
+/* =================== 题库全景：思维导图视图样式（pan-mm-* / pan-fs-* / pan-legend-*） =================== */
+/* 说明：上方 panorama-* 规则（.panorama-mindwrap / .panorama-toolbar / .panorama-tree 等）是旧 DOM 残留，
+   当前 panorama.js 实际产出 pan-mm-* / pan-orbit-* / pan-fs-* / pan-legend-* 类名，
+   下方为对应真实 DOM 的样式，避免整个思维导图页裸排。 */
+
+/* 外层卡片：框住画布 + 工具栏 + 全屏按钮 + 图例浮层 */
+.pan-orbit-wrap.pan-mm-wrap {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(130% 130% at 50% -10%, rgba(37,99,235,.06), transparent 55%),
+    var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  padding: 16px 16px 10px;
+}
+/* 装饰同心轨道环（浮在画布之下） */
+.pan-orbit-rings {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.pan-orbit-rings span {
+  position: absolute; border-radius: 50%;
+  border: 1px solid var(--border);
+  background: radial-gradient(circle at 50% 50%, rgba(37,99,235,.05), transparent 70%);
+}
+.pan-orbit-rings span:nth-child(1) { width: 32%; aspect-ratio: 1; }
+.pan-orbit-rings span:nth-child(2) { width: 56%; aspect-ratio: 1; }
+.pan-orbit-rings span:nth-child(3) { width: 80%; aspect-ratio: 1; }
+.pan-orbit-rings span:nth-child(4) { width: 104%; aspect-ratio: 1; }
+
+/* 画布容器（ECharts 注入，JS 按可见节点数动态设高） */
+.panorama-chart.pan-orbit-chart.pan-mm-chart { position: relative; z-index: 1; width: 100%; }
+/* 左右逻辑图：JS 已动态设 wrapper 高度，此处给最小高度兜底 */
+.pan-orbit-wrap.pan-mm-tall .pan-mm-chart { min-height: 900px; }
+
+/* 工具栏 */
+.pan-mm-bar {
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 8px 2px 4px;
+}
+.pan-mm-btn {
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; font-size: 13px; font-weight: 600; line-height: 1.4;
+  color: var(--c-primary); background: var(--c-primary-50);
+  border: 1px solid transparent; border-radius: 999px;
+  transition: background .15s, color .15s, border-color .15s, transform .05s;
+}
+.pan-mm-btn:hover { background: var(--c-primary); color: #fff; }
+.pan-mm-btn:active { transform: translateY(1px); }
+.pan-mm-note { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+
+/* 全屏按钮（悬浮右上角） */
+.pan-fs-btn {
+  position: absolute; top: 14px; right: 14px; z-index: 6;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; font-size: 13px; font-weight: 600; line-height: 1.4;
+  color: var(--text-secondary); background: var(--bg-elevated);
+  border: 1px solid var(--border); border-radius: 999px;
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.pan-fs-btn:hover { color: var(--c-primary); border-color: var(--c-primary); }
+.pan-fs-btn .pan-fs-ic { font-size: 15px; line-height: 1; }
+.pan-fs-btn.on { color: var(--c-primary); border-color: var(--c-primary); }
+
+/* 图例浮层：普通态隐藏，全屏/伪全屏时浮在画布左下（避免与下方简介区图例重复） */
+.pan-fs-legend {
+  display: none;
+  position: absolute; left: 14px; bottom: 14px; z-index: 4;
+  flex-wrap: wrap; align-items: center; gap: 6px 14px;
+  max-width: calc(100% - 28px); padding: 9px 13px;
+  font-size: 12px; color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); backdrop-filter: blur(4px);
+}
+.pan-fs-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.pan-fs-legend b { color: var(--text); font-weight: 600; }
+.pan-orbit-wrap:fullscreen .pan-fs-legend,
+.pan-orbit-wrap:-webkit-full-screen .pan-fs-legend,
+.pan-orbit-wrap.pan-pseudo-fs .pan-fs-legend { display: flex; }
+
+/* 普通态图例（view=cat/pos/ai 简介区下方，由 buildLegendHtml 生成） */
+.pan-legend {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  margin: 10px 2px 2px; font-size: 12px; color: var(--text-secondary);
+}
+.pan-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.pan-legend-item i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; }
+.pan-legend-item b { color: var(--text); font-weight: 600; }
+.pan-legend-item em { font-style: normal; color: var(--text-muted); }
+.pan-legend-note { width: 100%; color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+/* tooltip 内「查看题目 →」 */
+.pan-tip-link {
+  display: inline-block; margin-top: 4px;
+  color: #60a5fa; font-weight: 600; text-decoration: none;
+  border-bottom: 1px solid rgba(96,165,250,.5);
+}
+.pan-tip-link:hover { border-bottom-color: #60a5fa; }
+
+/* 伪全屏（iOS Safari 等不支持原生 Fullscreen API 时降级） */
+.pan-orbit-wrap.pan-pseudo-fs {
+  position: fixed; inset: 0; z-index: 9999;
+  border-radius: 0; padding: 56px 16px 16px;
+  background: var(--bg-subtle); overflow: auto;
+}
+.pan-orbit-wrap.pan-pseudo-fs .pan-fs-btn { position: fixed; top: 14px; right: 14px; }
+body.pan-fs-lock { overflow: hidden; }
+
 /* ---- Tooltip（数据提示浮层） ---- */
 [data-tooltip] { position: relative; }
 [data-tooltip]::after {
