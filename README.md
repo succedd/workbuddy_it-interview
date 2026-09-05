@@ -209,6 +209,12 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-05 · 题库全景页样式补全 + 缓存版本号升至 `20260905f`
+- 用户实测反馈：升级到 `e` 后全景图页"还是不一样、布局很难看"。根因：style.css 里有一整套精心设计的全景图 CSS（`.panorama-mindwrap / .panorama-toolbar / .panorama-tree / .panorama-mind-legend` 等），但都是**孤儿**——panorama.js 早已改用 `pan-mm-* / pan-orbit-* / pan-fs-* / pan-legend-*` 类名，旧规则一概不命中，等于整页裸排。
+- 补：`.pan-orbit-wrap.pan-mm-wrap` 卡片化（圆角 + 渐变光斑 + 浅阴影）、`.pan-orbit-rings span×4` 装饰同心轨道环、`.pan-mm-bar / .pan-mm-btn` 蓝色胶囊工具栏、`.pan-fs-btn` 悬浮右上全屏按钮、`.pan-fs-legend` 全屏态浮动图例（默认隐藏避免与简介区图例重复）、`.pan-legend / .pan-legend-item` 简介区图例、`.pan-tip-link` 适配深底 tooltip 的「查看题目 →」链接、`.pan-mm-tall` 兜底高度、`.pan-pseudo-fs / body.pan-fs-lock / :fullscreen` 全屏态补齐。
+- 实测截图：view=all 与 view=cat 都已正确渲染卡片框 + 工具栏 + 全屏按钮 + 装饰轨道环。
+- `index.html` 全部 `?v=` 与 `sw.js VERSION` 同步升至 `20260905f`，强制 SW 注册 URL 变化清掉旧缓存。commit `77ef538`（release 同步；main 仍落后）。
+
 ### 2026-09-05 · 缓存版本号统一升至 `20260905e`（全景图页缓存兜底）
 - 全栈字节比对（含 CRLF 归一化）确认全景图页与事故修复基线 `ced3cc6f` 完全一致，**无代码回退**；用户报告的"页面样式不一样"是浏览器的旧 Service Worker 缓存问题。
 - 把 `index.html` 全部 23 个 `?v=20260905c` 与 `sw.js?v=20260905c` 注册 URL 同步升到 `20260905e`，配合 `sw.js` `VERSION = "20260905e"`——SW 注册 URL 不同将触发新 SW 接管并在 `activate` 阶段删除旧缓存 `iti-pwa-v20260905c/d`，**用户下次开页即强制拉新版**（无需手动硬刷新）。
