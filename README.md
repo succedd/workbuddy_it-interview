@@ -209,6 +209,12 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-06 · 首页栅格溢出 + 题库全景图 echarts 加载失败双修（缓存版本 `20260906a`）
+- **首页栅格修复**：用户反馈首页「学习打卡 / 今日 5 题」两张卡片栅格被撑爆（实测 99px / 1255px）。根因：`css/style.css` 的 `.grid-cols-2/3/4` 用裸 `1fr`（不是 `minmax(0, 1fr)`），右卡 `.daily-list a > span` 是长 flex 文本节点，min-content 把 grid track 撑爆、左卡被挤窄。修复：所有列改 `minmax(0, 1fr)`，`.grid > *` 加 `min-width:0`，让 track 可任意收缩、长文本可换行/省略。
+- **全景图 echarts 修复**：用户反馈 `#/panorama` 报红色 `思维导图加载失败：echarts`。根因不在脚本本身 — 旧 `sw.js` 的 `cacheFirst` 一刀切，对 `vendor/echarts.min.js` 这种直链无版本号资源同样先返缓存；浏览器老 SW 进程里缓存着已被删除的中间版本，新部署落到旧 JS 上 → `loadScript` 拒绝 → "脚本加载失败"。修复：① `sw.js` 全量重写 — HTML/JS 走 network-first（3s 超时回缓存），vendor/css/js 走 stale-while-revalidate 并把 `?v=` 作为缓存键；② `U.loadScript` 失败时自动追加 `?_t=<ts>` 再加载一次做兜底；③ `panorama.js` 的 `fail()` 加「重试」按钮 + 真实 missing 物名（`echarts 未就绪`/`showMsg`），用户不必再翻 DevTools。
+- `index.html` 全部 `?v=20260905f` → `20260906a`、`sw.js VERSION = "20260905f"` → `"20260906a"`。双推 `release`（commit `339267d`）和 `main`（commit `00d82be` = 修复 commit + merge origin/main 引入 7 笔 backup/publish 数据提交），文件树 584 项与 `ced3cc6f` 事故基线一致、**未丢任何已有文件**。
+- 注意：用户拿到新版 CSS/JS 同样要 Ctrl+Shift+R 或关闭全部 `it-interview.is-a.dev` 标签页重开（SW 注册 URL 已变 → `activate` 时删除老缓存 `iti-pwa-v20260905f`）。
+
 ### 2026-09-05 · 题库全景页样式补全 + 缓存版本号升至 `20260905f`
 - 用户实测反馈：升级到 `e` 后全景图页"还是不一样、布局很难看"。根因：style.css 里有一整套精心设计的全景图 CSS（`.panorama-mindwrap / .panorama-toolbar / .panorama-tree / .panorama-mind-legend` 等），但都是**孤儿**——panorama.js 早已改用 `pan-mm-* / pan-orbit-* / pan-fs-* / pan-legend-*` 类名，旧规则一概不命中，等于整页裸排。
 - 补：`.pan-orbit-wrap.pan-mm-wrap` 卡片化（圆角 + 渐变光斑 + 浅阴影）、`.pan-orbit-rings span×4` 装饰同心轨道环、`.pan-mm-bar / .pan-mm-btn` 蓝色胶囊工具栏、`.pan-fs-btn` 悬浮右上全屏按钮、`.pan-fs-legend` 全屏态浮动图例（默认隐藏避免与简介区图例重复）、`.pan-legend / .pan-legend-item` 简介区图例、`.pan-tip-link` 适配深底 tooltip 的「查看题目 →」链接、`.pan-mm-tall` 兜底高度、`.pan-pseudo-fs / body.pan-fs-lock / :fullscreen` 全屏态补齐。
