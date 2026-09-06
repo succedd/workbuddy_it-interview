@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>设计一场秒杀系统：如何防止超卖、扛住瞬时洪峰、并保证下单成功？ · IT面试题库</title>
-  <meta name="description" content="要点： 库存预热与预扣：活动前把库存加载到 Redis，扣减用 DECR/Lua 原子操作，避免查库；库存≤0 直接拦截，杜绝超卖。 流量削峰：前端按钮置灰+答题/验证码拦羊毛；网关层限流（令牌桶）、削峰填谷（MQ 异步化），把「同步下单」转「排队下单」。 防超卖关键：用 Redis Lua 原子扣减判断余量，扣…">
+  <title>零信任（Zero Trust）的核心理念是什么？与传统边界安全模型有何不同？ · IT面试题库</title>
+  <meta name="description" content="核心理念：永远不信任、始终验证（Never Trust, Always Verify）。不再默认“内网安全”，每次访问都基于身份、设备态势、上下文做动态授权。 与传统模型差异：传统“城堡—护城河”模型认为穿越边界后即为可信；零信任则假设网络已被渗透，对任何请求都做最小权限校验，并持续评估风险。 落地要素：强身份（…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="设计一场秒杀系统：如何防止超卖、扛住瞬时洪峰、并保证下单成功？ · IT面试题库">
-  <meta property="og:description" content="要点： 库存预热与预扣：活动前把库存加载到 Redis，扣减用 DECR/Lua 原子操作，避免查库；库存≤0 直接拦截，杜绝超卖。 流量削峰：前端按钮置灰+答题/验证码拦羊毛；网关层限流（令牌桶）、削峰填谷（MQ 异步化），把「同步下单」转「排队下单」。 防超卖关键：用 Redis Lua 原子扣减判断余量，扣…">
+  <meta property="og:title" content="零信任（Zero Trust）的核心理念是什么？与传统边界安全模型有何不同？ · IT面试题库">
+  <meta property="og:description" content="核心理念：永远不信任、始终验证（Never Trust, Always Verify）。不再默认“内网安全”，每次访问都基于身份、设备态势、上下文做动态授权。 与传统模型差异：传统“城堡—护城河”模型认为穿越边界后即为可信；零信任则假设网络已被渗透，对任何请求都做最小权限校验，并持续评估风险。 落地要素：强身份（…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/626.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="设计一场秒杀系统：如何防止超卖、扛住瞬时洪峰、并保证下单成功？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 库存预热与预扣：活动前把库存加载到 Redis，扣减用 DECR/Lua 原子操作，避免查库；库存≤0 直接拦截，杜绝超卖。 流量削峰：前端按钮置灰+答题/验证码拦羊毛；网关层限流（令牌桶）、削峰填谷（MQ 异步化），把「同步下单」转「排队下单」。 防超卖关键：用 Redis Lua 原子扣减判断余量，扣…">
+  <meta name="twitter:title" content="零信任（Zero Trust）的核心理念是什么？与传统边界安全模型有何不同？ · IT面试题库">
+  <meta name="twitter:description" content="核心理念：永远不信任、始终验证（Never Trust, Always Verify）。不再默认“内网安全”，每次访问都基于身份、设备态势、上下文做动态授权。 与传统模型差异：传统“城堡—护城河”模型认为穿越边界后即为可信；零信任则假设网络已被渗透，对任何请求都做最小权限校验，并持续评估风险。 落地要素：强身份（…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/626.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一场秒杀系统：如何防止超卖、扛住瞬时洪峰、并保证下单成功？","text":"考察点：理解秒杀场景核心矛盾（瞬时高并发+强一致库存），掌握预热、预扣、异步化手段。","answerCount":1,"datePublished":"2026-09-06T02:23:55.648Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 库存预热与预扣：活动前把库存加载到 Redis，扣减用 DECR/Lua 原子操作，避免查库；库存≤0 直接拦截，杜绝超卖。 流量削峰：前端按钮置灰+答题/验证码拦羊毛；网关层限流（令牌桶）、削峰填谷（MQ 异步化），把「同步下单」转「排队下单」。 防超卖关键：用 Redis Lua 原子扣减判断余量，扣减成功才发 MQ 异步创建订单；订单创建失败回滚库存（补偿）。 一致性兜底：DB 层对库存字段加「库存≥0」约束与乐观锁/行锁，作为最后一道防线，最终以 DB 落库为准。","url":"https://it-interview.is-a.dev/#/question/626"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"零信任（Zero Trust）的核心理念是什么？与传统边界安全模型有何不同？","text":"解释零信任架构的核心原则，并对比“内网即可信”的传统模型。","answerCount":1,"datePublished":"2026-09-06T06:21:15.679Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心理念：永远不信任、始终验证（Never Trust, Always Verify）。不再默认“内网安全”，每次访问都基于身份、设备态势、上下文做动态授权。 与传统模型差异：传统“城堡—护城河”模型认为穿越边界后即为可信；零信任则假设网络已被渗透，对任何请求都做最小权限校验，并持续评估风险。 落地要素：强身份（SSO/MFA）、设备指纹、微隔离、基于策略的细粒度访问控制与全程加密。","url":"https://it-interview.is-a.dev/#/question/626"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,22 +70,18 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>设计一场秒杀系统：如何防止超卖、扛住瞬时洪峰、并保证下单成功？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">系统设计</span><span class="chip tag">秒杀</span><span class="chip tag">高并发</span><span class="chip tag">库存</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：理解秒杀场景核心矛盾（瞬时高并发+强一致库存），掌握预热、预扣、异步化手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
-<ul>
-<li><strong>库存预热与预扣</strong>：活动前把库存加载到 Redis，扣减用 <code>DECR</code>/Lua 原子操作，避免查库；库存≤0 直接拦截，杜绝超卖。</li>
-<li><strong>流量削峰</strong>：前端按钮置灰+答题/验证码拦羊毛；网关层限流（令牌桶）、削峰填谷（MQ 异步化），把「同步下单」转「排队下单」。</li>
-<li><strong>防超卖关键</strong>：用 Redis Lua 原子扣减判断余量，扣减成功才发 MQ 异步创建订单；订单创建失败回滚库存（补偿）。</li>
-<li><strong>一致性兜底</strong>：DB 层对库存字段加「库存≥0」约束与乐观锁/行锁，作为最后一道防线，最终以 DB 落库为准。</li>
-</ul></div>
+    <h1>零信任（Zero Trust）的核心理念是什么？与传统边界安全模型有何不同？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">安全架构师</span><span class="chip">云架构师</span><span class="chip tag">零信任</span><span class="chip tag">零信任架构</span><span class="chip tag">微隔离</span></div>
+    <div class="card"><h2>题目</h2><p>解释零信任架构的核心原则，并对比“内网即可信”的传统模型。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>核心理念</strong>：永远不信任、始终验证（Never Trust, Always Verify）。不再默认“内网安全”，每次访问都基于身份、设备态势、上下文做动态授权。</p>
+<p><strong>与传统模型差异</strong>：传统“城堡—护城河”模型认为穿越边界后即为可信；零信任则假设网络已被渗透，对任何请求都做最小权限校验，并持续评估风险。</p>
+<p><strong>落地要素</strong>：强身份（SSO/MFA）、设备指纹、微隔离、基于策略的细粒度访问控制与全程加密。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/626">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=98&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=216&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
