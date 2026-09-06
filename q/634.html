@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？ · IT面试题库</title>
-  <meta name="description" content="要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账…">
+  <title>Spring Bean 的作用域（scope）有哪些？单例 Bean 是否线程安全？ · IT面试题库</title>
+  <meta name="description" content="常用作用域：singleton（默认，全局唯一）、prototype（每次获取新建）、request/session/application（Web 范围）、websocket。 线程安全本质：singleton Bean 本身无状态或仅持有无状态依赖时通常是线程安全的；但若 Bean 内部用成员变量保存请求相关…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？ · IT面试题库">
-  <meta property="og:description" content="要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账…">
+  <meta property="og:title" content="Spring Bean 的作用域（scope）有哪些？单例 Bean 是否线程安全？ · IT面试题库">
+  <meta property="og:description" content="常用作用域：singleton（默认，全局唯一）、prototype（每次获取新建）、request/session/application（Web 范围）、websocket。 线程安全本质：singleton Bean 本身无状态或仅持有无状态依赖时通常是线程安全的；但若 Bean 内部用成员变量保存请求相关…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/634.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账…">
+  <meta name="twitter:title" content="Spring Bean 的作用域（scope）有哪些？单例 Bean 是否线程安全？ · IT面试题库">
+  <meta name="twitter:description" content="常用作用域：singleton（默认，全局唯一）、prototype（每次获取新建）、request/session/application（Web 范围）、websocket。 线程安全本质：singleton Bean 本身无状态或仅持有无状态依赖时通常是线程安全的；但若 Bean 内部用成员变量保存请求相关…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/634.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？","text":"考察点：具备主机安全事件响应能力——从现象到根因到止血的闭环。","answerCount":1,"datePublished":"2026-09-06T02:24:12.447Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账户。 清除与恢复：杀进程、删定时任务/恶意文件、改全部口令；若已被加密且无解密密钥，从干净快照/备份恢复（切勿付赎金）；打补丁闭环。 加固交付：收敛安全组、禁用弱口令、开启主机安全与异地备份，给客户出具加固清单，防止复发。","url":"https://it-interview.is-a.dev/#/question/634"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Bean 的作用域（scope）有哪些？单例 Bean 是否线程安全？","text":"列举常用 scope，并说明单例 Bean 的线程安全问题本质与应对。","answerCount":1,"datePublished":"2026-09-06T06:23:26.616Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"常用作用域：singleton（默认，全局唯一）、prototype（每次获取新建）、request/session/application（Web 范围）、websocket。 线程安全本质：singleton Bean 本身无状态或仅持有无状态依赖时通常是线程安全的；但若 Bean 内部用成员变量保存请求相关数据，多线程并发就会互相污染，表现为“线程不安全”。 应对：避免在单例 Bean 中保存可变请求级状态；需要状态隔离时改用 prototype 或通过方法参数/TreadLocal 传递，而非实例字段。","url":"https://it-interview.is-a.dev/#/question/634"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,22 +70,18 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">云安全</span><span class="chip tag">主机安全</span><span class="chip tag">挖矿</span><span class="chip tag">勒索</span><span class="chip tag">应急响应</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：具备主机安全事件响应能力——从现象到根因到止血的闭环。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
-<ul>
-<li><strong>先止血隔离</strong>：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。</li>
-<li><strong>定位根因</strong>：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账户。</li>
-<li><strong>清除与恢复</strong>：杀进程、删定时任务/恶意文件、改全部口令；若已被加密且无解密密钥，从干净快照/备份恢复（切勿付赎金）；打补丁闭环。</li>
-<li><strong>加固交付</strong>：收敛安全组、禁用弱口令、开启主机安全与异地备份，给客户出具加固清单，防止复发。</li>
-</ul></div>
+    <h1>Spring Bean 的作用域（scope）有哪些？单例 Bean 是否线程安全？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">Spring</span><span class="chip tag">scope</span><span class="chip tag">线程安全</span></div>
+    <div class="card"><h2>题目</h2><p>列举常用 scope，并说明单例 Bean 的线程安全问题本质与应对。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>常用作用域</strong>：singleton（默认，全局唯一）、prototype（每次获取新建）、request/session/application（Web 范围）、websocket。</p>
+<p><strong>线程安全本质</strong>：singleton Bean 本身无状态或仅持有无状态依赖时通常是线程安全的；但若 Bean 内部用成员变量保存请求相关数据，多线程并发就会互相污染，表现为“线程不安全”。</p>
+<p><strong>应对</strong>：避免在单例 Bean 中保存可变请求级状态；需要状态隔离时改用 prototype 或通过方法参数/TreadLocal 传递，而非实例字段。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/634">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=80&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
