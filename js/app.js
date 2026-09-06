@@ -854,7 +854,7 @@
       const toggle = $("#catmap-toggle");
       if (toggle) toggle.onclick = () => {
         const open = box.style.display !== "none";
-        box.style.display = open ? "none" : "";
+        box.style.display = open ? "none" : "flex";
         toggle.textContent = open ? "展开" : "收起";
         if (!open && _catMapChart) _catMapChart.resize();
       };
@@ -868,9 +868,11 @@
         const renderTree = () => {
           box.style.height = "min(58vh,480px)";
           box.style.overflowY = "hidden";
-          box.innerHTML = `<div style="width:100%;height:100%"></div>`;
+          const host = $("#catmap-body") || box;
+          host.style.height = "100%";
+          host.innerHTML = `<div style="width:100%;height:100%"></div>`;
           U.loadScript("echarts", U.ECHARTS_URL).then(() => {
-            const holder = box.firstElementChild;
+            const holder = host.firstElementChild;
             if (!holder || !window.echarts) return;
             const toData = (node, hlId) => ({
               id: node.id,
@@ -958,7 +960,9 @@
             });
           };
           const frame = (active) => {
-            box.innerHTML = `<div class="seg" id="catmap-seg" style="margin-bottom:10px"><button data-t="map"${active === "map" ? ' class="active"' : ""}>架构图</button><button data-t="tree"${active === "tree" ? ' class="active"' : ""}>分支树</button></div><div id="catmap-body"></div>`;
+            box.style.display = "flex";
+            box.style.flexDirection = "column";
+            box.innerHTML = `<div class="seg" id="catmap-seg" style="margin-bottom:10px;flex-shrink:0"><button data-t="map"${active === "map" ? ' class="active"' : ""}>架构图</button><button data-t="tree"${active === "tree" ? ' class="active"' : ""}>分支树</button></div><div id="catmap-body" style="flex:1;min-height:0;position:relative"></div>`;
             wireSeg(active);
           };
           if (mapKey) { frame("map"); renderTechMap(mapKey); }
