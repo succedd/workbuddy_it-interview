@@ -138,6 +138,19 @@
       composeShare(bg, textEl.textContent, authorEl.textContent);
     });
 
+    // —— 鼠标放到名言上 → 背景图缓缓放大、提亮；移开恢复 ——
+    var box = el.querySelector(".daily-quote");
+    var inner = el.querySelector(".daily-quote__inner");
+    if (box && inner) {
+      inner.addEventListener("mouseenter", function () { box.classList.add("is-hover"); });
+      inner.addEventListener("mouseleave", function () { box.classList.remove("is-hover"); });
+      // 触屏设备：点击切换（touchstart 后立即生效，click 时移除）
+      inner.addEventListener("touchstart", function () { box.classList.add("is-hover"); }, { passive: true });
+      inner.addEventListener("touchend", function () {
+        setTimeout(function () { box.classList.remove("is-hover"); }, 1200);
+      }, { passive: true });
+    }
+
     load(true);
   }
 
