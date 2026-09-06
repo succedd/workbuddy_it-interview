@@ -114,6 +114,9 @@
 | 2026-09-05 | 2026-09-05-a | 事件循环追问链（经典主题 T047，前端域：调用栈→宏微任务→Promise→async/await→微任务饥饿） | +7 |
 | 2026-09-05 | 2026-09-05-b | 链表/栈/队列高频题追问链（经典主题 T054，算法域：206→21→25→20→155→739→84 单调栈） | +7 |
 | 2026-09-05 | 2026-09-05-c | Git 协作追问链（经典主题 T058，软件工程域：三层模型→分支→冲突→rebase 与 merge→reflog 找回） | +7 |
+| 2026-09-06 | 2026-09-06-a | RAG 追问链（经典主题 T060，大模型域：为什么需要→切片向量化→检索→混合检索+重排→评估→生产级架构） | +7 |
+| 2026-09-06 | 2026-09-06-b | 系统设计入门追问链（经典主题 T064，场景与软技能域：容量估算→短链→秒杀→feed推拉→权衡） | +7 |
+| 2026-09-06 | 2026-09-06-c | 云安全日常追问链（经典主题 T005，公有云售后域：安全组有状态→收敛高危端口→CAM→勒索处置→账号隔离） | +7 |
 
 ## 部署与自定义域名
 
@@ -208,27 +211,6 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
-
-### 2026-09-06 · 首页栅格溢出 + 题库全景图 echarts 加载失败双修（缓存版本 `20260906a`）
-- **首页栅格修复**：用户反馈首页「学习打卡 / 今日 5 题」两张卡片栅格被撑爆（实测 99px / 1255px）。根因：`css/style.css` 的 `.grid-cols-2/3/4` 用裸 `1fr`（不是 `minmax(0, 1fr)`），右卡 `.daily-list a > span` 是长 flex 文本节点，min-content 把 grid track 撑爆、左卡被挤窄。修复：所有列改 `minmax(0, 1fr)`，`.grid > *` 加 `min-width:0`，让 track 可任意收缩、长文本可换行/省略。
-- **全景图 echarts 修复**：用户反馈 `#/panorama` 报红色 `思维导图加载失败：echarts`。根因不在脚本本身 — 旧 `sw.js` 的 `cacheFirst` 一刀切，对 `vendor/echarts.min.js` 这种直链无版本号资源同样先返缓存；浏览器老 SW 进程里缓存着已被删除的中间版本，新部署落到旧 JS 上 → `loadScript` 拒绝 → "脚本加载失败"。修复：① `sw.js` 全量重写 — HTML/JS 走 network-first（3s 超时回缓存），vendor/css/js 走 stale-while-revalidate 并把 `?v=` 作为缓存键；② `U.loadScript` 失败时自动追加 `?_t=<ts>` 再加载一次做兜底；③ `panorama.js` 的 `fail()` 加「重试」按钮 + 真实 missing 物名（`echarts 未就绪`/`showMsg`），用户不必再翻 DevTools。
-- `index.html` 全部 `?v=20260905f` → `20260906a`、`sw.js VERSION = "20260905f"` → `"20260906a"`。双推 `release`（commit `339267d`）和 `main`（commit `00d82be` = 修复 commit + merge origin/main 引入 7 笔 backup/publish 数据提交），文件树 584 项与 `ced3cc6f` 事故基线一致、**未丢任何已有文件**。
-- 注意：用户拿到新版 CSS/JS 同样要 Ctrl+Shift+R 或关闭全部 `it-interview.is-a.dev` 标签页重开（SW 注册 URL 已变 → `activate` 时删除老缓存 `iti-pwa-v20260905f`）。
-
-### 2026-09-05 · 题库全景页样式补全 + 缓存版本号升至 `20260905f`
-- 用户实测反馈：升级到 `e` 后全景图页"还是不一样、布局很难看"。根因：style.css 里有一整套精心设计的全景图 CSS（`.panorama-mindwrap / .panorama-toolbar / .panorama-tree / .panorama-mind-legend` 等），但都是**孤儿**——panorama.js 早已改用 `pan-mm-* / pan-orbit-* / pan-fs-* / pan-legend-*` 类名，旧规则一概不命中，等于整页裸排。
-- 补：`.pan-orbit-wrap.pan-mm-wrap` 卡片化（圆角 + 渐变光斑 + 浅阴影）、`.pan-orbit-rings span×4` 装饰同心轨道环、`.pan-mm-bar / .pan-mm-btn` 蓝色胶囊工具栏、`.pan-fs-btn` 悬浮右上全屏按钮、`.pan-fs-legend` 全屏态浮动图例（默认隐藏避免与简介区图例重复）、`.pan-legend / .pan-legend-item` 简介区图例、`.pan-tip-link` 适配深底 tooltip 的「查看题目 →」链接、`.pan-mm-tall` 兜底高度、`.pan-pseudo-fs / body.pan-fs-lock / :fullscreen` 全屏态补齐。
-- 实测截图：view=all 与 view=cat 都已正确渲染卡片框 + 工具栏 + 全屏按钮 + 装饰轨道环。
-- `index.html` 全部 `?v=` 与 `sw.js VERSION` 同步升至 `20260905f`，强制 SW 注册 URL 变化清掉旧缓存。commit `77ef538`（release 同步；main 仍落后）。
-
-### 2026-09-05 · 缓存版本号统一升至 `20260905e`（全景图页缓存兜底）
-- 全栈字节比对（含 CRLF 归一化）确认全景图页与事故修复基线 `ced3cc6f` 完全一致，**无代码回退**；用户报告的"页面样式不一样"是浏览器的旧 Service Worker 缓存问题。
-- 把 `index.html` 全部 23 个 `?v=20260905c` 与 `sw.js?v=20260905c` 注册 URL 同步升到 `20260905e`，配合 `sw.js` `VERSION = "20260905e"`——SW 注册 URL 不同将触发新 SW 接管并在 `activate` 阶段删除旧缓存 `iti-pwa-v20260905c/d`，**用户下次开页即强制拉新版**（无需手动硬刷新）。
-- 顺带发现：`css/style.css` 对 `pan-mm-* / pan-orbit-* / pan-fs-* / .pan-legend-* / .pan-tip-*` 容器**长期未提供样式规则**（自 `ced3cc6f` 起如此），轨道环与工具条属于"无样式但功能正常"状态；此项作为遗留缺口登记，本次未改动 CSS（避免越权变更样式），如需补全请提需求。
-- commit `86a26c2`（release + main 同步）。
-
-### 2026-09-05 · sw.js 缓存版本号升级 `20260905c` → `20260905d`
-首页 4 个统计卡视觉差异排查：用户报告"内部布局/样式与原本印象不同"，可能性之一是浏览器 SW 缓存了旧版 CSS 资源。升级 `sw.js` 的 `VERSION` 触发 activate 删除旧缓存 `iti-pwa-v20260905c`，用户硬刷一次即可拉到新 CSS/JS。commit `946d62c`（release + main 同步）。
 
 ### 2026-09-02 · 「关于本站」页视觉升级（缓存版本 `20260902b`）
 参考主流 about 页重做视觉，解决「样式单调、颜色寡淡」：品牌渐变 Hero 横幅（蓝→靛→紫 + 青/粉柔光斑 + 玻璃质感 chip）；4 张统计卡悬浮叠在横幅下沿，各带蓝/紫/青/橙彩色图标底，hover 上浮 3px；卡片标题改「彩色图标方块 + 主标题 + 副标题」双行头；三宫格 tile 加图标 + hover 浮起；适用人群改带图标胶囊；站长区新增渐变头像「阅」+ 5 个领域标签；信条改渐变底引用条；联系卡淡蓝渐变底，二维码 172px 圆角 + 大阴影 + hover 放大；收尾标语改渐变文字。颜色全部走 CSS 变量 + `--accent` 内联变量，深色模式自动适配（`color-mix` 不支持时回退 `--bg-subtle`）。
