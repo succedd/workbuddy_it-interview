@@ -409,10 +409,7 @@ table.data tr:hover td { background: var(--bg-hover); }
 
 /* ============ 今日5题 & 学习打卡 & 搜索下拉（v20260827h） ============ */
 .daily-list a:last-child { border-bottom: none !important; }
-.heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 240px; }
-.heat-cell { width: 100%; aspect-ratio: 1; border-radius: 3px; background: var(--bg-subtle); }
-.heat-cell.h1 { background: #bbf7d0; } .heat-cell.h2 { background: #6ee7b7; } .heat-cell.h3 { background: #10b981; } .heat-cell.h4 { background: #059669; }
-[data-theme="dark"] .heat-cell.h1 { background: #14532d66; } [data-theme="dark"] .heat-cell.h2 { background: #16653488; } [data-theme="dark"] .heat-cell.h3 { background: #16a34abb; } [data-theme="dark"] .heat-cell.h4 { background: #22c55e; }
+/* heat-grid / heat-cell 规则已统一迁移至批次3区 */
 .rv-card { padding: 14px 16px; }
 .search-dd { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; min-width: 230px; z-index: 70; box-shadow: var(--shadow-md); }
 .sd-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); padding: 4px 8px 6px; }
@@ -543,8 +540,8 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 
 /* ---- 批次3：每日5题 / 学习打卡 / 错题重练 ---- */
 .daily-list a:last-child { border-bottom: none !important; }
-.heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 240px; }
-.heat-cell { display: block; aspect-ratio: 1 / 1; border-radius: 3px; background: var(--border, #e2e8f0); opacity: .55; }
+.heat-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; width: 100%; max-width: none; }
+.heat-cell { width: 100%; aspect-ratio: 1; border-radius: 5px; background: var(--border, #e2e8f0); opacity: .55; }
 .heat-cell.h1 { background: #bfdbfe; opacity: 1; }
 .heat-cell.h2 { background: #93c5fd; opacity: 1; }
 .heat-cell.h3 { background: #3b82f6; opacity: 1; }
