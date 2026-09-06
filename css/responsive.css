@@ -1,8 +1,8 @@
 /* Tablet */
 @media (max-width: 980px) {
-  .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-cols-3 { grid-template-columns: repeat(2, 1fr); }
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .editor-split { grid-template-columns: 1fr; }
 }
 
@@ -16,7 +16,7 @@
   body.drawer-open .sidebar { transform: translateX(0); box-shadow: var(--shadow-lg); }
   .drawer-mask { position: fixed; inset: var(--topbar-h) 0 0 0; background: rgba(15,23,42,.45); z-index: 70; }
   .main { padding: 16px 14px 50px; }
-  .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-auto { grid-template-columns: 1fr; }
+  .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-auto { grid-template-columns: minmax(0, 1fr); }
   /* 顶栏空间有限：搜索入口移入抽屉，本机访问计数隐藏 */
   .topbar-search { display: none; }
   .drawer-search { display: block; }

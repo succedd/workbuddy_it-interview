@@ -3,10 +3,17 @@
  *  - 同源静态资源（带版本号）：cache-first + 运行时补缓存
  *  - 导航请求（HTML）：network-first，离线时回退到缓存的 index.html（SPA 照常工作）
  *  - 跨域资源（jsdelivr CDN、百度统计、API worker）：不拦截，交由浏览器正常处理
+ *  - echarts / xlsx 大库：缓存前校验 content-length，避免 SW 写入不完整响应后
+ *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260905f";
+const VERSION = "20260906a";
 const CACHE = "iti-pwa-v" + VERSION;
+/* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
+const LARGE_ASSETS = {
+  "/vendor/echarts.min.js": 1030855,
+  "/vendor/xlsx.full.min.js": 881749
+};
 const APP_SHELL = [
   "/", "/index.html",
   "/css/variables.css?v=" + VERSION, "/css/style.css?v=" + VERSION,
@@ -40,6 +47,19 @@ self.addEventListener("activate", (event) => {
   })());
 });
 
+/* 调试入口：postMessage({type:"CLEAR_CACHE"}) 清空当前 SW 缓存（包含损坏响应） */
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "CLEAR_CACHE") {
+    event.waitUntil((async () => {
+      await caches.delete(CACHE);
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+      try { await self.registration.update(); } catch (_) {}
+      if (event.source && event.source.postMessage) event.source.postMessage({ type: "CLEAR_CACHE_DONE" });
+    })());
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -71,10 +91,32 @@ self.addEventListener("fetch", (event) => {
   // 同源静态资源：cache-first + 运行时补缓存
   event.respondWith((async () => {
     const cached = await caches.match(req);
-    if (cached) return cached;
+    /* 大库损坏缓存自愈：缓存存在但字节数对不上，丢弃缓存回源重抓 */
+    if (cached) {
+      const expected = LARGE_ASSETS[url.pathname];
+      if (expected && cached.headers) {
+        const len = Number(cached.headers.get("content-length") || 0);
+        if (len && len !== expected) {
+          try { const cache = await caches.open(CACHE); await cache.delete(req); } catch (_) {}
+        } else {
+          return cached;
+        }
+      } else {
+        return cached;
+      }
+    }
     try {
       const net = await fetch(req);
-      if (net && net.ok) { const cache = await caches.open(CACHE); cache.put(req, net.clone()).catch(() => {}); }
+      if (net && net.ok) {
+        /* 校验大库字节数，不完整响应不写入缓存 */
+        const expected = LARGE_ASSETS[url.pathname];
+        if (expected) {
+          const len = Number(net.headers.get("content-length") || 0);
+          if (len && len !== expected) return net;
+        }
+        const cache = await caches.open(CACHE);
+        cache.put(req, net.clone()).catch(() => {});
+      }
       return net;
     } catch (_) {
       return cached || Response.error();

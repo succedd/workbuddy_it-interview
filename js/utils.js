@@ -268,23 +268,67 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
-  /* ---- 第三方大库按需加载（echarts / xlsx 首屏不再全量下载） ---- */
+  /* ---- 第三方大库按需加载（echarts / xlsx 首屏不再全量下载） ----
+     鲁棒性：失败自动重试（每次加 ?_t= 时间戳破 Service Worker / HTTP 缓存）+ CDN 兜底，
+     确保即便本地 vendor 被拦截或 SW 缓存了损坏响应，全景图也能恢复。 */
   const _scriptCache = {};
+  const _scriptRetries = {};          // 每个 name 已重试次数
+  const RETRY_LIMIT = 3;              // 单 URL 重试上限（含首次）
+  const RETRY_DELAY_MS = 400;         // 重试退避基数
+  /* 全局 CDN 兜底（jsdelivr 同步命中 GitHub，1MB 大库也能稳定加载） */
+  const FALLBACKS = {
+    echarts: [
+      "vendor/echarts.min.js",
+      "https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"
+    ],
+    xlsx: [
+      "vendor/xlsx.full.min.js",
+      "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+    ]
+  };
+  function _tryLoad(name, url, attempt) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      /* ?_t= 时间戳仅破缓存，对 Vite/相对路径无副作用；外链 CDN 自带 ?v= 不再加 */
+      s.src = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_t=" + Date.now() + "_" + attempt;
+      s.async = true;
+      s.crossOrigin = "anonymous";
+      s.onload = () => { if (window[name]) resolve(window[name]); else reject(new Error("loaded but " + name + " 未挂载到 window")); };
+      s.onerror = () => reject(new Error("脚本加载失败：" + name + " @ " + url));
+      document.head.appendChild(s);
+    });
+  }
   U.loadScript = function (name, url) {
     if (window[name]) return Promise.resolve(window[name]);
     if (_scriptCache[name]) return _scriptCache[name];
-    _scriptCache[name] = new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = url; s.async = true;
-      s.onload = () => resolve(window[name]);
-      s.onerror = () => { delete _scriptCache[name]; reject(new Error("脚本加载失败：" + name)); };
-      document.head.appendChild(s);
-    });
+    const candidates = FALLBACKS[name] ? FALLBACKS[name].slice() : [url];
+    if (url && candidates.indexOf(url) < 0) candidates.unshift(url);
+    _scriptCache[name] = (async () => {
+      let lastErr;
+      for (const u of candidates) {
+        _scriptRetries[name] = 0;
+        for (let i = 0; i < RETRY_LIMIT; i++) {
+          _scriptRetries[name] = i + 1;
+          try {
+            const v = await _tryLoad(name, u, i + 1);
+            if (window[name]) return v;
+          } catch (e) { lastErr = e; }
+          /* 退避后重试：400 / 800 / 1200ms */
+          if (i < RETRY_LIMIT - 1) await new Promise(r => setTimeout(r, RETRY_DELAY_MS * (i + 1)));
+        }
+      }
+      delete _scriptCache[name];
+      throw lastErr || new Error("脚本加载失败：" + name);
+    })();
     return _scriptCache[name];
   };
   U.CONFETTI_URL = "vendor/canvas-confetti.min.js";
   U.ECHARTS_URL = "vendor/echarts.min.js";
   U.XLSX_URL = "vendor/xlsx.full.min.js";
+  /* 暴露给用户/调试：当前累计重试次数，0 表示首次 */
+  U.loadRetries = name => _scriptRetries[name] || 0;
+  /* 手动作废某个 name 的脚本缓存，让下次 U.loadScript(name) 走网络重抓（含新的 ?_t= 破缓存） */
+  U.invalidateCache = function (name) { delete _scriptCache[name]; delete _scriptRetries[name]; };
 
   /* ---- Tooltip 浮层（JavaScript 控制，支持多行 / 动态更新 / 自动跟随） ---- */
   let _tooltipEl = null;

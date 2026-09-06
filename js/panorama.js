@@ -402,7 +402,7 @@
     }
 
     function fail(msg) {
-      holder.innerHTML = '<div class="pan-loading" style="color:#ef4444">思维导图加载失败：' + esc(msg || "未知错误") + "</div>";
+      holder.innerHTML = '<div class="pan-loading" style="color:#ef4444;display:flex;flex-direction:column;gap:10px;align-items:flex-start"><div>思维导图加载失败：' + esc(msg || "未知错误") + '</div><div style="font-size:12px;color:var(--text-muted)">可能原因：网络抖动 / Service Worker 缓存了损坏响应 / 代理拦截。<a href="javascript:void(0)" style="color:var(--c-primary);text-decoration:underline;margin-left:6px" onclick="(function(){try{window.U.invalidateCache(\'echarts\')}catch(_){};var v=(new URLSearchParams(location.hash.split(\'?\')[1]||\'\')).get(\'view\')||\'all\';window.App.go(\'/panorama?view=\'+v+\'&_t=\'+Date.now());})()">重试</a></div></div>';
     }
     function buildOption() {
       const labelColor = cssVar("--text") || "#334155";
@@ -643,7 +643,7 @@
     const fs = attachFullscreen(wrap, function () { return chart; });
 
     function fail(msg) {
-      holder.innerHTML = '<div class="pan-loading" style="color:#ef4444">轨道图加载失败：' + esc(msg || "未知错误") + '</div>';
+      holder.innerHTML = '<div class="pan-loading" style="color:#ef4444;display:flex;flex-direction:column;gap:10px;align-items:flex-start"><div>轨道图加载失败：' + esc(msg || "未知错误") + '</div><div style="font-size:12px;color:var(--text-muted)">可能原因：网络抖动 / Service Worker 缓存了损坏响应 / 代理拦截。<a href="javascript:void(0)" style="color:var(--c-primary);text-decoration:underline;margin-left:6px" onclick="(function(){try{window.U.invalidateCache(\'echarts\')}catch(_){};var v=(new URLSearchParams(location.hash.split(\'?\')[1]||\'\')).get(\'view\')||\'all\';window.App.go(\'/panorama?view=\'+v+\'&_t=\'+Date.now());})()">重试</a></div></div>';
     }
     U.loadScript("echarts", U.ECHARTS_URL).then(function () {
       if (!holder || !window.echarts) { fail("echarts 未就绪"); return; }
