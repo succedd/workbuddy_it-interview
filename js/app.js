@@ -709,6 +709,8 @@
       }
     } catch (e) {}
     setMain(`
+      <div id="daily-quote-mount"></div>
+
       <section class="hero">
         <h1>IT 面试题库 · 刷题 / 模拟面试</h1>
         <p>覆盖完整技术体系与岗位体系的高频面试题库：在线刷题、错题间隔复习、模拟面试与学习周报，支持云端同步与离线使用。</p>
@@ -769,7 +771,10 @@
       <div class="grid grid-cols-2">${qlist(best)}</div>
 
       <div class="note" style="margin-top:24px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
-    `, () => { if (App._wkInit) App._wkInit(); });
+    `, () => {
+      if (App._wkInit) App._wkInit();
+      if (window.DailyQuote) window.DailyQuote.mount(document.getElementById("daily-quote-mount"));
+    });
     const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); } };
     $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
     $("#hero-go").onclick = () => heroGo();
