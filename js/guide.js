@@ -49,6 +49,7 @@ async function pageHelp() {
       ${li("学习打卡", "打开网站即打卡，热力图展示最近 35 天；连续天数看着数字涨很有成就感")}
       ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比、每日柱状图和近 8 周对比；薄弱分类可直接点击去刷；达成周目标有彩带庆祝；点「历史」可回看近 26 周的历史周报（存于本机）")}
       ${li("分享周报", "点周报卡片上的「📸 分享周报」生成精美周报图：手机长按发给朋友，电脑复制图片后到微信聊天框 Ctrl+V 粘贴")}
+      ${li("首页每日一句", "首页顶部横幅每天自动换一条中文名言（实时来自 Hitokoto，配 LoremFlickr 意境图），当天稳定不跳动；点「🎲 换一条」随机换一句，点「🖼️ 分享图片」生成带名言的卡片图（下载 / 复制到剪贴板）；接口不可达时自动降级为兜底名言")}
     `)}
     ${sec("review", "🔁 复习与错题（艾宾浩斯记忆曲线）", `
       ${li("怎么进错题本", "刷题或模拟面试中点「不太会 / 不会」，或在题目详情页点「不太会」按钮")}
@@ -90,7 +91,7 @@ async function pageHelp() {
       ${li("页面显示异常 / 数据不对？", "先强制刷新（电脑 Ctrl+Shift+R，手机清一下浏览器缓存）；仍有问题联系管理员")}
       ${li("题目答案有误？", "欢迎反馈给管理员纠错，题库会持续迭代")}
     `)}
-    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-08-31 · 更详细的开发文档见 GitHub 仓库 README</div>
+    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-09-06 · 更详细的开发文档见 GitHub 仓库 README</div>
   `);
   $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
     const el = document.getElementById(t.dataset.go);
