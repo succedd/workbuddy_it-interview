@@ -915,15 +915,28 @@ body.pan-fs-lock { overflow: hidden; }
   width: 100%; height: 100%;
   object-fit: cover;
   filter: saturate(1.05) brightness(.78);
-  transition: opacity .5s ease;
+  transform: scale(1);
+  transform-origin: 50% 50%;
+  transition: opacity .5s ease, transform .55s cubic-bezier(.2,.8,.2,1), filter .55s ease;
   opacity: 0;
+  will-change: transform, filter;
 }
 .daily-quote__bg.show { opacity: 1; }
+.daily-quote.is-hover .daily-quote__bg {
+  transform: scale(1.16);
+  filter: saturate(1.12) brightness(.94);
+}
 .daily-quote__overlay {
   position: absolute; inset: 0;
   background:
     linear-gradient(180deg, rgba(8,12,20,.30) 0%, rgba(8,12,20,.62) 100%),
     radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.18), transparent 55%);
+  transition: background .55s ease;
+}
+.daily-quote.is-hover .daily-quote__overlay {
+  background:
+    linear-gradient(180deg, rgba(8,12,20,.22) 0%, rgba(8,12,20,.50) 100%),
+    radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.22), transparent 55%);
 }
 .daily-quote__inner { position: relative; z-index: 2; max-width: 920px; }
 .daily-quote__label {
@@ -967,6 +980,12 @@ body.pan-fs-lock { overflow: hidden; }
   display: inline-block; animation: dq-spin .8s linear infinite;
 }
 @keyframes dq-spin { to { transform: rotate(360deg); } }
+/* 尊重用户的「减少动画」偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .daily-quote__bg,
+  .daily-quote.is-hover .daily-quote__bg { transition: none; transform: none; }
+  .daily-quote__overlay { transition: none; }
+}
 @media (max-width: 640px) {
   .daily-quote { padding: 22px 18px; min-height: 180px; }
   .daily-quote__actions .dq-btn { padding: 6px 11px; font-size: 12px; }
