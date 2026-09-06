@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>云安全组是有状态的（stateful）意味着什么？规则匹配的优先级与默认策略如何工作？ · IT面试题库</title>
-  <meta name="description" content="要点： 有状态（stateful）：安全组跟踪连接状态，入站允许了某条请求后，其返回流量（即便出站规则未显式放行）也会自动放过；无需像无状态防火墙那样进出都配规则。 规则匹配顺序：同方向规则按优先级/序号从上到下匹配，命中即生效；未命中走默认策略（入站默认拒绝、出站默认允许，具体以产品文档为准）。 默认策略：新建…">
+  <title>JMeter 做接口性能测试时，线程组、断言、监听器各自的作用是什么？ · IT面试题库</title>
+  <meta name="description" content="线程组（Thread Group）：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。 断言（Assertion）：对采样响应做校验（响应码、包含文本、JSON 字段、耗时），判断请求“业务上是否成功”，而非仅网络通。 监听器（Listener）：收集并展示结果，如查看结果树…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="云安全组是有状态的（stateful）意味着什么？规则匹配的优先级与默认策略如何工作？ · IT面试题库">
-  <meta property="og:description" content="要点： 有状态（stateful）：安全组跟踪连接状态，入站允许了某条请求后，其返回流量（即便出站规则未显式放行）也会自动放过；无需像无状态防火墙那样进出都配规则。 规则匹配顺序：同方向规则按优先级/序号从上到下匹配，命中即生效；未命中走默认策略（入站默认拒绝、出站默认允许，具体以产品文档为准）。 默认策略：新建…">
+  <meta property="og:title" content="JMeter 做接口性能测试时，线程组、断言、监听器各自的作用是什么？ · IT面试题库">
+  <meta property="og:description" content="线程组（Thread Group）：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。 断言（Assertion）：对采样响应做校验（响应码、包含文本、JSON 字段、耗时），判断请求“业务上是否成功”，而非仅网络通。 监听器（Listener）：收集并展示结果，如查看结果树…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/631.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="云安全组是有状态的（stateful）意味着什么？规则匹配的优先级与默认策略如何工作？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 有状态（stateful）：安全组跟踪连接状态，入站允许了某条请求后，其返回流量（即便出站规则未显式放行）也会自动放过；无需像无状态防火墙那样进出都配规则。 规则匹配顺序：同方向规则按优先级/序号从上到下匹配，命中即生效；未命中走默认策略（入站默认拒绝、出站默认允许，具体以产品文档为准）。 默认策略：新建…">
+  <meta name="twitter:title" content="JMeter 做接口性能测试时，线程组、断言、监听器各自的作用是什么？ · IT面试题库">
+  <meta name="twitter:description" content="线程组（Thread Group）：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。 断言（Assertion）：对采样响应做校验（响应码、包含文本、JSON 字段、耗时），判断请求“业务上是否成功”，而非仅网络通。 监听器（Listener）：收集并展示结果，如查看结果树…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/631.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"云安全组是有状态的（stateful）意味着什么？规则匹配的优先级与默认策略如何工作？","text":"考察点：理解安全组的有状态特性与规则匹配顺序，区别于传统防火墙的无状态包过滤。","answerCount":1,"datePublished":"2026-09-06T02:24:08.137Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 有状态（stateful）：安全组跟踪连接状态，入站允许了某条请求后，其返回流量（即便出站规则未显式放行）也会自动放过；无需像无状态防火墙那样进出都配规则。 规则匹配顺序：同方向规则按优先级/序号从上到下匹配，命中即生效；未命中走默认策略（入站默认拒绝、出站默认允许，具体以产品文档为准）。 默认策略：新建安全组通常入站全拒绝、出站全允许；开放服务靠显式入站规则（如放通 80/443）。 实操影响：规则变更按连接状态即时生效；排错优先看「实例是否绑定了正确安全组 + 入站是否放行」，而非系统 iptables。","url":"https://it-interview.is-a.dev/#/question/631"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JMeter 做接口性能测试时，线程组、断言、监听器各自的作用是什么？","text":"说明 JMeter 核心组件线程组、断言、监听器的职责与典型配置。","answerCount":1,"datePublished":"2026-09-06T06:21:15.952Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"线程组（Thread Group）：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。 断言（Assertion）：对采样响应做校验（响应码、包含文本、JSON 字段、耗时），判断请求“业务上是否成功”，而非仅网络通。 监听器（Listener）：收集并展示结果，如查看结果树、聚合报告（吞吐量、平均/99 线耗时、错误率）。生产压测常用聚合报告+图形，避免结果树拖慢性能。","url":"https://it-interview.is-a.dev/#/question/631"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,22 +70,18 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>云安全组是有状态的（stateful）意味着什么？规则匹配的优先级与默认策略如何工作？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">云安全</span><span class="chip tag">安全组</span><span class="chip tag">有状态</span><span class="chip tag">腾讯云</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：理解安全组的有状态特性与规则匹配顺序，区别于传统防火墙的无状态包过滤。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
-<ul>
-<li><strong>有状态（stateful）</strong>：安全组跟踪连接状态，入站允许了某条请求后，其返回流量（即便出站规则未显式放行）也会自动放过；无需像无状态防火墙那样进出都配规则。</li>
-<li><strong>规则匹配顺序</strong>：同方向规则按优先级/序号从上到下匹配，命中即生效；未命中走默认策略（入站默认拒绝、出站默认允许，具体以产品文档为准）。</li>
-<li><strong>默认策略</strong>：新建安全组通常入站全拒绝、出站全允许；开放服务靠显式入站规则（如放通 80/443）。</li>
-<li><strong>实操影响</strong>：规则变更按连接状态即时生效；排错优先看「实例是否绑定了正确安全组 + 入站是否放行」，而非系统 iptables。</li>
-</ul></div>
+    <h1>JMeter 做接口性能测试时，线程组、断言、监听器各自的作用是什么？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">性能测试工程师</span><span class="chip">测试工程师</span><span class="chip tag">JMeter</span><span class="chip tag">性能测试</span><span class="chip tag">压测</span></div>
+    <div class="card"><h2>题目</h2><p>说明 JMeter 核心组件线程组、断言、监听器的职责与典型配置。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>线程组（Thread Group）</strong>：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。</p>
+<p><strong>断言（Assertion）</strong>：对采样响应做校验（响应码、包含文本、JSON 字段、耗时），判断请求“业务上是否成功”，而非仅网络通。</p>
+<p><strong>监听器（Listener）</strong>：收集并展示结果，如查看结果树、聚合报告（吞吐量、平均/99 线耗时、错误率）。生产压测常用聚合报告+图形，避免结果树拖慢性能。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/631">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=114&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
