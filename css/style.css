@@ -894,3 +894,80 @@ body.pan-fs-lock { overflow: hidden; }
   .card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
   @page { margin: 1.5cm; size: A4; }
 }
+
+/* ============ 每日一句横幅（实时在线·自带暗色叠层，与明暗主题解耦） ============ */
+.daily-quote {
+  position: relative;
+  margin-top: 8px;
+  border-radius: var(--radius, 14px);
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px 34px;
+  color: #fff;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  box-shadow: var(--shadow-sm, 0 2px 10px rgba(0,0,0,.08));
+}
+.daily-quote__bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: saturate(1.05) brightness(.78);
+  transition: opacity .5s ease;
+  opacity: 0;
+}
+.daily-quote__bg.show { opacity: 1; }
+.daily-quote__overlay {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8,12,20,.30) 0%, rgba(8,12,20,.62) 100%),
+    radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.18), transparent 55%);
+}
+.daily-quote__inner { position: relative; z-index: 2; max-width: 920px; }
+.daily-quote__label {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; letter-spacing: .14em; font-weight: 600;
+  color: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.22);
+  padding: 4px 11px; border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.daily-quote__text {
+  margin: 14px 0 10px;
+  font-size: clamp(20px, 3.4vw, 30px);
+  line-height: 1.45; font-weight: 600;
+  text-shadow: 0 2px 14px rgba(0,0,0,.45);
+  word-break: break-word;
+}
+.daily-quote__text.loading { opacity: .65; }
+.daily-quote__author {
+  font-size: 15px; color: rgba(255,255,255,.9); font-style: italic;
+  text-shadow: 0 1px 8px rgba(0,0,0,.4);
+}
+.daily-quote__author b { font-style: normal; font-weight: 600; }
+.daily-quote__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.daily-quote__actions .dq-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600;
+  color: #fff; cursor: pointer;
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.28);
+  padding: 7px 14px; border-radius: 999px;
+  transition: background .18s, transform .18s;
+  backdrop-filter: blur(4px);
+}
+.daily-quote__actions .dq-btn:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
+.daily-quote__actions .dq-btn:active { transform: translateY(0); }
+.daily-quote__spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.35); border-top-color: #fff;
+  display: inline-block; animation: dq-spin .8s linear infinite;
+}
+@keyframes dq-spin { to { transform: rotate(360deg); } }
+@media (max-width: 640px) {
+  .daily-quote { padding: 22px 18px; min-height: 180px; }
+  .daily-quote__actions .dq-btn { padding: 6px 11px; font-size: 12px; }
+}
