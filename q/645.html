@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库</title>
-  <meta name="description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
+  <title>【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库</title>
+  <meta name="description" content="要点一：正确答案是 B max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
-  <meta property="og:description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
+  <meta property="og:title" content="【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库">
+  <meta property="og:description" content="要点一：正确答案是 B max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/645.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
-  <meta name="twitter:description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
+  <meta name="twitter:title" content="【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：正确答案是 B max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/645.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？","text":"对比 Koa 与 Express 的中间件执行模型差异。","answerCount":1,"datePublished":"2026-09-06T06:23:27.230Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Koa 用 compose 把中间件递归嵌套；没有内置路由/body 解析，更精简，需自行引入 koa-router 等。","url":"https://it-interview.is-a.dev/#/question/645"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？","text":"A. Read View 的 max_trx_id 就是创建时刻活跃事务 id 列表中的最大值 B. 记录的 trx_id 大于等于 max_trx_id，说明该版本由 Read View 创建之后才启动的事务生成，对当前事务不可见 C. 记录的 trx_id 介于 min_trx_id 与 max_trx_id 之间时，该版本对当前事务一定可见 D. m_ids 中必须包含创建 Read View 的事务自身的 id，否则可见性判断会出错 请选出正确答案，并解释其余选项错误的原因。","answerCount":1,"datePublished":"2026-09-07T13:18:41.465Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：正确答案是 B max_trx_id 是创建 Read View 时\"下一个将要分配给新事务的事务 id\"（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id >= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选项分析 A 错：max_trx_id 是\"下一个待分配的事务 id\"（高水位），不是活跃列表的最大值；min_trx_id 才是 m_ids 中的最小值（低水位）。 C 错：trx_id 落在 [min_trx_id, max_trx_id) 区间时还需二分查找 m_ids：在列表中说明该事务创建时仍活跃，版本不可见；不在列表中才可见，并非\"一定可见\"。 D 错：m_ids 不包括创建 Read View 的事务自身；trx_id == creator_trx_id 的版本\"自己的修改对自己总是可见\"，由可见性算法的第一条分支直接返回，与 m_ids 是否包含自身无关。 要点三：完整可见性规则速记 trx_id = max_trx_id：创建后才启动，不可见；区间内查 m_ids，在则不可见、不在则可见；等于 creator_trx_id 恒可见。沿 undo log 版本链逐版本判断直到找到可见版本。","url":"https://it-interview.is-a.dev/#/question/645"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,33 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Koa 的洋葱模型中间件与 Express 中间件有何不同？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Koa</span><span class="chip tag">洋葱模型</span><span class="chip tag">中间件</span></div>
-    <div class="card"><h2>题目</h2><p>对比 Koa 与 Express 的中间件执行模型差异。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Express</strong>：中间件是线性“单向”执行，靠 <code>next()</code> 往下走，难以在响应返回阶段统一做后置处理。</p>
-<p><strong>Koa 洋葱模型</strong>：基于 async 函数，每个中间件用 <code>await next()</code> 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。</p>
-<p><strong>实现</strong>：Koa 用 <code>compose</code> 把中间件递归嵌套；没有内置路由/body 解析，更精简，需自行引入 koa-router 等。</p></div>
+    <h1>【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">Java后端工程师</span><span class="chip tag">MySQL</span><span class="chip tag">事务</span><span class="chip tag">MVCC</span><span class="chip tag">ReadView</span></div>
+    <div class="card"><h2>题目</h2><p>A. Read View 的 max_trx_id 就是创建时刻活跃事务 id 列表中的最大值</p>
+<p>B. 记录的 trx_id 大于等于 max_trx_id，说明该版本由 Read View 创建之后才启动的事务生成，对当前事务不可见</p>
+<p>C. 记录的 trx_id 介于 min_trx_id 与 max_trx_id 之间时，该版本对当前事务一定可见</p>
+<p>D. m_ids 中必须包含创建 Read View 的事务自身的 id，否则可见性判断会出错</p>
+<p>请选出正确答案，并解释其余选项错误的原因。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：正确答案是 B</strong></p>
+<ul>
+<li>max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。</li>
+</ul>
+<p><strong>要点二：错误选项分析</strong></p>
+<ul>
+<li>A 错：max_trx_id 是&quot;下一个待分配的事务 id&quot;（高水位），不是活跃列表的最大值；min_trx_id 才是 m_ids 中的最小值（低水位）。</li>
+<li>C 错：trx_id 落在 [min_trx_id, max_trx_id) 区间时还需二分查找 m_ids：在列表中说明该事务创建时仍活跃，版本不可见；不在列表中才可见，并非&quot;一定可见&quot;。</li>
+<li>D 错：m_ids 不包括创建 Read View 的事务自身；trx_id == creator_trx_id 的版本&quot;自己的修改对自己总是可见&quot;，由可见性算法的第一条分支直接返回，与 m_ids 是否包含自身无关。</li>
+</ul>
+<p><strong>要点三：完整可见性规则速记</strong></p>
+<ul>
+<li>trx_id &lt; min_trx_id：创建前已提交，可见；trx_id &gt;= max_trx_id：创建后才启动，不可见；区间内查 m_ids，在则不可见、不在则可见；等于 creator_trx_id 恒可见。沿 undo log 版本链逐版本判断直到找到可见版本。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/645">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=92&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
