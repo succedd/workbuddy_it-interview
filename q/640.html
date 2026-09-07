@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？ · IT面试题库</title>
-  <meta name="description" content="MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python…">
+  <title>CAS 的底层实现原理是什么？它存在哪些问题？ · IT面试题库</title>
+  <meta name="description" content="要点一：底层实现 CAS（Compare-And-Swap）语义为&quot;当且仅当当前值等于预期值时，才把它更新为新值&quot;，是一个原子操作。 Java 侧由 sun.misc.Unsafe 的 compareAndSwapInt/Object/Long（native 方法）表达 CAS 语义，JVM 把这些调用识别为内部…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？ · IT面试题库">
-  <meta property="og:description" content="MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python…">
+  <meta property="og:title" content="CAS 的底层实现原理是什么？它存在哪些问题？ · IT面试题库">
+  <meta property="og:description" content="要点一：底层实现 CAS（Compare-And-Swap）语义为&quot;当且仅当当前值等于预期值时，才把它更新为新值&quot;，是一个原子操作。 Java 侧由 sun.misc.Unsafe 的 compareAndSwapInt/Object/Long（native 方法）表达 CAS 语义，JVM 把这些调用识别为内部…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/640.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？ · IT面试题库">
-  <meta name="twitter:description" content="MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python…">
+  <meta name="twitter:title" content="CAS 的底层实现原理是什么？它存在哪些问题？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：底层实现 CAS（Compare-And-Swap）语义为&quot;当且仅当当前值等于预期值时，才把它更新为新值&quot;，是一个原子操作。 Java 侧由 sun.misc.Unsafe 的 compareAndSwapInt/Object/Long（native 方法）表达 CAS 语义，JVM 把这些调用识别为内部…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/640.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？","text":"解释 MTV 各部分职责、一次请求的处理链路，以及 Django ORM 的利弊。","answerCount":1,"datePublished":"2026-09-06T06:23:26.920Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python 类操作数据库，避免手写 SQL、跨库可移植、自带防注入。 ORM 缺点：复杂查询效率低、易产生 N+1 查询；深度优化需写原生 SQL 或用 select_related/prefetch_related 缓解。","url":"https://it-interview.is-a.dev/#/question/640"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CAS 的底层实现原理是什么？它存在哪些问题？","text":"承接上题：修复方案里的 AtomicInteger 底层就是 CAS。追问 CAS 是什么、Java 如何实现、有哪些坑。考察点：Unsafe 与原子指令；自旋重试；ABA 问题与 AtomicStampedReference；循环开销与单变量限制。","answerCount":1,"datePublished":"2026-09-07T13:14:26.284Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：底层实现 CAS（Compare-And-Swap）语义为\"当且仅当当前值等于预期值时，才把它更新为新值\"，是一个原子操作。 Java 侧由 sun.misc.Unsafe 的 compareAndSwapInt/Object/Long（native 方法）表达 CAS 语义，JVM 把这些调用识别为内部函数（intrinsic），最终映射为目标平台处理器支持的原子指令，具体实现依赖 JVM 与 CPU 架构。 AtomicInteger 等原子类的 getAndAddInt 就是 do-while 循环不断重试 CAS 直到成功，这就是自旋锁机制。 要点二：三大问题 ABA 问题：值从 A 改成 B 又改回 A，CAS 检查时无法感知中途变化。解决办法是加版本号/时间戳，JDK 1.5 起的 AtomicStampedReference 同时比较引用与 stamp 才执行更新。 循环时间长开销大：竞争激烈时自旋长期失败，空耗 CPU。JVM 支持时编译器会在自旋中插入 pause 指令，延迟流水线执行并避免内存顺序冲突清空流水线。 只能保证一个共享变量的原子性：对多个变量无能为力。可用 AtomicReference 把多个变量封装进一个对象做整体 CAS，或退回加锁方案。","url":"https://it-interview.is-a.dev/#/question/640"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,19 +70,27 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Python后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Django</span><span class="chip tag">MTV</span><span class="chip tag">ORM</span></div>
-    <div class="card"><h2>题目</h2><p>解释 MTV 各部分职责、一次请求的处理链路，以及 Django ORM 的利弊。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>MTV 分工</strong>：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。</p>
-<p><strong>请求流程</strong>：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。</p>
-<p><strong>ORM 优点</strong>：用 Python 类操作数据库，避免手写 SQL、跨库可移植、自带防注入。</p>
-<p><strong>ORM 缺点</strong>：复杂查询效率低、易产生 N+1 查询；深度优化需写原生 SQL 或用 select_related/prefetch_related 缓解。</p></div>
+    <h1>CAS 的底层实现原理是什么？它存在哪些问题？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">JUC</span><span class="chip tag">CAS</span><span class="chip tag">Unsafe</span><span class="chip tag">ABA</span><span class="chip tag">AtomicInteger</span></div>
+    <div class="card"><h2>题目</h2><p>承接上题：修复方案里的 AtomicInteger 底层就是 CAS。追问 CAS 是什么、Java 如何实现、有哪些坑。考察点：Unsafe 与原子指令；自旋重试；ABA 问题与 AtomicStampedReference；循环开销与单变量限制。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：底层实现</strong></p>
+<ul>
+<li>CAS（Compare-And-Swap）语义为&quot;当且仅当当前值等于预期值时，才把它更新为新值&quot;，是一个原子操作。</li>
+<li>Java 侧由 sun.misc.Unsafe 的 compareAndSwapInt/Object/Long（native 方法）表达 CAS 语义，JVM 把这些调用识别为内部函数（intrinsic），最终映射为目标平台处理器支持的原子指令，具体实现依赖 JVM 与 CPU 架构。</li>
+<li>AtomicInteger 等原子类的 getAndAddInt 就是 do-while 循环不断重试 CAS 直到成功，这就是自旋锁机制。</li>
+</ul>
+<p><strong>要点二：三大问题</strong></p>
+<ul>
+<li>ABA 问题：值从 A 改成 B 又改回 A，CAS 检查时无法感知中途变化。解决办法是加版本号/时间戳，JDK 1.5 起的 AtomicStampedReference 同时比较引用与 stamp 才执行更新。</li>
+<li>循环时间长开销大：竞争激烈时自旋长期失败，空耗 CPU。JVM 支持时编译器会在自旋中插入 pause 指令，延迟流水线执行并避免内存顺序冲突清空流水线。</li>
+<li>只能保证一个共享变量的原子性：对多个变量无能为力。可用 AtomicReference 把多个变量封装进一个对象做整体 CAS，或退回加锁方案。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/640">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=87&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
