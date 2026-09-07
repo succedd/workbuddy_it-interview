@@ -1,0 +1,90 @@
+{
+  "chain": true,
+  "topic": "T018",
+  "questions": [
+    {
+      "title": "【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？",
+      "body": "A. Read View 的 max_trx_id 就是创建时刻活跃事务 id 列表中的最大值\nB. 记录的 trx_id 大于等于 max_trx_id，说明该版本由 Read View 创建之后才启动的事务生成，对当前事务不可见\nC. 记录的 trx_id 介于 min_trx_id 与 max_trx_id 之间时，该版本对当前事务一定可见\nD. m_ids 中必须包含创建 Read View 的事务自身的 id，否则可见性判断会出错\n\n请选出正确答案，并解释其余选项错误的原因。",
+      "answer": "**要点一：正确答案是 B**\n- max_trx_id 是创建 Read View 时\"下一个将要分配给新事务的事务 id\"（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id >= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。\n\n**要点二：错误选项分析**\n- A 错：max_trx_id 是\"下一个待分配的事务 id\"（高水位），不是活跃列表的最大值；min_trx_id 才是 m_ids 中的最小值（低水位）。\n- C 错：trx_id 落在 [min_trx_id, max_trx_id) 区间时还需二分查找 m_ids：在列表中说明该事务创建时仍活跃，版本不可见；不在列表中才可见，并非\"一定可见\"。\n- D 错：m_ids 不包括创建 Read View 的事务自身；trx_id == creator_trx_id 的版本\"自己的修改对自己总是可见\"，由可见性算法的第一条分支直接返回，与 m_ids 是否包含自身无关。\n\n**要点三：完整可见性规则速记**\n- trx_id < min_trx_id：创建前已提交，可见；trx_id >= max_trx_id：创建后才启动，不可见；区间内查 m_ids，在则不可见、不在则可见；等于 creator_trx_id 恒可见。沿 undo log 版本链逐版本判断直到找到可见版本。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "中级",
+      "type": "单选题",
+      "tags": ["MySQL", "事务", "MVCC", "ReadView"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/transaction/mvcc.html"
+    },
+    {
+      "title": "读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？",
+      "body": "追问链第二环：从\"知道隔离级别\"深入到\"Read View 生成时机\"。考察点：RC 每条 select 重新生成 Read View vs RR 整个事务复用首个 Read View；两种开启事务命令的启动时机差异；由此解释不可重复读的有无。",
+      "answer": "**要点一：核心差异——Read View 的生成时机**\n- RC（读提交）：每执行一条 select 语句都会重新生成一个新的 Read View，所以别的事务提交后，本事务的下一次读取就能看到新数据——这正是\"不可重复读\"现象仍然存在的机制根源。\n- RR（可重复读）：启动事务时生成一个 Read View，整个事务期间一直复用它。即使其他事务中途修改并提交，本事务的 Read View 不变，读到的始终与事务启动时一致，从而实现\"可重复读\"。\n\n**要点二：事务的真正启动时机（进阶细节）**\n- 执行 begin/start transaction 命令并不代表事务立即启动，只有在执行第一条 select 语句时才真正启动（此时才生成 Read View）。\n- 执行 start transaction with consistent snapshot 命令则会马上启动事务并生成 Read View。两者时间差内其他事务的提交是否被\"看见\"，取决于用哪种方式开启事务——这是实战中排查\"为什么我 begin 之后还能读到别人提交的数据\"的关键。\n\n**要点三：其他隔离级别的实现对照**\n- 读未提交（RU）：直接读取最新数据，无需 Read View。\n- 串行化：通过读加共享锁、写加排他锁把事务串行化，也不用 MVCC。因此\"隔离性靠 MVCC\"这句话只对 RC 和 RR 成立。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": ["MySQL", "事务", "隔离级别", "ReadView", "MVCC"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/transaction/mvcc.html"
+    },
+    {
+      "title": "【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？",
+      "body": "追问链第三环：幻读。考察点：快照读与当前读的本质区别；RR 靠 MVCC 解决快照读幻读、靠 next-key lock 解决当前读幻读的双轨机制；为什么说 RR 只是\"很大程度避免\"而非\"彻底解决\"幻读。",
+      "answer": "**要点一：普通 select 是快照读，MVCC 保证两次一致**\n- 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次查询\"看不到\"新插入的行，两次结果一致，快照读层面的幻读被 MVCC 解决。\n\n**要点二：select ... for update 是当前读，改走 next-key lock 机制**\n- 锁定读/更新语句（select ... for update、update、delete）是当前读：必须读最新已提交版本，快照无能为力。此时 InnoDB 在 RR 下对扫描范围加 next-key lock（记录锁 + 间隙锁），把记录本身和记录前的间隙都锁住。\n- 事务 B 若想在该间隙内插入新行，插入操作会被阻塞（生成插入意向锁进入等待），直到 A 提交。这样当前读也\"看不到\"幻影行，幻读被锁机制解决。\n\n**要点三：为什么只是\"很大程度避免\"而非\"彻底解决\"**\n- RR 下快照读与当前读是两套机制：若事务内先快照读、后当前读（或先快照读、再 update 别人刚插入的行），两次读取可能交叉出现\"看不见又改得到\"的现象，极端时序下幻读仍可能发生。\n- 工程启示：同一事务内对同一批数据保持一致的读取方式；需要严格防幻读的场景显式用锁定读（for update）并缩小事务范围，而不是盲目升级串行化（性能代价过大）。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": ["MySQL", "事务", "幻读", "快照读", "当前读", "next-key-lock"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/transaction/mvcc.html"
+    },
+    {
+      "title": "InnoDB 的行级锁有哪三种？next-key lock 是如何防止当前读幻读的？间隙锁之间为什么互相兼容？",
+      "body": "追问链第四环：从\"幻读靠锁解决\"深入到锁的具体形态。考察点：Record Lock / Gap Lock / Next-Key Lock 的定义与锁对象差异；间隙锁只防插入不防读的设计意图；间隙锁兼容性反而容易引发死锁的细节。",
+      "answer": "**要点一：三种行级锁**\n- Record Lock（记录锁）：仅锁住一条记录本身，分 S 型与 X 型，遵循 S-S 兼容、S-X/X-X 互斥。\n- Gap Lock（间隙锁）：锁定一个开区间范围但不包含记录本身，只在 RR 与串行化级别下存在，目的是防止其他事务向间隙插入\"幻影记录\"。\n- Next-Key Lock（临键锁）：Record Lock + Gap Lock 的组合，锁住一个左开右闭区间如 (3, 5]，既保护记录本身，又阻止新纪录插入到记录前面的间隙。\n\n**要点二：next-key lock 防当前读幻读的原理**\n- 当前读语句（select ... for update 等）对扫描到的索引范围加 next-key lock 后，其他事务既不能修改范围内已有记录（记录锁互斥），也不能把新行插入到被保护的间隙（插入时发现位置被间隙锁覆盖而阻塞，并生成插入意向锁等待）。\n- 插入被\"卡住\"直到持锁事务提交释放间隙锁，幻影行根本无法出现，当前读因此可重复。\n\n**要点三：间隙锁的兼容性与死锁隐患**\n- 间隙锁之间是兼容的：两个事务可以同时持有包含共同间隙的间隙锁，互不阻塞——因为它的目的是\"防插入\"而非\"互斥读\"，没有 S/X 之分。\n- 但这也埋着死锁隐患：事务 A、B 同时持有同一间隙的间隙锁后，A 尝试向该间隙插入（等 B 释放）、B 尝试向该间隙插入（等 A 释放），互相等待形成死锁。这是高频线上死锁模式之一，缩短事务、降低隔离级别或用 RC（无间隙锁）是常见缓解手段。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": ["MySQL", "行级锁", "间隙锁", "next-key-lock", "插入意向锁"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/lock/mysql_lock.html"
+    },
+    {
+      "title": "【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案",
+      "body": "追问链第五环：从行锁走向表级的元数据锁（MDL）线上事故。考察点：MDL 读/写锁的自动加锁规则与释放时机；\"MDL 写锁等待会阻塞后续所有读\"的队列优先级机制；长事务是元凶；安全执行 DDL 的操作规程。",
+      "answer": "**要点一：根因定位——MDL 写锁被长事务卡住引发连锁阻塞**\n- MDL 不需要显式申请：表上的 CRUD 自动加 MDL 读锁，表结构变更（DDL）自动加 MDL 写锁；MDL 在事务提交后才释放，事务执行期间一直持有。\n- 事故链：某个长事务先执行了 select（持有 MDL 读锁一直不提交）→ ALTER 申请 MDL 写锁被阻塞 → 由于申请 MDL 锁的队列中写锁优先级高于读锁，后续所有该表的 CRUD（申请读锁）都被堵在写锁之后 → 查询堆积、连接池打满、连接数飙升。\"改表卡住 + 全表查询堵死\"的组合是 MDL 事故的典型指纹。\n\n**要点二：处置步骤**\n- 先止血：查 performance_schema.metadata_locks / information_schema.innodb_trx 定位持有 MDL 读锁的长事务会话，kill 掉长事务（或让其尽快提交），ALTER 即可拿到写锁放行；必要时先 kill 掉堆积的查询防连接耗尽。\n- 再观察：确认 DDL 完成后连接数、QPS 恢复正常；复盘该长事务的来源（未提交的手工会话、忘提交的代码事务、监控脚本等）。\n\n**要点三：预防方案**\n- 变更前检查：执行 DDL 前先查 information_schema.innodb_trx 中是否有长事务，有则先处理。\n- 使用 online DDL / gh-ost 等工具：ALTER 时设置 lock=none 或用无锁变更工具，缩短 MDL 写锁持有窗口；仍要在低峰期执行。\n- 代码规范：应用侧禁止开启事务后空等（长事务），设置 innodb 锁等待与事务超时；把\"大表 DDL 前必须检查长事务\"写进变更 checklist。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": ["MySQL", "MDL", "元数据锁", "长事务", "DDL", "线上排查"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/lock/mysql_lock.html"
+    },
+    {
+      "title": "【系统设计题】为账户表设计高并发余额扣减方案：如何在保证不超扣的前提下尽量减小锁的开销？请对比 SELECT ... FOR UPDATE、乐观锁版本号与原子 UPDATE 三种路线并说明锁的具体行为",
+      "body": "追问链第六环：把锁知识落到并发写设计。考察点：当前读加锁的具体范围（等值查询唯一索引的加锁形态）；三种扣减路线的锁开销与适用场景；热点行问题与合并扣减/队列化等优化方向。",
+      "answer": "**要点一：路线对比**\n- SELECT ... FOR UPDATE（悲观锁/当前读）：事务内对目标行加 X 型记录锁（等值查询命中唯一索引时只锁该记录本身），后续 UPDATE 同事务执行，全程持锁到 commit。强一致、逻辑直白，但并发下锁竞争激烈、持有时间越长吞吐越低；注意必须在事务中且 where 条件必须走索引，否则锁范围会扩大甚至升级为对扫描范围的锁，殃及无关行。\n- 乐观锁版本号：update account set balance = balance - ? , version = version + 1 where id = ? and version = ?；不加行锁，靠 affected rows 判断成败，失败重试。读多写少/冲突率低时性能最好，冲突率高时重试风暴反而劣化。\n- 原子 UPDATE：update account set balance = balance - ? where id = ? and balance >= ?；单条语句利用 InnoDB 行锁天然原子完成\"判断+扣减\"，无需先查后改，代码最简，冲突退化为短促的行锁排队，是余额扣减的默认首选。\n\n**要点二：锁开销与热点行优化**\n- 三种路线最终都会落到同一行的行锁上，热点账户（如平台总账）的并发扣减会形成行锁排队，QPS 上限受单行锁吞吐约束。\n- 优化方向：热点行拆分（余额分桶）、把扣减请求在应用层合并后批量提交、用 MQ 把同步扣减削峰为串行消费、Redis 预扣 + 异步落库对账。核心思想都是\"把单行锁的串行瓶颈摊开\"。\n\n**要点三：一致性配套设计**\n- 余额字段用 UNSIGNED 约束兜底防负数；扣减与流水写入同事务保证账实一致；对账任务兜底；乐观锁重试需设上限并监控失败率。\n- 选型建议：一般账户扣减用原子 UPDATE + 条件判断；冲突极低且逻辑复杂的业务用乐观锁；需要先读后写跨多资源协调时才用 FOR UPDATE，且务必控制事务长度。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "高级",
+      "type": "系统设计题",
+      "tags": ["MySQL", "并发扣减", "悲观锁", "乐观锁", "热点行", "系统设计"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/lock/mysql_lock.html"
+    },
+    {
+      "title": "【开放讨论】MySQL 默认隔离级别是可重复读，但不少互联网公司线上反而配置为读提交（RC）。你如何看待这种选型？需要承担哪些代价？",
+      "body": "追问链收口：综合权衡题。考察点：RR 与 RC 的性能与死锁差异（间隙锁有无）；RC 下的幻读/不可重复读风险及其在业务侧的消化方式；binlog 格式约束；给出自己的选型判断标准。",
+      "answer": "**要点一：公司改用 RC 的常见理由**\n- 性能与锁开销：RC 下没有间隙锁/next-key lock（只有记录锁），加锁范围小、并发写冲突少，锁等待和死锁概率显著下降——RR 下\"两个事务同时持有同一间隙的间隙锁再互相插入\"这类死锁模式在 RC 下天然不存在。\n- 语义够用：多数业务通过\"先查再改\"加原子 UPDATE 或分布式锁控制一致性，并不依赖事务内多次快照读严格一致；RC 每条语句新 Read View，读到的是最新已提交数据，反而更贴近很多业务的预期。\n\n**要点二：必须承担的代价**\n- 不可重复读与幻读在 RC 下都会出现：同一事务内两次相同查询结果可能不同，依赖\"事务内多次读一致\"的逻辑（如对账、报表类）必须改造（一次读完成、或显式 for update）。\n- binlog 必须使用 row 格式：RC 与 statement 格式组合会导致主从不一致，而 row 格式会增大 binlog 体积与网络开销（现代版本默认 row，代价已可接受）。\n\n**要点三：我的判断标准（观点题，言之成理即可）**\n- 默认跟官方走 RR 是稳妥的；但当系统以高并发 OLTP 写为主、死锁监控频繁、且业务一致性由显式锁/原子写保证时，切 RC 是成熟公司验证过的方案（如阿里规范即要求 RC）。\n- 决策依据三条线：①业务是否存在依赖事务内可重复读的逻辑；②死锁/锁等待是否已成实际瓶颈；③binlog 格式与下游（从库、数仓订阅）能否配合。三者满足其二才值得切换，并需回归测试覆盖事务边界。",
+      "category": "MySQL",
+      "positions": ["Java后端工程师"],
+      "difficulty": "高级",
+      "type": "开放讨论题",
+      "tags": ["MySQL", "隔离级别", "RC", "RR", "技术选型", "binlog"],
+      "years": 2026,
+      "source": "https://xiaolincoding.com/mysql/transaction/mvcc.html"
+    }
+  ]
+}
