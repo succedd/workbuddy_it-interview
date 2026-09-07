@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库</title>
-  <meta name="description" content="核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数…">
+  <title>【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？ · IT面试题库</title>
+  <meta name="description" content="要点一：stop() 为什么被废弃 Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于&quot;改了一半&quot;的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。 正确思路是&quot;协作式终止&quot;：由目标线程自己在安全检查点检测停止信号并主动退出。 要点二…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库">
-  <meta property="og:description" content="核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数…">
+  <meta property="og:title" content="【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？ · IT面试题库">
+  <meta property="og:description" content="要点一：stop() 为什么被废弃 Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于&quot;改了一半&quot;的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。 正确思路是&quot;协作式终止&quot;：由目标线程自己在安全检查点检测停止信号并主动退出。 要点二…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/638.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库">
-  <meta name="twitter:description" content="核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数…">
+  <meta name="twitter:title" content="【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：stop() 为什么被废弃 Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于&quot;改了一半&quot;的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。 正确思路是&quot;协作式终止&quot;：由目标线程自己在安全检查点检测停止信号并主动退出。 要点二…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/638.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 垃圾回收器 G1 的工作原理与适用场景？","text":"解释 G1 的分区（Region）思路、可预测停顿模型与适用场景。","answerCount":1,"datePublished":"2026-09-06T06:23:26.832Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数 GB 到数十 GB）、对停顿敏感的服务端应用；JDK 9+ 后成为默认收集器。相比 CMS，它避免了内存碎片导致的 Full GC，并发标记用 SATB 算法。","url":"https://it-interview.is-a.dev/#/question/638"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？","text":"追问链起点：从一个最常用的 volatile 实战场景切入。考察点：Thread.stop() 被废弃的原因；volatile 状态标志位的可见性依据（happens-before 传递性）；与 interrupt() 机制的配合与选型。","answerCount":1,"datePublished":"2026-09-07T13:14:26.066Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：stop() 为什么被废弃 Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于\"改了一半\"的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。 正确思路是\"协作式终止\"：由目标线程自己在安全检查点检测停止信号并主动退出。 要点二：volatile 状态标志位方案及其原理 典型写法：private volatile boolean running = true; 工作线程在循环中轮询该标志，发现 false 即退出；外部线程只做一次 volatile 写。 可靠性依据是 JMM 的 happens-before：volatile 写 happens-before 后续的 volatile 读；结合程序顺序规则与传递性，写线程在置 flag 前对普通变量的所有修改，读线程在看到 flag 变化后全部可见——这使标志位不仅能传递\"要停了\"的信号，还能安全发布停止前的状态。 要点三：与 interrupt() 的配合与选型 线程卡在 sleep/wait/IO 等阻塞点时轮询标志位是无效的（收不到信号），此时应使用 interrupt()：阻塞方法会抛出 InterruptedException 或设置中断标志位，线程捕获后在 catch 中收尾退出。 实践选型：纯计算/轮询循环用 volatile 标志；存在阻塞调用的任务用 interrupt 为主、标志位为辅，两者常结合使用。注意 catch InterruptedException 后应恢复中断状态（Thread.currentThread().interrupt()），避免中断信号被吞。","url":"https://it-interview.is-a.dev/#/question/638"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,30 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>JVM 垃圾回收器 G1 的工作原理与适用场景？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">G1</span><span class="chip tag">GC</span></div>
-    <div class="card"><h2>题目</h2><p>解释 G1 的分区（Region）思路、可预测停顿模型与适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心设计</strong>：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。</p>
-<p><strong>可预测停顿</strong>：通过 <code>-XX:MaxGCPauseMillis</code> 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。</p>
-<p><strong>适用场景</strong>：大堆（数 GB 到数十 GB）、对停顿敏感的服务端应用；JDK 9+ 后成为默认收集器。相比 CMS，它避免了内存碎片导致的 Full GC，并发标记用 SATB 算法。</p></div>
+    <h1>【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">JUC</span><span class="chip tag">volatile</span><span class="chip tag">线程生命周期</span><span class="chip tag">interrupt</span><span class="chip tag">happens-before</span></div>
+    <div class="card"><h2>题目</h2><p>追问链起点：从一个最常用的 volatile 实战场景切入。考察点：Thread.stop() 被废弃的原因；volatile 状态标志位的可见性依据（happens-before 传递性）；与 interrupt() 机制的配合与选型。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：stop() 为什么被废弃</strong></p>
+<ul>
+<li>Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于&quot;改了一半&quot;的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。</li>
+<li>正确思路是&quot;协作式终止&quot;：由目标线程自己在安全检查点检测停止信号并主动退出。</li>
+</ul>
+<p><strong>要点二：volatile 状态标志位方案及其原理</strong></p>
+<ul>
+<li>典型写法：private volatile boolean running = true; 工作线程在循环中轮询该标志，发现 false 即退出；外部线程只做一次 volatile 写。</li>
+<li>可靠性依据是 JMM 的 happens-before：volatile 写 happens-before 后续的 volatile 读；结合程序顺序规则与传递性，写线程在置 flag 前对普通变量的所有修改，读线程在看到 flag 变化后全部可见——这使标志位不仅能传递&quot;要停了&quot;的信号，还能安全发布停止前的状态。</li>
+</ul>
+<p><strong>要点三：与 interrupt() 的配合与选型</strong></p>
+<ul>
+<li>线程卡在 sleep/wait/IO 等阻塞点时轮询标志位是无效的（收不到信号），此时应使用 interrupt()：阻塞方法会抛出 InterruptedException 或设置中断标志位，线程捕获后在 catch 中收尾退出。</li>
+<li>实践选型：纯计算/轮询循环用 volatile 标志；存在阻塞调用的任务用 interrupt 为主、标志位为辅，两者常结合使用。注意 catch InterruptedException 后应恢复中断状态（Thread.currentThread().interrupt()），避免中断信号被吞。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/638">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
