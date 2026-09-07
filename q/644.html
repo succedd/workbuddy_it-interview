@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库</title>
-  <meta name="description" content="执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、bo…">
+  <title>【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库</title>
+  <meta name="description" content="要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按&quot;先入队后扩容&quot;的提交流程，队列永远不满 →…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库">
-  <meta property="og:description" content="执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、bo…">
+  <meta property="og:title" content="【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库">
+  <meta property="og:description" content="要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按&quot;先入队后扩容&quot;的提交流程，队列永远不满 →…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/644.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库">
-  <meta name="twitter:description" content="执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、bo…">
+  <meta name="twitter:title" content="【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库">
+  <meta name="twitter:description" content="要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按&quot;先入队后扩容&quot;的提交流程，队列永远不满 →…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/644.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Express 中间件（middleware）的执行顺序与 next() 作用是什么？","text":"说明 Express 中间件的注册顺序、next() 的含义与典型用途。","answerCount":1,"datePublished":"2026-09-06T06:23:27.154Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、body 解析。错误中间件必须 4 个参数才能被识别。","url":"https://it-interview.is-a.dev/#/question/644"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案","text":"追问链收口：综合考察线程池实战。场景：代码里用 Executors.newFixedThreadPool 创建线程池处理异步任务，运行数日后 OutOfMemoryError。考察点：Executors 三大隐患；无界队列与 OOM 的因果链；CPU 密集/IO 密集的参数设定；拒绝策略与监控选型。","answerCount":1,"datePublished":"2026-09-07T13:14:26.791Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按\"先入队后扩容\"的提交流程，队列永远不满 → 非核心线程永远不会创建 → 任务消费速度跟不上生产速度时任务无限堆积。 每个待执行任务连同其闭包引用的对象长期滞留堆中，最终 Old 区打满 OOM；堆转储中大量 WAITING 线程（核心线程在队列 take() 上空等）+ 海量排队任务对象正是这一因果链的证据。同理 newCachedThreadPool 允许创建 Integer.MAX_VALUE 个线程，高并发下会耗尽线程/内存。 要点二：正确姿势——显式 new ThreadPoolExecutor 用七参构造器显式声明有界队列（如 ArrayBlockingQueue(capacity)）与拒绝策略，让\"队列满→扩容→拒绝\"的防御链路真实生效。 参数设定：CPU 密集型任务线程数 ≈ N+1（N 为核数），减少上下文切换；IO 密集型任务 ≈ 2N 或按 N × (1 + 等待时间/计算时间) 估算，再通过压测校准；队列容量按可容忍的延迟与内存预算倒推。 拒绝策略选型：CallerRunsPolicy 提供反压但会拖慢调用方，适合可降速场景；对不能丢的任务应自定义策略——落库/落 MQ 后异步补偿，而不是默默 AbortPolicy 抛异常丢弃。 要点三：预防体系 线程池监控：定期上报 getActiveCount/getQueue().size()/getCompletedTaskCount()，队列持续增长即触发告警，比等 OOM 早发现数小时。 参数动态化：把 corePoolSize/maximumPoolSize 等放到配置中心，支持不重启动态调参；配合 setKeepAliveTime 与 allowCoreThreadTimeOut 应对流量潮汐。 规范层面：生产代码禁止使用 Executors 快捷方法（阿里 Java 开发手册强制规则），统一经线程池工厂创建并打业务化线程名。","url":"https://it-interview.is-a.dev/#/question/644"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,32 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Express 中间件（middleware）的执行顺序与 next() 作用是什么？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Express</span><span class="chip tag">中间件</span><span class="chip tag">Node</span></div>
-    <div class="card"><h2>题目</h2><p>说明 Express 中间件的注册顺序、next() 的含义与典型用途。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>执行顺序</strong>：中间件按 <code>app.use</code> / 路由注册的顺序自上而下形成链条，请求依次经过。</p>
-<p><strong>next() 含义</strong>：调用 <code>next()</code> 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。</p>
-<p><strong>典型用途</strong>：日志、身份认证、错误处理（错误优先中间件 <code>(err,req,res,next)</code>）、统一 CORS/限流、body 解析。错误中间件必须 4 个参数才能被识别。</p></div>
+    <h1>【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">JUC</span><span class="chip tag">线程池</span><span class="chip tag">OOM</span><span class="chip tag">Executors</span><span class="chip tag">调优</span><span class="chip tag">线上排查</span></div>
+    <div class="card"><h2>题目</h2><p>追问链收口：综合考察线程池实战。场景：代码里用 Executors.newFixedThreadPool 创建线程池处理异步任务，运行数日后 OutOfMemoryError。考察点：Executors 三大隐患；无界队列与 OOM 的因果链；CPU 密集/IO 密集的参数设定；拒绝策略与监控选型。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：根因定位——Executors.newFixedThreadPool 的无界队列</strong></p>
+<ul>
+<li>newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按&quot;先入队后扩容&quot;的提交流程，队列永远不满 → 非核心线程永远不会创建 → 任务消费速度跟不上生产速度时任务无限堆积。</li>
+<li>每个待执行任务连同其闭包引用的对象长期滞留堆中，最终 Old 区打满 OOM；堆转储中大量 WAITING 线程（核心线程在队列 take() 上空等）+ 海量排队任务对象正是这一因果链的证据。同理 newCachedThreadPool 允许创建 Integer.MAX_VALUE 个线程，高并发下会耗尽线程/内存。</li>
+</ul>
+<p><strong>要点二：正确姿势——显式 new ThreadPoolExecutor</strong></p>
+<ul>
+<li>用七参构造器显式声明有界队列（如 ArrayBlockingQueue(capacity)）与拒绝策略，让&quot;队列满→扩容→拒绝&quot;的防御链路真实生效。</li>
+<li>参数设定：CPU 密集型任务线程数 ≈ N+1（N 为核数），减少上下文切换；IO 密集型任务 ≈ 2N 或按 N × (1 + 等待时间/计算时间) 估算，再通过压测校准；队列容量按可容忍的延迟与内存预算倒推。</li>
+<li>拒绝策略选型：CallerRunsPolicy 提供反压但会拖慢调用方，适合可降速场景；对不能丢的任务应自定义策略——落库/落 MQ 后异步补偿，而不是默默 AbortPolicy 抛异常丢弃。</li>
+</ul>
+<p><strong>要点三：预防体系</strong></p>
+<ul>
+<li>线程池监控：定期上报 getActiveCount/getQueue().size()/getCompletedTaskCount()，队列持续增长即触发告警，比等 OOM 早发现数小时。</li>
+<li>参数动态化：把 corePoolSize/maximumPoolSize 等放到配置中心，支持不重启动态调参；配合 setKeepAliveTime 与 allowCoreThreadTimeOut 应对流量潮汐。</li>
+<li>规范层面：生产代码禁止使用 Executors 快捷方法（阿里 Java 开发手册强制规则），统一经线程池工厂创建并打业务化线程名。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/644">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=91&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
