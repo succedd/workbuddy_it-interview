@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？ · IT面试题库</title>
-  <meta name="description" content="模型本质：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。 循环阶段：timers（setTimeout）→ pending callbacks → idle/prepare → poll（取 I/O…">
+  <title>ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库</title>
+  <meta name="description" content="要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？ · IT面试题库">
-  <meta property="og:description" content="模型本质：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。 循环阶段：timers（setTimeout）→ pending callbacks → idle/prepare → poll（取 I/O…">
+  <meta property="og:title" content="ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库">
+  <meta property="og:description" content="要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/643.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？ · IT面试题库">
-  <meta name="twitter:description" content="模型本质：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。 循环阶段：timers（setTimeout）→ pending callbacks → idle/prepare → poll（取 I/O…">
+  <meta name="twitter:title" content="ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/643.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？","text":"解释事件循环的阶段划分与非阻塞 I/O 模型。","answerCount":1,"datePublished":"2026-09-06T06:23:27.087Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"模型本质：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。 循环阶段：timers（setTimeout）→ pending callbacks → idle/prepare → poll（取 I/O 事件）→ check（setImmediate）→ close。每阶段有专属 FIFO 队列。 优势：用少量线程处理海量并发连接，特别适合聊天、网关、API 聚合等 I/O 密集场景；CPU 密集任务会阻塞循环，应交给 Worker 线程或子进程。","url":"https://it-interview.is-a.dev/#/question/643"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？","text":"追问链过渡到线程池：日常开发最常碰的并发组件。考察点：corePoolSize/maximumPoolSize/workQueue/keepAliveTime/unit/threadFactory/handler 七参数含义；\"核心线程→入队→扩容到最大线程→拒绝\"的提交顺序。","answerCount":1,"datePublished":"2026-09-07T13:14:26.622Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue），存放等待执行的任务。 keepAliveTime + unit：线程数大于核心数时，多余空闲线程的存活时长，超时后被回收。 threadFactory：创建新线程的工厂，建议自定义线程名便于排查问题。 handler：拒绝策略，任务过多无法处理时触发。 要点二：任务提交流程（顺序不能背错） 1) 运行线程数 \u003c corePoolSize：直接新建核心线程执行任务（即使其他核心线程空闲）。 2) 达到核心线程数：尝试把任务放入 workQueue 排队。 3) 队列已满：继续创建非核心线程执行，直到线程数达到 maximumPoolSize。 4) 线程数已到最大且队列满：执行拒绝策略（如 CallerRunsPolicy 由提交线程自己执行，形成天然的反压降速）。 要点三：常见误区 顺序是\"先入队、后扩容\"，不是\"先扩满线程再排队\"——这也是无界队列会吞噬 maximumPoolSize 的根因（队列永远不满，非核心线程永远不会被创建）。","url":"https://it-interview.is-a.dev/#/question/643"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,35 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Node.js</span><span class="chip tag">事件循环</span><span class="chip tag">非阻塞IO</span></div>
-    <div class="card"><h2>题目</h2><p>解释事件循环的阶段划分与非阻塞 I/O 模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>模型本质</strong>：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。</p>
-<p><strong>循环阶段</strong>：timers（setTimeout）→ pending callbacks → idle/prepare → poll（取 I/O 事件）→ check（setImmediate）→ close。每阶段有专属 FIFO 队列。</p>
-<p><strong>优势</strong>：用少量线程处理海量并发连接，特别适合聊天、网关、API 聚合等 I/O 密集场景；CPU 密集任务会阻塞循环，应交给 Worker 线程或子进程。</p></div>
+    <h1>ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">JUC</span><span class="chip tag">线程池</span><span class="chip tag">ThreadPoolExecutor</span><span class="chip tag">拒绝策略</span></div>
+    <div class="card"><h2>题目</h2><p>追问链过渡到线程池：日常开发最常碰的并发组件。考察点：corePoolSize/maximumPoolSize/workQueue/keepAliveTime/unit/threadFactory/handler 七参数含义；&quot;核心线程→入队→扩容到最大线程→拒绝&quot;的提交顺序。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：七个构造参数</strong></p>
+<ul>
+<li>corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。</li>
+<li>maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。</li>
+<li>workQueue：阻塞任务队列（如 ArrayBlockingQueue），存放等待执行的任务。</li>
+<li>keepAliveTime + unit：线程数大于核心数时，多余空闲线程的存活时长，超时后被回收。</li>
+<li>threadFactory：创建新线程的工厂，建议自定义线程名便于排查问题。</li>
+<li>handler：拒绝策略，任务过多无法处理时触发。</li>
+</ul>
+<p><strong>要点二：任务提交流程（顺序不能背错）</strong></p>
+<ul>
+<li>1) 运行线程数 &lt; corePoolSize：直接新建核心线程执行任务（即使其他核心线程空闲）。</li>
+<li>2) 达到核心线程数：尝试把任务放入 workQueue 排队。</li>
+<li>3) 队列已满：继续创建非核心线程执行，直到线程数达到 maximumPoolSize。</li>
+<li>4) 线程数已到最大且队列满：执行拒绝策略（如 CallerRunsPolicy 由提交线程自己执行，形成天然的反压降速）。</li>
+</ul>
+<p><strong>要点三：常见误区</strong></p>
+<ul>
+<li>顺序是&quot;先入队、后扩容&quot;，不是&quot;先扩满线程再排队&quot;——这也是无界队列会吞噬 maximumPoolSize 的根因（队列永远不满，非核心线程永远不会被创建）。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/643">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=90&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
