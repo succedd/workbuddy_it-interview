@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？ · IT面试题库</title>
-  <meta name="description" content="量化：把 FP32 权重/激活降为 INT8/FP16，减小体积、加快计算，略有精度损失。 剪枝：删掉不重要的连接/通道，降低参数量与计算量（结构化剪枝更利于硬件加速）。 ONNX：把 PyTorch/TF 模型导出为统一中间表示，跨框架部署并用 ONNX Runtime 加速。 批处理与算子融合：合并请求提升 …">
+  <title>CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？ · IT面试题库</title>
+  <meta name="description" content="要点一：CMS（Concurrent Mark Sweep）——追求低停顿 目标：获取最短回收停顿时间，适合重视响应速度的互联网应用。 工作流程四步： 1. 初始标记：只标记 GC Roots 能直接关联到的对象，需要 STW，但极快。 2. 并发标记：从初始标记对象出发遍历整个对象图，与用户线程并发，耗时最长但…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？ · IT面试题库">
-  <meta property="og:description" content="量化：把 FP32 权重/激活降为 INT8/FP16，减小体积、加快计算，略有精度损失。 剪枝：删掉不重要的连接/通道，降低参数量与计算量（结构化剪枝更利于硬件加速）。 ONNX：把 PyTorch/TF 模型导出为统一中间表示，跨框架部署并用 ONNX Runtime 加速。 批处理与算子融合：合并请求提升 …">
+  <meta property="og:title" content="CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？ · IT面试题库">
+  <meta property="og:description" content="要点一：CMS（Concurrent Mark Sweep）——追求低停顿 目标：获取最短回收停顿时间，适合重视响应速度的互联网应用。 工作流程四步： 1. 初始标记：只标记 GC Roots 能直接关联到的对象，需要 STW，但极快。 2. 并发标记：从初始标记对象出发遍历整个对象图，与用户线程并发，耗时最长但…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/666.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？ · IT面试题库">
-  <meta name="twitter:description" content="量化：把 FP32 权重/激活降为 INT8/FP16，减小体积、加快计算，略有精度损失。 剪枝：删掉不重要的连接/通道，降低参数量与计算量（结构化剪枝更利于硬件加速）。 ONNX：把 PyTorch/TF 模型导出为统一中间表示，跨框架部署并用 ONNX Runtime 加速。 批处理与算子融合：合并请求提升 …">
+  <meta name="twitter:title" content="CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：CMS（Concurrent Mark Sweep）——追求低停顿 目标：获取最短回收停顿时间，适合重视响应速度的互联网应用。 工作流程四步： 1. 初始标记：只标记 GC Roots 能直接关联到的对象，需要 STW，但极快。 2. 并发标记：从初始标记对象出发遍历整个对象图，与用户线程并发，耗时最长但…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/666.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？","text":"列举并解释主流的模型压缩与加速技术。","answerCount":1,"datePublished":"2026-09-06T06:26:13.318Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"量化：把 FP32 权重/激活降为 INT8/FP16，减小体积、加快计算，略有精度损失。 剪枝：删掉不重要的连接/通道，降低参数量与计算量（结构化剪枝更利于硬件加速）。 ONNX：把 PyTorch/TF 模型导出为统一中间表示，跨框架部署并用 ONNX Runtime 加速。 批处理与算子融合：合并请求提升 GPU 利用率，融合相邻算子减少访存。配合 TensorRT 等推理引擎可数倍提速。","url":"https://it-interview.is-a.dev/#/question/666"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？","text":"追问链第四问。考察点：CMS 的四步与「低停顿但碎片化」的取舍；G1 的 Region 化与可预测停顿模型；两者的共同点与 G1 的替代关系。","answerCount":1,"datePublished":"2026-09-08T13:40:51.827Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：CMS（Concurrent Mark Sweep）——追求低停顿 目标：获取最短回收停顿时间，适合重视响应速度的互联网应用。 工作流程四步： 1. 初始标记：只标记 GC Roots 能直接关联到的对象，需要 STW，但极快。 2. 并发标记：从初始标记对象出发遍历整个对象图，与用户线程并发，耗时最长但不阻塞业务。 3. 重新标记：修正并发标记期间因用户线程继续运行而产生的变动，需要 STW，时间略长于初始标记。 4. 并发清除：清理死亡对象，与用户线程并发。 主要缺点： 标记-清除算法产生内存碎片，碎片过多会触发 Full GC 且退化为 Serial 单线程收集； 并发阶段占用 CPU 资源，降低吞吐量； 无法处理「浮动垃圾」，并发期间还需预留空间，若预留不足会出现 Concurrent Mode Failure。 要点二：G1（Garbage First）——可预测停顿模型 目标：在延迟可控的前提下获得尽可能高的吞吐量，是 JDK 9 起的默认收集器。 核心设计： 把整堆划分为多个大小相等的 Region（1MB~32MB，2 的幂），每个 Region 可动态扮演 Eden / Survivor / Old / Humongous 角色，不再要求内存物理连续。 维护每个 Region 的回收价值（能回收多少空间 + 预计耗时），按 -XX:MaxGCPauseMillis（默认 200ms）选择收益最高的若干个 Region 回收，即 Garbage First 名字的由来。 整体看是标记-整理，局部（Region 之间）看是标记-复制，因此基本不产生内存碎片。 用 Remembered Set 记录跨 Region 引用，避免全堆扫描。 工作流程：初始标记（STW）→ 并发标记 → 最终标记（STW）→ 筛选回收（Evacuation，STW，按价值排序回收选定 Region）。 要点三：适用场景对比 CMS：堆较小（如 4GB 以内）、要求极低停顿、CPU 资源充足；适合老年代对象生命周期长、回收不频繁的场景。JDK 9 起已被标记废弃，JDK 14 中被移除。 G1：堆较大（6GB 以上）、希望停顿时间可预测、同时兼顾吞吐；大堆下优势明显，是目前服务端主流选择。 更低延迟场景（要求亚毫秒级）可了解 ZGC / Shenandoah，它们通过染色指针与读屏障把停顿控制到与堆大小几乎无关。 要点四：二者共同点 都存在并发标记阶段（与用户线程一起跑）； 初始/重新（最终）标记阶段都需要 STW； 都属于「低延迟」取向的收集器，与「高吞吐」取向的 Parallel Scavenge / Parallel Old 形成对比。","url":"https://it-interview.is-a.dev/#/question/666"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,19 +70,54 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">模型部署工程师</span><span class="chip">MLOps工程师</span><span class="chip">深度学习工程师</span><span class="chip tag">模型量化</span><span class="chip tag">剪枝</span><span class="chip tag">ONNX</span><span class="chip tag">推理优化</span></div>
-    <div class="card"><h2>题目</h2><p>列举并解释主流的模型压缩与加速技术。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>量化</strong>：把 FP32 权重/激活降为 INT8/FP16，减小体积、加快计算，略有精度损失。</p>
-<p><strong>剪枝</strong>：删掉不重要的连接/通道，降低参数量与计算量（结构化剪枝更利于硬件加速）。</p>
-<p><strong>ONNX</strong>：把 PyTorch/TF 模型导出为统一中间表示，跨框架部署并用 ONNX Runtime 加速。</p>
-<p><strong>批处理与算子融合</strong>：合并请求提升 GPU 利用率，融合相邻算子减少访存。配合 TensorRT 等推理引擎可数倍提速。</p></div>
+    <h1>CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">JVM</span><span class="chip tag">CMS</span><span class="chip tag">G1</span><span class="chip tag">垃圾收集器</span></div>
+    <div class="card"><h2>题目</h2><p>追问链第四问。考察点：CMS 的四步与「低停顿但碎片化」的取舍；G1 的 Region 化与可预测停顿模型；两者的共同点与 G1 的替代关系。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：CMS（Concurrent Mark Sweep）——追求低停顿</strong></p>
+<ul>
+<li>目标：<strong>获取最短回收停顿时间</strong>，适合重视响应速度的互联网应用。</li>
+<li>工作流程四步：</li>
+</ul>
+<p>  1. <strong>初始标记</strong>：只标记 GC Roots 能直接关联到的对象，<strong>需要 STW</strong>，但极快。</p>
+<p>  2. <strong>并发标记</strong>：从初始标记对象出发遍历整个对象图，<strong>与用户线程并发</strong>，耗时最长但不阻塞业务。</p>
+<p>  3. <strong>重新标记</strong>：修正并发标记期间因用户线程继续运行而产生的变动，<strong>需要 STW</strong>，时间略长于初始标记。</p>
+<p>  4. <strong>并发清除</strong>：清理死亡对象，<strong>与用户线程并发</strong>。</p>
+<ul>
+<li>主要缺点：</li>
+</ul>
+<p>  - <strong>标记-清除算法</strong>产生<strong>内存碎片</strong>，碎片过多会触发 Full GC 且退化为 Serial 单线程收集；</p>
+<p>  - 并发阶段占用 CPU 资源，<strong>降低吞吐量</strong>；</p>
+<p>  - 无法处理「浮动垃圾」，并发期间还需预留空间，若预留不足会出现 <strong>Concurrent Mode Failure</strong>。</p>
+<p><strong>要点二：G1（Garbage First）——可预测停顿模型</strong></p>
+<ul>
+<li>目标：在延迟可控的前提下获得尽可能高的吞吐量，是 JDK 9 起的<strong>默认收集器</strong>。</li>
+<li>核心设计：</li>
+</ul>
+<p>  - 把整堆划分为多个大小相等的 <strong>Region</strong>（1MB~32MB，2 的幂），每个 Region 可动态扮演 Eden / Survivor / Old / Humongous 角色，<strong>不再要求内存物理连续</strong>。</p>
+<p>  - 维护每个 Region 的<strong>回收价值</strong>（能回收多少空间 + 预计耗时），按 <code>-XX:MaxGCPauseMillis</code>（默认 200ms）选择<strong>收益最高的若干个 Region</strong> 回收，即 Garbage First 名字的由来。</p>
+<p>  - 整体看是<strong>标记-整理</strong>，局部（Region 之间）看是<strong>标记-复制</strong>，因此<strong>基本不产生内存碎片</strong>。</p>
+<p>  - 用 <strong>Remembered Set</strong> 记录跨 Region 引用，避免全堆扫描。</p>
+<ul>
+<li>工作流程：初始标记（STW）→ 并发标记 → 最终标记（STW）→ 筛选回收（Evacuation，STW，按价值排序回收选定 Region）。</li>
+</ul>
+<p><strong>要点三：适用场景对比</strong></p>
+<ul>
+<li><strong>CMS</strong>：堆较小（如 4GB 以内）、要求极低停顿、CPU 资源充足；适合老年代对象生命周期长、回收不频繁的场景。JDK 9 起已被标记废弃，<strong>JDK 14 中被移除</strong>。</li>
+<li><strong>G1</strong>：堆较大（6GB 以上）、希望<strong>停顿时间可预测</strong>、同时兼顾吞吐；大堆下优势明显，是目前服务端主流选择。</li>
+<li>更低延迟场景（要求亚毫秒级）可了解 ZGC / Shenandoah，它们通过染色指针与读屏障把停顿控制到与堆大小几乎无关。</li>
+</ul>
+<p><strong>要点四：二者共同点</strong></p>
+<ul>
+<li>都存在并发标记阶段（与用户线程一起跑）；</li>
+<li>初始/重新（最终）标记阶段都需要 STW；</li>
+<li>都属于「低延迟」取向的收集器，与「高吞吐」取向的 Parallel Scavenge / Parallel Old 形成对比。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/666">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

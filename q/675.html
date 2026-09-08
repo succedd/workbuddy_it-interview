@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jetpack Compose 的声明式 UI 与重组（recomposition）是什么？ · IT面试题库</title>
-  <meta name="description" content="声明式 UI：用 @Composable 函数描述界面，状态变化后框架自动重组（recompose）受影响的部分，而非手动 findViewById 改属性。 重组：当 State 变化时，Compose 只重新执行读取了该 State 的可组合函数，跳过未变部分以提升性能。 要点：Composable 应无副作…">
+  <title>为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？ · IT面试题库</title>
+  <meta name="description" content="要点一：InnoDB 是索引组织表（聚簇索引） InnoDB 的数据按主键顺序存储在聚簇索引的 B+ 树叶子节点上。主键值决定了行的物理排列顺序。 因此主键的插入顺序直接决定了 B+ 树是「顺序追加」还是「随机插入」。 要点二：自增 ID 的优势 顺序写入，无页分裂：新行的主键总是比已有的都大，直接追加到 B+ …">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Jetpack Compose 的声明式 UI 与重组（recomposition）是什么？ · IT面试题库">
-  <meta property="og:description" content="声明式 UI：用 @Composable 函数描述界面，状态变化后框架自动重组（recompose）受影响的部分，而非手动 findViewById 改属性。 重组：当 State 变化时，Compose 只重新执行读取了该 State 的可组合函数，跳过未变部分以提升性能。 要点：Composable 应无副作…">
+  <meta property="og:title" content="为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？ · IT面试题库">
+  <meta property="og:description" content="要点一：InnoDB 是索引组织表（聚簇索引） InnoDB 的数据按主键顺序存储在聚簇索引的 B+ 树叶子节点上。主键值决定了行的物理排列顺序。 因此主键的插入顺序直接决定了 B+ 树是「顺序追加」还是「随机插入」。 要点二：自增 ID 的优势 顺序写入，无页分裂：新行的主键总是比已有的都大，直接追加到 B+ …">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/675.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Jetpack Compose 的声明式 UI 与重组（recomposition）是什么？ · IT面试题库">
-  <meta name="twitter:description" content="声明式 UI：用 @Composable 函数描述界面，状态变化后框架自动重组（recompose）受影响的部分，而非手动 findViewById 改属性。 重组：当 State 变化时，Compose 只重新执行读取了该 State 的可组合函数，跳过未变部分以提升性能。 要点：Composable 应无副作…">
+  <meta name="twitter:title" content="为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：InnoDB 是索引组织表（聚簇索引） InnoDB 的数据按主键顺序存储在聚簇索引的 B+ 树叶子节点上。主键值决定了行的物理排列顺序。 因此主键的插入顺序直接决定了 B+ 树是「顺序追加」还是「随机插入」。 要点二：自增 ID 的优势 顺序写入，无页分裂：新行的主键总是比已有的都大，直接追加到 B+ …">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/675.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jetpack Compose 的声明式 UI 与重组（recomposition）是什么？","text":"说明 Compose 的声明式思路与重组机制要点。","answerCount":1,"datePublished":"2026-09-06T06:28:26.974Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"声明式 UI：用 @Composable 函数描述界面，状态变化后框架自动重组（recompose）受影响的部分，而非手动 findViewById 改属性。 重组：当 State 变化时，Compose 只重新执行读取了该 State 的可组合函数，跳过未变部分以提升性能。 要点：Composable 应无副作用、幂等；副作用用 LaunchedEffect/DisposableEffect 等效应 API 管理；与传统 XML+View 相比开发与维护成本更低。","url":"https://it-interview.is-a.dev/#/question/675"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？","text":"追问链第二问。考察点：聚簇索引按主键顺序存储；UUID 无序导致页分裂与碎片；二级索引叶子节点存主键值，主键越长索引越占空间；自增 ID 的局限与替代方案。","answerCount":1,"datePublished":"2026-09-08T13:41:08.367Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：InnoDB 是索引组织表（聚簇索引） InnoDB 的数据按主键顺序存储在聚簇索引的 B+ 树叶子节点上。主键值决定了行的物理排列顺序。 因此主键的插入顺序直接决定了 B+ 树是「顺序追加」还是「随机插入」。 要点二：自增 ID 的优势 顺序写入，无页分裂：新行的主键总是比已有的都大，直接追加到 B+ 树最右边的页；页写满就新开一页，不会产生页分裂、不移动已有数据、不产生碎片。 写入速度快：顺序 I/O，且能充分利用 Buffer Pool 的预读与缓存（热点集中在最新的几页）。 占用空间小：BIGINT 只有 8 字节；而 UUID 是 36 字节字符串（或用 BINARY(16) 也需 16 字节）。 要点三：UUID 作为主键的三大问题 随机写入导致页分裂：UUID 无序，新行可能被插入到 B+ 树的中间位置。目标页已满时触发页分裂——把一页拆成两页并移动数据，产生大量随机 I/O 与内存碎片，写入吞吐显著下降，表也会膨胀。 二级索引被撑大：InnoDB 的二级索引叶子节点存的是主键值。主键从 8 字节变成 36 字节，每一条二级索引记录都要跟着变大，所有索引的体积成倍增长，缓存命中率下降。 缓存局部性差：随机主键让热数据分散在大量页面里，Buffer Pool 命中率降低。 要点四：自增 ID 的局限 不安全：ID 连续递增，容易暴露业务量（爬一遍就知道订单总数），且可被遍历。 分布式场景不友好：分库分表下多库各自自增会冲突，需要额外设置步长（如 auto_increment_increment）或引入发号器。 无法提前生成：必须先落库才能拿到 ID，某些需要「先生成 ID 再落库」的场景受限。 要点五：折中方案 对内部分库分表：用雪花算法（Snowflake）等趋势递增的分布式 ID——高位是时间戳，整体递增，避免了 UUID 的随机写入问题，同时保证全局唯一。 对对外暴露的字段：额外加一个 UUID / 短码字段做业务标识，主键仍用自增或 Snowflake，兼顾性能与安全。 如果必须用 UUID：使用 MySQL 8.0 的 UUID_TO_BIN(uuid(), 1)（第 2 个参数为 1 会交换时间低位到高位，使其趋势递增）并存入 BINARY(16)，可大幅缓解随机写入问题。","url":"https://it-interview.is-a.dev/#/question/675"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,44 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Jetpack Compose 的声明式 UI 与重组（recomposition）是什么？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Compose</span><span class="chip tag">声明式</span><span class="chip tag">重组</span></div>
-    <div class="card"><h2>题目</h2><p>说明 Compose 的声明式思路与重组机制要点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>声明式 UI</strong>：用 <code>@Composable</code> 函数描述界面，状态变化后框架自动重组（recompose）受影响的部分，而非手动 findViewById 改属性。</p>
-<p><strong>重组</strong>：当 State 变化时，Compose 只重新执行读取了该 State 的可组合函数，跳过未变部分以提升性能。</p>
-<p><strong>要点</strong>：Composable 应无副作用、幂等；副作用用 <code>LaunchedEffect</code>/<code>DisposableEffect</code> 等效应 API 管理；与传统 XML+View 相比开发与维护成本更低。</p></div>
+    <h1>为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">MySQL</span><span class="chip tag">主键</span><span class="chip tag">自增ID</span><span class="chip tag">UUID</span><span class="chip tag">聚簇索引</span></div>
+    <div class="card"><h2>题目</h2><p>追问链第二问。考察点：聚簇索引按主键顺序存储；UUID 无序导致页分裂与碎片；二级索引叶子节点存主键值，主键越长索引越占空间；自增 ID 的局限与替代方案。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：InnoDB 是索引组织表（聚簇索引）</strong></p>
+<ul>
+<li>InnoDB 的数据<strong>按主键顺序</strong>存储在聚簇索引的 B+ 树叶子节点上。主键值决定了行的物理排列顺序。</li>
+<li>因此主键的<strong>插入顺序</strong>直接决定了 B+ 树是「顺序追加」还是「随机插入」。</li>
+</ul>
+<p><strong>要点二：自增 ID 的优势</strong></p>
+<ul>
+<li><strong>顺序写入，无页分裂</strong>：新行的主键总是比已有的都大，直接追加到 B+ 树最右边的页；页写满就新开一页，<strong>不会产生页分裂、不移动已有数据、不产生碎片</strong>。</li>
+<li><strong>写入速度快</strong>：顺序 I/O，且能充分利用 Buffer Pool 的预读与缓存（热点集中在最新的几页）。</li>
+<li><strong>占用空间小</strong>：<code>BIGINT</code> 只有 8 字节；而 UUID 是 36 字节字符串（或用 BINARY(16) 也需 16 字节）。</li>
+</ul>
+<p><strong>要点三：UUID 作为主键的三大问题</strong></p>
+<ul>
+<li><strong>随机写入导致页分裂</strong>：UUID 无序，新行可能被插入到 B+ 树的中间位置。目标页已满时触发<strong>页分裂</strong>——把一页拆成两页并移动数据，产生大量<strong>随机 I/O</strong> 与<strong>内存碎片</strong>，写入吞吐显著下降，表也会膨胀。</li>
+<li><strong>二级索引被撑大</strong>：InnoDB 的<strong>二级索引叶子节点存的是主键值</strong>。主键从 8 字节变成 36 字节，<strong>每一条二级索引记录都要跟着变大</strong>，所有索引的体积成倍增长，缓存命中率下降。</li>
+<li><strong>缓存局部性差</strong>：随机主键让热数据分散在大量页面里，Buffer Pool 命中率降低。</li>
+</ul>
+<p><strong>要点四：自增 ID 的局限</strong></p>
+<ul>
+<li><strong>不安全</strong>：ID 连续递增，容易暴露业务量（爬一遍就知道订单总数），且可被遍历。</li>
+<li><strong>分布式场景不友好</strong>：分库分表下多库各自自增会冲突，需要额外设置步长（如 <code>auto_increment_increment</code>）或引入发号器。</li>
+<li><strong>无法提前生成</strong>：必须先落库才能拿到 ID，某些需要「先生成 ID 再落库」的场景受限。</li>
+</ul>
+<p><strong>要点五：折中方案</strong></p>
+<ul>
+<li>对<strong>内部分库分表</strong>：用<strong>雪花算法（Snowflake）</strong>等<strong>趋势递增</strong>的分布式 ID——高位是时间戳，整体递增，避免了 UUID 的随机写入问题，同时保证全局唯一。</li>
+<li>对<strong>对外暴露</strong>的字段：额外加一个 UUID / 短码字段做业务标识，主键仍用自增或 Snowflake，兼顾性能与安全。</li>
+<li>如果必须用 UUID：使用 <strong>MySQL 8.0 的 <code>UUID_TO_BIN(uuid(), 1)</code></strong>（第 2 个参数为 1 会交换时间低位到高位，使其趋势递增）并存入 <code>BINARY(16)</code>，可大幅缓解随机写入问题。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/675">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=227&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=41&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

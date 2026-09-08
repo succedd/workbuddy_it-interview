@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库</title>
-  <meta name="description" content="静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.fun…">
+  <title>JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？ · IT面试题库</title>
+  <meta name="description" content="要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库">
-  <meta property="og:description" content="静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.fun…">
+  <meta property="og:title" content="JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？ · IT面试题库">
+  <meta property="og:description" content="要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/660.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库">
-  <meta name="twitter:description" content="静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.fun…">
+  <meta name="twitter:title" content="JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/660.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？","text":"对比两种执行模式的特点与适用场景。","answerCount":1,"datePublished":"2026-09-06T06:26:12.498Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.function 把函数编译成图以获得性能与可部署性。 实际工程：用 Eager 开发调试，用 tf.function/ SavedModel 做生产化。","url":"https://it-interview.is-a.dev/#/question/660"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","text":"追问链第三问。考察点：程序计数器/虚拟机栈/本地方法栈/堆/方法区的划分；线程私有与共享的边界；直接内存不算规范定义的运行时数据区；各区域会抛什么错误。","answerCount":1,"datePublished":"2026-09-08T13:40:44.056Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有的三个区域 程序计数器：当前线程所执行字节码的行号指示器，用于分支、循环、跳转、异常处理和线程切换后恢复执行位置。执行 native 方法时值为 Undefined。它是唯一一个在规范中没有规定任何 OutOfMemoryError 的区域。 Java 虚拟机栈：由栈帧组成，每次方法调用压入一个栈帧，方法结束（正常 return 或抛异常）弹出。栈帧内含局部变量表、操作数栈、动态链接、方法返回地址。 本地方法栈：为 native 方法服务，HotSpot 中已与虚拟机栈合二为一。 要点三：线程共享的两个区域 堆：几乎所有对象实例与数组都在这里分配（JIT 逃逸分析成熟后出现了栈上分配与标量替换的例外）。堆是垃圾收集器管理的主要区域，可进一步划分为新生代（Eden + Survivor0/1）与老年代。 方法区：存储已被加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。JDK 7 及以前用永久代实现，JDK 8 起改用本地内存实现的元空间。 要点四：各区域会抛的错误 程序计数器：规范中没有 OOM。 虚拟机栈/本地方法栈：栈深度超限抛 StackOverflowError（典型是无限递归）；栈可动态扩展但申请不到内存时抛 OutOfMemoryError。 堆：无法分配实例且堆无法再扩展时抛 OutOfMemoryError: Java heap space。 方法区：JDK8 后元空间默认使用本地内存，溢出信息为 OutOfMemoryError: Metaspace。 直接内存：受 -XX:MaxDirectMemorySize 与物理内存限制，溢出时 Heap Dump 文件往往很小而看不出异常。","url":"https://it-interview.is-a.dev/#/question/660"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,40 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">TensorFlow</span><span class="chip tag">Eager</span><span class="chip tag">计算图</span></div>
-    <div class="card"><h2>题目</h2><p>对比两种执行模式的特点与适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>静态图（Graph）</strong>：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。</p>
-<p><strong>Eager Execution</strong>：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 <code>@tf.function</code> 把函数编译成图以获得性能与可部署性。</p>
-<p>实际工程：用 Eager 开发调试，用 tf.function/ SavedModel 做生产化。</p></div>
+    <h1>JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">JVM</span><span class="chip tag">运行时数据区</span><span class="chip tag">内存模型</span></div>
+    <div class="card"><h2>题目</h2><p>追问链第三问。考察点：程序计数器/虚拟机栈/本地方法栈/堆/方法区的划分；线程私有与共享的边界；直接内存不算规范定义的运行时数据区；各区域会抛什么错误。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：整体划分</strong></p>
+<ul>
+<li><strong>线程私有</strong>（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。</li>
+<li><strong>线程共享</strong>（所有线程共用，是 GC 的主战场）：堆、方法区。</li>
+<li><strong>直接内存</strong>（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。</li>
+</ul>
+<p><strong>要点二：线程私有的三个区域</strong></p>
+<ul>
+<li><strong>程序计数器</strong>：当前线程所执行字节码的<strong>行号指示器</strong>，用于分支、循环、跳转、异常处理和线程切换后恢复执行位置。执行 native 方法时值为 Undefined。它是<strong>唯一一个在规范中没有规定任何 OutOfMemoryError 的区域</strong>。</li>
+<li><strong>Java 虚拟机栈</strong>：由<strong>栈帧</strong>组成，每次方法调用压入一个栈帧，方法结束（正常 return 或抛异常）弹出。栈帧内含局部变量表、操作数栈、动态链接、方法返回地址。</li>
+<li><strong>本地方法栈</strong>：为 native 方法服务，HotSpot 中已与虚拟机栈合二为一。</li>
+</ul>
+<p><strong>要点三：线程共享的两个区域</strong></p>
+<ul>
+<li><strong>堆</strong>：几乎所有对象实例与数组都在这里分配（JIT 逃逸分析成熟后出现了栈上分配与标量替换的例外）。堆是垃圾收集器管理的主要区域，可进一步划分为新生代（Eden + Survivor0/1）与老年代。</li>
+<li><strong>方法区</strong>：存储已被加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。JDK 7 及以前用<strong>永久代</strong>实现，JDK 8 起改用本地内存实现的<strong>元空间</strong>。</li>
+</ul>
+<p><strong>要点四：各区域会抛的错误</strong></p>
+<ul>
+<li>程序计数器：规范中没有 OOM。</li>
+<li>虚拟机栈/本地方法栈：栈深度超限抛 <strong>StackOverflowError</strong>（典型是无限递归）；栈可动态扩展但申请不到内存时抛 <strong>OutOfMemoryError</strong>。</li>
+<li>堆：无法分配实例且堆无法再扩展时抛 <strong>OutOfMemoryError: Java heap space</strong>。</li>
+<li>方法区：JDK8 后元空间默认使用本地内存，溢出信息为 <strong>OutOfMemoryError: Metaspace</strong>。</li>
+<li>直接内存：受 <code>-XX:MaxDirectMemorySize</code> 与物理内存限制，溢出时 Heap Dump 文件往往很小而看不出异常。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/660">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=181&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

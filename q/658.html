@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库</title>
-  <meta name="description" content="Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率…">
+  <title>Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库</title>
+  <meta name="description" content="要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 J…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库">
-  <meta property="og:description" content="Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率…">
+  <meta property="og:title" content="Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库">
+  <meta property="og:description" content="要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 J…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/658.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库">
-  <meta name="twitter:description" content="Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率…">
+  <meta name="twitter:title" content="Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 J…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/658.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？","text":"对比三种激活函数的用途、优缺点与适用位置。","answerCount":1,"datePublished":"2026-09-06T06:26:12.247Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率分布，用于多分类输出层。隐藏层现代多用 ReLU 族，输出层按任务选 Sigmoid/Softmax。","url":"https://it-interview.is-a.dev/#/question/658"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？","text":"追问链起点。考察点：类生命周期的完整阶段划分；加载/连接（验证-准备-解析）/初始化/使用/卸载各自做什么；加载阶段的三件事（取字节流、转运行时结构、生成 Class 对象）。","answerCount":1,"datePublished":"2026-09-08T13:40:43.018Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 Java 的动态绑定）。 要点二：加载阶段的三件事 1) 通过类的全限定名获取定义该类的二进制字节流（并不要求一定来自 .class 文件，也可以是 jar、网络、动态代理生成、JSP 等）。 2) 将字节流代表的静态存储结构，转换为方法区的运行时数据结构。 3) 在堆中生成一个 java.lang.Class 对象，作为方法区中该类各种数据的访问入口。 要点三：连接三步各自做什么 验证：校验字节流符合《Java 虚拟机规范》约束，保证不会危害虚拟机安全（文件格式、元数据、字节码、符号引用四层校验）。 准备：为类变量（static 修饰）分配内存并设置零值（如 int 为 0、引用为 null），此时不会执行赋初值的代码。 解析：把常量池中的符号引用替换为直接引用（指向目标的指针、偏移量或句柄）。 要点四：初始化阶段 初始化才真正执行类构造器 ()，即静态变量赋值语句与静态代码块。 JVM 规范严格规定有且仅有六种情况必须立即初始化（new/getstatic/putstatic/invokestatic 指令、反射调用、父类未初始化时先初始化父类、主类、MethodHandle 等），这六个场景也是面试高频追问点。","url":"https://it-interview.is-a.dev/#/question/658"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,38 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">激活函数</span><span class="chip tag">ReLU</span><span class="chip tag">Softmax</span></div>
-    <div class="card"><h2>题目</h2><p>对比三种激活函数的用途、优缺点与适用位置。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Sigmoid</strong>：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。</p>
-<p><strong>ReLU</strong>：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。</p>
-<p><strong>Softmax</strong>：把多类 logits 转成和为 1 的概率分布，用于多分类输出层。隐藏层现代多用 ReLU 族，输出层按任务选 Sigmoid/Softmax。</p></div>
+    <h1>Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">JVM</span><span class="chip tag">类加载</span><span class="chip tag">类生命周期</span></div>
+    <div class="card"><h2>题目</h2><p>追问链起点。考察点：类生命周期的完整阶段划分；加载/连接（验证-准备-解析）/初始化/使用/卸载各自做什么；加载阶段的三件事（取字节流、转运行时结构、生成 Class 对象）。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：生命周期的七个阶段</strong></p>
+<ul>
+<li>类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。</li>
+<li>其中验证、准备、解析合称<strong>连接</strong>，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。</li>
+<li>注意顺序：验证、准备、解析<strong>并非严格串行</strong>，解析阶段常常在初始化之后才开始（支持 Java 的动态绑定）。</li>
+</ul>
+<p><strong>要点二：加载阶段的三件事</strong></p>
+<ul>
+<li>1) 通过类的<strong>全限定名</strong>获取定义该类的二进制字节流（并不要求一定来自 .class 文件，也可以是 jar、网络、动态代理生成、JSP 等）。</li>
+<li>2) 将字节流代表的静态存储结构，转换为<strong>方法区的运行时数据结构</strong>。</li>
+<li>3) 在堆中生成一个 <code>java.lang.Class</code> 对象，作为方法区中该类各种数据的<strong>访问入口</strong>。</li>
+</ul>
+<p><strong>要点三：连接三步各自做什么</strong></p>
+<ul>
+<li><strong>验证</strong>：校验字节流符合《Java 虚拟机规范》约束，保证不会危害虚拟机安全（文件格式、元数据、字节码、符号引用四层校验）。</li>
+<li><strong>准备</strong>：为类变量（<code>static</code> 修饰）分配内存并设置<strong>零值</strong>（如 int 为 0、引用为 null），此时不会执行赋初值的代码。</li>
+<li><strong>解析</strong>：把常量池中的<strong>符号引用</strong>替换为<strong>直接引用</strong>（指向目标的指针、偏移量或句柄）。</li>
+</ul>
+<p><strong>要点四：初始化阶段</strong></p>
+<ul>
+<li>初始化才真正执行类构造器 <code>&lt;clinit&gt;()</code>，即静态变量赋值语句与静态代码块。</li>
+<li>JVM 规范严格规定<strong>有且仅有六种情况</strong>必须立即初始化（new/getstatic/putstatic/invokestatic 指令、反射调用、父类未初始化时先初始化父类、主类、MethodHandle 等），这六个场景也是面试高频追问点。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/658">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=178&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

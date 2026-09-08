@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Swift 与 Objective-C 相比有哪些语言特性优势？ · IT面试题库</title>
-  <meta name="description" content="类型安全与可选类型：Swift 用 Optional 把“可能为空”显式建模，编译期防 nil 崩溃，远胜 OC 的脆弱指针。 语法简洁：省略头文件、类型推断、闭包尾随语法，代码量更少。 现代特性：值类型 struct/enum、protocol extension、泛型、错误处理更完善。 内存管理：同样用 AR…">
+  <title>redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库</title>
+  <meta name="description" content="要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Swift 与 Objective-C 相比有哪些语言特性优势？ · IT面试题库">
-  <meta property="og:description" content="类型安全与可选类型：Swift 用 Optional 把“可能为空”显式建模，编译期防 nil 崩溃，远胜 OC 的脆弱指针。 语法简洁：省略头文件、类型推断、闭包尾随语法，代码量更少。 现代特性：值类型 struct/enum、protocol extension、泛型、错误处理更完善。 内存管理：同样用 AR…">
+  <meta property="og:title" content="redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库">
+  <meta property="og:description" content="要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/669.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Swift 与 Objective-C 相比有哪些语言特性优势？ · IT面试题库">
-  <meta name="twitter:description" content="类型安全与可选类型：Swift 用 Optional 把“可能为空”显式建模，编译期防 nil 崩溃，远胜 OC 的脆弱指针。 语法简洁：省略头文件、类型推断、闭包尾随语法，代码量更少。 现代特性：值类型 struct/enum、protocol extension、泛型、错误处理更完善。 内存管理：同样用 AR…">
+  <meta name="twitter:title" content="redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/669.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Swift 与 Objective-C 相比有哪些语言特性优势？","text":"从类型安全、语法简洁、内存管理等方面对比两种 iOS 主力语言。","answerCount":1,"datePublished":"2026-09-06T06:28:25.698Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"类型安全与可选类型：Swift 用 Optional 把“可能为空”显式建模，编译期防 nil 崩溃，远胜 OC 的脆弱指针。 语法简洁：省略头文件、类型推断、闭包尾随语法，代码量更少。 现代特性：值类型 struct/enum、protocol extension、泛型、错误处理更完善。 内存管理：同样用 ARC，但 Swift 对值类型零额外开销。代价是 OC 大量历史库仍需混编（Bridging Header）。","url":"https://it-interview.is-a.dev/#/question/669"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？","text":"追问链第二问。考察点：物理日志 vs 逻辑日志、循环写 vs 追加写；两阶段提交的 prepare→binlog→commit 三步；崩恢复时如何判定事务该提交还是回滚。","answerCount":1,"datePublished":"2026-09-08T13:40:59.705Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，STATEMENT 记 SQL，ROW 记行的前后镜像）。 写入方式：redo log 循环写，空间固定会用完，写满前必须把脏页刷盘以推进 checkpoint 腾出空间；binlog 追加写，写完一个文件切换到下一个，不会覆盖。 用途：redo log 用于崩溃恢复（crash-safe）；binlog 用于备份恢复与主从复制。 要点二：为什么必须两阶段提交 如果简单地「先写 redo log 再写 binlog」或反过来，只要中间宕机，两份日志就会出现分歧： 先 redo 后 binlog：redo 说事务提交了，binlog 里没有 → 从库少了这条数据，主从不一致。 先 binlog 后 redo：binlog 有而 redo 没有 → 主库崩溃恢复后丢了这条数据，但从库却多了一条，同样不一致。 由于 redo log 保证主库 crash-safe、binlog 决定从库数据，二者必须逻辑上原子：要么都写入，要么都不写入。 要点三：两阶段提交的过程 1) prepare 阶段：把 redo log 写入，标记为 prepare 状态。 2) 写 binlog 并刷盘。 3) commit 阶段：把 redo log 状态改为 commit，事务提交完成。 关键判据：binlog 是否完整写入决定了事务的命运。 要点四：异常重启时会发生什么 redo 处于 prepare、binlog 完整：说明 binlog 已落盘，从库会同步到这条数据 → 主库继续提交（把 redo 改成 commit）。 redo 处于 prepare、binlog 不完整/不存在：从库拿不到这条数据 → 主库回滚（用 undo log 撤销）。 这样无论在哪一步宕机，重启后主库与从库的数据都能保持一致。 要点五：代价与优化 两阶段提交需要两次刷盘（redo prepare 一次、binlog 一次），且为了保证多事务并发时 binlog 与 redo 顺序一致，MySQL 还引入了 prepare_commit_mutex，这会降低并发吞吐。 优化手段：把 innodb_flush_log_at_trx_commit 与 sync_binlog 都设为 1 最安全但最慢（双 1 配置）；MySQL 5.6 后引入 组提交（group commit），把多个事务的刷盘合并成一次，大幅缓解该开销。","url":"https://it-interview.is-a.dev/#/question/669"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,19 +70,49 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Swift 与 Objective-C 相比有哪些语言特性优势？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Swift</span><span class="chip tag">ObjectiveC</span><span class="chip tag">iOS</span></div>
-    <div class="card"><h2>题目</h2><p>从类型安全、语法简洁、内存管理等方面对比两种 iOS 主力语言。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>类型安全与可选类型</strong>：Swift 用 <code>Optional</code> 把“可能为空”显式建模，编译期防 nil 崩溃，远胜 OC 的脆弱指针。</p>
-<p><strong>语法简洁</strong>：省略头文件、类型推断、闭包尾随语法，代码量更少。</p>
-<p><strong>现代特性</strong>：值类型 struct/enum、protocol extension、泛型、错误处理更完善。</p>
-<p><strong>内存管理</strong>：同样用 ARC，但 Swift 对值类型零额外开销。代价是 OC 大量历史库仍需混编（Bridging Header）。</p></div>
+    <h1>redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">MySQL</span><span class="chip tag">redo log</span><span class="chip tag">binlog</span><span class="chip tag">两阶段提交</span></div>
+    <div class="card"><h2>题目</h2><p>追问链第二问。考察点：物理日志 vs 逻辑日志、循环写 vs 追加写；两阶段提交的 prepare→binlog→commit 三步；崩恢复时如何判定事务该提交还是回滚。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：四项核心区别</strong></p>
+<ul>
+<li><strong>归属层次</strong>：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，<strong>所有引擎都能产生</strong>。</li>
+<li><strong>日志类型</strong>：redo log 是<strong>物理日志</strong>（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是<strong>逻辑日志</strong>（记录语句原始逻辑，STATEMENT 记 SQL，ROW 记行的前后镜像）。</li>
+<li><strong>写入方式</strong>：redo log <strong>循环写</strong>，空间固定会用完，写满前必须把脏页刷盘以推进 checkpoint 腾出空间；binlog <strong>追加写</strong>，写完一个文件切换到下一个，<strong>不会覆盖</strong>。</li>
+<li><strong>用途</strong>：redo log 用于<strong>崩溃恢复</strong>（crash-safe）；binlog 用于<strong>备份恢复与主从复制</strong>。</li>
+</ul>
+<p><strong>要点二：为什么必须两阶段提交</strong></p>
+<ul>
+<li>如果简单地「先写 redo log 再写 binlog」或反过来，只要中间宕机，两份日志就会出现分歧：</li>
+</ul>
+<p>  - 先 redo 后 binlog：redo 说事务提交了，binlog 里没有 → 从库少了这条数据，<strong>主从不一致</strong>。</p>
+<p>  - 先 binlog 后 redo：binlog 有而 redo 没有 → 主库崩溃恢复后丢了这条数据，但<strong>从库却多了一条</strong>，同样不一致。</p>
+<ul>
+<li>由于 redo log 保证主库 crash-safe、binlog 决定从库数据，二者必须<strong>逻辑上原子</strong>：要么都写入，要么都不写入。</li>
+</ul>
+<p><strong>要点三：两阶段提交的过程</strong></p>
+<ul>
+<li>1) <strong>prepare 阶段</strong>：把 redo log 写入，标记为 <code>prepare</code> 状态。</li>
+<li>2) 写 <strong>binlog</strong> 并刷盘。</li>
+<li>3) <strong>commit 阶段</strong>：把 redo log 状态改为 <code>commit</code>，事务提交完成。</li>
+<li>关键判据：<strong>binlog 是否完整写入</strong>决定了事务的命运。</li>
+</ul>
+<p><strong>要点四：异常重启时会发生什么</strong></p>
+<ul>
+<li><strong>redo 处于 prepare、binlog 完整</strong>：说明 binlog 已落盘，从库会同步到这条数据 → 主库<strong>继续提交</strong>（把 redo 改成 commit）。</li>
+<li><strong>redo 处于 prepare、binlog 不完整/不存在</strong>：从库拿不到这条数据 → 主库<strong>回滚</strong>（用 undo log 撤销）。</li>
+<li>这样无论在哪一步宕机，重启后主库与从库的数据都能保持一致。</li>
+</ul>
+<p><strong>要点五：代价与优化</strong></p>
+<ul>
+<li>两阶段提交需要<strong>两次刷盘</strong>（redo prepare 一次、binlog 一次），且为了保证多事务并发时 binlog 与 redo 顺序一致，MySQL 还引入了 <strong>prepare_commit_mutex</strong>，这会降低并发吞吐。</li>
+<li>优化手段：把 <code>innodb_flush_log_at_trx_commit</code> 与 <code>sync_binlog</code> 都设为 1 最安全但最慢（双 1 配置）；MySQL 5.6 后引入 <strong>组提交（group commit）</strong>，把多个事务的刷盘合并成一次，大幅缓解该开销。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/669">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=219&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

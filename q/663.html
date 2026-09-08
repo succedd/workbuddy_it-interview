@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？ · IT面试题库</title>
-  <meta name="description" content="召回（Recall）：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。 粗排（Pre-Rank）：轻量模型对召回结果打分截断到百级，平衡效率与效果。 精排（Rank）：复杂模型（如深度排序）对百级候选精细打分，重“准”。 重排（Re-Rank）：结合业务规则、多样性、去重做…">
+  <title>JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？ · IT面试题库</title>
+  <meta name="description" content="要点一：引用计数法及其缺陷 做法：每个对象维护一个引用计数器，被引用时 +1，引用失效时 -1，计数为 0 即认为可回收。 优点：原理简单、判定效率高，Python、Objective-C 等都采用过。 致命缺陷：无法解决循环引用。对象 A 持有 B、B 持有 A，两者都不再被外部使用，但计数恒为 1，永远无法回…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？ · IT面试题库">
-  <meta property="og:description" content="召回（Recall）：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。 粗排（Pre-Rank）：轻量模型对召回结果打分截断到百级，平衡效率与效果。 精排（Rank）：复杂模型（如深度排序）对百级候选精细打分，重“准”。 重排（Re-Rank）：结合业务规则、多样性、去重做…">
+  <meta property="og:title" content="JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？ · IT面试题库">
+  <meta property="og:description" content="要点一：引用计数法及其缺陷 做法：每个对象维护一个引用计数器，被引用时 +1，引用失效时 -1，计数为 0 即认为可回收。 优点：原理简单、判定效率高，Python、Objective-C 等都采用过。 致命缺陷：无法解决循环引用。对象 A 持有 B、B 持有 A，两者都不再被外部使用，但计数恒为 1，永远无法回…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/663.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？ · IT面试题库">
-  <meta name="twitter:description" content="召回（Recall）：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。 粗排（Pre-Rank）：轻量模型对召回结果打分截断到百级，平衡效率与效果。 精排（Rank）：复杂模型（如深度排序）对百级候选精细打分，重“准”。 重排（Re-Rank）：结合业务规则、多样性、去重做…">
+  <meta name="twitter:title" content="JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：引用计数法及其缺陷 做法：每个对象维护一个引用计数器，被引用时 +1，引用失效时 -1，计数为 0 即认为可回收。 优点：原理简单、判定效率高，Python、Objective-C 等都采用过。 致命缺陷：无法解决循环引用。对象 A 持有 B、B 持有 A，两者都不再被外部使用，但计数恒为 1，永远无法回…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/663.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？","text":"解释搜索系统中从海量候选到最终结果的漏斗式架构。","answerCount":1,"datePublished":"2026-09-06T06:26:12.972Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"召回（Recall）：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。 粗排（Pre-Rank）：轻量模型对召回结果打分截断到百级，平衡效率与效果。 精排（Rank）：复杂模型（如深度排序）对百级候选精细打分，重“准”。 重排（Re-Rank）：结合业务规则、多样性、去重做最终调整。整体呈漏斗，逐级缩减并保证效果。","url":"https://it-interview.is-a.dev/#/question/663"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？","text":"追问链起点。考察点：引用计数法的实现与致命缺陷；可达性分析的基本思路；Java 的四种引用强度对对象生命周期的影响。","answerCount":1,"datePublished":"2026-09-08T13:40:50.667Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：引用计数法及其缺陷 做法：每个对象维护一个引用计数器，被引用时 +1，引用失效时 -1，计数为 0 即认为可回收。 优点：原理简单、判定效率高，Python、Objective-C 等都采用过。 致命缺陷：无法解决循环引用。对象 A 持有 B、B 持有 A，两者都不再被外部使用，但计数恒为 1，永远无法回收，从而造成内存泄漏。此外计数的加解密伴随每一次赋值，额外开销也不小。 正因如此，主流 Java 虚拟机都没有采用引用计数法来管理内存。 要点二：可达性分析（Java 采用） 思路：以一系列称为 GC Roots 的根对象为起点，按引用关系向下搜索，走过的路径称为「引用链」。 某个对象到 GC Roots 之间没有任何引用链相连（即从根出发不可达），则证明该对象不可能再被使用，可被回收。 它天然解决了循环引用问题：两个互相引用但整体不可达的对象，会被一并判定为可回收。 要点三：Java 的四种引用强度 强引用：Object o = new Object()，只要强引用存在，对象永远不会被回收，内存不足时宁可抛 OOM。 软引用（SoftReference）：内存不足（即将 OOM）时会被回收，适合做内存敏感的缓存。 弱引用（WeakReference）：只要发生 GC 就会被回收，与内存是否充足无关，典型应用是 WeakHashMap、ThreadLocalMap 的 key。 虚引用（PhantomReference）：无法通过它取得对象实例，唯一作用是在对象被回收时收到系统通知，用于管理堆外内存（如 DirectByteBuffer 的 Cleaner）。 要点四：面试答题建议 先答「可达性分析」，再说「引用计数法不采用是因为循环引用」，最后补一句「可达性分析还要结合四种引用强度综合判断」，层次就完整了。","url":"https://it-interview.is-a.dev/#/question/663"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,19 +70,39 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">搜索算法工程师</span><span class="chip">算法工程师</span><span class="chip">推荐算法工程师</span><span class="chip tag">搜索</span><span class="chip tag">召回</span><span class="chip tag">精排</span><span class="chip tag">召回排序</span></div>
-    <div class="card"><h2>题目</h2><p>解释搜索系统中从海量候选到最终结果的漏斗式架构。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>召回（Recall）</strong>：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。</p>
-<p><strong>粗排（Pre-Rank）</strong>：轻量模型对召回结果打分截断到百级，平衡效率与效果。</p>
-<p><strong>精排（Rank）</strong>：复杂模型（如深度排序）对百级候选精细打分，重“准”。</p>
-<p><strong>重排（Re-Rank）</strong>：结合业务规则、多样性、去重做最终调整。整体呈漏斗，逐级缩减并保证效果。</p></div>
+    <h1>JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">JVM</span><span class="chip tag">GC</span><span class="chip tag">可达性分析</span><span class="chip tag">引用计数</span></div>
+    <div class="card"><h2>题目</h2><p>追问链起点。考察点：引用计数法的实现与致命缺陷；可达性分析的基本思路；Java 的四种引用强度对对象生命周期的影响。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：引用计数法及其缺陷</strong></p>
+<ul>
+<li>做法：每个对象维护一个引用计数器，被引用时 +1，引用失效时 -1，计数为 0 即认为可回收。</li>
+<li>优点：原理简单、判定效率高，Python、Objective-C 等都采用过。</li>
+<li><strong>致命缺陷：无法解决循环引用</strong>。对象 A 持有 B、B 持有 A，两者都不再被外部使用，但计数恒为 1，永远无法回收，从而造成内存泄漏。此外计数的加解密伴随每一次赋值，额外开销也不小。</li>
+<li>正因如此，主流 Java 虚拟机<strong>都没有采用引用计数法</strong>来管理内存。</li>
+</ul>
+<p><strong>要点二：可达性分析（Java 采用）</strong></p>
+<ul>
+<li>思路：以一系列称为 <strong>GC Roots</strong> 的根对象为起点，按引用关系向下搜索，走过的路径称为「引用链」。</li>
+<li>某个对象<strong>到 GC Roots 之间没有任何引用链相连</strong>（即从根出发不可达），则证明该对象不可能再被使用，可被回收。</li>
+<li>它天然解决了循环引用问题：两个互相引用但整体不可达的对象，会被一并判定为可回收。</li>
+</ul>
+<p><strong>要点三：Java 的四种引用强度</strong></p>
+<ul>
+<li><strong>强引用</strong>：<code>Object o = new Object()</code>，只要强引用存在，对象<strong>永远不会被回收</strong>，内存不足时宁可抛 OOM。</li>
+<li><strong>软引用</strong>（<code>SoftReference</code>）：内存不足（即将 OOM）时会被回收，适合做<strong>内存敏感的缓存</strong>。</li>
+<li><strong>弱引用</strong>（<code>WeakReference</code>）：只要发生 GC 就会被回收，与内存是否充足无关，典型应用是 <code>WeakHashMap</code>、<code>ThreadLocalMap</code> 的 key。</li>
+<li><strong>虚引用</strong>（<code>PhantomReference</code>）：无法通过它取得对象实例，唯一作用是在对象被回收时收到系统通知，用于管理<strong>堆外内存</strong>（如 DirectByteBuffer 的 Cleaner）。</li>
+</ul>
+<p><strong>要点四：面试答题建议</strong></p>
+<ul>
+<li>先答「可达性分析」，再说「引用计数法不采用是因为循环引用」，最后补一句「可达性分析还要结合四种引用强度综合判断」，层次就完整了。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/663">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=186&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

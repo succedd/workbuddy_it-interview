@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kotlin 相比 Java 有哪些核心语法优势（空安全、data class、协程）？ · IT面试题库</title>
-  <meta name="description" content="空安全：类型系统区分可空（T?）与非空，编译期强制判空，显著减少 NPE。 data class：一行定义只含数据的类，自动生成 equals/hashCode/toString/copy。 协程（Coroutine）：用挂起函数（suspend）以同步写法写异步，比回调/线程更轻量易读，是 Kotlin 并发核…">
+  <title>读写分离架构下，如何解决「刚写入就读不到」的问题？ · IT面试题库</title>
+  <meta name="description" content="要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Kotlin 相比 Java 有哪些核心语法优势（空安全、data class、协程）？ · IT面试题库">
-  <meta property="og:description" content="空安全：类型系统区分可空（T?）与非空，编译期强制判空，显著减少 NPE。 data class：一行定义只含数据的类，自动生成 equals/hashCode/toString/copy。 协程（Coroutine）：用挂起函数（suspend）以同步写法写异步，比回调/线程更轻量易读，是 Kotlin 并发核…">
+  <meta property="og:title" content="读写分离架构下，如何解决「刚写入就读不到」的问题？ · IT面试题库">
+  <meta property="og:description" content="要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/672.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Kotlin 相比 Java 有哪些核心语法优势（空安全、data class、协程）？ · IT面试题库">
-  <meta name="twitter:description" content="空安全：类型系统区分可空（T?）与非空，编译期强制判空，显著减少 NPE。 data class：一行定义只含数据的类，自动生成 equals/hashCode/toString/copy。 协程（Coroutine）：用挂起函数（suspend）以同步写法写异步，比回调/线程更轻量易读，是 Kotlin 并发核…">
+  <meta name="twitter:title" content="读写分离架构下，如何解决「刚写入就读不到」的问题？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/672.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 相比 Java 有哪些核心语法优势（空安全、data class、协程）？","text":"说明 Kotlin 提升开发效率与安全性的关键特性。","answerCount":1,"datePublished":"2026-09-06T06:28:26.392Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"空安全：类型系统区分可空（T?）与非空，编译期强制判空，显著减少 NPE。 data class：一行定义只含数据的类，自动生成 equals/hashCode/toString/copy。 协程（Coroutine）：用挂起函数（suspend）以同步写法写异步，比回调/线程更轻量易读，是 Kotlin 并发核心。 其他：扩展函数、默认参数、when 表达式、密封类（sealed class）让状态机更安全。整体与 Java 100% 互操作。","url":"https://it-interview.is-a.dev/#/question/672"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"读写分离架构下，如何解决「刚写入就读不到」的问题？","text":"追问链第五问。考察点：主从延迟导致读己之写失效；强制走主库、写后读主（会话/时间窗）、缓存中转、二次读取四种方案及其取舍。","answerCount":1,"datePublished":"2026-09-08T13:41:00.247Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制走主库（最常用） 对于写后立即读的敏感操作（下单后查订单、改资料后回显、注册后跳转），在代码或中间件层面显式指定走主库。 优点：简单、可靠、绝对一致；缺点：主库压力增大，需要精确识别哪些查询是「敏感的」，否则过度使用会让读写分离失去意义。 实践中常用注解或 Hint（如 ShardingSphere 的 Hint、MyCat 的 /#mycat:db_type=master/）标记。 要点三：方案二 —— 写后读主（会话级/时间窗） 在一次会话内，只要发生过写操作，就把接下来一小段时间（如 1~3 秒，或直到本会话结束）内的读请求都路由到主库。 需要维护「会话最后一次写入时间」，中间件（如 ShardingSphere、ProxySQL）已内建该能力。 比全量走主库精细，但如果延迟超过时间窗仍会失效，需要配合延迟监控动态调整窗口。 要点四：方案三 —— 写缓存兜底 写主库的同时把数据写入 Redis（或本地缓存）并设置一个较短的过期时间；读请求优先读缓存，未命中再读从库。 优点：不增加主库读压力，还能抗热点读；缺点：引入了缓存与数据库的一致性问题，且只适合主键/唯一键明确、结构简单的查询。 要点五：方案四 —— 二次读取与延迟感知 二次读取：从库读不到时，再回主库读一次（只对「刚写入」的场景启用，避免放大主库压力）。 延迟感知路由：中间件实时监控各从库延迟，延迟超过阈值的从库自动摘除，只在健康的从库间分流读请求。 要点六：选型建议 核心交易链路（下单、支付、库存）→ 强制走主库； 用户「自己的数据」类查询 → 写后读主 或 缓存兜底； 列表、报表、搜索等容忍延迟的查询 → 正常走从库，并配合延迟感知路由； 如果业务对一致性要求极高且延迟不可接受，应考虑强一致方案（MGR、分布式数据库）而非在应用层打补丁。","url":"https://it-interview.is-a.dev/#/question/672"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,19 +70,49 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Kotlin 相比 Java 有哪些核心语法优势（空安全、data class、协程）？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Kotlin</span><span class="chip tag">空安全</span><span class="chip tag">协程</span><span class="chip tag">data class</span></div>
-    <div class="card"><h2>题目</h2><p>说明 Kotlin 提升开发效率与安全性的关键特性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>空安全</strong>：类型系统区分可空（T?）与非空，编译期强制判空，显著减少 NPE。</p>
-<p><strong>data class</strong>：一行定义只含数据的类，自动生成 equals/hashCode/toString/copy。</p>
-<p><strong>协程（Coroutine）</strong>：用挂起函数（suspend）以同步写法写异步，比回调/线程更轻量易读，是 Kotlin 并发核心。</p>
-<p><strong>其他</strong>：扩展函数、默认参数、when 表达式、密封类（sealed class）让状态机更安全。整体与 Java 100% 互操作。</p></div>
+    <h1>读写分离架构下，如何解决「刚写入就读不到」的问题？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">MySQL</span><span class="chip tag">读写分离</span><span class="chip tag">主从延迟</span><span class="chip tag">一致性</span></div>
+    <div class="card"><h2>题目</h2><p>追问链第五问。考察点：主从延迟导致读己之写失效；强制走主库、写后读主（会话/时间窗）、缓存中转、二次读取四种方案及其取舍。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：问题根因</strong></p>
+<ul>
+<li>读写分离后，写请求走主库、读请求走从库。由于主从复制是<strong>异步</strong>的，主库刚提交的数据可能还没同步到从库。</li>
+<li>用户「提交订单 → 立刻查看订单」时读请求落到从库，就会<strong>读不到自己刚写的数据</strong>（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。</li>
+</ul>
+<p><strong>要点二：方案一 —— 强制走主库（最常用）</strong></p>
+<ul>
+<li>对于<strong>写后立即读</strong>的敏感操作（下单后查订单、改资料后回显、注册后跳转），在代码或中间件层面<strong>显式指定走主库</strong>。</li>
+<li>优点：简单、可靠、绝对一致；缺点：主库压力增大，需要精确识别哪些查询是「敏感的」，否则过度使用会让读写分离失去意义。</li>
+<li>实践中常用注解或 Hint（如 ShardingSphere 的 Hint、MyCat 的 <code>/<em>#mycat:db_type=master</em>/</code>）标记。</li>
+</ul>
+<p><strong>要点三：方案二 —— 写后读主（会话级/时间窗）</strong></p>
+<ul>
+<li>在一次会话内，只要发生过写操作，就把接下来<strong>一小段时间</strong>（如 1~3 秒，或直到本会话结束）内的读请求都路由到主库。</li>
+<li>需要维护「会话最后一次写入时间」，中间件（如 ShardingSphere、ProxySQL）已内建该能力。</li>
+<li>比全量走主库精细，但如果延迟超过时间窗仍会失效，需要配合延迟监控动态调整窗口。</li>
+</ul>
+<p><strong>要点四：方案三 —— 写缓存兜底</strong></p>
+<ul>
+<li>写主库的同时把数据写入 <strong>Redis</strong>（或本地缓存）并设置一个较短的过期时间；读请求<strong>优先读缓存</strong>，未命中再读从库。</li>
+<li>优点：不增加主库读压力，还能抗热点读；缺点：引入了缓存与数据库的<strong>一致性问题</strong>，且只适合主键/唯一键明确、结构简单的查询。</li>
+</ul>
+<p><strong>要点五：方案四 —— 二次读取与延迟感知</strong></p>
+<ul>
+<li><strong>二次读取</strong>：从库读不到时，再回主库读一次（只对「刚写入」的场景启用，避免放大主库压力）。</li>
+<li><strong>延迟感知路由</strong>：中间件实时监控各从库延迟，<strong>延迟超过阈值的从库自动摘除</strong>，只在健康的从库间分流读请求。</li>
+</ul>
+<p><strong>要点六：选型建议</strong></p>
+<ul>
+<li>核心交易链路（下单、支付、库存）→ <strong>强制走主库</strong>；</li>
+<li>用户「自己的数据」类查询 → <strong>写后读主</strong> 或 <strong>缓存兜底</strong>；</li>
+<li>列表、报表、搜索等容忍延迟的查询 → 正常走从库，并配合延迟感知路由；</li>
+<li>如果业务对一致性要求极高且延迟不可接受，应考虑<strong>强一致方案</strong>（MGR、分布式数据库）而非在应用层打补丁。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/672">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=224&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

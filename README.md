@@ -215,6 +215,18 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-08 · 经典题补录：JVM 类加载/GC 与 MySQL 日志·索引四条追问链（657 → 677 题）
+- **取材思路：先找真空白，而不是重复造轮子**。合并前对现有 657 题做了两轮关键词查重，定位到 4 片**零覆盖**区域：类加载 / 双亲委派 / JVM 运行时数据区 / 垃圾收集器（均为 0 题）、MySQL 的 binlog / redo log / undo log（0 题）、主从复制与读写分离（0 题）、count 与索引设计规范（0 题）。本次全部从这些空白区下手。
+- **新增 20 题，分 4 条追问链**（同链题目互挂 `relatedIds`，详情页「相关题」直接成链）：
+  - **链 1 · JVM 类加载与内存区域**（T010，5 题）：类生命周期七阶段与加载三件事、双亲委派模型与三种打破方式、运行时数据区线程私有/共享划分与各区 OOM、元空间取代永久代的动因与风险、对象创建五步 + 句柄与直接指针两种访问定位。
+  - **链 2 · JVM 垃圾回收**（T011，5 题）：引用计数法的循环引用缺陷与可达性分析、GC Roots 组成与 finalize 缓刑期、Minor/Major/Full GC 触发条件与晋升三条路径、CMS 四步 vs G1 的 Region 化与可预测停顿、分代假说与「存活率决定算法选择」。
+  - **链 3 · MySQL 日志与高可用**（T019，6 题）：undo/redo/binlog 各自职责与 WAL、redo vs binlog 四差异与两阶段提交的必要性、主从复制三线程与 binlog 三格式、主从延迟成因与并行复制缓解、读写分离「刚写入读不到」的四种解法、有 Buffer Pool 为什么还要 redo log。
+  - **链 4 · 索引与 SQL 优化**（T020，4 题）：count(*)/count(1)/count(列名) 语义与性能、自增主键 vs UUID 的页分裂代价、索引列 NOT NULL 的四类代价、前缀索引的取长方法与覆盖索引失效代价。
+- **来源全部实测可达**：JavaGuide 的 `class-loading-process` / `classloader` / `memory-area` / `jvm-garbage-collection`，小林coding 的 `mysql/log/how_update`、`mysql/index/count`、`mysql/index/index_interview`。注：MySQL 官方文档 `dev.mysql.com` 对爬虫返回 403，已改用中文权威源。
+- **分享页处理（重要）**：重生成分享页时发现 q/ 下有 78 个页面的「新生成内容」反而比仓库里已提交的版本更差（例如 q/133 的答案被降为摘要版、q/500 的题目与当前 published.json 的 ID 不一致）——说明历史上题库曾到过 748 题、后 published.json 被重建回 657 题，遗留了 71 个孤儿分享页（q/678-748）。**本次刻意只提交新增的 q/658-677.html，其余旧分享页一律还原不动**，避免把更丰富的内容覆盖掉。该历史遗留问题（孤儿页 + 旧页内容比题库更丰富）尚未处理，建议后续单独排查。
+
+
+
 ### 2026-09-08 · 手机端「API 不可达」根因定位 + API 入口多候选改造（缓存版本 `20260908a`）
 - **根因（已实测确认，非代码 bug）**：后端写死在 `js/account.js` 的 `https://it-interview-stats.iti-interview.workers.dev` 在中国大陆被**双重封锁**——① DNS 投毒：本地/阿里/360 解析分别返回 Facebook、Dropbox、Facebook 的假 IP；② SNI 复位：即使用 DoH 拿到 Cloudflare 真实 IP（104.21.73.x / 172.67.189.x）直连，TLS 握手也在 0.24s 内被 RST。结论：**只要 API 挂在 `*.workers.dev` 上，国内任何无代理设备（手机 4G/5G、微信内置浏览器）必然报「API 暂不可达」**；电脑能登录纯粹是因为走了代理。Worker 本身健康（Cloudflare API 查得脚本在册，带代理实测 `/stats` 200）。
 - **改造 1：入口不再写死单点**。`account.js` 新增「候选列表 + 自动择优」：手填地址 → 上次探测成功的入口 → 同源远程配置 → 内置兜底。`call()` 按顺序逐个尝试（每个 8s 超时，**仅网络层失败才换下一个**；HTTP 4xx/5xx 视为「这个入口是通的」直接抛出，避免把密码错误掩盖成网络问题），成功即记入 `localStorage.stats_api_pick`。

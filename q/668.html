@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>大模型（LLM）常见的应用范式（RAG、微调、Agent）分别适合什么场景？ · IT面试题库</title>
-  <meta name="description" content="RAG（检索增强）：回答需依赖私有/实时知识时，先检索文档片段喂给模型。适合知识库问答、减少幻觉、无需重训。 SFT 微调：需让模型学会特定风格/领域能力或任务格式时，用标注数据微调。适合垂直能力固化，但成本高、需数据。 Agent：任务需多步推理、调用外部工具/系统完成动作（不止生成文本）时。适合自动化工作流。…">
+  <title>MySQL 的 undo log、redo log、binlog 分别解决什么问题？各自保证了 ACID 的哪一性？ · IT面试题库</title>
+  <meta name="description" content="要点一：三种日志的定位与层次 undo log（回滚日志）：由 InnoDB 存储引擎层生成，保证事务的原子性（Atomicity），用于事务回滚和 MVCC。 redo log（重做日志）：同样由 InnoDB 层生成，保证事务的持久性（Durability），用于掉电等故障后的崩溃恢复。 binlog（归档日…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="大模型（LLM）常见的应用范式（RAG、微调、Agent）分别适合什么场景？ · IT面试题库">
-  <meta property="og:description" content="RAG（检索增强）：回答需依赖私有/实时知识时，先检索文档片段喂给模型。适合知识库问答、减少幻觉、无需重训。 SFT 微调：需让模型学会特定风格/领域能力或任务格式时，用标注数据微调。适合垂直能力固化，但成本高、需数据。 Agent：任务需多步推理、调用外部工具/系统完成动作（不止生成文本）时。适合自动化工作流。…">
+  <meta property="og:title" content="MySQL 的 undo log、redo log、binlog 分别解决什么问题？各自保证了 ACID 的哪一性？ · IT面试题库">
+  <meta property="og:description" content="要点一：三种日志的定位与层次 undo log（回滚日志）：由 InnoDB 存储引擎层生成，保证事务的原子性（Atomicity），用于事务回滚和 MVCC。 redo log（重做日志）：同样由 InnoDB 层生成，保证事务的持久性（Durability），用于掉电等故障后的崩溃恢复。 binlog（归档日…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/668.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="大模型（LLM）常见的应用范式（RAG、微调、Agent）分别适合什么场景？ · IT面试题库">
-  <meta name="twitter:description" content="RAG（检索增强）：回答需依赖私有/实时知识时，先检索文档片段喂给模型。适合知识库问答、减少幻觉、无需重训。 SFT 微调：需让模型学会特定风格/领域能力或任务格式时，用标注数据微调。适合垂直能力固化，但成本高、需数据。 Agent：任务需多步推理、调用外部工具/系统完成动作（不止生成文本）时。适合自动化工作流。…">
+  <meta name="twitter:title" content="MySQL 的 undo log、redo log、binlog 分别解决什么问题？各自保证了 ACID 的哪一性？ · IT面试题库">
+  <meta name="twitter:description" content="要点一：三种日志的定位与层次 undo log（回滚日志）：由 InnoDB 存储引擎层生成，保证事务的原子性（Atomicity），用于事务回滚和 MVCC。 redo log（重做日志）：同样由 InnoDB 层生成，保证事务的持久性（Durability），用于掉电等故障后的崩溃恢复。 binlog（归档日…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/668.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大模型（LLM）常见的应用范式（RAG、微调、Agent）分别适合什么场景？","text":"对比 RAG、SFT 微调、Agent 三种落地方式的取舍。","answerCount":1,"datePublished":"2026-09-06T06:26:13.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RAG（检索增强）：回答需依赖私有/实时知识时，先检索文档片段喂给模型。适合知识库问答、减少幻觉、无需重训。 SFT 微调：需让模型学会特定风格/领域能力或任务格式时，用标注数据微调。适合垂直能力固化，但成本高、需数据。 Agent：任务需多步推理、调用外部工具/系统完成动作（不止生成文本）时。适合自动化工作流。实践中常组合：RAG 供给知识 + 微调定风格 + Agent 编排动作。","url":"https://it-interview.is-a.dev/#/question/668"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MySQL 的 undo log、redo log、binlog 分别解决什么问题？各自保证了 ACID 的哪一性？","text":"追问链起点。考察点：三种日志所属层次（InnoDB 层 vs Server 层）；undo 保证原子性、redo 保证持久性、binlog 用于归档与主从复制；一条 UPDATE 语句的完整日志链路。","answerCount":1,"datePublished":"2026-09-08T13:40:58.520Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：三种日志的定位与层次 undo log（回滚日志）：由 InnoDB 存储引擎层生成，保证事务的原子性（Atomicity），用于事务回滚和 MVCC。 redo log（重做日志）：同样由 InnoDB 层生成，保证事务的持久性（Durability），用于掉电等故障后的崩溃恢复。 binlog（归档日志）：由 Server 层生成，所有存储引擎通用，主要用于数据备份、主从复制，本身不保证 crash-safe。 要点二：为什么需要 undo log 事务执行中途崩溃或主动 ROLLBACK，需要把数据恢复到事务开始前的样子。 做法：每次对记录做「增删改」前，先把回滚所需的信息记进 undo log（如插入记主键、更新记被修改列的旧值、删除记整行）。回滚时执行相反的操作即可：insert 对应 delete，delete 对应 insert，update 对应反向 update。 同一条记录的 undo log 会形成版本链，配合 ReadView 就实现了 MVCC 快照读，这也是 RC/RR 隔离级别下「读不加锁」的基础。 要点三：为什么需要 redo log（WAL） 修改数据时，InnoDB 先在内存的 Buffer Pool 中改脏页，并不立即刷盘（随机写极慢）。 但如果此时宕机，内存中的脏页会丢失，事务却已经返回成功，就破坏了持久性。 于是引入 WAL（Write-Ahead Logging）：修改前先顺序写 redo log（顺序写远快于随机写），并保证日志先落盘。宕机重启后，InnoDB 用 redo log 把没来得及刷盘的修改重做一遍，从而保证「已提交事务不丢失」。 redo log 是物理日志（记录「在某个数据页的某个偏移量做了什么修改」），大小固定、循环写，写满会覆盖前面的空间（因此必须先推进 checkpoint 把脏页刷盘）。 要点四：为什么还需要 binlog redo log 是 InnoDB 私有的，且循环写会覆盖，无法用于数据备份和主从复制；binlog 是追加写（写满切新文件，不覆盖），记录了完整的逻辑变更历史。 binlog 有三种格式： STATEMENT：记原始 SQL 语句，日志量小，但含 now()、uuid() 等不确定函数时会导致主从不一致。 ROW：记每行数据的变化前后镜像，日志量大但绝对安全，MySQL 8.0 起默认 ROW。 MIXED：混合模式，一般情况用 STATEMENT，可能引发不一致时自动切 ROW。 要点五：一条 UPDATE 的日志顺序 取数据页进 Buffer Pool → 写 undo log → 改内存数据页 → 写 redo log（prepare）→ 写 binlog → 写 redo log（commit），即两阶段提交。","url":"https://it-interview.is-a.dev/#/question/668"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,46 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>大模型（LLM）常见的应用范式（RAG、微调、Agent）分别适合什么场景？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">LLM应用开发工程师</span><span class="chip">AI应用开发工程师</span><span class="chip">RAG工程师</span><span class="chip tag">LLM</span><span class="chip tag">RAG</span><span class="chip tag">微调</span><span class="chip tag">Agent</span></div>
-    <div class="card"><h2>题目</h2><p>对比 RAG、SFT 微调、Agent 三种落地方式的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>RAG（检索增强）</strong>：回答需依赖私有/实时知识时，先检索文档片段喂给模型。适合知识库问答、减少幻觉、无需重训。</p>
-<p><strong>SFT 微调</strong>：需让模型学会特定风格/领域能力或任务格式时，用标注数据微调。适合垂直能力固化，但成本高、需数据。</p>
-<p><strong>Agent</strong>：任务需多步推理、调用外部工具/系统完成动作（不止生成文本）时。适合自动化工作流。实践中常组合：RAG 供给知识 + 微调定风格 + Agent 编排动作。</p></div>
+    <h1>MySQL 的 undo log、redo log、binlog 分别解决什么问题？各自保证了 ACID 的哪一性？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">MySQL</span><span class="chip tag">undo log</span><span class="chip tag">redo log</span><span class="chip tag">binlog</span><span class="chip tag">WAL</span></div>
+    <div class="card"><h2>题目</h2><p>追问链起点。考察点：三种日志所属层次（InnoDB 层 vs Server 层）；undo 保证原子性、redo 保证持久性、binlog 用于归档与主从复制；一条 UPDATE 语句的完整日志链路。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点一：三种日志的定位与层次</strong></p>
+<ul>
+<li><strong>undo log（回滚日志）</strong>：由 <strong>InnoDB 存储引擎层</strong>生成，保证事务的<strong>原子性（Atomicity）</strong>，用于<strong>事务回滚和 MVCC</strong>。</li>
+<li><strong>redo log（重做日志）</strong>：同样由 <strong>InnoDB 层</strong>生成，保证事务的<strong>持久性（Durability）</strong>，用于<strong>掉电等故障后的崩溃恢复</strong>。</li>
+<li><strong>binlog（归档日志）</strong>：由 <strong>Server 层</strong>生成，<strong>所有存储引擎通用</strong>，主要用于<strong>数据备份、主从复制</strong>，本身不保证 crash-safe。</li>
+</ul>
+<p><strong>要点二：为什么需要 undo log</strong></p>
+<ul>
+<li>事务执行中途崩溃或主动 <code>ROLLBACK</code>，需要把数据恢复到事务开始前的样子。</li>
+<li>做法：每次对记录做「增删改」前，先把回滚所需的信息记进 undo log（如插入记主键、更新记被修改列的旧值、删除记整行）。回滚时执行<strong>相反的操作</strong>即可：insert 对应 delete，delete 对应 insert，update 对应反向 update。</li>
+<li>同一条记录的 undo log 会形成<strong>版本链</strong>，配合 ReadView 就实现了 <strong>MVCC 快照读</strong>，这也是 RC/RR 隔离级别下「读不加锁」的基础。</li>
+</ul>
+<p><strong>要点三：为什么需要 redo log（WAL）</strong></p>
+<ul>
+<li>修改数据时，InnoDB 先在内存的 <strong>Buffer Pool</strong> 中改脏页，并不立即刷盘（随机写极慢）。</li>
+<li>但如果此时宕机，内存中的脏页会丢失，事务却已经返回成功，就破坏了持久性。</li>
+<li>于是引入 <strong>WAL（Write-Ahead Logging）</strong>：修改前先<strong>顺序写</strong> redo log（顺序写远快于随机写），并保证日志先落盘。宕机重启后，InnoDB 用 redo log 把没来得及刷盘的修改重做一遍，从而保证「已提交事务不丢失」。</li>
+<li>redo log 是<strong>物理日志</strong>（记录「在某个数据页的某个偏移量做了什么修改」），大小固定、<strong>循环写</strong>，写满会覆盖前面的空间（因此必须先推进 checkpoint 把脏页刷盘）。</li>
+</ul>
+<p><strong>要点四：为什么还需要 binlog</strong></p>
+<ul>
+<li>redo log 是 InnoDB 私有的，且循环写会覆盖，<strong>无法用于数据备份和主从复制</strong>；binlog 是<strong>追加写</strong>（写满切新文件，不覆盖），记录了完整的逻辑变更历史。</li>
+<li>binlog 有三种格式：</li>
+</ul>
+<p>  - <strong>STATEMENT</strong>：记原始 SQL 语句，日志量小，但含 <code>now()</code>、<code>uuid()</code> 等不确定函数时会导致主从不一致。</p>
+<p>  - <strong>ROW</strong>：记每行数据的变化前后镜像，日志量大但<strong>绝对安全</strong>，MySQL 8.0 起默认 ROW。</p>
+<p>  - <strong>MIXED</strong>：混合模式，一般情况用 STATEMENT，可能引发不一致时自动切 ROW。</p>
+<p><strong>要点五：一条 UPDATE 的日志顺序</strong></p>
+<ul>
+<li>取数据页进 Buffer Pool → 写 undo log → 改内存数据页 → 写 redo log（prepare）→ 写 binlog → 写 redo log（commit），即<strong>两阶段提交</strong>。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/668">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=182&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
