@@ -3183,12 +3183,13 @@
         <div id="bk-out" class="muted" style="margin-top:8px"></div></div>
 
       <div class="card"><h2 style="font-size:16px">${U.icon("shield")} Cloudflare Worker（可选·高级）</h2>
-        <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。</p>
+        <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。<br><b>提示：</b>Cloudflare 的 workers.dev 域名在国内网络常被拦截（表现为登录时提示「API 暂不可达」），此时可点下方「自动选择可用入口」让站点自行挑选能连通的后端地址。</p>
         <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.cfApi())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
         <label class="field"><span>访问密钥(可选)</span><input id="stats-key" value="${U.esc((typeof localStorage !== "undefined" && localStorage.getItem("stats_key")) || "")}" placeholder="与 Worker 的 STATS_KEY 一致" /></label>
         <div class="pill-row">
           <button class="btn" id="stats-save">${U.icon("check")} 保存</button>
           <button class="btn" id="stats-test">${U.icon("play")} 测试连接</button>
+        <button class="btn" id="stats-autopick">${U.icon("refresh")} 自动选择可用入口</button>
         </div>
         <div id="stats-out" class="muted" style="margin-top:8px"></div></div>
 
@@ -3357,6 +3358,20 @@
       } catch (e) { out.innerHTML = `<span class="tag tag-danger">恢复失败</span> ` + U.esc(String(e && e.message || e)); }
     };
     $("#stats-test").onclick = async () => { const out = $("#stats-out"); if (!Stats.cfApi()) { out.innerHTML = '<span class="tag tag-warning">请先填写接口地址</span>'; return; } out.textContent = "测试中…"; const j = await Stats.cfGetStats(true); out.innerHTML = j ? `<span class="tag tag-success">连接成功</span> 累计 ${j.total || 0} · 今日 ${j.today || 0}` : `<span class="tag tag-danger">连接失败</span>`; };
+    const apBtn = $("#stats-autopick");
+    if (apBtn) apBtn.onclick = async () => {
+      const out = $("#stats-out");
+      if (!window.Account || !Account.probeEndpoints) { out.textContent = "当前版本不支持自动选择"; return; }
+      apBtn.disabled = true; out.textContent = "正在探测可用入口…";
+      try {
+        const res = await Account.probeEndpoints();
+        const hit = res.filter(x => x.ok)[0];
+        out.innerHTML = res.map(x => `<div>${x.ok ? '<span class="tag tag-success">可用</span>' : '<span class="tag tag-danger">不可达</span>'} <code>${U.esc(x.base)}</code> <span class="muted">${x.ms}ms</span></div>`).join("")
+          + (hit ? `<div style="margin-top:6px"><b>已切换到：</b><code>${U.esc(hit.base)}</code></div>` : '<div style="margin-top:6px" class="tag tag-warning">所有入口都不可达，请换网络（Wi-Fi / 代理）后再试</div>');
+        renderTopbar();
+      } catch (e) { out.textContent = "探测失败：" + (e && e.message || e); }
+      apBtn.disabled = false;
+    };
     $("#restore-seed").onclick = async () => {
       if (await U.confirm("将初始示例题目追加合并到当前题库（不覆盖现有数据）？", { okText: "追加" })) {
         const n = await DB.resetSeedAppend(); await Services.reload(); U.toast("已追加 " + n + " 道示例题目", "success"); renderSidebar(parseHash());
@@ -3535,8 +3550,16 @@
        默认地址指向本站官方 Worker（it-interview-stats.iti-interview.workers.dev）；
        管理员仍可在系统设置里用自己的地址覆盖（localStorage.stats_api）。 */
     const DEFAULT_STATS_API = "https://it-interview-stats.iti-interview.workers.dev";
-    const cfApi = () => (typeof localStorage !== "undefined"
-      ? (localStorage.getItem("stats_api") || DEFAULT_STATS_API) : DEFAULT_STATS_API);
+    /* 与帐号系统共用入口解析（2026-09-08）：手填地址 → 上次探测成功的入口 → 远程配置 → 内置。
+       account.js 尚未加载时退回原逻辑，行为不变。 */
+    const cfApi = () => {
+      if (typeof localStorage !== "undefined") {
+        const manual = localStorage.getItem("stats_api");
+        if (manual) return manual;
+      }
+      try { if (window.Account && window.Account.apiBase) return window.Account.apiBase(); } catch (e) {}
+      return DEFAULT_STATS_API;
+    };
     function cfEnabled() { return !!cfApi(); }
     function fetchWithTimeout(url, opts = {}, ms = 3000) {
       const ctrl = new AbortController();

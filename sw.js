@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260906a";
+const VERSION = "20260908a";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -84,6 +84,17 @@ self.addEventListener("fetch", (event) => {
       } catch (_) {
         return (await caches.match("/index.html")) || (await caches.match("/")) || Response.error();
       }
+    })());
+    return;
+  }
+
+  /* 远程 API 入口配置：必须 network-first。
+     同源资源默认是 cache-first，若把 api-endpoints.json 缓存住，
+     "改一份 JSON 就能全量切换后端入口" 的应急通道会失效。 */
+  if (url.pathname.endsWith('/api-endpoints.json')) {
+    event.respondWith((async () => {
+      try { return await fetch(req, { cache: 'reload' }); }
+      catch (_) { return (await caches.match(req)) || Response.error(); }
     })());
     return;
   }

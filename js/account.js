@@ -16,13 +16,88 @@
 
   const A = {};
   const LS = { token: "acc_token", user: "acc_user", syncAt: "acc_sync_at" };
-  const API_DEFAULT = "https://it-interview-stats.iti-interview.workers.dev";
+
+  /* ---------------- API 入口解析（2026-09-08 重构） ----------------
+   * 背景：Cloudflare 的 *.workers.dev 域名在中国大陆被 DNS 投毒 + SNI 复位，
+   *       手机（无代理）访问必然失败，表现为「API 暂不可达」。根治办法是给
+   *       Worker 绑自有域名（api.itinterview.eu.org，eu.org 审核通过后生效）。
+   * 设计：入口不再写死单点，改成「候选列表 + 自动择优 + 远程可覆盖」：
+   *   1) 用户在设置里手填的地址（localStorage.stats_api）优先级最高；
+   *   2) 上一次探测成功的入口（localStorage.stats_api_pick）；
+   *   3) 同源远程配置 api-endpoints.json（改入口无需重新发版，可绕过 SW 缓存）；
+   *   4) 内置兜底列表 BUILTIN_ENDPOINTS。
+   * 只有网络层失败（fetch 抛错 / 超时）才换下一个入口；HTTP 4xx/5xx 说明这个
+   * 入口是通的（比如密码错误），不切换，避免把真实错误掩盖成"网络问题"。
+   * ---------------------------------------------------------------- */
+  const BUILTIN_ENDPOINTS = [
+    "https://it-interview-stats.iti-interview.workers.dev"
+  ];
+  const CFG_URL = "api-endpoints.json";
+  const CFG_TTL = 6 * 3600 * 1000;
+  const API_DEFAULT = BUILTIN_ENDPOINTS[0];
 
   function ls(k, v) {
     if (v === undefined) return localStorage.getItem(k);
     v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v);
   }
-  const apiBase = () => (localStorage.getItem("stats_api") || API_DEFAULT).replace(/\/+$/, "");
+
+  function dedup(list) {
+    const out = [];
+    (list || []).forEach(function (u) {
+      const s = String(u || "").trim().replace(/\/+$/, "");
+      if (s && /^https?:\/\//i.test(s) && out.indexOf(s) < 0) out.push(s);
+    });
+    return out;
+  }
+  /* 远程配置：同源 JSON，形如 {"endpoints":["https://api.example.com", ...]}。
+     读取失败/格式错误一律静默忽略并退回内置列表，绝不影响主流程。 */
+  function readCfg() {
+    try {
+      const raw = localStorage.getItem("stats_api_cfg");
+      if (!raw) return null;
+      const o = JSON.parse(raw);
+      if (!o || !o.at || Date.now() - o.at > CFG_TTL) return null;
+      return dedup(o.endpoints);
+    } catch (e) { return null; }
+  }
+  A.refreshEndpoints = async function () {
+    try {
+      const r = await fetch(CFG_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return null;
+      const o = await r.json();
+      const list = dedup(o && o.endpoints);
+      if (!list.length) return null;
+      try { localStorage.setItem("stats_api_cfg", JSON.stringify({ at: Date.now(), endpoints: list })); } catch (e) {}
+      return list;
+    } catch (e) { return null; }
+  };
+  A.endpoints = function () {
+    const manual = localStorage.getItem("stats_api") || "";
+    const pick = localStorage.getItem("stats_api_pick") || "";
+    return dedup([manual, pick].concat(readCfg() || [], BUILTIN_ENDPOINTS));
+  };
+  /* 逐个探测候选入口，选中第一个可用的记下来（设置页「自动选择可用入口」用）。 */
+  A.probeEndpoints = async function () {
+    const eps = A.endpoints();
+    const out = [];
+    for (let i = 0; i < eps.length; i++) {
+      const base = eps[i];
+      const ctl = ("AbortController" in window) ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, 6000) : null;
+      const t0 = Date.now();
+      let ok = false;
+      try {
+        const r = await fetch(base + "/stats", { signal: ctl && ctl.signal });
+        ok = r.status < 500;
+      } catch (e) { ok = false; }
+      if (timer) clearTimeout(timer);
+      out.push({ base: base, ok: ok, ms: Date.now() - t0 });
+      if (ok) { ls("stats_api_pick", base); break; }
+    }
+    return out;
+  };
+  const apiBase = () => (A.endpoints()[0] || API_DEFAULT);
+  A.apiBase = apiBase;
 
   A.getUser = () => { try { return JSON.parse(ls(LS.user) || "null"); } catch (e) { return null; } };
   A.getToken = () => ls(LS.token) || "";
@@ -31,29 +106,38 @@
   async function call(method, path, body) {
     const h = { "Content-Type": "application/json" };
     if (A.getToken()) h["Authorization"] = "Bearer " + A.getToken();
-    /* 带 12s 超时与 1 次自动重试：workers.dev 在部分网络下丢包/超时（Failed to fetch），
-       重试通常能成功；仍失败时抛出可读错误而非裸 TypeError */
-    const once = async () => {
+    /* 按候选入口顺序尝试：每个入口 8s 超时，网络层失败才换下一个；
+       最后一个入口再补一次重试（吸收偶发丢包）。全部失败才报"不可达"。 */
+    const once = (base) => {
       const ctl = ("AbortController" in window) ? new AbortController() : null;
-      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, 12000) : null;
-      try {
-        return await fetch(apiBase() + path, {
-          method, headers: h, body: body ? JSON.stringify(body) : undefined, signal: ctl && ctl.signal,
-        });
-      } finally { if (timer) clearTimeout(timer); }
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, 8000) : null;
+      const p = fetch(base + path, {
+        method, headers: h, body: body ? JSON.stringify(body) : undefined, signal: ctl && ctl.signal,
+      });
+      const clear = () => { if (timer) clearTimeout(timer); };
+      p.then(clear, clear);
+      return p;
     };
-    let r;
-    try {
-      r = await once();
-    } catch (e1) {
-      await new Promise(res => setTimeout(res, 800));   // 稍候重试一次
-      try { r = await once(); }
-      catch (e2) {
-        const err = new Error("网络连接失败（API 暂不可达）：请检查网络后点「刷新」重试；若持续失败，可能需要切换网络/代理");
-        err.network = true;
-        throw err;
+    const eps = A.endpoints();
+    let r = null, usedEp = null;
+    for (let i = 0; i < eps.length; i++) {
+      const base = eps[i];
+      try {
+        r = await once(base);
+        usedEp = base;
+        break;                                   // 拿到响应（含 4xx/5xx）即停止换入口
+      } catch (e1) {
+        if (i < eps.length - 1) { await new Promise(res => setTimeout(res, 300)); continue; }
+        try { r = await once(base); usedEp = base; } catch (e2) { /* 最后入口也失败 */ }
       }
     }
+    if (!r) {
+      const err = new Error("连不上服务器（API 暂不可达）。国内网络访问 Cloudflare 的 workers.dev 域名常被拦截，" +
+        "请切换网络（Wi-Fi / 代理）后重试；也可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
+      err.network = true;
+      throw err;
+    }
+    if (usedEp) ls("stats_api_pick", usedEp);
     let j = null; try { j = await r.json(); } catch (_) {}
     if (!r.ok) { const e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
     return j;
@@ -331,6 +415,9 @@
     $("#u-q").addEventListener("keydown", e => { if (e.key === "Enter") load($("#u-q").value.trim()); });
     load("");
   };
+
+  /* 启动后异步拉取一次远程入口配置，下次调用即生效（eu.org 通过后改 JSON 即可全量切换） */
+  try { A.refreshEndpoints(); } catch (e) {}
 
   window.Account = A;
 })();
