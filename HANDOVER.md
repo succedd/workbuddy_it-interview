@@ -74,7 +74,8 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-08 21:50（**经典题补录：JVM 类加载/GC + MySQL 日志·索引四条追问链，题库 657 → 677 题**）
+- **最后更新**：2026-09-08 22:30（**丢失题全量找回：题库 677 → 874 题 + q/133 答案修复 + 3 题分类修复**）
+- **题库考古与恢复（2026-09-08 晚）**——遍历 git 历史全部 140 个 published.json 版本，确认 09-06 的 748→637 塌陷为事故源头。恢复 197 道丢失题（71 道复用孤儿页 ID 678-748，126 道新分配 749-874），修复 #133 被降质答案（152→3614 字符）与 #229/#233/#239 的 categoryId=null。**决定性验证**：748 个旧分享页与恢复后题库逐页比对（剥离 markdown 渲染差异后），0 页比题库更丰富 → 恢复后的题库是全部历史内容的严格超集。分享页 874 页全量重生成（0 孤儿 0 缺页），sitemap 879 条。release 与 main 双分支同步推送。
 - **经典题补录 20 题（2026-09-08）**——用户要求「从网上再抓点优质、经典的题」。执行方式：先对现有 657 题做两轮关键词查重定位**零覆盖空白区**，再按 `tools/classic-topics.json` 的追问链机制成批产出，全部经 `enrich_questions.py` 质检闸门（来源可达 + 答案结构化 + 标题去重）合并，**新增 20 题、跳过 0**，题库 657 → 677（新 ID 658-677）。
   - **四条追问链**（同链互挂 `relatedIds`）：T010 JVM 类加载与内存区域（5 题：类生命周期/双亲委派/运行时数据区/元空间 vs 永久代/对象创建与访问定位）；T011 JVM 垃圾回收（5 题：可达性分析 vs 引用计数/GC Roots 与 finalize 缓刑/Minor-Major-Full GC/CMS vs G1/分代假说与算法选择）；T019 MySQL 日志与高可用（6 题：undo·redo·binlog/WAL、redo vs binlog 与两阶段提交、主从复制三线程与 binlog 格式、主从延迟与并行复制、读写分离「刚写入读不到」、Buffer Pool 与 redo log 的关系）；T020 索引与 SQL 优化（4 题：count(*) vs count(1) vs count(列名)、自增主键 vs UUID、索引列 NOT NULL、前缀索引）。
   - **批次文件**：`tools/batches/2026-09-08-{a,b,c,d}.json`；来源均实测 HTTP 200：JavaGuide 的 `class-loading-process`/`classloader`/`memory-area`/`jvm-garbage-collection`，小林coding 的 `mysql/log/how_update`、`mysql/index/count`、`mysql/index/index_interview`。**注意 `dev.mysql.com` 官方文档对爬虫返回 403**，出题时改用中文权威源。

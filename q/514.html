@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？ · IT面试题库</title>
-  <meta name="description" content="要点： 1. TCC 三阶段： Try：预留资源（如冻结库存、冻结额度），做业务检查，不真正提交； Confirm：确认执行，用 Try 预留的资源完成业务，必须成功（不回滚）； Cancel：释放 Try 预留的资源，做反向补偿。 与 2PC 区别：2PC 在数据库层加锁，TCC 在业务层自己实现三动作，无长锁…">
+  <title>Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库</title>
+  <meta name="description" content="执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？ · IT面试题库">
-  <meta property="og:description" content="要点： 1. TCC 三阶段： Try：预留资源（如冻结库存、冻结额度），做业务检查，不真正提交； Confirm：确认执行，用 Try 预留的资源完成业务，必须成功（不回滚）； Cancel：释放 Try 预留的资源，做反向补偿。 与 2PC 区别：2PC 在数据库层加锁，TCC 在业务层自己实现三动作，无长锁…">
+  <meta property="og:title" content="Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库">
+  <meta property="og:description" content="执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/514.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 1. TCC 三阶段： Try：预留资源（如冻结库存、冻结额度），做业务检查，不真正提交； Confirm：确认执行，用 Try 预留的资源完成业务，必须成功（不回滚）； Cancel：释放 Try 预留的资源，做反向补偿。 与 2PC 区别：2PC 在数据库层加锁，TCC 在业务层自己实现三动作，无长锁…">
+  <meta name="twitter:title" content="Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库">
+  <meta name="twitter:description" content="执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/514.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？","text":"考察点：TCC 三阶段语义，以及其三大工程难题（空回滚、防悬挂、幂等）的成因与解法。追问：Try 预留资源失败，Cancel 要保证什么？","answerCount":1,"datePublished":"2026-09-04T02:19:55.517Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. TCC 三阶段： Try：预留资源（如冻结库存、冻结额度），做业务检查，不真正提交； Confirm：确认执行，用 Try 预留的资源完成业务，必须成功（不回滚）； Cancel：释放 Try 预留的资源，做反向补偿。 与 2PC 区别：2PC 在数据库层加锁，TCC 在业务层自己实现三动作，无长锁、性能好、侵入性强。 2. 三大难题与解法： 幂等：网络重试会重复调用 Confirm/Cancel，必须按全局事务 ID 做幂等（已处理则直接返回成功）； 空回滚：Try 没执行（如因网络 Cancel 先到），Cancel 不能报错，应记录「空回滚」并直接返回成功； 防悬挂：空回滚后如果迟到的 Try 又执行了，会留下未释放的预留资源——需在 Try 入口检查「是否已空回滚过」，若已回滚则拒绝执行 Try。 结论：TCC 把一致性责任交给业务代码，性能高、适合核心链路；但需自己处理幂等/空回滚/防悬挂三件套，通常用事务日志表记录状态机来保证。","url":"https://it-interview.is-a.dev/#/question/514"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。","text":"解释 defer 的 LIFO 顺序、参数在 defer 语句执行时即求值、以及 defer 对命名返回值的修改效果。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之前运行，因此它能修改命名返回值： 但若是匿名返回值（如 func f() int），defer 修改的只是局部副本，不影响最终返回。 常见陷阱：在 for 循环里 defer file.Close() 会延迟到函数结束才执行，可能耗尽文件描述符——应在循环内显式关闭或把循环体抽成函数。","url":"https://it-interview.is-a.dev/#/question/514"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,30 +70,36 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">TCC</span><span class="chip tag">幂等</span><span class="chip tag">空回滚</span><span class="chip tag">防悬挂</span><span class="chip tag">补偿</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：TCC 三阶段语义，以及其三大工程难题（空回滚、防悬挂、幂等）的成因与解法。追问：Try 预留资源失败，Cancel 要保证什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
-<ol>
-<li><strong>TCC 三阶段</strong>：</li>
-</ol>
-<p>   - <strong>Try</strong>：预留资源（如冻结库存、冻结额度），做业务检查，不真正提交；</p>
-<p>   - <strong>Confirm</strong>：确认执行，用 Try 预留的资源完成业务，必须成功（不回滚）；</p>
-<p>   - <strong>Cancel</strong>：释放 Try 预留的资源，做反向补偿。</p>
-<p>   - 与 2PC 区别：2PC 在数据库层加锁，TCC 在<strong>业务层</strong>自己实现三动作，无长锁、性能好、侵入性强。</p>
-<ol>
-<li><strong>三大难题与解法</strong>：</li>
-</ol>
-<p>   - <strong>幂等</strong>：网络重试会重复调用 Confirm/Cancel，必须按全局事务 ID 做幂等（已处理则直接返回成功）；</p>
-<p>   - <strong>空回滚</strong>：Try 没执行（如因网络 Cancel 先到），Cancel 不能报错，应记录「空回滚」并直接返回成功；</p>
-<p>   - <strong>防悬挂</strong>：空回滚后如果迟到的 Try 又执行了，会留下未释放的预留资源——需在 Try 入口检查「是否已空回滚过」，若已回滚则拒绝执行 Try。</p>
-<p><strong>结论</strong>：TCC 把一致性责任交给业务代码，性能高、适合核心链路；但需自己处理幂等/空回滚/防悬挂三件套，通常用事务日志表记录状态机来保证。</p></div>
+    <h1>Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">defer</span><span class="chip tag">闭包</span><span class="chip tag">命名返回值</span></div>
+    <div class="card"><h2>题目</h2><p>解释 defer 的 LIFO 顺序、参数在 defer 语句执行时即求值、以及 defer 对命名返回值的修改效果。</p></div>
+    <div class="card"><h2>参考答案</h2><ul>
+<li><strong>执行顺序</strong>：同一个函数里的多个 <code>defer</code> 按<strong>后进先出（LIFO）</strong>执行，即最后声明的 defer 最先运行。</li>
+<li><strong>参数求值时机</strong>：<code>defer</code> 后面的函数<strong>参数在 defer 语句执行那一刻</strong>就被求值并拷贝，而不是在函数 return 时才求。常见“坑”：</li>
+</ul>
+<pre><code class="language-go">func f() int {
+    i := 0
+    defer fmt.Println(i) // 输出 0，因为此时 i 已求值为 0
+    i++
+    return i
+}</code></pre>
+<ul>
+<li><strong>对命名返回值的修改</strong>：<code>defer</code> 在 <strong>return 赋值之后、真正返回之前</strong>运行，因此它<strong>能修改命名返回值</strong>：</li>
+</ul>
+<pre><code class="language-go">func f() (result int) {
+    defer func() { result++ }() // 返回 1
+    return 0
+}</code></pre>
+<p>  但若是匿名返回值（如 <code>func f() int</code>），defer 修改的只是局部副本，不影响最终返回。</p>
+<ul>
+<li><strong>常见陷阱</strong>：在 <code>for</code> 循环里 <code>defer file.Close()</code> 会延迟到函数结束才执行，可能耗尽文件描述符——应在循环内显式关闭或把循环体抽成函数。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/514">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=119&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=16&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

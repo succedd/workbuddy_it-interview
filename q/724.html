@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="数据模型：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 行键+列族:列+版本时间戳 定位，可存多版本。 特点：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。 适用：时序/日志/画像等写多读少、单键查询场景…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/724.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HBase 的数据模型（行键/列族/版本）与适用场景？","text":"说明 HBase 的列式存储模型与典型用途。","answerCount":1,"datePublished":"2026-09-06T06:33:53.777Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"数据模型：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 行键+列族:列+版本时间戳 定位，可存多版本。 特点：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。 适用：时序/日志/画像等写多读少、单键查询场景；不支持复杂 join 与二级索引（需额外方案），不适合事务型关系查询。","url":"https://it-interview.is-a.dev/#/question/724"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HBase 的数据模型（行键/列族/版本）与适用场景？","text":"说明 HBase 的列式存储模型与典型用途。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"数据模型：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 行键+列族:列+版本时间戳 定位，可存多版本。 特点：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。 适用：时序/日志/画像等写多读少、单键查询场景；不支持复杂 join 与二级索引（需额外方案），不适合事务型关系查询。","url":"https://it-interview.is-a.dev/#/question/724"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

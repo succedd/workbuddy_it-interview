@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？ · IT面试题库</title>
-  <meta name="description" content="要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不…">
+  <title>TCP 为什么需要三次握手建立连接、四次挥手释放连接？ · IT面试题库</title>
+  <meta name="description" content="三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？ · IT面试题库">
-  <meta property="og:description" content="要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不…">
+  <meta property="og:title" content="TCP 为什么需要三次握手建立连接、四次挥手释放连接？ · IT面试题库">
+  <meta property="og:description" content="三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/486.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？ · IT面试题库">
-  <meta name="twitter:description" content="要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不…">
+  <meta name="twitter:title" content="TCP 为什么需要三次握手建立连接、四次挥手释放连接？ · IT面试题库">
+  <meta name="twitter:description" content="三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/486.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？","text":"考察点：栈「后进先出」与最近匹配原则的结合，是从链表转向栈类题的衔接点。追问：如果字符串里混入其他字符，如何调整？","answerCount":1,"datePublished":"2026-09-05T02:44:18.447Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。 三个失效场景都要覆盖：右括号时栈空（如 ())）、弹出的类型不匹配（如 (]）、遍历结束栈非空（如 ((）。第三个最容易被漏掉，return not stack 而不是 return True 是关键。 为什么不用计数器：([)] 这种交叉嵌套计数器无法识别，栈能保留「未闭合序列」的完整顺序信息。 复杂度：时间 O(n)，空间 O(n)（最坏全是左括号）。奇数长度可提前返回 False 做小优化。","url":"https://it-interview.is-a.dev/#/question/486"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 为什么需要三次握手建立连接、四次挥手释放连接？","text":"请描述 TCP 三次握手与四次挥手的过程，并解释为什么建立是三次、释放是四次。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方进入 ESTABLISHED）。 为什么三次？两次不够：若旧 SYN 迟到，服务器单凭两次握手就开连接会浪费资源；三次能让双方都确认“对方能收、自己能发”。 四次挥手（释放连接）——TCP 全双工，每个方向需单独关闭： 1. 客户端 FIN=1, seq=u → 服务器（客户端 FIN_WAIT_1）。 2. 服务器 ACK=1, ack=u+1 → 客户端（服务器 CLOSE_WAIT，客户端 FIN_WAIT_2）。此时服务器仍可发数据。 3. 服务器发完数据后 FIN=1, seq=w → 客户端（服务器 LAST_ACK）。 4. 客户端 ACK=1, ack=w+1 → 服务器（服务器 CLOSED；客户端 TIME_WAIT 等待 2MSL 后 CLOSED）。 为什么四次？因为收到 FIN 只表示对方不再发数据，但本方可能还有数据要发，故 ACK 与 FIN 不能合并（不像 SYN+ACK 可合并），需分两次往返。 TIME_WAIT 等待 2MSL：确保最后 ACK 到达；让旧报文在网络中消逝，防止影响新连接。","url":"https://it-interview.is-a.dev/#/question/486"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,30 +70,31 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>编程题：给定一个只含 `()[]{}` 的字符串，判断它是否有效（LeetCode 20）。有效要求：括号类型匹配、顺序正确、正确闭合。为什么这道题天然适合用栈？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">栈</span><span class="chip tag">括号匹配</span><span class="chip tag">LeetCode20</span><span class="chip tag">LIFO</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：栈「后进先出」与最近匹配原则的结合，是从链表转向栈类题的衔接点。追问：如果字符串里混入其他字符，如何调整？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：左括号压栈、右括号弹栈比对——「最近未闭合的左括号必须最先被闭合」正好是栈的 LIFO 语义。</p>
-<pre><code class="language-python">def isValid(s: str) -&gt; bool:
-    pairs = {&#39;)&#39;: &#39;(&#39;, &#39;]&#39;: &#39;[&#39;, &#39;}&#39;: &#39;{&#39;}
-    stack = []
-    for ch in s:
-        if ch not in pairs:          # 左括号
-            stack.append(ch)
-        elif not stack or stack.pop() != pairs[ch]:
-            return False             # 右括号不匹配/栈空
-    return not stack                 # 必须全部闭合</code></pre>
-<ul>
-<li><strong>三个失效场景都要覆盖</strong>：右括号时栈空（如 <code>())</code>）、弹出的类型不匹配（如 <code>(]</code>）、遍历结束栈非空（如 <code>((</code>）。第三个最容易被漏掉，<code>return not stack</code> 而不是 <code>return True</code> 是关键。</li>
-<li><strong>为什么不用计数器</strong>：<code>([)]</code> 这种交叉嵌套计数器无法识别，栈能保留「未闭合序列」的完整顺序信息。</li>
-<li><strong>复杂度</strong>：时间 O(n)，空间 O(n)（最坏全是左括号）。奇数长度可提前返回 False 做小优化。</li>
-</ul></div>
+    <h1>TCP 为什么需要三次握手建立连接、四次挥手释放连接？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">TCP</span><span class="chip tag">三次握手</span><span class="chip tag">四次挥手</span></div>
+    <div class="card"><h2>题目</h2><p>请描述 TCP 三次握手与四次挥手的过程，并解释为什么建立是三次、释放是四次。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>三次握手（建立连接）</strong>——确认双方收发能力：</p>
+<ol>
+<li>客户端 <code>SYN=1, seq=x</code> → 服务器（进入 SYN_SENT）。</li>
+<li>服务器 <code>SYN=1, ACK=1, seq=y, ack=x+1</code> → 客户端（进入 SYN_RCVD）。</li>
+<li>客户端 <code>ACK=1, seq=x+1, ack=y+1</code> → 服务器（双方进入 ESTABLISHED）。</li>
+</ol>
+<p>为什么三次？两次不够：若旧 SYN 迟到，服务器单凭两次握手就开连接会浪费资源；三次能让双方都确认“对方能收、自己能发”。</p>
+<p><strong>四次挥手（释放连接）</strong>——TCP 全双工，每个方向需单独关闭：</p>
+<ol>
+<li>客户端 <code>FIN=1, seq=u</code> → 服务器（客户端 FIN_WAIT_1）。</li>
+<li>服务器 <code>ACK=1, ack=u+1</code> → 客户端（服务器 CLOSE_WAIT，客户端 FIN_WAIT_2）。此时服务器仍可发数据。</li>
+<li>服务器发完数据后 <code>FIN=1, seq=w</code> → 客户端（服务器 LAST_ACK）。</li>
+<li>客户端 <code>ACK=1, ack=w+1</code> → 服务器（服务器 CLOSED；客户端 TIME_WAIT 等待 2MSL 后 CLOSED）。</li>
+</ol>
+<p>为什么四次？因为收到 FIN 只表示对方不再发数据，但本方可能还有数据要发，故 ACK 与 FIN 不能合并（不像 SYN+ACK 可合并），需分两次往返。</p>
+<p><strong>TIME_WAIT 等待 2MSL</strong>：确保最后 ACK 到达；让旧报文在网络中消逝，防止影响新连接。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/486">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=2&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

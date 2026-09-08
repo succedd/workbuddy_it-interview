@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="双线程模型：逻辑层（AppService，跑 JS 业务逻辑）与渲染层（WebView，管页面渲染）分属两个线程，通过 Native 桥接以 JSON/消息通信，避免 JS 卡顿阻塞渲染，也出于安全沙箱考虑。 生命周期：App 级有 onLaunch/onShow/onHide；Page 级有 onLoad/on…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/721.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"微信小程序的生命周期与双线程模型（逻辑层/渲染层）？","text":"解释小程序的运行架构与关键生命周期。","answerCount":1,"datePublished":"2026-09-06T06:33:53.565Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"双线程模型：逻辑层（AppService，跑 JS 业务逻辑）与渲染层（WebView，管页面渲染）分属两个线程，通过 Native 桥接以 JSON/消息通信，避免 JS 卡顿阻塞渲染，也出于安全沙箱考虑。 生命周期：App 级有 onLaunch/onShow/onHide；Page 级有 onLoad/onShow/onReady/onHide/onUnload。 注意两线程异步通信有延迟，不可假设同步拿到 setData 后的 DOM 状态。","url":"https://it-interview.is-a.dev/#/question/721"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"微信小程序的生命周期与双线程模型（逻辑层/渲染层）？","text":"解释小程序的运行架构与关键生命周期。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"双线程模型：逻辑层（AppService，跑 JS 业务逻辑）与渲染层（WebView，管页面渲染）分属两个线程，通过 Native 桥接以 JSON/消息通信，避免 JS 卡顿阻塞渲染，也出于安全沙箱考虑。 生命周期：App 级有 onLaunch/onShow/onHide；Page 级有 onLoad/onShow/onReady/onHide/onUnload。 注意两线程异步通信有延迟，不可假设同步拿到 setData 后的 DOM 状态。","url":"https://it-interview.is-a.dev/#/question/721"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

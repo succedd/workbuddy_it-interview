@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="技术栈：Kafka 做高吞吐数据总线，Flink 做实时计算（聚合/关联），结果写入 ClickHouse/Doris 等 OLAP 供查询。 Lambda：批流双链路（批层算准、流层算快），结果合并，准确但维护两套逻辑。 Kappa：只用流（Kafka 保留全量+重放）一条链路，架构更简单；以流为主、按需重放替…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/709.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？","text":"说明实时数仓技术栈，并对比两种数仓架构范式。","answerCount":1,"datePublished":"2026-09-06T06:30:39.454Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"技术栈：Kafka 做高吞吐数据总线，Flink 做实时计算（聚合/关联），结果写入 ClickHouse/Doris 等 OLAP 供查询。 Lambda：批流双链路（批层算准、流层算快），结果合并，准确但维护两套逻辑。 Kappa：只用流（Kafka 保留全量+重放）一条链路，架构更简单；以流为主、按需重放替代批层。现代多倾向 Kappa/流批一体以减少重复开发。","url":"https://it-interview.is-a.dev/#/question/709"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？","text":"说明实时数仓技术栈，并对比两种数仓架构范式。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"技术栈：Kafka 做高吞吐数据总线，Flink 做实时计算（聚合/关联），结果写入 ClickHouse/Doris 等 OLAP 供查询。 Lambda：批流双链路（批层算准、流层算快），结果合并，准确但维护两套逻辑。 Kappa：只用流（Kafka 保留全量+重放）一条链路，架构更简单；以流为主、按需重放替代批层。现代多倾向 Kappa/流批一体以减少重复开发。","url":"https://it-interview.is-a.dev/#/question/709"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="聚集索引（Clustered）：决定数据行的物理存储顺序，一个表只能有一个；叶子节点就是数据页，查询命中时无需回表，范围扫描极快。 非聚集索引（Nonclustered）：索引与数据物理顺序无关，叶子节点存索引键+指向数据行的指针（或聚集键）；一个表可建多个。 取舍：频繁按某列范围/排序查询用聚集索引；多列高频过…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/723.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SQL Server 中聚集索引与非聚集索引的区别？","text":"对比两种索引的物理与逻辑差异。","answerCount":1,"datePublished":"2026-09-06T06:33:53.711Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"聚集索引（Clustered）：决定数据行的物理存储顺序，一个表只能有一个；叶子节点就是数据页，查询命中时无需回表，范围扫描极快。 非聚集索引（Nonclustered）：索引与数据物理顺序无关，叶子节点存索引键+指向数据行的指针（或聚集键）；一个表可建多个。 取舍：频繁按某列范围/排序查询用聚集索引；多列高频过滤可建多个非聚集索引，但写操作会更慢、占更多空间。","url":"https://it-interview.is-a.dev/#/question/723"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SQL Server 中聚集索引与非聚集索引的区别？","text":"对比两种索引的物理与逻辑差异。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"聚集索引（Clustered）：决定数据行的物理存储顺序，一个表只能有一个；叶子节点就是数据页，查询命中时无需回表，范围扫描极快。 非聚集索引（Nonclustered）：索引与数据物理顺序无关，叶子节点存索引键+指向数据行的指针（或聚集键）；一个表可建多个。 取舍：频繁按某列范围/排序查询用聚集索引；多列高频过滤可建多个非聚集索引，但写操作会更慢、占更多空间。","url":"https://it-interview.is-a.dev/#/question/723"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

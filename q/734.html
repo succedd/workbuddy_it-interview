@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="单线程事件循环：Dart 默认单线程跑事件循环，类似 JS，UI 流畅靠非阻塞异步（async/await）。 Isolate：Dart 的“线程”叫 Isolate，各自有独立内存堆、不共享状态，靠消息传递（SendPort/ReceivePort）通信，从根本上避免共享内存的锁问题。 与 Flutter：Fl…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/734.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Dart 的 Isolate 并发模型与 Flutter 的关系？","text":"解释 Dart 单线程+Isolate 的并发思路。","answerCount":1,"datePublished":"2026-09-06T06:33:54.481Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"单线程事件循环：Dart 默认单线程跑事件循环，类似 JS，UI 流畅靠非阻塞异步（async/await）。 Isolate：Dart 的“线程”叫 Isolate，各自有独立内存堆、不共享状态，靠消息传递（SendPort/ReceivePort）通信，从根本上避免共享内存的锁问题。 与 Flutter：Flutter UI 跑在主 Isolate；耗时计算可 spawn 新 Isolate 在后台跑，结果回传，避免阻塞界面掉帧（如 JSON 解析用 compute）。","url":"https://it-interview.is-a.dev/#/question/734"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Dart 的 Isolate 并发模型与 Flutter 的关系？","text":"解释 Dart 单线程+Isolate 的并发思路。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"单线程事件循环：Dart 默认单线程跑事件循环，类似 JS，UI 流畅靠非阻塞异步（async/await）。 Isolate：Dart 的“线程”叫 Isolate，各自有独立内存堆、不共享状态，靠消息传递（SendPort/ReceivePort）通信，从根本上避免共享内存的锁问题。 与 Flutter：Flutter UI 跑在主 Isolate；耗时计算可 spawn 新 Isolate 在后台跑，结果回传，避免阻塞界面掉帧（如 JSON 解析用 compute）。","url":"https://it-interview.is-a.dev/#/question/734"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

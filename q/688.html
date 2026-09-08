@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="采集：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。 编码：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。 渲染：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。 弱网对抗：自适应码率（ABR）、…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/688.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？","text":"说明自研或封装音视频 SDK 时需处理的核心环节。","answerCount":1,"datePublished":"2026-09-06T06:28:28.904Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"采集：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。 编码：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。 渲染：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。 弱网对抗：自适应码率（ABR）、抖动缓冲（Jitter Buffer）、丢帧/丢包重传（NACK/FEC）、QoS 上报；移动端还需处理前后台切换、旋转与功耗。","url":"https://it-interview.is-a.dev/#/question/688"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？","text":"说明自研或封装音视频 SDK 时需处理的核心环节。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"采集：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。 编码：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。 渲染：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。 弱网对抗：自适应码率（ABR）、抖动缓冲（Jitter Buffer）、丢帧/丢包重传（NACK/FEC）、QoS 上报；移动端还需处理前后台切换、旋转与功耗。","url":"https://it-interview.is-a.dev/#/question/688"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

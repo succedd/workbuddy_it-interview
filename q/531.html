@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库</title>
+  <meta name="description" content="常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库">
+  <meta property="og:description" content="常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/531.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库">
+  <meta name="twitter:description" content="常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/531.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。","text":"说明函数/隐式转换/前导模糊/OR/!=/NULL 等导致失效的情况，并解释 EXPLAIN 的 type/key/rows/Extra 关键字段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：%abc 无法用 B+ 树定位（abc% 可走前缀）。 4. 不等于/范围过度：!=、\u003c> 多数情况放弃索引；NOT IN、OR 连接非索引列也会失效。 5. 违背最左前缀（见上题）。 6. 字符集/排序规则不一致 的 join 关联列导致无法用索引。 用 EXPLAIN 判断： type：访问类型，从好到差 system > const > eq_ref > ref > range > index > ALL；ALL 即全表扫描（未走索引）。 key：实际使用的索引；为 NULL 表示没用到。 rows：预估扫描行数，越大越慢。 Extra：Using index（覆盖索引，好）、Using where（回表过滤）、Using filesort/Using temporary（需优化，排序/临时表）。 优化思路：建覆盖索引、避免 SELECT *、改写函数条件为范围、调整联合索引顺序。","url":"https://it-interview.is-a.dev/#/question/531"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip tag">索引失效</span><span class="chip tag">EXPLAIN</span><span class="chip tag">执行计划</span><span class="chip tag">SQL优化</span></div>
+    <div class="card"><h2>题目</h2><p>说明函数/隐式转换/前导模糊/OR/!=/NULL 等导致失效的情况，并解释 EXPLAIN 的 type/key/rows/Extra 关键字段。</p></div>
+    <div class="card"><h2>参考答案</h2><ul>
+<li><strong>常见索引失效场景</strong>：</li>
+</ul>
+<p>  1. 对索引列使用<strong>函数或运算</strong>：<code>WHERE YEAR(created_at)=2024</code>、<code>WHERE amount+1=10</code> → 无法用索引。</p>
+<p>  2. <strong>隐式类型转换</strong>：列是字符串却用数字比较 <code>WHERE phone=13800000000</code>（MySQL 会转字符串，致失效）。</p>
+<p>  3. <strong>前导模糊/左右模糊</strong>：<code>%abc</code> 无法用 B+ 树定位（<code>abc%</code> 可走前缀）。</p>
+<p>  4. <strong>不等于/范围过度</strong>：<code>!=</code>、<code>&lt;&gt;</code> 多数情况放弃索引；<code>NOT IN</code>、<code>OR</code> 连接非索引列也会失效。</p>
+<p>  5. <strong>违背最左前缀</strong>（见上题）。</p>
+<p>  6. <strong>字符集/排序规则不一致</strong> 的 join 关联列导致无法用索引。</p>
+<ul>
+<li><strong>用 EXPLAIN 判断</strong>：</li>
+</ul>
+<p>  - <code>type</code>：访问类型，从好到差 <code>system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL</code>；<code>ALL</code> 即全表扫描（未走索引）。</p>
+<p>  - <code>key</code>：实际使用的索引；为 <code>NULL</code> 表示没用到。</p>
+<p>  - <code>rows</code>：预估扫描行数，越大越慢。</p>
+<p>  - <code>Extra</code>：<code>Using index</code>（覆盖索引，好）、<code>Using where</code>（回表过滤）、<code>Using filesort</code>/<code>Using temporary</code>（需优化，排序/临时表）。</p>
+<ul>
+<li><strong>优化思路</strong>：建覆盖索引、避免 <code>SELECT *</code>、改写函数条件为范围、调整联合索引顺序。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/531">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=27&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

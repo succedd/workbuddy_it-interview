@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="执行原理：Hive 用元数据（Metastore）描述表结构，把 HiveQL 经解析/优化生成执行计划，早期翻译为 MapReduce、现多跑在 Tez/Spark 引擎上。 分区（Partition）：按字段（如日期）把数据物理分目录，查询加分区条件可大幅裁剪扫描。 分桶（Bucket）：按哈希把数据分到固定…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/706.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？","text":"说明 Hive 的 SQL-on-Hadoop 机制与表设计优化。","answerCount":1,"datePublished":"2026-09-06T06:30:38.693Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行原理：Hive 用元数据（Metastore）描述表结构，把 HiveQL 经解析/优化生成执行计划，早期翻译为 MapReduce、现多跑在 Tez/Spark 引擎上。 分区（Partition）：按字段（如日期）把数据物理分目录，查询加分区条件可大幅裁剪扫描。 分桶（Bucket）：按哈希把数据分到固定桶文件，利于采样与 join 优化。二者是 Hive 海量表查询提速的核心手段。","url":"https://it-interview.is-a.dev/#/question/706"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？","text":"说明 Hive 的 SQL-on-Hadoop 机制与表设计优化。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行原理：Hive 用元数据（Metastore）描述表结构，把 HiveQL 经解析/优化生成执行计划，早期翻译为 MapReduce、现多跑在 Tez/Spark 引擎上。 分区（Partition）：按字段（如日期）把数据物理分目录，查询加分区条件可大幅裁剪扫描。 分桶（Bucket）：按哈希把数据分到固定桶文件，利于采样与 join 优化。二者是 Hive 海量表查询提速的核心手段。","url":"https://it-interview.is-a.dev/#/question/706"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

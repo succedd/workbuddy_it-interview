@@ -3,32 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>下列关于 Git 常用操作的说法，正确的是：
-A. git pull 等价于 git fetch + git merge
-B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
-C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
-D. git stash 保存的是工作区和暂存区的改动 · IT面试题库</title>
-  <meta name="description" content="要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针…">
+  <title>LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？ · IT面试题库</title>
+  <meta name="description" content="LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="下列关于 Git 常用操作的说法，正确的是：
-A. git pull 等价于 git fetch + git merge
-B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
-C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
-D. git stash 保存的是工作区和暂存区的改动 · IT面试题库">
-  <meta property="og:description" content="要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针…">
+  <meta property="og:title" content="LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？ · IT面试题库">
+  <meta property="og:description" content="LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/492.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="下列关于 Git 常用操作的说法，正确的是：
-A. git pull 等价于 git fetch + git merge
-B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
-C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
-D. git stash 保存的是工作区和暂存区的改动 · IT面试题库">
-  <meta name="twitter:description" content="要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针…">
+  <meta name="twitter:title" content="LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？ · IT面试题库">
+  <meta name="twitter:description" content="LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/492.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"下列关于 Git 常用操作的说法，正确的是：\nA. git pull 等价于 git fetch + git merge\nB. git reset --hard 可以恢复任意已删除的提交历史，无任何风险\nC. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支\nD. git stash 保存的是工作区和暂存区的改动","text":"考察点：易混操作辨析——fetch/pull、reset/revert、stash 的准确语义。追问：为什么「撤销已推送的提交」要用 revert 而不是 reset --hard + force push？","answerCount":1,"datePublished":"2026-09-05T02:44:46.535Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针、重写历史，公共分支上使用会波及所有协作者。它「能找回的部分」仅限于 reflog 里还有记录的提交，并非无风险。 C 对：revert 通过新增一个「反操作提交」抵消目标提交，历史只增不改，是唯一安全的公共分支撤销手段。 D 对：stash 默认同时收走工作区与暂存区的未提交改动；git stash pop 恢复到工作区，git stash apply --index 可连暂存区状态一起恢复。 选择题背后的原则：改历史的命令（reset、rebase、filter-branch）只用于本地/私有分支；公共历史一律用只增不改的 revert。","url":"https://it-interview.is-a.dev/#/question/492"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？","text":"请说明自顶向下（LL）与自底向上（LR）分析的基本原理、对文法的要求，以及常见变体（如 LL(1)、LR(0)/SLR/LALR/LR(1)）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分析器。 优点：直观、易手写；缺点：能分析的文法类较小。 LR 分析（自底向上，Left-to-right scan, Rightmost derivation in reverse）： 从左向右扫描、最右推导逆过程（规约），用状态栈 + 移进/规约动作表，从叶子逐步规约到开始符号。 变体能力递增：LR(0) \u003c SLR \u003c LALR(1) \u003c LR(1)（CLRLR）。LALR 因表小而实用（如 Yacc/Bison 默认），LR(1) 最强大但状态爆炸。 优点：能分析绝大多数上下文无关文法，错误定位早；缺点：手工构造难，依赖自动生成工具。 对比：LL 简单但文法受限、需改造；LR 能力强、覆盖广，是工业编译器后端主力。","url":"https://it-interview.is-a.dev/#/question/492"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -82,27 +70,28 @@ D. git stash 保存的是工作区和暂存区的改动 · IT面试题库">
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>下列关于 Git 常用操作的说法，正确的是：
-A. git pull 等价于 git fetch + git merge
-B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
-C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
-D. git stash 保存的是工作区和暂存区的改动</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">Git</span><span class="chip tag">reset</span><span class="chip tag">revert</span><span class="chip tag">stash</span><span class="chip tag">fetch</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：易混操作辨析——fetch/pull、reset/revert、stash 的准确语义。追问：为什么「撤销已推送的提交」要用 revert 而不是 reset --hard + force push？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：正确答案为 <strong>A、C、D</strong>（B 错误）。</p>
+    <h1>LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip tag">LL</span><span class="chip tag">LR</span><span class="chip tag">语法分析</span></div>
+    <div class="card"><h2>题目</h2><p>请说明自顶向下（LL）与自底向上（LR）分析的基本原理、对文法的要求，以及常见变体（如 LL(1)、LR(0)/SLR/LALR/LR(1)）。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）</strong>：</p>
 <ul>
-<li><strong>A 对</strong>：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 <code>git pull --rebase</code> 则第二步改为变基，历史更线性。</li>
-<li><strong>B 错</strong>：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针、重写历史，公共分支上使用会波及所有协作者。它「能找回的部分」仅限于 reflog 里还有记录的提交，并非无风险。</li>
-<li><strong>C 对</strong>：revert 通过新增一个「反操作提交」抵消目标提交，历史只增不改，是唯一安全的公共分支撤销手段。</li>
-<li><strong>D 对</strong>：stash 默认同时收走工作区与暂存区的未提交改动；<code>git stash pop</code> 恢复到工作区，<code>git stash apply --index</code> 可连暂存区状态一起恢复。</li>
-<li><strong>选择题背后的原则</strong>：改历史的命令（reset、rebase、filter-branch）只用于本地/私有分支；公共历史一律用只增不改的 revert。</li>
-</ul></div>
+<li>从左向右扫描、最左推导，用<strong>预测分析表 + 栈</strong>构造分析树，试图从开始符号推导出输入。</li>
+<li>典型 <strong>LL(1)</strong>：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分析器。</li>
+<li>优点：直观、易手写；缺点：能分析的文法类较小。</li>
+</ul>
+<p><strong>LR 分析（自底向上，Left-to-right scan, Rightmost derivation in reverse）</strong>：</p>
+<ul>
+<li>从左向右扫描、最右推导逆过程（规约），用<strong>状态栈 + 移进/规约动作表</strong>，从叶子逐步规约到开始符号。</li>
+<li>变体能力递增：<strong>LR(0) &lt; SLR &lt; LALR(1) &lt; LR(1)</strong>（CLRLR）。LALR 因表小而实用（如 Yacc/Bison 默认），LR(1) 最强大但状态爆炸。</li>
+<li>优点：能分析绝大多数上下文无关文法，错误定位早；缺点：手工构造难，依赖自动生成工具。</li>
+</ul>
+<p><strong>对比</strong>：LL 简单但文法受限、需改造；LR 能力强、覆盖广，是工业编译器后端主力。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/492">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=7&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

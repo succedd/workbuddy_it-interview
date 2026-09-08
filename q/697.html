@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="Bootloader（如 U-Boot）：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。 Kernel：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。 Rootfs：挂载真正根文件系统，提供用户空间程序与库。 Init：执行 /sbin/init（systemd/BusyBox …">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/697.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？","text":"说明从加电到用户空间的启动链路。","answerCount":1,"datePublished":"2026-09-06T06:30:37.217Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Bootloader（如 U-Boot）：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。 Kernel：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。 Rootfs：挂载真正根文件系统，提供用户空间程序与库。 Init：执行 /sbin/init（systemd/BusyBox init），按脚本拉起服务与 shell/UI。理解流程才能做启动优化与故障定位（卡在哪一级）。","url":"https://it-interview.is-a.dev/#/question/697"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？","text":"说明从加电到用户空间的启动链路。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Bootloader（如 U-Boot）：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。 Kernel：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。 Rootfs：挂载真正根文件系统，提供用户空间程序与库。 Init：执行 /sbin/init（systemd/BusyBox init），按脚本拉起服务与 shell/UI。理解流程才能做启动优化与故障定位（卡在哪一级）。","url":"https://it-interview.is-a.dev/#/question/697"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

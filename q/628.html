@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>自动化测试框架有哪些常见类型？何时该引入自动化？ · IT面试题库</title>
-  <meta name="description" content="数据驱动：用例逻辑与测试数据分离，同一脚本跑多组数据（如 CSV/Excel 参数化），适合同逻辑多输入的回归。 关键字驱动：把操作封装成关键字（点击、输入），用例用配置描述，非技术人员也可编写。 BDD（行为驱动）：用自然语言（Given/When/Then）描述行为，开发测试产品对齐需求，如 Cucumber…">
+  <title>信息流（feed）系统的推模式（fan-out）与拉模式（fan-in）各有什么优劣？什么场景用推拉结合？ · IT面试题库</title>
+  <meta name="description" content="要点： 推模式（写扩散）：用户发帖时主动推送给所有粉丝的时间线（写时 fan-out）；读速度快（直接读自己 timeline），但大 V 发一条要写海量粉丝，写放大严重。 拉模式（读扩散）：读自己 feed 时实时拉取所关注人的最新动态聚合；写无压力，但粉丝多的人读取慢、聚合成本高。 推拉结合（混合）：普通用户…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="自动化测试框架有哪些常见类型？何时该引入自动化？ · IT面试题库">
-  <meta property="og:description" content="数据驱动：用例逻辑与测试数据分离，同一脚本跑多组数据（如 CSV/Excel 参数化），适合同逻辑多输入的回归。 关键字驱动：把操作封装成关键字（点击、输入），用例用配置描述，非技术人员也可编写。 BDD（行为驱动）：用自然语言（Given/When/Then）描述行为，开发测试产品对齐需求，如 Cucumber…">
+  <meta property="og:title" content="信息流（feed）系统的推模式（fan-out）与拉模式（fan-in）各有什么优劣？什么场景用推拉结合？ · IT面试题库">
+  <meta property="og:description" content="要点： 推模式（写扩散）：用户发帖时主动推送给所有粉丝的时间线（写时 fan-out）；读速度快（直接读自己 timeline），但大 V 发一条要写海量粉丝，写放大严重。 拉模式（读扩散）：读自己 feed 时实时拉取所关注人的最新动态聚合；写无压力，但粉丝多的人读取慢、聚合成本高。 推拉结合（混合）：普通用户…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/628.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="自动化测试框架有哪些常见类型？何时该引入自动化？ · IT面试题库">
-  <meta name="twitter:description" content="数据驱动：用例逻辑与测试数据分离，同一脚本跑多组数据（如 CSV/Excel 参数化），适合同逻辑多输入的回归。 关键字驱动：把操作封装成关键字（点击、输入），用例用配置描述，非技术人员也可编写。 BDD（行为驱动）：用自然语言（Given/When/Then）描述行为，开发测试产品对齐需求，如 Cucumber…">
+  <meta name="twitter:title" content="信息流（feed）系统的推模式（fan-out）与拉模式（fan-in）各有什么优劣？什么场景用推拉结合？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 推模式（写扩散）：用户发帖时主动推送给所有粉丝的时间线（写时 fan-out）；读速度快（直接读自己 timeline），但大 V 发一条要写海量粉丝，写放大严重。 拉模式（读扩散）：读自己 feed 时实时拉取所关注人的最新动态聚合；写无压力，但粉丝多的人读取慢、聚合成本高。 推拉结合（混合）：普通用户…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/628.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"自动化测试框架有哪些常见类型？何时该引入自动化？","text":"区分数据驱动、关键字驱动、BDD 等框架，并说明自动化测试的适用边界。","answerCount":1,"datePublished":"2026-09-06T06:21:15.802Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"数据驱动：用例逻辑与测试数据分离，同一脚本跑多组数据（如 CSV/Excel 参数化），适合同逻辑多输入的回归。 关键字驱动：把操作封装成关键字（点击、输入），用例用配置描述，非技术人员也可编写。 BDD（行为驱动）：用自然语言（Given/When/Then）描述行为，开发测试产品对齐需求，如 Cucumber。 引入时机：仅在稳定、高频回归、收益大于维护成本的模块自动化；探索性测试、一次性需求仍靠手工。","url":"https://it-interview.is-a.dev/#/question/628"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"信息流（feed）系统的推模式（fan-out）与拉模式（fan-in）各有什么优劣？什么场景用推拉结合？","text":"考察点：理解 feed 流两种分发架构的取舍，能按「关注数/实时性/成本」选型。","answerCount":1,"datePublished":"2026-09-06T02:24:01.460Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 推模式（写扩散）：用户发帖时主动推送给所有粉丝的时间线（写时 fan-out）；读速度快（直接读自己 timeline），但大 V 发一条要写海量粉丝，写放大严重。 拉模式（读扩散）：读自己 feed 时实时拉取所关注人的最新动态聚合；写无压力，但粉丝多的人读取慢、聚合成本高。 推拉结合（混合）：普通用户用推模式，大 V（粉丝极多）改用拉模式，或「推给在线粉丝+拉取大 V」，兼顾读性能与写成本。 选型依据：关注数少、实时性要求高→推；大 V 多、写成本敏感→拉；社交产品普遍推拉结合，并用 Redis 存 timeline、冷热分离。","url":"https://it-interview.is-a.dev/#/question/628"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,19 +70,22 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>自动化测试框架有哪些常见类型？何时该引入自动化？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip tag">自动化测试</span><span class="chip tag">数据驱动</span><span class="chip tag">BDD</span></div>
-    <div class="card"><h2>题目</h2><p>区分数据驱动、关键字驱动、BDD 等框架，并说明自动化测试的适用边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>数据驱动</strong>：用例逻辑与测试数据分离，同一脚本跑多组数据（如 CSV/Excel 参数化），适合同逻辑多输入的回归。</p>
-<p><strong>关键字驱动</strong>：把操作封装成关键字（点击、输入），用例用配置描述，非技术人员也可编写。</p>
-<p><strong>BDD（行为驱动）</strong>：用自然语言（Given/When/Then）描述行为，开发测试产品对齐需求，如 Cucumber。</p>
-<p><strong>引入时机</strong>：仅在稳定、高频回归、收益大于维护成本的模块自动化；探索性测试、一次性需求仍靠手工。</p></div>
+    <h1>信息流（feed）系统的推模式（fan-out）与拉模式（fan-in）各有什么优劣？什么场景用推拉结合？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">系统设计</span><span class="chip tag">feed流</span><span class="chip tag">推模式</span><span class="chip tag">拉模式</span><span class="chip tag">架构</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：理解 feed 流两种分发架构的取舍，能按「关注数/实时性/成本」选型。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>推模式（写扩散）</strong>：用户发帖时主动推送给所有粉丝的时间线（写时 fan-out）；读速度快（直接读自己 timeline），但大 V 发一条要写海量粉丝，写放大严重。</li>
+<li><strong>拉模式（读扩散）</strong>：读自己 feed 时实时拉取所关注人的最新动态聚合；写无压力，但粉丝多的人读取慢、聚合成本高。</li>
+<li><strong>推拉结合（混合）</strong>：普通用户用推模式，大 V（粉丝极多）改用拉模式，或「推给在线粉丝+拉取大 V」，兼顾读性能与写成本。</li>
+<li><strong>选型依据</strong>：关注数少、实时性要求高→推；大 V 多、写成本敏感→拉；社交产品普遍推拉结合，并用 Redis 存 timeline、冷热分离。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/628">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=108&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=98&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

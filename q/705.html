@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="Map：各 split 由 map 任务读入，输出 中间结果。 Shuffle（最核心）：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。 Reduce：对同一 key 的 value 分组后调用 reduce 汇总…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/705.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MapReduce 的 map→shuffle→reduce 过程是怎样的？","text":"描述一次 MapReduce 作业的数据流与关键阶段。","answerCount":1,"datePublished":"2026-09-06T06:30:38.323Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Map：各 split 由 map 任务读入，输出 中间结果。 Shuffle（最核心）：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。 Reduce：对同一 key 的 value 分组后调用 reduce 汇总输出。 理解 shuffle 的磁盘/网络开销，是调优（合并、压缩、合理分区数）的关键。","url":"https://it-interview.is-a.dev/#/question/705"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MapReduce 的 map→shuffle→reduce 过程是怎样的？","text":"描述一次 MapReduce 作业的数据流与关键阶段。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Map：各 split 由 map 任务读入，输出 中间结果。 Shuffle（最核心）：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。 Reduce：对同一 key 的 value 分组后调用 reduce 汇总输出。 理解 shuffle 的磁盘/网络开销，是调优（合并、压缩、合理分区数）的关键。","url":"https://it-interview.is-a.dev/#/question/705"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

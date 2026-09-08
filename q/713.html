@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="动机：直接操作真实 DOM 昂贵且频繁触发重排，批量手动操作易出错。虚拟 DOM 用 JS 对象描述 UI 树，避免每次都与真实 DOM 直接交互。 Diff 过程：状态变化后生成新 vnode 树，与旧树对比（同层比较、key 复用），算出最小变更集，再一次性 patch 到真实 DOM。 收益：把“频繁细小的…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/713.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端框架为何需要虚拟 DOM？Diff 算法的作用？","text":"解释虚拟 DOM 的引入动机与差异化更新的价值。","answerCount":1,"datePublished":"2026-09-06T06:33:52.745Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"动机：直接操作真实 DOM 昂贵且频繁触发重排，批量手动操作易出错。虚拟 DOM 用 JS 对象描述 UI 树，避免每次都与真实 DOM 直接交互。 Diff 过程：状态变化后生成新 vnode 树，与旧树对比（同层比较、key 复用），算出最小变更集，再一次性 patch 到真实 DOM。 收益：把“频繁细小的 DOM 操作”收敛为“一次最小更新”，提升性能与可维护性；代价是多了 vnode 构建与 diff 开销，极端场景可用手动优化绕过。","url":"https://it-interview.is-a.dev/#/question/713"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端框架为何需要虚拟 DOM？Diff 算法的作用？","text":"解释虚拟 DOM 的引入动机与差异化更新的价值。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"动机：直接操作真实 DOM 昂贵且频繁触发重排，批量手动操作易出错。虚拟 DOM 用 JS 对象描述 UI 树，避免每次都与真实 DOM 直接交互。 Diff 过程：状态变化后生成新 vnode 树，与旧树对比（同层比较、key 复用），算出最小变更集，再一次性 patch 到真实 DOM。 收益：把“频繁细小的 DOM 操作”收敛为“一次最小更新”，提升性能与可维护性；代价是多了 vnode 构建与 diff 开销，极端场景可用手动优化绕过。","url":"https://it-interview.is-a.dev/#/question/713"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

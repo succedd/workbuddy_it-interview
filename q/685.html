@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="信令（Signaling）：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。 SDP 协商：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。 ICE 候选：收集主机/反…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/685.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？","text":"解释 WebRTC 建立 P2P 媒体连接的三个关键环节。","answerCount":1,"datePublished":"2026-09-06T06:28:28.368Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"信令（Signaling）：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。 SDP 协商：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。 ICE 候选：收集主机/反射/中继（TURN）候选地址，两两连通性检查选出可用路径，穿透 NAT 建立 P2P；失败回退 TURN 中继。此后用 SRTP 传输加密媒体流。","url":"https://it-interview.is-a.dev/#/question/685"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？","text":"解释 WebRTC 建立 P2P 媒体连接的三个关键环节。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"信令（Signaling）：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。 SDP 协商：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。 ICE 候选：收集主机/反射/中继（TURN）候选地址，两两连通性检查选出可用路径，穿透 NAT 建立 P2P；失败回退 TURN 中继。此后用 SRTP 传输加密媒体流。","url":"https://it-interview.is-a.dev/#/question/685"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

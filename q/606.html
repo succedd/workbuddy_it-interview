@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>嵌入式系统中如何防止栈溢出（Stack Overflow）？ · IT面试题库</title>
+  <meta name="description" content="成因 过深递归或超大局部数组（栈上分配）； 中断嵌套 + 每个 ISR 栈帧叠加； 栈空间配置过小（启动文件 Stack_Size）； printf/浮点格式化等在栈上消耗巨大。 防护手段 1. 合理配置栈大小：启动文件/链接脚本中按最坏路径估算并留余量。 2. 栈填充（Stack Painting / 哨兵）：…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="嵌入式系统中如何防止栈溢出（Stack Overflow）？ · IT面试题库">
+  <meta property="og:description" content="成因 过深递归或超大局部数组（栈上分配）； 中断嵌套 + 每个 ISR 栈帧叠加； 栈空间配置过小（启动文件 Stack_Size）； printf/浮点格式化等在栈上消耗巨大。 防护手段 1. 合理配置栈大小：启动文件/链接脚本中按最坏路径估算并留余量。 2. 栈填充（Stack Painting / 哨兵）：…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/606.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="嵌入式系统中如何防止栈溢出（Stack Overflow）？ · IT面试题库">
+  <meta name="twitter:description" content="成因 过深递归或超大局部数组（栈上分配）； 中断嵌套 + 每个 ISR 栈帧叠加； 栈空间配置过小（启动文件 Stack_Size）； printf/浮点格式化等在栈上消耗巨大。 防护手段 1. 合理配置栈大小：启动文件/链接脚本中按最坏路径估算并留余量。 2. 栈填充（Stack Painting / 哨兵）：…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/606.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式系统中如何防止栈溢出（Stack Overflow）？","text":"请分析栈溢出的常见成因，并给出在资源受限 MCU 上的检测与防护手段（含编译期/运行期）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"成因 过深递归或超大局部数组（栈上分配）； 中断嵌套 + 每个 ISR 栈帧叠加； 栈空间配置过小（启动文件 Stack_Size）； printf/浮点格式化等在栈上消耗巨大。 防护手段 1. 合理配置栈大小：启动文件/链接脚本中按最坏路径估算并留余量。 2. 栈填充（Stack Painting / 哨兵）：启动时把栈区填 0xCD 等特殊模式，运行期检查栈底保留区是否被改写 → 判断是否曾溢出（如 FreeRTOS uxTaskGetStackHighWaterMark）。 3. MPU/MMU 保护：把栈区末尾设只读守卫页，越界即触发硬件异常（HardFault）。 4. 编译期/静态分析：-fstack-usage 统计函数栈用量；避免大局部数组改用静态/static 或堆（需带内存保护）。 5. Watchdog + 异常钩子：栈溢出常表现为 HardFault，在 HardFault 处理函数里记录并安全重启。 6. 编码规范：避免递归、限制中断嵌套深度、慎用栈上大缓冲与 printf。 注意：溢出往往「静默」破坏相邻变量/堆，难以复现，务必以监控手段前置发现。","url":"https://it-interview.is-a.dev/#/question/606"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>嵌入式系统中如何防止栈溢出（Stack Overflow）？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip tag">嵌入式C</span><span class="chip tag">栈溢出</span><span class="chip tag">HardFault</span><span class="chip tag">MPU</span></div>
+    <div class="card"><h2>题目</h2><p>请分析栈溢出的常见成因，并给出在资源受限 MCU 上的检测与防护手段（含编译期/运行期）。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>成因</strong></p>
+<ul>
+<li>过深递归或超大局部数组（栈上分配）；</li>
+<li>中断嵌套 + 每个 ISR 栈帧叠加；</li>
+<li>栈空间配置过小（启动文件 <code>Stack_Size</code>）；</li>
+<li>printf/浮点格式化等在栈上消耗巨大。</li>
+</ul>
+<p><strong>防护手段</strong></p>
+<ol>
+<li><strong>合理配置栈大小</strong>：启动文件/链接脚本中按最坏路径估算并留余量。</li>
+<li><strong>栈填充（Stack Painting / 哨兵）</strong>：启动时把栈区填 <code>0xCD</code> 等特殊模式，运行期检查栈底保留区是否被改写 → 判断是否曾溢出（如 FreeRTOS <code>uxTaskGetStackHighWaterMark</code>）。</li>
+<li><strong>MPU/MMU 保护</strong>：把栈区末尾设只读守卫页，越界即触发硬件异常（HardFault）。</li>
+<li><strong>编译期/静态分析</strong>：<code>-fstack-usage</code> 统计函数栈用量；避免大局部数组改用静态/<code>static</code> 或堆（需带内存保护）。</li>
+<li><strong>Watchdog + 异常钩子</strong>：栈溢出常表现为 HardFault，在 HardFault 处理函数里记录并安全重启。</li>
+<li><strong>编码规范</strong>：避免递归、限制中断嵌套深度、慎用栈上大缓冲与 <code>printf</code>。</li>
+</ol>
+<p><strong>注意</strong>：溢出往往「静默」破坏相邻变量/堆，难以复现，务必以监控手段前置发现。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/606">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=242&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库</title>
-  <meta name="description" content="要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%…">
+  <title>什么是等价关系？自反、对称、传递三大性质如何判定？ · IT面试题库</title>
+  <meta name="description" content="设 R 是集合 A 上的二元关系，若 R 同时满足： 自反性（Reflexive）：∀a∈A, (a,a)∈R； 对称性（Symmetric）：若 (a,b)∈R 则 (b,a)∈R； 传递性（Transitive）：若 (a,b)∈R 且 (b,c)∈R 则 (a,c)∈R； 则称 R 为等价关系。 等价类：与…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库">
-  <meta property="og:description" content="要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%…">
+  <meta property="og:title" content="什么是等价关系？自反、对称、传递三大性质如何判定？ · IT面试题库">
+  <meta property="og:description" content="设 R 是集合 A 上的二元关系，若 R 同时满足： 自反性（Reflexive）：∀a∈A, (a,a)∈R； 对称性（Symmetric）：若 (a,b)∈R 则 (b,a)∈R； 传递性（Transitive）：若 (a,b)∈R 且 (b,c)∈R 则 (a,c)∈R； 则称 R 为等价关系。 等价类：与…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/497.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库">
-  <meta name="twitter:description" content="要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%…">
+  <meta name="twitter:title" content="什么是等价关系？自反、对称、传递三大性质如何判定？ · IT面试题库">
+  <meta name="twitter:description" content="设 R 是集合 A 上的二元关系，若 R 同时满足： 自反性（Reflexive）：∀a∈A, (a,a)∈R； 对称性（Symmetric）：若 (a,b)∈R 则 (b,a)∈R； 传递性（Transitive）：若 (a,b)∈R 且 (b,c)∈R 则 (a,c)∈R； 则称 R 为等价关系。 等价类：与…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/497.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法","text":"考察点：是否掌握系统化的性能排查方法论（USE），而非盲目敲命令。追问：为什么强调「先整体后局部」，而不是直接上 perf 火焰图？","answerCount":1,"datePublished":"2026-09-04T02:18:55.312Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%。 Saturation（饱和度）：资源积压的额外工作量（通常表现为队列），如 CPU 运行队列长度、磁盘 await 排队；任何非零饱和度都值得警惕。 Errors（错误）：错误事件计数，如网卡 late collision、TCP 重传、磁盘 media error，非零且持续增长的必须查。 落地顺序：USE 能解决约 80% 的服务器问题、只需 5% 精力，是「先整体后局部」的抓手；定位到 CPU / 内存 / IO / 网络中的某一类瓶颈后，再上 top / perf / iostat / ss 等工具钻取。切忌一上来就 perf 火焰图——没有方向地采样既慢又难读，容易在错误资源上浪费时间。","url":"https://it-interview.is-a.dev/#/question/497"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是等价关系？自反、对称、传递三大性质如何判定？","text":"请说明等价关系的定义，并举出集合划分（商集）与模 n 同余等例子，解释等价类与划分的关系。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设 R 是集合 A 上的二元关系，若 R 同时满足： 自反性（Reflexive）：∀a∈A, (a,a)∈R； 对称性（Symmetric）：若 (a,b)∈R 则 (b,a)∈R； 传递性（Transitive）：若 (a,b)∈R 且 (b,c)∈R 则 (a,c)∈R； 则称 R 为等价关系。 等价类：与 a 等价的全体 [a] = {x∈A | (x,a)∈R}。等价类互不相交且并为 A，构成 A 的一个划分（partition）；反过来任一划分也唯一确定一个等价关系。等价类的集合称为商集 A/R。 经典例子——模 n 同余：整数上 a ≡ b (mod n)（n | a−b）是等价关系。模 3 同余把整数分为 3 个等价类 [0],[1],[2]（即余数 0/1/2），商集即 ℤ₃。 应用：哈希分桶、编译器中的作用域分组、类型系统等，本质都是用等价关系把元素归并成互不相交的类。","url":"https://it-interview.is-a.dev/#/question/497"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,22 +70,25 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">USE方法</span><span class="chip tag">性能排查</span><span class="chip tag">Linux</span><span class="chip tag">方法论</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：是否掌握系统化的性能排查方法论（USE），而非盲目敲命令。追问：为什么强调「先整体后局部」，而不是直接上 perf 火焰图？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。</p>
+    <h1>什么是等价关系？自反、对称、传递三大性质如何判定？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip tag">等价关系</span><span class="chip tag">自反</span><span class="chip tag">对称</span><span class="chip tag">传递</span></div>
+    <div class="card"><h2>题目</h2><p>请说明等价关系的定义，并举出集合划分（商集）与模 n 同余等例子，解释等价类与划分的关系。</p></div>
+    <div class="card"><h2>参考答案</h2><p>设 R 是集合 A 上的二元关系，若 R 同时满足：</p>
 <ul>
-<li><strong>Utilization（利用率）</strong>：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%。</li>
-<li><strong>Saturation（饱和度）</strong>：资源积压的额外工作量（通常表现为队列），如 CPU 运行队列长度、磁盘 await 排队；任何非零饱和度都值得警惕。</li>
-<li><strong>Errors（错误）</strong>：错误事件计数，如网卡 late collision、TCP 重传、磁盘 media error，非零且持续增长的必须查。</li>
+<li><strong>自反性（Reflexive）</strong>：∀a∈A, (a,a)∈R；</li>
+<li><strong>对称性（Symmetric）</strong>：若 (a,b)∈R 则 (b,a)∈R；</li>
+<li><strong>传递性（Transitive）</strong>：若 (a,b)∈R 且 (b,c)∈R 则 (a,c)∈R；</li>
 </ul>
-<p><strong>落地顺序</strong>：USE 能解决约 80% 的服务器问题、只需 5% 精力，是「先整体后局部」的抓手；定位到 CPU / 内存 / IO / 网络中的某一类瓶颈后，再上 top / perf / iostat / ss 等工具钻取。切忌一上来就 perf 火焰图——没有方向地采样既慢又难读，容易在错误资源上浪费时间。</p></div>
+<p>则称 R 为<strong>等价关系</strong>。</p>
+<p><strong>等价类</strong>：与 a 等价的全体 <code>[a] = {x∈A | (x,a)∈R}</code>。等价类互不相交且并为 A，构成 A 的一个<strong>划分（partition）</strong>；反过来任一划分也唯一确定一个等价关系。等价类的集合称为<strong>商集 A/R</strong>。</p>
+<p><strong>经典例子——模 n 同余</strong>：整数上 <code>a ≡ b (mod n)</code>（n | a−b）是等价关系。模 3 同余把整数分为 3 个等价类 <code>[0],[1],[2]</code>（即余数 0/1/2），商集即 ℤ₃。</p>
+<p><strong>应用</strong>：哈希分桶、编译器中的作用域分组、类型系统等，本质都是用等价关系把元素归并成互不相交的类。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/497">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=8&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

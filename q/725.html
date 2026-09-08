@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP …">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/725.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","text":"解释 Cassandra 可调一致性与 AP 取向。","answerCount":1,"datePublished":"2026-09-06T06:33:53.832Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP 中优先可用与分区容忍），副本间异步修复（read repair/hinted handoff），短暂不一致会收敛。适合写入极高、可容忍短暂不一致的场景。","url":"https://it-interview.is-a.dev/#/question/725"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","text":"解释 Cassandra 可调一致性与 AP 取向。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP 中优先可用与分区容忍），副本间异步修复（read repair/hinted handoff），短暂不一致会收敛。适合写入极高、可容忍短暂不一致的场景。","url":"https://it-interview.is-a.dev/#/question/725"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

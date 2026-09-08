@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Appium 实现移动端 UI 自动化的原理是什么？为何能跨 iOS/Android？ · IT面试题库</title>
-  <meta name="description" content="架构：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。 跨平台原理：它封装了系统原生框架——Android 走 UIAutomator2，iOS 走 XCUITest，对上层暴露统一的…">
+  <title>如何收敛「0.0.0.0/0 放通 22/3389/3306 等高危端口」的风险？给出最小授权与临时放行的实操。 · IT面试题库</title>
+  <meta name="description" content="要点： 收紧来源 IP：把 22/3389 的来源从 0.0.0.0/0 改为运维 VPN/堡垒机出口 IP 或企业 CIDR，禁止全网放通管理端口。 最小化端口：数据库 3306/6379 只对内网安全组/网段放通，绝不对外；Web 仅放 80/443。 临时放行：排障需临时开端口时，用「限定来源 + 短时」规…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Appium 实现移动端 UI 自动化的原理是什么？为何能跨 iOS/Android？ · IT面试题库">
-  <meta property="og:description" content="架构：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。 跨平台原理：它封装了系统原生框架——Android 走 UIAutomator2，iOS 走 XCUITest，对上层暴露统一的…">
+  <meta property="og:title" content="如何收敛「0.0.0.0/0 放通 22/3389/3306 等高危端口」的风险？给出最小授权与临时放行的实操。 · IT面试题库">
+  <meta property="og:description" content="要点： 收紧来源 IP：把 22/3389 的来源从 0.0.0.0/0 改为运维 VPN/堡垒机出口 IP 或企业 CIDR，禁止全网放通管理端口。 最小化端口：数据库 3306/6379 只对内网安全组/网段放通，绝不对外；Web 仅放 80/443。 临时放行：排障需临时开端口时，用「限定来源 + 短时」规…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/632.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Appium 实现移动端 UI 自动化的原理是什么？为何能跨 iOS/Android？ · IT面试题库">
-  <meta name="twitter:description" content="架构：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。 跨平台原理：它封装了系统原生框架——Android 走 UIAutomator2，iOS 走 XCUITest，对上层暴露统一的…">
+  <meta name="twitter:title" content="如何收敛「0.0.0.0/0 放通 22/3389/3306 等高危端口」的风险？给出最小授权与临时放行的实操。 · IT面试题库">
+  <meta name="twitter:description" content="要点： 收紧来源 IP：把 22/3389 的来源从 0.0.0.0/0 改为运维 VPN/堡垒机出口 IP 或企业 CIDR，禁止全网放通管理端口。 最小化端口：数据库 3306/6379 只对内网安全组/网段放通，绝不对外；Web 仅放 80/443。 临时放行：排障需临时开端口时，用「限定来源 + 短时」规…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/632.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Appium 实现移动端 UI 自动化的原理是什么？为何能跨 iOS/Android？","text":"解释 Appium 的架构设计与跨平台能力来源。","answerCount":1,"datePublished":"2026-09-06T06:21:16.006Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"架构：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。 跨平台原理：它封装了系统原生框架——Android 走 UIAutomator2，iOS 走 XCUITest，对上层暴露统一的 WebDriver API，因此同一套脚本语言（Python/Java）可驱动两端。 优势：开源、支持多语言、无需改被测 App 源码；局限是依赖各平台框架版本与真机/模拟器环境。","url":"https://it-interview.is-a.dev/#/question/632"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何收敛「0.0.0.0/0 放通 22/3389/3306 等高危端口」的风险？给出最小授权与临时放行的实操。","text":"考察点：掌握安全组最小权限落地——收紧来源、缩小端口、临时放行的运维习惯。","answerCount":1,"datePublished":"2026-09-06T02:24:10.332Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 收紧来源 IP：把 22/3389 的来源从 0.0.0.0/0 改为运维 VPN/堡垒机出口 IP 或企业 CIDR，禁止全网放通管理端口。 最小化端口：数据库 3306/6379 只对内网安全组/网段放通，绝不对外；Web 仅放 80/443。 临时放行：排障需临时开端口时，用「限定来源 + 短时」规则，处理完立即删除，避免长期 0.0.0.0/0。 批量治理：用 CLI/SDK 扫描账号下所有安全组，列出放通 0.0.0.0/0 且端口高危的条目（见编程题），纳入定期巡检。","url":"https://it-interview.is-a.dev/#/question/632"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,18 +70,22 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Appium 实现移动端 UI 自动化的原理是什么？为何能跨 iOS/Android？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Appium</span><span class="chip tag">UI自动化</span><span class="chip tag">移动测试</span></div>
-    <div class="card"><h2>题目</h2><p>解释 Appium 的架构设计与跨平台能力来源。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>架构</strong>：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。</p>
-<p><strong>跨平台原理</strong>：它封装了系统原生框架——Android 走 UIAutomator2，iOS 走 XCUITest，对上层暴露统一的 WebDriver API，因此同一套脚本语言（Python/Java）可驱动两端。</p>
-<p><strong>优势</strong>：开源、支持多语言、无需改被测 App 源码；局限是依赖各平台框架版本与真机/模拟器环境。</p></div>
+    <h1>如何收敛「0.0.0.0/0 放通 22/3389/3306 等高危端口」的风险？给出最小授权与临时放行的实操。</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">云安全</span><span class="chip tag">安全组</span><span class="chip tag">最小权限</span><span class="chip tag">高危端口</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：掌握安全组最小权限落地——收紧来源、缩小端口、临时放行的运维习惯。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>收紧来源 IP</strong>：把 22/3389 的来源从 0.0.0.0/0 改为运维 VPN/堡垒机出口 IP 或企业 CIDR，禁止全网放通管理端口。</li>
+<li><strong>最小化端口</strong>：数据库 3306/6379 只对内网安全组/网段放通，绝不对外；Web 仅放 80/443。</li>
+<li><strong>临时放行</strong>：排障需临时开端口时，用「限定来源 + 短时」规则，处理完立即删除，避免长期 0.0.0.0/0。</li>
+<li><strong>批量治理</strong>：用 CLI/SDK 扫描账号下所有安全组，列出放通 0.0.0.0/0 且端口高危的条目（见编程题），纳入定期巡检。</li>
+</ul></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/632">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=115&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

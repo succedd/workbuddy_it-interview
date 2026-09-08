@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="架构：NameNode 是主节点，管元数据（目录树、块位置）；DataNode 是工作节点，存实际数据块并按指令读写。 副本机制：默认每块存 3 副本，跨机架分布，兼顾可靠与带宽。 容错：DataNode 心跳/块汇报异常时 NameNode 标记失效并调度复制恢复副本数；NameNode 用 EditLog+F…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/704.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？","text":"解释 HDFS 主从结构与可靠性来源。","answerCount":1,"datePublished":"2026-09-06T06:30:38.151Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"架构：NameNode 是主节点，管元数据（目录树、块位置）；DataNode 是工作节点，存实际数据块并按指令读写。 副本机制：默认每块存 3 副本，跨机架分布，兼顾可靠与带宽。 容错：DataNode 心跳/块汇报异常时 NameNode 标记失效并调度复制恢复副本数；NameNode 用 EditLog+FsImage（HA 下由 JournalNode+ZKFC 实现主备切换）防单点。客户端读写自动重试可用副本。","url":"https://it-interview.is-a.dev/#/question/704"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？","text":"解释 HDFS 主从结构与可靠性来源。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"架构：NameNode 是主节点，管元数据（目录树、块位置）；DataNode 是工作节点，存实际数据块并按指令读写。 副本机制：默认每块存 3 副本，跨机架分布，兼顾可靠与带宽。 容错：DataNode 心跳/块汇报异常时 NameNode 标记失效并调度复制恢复副本数；NameNode 用 EditLog+FsImage（HA 下由 JournalNode+ZKFC 实现主备切换）防单点。客户端读写自动重试可用副本。","url":"https://it-interview.is-a.dev/#/question/704"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

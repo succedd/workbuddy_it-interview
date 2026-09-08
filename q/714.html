@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="原理：Vue2 在初始化时对 data 每个属性用 Object.defineProperty 重写 getter/setter，读取时收集依赖（Watcher），赋值时通知依赖更新视图（发布订阅）。 局限：① 无法监听对象新增/删除属性（需 Vue.set）；② 数组通过重写原型方法拦截，但下标/长度修改监听不…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/714.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue2 的响应式原理（Object.defineProperty）及局限？","text":"说明 Vue2 如何实现数据驱动视图，以及其已知短板。","answerCount":1,"datePublished":"2026-09-06T06:33:52.869Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：Vue2 在初始化时对 data 每个属性用 Object.defineProperty 重写 getter/setter，读取时收集依赖（Watcher），赋值时通知依赖更新视图（发布订阅）。 局限：① 无法监听对象新增/删除属性（需 Vue.set）；② 数组通过重写原型方法拦截，但下标/长度修改监听不到；③ 递归劫持深对象有性能开销。 Vue3 改用 Proxy 从根本上解决了这些限制，且支持懒代理。","url":"https://it-interview.is-a.dev/#/question/714"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue2 的响应式原理（Object.defineProperty）及局限？","text":"说明 Vue2 如何实现数据驱动视图，以及其已知短板。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：Vue2 在初始化时对 data 每个属性用 Object.defineProperty 重写 getter/setter，读取时收集依赖（Watcher），赋值时通知依赖更新视图（发布订阅）。 局限：① 无法监听对象新增/删除属性（需 Vue.set）；② 数组通过重写原型方法拦截，但下标/长度修改监听不到；③ 递归劫持深对象有性能开销。 Vue3 改用 Proxy 从根本上解决了这些限制，且支持懒代理。","url":"https://it-interview.is-a.dev/#/question/714"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }

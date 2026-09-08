@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库</title>
-  <meta name="description" content="排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top…">
+  <title>C 语言中指针和数组的区别是什么？ · IT面试题库</title>
+  <meta name="description" content="本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&amp;arr 以及用字符串字面量初始化 char s[…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库">
-  <meta property="og:description" content="排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top…">
+  <meta property="og:title" content="C 语言中指针和数组的区别是什么？ · IT面试题库">
+  <meta property="og:description" content="本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&amp;arr 以及用字符串字面量初始化 char s[…">
   <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <meta property="og:url" content="https://it-interview.is-a.dev/q/499.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库">
-  <meta name="twitter:description" content="排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top…">
+  <meta name="twitter:title" content="C 语言中指针和数组的区别是什么？ · IT面试题库">
+  <meta name="twitter:description" content="本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&amp;arr 以及用字符串字面量初始化 char s[…">
   <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
   <link rel="canonical" href="https://it-interview.is-a.dev/q/499.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？","text":"考察点：CPU 火焰图的完整排查链路（top→mpstat→pidstat→perf→火焰图），以及 on-CPU 与 off-CPU 的区别。追问：如果 CPU 利用率不高但进程依然很慢，该怎么查？","answerCount":1,"datePublished":"2026-09-04T02:18:59.599Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top -F 49 -p 实时看热点符号； 5. 抓样本：perf record -F 99 -a -g -- sleep 30 再 perf report； 6. 生成火焰图：perf script | ./stackcollapse-perf.pl > out.folded && ./flamegraph.pl out.folded > cpu.svg，纵向找最宽的栈帧即热点函数。 关键区分： on-CPU 高（us / sy 高）→ 用上面链路找计算热点； off-CPU 高（进程在等锁 / IO / 网络，CPU 不高却慢）→ 用 off-CPU 火焰图（perf sched / 调度延迟），此时只看 CPU 利用率会误判为「CPU 没问题」。 注意：容器里 top 可能显示宿主机核数导致误读，应结合 cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us 或 cgroup 视角确认配额后再下结论。","url":"https://it-interview.is-a.dev/#/question/499"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"C 语言中指针和数组的区别是什么？","text":"为什么 sizeof(arr) 和 sizeof(p) 结果不同？数组名在哪些情况下会退化为指针？函数参数里的数组实际上是什么？","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&arr 以及用字符串字面量初始化 char s[]=\"abc\" 时，数组名不退化；其余（如赋值、算术、函数传参）均退化为指针。 函数参数：void f(int a[10]) 等价于 void f(int a)——数组形参一律退化为指针，因此函数内 sizeof(a) 得到指针大小，无法获知原数组长度（常需额外传长度参数）。 访问方式：arr[i] 与 p[i] 语义相同（都按 基址+isizeof(T) 寻址），但数组越界访问更隐蔽；指针可重新指向别处，数组名不能。","url":"https://it-interview.is-a.dev/#/question/499"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -70,30 +70,28 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">CPU</span><span class="chip tag">perf</span><span class="chip tag">火焰图</span><span class="chip tag">热点函数</span><span class="chip tag">on-CPU</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：CPU 火焰图的完整排查链路（top→mpstat→pidstat→perf→火焰图），以及 on-CPU 与 off-CPU 的区别。追问：如果 CPU 利用率不高但进程依然很慢，该怎么查？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>排查链路（on-CPU 热点）</strong>：</p>
-<ol>
-<li><code>top -H</code> 或 <code>top</code> 找到高 CPU 的进程 / 线程 PID、TID；</li>
-<li><code>mpstat -P ALL 1</code> 确认是单核还是多核打满，排除「平均低但单核 100%」的假象；</li>
-<li><code>pidstat -u -p &lt;pid&gt; 1</code> 看该进程用户态 / 内核态拆分；</li>
-<li><code>perf top -F 49 -p &lt;pid&gt;</code> 实时看热点符号；</li>
-<li>抓样本：<code>perf record -F 99 -a -g -- sleep 30</code> 再 <code>perf report</code>；</li>
-<li>生成火焰图：<code>perf script | ./stackcollapse-perf.pl &gt; out.folded &amp;&amp; ./flamegraph.pl out.folded &gt; cpu.svg</code>，纵向找最宽的栈帧即热点函数。</li>
-</ol>
-<p><strong>关键区分</strong>：</p>
+    <h1>C 语言中指针和数组的区别是什么？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">C语言</span><span class="chip tag">指针</span><span class="chip tag">数组</span></div>
+    <div class="card"><h2>题目</h2><p>为什么 <code>sizeof(arr)</code> 和 <code>sizeof(p)</code> 结果不同？数组名在哪些情况下会退化为指针？函数参数里的数组实际上是什么？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>本质区别</strong>：</p>
 <ul>
-<li><strong>on-CPU 高</strong>（us / sy 高）→ 用上面链路找计算热点；</li>
-<li><strong>off-CPU 高</strong>（进程在等锁 / IO / 网络，CPU 不高却慢）→ 用 off-CPU 火焰图（perf sched / 调度延迟），此时只看 CPU 利用率会误判为「CPU 没问题」。</li>
+<li><strong>数组</strong>是一段连续内存空间，数组名 <code>arr</code> 在大多数表达式中会<strong>退化为指向首元素的指针常量</strong>（类型 <code>T*</code>，不可被赋值/自增）。</li>
+<li><strong>指针</strong>是一个独立变量，存的是地址，本身占 <code>sizeof(void*)</code>（通常 4/8 字节）。</li>
 </ul>
-<p><strong>注意</strong>：容器里 <code>top</code> 可能显示宿主机核数导致误读，应结合 <code>cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us</code> 或 cgroup 视角确认配额后再下结论。</p></div>
+<p><strong>关键现象</strong>：</p>
+<pre><code class="language-c">int arr[10];
+int *p = arr;
+sizeof(arr); // = 10*sizeof(int) = 40，仍是数组
+sizeof(p);   // = 8（64位），只是指针大小</code></pre>
+<p>只有在 <code>sizeof(arr)</code>、<code>&amp;arr</code> 以及用字符串字面量初始化 <code>char s[]=&quot;abc&quot;</code> 时，数组名<strong>不退化</strong>；其余（如赋值、算术、函数传参）均退化为指针。</p>
+<p><strong>函数参数</strong>：<code>void f(int a[10])</code> 等价于 <code>void f(int *a)</code>——数组形参<strong>一律退化为指针</strong>，因此函数内 <code>sizeof(a)</code> 得到指针大小，无法获知原数组长度（常需额外传长度参数）。</p>
+<p><strong>访问方式</strong>：<code>arr[i]</code> 与 <code>p[i]</code> 语义相同（都按 <code>基址+i*sizeof(T)</code> 寻址），但数组越界访问更隐蔽；指针可重新指向别处，数组名不能。</p></div>
     <a class="cta" href="https://it-interview.is-a.dev/#/question/499">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=10&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
