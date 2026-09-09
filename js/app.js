@@ -701,11 +701,11 @@
       const dn = (wl.due || []).length;
       App.reviewDue = dn;
       if (dn > 0) {
-        dueBannerHtml = `<a class="card card-hover review-banner" href="#/review" style="margin-top:20px">
-          <span class="rb-ic">📚</span>
-          <span class="rb-txt"><b style="font-size:16px">今天有 ${dn} 道题到复习时间了</b>
-            <div class="muted" style="font-size:13px;margin-top:3px">趁还记得赶紧巩固，错过这次复习间隔会拉得更长</div></span>
-          <span class="tag tag-warning" style="white-space:nowrap">立即复习 →</span></a>`;
+        dueBannerHtml = `<a class="review-banner" href="#/review" style="margin-top:20px">
+          <span class="rb-count">${dn}</span>
+          <span class="rb-txt"><b>今天有 ${dn} 道题到复习时间了</b>
+            <div class="rb-sub">趁还记得赶紧巩固，错过这次复习间隔会拉得更长</div></span>
+          <span class="rb-cta">立即复习 →</span></a>`;
       }
     } catch (e) {}
     setMain(`

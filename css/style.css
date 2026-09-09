@@ -576,19 +576,25 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 .tag-link:hover { color: #2563EB; border-color: #93c5fd; }
 .hero-search .btn { white-space: nowrap; }
 
-/* 错题重练侧边栏入口：有到期题时的脉冲提醒（光晕扩散 + 整行呼吸，远比单纯缩放醒目） */
+/* 错题重练侧边栏入口：有到期题时的脉冲提醒（红色系 + 光晕扩散 + 整行呼吸，20260909g 强化） */
 .side-nav-item.nav-pulse { position: relative; animation: navPulseRow 1.8s ease-in-out infinite; }
-.side-nav-item.nav-pulse::after { content: ""; position: absolute; left: 5px; top: 50%; width: 11px; height: 11px; margin-top: -5.5px; border-radius: 50%; background: var(--c-warning, #F59E0B); animation: navPulse 1.5s ease-out infinite; }
-@keyframes navPulse { 0% { transform: scale(.8); box-shadow: 0 0 0 0 rgba(245,158,11,.7); } 70% { transform: scale(1.28); box-shadow: 0 0 0 10px rgba(245,158,11,0); } 100% { transform: scale(.8); box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
-@keyframes navPulseRow { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(245,158,11,.16); } }
-/* 到期数量徽章（侧边栏「错题重练」右侧） */
-.due-badge { margin-left: auto; min-width: 20px; padding: 1px 7px; border-radius: 10px; background: var(--c-warning, #F59E0B); color: #fff; font-size: 12px; font-weight: 700; line-height: 18px; text-align: center; animation: badgeBob 1.8s ease-in-out infinite; }
-@keyframes badgeBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-/* 首页到期复习横幅（最醒目的一层提醒） */
-.review-banner { display: flex; align-items: center; gap: 14px; padding: 16px 20px; text-decoration: none; border: 1px solid rgba(245,158,11,.45); background: linear-gradient(90deg, rgba(245,158,11,.14), rgba(245,158,11,.03)); }
-.review-banner .rb-ic { font-size: 26px; animation: badgeBob 1.8s ease-in-out infinite; }
-.review-banner .rb-txt { flex: 1; min-width: 0; }
-@keyframes bannerGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.3); } 50% { box-shadow: 0 0 0 7px rgba(245,158,11,0); } }
+.side-nav-item.nav-pulse::after { content: ""; position: absolute; left: 5px; top: 50%; width: 11px; height: 11px; margin-top: -5.5px; border-radius: 50%; background: #EF4444; animation: navPulse 1.5s ease-out infinite; }
+@keyframes navPulse { 0% { transform: scale(.8); box-shadow: 0 0 0 0 rgba(239,68,68,.7); } 70% { transform: scale(1.28); box-shadow: 0 0 0 10px rgba(239,68,68,0); } 100% { transform: scale(.8); box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+@keyframes navPulseRow { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(239,68,68,.14); } }
+/* 到期数量徽章（侧边栏「错题重练」右侧）：红底白字 + 光晕脉冲 */
+.due-badge { margin-left: auto; min-width: 20px; padding: 1px 7px; border-radius: 10px; background: #EF4444; color: #fff; font-size: 12px; font-weight: 700; line-height: 18px; text-align: center; animation: badgePulse 1.6s ease-out infinite; }
+@keyframes badgePulse { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,.55); } 70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+/* 首页到期复习横幅（20260909g 重做：橙红渐变实底 + 大数字圆徽章 + 呼吸光晕，远比淡色卡片醒目） */
+.review-banner { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px 20px; text-decoration: none; border: none; border-radius: 12px; color: #fff; background: linear-gradient(120deg, #F97316, #EF4444 78%, #DC2626); overflow: hidden; animation: bannerGlow 2.2s ease-in-out infinite; }
+.review-banner::before { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,.18), transparent 45%); pointer-events: none; }
+.review-banner .rb-count { flex: none; min-width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.22); border: 2px solid rgba(255,255,255,.55); color: #fff; font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.review-banner .rb-txt { flex: 1; min-width: 0; color: #fff; }
+.review-banner .rb-txt b { font-size: 16.5px; color: #fff; display: block; }
+.review-banner .rb-txt .rb-sub { font-size: 13px; margin-top: 3px; color: rgba(255,255,255,.88); }
+.review-banner .rb-cta { flex: none; background: #fff; color: #DC2626; font-weight: 800; font-size: 14px; padding: 9px 16px; border-radius: 9px; box-shadow: 0 2px 8px rgba(0,0,0,.18); white-space: nowrap; }
+.review-banner:hover .rb-cta { transform: scale(1.04); }
+@keyframes bannerGlow { 0%, 100% { box-shadow: 0 4px 16px rgba(239,68,68,.32); } 50% { box-shadow: 0 4px 28px rgba(239,68,68,.62); } }
+@media (max-width: 640px) { .review-banner { padding: 14px 16px; gap: 11px; } .review-banner .rb-count { min-width: 44px; height: 44px; font-size: 20px; } .review-banner .rb-cta { padding: 8px 12px; font-size: 13px; } }
 
 /* ============================ 技术架构图（tech-maps） ============================ */
 .tm-layer { border:1px solid var(--border); border-left-width:3px; border-radius:10px; padding:10px 12px; background:var(--bg-subtle); }
