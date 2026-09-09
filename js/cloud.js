@@ -233,6 +233,42 @@
     return { added: addedQ };
   };
 
+  /* ---------- 本地 vs 云端 题量比对（2026-09-09） ----------
+     用途：编辑端判断本机是否落后于云端快照，登录后人不用猜「怎么少了几百题」 */
+  C.localVsRemote = async function () {
+    const local = await DB.db.questions.count();
+    let remote = null;
+    try { remote = await C.fetchRemote(); } catch (e) {}
+    return {
+      local: local,
+      remote: remote && Array.isArray(remote.questions) ? remote.questions.length : null,
+      publishedAt: remote ? (remote.publishedAt || 0) : 0
+    };
+  };
+
+  /* ---------- 发布保护：禁止用更少的旧数据反向覆盖云端（2026-09-09） ----------
+     事故复盘：本机题库停留在旧快照（834 题，且答案是降质短版）时，编辑端的
+     自动/手动发布会把云端已恢复的 874 题整体砍回去，全程零提示。
+     因此每次发布前先与云端快照比对题量：
+       - 本地 < 云端 → 抛错拒绝发布，提示先「从云端拉取到本机」
+       - 确实是删题场景 → 先拉取、在本地删，再发布（拉到本地再删不会触发本保护）
+       - 例外：C.forceOnce() 可放行一次（保留给明确的强行覆盖场景） */
+  C._forceOnce = false;
+  C.forceOnce = function () { C._forceOnce = true; };
+  C.guardAgainstShrink = async function (localCount) {
+    if (C._forceOnce) { C._forceOnce = false; return null; }
+    let remote = null;
+    try { remote = await C.fetchRemote(true); } catch (e) {}
+    if (!remote || !Array.isArray(remote.questions)) return null;   // 云端不可达时不阻断本地发布
+    const rc = remote.questions.length;
+    if (rc > localCount) {
+      return "本机 " + localCount + " 题 < 云端 " + rc + " 题（少 " + (rc - localCount) +
+        " 题），已拒绝发布——直接用本机覆盖会把云端这些题删掉。" +
+        "请先点「从云端拉取到本机」；确属删题场景，请先拉取，再在本机删除后发布。";
+    }
+    return null;
+  };
+
   /* ---------- 导出本地全量题库 ---------- */
   C.exportAll = async function () {
     const db = DB.db;
@@ -254,6 +290,9 @@
   C._publishChain = Promise.resolve();
   C._publishInner = async function () {
     const data = await C.exportAll();
+    /* 发布前保护：本机题量少于云端时直接拒绝，避免又一次「874 → 834」式砍库 */
+    const guard = await C.guardAgainstShrink(data.questions.length);
+    if (guard) { const ge = new Error(guard); ge.guardBlocked = true; throw ge; }
     const msg = "发布题库 " + new Date(data.publishedAt).toLocaleString("zh-CN") +
       "（" + data.questions.length + " 题 / " + data.positions.length + " 岗位）";
     /* 题库双推 release+main（与扩充流水线一致）：Pages 发布源是 release，
@@ -319,9 +358,11 @@
       C._state = "error";
       C._lastError = String((e && e.message) || e);
       console.warn("自动发布失败", e);
-      try { U.toast("自动发布失败：" + C._lastError + "，稍后自动重试", "error"); } catch (_) {}
+      try { U.toast("自动发布失败：" + C._lastError + (e && e.guardBlocked ? "（本机落后于云端，请先拉取）" : "，稍后自动重试"), "error"); } catch (_) {}
       clearTimeout(C._timer);
-      C._timer = setTimeout(() => C.autoPublish(), RETRY_DELAY);   // 失败重试
+      /* 保护性拒绝不重试：本机落后必须人工拉取，自动重试只会反复弹同一条错 */
+      if (e && e.guardBlocked) { C._dirty = false; }
+      else C._timer = setTimeout(() => C.autoPublish(), RETRY_DELAY);
     } finally {
       C._publishing = false;
       C._emit();

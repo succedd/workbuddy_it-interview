@@ -3236,8 +3236,11 @@
         out.innerHTML = `<span class="tag tag-success">发布成功</span> ${r.count} 题 / ${r.positions} 岗位已上线，约 1-2 分钟后对所有访客生效`;
         U.toast("题库已发布", "success");
       } catch (e) {
-        out.innerHTML = `<span class="tag tag-danger">发布失败</span> ` + U.esc(String(e && e.message || e)) +
-          `<div class="note">请确认 Token 有效（Fine-grained，勾选本仓库 Contents: Read and write）、仓库名与分支正确。</div>`;
+        const blocked = e && e.guardBlocked;
+        out.innerHTML = `<span class="tag tag-danger">${blocked ? "已阻止发布" : "发布失败"}</span> ` + U.esc(String(e && e.message || e)) +
+          (blocked
+            ? `<div class="note">正确做法：先点右侧「从云端拉取到本机」，确认题量正常后再删题/发布。</div>`
+            : `<div class="note">请确认 Token 有效（Fine-grained，勾选本仓库 Contents: Read and write）、仓库名与分支正确。</div>`);
       }
     };
     $("#pub-sync").onclick = async () => {
@@ -3653,6 +3656,17 @@
               U.toast("已从云端自动吸收 " + a.added + " 道新题（不改动本地已有题目）", "success");
               console.log("absorbRemote: +" + a.added + " questions from cloud snapshot");
             }
+            /* 编辑端落后提示（2026-09-09）：本机比云端少的题「吸收」补不回来时
+               （如云端做过全量恢复），明确告知去设置页拉取，而不是让用户困惑
+               「库里怎么少了这么多题」 */
+            try {
+              const cmp = await Cloud.localVsRemote();
+              if (cmp && cmp.remote && cmp.remote > cmp.local) {
+                U.toast("云端题库 " + cmp.remote + " 题，本机只有 " + cmp.local + " 题（少 " +
+                  (cmp.remote - cmp.local) + " 题）。到「设置 → 发布 → 从云端拉取到本机」同步最新版",
+                  "warn", 12000);
+              }
+            } catch (e3) { console.warn("localVsRemote error", e3); }
           } catch (e2) { console.warn("absorbRemote error", e2); }
         }
       } catch (e) { console.warn("cloud sync error", e); }
