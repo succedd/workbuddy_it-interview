@@ -247,6 +247,42 @@
             restoredQ = fixes.length;
           }
         }
+        /* 岗位关联自动补齐（2026-09-09）：云端某题配的岗位比本机全时，按「并集」合并。
+           没有这一步，流水线回填的岗位会在编辑端下次自动发布时被整包冲掉——
+           题数没变少，发布守卫不会拦截。并集合并可保住本机人工配的岗位不被删。 */
+        let posFixed = 0;
+        if (C.autoRestoreEnabled()) {
+          const rposName = {};
+          (remote.positions || []).forEach(p => { if (p && p.id != null) rposName[p.id] = p.name; });
+          const localById2 = new Map(locals.map(q => [q.id, q]));
+          const posFixes = [];
+          for (const rq of remote.questions) {
+            const lq = localById2.get(rq.id);
+            if (!lq) continue;
+            const rIds = Array.isArray(rq.positionIds) ? rq.positionIds : [];
+            if (!rIds.length) continue;
+            const lIds = Array.isArray(lq.positionIds) ? lq.positionIds : [];
+            /* 名称优先取云端岗位表，其次云端/本机题目上带的 positionNames */
+            const nameOf = {};
+            (rq.positionNames || []).forEach((n, idx) => { if (rIds[idx] != null) nameOf[rIds[idx]] = n; });
+            (lq.positionNames || []).forEach((n, idx) => { if (lIds[idx] != null && !nameOf[lIds[idx]]) nameOf[lIds[idx]] = n; });
+            const missing = rIds.filter(i => lIds.indexOf(i) < 0);
+            const merged = lIds.concat(missing).filter(i => rposName[i] || nameOf[i]);
+            const mergedNames = merged.map(i => rposName[i] || nameOf[i]);
+            /* ids 与 names 都没变化才跳过（本机 names 为空的历史数据也要顺带补齐） */
+            if (merged.join(",") === lIds.join(",") &&
+                mergedNames.join(",") === (lq.positionNames || []).join(",")) continue;
+            posFixes.push(Object.assign({}, lq, {
+              positionIds: merged,
+              positionNames: merged.map(i => rposName[i] || nameOf[i])
+            }));
+          }
+          if (posFixes.length) {
+            await db.questions.bulkPut(posFixes);
+            posFixed = posFixes.length;
+          }
+        }
+        C._lastPosFixed = posFixed;
         // 分类：按 id 追加缺失的（空壳分类也能补齐树结构）
         const localCatIds = new Set((await db.categories.toArray()).map(c => c.id));
         const newCats = (remote.categories || []).filter(c => c && !localCatIds.has(c.id));
@@ -266,7 +302,7 @@
       await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
       await DB.setSetting("absorbNormVer", NORM_VER);
     } finally { C._suppress--; }
-    return { added: addedQ, restored: restoredQ };
+    return { added: addedQ, restored: restoredQ, posFixed: C._lastPosFixed || 0 };
   };
 
   /* ---------- 本地 vs 云端 题量比对（2026-09-09） ----------

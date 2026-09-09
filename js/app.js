@@ -3671,12 +3671,13 @@
             const a = await Cloud.absorbRemote();
             /* 自动同步结果：补新题 + 自动修复降质答案分别告知，
                两个都有值时合并成一条提示，避免弹两下 */
-            if (a && (a.added > 0 || a.restored > 0)) {
+            if (a && (a.added > 0 || a.restored > 0 || a.posFixed > 0)) {
               const parts = [];
               if (a.added > 0) parts.push("补入 " + a.added + " 道新题");
               if (a.restored > 0) parts.push("恢复 " + a.restored + " 道被降质/截断的答案");
+              if (a.posFixed > 0) parts.push("补齐 " + a.posFixed + " 道题的岗位关联");
               U.toast("已自动同步云端最新题库：" + parts.join("、") + "（本地已有内容不会被覆盖）", "success", 8000);
-              console.log("absorbRemote: +" + a.added + " new, " + a.restored + " restored from cloud snapshot");
+              console.log("absorbRemote: +" + a.added + " new, " + a.restored + " restored, " + a.posFixed + " positions from cloud snapshot");
             }
             /* 编辑端落后提示（2026-09-09）：本机比云端少的题「吸收」补不回来时
                （如云端做过全量恢复），明确告知去设置页拉取，而不是让用户困惑
