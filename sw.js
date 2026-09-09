@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260909c";
+const VERSION = "20260909d";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -49,6 +49,11 @@ self.addEventListener("activate", (event) => {
 
 /* 调试入口：postMessage({type:"CLEAR_CACHE"}) 清空当前 SW 缓存（包含损坏响应） */
 self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    /* 页面点「有新版本，点击刷新」时请求立即接管 */
+    self.skipWaiting();
+    return;
+  }
   if (event.data && event.data.type === "CLEAR_CACHE") {
     event.waitUntil((async () => {
       await caches.delete(CACHE);

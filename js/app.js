@@ -252,7 +252,7 @@
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
-    const tags = (q.tags || []).slice(0, 4).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
+    const tags = (q.tags || []).filter(t => t != null && String(t).trim()).slice(0, 4).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const pos = (q.positionNames || []).slice(0, 3).map(p => `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(p)}'">${U.esc(p)}</span>`).join("");
     return `<a class="card card-hover q-card" href="#/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
@@ -1244,7 +1244,7 @@
       const pos = posByName.get(n);
       return pos ? `<a class="tag tag-outline" href="#/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="#/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
     }).join("");
-    const techTags = (q.tags || []).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
+    const techTags = (q.tags || []).filter(t => t != null && String(t).trim()).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
     const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
     setMain(`
@@ -2883,7 +2883,7 @@
               <label class="checkbox"><input type="checkbox" data-i="${i}" ${r.selected ? "checked" : ""}/> <b>${U.esc(r.q.title)}</b></label>
               <span class="tag ${r.status === "matched" ? "tag-success" : "tag-warning"}">${r.status === "matched" ? "已归类" : "待分类"}</span>
             </div>
-            <div class="muted" style="font-size:12px">难度 ${U.esc(r.q.difficulty || "-")} · 题型 ${U.esc(r.q.type || "-")} · ${U.esc((r.q.tags || []).join(","))}</div>
+            <div class="muted" style="font-size:12px">难度 ${U.esc(r.q.difficulty || "-")} · 题型 ${U.esc(r.q.type || "-")} · ${U.esc((r.q.tags || []).filter(t => t != null && String(t).trim()).join(","))}</div>
             <details style="margin-top:6px"><summary style="cursor:pointer">查看内容</summary><div class="qd-body md" style="margin-top:8px">${U.md((r.q.body || "") + "\n\n**答案**\n" + (r.q.answer || ""))}</div></details>
             ${r.status === "missing" ? `<div class="note">系统未发现匹配分类，请手动选择：<select class="sel-cat" data-i="${i}">${catOptions()}</select></div>` : ""}
           </div>`).join("")}</div>
