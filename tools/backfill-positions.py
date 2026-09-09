@@ -175,9 +175,13 @@ def main():
         q["positionNames"] = [pname.get(i) for i in new_ids]
     print("规范化：补 names(A 类) %d 题，纠正不一致(C 类) %d 题" % (fixed_a, fixed_c))
 
-    d["version"] = (d.get("version") or 0) + 1
+    # 仅在确有改动时提升 version
+    if plan or fixed_a or fixed_c:
+        d["version"] = (d.get("version") or 0) + 1
+    # 与仓库原有格式保持一致：单行紧凑 JSON、无末尾换行。
+    # 切勿改 indent 美化——会把 1.5MB 的文件撑到 1.8MB 并制造数万行假 diff。
     io.open(DATA, "w", encoding="utf-8", newline="").write(
-        json.dumps(d, ensure_ascii=False, indent=2) + "\n")
+        json.dumps(d, ensure_ascii=False, separators=(",", ":")))
 
     chk = json.load(io.open(DATA, encoding="utf-8"))
     left = sum(1 for q in chk["questions"] if not (q.get("positionIds") or []))
