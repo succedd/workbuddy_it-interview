@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip tag">缓存一致性</span><span class="chip tag">延迟双删</span><span class="chip tag">Cache-Aside</span><span class="chip tag">最终一致</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">缓存一致性</span><span class="chip tag">延迟双删</span><span class="chip tag">Cache-Aside</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>用了 Redis 缓存 + MySQL。更新数据时，缓存和 DB 怎么操作才能保证最终一致？请分析“先更新 DB 再删缓存”“先删缓存再更新 DB”的并发问题，并说明延迟双删与消息队列重试的思路。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>核心结论</strong>：缓存与 DB 无法在分布式下做到强一致，<strong>目标是最终一致</strong>。业界主流用<strong>Cache-Aside（旁路缓存）+ 先更新 DB、再删除缓存</strong>。</p>
 <p><strong>先更新 DB，再删缓存（推荐）</strong>：</p>

@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">数据库与数据存储</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">数据库工程师</span><span class="chip">DBA数据库管理员</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">数据库与数据存储</span></div>
     <div class="card"><h2>题目</h2><p>索引是白吃的午餐吗？加一个索引，系统里有什么东西在悄悄变差？由此推广：缓存、副本分别又在偷什么？</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>索引偷的是写性能与空间</strong>：每次 INSERT/UPDATE 都要同步维护所有相关索引（写放大），索引越多写越慢；还有存储成本与优化器选错索引的风险。</p>
 <p>推广到整个存储世界，<strong>一切都是权衡</strong>：</p>

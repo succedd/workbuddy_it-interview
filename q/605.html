@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip tag">嵌入式C</span><span class="chip tag">位操作</span><span class="chip tag">寄存器</span><span class="chip tag">RMW</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">驱动开发工程师</span><span class="chip">固件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">嵌入式软件工程师</span><span class="chip tag">嵌入式C</span><span class="chip tag">位操作</span><span class="chip tag">寄存器</span><span class="chip tag">RMW</span></div>
     <div class="card"><h2>题目</h2><p>给出对 32 位寄存器某一位或多位进行置 1、清 0、读取、翻转的标准写法，并说明位域（bit-field）的注意事项。</p></div>
     <div class="card"><h2>参考答案</h2><p>设寄存器指针 <code>volatile uint32_t *reg</code>，位编号 n（从 0 起）。</p>
 <p><strong>置位（Set）</strong>：<code>*reg |= (1u &lt;&lt; n);</code></p>

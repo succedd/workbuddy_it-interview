@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是一致性哈希？它如何缓解分布式缓存扩容时的数据迁移问题？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip tag">一致性哈希</span><span class="chip tag">分布式</span><span class="chip tag">缓存</span><span class="chip tag">扩容</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据工程师</span><span class="chip tag">一致性哈希</span><span class="chip tag">分布式</span><span class="chip tag">缓存</span><span class="chip tag">扩容</span></div>
     <div class="card"><h2>题目</h2><p>场景：某 Redis 缓存集群从 3 个节点扩容到 4 个节点。为什么使用普通取模哈希 hash(key) % N 会导致大量缓存失效？一致性哈希如何解决这个问题，又存在什么缺陷需要弥补？</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>普通取模的问题</strong>：hash(key) % N 在 N 变化时，几乎所有 key 的映射目标都会改变，意味着扩容后绝大部分缓存 key 找不到原节点 → 大量缓存失效（缓存雪崩 / 回源压力骤增）。</p>
 <p><strong>一致性哈希（Consistent Hashing）</strong>：</p>

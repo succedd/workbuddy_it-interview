@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">分布式系统与微服务</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">云架构师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">分布式系统与微服务</span></div>
     <div class="card"><h2>题目</h2><p>网络分区（两台机器之间断了）是必然发生的。分区发生的那一刻，系统只能二选一：拒绝服务保一致，或继续服务冒不一致的风险——你自己的项目会选哪个？</p></div>
     <div class="card"><h2>参考答案</h2><p>CAP 的物理根源：<strong>分区发生时，两台机器无法通信，各自收到的写请求没法互相同步</strong>——要么拒绝其中一方（保 C：一致），要么都接受（保 A：可用，但数据分叉）。</p>
 <p>落地形态：</p>

@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>云原生【诞生】为什么会有 Docker？「在我机器上是好的」这个世纪难题的根源是什么？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">云原生与DevOps</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">云计算工程师</span><span class="chip">云平台开发工程师</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">云原生与DevOps</span></div>
     <div class="card"><h2>题目</h2><p>开发机和服务器的差异到底在哪几层？虚拟机为什么没能彻底解决这个问题，容器又是怎么解决的？</p></div>
     <div class="card"><h2>参考答案</h2><p>根源：<strong>应用 = 代码 + 依赖（运行时、库、系统配置）</strong>，传统部署只交付代码，其余靠在目标机器上「搭出来」→ 环境漂移必然发生。</p>
 <p>虚拟机给了隔离但太重（GB 级镜像、分钟级启动，且系统层仍可能漂移）。<strong>Docker 的答案：把应用连同依赖整体打包成镜像</strong>——一个不可变的、分层的、MB 级的交付物，「构建一次，到处运行」。</p>

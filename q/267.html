@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>计算机科学基础【边界】网络协议为什么要分层？分层带来什么代价？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">计算机科学基础</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">系统软件工程师</span><span class="chip">软件开发工程师(通用)</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">计算机科学基础</span></div>
     <div class="card"><h2>题目</h2><p>设想把「从 A 机器发一句话到 B 机器」写成一整块程序， vs 拆成层——各自的后果是什么？</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>分层的原因</strong>：异构设备要互通，必须各自只承诺一类职责——物理层管信号、IP 管寻址、TCP 管可靠、HTTP 管语义；层与层之间用标准接口解耦，任何一层换实现（换网线、换路由算法）都不影响其他层。<strong>这是「关注点分离」最早、最成功的工程实践</strong>。</p>
 <p><strong>代价</strong>：每一层封装都有开销（包头冗余、逐层解析），排查问题必须逐层下钻。<strong>分层的收益与代价，就是几乎所有软件架构问题的原型</strong>。</p></div>

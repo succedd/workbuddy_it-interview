@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>AI【边界】大模型为什么会「一本正经地胡说八道」？幻觉的根源是什么，能不能根治？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">人工智能与机器学习</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">深度学习工程师</span><span class="chip">AI应用开发工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">人工智能与机器学习</span></div>
     <div class="card"><h2>题目</h2><p>大模型明明考试那么强，为什么问它一个冷门事实，它能编出看似合理的假文献？这和「背题」的机制有什么关系？</p></div>
     <div class="card"><h2>参考答案</h2><p>幻觉的根源在机制本身：<strong>大模型是概率性的「下一个词预测器」，不是事实数据库</strong>。它学到的是语言的统计规律与知识的相关性，生成时选的是「最像答案的词序列」——当知识缺失或问题模糊时，它会<strong>生成语言上流畅但事实上虚构的内容</strong>，且语气一样自信。</p>
 <p><strong>为什么难根治</strong>：概率生成与事实严格一致在机制上不冲突但难同时保证。缓解手段：RAG（检索真实资料再回答）、工具调用（计算器/搜索）、对齐训练。<strong>工程启示：对确定性有要求的场景（金融/医疗），必须外挂数据源与校验，不能裸信模型</strong>——这也是 RAG、Agent 类岗位需求爆发的根本原因。</p></div>

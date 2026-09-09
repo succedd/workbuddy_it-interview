@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">JUC</span><span class="chip tag">线程池</span><span class="chip tag">OOM</span><span class="chip tag">Executors</span><span class="chip tag">调优</span><span class="chip tag">线上排查</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Express</span><span class="chip tag">中间件</span><span class="chip tag">Node</span></div>
     <div class="card"><h2>题目</h2><p>追问链收口：综合考察线程池实战。场景：代码里用 Executors.newFixedThreadPool 创建线程池处理异步任务，运行数日后 OutOfMemoryError。考察点：Executors 三大隐患；无界队列与 OOM 的因果链；CPU 密集/IO 密集的参数设定；拒绝策略与监控选型。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点一：根因定位——Executors.newFixedThreadPool 的无界队列</strong></p>
 <ul>

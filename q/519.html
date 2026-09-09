@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip tag">借用检查器</span><span class="chip tag">NLL</span><span class="chip tag">编译期检查</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">新兴方向工程师</span><span class="chip tag">借用检查器</span><span class="chip tag">NLL</span><span class="chip tag">编译期检查</span></div>
     <div class="card"><h2>题目</h2><p>说明借用检查基于“流敏感”分析、借用区域(borrow region)的概念，以及 NLL 如何放宽词法作用域限制。</p></div>
     <div class="card"><h2>参考答案</h2><ul>
 <li><strong>基本思路</strong>：编译器为每个引用维护“借用何时开始、何时结束”的信息，并在<strong>借用生效期间</strong>强制“要么多读、要么唯一写”的规则；任何违反（如可变与不可变借用重叠、返回了指向已释放栈内存的引用）都会报编译错误。</li>

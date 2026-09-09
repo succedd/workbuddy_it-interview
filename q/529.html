@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">窗口函数</span><span class="chip tag">OVER</span><span class="chip tag">PARTITION BY</span><span class="chip tag">SQL进阶</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">窗口函数</span><span class="chip tag">OVER</span><span class="chip tag">PARTITION BY</span><span class="chip tag">SQL进阶</span></div>
     <div class="card"><h2>题目</h2><p>解释窗口函数的“分组但不聚合 collapsing”语义，给出 ROW_NUMBER/RANK/DENSE_RANK 与 SUM() OVER 示例。</p></div>
     <div class="card"><h2>参考答案</h2><ul>
 <li><strong>窗口函数</strong>：对<strong>每一行</strong>在其所属“窗口（分组）”内计算聚合/排序，但<strong>不把多行压缩成一行</strong>（与 <code>GROUP BY</code> 不同，后者会折叠行数）。语法：<code>函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])</code>。</li>

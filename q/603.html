@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>中断服务程序（ISR）与主程序共享数据时，如何保护临界区？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip tag">嵌入式C</span><span class="chip tag">中断</span><span class="chip tag">临界区</span><span class="chip tag">原子操作</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">驱动开发工程师</span><span class="chip">固件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">嵌入式软件工程师</span><span class="chip tag">嵌入式C</span><span class="chip tag">中断</span><span class="chip tag">临界区</span><span class="chip tag">原子操作</span></div>
     <div class="card"><h2>题目</h2><p>主循环与 ISR 共享一个计数器/缓冲区时，简述临界区保护方法：关中断、原子操作、双缓冲。请说明各自的适用场景与注意点。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>问题</strong>：ISR 可能在主程序读写共享变量中途抢占，导致数据不一致（撕裂读/写），或主程序长时间关中断影响实时性。</p>
 <p><strong>方法一：关中断（临界区）</strong></p>

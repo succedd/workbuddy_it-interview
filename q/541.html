@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 TCP 粘包/拆包？常见解决方案有哪些？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">TCP</span><span class="chip tag">粘包</span><span class="chip tag">拆包</span><span class="chip tag">Netty</span><span class="chip tag">Socket</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">粘包</span><span class="chip tag">拆包</span><span class="chip tag">Netty</span><span class="chip tag">Socket</span></div>
     <div class="card"><h2>题目</h2><p>请解释 TCP 为什么会出现“粘包/拆包”，并给出应用层常见的几种拆包/封帧方案（可结合 Netty 举例）。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>原因</strong>：TCP 是<strong>面向字节流的可靠传输</strong>，本身没有“消息边界”。发送方多次 write 可能被底层合并成一个包发出（<strong>粘包</strong>），一次 write 也可能被拆成多个 TCP 段到达（<strong>拆包</strong>）。接收方 read 拿到的是无边界的字节流，无法天然区分上一条消息在哪结束。</p>
 <p><strong>常见解决方案（在应用层定义消息边界）</strong>：</p>

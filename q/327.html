@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">游戏开发与图形图像</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">游戏开发工程师</span><span class="chip">Unity游戏开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip">游戏引擎工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">游戏开发与图形图像</span></div>
     <div class="card"><h2>题目</h2><p>60Hz 屏幕每 16.6ms 必须交出一帧。渲染、物理、逻辑、UI 共用这个预算——超了会发生什么？为什么说优化的第一性是「砍工作」？</p></div>
     <div class="card"><h2>参考答案</h2><p>60Hz 下每帧只有 <strong>16.6ms</strong>：渲染 + 物理 + 游戏逻辑 + UI 全部要在这段时间内完成。超预算 → 帧被跳过 → 肉眼可见的卡顿（掉帧）。</p>
 <p>所以优化的第一性是<strong>砍掉不必要的工作</strong>，其次才是加速：</p>

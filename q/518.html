@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Rust 中 `dyn Trait`（trait 对象）与泛型（静态分发）有什么区别？各自适用场景与性能权衡如何？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip tag">trait对象</span><span class="chip tag">泛型</span><span class="chip tag">单态化</span><span class="chip tag">对象安全</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">新兴方向工程师</span><span class="chip tag">trait对象</span><span class="chip tag">泛型</span><span class="chip tag">单态化</span><span class="chip tag">对象安全</span></div>
     <div class="card"><h2>题目</h2><p>对比动态分发与单态化(monomorphization)的取舍、对象安全(object safety)要求、以及何时用哪种。</p></div>
     <div class="card"><h2>参考答案</h2><ul>
 <li><strong>泛型 + trait bound（<code>fn f&lt;T: Trait&gt;(x: T)</code>）</strong>：编译期<strong>单态化</strong>，为每个具体类型生成一份专用代码，是<strong>静态分发</strong>——零运行时开销、可被内联优化；代价是代码体积膨胀（一份类型一份代码）。</li>

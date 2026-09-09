@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>CSRF Token 是如何防御 CSRF 的？前端应如何传递？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">CSRF</span><span class="chip tag">Token</span><span class="chip tag">Web安全</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">CSRF</span><span class="chip tag">Token</span><span class="chip tag">Web安全</span></div>
     <div class="card"><h2>题目</h2><p>请说明 Token 机制为什么能阻断第三方站点伪造请求，以及 token 生成与校验的注意点。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>原理</strong>：服务器在渲染表单/页面时下发一个<strong>随机、不可预测、与用户会话绑定</strong>的 token；提交敏感请求时要求一并带上该 token，服务端校验其合法性。</p>
 <p><strong>为什么能防</strong>：第三方恶意站点<strong>无法读取/预测</strong>受害者在目标站点的 token（同源策略阻止跨域读 DOM/Cookie），因此它构造的请求缺少正确 token，被服务端拒绝。</p>

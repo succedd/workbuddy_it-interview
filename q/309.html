@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">大数据与数据工程</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">大数据工程师</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">大数据架构师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">大数据与数据工程</span></div>
     <div class="card"><h2>题目</h2><p>当数据量到 TB/PB 级、单机磁盘 IO 成了瓶颈，「移动数据到计算那边」和「移动计算到数据那边」哪个更划算？</p></div>
     <div class="card"><h2>参考答案</h2><p>单机的墙：磁盘顺序读虽快，但 PB 级数据按 MB/s 级网络拉到一台机器集中算，<strong>光搬运就要以天计</strong>。</p>
 <p>Hadoop 的第一性思想：<strong>移动计算比移动数据便宜</strong>——把计算代码分发到数据所在的节点并行执行，每台机器只算本地数据，最后汇总。</p>

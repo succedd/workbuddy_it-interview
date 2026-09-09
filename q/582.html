@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">分布式锁</span><span class="chip tag">SETNX</span><span class="chip tag">Redis</span><span class="chip tag">原子性</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">分布式锁</span><span class="chip tag">SETNX</span><span class="chip tag">Redis</span><span class="chip tag">原子性</span></div>
     <div class="card"><h2>题目</h2><p>多实例要互斥执行一段逻辑。请用 Redis 实现一个分布式锁，说明 <code>SET NX PX</code> 的作用，并指出“先 SETNX 再单独 EXPIRE”在崩溃时会导致什么问题（死锁）。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>正确做法（原子加锁）</strong>：</p>
 <pre><code class="language-redis">SET lock:order:123 &lt;唯一随机值&gt; NX PX 30000</code></pre>

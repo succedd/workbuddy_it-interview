@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">无畏并发</span><span class="chip tag">Arc</span><span class="chip tag">Mutex</span><span class="chip tag">RwLock</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">新兴方向工程师</span><span class="chip tag">无畏并发</span><span class="chip tag">Arc</span><span class="chip tag">Mutex</span><span class="chip tag">RwLock</span></div>
     <div class="card"><h2>题目</h2><p>解释 Arc 的引用计数共享、Mutex 的互斥保护、RwLock 的读写分离，以及它们在多线程间共享可变状态时的组合。</p></div>
     <div class="card"><h2>参考答案</h2><ul>
 <li><strong>无畏并发</strong>：因借用检查器在编译期就杜绝数据竞争，Rust 让你“无所畏惧”地在多线程间共享/修改数据，竞争错误在编译期而非运行时暴露。</li>

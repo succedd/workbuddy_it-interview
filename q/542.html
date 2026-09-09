@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip tag">IO多路复用</span><span class="chip tag">epoll</span><span class="chip tag">select</span><span class="chip tag">poll</span><span class="chip tag">高并发</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">IO多路复用</span><span class="chip tag">epoll</span><span class="chip tag">select</span><span class="chip tag">poll</span><span class="chip tag">高并发</span></div>
     <div class="card"><h2>题目</h2><p>请解释 I/O 多路复用的目的，并对比 select、poll、epoll 在性能、文件描述符数量限制上的差异，说明 epoll 的 ET/LT 模式。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>I/O 多路复用</strong>：单个线程/进程同时<strong>监听多个文件描述符（fd）</strong>，哪个就绪就处理哪个，避免为每个连接开一个线程带来的资源消耗，是高并发网络编程的核心。</p>
 <p><strong>三者对比</strong>：</p>

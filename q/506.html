@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么基类析构函数通常要声明为 virtual（虚析构函数）？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">C++</span><span class="chip tag">虚析构</span><span class="chip tag">多态</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">C++</span><span class="chip tag">虚析构</span><span class="chip tag">多态</span></div>
     <div class="card"><h2>题目</h2><p>请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>问题场景</strong>：通过基类指针删除派生类对象时，若基类析构<strong>不是虚函数</strong>，则发生<strong>未定义行为</strong>——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。</p>
 <pre><code class="language-cpp">Base* p = new Derived();

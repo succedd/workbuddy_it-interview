@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>物联网【本质】设备连云为什么用 MQTT 而不是 HTTP？协议设计的取舍暴露了什么需求差异？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">嵌入式与物联网</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">嵌入式软件工程师</span><span class="chip">IoT开发工程师</span><span class="chip">边缘计算工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">嵌入式与物联网</span></div>
     <div class="card"><h2>题目</h2><p>HTTP 是万能的，为什么物联网偏偏造了 MQTT？想象一台用电池的温湿度传感器，每小时上报一次数据——HTTP 方案会怎么「杀死」它？</p></div>
     <div class="card"><h2>参考答案</h2><p>IoT 设备的三大约束：<strong>电池供电（省电压倒一切）、网络不稳（2G/弱WiFi）、带宽窄（KB 级报文）</strong>。HTTP 的连接模型在这些约束下全部失灵：频繁握手耗电、头信息比数据还大、设备做服务端（被动接收指令）更是别扭。</p>
 <p><strong>MQTT 的设计正对约束</strong>：</p>

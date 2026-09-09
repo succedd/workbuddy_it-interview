@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip tag">测试保护网</span><span class="chip tag">遗留代码</span><span class="chip tag">特征测试</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">后端开发工程师</span><span class="chip">应用架构师</span><span class="chip tag">测试保护网</span><span class="chip tag">遗留代码</span><span class="chip tag">特征测试</span></div>
     <div class="card"><h2>题目</h2><p>团队要对一段没有单元测试的遗留代码做重构。有人说“先写测试再重构”，为什么？若暂时无法补全测试，有哪些降低风险的做法？</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>为什么先建测试保护网</strong>：重构的定义（Fowler）是“<strong>在不改变外部行为的前提下改善内部结构</strong>”。测试就是验证“行为不变”的安全网——小步修改后一跑测试，立刻知道是否改坏。没有测试，重构就是盲改，极易引入回归 bug。</p>
 <p><strong>落地做法（遗留代码）</strong>：</p>

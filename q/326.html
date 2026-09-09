@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>图形学【本质】渲染管线的本质是什么？「可编程管线」的普及为什么是图形学的分水岭？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">游戏开发与图形图像</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">游戏开发工程师</span><span class="chip">Unity游戏开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip">游戏引擎工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">游戏开发与图形图像</span></div>
     <div class="card"><h2>题目</h2><p>从「3D 世界的数学描述」到「屏幕上的像素」，中间发生了什么？哪几步是固定的、哪几步交给了程序员？</p></div>
     <div class="card"><h2>参考答案</h2><p>渲染管线 = <strong>把 3D 数学描述批量变成像素的流水线</strong>：顶点变换（模型→世界→相机→投影）→ 图元装配 → 光栅化（三角形变像素）→ 像素着色 → 输出。</p>
 <p><strong>分水岭在「可编程」</strong>：早期管线固定（效果只能二选一），Shader（顶点/像素着色器）让程序员接管关键阶段——<strong>光照模型、水面波动、卡通渲染全是 Shader 的创作</strong>。游戏画面的代际差异本质是 Shader 算法的差异。</p>

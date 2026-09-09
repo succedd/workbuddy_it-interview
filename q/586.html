@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip tag">锁续期</span><span class="chip tag">watchdog</span><span class="chip tag">Redisson</span><span class="chip tag">分布式锁</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">锁续期</span><span class="chip tag">watchdog</span><span class="chip tag">Redisson</span><span class="chip tag">分布式锁</span></div>
     <div class="card"><h2>题目</h2><p>业务执行时间不确定，锁 TTL 难以预估。请说明看门狗（watchdog）续期机制的思想，以及使用 Redisson 等客户端时续期与释放的注意点。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>问题背景</strong>：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。</p>
 <p><strong>看门狗（watchdog）续期</strong>：</p>

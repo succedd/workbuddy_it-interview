@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip tag">分布式锁</span><span class="chip tag">误删防护</span><span class="chip tag">Lua脚本</span><span class="chip tag">Redis</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">分布式锁</span><span class="chip tag">误删防护</span><span class="chip tag">Lua脚本</span><span class="chip tag">Redis</span></div>
     <div class="card"><h2>题目</h2><p>线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 <code>DEL</code> 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>风险（误删他人锁）</strong>：</p>
 <ol>

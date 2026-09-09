@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">MySQL</span><span class="chip tag">事务</span><span class="chip tag">幻读</span><span class="chip tag">快照读</span><span class="chip tag">当前读</span><span class="chip tag">next-key-lock</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">RESTful</span><span class="chip tag">API设计</span><span class="chip tag">HTTP</span></div>
     <div class="card"><h2>题目</h2><p>追问链第三环：幻读。考察点：快照读与当前读的本质区别；RR 靠 MVCC 解决快照读幻读、靠 next-key lock 解决当前读幻读的双轨机制；为什么说 RR 只是&quot;很大程度避免&quot;而非&quot;彻底解决&quot;幻读。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点一：普通 select 是快照读，MVCC 保证两次一致</strong></p>
 <ul>

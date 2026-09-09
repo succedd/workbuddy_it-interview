@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么在 WinForms/WPF 里用 `.Result` 或 `.Wait()` 等待 async 方法会死锁，而在 Console/ASP.NET Core 里不会？如何避免？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip tag">async/await</span><span class="chip tag">死锁</span><span class="chip tag">SynchronizationContext</span><span class="chip tag">ConfigureAwait</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">.NET开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">async/await</span><span class="chip tag">死锁</span><span class="chip tag">SynchronizationContext</span><span class="chip tag">ConfigureAwait</span></div>
     <div class="card"><h2>题目</h2><p>解释 SynchronizationContext、await 默认捕获并 Post 回原上下文、单线程上下文下的循环等待，以及 ConfigureAwait(false) 的作用。</p></div>
     <div class="card"><h2>参考答案</h2><ul>
 <li><strong>根因</strong>：<code>await</code> 默认会<strong>捕获当前的 SynchronizationContext</strong>（若非空则用其 Post 把后续代码调度回原线程；否则用线程池 TaskScheduler）。</li>
