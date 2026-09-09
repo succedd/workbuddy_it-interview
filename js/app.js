@@ -3161,6 +3161,16 @@
         </div>
         <div id="auto-pub-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：需先在上方配置发布 Token 后生效。"}</div></div>
 
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("refresh")} 自动同步</h2>
+        <p class="secondary">开启后，每次启动会自动与云端快照比对：<strong>云端新增的题目自动补入本机</strong>（本机已有内容一律保留）；本机某题答案明显短于云端时，判定为历史降质/截断并<strong>自动恢复完整版</strong>（浏览计数保留）。想手动精简某题答案时，建议先关闭此项。</p>
+        <div class="pill-row">
+          <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="auto-restore-toggle" ${Cloud.autoRestoreEnabled() ? "checked" : ""} style="width:16px;height:16px" />
+            <span>自动补齐云端新题并恢复降质答案</span>
+          </label>
+        </div>
+        <div id="auto-restore-out" class="muted" style="margin-top:8px"></div></div>
+
       <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("fileText")} 题目图片外置</h2>
         <p class="secondary">把题目里内嵌的 base64 图片（data URL）迁移为仓库独立文件 <code>assets/q/</code>，Markdown 改为 URL 引用：显著减小 data/published.json 体积，图片可被浏览器缓存。新粘贴的图片在配置发布 Token 后会自动外置，此工具用于迁移<strong>历史存量</strong>图片。迁移可重复执行，已迁移的自动跳过。</p>
         <div class="pill-row">
@@ -3264,6 +3274,13 @@
       $("#auto-pub-out").textContent = this.checked ? "已开启：改动停止 10 秒后自动发布。" : "已关闭：请手动点「发布题库到线上」。";
       U.toast(this.checked ? "自动发布已开启" : "自动发布已关闭", "success");
       Cloud._renderChip();
+    };
+    $("#auto-restore-toggle").onchange = function () {
+      Cloud.setAutoRestore(this.checked);
+      $("#auto-restore-out").textContent = this.checked
+        ? "已开启：下次启动即自动补齐云端新题并修复降质答案。"
+        : "已关闭：仅自动补入新题，本机已有答案不再被改动。";
+      U.toast(this.checked ? "自动同步已开启" : "自动同步已关闭（仍会补新题）", "success");
     };
     /* ---------- 题目图片外置：扫描 + 迁移 ---------- */
     const IMG_INLINE_RE = /!\[[^\]]*\]\(data:image\/([a-zA-Z+.-]+);base64,([A-Za-z0-9+/=]+)\)/g;
@@ -3652,9 +3669,14 @@
         if (r && r.skipped && r.reason === "editor") {
           try {
             const a = await Cloud.absorbRemote();
-            if (a && a.added > 0) {
-              U.toast("已从云端自动吸收 " + a.added + " 道新题（不改动本地已有题目）", "success");
-              console.log("absorbRemote: +" + a.added + " questions from cloud snapshot");
+            /* 自动同步结果：补新题 + 自动修复降质答案分别告知，
+               两个都有值时合并成一条提示，避免弹两下 */
+            if (a && (a.added > 0 || a.restored > 0)) {
+              const parts = [];
+              if (a.added > 0) parts.push("补入 " + a.added + " 道新题");
+              if (a.restored > 0) parts.push("恢复 " + a.restored + " 道被降质/截断的答案");
+              U.toast("已自动同步云端最新题库：" + parts.join("、") + "（本地已有内容不会被覆盖）", "success", 8000);
+              console.log("absorbRemote: +" + a.added + " new, " + a.restored + " restored from cloud snapshot");
             }
             /* 编辑端落后提示（2026-09-09）：本机比云端少的题「吸收」补不回来时
                （如云端做过全量恢复），明确告知去设置页拉取，而不是让用户困惑

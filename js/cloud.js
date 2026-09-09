@@ -17,6 +17,7 @@
   const LS_REPO = "gh_publish_repo";
   const LS_BRANCH = "gh_publish_branch";
   const LS_AUTO = "gh_autopublish";
+  const LS_AUTORESTORE = "iti_autorestore_degraded";   /* 2026-09-09：本机答案为降质短版时自动恢复云端完整版 */
   const DEFAULT_REPO = "succedd/workbuddy_it-interview";
   const DEFAULT_BRANCH = "main";
   const FILE_PATH = "data/published.json";
@@ -48,6 +49,16 @@
     localStorage.setItem(LS_AUTO, on ? "1" : "0");
     if (!on) { C._dirty = false; clearTimeout(C._timer); C._emit(); }
     else if (C._dirty) C._schedule();
+  };
+
+  /* 自动恢复降质答案：默认开启 */
+  C.autoRestoreEnabled = function () {
+    if (typeof localStorage === "undefined") return true;
+    return localStorage.getItem(LS_AUTORESTORE) !== "0";
+  };
+  C.setAutoRestore = function (on) {
+    if (typeof localStorage === "undefined") return;
+    localStorage.setItem(LS_AUTORESTORE, on ? "1" : "0");
   };
 
   C.saveConfig = function (tok, repo, branch) {
@@ -196,6 +207,7 @@
 
     const norm = s => String(s || "").toLowerCase().replace(/[\s\p{P}\p{S}_]+/gu, "");   /* 保留 CJK 等文字与数字，仅剥空白/标点/符号 */
     let addedQ = 0;
+    let restoredQ = 0;   /* 降质答案已自动恢复的题数 */
     /* 吸收期间抑制自动发布：吸收的内容本就来自云端，不能又整包推回去覆盖流水线数据 */
     C._suppress++;
     try {
@@ -210,6 +222,30 @@
         if (newQuestions.length) {
           await db.questions.bulkAdd(newQuestions);
           addedQ += newQuestions.length;
+        }
+        /* 降质答案自动恢复（2026-09-09）：本机某题的答案明显短于云端时，
+           几乎只剩两种可能——① 本机是历史的降级/截断版本；② 用户刻意精简。
+           默认按①处理（可用设置项关闭），取云端的完整版并把本机更大的浏览计数带过去。
+           没有这一步，编辑端只能靠「手动从云端拉取」才能修复答案，十分反直觉。 */
+        restoredQ = 0;
+        if (C.autoRestoreEnabled()) {
+          const localById = new Map(locals.map(q => [q.id, q]));
+          const fixes = [];
+          for (const rq of remote.questions) {
+            const lq = localById.get(rq.id);
+            if (!lq) continue;
+            const la = String(lq.answer || "").length;
+            const ra = String(rq.answer || "").length;
+            if (ra > Math.max(la * 1.3, la + 120)) {
+              const merged = Object.assign({}, rq);
+              merged.views = Math.max(Number(rq.views) || 0, Number(lq.views) || 0);
+              fixes.push(merged);
+            }
+          }
+          if (fixes.length) {
+            await db.questions.bulkPut(fixes);
+            restoredQ = fixes.length;
+          }
         }
         // 分类：按 id 追加缺失的（空壳分类也能补齐树结构）
         const localCatIds = new Set((await db.categories.toArray()).map(c => c.id));
@@ -230,7 +266,7 @@
       await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
       await DB.setSetting("absorbNormVer", NORM_VER);
     } finally { C._suppress--; }
-    return { added: addedQ };
+    return { added: addedQ, restored: restoredQ };
   };
 
   /* ---------- 本地 vs 云端 题量比对（2026-09-09） ----------
