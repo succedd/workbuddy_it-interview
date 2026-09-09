@@ -541,7 +541,11 @@ html[data-theme="dark"] .bk.ok { color: #4ade80; border-color: rgba(74,222,128,.
 /* ---- 批次3：每日5题 / 学习打卡 / 错题重练 ---- */
 .daily-list a:last-child { border-bottom: none !important; }
 .heat-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; width: 100%; max-width: none; }
-.heat-cell { width: 100%; aspect-ratio: 1; border-radius: 5px; background: var(--border, #e2e8f0); opacity: .55; }
+/* heat-cell：定高 30px 的月历式通栏格（5 周 ≈ 月视图）。
+   旧版 aspect-ratio:1 正方形在宽卡里被撑到 71px 见方、5 行 376px 高，
+   把整卡撑爆，与右侧「今日 5 题」（内容 ~319px）形成一大一小视差；
+   定高后打卡卡内容 ≈320px，与右卡逐像素对齐，且任意屏宽下两侧高度都恒定 */
+.heat-cell { width: 100%; height: 30px; border-radius: 6px; background: var(--border, #e2e8f0); opacity: .55; }
 .heat-cell.h1 { background: #bfdbfe; opacity: 1; }
 .heat-cell.h2 { background: #93c5fd; opacity: 1; }
 .heat-cell.h3 { background: #3b82f6; opacity: 1; }

@@ -74,7 +74,8 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-09 07:45（**main 分支同步完成：release / main 双双 946 文件 · 874 题，线上实测 874 题**）
+- **最后更新**：2026-09-09 08:15（**首页双卡视差修复：热力格子改月历式定高 30px，缓存版本 `20260909a`**）
+- **首页「学习打卡 / 今日 5 题」一大一小视差修复（缓存版本 `20260909a`，2026-09-09）**——用户反馈两张卡「存在一大一小的视差」。puppeteer 实测（1440 视口）：两卡外框虽同为 566×527（grid 拉伸），但**内容高度 468 vs 287**——「今日 5 题」底部空了 208px。根因：`.heat-cell` 的 `aspect-ratio:1` 正方形在 528px 宽卡里被撑到 **71×71px**、5 行热力图高达 376px（GitHub contributions 格子才 11px，大了 6 倍）。修复：格子改**月历式定高 30px 通栏格**（35 天 = 5 周 ≈ 月视图观感，radius 5→6px），打卡卡内容落到 ~291px，与右卡 287px 仅差 4px，且两卡高度在任意屏宽下恒定对齐。`css/style.css` 仅动 `.heat-cell` 一条规则；`index.html` 24 处 `?v=` 与 `sw.js VERSION` 统一升 `20260909a`。上线后 puppeteer 复测：双卡 566×321，heat-grid 528×170，cell 71×30。
 - **分支同步收尾（2026-09-09 早）**——上一轮（09-08 22:31）的「题库考古恢复」提交 `1b404f4` 只推到了 `release`（946 文件 / 874 题），`main` 仍停在 `482e1d8`（721 文件 / 677 题）。本轮补齐：从 `origin/main` 建 `main-restore` 分支 → `git cherry-pick 1b404f4`（**0 冲突**）→ `merge-base --is-ancestor` 确认 fast-forward → 推送 `main-restore:main`，新 tip **`2730606`**。校验：`origin/main` 与 `origin/release` 文件树 `git diff` **完全一致**（946 文件 / 874 分享页 / published.json 874 题），线上 `https://it-interview.is-a.dev/data/published.json` 实测 **874 题**，`index.html` 缓存版本 `v=20260908a`，`account.js` 的 `BUILTIN_ENDPOINTS`/`probeEndpoints`/`refreshEndpoints` 与 `app.js` 的 `stats-autopick`/`cfApi`/艾宾浩斯/分享 全部在位（与本地逐项比对一致），**旧功能 0 丢失**。
   - **过程中踩的坑（重要）**：`@tmp` 上一步在切换分支时被中断，导致工作区 **874 个 `q/*.html` 被删空** + `.git/index.lock` 残留（stale lock，无 git 进程）。修复 = `rm -f .git/index.lock` → `git checkout -- q/` 全量恢复（文件仍在 HEAD 里，未丢失）。**教训：本仓库切换分支前务必确认工作区干净，中断后先查 `.git/index.lock`**。
   - **本地分支现状**（仅本地，未推远端，可随时清理）：`rel-add-q c1505ab`、`rel-restore 1b404f4`（= origin/release tip）、`main-add-q c5591e4`、`main-restore 2730606`（= origin/main tip）、`sync-main 6ee5c20`。远端权威分支只有 `main` 与 `release`，**Pages 发布源 = `release`**。
