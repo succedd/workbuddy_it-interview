@@ -1,0 +1,15 @@
+# Netlify 桥配置：整站（所有方法、所有路径）反代到 Cloudflare Worker 上游。
+# 本站不托管静态内容，publish 目录仅是 Netlify 要求的占位。
+[build]
+  publish = "netlify/public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# 任意路径 → 代理函数（redirects 对 GET/POST/PUT/OPTIONS 均生效）
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/proxy"
+  status = 200
+  force = true
