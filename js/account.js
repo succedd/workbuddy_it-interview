@@ -132,8 +132,8 @@
       }
     }
     if (!r) {
-      const err = new Error("连不上服务器（API 暂不可达）。国内网络访问 Cloudflare 的 workers.dev 域名常被拦截，" +
-        "请切换网络（Wi-Fi / 代理）后重试；也可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
+      const err = new Error("连不上服务器（API 暂不可达）。后端部署在 Cloudflare 的 workers.dev 域名上，该域名在国内被拦截，" +
+        "切换 Wi-Fi / 4G 都无效，只能挂代理访问；也可到「设置 → Cloudflare Worker」点「自动选择可用入口」（桥接入口上线后会自动命中）。");
       err.network = true;
       throw err;
     }
