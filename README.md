@@ -221,6 +221,15 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-10 · 瘦分类集中填充 +72 题（1013 → 1085）
+按数据驱动补齐「题量薄弱」的分类：全库 242 个叶子分类中 **192 个不足 5 题**，很多是 Django / Flask / FastAPI / MyBatis / Dubbo / Flink / Prometheus / Jenkins / 微前端 这类面试高频词却只有 1 题。本批按域分三组、每分类 3 题、与既有题走互补角度（既有偏深水题，本批补基础机制与选型题）：
+
+- **后端语言与框架（24 题）**：MyBatis（缓存体系 / Mapper 动态代理 / 物理分页）· Django（N+1 排查 / 中间件与 Signal / 连接池与 CONN_MAX_AGE）· Flask（应用与请求上下文 / 蓝图工程结构 / WSGI vs ASGI）· FastAPI（依赖注入 / sync 与 async 混用陷阱 / Pydantic v2 迁移）· Express（错误中间件与 async 丢错 / cluster 多核与优雅重启 / 迁 Fastify 的取舍）· Koa（ctx 与 delegates / 洋葱模型统一响应与异常 / 生态组合选型）· NestJS（模块与 DI / 请求生命周期 / 动态模块）· GraphQL（N+1 与 DataLoader / 深度与成本攻击防护 / Schema 演进）
+- **前端（24 题）**：TypeScript（条件类型与 infer / 类型收窄与 unknown / 装饰器与元数据）· 小程序（setData 瓶颈与长列表 / 登录链路与 session_key 安全 / 跨端方案选型）· 性能优化（Core Web Vitals / 懒加载预加载与缓存组合 / 虚拟滚动）· 微前端（方案选型 / qiankun 沙箱与样式隔离 / 路由与共享状态）· Webpack（HMR / Loader 与 Plugin / hash 与缓存策略）· Vite（dev 用 ESM、build 用 Rollup / HMR 精度 / 插件体系）· Next.js（四种渲染模式 / 四层缓存与失效 / Edge 中间件）· 浏览器原理（事件循环 / 渲染管线与合成层 / HTTP 缓存与存储选型）
+- **分布式与云原生（24 题）**：API 网关（限流算法 / 鉴权与灰度 / 性能瓶颈与重试放大）· 服务治理（雪崩防护四件套 / 负载均衡与一致性哈希 / 灰度·蓝绿·全链路压测）· Nacos（配置长轮询 / 心跳与流量摘除 / Raft 与 Distro）· gRPC（四种流式 / 超时重试与负载均衡 / grpc-gateway 共存）· Spring Cloud（断路器演进选型 / 配置热更新与 @RefreshScope / 与 Service Mesh 的取舍）· Prometheus（四种指标类型 / Pull 与 Pushgateway / rate·irate·increase）· Grafana（告警分工 / 大范围查询与 Recording Rule / 黄金四指标看板）· Jenkins（声明式 vs 脚本式 / 共享库设计 / 与 GitLab CI·GitHub Actions 选型）
+
+质检 72 新增 0 重复 0 跳过，来源均为官方文档/权威资料；分享页 q/1014–1085 与 sitemap（1090 条）已补齐至 main + release 双分支。同时新增 **`tools/verify-publish.py`**：把「推完必复查」固化为一条命令（本地自检 + 线上题数与 id 对比 + 双分支分享页抽查 + sitemap 校验，支持 `--fix-share` 自动补齐）。
+
 ### 2026-09-02 · 「关于本站」页视觉升级（缓存版本 `20260902b`）
 参考主流 about 页重做视觉，解决「样式单调、颜色寡淡」：品牌渐变 Hero 横幅（蓝→靛→紫 + 青/粉柔光斑 + 玻璃质感 chip）；4 张统计卡悬浮叠在横幅下沿，各带蓝/紫/青/橙彩色图标底，hover 上浮 3px；卡片标题改「彩色图标方块 + 主标题 + 副标题」双行头；三宫格 tile 加图标 + hover 浮起；适用人群改带图标胶囊；站长区新增渐变头像「阅」+ 5 个领域标签；信条改渐变底引用条；联系卡淡蓝渐变底，二维码 172px 圆角 + 大阴影 + hover 放大；收尾标语改渐变文字。颜色全部走 CSS 变量 + `--accent` 内联变量，深色模式自动适配（`color-mix` 不支持时回退 `--bg-subtle`）。
 
