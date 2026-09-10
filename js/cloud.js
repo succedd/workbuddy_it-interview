@@ -136,6 +136,54 @@
     } catch (e) { return null; }
   };
 
+  /* ---------- 重复题清理（2026-09-10） ----------
+     云端把同一道题的重复收录合并掉了（published.json 顶层 removedQuestions = {旧题号: 保留题号}）。
+     只删云端不够：本机若还留着，编辑端下次自动发布会把它整包推回（题数没变少，发布守卫不会拦）；
+     普通浏览器的本地收藏/浏览/错题记录也会变成指向不存在题目的死记录。
+     这里做两件事：① 删掉本机的重复题；② 把 favorites / histories / weakBank 重定向到保留题号。
+     幂等：同一份映射重复执行结果一致，失败不阻断启动流程。 */
+  C.applyRemovedQuestions = async function (map) {
+    const db = DB.db;
+    const out = { removed: 0, remapped: 0 };
+    if (!map || typeof map !== "object") return out;
+    const pairs = Object.keys(map)
+      .map(k => [parseInt(k, 10), parseInt(map[k], 10)])
+      .filter(p => p[0] && p[1] && p[0] !== p[1]);
+    if (!pairs.length) return out;
+    try { await DB.setSetting("removedMap", map); } catch (_) {}   /* 缓存映射，供账号云同步合并后再次清理 */
+    try {
+      await db.transaction("rw", [db.questions, db.questionVersions, db.favorites, db.histories, db.weakBank], async () => {
+        for (const pair of pairs) {
+          const from = pair[0], to = pair[1];
+          if (await db.questions.get(from)) { await db.questions.delete(from); out.removed++; }
+          const vers = await db.questionVersions.where("questionId").equals(from).toArray();
+          for (const v of vers) await db.questionVersions.delete(v.id);
+          for (const store of [db.favorites, db.histories, db.weakBank]) {
+            const olds = await store.where("questionId").equals(from).toArray();
+            if (!olds.length) continue;
+            let keepExists = !!(await store.where("questionId").equals(to).first());
+            for (const rec of olds) {
+              if (keepExists) await store.delete(rec.id);          /* 保留题已有同类记录，旧的直接去重 */
+              else { await store.update(rec.id, { questionId: to }); keepExists = true; }
+              out.remapped++;
+            }
+          }
+        }
+      });
+    } catch (e) { /* 清理失败只影响去重，不阻断同步 */ }
+    C._lastRemoved = out;
+    return out;
+  };
+
+  /* 已缓存的「被删题号 → 保留题号」映射（账号云同步合并后用它再清理一次，
+     否则云端用户数据里残留的旧题号会被重新拉回本机，形成指向不存在题目的死记录） */
+  C.getRemovedMap = async function () {
+    try {
+      const v = await DB.getSetting("removedMap");
+      return (v && typeof v === "object") ? v : {};
+    } catch (e) { return {}; }
+  };
+
   /* ---------- 应用云端快照到本地（全量替换，保留收藏/历史/设置） ---------- */
   C._suppress = 0;   // >0 期间不触发脏标记（如手动从云端覆盖同步）
   C.applyRemote = async function (data) {
@@ -152,6 +200,8 @@
         if (data.positionSkills && data.positionSkills.length) await db.positionSkills.bulkAdd(data.positionSkills);
         if (data.questions && data.questions.length) await db.questions.bulkAdd(data.questions);
       });
+      /* 题目已整包替换，被合并的重复题自然消失；这里只需把用户本地数据重定向到保留题 */
+      await C.applyRemovedQuestions(data.removedQuestions);
       await DB.setSetting("cloudSyncedAt", data.publishedAt || 0);
     } finally { C._suppress--; }
   };
@@ -203,6 +253,12 @@
     let run = !!force;
     try { if ((await DB.getSetting("absorbNormVer")) !== NORM_VER) run = true; } catch (_) {}
     const last = await DB.getSetting("absorbedRemoteAt") || 0;
+    /* 重复题清理标记：云端 removedQuestions 条数与本机已应用的不一致时，即使快照时间戳没变也要跑一次 */
+    const remoteRmCount = (remote.removedQuestions && typeof remote.removedQuestions === "object")
+      ? Object.keys(remote.removedQuestions).length : 0;
+    let rmApplied = 0;
+    try { rmApplied = (await DB.getSetting("removedApplied")) || 0; } catch (_) {}
+    if (!run && remoteRmCount !== rmApplied) run = true;
     if (!run && (remote.publishedAt || 0) <= last) return { added: 0, reason: "upToDate" };
 
     const norm = s => String(s || "").toLowerCase().replace(/[\s\p{P}\p{S}_]+/gu, "");   /* 保留 CJK 等文字与数字，仅剥空白/标点/符号 */
@@ -344,10 +400,17 @@
           if (newSkills.length) await db.positionSkills.bulkAdd(newSkills);
         }
       });
+      /* 重复题清理：云端已合并的重复题，本机同样删掉并把用户本地数据重定向（在抑制发布期间执行，
+         避免清理动作触发一次携带旧数据的自动发布） */
+      const rmRes = await C.applyRemovedQuestions(remote.removedQuestions);
       await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
       await DB.setSetting("absorbNormVer", NORM_VER);
+      await DB.setSetting("removedApplied", remoteRmCount);
+      C._lastRemoved = rmRes;
     } finally { C._suppress--; }
-    return { added: addedQ, restored: restoredQ, posFixed: C._lastPosFixed || 0, catMerged: C._lastCatMerged || 0 };
+    return { added: addedQ, restored: restoredQ, posFixed: C._lastPosFixed || 0, catMerged: C._lastCatMerged || 0,
+             removed: (C._lastRemoved && C._lastRemoved.removed) || 0,
+             remapped: (C._lastRemoved && C._lastRemoved.remapped) || 0 };
   };
 
   /* ---------- 本地 vs 云端 题量比对（2026-09-09） ----------

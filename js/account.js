@@ -290,6 +290,13 @@
       }
       if (newDaily.length) await db.dailyDone.bulkAdd(newDaily);
     });
+    /* 云端用户数据可能仍带着「已被合并的重复题号」，重定向到保留题，避免出现指向不存在题目的死记录 */
+    try {
+      const cm = window.Cloud;
+      if (cm && cm.getRemovedMap && cm.applyRemovedQuestions) {
+        await cm.applyRemovedQuestions(await cm.getRemovedMap());
+      }
+    } catch (_) { /* 清理失败不影响同步结果 */ }
     await Services.reload();
     ls(LS.syncAt, String(now));
   }
