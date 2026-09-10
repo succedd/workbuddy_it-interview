@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用递归和非递归（显式栈）分别实现二叉树的前序、中序、后序遍历，并说明非递归写法中节点入栈/出栈的时机。 · IT面试题库</title>
+  <meta name="description" content="要点： 递归本质：三种遍历只差 print(root) 在 traverse(left) / traverse(right) 之间的位置（前：根左右；中：左根右；后：左右根），递归隐式用了调用栈。 非递归前序：根先入栈；循环弹栈 → 访问 → 先把右孩子入栈、再把左孩子入栈（因为栈是后进先出，左后入先出）。 非递…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="用递归和非递归（显式栈）分别实现二叉树的前序、中序、后序遍历，并说明非递归写法中节点入栈/出栈的时机。 · IT面试题库">
+  <meta property="og:description" content="要点： 递归本质：三种遍历只差 print(root) 在 traverse(left) / traverse(right) 之间的位置（前：根左右；中：左根右；后：左右根），递归隐式用了调用栈。 非递归前序：根先入栈；循环弹栈 → 访问 → 先把右孩子入栈、再把左孩子入栈（因为栈是后进先出，左后入先出）。 非递…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/962.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="用递归和非递归（显式栈）分别实现二叉树的前序、中序、后序遍历，并说明非递归写法中节点入栈/出栈的时机。 · IT面试题库">
+  <meta name="twitter:description" content="要点： 递归本质：三种遍历只差 print(root) 在 traverse(left) / traverse(right) 之间的位置（前：根左右；中：左根右；后：左右根），递归隐式用了调用栈。 非递归前序：根先入栈；循环弹栈 → 访问 → 先把右孩子入栈、再把左孩子入栈（因为栈是后进先出，左后入先出）。 非递…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/962.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用递归和非递归（显式栈）分别实现二叉树的前序、中序、后序遍历，并说明非递归写法中节点入栈/出栈的时机。","text":"考察点：递归与迭代两种思维、显式栈模拟调用栈、三种遍历在非递归下的差异（尤其后序的经典写法）。","answerCount":1,"datePublished":"2026-09-10T02:29:34.400Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 递归本质：三种遍历只差 print(root) 在 traverse(left) / traverse(right) 之间的位置（前：根左右；中：左根右；后：左右根），递归隐式用了调用栈。 非递归前序：根先入栈；循环弹栈 → 访问 → 先把右孩子入栈、再把左孩子入栈（因为栈是后进先出，左后入先出）。 非递归中序：while (root || stack)：先把 root 及其所有左孩子一路压栈，弹栈访问后 root 转向右孩子，再继续压它的左链。 非递归后序：经典写法维护一个 prev 指针判断「上次访问的是左还是右」决定下一步；或更简单的『前序变体（根右左）结果 reverse』技巧。 参考实现（中序非递归）： 复杂度：时间 O(n)，空间 O(h)（h 为树高，链表退化时 O(n)）。","url":"https://it-interview.is-a.dev/#/question/962"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>用递归和非递归（显式栈）分别实现二叉树的前序、中序、后序遍历，并说明非递归写法中节点入栈/出栈的时机。</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">二叉树</span><span class="chip tag">遍历</span><span class="chip tag">递归</span><span class="chip tag">非递归</span><span class="chip tag">栈</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：递归与迭代两种思维、显式栈模拟调用栈、三种遍历在非递归下的差异（尤其后序的经典写法）。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>递归本质</strong>：三种遍历只差 <code>print(root)</code> 在 <code>traverse(left)</code> / <code>traverse(right)</code> 之间的位置（前：根左右；中：左根右；后：左右根），递归隐式用了调用栈。</li>
+<li><strong>非递归前序</strong>：根先入栈；循环弹栈 → 访问 → 先把右孩子入栈、再把左孩子入栈（因为栈是后进先出，左后入先出）。</li>
+<li><strong>非递归中序</strong>：<code>while (root || stack)</code>：先把 root 及其所有左孩子一路压栈，弹栈访问后 root 转向右孩子，再继续压它的左链。</li>
+<li><strong>非递归后序</strong>：经典写法维护一个 <code>prev</code> 指针判断「上次访问的是左还是右」决定下一步；或更简单的『前序变体（根右左）结果 reverse』技巧。</li>
+</ul>
+<p><strong>参考实现（中序非递归）</strong>：</p>
+<pre><code class="language-js">function inorder(root) {
+  const res = [], stack = [];
+  while (root || stack.length) {
+    while (root) { stack.push(root); root = root.left; }   // 一路向左
+    root = stack.pop();
+    res.push(root.val);                                    // 出栈即访问
+    root = root.right;                                     // 转向右子树
+  }
+  return res;
+}</code></pre>
+<p><strong>复杂度</strong>：时间 O(n)，空间 O(h)（h 为树高，链表退化时 O(n)）。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/962">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=2&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
