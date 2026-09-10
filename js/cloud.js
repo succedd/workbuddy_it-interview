@@ -283,6 +283,51 @@
           }
         }
         C._lastPosFixed = posFixed;
+        /* 同名分类就地合并（2026-09-10）：本地库对分类只做「并集吸收」，云端清理掉的
+           重名重复分类不会被删，编辑端下次自动发布又会把整包推回云端，让清理白做。
+           这里以云端为权威就地合并：题改挂保留项、技能关联重定向、移除多余条目。
+           只在本地确实存在重名分类时执行，任何异常都不影响后续吸收。 */
+        let catMerged = 0;
+        try {
+          const localCats = await db.categories.toArray();
+          const byName = new Map();
+          for (const c of localCats) {
+            const k = String(c.name || "").trim();
+            if (!k) continue;
+            if (!byName.has(k)) byName.set(k, []);
+            byName.get(k).push(c);
+          }
+          const dupGroups = [...byName.values()].filter(g => g.length > 1);
+          if (dupGroups.length) {
+            const skills = await db.positionSkills.toArray();
+            const inCloud = new Set((remote.categories || []).map(c => c.id));
+            const qCnt = {}, sCnt = {};
+            for (const q of locals) { if (q.categoryId != null) qCnt[q.categoryId] = (qCnt[q.categoryId] || 0) + 1; }
+            for (const s of skills) { if (s.categoryId != null) sCnt[s.categoryId] = (sCnt[s.categoryId] || 0) + 1; }
+            const drop2keep = new Map();
+            for (const group of dupGroups) {
+              /* 保留优先级：云端仍在 > 被技能表引用 > 题多 > id 小 */
+              const rank = c => [inCloud.has(c.id) ? 1 : 0, sCnt[c.id] ? 1 : 0, qCnt[c.id] || 0, -c.id];
+              const sorted = group.slice().sort((a, b) => {
+                const ra = rank(a), rb = rank(b);
+                for (let i = 0; i < ra.length; i++) if (ra[i] !== rb[i]) return rb[i] - ra[i];
+                return 0;
+              });
+              for (let i = 1; i < sorted.length; i++) drop2keep.set(sorted[i].id, sorted[0].id);
+            }
+            if (drop2keep.size) {
+              const movedQ = locals.filter(q => q.categoryId != null && drop2keep.has(q.categoryId))
+                .map(q => Object.assign({}, q, { categoryId: drop2keep.get(q.categoryId) }));
+              if (movedQ.length) await db.questions.bulkPut(movedQ);
+              const movedS = skills.filter(s => s.categoryId != null && drop2keep.has(s.categoryId))
+                .map(s => Object.assign({}, s, { categoryId: drop2keep.get(s.categoryId) }));
+              if (movedS.length) await db.positionSkills.bulkPut(movedS);
+              await db.categories.bulkDelete([...drop2keep.keys()]);
+              catMerged = drop2keep.size;
+            }
+          }
+        } catch (e) { catMerged = 0; }
+        C._lastCatMerged = catMerged;
         // 分类：按 id 追加缺失的（空壳分类也能补齐树结构）
         const localCatIds = new Set((await db.categories.toArray()).map(c => c.id));
         const newCats = (remote.categories || []).filter(c => c && !localCatIds.has(c.id));
@@ -302,7 +347,7 @@
       await DB.setSetting("absorbedRemoteAt", remote.publishedAt || Date.now());
       await DB.setSetting("absorbNormVer", NORM_VER);
     } finally { C._suppress--; }
-    return { added: addedQ, restored: restoredQ, posFixed: C._lastPosFixed || 0 };
+    return { added: addedQ, restored: restoredQ, posFixed: C._lastPosFixed || 0, catMerged: C._lastCatMerged || 0 };
   };
 
   /* ---------- 本地 vs 云端 题量比对（2026-09-09） ----------
