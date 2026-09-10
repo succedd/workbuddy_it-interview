@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gRPC 的超时、重试与负载均衡该怎么配？为什么默认的 RPC 重试很危险？ · IT面试题库</title>
+  <meta name="description" content="要点： 超时用 Deadline 而非 Timeout：gRPC 的 deadline 是绝对时间点，并且会随调用链传下去——服务 A 调 B 再调 C 时，C 收到的 deadline 是 A 定的那个时刻。好处是整条链路的剩余预算被正确共享：B 不会在 A 已经超时的情况下继续等 C。必须显式设置 deadl…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="gRPC 的超时、重试与负载均衡该怎么配？为什么默认的 RPC 重试很危险？ · IT面试题库">
+  <meta property="og:description" content="要点： 超时用 Deadline 而非 Timeout：gRPC 的 deadline 是绝对时间点，并且会随调用链传下去——服务 A 调 B 再调 C 时，C 收到的 deadline 是 A 定的那个时刻。好处是整条链路的剩余预算被正确共享：B 不会在 A 已经超时的情况下继续等 C。必须显式设置 deadl…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1072.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="gRPC 的超时、重试与负载均衡该怎么配？为什么默认的 RPC 重试很危险？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 超时用 Deadline 而非 Timeout：gRPC 的 deadline 是绝对时间点，并且会随调用链传下去——服务 A 调 B 再调 C 时，C 收到的 deadline 是 A 定的那个时刻。好处是整条链路的剩余预算被正确共享：B 不会在 A 已经超时的情况下继续等 C。必须显式设置 deadl…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1072.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"gRPC 的超时、重试与负载均衡该怎么配？为什么默认的 RPC 重试很危险？","text":"考察点：deadline 传播、重试语义、客户端 LB。生产配置题。","answerCount":1,"datePublished":"2026-09-10T11:54:26.062Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 超时用 Deadline 而非 Timeout：gRPC 的 deadline 是绝对时间点，并且会随调用链传下去——服务 A 调 B 再调 C 时，C 收到的 deadline 是 A 定的那个时刻。好处是整条链路的剩余预算被正确共享：B 不会在 A 已经超时的情况下继续等 C。必须显式设置 deadline（默认无超时 = 可能永久挂住线程/连接）。 配置原则：外层 deadline > 内层，且每一跳都要减去自身处理耗时（框架自动处理传播，但服务内部要检查 ctx.Done()/context.isActive() 并及时退出，否则「上游已放弃，下游还在算」——白白消耗资源）。 重试为什么危险： 默认不开启（这是 gRPC 的保守设计，但很多团队手工打开后不设约束），一旦开启：放大流量（下游过载时重试 2 次即 3 倍压力）、可能重复执行副作用（非幂等接口重复扣款/重复下单）； 正确配置四要素：① 只对幂等/安全方法重试（GET、幂等 PUT，或业务上带幂等键）；② 限制次数与预算——maxAttempts 建议 ≤3，并设置 maxAttempts 与总超时联动（重试必须在上游 deadline 内完成，gRPC 的 retry policy 支持 retryableStatusCodes + 退避参数）；③ 退避 + 抖动（initialBackoff/maxBackoff/backoffMultiplier，必须带 jitter 避免惊群）；④ 限定可重试的状态码——只重试 UNAVAILABLE（瞬时不可用）、RESOURCE_EXHAUSTED，绝不重试 INVALID_ARGUMENT/PERMISSION_DENIED（重试也一定失败，纯浪费）； 叠加风险：如果客户端 + 服务端 + SDK 三层都配了重试，实际放大倍数是乘积（2×2×2 = 8 倍）。只在最靠近故障点的一层重试； 配合熔断：熔断打开时应直接快速失败，不要继续重试。 负载均衡： gRPC 的连接是长连接（HTTP/2），若像普通 HTTP 那样「连到 LB，由 LB 分发连接」，会出现一个连接把所有请求都发到同一台后端的问题（连接级均衡 ≠ 请求级均衡）； 正确姿势：客户端侧负载均衡（Client-side LB）——客户端通过服务发现拿到全部后端地址，自己按策略（round_robin/pick_first/least_request）为每个后端建子连接并轮询发请求；gRPC 提供 grpc.Dial 的 resolver + balancer 机制，也可用 xDS（配合 Istio/Envoy）做集中式 LB； 若必须用代理（如 Nginx/Envoy 做 L7 代理），需要代理支持 HTTP/2 且按请求分发（Envoy 可以，普通 TCP 四层 LB 不行）。 加分点：健康检查用 gRPC Health Checking Protocol（标准 grpc.health.v1.Health）；连接要设 keepalive（检测半开连接），但要与 LB 的空闲超时协调（keepalive 间隔太长会被 LB 断，太短会浪费）；请求要带 metadata 传 trace id 与业务标识（等价于 HTTP header）。","url":"https://it-interview.is-a.dev/#/question/1072"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>gRPC 的超时、重试与负载均衡该怎么配？为什么默认的 RPC 重试很危险？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">gRPC</span><span class="chip tag">重试</span><span class="chip tag">Deadline</span><span class="chip tag">负载均衡</span><span class="chip tag">幂等</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：deadline 传播、重试语义、客户端 LB。生产配置题。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>超时用 Deadline 而非 Timeout</strong>：gRPC 的 <code>deadline</code> 是<strong>绝对时间点</strong>，并且<strong>会随调用链传下去</strong>——服务 A 调 B 再调 C 时，C 收到的 deadline 是 A 定的那个时刻。好处是<strong>整条链路的剩余预算被正确共享</strong>：B 不会在 A 已经超时的情况下继续等 C。<strong>必须显式设置 deadline</strong>（默认无超时 = 可能永久挂住线程/连接）。</li>
+<li><strong>配置原则</strong>：<strong>外层 deadline &gt; 内层</strong>，且<strong>每一跳都要减去自身处理耗时</strong>（框架自动处理传播，但服务内部要检查 <code>ctx.Done()</code>/<code>context.isActive()</code> 并及时退出，否则「上游已放弃，下游还在算」——白白消耗资源）。</li>
+<li><strong>重试为什么危险</strong>：</li>
+</ul>
+<p>  - <strong>默认不开启</strong>（这是 gRPC 的保守设计，但很多团队手工打开后不设约束），一旦开启：<strong>放大流量</strong>（下游过载时重试 2 次即 3 倍压力）、<strong>可能重复执行副作用</strong>（非幂等接口重复扣款/重复下单）；</p>
+<p>  - <strong>正确配置四要素</strong>：① <strong>只对幂等/安全方法重试</strong>（<code>GET</code>、幂等 PUT，或业务上带<strong>幂等键</strong>）；② <strong>限制次数与预算</strong>——<code>maxAttempts</code> 建议 ≤3，并设置 <strong><code>maxAttempts</code> 与总超时联动</strong>（重试必须在上游 deadline 内完成，gRPC 的 retry policy 支持 <code>retryableStatusCodes</code> + 退避参数）；③ <strong>退避 + 抖动</strong>（<code>initialBackoff</code>/<code>maxBackoff</code>/<code>backoffMultiplier</code>，<strong>必须带 jitter</strong> 避免惊群）；④ <strong>限定可重试的状态码</strong>——只重试 <code>UNAVAILABLE</code>（瞬时不可用）、<code>RESOURCE_EXHAUSTED</code>，<strong>绝不重试 <code>INVALID_ARGUMENT</code>/<code>PERMISSION_DENIED</code></strong>（重试也一定失败，纯浪费）；</p>
+<p>  - <strong>叠加风险</strong>：如果<strong>客户端 + 服务端 + SDK 三层都配了重试</strong>，实际放大倍数是乘积（2×2×2 = 8 倍）。<strong>只在最靠近故障点的一层重试</strong>；</p>
+<p>  - <strong>配合熔断</strong>：熔断打开时应<strong>直接快速失败</strong>，不要继续重试。</p>
+<ul>
+<li><strong>负载均衡</strong>：</li>
+</ul>
+<p>  - gRPC 的连接是<strong>长连接（HTTP/2）</strong>，若像普通 HTTP 那样「连到 LB，由 LB 分发连接」，会出现<strong>一个连接把所有请求都发到同一台后端</strong>的问题（连接级均衡 ≠ 请求级均衡）；</p>
+<p>  - <strong>正确姿势</strong>：<strong>客户端侧负载均衡（Client-side LB）</strong>——客户端通过服务发现拿到<strong>全部后端地址</strong>，自己按策略（round_robin/pick_first/least_request）为<strong>每个后端建子连接</strong>并轮询发请求；gRPC 提供 <code>grpc.Dial</code> 的 <code>resolver + balancer</code> 机制，也可用 <strong>xDS</strong>（配合 Istio/Envoy）做集中式 LB；</p>
+<p>  - 若必须用代理（如 Nginx/Envoy 做 L7 代理），需要代理支持 <strong>HTTP/2 且按请求分发</strong>（Envoy 可以，普通 TCP 四层 LB 不行）。</p>
+<ul>
+<li><strong>加分点</strong>：健康检查用 <strong>gRPC Health Checking Protocol</strong>（标准 <code>grpc.health.v1.Health</code>）；<strong>连接要设 <code>keepalive</code></strong>（检测半开连接），但要与 LB 的空闲超时协调（keepalive 间隔太长会被 LB 断，太短会浪费）；<strong>请求要带 metadata</strong> 传 trace id 与业务标识（等价于 HTTP header）。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1072">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=125&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastAPI 中同步 def 与 async def 路由混用会出什么问题？什么情况下反而该用同步？ · IT面试题库</title>
+  <meta name="description" content="要点： FastAPI 的调度规则：async def 路由直接在事件循环里跑；def（同步）路由被自动丢到 ThreadPool（默认 anyio 的 40 个线程）里跑。所以两者混用本身不会报错。 致命错误：在 async def 里调用阻塞代码。例如 requests.get()、time.sleep()、…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="FastAPI 中同步 def 与 async def 路由混用会出什么问题？什么情况下反而该用同步？ · IT面试题库">
+  <meta property="og:description" content="要点： FastAPI 的调度规则：async def 路由直接在事件循环里跑；def（同步）路由被自动丢到 ThreadPool（默认 anyio 的 40 个线程）里跑。所以两者混用本身不会报错。 致命错误：在 async def 里调用阻塞代码。例如 requests.get()、time.sleep()、…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1024.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FastAPI 中同步 def 与 async def 路由混用会出什么问题？什么情况下反而该用同步？ · IT面试题库">
+  <meta name="twitter:description" content="要点： FastAPI 的调度规则：async def 路由直接在事件循环里跑；def（同步）路由被自动丢到 ThreadPool（默认 anyio 的 40 个线程）里跑。所以两者混用本身不会报错。 致命错误：在 async def 里调用阻塞代码。例如 requests.get()、time.sleep()、…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1024.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"FastAPI 中同步 def 与 async def 路由混用会出什么问题？什么情况下反而该用同步？","text":"考察点：事件循环阻塞、线程池调度、异步陷阱。这是异步框架最致命的坑。","answerCount":1,"datePublished":"2026-09-10T11:51:01.018Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： FastAPI 的调度规则：async def 路由直接在事件循环里跑；def（同步）路由被自动丢到 ThreadPool（默认 anyio 的 40 个线程）里跑。所以两者混用本身不会报错。 致命错误：在 async def 里调用阻塞代码。例如 requests.get()、time.sleep()、同步的 pymysql/psycopg2 查询、CPU 密集的 pandas。这些会阻塞整个事件循环，导致所有并发请求一起卡住——表现是「并发数上来后所有请求都变慢，但 CPU 不高」，非常难排查。 正确姿势：① 用异步库（httpx.AsyncClient、asyncpg、motor、SQLAlchemy 2.0 async）；② 万不得已用 await run_in_threadpool(blocking_fn) 或 asyncio.to_thread() 把阻塞调用挪出循环；③ CPU 密集交给 ProcessPoolExecutor 或独立的 Celery/任务队列。 什么时候故意用同步 def：依赖同步驱动、代码复用存量同步逻辑、或该接口本身 QPS 很低。交给线程池反而简单安全——代价是线程数成为并发上限，40 个线程被打满时新请求要排队。 排查手段：asyncio 的慢回调日志（loop.slow_callback_duration）、压测时观察「并发上升 → P99 断崖式上涨」；或用 py-spy dump 直接看事件循环线程栈里卡在哪个同步调用上。 加分点：启动/关闭事件 lifespan 也必须是 async 友好的；同步依赖同样走线程池，这也是「同步依赖里做重活」被诟病的原因。","url":"https://it-interview.is-a.dev/#/question/1024"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>FastAPI 中同步 def 与 async def 路由混用会出什么问题？什么情况下反而该用同步？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">FastAPI</span><span class="chip tag">异步</span><span class="chip tag">事件循环</span><span class="chip tag">阻塞</span><span class="chip tag">线程池</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：事件循环阻塞、线程池调度、异步陷阱。这是异步框架最致命的坑。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>FastAPI 的调度规则</strong>：<code>async def</code> 路由<strong>直接在事件循环里跑</strong>；<code>def</code>（同步）路由被自动丢到 <strong>ThreadPool（默认 anyio 的 40 个线程）</strong>里跑。所以两者混用本身不会报错。</li>
+<li><strong>致命错误：在 async def 里调用阻塞代码</strong>。例如 <code>requests.get()</code>、<code>time.sleep()</code>、同步的 <code>pymysql</code>/<code>psycopg2</code> 查询、CPU 密集的 pandas。这些会<strong>阻塞整个事件循环</strong>，导致<strong>所有并发请求一起卡住</strong>——表现是「并发数上来后所有请求都变慢，但 CPU 不高」，非常难排查。</li>
+<li><strong>正确姿势</strong>：① 用异步库（<code>httpx.AsyncClient</code>、<code>asyncpg</code>、<code>motor</code>、SQLAlchemy 2.0 async）；② 万不得已用 <code>await run_in_threadpool(blocking_fn)</code> 或 <code>asyncio.to_thread()</code> 把阻塞调用挪出循环；③ CPU 密集交给 <code>ProcessPoolExecutor</code> 或独立的 Celery/任务队列。</li>
+<li><strong>什么时候故意用同步 def</strong>：依赖同步驱动、代码复用存量同步逻辑、或该接口本身 QPS 很低。交给线程池反而简单安全——<strong>代价是线程数成为并发上限</strong>，40 个线程被打满时新请求要排队。</li>
+<li><strong>排查手段</strong>：<code>asyncio</code> 的慢回调日志（<code>loop.slow_callback_duration</code>）、压测时观察「并发上升 → P99 断崖式上涨」；或用 <code>py-spy dump</code> 直接看事件循环线程栈里卡在哪个同步调用上。</li>
+<li><strong>加分点</strong>：启动/关闭事件 <code>lifespan</code> 也必须是 async 友好的；同步依赖同样走线程池，这也是「同步依赖里做重活」被诟病的原因。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1024">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=89&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

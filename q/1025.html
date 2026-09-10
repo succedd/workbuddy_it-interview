@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pydantic 在 FastAPI 里承担什么角色？从 v1 升级到 v2 有哪些必须注意的变化？ · IT面试题库</title>
+  <meta name="description" content="要点： 角色（三层）：① 请求校验——把 JSON body 反序列化成模型，类型不符自动返回 422 与结构化错误；② 响应序列化——response_model 决定对外暴露哪些字段（可裁掉密码等敏感字段）、并做类型转换；③ 自动文档——Pydantic 的字段定义/Field(description=...…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Pydantic 在 FastAPI 里承担什么角色？从 v1 升级到 v2 有哪些必须注意的变化？ · IT面试题库">
+  <meta property="og:description" content="要点： 角色（三层）：① 请求校验——把 JSON body 反序列化成模型，类型不符自动返回 422 与结构化错误；② 响应序列化——response_model 决定对外暴露哪些字段（可裁掉密码等敏感字段）、并做类型转换；③ 自动文档——Pydantic 的字段定义/Field(description=...…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1025.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pydantic 在 FastAPI 里承担什么角色？从 v1 升级到 v2 有哪些必须注意的变化？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 角色（三层）：① 请求校验——把 JSON body 反序列化成模型，类型不符自动返回 422 与结构化错误；② 响应序列化——response_model 决定对外暴露哪些字段（可裁掉密码等敏感字段）、并做类型转换；③ 自动文档——Pydantic 的字段定义/Field(description=...…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1025.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Pydantic 在 FastAPI 里承担什么角色？从 v1 升级到 v2 有哪些必须注意的变化？","text":"考察点：数据校验/序列化、模型驱动开发、v1→v2 迁移。框架选型与升级实操。","answerCount":1,"datePublished":"2026-09-10T11:51:02.973Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 角色（三层）：① 请求校验——把 JSON body 反序列化成模型，类型不符自动返回 422 与结构化错误；② 响应序列化——response_model 决定对外暴露哪些字段（可裁掉密码等敏感字段）、并做类型转换；③ 自动文档——Pydantic 的字段定义/Field(description=...) 直接生成 OpenAPI Schema，Swagger 就是这么来的。此外还用于配置管理（pydantic-settings）与内部 DTO。 v2 的核心变化： 内核重写为 Rust（pydantic-core），校验速度提升数倍，这是最大卖点； validator → field_validator、root_validator → model_validator，且默认是 mode='after'，要前置校验得写 mode='before'； Config 内部类 → model_config = ConfigDict(...)； orm_mode → from_attributes=True（配合 v2 才用 .model_validate(obj) 读 ORM 对象）； .dict()/.json() → .model_dump()/.model_dump_json()；parse_obj → model_validate； Optional[X] 语义收紧：v1 里 Optional 隐含「非必填」，v2 中类型可空与字段必填是两件事，必填要显式 Field(...)，否则会出现「少了字段不再报错」的隐患； pydantic-settings 拆成独立包，BaseSettings 不再在 pydantic 主包。 迁移建议：用官方 bump-pydantic 脚本批量改写，但回归测试必须重跑——最常踩的是 Optional 语义变化和 field_validator 的作用模式差异，这两处会静默改变校验行为。","url":"https://it-interview.is-a.dev/#/question/1025"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Pydantic 在 FastAPI 里承担什么角色？从 v1 升级到 v2 有哪些必须注意的变化？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">FastAPI</span><span class="chip tag">Pydantic</span><span class="chip tag">数据校验</span><span class="chip tag">v2迁移</span><span class="chip tag">OpenAPI</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：数据校验/序列化、模型驱动开发、v1→v2 迁移。框架选型与升级实操。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>角色（三层）</strong>：① <strong>请求校验</strong>——把 JSON body 反序列化成模型，类型不符自动返回 422 与结构化错误；② <strong>响应序列化</strong>——<code>response_model</code> 决定对外暴露哪些字段（可裁掉密码等敏感字段）、并做类型转换；③ <strong>自动文档</strong>——Pydantic 的字段定义/<code>Field(description=...)</code> 直接生成 OpenAPI Schema，Swagger 就是这么来的。此外还用于<strong>配置管理</strong>（<code>pydantic-settings</code>）与内部 DTO。</li>
+<li><strong>v2 的核心变化</strong>：</li>
+</ul>
+<p>  - <strong>内核重写为 Rust（pydantic-core）</strong>，校验速度提升数倍，这是最大卖点；</p>
+<p>  - <strong><code>validator</code> → <code>field_validator</code></strong>、<strong><code>root_validator</code> → <code>model_validator</code></strong>，且默认是 <code>mode=&#39;after&#39;</code>，要前置校验得写 <code>mode=&#39;before&#39;</code>；</p>
+<p>  - <strong><code>Config</code> 内部类 → <code>model_config = ConfigDict(...)</code></strong>；</p>
+<p>  - <strong><code>orm_mode</code> → <code>from_attributes=True</code></strong>（配合 v2 才用 <code>.model_validate(obj)</code> 读 ORM 对象）；</p>
+<p>  - <strong><code>.dict()</code>/<code>.json()</code> → <code>.model_dump()</code>/<code>.model_dump_json()</code></strong>；<code>parse_obj</code> → <code>model_validate</code>；</p>
+<p>  - <strong><code>Optional[X]</code> 语义收紧</strong>：v1 里 <code>Optional</code> 隐含「非必填」，v2 中<strong>类型可空与字段必填是两件事</strong>，必填要显式 <code>Field(...)</code>，否则会出现「少了字段不再报错」的隐患；</p>
+<p>  - <strong><code>pydantic-settings</code> 拆成独立包</strong>，<code>BaseSettings</code> 不再在 pydantic 主包。</p>
+<ul>
+<li><strong>迁移建议</strong>：用官方 <code>bump-pydantic</code> 脚本批量改写，但<strong>回归测试必须重跑</strong>——最常踩的是 <code>Optional</code> 语义变化和 <code>field_validator</code> 的作用模式差异，这两处会静默改变校验行为。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1025">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=89&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

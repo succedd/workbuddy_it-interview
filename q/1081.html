@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？ · IT面试题库</title>
+  <meta name="description" content="要点： 慢的根因分析（先定位再优化）： 1. 查询要扫描的时间序列数（基数）太多——sum by (route) 之类跨几百条 series 聚合，每次都要读大量样本； 2. 时间范围大 → 样本数线性增长：查 30 天、采集间隔 15s，单条 series 就是 17 万个样本；PromQL 的区间函数（rat…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？ · IT面试题库">
+  <meta property="og:description" content="要点： 慢的根因分析（先定位再优化）： 1. 查询要扫描的时间序列数（基数）太多——sum by (route) 之类跨几百条 series 聚合，每次都要读大量样本； 2. 时间范围大 → 样本数线性增长：查 30 天、采集间隔 15s，单条 series 就是 17 万个样本；PromQL 的区间函数（rat…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1081.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 慢的根因分析（先定位再优化）： 1. 查询要扫描的时间序列数（基数）太多——sum by (route) 之类跨几百条 series 聚合，每次都要读大量样本； 2. 时间范围大 → 样本数线性增长：查 30 天、采集间隔 15s，单条 series 就是 17 万个样本；PromQL 的区间函数（rat…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1081.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？","text":"考察点：查询性能问题、预聚合、指标基数。Grafana 规模化的必修课。","answerCount":1,"datePublished":"2026-09-10T11:55:09.034Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 慢的根因分析（先定位再优化）： 1. 查询要扫描的时间序列数（基数）太多——sum by (route) 之类跨几百条 series 聚合，每次都要读大量样本； 2. 时间范围大 → 样本数线性增长：查 30 天、采集间隔 15s，单条 series 就是 17 万个样本；PromQL 的区间函数（rate/avg_over_time）需要在内存里对每个 series 逐个计算； 3. 面板数量多：一个看板 20 个面板 = 20 个独立查询，Grafana 会并发发出但 TSDB 是共享负载； 4. 查询触发了高代价操作：正则匹配标签、histogram_quantile 跨大量桶、count by (...) (metric) 全量枚举； 5. 数据源配置与缓存：未启用查询缓存/结果缓存，每次都实打实算；Grafana 的 max data points 与 min interval 未调优导致拉回远超屏幕像素的样本数。 优化手段（按性价比排序）： 1. min interval 与 Max data points：面板上设置 Max data points ≈ 面板宽度像素（如 1000），Min interval ≥ 采集间隔——这是零成本、收益最大的一步（Prometheus 会自动按步长降采样，减少传输与渲染量）； 2. Recording Rule（预聚合）：把常用且昂贵的聚合定时算好并写成新指标（如 job:request_rate5m:sum），看板直接查预聚合结果。优势是查询极快、语义稳定（团队约定 level:metric:operations 命名）；注意： 只保留必要的标签（预聚合必须 by 掉高基数标签，否则失去意义）； 区间函数要固化区间（如固定 5m，不能在预聚合里留给查询时随意指定——预聚合的时间粒度一旦选定无法回溯改变）； 适合高频、稳定、跨大范围查询的指标； 3. 降采样（Downsampling / 历史数据分层）：长期存储（Thanos/Mimir/VictoriaMetrics）把原始样本按时间粒度归档——近期保留 15s 精度、30 天后保留 5m、一年后保留 1h。时间范围越大，用越粗的粒度，查询量与存储量都大幅下降。代价是精度丢失，所以原始数据要保留足够窗口（排障需要的正是近期精度）； 4. 指标基数治理（治本）：别让高基数标签进入指标（用户 ID、请求 ID、URL 全路径），改用路由模板、分桶、或把这部分数据放日志/链路。基数问题不解决，Recording Rule 也只是把慢查询转移成慢写入； 5. 仪表盘工程化：拆大看板（概览看板用预聚合、详情看板看单实例）、用模板变量避免「一行展示所有服务」、把「总览」与「下钻」分离；对非常慢的面板设较长的刷新间隔（如 5 分钟），不要让 30 天范围的面板每 10 秒刷新一次； 6. 数据源与存储侧：启用 Prometheus 侧的查询缓存（或 Thanos Query 的 --query.replica-label 去重 + 缓存）、控制 --query.max-samples 防止单查询打爆内存；用远程读（remote read）替代每处直连多个 Prometheus。 验证与运营： 用 Prometheus 的 /api/v1/status/tsdb 与 Grafana 的查询检查器（Query Inspector）看真实耗时与返回样本数——先量化再动手； 关注 Prometheus 自身的 prometheus_engine_query_duration_seconds 与慢查询日志（--query.log-slow-queries）定位最贵的查询； 建立规范：新增看板必须设 Max data points、跨周查询必须用预聚合、新增标签必须过基数评审（这比事后优化更省事）。","url":"https://it-interview.is-a.dev/#/question/1081"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Grafana</span><span class="chip tag">性能优化</span><span class="chip tag">RecordingRule</span><span class="chip tag">降采样</span><span class="chip tag">指标基数</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：查询性能问题、预聚合、指标基数。Grafana 规模化的必修课。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>慢的根因分析（先定位再优化）</strong>：</li>
+</ul>
+<p>  1. <strong>查询要扫描的时间序列数（基数）太多</strong>——<code>sum by (route)</code> 之类跨几百条 series 聚合，每次都要读大量样本；</p>
+<p>  2. <strong>时间范围大 → 样本数线性增长</strong>：查 30 天、采集间隔 15s，单条 series 就是 17 万个样本；PromQL 的<strong>区间函数（rate/avg_over_time）需要在内存里对每个 series 逐个计算</strong>；</p>
+<p>  3. <strong>面板数量多</strong>：一个看板 20 个面板 = 20 个独立查询，<strong>Grafana 会并发发出但 TSDB 是共享负载</strong>；</p>
+<p>  4. <strong>查询触发了高代价操作</strong>：正则匹配标签、<code>histogram_quantile</code> 跨大量桶、<code>count by (...) (metric)</code> 全量枚举；</p>
+<p>  5. <strong>数据源配置与缓存</strong>：未启用查询缓存/结果缓存，每次都实打实算；Grafana 的 <code>max data points</code> 与 <code>min interval</code> 未调优导致拉回远超屏幕像素的样本数。</p>
+<ul>
+<li><strong>优化手段（按性价比排序）</strong>：</li>
+</ul>
+<p>  1. <strong><code>min interval</code> 与 <code>Max data points</code></strong>：面板上设置 <code>Max data points</code> ≈ 面板宽度像素（如 1000），<code>Min interval</code> ≥ 采集间隔——<strong>这是零成本、收益最大的一步</strong>（Prometheus 会自动按步长降采样，减少传输与渲染量）；</p>
+<p>  2. <strong>Recording Rule（预聚合）</strong>：把常用且昂贵的聚合<strong>定时算好并写成新指标</strong>（如 <code>job:request_rate5m:sum</code>），看板直接查预聚合结果。优势是<strong>查询极快、语义稳定</strong>（团队约定 <code>level:metric:operations</code> 命名）；注意：</p>
+<p>     - <strong>只保留必要的标签</strong>（预聚合必须 <code>by</code> 掉高基数标签，否则失去意义）；</p>
+<p>     - <strong>区间函数要固化区间</strong>（如固定 5m，不能在预聚合里留给查询时随意指定——预聚合的时间粒度一旦选定无法回溯改变）；</p>
+<p>     - 适合<strong>高频、稳定、跨大范围查询</strong>的指标；</p>
+<p>  3. <strong>降采样（Downsampling / 历史数据分层）</strong>：长期存储（Thanos/Mimir/VictoriaMetrics）把原始样本<strong>按时间粒度归档</strong>——近期保留 15s 精度、30 天后保留 5m、一年后保留 1h。<strong>时间范围越大，用越粗的粒度</strong>，查询量与存储量都大幅下降。<strong>代价是精度丢失</strong>，所以原始数据要保留足够窗口（排障需要的正是近期精度）；</p>
+<p>  4. <strong>指标基数治理（治本）</strong>：<strong>别让高基数标签进入指标</strong>（用户 ID、请求 ID、URL 全路径），改用<strong>路由模板</strong>、<strong>分桶</strong>、或把这部分数据放日志/链路。<strong>基数问题不解决，Recording Rule 也只是把慢查询转移成慢写入</strong>；</p>
+<p>  5. <strong>仪表盘工程化</strong>：拆大看板（概览看板用预聚合、详情看板看单实例）、用模板变量<strong>避免「一行展示所有服务」</strong>、把「总览」与「下钻」分离；对非常慢的面板设<strong>较长的刷新间隔</strong>（如 5 分钟），<strong>不要让 30 天范围的面板每 10 秒刷新一次</strong>；</p>
+<p>  6. <strong>数据源与存储侧</strong>：启用 Prometheus 侧的查询缓存（或 Thanos Query 的 <code>--query.replica-label</code> 去重 + 缓存）、控制 <code>--query.max-samples</code> 防止单查询打爆内存；用<strong>远程读（remote read）</strong>替代每处直连多个 Prometheus。</p>
+<ul>
+<li><strong>验证与运营</strong>：</li>
+</ul>
+<p>  - 用 Prometheus 的 <strong><code>/api/v1/status/tsdb</code></strong> 与 Grafana 的<strong>查询检查器（Query Inspector）</strong>看真实耗时与返回样本数——<strong>先量化再动手</strong>；</p>
+<p>  - 关注 <strong>Prometheus 自身的 <code>prometheus_engine_query_duration_seconds</code></strong> 与慢查询日志（<code>--query.log-slow-queries</code>）定位最贵的查询；</p>
+<p>  - <strong>建立规范</strong>：新增看板必须设 <code>Max data points</code>、跨周查询必须用预聚合、新增标签必须过基数评审（<strong>这比事后优化更省事</strong>）。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1081">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=144&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gRPC 的四种流式模式分别适合什么场景？流式相比普通 RPC 复杂在哪里？ · IT面试题库</title>
+  <meta name="description" content="要点： 四种模式（都由 Protobuf 的 stream 关键字声明）： 1. Unary（一元）：一请求一响应，等价于普通 RPC。绝大多数业务接口用这个——简单、幂等好设计、易做重试与缓存； 2. Server Streaming（服务端流）：一请求、多响应。适合大结果集分块下发（导出大数据、日志拉取）、实…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="gRPC 的四种流式模式分别适合什么场景？流式相比普通 RPC 复杂在哪里？ · IT面试题库">
+  <meta property="og:description" content="要点： 四种模式（都由 Protobuf 的 stream 关键字声明）： 1. Unary（一元）：一请求一响应，等价于普通 RPC。绝大多数业务接口用这个——简单、幂等好设计、易做重试与缓存； 2. Server Streaming（服务端流）：一请求、多响应。适合大结果集分块下发（导出大数据、日志拉取）、实…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1071.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="gRPC 的四种流式模式分别适合什么场景？流式相比普通 RPC 复杂在哪里？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 四种模式（都由 Protobuf 的 stream 关键字声明）： 1. Unary（一元）：一请求一响应，等价于普通 RPC。绝大多数业务接口用这个——简单、幂等好设计、易做重试与缓存； 2. Server Streaming（服务端流）：一请求、多响应。适合大结果集分块下发（导出大数据、日志拉取）、实…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1071.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"gRPC 的四种流式模式分别适合什么场景？流式相比普通 RPC 复杂在哪里？","text":"考察点：四种调用模式、流控与背压、连接生命周期。理解 gRPC 的表达能力边界。","answerCount":1,"datePublished":"2026-09-10T11:54:23.603Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四种模式（都由 Protobuf 的 stream 关键字声明）： 1. Unary（一元）：一请求一响应，等价于普通 RPC。绝大多数业务接口用这个——简单、幂等好设计、易做重试与缓存； 2. Server Streaming（服务端流）：一请求、多响应。适合大结果集分块下发（导出大数据、日志拉取）、实时推送（行情、通知、订阅）、流式生成（LLM 逐 token 返回）； 3. Client Streaming（客户端流）：多请求、一响应。适合批量上传/聚合（分片上传文件、传感器批量上报、批量写入）——相比「多次 Unary」省掉了每次的头部开销与往返； 4. Bidirectional Streaming（双向流）：双向独立。适合实时双向交互（IM 聊天、协同编辑、语音识别边发边收、游戏状态同步）。注意：双向流是「全双工」，两侧可独立发送，不是「一问一答」。 流式比 Unary 复杂在哪（重点答这一块）： 背压（Backpressure）：如果生产者比消费者快，数据会在内存里堆积——HTTP/2 有流控窗口机制，但应用层必须显式配合（如 gRPC 的 isReady() 判断可写、或按需 request(n) 拉取），否则内存泄漏型 OOM。这是流式接口最常见的线上问题； 连接生命周期：长连接意味着要处理重连、断线续传、心跳保活；连接断开时未完成的流会出错，业务必须能从中断点恢复（记录 offset/cursor）； 错误语义变化：Unary 一次调用对应一个明确结果；流式里错误可能在流中途发生（已收到部分数据再报错），客户端要定义「部分成功的处理规则」； 负载均衡失效：长连接一旦建立就粘在某个后端实例上，后续所有流数据都走这一条——发布/扩缩容时无法平滑迁移（需主动断开重建），而不像 Unary 可以每次重新选实例； 超时与重试困难：流式请求的耗时不可预估，不能用固定的短超时；重试会导致数据重复（需要幂等/去重）； 可观测性变差：一次业务概念上的「会话」在监控里表现为一个超长 span，延迟指标失去意义，需要自定义「每消息延迟」指标； 代理与网关兼容性：部分 HTTP 代理、LB 会缓冲或在一段时间无数据后切断长连接流（如 Nginx 需关 proxy_buffering、调 grpc_read_timeout），生产上必须验证每一跳的配置。 选型建议：能用 Unary 就用 Unary（90% 场景）；需要「服务端持续推送」优先考虑 Server Streaming（比 WebSocket 更规范、有 Protobuf 类型）；双向流只在真的双向实时交互时用，并提前设计好背压、断线恢复、死连接检测；纯前端（浏览器）对接时注意 gRPC-Web 不支持客户端流与双向流（浏览器无法完全控制 HTTP/2 帧），此时用 WebSocket 或 SSE 更合适。","url":"https://it-interview.is-a.dev/#/question/1071"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>gRPC 的四种流式模式分别适合什么场景？流式相比普通 RPC 复杂在哪里？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">gRPC</span><span class="chip tag">流式</span><span class="chip tag">Streaming</span><span class="chip tag">背压</span><span class="chip tag">HTTP2</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：四种调用模式、流控与背压、连接生命周期。理解 gRPC 的表达能力边界。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>四种模式（都由 Protobuf 的 <code>stream</code> 关键字声明）</strong>：</li>
+</ul>
+<p>  1. <strong>Unary（一元）</strong>：一请求一响应，等价于普通 RPC。<strong>绝大多数业务接口用这个</strong>——简单、幂等好设计、易做重试与缓存；</p>
+<p>  2. <strong>Server Streaming（服务端流）</strong>：一请求、多响应。适合<strong>大结果集分块下发</strong>（导出大数据、日志拉取）、<strong>实时推送</strong>（行情、通知、订阅）、<strong>流式生成</strong>（LLM 逐 token 返回）；</p>
+<p>  3. <strong>Client Streaming（客户端流）</strong>：多请求、一响应。适合<strong>批量上传/聚合</strong>（分片上传文件、传感器批量上报、批量写入）——相比「多次 Unary」省掉了每次的头部开销与往返；</p>
+<p>  4. <strong>Bidirectional Streaming（双向流）</strong>：双向独立。适合<strong>实时双向交互</strong>（IM 聊天、协同编辑、语音识别边发边收、游戏状态同步）。<strong>注意：双向流是「全双工」，两侧可独立发送，不是「一问一答」</strong>。</p>
+<ul>
+<li><strong>流式比 Unary 复杂在哪（重点答这一块）</strong>：</li>
+</ul>
+<p>  - <strong>背压（Backpressure）</strong>：如果生产者比消费者快，数据会在内存里堆积——HTTP/2 有<strong>流控窗口</strong>机制，但<strong>应用层必须显式配合</strong>（如 gRPC 的 <code>isReady()</code> 判断可写、或按需 <code>request(n)</code> 拉取），否则<strong>内存泄漏型 OOM</strong>。这是流式接口最常见的线上问题；</p>
+<p>  - <strong>连接生命周期</strong>：长连接意味着<strong>要处理重连、断线续传、心跳保活</strong>；连接断开时<strong>未完成的流会出错</strong>，业务必须能<strong>从中断点恢复</strong>（记录 offset/cursor）；</p>
+<p>  - <strong>错误语义变化</strong>：Unary 一次调用对应一个明确结果；流式里<strong>错误可能在流中途发生</strong>（已收到部分数据再报错），客户端要定义「部分成功的处理规则」；</p>
+<p>  - <strong>负载均衡失效</strong>：<strong>长连接一旦建立就粘在某个后端实例</strong>上，后续所有流数据都走这一条——<strong>发布/扩缩容时无法平滑迁移</strong>（需主动断开重建），而不像 Unary 可以每次重新选实例；</p>
+<p>  - <strong>超时与重试困难</strong>：流式请求的耗时不可预估，<strong>不能用固定的短超时</strong>；重试会<strong>导致数据重复</strong>（需要幂等/去重）；</p>
+<p>  - <strong>可观测性变差</strong>：一次业务概念上的「会话」在监控里表现为<strong>一个超长 span</strong>，延迟指标失去意义，需要自定义「每消息延迟」指标；</p>
+<p>  - <strong>代理与网关兼容性</strong>：<strong>部分 HTTP 代理、LB 会缓冲或在一段时间无数据后切断</strong>长连接流（如 Nginx 需关 <code>proxy_buffering</code>、调 <code>grpc_read_timeout</code>），<strong>生产上必须验证每一跳的配置</strong>。</p>
+<ul>
+<li><strong>选型建议</strong>：能用 Unary 就用 Unary（90% 场景）；<strong>需要「服务端持续推送」优先考虑 Server Streaming</strong>（比 WebSocket 更规范、有 Protobuf 类型）；双向流只在<strong>真的双向实时交互</strong>时用，并<strong>提前设计好背压、断线恢复、死连接检测</strong>；纯前端（浏览器）对接时注意 <strong>gRPC-Web 不支持客户端流与双向流</strong>（浏览器无法完全控制 HTTP/2 帧），此时用 WebSocket 或 SSE 更合适。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1071">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=125&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

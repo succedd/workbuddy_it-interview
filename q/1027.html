@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？ · IT面试题库</title>
+  <meta name="description" content="要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Ro…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？ · IT面试题库">
+  <meta property="og:description" content="要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Ro…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1027.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Ro…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1027.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？","text":"考察点：多进程模型、cluster 负载均衡、共享状态、优雅重启。Node 生产部署必考。","answerCount":1,"datePublished":"2026-09-10T11:51:12.345Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Round-Robin（cluster.SCHED_RR，由主进程分发连接），在 Linux 上比交由内核抢占（SCHED_NONE）更均衡，能缓解「连接分布不均导致某些 worker 忙死」。 生产替代方案：pm2 -i max（内部也是 cluster）或直接用容器编排——每容器一进程，由 K8s/HPA 扩副本，这比单机多进程更符合云原生思路（隔离性、滚动更新都更好）。 核心坑： 端口冲突：worker 都 listen 同一端口是允许的（cluster 内部做了处理），但在 cluster 外自己再起进程会 EADDRINUSE； 内存不共享：多进程意味着内存里的 session/限流计数/cache 各存各的，多副本下会不一致——必须外置到 Redis； 定时任务重复执行：每个 worker 都会跑 setInterval，导致任务被执行 N 次，需要分布式锁或把定时任务独立成进程； 滚动重启：cluster 支持零停机重启——逐个 worker.disconnect()（先停止接收新连接、等存量请求处理完）再 fork 新的，不能所有 worker 一起杀； worker 崩溃不自动重启：必须监听 exit 事件主动 fork，且要防止崩溃风暴（异常启动即崩 → 无限 fork，需加退避与最大重启次数）。 加分点：worker.send()/process.send() 做进程间通信；cluster.isPrimary 区分角色（旧版为 isMaster）。","url":"https://it-interview.is-a.dev/#/question/1027"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Express</span><span class="chip tag">cluster</span><span class="chip tag">多核</span><span class="chip tag">优雅重启</span><span class="chip tag">Node.js</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：多进程模型、cluster 负载均衡、共享状态、优雅重启。Node 生产部署必考。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>问题本质</strong>：Node 的 JS 执行是<strong>单线程</strong>的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且<strong>一个致命错误会带走整个服务</strong>。</li>
+<li><strong>cluster 模块</strong>：主进程（primary）用 <code>cluster.fork()</code> 派生多个 worker，<strong>共享同一个监听端口</strong>。默认策略是 <strong>Round-Robin</strong>（<code>cluster.SCHED_RR</code>，由主进程分发连接），在 Linux 上比交由内核抢占（<code>SCHED_NONE</code>）更均衡，能缓解「连接分布不均导致某些 worker 忙死」。</li>
+<li><strong>生产替代方案</strong>：<code>pm2 -i max</code>（内部也是 cluster）或直接用容器编排——<strong>每容器一进程</strong>，由 K8s/HPA 扩副本，这比单机多进程更符合云原生思路（隔离性、滚动更新都更好）。</li>
+<li><strong>核心坑</strong>：</li>
+</ul>
+<p>  - <strong>端口冲突</strong>：worker 都 <code>listen</code> 同一端口是允许的（cluster 内部做了处理），但在 cluster 外自己再起进程会 <code>EADDRINUSE</code>；</p>
+<p>  - <strong>内存不共享</strong>：多进程意味着<strong>内存里的 session/限流计数/cache 各存各的</strong>，多副本下会不一致——必须外置到 <strong>Redis</strong>；</p>
+<p>  - <strong>定时任务重复执行</strong>：每个 worker 都会跑 <code>setInterval</code>，导致任务被执行 N 次，需要<strong>分布式锁</strong>或把定时任务独立成进程；</p>
+<p>  - <strong>滚动重启</strong>：<code>cluster</code> 支持<strong>零停机重启</strong>——逐个 <code>worker.disconnect()</code>（先停止接收新连接、等存量请求处理完）再 fork 新的，不能所有 worker 一起杀；</p>
+<p>  - <strong>worker 崩溃不自动重启</strong>：必须监听 <code>exit</code> 事件主动 fork，且要防止<strong>崩溃风暴</strong>（异常启动即崩 → 无限 fork，需加退避与最大重启次数）。</p>
+<ul>
+<li><strong>加分点</strong>：<code>worker.send()</code>/<code>process.send()</code> 做进程间通信；<code>cluster.isPrimary</code> 区分角色（旧版为 <code>isMaster</code>）。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1027">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=91&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库</title>
+  <meta name="description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库">
+  <meta property="og:description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1059.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1059.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？","text":"考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。","answerCount":1,"datePublished":"2026-09-10T11:53:15.976Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→ 进入下一轮。 两条铁律：① 每个宏任务之间会清空微任务队列；② 微任务执行期间新产生的微任务会在同一轮继续执行（所以「微任务里递归 Promise」会饿死渲染，页面卡死）。 执行顺序实例： setTimeout(fn, 0) 为什么不是「立即执行」：它至少要等下一个宏任务轮次，且浏览器有 4ms 的最小钳制（嵌套调用超过 5 层时）；requestAnimationFrame 在渲染前执行，适合动画；requestIdleCallback 在空闲时执行，适合低优先级任务。 Node.js 的不同（阶段模型）：事件循环分为 timers → pending callbacks → idle/prepare → poll → check（setImmediate）→ close callbacks，每个阶段之间（以及每个阶段内部）会清空微任务队列。要点： process.nextTick 优先级高于 Promise 微任务——它有自己的 nextTick 队列，且总在微任务之前清空（滥用会饿死 IO）； setImmediate 与 setTimeout(0) 的顺序不确定：在主模块（同步代码）里，两者顺序取决于进程启动耗时（通常不确定）；但在 I/O 回调里，setImmediate 总是先于 setTimeout（因为 IO 回调后先到 check 阶段，再到 timers 阶段）； Node 11+ 起两者都对齐到浏览器的「宏任务间清微任务」语义，早期版本的差异（微任务何时清空）已修正。 实践结论：想「尽快执行但仍让出渲染」→ 微任务（Promise/queueMicrotask）；想「下一帧前执行」→ rAF；想把长任务切片避免阻塞 INP → 用 setTimeout/scheduler.postTask/MessageChannel 主动让出；别用 setTimeout 做「同步后的立即刷新」，DOM 更新在微任务里就能被读到（await nextTick() / Vue 的 nextTick 就是基于微任务）。 渲染相关：微任务清空后才可能渲染，所以「改 DOM 后立刻读取布局」会强制同步布局（reflow）；Flush 频率取决于是否被 JS 长任务占满——这也是长任务拖慢 INP 的底层原因。","url":"https://it-interview.is-a.dev/#/question/1059"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">前端架构师</span><span class="chip tag">浏览器</span><span class="chip tag">事件循环</span><span class="chip tag">微任务</span><span class="chip tag">EventLoop</span><span class="chip tag">Node.js</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>浏览器的一次事件循环</strong>：从<strong>宏任务（task）队列</strong>取一个任务执行 → 该任务产生的所有<strong>微任务（microtask）</strong>在本轮内<strong>全部清空</strong>（<code>queueMicrotask</code>、<code>Promise.then</code>、<code>MutationObserver</code>）→ 可能需要<strong>渲染更新</strong>（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→ 进入下一轮。</li>
+<li><strong>两条铁律</strong>：① <strong>每个宏任务之间会清空微任务队列</strong>；② <strong>微任务执行期间新产生的微任务会在同一轮继续执行</strong>（所以「微任务里递归 Promise」会<strong>饿死渲染</strong>，页面卡死）。</li>
+<li><strong>执行顺序实例</strong>：</li>
+</ul>
+<pre><code class="language-js">console.log(&#39;1&#39;)
+setTimeout(() =&gt; console.log(&#39;2&#39;))          // 宏任务
+Promise.resolve().then(() =&gt; console.log(&#39;3&#39;)) // 微任务
+console.log(&#39;4&#39;)
+// 输出：1 4 3 2</code></pre>
+<ul>
+<li><strong><code>setTimeout(fn, 0)</code> 为什么不是「立即执行」</strong>：它至少要等<strong>下一个宏任务轮次</strong>，且浏览器有 <strong>4ms 的最小钳制</strong>（嵌套调用超过 5 层时）；<code>requestAnimationFrame</code> 在<strong>渲染前</strong>执行，适合动画；<code>requestIdleCallback</code> 在<strong>空闲时</strong>执行，适合低优先级任务。</li>
+<li><strong>Node.js 的不同（阶段模型）</strong>：事件循环分为 <strong>timers → pending callbacks → idle/prepare → poll → check（<code>setImmediate</code>）→ close callbacks</strong>，<strong>每个阶段之间（以及每个阶段内部）会清空微任务队列</strong>。要点：</li>
+</ul>
+<p>  - <strong><code>process.nextTick</code> 优先级高于 Promise 微任务</strong>——它有自己的 nextTick 队列，且<strong>总在微任务之前清空</strong>（滥用会饿死 IO）；</p>
+<p>  - <strong><code>setImmediate</code> 与 <code>setTimeout(0)</code> 的顺序不确定</strong>：在<strong>主模块（同步代码）里</strong>，两者顺序取决于进程启动耗时（通常不确定）；但在 <strong>I/O 回调里</strong>，<code>setImmediate</code> <strong>总是先于</strong> <code>setTimeout</code>（因为 IO 回调后先到 check 阶段，再到 timers 阶段）；</p>
+<p>  - <strong>Node 11+ 起两者都对齐到浏览器的「宏任务间清微任务」语义</strong>，早期版本的差异（微任务何时清空）已修正。</p>
+<ul>
+<li><strong>实践结论</strong>：想「尽快执行但仍让出渲染」→ <strong>微任务</strong>（Promise/<code>queueMicrotask</code>）；想「下一帧前执行」→ <code>rAF</code>；想把<strong>长任务切片</strong>避免阻塞 INP → 用 <code>setTimeout</code>/<code>scheduler.postTask</code>/<code>MessageChannel</code> 主动让出；<strong>别用 <code>setTimeout</code> 做「同步后的立即刷新」</strong>，DOM 更新在微任务里就能被读到（<code>await nextTick()</code> / Vue 的 <code>nextTick</code> 就是基于微任务）。</li>
+<li><strong>渲染相关</strong>：微任务清空后才可能渲染，所以「改 DOM 后立刻读取布局」会<strong>强制同步布局（reflow）</strong>；Flush 频率取决于是否被 JS 长任务占满——<strong>这也是长任务拖慢 INP 的底层原因</strong>。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1059">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=60&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
