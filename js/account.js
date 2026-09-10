@@ -179,7 +179,7 @@
     const snap = {
       favorites: fav.map(x => ({ id: x.questionId, at: x.createdAt })),
       histories: his.map(x => ({ id: x.questionId, views: x.views || 1, at: x.viewedAt || x.createdAt || Date.now() })),
-      weak: weak.map(x => ({ id: x.questionId, at: x.createdAt })),
+      weak: weak.map(x => ({ id: x.questionId, at: x.createdAt, box: x.box || 0, dueAt: x.dueAt || null, marked: x.marked || null, lastOkAt: x.lastOkAt || null, updatedAt: x.updatedAt || x.createdAt || Date.now() })),
       daily: dailyRows.map(r => ({ day: r.day, ids: r.ids || [] })),
     };
     A._rememberSnapshot(snap);   // 缓存快照，供关闭页面时 sendBeacon 兜底使用
@@ -261,10 +261,20 @@
         else if ((h.views || 0) > (cur.views || 0)) { cur.views = h.views; cur.viewedAt = Math.max(cur.viewedAt || 0, h.at || 0); await db.histories.put(cur); }
       }
       if (newHis.length) await db.histories.bulkAdd(newHis);
-      // weak bank
-      const weakKeys = new Set((await db.weakBank.toArray()).map(x => x.questionId));
-      const newWeak = (remote.weak || []).filter(w => !weakKeys.has(w.id))
-        .map(w => ({ questionId: w.id, createdAt: w.at || now }));
+      // weak bank：带全量复习进度（阶段/到期时间/标记），按 updatedAt 新者胜合并
+      const weakMap = new Map((await db.weakBank.toArray()).map(x => [x.questionId, x]));
+      const newWeak = [];
+      for (const w of (remote.weak || [])) {
+        const rUpd = w.updatedAt || w.at || now;
+        const cur = weakMap.get(w.id);
+        if (!cur) {
+          newWeak.push({ questionId: w.id, createdAt: w.at || now, box: w.box || 0, dueAt: w.dueAt || null, marked: w.marked || null, lastOkAt: w.lastOkAt || null, updatedAt: rUpd });
+        } else if (rUpd > (cur.updatedAt || cur.createdAt || 0)) {
+          cur.box = w.box || 0; cur.dueAt = w.dueAt || cur.dueAt; cur.marked = w.marked || cur.marked;
+          cur.lastOkAt = w.lastOkAt || cur.lastOkAt; cur.updatedAt = rUpd;
+          await db.weakBank.put(cur);
+        }
+      }
       if (newWeak.length) await db.weakBank.bulkAdd(newWeak);
       // 每日打卡：按天并集，不丢任一设备的记录
       const dayRe = /^\d{4}-\d{2}-\d{2}$/;

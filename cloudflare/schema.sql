@@ -37,11 +37,16 @@ CREATE TABLE IF NOT EXISTS histories (
   PRIMARY KEY (user_id, question_id)
 );
 
--- 错题本
+-- 错题本（20260910b 起含艾宾浩斯复习进度；已有旧表由 worker 启动时 ALTER TABLE 动态补列）
 CREATE TABLE IF NOT EXISTS weak_bank (
   user_id    INTEGER NOT NULL,
   question_id INTEGER NOT NULL,
   created_at INTEGER NOT NULL,
+  box        INTEGER DEFAULT 0,            -- 记忆曲线阶段（0-7）
+  due_at     INTEGER,                      -- 下次到期时间戳 ms
+  marked     TEXT,                         -- 标记类型 familiar/unknown
+  last_ok_at INTEGER,                      -- 最近一次「会了」时间
+  updated_at INTEGER,                      -- 最后改动时间（新者胜合并依据）
   PRIMARY KEY (user_id, question_id)
 );
 

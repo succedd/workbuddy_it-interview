@@ -284,14 +284,34 @@ async function handleMe(env, request) {
 
 /* ---------- 个人数据云同步：favorites / histories / weak / daily（每日打卡） ---------- */
 
+/* weak_bank 复习进度列（20260910b 新增）：旧表缺列时用 ALTER TABLE 动态补齐，每 isolate 只试一轮 */
+let weakColsPromise = null;
+function ensureWeakCols(db) {
+  if (!weakColsPromise) {
+    weakColsPromise = (async () => {
+      for (const ddl of [
+        "ALTER TABLE weak_bank ADD COLUMN box INTEGER DEFAULT 0",
+        "ALTER TABLE weak_bank ADD COLUMN due_at INTEGER",
+        "ALTER TABLE weak_bank ADD COLUMN marked TEXT",
+        "ALTER TABLE weak_bank ADD COLUMN last_ok_at INTEGER",
+        "ALTER TABLE weak_bank ADD COLUMN updated_at INTEGER",
+      ]) {
+        try { await db.prepare(ddl).run(); } catch (_) { /* 列已存在 */ }
+      }
+    })().catch(() => {});
+  }
+  return weakColsPromise;
+}
+
 async function handleGetMyData(env, request) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
   if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  await ensureWeakCols(db);
   const [fav, his, weak] = await db.batch([
     db.prepare("SELECT question_id AS id, created_at AS at FROM favorites WHERE user_id = ?").bind(u.id),
     db.prepare("SELECT question_id AS id, views, viewed_at AS at FROM histories WHERE user_id = ?").bind(u.id),
-    db.prepare("SELECT question_id AS id, created_at AS at FROM weak_bank WHERE user_id = ?").bind(u.id),
+    db.prepare("SELECT question_id AS id, box, due_at AS dueAt, marked, last_ok_at AS lastOkAt, created_at AS at, updated_at AS updatedAt FROM weak_bank WHERE user_id = ?").bind(u.id),
   ]);
   let daily = [];
   try {
@@ -330,11 +350,21 @@ async function handlePutMyData(env, request) {
       "ON CONFLICT(user_id, question_id) DO UPDATE SET views = MAX(views, excluded.views), viewed_at = MAX(viewed_at, excluded.viewed_at)")
       .bind(u.id, qid, views, at));
   }
+  await ensureWeakCols(db);
   for (const w of normArr(body.weak)) {
     const qid = parseInt(w.id ?? w.questionId); if (!qid) continue;
+    const at = parseInt(w.at) || now;
+    const box = Math.max(0, Math.min(7, parseInt(w.box) || 0));
+    const dueAt = parseInt(w.dueAt) || at;                 // 缺省视为已到期，由客户端 repair 兜底
+    const marked = (typeof w.marked === "string" && w.marked) ? w.marked.slice(0, 32) : null;
+    const lastOkAt = parseInt(w.lastOkAt) || null;
+    const upd = parseInt(w.updatedAt) || at;               // 新者胜：只接受不早于已存记录的更新
     stmts.push(db.prepare(
-      "INSERT INTO weak_bank (user_id, question_id, created_at) VALUES (?, ?, ?) " +
-      "ON CONFLICT(user_id, question_id) DO NOTHING").bind(u.id, qid, parseInt(w.at) || now));
+      "INSERT INTO weak_bank (user_id, question_id, created_at, box, due_at, marked, last_ok_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+      "ON CONFLICT(user_id, question_id) DO UPDATE SET box = excluded.box, due_at = excluded.due_at, marked = excluded.marked, " +
+      "last_ok_at = excluded.last_ok_at, updated_at = excluded.updated_at " +
+      "WHERE excluded.updated_at >= COALESCE(weak_bank.updated_at, 0)")
+      .bind(u.id, qid, at, box, dueAt, marked, lastOkAt, upd));
   }
   if (stmts.length) await db.batch(stmts.slice(0, 1500));   // D1 单批上限保险；核心同步（收藏/历史/错题）独立成批
   /* 每日打卡：独立批处理 + 按天并集，即使 daily_done 表缺失也不影响上面核心同步 */
