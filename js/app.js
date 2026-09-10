@@ -11,7 +11,9 @@
 
   /* ============================ 主题 ============================ */
   const THEME_KEY = "it_hub_theme";
-  App.getTheme = () => { try { return localStorage.getItem(THEME_KEY) || "system"; } catch (e) { return "system"; } };
+  /* 默认浅色（20260910a）：手机系统深色模式会让整站跟随变暗、刷题体验差，
+     首次访问不再跟随系统，改为固定浅色；用户仍可在顶栏/设置手动切深色或跟随系统 */
+  App.getTheme = () => { try { return localStorage.getItem(THEME_KEY) || "light"; } catch (e) { return "light"; } };
   App.setTheme = function (mode) {
     try { localStorage.setItem(THEME_KEY, mode); } catch (e) {}
     applyTheme();
