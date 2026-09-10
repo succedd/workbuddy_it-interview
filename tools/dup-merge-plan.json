@@ -1,5 +1,5 @@
 {
-  "_note": "重复题合并计划。每条 = {drop: 要删的题号, keep: 保留的题号, note: 理由}。drop/keep 必须人工核对过内容，保留方应是内容更全或热度更高的那一版；answerFrom 可选，用于把被删题的答案搬进保留题（answerFrom=drop 的 id）。执行后所有被删题号写入顶层 removedQuestions，前端据此清理本机并重定向用户数据。",
+  "_note": "重复题合并计划。每条 = {drop: 要删的题号, keep: 保留的题号, note: 理由}。drop/keep 必须人工核对过内容，保留方应是内容更全或热度更高的那一版；answerFrom 可选，用于把被删题的答案搬进保留题（answerFrom=drop 的 id）；answerText 可选，用于两版各有独占内容时写入拼好的合并正文。执行后所有被删题号写入顶层 removedQuestions，前端据此清理本机并重定向用户数据。",
   "merges": [
     {
       "drop": 853,
@@ -20,6 +20,172 @@
       "drop": 259,
       "keep": 257,
       "note": "移动端冷启动/热启动：259 是标题带「（副本）」的字面重复，答案逐字相同，仅删副本"
+    },
+    {
+      "drop": 180,
+      "keep": 80,
+      "note": "Kafka 核心概念：保留 80（359 字，含 Consumer Group 并行度、Offset 存储、ZK→KRaft；180 为 142 字简版）"
+    },
+    {
+      "drop": 159,
+      "keep": 60,
+      "note": "TCP 三次握手/四次挥手：保留 60（312 字，含「两次不够、四次多余」的动机与半关闭状态）"
+    },
+    {
+      "drop": 179,
+      "keep": 78,
+      "note": "Spring Boot 全局异常：保留 78（582 字，含 @RestControllerAdvice 完整代码与兜底 handler；179 为 320 字简版）"
+    },
+    {
+      "drop": 39,
+      "keep": 905,
+      "note": "Redis 为什么快：保留 905（442 字，含 RESP 协议、多线程 IO 与大 key 阻塞的追问点）"
+    },
+    {
+      "drop": 925,
+      "keep": 366,
+      "note": "进程间通信（IPC）：标题仅「分别/各适用」用词差异，同一题；保留 366（461 字，含选型口诀）"
+    },
+    {
+      "drop": 244,
+      "keep": 768,
+      "note": "浏览器 HTTP 缓存：保留 768（450 字，含强缓存/协商缓存配合策略与文件名哈希刷新）"
+    },
+    {
+      "drop": 43,
+      "keep": 906,
+      "note": "Redis RDB/AOF：保留 906（434 字，含 appendfsync 三档、AOF 重写、混合持久化）"
+    },
+    {
+      "drop": 139,
+      "keep": 906,
+      "note": "Redis RDB/AOF：139（141 字）与 43 是同一题的两个简版，统一并入 906"
+    },
+    {
+      "drop": 103,
+      "keep": 930,
+      "note": "ConcurrentHashMap：保留 930（511 字，含 1.7/1.8 锁粒度对比、多线程协助扩容、size 分散计数）"
+    },
+    {
+      "drop": 107,
+      "keep": 2,
+      "note": "String/StringBuffer/StringBuilder：保留 2（330 字，含选型与「为什么 StringBuilder 更快」）"
+    },
+    {
+      "drop": 105,
+      "keep": 3,
+      "note": "ArrayList/LinkedList：保留 3（327 字，含尾插摊销复杂度与内存开销对比）"
+    },
+    {
+      "drop": 111,
+      "keep": 13,
+      "note": "Python 装饰器：保留 13（453 字，含完整代码、@wraps 与带参装饰器三层嵌套）"
+    },
+    {
+      "drop": 128,
+      "keep": 950,
+      "note": "React Hooks：保留 950（611 字，含链表实现原理、两条铁律的由来与闭包陷阱）"
+    },
+    {
+      "drop": 41,
+      "keep": 908,
+      "note": "Redis 分布式锁：保留 908（486 字，含 UUID 防误删、看门狗续期、可重入与 Redisson 建议）"
+    },
+    {
+      "drop": 823,
+      "keep": 208,
+      "note": "K8s CrashLoopBackOff：保留 208（4611 字系统化排查手册，含命令与退出码对照；823 为 695 字摘要）"
+    },
+    {
+      "drop": 169,
+      "keep": 71,
+      "note": "链表判环：保留 71（350 字，含 Floyd 代码与「相遇点即环入口」的进阶说明）"
+    },
+    {
+      "drop": 181,
+      "keep": 84,
+      "note": "Kafka 与 RabbitMQ：保留 84（249 字，含 AMQP 路由模型与并存场景）"
+    },
+    {
+      "drop": 4,
+      "keep": 929,
+      "note": "HashMap 原理：保留 929（505 字，含 1.8 三项改动、头插改成环、扩容免重算 hash）"
+    },
+    {
+      "drop": 100,
+      "keep": 929,
+      "note": "HashMap 原理：100（187 字）与 4 是同一题的两个版本，统一并入 929"
+    },
+    {
+      "drop": 104,
+      "keep": 5,
+      "note": "volatile：保留 5（296 字，含可见性/有序性两层语义、不保证原子性的反例与正确用法）"
+    },
+    {
+      "drop": 909,
+      "keep": 142,
+      "note": "Redis 过期删除与内存淘汰：142 的题目已覆盖「过期删除+淘汰」双主题，用 answerText 把 909 的八种淘汰策略与近似 LRU 细节并入",
+      "answerText": "## 过期删除（惰性 + 定期）\n\nRedis 并不会在 key 到期时立即删除，而是两种策略配合：\n- **惰性删除**：访问该 key 时才检查是否过期，过期则删除并返回 nil——不额外消耗 CPU，但冷 key 会长期占内存。\n- **定期删除**：每 100ms（每秒约 10 次）从设了 TTL 的 key 中**随机抽取**一批检查并删除，单轮限时以避免阻塞主线程。\n\n## 内存淘汰策略\n\n内存达到 `maxmemory` 后，新写入按 `maxmemory-policy` 淘汰旧数据（或直接报错）。**八种策略**（Redis 4.0+）：\n- **noeviction**（默认）：不淘汰，写入报错——适合不能丢数据的存储型用法。\n- **volatile 系列**（只在**设置了过期时间**的 key 中淘汰）：`volatile-lru` 最近最少使用 / `volatile-lfu`（4.0+）访问频率最低 / `volatile-ttl` 剩余存活时间最短 / `volatile-random` 随机。\n- **allkeys 系列**（在**全部 key** 中淘汰）：`allkeys-lru` / `allkeys-lfu` / `allkeys-random`。\n\n**选择建议**：\n- 纯缓存：`allkeys-lru`（通用）或 `allkeys-lfu`（有明确热点、访问频率差异大时更准）；\n- 缓存+持久数据混存：`volatile-lru`，保证无 TTL 的业务数据不被淘汰。\n\n**追问点**：Redis 的 LRU 是**近似 LRU**（随机采样若干 key 取最久未用），LFU 用 Morris 计数器并随时间衰减，都不是教科书式的精确实现。"
+    },
+    {
+      "drop": 242,
+      "keep": 916,
+      "note": "TCP 为什么三次握手：保留 916（432 字，含确认双向能力、防历史连接、ISN 同步三条理由与 SYN 洪泛防御）"
+    },
+    {
+      "drop": 917,
+      "keep": 361,
+      "note": "TCP 四次挥手与 TIME_WAIT：保留 361（493 字，含完整状态机流转与 2MSL 的两个作用）"
+    },
+    {
+      "drop": 131,
+      "keep": 33,
+      "note": "MySQL ACID 与隔离级别：保留 33（276 字，含各级别对应解决的并发问题与 MVCC 说明）"
+    },
+    {
+      "drop": 164,
+      "keep": 66,
+      "note": "时间复杂度与空间复杂度：保留 66（251 字，含常见复杂度对照与渐进分析的意义）"
+    },
+    {
+      "drop": 935,
+      "keep": 660,
+      "note": "JVM 运行时数据区：保留 660（990 字，含程序计数器唯一不 OOM、栈帧构成、逃逸分析与元空间）"
+    },
+    {
+      "drop": 122,
+      "keep": 21,
+      "note": "CSS BFC：21 的题目「盒模型与 BFC」已含 BFC 触发条件与用途，为 122 的超集，直接合并"
+    },
+    {
+      "drop": 140,
+      "keep": 907,
+      "note": "缓存穿透/击穿/雪崩：保留 907（442 字，含逻辑过期、互斥锁、随机抖动等逐项方案）"
+    },
+    {
+      "drop": 42,
+      "keep": 907,
+      "note": "缓存穿透/击穿/雪崩：42（231 字）与 140 是同一题的两个简版，统一并入 907"
+    },
+    {
+      "drop": 928,
+      "keep": 761,
+      "note": "零拷贝：保留 761（529 字，含传统 I/O 四次拷贝拆解、mmap/sendfile/splice 三种手段对比）"
+    },
+    {
+      "drop": 138,
+      "keep": 40,
+      "note": "Redis 数据结构与场景：保留 40（279 字，含 Bitmap/HyperLogLog/Geo/Stream 与选型核心）"
+    },
+    {
+      "drop": 151,
+      "keep": 52,
+      "note": "Docker 镜像与容器：保留 52（253 字，含联合文件系统、可写层与分层优势）"
+    },
+    {
+      "drop": 37,
+      "keep": 901,
+      "note": "MySQL 深度分页：保留 901（511 字，含延迟关联 SQL 与游标分页的取舍说明）"
     }
   ]
 }

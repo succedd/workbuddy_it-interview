@@ -198,6 +198,11 @@ def merge_one(keep, drop, m):
             keep["body"] = drop["body"]
         info["answerFrom"] = drop["id"]
 
+    # 答案：显式给出合并后的正文（两版各有独占内容、需要拼成一份时使用）
+    if m.get("answerText"):
+        keep["answer"] = m["answerText"]
+        info["answerText"] = True
+
     keep["updatedAt"] = max(int(keep.get("updatedAt") or 0), int(drop.get("updatedAt") or 0),
                             int(time.time() * 1000))
     return info
