@@ -21,6 +21,12 @@
   python tools/merge-dup-questions.py --apply                # 写入 data/published.json
   python tools/merge-dup-questions.py --apply --push         # 并推送 release + main
   python tools/merge-dup-questions.py --apply --push --print-drops   # 输出被删题号（供分享页跳转）
+  python tools/merge-dup-questions.py --write-redirects      # 为被删题号生成跳转分享页
+  python tools/merge-dup-questions.py --prune-sitemap        # 从 sitemap.xml 移除被删题号条目
+
+完整发版链（2026-09-10 实战）：
+  --dry → --apply --write-redirects --prune-sitemap → bump 版本号 → 刷 README/HANDOVER
+  → 精确 git add（含 q/）→ push release + main → 线上核对题数与跳转页
 """
 import argparse
 import json
@@ -306,6 +312,43 @@ def all_pairs(data):
     return {int(k): int(v) for k, v in rm.items() if str(k).isdigit() and str(v).isdigit()}
 
 
+def prune_sitemap(dropped, nl=None):
+    """从 sitemap.xml 移除全部「已被合并」题号对应的 <url> 条目，保留原换行风格。
+
+    注意：遍历删除块时必须在两个分支都推进游标 pos，否则下一轮
+    text[pos:m.start()] 会把刚删掉的块原样拼回去（曾经出现「删除 33 条但总数反而变多」）。
+    """
+    p = os.path.join(ROOT, "sitemap.xml")
+    if not os.path.exists(p):
+        log("! 未找到 sitemap.xml，跳过")
+        return 0
+    text = open(p, encoding="utf-8").read()
+    eol = nl if nl is not None else ("\r\n" if "\r\n" in text else "\n")
+    pat = re.compile(r"[ \t]*<url>(?:(?!</url>).)*?</url>" + re.escape(eol) + "?", re.S)
+    out, pos, removed = [], 0, 0
+    for m in pat.finditer(text):
+        out.append(text[pos:m.start()])
+        pos = m.end()                      # ← 关键：两个分支都要推进
+        blk = m.group(0)
+        lm = re.search(r"<loc>([^<]+)</loc>", blk)
+        qm = re.search(r"/q/(\d+)\.html$", lm.group(1)) if lm else None
+        if qm and int(qm.group(1)) in dropped:
+            removed += 1
+            continue
+        out.append(blk)
+    out.append(text[pos:])
+    new = "".join(out)
+    with open(p, "w", encoding="utf-8", newline="") as f:
+        f.write(new)
+    total = len(re.findall(r"<url>", new))
+    pages = len(re.findall(r"/q/\d+\.html</loc>", new))
+    leftover = sorted(i for i in dropped if ("/q/%d.html</loc>" % i) in new)
+    log("✓ sitemap 移除 %d 条（剩余 %d 条，其中分享页 %d 条）" % (removed, total, pages))
+    if leftover:
+        log("! 以下已删题号仍残留在 sitemap：%s" % leftover)
+    return removed
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scan", action="store_true", help="扫描疑似重复，只报告")
@@ -314,6 +357,8 @@ def main():
     ap.add_argument("--push", action="store_true", help="推送 release + main")
     ap.add_argument("--print-drops", action="store_true", help="输出被删题号（供分享页跳转处理）")
     ap.add_argument("--write-redirects", action="store_true", help="为被删题号生成跳转分享页")
+    ap.add_argument("--prune-sitemap", action="store_true",
+                    help="从 sitemap.xml 移除全部「已被合并」题号的条目（依据 removedQuestions，可反复执行）")
     args = ap.parse_args()
 
     data = load()
@@ -356,6 +401,13 @@ def main():
             log("! 没有 removedQuestions 记录，无法生成跳转页")
         else:
             write_redirects(data, pairs)
+
+    if args.prune_sitemap:
+        pairs = all_pairs(data)
+        if not pairs:
+            log("! 没有 removedQuestions 记录，无法清理 sitemap")
+        else:
+            prune_sitemap(set(pairs.keys()))
 
     if args.push:
         # --push 始终推送当前本地 data/published.json（合并已在本地完成时可直接重试推送）
