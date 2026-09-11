@@ -455,7 +455,30 @@
     const [categories, positions, positionSkills, questions] = await Promise.all([
       db.categories.toArray(), db.positions.toArray(), db.positionSkills.toArray(), db.questions.toArray()
     ]);
-    return {
+    /* 重复题映射必须随快照一起发布（2026-09-11 修复）：
+       读取侧（applyRemovedQuestions / absorbRemote）一直都认这个字段，唯独发布侧漏了，
+       于是编辑端每自动发布一次就把云端的映射整体抹掉。映射一没：被合并的重复题会被
+       其它编辑端整包推回「题数不减、发布守卫拦不住」，用户本地的收藏/错题记录也会
+       重新变成指向不存在题目的死记录。
+       合并策略与 guardAgainstShrink 同源：以云端为底、叠加本机累积的 removedMap，
+       只增不减；两端都读不到来源时干脆不写这个键，避免凭空造空对象覆盖云端。 */
+    let merged = {};
+    let haveSource = false;
+    try {
+      const remote = await C.fetchRemote(true);
+      if (remote && remote.removedQuestions && typeof remote.removedQuestions === "object") {
+        merged = Object.assign(merged, remote.removedQuestions);
+        haveSource = true;   /* 云端可达即以其为权威基线（含「确实为空」的情形） */
+      }
+    } catch (e) { /* 云端不可达：退化为只用本机累积，不阻断发布 */ }
+    try {
+      const local = await C.getRemovedMap();
+      if (local && typeof local === "object" && Object.keys(local).length) {
+        merged = Object.assign(merged, local);
+        haveSource = true;
+      }
+    } catch (e) {}
+    const out = {
       version: 1,
       publishedAt: Date.now(),
       categories: categories,
@@ -463,6 +486,8 @@
       positionSkills: positionSkills,
       questions: questions
     };
+    if (haveSource) out.removedQuestions = merged;
+    return out;
   };
 
   /* ---------- 发布到 GitHub（编辑端） ---------- */

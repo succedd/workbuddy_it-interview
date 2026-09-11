@@ -268,6 +268,44 @@ def apply_merges(data, merges):
     return drop2keep
 
 
+def rebuild_removed(data, merges):
+    """恢复丢失的顶层 removedQuestions 映射（合并已完成、映射却不在快照里的情况）。
+
+    背景（2026-09-11）：编辑端的发布链路（js/cloud.js 的 C.exportAll）曾经不带这个
+    字段，于是 merge 工具写进 published.json 的映射被下一次自动发布整包抹掉。此后
+    --apply 已经跑不动了（drop 早已不在库中，validate 会直接报错退出），只能靠本模式
+    把映射补回来。
+
+    只补映射：不动任何题目内容，也不累加热度（那一步在执行合并时已经做过）。
+    幂等：已记录同一映射的条目静默跳过；映射冲突或保留题缺失会报错且不写入。
+    返回 (新增列表, 已存在列表, 问题列表)。
+    """
+    qmap = {q["id"]: q for q in data.get("questions", [])}
+    rm = data.get("removedQuestions") if isinstance(data.get("removedQuestions"), dict) else {}
+    added, skipped, bad = [], [], []
+    for m in merges:
+        d, k = m.get("drop"), m.get("keep")
+        if d is None or k is None:
+            bad.append("条目缺少 drop/keep：%s" % m)
+        elif k not in qmap:
+            bad.append("保留题 %s 不存在，跳过 drop %s" % (k, d))
+        elif d in qmap:
+            bad.append("被删题 %s 仍在库中（该走 --apply，不是 --rebuild-removed）" % d)
+        elif str(d) in rm:
+            if int(rm[str(d)]) == k:
+                skipped.append(d)
+            else:
+                bad.append("映射冲突 drop %s：已有 %s，计划 %s" % (d, rm[str(d)], k))
+        else:
+            rm[str(d)] = k
+            added.append((d, k))
+    if added:
+        data["removedQuestions"] = dict(sorted(rm.items(), key=lambda kv: int(kv[0])))
+        data["version"] = int(data.get("version") or 0) + 1
+        data["publishedAt"] = int(time.time() * 1000)
+    return added, skipped, bad
+
+
 SITE = "https://it-interview.is-a.dev"
 REDIRECT_TPL = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -359,6 +397,8 @@ def main():
     ap.add_argument("--write-redirects", action="store_true", help="为被删题号生成跳转分享页")
     ap.add_argument("--prune-sitemap", action="store_true",
                     help="从 sitemap.xml 移除全部「已被合并」题号的条目（依据 removedQuestions，可反复执行）")
+    ap.add_argument("--rebuild-removed", action="store_true",
+                    help="只补顶层 removedQuestions 映射（合并已完成、映射丢失时用；不动题目内容）")
     args = ap.parse_args()
 
     data = load()
@@ -370,6 +410,32 @@ def main():
         return 0
 
     merges = load_plan()
+
+    if args.rebuild_removed:
+        if not merges:
+            log("! 未找到 dup-merge-plan.json，无法重建映射")
+            return 2
+        added, skipped, bad = rebuild_removed(data, merges)
+        for b in bad:
+            log("✗ %s" % b)
+        if skipped:
+            log("· %d 条映射已存在（跳过）" % len(skipped))
+        if added:
+            size = save(data)
+            log("✓ 补回 %d 条被删题映射：%s" % (len(added), sorted(d for d, _ in added)))
+            log("✓ 已写入 %s（%.2f MB，单行紧凑，version→%s）" % (PUBLISHED, size / 1048576.0, data.get("version")))
+            if args.print_drops:
+                log("被删题号：%s" % ",".join(str(d) for d, _ in added))
+        else:
+            log("（没有需要补的映射，未改动数据文件）")
+        if bad:
+            return 2
+        if args.write_redirects:
+            write_redirects(data, all_pairs(data))
+        if args.prune_sitemap:
+            prune_sitemap(set(all_pairs(data).keys()))
+        return 0
+
     qmap, problems, pending, already = validate(data, merges) if merges else ({}, [], [], [])
     if problems:
         for p in problems:
