@@ -1,0 +1,92 @@
+{
+  "chain": true,
+  "topic": "T012",
+  "batch": "2026-09-11-c",
+  "note": "T012 Spring 追问链：IoC 容器→Bean 生命周期→AOP 原理→循环依赖。刻意避开存量概念题（IoC/DI、Bean 生命周期总览、三级缓存概念、事务传播），走执行顺序/自调用失效/构造器循环依赖等工程面。来源：Spring Framework 官方文档 4 篇（实测 200）+ JavaGuide 官方仓库。",
+  "questions": [
+    {
+      "title": "BeanFactory 和 ApplicationContext 都能当作 IoC 容器，它们有什么区别？为什么生产项目基本都用 ApplicationContext？",
+      "body": "考察点：两级容器接口的定位差异、延迟加载与预实例化的取舍（配置错误发现时机）、ApplicationContext 的企业级扩展能力。追问链第一环：先看清「容器」本身。",
+      "answer": "**定位差异**：BeanFactory 是 IoC 的**底层核心接口**，定义了 Bean 定义加载、实例化、依赖注入、生命周期管理的基本能力；ApplicationContext 是它的子接口，在其之上叠加了一整套企业级框架功能（国际化 MessageSource、事件发布、资源加载、多上下文层次等）。\n\n**创建时机：延迟 vs 预实例化（面试官最想听的点）**：\n- **BeanFactory 采用延迟加载**：Bean 只在被使用（getBean）时才实例化。缺点是配置问题暴露得晚——某个 Bean 属性没注入，要到第一次使用时才抛异常；\n- **ApplicationContext 默认预实例化所有单例 Bean**：用一点启动时间和内存，换取**配置错误在容器启动期就暴露**（缺失依赖、循环依赖、类型不匹配在启动时直接失败），这正是生产环境想要的 fail-fast 语义；启动后运行期速度也更快（对象都已就绪）。\n\n**其他差异要点**：\n- BeanPostProcessor / BeanFactoryPostProcessor 两者都支持，但 BeanFactory 需要**手动注册**，ApplicationContext 自动注册；\n- Spring 容器创建时会校验每个 Bean 的配置，但属性直到 Bean 真正创建时才被设置——所以「容器加载成功」不代表「所有 Bean 都没问题」，ApplicationContext 的预实例化就是把「以后可能爆」的问题提前到现在爆。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": ["Spring", "BeanFactory", "ApplicationContext", "IoC容器"],
+      "years": "不限",
+      "source": "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html"
+    },
+    {
+      "title": "【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=\"init2()\"。初始化阶段的执行顺序是：\nA. afterPropertiesSet() → @PostConstruct init1() → init2()\nB. @PostConstruct init1() → afterPropertiesSet() → init2()\nC. init2() → afterPropertiesSet() → @PostConstruct init1()\nD. 三者顺序不确定，取决于 Bean 注册顺序",
+      "body": "考察点：Bean 初始化回调的三种机制及官方固定执行顺序、Aware 回调的位置、为什么官方推荐 @PostConstruct。追问链第二环：Bean 生命周期的精确时序。",
+      "answer": "**正确答案**：B。\n\n**官方定义的初始化顺序（Spring Framework 文档明确列出）**：\n1. **@PostConstruct 标注的方法**（JSR-250 注解，现代 Spring 应用的最佳实践，不与 Spring 接口耦合）；\n2. **InitializingBean 的 afterPropertiesSet()**（官方不推荐——会让业务代码耦合 Spring 接口）；\n3. **自定义 init-method / @Bean(initMethod=...)**（既想要解耦又不使用注解时的方案）。\n\n销毁侧顺序同理：@PreDestroy → destroy() → 自定义 destroy-method。\n\n**时序全景（答题加分项）**：实例化（构造器）→ 属性填充（依赖注入）→ Aware 回调（如 BeanNameAware.setBeanName、ApplicationContextAware.setApplicationContext，发生在普通属性填充之后、初始化回调之前）→ BeanPostProcessor 前置处理 → 初始化回调（按 B 的顺序）→ BeanPostProcessor 后置处理（**AOP 代理就是在这里生成的**）→ Bean 就绪。\n\n**补充要点**：初始化回调在容器的单例创建锁内执行，官方提醒 @PostConstruct 里只做配置校验和轻量数据准备——重量级异步初始化（如预热数据库）应放到 SmartInitializingSingleton.afterSingletonsInstantiated() 或监听 ContextRefreshedEvent，避免初始化死锁；若多种机制配置了**同一个方法名**，该方法只会被执行一次。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "中级",
+      "type": "单选题",
+      "tags": ["Spring", "Bean生命周期", "@PostConstruct", "InitializingBean", "单选"],
+      "years": "不限",
+      "source": "https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html"
+    },
+    {
+      "title": "【场景题】一个 singleton 的 Service 里 @Autowired 注入了一个 prototype 的任务上下文对象，多线程使用时发现所有请求共用同一个实例、状态互相污染。为什么会这样？给出至少两种修复方案并说明取舍。",
+      "body": "考察点：作用域语义（依赖在实例化时解析一次）、singleton 注入 prototype 的经典陷阱、ObjectProvider/@Lookup/scoped proxy 等运行期获取方案。追问链从生命周期过渡到作用域与状态。",
+      "answer": "**根因分析**：\n- singleton Bean 每个容器只有一个实例，它的依赖在**实例化时一次性解析注入**——注入 prototype Bean 时创建一个新的原型实例交给它，但这个 prototype 实例就是它此后**永远持有的唯一一份**；\n- 也就是说 prototype 的「每次获取都新建」语义只在**向容器索取**时成立，注入到 singleton 后就被固化成了单例——官方文档原文警告：依赖解析发生在实例化时（dependencies are resolved at instantiation time）。\n\n**修复方案（核心思想：把「注入」改成「运行期按需获取」）**：\n- **方案一：注入 ObjectProvider<T> / ObjectFactory<T>**——每次需要时调 getObject()/getIfAvailable() 拿一个全新实例，容器管理、类型安全，是官方推荐写法；\n- **方案二：@Lookup 方法注入**——在抽象方法上标注，Spring 用 CGLIB 重写方法返回 prototype 新实例，写法简洁；\n- **方案三：scoped-proxy（@Scope(proxyMode=ScopedProxyMode.TARGET_CLASS)）**——注入一个代理，每次方法调用都转发到当前作用域的真实实例；对 request/session 等短生命周期作用域注入长生命周期 Bean 是必选方案，prototype 也可以用；\n- **方案四：直接注入 ApplicationContext 再 getBean()**——可行但让业务类耦合容器，代码可测性差，不推荐。\n\n**取舍与延伸**：优先 ObjectProvider（无侵入、语义清晰）；还要警惕另一面——prototype Bean 由客户端持有后，**容器不再管理其销毁回调**，昂贵资源（连接、文件句柄）要客户端自己清理，必要时用 BeanPostProcessor 统一登记回收。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": ["Spring", "作用域", "singleton", "prototype", "ObjectProvider"],
+      "years": "不限",
+      "source": "https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html"
+    },
+    {
+      "title": "【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。",
+      "body": "考察点：代理机制的自我调用（self-invocation）盲区、@Transactional/@Async 失效的经典场景、三种修复方案的推荐度排序。追问链 AOP 环节的高频生产事故。",
+      "answer": "**根因定位**：两个现象是同一个根因——**自调用绕过了代理**。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 `this` 引用是**原始对象**而不是代理，A 里调 `this.B()` 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明确说明：self invocation via this will bypass the advice。\n\n**原理展开（为什么代理救不了 this）**：代理增强发生在「外部调用先经过代理」这一层；一旦调用已经进入目标对象内部，后续 this 调用就是普通 Java 方法调用（相当于字节码层面的直接调用），与 Spring 无关。\n\n**修复方案（按推荐度）**：\n- **首选：避免自调用（重构拆分）**——把 B 拆到另一个 Bean，通过注入相互调用，让调用重新走代理；官方称为 best approach，代价是需要少量重构；\n- **次选：注入自身引用（self injection）**——把自身 Bean 注入给自己（或用 ObjectProvider 拿代理），通过自引用调 B，让调用走代理；注意可能触发循环依赖，Spring 允许这类自注入；\n- **兜底：AopContext.currentProxy()**——`((XxxService) AopContext.currentProxy()).B()`，需要开启 exposeProxy；官方明确「highly discouraged」——代码与 Spring AOP 强耦合，仅作最后手段。\n\n**举一反三（同类失效场景清单）**：同类 this 调用、方法非 public（CGLIB/JDK 代理都无法拦截 private）、异常被 catch 吞掉不抛出、final 方法无法被 CGLIB 覆盖——排查「注解不生效」类工单时优先对照这张清单。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": ["Spring", "AOP", "自调用", "事务失效", "@Async", "代理"],
+      "years": "不限",
+      "source": "https://docs.spring.io/spring-framework/reference/core/aop/proxying.html"
+    },
+    {
+      "title": "Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？",
+      "body": "考察点：两种代理机制的选型逻辑（接口 vs 子类）、final/private/package-private 方法的代理限制、Spring Boot 的默认代理策略差异。承接上一题「自调用」，补全代理机制的知识面。",
+      "answer": "**选型逻辑**：\n- 目标对象**实现了至少一个接口**→ 使用 **JDK 动态代理**（JDK 内置，基于接口，代理实现目标类型的所有接口）；\n- 目标对象**没有实现任何接口**→ 使用 **CGLIB**（运行时生成目标类的子类并覆盖方法织入增强）；\n- 可强制统一走 CGLIB（proxy-target-class=true / @EnableTransactionManagement(proxyTargetClass=true) 等），用于「想代理目标类的所有方法而不只是接口方法」的场景；注意配置会合并取「最强」设置。核心框架默认建议接口代理，Spring Boot 可能按配置属性默认启用类代理（CGLIB）。\n\n**CGLIB 模式下注定无法增强的方法（高频考点）**：\n- **final 类无法被代理**——无法被继承；\n- **final 方法无法被增强**——无法被覆盖重写；\n- **private 方法无法被增强**——子类不可见，无法覆盖；\n- 跨包父类的 package-private 方法同理不可见、不可增强。\n\n**补充要点**：\n- CGLIB 代理实例通过 Objenesis 创建，正常情况下目标对象构造器不会被调用两次（若 JVM 不允许绕过构造器，可能出现双调用与相应日志）；\n- 模块化部署下不能为 java.lang 包的类创建 CGLIB 代理（需 --add-opens 引导参数）；\n- 实践含义：Service 类尽量别用 final 修饰、增强目标方法别设为 private/final，否则事务、缓存、异步等注解全部静默失效——这类「注解不生效」问题要从代理机制层面理解，而不是盲目换注解。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": ["Spring", "AOP", "JDK动态代理", "CGLIB", "final"],
+      "years": "不限",
+      "source": "https://docs.spring.io/spring-framework/reference/core/aop/proxying.html"
+    },
+    {
+      "title": "【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。",
+      "body": "考察点：循环依赖的解决边界（构造器注入/prototype 无法用三级缓存解决）、BeanCurrentlyInCreationException 的成因、依赖图梳理与重构方案。追问链收尾：从「三级缓存是什么」深入到「什么时候三级缓存也无能为力」。",
+      "answer": "**机制边界（为什么这次救不回来）**：\n- 三级缓存解决循环依赖的前提是「**先实例化、后注入**」：A 实例化（构造器已执行完）后可以先把早期引用暴露出去，让 B 先拿半成品 A 用，A 稍后再补完初始化；\n- **构造器注入打破了这个前提**：A 还没构造出来就依赖 B，B 又要在构造器里拿到 A——「先有鸡还是先有蛋」无法暴露任何早期引用，Spring 官方文档明确： predominantly constructor injection 可能造成不可解决的循环依赖，运行期检测到后直接抛 BeanCurrentlyInCreationException；\n- 另一边界：**prototype 作用域**的循环依赖也无法解决——原型 Bean 不进单例缓存，Spring 不缓存它的中间状态，直接报错；\n- 相关参数：Spring Boot 2.6+ 默认禁止循环引用（spring.main.allow-circular-references=false），很多「升级后突然启动失败」的工单源于此。\n\n**排查路径**：\n- 从异常栈提取循环链（A → B → A），结合 @Autowired/构造器注解画出依赖图，确认是构造器注入、字段注入还是 setter 注入；\n- 确认涉及的 Bean 作用域（是否混入 prototype）；\n- 检查是否为近期升级 Spring Boot 引入的默认行为变化。\n\n**解决方案（按优先级）**：\n- **首选：重构消灭循环**——循环依赖几乎总是设计问题（职责耦合），提取公共逻辑到第三个 Bean，或用事件/回调解耦；\n- 次选：把其中一方的**构造器注入改为 setter/字段注入**（官方文档给出的可行方案——虽不推荐但可让三级缓存接管）；\n- 应急：在依赖点加 **@Lazy**——注入的是延迟代理，首次使用才真正解析，绕开启动期循环；\n- 反模式：随手打开 allow-circular-references 只是把问题藏起来，不解决耦合本身。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": ["Spring", "循环依赖", "构造器注入", "BeanCurrentlyInCreationException", "三级缓存"],
+      "years": "不限",
+      "source": "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html"
+    },
+    {
+      "title": "【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。",
+      "body": "考察点：三级缓存中第三级的真正作用（延迟决定暴露原始对象还是代理对象）、提前生成代理对 Bean 生命周期语义的破坏、设计与兼容性权衡。追问链压轴题，检验对循环依赖机制的理解深度。",
+      "answer": "**问题背景**：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 **ObjectFactory**（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。\n\n**核心矛盾**：\n- 正常生命周期里，AOP 代理在**初始化完成之后**由 BeanPostProcessor（postProcessAfterInitialization）生成——即 Bean 要先走完填充、初始化才生成代理；\n- 循环依赖时 B 需要在 A 未完成初始化时就拿到 A 的引用；如果此时把**原始对象**给 B，而最终容器里发布的是**代理对象**，B 持有的引用和容器对外暴露的就不是同一个对象——行为不一致；\n- 如果为了统一而**提前给所有可能有循环依赖的 Bean 生成代理**，又破坏了 Spring 的生命周期约定：代理生成应发生在初始化之后，无条件提前生成等于改变所有 Bean 的创建时序，即使绝大多数 Bean 根本不会被循环依赖触及。\n\n**ObjectFactory 的解法（延迟决策）**：第三级缓存存的是「工厂」而不是对象——只有**真正发生循环依赖、别的 Bean 来要早期引用时**，工厂才被调用一次：内部走 getEarlyBeanReference()，若该 Bean 需要 AOP 就**在这一刻生成代理**返回并放入二级缓存，否则返回原始对象。效果是：\n- **不发生循环依赖的 Bean 完全不受影响**，代理仍按标准时序在初始化后生成；\n- **发生循环依赖的 Bean** 由工厂按需决定暴露什么，保证 B 拿到的引用与容器最终发布的一致；\n- 工厂调用后即从三级缓存移到二级缓存，保证多次索取拿到的是**同一个**早期引用。\n\n**结论要点**：第三级缓存本质上把「暴露原始对象还是代理」的决策**延迟到必须暴露的那一刻**，用极小的复杂度代价（多一层工厂）同时保住了「标准代理时序」和「循环依赖下引用一致性」两个目标。这也是为什么直接在二级缓存囤半成品、或提前全局生成代理，都不是等价方案。",
+      "category": "Spring",
+      "positions": ["Java后端工程师", "Java开发工程师", "后端架构师"],
+      "difficulty": "高级",
+      "type": "开放讨论",
+      "tags": ["Spring", "三级缓存", "ObjectFactory", "AOP代理", "循环依赖"],
+      "years": "不限",
+      "source": "https://github.com/Snailclimb/JavaGuide"
+    }
+  ]
+}
