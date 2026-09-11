@@ -76,9 +76,19 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-11 21:45
-- **最新 commit**：`release 5567d35e` / `main 9594c428`（2026-09-11 21:36 GMT+8 上线，走 **Git Data API 单提交快进**（`force:false`），非本地 `git push`）——即下方「移动端体验三件套（`20260911b`）」。⚠️ **本次本地 `.git` 曾因 `git rebase` 被 SIGTERM 打断而损坏**（`refs/` 被清空 → `fatal: not a git repository`），已按既有恢复法重建：`mkdir -p .git/refs/{heads,tags,remotes/origin}` → `git fetch origin main release` → `update-ref refs/heads/main <远端tip>` → 删陈旧 `.git/index` → `git read-tree HEAD`，现 `working tree clean`。**教训：本仓库发版一律用 API 单提交，不要在发版链里跑 `rebase`。**
-  - **上线前基线核对（第一铁律，已形成可复用脚本）**：逐文件比对「我的改动基线 `ae61a70`」与「远端 tip」的 blob sha。结果：`release` 上 `index.html`/`sw.js` 自 `ae61a70` 起**仅行尾 LF→CRLF、内容零差异**（`splitlines` diff 为空），其余 8 个文件与基线**逐字节相同** —— 故整文件覆盖安全，**线上无任何独有改动被覆盖**。⚠️ 注意 `core.autocrlf=true` 会让人误判：`git hash-object <file>`（带过滤）算的是 LF 版 sha，与远端存储的 CRLF blob 不同；**比对远端必须用 `git hash-object --no-filters`**（或直接算 `sha1("blob <len>\0"+raw)`）。
+- **最后更新**：2026-09-11 22:05
+- **本次上线共 3 个提交（均走 Git Data API 单提交快进，`force:false`）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 移动端三件套 | `5567d35e` | `9594c428` | 10 个文件，缓存版本 `20260911b` |
+  | ② 交接卡刷新 | `d79940da` | `d72a518e` | 仅 `HANDOVER.md` |
+  | ③ sitemap 补收录 | `69a7826b` | `b2193d40` | `sitemap.xml`，1053 → **1074** 条 |
+  | ④ 本文件再次刷新 | （紧随其后） | （紧随其后） | README + HANDOVER |
+  ⚠️ **本地 `.git` 曾因 `git rebase` 被 SIGTERM 打断而损坏**（`refs/` 被清空 → `fatal: not a git repository`），已按既有恢复法重建：`mkdir -p .git/refs/{heads,tags,remotes/origin}` → `git fetch origin main release` → `update-ref refs/heads/main <远端tip>` → 删陈旧 `.git/index` → `git read-tree HEAD`，现 `working tree clean`。**教训：本仓库发版一律用 API 单提交，不要在发版链里跑 `rebase`。**
+  - **上线前基线核对（第一铁律，已脚本化为 `~/.workbuddy/skills/it-interview-deploy/tools/check_deploy_baseline.py`）**：逐文件比对「我的改动基线 `ae61a70`」与「远端 tip」的 blob sha。结果：`release` 上 `index.html`/`sw.js` 自 `ae61a70` 起**仅行尾 LF→CRLF、内容零差异**（`splitlines` diff 为空），其余 8 个文件与基线**逐字节相同** —— 故整文件覆盖安全，**线上无任何独有改动被覆盖**。⚠️ `core.autocrlf=true` 会让人误判：`git hash-object <file>`（带过滤）算的是 LF 版 sha，与远端存储的 CRLF blob 不同；**比对远端必须用 `git hash-object --no-filters`**（或直接算 `sha1("blob <len>\0"+raw)`）。
+  - **上线后线上真机回归（`_v8_live_cdp.mjs`，headless Chrome + CDP 直接打 `it-interview.is-a.dev`）= 22/23**：tab 栏 5 项/5 图标/贴视口底/满宽/`z-index:60`/首页高亮、主内容留白 102px、侧栏 10 项未退化、批注卡片 4 要素 + 保存成功 + 答案顶部回显、**左滑 `#/question/1 → #/question/2` 成功**、防误触（纵向 / 微位移 / 边缘起滑）全部不触发、题库/收藏/全景/指南页与 tab 栏共存。唯一 1 项是**阈值假阳性**（全新浏览器无错题 → 错题重练页 0 张卡片，`chars<500`），页面本身正常。
+  - ⚠️ **CDP 截图坑（2026-09-11 实测）**：本机 headless 下 `Emulation.setDeviceMetricsOverride` **不生效**（真实视口是 562×1217 而非设定的 390×844），按 390×844 裁剪会把贴在视口底部的 `position:fixed` 元素切掉；必须**实测 `window.innerWidth/innerHeight` 再据此裁剪**。另外 `chrome --headless --screenshot` 命令行模式在本站会**卡在「初始化本地数据库… 0%」**（虚拟时间与 IndexedDB 不兼容），只能走 CDP。
+
 - **【feat】移动端体验三件套（2026-09-11 21:28 GMT+8，缓存版本 `20260911b`）**：手机上刷题的操作重心从「够按钮」挪到拇指区，三项均为**增量改动、未触碰任何旧逻辑**。
   - **底部 tab 栏**（新增）：`index.html` 加 `<nav id="tabbar">`；`app.js` 加 `renderTabbar(r)`（在 `renderSidebar` 末尾调用，与侧栏共用 `App.reviewDue` 计数，角标永远一致）；`css/style.css` 加 `.tabbar / .tab-item / .tab-badge` 样式；`css/responsive.css` 的 `<=720px` 断点里 `display:flex` 启用。桌面端 `display:none` 完全无感。**层级刻意取 `z-index:60`**（顶栏 50 < tabbar 60 < 抽屉遮罩 70 < 弹窗 100），且 `body.drawer-open` 时隐藏，避免半透明遮罩下「看起来还能点」。**连带让位**：`.main` 底部留白 `50px → 102px`、`.toast-root` 底部 `24px → 76px`、`#sw-update-pill`（index.html 内联 640px 断点规则用 `html body #sw-update-pill` 提特异性覆盖）抬到 `76px`，确保新旧浮动元素都不被 tab 栏压住。
   - **左右滑切题**（新增）：`app.js` 加 `bindSwipeNav()`（在 `route()` 里幂等绑定，事件挂 `#main`、用 `dataset.swipeBound` 标记，内容替换无需重绑）。**关键设计：不重新实现导航，滑动直接 `click()` 页面上已有的 `#prev-btn/#next-btn`（详情页）与 `#prev/#next`（练习页）按钮** —— 与键盘快捷键同一出口，顺序 / 同分类循环 / 练习进度 / 完成判定全部与手动点击一致。守卫：仅 `question` 与 `practice` 两个路由生效（`#/mock` 最后一题是「提交面试」，绝不能误滑触发）；纵向位移 >18px 且大于横向 1.2 倍即判定为滚动并放手；位移 <60px 不触发；屏幕左右 28px 内起滑不响应（避开系统返回手势）；起点在 `input/textarea/select/contenteditable/.modal/.md pre/.hljs` 内不响应；弹窗打开时不响应。全部监听为 `{passive:true}`，绝不干扰滚动。
