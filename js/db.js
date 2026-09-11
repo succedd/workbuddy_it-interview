@@ -53,6 +53,25 @@
     dailyDone: "++id, day"
   });
 
+  /* v4：个人题目批注（详情页「我的批注」）。只在本机与个人加密备份中流转，
+     不随题库快照发布上云，也不会改动 questions 表本身。 */
+  db.version(4).stores({
+    categories: "++id, parentId, name, depth, status",
+    positions: "++id, name, stage",
+    positionSkills: "++id, positionId, categoryId, techName",
+    questions: "++id, categoryId, difficulty, type, status, source, aiScore, createdAt, updatedAt, title",
+    questionVersions: "++id, questionId, version",
+    favorites: "++id, questionId, createdAt",
+    histories: "++id, questionId, createdAt",
+    aiGenerateLogs: "++id, createdAt",
+    importLogs: "++id, createdAt",
+    backups: "++id, createdAt",
+    settings: "key",
+    weakBank: "++id, questionId, createdAt",
+    dailyDone: "++id, day",
+    notes: "++id, questionId, updatedAt"
+  });
+
   const DB = { db };
 
   DB.getSetting = async function (key) {
@@ -318,6 +337,33 @@
     }
     if (added > 0) await DB.setSetting(MIGRATION_KEY, true);
     return added;
+  };
+
+  /* ---------- 个人批注（题目详情页「我的批注」） ---------- */
+  DB.noteGet = async function (questionId) {
+    const rows = await db.notes.where("questionId").equals(questionId).toArray();
+    return rows.length ? rows[rows.length - 1] : null;
+  };
+  DB.noteSet = async function (questionId, text) {
+    const val = (text == null ? "" : String(text));
+    const rows = await db.notes.where("questionId").equals(questionId).toArray();
+    if (!val.trim()) {                     // 内容清空 = 删除该题批注
+      for (const r of rows) await db.notes.delete(r.id);
+      return null;
+    }
+    const now = Date.now();
+    if (rows.length) {
+      const keep = rows[0];
+      await db.notes.update(keep.id, { text: val, updatedAt: now });
+      for (const r of rows.slice(1)) await db.notes.delete(r.id);   // 清理历史重复记录
+      return { id: keep.id, questionId, text: val, updatedAt: now };
+    }
+    const id = await db.notes.add({ questionId, text: val, updatedAt: now });
+    return { id, questionId, text: val, updatedAt: now };
+  };
+  DB.notesAll = async function () {        // 全部批注（按更新时间倒序）
+    const all = await db.notes.toArray();
+    return all.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   };
 
   window.DB = DB;

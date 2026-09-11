@@ -4,6 +4,7 @@
  *    - localStorage：发布 Token / 仓库分支 / AI Key 与配置 / 统计配置 / 主题
  *    - IndexedDB settings 表：管理员密码哈希等
  *    - IndexedDB favorites / histories / weakBank：收藏、浏览历史、薄弱题本
+ *    - IndexedDB notes：题目「我的批注」（用户自己的理解笔记）
  *  安全：文件以 AES-256-GCM 加密（PBKDF2-SHA256 派生密钥，默认 600,000 迭代，
  *        旧备份 iter 字段缺失时回退 150,000 以保证向后兼容），仓库公开也只有密文；
  *        备份密码只存在本机 localStorage，清缓存后需凭记忆的密码恢复。
@@ -59,13 +60,15 @@
       const v = (typeof localStorage !== "undefined") ? localStorage.getItem(k) : null;
       if (v != null) ls[k] = v;
     });
-    const [settings, favorites, histories, weakBank] = await Promise.all([
-      db.settings.toArray(), db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray()
+    const [settings, favorites, histories, weakBank, notes] = await Promise.all([
+      db.settings.toArray(), db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray(),
+      db.notes ? db.notes.toArray() : Promise.resolve([])
     ]);
     return {
       version: 1, savedAt: Date.now(),
       localStorage: ls,
-      settings: settings, favorites: favorites, histories: histories, weakBank: weakBank
+      settings: settings, favorites: favorites, histories: histories, weakBank: weakBank,
+      notes: notes
     };
   };
 
@@ -132,7 +135,10 @@
     const db = DB.db;
     B._suppress++;
     try {
-    await db.transaction("rw", [db.settings, db.favorites, db.histories, db.weakBank], async () => {
+    /* 批注表可能不存在（本模块先于 DB v4 升级加载的极端情况）→ 动态纳入事务表清单 */
+    const rwTables = [db.settings, db.favorites, db.histories, db.weakBank];
+    if (db.notes) rwTables.push(db.notes);
+    await db.transaction("rw", rwTables, async () => {
       if (Array.isArray(data.settings)) await db.settings.bulkPut(data.settings);
       if (Array.isArray(data.favorites)) {
         await db.favorites.clear();
@@ -146,6 +152,11 @@
         await db.weakBank.clear();
         if (data.weakBank.length) await db.weakBank.bulkAdd(data.weakBank);
       }
+      /* 批注：仅当备份里确实带了这个字段才覆盖，避免旧备份把现有批注清空 */
+      if (db.notes && Array.isArray(data.notes)) {
+        await db.notes.clear();
+        if (data.notes.length) await db.notes.bulkAdd(data.notes);
+      }
     });
     } finally { B._suppress--; }
     return {
@@ -154,6 +165,7 @@
       favorites: (data.favorites || []).length,
       histories: (data.histories || []).length,
       weakBank: (data.weakBank || []).length,
+      notes: Array.isArray(data.notes) ? data.notes.length : 0,
       hasToken: !!(data.localStorage && data.localStorage.gh_publish_token)
     };
   };
@@ -212,7 +224,7 @@
           t.hook("deleting", () => { if (B._suppress <= 0) B.scheduleBackup(); });
         } catch (e) {}
       };
-      [db.settings, db.favorites, db.histories, db.weakBank].forEach(hook);
+      [db.settings, db.favorites, db.histories, db.weakBank, db.notes].filter(Boolean).forEach(hook);
       B._hooked = true;
     }
     /* 包装 localStorage.setItem：配置类键被写入时顺带备份 */
