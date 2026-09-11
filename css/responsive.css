@@ -34,10 +34,16 @@
 /* ============ iOS 安全区（viewport-fit=cover 后生效） ============ */
 /* 底部：home 条不遮内容（移动端主内容与底部弹窗） */
 @media (max-width: 720px) {
-  .main { padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px)); }
+  /* 底部 tab 栏固定占 52px（安全区另算）：主内容、Toast、新版本胶囊都必须让开，否则被压住 */
+  .main { padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px)); }
   .modal { padding-bottom: env(safe-area-inset-bottom, 0px); }
   body.drawer-open .sidebar { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
   .toast-root { top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); }
+  /* 底部 tab 栏启用；抽屉展开时隐藏，避免叠在遮罩下层产生「半灰可点」的错觉 */
+  .tabbar { display: flex; }
+  body.drawer-open .tabbar { display: none; }
+  /* index.html 内联样式对 #sw-update-pill 有 640px 断点规则，此处提特异性覆盖，抬到 tab 栏之上 */
+  html body #sw-update-pill { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 }
 /* 顶部：仅 PWA 独立窗口（安装到主屏幕）时页面顶到屏幕最上沿，需给顶栏让出刘海 */
 @media (display-mode: standalone) {
@@ -53,7 +59,7 @@ html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); bo
 
 /* Toast 移动端改底部居中（拇指区，不遮标题），进出场改上/下滑 */
 @media (max-width: 720px) {
-  .toast-root { top: auto; left: 16px; right: 16px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); align-items: center; max-width: none; }
+  .toast-root { top: auto; left: 16px; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); align-items: center; max-width: none; }
   .toast { animation-name: toast-in-up; }
   .toast.out { animation-name: toast-out-down; }
 }

@@ -76,6 +76,7 @@
     setPageKeys(null);
     const r = parseHash();
     renderSidebar(r);
+    bindSwipeNav();          // 手势监听挂在 #main 上，幂等绑定（路由切换只需确保已挂）
     /* 动态 document.title：浏览器标签/历史/收藏可区分页面（404 与详情页会再覆盖） */
     document.title = "IT面试题库管理系统";
     if (r.parts[0] === "admin") {
@@ -220,6 +221,7 @@
         ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
     }
     sidebar.innerHTML = html;
+    renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）
     $$("#side-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
         if (e.target.closest(".twist")) {
@@ -230,6 +232,70 @@
         document.body.classList.remove("drawer-open");
       };
     });
+  }
+
+  /* ============================ 底部 tab 栏（移动端） ============================
+   * 仅 <=720px 由 CSS 显示，桌面端零影响。复用侧边栏同一份「待复习」计数
+   * （App.reviewDue），并由 renderSidebar 统一触发刷新，角标始终与侧栏一致。 */
+  function renderTabbar(r) {
+    const el = document.getElementById("tabbar");
+    if (!el) return;
+    const p0 = (r && r.parts[0]) || "home";
+    const due = App.reviewDue || 0;
+    const item = (href, icon, label, active, badge) =>
+      `<a class="tab-item${active ? " active" : ""}" href="${href}"${active ? ' aria-current="page"' : ""}>` +
+      `${U.icon(icon)}<span>${label}</span>` +
+      `${badge ? `<i class="tab-badge">${badge > 99 ? "99+" : badge}</i>` : ""}</a>`;
+    el.innerHTML =
+      item("#/", "home", "首页", p0 === "home") +
+      item("#/questions", "layers", "题库", p0 === "questions") +
+      item("#/practice", "refresh", "刷题", p0 === "practice") +
+      item("#/review", "alert", "错题", p0 === "review", due) +
+      item("#/favorites", "bookmark", "收藏", p0 === "favorites");
+  }
+
+  /* ============================ 移动端手势：左右滑动切题 ============================
+   * 刻意不重新实现导航：滑动直接点击页面上已有的「上一题 / 下一题」按钮，
+   * 与键盘快捷键走同一个出口 —— 顺序、同分类循环、练习进度与完成判定全部与手动点击一致。
+   * 仅在题目详情页与刷题练习页生效（模拟面试最后一题是「提交面试」，绝不能被误滑触发）。 */
+  const SWIPE_MIN_DX = 60;   // 水平最小位移（px）
+  const SWIPE_EDGE = 28;     // 屏幕左右边缘内不响应（避开系统侧滑返回手势）
+  function bindSwipeNav() {
+    const el = document.getElementById("main");
+    if (!el || el.dataset.swipeBound === "1") return;   // 幂等：内容替换无需重绑
+    el.dataset.swipeBound = "1";
+    let sx = 0, sy = 0, active = false;
+    el.addEventListener("touchstart", e => {
+      active = false;
+      if (e.touches.length !== 1) return;
+      const t = e.target;
+      if (t && t.closest && t.closest("input,textarea,select,[contenteditable],.modal,.md pre,.hljs,.swipe-off")) return;
+      const x = e.touches[0].clientX;
+      if (x < SWIPE_EDGE || x > window.innerWidth - SWIPE_EDGE) return;
+      sx = x; sy = e.touches[0].clientY; active = true;
+    }, { passive: true });
+    el.addEventListener("touchmove", e => {
+      if (!active || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+      /* 纵向意图明显时立刻放手，把滚动完全交还给浏览器 */
+      if (Math.abs(dy) > 18 && Math.abs(dy) > Math.abs(dx) * 1.2) active = false;
+    }, { passive: true });
+    el.addEventListener("touchend", e => {
+      if (!active) return;
+      active = false;
+      const cur = (location.hash || "").replace(/^#\/?/, "").split("?")[0].split("/")[0];
+      if (cur !== "question" && cur !== "practice") return;
+      if (document.querySelector("#modal-root .modal-mask, #modal-root .modal")) return;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) < SWIPE_MIN_DX || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+      /* 右滑 = 上一题，左滑 = 下一题（与翻页直觉一致） */
+      const btn = dx > 0
+        ? (document.getElementById("prev-btn") || document.getElementById("prev"))
+        : (document.getElementById("next-btn") || document.getElementById("next"));
+      if (btn && btn.offsetParent !== null) btn.click();
+    }, { passive: true });
   }
 
   function renderTree(parentId, r) {
@@ -1249,6 +1315,11 @@
     const techTags = (q.tags || []).filter(t => t != null && String(t).trim()).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
     const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
+    /* 我的批注（只在本机 / 个人加密备份中流转）：复习时先看到「我自己的话」，再往下看标准答案 */
+    const myNote = await DB.noteGet(q.id);
+    const noteQuote = (myNote && myNote.text)
+      ? `<div class="note-quote"><span class="nq-tag">✍️ 我的批注</span>${U.esc(myNote.text)}</div>`
+      : "";
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span>${pathHtml}<span class="sep">/</span><span>题目</span></div>
       <div class="qd-head">
@@ -1273,7 +1344,16 @@
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
           <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
       </div>
-      <div class="qd-answer md" id="answer-box" style="display:none">${U.md(q.answer)}</div>
+      <div class="note-card" id="note-card">
+        <div class="note-head"><b>✍️ 我的批注</b><span class="muted" id="note-saved"></span></div>
+        <textarea id="note-input" placeholder="写下你自己的想法、踩过的坑、面试时打算怎么讲…（只存在这台设备，随加密备份一起走，不会公开）"></textarea>
+        <div class="pill-row" style="margin-top:8px">
+          <button class="btn btn-primary btn-sm" id="note-save">保存批注</button>
+          <button class="btn btn-sm" id="note-clear">清空</button>
+        </div>
+        <div class="note-tip">仅自己可见 · 不随题库发布上传</div>
+      </div>
+      <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${U.md(q.answer)}</div>
       <div class="section-head"><h2>相关推荐</h2></div>
       <div class="grid grid-cols-2">${related.map(x => qCard(x)).join("")}</div>
       <div class="pill-row" style="margin-top:16px">
@@ -1282,6 +1362,41 @@
       </div>
     `, () => { U.highlightAll(main); });
     $("#show-answer").onclick = () => { const b = $("#answer-box"); b.style.display = b.style.display === "none" ? "block" : "none"; U.highlightAll(b); };
+    /* 我的批注：纯本地保存（IndexedDB），保存后同步回显到答案顶部 */
+    try {
+      const noteEl = $("#note-input");
+      if (noteEl) {
+        const savedEl = $("#note-saved");
+        const paintSaved = (t) => { if (savedEl) savedEl.textContent = t ? "已保存 · " + U.fmtDate(t) : "尚未填写"; };
+        const syncQuote = (txt) => {
+          const box = $("#answer-box");
+          if (!box) return;
+          const old = box.querySelector(".note-quote");
+          if (old) old.remove();
+          if (txt) box.insertAdjacentHTML("afterbegin", `<div class="note-quote"><span class="nq-tag">✍️ 我的批注</span>${U.esc(txt)}</div>`);
+        };
+        noteEl.value = myNote ? myNote.text : "";
+        paintSaved(myNote ? myNote.updatedAt : 0);
+        $("#note-save").onclick = async () => {
+          try {
+            const r = await DB.noteSet(q.id, noteEl.value);
+            paintSaved(r ? r.updatedAt : 0);
+            syncQuote(r ? r.text : "");
+            U.toast(r ? "批注已保存（仅本机可见）" : "批注已清空", "success");
+          } catch (e) { console.warn("note save error", e); U.toast("批注保存失败", "error"); }
+        };
+        $("#note-clear").onclick = async () => {
+          if (!noteEl.value.trim()) { noteEl.value = ""; paintSaved(0); return; }
+          if (!(await U.confirm("清空这道题的批注？内容不可恢复。", { okText: "清空" }))) return;
+          try {
+            noteEl.value = "";
+            await DB.noteSet(q.id, "");
+            paintSaved(0); syncQuote("");
+            U.toast("批注已清空", "info");
+          } catch (e) { console.warn("note clear error", e); }
+        };
+      }
+    } catch (e) { console.warn("note init error", e); }
     $("#fav-btn").onclick = async () => {
       const nowFav = await Services.toggleFavorite(q.id);
       $("#fav-btn").className = "btn " + (nowFav ? "btn-danger" : "");
@@ -1437,7 +1552,10 @@
     kbHint.style.cssText = "font-size:11px;margin-left:8px";
     kbHint.id = "kb-hint";
     kbHint.textContent = "快捷键：Space 翻答案 · S 收藏";
-    $(".pill-row").appendChild(kbHint);
+    /* 必须挂在「上一题 / 下一题」这一行：批注卡片内部也有 .pill-row，
+       泛选 $(".pill-row") 会命中批注卡片里的按钮行（文档顺序靠前） */
+    const kbRow = $("#prev-btn") ? $("#prev-btn").parentElement : $(".pill-row");
+    if (kbRow) kbRow.appendChild(kbHint);
     /* 用 tooltip 方式展示快捷键（悬浮高亮） */
     setTimeout(() => {
       const btn = $("#show-answer");
@@ -1459,6 +1577,15 @@
     const { due, upcoming } = await Services.weakList();
     App.reviewDue = due.length;
     renderSidebar(parseHash());
+    /* 一次性取出全部批注建索引（避免每张卡片各查一次库） */
+    let noteByQ = new Map();
+    try { noteByQ = new Map((await DB.notesAll()).map(n => [n.questionId, n])); } catch (e) {}
+    const noteLine = (qid) => {
+      const n = noteByQ.get(qid);
+      if (!n || !n.text) return "";
+      const txt = n.text.length > 60 ? n.text.slice(0, 60) + "…" : n.text;
+      return `<div class="note-mini">✍️ <b>我的批注</b>：${U.esc(txt)}</div>`;
+    };
     const ivlLabel = w => Services.EBBS_LABEL[Math.min(w.box || 0, Services.EBBS_LABEL.length - 1)];
     const fmtTime = ts => { const d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
     const cardOf = (w, isDue) => {
@@ -1469,6 +1596,7 @@
           <span class="tag ${isDue ? "tag-warning" : ""}">${isDue ? "第 " + ((w.box || 0) + 1) + " 次 · 待复习" : ivlLabel(w) + "后"}</span>
         </div>
         <div class="muted" style="font-size:12px;margin-top:4px">${w.marked === "unknown" ? "不会" : "不熟悉"} · 排期 ${fmtTime(w.dueAt)}${w.lastOkAt ? " · 上次会了 " + fmtTime(w.lastOkAt) : ""}</div>
+        ${noteLine(q.id)}
         <div class="pill-row" style="margin-top:10px">
           ${isDue ? `<button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
           <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>` : ""}
