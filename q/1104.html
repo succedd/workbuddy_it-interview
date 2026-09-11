@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库</title>
+  <meta name="description" content="选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTran…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库">
+  <meta property="og:description" content="选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTran…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1104.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库">
+  <meta name="twitter:description" content="选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTran…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1104.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？","text":"考察点：两种代理机制的选型逻辑（接口 vs 子类）、final/private/package-private 方法的代理限制、Spring Boot 的默认代理策略差异。承接上一题「自调用」，补全代理机制的知识面。","answerCount":1,"datePublished":"2026-09-11T11:56:25.756Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTransactionManagement(proxyTargetClass=true) 等），用于「想代理目标类的所有方法而不只是接口方法」的场景；注意配置会合并取「最强」设置。核心框架默认建议接口代理，Spring Boot 可能按配置属性默认启用类代理（CGLIB）。 CGLIB 模式下注定无法增强的方法（高频考点）： final 类无法被代理——无法被继承； final 方法无法被增强——无法被覆盖重写； private 方法无法被增强——子类不可见，无法覆盖； 跨包父类的 package-private 方法同理不可见、不可增强。 补充要点： CGLIB 代理实例通过 Objenesis 创建，正常情况下目标对象构造器不会被调用两次（若 JVM 不允许绕过构造器，可能出现双调用与相应日志）； 模块化部署下不能为 java.lang 包的类创建 CGLIB 代理（需 --add-opens 引导参数）； 实践含义：Service 类尽量别用 final 修饰、增强目标方法别设为 private/final，否则事务、缓存、异步等注解全部静默失效——这类「注解不生效」问题要从代理机制层面理解，而不是盲目换注解。","url":"https://it-interview.is-a.dev/#/question/1104"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">AOP</span><span class="chip tag">JDK动态代理</span><span class="chip tag">CGLIB</span><span class="chip tag">final</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：两种代理机制的选型逻辑（接口 vs 子类）、final/private/package-private 方法的代理限制、Spring Boot 的默认代理策略差异。承接上一题「自调用」，补全代理机制的知识面。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>选型逻辑</strong>：</p>
+<ul>
+<li>目标对象<strong>实现了至少一个接口</strong>→ 使用 <strong>JDK 动态代理</strong>（JDK 内置，基于接口，代理实现目标类型的所有接口）；</li>
+<li>目标对象<strong>没有实现任何接口</strong>→ 使用 <strong>CGLIB</strong>（运行时生成目标类的子类并覆盖方法织入增强）；</li>
+<li>可强制统一走 CGLIB（proxy-target-class=true / @EnableTransactionManagement(proxyTargetClass=true) 等），用于「想代理目标类的所有方法而不只是接口方法」的场景；注意配置会合并取「最强」设置。核心框架默认建议接口代理，Spring Boot 可能按配置属性默认启用类代理（CGLIB）。</li>
+</ul>
+<p><strong>CGLIB 模式下注定无法增强的方法（高频考点）</strong>：</p>
+<ul>
+<li><strong>final 类无法被代理</strong>——无法被继承；</li>
+<li><strong>final 方法无法被增强</strong>——无法被覆盖重写；</li>
+<li><strong>private 方法无法被增强</strong>——子类不可见，无法覆盖；</li>
+<li>跨包父类的 package-private 方法同理不可见、不可增强。</li>
+</ul>
+<p><strong>补充要点</strong>：</p>
+<ul>
+<li>CGLIB 代理实例通过 Objenesis 创建，正常情况下目标对象构造器不会被调用两次（若 JVM 不允许绕过构造器，可能出现双调用与相应日志）；</li>
+<li>模块化部署下不能为 java.lang 包的类创建 CGLIB 代理（需 --add-opens 引导参数）；</li>
+<li>实践含义：Service 类尽量别用 final 修饰、增强目标方法别设为 private/final，否则事务、缓存、异步等注解全部静默失效——这类「注解不生效」问题要从代理机制层面理解，而不是盲目换注解。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1104">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
