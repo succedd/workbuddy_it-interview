@@ -25,6 +25,17 @@
   const AUTO_DELAY = 10000;      // 防抖：最后一次改动 10 秒后自动发布
   const RETRY_DELAY = 90000;     // 失败后重试间隔
 
+  /* ---- 访客端题库拉取可靠性（2026-09-13 P1 修复）----
+     published.json 约 1.5MB，弱网下 8 秒很可能拉不完；而此前 fetchT 无重试、
+     fetchRemote 超时直接返回 null，访客会**静默停在 seed 的 99 道题**且毫无提示。
+     现在：单次超时提到 25s + 最多 3 次退避重试，失败原因留在 C._lastFetch，
+     由 app.js 决定是否提示用户并安排重试。 */
+  const FETCH_MS = 8000;         // 非关键调用（发布守卫/对比/导出）单次超时
+  const FETCH_MS_FULL = 25000;   // 首次全量题库单次超时
+  const FETCH_TRIES = 3;         // 同步关键路径尝试次数
+  const FETCH_TRIES_QUICK = 2;   // 非关键路径尝试次数
+  const SEED_ONLY_MAX = 400;     // 本机题数 ≤ 此值且从未同步过 => 视为「只有种子库」
+
   const C = {};
 
   /* ---------- 配置 ---------- */
@@ -78,6 +89,8 @@
       .finally(() => clearTimeout(t));
   }
 
+  function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
+
   /* ---------- 通用文件上传（GitHub Contents API，乐观锁重试） ---------- */
   C.putFile = async function (path, content, message, branch) {
     const tok = C.token();
@@ -123,17 +136,45 @@
     throw lastErr;
   };
 
-  /* ---------- 拉取云端快照 ---------- */
-  C.fetchRemote = async function (noCache) {
-    try {
-      const r = await fetchT(FILE_PATH + (noCache ? "?v=" + Date.now() : ""), noCache ? { cache: "no-store" } : undefined, 8000);
-      if (!r.ok) return null;
-      const j = await r.json();
-      /* version 兼容：历史快照恒为 1；2026-08-27 起扩充流水线每次合并会递增，
-         因此只要求是正整数，不再限定 ===1 */
-      if (j && Number.isInteger(j.version) && j.version >= 1 && Array.isArray(j.questions)) return j;
-      return null;
-    } catch (e) { return null; }
+  /* ---------- 拉取云端快照 ----------
+     契约不变：失败仍 return null（调用方都按 falsy 处理），但会把最近一次结果
+     写入 C._lastFetch，让上层能区分「云端确实没有这个文件」与「网络失败/超时」。
+     opts.timeout / opts.attempts 可控重试策略，默认走「首次全量」档（25s × 3）。 */
+  C._lastFetch = { ok: false, reason: "", attempts: 0, at: 0 };
+  C.lastFetch = function () { return C._lastFetch; };
+
+  C.fetchRemote = async function (noCache, opts) {
+    const o = opts || {};
+    const attempts = Math.max(1, o.attempts || FETCH_TRIES);
+    const timeout = o.timeout || FETCH_MS_FULL;
+    const url = FILE_PATH + (noCache ? "?v=" + Date.now() : "");
+    const init = noCache ? { cache: "no-store" } : undefined;
+    let reason = "", tries = 0;
+    for (let i = 0; i < attempts; i++) {
+      tries = i + 1;
+      try {
+        const r = await fetchT(url, init, timeout);
+        if (r.ok) {
+          const j = await r.json();
+          /* version 兼容：历史快照恒为 1；2026-08-27 起扩充流水线每次合并会递增，
+             因此只要求是正整数，不再限定 ===1 */
+          if (j && Number.isInteger(j.version) && j.version >= 1 && Array.isArray(j.questions)) {
+            C._lastFetch = { ok: true, reason: "", attempts: i + 1, at: Date.now(), count: j.questions.length };
+            return j;
+          }
+          reason = "badPayload";
+        } else {
+          reason = "http" + r.status;
+          /* 404/403：云端确实没有这个文件，重试无意义 */
+          if (r.status === 404 || r.status === 403) break;
+        }
+      } catch (e) {
+        reason = (e && e.name === "AbortError") ? "timeout" : ((e && e.message) || "network");
+      }
+      if (i < attempts - 1) await sleep(900 * (i + 1));   // 退避 0.9s / 1.8s
+    }
+    C._lastFetch = { ok: false, reason: reason || "unknown", attempts: attempts, at: Date.now() };
+    return null;
   };
 
   /* ---------- 重复题清理（2026-09-10） ----------
@@ -216,12 +257,25 @@
   C.syncIfNeeded = async function (justSeeded) {
     if (C.isEditor()) return { skipped: true, reason: "editor" };
     const data = await C.fetchRemote();
-    if (!data) return { skipped: true, reason: "noCloud" };
+    if (!data) {
+      const st = C._lastFetch || {};
+      /* 区分「云端没有快照」与「网络失败」：后者意味着访客可能只拿到本机种子库，
+         必须让上层能感知（提示用户 + 安排重试），而不是静默按「无云端」处理 */
+      if (!st.ok && st.reason !== "http404" && st.reason !== "http403") {
+        return { failed: true, reason: "fetchFailed", detail: st.reason, attempts: st.attempts };
+      }
+      return { skipped: true, reason: "noCloud" };
+    }
     const local = await DB.getSetting("cloudSyncedAt");
     const hasSynced = local != null;
     if ((data.publishedAt || 0) <= (local || 0)) return { skipped: true, reason: "upToDate" };
     if (!hasSynced && !justSeeded) {
-      return { pending: true, count: (data.questions || []).length };
+      /* 上次全量拉取失败过的话，本机就是「清一色种子题」——没有需要保护的用户数据，
+         直接采用云端版本（否则访客刷新多少次都停在 99 题，还得自己找到设置页）；
+         确实存在用户自己的数据时才走 pending，让用户手动确认 */
+      if (!(await C.looksUnseeded())) return { pending: true, count: (data.questions || []).length };
+      await C.applyRemote(data);
+      return { applied: true, count: (data.questions || []).length, recovered: true };
     }
     await C.applyRemote(data);
     return { applied: true, count: (data.questions || []).length };
@@ -230,9 +284,34 @@
   /* 手动立即同步（设置页按钮）：强制采用云端版本，覆盖本地题库 */
   C.syncNow = async function () {
     const data = await C.fetchRemote(true);
-    if (!data) throw new Error("云端题库不存在或无法访问");
+    if (!data) throw new Error("云端题库不存在或无法访问（" + ((C._lastFetch || {}).reason || "未知原因") + "）");
     await C.applyRemote(data);
     return data;
+  };
+
+  /* ---------- 首次访客题库不完整的判定与恢复（2026-09-13 P1 修复） ----------
+     弱网下首次全量拉取失败，访客会停在本机 seed 的 99 道题却毫无察觉。
+     判定「疑似只有种子库」：非编辑端 + 从未成功同步过（cloudSyncedAt 缺失）
+     + 本机题数 ≤ SEED_ONLY_MAX 且**所有题的 source 都是 seed**。
+     最后一条是关键护栏：只有「清一色种子题」才允许静默覆盖，用户自己导入/AI 生成的
+     题目（source 为 import/ai/manual/URL…）一律视为真实数据，仍走 pending 让用户确认。 */
+  C.looksUnseeded = async function () {
+    if (C.isEditor()) return false;
+    try {
+      if ((await DB.getSetting("cloudSyncedAt")) != null) return false;
+      const n = await DB.db.questions.count();
+      if (!(n > 0 && n <= SEED_ONLY_MAX)) return false;
+      const foreign = await DB.db.questions.filter(q => (q.source || "") !== "seed").count();
+      return foreign === 0;
+    } catch (e) { return false; }
+  };
+
+  C.recoverIncompleteSync = async function () {
+    if (!(await C.looksUnseeded())) return { skipped: true, reason: "notSeedOnly" };
+    const data = await C.fetchRemote(true);
+    if (!data) return { failed: true, detail: (C._lastFetch || {}).reason || "" };
+    await C.applyRemote(data);
+    return { applied: true, count: (data.questions || []).length };
   };
 
   /* ---------- 编辑端增量吸收（2026-08-27） ----------
@@ -245,7 +324,7 @@
    */
   C.absorbRemote = async function (force) {
     const db = DB.db;
-    const remote = await C.fetchRemote();
+    const remote = await C.fetchRemote(false, { attempts: 2, timeout: 15000 });
     if (!remote || !Array.isArray(remote.questions)) return { added: 0, reason: "noCloud" };
     /* NORM_VER：norm 规则变更（v2 改 Unicode 感知）后对老本地库强制重放一次吸收，
        修复旧版把中文标题剥空导致漏吸收的题 */
@@ -418,7 +497,7 @@
   C.localVsRemote = async function () {
     const local = await DB.db.questions.count();
     let remote = null;
-    try { remote = await C.fetchRemote(); } catch (e) {}
+    try { remote = await C.fetchRemote(false, { attempts: FETCH_TRIES_QUICK, timeout: FETCH_MS }); } catch (e) {}
     return {
       local: local,
       remote: remote && Array.isArray(remote.questions) ? remote.questions.length : null,
@@ -438,7 +517,7 @@
   C.guardAgainstShrink = async function (localCount) {
     if (C._forceOnce) { C._forceOnce = false; return null; }
     let remote = null;
-    try { remote = await C.fetchRemote(true); } catch (e) {}
+    try { remote = await C.fetchRemote(true, { attempts: FETCH_TRIES_QUICK, timeout: FETCH_MS }); } catch (e) {}
     if (!remote || !Array.isArray(remote.questions)) return null;   // 云端不可达时不阻断本地发布
     const rc = remote.questions.length;
     if (rc > localCount) {
@@ -465,7 +544,7 @@
     let merged = {};
     let haveSource = false;
     try {
-      const remote = await C.fetchRemote(true);
+      const remote = await C.fetchRemote(true, { attempts: FETCH_TRIES_QUICK, timeout: FETCH_MS });
       if (remote && remote.removedQuestions && typeof remote.removedQuestions === "object") {
         merged = Object.assign(merged, remote.removedQuestions);
         haveSource = true;   /* 云端可达即以其为权威基线（含「确实为空」的情形） */
