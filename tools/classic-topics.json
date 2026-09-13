@@ -1,6 +1,6 @@
 {
   "note": "经典题转写任务清单：自动化每次运行先跑 enrich_questions.py --topic-next 取第一个未完成主题，按追问链生成 5-8 题批次（由浅入深、题间 relatedIds 串联），合并成功后用 --topic-done <id> --batch <批号> 标记完成。cat/positions 必须用 published.json 中真实存在的名称。",
-  "updated": "2026-09-11",
+  "updated": "2026-09-13",
   "topics": [
     {
       "id": "T001",
@@ -175,7 +175,8 @@
       ],
       "source": "https://github.com/Snailclimb/JavaGuide",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-09-13-b"
     },
     {
       "id": "T014",
@@ -279,7 +280,8 @@
       ],
       "source": "https://www.xiaolincoding.com/",
       "count": 8,
-      "done": false
+      "done": true,
+      "batch": "2026-09-13-c"
     },
     {
       "id": "T022",
@@ -926,7 +928,8 @@
       ],
       "source": "https://cloud.tencent.com/document/product/436/",
       "count": 5,
-      "done": false
+      "done": true,
+      "batch": "2026-09-13-a"
     }
   ]
 }
