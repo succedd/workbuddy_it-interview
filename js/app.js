@@ -3578,7 +3578,7 @@
         <div id="bk-out" class="muted" style="margin-top:8px"></div></div>
 
       <div class="card"><h2 style="font-size:16px">${U.icon("shield")} Cloudflare Worker（可选·高级）</h2>
-        <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。<br><b>提示：</b>Cloudflare 的 workers.dev 域名在国内网络常被拦截（表现为登录时提示「API 暂不可达」），此时可点下方「自动选择可用入口」让站点自行挑选能连通的后端地址。</p>
+        <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布，并提供账号登录 / 云同步。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。<br><b>提示：</b>Cloudflare 的 workers.dev 域名在国内网络常被拦截（表现为登录时提示「API 暂不可达」）。站点已内置<b>多入口自动择优</b>：每次打开页面会静默挑出当前网络能连通的入口（候选来自同源 <code>api-endpoints.json</code>，改这个文件即可全量切换后端、无需发版，备份入口为国内可直连的中转桥），通常无需手动干预；若仍连不上，可点下方「自动选择可用入口」立即重测。</p>
         <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.cfApi())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
         <label class="field"><span>访问密钥(可选)</span><input id="stats-key" value="${U.esc((typeof localStorage !== "undefined" && localStorage.getItem("stats_key")) || "")}" placeholder="与 Worker 的 STATS_KEY 一致" /></label>
         <div class="pill-row">

@@ -76,9 +76,25 @@
     const pick = localStorage.getItem("stats_api_pick") || "";
     return dedup([manual, pick].concat(readCfg() || [], BUILTIN_ENDPOINTS));
   };
-  /* 逐个探测候选入口，选中第一个可用的记下来（设置页「自动选择可用入口」用）。 */
-  A.probeEndpoints = async function () {
-    const eps = A.endpoints();
+
+  /* 记录「上次成功入口」并打时间戳（时间戳供启动自动择优判断还新不新鲜）。 */
+  function markPick(base) {
+    ls("stats_api_pick", base);
+    ls("stats_api_pick_at", String(Date.now()));
+  }
+
+  /* 探测候选顺序：手动指定 > 远程配置 > 上次成功 > 内置兜底。
+     注意与 A.endpoints() 不同——这里刻意把「上次成功入口」排在「远程配置」之后。
+     否则本机存的旧入口会一直压住刚发布的新入口（例如新上线的国内中转桥），
+     表现为「明明改了 api-endpoints.json 却还是连不上」。 */
+  function probeList() {
+    const manual = (localStorage.getItem("stats_api") || "").trim();
+    const pick = localStorage.getItem("stats_api_pick") || "";
+    return dedup([manual].concat(readCfg() || [], [pick], BUILTIN_ENDPOINTS));
+  }
+
+  /* 按顺序逐个探测，命中第一个可用即停；只返回结果，不改 pick。 */
+  async function probeEach(eps) {
     const out = [];
     for (let i = 0; i < eps.length; i++) {
       const base = eps[i];
@@ -92,9 +108,35 @@
       } catch (e) { ok = false; }
       if (timer) clearTimeout(timer);
       out.push({ base: base, ok: ok, ms: Date.now() - t0 });
-      if (ok) { ls("stats_api_pick", base); break; }
+      if (ok) break;
     }
     return out;
+  }
+
+  /* 逐个探测候选入口，选中第一个可用的记下来（设置页「自动选择可用入口」用）。 */
+  A.probeEndpoints = async function () {
+    const res = await probeEach(probeList());
+    const hit = res.filter(function (x) { return x.ok; })[0];
+    if (hit) markPick(hit.base);
+    return res;
+  };
+
+  /* 启动时的后台自动择优——让「新入口上线后自动命中」成为事实，而不是要求用户手点。
+     - 用户手动填过地址 → 不干预（用户说了算）
+     - 上次成功入口还新鲜（默认 30 分钟内）→ 跳过，避免每开一次页面都发探测请求
+     - 否则按 probeList() 顺序探测，把第一个可用的写成新的 pick
+     全程静默、绝不抛错、绝不阻塞启动（失败也只是维持现状）。 */
+  const PICK_TTL = 30 * 60 * 1000;
+  A.autoProbe = async function (force) {
+    try {
+      if (!force && (localStorage.getItem("stats_api") || "").trim()) return { skipped: "manual" };
+      const at = Number(localStorage.getItem("stats_api_pick_at") || 0);
+      if (!force && at && Date.now() - at < PICK_TTL) return { skipped: "fresh" };
+      const res = await probeEach(probeList());
+      const hit = res.filter(function (x) { return x.ok; })[0];
+      if (hit) { markPick(hit.base); return { picked: hit.base, tested: res.length }; }
+      return { picked: "", tested: res.length };
+    } catch (e) { return { error: (e && e.message) || String(e) }; }
   };
   const apiBase = () => (A.endpoints()[0] || API_DEFAULT);
   A.apiBase = apiBase;
@@ -132,12 +174,18 @@
       }
     }
     if (!r) {
-      const err = new Error("连不上服务器（API 暂不可达）。后端部署在 Cloudflare 的 workers.dev 域名上，该域名在国内被拦截，" +
-        "切换 Wi-Fi / 4G 都无效，只能挂代理访问；也可到「设置 → Cloudflare Worker」点「自动选择可用入口」（桥接入口上线后会自动命中）。");
+      /* 给维护者留可诊断信息（控制台），但给用户的文案保持简短可读——
+         长串技术解释（workers.dev 被墙、要挂代理…）对普通访客没有帮助，
+         细节放设置页说明，这里只给「下一步该做什么」。 */
+      try {
+        console.warn("[account] 全部 API 入口均不可达。已尝试：", A.endpoints().join("  |  "));
+      } catch (_) {}
+      const err = new Error("连不上服务器（API 暂不可达）。已自动尝试全部可用入口，请稍后重试；" +
+        "若持续出现，可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
       err.network = true;
       throw err;
     }
-    if (usedEp) ls("stats_api_pick", usedEp);
+    if (usedEp) markPick(usedEp);
     let j = null; try { j = await r.json(); } catch (_) {}
     if (!r.ok) { const e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
     return j;
@@ -433,8 +481,12 @@
     load("");
   };
 
-  /* 启动后异步拉取一次远程入口配置，下次调用即生效（eu.org 通过后改 JSON 即可全量切换） */
-  try { A.refreshEndpoints(); } catch (e) {}
+  /* 启动后异步拉取一次远程入口配置，随后后台自动择优一次（两步都失败也不影响主流程）。
+     必须先刷新远程配置、再自动择优，才能看到最新候选列表——
+     「新入口上线后自动命中」（改 api-endpoints.json 即可全量切换）靠的就是这一步。 */
+  try {
+    A.refreshEndpoints().then(function () { return A.autoProbe(); }).catch(function () {});
+  } catch (e) {}
 
   window.Account = A;
 })();
