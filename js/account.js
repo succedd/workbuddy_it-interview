@@ -211,8 +211,10 @@
       try {
         console.warn("[account] 全部 API 入口均不可达。已尝试：", A.endpoints().join("  |  "));
       } catch (_) {}
-      const err = new Error("连不上服务器（API 暂不可达）。已自动尝试全部可用入口，请稍后重试；" +
-        "若持续出现，可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
+      const ver = (window.PAGE_VER ? "（页面版本 " + window.PAGE_VER + "）" : "");
+      const err = new Error("连不上服务器（API 暂不可达）" + ver + "。已自动尝试全部可用入口，请稍后重试；" +
+        "若持续出现，请先刷新页面（Ctrl+F5）加载最新前端，再试一次；" +
+        "仍不行可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
       err.network = true;
       throw err;
     }
