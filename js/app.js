@@ -98,6 +98,8 @@
       case undefined: case "": case "home": document.title = "首页 · IT面试题库"; return pageHome();
       case "category": return pageCategory(r.q);
       case "position": return r.parts[1] ? pagePositionDetail(r.parts[1]) : pagePositions();
+      /* 岗位学习路线图：把岗位题目串成 4–8 周计划（map = 路线图入口） */
+      case "roadmap": return r.parts[1] ? pageRoadmapDetail(r.parts[1]) : pageRoadmap();
       case "questions": return pageQuestions(r.q);
       case "question": return pageQuestionDetail(r.parts[1]);
       case "favorites": return pageFavorites();
@@ -204,6 +206,7 @@
       ${navItem("#/", "home", "首页", p0 === "home")}
       ${navItem("#/category", "layers", "技术体系", p0 === "category")}
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
+      ${navItem("#/roadmap", "map", "学习路线图", p0 === "roadmap")}
       ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
       ${navItem("#/random", "dice", "随机一题", p0 === "random")}
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
@@ -1193,6 +1196,244 @@
     });
   }
 
+  /* ============================ 岗位学习路线图 ============================ */
+  /* 把岗位已关联的题目按技术分类聚合成 4–8 周计划（计算逻辑在 js/roadmap.js）。
+     题量太少的岗位不在此页列出 —— 点进去只有一两周反而像页面坏了。 */
+  const RM_MIN_Q = 20;
+  function rmHours(min) {
+    if (!min) return "0 分钟";
+    if (min < 60) return min + " 分钟";
+    const h = min / 60;
+    return (h >= 10 ? Math.round(h) : Math.round(h * 10) / 10) + " 小时";
+  }
+  /* 完成度：按题量算百分比，但只要动过手就至少显示 1% ——
+     279 道题里做完 1 道四舍五入是 0%，进度条毫无变化会让人以为没生效 */
+  function rmPct(done, total) {
+    if (!total) return 0;
+    return done > 0 ? Math.max(1, Math.round(done / total * 100)) : 0;
+  }
+  /* 可生成路线图的岗位（去重、隐藏岗位过滤、题量门槛） */
+  function rmPosStages() {
+    const seen = new Set();
+    const out = [];
+    Services.positionsByStage().forEach(s => {
+      const list = [];
+      s.list.forEach(p => {
+        if (Services.isHiddenPosition(p)) return;
+        const key = Services.posKey(p);
+        if (seen.has(key)) return;
+        seen.add(key);
+        if (Services.questionCountForPosition(p) < RM_MIN_Q) return;
+        list.push(p);
+      });
+      out.push({ stage: s.stage, list: list });
+    });
+    return out.filter(s => s.list.length);
+  }
+  /* 路线图里单题的勾选行（点标题进详情，点圆圈切换掌握） */
+  function rmRowHtml(q) {
+    const done = Roadmap.isMastered(q.id);
+    return `<div class="rm-row${done ? " done" : ""}" data-q="${q.id}">
+      <button type="button" class="rm-check${done ? " on" : ""}" data-act="chk" aria-pressed="${done}" aria-label="标记为已掌握">${U.icon("check")}</button>
+      <a class="rm-title" href="#/question/${q.id}">${U.esc(q.title)}</a>
+      <span class="tag diff-${U.esc(q.difficulty || "")}">${U.esc(q.difficulty || "")}</span>
+    </div>`;
+  }
+
+  async function pageRoadmap() {
+    document.title = "学习路线图 · IT面试题库";
+    await Roadmap.load();
+    const stages = rmPosStages();
+    if (!stages.length) {
+      setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div>
+        <h3>暂无可用路线图</h3><p class="secondary">岗位题量达到 ${RM_MIN_Q} 道后即可生成 4–8 周学习计划。</p>
+        <a class="btn btn-primary" href="#/position">${U.icon("briefcase")} 去岗位体系看看</a></div>`);
+      return;
+    }
+    let posN = 0, doneAll = 0, totAll = 0, startedN = 0;
+    const body = stages.map(s => {
+      const cards = s.list.map(p => {
+        const rm = Roadmap.build(p);
+        const pct = rmPct(rm.mastered, rm.total);
+        posN++; doneAll += rm.mastered; totAll += rm.total;
+        if (rm.mastered > 0) startedN++;
+        return `<a class="card card-hover" href="#/roadmap/${p.id}" style="text-decoration:none">
+          <div style="font-weight:700">${U.esc(Services.posFullName(p))}</div>
+          <div class="muted" style="font-size:12px;margin-top:4px">${rm.weeks.length} 周 · ${rm.total} 题 · 约 ${rmHours(rm.minutes)}</div>
+          <div class="progress" style="margin-top:10px"><span style="width:${pct}%"></span></div>
+          <div class="progress-text">已掌握 ${rm.mastered}/${rm.total} · ${pct}%</div>
+        </a>`;
+      }).join("");
+      return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag">${s.list.length} 个岗位</span></div>
+        <div class="grid grid-cols-3">${cards}</div>`;
+    }).join("");
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>学习路线图</span></div>
+      <h1>岗位学习路线图</h1>
+      <p class="secondary">把每个岗位的题目按技术分类拆成 4–8 周的计划，每天只需几道题就能跟上进度。
+        在「刷题练习」里点「已掌握」会自动记入路线图，也可以直接在下面打勾。</p>
+      <div class="grid grid-cols-3" style="margin:16px 0">
+        <div class="card"><div class="stat"><div class="num">${posN}</div><div class="label">可规划岗位</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num">${startedN}</div><div class="label">已开始的路线</div></div></div>
+        <div class="card"><div class="stat"><div class="num">${rmPct(doneAll, totAll)}%</div><div class="label">总掌握度（${doneAll}/${totAll}）</div></div></div>
+      </div>
+      ${body}
+      <p class="muted" style="margin-top:24px">题量不足 ${RM_MIN_Q} 道的岗位暂不生成路线图，可直接在
+        <a href="#/position">岗位体系</a>中浏览其技术栈与题目。</p>`);
+  }
+
+  async function pageRoadmapDetail(id) {
+    const p = Services.getPosition(parseInt(id));
+    if (!p) {
+      setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>未找到该岗位</h3>
+        <a class="btn btn-primary" href="#/roadmap">返回路线图</a></div>`);
+      return;
+    }
+    await Roadmap.load();
+    const rm = Roadmap.build(p);
+    const name = Services.posFullName(p);
+    document.title = name + " 学习路线图 · IT面试题库";
+
+    if (!rm.weeks.length) {
+      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">学习路线图</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+        <div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>该岗位题目不足</h3>
+        <p class="secondary">至少需要 ${RM_MIN_Q} 道题才能生成周计划，当前 ${rm.total} 道。</p>
+        <a class="btn btn-primary" href="#/questions?posid=${p.id}">${U.icon("layers")} 查看现有题目</a></div>`);
+      return;
+    }
+
+    const curWeek = Roadmap.nextWeek(rm);
+    const weekHtml = (w) => {
+      /* 主题多的时候只展示前 8 个，其余折叠成计数，避免标签堆成一整屏 */
+      const shown = w.topics.slice().sort((a, b) => b.count - a.count);
+      const topics = shown.slice(0, 8).map(t => `<span class="tag tag-outline">${U.esc(t.name)} · ${t.count}</span>`).join("") +
+        (shown.length > 8 ? `<span class="tag">其余 ${shown.length - 8} 个技术点</span>` : "");
+      const done = Roadmap.masteredCount(w.ids);
+      const wpct = rmPct(done, w.count);
+      const dist = ["初级", "中级", "高级", "专家"]
+        .filter(d => w.diffDist[d] > 0)
+        .map(d => `<span class="tag diff-${d}">${d} ${w.diffDist[d]}</span>`).join("");
+      return `<div class="rm-week" data-w="${w.n}">
+        <div class="rm-week-head" role="button" tabindex="0" aria-expanded="false">
+          <div class="rm-week-n">W${w.n}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700">${U.esc(w.title)}</div>
+            <div class="rm-week-meta">${w.count} 题 · ${rmHours(w.minutes)} · 每天约 ${w.daily} 题${w.n === curWeek ? ' · <b style="color:var(--c-primary)">建议从这里继续</b>' : ""}</div>
+            <div class="progress" style="margin-top:8px"><span style="width:${wpct}%"></span></div>
+          </div>
+          <div style="flex:none;text-align:right">
+            <div class="muted rm-week-count" style="font-size:12px">${done}/${w.count}</div>
+            <span class="btn btn-sm">${U.icon("chevronDown")} <span class="rm-toggle-txt">展开</span></span>
+          </div>
+        </div>
+        <div class="rm-week-body">
+          <div class="pill-row" style="margin-bottom:8px">${topics}</div>
+          <div class="pill-row rm-dist-row" style="margin-bottom:10px"><span class="muted" style="font-size:12px;align-self:center">难度分布</span>${dist}</div>
+          <div class="pill-row" style="margin-bottom:4px">
+            <a class="btn btn-primary btn-sm" href="#/practice?scope=roadmap&pos=${p.id}&week=${w.n}&mode=seq">${U.icon("play")} 开始本周练习</a>
+            <button type="button" class="btn btn-sm" data-act="all">${U.icon("check")} 本周全部掌握</button>
+            <button type="button" class="btn btn-sm" data-act="none">${U.icon("refresh")} 取消本周标记</button>
+          </div>
+          <div class="rm-rows"></div>
+        </div>
+      </div>`;
+    };
+
+    const pct = rmPct(rm.mastered, rm.total);
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">学习路线图</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h1 style="margin:0">${U.esc(name)} 学习路线</h1>
+        <span class="tag tag-ai">${U.esc(p.stage || "")}</span>
+      </div>
+      <p class="secondary">按技术分类由浅入深拆成 ${rm.weeks.length} 周，共 ${rm.total} 道题、约 ${rmHours(rm.minutes)}。
+        勾选表示「已掌握」，进度会自动保存并随账号同步。</p>
+      <div class="grid grid-cols-4" style="margin:16px 0">
+        <div class="card"><div class="stat"><div class="num">${rm.weeks.length}</div><div class="label">学习周数</div></div></div>
+        <div class="card"><div class="stat"><div class="num">${rm.total}</div><div class="label">题目总数</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num" id="rm-done">${rm.mastered}</div><div class="label">已掌握</div></div></div>
+        <div class="card"><div class="stat"><div class="num" id="rm-pct">${pct}%</div><div class="label">完成度</div></div></div>
+      </div>
+      <div class="card" style="margin-bottom:6px">
+        <div class="progress"><span id="rm-bar" style="width:${pct}%"></span></div>
+        <div class="pill-row" style="margin-top:12px">
+          <button type="button" class="btn btn-primary btn-sm" id="rm-continue">${U.icon("play")} 继续学习（第 ${curWeek} 周）</button>
+          <a class="btn btn-sm" href="#/practice?scope=pos&pos=${p.id}&mode=seq">${U.icon("layers")} 全岗位顺序刷题</a>
+          <a class="btn btn-sm" href="#/position/${p.id}">${U.icon("briefcase")} 岗位详情</a>
+          <button type="button" class="btn btn-sm btn-danger" id="rm-reset" style="margin-left:auto">${U.icon("trash")} 重置本岗进度</button>
+        </div>
+      </div>
+      ${rm.weeks.map(weekHtml).join("")}`);
+
+    /* —— 交互：展开/折叠、单题勾选、整周批量 —— */
+    const refreshTotals = () => {
+      const done = Roadmap.masteredCount(rm.weeks.reduce((a, w) => a.concat(w.ids), []));
+      const pc = rmPct(done, rm.total);
+      const el = $("#rm-done"); if (el) el.textContent = done;
+      const ep = $("#rm-pct"); if (ep) ep.textContent = pc + "%";
+      const eb = $("#rm-bar"); if (eb) eb.style.width = pc + "%";
+    };
+
+    $$(".rm-week").forEach(box => {
+      const w = rm.weeks[parseInt(box.dataset.w) - 1];
+      if (!w) return;
+      const head = box.querySelector(".rm-week-head");
+      const rows = box.querySelector(".rm-rows");
+      const toggleTxt = box.querySelector(".rm-toggle-txt");
+      const open = () => {
+        /* 题目行按需渲染：大岗位（200+ 题）一次性铺开会让首屏很卡 */
+        if (rows.dataset.rendered !== "1") { rows.innerHTML = w.questions.map(rmRowHtml).join(""); rows.dataset.rendered = "1"; }
+        box.classList.add("open");
+        head.setAttribute("aria-expanded", "true");
+        if (toggleTxt) toggleTxt.textContent = "收起";
+      };
+      const close = () => {
+        box.classList.remove("open");
+        head.setAttribute("aria-expanded", "false");
+        if (toggleTxt) toggleTxt.textContent = "展开";
+      };
+      const syncWeek = () => {
+        const done = Roadmap.masteredCount(w.ids);
+        const pc = rmPct(done, w.count);
+        const bar = box.querySelector(".rm-week-head .progress > span");
+        if (bar) bar.style.width = pc + "%";
+        const cnt = box.querySelector(".rm-week-count");
+        if (cnt) cnt.textContent = done + "/" + w.count;
+        if (rows.dataset.rendered === "1") rows.innerHTML = w.questions.map(rmRowHtml).join("");
+        refreshTotals();
+      };
+      head.onclick = (e) => { if (e.target.closest("button, a")) return; box.classList.contains("open") ? close() : open(); };
+      head.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); box.classList.contains("open") ? close() : open(); } };
+      rows.onclick = (e) => {
+        const btn = e.target.closest('[data-act="chk"]');
+        if (!btn) return;
+        e.preventDefault();
+        const qid = parseInt(btn.closest(".rm-row").dataset.q);
+        const on = Roadmap.toggle(qid);
+        syncWeek();
+        U.toast(on ? "已标记掌握" : "已取消标记", on ? "success" : "warn");
+      };
+      box.querySelector('.rm-week-body [data-act="all"]').onclick = () => {
+        w.ids.forEach(qid => Roadmap.setMastered(qid, true));
+        syncWeek(); U.toast("本周 " + w.count + " 题已全部标记掌握", "success");
+      };
+      box.querySelector('.rm-week-body [data-act="none"]').onclick = () => {
+        w.ids.forEach(qid => Roadmap.setMastered(qid, false));
+        syncWeek(); U.toast("已取消本周标记", "warn");
+      };
+      /* 进度条宽度写在 HTML 里的内联 style，展开后不会自动刷新，这里补一次 */
+      syncWeek();
+      if (w.n === curWeek) { open(); }
+      else { close(); }
+    });
+
+    $("#rm-continue").onclick = () => { App.go("/practice?scope=roadmap&pos=" + p.id + "&week=" + curWeek + "&mode=seq"); };
+    $("#rm-reset").onclick = async () => {
+      if (!(await U.confirm("确定重置「" + name + "」的掌握标记？进度是按题目记录的，若其它岗位含相同题目，其标记也会一并取消。", { danger: true }))) return;
+      rm.weeks.forEach(w => w.ids.forEach(qid => Roadmap.setMastered(qid, false)));
+      U.toast("已重置本岗进度", "success");
+      pageRoadmapDetail(p.id);
+    };
+  }
+
   /* ============================ 题目列表页 ============================ */
   async function pageQuestions(q) {
     document.title = "题目列表 · IT面试题库";
@@ -1795,6 +2036,13 @@
       pool = Services.published().slice();
       if (scope === "cat" && q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
       if (scope === "pos" && q.pos) { const pos = Services.getPosition(parseInt(q.pos)); pool = pool.filter(x => Services.matchPosition(x, pos)); }
+      /* 路线图：只刷某一周的题。题集由 js/roadmap.js 计算，与路线图页完全同源，
+         不会出现「路线图说这周 30 题、练习却只有 12 题」的错位 */
+      if (scope === "roadmap" && q.pos) {
+        const ids = window.Roadmap ? Roadmap.weekQuestionIds(q.pos, q.week) : [];
+        const idSet = new Set(ids);
+        pool = pool.filter(x => idSet.has(x.id));
+      }
     }
     if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
 
@@ -1818,6 +2066,8 @@
       if (s !== "all") p.set("scope", s);
       if (s === "cat" && $("#pcat").value) p.set("cat", $("#pcat").value);
       if (s === "pos" && $("#ppos").value) p.set("pos", $("#ppos").value);
+      /* 路线图模式：切难度/模式时要保留岗位与周次，否则会被甩回全部题目 */
+      if (s === "roadmap" && q.pos) { p.set("pos", q.pos); if (q.week) p.set("week", q.week); }
       return "/practice?" + p.toString();
     };
 
@@ -1844,6 +2094,7 @@
             <button type="button" class="btn btn-sm ${scope === "weak" ? "btn-primary" : "btn-secondary"}" data-scope="weak">${U.icon("alert")} 薄弱题本 (${weakN})</button>
           </div>
           ${scope === "weak" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">仅练习标记为「不熟悉」或「不会」的题目。${weakN ? "" : " 当前为空，去全部题目里标记吧。"}</span>${weakN ? `<button class="btn btn-sm btn-danger" id="clear-weak" style="margin-left:auto">清空薄弱题本</button>` : ""}</div>` : ""}
+          ${scope === "roadmap" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">${U.icon("map")} 来自「${selectedPosLabel || "该岗位"}」学习路线图第 ${U.esc(String(q.week || 1))} 周，共 ${pool.length} 题。</span><a class="btn btn-sm" href="#/roadmap/${U.esc(String(q.pos || ""))}" style="margin-left:auto">${U.icon("chevronRight")} 返回路线图</a></div>` : ""}
         </div>
 
         <div id="cat-panel" class="field ${scope === "cat" ? "" : "hidden"}">
@@ -1928,6 +2179,8 @@
             mastered++;
             if (await Services.isWeak(q.id)) { await Services.weakGrade(q.id, true); U.toast("已掌握 · 复习间隔已拉长", "success"); }
             else U.toast("已标记为掌握", "success");
+            /* 同步记入岗位学习路线图进度（题目不在任何路线图里时无副作用） */
+            if (window.Roadmap) { try { await Roadmap.markMastered(q.id); } catch (_) {} }
           }
           else { weak++; await Services.addWeak(q.id, m); U.toast("已加入错题重练 · 按记忆曲线安排复习", "warn"); }
         } catch (e) { console.warn("mark error", e); U.toast("标记失败：" + (e && e.message), "error"); }

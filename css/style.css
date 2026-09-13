@@ -1061,3 +1061,28 @@ body.pan-fs-lock { overflow: hidden; }
 .note-quote .nq-tag { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 700; color: var(--c-primary); }
 .note-mini { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
 .note-mini b { color: var(--c-primary); }
+
+/* ============ 岗位学习路线图（roadmap） ============ */
+.rm-week { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elevated); margin-top: 14px; overflow: hidden; }
+.rm-week-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
+.rm-week-head:hover { background: var(--bg-hover); }
+.rm-week-head:focus-visible { outline: 2px solid var(--c-primary); outline-offset: -2px; }
+.rm-week-n { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--c-primary-50); color: var(--c-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; font-family: var(--font-mono); }
+.rm-week-meta { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+.rm-week-body { display: none; padding: 14px 16px; border-top: 1px solid var(--border); }
+.rm-week.open .rm-week-body { display: block; }
+.rm-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); margin-top: 8px; }
+.rm-row:hover { border-color: var(--border-strong); }
+.rm-check { flex: none; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid var(--border-strong); background: transparent; color: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+.rm-check .ic { width: 12px; height: 12px; }
+.rm-check.on { background: var(--c-success); border-color: var(--c-success); color: #fff; }
+.rm-title { flex: 1; min-width: 0; color: var(--text); text-decoration: none; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rm-row.done { background: var(--bg-subtle); }
+.rm-row.done .rm-title { color: var(--text-muted); text-decoration: line-through; }
+
+@media (max-width: 720px) {
+  .rm-week-head { padding: 12px; gap: 10px; }
+  .rm-week-body { padding: 12px; }
+  .rm-week-n { width: 30px; height: 30px; font-size: 12px; }
+  .rm-title { font-size: 13px; white-space: normal; }
+}
