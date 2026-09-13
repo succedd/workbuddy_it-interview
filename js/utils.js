@@ -166,22 +166,31 @@
     mask.classList.add("open");
   };
 
-  /* ---------- Toast ---------- */
-  U.toast = function (msg, type, timeout) {
+  /* ---------- Toast ----------
+     opts.action = { label, onClick } → 右侧一个操作按钮（点了先关提示再回调）
+     timeout = 0 → 不自动关闭（常驻，直到用户关闭或点了操作按钮） */
+  U.toast = function (msg, type, timeout, opts) {
     type = type || "info";
+    opts = opts || {};
     const root = document.getElementById("toast-root");
-    if (!root) return;
+    if (!root) return null;
     const ic = type === "success" ? U.icon("check") : type === "warn" ? U.icon("alert") : type === "error" ? U.icon("alert") : U.icon("info");
+    const hasAct = !!(opts.action && opts.action.label);
     const el = document.createElement("div");
-    el.className = "toast " + type;
+    el.className = "toast " + type + (hasAct ? " has-act" : "");
     el.setAttribute("role", "status");
-    el.innerHTML = `<span class="t-ic">${ic}</span><span class="t-msg">${U.esc(msg)}</span><span class="t-close" role="button" tabindex="0" aria-label="关闭提示">${U.icon("x")}</span>`;
+    el.innerHTML = `<span class="t-ic">${ic}</span><span class="t-msg">${U.esc(msg)}</span>${hasAct ? `<button class="t-act" type="button">${U.esc(opts.action.label)}</button>` : ""}<span class="t-close" role="button" tabindex="0" aria-label="关闭提示">${U.icon("x")}</span>`;
     const close = () => { el.classList.add("out"); setTimeout(() => el.remove(), 250); };
     const tclose = el.querySelector(".t-close");
     tclose.onclick = close;
     tclose.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); close(); } };
+    if (hasAct) {
+      const btn = el.querySelector(".t-act");
+      btn.onclick = () => { close(); try { opts.action.onClick && opts.action.onClick(); } catch (e) { console.warn("toast action error", e); } };
+    }
     root.appendChild(el);
-    setTimeout(close, timeout || 3000);
+    if (timeout !== 0) setTimeout(close, timeout || 3000);
+    return el;
   };
 
   /* ---------- Modal ---------- */

@@ -4013,6 +4013,62 @@
     if (tot && tot.textContent !== tt) { tot.textContent = tt; flashVis(tot); }
   }
 
+  /* ---- 弱网首次题库拉取失败的恢复（2026-09-13 P1 修复）----
+     访客首次打开时若 data/published.json（约 1.5MB）拉取失败，本机只剩 seed 的
+     99 道题，界面上却没有任何提示、也不会再自动重试。这里：
+     ① 常驻提示条（带「立即重试」按钮）；② 网络恢复 / 页面重新可见时自动重试；
+     ③ 启动完成后补一次延迟自动重试；④ 补全成功就原位刷新界面（失败回退整页刷新）。 */
+  function armSyncRecovery() {
+    if (App._syncRecoveryArmed) return;
+    App._syncRecoveryArmed = true;
+    let busy = false, done = false;
+    const off = () => {
+      window.removeEventListener("online", onAuto);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+    const finish = async (count) => {
+      done = true; off(); App._syncRecoveryArmed = false;
+      U.toast("已补全题库：共 " + count + " 题", "success", 5000);
+      try {
+        await Services.reload();
+        App.dailyList = await buildDailyList();
+        renderTopbar(); renderSidebar(parseHash()); route();
+      } catch (e) { console.warn("refresh after sync recovery failed", e); location.reload(); }
+    };
+    const attempt = async (fromUser) => {
+      if (busy || done) return;
+      /* 启动流程未结束时不自动重试，避免与 init() 的 reload 竞态（用户手动点击不受限） */
+      if (!fromUser && !App.dailyList) return;
+      busy = true;
+      try {
+        const r = await Cloud.recoverIncompleteSync();
+        if (r && r.applied) await finish(r.count);
+        else if (fromUser) {
+          if (r && r.failed) U.toast("仍无法连接云端题库，请检查网络后重试", "error", 5000);
+          else U.toast("本机题库已完整，无需补全", "info", 4000);
+        }
+      } catch (e) {
+        if (fromUser) U.toast("重试失败：" + ((e && e.message) || e), "error", 5000);
+      } finally { busy = false; }
+    };
+    function onAuto() { attempt(false); }
+    function onVisible() { if (document.visibilityState === "visible") attempt(false); }
+    window.addEventListener("online", onAuto);
+    document.addEventListener("visibilitychange", onVisible);
+    /* 启动完成后 20 秒补一次自动重试（应对「一开始几个请求都慢」的弱网） */
+    setTimeout(() => attempt(false), 20000);
+    /* 提示里的题数必须读 IndexedDB：armSyncRecovery 是在 boot 早期被调用的，
+       此刻 Services.questions 还没装载（boot 后面才 await Services.reload()），
+       用它会在提示里显示「0 题」。异步取真实条数，期间若已恢复成功就不打扰用户。 */
+    (async () => {
+      let n = (Services.questions || []).length;
+      try { if (DB.db && DB.db.questions) n = await DB.db.questions.count(); } catch (_) {}
+      if (done) return;
+      U.toast("题库未完整下载（当前只有本机示例 " + n + " 题），多半是网络较慢。请检查网络后重试", "warn", 0,
+        { action: { label: "立即重试", onClick: () => attempt(true) } });
+    })();
+  }
+
   async function init() {
     applyTheme();
     Stats.loadBaiduScript();
@@ -4047,8 +4103,10 @@
       Boot.set(55, "检查云端题库更新…");
       try {
         const r = await Cloud.syncIfNeeded(justSeeded);
-        if (r && r.applied) U.toast("已同步云端题库最新版（共 " + r.count + " 题）", "success");
+        if (r && r.applied) U.toast(r.recovered ? "题库补全完成：共 " + r.count + " 题" : "已同步云端题库最新版（共 " + r.count + " 题）", "success");
         if (r && r.pending) cloudPending = r;
+        /* 网络失败（而非「云端没有快照」）：访客可能只有 seed 的 99 题，安排提示与重试 */
+        if (r && r.failed) { console.warn("cloud sync fetch failed:", r.detail, "attempts=", r.attempts); armSyncRecovery(); }
         /* 编辑端（配置过 Token）：不做全量同步，但增量吸收云端自动扩充的新题，
            避免本地题库落后于线上而不自知。失败不影响启动。 */
         if (r && r.skipped && r.reason === "editor") {
