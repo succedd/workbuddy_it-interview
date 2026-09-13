@@ -93,13 +93,19 @@
     return dedup([manual].concat(readCfg() || [], [pick], BUILTIN_ENDPOINTS));
   }
 
-  /* 按顺序逐个探测，命中第一个可用即停；只返回结果，不改 pick。 */
+  /* 按顺序逐个探测，命中第一个可用即停；只返回结果，不改 pick。
+     ⚠️ 首选候选必须给长超时：国内首选是 Netlify 中转桥，而 Netlify Function 冷启动实测 13s+，
+     沿用固定的 6s 会把冷启动误判成「不可用」→ autoProbe 永远写不上 pick，就只剩
+     api-endpoints.json 一条退路，一旦该文件也拉不到，页面就彻底连不上。
+     其余候选保持 6s，好尽快跳到下一个，避免整体拖太久。 */
+  const PROBE_FIRST_MS = 20000, PROBE_MS = 6000;
   async function probeEach(eps) {
     const out = [];
     for (let i = 0; i < eps.length; i++) {
       const base = eps[i];
+      const lim = i === 0 ? PROBE_FIRST_MS : PROBE_MS;
       const ctl = ("AbortController" in window) ? new AbortController() : null;
-      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, 6000) : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, lim) : null;
       const t0 = Date.now();
       let ok = false;
       try {
@@ -148,11 +154,14 @@
   async function call(method, path, body) {
     const h = { "Content-Type": "application/json" };
     if (A.getToken()) h["Authorization"] = "Bearer " + A.getToken();
-    /* 按候选入口顺序尝试：每个入口 8s 超时，网络层失败才换下一个；
-       最后一个入口再补一次重试（吸收偶发丢包）。全部失败才报"不可达"。 */
-    const once = (base) => {
+    /* 按候选入口顺序尝试：网络层失败才换下一个，最后一个入口再补一次重试（吸收偶发丢包）。
+       首选入口给长超时（20s）：Netlify 中转桥的 Lambda 冷启动实测 13s+，固定 8s 会把
+       「冷启动」误判成「不可达」，用户看到的就是「连不上服务器」——这正是本次要根治的复现路径。
+       其余候选保持 8s：首选都挂了说明确实有问题，快速失败好过久等。全部失败才报"不可达"。 */
+    const CALL_FIRST_MS = 20000, CALL_MS = 8000;
+    const once = (base, ms) => {
       const ctl = ("AbortController" in window) ? new AbortController() : null;
-      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, 8000) : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, ms || CALL_MS) : null;
       const p = fetch(base + path, {
         method, headers: h, body: body ? JSON.stringify(body) : undefined, signal: ctl && ctl.signal,
       });
@@ -165,12 +174,12 @@
     for (let i = 0; i < eps.length; i++) {
       const base = eps[i];
       try {
-        r = await once(base);
+        r = await once(base, i === 0 ? CALL_FIRST_MS : CALL_MS);
         usedEp = base;
         break;                                   // 拿到响应（含 4xx/5xx）即停止换入口
       } catch (e1) {
         if (i < eps.length - 1) { await new Promise(res => setTimeout(res, 300)); continue; }
-        try { r = await once(base); usedEp = base; } catch (e2) { /* 最后入口也失败 */ }
+        try { r = await once(base, CALL_MS); usedEp = base; } catch (e2) { /* 最后入口也失败 */ }
       }
     }
     if (!r) {
