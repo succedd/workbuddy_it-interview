@@ -76,12 +76,12 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-13 19:40
-- **本次上线（2026-09-13 19:40，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+- **最后更新**：2026-09-13 20:35
+- **本次上线（2026-09-13 20:35，Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
-  | ① 桥 CORS 假象追根修复：代理剥离 `content-encoding` | `8ad2136b` | `dc1aa39d` | 4 个文件（`netlify/functions/proxy.js` `cloudflare/worker.js` `README.md` `HANDOVER.md`） |
-  | ② 交接卡刷新（本条，占位） | — | — | 仅 `HANDOVER.md` |
+  | ① 帐号管理 500 追根修复：jsonResp 调用点签名错位 | `3efde2ab` | `4c355c1d` | 仅 `cloudflare/worker.js`（CF 版本 `5762292d`） |
+- **【fix】帐号管理「加载失败 HTTP 500」追根（2026-09-13 20:35，CF 版本 `5762292d`）**：上一轮 CORS 重构（`eec5a04b`）改了 `jsonResp` 签名为 `(obj, origin, status)` 但**没同步调用点**，三处损伤：① **27 处调用仍按旧顺序 `jsonResp(obj, status, origin)`** → 错误分支与注册成功分支（201）的 `new Response` 状态码收到 origin 字符串 → 全部炸 500（**即注册新用户也是坏的**，不止管理列表）；② `handleAdminUsers` 有一处 `(rows.results || [], origin).map(publicUser)` 逗号表达式 → 对字符串调 `.map` 必 TypeError → 管理列表 500 的直接根因；③ `/me/data` GET 的多行 `jsonResp` **漏传 origin** → 云同步响应无 ACAO（潜伏的第二处 CORS 故障）。修复：sed 批量归位 27 处 + 修逗号表达式 + 补 origin。**验证（经 Netlify 桥全链路）**：`/admin/users` 未登录 403 JSON、注册 201、临时提权的测试管理员登录后列表 200 且 `q=` 搜索过滤正常（测试账号已删：D1 users -1 / sessions -2）。
 - **【fix】桥「浏览器跨域失败」追根（2026-09-13 19:40，Netlify 部署 `6aa6874d`）**：`20260913e` 后复测发现**浏览器页面内跨域 `fetch` 必挂**（200 可见、body 读抛 `Failed to fetch`），而 curl 全绿、CDP 里 ACAO 明明存在。**根因**：`proxy.js` 把上游 `content-encoding: br` 头原样拷回，但 undici 的 `arrayBuffer()` 已解压 body → 「声称 br、实际明文」→ Chrome `net::ERR_CONTENT_DECODING_FAILED`。**curl 一直正常是因为它默认不发 `Accept-Encoding`**（无压缩头可拷）。修复：响应侧新增 `RESP_STRIP_HEADERS`（`content-encoding`/`content-length`/`transfer-encoding`/`connection`/`keep-alive`），由 Netlify 边缘按 `Vary: Accept-Encoding` 自己压缩；同时移除调试用的 `ACAO=*` 强制覆盖与 `x-debug-*` 头，ACAO 恢复 worker 精确回显。**次因**：`cloudflare/worker.js` 模块级 `_corsOrigin` 并发竞态已改纯函数式 `corsHeadersFor(origin)`（CF 版本 `eec5a04b`）。**验收**：`_live_domestic.mjs` **20/20 全过**——页面内跨域 fetch 拿到真实统计、题库从云端加载 **1090 题**（此前 99 道种子题）、无报错文案、0 JS 异常。
 - **⚠️ 排查方法论（复用价值高）**：① 「JS 读不到 ACAO」**不是** CORS 失败判据——Fetch 规范下 cors 响应的 JS 可见头只有 safelisted 集合 + `Access-Control-Expose-Headers` 列名，ACAO 本就对 JS 隐藏；判 CORS 要看 body 可读性 + CDP 网络层 + **Chrome 控制台**（用 CDP `Log.entryAdded` 才抓得到 `net::ERR_CONTENT_DECODING_FAILED` 这类网络错误，本例唯一直指真相的日志）。② CDP send 阶段对请求方隐藏 `Origin`（forbidden header），不能据此断言浏览器没发 Origin；用「响应 ACAO 精确回显站点源」反推全链路转发无损。③ 逆向验证法：curl 与浏览器唯一的系统性差异是 `Accept-Encoding`，手动给 curl 补上该头即可复现浏览器行为——比换浏览器开关试错快得多。
 - **上一次上线（2026-09-13 18:25，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
