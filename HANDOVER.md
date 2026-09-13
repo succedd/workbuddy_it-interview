@@ -76,12 +76,22 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-13 17:45
-- **本次上线（2026-09-13 17:45，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+- **最后更新**：2026-09-13 18:25
+- **本次上线（2026-09-13 18:25，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 冷启动追根修复：首位入口超时 20s（缓存版本 `20260913e`） | `44fe713a` | `99915c10` | 4 个文件（`js/account.js` `index.html` `sw.js` `README.md`） |
+  | ② 交接卡刷新（本条） | `（紧随其后）` | `（紧随其后）` | 仅 `HANDOVER.md` |
+- **【fix】冷启动追根修复（缓存版本 `20260913e`）**：`20260913d` 上线后真机复测发现——**桥上线后首次访问仍报「连不上服务器」，刷新一次（桥已热）才好**。根因不是桥不可用，而是 **Netlify Functions 冷启动实测 13~19s（热态仅 1~2s，所以第二次就好了——极具迷惑性），而探针 6s / 正式调用 8s 的超时全部短于冷启动**，必踩雷。修复：**候选首位入口（通常即中转桥）的探针与正式调用统一给 20s 长超时**（`js/account.js` 的 `PROBE_FIRST_MS = 20000` / `CALL_FIRST_MS = 20000`），其余入口维持 6s / 8s 快速切换、不拖慢故障转移。
+  - **验收**：自动择优真机回归 **26/26**（`_probe_test.mjs` + `_probe_server.py` 新增「慢端点 8773（9s 延迟）」3 项专项：**慢但活着的首位入口能被 20s 长超时正确选中、不被旧 6s 探针误杀**）；既有全量回归 **62/62**、`smoke` **26/26**、`node --check` 全通。
+  - **发版基线逐行 diff 零内容丢失**（-37 行全部可解释）：`js/account.js` 旧超时实现 8 行、`index.html` 纯版本号 25 行、`sw.js` 1 行、`README.md` 3 行被更新的条目行（补记冷启动修复 + 版本/验收数字更新）。
+- **⚠️ 测试基建新坑（undici）**：Node 侧 `fetch` 对 `netlify.app` 存在**「promise 永不结算」的间歇性挂死**——同一进程同一时刻 curl 正常、`it-interview.is-a.dev` fetch 正常，唯独 netlify.app 的 fetch 挂满 300s，连 `AbortSignal.timeout(40s)` 都不触发（疑似 IPv6 / 连接族选择问题）。**测试脚本里所有外部 fetch 必须 `Promise.race` 硬超时兜底**（见 `_live_domestic.mjs` 的 `nf()`），不能只信 `AbortSignal.timeout`。
+- **上一次上线（2026-09-13 17:45，3 个提交，均走 Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
   | ① 后端国内可达：Netlify 直连桥 + 入口启动自动择优 | `533fd93a` | `5a1566ec` | 9 个文件（`js/account.js` `js/app.js` `index.html` `sw.js` `api-endpoints.json` `README.md` `netlify.toml` `netlify/public/_redirects`（新增）`tools/deploy-netlify-bridge.sh`），缓存版本 `20260913d` |
   | ② 交接卡刷新（本条） | `aa89b06c` | `74e90eb2` | 仅 `HANDOVER.md` |
+  | ③ 交接卡回填提交号（使自洽） | `9c04498e` | `80dc88ee` | 仅 `HANDOVER.md` |
 - **发版前基线核对（第一铁律）**：远端两分支 tip = `release 05a69a07` / `main b0abd03a`（与上次交接卡推送一致，**无新的自动提交**）。本次不再只比 blob sha（只能回答「是否相同」，回答不了「覆盖后会不会丢掉线上独有的行」），改用**逐行 diff**（`_baseline_diff.py`：拉远端内容与本地做 `difflib`，把远端→本地方向上**被删除的行全部打印出来**逐条核对，行尾先 `\r\r\n → \n` 再 `\r\n → \n` 归一）。结果**零内容丢失**，每条被删行均可解释：
   - `js/account.js` 440→492 行 `+61/-9`（-9 = 旧 `probeEndpoints` 实现 + 旧报错文案 2 行 + 旧 `ls("stats_api_pick", usedEp)` + 旧启动钩子 2 行）
   - `js/app.js` `+1/-1`（旧提示段落）、`index.html` `+25/-25`（纯版本号）、`sw.js` `+1/-1`（版本）、`README.md` `+17/-0`（纯新增）
