@@ -76,8 +76,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-13 18:25
-- **本次上线（2026-09-13 18:25，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+- **最后更新**：2026-09-13 19:40
+- **本次上线（2026-09-13 19:40，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 桥 CORS 假象追根修复：代理剥离 `content-encoding`（占位，推送后回填真实 SHA） | — | — | `netlify/functions/proxy.js` `cloudflare/worker.js` `README.md` |
+  | ② 交接卡刷新（本条，占位） | — | — | 仅 `HANDOVER.md` |
+- **【fix】桥「浏览器跨域失败」追根（2026-09-13 19:40，Netlify 部署 `6aa6874d`）**：`20260913e` 后复测发现**浏览器页面内跨域 `fetch` 必挂**（200 可见、body 读抛 `Failed to fetch`），而 curl 全绿、CDP 里 ACAO 明明存在。**根因**：`proxy.js` 把上游 `content-encoding: br` 头原样拷回，但 undici 的 `arrayBuffer()` 已解压 body → 「声称 br、实际明文」→ Chrome `net::ERR_CONTENT_DECODING_FAILED`。**curl 一直正常是因为它默认不发 `Accept-Encoding`**（无压缩头可拷）。修复：响应侧新增 `RESP_STRIP_HEADERS`（`content-encoding`/`content-length`/`transfer-encoding`/`connection`/`keep-alive`），由 Netlify 边缘按 `Vary: Accept-Encoding` 自己压缩；同时移除调试用的 `ACAO=*` 强制覆盖与 `x-debug-*` 头，ACAO 恢复 worker 精确回显。**次因**：`cloudflare/worker.js` 模块级 `_corsOrigin` 并发竞态已改纯函数式 `corsHeadersFor(origin)`（CF 版本 `eec5a04b`）。**验收**：`_live_domestic.mjs` **20/20 全过**——页面内跨域 fetch 拿到真实统计、题库从云端加载 **1090 题**（此前 99 道种子题）、无报错文案、0 JS 异常。
+- **⚠️ 排查方法论（复用价值高）**：① 「JS 读不到 ACAO」**不是** CORS 失败判据——Fetch 规范下 cors 响应的 JS 可见头只有 safelisted 集合 + `Access-Control-Expose-Headers` 列名，ACAO 本就对 JS 隐藏；判 CORS 要看 body 可读性 + CDP 网络层 + **Chrome 控制台**（用 CDP `Log.entryAdded` 才抓得到 `net::ERR_CONTENT_DECODING_FAILED` 这类网络错误，本例唯一直指真相的日志）。② CDP send 阶段对请求方隐藏 `Origin`（forbidden header），不能据此断言浏览器没发 Origin；用「响应 ACAO 精确回显站点源」反推全链路转发无损。③ 逆向验证法：curl 与浏览器唯一的系统性差异是 `Accept-Encoding`，手动给 curl 补上该头即可复现浏览器行为——比换浏览器开关试错快得多。
+- **上一次上线（2026-09-13 18:25，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
   | ① 冷启动追根修复：首位入口超时 20s（缓存版本 `20260913e`） | `44fe713a` | `99915c10` | 4 个文件（`js/account.js` `index.html` `sw.js` `README.md`） |
@@ -85,7 +92,7 @@
 - **【fix】冷启动追根修复（缓存版本 `20260913e`）**：`20260913d` 上线后真机复测发现——**桥上线后首次访问仍报「连不上服务器」，刷新一次（桥已热）才好**。根因不是桥不可用，而是 **Netlify Functions 冷启动实测 13~19s（热态仅 1~2s，所以第二次就好了——极具迷惑性），而探针 6s / 正式调用 8s 的超时全部短于冷启动**，必踩雷。修复：**候选首位入口（通常即中转桥）的探针与正式调用统一给 20s 长超时**（`js/account.js` 的 `PROBE_FIRST_MS = 20000` / `CALL_FIRST_MS = 20000`），其余入口维持 6s / 8s 快速切换、不拖慢故障转移。
   - **验收**：自动择优真机回归 **26/26**（`_probe_test.mjs` + `_probe_server.py` 新增「慢端点 8773（9s 延迟）」3 项专项：**慢但活着的首位入口能被 20s 长超时正确选中、不被旧 6s 探针误杀**）；既有全量回归 **62/62**、`smoke` **26/26**、`node --check` 全通。
   - **发版基线逐行 diff 零内容丢失**（-37 行全部可解释）：`js/account.js` 旧超时实现 8 行、`index.html` 纯版本号 25 行、`sw.js` 1 行、`README.md` 3 行被更新的条目行（补记冷启动修复 + 版本/验收数字更新）。
-- **⚠️ 测试基建新坑（undici）**：Node 侧 `fetch` 对 `netlify.app` 存在**「promise 永不结算」的间歇性挂死**——同一进程同一时刻 curl 正常、`it-interview.is-a.dev` fetch 正常，唯独 netlify.app 的 fetch 挂满 300s，连 `AbortSignal.timeout(40s)` 都不触发（疑似 IPv6 / 连接族选择问题）。**测试脚本里所有外部 fetch 必须 `Promise.race` 硬超时兜底**（见 `_live_domestic.mjs` 的 `nf()`），不能只信 `AbortSignal.timeout`。
+- **⚠️ 测试基建新坑（undici）**：Node 侧 `fetch` 对 `netlify.app` 存在**「promise 永不结算」的间歇性挂死**——同一进程同一时刻 curl 正常、`it-interview.is-a.dev` fetch 正常，唯独 netlify.app 的 fetch 挂满 300s，连 `AbortSignal.timeout(40s)` + `Promise.race` 硬超时都不触发（race 只包住 `fetch()` 本身，后续 `await r.json()` 的 body 流挂死同样不结算；疑似 IPv6 / 连接族选择问题）。**结论：测试脚本里的外部 HTTP 一律 `spawnSync("curl", ["-s","--noproxy","*",…])`，不要用 Node fetch**（模板见 `_live_domestic.mjs` 第 0 段）。
 - **上一次上线（2026-09-13 17:45，3 个提交，均走 Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|

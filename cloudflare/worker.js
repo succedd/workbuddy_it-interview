@@ -23,21 +23,21 @@
 const MAX_TOP = 20;
 
 /* CORS 白名单：只对允许的来源回 ACAO（默认本站；可用 ALLOWED_ORIGIN 逗号分隔多个）。
-   同一 isolate 并发请求间存在共享变量读取，但值恒为白名单内来源，
-   未知来源一律拿不到 CORS 头（浏览器拒绝读取），fail-closed。 */
-let _corsOrigin = "";
-function resolveCors(env, request) {
+   ⚠️ 必须是纯函数：isolate 并发请求会共享模块级变量、互相覆盖 Origin，
+   表现为「同 isolate 内偶现 ACAO 缺失」。修法：把 origin 沿调用链传下去，
+   任何中间不得用模块级状态缓存。 */
+function resolveCorsOrigin(env, request) {
   const origins = ((env && env.ALLOWED_ORIGIN) || "https://it-interview.is-a.dev")
     .split(",").map(s => s.trim()).filter(Boolean);
   const origin = (request && request.headers.get("origin")) || "";
-  _corsOrigin = origin && origins.includes(origin) ? origin : "";
+  return origin && origins.includes(origin) ? origin : "";
 }
-function corsHeaders() {
+function corsHeadersFor(origin) {
   const h = {
     "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,Authorization",
   };
-  if (_corsOrigin) h["Access-Control-Allow-Origin"] = _corsOrigin;
+  if (origin) h["Access-Control-Allow-Origin"] = origin;
   return h;
 }
 
@@ -52,7 +52,7 @@ async function inc(env, key, by = 1) {
   return next;
 }
 
-async function handleVisit(env, request) {
+async function handleVisit(env, request, origin) {
   await inc(env, "total");
   await inc(env, "daily:" + dayKey());
   const cf = request.cf || {};
@@ -60,24 +60,24 @@ async function handleVisit(env, request) {
   await inc(env, "geo:" + country);
   if (cf.city) await inc(env, "city:" + country + ":" + cf.city);
   return new Response(JSON.stringify({ ok: true }), {
-    headers: { "content-type": "application/json", ...corsHeaders() },
+    headers: { "content-type": "application/json", ...corsHeadersFor(origin) },
   });
 }
 
-async function handleView(env, request) {
+async function handleView(env, request, origin) {
   const url = new URL(request.url);
   let id = url.searchParams.get("id");
   if (!id) {
     try { const b = await request.json(); id = b && b.id; } catch (_) {}
   }
-  if (!id) return new Response("missing id", { status: 400, headers: corsHeaders() });
+  if (!id) return new Response("missing id", { status: 400, headers: corsHeadersFor(origin) });
   const n = await inc(env, "views:" + id);
   return new Response(JSON.stringify({ ok: true, views: n }), {
-    headers: { "content-type": "application/json", ...corsHeaders() },
+    headers: { "content-type": "application/json", ...corsHeadersFor(origin) },
   });
 }
 
-async function handleStats(env) {
+async function handleStats(env, origin) {
   const total = parseInt((await env.STATS.get("total")) || "0", 10) || 0;
   const today = parseInt((await env.STATS.get("daily:" + dayKey())) || "0", 10) || 0;
 
@@ -107,7 +107,7 @@ async function handleStats(env) {
     topCities: cities.slice(0, 15),
     topQuestions: views.slice(0, MAX_TOP),
     updatedAt: Date.now(),
-  }), { headers: { "content-type": "application/json", ...corsHeaders() } });
+  }), { headers: { "content-type": "application/json", ...corsHeadersFor(origin) } });
 }
 
 async function authOk(env, request) {
@@ -196,21 +196,21 @@ async function requireAdmin(db, request) {
 
 /* ---------- 注册 / 登录 / 会话 ---------- */
 
-async function handleRegister(env, request) {
+async function handleRegister(env, request, origin) {
   const db = env.USERS;
   const ip = (request.headers.get("cf-connecting-ip") || "x");
-  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, 429);
+  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, 429, origin);
 
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
   const email = String(body.email || "").trim().toLowerCase();
   const password = body.password;
   const nick = String(body.nick || "").trim().slice(0, 40);
-  if (!validEmail(email)) return jsonResp({ error: "邮箱格式不正确" }, 400);
-  if (!validPassword(password)) return jsonResp({ error: "密码需 8-72 位" }, 400);
+  if (!validEmail(email)) return jsonResp({ error: "邮箱格式不正确" }, 400, origin);
+  if (!validPassword(password)) return jsonResp({ error: "密码需 8-72 位" }, 400, origin);
 
   const exists = await db.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
-  if (exists) return jsonResp({ error: "该邮箱已注册" }, 409);
+  if (exists) return jsonResp({ error: "该邮箱已注册" }, 409, origin);
 
   const salt = randomHex(16);
   const passHash = await hashPassword(password, salt);
@@ -240,24 +240,24 @@ async function handleRegister(env, request) {
   await db.prepare("INSERT INTO sessions (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)")
     .bind(token, uid, now + SESSION_TTL_MS, now).run();
 
-  return jsonResp({ token, user: { id: uid, email, nick, role } }, 201);
+  return jsonResp({ token, user: { id: uid, email, nick, role } }, 201, origin);
 }
 
-async function handleLogin(env, request) {
+async function handleLogin(env, request, origin) {
   const db = env.USERS;
   const ip = (request.headers.get("cf-connecting-ip") || "x");
-  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, 429);
+  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, 429, origin);
 
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
   const u = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
   /* 统一报错文案，避免枚举邮箱 */
-  if (!u) return jsonResp({ error: "邮箱或密码不正确" }, 401);
-  if (u.status !== 1) return jsonResp({ error: "帐号已被禁用，请联系管理员" }, 403);
+  if (!u) return jsonResp({ error: "邮箱或密码不正确" }, 401, origin);
+  if (u.status !== 1) return jsonResp({ error: "帐号已被禁用，请联系管理员" }, 403, origin);
   const calc = await hashPassword(password, u.salt);
-  if (calc !== u.pass_hash) return jsonResp({ error: "邮箱或密码不正确" }, 401);
+  if (calc !== u.pass_hash) return jsonResp({ error: "邮箱或密码不正确" }, 401, origin);
 
   const now = Date.now();
   const token = randomHex(32);
@@ -267,19 +267,19 @@ async function handleLogin(env, request) {
     db.prepare("UPDATE users SET last_login_at = ? WHERE id = ?").bind(now, u.id),
     db.prepare("DELETE FROM sessions WHERE expires_at < ?").bind(now),   // 顺手清过期会话
   ]);
-  return jsonResp({ token, user: publicUser(u) });
+  return jsonResp({ token, user: publicUser(u, origin) });
 }
 
-async function handleLogout(env, request) {
+async function handleLogout(env, request, origin) {
   const m = /^Bearer\s+([0-9a-f]{64})$/i.exec((request.headers.get("Authorization") || "").trim());
   if (m) await env.USERS.prepare("DELETE FROM sessions WHERE token = ?").bind(m[1]).run();
-  return jsonResp({ ok: true });
+  return jsonResp({ ok: true }, origin);
 }
 
-async function handleMe(env, request) {
+async function handleMe(env, request, origin) {
   const u = await sessionUser(env.USERS, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
-  return jsonResp({ user: publicUser(u) });
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
+  return jsonResp({ user: publicUser(u, origin) });
 }
 
 /* ---------- 个人数据云同步：favorites / histories / weak / daily（每日打卡） ---------- */
@@ -303,10 +303,10 @@ function ensureWeakCols(db) {
   return weakColsPromise;
 }
 
-async function handleGetMyData(env, request) {
+async function handleGetMyData(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
   await ensureWeakCols(db);
   const [fav, his, weak] = await db.batch([
     db.prepare("SELECT question_id AS id, created_at AS at FROM favorites WHERE user_id = ?").bind(u.id),
@@ -324,12 +324,12 @@ async function handleGetMyData(env, request) {
   });
 }
 
-async function handlePutMyData(env, request) {
+async function handlePutMyData(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
 
   const now = Date.now();
   const stmts = [];
@@ -386,7 +386,7 @@ async function handlePutMyData(env, request) {
       .bind(u.id, day, JSON.stringify(map[day]), now));
     if (dStmts.length) { await db.batch(dStmts.slice(0, 500)); dailyApplied = dStmts.length; }
   } catch (e) { console.warn("daily sync skipped:", e.message); }
-  return jsonResp({ ok: true, applied: stmts.length, dailyApplied });
+  return jsonResp({ ok: true, applied: stmts.length, dailyApplied }, origin);
 }
 
 /* ---------- 管理员接口 ---------- */
@@ -395,26 +395,26 @@ async function handlePutMyData(env, request) {
 /* 注意：mock_reports 表若尚未创建，全部静默降级（返回空/跳过保存），
    绝不影响收藏/历史/错题等核心同步，也不打断面试流程。 */
 
-async function handleGetReports(env, request) {
+async function handleGetReports(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
   try {
     const r = await db.prepare(
       "SELECT id, created_at AS at, position, years, total, master, familiar, unknown, duration, coverage " +
       "FROM mock_reports WHERE user_id = ? ORDER BY created_at DESC LIMIT 20").bind(u.id).all();
-    return jsonResp({ reports: r.results || [] });
+    return jsonResp({ reports: r.results || [] }, origin);
   } catch (e) {
-    return jsonResp({ reports: [], note: "reports_unavailable" });
+    return jsonResp({ reports: [], note: "reports_unavailable" }, origin);
   }
 }
 
-async function handleSaveReport(env, request) {
+async function handleSaveReport(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
   let b = {};
-  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
   const num = (v, d) => { const n = parseInt(v); return isNaN(n) ? d : n; };
   try {
     await db.prepare(
@@ -424,16 +424,16 @@ async function handleSaveReport(env, request) {
         String(b.position || "").slice(0, 60), String(b.years || "").slice(0, 20),
         num(b.total, 0), num(b.master, 0), num(b.familiar, 0), num(b.unknown, 0), num(b.duration, 0),
         String(b.coverage || "").slice(0, 400)).run();
-    return jsonResp({ ok: true });
+    return jsonResp({ ok: true }, origin);
   } catch (e) {
-    return jsonResp({ ok: false, note: "save_skipped" });
+    return jsonResp({ ok: false, note: "save_skipped" }, origin);
   }
 }
 
-async function handleAdminUsers(env, request) {
+async function handleAdminUsers(env, request, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
-  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403, origin);
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   let rows;
@@ -444,44 +444,44 @@ async function handleAdminUsers(env, request) {
   } else {
     rows = await db.prepare("SELECT * FROM users ORDER BY created_at DESC LIMIT 200").all();
   }
-  return jsonResp({ users: (rows.results || []).map(publicUser) });
+  return jsonResp({ users: (rows.results || [], origin).map(publicUser) });
 }
 
-async function handleAdminUserStatus(env, request, targetId) {
+async function handleAdminUserStatus(env, request, targetId, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
-  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403, origin);
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
   const status = parseInt(body.status) === 1 ? 1 : 0;
   if (targetId === admin.id && status === 0)
-    return jsonResp({ error: "不能禁用自己" }, 400);
+    return jsonResp({ error: "不能禁用自己" }, 400, origin);
   const r = await db.prepare("UPDATE users SET status = ? WHERE id = ?").bind(status, targetId).run();
-  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, 404);
+  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, 404, origin);
   if (status === 0) await db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(targetId).run();
-  return jsonResp({ ok: true, status });
+  return jsonResp({ ok: true, status }, origin);
 }
 
-async function handleAdminResetPassword(env, request, targetId) {
+async function handleAdminResetPassword(env, request, targetId, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
-  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403, origin);
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
   const password = String(body.password || "");
-  if (!validPassword(password)) return jsonResp({ error: "新密码需 8-72 位" }, 400);
+  if (!validPassword(password)) return jsonResp({ error: "新密码需 8-72 位" }, 400, origin);
   const salt = randomHex(16);
   const passHash = await hashPassword(password, salt);
   const r = await db.prepare("UPDATE users SET pass_hash = ?, salt = ? WHERE id = ?")
     .bind(passHash, salt, targetId).run();
-  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, 404);
+  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, 404, origin);
   await db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(targetId).run();  // 踢下线
-  return jsonResp({ ok: true });
+  return jsonResp({ ok: true }, origin);
 }
 
-function jsonResp(obj, status = 200) {
+function jsonResp(obj, origin = "", status = 200) {
   return new Response(JSON.stringify(obj), {
-    status, headers: { "content-type": "application/json", ...corsHeaders() },
+    status, headers: { "content-type": "application/json", ...corsHeadersFor(origin) },
   });
 }
 
@@ -489,37 +489,37 @@ export default {
   async fetch(request, env, ctx) {
   const url = new URL(request.url);
   const p = url.pathname;
-  resolveCors(env, request);
-  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders() });
+  const corsOrigin = resolveCorsOrigin(env, request);
+  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeadersFor(corsOrigin) });
     try {
-      if (!authOk(env, request)) return new Response("forbidden", { status: 403, headers: corsHeaders() });
-      if (p === "/visit" && request.method === "POST") return await handleVisit(env, request);
-      if (p === "/view" && request.method === "POST") return await handleView(env, request);
-      if (p === "/stats" && request.method === "GET") return await handleStats(env);
+      if (!authOk(env, request)) return new Response("forbidden", { status: 403, headers: corsHeadersFor(corsOrigin) });
+      if (p === "/visit" && request.method === "POST") return await handleVisit(env, request, corsOrigin);
+      if (p === "/view" && request.method === "POST") return await handleView(env, request, corsOrigin);
+      if (p === "/stats" && request.method === "GET") return await handleStats(env, corsOrigin);
 
       /* ---- 用户系统（D1）---- */
       const db = env.USERS;
       if (db) {
         let m;
-        if (p === "/auth/register" && request.method === "POST") return await handleRegister(env, request);
-        if (p === "/auth/login" && request.method === "POST") return await handleLogin(env, request);
-        if (p === "/auth/logout" && request.method === "POST") return await handleLogout(env, request);
-        if (p === "/auth/me" && request.method === "GET") return await handleMe(env, request);
-        if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request);
-        if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request);
-        if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request);
-        if (p === "/me/reports" && request.method === "POST") return await handleSaveReport(env, request);
+        if (p === "/auth/register" && request.method === "POST") return await handleRegister(env, request, corsOrigin);
+        if (p === "/auth/login" && request.method === "POST") return await handleLogin(env, request, corsOrigin);
+        if (p === "/auth/logout" && request.method === "POST") return await handleLogout(env, request, corsOrigin);
+        if (p === "/auth/me" && request.method === "GET") return await handleMe(env, request, corsOrigin);
+        if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request, corsOrigin);
+        if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request, corsOrigin);
+        if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request, corsOrigin);
+        if (p === "/me/reports" && request.method === "POST") return await handleSaveReport(env, request, corsOrigin);
         if ((m = /^\/admin\/users\/(\d+)\/status$/.exec(p)) && request.method === "POST")
-          return await handleAdminUserStatus(env, request, parseInt(m[1]));
+          return await handleAdminUserStatus(env, request, parseInt(m[1]), corsOrigin);
         if ((m = /^\/admin\/users\/(\d+)\/reset$/.exec(p)) && request.method === "POST")
-          return await handleAdminResetPassword(env, request, parseInt(m[1]));
-        if (p === "/admin/users" && request.method === "GET") return await handleAdminUsers(env, request);
+          return await handleAdminResetPassword(env, request, parseInt(m[1]), corsOrigin);
+        if (p === "/admin/users" && request.method === "GET") return await handleAdminUsers(env, request, corsOrigin);
       }
     } catch (e) {
       /* 不把内部错误信息回给客户端（防信息泄漏），只记日志 */
       console.error("worker error:", e && (e.stack || e.message));
-      return new Response("error", { status: 500, headers: corsHeaders() });
+      return new Response("error", { status: 500, headers: corsHeadersFor(corsOrigin) });
     }
-    return new Response("not found", { status: 404, headers: corsHeaders() });
+    return new Response("not found", { status: 404, headers: corsHeadersFor(corsOrigin) });
   },
 };

@@ -234,6 +234,16 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-13f · fix: 桥「浏览器跨域失败」追根 —— 根因是代理复制了 `content-encoding` 头（ERR_CONTENT_DECODING_FAILED，伪装成 CORS 故障）
+
+- **现象**：`20260913e` 后真机复测发现——curl 直连桥一切正常（含正确的 ACAO 回显），但**浏览器页面内跨域 `fetch` 必挂**：响应状态 200 可见、body 读取抛 `TypeError: Failed to fetch`，症状极像 CORS 配置错误。同源请求正常、curl 正常、CDP 抓包显示响应头里 ACAO 明明存在，极具迷惑性。
+- **根因（两层）**：
+  1. **主因：内容编码错乱**。`netlify/functions/proxy.js` 把上游响应头**原样拷回**，其中包括 `content-encoding: br`；但 Node fetch（undici）的 `resp.arrayBuffer()` **已经把 body 解压成明文**了——响应「声称 br 编码、实际是明文」，Chrome 解码失败报 `net::ERR_CONTENT_DECODING_FAILED`，body 管道被渲染进程关闭。**curl 为什么一直正常**：curl 默认不发 `Accept-Encoding`，上游返回未压缩响应、无 `content-encoding` 头可拷——这就是「curl 通、浏览器不通」假象的根源。Chrome 控制台的 `net::ERR_CONTENT_DECODING_FAILED`（`Log.entryAdded` 才能看到）是唯一直指真相的日志。
+  2. **次因：worker.js CORS 并发竞态**。模块级 `let _corsOrigin` 被并发请求相互覆盖，高并发下可能给请求 A 回了请求 B 的来源（或空）。已改为**纯函数式** `corsHeadersFor(origin)`，`origin` 沿调用链显式传递（Cloudflare Worker 版本 `eec5a04b` 已上线）。
+- **修复**：① `proxy.js` 新增 `RESP_STRIP_HEADERS`，响应侧剔除 `content-encoding` / `content-length` / `transfer-encoding` / `connection` / `keep-alive`（Netlify 边缘会按 `Vary: Accept-Encoding` 自己正确压缩）；② 移除排查用的 `ACAO=*` 强制覆盖与 `x-debug-*` 调试头，ACAO 恢复 worker 的精确回显（fail-closed 白名单不受影响）。
+- **验收（成都，绕代理）**：线上真机验收 **20/20 全部通过**（`_live_domestic.mjs`）——页面内跨域 `fetch /stats` 拿到真实统计（body 可读）、**题库从云端加载 1090 题**（此前停在 99 道种子题）、无「连不上服务器」文案、侧栏 12 项、0 条 JS 异常；br 编码 body 用 node `zlib.brotliDecompressSync` 解码验证为合法 JSON。
+- **规范知识点（排查记录）**：按 Fetch 规范，`cors` 响应的 JS 可见头 = safelisted 集合（`cache-control`/`content-type` 等）+ `Access-Control-Expose-Headers` 列名，**`Access-Control-Allow-Origin` 本来就对 JS 隐藏**——「JS 里读不到 ACAO」不能作为 CORS 失败的判据；CORS 是否通过要看 body 可读性 + CDP 网络层 + Chrome 控制台错误。
+
 ### 2026-09-13e · feat: 后端国内可达（Netlify 直连桥）+ 入口启动自动择优（缓存版本 `20260913d→e`）
 
 - **问题**：站点在**国内网络**下登录/云同步全部失败，提示「加载失败 连不上服务器（API 暂不可达）」，切 Wi-Fi / 4G 都无效、只能挂代理。根因不是服务器挂了，而是 **Cloudflare 的 `*.workers.dev` 域名在国内被 DNS 投毒**——实测 `it-interview-stats.iti-interview.workers.dev` 解析到 `104.244.46.208`（Twitter 的 IP 段）、泛域名解析到 `31.13.71.19`（Facebook 段），TCP 直接超时。
