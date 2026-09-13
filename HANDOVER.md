@@ -81,7 +81,7 @@
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
   | ① 后端国内可达：Netlify 直连桥 + 入口启动自动择优 | `533fd93a` | `5a1566ec` | 9 个文件（`js/account.js` `js/app.js` `index.html` `sw.js` `api-endpoints.json` `README.md` `netlify.toml` `netlify/public/_redirects`（新增）`tools/deploy-netlify-bridge.sh`），缓存版本 `20260913d` |
-  | ② 交接卡刷新（本条） | `（紧随其后）` | `（紧随其后）` | 仅 `HANDOVER.md` |
+  | ② 交接卡刷新（本条） | `aa89b06c` | `74e90eb2` | 仅 `HANDOVER.md` |
 - **发版前基线核对（第一铁律）**：远端两分支 tip = `release 05a69a07` / `main b0abd03a`（与上次交接卡推送一致，**无新的自动提交**）。本次不再只比 blob sha（只能回答「是否相同」，回答不了「覆盖后会不会丢掉线上独有的行」），改用**逐行 diff**（`_baseline_diff.py`：拉远端内容与本地做 `difflib`，把远端→本地方向上**被删除的行全部打印出来**逐条核对，行尾先 `\r\r\n → \n` 再 `\r\n → \n` 归一）。结果**零内容丢失**，每条被删行均可解释：
   - `js/account.js` 440→492 行 `+61/-9`（-9 = 旧 `probeEndpoints` 实现 + 旧报错文案 2 行 + 旧 `ls("stats_api_pick", usedEp)` + 旧启动钩子 2 行）
   - `js/app.js` `+1/-1`（旧提示段落）、`index.html` `+25/-25`（纯版本号）、`sw.js` `+1/-1`（版本）、`README.md` `+17/-0`（纯新增）
