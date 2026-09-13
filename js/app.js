@@ -56,6 +56,28 @@
     return false;
   };
 
+  /* 服务端管理员守卫（20260913f）：帐号管理页专用，按登录用户的 D1 role 判定，
+     与本地密码门禁（Auth.isAdmin）解耦——本地密码只管题目编辑端。 */
+  App.requireServerAdmin = function () {
+    if (window.Account && Account.isServerAdmin()) return true;
+    main.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("shield")}</div>
+      <h3>需要管理员权限</h3><p>请使用管理员帐号在「帐号」页登录后访问。</p>
+      <button class="btn btn-primary" id="to-acc">${U.icon("user")} 前往登录</button></div>`;
+    $("#to-acc").onclick = () => App.go("/account");
+    return false;
+  };
+
+  /* 启动时 /auth/me 刷新完本地用户缓存后由 account.js 回调：重渲染导航，
+     若正停在帐号管理页则重跑路由（提权/禁用立即生效，无需手动刷新）。 */
+  App.onAccountRefreshed = function () {
+    try {
+      renderTopbar();
+      renderSidebar(parseHash());
+      const r = parseHash();
+      if (r.parts[0] === "admin" && r.parts[1] === "users") route();
+    } catch (e) {}
+  };
+
   function clearCharts() { charts.forEach(c => { try { c.dispose(); } catch (e) {} }); charts = []; }
   App.registerChart = function (chart) { charts.push(chart); };
 
@@ -80,8 +102,13 @@
     /* 动态 document.title：浏览器标签/历史/收藏可区分页面（404 与详情页会再覆盖） */
     document.title = "IT面试题库管理系统";
     if (r.parts[0] === "admin") {
-      if (!App.requireAdmin()) return;
       const sub = r.parts[1] || "dashboard";
+      /* 帐号管理（20260913f）：唯一走服务端角色鉴权的管理页，先于本地密码门禁处理 */
+      if (sub === "users") {
+        if (!App.requireServerAdmin()) return;
+        return Account.renderAdminPage();
+      }
+      if (!App.requireAdmin()) return;
       if (sub === "dashboard") return pageAdminDashboard();
       if (sub === "questions") return pageAdminQuestions();
       if (sub === "question") return pageAdminQuestionEdit(r.parts[2]);
@@ -91,7 +118,6 @@
       if (sub === "import") return pageAdminImport();
       if (sub === "backup") return pageAdminBackup();
       if (sub === "settings") return pageAdminSettings();
-      if (sub === "users") return window.Account ? Account.renderAdminPage() : pageAdminDashboard();
       return pageAdminDashboard();
     }
     switch (r.parts[0]) {
@@ -147,7 +173,7 @@
            <a href="#/admin/ai">${U.icon("sparkles")} AI 出题</a>
            <a href="#/admin/import">${U.icon("upload")} 批量导入</a>
            <a href="#/admin/backup">${U.icon("database")} 备份恢复</a>
-           <a href="#/admin/users">${U.icon("users")||U.icon("user")} 帐号管理</a>
+           ${(window.Account && Account.isServerAdmin()) ? `<a href="#/admin/users">${U.icon("users")||U.icon("user")} 帐号管理</a>` : ""}
            <a href="#/admin/settings">${U.icon("settings")||U.icon("user")} 系统设置</a>
            <div class="sep"></div>
            <a href="#" id="admin-logout">${U.icon("x")} 退出管理</a>
@@ -224,6 +250,11 @@
         ${navItem("#/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
         ${navItem("#/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
         ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
+    }
+    /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁 */
+    if (window.Account && Account.isServerAdmin()) {
+      html += `<div class="nav-section-title">站点</div>
+        ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}`;
     }
     sidebar.innerHTML = html;
     renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）

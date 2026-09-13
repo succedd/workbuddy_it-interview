@@ -150,6 +150,23 @@
   A.getUser = () => { try { return JSON.parse(ls(LS.user) || "null"); } catch (e) { return null; } };
   A.getToken = () => ls(LS.token) || "";
   A.isLoggedIn = () => !!(A.getToken() && A.getUser());
+  /* 服务端管理员判定（20260913f）：以登录响应里的 role 为准，
+     与旧 auth.js 的本地密码门禁（Auth.isAdmin，仅题目编辑端使用）彻底解耦。 */
+  A.isServerAdmin = () => { const u = A.getUser(); return !!(u && u.role === "admin" && A.getToken()); };
+
+  /* 启动时静默刷新本地缓存的用户信息（含 role/status）：
+     库内提权/禁用等变更无需重新登录即可在前端生效；token 失效则清空本地会话。 */
+  A.refreshMe = async function () {
+    if (!A.getToken()) return false;
+    try {
+      const j = await call("GET", "/auth/me");
+      ls(LS.user, JSON.stringify(j.user));
+      return true;
+    } catch (e) {
+      if (e && e.status === 401) { A.logout(); }
+      return false;
+    }
+  };
 
   async function call(method, path, body) {
     const h = { "Content-Type": "application/json" };
@@ -495,6 +512,7 @@
      「新入口上线后自动命中」（改 api-endpoints.json 即可全量切换）靠的就是这一步。 */
   try {
     A.refreshEndpoints().then(function () { return A.autoProbe(); }).catch(function () {});
+    A.refreshMe().then(function (ok) { if (ok && window.App && App.onAccountRefreshed) App.onAccountRefreshed(); }).catch(function () {});
   } catch (e) {}
 
   window.Account = A;
