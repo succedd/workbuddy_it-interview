@@ -76,12 +76,47 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-13 16:09
-- **本次上线（2026-09-13 16:09，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+- **最后更新**：2026-09-13 17:45
+- **本次上线（2026-09-13 17:45，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 后端国内可达：Netlify 直连桥 + 入口启动自动择优 | `533fd93a` | `5a1566ec` | 9 个文件（`js/account.js` `js/app.js` `index.html` `sw.js` `api-endpoints.json` `README.md` `netlify.toml` `netlify/public/_redirects`（新增）`tools/deploy-netlify-bridge.sh`），缓存版本 `20260913d` |
+  | ② 交接卡刷新（本条） | `（紧随其后）` | `（紧随其后）` | 仅 `HANDOVER.md` |
+- **发版前基线核对（第一铁律）**：远端两分支 tip = `release 05a69a07` / `main b0abd03a`（与上次交接卡推送一致，**无新的自动提交**）。本次不再只比 blob sha（只能回答「是否相同」，回答不了「覆盖后会不会丢掉线上独有的行」），改用**逐行 diff**（`_baseline_diff.py`：拉远端内容与本地做 `difflib`，把远端→本地方向上**被删除的行全部打印出来**逐条核对，行尾先 `\r\r\n → \n` 再 `\r\n → \n` 归一）。结果**零内容丢失**，每条被删行均可解释：
+  - `js/account.js` 440→492 行 `+61/-9`（-9 = 旧 `probeEndpoints` 实现 + 旧报错文案 2 行 + 旧 `ls("stats_api_pick", usedEp)` + 旧启动钩子 2 行）
+  - `js/app.js` `+1/-1`（旧提示段落）、`index.html` `+25/-25`（纯版本号）、`sw.js` `+1/-1`（版本）、`README.md` `+17/-0`（纯新增）
+  - `api-endpoints.json` `+3/-2`（旧注释 + 旧的 `updated: 2026-09-08`）、`netlify.toml` `+4/-1`（`force = true`）、`tools/deploy-netlify-bridge.sh` `+77/-20`（旧脚本全文）
+  - `netlify/public/_redirects` 远端不存在（新文件，纯新增 2 行）
+- **【feat】后端国内可达：Netlify 直连桥（2026-09-13 上线，缓存版本 `20260913d`）**
+  - **问题**：站点在**国内网络**下登录 / 云同步全失败，提示「加载失败 连不上服务器（API 暂不可达）」，切 Wi-Fi / 4G 无效、只能挂代理。根因不是服务挂了 —— **Cloudflare 的 `*.workers.dev` 在国内被 DNS 投毒**（实测 `it-interview-stats.iti-interview.workers.dev` → `104.244.46.208` Twitter 段、泛域 → `31.13.71.19` Facebook 段，TCP 直接超时）。
+  - **为什么不能直接绑自有域名**：CF API 实查账号 `6e7bbb8c6002ed51eabf4fd5c1f3e066` 只有 1 个 zone `itinterview.eu.org`，**status 仍是 `pending`**（eu.org 未批准、NS 未委派）→ 绑不了自定义域名；且该 OAuth token **只有 `zone:read` 没有 `dns:write`**，即便 zone 转 active 也改不了 DNS。另：`pages.dev` 国内**直接 DNS 解析失败**，所以「换 CF Pages」也不是出路。
+  - **国内可达性实测（成都，绕代理真实网络）**：`netlify.app` ✅ / `deno.dev` ✅ / `onrender.com` ✅ / `railway.app` ✅ / `vercel.app` ❌污染 / `fly.dev` ❌解析失败 / `workers.dev` ❌污染 / `pages.dev` ❌解析失败；`app.netlify.com`、`api.netlify.com`、`www.netlify.com` **均可达**（建号取令牌不用代理）。→ 据此选 **Netlify** 做过渡中转。
+  - **桥本体**：仓库 `netlify/functions/proxy.js`（既有设计，本次正式上线）把方法 / 头 / 体 / 查询串原样透传到上游 Worker，剥离逐跳头。已部署到 **`https://iti-api.netlify.app`**，并写进 `api-endpoints.json` **首位**（第二位保留 workers.dev 作海外 / 挂代理环境的后备）。
+  - **全路径重写**：新增 `netlify/public/_redirects`（`/ → index.html 200`、`/* → /.netlify/functions/proxy 200`，**不带 `!`**，所以有同名静态文件时优先用文件、`/` 仍显示说明页）；`netlify.toml` 同步**去掉 `force = true`**（那句会把首页也吞进代理）。
+  - **⚠️ 部署头号坑**：Netlify 新版免费套餐建站后 **`sso_login` 默认 `true`** → 所有访问被 **401 重定向到 `app.netlify.com/edge-access?…` 登录页**，症状是「桥明明部署成功却打不开」，且极易误判成「函数没部署上去」。修法：`netlify api updateSite --data '{"site_id":"<id>","body":{"sso_login":false}}'`，用 `netlify api getSite` 复查 `sso_login=false`。
+  - **部署脚本重写**：`tools/deploy-netlify-bridge.sh` —— 旧脚本的 node 路径 `22.22.2-2` 已不存在（现为 `22.22.2-3`）；改用 `--site-name iti-api`（不存在自动建站，比手写 `netlify api createSite` + 把默认子域当 `custom_domain` 传更稳）；`--json` 解析并落地 `netlify/.site-id` / `.site-url`；部署后自动 `curl --noproxy '*'` 自检。
+  - **安全边界不被削弱**：上游 Worker CORS 是 fail-closed，桥原样透传 `Origin`。**线上四项自检全过**：① `GET /stats` + `Origin: https://it-interview.is-a.dev` → 200 且返回 ACAO；② `OPTIONS /auth/login` → CORS 三头齐全；③ `POST /auth/login` 假凭据 → **401 + Worker 真实错误体 `{"error":"邮箱或密码不正确"}`**（证明 POST + JSON 写路径与错误透传都通）；④ 非白名单 `Origin` → **无 ACAO**。性能：冷启动首次 `GET /stats` 约 19s（Lambda 冷启动），热态 1~2s。
+- **【feat】入口「启动自动择优」（`js/account.js`，缓存版本 `20260913d`）**
+  - 此前 UI 写着「桥接入口上线后会自动命中」，但 `probeEndpoints()` **只在手动点按钮时才跑**，承诺是假的。新增 `Account.autoProbe()`：每次打开页面在 `refreshEndpoints()` resolve 之后**后台静默**探测一次，命中第一个可用入口即写 `stats_api_pick` + 新增的 `stats_api_pick_at` 时间戳。
+  - **候选顺序刻意与调用顺序不同**：自动择优按「**手动指定 → 远程配置 → 上次成功 → 内置兜底**」，而 `A.endpoints()`（真正发请求的顺序，`call()` 用它）**保持原样不变**（`手动 → pick → 配置 → 内置`）。原因：本机旧 pick 若排在远程配置之前，会一直压住刚发布的新入口 —— 表现为「明明改了 `api-endpoints.json` 却还是连不上」，这正是本次要根治的坑。**所以只自测了 `A.endpoints()` 顺序未变，不要顺手去改它。**
+  - **三条不打扰用户的护栏**：手填过地址 → 完全不干预；上次成功入口在 **30 分钟内新鲜** → 跳过不重复探测；**全部不可达 → 静默失败、不清空原 pick、页面照常可用**。
+  - `Account.probeEndpoints()`（设置页 `#stats-autopick`）已复用同一套 `probeList()`，所以手动点一次也能立刻切到新入口（旧 pick 优先级问题的应急解法）。
+  - **报错文案瘦身**：原来那段「后端部署在 Cloudflare 的 workers.dev 域名上，该域名在国内被拦截，切换 Wi-Fi / 4G 都无效…」对普通访客毫无帮助，改为一行可执行提示；完整入口列表改走 `console.warn` 供维护者排查。
+  - 设置页说明同步更新（`#/admin/settings` 的 Cloudflare Worker 板块），点明「已内置多入口自动择优、候选来自同源 `api-endpoints.json`、改它即可全量切换、备份入口为国内可直连的中转桥」。
+- **验收（可复用）**：① 桥逻辑本地 mock 上游 **19/19**（`_bridge_test.mjs`：路径+查询串透传、POST/Auth/Origin 头透传、JSON 体不被破坏、非 base64 体、OPTIONS 预检、CORS 白名单不被削弱、逐跳头剥离、上游挂掉降级 `502 bridge_upstream_error`、带 `/.netlify/functions/proxy` 前缀的路径还原）。② **启动自动择优真机回归 23/23**（`_probe_test.mjs` + `_probe_server.py`：两个可用假端点 + 一个死端点，覆盖启动切换、配置优先于旧 pick、新鲜跳过、手动不干预、force 重测、全不可达不崩、`A.endpoints()` 顺序无回归、后台设置页按钮可用、公共侧栏 12 项）。③ 既有全量回归 **62/62**（含 16 个旧页面逐页未退化）+ `smoke-test` **26/26** + `node --check` 全通。④ 线上端到端 4 项（见上）。
+- **⚠️ 本轮新踩的测试基建坑（已写进 `~/.workbuddy/skills/it-interview-deploy/SKILL.md`）**：
+  1. **`Runtime.evaluate` 可能永不返回 → 整轮 CDP 测试静默挂死**（本轮实测本该 2.5 分钟跑完，卡了 5 分钟+ 只能手动 kill）。页面执行上下文被替换（SPA 路由重渲染 / 导航）时会这样。**必须给每次 CDP 调用加 `Promise.race` 超时 + 全局看门狗**，并给每条断言加 `[123s]` 秒表前缀。
+  2. **测试选择器不能自己编**：数侧栏项数要用既有回归的 `#sidebar .side-nav-item`；宽选择器会把管理子导航 / 页脚链接算进来（16 vs 正确 12）。
+  3. **管理后台页需要登录态**：`#/admin/settings`（不是 `#/settings`）被 `App.requireAdmin()` 拦，测试要先 `sessionStorage.setItem('it_hub_admin','1')`。而**这个登录态会污染后续断言** —— 管理员态下公共页侧栏也会多出 4 条管理入口（12 → 16），量侧栏前必须先 `removeItem`。
+  4. **假 API 必须实现 `do_POST` / `do_PUT` 且带 CORS 头**（站点启动会 `POST /visit`、切题会 `POST /view`）；`BaseHTTPRequestHandler` 对未实现动词默认 501 且无 ACAO → 浏览器报 CORS 错误，污染「无 JS 异常」断言。断言时要把 `ERR_*` / `net::` / `Failed to load resource` / `CORS policy` 这类**资源加载失败日志**与真实未捕获 JS 异常分开。
+  5. **给 `python.exe` / `node.exe` 传路径必须用 `C:/…` 形式**：Git Bash 的 `/c/Users/…` 会被 Windows 程序当成 `C:\c\Users\…`，报 `can't open file` / `MODULE_NOT_FOUND`。
+  6. **本机 `rm` 被 safe-delete 钩子包裹**：在 `set -euo pipefail` 的 bash 脚本里 `rm -f` 失败会**直接中断后续步骤**（本轮部署脚本的自检段就这样被静默跳过），清理临时文件要放最后或写 `|| true`。
+- **⏭ 下一步（待 eu.org 批准，预计 09-18 ~ 09-25）**：CF zone 转 active → Worker 绑 `api.itinterview.eu.org` → 把该地址**插到 `api-endpoints.json` 首位** → 前端 `autoProbe` 会在用户下次打开页面时**自动命中并切换**（无需发版、无需用户操作）。届时 Netlify 桥可保留为二级后备或下线。
+- **上一次上线（2026-09-13 16:09，2 个提交，均走 Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
   | ① 弱网题库加载可靠性修复 | `9a3543b2` | `2fb7eea3` | 7 个文件（`js/cloud.js` `js/app.js` `js/utils.js` `css/style.css` `index.html` `sw.js` `README.md`），缓存版本 `20260913c` |
-  | ② 交接卡刷新（本条） | 见下 | 见下 | 仅 `HANDOVER.md` |
+  | ② 交接卡刷新 | `05a69a07` | `b0abd03a` | 仅 `HANDOVER.md` |
 - **发版前基线核对（第一铁律）**：远端两分支 tip = `release 5ed5d85827` / `main 3a53700289`（只多了 15:53「发布题库 1090 题」与 15:55「备份本地数据（加密）」两个 `data/` 类自动提交，与代码文档无关）。用 API 逐文件 diff「远端 → 本地」并**按行尾归一后**复核，确认 **零内容丢失**：`js/cloud.js` 622→701 行（+97/-18，被删的 18 行全是本次重写的 `fetchRemote` / `syncIfNeeded` 旧实现）、`js/app.js` 4269→4327（+59/**-1**，唯一删除是被替换的那行 toast 文案）、`js/utils.js` 383→392（+15/-6，旧 `U.toast` 函数体）、`index.html` +25/-25（纯版本号）、`sw.js` +1/-1、`README.md` +10/**-0**。`js/guide.js` / `js/roadmap.js` / `js/db.js` / `js/services.js` / `HANDOVER.md` 与远端**逐字节一致**，未重复上传。
 - **顺带修掉的历史脏数据**：线上 `css/style.css` 的 `.about-*` 块行尾是 **`\r\r\n`（双 CR）**（2026-09-13b 那次恢复时留下的），本次随文件写入归一为 `\r\n`。浏览器解析不受影响（双 CR 也算空白），属纯清理。**注意**：只看 `loneLF = \n 数 - \r\n 数` 的行尾体检**查不出双 CR**，要额外数 `\r\r\n`。
 - **【fix】弱网下访客「静默只有 99 道种子题」（2026-09-13 16:09，缓存版本 `20260913c`）**
