@@ -234,6 +234,23 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-13e · feat: 后端国内可达（Netlify 直连桥）+ 入口启动自动择优（缓存版本 `20260913d`）
+
+- **问题**：站点在**国内网络**下登录/云同步全部失败，提示「加载失败 连不上服务器（API 暂不可达）」，切 Wi-Fi / 4G 都无效、只能挂代理。根因不是服务器挂了，而是 **Cloudflare 的 `*.workers.dev` 域名在国内被 DNS 投毒**——实测 `it-interview-stats.iti-interview.workers.dev` 解析到 `104.244.46.208`（Twitter 的 IP 段）、泛域名解析到 `31.13.71.19`（Facebook 段），TCP 直接超时。
+- **为什么不直接绑自有域名**：唯一可用的 CF zone 是 `itinterview.eu.org`，状态仍是 **pending**（eu.org 尚未批准、NS 未委派），Cloudflare 侧**暂时绑不上自定义域名**；`pages.dev` 更差——国内**直接 DNS 解析失败**（实测），所以「换 Cloudflare Pages」不是出路。
+- **国内可达性实测结论（成都，绕代理真实网络）**：`netlify.app` ✅ / `deno.dev` ✅ / `onrender.com` ✅ / `railway.app` ✅ / `vercel.app` ❌污染 / `workers.dev` ❌污染 / `pages.dev` ❌解析失败 / `fly.dev` ❌解析失败。据此选了 **Netlify**（`app.netlify.com`、`api.netlify.com`、`www.netlify.com` 国内也均可直连，建号取令牌无需代理）。
+- **新增：Netlify 国内直连桥**（仓库 `netlify/` 目录，代码为既有设计，本次正式上线）——`netlify/functions/proxy.js` 把方法/头/体/查询串**原样透传**到上游 Worker，逐跳头（`host`/`content-length`/`accept-encoding`/`cf-*`）剥离。已部署到 **`https://iti-api.netlify.app`**。
+  - 全路径重写：`netlify/public/_redirects`（`/ → index.html`、`/* → /.netlify/functions/proxy`，**不带 `!`** 所以有同名静态文件时优先用文件，`/` 仍显示说明页）；`netlify.toml` 同步去掉 `force = true`（原本会把首页也吞进代理）。
+  - **不削弱安全边界**：上游 Worker 的 CORS 白名单是 fail-closed（未知来源拿不到 `Access-Control-Allow-Origin`），桥原样透传 `Origin`，实测非白名单来源经桥后**依然没有 ACAO**。
+- **新增：入口「启动自动择优」**（`js/account.js` `Account.autoProbe`）——此前 UI 里写着「桥接入口上线后会自动命中」，但 `probeEndpoints()` **只在手动点按钮时才跑**，承诺是假的。现在每次打开页面都会：先刷新同源 `api-endpoints.json`，再**后台静默**探测候选入口并写下第一个可用的。
+  - **候选优先级刻意与调用顺序不同**：自动择优按「手动指定 → 远程配置 → 上次成功 → 内置兜底」，而 `A.endpoints()`（真正发请求的顺序）**保持原样不变**。原因：本机存的旧入口如果排在远程配置之前，就会一直压住刚发布的新入口，表现为「明明改了 `api-endpoints.json` 却还是连不上」——这正是本次要根治的坑。
+  - **不会打扰用户**：手填过地址 → 完全不干预；上次成功入口还在 30 分钟内新鲜期 → 跳过不重复探测；全部不可达 → 静默失败、不清空原有 pick、页面照常可用。
+- **报错文案瘦身**：原来那段「后端部署在 Cloudflare 的 workers.dev 域名上，该域名在国内被拦截，切换 Wi-Fi / 4G 都无效，只能挂代理访问…」对普通访客毫无帮助，改为一行可执行的提示（并保留完整信息在控制台 `console.warn` 供维护者排查）。
+- **改了 `api-endpoints.json` 无需发版**：该文件同源、由 Service Worker 走 **network-first**（专为此留的应急通道），前端每次加载都会拉取，改它即可全量切换后端地址。
+- **运维踩坑（重要）**：Netlify 新版免费套餐建站后 **`sso_login` 默认是 `true`**，任何访客都会被 401 重定向到 `app.netlify.com/edge-access` 登录页——表现为「桥部署成功了但访问不了」。需 `netlify api updateSite --data '{"site_id":"...","body":{"sso_login":false}}'` 关掉。`tools/deploy-netlify-bridge.sh` 已重写（旧脚本的 node 路径 `22.22.2-2` 已失效；改用 `--site-name` 自动建站，比手写 `api createSite` + `customDomain` 稳），并把站点 ID / URL 落地到 `netlify/.site-id` / `netlify/.site-url`。
+- **版本**：`20260913c` → `20260913d`（`index.html` 24 处 `?v=` + 1 处 SW 轮询版本；`sw.js` `VERSION`）。
+- **验收**：① 桥逻辑本地 mock 上游 **19/19**（路径+查询串透传、POST/Auth/Origin 头透传、JSON 体不被破坏、OPTIONS 预检、CORS 白名单不被削弱、逐跳头剥离、上游挂掉降级 `502 bridge_upstream_error`、带 `/.netlify/functions/proxy` 前缀的路径还原）；② 「启动自动择优」真机回归 **23 项**（`_probe_test.mjs` + `_probe_server.py`：两个可用假端点 + 一个死端点，覆盖启动切换、配置优先于旧 pick、新鲜跳过、手动不干预、force 重测、全不可达不崩、`A.endpoints()` 顺序无回归、后台设置页按钮可用）；③ **线上端到端实测（成都、绕代理）**：`GET /stats` 200 返回真实数据、`OPTIONS /auth/login` CORS 三头齐全、`POST /auth/login` 返回 Worker 真实错误体 `{"error":"邮箱或密码不正确"}`、非白名单 Origin 无 ACAO。
+
 ### 2026-09-13d · fix: 弱网下「静默只有 99 道种子题」的加载可靠性修复（缓存版本 `20260913c`）
 
 - **问题**：`js/cloud.js` 的 `fetchT` **没有重试**，`fetchRemote` 超时直接返回 `null`，启动时 `syncIfNeeded` 也不重试 —— 而首次拉取 **1.5MB** 的 `data/published.json` 只给 **8 秒**超时。超时后访客就停在 `data/seed.js` 的 **99 道示例题**，界面**没有任何提示、也不会再自动重试**，用户只会以为「这站题库怎么这么少」（真机与无头环境均已复现）。

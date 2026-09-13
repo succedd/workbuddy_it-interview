@@ -8,8 +8,11 @@
   node_bundler = "esbuild"
 
 # 任意路径 → 代理函数（redirects 对 GET/POST/PUT/OPTIONS 均生效）
+# 注意：不加 force=true。非强制规则「有同名静态文件时优先用文件、否则才走重写」，
+# 这样 `/` 仍能正常展示 netlify/public/index.html 说明页，而 /auth/login、
+# /me/data 这类无对应文件的 API 路径才会落到代理函数。
+# 等价规则同时写在 netlify/public/_redirects（CLI 手动部署时该文件最可靠）。
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/proxy"
   status = 200
-  force = true
