@@ -199,18 +199,18 @@ async function requireAdmin(db, request) {
 async function handleRegister(env, request, origin) {
   const db = env.USERS;
   const ip = (request.headers.get("cf-connecting-ip") || "x");
-  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, 429, origin);
+  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, origin, 429);
 
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const email = String(body.email || "").trim().toLowerCase();
   const password = body.password;
   const nick = String(body.nick || "").trim().slice(0, 40);
-  if (!validEmail(email)) return jsonResp({ error: "邮箱格式不正确" }, 400, origin);
-  if (!validPassword(password)) return jsonResp({ error: "密码需 8-72 位" }, 400, origin);
+  if (!validEmail(email)) return jsonResp({ error: "邮箱格式不正确" }, origin, 400);
+  if (!validPassword(password)) return jsonResp({ error: "密码需 8-72 位" }, origin, 400);
 
   const exists = await db.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
-  if (exists) return jsonResp({ error: "该邮箱已注册" }, 409, origin);
+  if (exists) return jsonResp({ error: "该邮箱已注册" }, origin, 409);
 
   const salt = randomHex(16);
   const passHash = await hashPassword(password, salt);
@@ -240,24 +240,24 @@ async function handleRegister(env, request, origin) {
   await db.prepare("INSERT INTO sessions (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)")
     .bind(token, uid, now + SESSION_TTL_MS, now).run();
 
-  return jsonResp({ token, user: { id: uid, email, nick, role } }, 201, origin);
+  return jsonResp({ token, user: { id: uid, email, nick, role } }, origin, 201);
 }
 
 async function handleLogin(env, request, origin) {
   const db = env.USERS;
   const ip = (request.headers.get("cf-connecting-ip") || "x");
-  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, 429, origin);
+  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, origin, 429);
 
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
   const u = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
   /* 统一报错文案，避免枚举邮箱 */
-  if (!u) return jsonResp({ error: "邮箱或密码不正确" }, 401, origin);
-  if (u.status !== 1) return jsonResp({ error: "帐号已被禁用，请联系管理员" }, 403, origin);
+  if (!u) return jsonResp({ error: "邮箱或密码不正确" }, origin, 401);
+  if (u.status !== 1) return jsonResp({ error: "帐号已被禁用，请联系管理员" }, origin, 403);
   const calc = await hashPassword(password, u.salt);
-  if (calc !== u.pass_hash) return jsonResp({ error: "邮箱或密码不正确" }, 401, origin);
+  if (calc !== u.pass_hash) return jsonResp({ error: "邮箱或密码不正确" }, origin, 401);
 
   const now = Date.now();
   const token = randomHex(32);
@@ -278,7 +278,7 @@ async function handleLogout(env, request, origin) {
 
 async function handleMe(env, request, origin) {
   const u = await sessionUser(env.USERS, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
   return jsonResp({ user: publicUser(u, origin) });
 }
 
@@ -306,7 +306,7 @@ function ensureWeakCols(db) {
 async function handleGetMyData(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
   await ensureWeakCols(db);
   const [fav, his, weak] = await db.batch([
     db.prepare("SELECT question_id AS id, created_at AS at FROM favorites WHERE user_id = ?").bind(u.id),
@@ -321,15 +321,15 @@ async function handleGetMyData(env, request, origin) {
   return jsonResp({
     favorites: fav.results || [], histories: his.results || [], weak: weak.results || [],
     daily, syncedAt: Date.now(),
-  });
+  }, origin);
 }
 
 async function handlePutMyData(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
 
   const now = Date.now();
   const stmts = [];
@@ -398,7 +398,7 @@ async function handlePutMyData(env, request, origin) {
 async function handleGetReports(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
   try {
     const r = await db.prepare(
       "SELECT id, created_at AS at, position, years, total, master, familiar, unknown, duration, coverage " +
@@ -412,9 +412,9 @@ async function handleGetReports(env, request, origin) {
 async function handleSaveReport(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
-  if (!u) return jsonResp({ error: "未登录或登录过期" }, 401, origin);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
   let b = {};
-  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const num = (v, d) => { const n = parseInt(v); return isNaN(n) ? d : n; };
   try {
     await db.prepare(
@@ -433,7 +433,7 @@ async function handleSaveReport(env, request, origin) {
 async function handleAdminUsers(env, request, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
-  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403, origin);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, origin, 403);
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   let rows;
@@ -444,20 +444,20 @@ async function handleAdminUsers(env, request, origin) {
   } else {
     rows = await db.prepare("SELECT * FROM users ORDER BY created_at DESC LIMIT 200").all();
   }
-  return jsonResp({ users: (rows.results || [], origin).map(publicUser) });
+  return jsonResp({ users: (rows.results || []).map(publicUser) }, origin);
 }
 
 async function handleAdminUserStatus(env, request, targetId, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
-  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403, origin);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, origin, 403);
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const status = parseInt(body.status) === 1 ? 1 : 0;
   if (targetId === admin.id && status === 0)
-    return jsonResp({ error: "不能禁用自己" }, 400, origin);
+    return jsonResp({ error: "不能禁用自己" }, origin, 400);
   const r = await db.prepare("UPDATE users SET status = ? WHERE id = ?").bind(status, targetId).run();
-  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, 404, origin);
+  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, origin, 404);
   if (status === 0) await db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(targetId).run();
   return jsonResp({ ok: true, status }, origin);
 }
@@ -465,16 +465,16 @@ async function handleAdminUserStatus(env, request, targetId, origin) {
 async function handleAdminResetPassword(env, request, targetId, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
-  if (!admin) return jsonResp({ error: "需要管理员权限" }, 403, origin);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, origin, 403);
   let body;
-  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, 400, origin); }
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const password = String(body.password || "");
-  if (!validPassword(password)) return jsonResp({ error: "新密码需 8-72 位" }, 400, origin);
+  if (!validPassword(password)) return jsonResp({ error: "新密码需 8-72 位" }, origin, 400);
   const salt = randomHex(16);
   const passHash = await hashPassword(password, salt);
   const r = await db.prepare("UPDATE users SET pass_hash = ?, salt = ? WHERE id = ?")
     .bind(passHash, salt, targetId).run();
-  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, 404, origin);
+  if (!r.meta.changes) return jsonResp({ error: "用户不存在" }, origin, 404);
   await db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(targetId).run();  // 踢下线
   return jsonResp({ ok: true }, origin);
 }
