@@ -234,6 +234,12 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-13g · fix: 管理权限体系统一（第一步）—— 帐号管理页改服务端角色鉴权（缓存版本 `20260913e→f`）
+
+- **背景**：① 前端管理入口门禁一直是旧单机时代的本地密码（`auth.js` 的 `Auth.isAdmin`，sessionStorage 标记），与服务端 D1 `role` 完全脱节——role=user 也能看到管理入口，点进「帐号管理」被后端 403；② 用户账号在 D1 切换重建时 role 丢失（库里唯一 admin 是种子账号），已在库内提权；③ 上一轮 `jsonResp` 签名重构（`eec5a04b`）没同步调用点，27 处参数错位 + 1 处逗号表达式 + `/me/data` 漏传 origin，导致管理列表/注册/全部错误分支 500（CF 版本 `5762292d` 已修复上线）。
+- **本版改动**：`account.js` 新增 `isServerAdmin()`（读登录响应缓存的 role + token）与 `refreshMe()`（启动时静默 `GET /auth/me` 刷新本地用户缓存——库内提权/禁用无需重新登录即生效，401 自动清会话）；`app.js` 路由给 `#/admin/users` 单独加 `requireServerAdmin()` 守卫（其余管理页维持本地密码门禁，本地密码仅保留给题目编辑端）；顶栏「帐号管理」入口与服务侧栏「站点」区均按服务端角色显隐，`onAccountRefreshed` 回调在刷新后重渲染导航。
+- **回归**：`node --check` 全过；smoke 26/26、启动自动择优 26/26、本地回归 62/62。
+
 ### 2026-09-13f · fix: 桥「浏览器跨域失败」追根 —— 根因是代理复制了 `content-encoding` 头（ERR_CONTENT_DECODING_FAILED，伪装成 CORS 故障）
 
 - **现象**：`20260913e` 后真机复测发现——curl 直连桥一切正常（含正确的 ACAO 回显），但**浏览器页面内跨域 `fetch` 必挂**：响应状态 200 可见、body 读取抛 `TypeError: Failed to fetch`，症状极像 CORS 配置错误。同源请求正常、curl 正常、CDP 抓包显示响应头里 ACAO 明明存在，极具迷惑性。
