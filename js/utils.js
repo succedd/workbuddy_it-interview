@@ -48,6 +48,8 @@
     star: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M12 3l2.6 5.7L21 9.6l-4.5 4.3 1.1 6.1L12 17.8 6.4 20l1.1-6.1L3 9.6l6.4-.9z"/></svg>`,
     refresh: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/></svg>`,
     fileText: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>`,
+    /* 学习文档（翻开的书，2026-09-14 新增，供「学」版块侧栏入口使用） */
+    bookOpen: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg>`,
     link: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>`,
     /* 岗位路线图（地图/路径） */
     map: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M9 3 3 5.4v15.8L9 19l6 2.2 6-2.2V3.2L15 5.4z"/><path d="M9 3v16M15 5.4v15.8"/></svg>`
