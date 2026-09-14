@@ -80,7 +80,7 @@
 - **本次上线（2026-09-14 21:50，Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
-  | ① 新增「学」版块：技术学习文档（方向 × 初级/中级/高级） | 占位-推送后回填 | 占位-推送后回填 | 7 个文件（`js/docs-data.js` `js/docs.js` `js/app.js` `js/utils.js` `js/guide.js` `index.html` `sw.js` `README.md`），缓存版本 `20260913k` |
+  | ① 新增「学」版块：技术学习文档（方向 × 初级/中级/高级） | `28b5d909` | `86265219` | 7 个文件（`js/docs-data.js` `js/docs.js` `js/app.js` `js/utils.js` `js/guide.js` `index.html` `sw.js` `README.md`），缓存版本 `20260913k` |
 - **【feat】「学」版块 —— 技术学习文档（缓存版本 `20260913k`）**：站点从「面试题库」向「IT 学习与成长平台」演进的第一块（定位 B：学习为主、面试为出口）。
   - **结构**：`js/docs-data.js`（数据）+ `js/docs.js`（阅读器）。路由 `#/docs`（方向列表）、`#/docs/<dir>`（分级目录）、`#/docs/<dir>/<level>/<chapter>`（阅读页）。
   - **内容**：运维/SRE 方向**初/中/高共 9 篇完整正文**（初级：Linux 目录结构与文件操作 / 用户权限与 sudo / 进程与资源查看；中级：性能分析四板斧 / 日志体系 / 常见故障速查手册；高级：K8s 集群运维 / SLO 与错误预算 / 事故复盘与变更管理）。另有 6 个方向（Java 后端、前端、DBA、云原生、网络与 OS、安全）先放目录骨架标「建设中」。
