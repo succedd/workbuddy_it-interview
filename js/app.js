@@ -126,6 +126,12 @@
       case "position": return r.parts[1] ? pagePositionDetail(r.parts[1]) : pagePositions();
       /* 岗位学习路线图：把岗位题目串成 4–8 周计划（map = 路线图入口） */
       case "roadmap": return r.parts[1] ? pageRoadmapDetail(r.parts[1]) : pageRoadmap();
+      /* 「学」版块：技术学习文档（方向 × 初级/中级/高级），
+         #/docs | #/docs/<dir> | #/docs/<dir>/<level>/<chapter> */
+      case "docs":
+        if (!r.parts[1]) return window.pageDocs();
+        if (r.parts[2] && r.parts[3]) return window.pageDocsChapter(r.parts[1], r.parts[2], r.parts[3]);
+        return window.pageDocsDir(r.parts[1]);
       case "questions": return pageQuestions(r.q);
       case "question": return pageQuestionDetail(r.parts[1]);
       case "favorites": return pageFavorites();
@@ -231,6 +237,7 @@
     let html = `
       <div class="nav-section-title">导航</div>
       ${navItem("#/", "home", "首页", p0 === "home")}
+      ${navItem("#/docs", "bookOpen", "学习文档", p0 === "docs")}
       ${navItem("#/category", "layers", "技术体系", p0 === "category")}
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
       ${navItem("#/roadmap", "map", "学习路线图", p0 === "roadmap")}
@@ -822,6 +829,7 @@
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
           <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
+          <a class="btn btn-lg" href="#/docs">${U.icon("bookOpen")} 学习文档</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
