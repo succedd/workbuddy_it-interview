@@ -80,7 +80,7 @@
 - **本次上线（2026-09-14 08:55，Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
-  | ① 登录必失败根因：/auth/login、/auth/me 响应漏传 origin（无 ACAO） | 占位-推送后回填 | 占位-推送后回填 | 3 个文件（`cloudflare/worker.js` `tools/check-cors-origin.mjs` `README.md`），CF 版本 `91b4c162` |
+  | ① 登录必失败根因：/auth/login、/auth/me 响应漏传 origin（无 ACAO） | `9981d6d0` | `7f08f9ba` | 3 个文件（`cloudflare/worker.js` `tools/check-cors-origin.mjs` `README.md`），CF 版本 `91b4c162` |
 - **【fix】登录链路 CORS 缺 ACAO（2026-09-14，CF 版本 `91b4c162`）**：用户已升级到 `20260913h` 仍报「连不上服务器（页面版本 20260913h）」，而 **curl 全绿**（登录 200 / stats 200）——极易误判为缓存或用户环境。真因是 **GET 不触发 CORS 预检、POST+JSON 会触发**：`handleLogin` 成功响应与 `handleMe` 响应**漏传 `origin`** → 无 ACAO → 浏览器 `net::ERR_FAILED` → 用户看到「连不上服务器」，而 curl 不做 CORS 检查故测不出。修复：两处补 `origin`。**浏览器复验**：`Account.login()` ok（2711ms）、`isServerAdmin()===true`、`/me/data` 正常。**新增永久防线** `tools/check-cors-origin.mjs`（静态审计全部 `jsonResp` 是否带 origin，含反向测试；当前 39 处全合规）；`_live_domestic.mjs` 增 2e（页面内 POST 预检链路）并修 1a 时序。
 - **上一次上线（2026-09-13 22:08）**：
   | 提交 | `release` | `main` | 内容 |
