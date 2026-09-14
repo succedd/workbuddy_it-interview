@@ -267,7 +267,7 @@ async function handleLogin(env, request, origin) {
     db.prepare("UPDATE users SET last_login_at = ? WHERE id = ?").bind(now, u.id),
     db.prepare("DELETE FROM sessions WHERE expires_at < ?").bind(now),   // 顺手清过期会话
   ]);
-  return jsonResp({ token, user: publicUser(u, origin) });
+  return jsonResp({ token, user: publicUser(u, origin) }, origin);
 }
 
 async function handleLogout(env, request, origin) {
@@ -279,7 +279,7 @@ async function handleLogout(env, request, origin) {
 async function handleMe(env, request, origin) {
   const u = await sessionUser(env.USERS, request);
   if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
-  return jsonResp({ user: publicUser(u, origin) });
+  return jsonResp({ user: publicUser(u, origin) }, origin);
 }
 
 /* ---------- 个人数据云同步：favorites / histories / weak / daily（每日打卡） ---------- */

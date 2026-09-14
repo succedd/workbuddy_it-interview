@@ -234,6 +234,18 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-14 · fix: 登录必失败的真凶 —— `/auth/login`、`/auth/me` 响应漏传 `origin`（CORS 缺 ACAO）
+
+- **现象**：用户在已升级到 `20260913h` 的页面点「登录」→ 报「连不上服务器（API 暂不可达）（页面版本 20260913h）」。**curl 直连一切正常**（登录 200、/stats 200），极易误判为「用户环境问题／缓存问题」。
+- **定位方法（关键）**：在真实浏览器里复刻登录路径并抓 CDP 网络事件，得到决定性证据 —— `POST https://iti-api.netlify.app/auth/login` 在 `OPTIONS` 预检 200 之后，本体请求以 **`net::ERR_FAILED`** 结束；而 `GET /stats` 正常。
+  原因：**GET 是「简单请求」不触发 CORS 预检，POST + `Content-Type: application/json` 会触发预检，且响应本体必须自带 ACAO**。两个响应缺 ACAO：
+  - `handleLogin` 成功响应 `jsonResp({ token, user: publicUser(u, origin) })` —— 漏传 `origin` → 登录成功响应无 ACAO → 浏览器判 CORS 失败 → 用户侧表现就是「连不上服务器」；
+  - `handleMe` 响应同类问题 → 启动时 `refreshMe()` 静默刷新也会失败。
+  **curl 永远测不出来**（curl 不做 CORS 检查），这是本次排查绕远路的根因。
+- **修复**：两处补传 `origin`；Worker 部署版本 `91b4c162`。浏览器复验：`Account.login()` → `{ok:true, ms:2711}`，`isServerAdmin() === true`，`/me/data` 同步也正常。
+- **永久防线**：新增 `tools/check-cors-origin.mjs` —— 静态扫描 `cloudflare/worker.js` 全部 `jsonResp()` 调用是否都带 `origin`（含反向测试验证：故意去参时正确报 L270）。已确认 39 个调用点全部合规。
+- **测试基线补强**：`_live_domestic.mjs` 新增 2e「页面内 POST 登录链路可用（预检通过 + 响应带 ACAO 可读）」；1a 改为轮询等待（避免冷启动下误报）。
+
 ### 2026-09-13h · fix: 长超时跟「桥」走而不是跟「第一位」走（缓存版本 `20260913f→g`）
 
 - **现象**：用户真机再次出现「连不上服务器（API 暂不可达）」。桥实测正常（冷启动 13.9s、热态 1.3s），但 `20260913e` 的 20s 长超时**只给调用顺序第一位的入口**——一旦 pick 记住了别的入口（如 workers.dev，DNS 被墙秒失败）排在首位，Netlify 桥落到第二位只有 8s 预算，冷启动 13s+ 必被误判「不可达」。
