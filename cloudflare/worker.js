@@ -13,6 +13,7 @@
 //   POST /auth/login      {email, password}                 -> {token, user}
 //   POST /auth/logout     （Authorization: Bearer token）
 //   GET  /auth/me         -> {user}
+//   POST /auth/password   {oldPassword, newPassword}  自助改密码（保留当前会话）
 //   GET  /me/data         -> {favorites, histories, weak}    （登录后整包拉取）
 //   PUT  /me/data         {favorites, histories, weak}       （整包覆盖式合并上传）
 // 管理员接口（role=admin）：
@@ -282,6 +283,31 @@ async function handleMe(env, request, origin) {
   return jsonResp({ user: publicUser(u, origin) }, origin);
 }
 
+/* 自助修改密码（20260914i）：必须提供旧密码；改完**不动当前会话**（其余会话踢掉），
+   避免「改密码 = 自己下线」的自锁，也让用户不必再走管理员重置。 */
+async function handleChangePassword(env, request, origin) {
+  const db = env.USERS;
+  const u = await sessionUser(db, request);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
+  let body;
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const oldPassword = String(body.oldPassword || "");
+  const newPassword = String(body.newPassword || "");
+  if (!validPassword(newPassword)) return jsonResp({ error: "新密码需 8-72 位" }, origin, 400);
+  if (newPassword === oldPassword) return jsonResp({ error: "新密码不能与旧密码相同" }, origin, 400);
+  const calc = await hashPassword(oldPassword, u.salt);
+  if (calc !== u.pass_hash) return jsonResp({ error: "旧密码不正确" }, origin, 401);
+
+  const salt = randomHex(16);
+  const passHash = await hashPassword(newPassword, salt);
+  const keep = extractToken(request);
+  await db.batch([
+    db.prepare("UPDATE users SET pass_hash = ?, salt = ? WHERE id = ?").bind(passHash, salt, u.id),
+    db.prepare("DELETE FROM sessions WHERE user_id = ? AND token != ?").bind(u.id, keep || ""),
+  ]);
+  return jsonResp({ ok: true }, origin);
+}
+
 /* ---------- 个人数据云同步：favorites / histories / weak / daily（每日打卡） ---------- */
 
 /* weak_bank 复习进度列（20260910b 新增）：旧表缺列时用 ALTER TABLE 动态补齐，每 isolate 只试一轮 */
@@ -466,6 +492,10 @@ async function handleAdminResetPassword(env, request, targetId, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
   if (!admin) return jsonResp({ error: "需要管理员权限" }, origin, 403);
+  /* 自锁守卫（20260914i）：重置密码会删掉目标用户全部会话，对自己执行 = 把自己踢下线且不知道新密码。
+     自助改密码请走 POST /auth/password（不动当前会话）。 */
+  if (targetId === admin.id)
+    return jsonResp({ error: "不能用「重置密码」改自己的密码（会把自己踢下线）。请到「帐号」页用「修改密码」。" }, origin, 400);
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const password = String(body.password || "");
@@ -505,6 +535,7 @@ export default {
         if (p === "/auth/login" && request.method === "POST") return await handleLogin(env, request, corsOrigin);
         if (p === "/auth/logout" && request.method === "POST") return await handleLogout(env, request, corsOrigin);
         if (p === "/auth/me" && request.method === "GET") return await handleMe(env, request, corsOrigin);
+        if (p === "/auth/password" && request.method === "POST") return await handleChangePassword(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request, corsOrigin);
         if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request, corsOrigin);

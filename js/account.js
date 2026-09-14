@@ -397,6 +397,8 @@
   A.adminListUsers = (q) => call("GET", "/admin/users" + (q ? "?q=" + encodeURIComponent(q) : ""));
   A.adminSetStatus = (id, status) => call("POST", "/admin/users/" + id + "/status", { status });
   A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
+  /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
+  A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
 
   /* ---------------- UI：登录/注册页 ---------------- */
   A.renderLoginPage = function () {
@@ -409,7 +411,15 @@
           <p class="muted" style="font-size:13px">登录后，你的收藏、刷题历史与错题本会自动云同步——换设备也能接着刷。</p>
           <div style="display:flex;gap:8px;margin-top:16px">
             <button class="btn btn-primary" id="acc-sync">立即同步</button>
+            <button class="btn" id="acc-pw-toggle">修改密码</button>
             <button class="btn btn-danger" id="acc-logout">退出登录</button>
+          </div>
+          <div id="acc-pw-box" style="display:none;margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
+            <label class="field"><span>当前密码</span><input id="acc-pw-old" type="password" placeholder="••••••••" /></label>
+            <label class="field"><span>新密码（8-72 位）</span><input id="acc-pw-new" type="password" placeholder="••••••••" /></label>
+            <label class="field"><span>确认新密码</span><input id="acc-pw-new2" type="password" placeholder="••••••••" /></label>
+            <button class="btn btn-primary" id="acc-pw-go">确认修改</button>
+            <p class="muted" style="font-size:12px;margin-top:8px">修改后其它设备的登录会失效，本机保持登录。</p>
           </div>
           <div id="acc-out" class="muted" style="margin-top:12px;font-size:13px"></div>
         ` : `
@@ -434,6 +444,29 @@
         catch (e) { out.textContent = "同步失败：" + e.message; }
       };
       $("#acc-logout").onclick = () => { A.logout(); U.toast("已退出登录", "info"); renderTopbar(); route(); };
+      /* 修改密码（20260914i）：原先只能靠「帐号管理 → 重置密码」，那会删掉自己的会话造成自锁 */
+      $("#acc-pw-toggle").onclick = () => {
+        const box = $("#acc-pw-box");
+        box.style.display = box.style.display === "none" ? "" : "none";
+      };
+      $("#acc-pw-go").onclick = async () => {
+        const out = $("#acc-out");
+        const oldPw = $("#acc-pw-old").value, n1 = $("#acc-pw-new").value, n2 = $("#acc-pw-new2").value;
+        out.style.color = "#DC2626";
+        if (!oldPw || !n1) { out.textContent = "请填写当前密码与新密码"; return; }
+        if (n1 !== n2) { out.textContent = "两次输入的新密码不一致"; return; }
+        if (n1.length < 8) { out.textContent = "新密码至少 8 位"; return; }
+        const btn = $("#acc-pw-go"); btn.disabled = true; out.style.color = "#64748B"; out.textContent = "提交中…";
+        try {
+          await A.changePassword(oldPw, n1);
+          $("#acc-pw-box").style.display = "none";
+          $("#acc-pw-old").value = $("#acc-pw-new").value = $("#acc-pw-new2").value = "";
+          out.style.color = "#16A34A"; out.textContent = "密码已更新，本机保持登录。";
+          U.toast("密码已更新", "success");
+        } catch (e) {
+          out.style.color = "#DC2626"; out.textContent = e.message;
+        } finally { btn.disabled = false; }
+      };
       return;
     }
 
@@ -458,6 +491,7 @@
 
   /* ---------------- UI：管理员帐号管理页 ---------------- */
   A.renderAdminPage = function () {
+    const myId = (A.getUser() || {}).id;
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/dashboard">管理</a><span class="sep">/</span><span>帐号管理</span></div>
       <div class="section-head"><h2>帐号管理</h2></div>
@@ -479,8 +513,10 @@
             <td>${u.status === 1 ? '<span class="tag tag-success">正常</span>' : '<span class="tag tag-danger">禁用</span>'}</td>
             <td>${new Date(u.createdAt).toLocaleDateString()}</td>
             <td>
-              <button class="btn btn-sm" data-act="toggle" data-id="${u.id}" data-s="${u.status}">${u.status === 1 ? "禁用" : "启用"}</button>
-              <button class="btn btn-sm" data-act="reset" data-id="${u.id}">重置密码</button>
+              ${u.id === myId
+                ? '<span class="muted" style="font-size:12px">当前登录帐号（改密码请到「帐号」页）</span>'
+                : `<button class="btn btn-sm" data-act="toggle" data-id="${u.id}" data-s="${u.status}">${u.status === 1 ? "禁用" : "启用"}</button>
+                   <button class="btn btn-sm" data-act="reset" data-id="${u.id}">重置密码</button>`}
             </td>
           </tr>`).join("") || '<tr><td colspan="7">暂无用户</td></tr>';
         tb.querySelectorAll("button[data-act]").forEach(b => {
@@ -500,6 +536,19 @@
           };
         });
       } catch (e) {
+        /* 403=登录态失效或非管理员（20260914i）：单纯显示「需要管理员权限」会让人以为是权限配错，
+           直接给出「重新登录」入口，并说明可能是会话被重置密码/禁用清掉了。 */
+        if (e && e.status === 403) {
+          tb.innerHTML = `<tr><td colspan="7">
+            <div style="padding:10px 4px">
+              <span class="tag tag-danger">需要管理员权限</span> ${U.esc(e.message || "")}
+              <div class="muted" style="font-size:12px;margin-top:6px">你的登录会话可能已失效（例如该帐号被「重置密码」或「禁用」）。重新登录即可恢复。</div>
+              <div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="u-relogin">${U.icon("user")} 重新登录</button></div>
+            </div></td></tr>`;
+          const lb = tb.querySelector("#u-relogin");
+          if (lb) lb.onclick = () => { A.logout(); App.go("/account"); };
+          return;
+        }
         tb.innerHTML = `<tr><td colspan="7">
           <div style="padding:10px 4px">
             <span class="tag tag-danger">加载失败</span> ${U.esc(e.message || "未知错误")}
