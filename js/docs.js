@@ -1,7 +1,7 @@
 /* =========================================================================
- *  js/docs.js — 「学」版块：技术学习文档（#/docs）
+ *  js/docs.js — 「学」版块：技术教程（#/docs）
  *
- *  定位：按「方向 × 初级/中级/高级」组织的成套学习文档，按顺序读即可。
+ *  定位：按「方向 × 初级/中级/高级」组织的成套技术教程，按顺序读即可。
  *  与题库的关系：章末按关键词自动挂本知识点的题，学完就能练（学练闭环）。
  *
  *  路由：
@@ -126,11 +126,11 @@
   /* ============================ 页面一：方向列表 ============================ */
   function pageDocs() {
     ensureCss();
-    document.title = "学习文档 · IT面试题库";
+    document.title = "技术教程 · IT面试题库";
     const dirs = window.DOCS.dirs || [];
     setMain(`
       <div class="hero" style="padding:26px 16px 18px">
-        <h1 style="font-size:22px">📘 学习文档</h1>
+        <h1 style="font-size:22px">📘 技术教程</h1>
         <p>按「技术方向 × 初级 / 中级 / 高级」组织的成套文档，从第一页按顺序读到最后一页，就是一条完整的成长路线。
            文档中的实战案例与踩坑记录来自真实运维现场，读完记得做章末的练习题巩固。</p>
       </div>
@@ -164,12 +164,12 @@
     ensureCss();
     const dir = findDir(dirId);
     if (!dir) { setMain(`<div class="empty">未找到该方向</div>`); return; }
-    document.title = dir.name + " · 学习文档";
+    document.title = dir.name + " · 技术教程";
     const st = dirStat(dir);
     const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">学习文档</a><span class="sep">/</span><span>${U.esc(dir.name)}</span></div>
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">技术教程</a><span class="sep">/</span><span>${U.esc(dir.name)}</span></div>
       <div class="hero" style="padding:20px 16px 16px">
         <h1 style="font-size:20px">${dir.icon || "📄"} ${U.esc(dir.name)}</h1>
         <p>${U.esc(dir.desc || "")}</p>
@@ -237,7 +237,7 @@
            <a class="btn btn-primary" href="#/docs/${dir.id}">返回目录</a></div>`;
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">学习文档</a><span class="sep">/</span>
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">技术教程</a><span class="sep">/</span>
         <a href="#/docs/${dir.id}">${U.esc(dir.name)}</a><span class="sep">/</span><span>${U.esc(lv.name)}</span></div>
       <div class="docs-wrap">
         ${toc}
