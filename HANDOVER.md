@@ -76,7 +76,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-15 21:30
+- **最后更新**：2026-09-15 22:35
+- **本次热修（2026-09-15 22:35，Git Data API 单提交快进，`force:false`）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 修复 `unload` 权限告警 + 技术教程宽屏右侧留白 | `a998719` | `dbb8391` | 7 个文件（`js/cloud.js` `js/app.js` `js/docs.js` `css/style.css` `index.html` `sw.js` `README.md`），缓存版本 `20260915b→20260915c` |
+- **【fix】两个用户反馈问题（缓存版本 `20260915c`）**：
+  - **① 控制台 `[Violation] Permissions policy violation: unload is not allowed in this document`**：`js/cloud.js` 原先在 `initAuto()` 里**无条件**注册 `beforeunload`，任何访客一加载页面就触发现代 Chrome 的 unload 权限告警。改为**按需绑定**——仅当「编辑端 + 已开启自动发布 + 产生了未发布的改动」时，`markDirty` 才挂上监听；自动发布成功或关闭自动发布即**立即解绑**。普通访客与登录但未改动的访客都不再挂监听。
+  - **② 宽屏（约 ≥1600px）「技术教程」页右侧大片空白**：`setMain` 把内容统一包进 `.container{max-width:1180px;margin:0 auto}`，而文档阅读页本是「左目录 248px + 右正文」的满宽布局，被限宽后在宽屏两侧（尤其右侧）留白。新增 `.container-wide{max-width:100%}`，`setMain` 检测 HTML 开头的 `<!-- wide -->` 标记即切换满宽；教程**索引页 / 方向页 / 阅读页**三处已加标记，其余页面（首页、题库等）行为完全不变。
+  - **顺带修正**：`index.html` 的 `PAGE_VER` / `SWV` 长期停留在旧值 `20260913k`（与 `sw.js` 的 `VERSION` 不一致，会让「有新版本，点击刷新」胶囊的比对逻辑错乱），本次随发版一并升到 `20260915c`。
+  - **验证**：`node --check` 三文件语法通过；本地 Chromium（1600×900）实测——阅读页 `.container` 含 `container-wide`、宽 1293px（占满 `.main` 可用宽），`.doc-body` 正文正常渲染；首页仍限宽 `container`；页面 `console`/`errors` 均为空，unload 告警消失。
+  - **⚠️ 环境备忘（重要，下次踩坑前先读）**：① 本次 GitHub **git 端点 `github.com:443` 经沙箱代理持续 502**，`git fetch/push` 全不通（直连也被沙箱阻断）；改用 **GitHub Git Data API（`api.github.com`，代理可达）** 单提交快进推送成功——Token 取自 `gh auth token`（`gho_` 开头 40 位，对仓库有 push 权限），脚本流程：`POST /git/blobs` → `POST /git/trees`（`base_tree`=远端 tip 树）→ `POST /git/commits`（`parents`=[远端 tip]）→ `PATCH /git/refs/heads/<br>`（`force:false`）。② 本机 `.git` 是**浅克隆**；中途一次 `git rebase --onto` 被环境 SIGTERM，触发自动 gc 误删了**我方本地提交对象**并**清空了 `.git/refs`**（症状：`fatal: not a git repository`，且 `cat-file` 只认 fetch 下来的对象）。恢复手法：重建 `.git/refs/{heads,tags}` → `git fetch --refetch --depth=1 origin <branches>` 补回缺失 tree/blob → `git reset --hard <远端tip>` → 重放本地改动。**后续在本机做 git 操作前先确认 `.git/refs` 存在，并优先走 API 推送路线。**
 - **本次上线（2026-09-15 21:30，cherry-pick 到两线最新 tip 后 fast-forward 推送）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
