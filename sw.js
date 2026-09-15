@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260915a";
+const VERSION = "20260915b";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -28,6 +28,8 @@ const APP_SHELL = [
   "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
   "/js/services.js?v=" + VERSION, "/js/roadmap.js?v=" + VERSION,
   "/js/docs-data.js?v=" + VERSION, "/js/docs.js?v=" + VERSION,
+  "/js/docs/java.js?v=" + VERSION, "/js/docs/network.js?v=" + VERSION,
+  "/js/docs/dba.js?v=" + VERSION, "/js/docs/frontend.js?v=" + VERSION,
   "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
   "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
   "/data/seed.js?v=" + VERSION
