@@ -384,7 +384,9 @@
   }
 
   function setMain(html, after) {
-    main.innerHTML = `<div class="container page-enter">${html}</div>`;
+    /* 文档类等「左栏 + 右正文」的满宽页面，在 HTML 开头放 <!-- wide --> 即可脱离 1180px 限宽，避免大屏右侧留白 */
+    const wide = typeof html === "string" && html.indexOf("<!-- wide -->") >= 0;
+    main.innerHTML = `<div class="container page-enter${wide ? " container-wide" : ""}">${html}</div>`;
     window.scrollTo(0, 0);
     if (after) after();
     U.highlightAll(main);

@@ -58,7 +58,7 @@
   C.setAutoEnabled = function (on) {
     if (typeof localStorage === "undefined") return;
     localStorage.setItem(LS_AUTO, on ? "1" : "0");
-    if (!on) { C._dirty = false; clearTimeout(C._timer); C._emit(); }
+    if (!on) { C._dirty = false; unbindUnload(); clearTimeout(C._timer); C._emit(); }
     else if (C._dirty) C._schedule();
   };
 
@@ -599,6 +599,7 @@
   /* ================= 自动发布引擎（v20260824a） ================= */
 
   C._dirty = false;
+  unbindUnload();
   C._timer = 0;
   C._publishing = false;
   C._state = "idle";          // idle | dirty | publishing | error
@@ -616,6 +617,7 @@
     if (!C.isEditor() || !C.autoEnabled()) return;
     if (C._suppress > 0) return;
     C._dirty = true;
+    bindUnload();
     if (C._state !== "publishing") C._state = "dirty";
     C._schedule();
     C._emit();
@@ -634,6 +636,7 @@
     try {
       const r = await C.publish();
       C._dirty = false;
+      unbindUnload();
       C._state = "idle";
       C._lastAutoAt = Date.now();
       C._lastError = "";
@@ -645,7 +648,7 @@
       try { U.toast("自动发布失败：" + C._lastError + (e && e.guardBlocked ? "（本机落后于云端，请先拉取）" : "，稍后自动重试"), "error"); } catch (_) {}
       clearTimeout(C._timer);
       /* 保护性拒绝不重试：本机落后必须人工拉取，自动重试只会反复弹同一条错 */
-      if (e && e.guardBlocked) { C._dirty = false; }
+      if (e && e.guardBlocked) { C._dirty = false; unbindUnload(); }
       else C._timer = setTimeout(() => C.autoPublish(), RETRY_DELAY);
     } finally {
       C._publishing = false;
@@ -682,19 +685,36 @@
     else { chip.className = "vis-chip autopub ok"; chip.innerHTML = "✓ 已同步云端"; }
   };
 
-  /* 初始化：编辑端启用钩子 + 关页前提醒 + 徽章轮询 */
+  /* 初始化：编辑端启用钩子 + 徽章轮询（关页提醒改为按需绑定，见下） */
   C.initAuto = function () {
     if (C.isEditor() && C.autoEnabled()) C.installHooks();
-    window.addEventListener("beforeunload", (e) => {
-      if (C._dirty && C.isEditor() && C.autoEnabled()) {
-        e.preventDefault();
-        e.returnValue = "题库有未发布的改动，关闭后将无法自动上云（下次打开会重试）。确定离开？";
-        return e.returnValue;
-      }
-    });
     setInterval(() => C._renderChip(), 3000);   // topbar 重渲染后恢复徽章
     C._renderChip();
   };
+
+  /* 关页前提醒：仅在「编辑端 + 自动发布已开 + 有未发布改动」时才挂 beforeunload 监听。
+     之前无条件注册，会让每个访客（尤其是未登录用户）都触发 Chrome 的
+     "[Violation] Permissions policy violation: unload is not allowed in this document" 告警。
+     改为脏标记产生时才绑定、清理后立即解绑，正常访客与登录但未改动的访客都不会挂监听。 */
+  /* 用 C._unloadBound 记录监听是否挂载（避免用外层 let 触发 TDZ：
+     initAuto 定义在先，而 C._dirty 初始化时就会调用 unbindUnload） */
+  function onBeforeUnload(e) {
+    if (C._dirty && C.isEditor() && C.autoEnabled()) {
+      e.preventDefault();
+      e.returnValue = "题库有未发布的改动，关闭后将无法自动上云（下次打开会重试）。确定离开？";
+      return e.returnValue;
+    }
+  }
+  function bindUnload() {
+    if (C._unloadBound || !C.isEditor() || !C.autoEnabled()) return;
+    C._unloadBound = true;
+    window.addEventListener("beforeunload", onBeforeUnload);
+  }
+  function unbindUnload() {
+    if (!C._unloadBound) return;
+    C._unloadBound = false;
+    window.removeEventListener("beforeunload", onBeforeUnload);
+  }
 
   if (typeof window !== "undefined") window.Cloud = C;
 })();

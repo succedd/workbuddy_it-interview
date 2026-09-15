@@ -240,6 +240,14 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-15 · fix: 修复控制台 `unload` 权限告警 + 技术教程宽屏右侧大片留白（缓存版本 `20260915b→20260915c`）
+
+- **① 控制台 `[Violation] Permissions policy violation: unload is not allowed in this document`**：`js/cloud.js` 原先在 `initAuto()` 里**无条件**注册 `beforeunload`，任何访客一加载页面就会被现代 Chrome 报此告警。改为**按需绑定**——仅当「编辑端 + 已开启自动发布 + 产生了未发布的改动」时，`markDirty` 才挂上监听；自动发布成功或关闭自动发布即**立即解绑**。普通访客与登录但未改动的访客都不再挂监听，告警消失。
+- **② 宽屏（约 ≥1600px）下「技术教程」页右侧大片空白**：`setMain` 把所有页面统一包进 `.container{max-width:1180px;margin:0 auto}`，而文档阅读页本是「左目录栏 248px + 右正文」的满宽布局，被限宽后在宽屏两侧（尤其右侧）留出大片空白。新增 `.container-wide{max-width:100%}`，`setMain` 检测 HTML 开头的 `<!-- wide -->` 标记即切换为满宽；教程**索引页 / 方向页 / 阅读页**三处已加标记，其余页面（首页、题库等）行为完全不变。
+- **顺带修正**：`index.html` 内 `PAGE_VER` / `SWV` 长期停留在旧值 `20260913k`（与 `sw.js` 的 `VERSION` 不一致，会让「有新版本，点击刷新」胶囊的比对逻辑错乱），本次随发版一并升到 `20260915c`。
+- **改动面**：`js/cloud.js`（beforeunload 动态绑定）、`js/app.js`（setMain 支持宽屏模式）、`js/docs.js`（三处加 `<!-- wide -->` 标记）、`css/style.css`（新增 `.container-wide`）、`index.html`（`?v=` 与 `PAGE_VER`/`SWV`）、`sw.js`（`VERSION`）。
+- **验证**：`node --check` 三文件语法通过；本地起静态服务用 Chromium（1600×900）实测——阅读页 `.container` 类名含 `container-wide`、实测宽度 1293px（占满 `.main` 可用宽，修复前被限制在 1180px 居中），`.doc-body` 正文正常渲染；首页仍为限宽 `container`（未受影响）；页面 `console` / `errors` 均为空，`unload` 告警消失。
+
 ### 2026-09-15 · feat: 技术教程补全 Java后端 / 网络与OS / 数据库(DBA) / 前端 四大方向实战正文（缓存版本 `20260915a→20260915b`）
 
 - **为什么**：09-14k 搭了「学」版块与 6 个方向的目录骨架，但 Java后端、网络与操作系统、数据库/DBA、前端 Web 四大方向一直只有「建设中」占位。本次按用户要求——**详细、完整、有条理、通俗易懂，像 10 年以上老 IT 人写的实战经验教程**——一次性补全为 61 篇标准实战篇。
