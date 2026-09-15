@@ -76,7 +76,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-15 20:15
+- **最后更新**：2026-09-15 21:30
+- **本次上线（2026-09-15 21:30，cherry-pick 到两线最新 tip 后 fast-forward 推送）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 「技术教程」补全 4 大方向实战正文（Java 后端 / 网络与操作系统 / 数据库·DBA / 前端 Web） | `b423511` | `f80d44c` | 8 个文件（`index.html` `sw.js` `js/docs-data.js` `js/docs/java.js` `js/docs/network.js` `js/docs/dba.js` `js/docs/frontend.js` `tools/validate-docs.js`），缓存版本 `20260915a→20260915b` |
+- **【docs】「技术教程」补全 4 大方向实战正文（缓存版本 `20260915b`）**：「学」版块（#/docs）此前仅运维/SRE 有 9 篇完整正文，其余方向都是「建设中」骨架。本次按用户要求以「官网/网上优质资料 + 10 年实战视角」补全 4 个方向，新增 **61 篇**实战教程：Java 后端 19（基础 6/中级 7/高级 6）、网络与操作系统 13（4/5/4）、数据库·DBA 14（4/5/5）、前端 Web 15（5/5/5）；全站累计 70 篇。
+  - **架构改动（关键）**：4 个方向拆成独立文件 `js/docs/{java,network,dba,frontend}.js`（各自 `window.X` 全局），`docs-data.js` 改为过滤掉这 4 个骨架、追加真实对象，侧栏顺序固定为 `运维/SRE → Java → 网络与OS → DBA → 前端 →(云原生/安全仍建设中)`；`index.html` 在 `docs-data.js` 前挂载 4 个 script，`sw.js` 预缓存同步加 4 文件。
+  - **正文规范（延续运维风格）**：原理 → 实战（可复用命令/代码/配置片段）→ ⚠ 踩坑与经验 → ✅ 可勾选排障清单；每篇强制 `updated` + `applies`；`terms` 关键词章末自动挂本知识点题库题（61 篇全部已挂 terms，学练闭环）。
+  - **改动面（刻意最小）**：仅新增 4 个 docs 数据文件 + 改 `docs-data.js`/`index.html`/`sw.js` 挂载与缓存；未改阅读器逻辑、未改现有页面；新增 `tools/validate-docs.js`（加载 4 文件 + docs-data 组装断言，CI 可复用）。
+  - **验证**：`node tools/validate-docs.js` 通过（4 方向共 61 章、章末 terms 100% 挂载、无未转义模板插值）；`node tools/smoke-test.js` 26/26 通过；发版后线上 grep 旧功能标记词确认未丢失。
+  - **下一步**：云原生/DevOps、安全两个方向仍为空骨架，后续按同规范补全即可（直接改对应 `js/docs/*.js`，无需动 docs-data.js 组装逻辑）。
 - **本次上线（2026-09-15 20:12，cherry-pick 到两线最新 tip 后 fast-forward 推送）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
