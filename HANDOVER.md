@@ -76,8 +76,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-14 21:50
-- **本次上线（2026-09-14 21:50，Git Data API 单提交快进，`force:false`）**：
+- **最后更新**：2026-09-15 20:15
+- **本次上线（2026-09-15 20:12，cherry-pick 到两线最新 tip 后 fast-forward 推送）**：
+  | 提交 | `release` | `main` | 内容 |
+  |---|---|---|---|
+  | ① 侧栏「学习文档/学习路线图」更名「技术教程/刷题计划」 | `4a6ade8` | `f744bc4` | 9 个文件（`js/app.js` `js/docs.js` `js/guide.js` `js/roadmap.js` `js/utils.js` `js/docs-data.js` `index.html` `sw.js` `README.md`），缓存版本 `20260913k→20260915a` |
+- **【refactor】侧栏双入口更名（缓存版本 `20260915a`）**：原「学习文档」→「技术教程」（看文章学知识），原「学习路线图」→「刷题计划」（岗位题库自动拆 4–8 周计划）——把「读」与「练」在名字上区分开，消除两个「学习×」入口的歧义。
+  - **路由不变**：`#/docs`、`#/roadmap` 照旧；收藏、分享链接、sitemap 均不受影响。改动仅限用户可见文案与注释：侧栏/首页 CTA/页面 title/面包屑/空态/练习页上下文条（app.js）、教程页标题与面包屑（docs.js）、使用指南两节（guide.js）、README 功能描述与更新日志。
+  - **流程备注**：期间浏览器端自动任务持续推「补充分享页/自动扩充」提交（只动 `q/`、`data/`、`README` 数据段），推送前按纪律重新 `ls-remote` 取两线最新 tip，main 线 cherry-pick 遇 README 整文件冲突（取远端版重放 3 处编辑解决），release 线干净落地。
+  - **验证**：`node tools/smoke-test.js` 26/26 通过；发版后线上 grep 见下。
+- **上一轮（2026-09-14 21:50，Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
   | ① 新增「学」版块：技术学习文档（方向 × 初级/中级/高级） | `28b5d909` | `86265219` | 7 个文件（`js/docs-data.js` `js/docs.js` `js/app.js` `js/utils.js` `js/guide.js` `index.html` `sw.js` `README.md`），缓存版本 `20260913k` |
