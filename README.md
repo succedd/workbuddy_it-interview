@@ -240,6 +240,15 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-15 · feat: 技术教程补全 Java后端 / 网络与OS / 数据库(DBA) / 前端 四大方向实战正文（缓存版本 `20260915a→20260915b`）
+
+- **为什么**：09-14k 搭了「学」版块与 6 个方向的目录骨架，但 Java后端、网络与操作系统、数据库/DBA、前端 Web 四大方向一直只有「建设中」占位。本次按用户要求——**详细、完整、有条理、通俗易懂，像 10 年以上老 IT 人写的实战经验教程**——一次性补全为 61 篇标准实战篇。
+- **规模**：Java 19 章（基础6/中级7/高级6）、网络 13（4/5/4）、DBA 14（4/5/5）、前端 15（5/5/5），共 **61 篇**；每篇统一按 ①原理讲解 → ②实战案例（可复用命令/代码/配置）→ ③⚠ 踩坑与经验 → ④✅ 可勾选排障清单 结构撰写，并强制标注 `applies`（适用版本/技术版本，防过时）与 `updated`（最后更新）；`terms` 关键词用于章末自动挂本知识点的题库题，实现学练闭环。
+- **架构改动（关键点）**：4 个方向从 `js/docs-data.js` 内联骨架拆为独立文件 `js/docs/{java,network,dba,frontend}.js`，各自 `window.JAVA / window.NETWORK / window.DBA / window.FRONTEND` 全局暴露；`docs-data.js` 仅保留 devops/security 两个骨架并排到末尾，组装时 `concat([window.JAVA, window.NETWORK, window.DBA, window.FRONTEND])`。顺带修掉旧 `docs-data.js` 把未建设方向排到已建成方向之前的排序 bug，侧栏顺序固定为 **运维/SRE → Java → 网络与OS → DBA → 前端 → 云原生/DevOps → 安全**。
+- **改动面（保持最小、不丢功能）**：`index.html` 在 `docs-data.js` 之前挂载 4 个新 script（均带 `?v=20260915b`）；`sw.js` `VERSION="20260915b"` 预缓存新增 4 文件；正文 Markdown 代码围栏用 `${F}`、行内代码用 `${C}` 占位（避免与 JS 模板字符串冲突），shell 变量写成 `\${VAR}` 防插值报错。
+- **验证**：`node tools/validate-docs.js` → ASSEMBLE_OK（7 方向、95 章、顺序正确、0 空骨架、0 缺失 terms）；4 文件 `node --check` 语法全过；单文件加载测试 61 篇 `termsLinked` 全满；线上 fetch 实测 `index.html / docs-data.js / java.js / network.js / dba.js / frontend.js / sw.js` 全部 200 且含 `20260915b`，旧功能标记词（`share-btn` / `review-banner` / `weakGrade` / `pageReview` / `todayFive` 等）齐全、无功能丢失。
+- **待办**：云原生/DevOps、安全 两个方向仍是目录骨架（章节占位、正文待补），后续按同规范直接改 `js/docs/*.js` 即可，无需动组装逻辑。
+
 ### 2026-09-15 · refactor: 侧栏「学习文档 / 学习路线图」更名「技术教程 / 刷题计划」（缓存版本 `20260913k→20260915a`）
 
 - **为什么改**：两个入口原名都以「学习」开头并排挂在侧栏，用户分不清该点哪个。两者定位本就不同——「学习文档」是**看文章学知识**（方向 × 初/中/高级成套教程），「学习路线图」是**排计划去刷题**（岗位题库自动拆成 4–8 周计划）。新名字直接把「读」和「练」区分开。
