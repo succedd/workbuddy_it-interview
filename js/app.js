@@ -124,9 +124,9 @@
       case undefined: case "": case "home": document.title = "首页 · IT面试题库"; return pageHome();
       case "category": return pageCategory(r.q);
       case "position": return r.parts[1] ? pagePositionDetail(r.parts[1]) : pagePositions();
-      /* 岗位学习路线图：把岗位题目串成 4–8 周计划（map = 路线图入口） */
+      /* 岗位刷题计划：把岗位题目串成 4–8 周计划（map = 刷题计划入口） */
       case "roadmap": return r.parts[1] ? pageRoadmapDetail(r.parts[1]) : pageRoadmap();
-      /* 「学」版块：技术学习文档（方向 × 初级/中级/高级），
+      /* 「学」版块：技术教程（方向 × 初级/中级/高级），
          #/docs | #/docs/<dir> | #/docs/<dir>/<level>/<chapter> */
       case "docs":
         if (!r.parts[1]) return window.pageDocs();
@@ -237,10 +237,10 @@
     let html = `
       <div class="nav-section-title">导航</div>
       ${navItem("#/", "home", "首页", p0 === "home")}
-      ${navItem("#/docs", "bookOpen", "学习文档", p0 === "docs")}
+      ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
       ${navItem("#/category", "layers", "技术体系", p0 === "category")}
       ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
-      ${navItem("#/roadmap", "map", "学习路线图", p0 === "roadmap")}
+      ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
       ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
       ${navItem("#/random", "dice", "随机一题", p0 === "random")}
       ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
@@ -829,7 +829,7 @@
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
           <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
-          <a class="btn btn-lg" href="#/docs">${U.icon("bookOpen")} 学习文档</a>
+          <a class="btn btn-lg" href="#/docs">${U.icon("bookOpen")} 技术教程</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
@@ -1237,7 +1237,7 @@
     });
   }
 
-  /* ============================ 岗位学习路线图 ============================ */
+  /* ============================ 岗位刷题计划 ============================ */
   /* 把岗位已关联的题目按技术分类聚合成 4–8 周计划（计算逻辑在 js/roadmap.js）。
      题量太少的岗位不在此页列出 —— 点进去只有一两周反而像页面坏了。 */
   const RM_MIN_Q = 20;
@@ -1282,12 +1282,12 @@
   }
 
   async function pageRoadmap() {
-    document.title = "学习路线图 · IT面试题库";
+    document.title = "刷题计划 · IT面试题库";
     await Roadmap.load();
     const stages = rmPosStages();
     if (!stages.length) {
       setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div>
-        <h3>暂无可用路线图</h3><p class="secondary">岗位题量达到 ${RM_MIN_Q} 道后即可生成 4–8 周学习计划。</p>
+        <h3>暂无可用刷题计划</h3><p class="secondary">岗位题量达到 ${RM_MIN_Q} 道后即可生成 4–8 周学习计划。</p>
         <a class="btn btn-primary" href="#/position">${U.icon("briefcase")} 去岗位体系看看</a></div>`);
       return;
     }
@@ -1308,17 +1308,17 @@
       return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag">${s.list.length} 个岗位</span></div>
         <div class="grid grid-cols-3">${cards}</div>`;
     }).join("");
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>学习路线图</span></div>
-      <h1>岗位学习路线图</h1>
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题计划</span></div>
+      <h1>岗位刷题计划</h1>
       <p class="secondary">把每个岗位的题目按技术分类拆成 4–8 周的计划，每天只需几道题就能跟上进度。
-        在「刷题练习」里点「已掌握」会自动记入路线图，也可以直接在下面打勾。</p>
+        在「刷题练习」里点「已掌握」会自动记入计划，也可以直接在下面打勾。</p>
       <div class="grid grid-cols-3" style="margin:16px 0">
         <div class="card"><div class="stat"><div class="num">${posN}</div><div class="label">可规划岗位</div></div></div>
-        <div class="card"><div class="stat ai"><div class="num">${startedN}</div><div class="label">已开始的路线</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num">${startedN}</div><div class="label">已开始的计划</div></div></div>
         <div class="card"><div class="stat"><div class="num">${rmPct(doneAll, totAll)}%</div><div class="label">总掌握度（${doneAll}/${totAll}）</div></div></div>
       </div>
       ${body}
-      <p class="muted" style="margin-top:24px">题量不足 ${RM_MIN_Q} 道的岗位暂不生成路线图，可直接在
+      <p class="muted" style="margin-top:24px">题量不足 ${RM_MIN_Q} 道的岗位暂不生成计划，可直接在
         <a href="#/position">岗位体系</a>中浏览其技术栈与题目。</p>`);
   }
 
@@ -1326,16 +1326,16 @@
     const p = Services.getPosition(parseInt(id));
     if (!p) {
       setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>未找到该岗位</h3>
-        <a class="btn btn-primary" href="#/roadmap">返回路线图</a></div>`);
+        <a class="btn btn-primary" href="#/roadmap">返回计划</a></div>`);
       return;
     }
     await Roadmap.load();
     const rm = Roadmap.build(p);
     const name = Services.posFullName(p);
-    document.title = name + " 学习路线图 · IT面试题库";
+    document.title = name + " 刷题计划 · IT面试题库";
 
     if (!rm.weeks.length) {
-      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">学习路线图</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
         <div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>该岗位题目不足</h3>
         <p class="secondary">至少需要 ${RM_MIN_Q} 道题才能生成周计划，当前 ${rm.total} 道。</p>
         <a class="btn btn-primary" href="#/questions?posid=${p.id}">${U.icon("layers")} 查看现有题目</a></div>`);
@@ -1380,7 +1380,7 @@
     };
 
     const pct = rmPct(rm.mastered, rm.total);
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">学习路线图</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <h1 style="margin:0">${U.esc(name)} 学习路线</h1>
         <span class="tag tag-ai">${U.esc(p.stage || "")}</span>
@@ -2135,7 +2135,7 @@
             <button type="button" class="btn btn-sm ${scope === "weak" ? "btn-primary" : "btn-secondary"}" data-scope="weak">${U.icon("alert")} 薄弱题本 (${weakN})</button>
           </div>
           ${scope === "weak" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">仅练习标记为「不熟悉」或「不会」的题目。${weakN ? "" : " 当前为空，去全部题目里标记吧。"}</span>${weakN ? `<button class="btn btn-sm btn-danger" id="clear-weak" style="margin-left:auto">清空薄弱题本</button>` : ""}</div>` : ""}
-          ${scope === "roadmap" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">${U.icon("map")} 来自「${selectedPosLabel || "该岗位"}」学习路线图第 ${U.esc(String(q.week || 1))} 周，共 ${pool.length} 题。</span><a class="btn btn-sm" href="#/roadmap/${U.esc(String(q.pos || ""))}" style="margin-left:auto">${U.icon("chevronRight")} 返回路线图</a></div>` : ""}
+          ${scope === "roadmap" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">${U.icon("map")} 来自「${selectedPosLabel || "该岗位"}」刷题计划第 ${U.esc(String(q.week || 1))} 周，共 ${pool.length} 题。</span><a class="btn btn-sm" href="#/roadmap/${U.esc(String(q.pos || ""))}" style="margin-left:auto">${U.icon("chevronRight")} 返回计划</a></div>` : ""}
         </div>
 
         <div id="cat-panel" class="field ${scope === "cat" ? "" : "hidden"}">
@@ -2220,7 +2220,7 @@
             mastered++;
             if (await Services.isWeak(q.id)) { await Services.weakGrade(q.id, true); U.toast("已掌握 · 复习间隔已拉长", "success"); }
             else U.toast("已标记为掌握", "success");
-            /* 同步记入岗位学习路线图进度（题目不在任何路线图里时无副作用） */
+            /* 同步记入岗位刷题计划进度（题目不在任何计划里时无副作用） */
             if (window.Roadmap) { try { await Roadmap.markMastered(q.id); } catch (_) {} }
           }
           else { weak++; await Services.addWeak(q.id, m); U.toast("已加入错题重练 · 按记忆曲线安排复习", "warn"); }
