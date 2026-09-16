@@ -108,7 +108,7 @@ ${F}
 
 ## ⚠ 踩坑与经验
 
-1. **把 ArrayList 当队列用**：${C}list.remove(0)$C} 是 ${C}O(n)$C}，高并发下用 ${C}ArrayDeque${C} 或 ${C}LinkedBlockingQueue${C}。
+1. **把 ArrayList 当队列用**：${C}list.remove(0)${C} 是 ${C}O(n)${C}，高并发下用 ${C}ArrayDeque${C} 或 ${C}LinkedBlockingQueue${C}。
 2. **HashMap 当全局缓存**：并发 put 可能死循环（JDK7）或数据错乱（JDK8+ 也不安全），共享状态用 ${C}ConcurrentHashMap${C}。
 3. **foreach 里改集合**：要么 ${C}Iterator.remove()${C}，要么先收集再批量删，否则 ${C}CME${C} 异常。
 4. **equals/hashCode 只重写一个**：放进 HashSet/HashMap 后「明明相等却查不到」。
