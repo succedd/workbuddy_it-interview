@@ -240,6 +240,14 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-16 · fix: 修复发版后「技术教程」页偶发整页空白（Service Worker 旧缓存未失效，缓存版本 `20260915c→20260916a`）
+
+- **现象**：`20260915c` 热修后，部分访客打开「技术教程」任意页（索引 / 方向 / 阅读）整页空白（`#main` 为空、标题回退为首页标题），而站内点击跳转又正常。本地起静态服务 + Chromium 实测确认：**关掉 Service Worker 后三个页面全部正常渲染（满宽、`opacity:1`、内容完整）**——说明代码本身没问题，是 SW 缓存了上一次 messy 部署期间的不完整资源组合（`iti-pwa-v20260915c`），且因版本号未变、SW 不重新安装，一直继续服务损坏缓存。
+- **根因**：`sw.js` 的 `VERSION` 在「修正 `PAGE_VER`/`SWV` 与 `VERSION` 不一致」那次也停在了 `20260915c`，与线上混乱期的缓存键同名；SW `activate` 只在「新版本号」时才清旧缓存，版本号没变就不会重抓，于是旧缓存被永久服务。
+- **修复**：将缓存版本整体升到 `20260916a`（`index.html` 全部 `?v=`、`PAGE_VER`、`SWV` 与 `sw.js` 的 `VERSION` 同步），使 SW 重新 `install` → `skipWaiting` → `activate` 删掉 `iti-pwa-v20260915c` 旧缓存、重新拉取干净资源；保留 `20260915c` 已做好的「宽屏满宽」布局（它本就正确，也顺带解决了之前「宽屏右侧大片留白」的诉求）。另在 `.container` 加 `opacity:1` 基线，作为 `page-enter` 动画兜底，杜绝任何「内容存在但不可见」的边缘情况。
+- **改动面**：`index.html`、`sw.js`、`css/style.css`。
+- **验证**：本地静态服务 + Chromium（1600×900）实测 `#/docs`、`#/docs/ops`、`#/docs/ops/basic/fs-basics` 三页均正常（满宽 ~1308px、`opacity:1`、正文/目录树完整）；`node --check` 全过。
+
 ### 2026-09-15 · fix: 修复控制台 `unload` 权限告警 + 技术教程宽屏右侧大片留白（缓存版本 `20260915b→20260915c`）
 
 - **① 控制台 `[Violation] Permissions policy violation: unload is not allowed in this document`**：`js/cloud.js` 原先在 `initAuto()` 里**无条件**注册 `beforeunload`，任何访客一加载页面就会被现代 Chrome 报此告警。改为**按需绑定**——仅当「编辑端 + 已开启自动发布 + 产生了未发布的改动」时，`markDirty` 才挂上监听；自动发布成功或关闭自动发布即**立即解绑**。普通访客与登录但未改动的访客都不再挂监听，告警消失。
