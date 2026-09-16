@@ -17,6 +17,16 @@ async function pageHelp() {
   ];
   const sec = (id, title, body) => `<div class="card" id="help-${id}" style="margin-top:14px"><h2 style="font-size:16px;margin-bottom:10px">${title}</h2>${body}</div>`;
   const li = (t, d) => `<div style="display:flex;gap:8px;padding:5px 0;line-height:1.65"><span style="flex:none">•</span><span><b>${t}</b>${d ? `<span class="muted"> —— ${d}</span>` : ""}</span></div>`;
+  /* 教程方向数与篇数从 window.DOCS 实时计算：以后增删章节不必再手改这段文案 */
+  const docsCover = (() => {
+    const dirs = ((window.DOCS || {}).dirs || []).filter(Boolean);
+    if (!dirs.length) return "按「技术方向 × 初级 / 中级 / 高级」组织的成套教程";
+    const cnt = (d) => (d.levels || []).reduce((a, l) => a + (l.chapters || []).length, 0);
+    const total = dirs.reduce((a, d) => a + cnt(d), 0);
+    const lvCount = (dirs[0].levels || []).length;
+    const parts = dirs.map((d) => `${d.name}（${cnt(d)}）`).join("、");
+    return `已上线 ${dirs.length} 个技术方向、共 ${total} 篇成套教程：${parts}；每个方向按 ${lvCount} 个级别（初级 → 中级 → 高级）组织，从第一章连续读到最后一章就是一条完整成长路线`;
+  })();
   setMain(`
     <div class="hero" style="padding:28px 16px 20px">
       <h1 style="font-size:22px">📖 使用指南</h1>
@@ -54,11 +64,11 @@ async function pageHelp() {
       ${li("这是什么", "按「技术方向 × 初级 / 中级 / 高级」组织的成套技术教程：一个方向一套教程，从初级第一章按顺序读到高级最后一章，就是一条完整的成长路线。与「刷题计划」的区别是——教程负责「系统地学」，题库和计划负责「练和面」")}
       ${li("怎么进", "侧栏「📘 技术教程」→ 选方向（如「运维 / SRE」）→ 选级别 → 点章节开始读")}
       ${li("顺序阅读", "每章底部有「上一章 / 下一章」，跨级别连续（初级最后一章的下一章就是中级第一章）；读完点「标记本章已学完」，左侧目录会打勾、方向页进度条实时更新")}
-      ${li("每篇文档的结构", "原理讲解 → 实战案例 → ⚠ 踩坑与经验 → ✅ 排障清单（可勾选）。「踩坑」是真实运维现场的经验沉淀，也是最值钱的部分")}
+      ${li("每篇文档的结构", "开篇「官方文档基线」给出本篇对齐的官方文档（OWASP / RFC / 官方手册等）→ 原理讲解 → 实战案例与代码 → ⚠ 踩坑与经验 → ✅ 自检 / 排障清单（可勾选）→ 📚 延伸阅读。目录骨架取自官方文档，正文按官方目录逐节展开，读完即可与官方文档无缝衔接")}
       ${li("时效提示", "每篇标注「更新 / 适用」版本（如「适用 K8s 1.24+」）。技术文档会过时，请以适用版本为准并结合官方文档核对")}
       ${li("章末挂题", "文档最下方会自动列出本章知识点的练习题，点进去直接刷——学完立刻巩固，不用自己去找题")}
       ${li("进度存在哪", "学习进度记录在本机浏览器（换设备不同步），清除浏览器数据会一并清掉")}
-      ${li("内容覆盖", "已上线 7 个技术方向、共 95 篇成套教程：运维 / SRE（9）、Java 后端（19）、网络与操作系统（13）、数据库 / DBA（14）、前端 Web（15）、云原生 / DevOps（14）、安全（11）；每个方向按「初级 → 中级 → 高级」组织，从第一章连续读到最后一章就是一条完整成长路线")}
+      ${li("内容覆盖", docsCover)}
     `)}
     ${sec("daily", "📚 日常学习", `
       ${li("刷题练习", "选分类 / 岗位 / 难度开一局，支持随机与顺序两种模式")}
