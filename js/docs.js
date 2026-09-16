@@ -128,7 +128,7 @@
     ensureCss();
     document.title = "技术教程 · IT面试题库";
     const dirs = window.DOCS.dirs || [];
-    setMain(`<!-- wide -->
+    setMain(`
       <div class="hero" style="padding:26px 16px 18px">
         <h1 style="font-size:22px">📘 技术教程</h1>
         <p>按「技术方向 × 初级 / 中级 / 高级」组织的成套文档，从第一页按顺序读到最后一页，就是一条完整的成长路线。
@@ -168,7 +168,7 @@
     const st = dirStat(dir);
     const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
 
-    setMain(`<!-- wide -->
+    setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">技术教程</a><span class="sep">/</span><span>${U.esc(dir.name)}</span></div>
       <div class="hero" style="padding:20px 16px 16px">
         <h1 style="font-size:20px">${dir.icon || "📄"} ${U.esc(dir.name)}</h1>
@@ -236,7 +236,7 @@
            <p>这一章的目录已规划，正文正在整理。可以先看同级的其它章节，或去「技术体系」里刷这个方向的题。</p>
            <a class="btn btn-primary" href="#/docs/${dir.id}">返回目录</a></div>`;
 
-    setMain(`<!-- wide -->
+    setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">技术教程</a><span class="sep">/</span>
         <a href="#/docs/${dir.id}">${U.esc(dir.name)}</a><span class="sep">/</span><span>${U.esc(lv.name)}</span></div>
       <div class="docs-wrap">

@@ -384,7 +384,8 @@
   }
 
   function setMain(html, after) {
-    /* 文档类等「左栏 + 右正文」的满宽页面，在 HTML 开头放 <!-- wide --> 即可脱离 1180px 限宽，避免大屏右侧留白 */
+    /* 满宽逃生舱：HTML 开头放 <!-- wide --> 可加 .container-wide（max-width:100%）脱离 1180px 限宽。
+       注意：全站目前统一使用 1180px 居中宽度（含「技术教程」全模块），此项保留备用，暂无页面使用。 */
     const wide = typeof html === "string" && html.indexOf("<!-- wide -->") >= 0;
     main.innerHTML = `<div class="container page-enter${wide ? " container-wide" : ""}">${html}</div>`;
     window.scrollTo(0, 0);
