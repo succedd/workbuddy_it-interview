@@ -1,0 +1,575 @@
+/* =========================================================================
+ *  account.js  —  用户帐号系统（前端）
+ *  后端：Cloudflare Worker /auth/*、/me/data（D1）。
+ *  能力：注册/登录/退出；收藏、刷题历史、错题本按用户云同步（换设备不丢）；
+ *        管理员帐号管理（列表/搜索/禁用/重置密码）。
+ * ========================================================================= */
+(function () {
+  "use strict";
+  /* app.js 是 IIFE，setMain/route/renderTopbar 等在其闭包内。
+     通过 App._internals 取用（app.js 末尾挂载）；U/DB/Services 本身就是 window 全局。 */
+  const _i = (window.App && window.App._internals) || {};
+  const $ = _i.$ || U.qs;
+  const setMain = _i.setMain;
+  const route = _i.route || (() => { location.hash = "#/"; });
+  const renderTopbar = _i.renderTopbar;
+
+  const A = {};
+  const LS = { token: "acc_token", user: "acc_user", syncAt: "acc_sync_at" };
+
+  /* ---------------- API 入口解析（2026-09-08 重构） ----------------
+   * 背景：Cloudflare 的 *.workers.dev 域名在中国大陆被 DNS 投毒 + SNI 复位，
+   *       手机（无代理）访问必然失败，表现为「API 暂不可达」。根治办法是给
+   *       Worker 绑自有域名（api.itinterview.eu.org，eu.org 审核通过后生效）。
+   * 设计：入口不再写死单点，改成「候选列表 + 自动择优 + 远程可覆盖」：
+   *   1) 用户在设置里手填的地址（localStorage.stats_api）优先级最高；
+   *   2) 上一次探测成功的入口（localStorage.stats_api_pick）；
+   *   3) 同源远程配置 api-endpoints.json（改入口无需重新发版，可绕过 SW 缓存）；
+   *   4) 内置兜底列表 BUILTIN_ENDPOINTS。
+   * 只有网络层失败（fetch 抛错 / 超时）才换下一个入口；HTTP 4xx/5xx 说明这个
+   * 入口是通的（比如密码错误），不切换，避免把真实错误掩盖成"网络问题"。
+   * ---------------------------------------------------------------- */
+  const BUILTIN_ENDPOINTS = [
+    "https://it-interview-stats.iti-interview.workers.dev"
+  ];
+  const CFG_URL = "api-endpoints.json";
+  const CFG_TTL = 6 * 3600 * 1000;
+  const API_DEFAULT = BUILTIN_ENDPOINTS[0];
+
+  function ls(k, v) {
+    if (v === undefined) return localStorage.getItem(k);
+    v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v);
+  }
+
+  function dedup(list) {
+    const out = [];
+    (list || []).forEach(function (u) {
+      const s = String(u || "").trim().replace(/\/+$/, "");
+      if (s && /^https?:\/\//i.test(s) && out.indexOf(s) < 0) out.push(s);
+    });
+    return out;
+  }
+  /* 远程配置：同源 JSON，形如 {"endpoints":["https://api.example.com", ...]}。
+     读取失败/格式错误一律静默忽略并退回内置列表，绝不影响主流程。 */
+  function readCfg() {
+    try {
+      const raw = localStorage.getItem("stats_api_cfg");
+      if (!raw) return null;
+      const o = JSON.parse(raw);
+      if (!o || !o.at || Date.now() - o.at > CFG_TTL) return null;
+      return dedup(o.endpoints);
+    } catch (e) { return null; }
+  }
+  A.refreshEndpoints = async function () {
+    try {
+      const r = await fetch(CFG_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return null;
+      const o = await r.json();
+      const list = dedup(o && o.endpoints);
+      if (!list.length) return null;
+      try { localStorage.setItem("stats_api_cfg", JSON.stringify({ at: Date.now(), endpoints: list })); } catch (e) {}
+      return list;
+    } catch (e) { return null; }
+  };
+  A.endpoints = function () {
+    const manual = localStorage.getItem("stats_api") || "";
+    const pick = localStorage.getItem("stats_api_pick") || "";
+    return dedup([manual, pick].concat(readCfg() || [], BUILTIN_ENDPOINTS));
+  };
+
+  /* 记录「上次成功入口」并打时间戳（时间戳供启动自动择优判断还新不新鲜）。 */
+  function markPick(base) {
+    ls("stats_api_pick", base);
+    ls("stats_api_pick_at", String(Date.now()));
+  }
+
+  /* 探测候选顺序：手动指定 > 远程配置 > 上次成功 > 内置兜底。
+     注意与 A.endpoints() 不同——这里刻意把「上次成功入口」排在「远程配置」之后。
+     否则本机存的旧入口会一直压住刚发布的新入口（例如新上线的国内中转桥），
+     表现为「明明改了 api-endpoints.json 却还是连不上」。 */
+  function probeList() {
+    const manual = (localStorage.getItem("stats_api") || "").trim();
+    const pick = localStorage.getItem("stats_api_pick") || "";
+    return dedup([manual].concat(readCfg() || [], [pick], BUILTIN_ENDPOINTS));
+  }
+
+  /* 按顺序逐个探测，命中第一个可用即停；只返回结果，不改 pick。
+     ⚠️ 长超时跟着「Netlify 桥」走而不是跟着「第一位」走（20260913g）：
+     Netlify Function 冷启动实测 13s+，若 pick 记住了别的入口（如 workers.dev）排在
+     调用顺序首位，桥落到第二位时只有 6s 预算 → 冷启动必被误判「不可用」。
+     桥在任何位置都给 20s；其余候选保持 6s，好尽快跳到下一个。 */
+  const PROBE_FIRST_MS = 20000, PROBE_MS = 6000;
+  const isBridge = (base) => /netlify\.app/i.test(base || "");
+  const probeLim = (base, i) => (i === 0 || isBridge(base)) ? PROBE_FIRST_MS : PROBE_MS;
+  async function probeEach(eps) {
+    const out = [];
+    for (let i = 0; i < eps.length; i++) {
+      const base = eps[i];
+      const lim = probeLim(base, i);
+      const ctl = ("AbortController" in window) ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, lim) : null;
+      const t0 = Date.now();
+      let ok = false;
+      try {
+        const r = await fetch(base + "/stats", { signal: ctl && ctl.signal });
+        ok = r.status < 500;
+      } catch (e) { ok = false; }
+      if (timer) clearTimeout(timer);
+      out.push({ base: base, ok: ok, ms: Date.now() - t0 });
+      if (ok) break;
+    }
+    return out;
+  }
+
+  /* 逐个探测候选入口，选中第一个可用的记下来（设置页「自动选择可用入口」用）。 */
+  A.probeEndpoints = async function () {
+    const res = await probeEach(probeList());
+    const hit = res.filter(function (x) { return x.ok; })[0];
+    if (hit) markPick(hit.base);
+    return res;
+  };
+
+  /* 启动时的后台自动择优——让「新入口上线后自动命中」成为事实，而不是要求用户手点。
+     - 用户手动填过地址 → 不干预（用户说了算）
+     - 上次成功入口还新鲜（默认 30 分钟内）→ 跳过，避免每开一次页面都发探测请求
+     - 否则按 probeList() 顺序探测，把第一个可用的写成新的 pick
+     全程静默、绝不抛错、绝不阻塞启动（失败也只是维持现状）。 */
+  const PICK_TTL = 30 * 60 * 1000;
+  A.autoProbe = async function (force) {
+    try {
+      if (!force && (localStorage.getItem("stats_api") || "").trim()) return { skipped: "manual" };
+      const at = Number(localStorage.getItem("stats_api_pick_at") || 0);
+      if (!force && at && Date.now() - at < PICK_TTL) return { skipped: "fresh" };
+      const res = await probeEach(probeList());
+      const hit = res.filter(function (x) { return x.ok; })[0];
+      if (hit) { markPick(hit.base); return { picked: hit.base, tested: res.length }; }
+      return { picked: "", tested: res.length };
+    } catch (e) { return { error: (e && e.message) || String(e) }; }
+  };
+  const apiBase = () => (A.endpoints()[0] || API_DEFAULT);
+  A.apiBase = apiBase;
+
+  A.getUser = () => { try { return JSON.parse(ls(LS.user) || "null"); } catch (e) { return null; } };
+  A.getToken = () => ls(LS.token) || "";
+  A.isLoggedIn = () => !!(A.getToken() && A.getUser());
+  /* 服务端管理员判定（20260913f）：以登录响应里的 role 为准，
+     与旧 auth.js 的本地密码门禁（Auth.isAdmin，仅题目编辑端使用）彻底解耦。 */
+  A.isServerAdmin = () => { const u = A.getUser(); return !!(u && u.role === "admin" && A.getToken()); };
+
+  /* 启动时静默刷新本地缓存的用户信息（含 role/status）：
+     库内提权/禁用等变更无需重新登录即可在前端生效；token 失效则清空本地会话。 */
+  A.refreshMe = async function () {
+    if (!A.getToken()) return false;
+    try {
+      const j = await call("GET", "/auth/me");
+      ls(LS.user, JSON.stringify(j.user));
+      return true;
+    } catch (e) {
+      if (e && e.status === 401) { A.logout(); }
+      return false;
+    }
+  };
+
+  async function call(method, path, body) {
+    const h = { "Content-Type": "application/json" };
+    if (A.getToken()) h["Authorization"] = "Bearer " + A.getToken();
+    /* 按候选入口顺序尝试：网络层失败才换下一个，最后一个入口再补一次重试（吸收偶发丢包）。
+       长超时（20s）跟「Netlify 桥」走而不是跟「第一位」走（20260913g）：
+       桥的 Lambda 冷启动实测 13s+，若 pick 记住了别的入口排在首位，桥落到第二位
+       只有 8s 预算 → 冷启动被误判「不可达」→「连不上服务器」。桥在任何位置都给 20s，
+       其余候选保持 8s 快速失败。全部失败才报"不可达"。 */
+    const CALL_FIRST_MS = 20000, CALL_MS = 8000;
+    const isBridgeEp = (base) => /netlify\.app/i.test(base || "");
+    const callLim = (base, i) => (i === 0 || isBridgeEp(base)) ? CALL_FIRST_MS : CALL_MS;
+    const once = (base, ms) => {
+      const ctl = ("AbortController" in window) ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, ms || CALL_MS) : null;
+      const p = fetch(base + path, {
+        method, headers: h, body: body ? JSON.stringify(body) : undefined, signal: ctl && ctl.signal,
+      });
+      const clear = () => { if (timer) clearTimeout(timer); };
+      p.then(clear, clear);
+      return p;
+    };
+    const eps = A.endpoints();
+    let r = null, usedEp = null;
+    for (let i = 0; i < eps.length; i++) {
+      const base = eps[i];
+      try {
+        r = await once(base, callLim(base, i));
+        usedEp = base;
+        break;                                   // 拿到响应（含 4xx/5xx）即停止换入口
+      } catch (e1) {
+        if (i < eps.length - 1) { await new Promise(res => setTimeout(res, 300)); continue; }
+        try { r = await once(base, callLim(base, i)); usedEp = base; } catch (e2) { /* 最后入口也失败 */ }
+      }
+    }
+    if (!r) {
+      /* 给维护者留可诊断信息（控制台），但给用户的文案保持简短可读——
+         长串技术解释（workers.dev 被墙、要挂代理…）对普通访客没有帮助，
+         细节放设置页说明，这里只给「下一步该做什么」。 */
+      try {
+        console.warn("[account] 全部 API 入口均不可达。已尝试：", A.endpoints().join("  |  "));
+      } catch (_) {}
+      const ver = (window.PAGE_VER ? "（页面版本 " + window.PAGE_VER + "）" : "");
+      const err = new Error("连不上服务器（API 暂不可达）" + ver + "。已自动尝试全部可用入口，请稍后重试；" +
+        "若持续出现，请先刷新页面（Ctrl+F5）加载最新前端，再试一次；" +
+        "仍不行可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
+      err.network = true;
+      throw err;
+    }
+    if (usedEp) markPick(usedEp);
+    let j = null; try { j = await r.json(); } catch (_) {}
+    if (!r.ok) { const e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
+    return j;
+  }
+
+  /* ---------------- 注册 / 登录 / 退出 ---------------- */
+  A.register = async (email, password, nick) => {
+    const j = await call("POST", "/auth/register", { email, password, nick });
+    _saveSession(j);
+    await syncUp();       // 注册即把本机已有数据带上云端
+    return j.user;
+  };
+  A.login = async (email, password) => {
+    const j = await call("POST", "/auth/login", { email, password });
+    _saveSession(j);
+    await mergeFromCloud();   // 登录后拉取该用户云端数据并合并进本机
+    return j.user;
+  };
+  A.logout = () => { ls(LS.token, null); ls(LS.user, null); };
+
+  async function _saveSession(j) {
+    ls(LS.token, j.token);
+    ls(LS.user, JSON.stringify(j.user));
+    ls(LS.syncAt, String(Date.now()));
+  }
+
+  /* ---------------- 个人数据同步 ----------------
+   * 本机数据源：Dexie 表 favorites/histories/weakBank。
+   * 上传（syncUp）：整包 PUT，服务端 ON CONFLICT DO NOTHING / MAX 合并，幂等安全。
+   * 下载（mergeFromCloud）：把云端条目与本机条目做并集写入本地。
+   ----------------------------------------------- */
+  async function collectLocal() {
+    const db = DB.db;
+    let dailyRows = [];
+    try { dailyRows = await db.dailyDone.toArray(); } catch (_) { /* 旧版 DB 尚未升级时跳过 */ }
+    const [fav, his, weak] = await Promise.all([
+      db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray(),
+    ]);
+    const snap = {
+      favorites: fav.map(x => ({ id: x.questionId, at: x.createdAt })),
+      histories: his.map(x => ({ id: x.questionId, views: x.views || 1, at: x.viewedAt || x.createdAt || Date.now() })),
+      weak: weak.map(x => ({ id: x.questionId, at: x.createdAt, box: x.box || 0, dueAt: x.dueAt || null, marked: x.marked || null, lastOkAt: x.lastOkAt || null, updatedAt: x.updatedAt || x.createdAt || Date.now() })),
+      daily: dailyRows.map(r => ({ day: r.day, ids: r.ids || [] })),
+    };
+    A._rememberSnapshot(snap);   // 缓存快照，供关闭页面时 sendBeacon 兜底使用
+    return snap;
+  }
+
+  A.syncUp = syncUp;
+  async function syncUp() {
+    if (!A.isLoggedIn()) return { applied: 0 };
+    const payload = await collectLocal();
+    return call("PUT", "/me/data", payload);
+  }
+
+  /* ---------------- 关闭/隐藏页面时的兜底上传（sendBeacon） ----------------
+   * 场景：用户刷完题直接关标签页/切后台，常规 fetch 可能被浏览器取消，
+   * 导致最后一次学习数据没传上去。sendBeacon 专为这种场景设计，
+   * 失败时降级为 keepalive fetch。token 走查询参数（sendBeacon 无法带自定义 header）。
+   ----------------------------------------------- */
+  let lastLocalSnapshot = null;
+  A._rememberSnapshot = function (snap) { lastLocalSnapshot = snap; };
+
+  A.beaconSync = function () {
+    try {
+      if (!A.isLoggedIn() || !lastLocalSnapshot) return;
+      const payload = JSON.stringify(lastLocalSnapshot);
+      const url = apiBase() + "/me/data?token=" + encodeURIComponent(A.getToken());
+      let ok = false;
+      if (navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: "application/json" });
+        ok = navigator.sendBeacon(url, blob);
+      }
+      if (!ok) {
+        fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch (_) { /* 兜底逻辑，任何异常静默 */ }
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") A.beaconSync();
+  });
+  window.addEventListener("pagehide", () => A.beaconSync());
+
+  /* 模拟面试报告：保存一条到云端（登录后），失败静默，绝不打断面试流程 */
+  A.saveReport = async function (r) {
+    if (!A.isLoggedIn()) return false;
+    try { const res = await call("POST", "/me/reports", r); return !!(res && res.ok); }
+    catch (e) { return false; }
+  };
+
+  /* 拉取历次模拟面试报告（最近 20 次），未登录或接口不可用时返回空数组 */
+  A.getReports = async function () {
+    if (!A.isLoggedIn()) return [];
+    try { const res = await call("GET", "/me/reports"); return (res && res.reports) || []; }
+    catch (e) { return []; }
+  };
+
+  A.mergeFromCloud = mergeFromCloud;
+  async function mergeFromCloud() {
+    if (!A.isLoggedIn()) return;
+    const remote = await call("GET", "/me/data");
+    const db = DB.db;
+    const now = Date.now();
+    await db.transaction("rw", [db.favorites, db.histories, db.weakBank, db.dailyDone], async () => {
+      // favorites
+      const favKeys = new Set((await db.favorites.toArray()).map(x => x.questionId));
+      const newFav = (remote.favorites || []).filter(f => !favKeys.has(f.id))
+        .map(f => ({ questionId: f.id, createdAt: f.at || now }));
+      if (newFav.length) await db.favorites.bulkAdd(newFav);
+      // histories：取较大者
+      const hisMap = new Map((await db.histories.toArray()).map(x => [x.questionId, x]));
+      const newHis = [];
+      for (const h of remote.histories || []) {
+        const cur = hisMap.get(h.id);
+        if (!cur) { newHis.push({ questionId: h.id, views: h.views || 1, viewedAt: h.at || now, createdAt: h.at || now }); }
+        else if ((h.views || 0) > (cur.views || 0)) { cur.views = h.views; cur.viewedAt = Math.max(cur.viewedAt || 0, h.at || 0); await db.histories.put(cur); }
+      }
+      if (newHis.length) await db.histories.bulkAdd(newHis);
+      // weak bank：带全量复习进度（阶段/到期时间/标记），按 updatedAt 新者胜合并
+      const weakMap = new Map((await db.weakBank.toArray()).map(x => [x.questionId, x]));
+      const newWeak = [];
+      for (const w of (remote.weak || [])) {
+        const rUpd = w.updatedAt || w.at || now;
+        const cur = weakMap.get(w.id);
+        if (!cur) {
+          newWeak.push({ questionId: w.id, createdAt: w.at || now, box: w.box || 0, dueAt: w.dueAt || null, marked: w.marked || null, lastOkAt: w.lastOkAt || null, updatedAt: rUpd });
+        } else if (rUpd > (cur.updatedAt || cur.createdAt || 0)) {
+          cur.box = w.box || 0; cur.dueAt = w.dueAt || cur.dueAt; cur.marked = w.marked || cur.marked;
+          cur.lastOkAt = w.lastOkAt || cur.lastOkAt; cur.updatedAt = rUpd;
+          await db.weakBank.put(cur);
+        }
+      }
+      if (newWeak.length) await db.weakBank.bulkAdd(newWeak);
+      // 每日打卡：按天并集，不丢任一设备的记录
+      const dayRe = /^\d{4}-\d{2}-\d{2}$/;
+      const dMap = new Map((await db.dailyDone.toArray()).map(x => [x.day, x]));
+      const newDaily = [];
+      for (const d of (remote.daily || [])) {
+        const day = String(d.day || "");
+        if (!dayRe.test(day)) continue;
+        const ids = new Set([...(dMap.get(day) ? (dMap.get(day).ids || []) : []), ...(Array.isArray(d.ids) ? d.ids : [])]);
+        const arr = Array.from(ids).filter(v => v > 0);
+        if (dMap.has(day)) { const row = dMap.get(day); row.ids = arr; await db.dailyDone.put(row); }
+        else newDaily.push({ day, ids: arr, updatedAt: now });
+      }
+      if (newDaily.length) await db.dailyDone.bulkAdd(newDaily);
+    });
+    /* 云端用户数据可能仍带着「已被合并的重复题号」，重定向到保留题，避免出现指向不存在题目的死记录 */
+    try {
+      const cm = window.Cloud;
+      if (cm && cm.getRemovedMap && cm.applyRemovedQuestions) {
+        await cm.applyRemovedQuestions(await cm.getRemovedMap());
+      }
+    } catch (_) { /* 清理失败不影响同步结果 */ }
+    await Services.reload();
+    ls(LS.syncAt, String(now));
+  }
+
+  /* 自动定期上报：登录状态下每次进入站点静默同步一次（失败不打扰） */
+  A.autoSyncIfDue = async function () {
+    try {
+      if (!A.isLoggedIn()) return;
+      const last = parseInt(ls(LS.syncAt) || "0");
+      if (Date.now() - last < 10 * 60 * 1000) return;   // 10 分钟内不重复
+      await syncUp();
+      ls(LS.syncAt, String(Date.now()));
+    } catch (_) { /* 静默失败 */ }
+  };
+
+  /* ---------------- 管理员接口 ---------------- */
+  A.adminListUsers = (q) => call("GET", "/admin/users" + (q ? "?q=" + encodeURIComponent(q) : ""));
+  A.adminSetStatus = (id, status) => call("POST", "/admin/users/" + id + "/status", { status });
+  A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
+  /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
+  A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
+
+  /* ---------------- UI：登录/注册页 ---------------- */
+  A.renderLoginPage = function () {
+    const user = A.getUser();
+    setMain(`
+      <div class="section-head"><h2>${user ? "我的帐号" : "登录 / 注册"}</h2></div>
+      <div class="card" style="max-width:440px;margin:0 auto">
+        ${user ? `
+          <p>当前用户：<b>${U.esc(user.nick || user.email)}</b>${user.role === "admin" ? ' <span class="tag tag-success">管理员</span>' : ""}</p>
+          <p class="muted" style="font-size:13px">登录后，你的收藏、刷题历史与错题本会自动云同步——换设备也能接着刷。</p>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button class="btn btn-primary" id="acc-sync">立即同步</button>
+            <button class="btn" id="acc-pw-toggle">修改密码</button>
+            <button class="btn btn-danger" id="acc-logout">退出登录</button>
+          </div>
+          <div id="acc-pw-box" style="display:none;margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
+            <label class="field"><span>当前密码</span><input id="acc-pw-old" type="password" placeholder="••••••••" /></label>
+            <label class="field"><span>新密码（8-72 位）</span><input id="acc-pw-new" type="password" placeholder="••••••••" /></label>
+            <label class="field"><span>确认新密码</span><input id="acc-pw-new2" type="password" placeholder="••••••••" /></label>
+            <button class="btn btn-primary" id="acc-pw-go">确认修改</button>
+            <p class="muted" style="font-size:12px;margin-top:8px">修改后其它设备的登录会失效，本机保持登录。</p>
+          </div>
+          <div id="acc-out" class="muted" style="margin-top:12px;font-size:13px"></div>
+        ` : `
+          <div class="tabs" style="margin-bottom:16px">
+            <button class="btn btn-sm" id="tab-login">登录</button>
+            <button class="btn btn-sm btn-primary" id="tab-reg">注册新帐号</button>
+          </div>
+          <label class="field"><span>邮箱</span><input id="acc-email" type="email" placeholder="you@example.com" /></label>
+          <label class="field"><span>密码（至少 8 位）</span><input id="acc-pass" type="password" placeholder="••••••••" /></label>
+          <label class="field" id="nick-row" style="display:none"><span>昵称（可选）</span><input id="acc-nick" type="text" /></label>
+          <button class="btn btn-primary full" id="acc-go" style="margin-top:8px">注 册</button>
+          <div id="acc-out" style="margin-top:12px;color:#DC2626;font-size:13px"></div>
+          <p class="muted" style="font-size:12px;margin-top:14px">帐号仅用于云同步你的学习数据；邮箱不对外展示。</p>
+        `}
+      </div>`);
+
+    if (user) {
+      $("#acc-sync").onclick = async () => {
+        const out = $("#acc-out"); out.textContent = "正在同步…";
+        try { const r = await syncUp(); out.textContent = "已上传本机数据（应用 " + (r.applied || 0) + " 条变更）";
+              await mergeFromCloud(); Services.reload(); route(); }
+        catch (e) { out.textContent = "同步失败：" + e.message; }
+      };
+      $("#acc-logout").onclick = () => { A.logout(); U.toast("已退出登录", "info"); renderTopbar(); route(); };
+      /* 修改密码（20260914i）：原先只能靠「帐号管理 → 重置密码」，那会删掉自己的会话造成自锁 */
+      $("#acc-pw-toggle").onclick = () => {
+        const box = $("#acc-pw-box");
+        box.style.display = box.style.display === "none" ? "" : "none";
+      };
+      $("#acc-pw-go").onclick = async () => {
+        const out = $("#acc-out");
+        const oldPw = $("#acc-pw-old").value, n1 = $("#acc-pw-new").value, n2 = $("#acc-pw-new2").value;
+        out.style.color = "#DC2626";
+        if (!oldPw || !n1) { out.textContent = "请填写当前密码与新密码"; return; }
+        if (n1 !== n2) { out.textContent = "两次输入的新密码不一致"; return; }
+        if (n1.length < 8) { out.textContent = "新密码至少 8 位"; return; }
+        const btn = $("#acc-pw-go"); btn.disabled = true; out.style.color = "#64748B"; out.textContent = "提交中…";
+        try {
+          await A.changePassword(oldPw, n1);
+          $("#acc-pw-box").style.display = "none";
+          $("#acc-pw-old").value = $("#acc-pw-new").value = $("#acc-pw-new2").value = "";
+          out.style.color = "#16A34A"; out.textContent = "密码已更新，本机保持登录。";
+          U.toast("密码已更新", "success");
+        } catch (e) {
+          out.style.color = "#DC2626"; out.textContent = e.message;
+        } finally { btn.disabled = false; }
+      };
+      return;
+    }
+
+    let mode = "reg";
+    const nickRow = $("#nick-row"), goBtn = $("#acc-go"), out = $("#acc-out");
+    $("#tab-login").onclick = () => { mode = "login"; nickRow.style.display = "none"; goBtn.textContent = "登 录"; };
+    $("#tab-reg").onclick   = () => { mode = "reg";   nickRow.style.display = "";     goBtn.textContent = "注 册"; };
+    goBtn.onclick = async () => {
+      const email = $("#acc-email").value.trim(), pass = $("#acc-pass").value, nick = ($("#acc-nick") && $("#acc-nick").value.trim()) || "";
+      if (!email || !pass) { out.textContent = "请填写邮箱和密码"; return; }
+      goBtn.disabled = true; out.style.color = "#64748B"; out.textContent = mode === "reg" ? "注册中…" : "登录中…";
+      try {
+        if (mode === "reg") await A.register(email, pass, nick);
+        else await A.login(email, pass);
+        U.toast("欢迎，" + email, "success");
+        renderTopbar(); route();
+      } catch (e) {
+        out.style.color = "#DC2626"; out.textContent = e.message;
+      } finally { goBtn.disabled = false; }
+    };
+  };
+
+  /* ---------------- UI：管理员帐号管理页 ---------------- */
+  A.renderAdminPage = function () {
+    const myId = (A.getUser() || {}).id;
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/dashboard">管理</a><span class="sep">/</span><span>帐号管理</span></div>
+      <div class="section-head"><h2>帐号管理</h2></div>
+      <div class="toolbar"><input id="u-q" class="full" style="max-width:280px" placeholder="搜索邮箱或昵称…" />
+        <button class="btn" id="u-refresh">${U.icon("refresh")} 刷新</button></div>
+      <div class="card" style="padding:0"><table class="data">
+        <thead><tr><th>ID</th><th>邮箱</th><th>昵称</th><th>角色</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead>
+        <tbody id="u-tb"><tr><td colspan="7">加载中…</td></tr></tbody></table></div>
+      <div class="note" style="margin-top:10px">禁用会立即踢掉该用户的全部登录会话；重置密码同样使其下线。</div>`);
+
+    const load = async (q) => {
+      const tb = $("#u-tb");
+      try {
+        const r = await A.adminListUsers(q);
+        tb.innerHTML = (r.users || []).map(u => `
+          <tr>
+            <td>${u.id}</td><td>${U.esc(u.email)}</td><td>${U.esc(u.nick || "-")}</td>
+            <td>${u.role === "admin" ? '<span class="tag tag-success">admin</span>' : "user"}</td>
+            <td>${u.status === 1 ? '<span class="tag tag-success">正常</span>' : '<span class="tag tag-danger">禁用</span>'}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            <td>
+              ${u.id === myId
+                ? '<span class="muted" style="font-size:12px">当前登录帐号（改密码请到「帐号」页）</span>'
+                : `<button class="btn btn-sm" data-act="toggle" data-id="${u.id}" data-s="${u.status}">${u.status === 1 ? "禁用" : "启用"}</button>
+                   <button class="btn btn-sm" data-act="reset" data-id="${u.id}">重置密码</button>`}
+            </td>
+          </tr>`).join("") || '<tr><td colspan="7">暂无用户</td></tr>';
+        tb.querySelectorAll("button[data-act]").forEach(b => {
+          b.onclick = async () => {
+            const id = parseInt(b.dataset.id), act = b.dataset.act;
+            if (act === "toggle") {
+              const s = b.dataset.s === "1" ? 0 : 1;
+              if (!(await U.confirm(s === 0 ? "禁用该用户？其所有会话将失效。" : "重新启用该用户？", { okText: "确定" }))) return;
+              try { await A.adminSetStatus(id, s); U.toast("已更新", "success"); load($("#u-q").value.trim()); }
+              catch (e) { U.toast(e.message, "error"); }
+            } else {
+              const pw = prompt("为该用户设置新密码（至少 8 位）：");
+              if (!pw) return;
+              try { await A.adminResetPassword(id, pw); U.toast("已重置并强制下线", "success"); }
+              catch (e) { U.alert(e.message); }
+            }
+          };
+        });
+      } catch (e) {
+        /* 403=登录态失效或非管理员（20260914i）：单纯显示「需要管理员权限」会让人以为是权限配错，
+           直接给出「重新登录」入口，并说明可能是会话被重置密码/禁用清掉了。 */
+        if (e && e.status === 403) {
+          tb.innerHTML = `<tr><td colspan="7">
+            <div style="padding:10px 4px">
+              <span class="tag tag-danger">需要管理员权限</span> ${U.esc(e.message || "")}
+              <div class="muted" style="font-size:12px;margin-top:6px">你的登录会话可能已失效（例如该帐号被「重置密码」或「禁用」）。重新登录即可恢复。</div>
+              <div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="u-relogin">${U.icon("user")} 重新登录</button></div>
+            </div></td></tr>`;
+          const lb = tb.querySelector("#u-relogin");
+          if (lb) lb.onclick = () => { A.logout(); App.go("/account"); };
+          return;
+        }
+        tb.innerHTML = `<tr><td colspan="7">
+          <div style="padding:10px 4px">
+            <span class="tag tag-danger">加载失败</span> ${U.esc(e.message || "未知错误")}
+            <div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="u-retry">${U.icon("refresh")} 重试</button></div>
+          </div></td></tr>`;
+        const rb = tb.querySelector("#u-retry");
+        if (rb) rb.onclick = () => { tb.innerHTML = '<tr><td colspan="7">加载中…</td></tr>'; load(q); };
+      }
+    };
+    $("#u-refresh").onclick = () => load("");
+    $("#u-q").addEventListener("keydown", e => { if (e.key === "Enter") load($("#u-q").value.trim()); });
+    load("");
+  };
+
+  /* 启动后异步拉取一次远程入口配置，随后后台自动择优一次（两步都失败也不影响主流程）。
+     必须先刷新远程配置、再自动择优，才能看到最新候选列表——
+     「新入口上线后自动命中」（改 api-endpoints.json 即可全量切换）靠的就是这一步。 */
+  try {
+    A.refreshEndpoints().then(function () { return A.autoProbe(); }).catch(function () {});
+    A.refreshMe().then(function (ok) { if (ok && window.App && App.onAccountRefreshed) App.onAccountRefreshed(); }).catch(function () {});
+  } catch (e) {}
+
+  window.Account = A;
+})();

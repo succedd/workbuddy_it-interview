@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库</title>
+  <meta name="description" content="TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库">
+  <meta property="og:description" content="TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/477.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库">
+  <meta name="twitter:description" content="TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/477.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？","text":"TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？","answerCount":1,"datePublished":"2026-09-05T06:18:10.910Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_WITH_AES_128_GCM_SHA256），以及一个随机数 Client Random。 解决什么：告诉服务端「我支持哪些能力」，并提供第一个随机数用于后续生成会话密钥。 第二次握手 — ServerHello + Certificate + ServerHello Done（服务端回应）： 服务端确认 TLS 版本和密码套件，返回自己的随机数 Server Random、服务器的数字证书（内含公钥、域名、CA 签名等），以及 Server Hello Done 表示信息发完。 解决什么：服务端证明身份（通过证书），双方各有一个随机数，为后续密钥协商打基础。 第三次握手 — Client Key Exchange + Change Cipher Spec + Finished（客户端完成）： 客户端用服务器公钥加密一个随机数 pre-master key 发给服务端；然后两端各自用 Client Random + Server Random + pre-master key 计算出会话密钥；最后发 Change Cipher Spec 通知后续消息加密，并发 Finished（对之前握手数据的摘要 + 加密）让服务端校验。 解决什么：安全地共享对称密钥，切换到加密通信通道。 第四次握手 — Change Cipher Spec + Finished（服务端完成）： 服务端同样发 Change Cipher Spec 和 Finished，双方互相校验摘要，确认握手未被篡改。 解决什么：双向确认握手完整、未被中间人干扰，TLS 握手正式结束，之后所有 HTTP 数据都用会话密钥对称加密传输。 追问：RSA 密钥交换不支持前向保密，如果服务端私钥泄露，历史通信都能被破解。现代网站多用 ECDHE（Elliptic Curve Diffie-Hellman Ephemeral），每次会话独立协商临时密钥，即使私钥泄露也无法解密历史数据。","url":"https://it-interview.is-a.dev/#/question/477"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">TLS</span><span class="chip tag">握手</span><span class="chip tag">ClientHello</span><span class="chip tag">ServerHello</span><span class="chip tag">密钥协商</span></div>
+    <div class="card"><h2>题目</h2><p>TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>TLS 握手的目标</strong>：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。</p>
+<p><strong>第一次握手 — ClientHello（客户端打招呼）：</strong></p>
+<ul>
+<li>客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 <code>TLS_RSA_WITH_AES_128_GCM_SHA256</code>），以及一个随机数 <code>Client Random</code>。</li>
+<li><strong>解决什么</strong>：告诉服务端「我支持哪些能力」，并提供第一个随机数用于后续生成会话密钥。</li>
+</ul>
+<p><strong>第二次握手 — ServerHello + Certificate + ServerHello Done（服务端回应）：</strong></p>
+<ul>
+<li>服务端确认 TLS 版本和密码套件，返回自己的随机数 <code>Server Random</code>、服务器的<strong>数字证书</strong>（内含公钥、域名、CA 签名等），以及 <code>Server Hello Done</code> 表示信息发完。</li>
+<li><strong>解决什么</strong>：服务端证明身份（通过证书），双方各有一个随机数，为后续密钥协商打基础。</li>
+</ul>
+<p><strong>第三次握手 — Client Key Exchange + Change Cipher Spec + Finished（客户端完成）：</strong></p>
+<ul>
+<li>客户端用服务器公钥加密一个随机数 <code>pre-master key</code> 发给服务端；然后两端各自用 <code>Client Random + Server Random + pre-master key</code> 计算出<strong>会话密钥</strong>；最后发 <code>Change Cipher Spec</code> 通知后续消息加密，并发 <code>Finished</code>（对之前握手数据的摘要 + 加密）让服务端校验。</li>
+<li><strong>解决什么</strong>：安全地共享对称密钥，切换到加密通信通道。</li>
+</ul>
+<p><strong>第四次握手 — Change Cipher Spec + Finished（服务端完成）：</strong></p>
+<ul>
+<li>服务端同样发 <code>Change Cipher Spec</code> 和 <code>Finished</code>，双方互相校验摘要，确认握手未被篡改。</li>
+<li><strong>解决什么</strong>：双向确认握手完整、未被中间人干扰，TLS 握手正式结束，之后所有 HTTP 数据都用会话密钥对称加密传输。</li>
+</ul>
+<blockquote><strong>追问</strong>：RSA 密钥交换不支持前向保密，如果服务端私钥泄露，历史通信都能被破解。现代网站多用 <strong>ECDHE</strong>（Elliptic Curve Diffie-Hellman Ephemeral），每次会话独立协商临时密钥，即使私钥泄露也无法解密历史数据。</blockquote></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/477">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

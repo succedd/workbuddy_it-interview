@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vite 的 HMR 为什么比 Webpack 更精准？它的实现机制是什么？ · IT面试题库</title>
+  <meta name="description" content="要点： 根本差异来自模块模式：dev 下 Vite 不打包，模块天然是独立文件、独立 URL，所以「文件 → 模块」是一一对应的，改动哪个文件就能精确知道要更新哪个模块 URL。Webpack 需要重新构建受影响的 chunk，粒度是 chunk 而非模块，边界判断更粗。 完整链路： 1. 文件变更 → Vite…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Vite 的 HMR 为什么比 Webpack 更精准？它的实现机制是什么？ · IT面试题库">
+  <meta property="og:description" content="要点： 根本差异来自模块模式：dev 下 Vite 不打包，模块天然是独立文件、独立 URL，所以「文件 → 模块」是一一对应的，改动哪个文件就能精确知道要更新哪个模块 URL。Webpack 需要重新构建受影响的 chunk，粒度是 chunk 而非模块，边界判断更粗。 完整链路： 1. 文件变更 → Vite…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1054.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vite 的 HMR 为什么比 Webpack 更精准？它的实现机制是什么？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 根本差异来自模块模式：dev 下 Vite 不打包，模块天然是独立文件、独立 URL，所以「文件 → 模块」是一一对应的，改动哪个文件就能精确知道要更新哪个模块 URL。Webpack 需要重新构建受影响的 chunk，粒度是 chunk 而非模块，边界判断更粗。 完整链路： 1. 文件变更 → Vite…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1054.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 的 HMR 为什么比 Webpack 更精准？它的实现机制是什么？","text":"考察点：模块粒度、import.meta.hot、运行时边界。开发体验背后的原理。","answerCount":1,"datePublished":"2026-09-10T11:52:57.818Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 根本差异来自模块模式：dev 下 Vite 不打包，模块天然是独立文件、独立 URL，所以「文件 → 模块」是一一对应的，改动哪个文件就能精确知道要更新哪个模块 URL。Webpack 需要重新构建受影响的 chunk，粒度是 chunk 而非模块，边界判断更粗。 完整链路： 1. 文件变更 → Vite 用 chokidar 监听（并要求开发者用原生文件系统事件，容器/NFS 挂载下需退回轮询 usePolling）； 2. 模块图（Module Graph）：Vite 在内存里维护两张图——moduleGraph（模块 ↔ 文件的导入关系）与 transformResult 缓存，能反向查导入者（importers）； 3. 确定边界：从变更模块沿 importers 向上查找最近一个「自接受（self-accepting）」模块——即调用过 import.meta.hot.accept() 的模块； 4. 只失效这一条链：使该模块及其上游被接受边界以下的模块失效（不影响其他分支）； 5. 通过 WebSocket 推送「更新的模块 URL + 时间戳」，浏览器用带时间戳 query 重新请求该模块（/src/foo.vue?t=1699... 打破 HTTP 缓存）并替换； 6. 若无边界，则 hmr.invalidate() → 整页刷新（full-reload）。 为什么更精准： 模块级粒度：只失效必要的一条依赖链，不重编译其他模块（Webpack 需重新构建 chunk）； explorer 用浏览器原生 ESM：更新即「重新请求一个 URL」，无需运行时打补丁到 chunk； 框架插件定义了高质量边界：@vitejs/plugin-vue 让 .vue 文件自接受并做组件级替换（保留 state 的部分在 vue HMR runtime 里处理）；React 走 @vitejs/plugin-react（Babel，支持 Fast Refresh）或 plugin-react-swc。 常用 API：import.meta.hot.accept(cb)（自接受）、accept(['./dep'], cb)（接受依赖）、dispose(cb)（清理副作用，如清除定时器/事件监听，不清理会内存泄漏）、invalidate()（主动升级为整页刷新）、prune(cb)（模块不再被导入时清理）、import.meta.hot.data（跨更新共享数据）。 为什么有时还是整页刷新：改动文件没有任何自接受边界（工具函数、常量、store）；改了 vite.config 或环境变量（需重启）；插件未正确标注边界；或在 optimizeDeps 里的依赖被改（需重新预构建）。 对比补充：Webpack 5 的 HMR 也有模块级 accept 机制，差距主要在于「是否重新打包」与 ESM 原生请求带来的粒度优势，以及 Vite 依赖图反向查找更轻量。","url":"https://it-interview.is-a.dev/#/question/1054"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Vite 的 HMR 为什么比 Webpack 更精准？它的实现机制是什么？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Vite</span><span class="chip tag">HMR</span><span class="chip tag">模块图</span><span class="chip tag">开发体验</span><span class="chip tag">ESM</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：模块粒度、import.meta.hot、运行时边界。开发体验背后的原理。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>根本差异来自模块模式</strong>：dev 下 Vite <strong>不打包</strong>，模块天然是<strong>独立文件、独立 URL</strong>，所以「文件 → 模块」是一一对应的，改动哪个文件就能<strong>精确知道要更新哪个模块 URL</strong>。Webpack 需要重新构建<strong>受影响的 chunk</strong>，粒度是 chunk 而非模块，边界判断更粗。</li>
+<li><strong>完整链路</strong>：</li>
+</ul>
+<p>  1. 文件变更 → Vite 用 <strong>chokidar</strong> 监听（并要求开发者<strong>用原生文件系统事件</strong>，容器/NFS 挂载下需退回轮询 <code>usePolling</code>）；</p>
+<p>  2. <strong>模块图（Module Graph）</strong>：Vite 在内存里维护两张图——<code>moduleGraph</code>（模块 ↔ 文件的导入关系）与 <code>transformResult</code> 缓存，能<strong>反向查导入者</strong>（<code>importers</code>）；</p>
+<p>  3. <strong>确定边界</strong>：从变更模块沿 importers <strong>向上查找</strong>最近一个「<strong>自接受（self-accepting）</strong>」模块——即调用过 <code>import.meta.hot.accept()</code> 的模块；</p>
+<p>  4. <strong>只失效这一条链</strong>：使该模块及其<strong>上游被接受边界以下的模块</strong>失效（不影响其他分支）；</p>
+<p>  5. 通过 <strong>WebSocket</strong> 推送「更新的模块 URL + 时间戳」，<strong>浏览器用带时间戳 query 重新请求该模块</strong>（<code>/src/foo.vue?t=1699...</code> 打破 HTTP 缓存）并<strong>替换</strong>；</p>
+<p>  6. 若无边界，则 <code>hmr.invalidate()</code> → <strong>整页刷新</strong>（<code>full-reload</code>）。</p>
+<ul>
+<li><strong>为什么更精准</strong>：</li>
+</ul>
+<p>  - <strong>模块级粒度</strong>：只失效必要的一条依赖链，<strong>不重编译其他模块</strong>（Webpack 需重新构建 chunk）；</p>
+<p>  - <strong>explorer 用浏览器原生 ESM</strong>：更新即「重新请求一个 URL」，无需运行时打补丁到 chunk；</p>
+<p>  - <strong>框架插件定义了高质量边界</strong>：<code>@vitejs/plugin-vue</code> 让 <code>.vue</code> 文件<strong>自接受并做组件级替换</strong>（保留 state 的部分在 <code>vue</code> HMR runtime 里处理）；React 走 <code>@vitejs/plugin-react</code>（Babel，支持 Fast Refresh）或 <code>plugin-react-swc</code>。</p>
+<ul>
+<li><strong>常用 API</strong>：<code>import.meta.hot.accept(cb)</code>（自接受）、<code>accept([&#39;./dep&#39;], cb)</code>（接受依赖）、<code>dispose(cb)</code>（清理副作用，如清除定时器/事件监听，<strong>不清理会内存泄漏</strong>）、<code>invalidate()</code>（主动升级为整页刷新）、<code>prune(cb)</code>（模块不再被导入时清理）、<code>import.meta.hot.data</code>（跨更新共享数据）。</li>
+<li><strong>为什么有时还是整页刷新</strong>：改动文件<strong>没有任何自接受边界</strong>（工具函数、常量、store）；改了 <code>vite.config</code> 或环境变量（需重启）；插件未正确标注边界；或在 <code>optimizeDeps</code> 里的依赖被改（需重新预构建）。</li>
+<li><strong>对比补充</strong>：Webpack 5 的 HMR 也有模块级 accept 机制，差距主要在于<strong>「是否重新打包」</strong>与 <strong>ESM 原生请求带来的粒度优势</strong>，以及 Vite 依赖图<strong>反向查找</strong>更轻量。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1054">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=70&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

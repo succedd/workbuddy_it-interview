@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prometheus 采用拉模型（Pull），那什么时候该用 Pushgateway？为什么说临时任务也不该轻易用？ · IT面试题库</title>
+  <meta name="description" content="要点： 为什么 Prometheus 默认用 Pull（拉）： 1. 便于判断目标存活——up == 0 就是一个天然的、免费的存活指标（Push 模型里「没收到数据」既可能是服务挂了，也可能是任务还没跑）； 2. 服务端可控——采集频率、超时、重试都在服务端，便于限流与保护，也避免大量客户端同时推送造成尖峰； …">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Prometheus 采用拉模型（Pull），那什么时候该用 Pushgateway？为什么说临时任务也不该轻易用？ · IT面试题库">
+  <meta property="og:description" content="要点： 为什么 Prometheus 默认用 Pull（拉）： 1. 便于判断目标存活——up == 0 就是一个天然的、免费的存活指标（Push 模型里「没收到数据」既可能是服务挂了，也可能是任务还没跑）； 2. 服务端可控——采集频率、超时、重试都在服务端，便于限流与保护，也避免大量客户端同时推送造成尖峰； …">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1078.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Prometheus 采用拉模型（Pull），那什么时候该用 Pushgateway？为什么说临时任务也不该轻易用？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 为什么 Prometheus 默认用 Pull（拉）： 1. 便于判断目标存活——up == 0 就是一个天然的、免费的存活指标（Push 模型里「没收到数据」既可能是服务挂了，也可能是任务还没跑）； 2. 服务端可控——采集频率、超时、重试都在服务端，便于限流与保护，也避免大量客户端同时推送造成尖峰； …">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1078.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 采用拉模型（Pull），那什么时候该用 Pushgateway？为什么说临时任务也不该轻易用？","text":"考察点：Pull 与 Push 的取舍、Pushgateway 的真实副作用。常被「为省事」误用的地方。","answerCount":1,"datePublished":"2026-09-10T11:54:57.326Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么 Prometheus 默认用 Pull（拉）： 1. 便于判断目标存活——up == 0 就是一个天然的、免费的存活指标（Push 模型里「没收到数据」既可能是服务挂了，也可能是任务还没跑）； 2. 服务端可控——采集频率、超时、重试都在服务端，便于限流与保护，也避免大量客户端同时推送造成尖峰； 3. 配置即清单：目标列表在 Prometheus 侧（static_configs 或服务发现），调试时可以直接用浏览器的 /metrics 页面验证（curl 就能看），排障成本低； 4. 无需在业务侧维护推送逻辑与目标地址（但需要暴露 HTTP 端点）。 Pushgateway 的定位：给无法被拉取的目标做一个中间缓存——最典型的是批处理任务/定时任务（CronJob）：跑几秒就退出，Prometheus 来不及在窗口内抓到它。任务把指标 push 到 Pushgateway，Prometheus 再从 Pushgateway 拉取。 注意：Pushgateway 不改变模型——Prometheus 依然是拉，Pushgateway 只是个「替身目标」。 为什么不该轻易用（副作用清单）： 1. 指标会永久驻留：Pushgateway 会保留最后一次推送的值，如果任务不再运行（被删掉、失败退出），指标会一直存在且看着「正常」——形成「僵尸指标」，会严重误导告警与容量判断； 2. 多实例聚合即错误：Pushgateway 按 job/instance 分组保存，多个实例推同名指标会互相覆盖，或产生难以理解的多组值（要手动在推送时加实例标签，且清理需额外接口）； 3. 计数器语义被破坏：任务每次重启都从 0 开始，Push 上去的 Counter 不是单调递增，rate() 的结果会混乱； 4. 失去 up 的存活语义：无法区分「任务正常但没数据」与「任务挂了」（这正是 Pull 的核心优势，被绕过了）； 5. 单点与状态风险：Pushgateway 本身是无状态设计的有状态组件（保存了数据），需要持久化、需要高可用，又多了个要运维的东西。 正确的替代方案（优先顺序）： ① 让任务「变长命」：把短任务改成常驻进程 + 定时触发（或加一个 always-on 的 sidecar 暴露指标），从而可被拉取——这是最干净的方案； ② Push 到「支持 Push 的时序库」：VictoriaMetrics、Mimir、Thanos 的接收端或直接写 remote_write，语义比 Pushgateway 更清晰（不驻留、可设计 TTL）； ③ 用 prometheus-pushgateway 但加重度约束：推送时显式带 instance/run_id 标签、任务结束时主动 DELETE 自己的分组（DELETE /metrics/job/ ）、为「最后成功时间」设独立 Gauge 并据此告警（这样任务不再运行能被发现）——这是把副作用管起来的补丁，而不是推荐做法； ④ 对于「事件式」数据，用 日志 + Loki 或 Push 到支持 TTL 的存储比时序指标更合适（如「本次任务处理了 N 条」本质是事件而非时序）。 判断准则（一句话）：能被拉取的一律拉取；只有「生命周期短于采集周期」且「无法改造成常驻」的目标，才考虑 Pushgateway，且必须为它设计「不再运行」的告警。","url":"https://it-interview.is-a.dev/#/question/1078"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Prometheus 采用拉模型（Pull），那什么时候该用 Pushgateway？为什么说临时任务也不该轻易用？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Prometheus</span><span class="chip tag">Pushgateway</span><span class="chip tag">Pull</span><span class="chip tag">批处理</span><span class="chip tag">监控设计</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：Pull 与 Push 的取舍、Pushgateway 的真实副作用。常被「为省事」误用的地方。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>为什么 Prometheus 默认用 Pull（拉）</strong>：</li>
+</ul>
+<p>  1. <strong>便于判断目标存活</strong>——<code>up == 0</code> 就是一个天然的、免费的存活指标（Push 模型里「没收到数据」既可能是服务挂了，也可能是任务还没跑）；</p>
+<p>  2. <strong>服务端可控</strong>——采集频率、超时、重试都在服务端，<strong>便于限流与保护</strong>，也避免大量客户端同时推送造成尖峰；</p>
+<p>  3. <strong>配置即清单</strong>：目标列表在 Prometheus 侧（<code>static_configs</code> 或服务发现），<strong>调试时可以直接用浏览器的 <code>/metrics</code> 页面验证</strong>（<code>curl</code> 就能看），排障成本低；</p>
+<p>  4. <strong>无需在业务侧维护推送逻辑与目标地址</strong>（但需要暴露 HTTP 端点）。</p>
+<ul>
+<li><strong>Pushgateway 的定位</strong>：给<strong>无法被拉取的目标</strong>做一个<strong>中间缓存</strong>——最典型的是<strong>批处理任务/定时任务（CronJob）</strong>：跑几秒就退出，Prometheus 来不及在窗口内抓到它。任务把指标 push 到 Pushgateway，Prometheus 再<strong>从 Pushgateway 拉取</strong>。</li>
+</ul>
+<p>  <strong>注意：Pushgateway 不改变模型</strong>——Prometheus 依然是拉，Pushgateway 只是个「替身目标」。</p>
+<ul>
+<li><strong>为什么不该轻易用（副作用清单）</strong>：</li>
+</ul>
+<p>  1. <strong>指标会永久驻留</strong>：Pushgateway 会<strong>保留最后一次推送的值</strong>，如果任务<strong>不再运行</strong>（被删掉、失败退出），指标会<strong>一直存在且看着「正常」</strong>——形成「僵尸指标」，会严重误导告警与容量判断；</p>
+<p>  2. <strong>多实例聚合即错误</strong>：Pushgateway 按 <code>job</code>/<code>instance</code> 分组保存，<strong>多个实例推同名指标会互相覆盖</strong>，或产生难以理解的多组值（要手动在推送时加实例标签，且清理需额外接口）；</p>
+<p>  3. <strong>计数器语义被破坏</strong>：任务每次重启都从 0 开始，Push 上去的 Counter <strong>不是单调递增</strong>，<code>rate()</code> 的结果会混乱；</p>
+<p>  4. <strong>失去 <code>up</code> 的存活语义</strong>：无法区分「任务正常但没数据」与「任务挂了」（这正是 Pull 的核心优势，被绕过了）；</p>
+<p>  5. <strong>单点与状态风险</strong>：Pushgateway 本身是无状态设计的<strong>有状态组件</strong>（保存了数据），需要持久化、需要高可用，<strong>又多了个要运维的东西</strong>。</p>
+<ul>
+<li><strong>正确的替代方案（优先顺序）</strong>：</li>
+</ul>
+<p>  - <strong>① 让任务「变长命」</strong>：把短任务改成<strong>常驻进程 + 定时触发</strong>（或加一个 always-on 的 sidecar 暴露指标），从而可被拉取——<strong>这是最干净的方案</strong>；</p>
+<p>  - <strong>② Push 到「支持 Push 的时序库」</strong>：VictoriaMetrics、Mimir、Thanos 的接收端或直接写 <strong>remote_write</strong>，语义比 Pushgateway 更清晰（不驻留、可设计 TTL）；</p>
+<p>  - <strong>③ 用 <code>prometheus-pushgateway</code> 但加重度约束</strong>：推送时<strong>显式带 <code>instance</code>/<code>run_id</code> 标签</strong>、任务结束时<strong>主动 DELETE 自己的分组</strong>（<code>DELETE /metrics/job/&lt;job&gt;</code>）、为「最后成功时间」设<strong>独立 Gauge</strong> 并据此告警（这样任务不再运行能被发现）——<strong>这是把副作用管起来的补丁，而不是推荐做法</strong>；</p>
+<p>  - <strong>④ 对于「事件式」数据</strong>，用 <strong>日志 + Loki</strong> 或 <strong>Push 到支持 TTL 的存储</strong>比时序指标更合适（如「本次任务处理了 N 条」本质是事件而非时序）。</p>
+<ul>
+<li><strong>判断准则（一句话）</strong>：<strong>能被拉取的一律拉取；只有「生命周期短于采集周期」且「无法改造成常驻」的目标，才考虑 Pushgateway，且必须为它设计「不再运行」的告警。</strong></li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1078">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

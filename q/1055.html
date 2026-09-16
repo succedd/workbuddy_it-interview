@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vite 的插件体系和 Webpack 的有什么本质不同？写一个兼容两端的 Vite 插件要注意什么？ · IT面试题库</title>
+  <meta name="description" content="要点： 本质不同： Webpack 插件面向构建流程，作用于 compiler/compilation 钩子（emit、optimizeChunks），能操作产物与模块图，但没有「按文件转换」这一层（那是 Loader 的职责）。插件与 Loader 是两套机制，需要分别实现。 Vite 插件是「Rollup 插…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Vite 的插件体系和 Webpack 的有什么本质不同？写一个兼容两端的 Vite 插件要注意什么？ · IT面试题库">
+  <meta property="og:description" content="要点： 本质不同： Webpack 插件面向构建流程，作用于 compiler/compilation 钩子（emit、optimizeChunks），能操作产物与模块图，但没有「按文件转换」这一层（那是 Loader 的职责）。插件与 Loader 是两套机制，需要分别实现。 Vite 插件是「Rollup 插…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1055.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vite 的插件体系和 Webpack 的有什么本质不同？写一个兼容两端的 Vite 插件要注意什么？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 本质不同： Webpack 插件面向构建流程，作用于 compiler/compilation 钩子（emit、optimizeChunks），能操作产物与模块图，但没有「按文件转换」这一层（那是 Loader 的职责）。插件与 Loader 是两套机制，需要分别实现。 Vite 插件是「Rollup 插…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1055.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 的插件体系和 Webpack 的有什么本质不同？写一个兼容两端的 Vite 插件要注意什么？","text":"考察点：插件钩子模型、Rollup 兼容层、dev/build 双环境差异。进阶必备。","answerCount":1,"datePublished":"2026-09-10T11:53:04.176Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质不同： Webpack 插件面向构建流程，作用于 compiler/compilation 钩子（emit、optimizeChunks），能操作产物与模块图，但没有「按文件转换」这一层（那是 Loader 的职责）。插件与 Loader 是两套机制，需要分别实现。 Vite 插件是「Rollup 插件 + Vite 扩展」，一套机制同时承担 Loader 与 Plugin 的角色：靠 transform(code, id) 做文件转换（等价 Loader），靠 buildStart/generateBundle 等钩子做构建干预（等价 Plugin）。这是最核心的区别：Vite 用一个钩子模型统一了 Webpack 的两层概念。 Vite 插件独有（Rollup 没有）的钩子（都以 vite 前缀命名，用来区分环境）： config / configResolved：修改或读取最终配置； configureServer：拿到 dev server 实例，可加中间件（写 mock 接口、代理）； transformIndexHtml：改 HTML（Webpack 里要靠 html-webpack-plugin，Vite 内建）； handleHotUpdate：自定义 HMR 行为（如 .md 文件变化时更新多个模块）； load / resolveId / transform：与 Rollup 同名，但 Vite 在 dev 与 build 都会调用。 关键约束：同一个插件要跑在 dev（ESM 直出、无打包）与 build（Rollup）两个环境，所以要特别注意： 1. 用 apply: 'serve' | 'build' 明确作用环境，否则 dev-only 的钩子在 build 时报错； 2. enforce: 'pre' | 'post' 控制插件顺序（比 transform 的默认中间位置更需要显式声明） 3. 不要假设「文件一定被合并/打包」：dev 下模块各自独立、URL 带 ?t= 查询串，id 里可能带 query，必须剥离 ? 后再判断扩展名——这是 Vite 插件的头号坑； 4. dev 下不要返回 CJS 代码（浏览器不能执行），要返回 ESM； 5. 虚拟模块（virtual module）：约定 id 加 \\0 前缀并在 resolveId 里处理，load 里返回内容——两环境行为要保持一致； 6. HMR 要显式声明：只有 handleHotUpdate 或框架插件会做，普通 transform 插件改了文件会退化为整页刷新； 7. 构建产物用 generateBundle/writeBundle，不要用 Node 的文件读写去改 dist（Vite 的产物在内存中流转）。 加分点：插件可以 export default 函数（接收 options）或数组（一个插件包拆成多个插件，configResolved 里做状态共享）；跨环境共享配置用 configResolved 里记录的 config.command === 'serve' 判断；想同时支持 Webpack 与 Vite 时，建议写两套薄适配层（各自调同一个核心实现），而不是硬造统一抽象——生态里 unplugin 就是为此而生，它把「Vite/Webpack/Rollup/esbuild」四端的适配封装好了，新插件优先基于 unplugin 起步可以省掉 80% 的适配工作。","url":"https://it-interview.is-a.dev/#/question/1055"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>Vite 的插件体系和 Webpack 的有什么本质不同？写一个兼容两端的 Vite 插件要注意什么？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端架构师</span><span class="chip">前端开发工程师</span><span class="chip tag">Vite</span><span class="chip tag">插件</span><span class="chip tag">Rollup</span><span class="chip tag">钩子</span><span class="chip tag">unplugin</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：插件钩子模型、Rollup 兼容层、dev/build 双环境差异。进阶必备。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>本质不同</strong>：</li>
+</ul>
+<p>  - <strong>Webpack 插件面向构建流程</strong>，作用于 <strong>compiler/compilation 钩子</strong>（<code>emit</code>、<code>optimizeChunks</code>），能操作<strong>产物与模块图</strong>，但<strong>没有「按文件转换」这一层</strong>（那是 Loader 的职责）。<strong>插件与 Loader 是两套机制</strong>，需要分别实现。</p>
+<p>  - <strong>Vite 插件是「Rollup 插件 + Vite 扩展」</strong>，<strong>一套机制同时承担 Loader 与 Plugin 的角色</strong>：靠 <code>transform(code, id)</code> 做文件转换（等价 Loader），靠 <code>buildStart</code>/<code>generateBundle</code> 等钩子做构建干预（等价 Plugin）。<strong>这是最核心的区别：Vite 用一个钩子模型统一了 Webpack 的两层概念。</strong></p>
+<ul>
+<li><strong>Vite 插件独有（Rollup 没有）的钩子</strong>（都以 <code>vite</code> 前缀命名，用来区分环境）：</li>
+</ul>
+<p>  - <code>config</code> / <code>configResolved</code>：修改或读取最终配置；</p>
+<p>  - <code>configureServer</code>：拿到 dev server 实例，可<strong>加中间件</strong>（写 mock 接口、代理）；</p>
+<p>  - <code>transformIndexHtml</code>：改 HTML（<strong>Webpack 里要靠 html-webpack-plugin，Vite 内建</strong>）；</p>
+<p>  - <strong><code>handleHotUpdate</code></strong>：<strong>自定义 HMR 行为</strong>（如 <code>.md</code> 文件变化时更新多个模块）；</p>
+<p>  - <code>load</code> / <code>resolveId</code> / <code>transform</code>：与 Rollup 同名，<strong>但 Vite 在 dev 与 build 都会调用</strong>。</p>
+<ul>
+<li><strong>关键约束：同一个插件要跑在 dev（ESM 直出、无打包）与 build（Rollup）两个环境</strong>，所以要特别注意：</li>
+</ul>
+<p>  1. <strong>用 <code>apply: &#39;serve&#39; | &#39;build&#39;</code></strong> 明确作用环境，否则 dev-only 的钩子在 build 时报错；</p>
+<p>  2. <strong><code>enforce: &#39;pre&#39; | &#39;post&#39;</code></strong> 控制插件顺序（比 <code>transform</code> 的默认中间位置更需要显式声明）</p>
+<p>  3. <strong>不要假设「文件一定被合并/打包」</strong>：dev 下模块各自独立、URL 带 <code>?t=</code> 查询串，<code>id</code> 里可能带 query，<strong>必须剥离 <code>?</code> 后再判断扩展名</strong>——这是 Vite 插件的头号坑；</p>
+<p>  4. <strong>dev 下不要返回 CJS 代码</strong>（浏览器不能执行），要返回 ESM；</p>
+<p>  5. <strong>虚拟模块（virtual module）</strong>：约定 id 加 <code>\0</code> 前缀并在 <code>resolveId</code> 里处理，<code>load</code> 里返回内容——两环境行为要保持一致；</p>
+<p>  6. <strong>HMR 要显式声明</strong>：只有 <code>handleHotUpdate</code> 或框架插件会做，普通 transform 插件改了文件会退化为<strong>整页刷新</strong>；</p>
+<p>  7. <strong>构建产物用 <code>generateBundle</code>/<code>writeBundle</code></strong>，不要用 Node 的文件读写去改 <code>dist</code>（Vite 的产物在内存中流转）。</p>
+<ul>
+<li><strong>加分点</strong>：插件可以 <code>export default</code> 函数（接收 options）或数组（一个插件包拆成多个插件，<code>configResolved</code> 里做状态共享）；跨环境共享配置用 <code>configResolved</code> 里记录的 <code>config.command === &#39;serve&#39;</code> 判断；<strong>想同时支持 Webpack 与 Vite</strong> 时，建议写两套薄适配层（各自调同一个核心实现），而不是硬造统一抽象——生态里 <code>unplugin</code> 就是为此而生，它把「Vite/Webpack/Rollup/esbuild」四端的适配封装好了，<strong>新插件优先基于 unplugin 起步可以省掉 80% 的适配工作</strong>。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1055">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=70&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

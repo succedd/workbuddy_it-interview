@@ -1,0 +1,90 @@
+{
+  "chain": true,
+  "topic": "T009",
+  "questions": [
+    {
+      "title": "【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？",
+      "body": "追问链起点：从一个最常用的 volatile 实战场景切入。考察点：Thread.stop() 被废弃的原因；volatile 状态标志位的可见性依据（happens-before 传递性）；与 interrupt() 机制的配合与选型。",
+      "answer": "**要点一：stop() 为什么被废弃**\n- Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于\"改了一半\"的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。\n- 正确思路是\"协作式终止\"：由目标线程自己在安全检查点检测停止信号并主动退出。\n\n**要点二：volatile 状态标志位方案及其原理**\n- 典型写法：private volatile boolean running = true; 工作线程在循环中轮询该标志，发现 false 即退出；外部线程只做一次 volatile 写。\n- 可靠性依据是 JMM 的 happens-before：volatile 写 happens-before 后续的 volatile 读；结合程序顺序规则与传递性，写线程在置 flag 前对普通变量的所有修改，读线程在看到 flag 变化后全部可见——这使标志位不仅能传递\"要停了\"的信号，还能安全发布停止前的状态。\n\n**要点三：与 interrupt() 的配合与选型**\n- 线程卡在 sleep/wait/IO 等阻塞点时轮询标志位是无效的（收不到信号），此时应使用 interrupt()：阻塞方法会抛出 InterruptedException 或设置中断标志位，线程捕获后在 catch 中收尾退出。\n- 实践选型：纯计算/轮询循环用 volatile 标志；存在阻塞调用的任务用 interrupt 为主、标志位为辅，两者常结合使用。注意 catch InterruptedException 后应恢复中断状态（Thread.currentThread().interrupt()），避免中断信号被吞。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "初级",
+      "type": "场景题",
+      "tags": ["JUC", "volatile", "线程生命周期", "interrupt", "happens-before"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html"
+    },
+    {
+      "title": "【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复",
+      "body": "承接上题：既然 volatile 保证可见性，为什么计数还是错的？考察点：识别 i++ 的\"读-改-写\"三步非原子性；区分可见性问题与原子性问题；给出正确修复方案与权衡。",
+      "answer": "**要点一：定位根因——丢失更新**\n- count++ 实际是\"读取 count → 加 1 → 写回\"三步操作，volatile 只保证每一步读到的都是最新值，但两个线程可以同时读到相同旧值、各自加 1 后写回，导致一次加法丢失。\n- 这是原子性问题而非可见性问题，加 volatile 治不了本症；这也解释了为什么压测结果持续偏小且偏差随并发度上升。\n\n**要点二：修复方案对比**\n- 方案 A（推荐）：改用 AtomicInteger.incrementAndGet()，底层 CAS 自旋实现，无锁、高并发下性能好；属原子性语义的正确载体。\n- 方案 B：synchronized 包裹自增代码块，简单可靠但引入锁竞争，吞吐量低于 CAS。\n- 方案 C：LongAdder（热点写场景更优），通过分段 Cell 分散竞争、最终求和，写多读少时性能最佳。\n\n**要点三：排查方法论沉淀**\n- 线上\"计数偏小\"类问题先区分是统计口径问题还是并发 bug：用固定脚本单线程复现排除前者，再用多线程压测 + 期望值断言复现丢失更新。\n- 经验法则：volatile 适合状态标志（如 running=false 停止线程）、一次性发布（DCL 单例）；复合操作必须换原子类或锁。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "中级",
+      "type": "故障排查题",
+      "tags": ["JUC", "volatile", "AtomicInteger", "原子性", "线上排查"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/java-concurrent-questions-02.html"
+    },
+    {
+      "title": "CAS 的底层实现原理是什么？它存在哪些问题？",
+      "body": "承接上题：修复方案里的 AtomicInteger 底层就是 CAS。追问 CAS 是什么、Java 如何实现、有哪些坑。考察点：Unsafe 与原子指令；自旋重试；ABA 问题与 AtomicStampedReference；循环开销与单变量限制。",
+      "answer": "**要点一：底层实现**\n- CAS（Compare-And-Swap）语义为\"当且仅当当前值等于预期值时，才把它更新为新值\"，是一个原子操作。\n- Java 侧由 sun.misc.Unsafe 的 compareAndSwapInt/Object/Long（native 方法）表达 CAS 语义，JVM 把这些调用识别为内部函数（intrinsic），最终映射为目标平台处理器支持的原子指令，具体实现依赖 JVM 与 CPU 架构。\n- AtomicInteger 等原子类的 getAndAddInt 就是 do-while 循环不断重试 CAS 直到成功，这就是自旋锁机制。\n\n**要点二：三大问题**\n- ABA 问题：值从 A 改成 B 又改回 A，CAS 检查时无法感知中途变化。解决办法是加版本号/时间戳，JDK 1.5 起的 AtomicStampedReference 同时比较引用与 stamp 才执行更新。\n- 循环时间长开销大：竞争激烈时自旋长期失败，空耗 CPU。JVM 支持时编译器会在自旋中插入 pause 指令，延迟流水线执行并避免内存顺序冲突清空流水线。\n- 只能保证一个共享变量的原子性：对多个变量无能为力。可用 AtomicReference 把多个变量封装进一个对象做整体 CAS，或退回加锁方案。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": ["JUC", "CAS", "Unsafe", "ABA", "AtomicInteger"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/cas.html"
+    },
+    {
+      "title": "【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？",
+      "body": "A. CAS 操作成功就说明共享变量在整个期间从未被其他线程修改过\nB. AtomicStampedReference 通过同时比较引用和版本戳（stamp）来解决 ABA 问题\nC. AtomicIntegerFieldUpdater 可以保证对多个共享变量的复合操作原子性\nD. CAS 竞争越激烈性能越好，因为自旋重试命中率更高\n\n请选出正确答案并解释其余选项错误的原因。",
+      "answer": "**要点一：正确答案是 B**\n- AtomicStampedReference.compareAndSet(expectedReference, newReference, expectedStamp, newStamp) 同时检查当前引用与当前标志（stamp）是否与预期相等，全部相等才以原子方式更新，版本号机制使\"A→B→A\"的往返无所遁形。\n\n**要点二：错误选项分析**\n- A 错：这正是 ABA 问题的定义——值可能在检查前被改成 B 再改回 A，CAS 无法感知，操作成功不代表\"从未被修改\"。\n- C 错：AtomicIntegerFieldUpdater 只是把普通 volatile int 字段包装成原子访问，针对单变量；多变量复合原子性需要 AtomicReference 封装对象或加锁。\n- D 错：竞争激烈时自旋长期失败，反复空转浪费 CPU（循环时间长开销大），性能反而急剧下降；CAS 更适合低中度竞争场景。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "中级",
+      "type": "单选题",
+      "tags": ["JUC", "CAS", "ABA", "AtomicStampedReference"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/cas.html"
+    },
+    {
+      "title": "AQS 的核心原理是什么？以 ReentrantLock 和 CountDownLatch 为例说明独占模式与共享模式的区别",
+      "body": "承接上题：CAS 是单点武器，AQS 是用 CAS + volatile state 搭建的同步框架。考察点：volatile int state 的语义多样性；CLH 变体双向队列（自旋+阻塞）；模板方法模式；独占/共享两种模式的典型实现。",
+      "answer": "**要点一：三大核心组件**\n- state 同步状态：private volatile int state，通过 getState/setState/compareAndSetState（CAS）操作。不同同步器赋予不同含义：ReentrantLock 中代表重入次数（0 为无锁，加锁 +1，解锁 -1）；CountDownLatch 中代表待等待的事件计数；Semaphore 中代表剩余许可证数。\n- CLH 变体等待队列：获取不到资源的线程被封装成 Node 入队。与原始 CLH 锁相比有两点优化：由纯自旋改为\"自旋 + 阻塞\"（避免长期自旋耗 CPU）；由单向链表改为双向队列（增加 next 指针，便于前驱释放锁后直接唤醒后继节点）。\n- 模板方法模式：AQS 作为抽象框架定义资源获取/释放的通用流程（如 acquire/acquireShared），子类只需重写 tryAcquire/tryRelease/tryAcquireShared 等钩子方法，队列管理、阻塞唤醒等脏活全部由框架完成。\n\n**要点二：独占模式 vs 共享模式**\n- 独占模式：同一时刻只有一个线程持有资源。ReentrantLock 的 lock() 触发 tryAcquire()，用 CAS 独占 state 并累加实现可重入；只有 unlock() 把 state 减到 0 后其他线程才能获取。\n- 共享模式：允许多个线程同时获取资源。CountDownLatch 的计数归零唤醒所有等待线程；Semaphore 用 CAS 修改 state 控制同时访问的并发数上限。\n\n**要点三：设计价值**\n- AQS 把\"volatile 状态 + CAS + 队列 + 阻塞唤醒\"封装成可复用骨架，是 JUC 大部分同步器（ReentrantLock、Semaphore、CountDownLatch、CyclicBarrier 内部的 ReentrantLock+Condition）的共同基座，回答并发问题时能自底向上串起 volatile→CAS→AQS 整条链。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": ["JUC", "AQS", "ReentrantLock", "CountDownLatch", "CLH队列"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/java-concurrent-questions-03.html"
+    },
+    {
+      "title": "ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？",
+      "body": "追问链过渡到线程池：日常开发最常碰的并发组件。考察点：corePoolSize/maximumPoolSize/workQueue/keepAliveTime/unit/threadFactory/handler 七参数含义；\"核心线程→入队→扩容到最大线程→拒绝\"的提交顺序。",
+      "answer": "**要点一：七个构造参数**\n- corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。\n- maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。\n- workQueue：阻塞任务队列（如 ArrayBlockingQueue），存放等待执行的任务。\n- keepAliveTime + unit：线程数大于核心数时，多余空闲线程的存活时长，超时后被回收。\n- threadFactory：创建新线程的工厂，建议自定义线程名便于排查问题。\n- handler：拒绝策略，任务过多无法处理时触发。\n\n**要点二：任务提交流程（顺序不能背错）**\n- 1) 运行线程数 < corePoolSize：直接新建核心线程执行任务（即使其他核心线程空闲）。\n- 2) 达到核心线程数：尝试把任务放入 workQueue 排队。\n- 3) 队列已满：继续创建非核心线程执行，直到线程数达到 maximumPoolSize。\n- 4) 线程数已到最大且队列满：执行拒绝策略（如 CallerRunsPolicy 由提交线程自己执行，形成天然的反压降速）。\n\n**要点三：常见误区**\n- 顺序是\"先入队、后扩容\"，不是\"先扩满线程再排队\"——这也是无界队列会吞噬 maximumPoolSize 的根因（队列永远不满，非核心线程永远不会被创建）。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": ["JUC", "线程池", "ThreadPoolExecutor", "拒绝策略"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/java-thread-pool-summary.html"
+    },
+    {
+      "title": "【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案",
+      "body": "追问链收口：综合考察线程池实战。场景：代码里用 Executors.newFixedThreadPool 创建线程池处理异步任务，运行数日后 OutOfMemoryError。考察点：Executors 三大隐患；无界队列与 OOM 的因果链；CPU 密集/IO 密集的参数设定；拒绝策略与监控选型。",
+      "answer": "**要点一：根因定位——Executors.newFixedThreadPool 的无界队列**\n- newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按\"先入队后扩容\"的提交流程，队列永远不满 → 非核心线程永远不会创建 → 任务消费速度跟不上生产速度时任务无限堆积。\n- 每个待执行任务连同其闭包引用的对象长期滞留堆中，最终 Old 区打满 OOM；堆转储中大量 WAITING 线程（核心线程在队列 take() 上空等）+ 海量排队任务对象正是这一因果链的证据。同理 newCachedThreadPool 允许创建 Integer.MAX_VALUE 个线程，高并发下会耗尽线程/内存。\n\n**要点二：正确姿势——显式 new ThreadPoolExecutor**\n- 用七参构造器显式声明有界队列（如 ArrayBlockingQueue(capacity)）与拒绝策略，让\"队列满→扩容→拒绝\"的防御链路真实生效。\n- 参数设定：CPU 密集型任务线程数 ≈ N+1（N 为核数），减少上下文切换；IO 密集型任务 ≈ 2N 或按 N × (1 + 等待时间/计算时间) 估算，再通过压测校准；队列容量按可容忍的延迟与内存预算倒推。\n- 拒绝策略选型：CallerRunsPolicy 提供反压但会拖慢调用方，适合可降速场景；对不能丢的任务应自定义策略——落库/落 MQ 后异步补偿，而不是默默 AbortPolicy 抛异常丢弃。\n\n**要点三：预防体系**\n- 线程池监控：定期上报 getActiveCount/getQueue().size()/getCompletedTaskCount()，队列持续增长即触发告警，比等 OOM 早发现数小时。\n- 参数动态化：把 corePoolSize/maximumPoolSize 等放到配置中心，支持不重启动态调参；配合 setKeepAliveTime 与 allowCoreThreadTimeOut 应对流量潮汐。\n- 规范层面：生产代码禁止使用 Executors 快捷方法（阿里 Java 开发手册强制规则），统一经线程池工厂创建并打业务化线程名。",
+      "category": "Java",
+      "positions": ["Java后端工程师"],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": ["JUC", "线程池", "OOM", "Executors", "调优", "线上排查"],
+      "years": 2026,
+      "source": "https://javaguide.cn/java/concurrent/java-concurrent-questions-03.html"
+    }
+  ]
+}
