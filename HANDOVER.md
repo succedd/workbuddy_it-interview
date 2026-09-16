@@ -76,12 +76,13 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-16 11:30
+- **最后更新**：2026-09-16 21:10
 - **本次热修（2026-09-16 09:00，Git Data API 单提交快进，`force:false`）**：
   | 提交 | `release` | `main` | 内容 |
   |---|---|---|---|
   | ① 修复发版后「技术教程」页偶发整页空白（SW 旧缓存未失效） | `bd102a6265` | `3f2dc6aa52` | 4 个文件（`index.html` `sw.js` `css/style.css` `README.md`），缓存版本 `20260915c→20260916a` |
   | ② 修复 `unload` 权限告警 + 技术教程宽屏右侧留白 | `a998719` | `dbb8391` | 7 个文件（`js/cloud.js` `js/app.js` `js/docs.js` `css/style.css` `index.html` `sw.js` `README.md`），缓存版本 `20260915b→20260915c` |
+- **【style】「技术教程」模块回归 1180px 居中宽度（缓存版本 `20260916d`）**：用户反馈从侧栏点进「技术教程」的页面比其它页面宽（方向列表 7 张卡片横拉满整屏）。根因：20260915c 为解「宽屏右侧留白」给教程**三个页面**都加了 `<!-- wide -->` 满宽标记（`.container-wide{max-width:100%}`），但用户更看重**与全站版心一致**。修复：`js/docs.js` 移除三处 `setMain(` 开头的 `<!-- wide -->`；`js/app.js` 的逃生舱机制**保留备用**，注释更新为「全站统一 1180px，暂无页面使用」（`.container-wide` 样式亦保留）。效果：方向卡片网格变 4 列×284px、阅读页 248px 目录+910px 正文。验证：本地 Chromium(1680×950) 四页对照 `.container` 宽度均 1180px。改动面 `js/docs.js` + `js/app.js` + `index.html`/`sw.js`（版本）+ 本文档（最终 tip：release=`9fcf3bf548` / main=`a529c524da`）。
 - **【fix】发版后「技术教程」页偶发整页空白（缓存版本 `20260916a`）**：用户反馈 20260915c 上线后打开 `#/docs` 任意页整页空白（标题回退首页、站内跳转正常）。本地 Chromium 实测：**关掉 Service Worker 后三页全部正常渲染** → 根因是 SW 缓存了 messy 部署期间的不完整资源组合（`iti-pwa-v20260915c`），且版本号未变 → SW 不重装 → 一直服务损坏缓存。修复：缓存版本整体升 `20260915c→20260916a`（`index.html` 全部 `?v=`+`PAGE_VER`+`SWV` 与 `sw.js` `VERSION` 同步），迫使 SW 重新 install→activate 删旧缓存、重拉干净资源；保留 20260915c 的宽屏满宽布局（本身正确，也顺手解决宽屏右侧留白）；`.container` 加 `opacity:1` 基线兜底 `page-enter` 动画。验证：本地与线上（it-interview.is-a.dev）用全新 puppeteer profile + SW enabled 实测 `#/docs`、`#/docs/ops/basic/fs-basics` 均 `opacity:1`、内容完整、SW `activated`、无 console error。
 - **【feat】补全「云原生/DevOps」与「安全」两大教程方向正文（缓存版本 `20260916b`）**：将原先仅占位骨架的 `devops` 与 `security` 两个方向补齐为完整实战教程（与 ops/java 等方向同结构）。devops 14 章（初级 Docker/Git/CI/Linux网络 → 中级 Dockerfile/K8s/Helm/Terraform/制品 → 高级 GitOps/多集群/发布策略/效能度量/平台工程）；security 11 章（初级 OWASP Top10/SQLi·XSS·CSRF/Linux基线 → 中级 渗透/认证授权/加密密钥/审计入侵 → 高级 SDL/WAF风控/应急取证/合规治理）。每章含 minutes/updated/applies/tags/terms 与带代码块、踩坑清单、排障清单的实战正文，沿用 `${C}`/`${F}` 模板占位符（GitHub Actions 的 `${{ }}` 已转义按字面显示）；移除不再使用的 `skeleton()` 死代码。改动面 `js/docs-data.js` + 缓存版本升 `20260916a→20260916b`。验证：`node --check` 通过；require 后 dirs 顺序 `ops → java → network → dba → frontend → devops → security`，25 章正文非空、字段完整。
 - **【doc】修正「技术教程」引导文案与文档页脚注（缓存版本 `20260916c`）**：上轮补全云原生/DevOps、安全后，两处用户可见文案未同步——`js/guide.js`「📘 技术教程」一节仍写「仅运维/SRE 上线、其余方向建设中」；`js/docs.js` 文档索引页脚注仍提示「灰色『建设中』的方向已规划目录」。现已 7 方向 95 篇全部上线，改为：`guide.js:61` 列出 7 方向及篇数（运维/SRE 9、Java 后端 19、网络与OS 13、数据库/DBA 14、前端 Web 15、云原生/DevOps 14、安全 11）；`docs.js:157` 页脚注去掉「建设中」误导，改为「当前 7 个技术方向、95 篇教程已全部上线；学习进度会随阅读自动累积」。侧栏/首页入口由 `window.DOCS` 自动生成，新方向已自动出现；`sitemap.xml` 历来不含 hash 路由章节页，本次无需改动。改动面 `js/guide.js` + `js/docs.js` + 缓存版本升 `20260916b→20260916c`（最终 tip：release=`e0427cba21` / main=`0b0df75915`）。
