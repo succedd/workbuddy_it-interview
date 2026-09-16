@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromQL 里 rate、irate、increase 有什么区别？为什么计算 QPS 必须带上时间区间？ · IT面试题库</title>
+  <meta name="description" content="要点： 三者的语义： rate(counter[5m])：计算区间内的平均每秒增长率。它把区间内所有采样点纳入，并自动处理 Counter 归零（进程重启）——检测到值下降时视为重置，按增长量累加。这是计算 QPS/速率的默认选择。 irate(counter[5m])：用区间内最后两个采样点算瞬时速率。反应快、…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="PromQL 里 rate、irate、increase 有什么区别？为什么计算 QPS 必须带上时间区间？ · IT面试题库">
+  <meta property="og:description" content="要点： 三者的语义： rate(counter[5m])：计算区间内的平均每秒增长率。它把区间内所有采样点纳入，并自动处理 Counter 归零（进程重启）——检测到值下降时视为重置，按增长量累加。这是计算 QPS/速率的默认选择。 irate(counter[5m])：用区间内最后两个采样点算瞬时速率。反应快、…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1079.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PromQL 里 rate、irate、increase 有什么区别？为什么计算 QPS 必须带上时间区间？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 三者的语义： rate(counter[5m])：计算区间内的平均每秒增长率。它把区间内所有采样点纳入，并自动处理 Counter 归零（进程重启）——检测到值下降时视为重置，按增长量累加。这是计算 QPS/速率的默认选择。 irate(counter[5m])：用区间内最后两个采样点算瞬时速率。反应快、…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1079.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PromQL 里 rate、irate、increase 有什么区别？为什么计算 QPS 必须带上时间区间？","text":"考察点：区间向量、外推逻辑、采样窗口与告警的配合。PromQL 实操核心。","answerCount":1,"datePublished":"2026-09-10T11:55:00.034Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三者的语义： rate(counter[5m])：计算区间内的平均每秒增长率。它把区间内所有采样点纳入，并自动处理 Counter 归零（进程重启）——检测到值下降时视为重置，按增长量累加。这是计算 QPS/速率的默认选择。 irate(counter[5m])：用区间内最后两个采样点算瞬时速率。反应快、对突变更灵敏，但噪声大、容易抖动——适合看趋势与调试（观察瞬时波动），不适合直接用于告警（会频繁抖动触发）。 increase(counter[5m])：区间内的总增长量（≈ rate × 区间秒数）。注意它仍然做了外推（不是简单的「末值 - 首值」），所以结果是近似值；语义上等价于「这 5 分钟处理了多少请求」，适合按时间窗口展示总量。 为什么必须带时间区间：rate() 的参数是区间向量（range vector），而 Counter 的瞬时值本身没有意义（它是从进程启动以来的累计值）。只有两点之间的差值除以时间才是速率。PromQL 里没有「无区间」的 rate——写 rate(metric) 会直接报错。区间长度决定了两件事： 1. 平滑度：区间越长越平滑但越迟钝； 2. 与采集间隔的关系：区间至少要包含 2 个以上采样点（官方建议≥4 倍 scrape interval）。采集间隔 15s、区间 5m（20 个点）是常见配置；若采集间隔改成 60s 而区间仍是 5m，只剩 5 个点，遇到丢采样时rate 结果会剧烈跳变甚至出现空值。 外推（Extrapolation）的坑：rate/increase 会把区间端点之间的增长按比例外推到区间边界，因此： 区间内的数据点太少（如只采到 2 个点且间隔不均）时，结果误差明显； 反例：任务每 2 分钟才打点一次、却用 rate(x[1m])，会得到忽高忽低甚至 0 的结果； 断言：指标打点间隔必须小于查询区间，且最好相差 4 倍以上。 实践要点： 告警要用 rate + 足够长的区间（如 rate(errors_total[5m]) / rate(requests_total[5m]) > 0.05），并配 for: 5m 避免瞬时抖动触发——for 与区间长度是互补的防抖手段； irate 用在看板上（展现瞬时抖动）而不是告警； 算比率时分子分母区间必须一致（都用 [5m]，否则得到无意义的比值）； increase 用于「计数总量」（如「过去 1 小时错误数」），但要理解它是近似，不能用于计费级精确统计（那应该用日志或专门的事件统计）； sum by (route) 再套 rate 与 rate 再 sum 的写法差异：sum(rate(...)) 满足「先聚合后计算」，是推荐写法（先按各实例算速率再求和）。反过来 rate(sum(...)) 在多数场景结果相近，但遇到 Counter 重置时行为不同（先 sum 会把重置掩盖掉）——推荐 sum(rate(...))； 别忘了 [5m] 里的 5m 是「查询时的回溯窗口」，超出 lookback delta 的样本会被忽略（很久没更新的指标查询会返回空而不是 0——这常导致「指标消失」的困惑，需要 or vector(0) 之类兜底）。","url":"https://it-interview.is-a.dev/#/question/1079"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>PromQL 里 rate、irate、increase 有什么区别？为什么计算 QPS 必须带上时间区间？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Prometheus</span><span class="chip tag">PromQL</span><span class="chip tag">rate</span><span class="chip tag">irate</span><span class="chip tag">告警</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：区间向量、外推逻辑、采样窗口与告警的配合。PromQL 实操核心。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>三者的语义</strong>：</li>
+</ul>
+<p>  - <strong><code>rate(counter[5m])</code></strong>：计算区间内的<strong>平均每秒增长率</strong>。它把区间内<strong>所有采样点</strong>纳入，并<strong>自动处理 Counter 归零（进程重启）</strong>——检测到值下降时视为重置，按增长量累加。<strong>这是计算 QPS/速率的默认选择</strong>。</p>
+<p>  - <strong><code>irate(counter[5m])</code></strong>：用区间内<strong>最后两个采样点</strong>算<strong>瞬时</strong>速率。<strong>反应快、对突变更灵敏</strong>，但<strong>噪声大、容易抖动</strong>——适合<strong>看趋势与调试</strong>（观察瞬时波动），不适合直接用于告警（会频繁抖动触发）。</p>
+<p>  - <strong><code>increase(counter[5m])</code></strong>：区间内的<strong>总增长量</strong>（≈ <code>rate × 区间秒数</code>）。注意它<strong>仍然做了外推</strong>（不是简单的「末值 - 首值」），所以结果是近似值；语义上等价于「这 5 分钟处理了多少请求」，适合<strong>按时间窗口展示总量</strong>。</p>
+<ul>
+<li><strong>为什么必须带时间区间</strong>：<code>rate()</code> 的参数是<strong>区间向量（range vector）</strong>，而 Counter 的<strong>瞬时值本身没有意义</strong>（它是从进程启动以来的累计值）。只有<strong>两点之间的差值除以时间</strong>才是速率。<strong>PromQL 里没有「无区间」的 rate</strong>——写 <code>rate(metric)</code> 会直接报错。区间长度决定了两件事：</li>
+</ul>
+<p>  1. <strong>平滑度</strong>：区间越长越平滑但<strong>越迟钝</strong>；</p>
+<p>  2. <strong>与采集间隔的关系</strong>：<strong>区间至少要包含 2 个以上采样点</strong>（官方建议<strong>≥4 倍 scrape interval</strong>）。采集间隔 15s、区间 5m（20 个点）是常见配置；若采集间隔改成 60s 而区间仍是 5m，只剩 5 个点，遇到丢采样时<strong>rate 结果会剧烈跳变甚至出现空值</strong>。</p>
+<ul>
+<li><strong>外推（Extrapolation）的坑</strong>：<code>rate</code>/<code>increase</code> 会把区间端点之间的增长<strong>按比例外推到区间边界</strong>，因此：</li>
+</ul>
+<p>  - <strong>区间内的数据点太少</strong>（如只采到 2 个点且间隔不均）时，结果<strong>误差明显</strong>；</p>
+<p>  - <strong>反例</strong>：任务每 2 分钟才打点一次、却用 <code>rate(x[1m])</code>，会得到<strong>忽高忽低甚至 0</strong> 的结果；</p>
+<p>  - <strong>断言</strong>：指标打点间隔必须<strong>小于</strong>查询区间，且最好相差 4 倍以上。</p>
+<ul>
+<li><strong>实践要点</strong>：</li>
+</ul>
+<p>  - <strong>告警要用 <code>rate</code> + 足够长的区间</strong>（如 <code>rate(errors_total[5m]) / rate(requests_total[5m]) &gt; 0.05</code>），并配 <strong><code>for: 5m</code></strong> 避免瞬时抖动触发——<strong><code>for</code> 与区间长度是互补的防抖手段</strong>；</p>
+<p>  - <strong><code>irate</code> 用在看板上</strong>（展现瞬时抖动）而不是告警；</p>
+<p>  - <strong>算比率时分子分母区间必须一致</strong>（都用 <code>[5m]</code>，否则得到无意义的比值）；</p>
+<p>  - <strong><code>increase</code> 用于「计数总量」</strong>（如「过去 1 小时错误数」），但要理解它是<strong>近似</strong>，不能用于计费级精确统计（那应该用日志或专门的事件统计）；</p>
+<p>  - <strong><code>sum by (route)</code> 再套 rate</strong> 与 <strong><code>rate</code> 再 <code>sum</code></strong> 的写法差异：<strong><code>sum(rate(...))</code> 满足「先聚合后计算」，是推荐写法</strong>（先按各实例算速率再求和）。反过来 <code>rate(sum(...))</code> 在多数场景结果相近，但<strong>遇到 Counter 重置时行为不同</strong>（先 sum 会把重置掩盖掉）——<strong>推荐 <code>sum(rate(...))</code></strong>；</p>
+<p>  - 别忘了 <strong><code>[5m]</code> 里的 <code>5m</code> 是「查询时的回溯窗口」</strong>，超出 <strong>lookback delta</strong> 的样本会被忽略（很久没更新的指标查询会返回空而不是 0——<strong>这常导致「指标消失」的困惑</strong>，需要 <code>or vector(0)</code> 之类兜底）。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1079">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

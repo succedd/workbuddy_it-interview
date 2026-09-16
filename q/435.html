@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库</title>
+  <meta name="description" content="一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库">
+  <meta property="og:description" content="一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/435.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库">
+  <meta name="twitter:description" content="一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/435.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？","text":"团队代码里两种写法混用，有人建议统一。请从扩展方式、同名声明冲突处理、可表达的类型范围几个角度说明差异，并给出选型建议。","answerCount":1,"datePublished":"2026-09-03T00:53:25.623Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类型。 type 用交叉类型 &：把已有对象类型组合起来，再用类型别名给结果命名。 官方文档明确指出：二者的主要区别在于如何处理冲突，而这也通常是你在 interface 与交叉类型别名之间做选择的首要理由。 三、核心差异二：冲突处理与声明合并 同名 interface：TypeScript 会尝试合并；属性兼容则合并成功，属性同名但类型不兼容则直接报错。这一特性常用于给第三方库的类型做扩展补充。 交叉类型：属性类型冲突时会被自动合并、编译通过，但那个属性会变成 never——要求同时满足 string 和 number，结果往往出人意料，且错误不在声明处暴露。 这是选型时最值得权衡的一点：前者让冲突尽早暴露，后者可能把问题推迟到使用处。 四、核心差异三：可表达的范围不同 文档原话是「type aliases, unlike interfaces, can describe more than just object types」。因此： 联合类型、带 null 的辅助类型、数组/元组的简写形式（如 [string, number]、可选元素 [number, number, number?]、剩余元素、只读元组）习惯上由 type 承载； 想用 interface 表达等价的元组结构，得手工声明数字索引与字面量 length，非常别扭； 映射类型、条件类型这类类型运算更是 type 的主场。 五、选型建议 对外的对象形状、需要被他人扩展或合并声明的（如库的公开 API、DTO 结构）优先用 interface；联合、元组、函数别名、以及一切类型运算用 type。团队内统一约定比争论本身更重要——两种写法在项目里各司其职、保持风格一致即可。","url":"https://it-interview.is-a.dev/#/question/435"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">TypeScript</span><span class="chip tag">类型系统</span><span class="chip tag">接口</span></div>
+    <div class="card"><h2>题目</h2><p>团队代码里两种写法混用，有人建议统一。请从扩展方式、同名声明冲突处理、可表达的类型范围几个角度说明差异，并给出选型建议。</p></div>
+    <div class="card"><h2>参考答案</h2><h3>一、先说共同点</h3>
+<p>两者都能用来命名对象类型，也<strong>都支持泛型</strong>——例如描述一个盒子既可以用 <code>interface Box&lt;Type&gt;</code>，也可以用 <code>type Box&lt;Type&gt;</code> 来写。所以选型不能停留在「能不能写」这个层面。</p>
+<h3>二、核心差异一：扩展方式不同</h3>
+<ul>
+<li><strong>interface 用 <code>extends</code></strong>：从其它命名类型复制成员并追加新成员，还能一次继承多个类型。</li>
+<li><strong>type 用交叉类型 <code>&amp;</code></strong>：把已有对象类型组合起来，再用类型别名给结果命名。</li>
+</ul>
+<p>官方文档明确指出：二者的<strong>主要区别在于如何处理冲突</strong>，而这也通常是你在 interface 与交叉类型别名之间做选择的首要理由。</p>
+<h3>三、核心差异二：冲突处理与声明合并</h3>
+<ul>
+<li><strong>同名 interface</strong>：TypeScript 会尝试合并；属性兼容则合并成功，属性同名但类型不兼容则<strong>直接报错</strong>。这一特性常用于给第三方库的类型做扩展补充。</li>
+<li><strong>交叉类型</strong>：属性类型冲突时会被<strong>自动合并、编译通过</strong>，但那个属性会变成 <code>never</code>——要求同时满足 string 和 number，结果往往出人意料，且错误不在声明处暴露。</li>
+</ul>
+<p>这是选型时最值得权衡的一点：前者让冲突尽早暴露，后者可能把问题推迟到使用处。</p>
+<h3>四、核心差异三：可表达的范围不同</h3>
+<p>文档原话是「type aliases, unlike interfaces, can describe more than just object types」。因此：</p>
+<ul>
+<li>联合类型、带 <code>null</code> 的辅助类型、数组/元组的简写形式（如 <code>[string, number]</code>、可选元素 <code>[number, number, number?]</code>、剩余元素、只读元组）<strong>习惯上由 <code>type</code> 承载</strong>；</li>
+<li>想用 interface 表达等价的元组结构，得手工声明数字索引与字面量 <code>length</code>，非常别扭；</li>
+<li>映射类型、条件类型这类类型运算更是 <code>type</code> 的主场。</li>
+</ul>
+<h3>五、选型建议</h3>
+<p>对外的对象形状、需要被他人扩展或合并声明的（如库的公开 API、DTO 结构）优先用 <code>interface</code>；联合、元组、函数别名、以及一切类型运算用 <code>type</code>。团队内统一约定比争论本身更重要——两种写法在项目里各司其职、保持风格一致即可。</p></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/435">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=75&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

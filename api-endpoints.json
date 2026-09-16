@@ -1,0 +1,8 @@
+{
+  "_comment": "前端 API 入口候选列表（按优先级）。页面每次加载都会拉取本文件并缓存 6 小时，因此改这里即可全量切换后端地址，无需重新发版、也不受 Service Worker 缓存影响。国内直连走第一位的中转桥（Cloudflare 的 workers.dev 域名在国内被 DNS 投毒，无代理必失败；桥是 Netlify 反代，国内实测可直连）；第二位保留 workers.dev 作海外/挂代理环境的后备。eu.org 审核通过、Worker 绑定 api.itinterview.eu.org 后，把该地址插到数组第一位即可。",
+  "endpoints": [
+    "https://iti-api.netlify.app",
+    "https://it-interview-stats.iti-interview.workers.dev"
+  ],
+  "updated": "2026-09-13"
+}
