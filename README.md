@@ -240,6 +240,18 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-16 · feat: 「云原生 / DevOps」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916e→20260916f`，release=`d50514322d` / main=`0004fdf886`）
+
+- **为什么**：延续上一轮「安全」方向的做法——用户希望技术教程**以技术官网文档的目录为骨架**、完整详细有条理地展开。
+- **本次范围**：「云原生 / DevOps」方向，14 章（初级 4 / 中级 5 / 高级 5）全部重写。正文由平均 **1094 字/章 → 约 11.2k 字符/章**（合计 157KB）。
+- **结构**：新增 `js/docs/devops.js`（与 `security.js` / `java.js` 同样的独立文件架构，`docs-data.js` 里移除内联 DEVOPS，改为引用 `window.DEVOPS`），`docs-data.js` 由 52KB 降到 30KB。
+- **官方目录基线**：Docker Docs（Get Started / Storage / Networking）、OCI 镜像与运行时规范、Dockerfile reference + Building best practices + Multi-stage builds、Git 官方文档 + GitHub Actions（Workflow syntax / Events / Secrets / Reusable workflows）、GitLab CI YAML reference、Kubernetes Docs（Workloads / Services & Networking / Configuration / Storage / Scheduling + 探针官方任务）、Helm（Charts / Chart Template Guide / Best Practices）、Terraform（Language / State / Modules / CLI）、Argo CD + Flux + OpenGitOps 四原则、Kustomize + Cluster API + 官方版本偏差策略、Argo Rollouts / Flagger + SRE Workbook 金丝雀章、Google SRE Book（SLI/SLO / 错误预算 / 多窗口燃烧率告警）、The Twelve-Factor App、CNCF Platforms White Paper + Backstage + Kubernetes Operator 模式。
+- **章节变化**：保留全部 14 个原章节 ID（不破坏已分享链接与阅读进度），只重写正文；每章开头新增「官方文档基线」链接块，章末统一为「⚠ 踩坑与误区 + ✅ 自检清单 + 📚 延伸阅读」。
+- **顺手修的两处工程债**：`sw.js` 预缓存清单此前**漏掉了 `js/docs/security.js`**（离线模式下安全方向会取不到数据），本次补上并加入 `devops.js`；`tools/validate-docs.js` 原先按「devops/security 仍是空骨架」的旧假设断言，已重写为按当前「6 个独立方向文件 + docs-data 组装」架构校验。
+- **新增校验工具**：`tools/render-check.js` 用真实 Chrome 渲染 6 个教程 URL，校验版心 1180px、console 零错误、正文无残留占位符；本地运行会自动过滤访客统计接口的 CORS 噪声。
+- **验证**：`node --check` 全部通过；`node tools/validate-docs.js` → `ASSEMBLE_OK`（7 方向 / 98 章 / 0 重复 / terms 100%）；`node tools/smoke-test.js` 26/26；`node tools/render-check.js` → `RENDER_OK`（6 个 URL 全部 1180px、0 控制台错误、0 残留占位）；线上核验见下方部署记录。
+- **剩余计划**：Java 后端、网络与操作系统、数据库·DBA、前端 Web 共 4 个方向仍偏薄，后续按同样方式重构（预告：Java=Oracle Tutorials / Spring Reference / JVMS；网络与OS=RFC 9110-9113 / 8446 / 9293 + Linux man-pages；DBA=MySQL 8.0 / PostgreSQL / Redis 官方手册；前端 Web=MDN / React / Vite / WHATWG）。
+
 ### 2026-09-16 · feat: 「安全」方向教程按 OWASP 官方目录重写并大幅深化（缓存版本 `20260916d→20260916e`）
 
 - **为什么**：用户反馈技术教程「写得有点简单」，希望**以技术官网文档的目录为骨架**、完整详细有条理地展开。
