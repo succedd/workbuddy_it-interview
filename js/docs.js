@@ -127,12 +127,15 @@
   function pageDocs() {
     ensureCss();
     document.title = "技术教程 · IT面试题库";
-    const dirs = window.DOCS.dirs || [];
+    const dirs = (window.DOCS.dirs || []).filter(Boolean);
+    /* 页脚的方向数/篇数从数据实时统计，避免增删章节后文案不同步 */
+    const allChapters = dirs.reduce((a, d) => a + dirStat(d).total, 0);
+    const allDirs = dirs;
     setMain(`
       <div class="hero" style="padding:26px 16px 18px">
         <h1 style="font-size:22px">📘 技术教程</h1>
-        <p>按「技术方向 × 初级 / 中级 / 高级」组织的成套文档，从第一页按顺序读到最后一页，就是一条完整的成长路线。
-           文档中的实战案例与踩坑记录来自真实运维现场，读完记得做章末的练习题巩固。</p>
+        <p>按「技术方向 × 初级 / 中级 / 高级」组织的成套文档，<b>目录骨架取自官方文档</b>（OWASP、RFC、Docker / K8s / Terraform 官方文档、MySQL / Redis 手册、MDN、Oracle / Spring 参考等），按官方目录逐节展开讲解。
+           每篇开头的「官方文档基线」告诉你可以对照哪份权威文档；实战案例与踩坑记录来自真实现场，读完记得做章末的练习题巩固。</p>
       </div>
       <div class="docs-dir-grid">
         ${dirs.map(d => {
@@ -154,7 +157,7 @@
         }).join("")}
       </div>
       <div class="muted" style="text-align:center;font-size:12px;margin-top:20px">
-        文档最近更新：${U.esc(window.DOCS.updated || "")} · 当前 7 个技术方向、95 篇教程已全部上线；学习进度会随阅读自动累积
+        文档最近更新：${U.esc(window.DOCS.updated || "")} · 当前 ${allDirs.length} 个技术方向、${allChapters} 篇教程已全部上线；学习进度会随阅读自动累积
       </div>
     `);
   }
