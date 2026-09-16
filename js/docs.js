@@ -154,7 +154,7 @@
         }).join("")}
       </div>
       <div class="muted" style="text-align:center;font-size:12px;margin-top:20px">
-        文档最近更新：${U.esc(window.DOCS.updated || "")} · 当前 7 个技术方向、95 篇教程已全部上线；学习进度会随阅读自动累积
+        文档最近更新：${U.esc(window.DOCS.updated || "")} · 灰色「建设中」的方向已规划目录，内容陆续补齐
       </div>
     `);
   }
