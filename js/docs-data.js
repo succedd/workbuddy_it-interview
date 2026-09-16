@@ -1085,54 +1085,1578 @@ ${F}
     ]
   };
 
-  /* ============================ 其他方向（目录先行） ============================
-   * 内容尚未撰写，先把目录骨架放出来：既是给用户看全貌，也是内容待办清单。 */
-  function skeleton(id, name, icon, desc, plan) {
-    return {
-      id, name, icon, desc, skeleton: true,
-      levels: plan.map((lv, i) => ({
-        id: ["basic", "mid", "adv"][i],
-        name: lv[0],
-        desc: lv[1],
-        chapters: lv[2].map((t, j) => ({
-          id: id + "-" + ["basic", "mid", "adv"][i] + "-" + (j + 1),
-          title: t, minutes: 0, updated: "", applies: "", tags: [], terms: [], body: ""
-        }))
-      }))
-    };
-  }
+  /* ============================ 云原生 / DevOps & 安全 ============================
+   * 这两个方向已补齐完整实战正文（与 ops / java 等方向同结构）。 */
+  const DEVOPS = {
+    id: "devops",
+    name: "云原生 / DevOps",
+    icon: "☁️",
+    desc: "从「会装会用工具」到「能设计交付平台与工程效能体系」。覆盖容器、CI/CD、K8s/Helm、IaC、GitOps、发布策略与平台工程。",
+    levels: [
+      /* ---------------- 初级 ---------------- */
+      {
+        id: "basic",
+        name: "初级",
+        desc: "会用工具完成日常交付：打包镜像、提交代码、跑通一条流水线、看懂基础网络。",
+        chapters: [
+          {
+            id: "devops-basic-1",
+            title: "Docker 镜像与容器操作",
+            minutes: 14,
+            updated: "2026-09-16",
+            applies: "Docker 20.10+ / Linux / macOS",
+            tags: ["Docker", "容器"],
+            terms: ["Docker", "容器", "镜像"],
+            body: `
+## 为什么先学 Docker
 
-  // devops / security 仍建设中，先用骨架占位（既是全貌也是内容待办）。
-  // 注意：java / frontend / dba / network 四个方向已由 js/docs/*.js 在 index.html 中
-  // 先于本文件加载并写入 window.*，这里不再放骨架，避免重复与死代码。
-  const DIRS = [
-    skeleton("devops", "云原生 / DevOps", "☁️", "容器、CI/CD、IaC 与交付效率。", [
-      ["初级", "会用工具完成交付。",
-        ["Docker 镜像与容器操作", "Git 与代码评审", "CI 流水线基本配置", "Linux 与网络基础"]],
-      ["中级", "能搭建与维护交付体系。",
-        ["Dockerfile 最佳实践与镜像瘦身", "CI/CD 流水线设计", "K8s 部署与 Helm", "基础设施即代码（Terraform）", "制品与版本管理"]],
-      ["高级", "能设计平台与推进工程效能。",
-        ["GitOps 与持续交付", "多集群与多环境管理", "发布策略（蓝绿/金丝雀）", "工程效能度量与改进", "平台化建设"]]
-    ]),
-    skeleton("security", "安全", "🔐", "Web 安全、渗透测试与加固合规。", [
-      ["初级", "建立安全意识。",
-        ["Web 安全基础（OWASP Top 10）", "常见漏洞原理（SQLi/XSS/CSRF）", "Linux 安全基线"]],
-      ["中级", "能做漏洞发现与修复。",
-        ["渗透测试流程与工具", "认证与授权设计", "加密与密钥管理", "日志审计与入侵排查"]],
-      ["高级", "能做安全体系建设。",
-        ["安全开发生命周期（SDL）", "WAF 与风控体系", "应急响应与取证", "合规与数据安全治理"]]
-    ])
-  ];
+现代交付的最小单元不是「一台装好环境的机器」，而是**一个可复制、不可变的镜像**。
+DevOps 里 90% 的「我本地能跑」问题，根源都是环境不一致；容器把代码和环境一起打包，从根上消除它。
+
+## 一、镜像与容器的关系
+
+- **镜像（Image）**：只读模板，像「安装光盘」，由多层只读层叠加而成。
+- **容器（Container）**：镜像的运行实例，在镜像之上加一层可写层，像「装好光盘正在跑的电脑」。
+
+${F}bash
+docker images                      # 看本地有哪些镜像
+docker ps -a                       # 看所有容器（含已退出的）
+docker run -d -p 8080:80 --name web nginx:alpine   # 后台起一个 nginx
+docker exec -it web sh             # 进容器里看一眼
+docker logs -f web                # 看容器日志
+docker stop web && docker rm web  # 停并删
+${F}
+
+## 二、从零打一个镜像
+
+新建 ${C}Dockerfile${C}：
+
+${F}dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]
+${F}
+
+${F}bash
+docker build -t myapp:1.0 .
+docker run -p 3000:3000 myapp:1.0
+${F}
+
+## 三、数据怎么留下来
+
+容器一删，可写层也没了。**持久化数据必须挂卷（volume）**：
+
+${F}bash
+docker volume create appdata
+docker run -v appdata:/data myapp
+# 千万别把数据库文件写在容器内部不挂卷！
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **容器里 PID 1 的进程死了，容器就退出**：前台跑的必须是主进程，别用 ${C}nohup ... &${C} 把主进程弄成后台。
+2. **数据不挂卷 = 容器一删全没**：数据库、上传文件、日志一律挂 volume 或 bind mount。
+3. **exit code 非零会被编排平台判失败**：脚本里 ${C}set -e${C} 要谨慎，别因无关命令失败导致容器起不来。
+4. **别用 ${C}latest${C} 标签上生产**：版本漂移会让「同一镜像名」在不同机器跑出不同内容，无法回滚。
+5. **镜像里别写密钥**：构建上下文可能进镜像层，用运行时挂载或 secret 注入。
+
+## ✅ 排障清单
+
+- [ ] 分得清镜像和容器，会用 ${C}ps${C}/${C}images${C}/${C}logs${C}/${C}exec${C}
+- [ ] 能写最小 Dockerfile 并 ${C}build${C}/${C}run${C} 起来
+- [ ] 知道数据必须挂卷持久化
+- [ ] 不用 ${C}latest${C} 上生产，固定版本号
+`
+          },
+          {
+            id: "devops-basic-2",
+            title: "Git 与代码评审",
+            minutes: 16,
+            updated: "2026-09-16",
+            applies: "Git 2.x",
+            tags: ["Git", "协作"],
+            terms: ["Git", "分支", "PR"],
+            body: `
+## 为什么协同先学 Git
+
+代码评审（Code Review）是现代工程协作的底线：它不是「找茬」，而是**在合并前共享上下文、拦截低级错误、沉淀团队规范**。
+而评审的前提，是每个人都清楚自己的改动落在哪、怎么干净地交出去。
+
+## 一、三个区的概念
+
+${F}bash
+# 工作区(你改的文件) → 暂存区(index) → 本地仓库 → 远端
+git status                 # 看当前站在哪、哪些改了没暂存
+git add -p                 # 交互式挑着加，避免把调试代码一起提交
+git commit -m "feat: 支持导出 CSV"
+git push origin feature/x  # 推到远端分支
+${F}
+
+## 二、一条干净的评审流程
+
+1. 从最新的 ${C}main${C} 切出 ${C}feature/x${C} 分支开发。
+2. 小步提交，commit message 写「为什么」而不是「改了什么」。
+3. 提 PR/MR 前先 ${C}git rebase main${C} 让历史线性、无多余 merge。
+4. 自审 diff，确认没把密钥、注释、调试代码带进去。
+5. 指定 reviewer，描述「这个改动要解决什么、怎么测的」。
+
+## 三、rebase 还是 merge
+
+${F}bash
+git rebase main   # 把你的提交「重放」到 main 最新之上，历史干净（推荐本地用）
+git merge main    # 产生一个 merge commit，保留真实分支拓扑（推荐集成分支用）
+${F}
+
+**经验**：自己分支没推过远端前，放心 rebase；已经推给别人 review 了，就别再 rebase 改写历史。
+
+## ⚠ 踩坑与经验
+
+1. **${C}git push --force${C} 是危险操作**：会覆盖远端历史，误伤他人提交。协作分支用 ${C}--force-with-lease${C}。
+2. **大文件别直接进 Git**：用 Git LFS 或对象存储，否则仓库越来越胖、clone 越来越慢。
+3. **merge 冲突先别慌**：${C}git status${C} 看冲突文件，${C}<<<<<<<${C} 之间是你要保留的内容，解决后 ${C}git add${C} 再提交。
+4. **${C}.gitignore${C} 尽早加**：日志、node_modules、env、构建产物别进库。
+5. **commit 粒度适中**：一个 commit 做一件事，方便回滚和 bisect。
+
+## ✅ 排障清单
+
+- [ ] 理解工作区/暂存区/仓库/远端四区
+- [ ] 会用 ${C}add -p${C} 选择性提交
+- [ ] 能走通 feature 分支 + rebase + PR 流程
+- [ ] 知道 rebase 与 merge 的取舍
+- [ ] 配好 ${C}.gitignore${C}，不提交密钥和构建产物
+`
+          },
+          {
+            id: "devops-basic-3",
+            title: "CI 流水线基本配置",
+            minutes: 15,
+            updated: "2026-09-16",
+            applies: "GitHub Actions / GitLab CI",
+            tags: ["CI", "自动化"],
+            terms: ["CI", "流水线", "GitHub Actions"],
+            body: `
+## 为什么需要 CI
+
+把「构建、测试、代码检查」交给机器在每次提交时自动跑，能**在合并前拦住坏代码**，也让人从重复劳动里解脱。
+CI（Continuous Integration，持续集成）的核心是：频繁合并 + 自动验证。
+
+## 一、一条最小流水线长什么样
+
+以 GitHub Actions 为例，${C}.github/workflows/ci.yml${C}：
+
+${F}yaml
+name: ci
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "18" }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+${F}
+
+## 二、流水线该分哪些阶段
+
+1. **安装依赖**：用 lockfile 保证可复现，开缓存加速。
+2. **静态检查（lint）**：风格、潜在 bug、安全告警。
+3. **测试**：单元 + 必要的集成，覆盖率作为参考而非唯一指标。
+4. **构建/打包**：产出可部署制品。
+5. **（可选）部署到预发**：合并到 main 后自动发预发环境。
+
+## 三、密钥怎么用
+
+${F}yaml
+- run: npm publish
+  env:
+    NODE_AUTH_TOKEN: \${{ secrets.NPM_TOKEN }}   # 只在该步注入，不落盘
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **密钥永远走 secrets**：绝不写进仓库或打印到日志。
+2. **测试用例要稳定（不 flaky）**：一个偶发失败的测试比没有测试更伤信任，先修 flaky 再合代码。
+3. **缓存要带版本键**：依赖变了缓存却没失效，会跑出诡异结果。
+4. **CI 里别依赖交互**：所有命令必须非交互、能超时退出。
+5. **流水线要快**：超过 10 分钟的 CI 会被人绕过，优先并行阶段。
+
+## ✅ 排障清单
+
+- [ ] 能写一条含 lint/test/build 的最小流水线
+- [ ] 知道密钥走 secrets、不落盘
+- [ ] 会用缓存加速依赖安装
+- [ ] 理解「频繁合并 + 自动验证」是 CI 的本质
+`
+          },
+          {
+            id: "devops-basic-4",
+            title: "Linux 与网络基础",
+            minutes: 14,
+            updated: "2026-09-16",
+            applies: "Linux 任意发行版",
+            tags: ["Linux", "网络"],
+            terms: ["Linux", "端口", "DNS"],
+            body: `
+## 为什么 DevOps 要懂网络
+
+容器、服务、负载均衡，底层全是 Linux 网络。
+「服务起不来」「端口被占」「DNS 解析慢」这类问题，不懂网络就只能重启试试。这一节给你一套排查工具。
+
+## 一、端口与进程
+
+${F}bash
+ss -ltnp        # 看哪些端口在监听、被哪个进程占用（-p 要 root）
+lsof -i :8080   # 谁占了 8080
+kill -9 <pid>   # 实在不行再杀
+${F}
+
+## 二、连通性排查四件套
+
+${F}bash
+ping 8.8.8.8          # 1 网络通不通（ICMP，有些环境禁）
+curl -v https://api  # 2 应用层能不能通，看状态码与 TLS 握手
+nslookup api          # 3 DNS 解析对不对
+telnet host 3306      # 4 特定端口通不通（无 curl 时替代）
+${F}
+
+## 三、DNS 解析去哪看
+
+${F}bash
+cat /etc/resolv.conf        # 看 DNS 服务器
+cat /etc/hosts              # 本地静态映射（排查诡异解析先查这里）
+systemd-resolve --status    # systemd 环境看当前解析配置
+${F}
+
+## 四、防火墙
+
+${F}bash
+iptables -L -n -v           # 传统 iptables 规则
+# 或 firewalld：
+firewall-cmd --list-all
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **${C}localhost${C} 不等于 ${C}0.0.0.0${C}**：服务只绑 ${C}127.0.0.1${C} 时容器/外部访问不到，应绑 ${C}0.0.0.0${C} 或具体网卡。
+2. **容器网络是独立的**：容器内 ${C}localhost${C} 指向容器自己，跨容器要用服务名或 IP。
+3. **DNS 缓存导致解析旧 IP**：改了 hosts/解析后清缓存或等 TTL。
+4. **防火墙默认丢包**：端口通了应用却连不上，八成是防火墙拦了。
+5. **MTU/分片问题**：某些 overlay 网络下大包被丢，表现为「小请求行、大请求卡」。
+
+## ✅ 排障清单
+
+- [ ] 会用 ${C}ss${C}/${C}lsof${C} 看端口占用
+- [ ] 会用 ${C}curl -v${C}/${C}nslookup${C}/${C}telnet${C} 分层排查
+- [ ] 知道 localhost 与 0.0.0.0 的区别
+- [ ] 知道去 ${C}/etc/hosts${C}/${C}/etc/resolv.conf${C} 查解析
+`
+          }
+        ]
+      },
+      /* ---------------- 中级 ---------------- */
+      {
+        id: "mid",
+        name: "中级",
+        desc: "能搭建与维护交付体系：优化镜像、设计流水线、上 K8s、写 IaC、管好制品。",
+        chapters: [
+          {
+            id: "devops-mid-1",
+            title: "Dockerfile 最佳实践与镜像瘦身",
+            minutes: 16,
+            updated: "2026-09-16",
+            applies: "Docker 20.10+",
+            tags: ["Docker", "镜像优化"],
+            terms: ["Dockerfile", "多阶段构建", "层缓存"],
+            body: `
+## 为什么要瘦身
+
+镜像越小：拉取越快、攻击面越小、存储越省。
+一个 1.2GB 的 Node 镜像和一个 80MB 的 alpine 镜像，部署体验和安全性天差地别。
+
+## 一、理解分层与缓存
+
+Dockerfile 每行是一个层，**只有前面层不变，后面的缓存才有效**。
+把「变动少的」放前面、「变动多的（如源码 COPY）」放后面：
+
+${F}dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./     # 先拷依赖清单
+RUN npm ci --omit=dev      # 装依赖（这层缓存命中率高）
+COPY . .                  # 再拷源码（频繁变动，放最后）
+${F}
+
+## 二、多阶段构建：构建环境和运行环境分离
+
+${F}dockerfile
+FROM node:18 AS build
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+
+FROM node:18-alpine          # 运行时只要构建产物
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+CMD ["node", "dist/server.js"]
+${F}
+
+## 三、.dockerignore
+
+${F}bash
+# .dockerignore：避免把 node_modules、.git、env 打进构建上下文
+node_modules
+.git
+*.env
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **别把密钥 COPY 进镜像**：哪怕后面 ${C}RUN rm${C}，密钥也留在了不可见的层里，用 multi-stage 或 build secret。
+2. **用 ${C}alpine${C} 注意 libc 差异**：部分二进制（如 Puppeteer）依赖 glibc，alpine 缺库会起不来，必要时用 ${C}debian-slim${C}。
+3. **${C}apt-get${C} 要清缓存**：装完 ${C}rm -rf /var/lib/apt/lists/*${C}，否则层里多一堆垃圾。
+4. **固定基础镜像版本 + digest**：${C}node:18-alpine@sha256:...${C} 杜绝底层漂移。
+5. **一个容器一个进程**：别在容器里跑 supervisord 塞一堆服务。
+
+## ✅ 排障清单
+
+- [ ] 会用多阶段构建分离构建/运行环境
+- [ ] 会排 Dockerfile 顺序提升缓存命中
+- [ ] 配了 ${C}.dockerignore${C}
+- [ ] 知道 alpine 与 glibc 的兼容坑
+- [ ] 不用 ${C}latest${C}、固定版本与 digest
+`
+          },
+          {
+            id: "devops-mid-2",
+            title: "CI/CD 流水线设计",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "GitHub Actions / GitLab CI",
+            tags: ["CI/CD", "交付"],
+            terms: ["CD", "制品晋级", "质量门"],
+            body: `
+## CI 与 CD 的区别
+
+- **CI（持续集成）**：代码合并前自动构建+测试。
+- **CD（持续交付/部署）**：合并后自动把产物交付到各环境，甚至自动上线。
+
+两者合起来才是「从提交到上线」的完整链路。
+
+## 一、阶段化设计
+
+${F}text
+代码提交 → 编译 → 单元测试 → 代码扫描(质量门) → 打包制品
+   → 部署预发 → 集成测试 → 部署生产(可手动审批/金丝雀)
+${F}
+
+## 二、制品晋级：同一个包走全流程
+
+**关键原则：构建一个不可变制品，逐级晋级，绝不每环境重打。**
+预发和生产跑的是同一个镜像 digest，差别只在配置（通过环境变量/配置中心注入）。
+
+${F}yaml
+# 伪代码：部署前先等质量门通过
+deploy-staging:
+  needs: [build, test, scan]
+  if: github.ref == 'refs/heads/main'
+deploy-prod:
+  needs: deploy-staging
+  environment: production   # 触发审批
+${F}
+
+## 三、质量门与卡点
+
+- 测试覆盖率不低于阈值
+- 静态扫描无高危漏洞
+- 依赖无已知 CVE（SCA）
+- 许可证合规
+
+## ⚠ 踩坑与经验
+
+1. **每环境重打镜像 = 埋雷**：你测的是 A 包，上线的是 B 包，问题无法复现。
+2. **手动审批别形同虚设**：生产部署前的关键卡点要真有人看变更说明。
+3. **流水线失败要阻断合并**：让红灯有约束力，否则 CI 沦为装饰。
+4. **数据库变更要单独管理**：应用可回滚，表结构变更往往不能，用 migration 工具并先备份。
+5. **密钥按环境隔离**：预发和生产密钥分开存，禁止互相串。
+
+## ✅ 排障清单
+
+- [ ] 分得清 CI 与 CD
+- [ ] 做到「一个不可变制品逐级晋级」
+- [ ] 设了质量门（测试/扫描/许可证）
+- [ ] 生产部署有审批卡点
+- [ ] 数据库变更有 migration 与回滚预案
+`
+          },
+          {
+            id: "devops-mid-3",
+            title: "K8s 部署与 Helm",
+            minutes: 20,
+            updated: "2026-09-16",
+            applies: "Kubernetes 1.24+ / Helm 3",
+            tags: ["K8s", "云原生"],
+            terms: ["Pod", "Deployment", "Service", "Helm"],
+            body: `
+## 为什么上 K8s
+
+当服务从几个变成几十个，手工管容器就崩溃了。
+K8s 提供**声明式调度、自愈、弹性伸缩、服务发现**，让你描述「想要什么状态」，它负责「达到并保持」。
+
+## 一、三个核心对象
+
+${F}yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: web }
+spec:
+  replicas: 3
+  selector: { matchLabels: { app: web } }
+  template:
+    metadata: { labels: { app: web } }
+    spec:
+      containers:
+        - name: web
+          image: myapp:1.0
+          ports: [{ containerPort: 3000 }]
+          resources:          # 必配！否则被驱逐或抢占
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "256Mi" }
+          readinessProbe:     # 就绪探针：没就绪不接流量
+            httpGet: { path: /healthz, port: 3000 }
+            initialDelaySeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: web }
+spec:
+  selector: { app: web }
+  ports: [{ port: 80, targetPort: 3000 }]
+${F}
+
+## 二、常用 kubectl
+
+${F}bash
+kubectl get pods -l app=web
+kubectl describe pod web-xxx      # 看事件，排查 Pending/CrashLoop
+kubectl logs -f deploy/web
+kubectl rollout status deploy/web # 看发布进度
+kubectl rollout undo deploy/web   # 回滚
+${F}
+
+## 三、Helm：把 YAML 参数化
+
+Helm 用 ${C}values.yaml${C} 覆盖默认值，一套模板部署多套环境：
+
+${F}bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install myweb bitnami/nginx -f my-values.yaml
+helm upgrade myweb bitnami/nginx -f my-values.yaml
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **不配 requests/limits = 灾难**：节点资源被吃满，调度器乱分配，关键 Pod 被驱逐。
+2. **只配 liveness 不配 readiness**：进程活着但没初始化完就被打流量，雪崩。
+3. **标签对不上 selector**：Service 找不到后端，一直是 ${C}<none>${C} endpoints。
+4. **镜像用 ${C}latest${C}**：滚动更新时新 Pod 可能拉到旧缓存，行为不一致。
+5. **Helm 升级前先 ${C}helm diff${C}**：看清会改哪些资源，避免误删。
+
+## ✅ 排障清单
+
+- [ ] 会写 Deployment + Service 最小可用 yaml
+- [ ] 给每个容器配 requests/limits 与探针
+- [ ] 会用 ${C}kubectl describe/logs/rollout${C} 排查
+- [ ] 理解 Helm values 参数化部署
+`
+          },
+          {
+            id: "devops-mid-4",
+            title: "基础设施即代码（Terraform）",
+            minutes: 17,
+            updated: "2026-09-16",
+            applies: "Terraform 1.x",
+            tags: ["IaC", "Terraform"],
+            terms: ["Terraform", "provider", "state"],
+            body: `
+## 为什么用 IaC
+
+手动在控制台点出来的环境，**不可复现、易漂移、离职即失传**。
+IaC 把基础设施写成代码：可版本化、可 review、可一键重建。
+
+## 一、基本工作流
+
+${F}bash
+terraform init      # 初始化 provider 与模块
+terraform plan      # 预览将要发生的变更（上生产前必看）
+terraform apply     # 真正执行
+terraform destroy   # 回收
+${F}
+
+## 二、一个最小配置
+
+${F}hcl
+terraform {
+  required_providers {
+    aws = { source = "hashicorp/aws" }
+  }
+}
+provider "aws" {
+  region = "ap-guangzhou"
+}
+resource "aws_s3_bucket" "logs" {
+  bucket = "my-app-logs-2026"
+}
+${F}
+
+## 三、state 是核心
+
+state 文件记录了「现实资源」与「代码声明」的对应关系。
+**state 损坏 = 不知道改了什么 = 可能误删资源**，必须妥善管理。
+
+${F}bash
+# 用远端后端（如 S3 + DynamoDB 锁）存 state，团队共享且防并发
+terraform state list        # 看当前管理了哪些资源
+terraform import aws_s3_bucket.logs existing-bucket  # 接管已有资源
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **state 别放本地、别进 Git**：用远端后端 + 锁，防止两人同时 apply 冲突。
+2. **${C}apply${C} 前必看 ${C}plan${C}**：尤其带 ${C}destroy${C} 标记的变更，确认不是误删。
+3. **敏感变量走 ${C}variable${C} + 后端加密**：别把 AK/SK 写死在 .tf 里。
+4. **防范 drift（漂移）**：控制台手动改了资源，state 就和实际不一致，定期 ${C}plan${C} 检查。
+5. **模块化复用**：同一套网络/VPC 抽成 module，避免每个项目复制粘贴。
+
+## ✅ 排障清单
+
+- [ ] 走通 init/plan/apply 基本流程
+- [ ] state 用远端后端 + 锁管理
+- [ ] ${C}apply${C} 前审查 ${C}plan${C}
+- [ ] 敏感信息不落代码
+- [ ] 会用 ${C}import${C} 接管已有资源
+`
+          },
+          {
+            id: "devops-mid-5",
+            title: "制品与版本管理",
+            minutes: 14,
+            updated: "2026-09-16",
+            applies: "任意制品仓库",
+            tags: ["制品", "版本"],
+            terms: ["SemVer", "不可变制品", "依赖锁定"],
+            body: `
+## 为什么制品管理很重要
+
+代码能回滚，但如果「依赖的包」飘了、或「同一个版本号」内容变了，回滚也没用。
+制品管理回答两个问题：**怎么给版本编号**、**怎么保证拿到的总是同一份**。
+
+## 一、语义化版本 SemVer
+
+${C}主版本.次版本.修订号${C}，如 ${C}2.3.1${C}：
+- **主版本**：不兼容的 API 变更
+- **次版本**：向下兼容的新功能
+- **修订号**：向下兼容的 bug 修复
+
+## 二、制品必须不可变
+
+${F}bash
+# 好的做法：发布后 v1.0.0 的内容永远不变，修 bug 发 v1.0.1
+# 坏的做法：反复覆盖同一个 latest / 1.0，谁都不知道线上跑的是哪次
+docker tag myapp:1.0.1 registry/app:1.0.1
+docker push registry/app:1.0.1
+${F}
+
+## 三、依赖锁定
+
+${F}bash
+# Node：package-lock.json 锁定 exact 版本
+npm ci                 # 严格按 lockfile 装，忽略 package.json 的 ^ 范围
+# Python：pip freeze > requirements.lock 或 poetry.lock
+# Go：go.sum
+${F}
+
+## 四、制品仓库分层
+
+- **源码仓库**：Git
+- **镜像仓库**：Harbor / ECR / GCR
+- **依赖代理**：Nexus / Artifactory（内网加速 + 缓存 + 审计）
+
+## ⚠ 踩坑与经验
+
+1. **${C}^${C} 和 ${C}~${C} 范围导致不确定性**：CI 用 ${C}npm ci${C} 而非 ${C}npm install${C}，锁定 exact。
+2. **覆盖发布=定时炸弹**：永远发新版本号，不覆盖旧的。
+3. **制品要带构建溯源**：记录 commit、构建号、时间，出问题能定位是哪次构建。
+4. **定期清理旧制品**：设保留策略，避免仓库无限膨胀。
+5. **私有依赖要走代理**：既加速又能在上游不可用时兜底。
+
+## ✅ 排障清单
+
+- [ ] 理解 SemVer 三段含义
+- [ ] 制品不可变，发新版不覆盖旧版
+- [ ] CI 用 lockfile 安装依赖
+- [ ] 制品带构建溯源信息
+`
+          }
+        ]
+      },
+      /* ---------------- 高级 ---------------- */
+      {
+        id: "adv",
+        name: "高级",
+        desc: "能设计平台与推进工程效能：GitOps、多集群、发布策略、效能度量、平台工程。",
+        chapters: [
+          {
+            id: "devops-adv-1",
+            title: "GitOps 与持续交付",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "Argo CD / Flux",
+            tags: ["GitOps", "持续交付"],
+            terms: ["GitOps", "声明式", "reconcile"],
+            body: `
+## 什么是 GitOps
+
+一句话：**Git 仓库是系统期望状态的唯一事实源，集群自动向它对齐**。
+传统 CD 是「流水线主动 push 到集群」；GitOps 是「控制器持续 pull Git 状态并 reconcile」。
+
+## 一、核心原则
+
+1. **声明式**：系统状态全用 Git 里的 YAML 描述。
+2. **Git 为唯一事实源**：改生产 = 提 PR 到 Git，不是登机器敲命令。
+3. **自动 reconcile**：控制器观测实际状态，持续纠正偏离。
+4. **可观测+可回滚**：状态有偏差立即告警；回滚 = 把 Git 回退一个 commit。
+
+## 二、Argo CD 最小示例
+
+${F}yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: { name: web, namespace: argocd }
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/org/gitops.git
+    path: apps/web
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: web
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }   # 自动同步 + 自愈
+${F}
+
+${F}bash
+argocd app get web        # 看同步状态（Synced / OutOfSync）
+argocd app rollback web   # 回滚到上一版本
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **${C}selfHeal${C} 是把双刃剑**：手动改集群会被自动覆盖，但也意味着误操作能自动修复——前提是你改的是 Git。
+2. **secret 别直接进 Git**：用 sealed-secrets / external-secrets 加密或外挂。
+3. **${C}prune${C} 要谨慎**：它会删 Git 里已移除的资源，确认无误再开。
+4. **多环境用多目录/多分支**：别用同一个 path 塞所有环境。
+
+## ✅ 排障清单
+
+- [ ] 理解 GitOps 四原则
+- [ ] 分得清「push CD」与「pull GitOps」
+- [ ] 会用 Argo CD 看同步状态与回滚
+- [ ] secret 不落明文 Git
+`
+          },
+          {
+            id: "devops-adv-2",
+            title: "多集群与多环境管理",
+            minutes: 19,
+            updated: "2026-09-16",
+            applies: "Kubernetes 多集群",
+            tags: ["多集群", "多环境"],
+            terms: ["环境分级", "集群拓扑", "配置分离"],
+            body: `
+## 为什么要分多环境/多集群
+
+- **环境分级**：dev → staging → prod，越往后越接近真实、越要严格。
+- **多集群**：隔离故障域（一个集群挂了不影响全局）、满足合规（数据不出境）、就近访问。
+
+## 一、环境管理三要素
+
+1. **代码同一份，配置分环境**：通过 ${C}values-{env}.yaml${C} 或配置中心区分。
+2. **数据隔离**：各环境用自己的库，禁止共用。
+3. **网络隔离**：prod 与 dev 不通，减少横向移动风险。
+
+## 二、多集群拓扑
+
+${F}text
+                    统一 GitOps 仓库
+                           │
+        ┌──────────┬───────┴────────┬──────────┐
+      cluster-dev  cluster-staging  cluster-prod(华东)  cluster-prod(海外)
+${F}
+
+每个集群跑一个 Argo CD，都指向同一 Git 仓库的不同 path/分支。
+
+## 三、配置与密钥分离
+
+- **非敏感配置**：ConfigMap / Helm values
+- **敏感配置**：External Secrets 从 Vault/云 KMS 拉，不进 Git
+
+## ⚠ 踩坑与经验
+
+1. **环境与生产「长得太不一样」**：staging 用不同版本、不同拓扑，导致问题只在 prod 暴露。尽量同构。
+2. **跨集群服务发现复杂**：用服务网格（Istio）或全局负载均衡，别手写 hosts。
+3. **配置漂移**：控制台手动改了某集群，与 Git 不一致，靠 reconcile 自愈兜底。
+4. **成本失控**：每个环境都开满副本数，dev 也 3 副本简直浪费，按环境缩放。
+
+## ✅ 排障清单
+
+- [ ] 做到「代码同份、配置分环境」
+- [ ] 各环境数据/网络隔离
+- [ ] 理解多集群故障域与合规价值
+- [ ] 密钥走 External Secrets 不进 Git
+`
+          },
+          {
+            id: "devops-adv-3",
+            title: "发布策略（蓝绿/金丝雀）",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "K8s + Service Mesh / Ingress",
+            tags: ["发布策略", "灰度"],
+            terms: ["蓝绿", "金丝雀", "滚动更新"],
+            body: `
+## 为什么发布策略重要
+
+${C}kubectl apply${C} 默认的滚动更新虽然平滑，但**一旦新版本有 bug，影响的是全部用户**，且回滚有窗口期。
+发布策略的目标：**降低爆炸半径、可快速止损、可观测可回退**。
+
+## 一、三种主流策略
+
+| 策略 | 做法 | 优点 | 缺点 |
+|---|---|---|---|
+| 滚动更新 | 逐批替换旧 Pod | 简单、资源省 | 新旧混跑，回滚慢 |
+| 蓝绿 | 起一套全新（绿），切流量 | 秒级切换/回滚 | 双倍资源 |
+| 金丝雀 | 先放 1%~5% 流量验证 | 爆炸半径最小 | 需要流量治理 |
+
+## 二、金丝雀（以 Istio 为例）
+
+${F}yaml
+# 把 90% 流量给稳定版，10% 给金丝雀
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+spec:
+  http:
+    - route:
+        - destination: { host: web, subset: stable }
+          weight: 90
+        - destination: { host: web, subset: canary }
+          weight: 10
+${F}
+
+## 三、回滚要点
+
+${F}bash
+kubectl rollout undo deploy/web          # 滚动/蓝绿回滚
+# 金丝雀：把 canary weight 调回 0 即可，几乎瞬时
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **数据库不兼容是头号杀手**：新代码写的新字段，旧版本读不了。用「向后兼容」的扩展式迁移。
+2. **只切流量不算真发布**：要同时监控错误率/延迟/业务指标，有异常立即回滚。
+3. **金丝雀只看「不报错」不够**：错误率没变但延迟翻倍，也要判失败。
+4. **资源要预留**：蓝绿双份、金丝雀叠加，提前算好容量。
+
+## ✅ 排障清单
+
+- [ ] 分得清滚动/蓝绿/金丝雀的取舍
+- [ ] 会用权重控制金丝雀流量
+- [ ] 发布同时盯错误率/延迟/业务指标
+- [ ] 数据库迁移保证向后兼容
+`
+          },
+          {
+            id: "devops-adv-4",
+            title: "工程效能度量与改进",
+            minutes: 16,
+            updated: "2026-09-16",
+            applies: "团队效能",
+            tags: ["效能", "DORA"],
+            terms: ["DORA", "部署频率", "变更失败率"],
+            body: `
+## 为什么要度量
+
+「我们效率很高」是感觉，「每周部署 5 次、失败率 2%」是数据。
+度量的目的是**找到瓶颈、验证改进是否有效**，不是用来考核个人。
+
+## 一、DORA 四大指标
+
+| 指标 | 含义 | 优秀区间 |
+|---|---|---|
+| 部署频率 | 多久发一次 | 按需每日多次 |
+| 交付前置时间 | 提交到上线多久 | 一小时以内 |
+| 变更失败率 | 发布导致故障比例 | 0%~15% |
+| 服务恢复时间(MTTR) | 故障到恢复 | 一小时以内 |
+
+## 二、常见瓶颈与方向
+
+- **合并冲突多、分支寿命长** → 推行小批量、短生命周期分支，频繁合 main。
+- **手工部署慢且易错** → 投资 CI/CD 自动化，消除人工步骤。
+- **测试慢/flaky** → 分层的、可靠的测试金字塔，并行执行。
+- **回滚难** → 发布策略 + 不可变制品 + 数据库兼容迁移。
+
+## 三、度量的坑
+
+${F}text
+❌ 用「代码行数 / 工时」考核 → 鼓励堆量
+❌ 只看「部署次数」→ 可能变相鼓励小改动刷数
+✅ 看「价值流动效率」：从需求到上线的端到端时间
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **指标是仪表盘不是鞭子**：公开排名会诱发刷数据。
+2. **先打通「可观测」再谈改进**：连部署频率都统计不出来，无从优化。
+3. **小步快跑优于大版本**：大版本发布风险高、回滚难，拆小更易稳。
+4. **改进要闭环**：提出假设 → 改流程 → 看指标变化 → 复盘。
+
+## ✅ 排障清单
+
+- [ ] 知道 DORA 四指标及优秀区间
+- [ ] 能识别团队当前瓶颈环节
+- [ ] 理解「度量用于改进而非考核」
+`
+          },
+          {
+            id: "devops-adv-5",
+            title: "平台化建设",
+            minutes: 17,
+            updated: "2026-09-16",
+            applies: "平台工程",
+            tags: ["平台工程", "IDP"],
+            terms: ["Internal Developer Platform", "黄金路径", "自助服务"],
+            body: `
+## 什么是平台工程
+
+当团队多了，每个组都在重复造「脚手架、CI 模板、监控接入」。
+平台工程把共性能力做成**内部开发者平台（IDP）**，让业务团队自助使用，少踩坑、快交付。
+
+## 一、黄金路径（Golden Path）
+
+给开发者一条「被验证过的最佳实践」默认路线：
+
+${F}text
+开发者只需：git clone 模板 → 填业务代码 → git push
+平台自动：生成 CI/CD、创建环境、接入监控/日志/告警、发预览链接
+${F}
+
+## 二、平台该提供什么
+
+- **脚手架**：一行命令生成符合规范的服务骨架。
+- **标准化流水线**：内置 lint/test/scan/部署，业务方零配置。
+- **可观测性开箱即用**：日志、指标、链路追踪默认接入。
+- **环境自助**：自助申请预发/测试环境，按时回收。
+
+## 三、平台与业务的解耦
+
+${F}bash
+# 平台提供「能力」，业务只声明「需求」
+# 例：业务描述要一个带 DB 的服务，平台按策略自动供给
+platform-cli new service order --with db,redis,cache
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **别做成「又一个要填的工单系统」**：自助、自助、自助，关键是减少摩擦。
+2. **抽象要适度**：过度抽象让特殊需求无法实现，留好逃生舱（escape hatch）。
+3. **平台也要 SLO**：平台挂了全员停工，平台自身的稳定性得有保障。
+4. **先解决真实痛点**：从最高频的重复劳动下手，别一上来就宏大架构。
+
+## ✅ 排障清单
+
+- [ ] 理解平台工程解决「重复造轮子」的本质
+- [ ] 能说出黄金路径的要素
+- [ ] 知道抽象要留逃生舱
+- [ ] 平台自身要有 SLO
+`
+          }
+        ]
+      }
+    ]
+  };
+
+  /* ============================ 安全 ============================ */
+  const SECURITY = {
+    id: "security",
+    name: "安全",
+    icon: "🔐",
+    desc: "从「知道有哪些坑」到「能建安全体系」。覆盖 Web 安全、渗透测试、认证授权、加密、审计应急与合规治理。",
+    levels: [
+      /* ---------------- 初级 ---------------- */
+      {
+        id: "basic",
+        name: "初级",
+        desc: "建立安全意识：认识常见Web漏洞与Linux加固基线。",
+        chapters: [
+          {
+            id: "security-basic-1",
+            title: "Web 安全基础（OWASP Top 10）",
+            minutes: 16,
+            updated: "2026-09-16",
+            applies: "通用 Web 应用",
+            tags: ["Web安全", "OWASP"],
+            terms: ["OWASP", "注入", "失效访问控制"],
+            body: `
+## 为什么先背 OWASP Top 10
+
+OWASP Top 10 是业界对「最危险 Web 安全风险」的共识清单。
+**开发写得对不对、测试该盯哪、面试常考什么，基本都在这 10 条里**。
+
+## 一、2021 版十大速览
+
+1. **失效的访问控制**：越权访问别人的数据（A1，最普遍）。
+2. **密码学失效**：明文存储、弱哈希、硬编码密钥。
+3. **注入**：SQL/命令/XXE 注入，拼接输入导致。
+4. **不安全的设计**：架构层面缺安全考虑。
+5. **安全配置错误**：默认口令、多余端口、详错页面。
+6. **易受攻击的组件**：用了有 CVE 的依赖。
+7. **身份识别与认证失败**：会话固定、弱密码、JWT 不校验。
+8. **软件和数据完整性故障**：不校验更新的完整性。
+9. **安全日志和监控失效**：出事了没记录、没告警。
+10. **服务端请求伪造（SSRF）**：服务端替你发任意请求。
+
+## 二、最该先堵的两个
+
+${F}text
+① 失效的访问控制：每个接口都必须校验「当前用户是否有权看这个资源」
+② 注入：任何拼接输入的地方（SQL/命令/HTML）都要参数化或转义
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **「前端隐藏按钮」不是权限控制**：攻击者直接调 API 就能绕过 UI。
+2. **依赖不是「能用就行」**：定期扫 CVE（如 ${C}npm audit${C}），老版本可能自带漏洞。
+3. **错误信息别暴露细节**：堆栈/SQL 报错直接返回给前端，等于给黑客画地图。
+4. **默认配置最危险**：框架装好就上线，默认口令、调试模式都没关。
+
+## ✅ 排障清单
+
+- [ ] 能说出 Top 10 里最危险的 2~3 条
+- [ ] 知道「前端隐藏 ≠ 鉴权」
+- [ ] 会扫依赖 CVE、关掉多余错误暴露
+`
+          },
+          {
+            id: "security-basic-2",
+            title: "常见漏洞原理（SQLi/XSS/CSRF）",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "通用 Web 应用",
+            tags: ["漏洞", "防护"],
+            terms: ["SQL注入", "XSS", "CSRF"],
+            body: `
+## 三大高频漏洞
+
+这三者占了 Web 攻击的绝大多数，理解原理才能从根本上防护。
+
+## 一、SQL 注入（SQLi）
+
+**原理**：把用户输入直接拼进 SQL，用户输入变成了「命令」。
+
+${F}text
+恶意输入：' OR '1'='1
+拼接后：SELECT * FROM user WHERE name='' OR '1'='1'   → 恒真，全表泄露
+${F}
+
+**防护**：永远用**参数化查询（预编译）**，绝拼接：
+
+${F}js
+// ❌ 危险
+db.query("SELECT * FROM user WHERE id = " + req.query.id);
+// ✅ 安全
+db.query("SELECT * FROM user WHERE id = ?", [req.query.id]);
+${F}
+
+## 二、跨站脚本（XSS）
+
+**原理**：把用户输入当 HTML/JS 执行。分三类：
+- **存储型**：恶意脚本存进数据库，别人打开就中招。
+- **反射型**：诱骗点击带 payload 的链接。
+- **DOM 型**：前端 JS 把不可信数据写进 DOM。
+
+**防护**：输出转义 + CSP（Content-Security-Policy）限制脚本来源。
+
+## 三、跨站请求伪造（CSRF）
+
+**原理**：攻击者诱导已登录用户浏览器，向目标站点发一个非本意的请求（如转账）。
+
+**防护**：
+- 同源策略 + **CSRF Token**（每个表单带随机 token，服务端校验）。
+- 关键接口要求**二次确认/重新鉴权**。
+- Cookie 设 ${C}SameSite=Strict/Lax${C}。
+
+## ⚠ 踩坑与经验
+
+1. **参数化不是「加引号」**：手写转义极易漏，用框架提供的绑定参数。
+2. **富文本场景 XSS 难防**：用白名单标签过滤（如 DOMPurify），别自己正则。
+3. **${C}SameSite=None${C} 必须配 ${C}Secure${C}**：否则 Cookie 不发送。
+4. **JSONP / 老接口是 CSRF 重灾区**：已弃用的跨域方式尽量少留。
+
+## ✅ 排障清单
+
+- [ ] 理解 SQLi 用参数化根治
+- [ ] 知道 XSS 三类与转义+CSP 防护
+- [ ] 知道 CSRF 用 token + SameSite 防护
+`
+          },
+          {
+            id: "security-basic-3",
+            title: "Linux 安全基线",
+            minutes: 15,
+            updated: "2026-09-16",
+            applies: "CentOS 7+ / Ubuntu 20.04+",
+            tags: ["Linux", "加固"],
+            terms: ["SSH加固", "防火墙", "最小权限"],
+            body: `
+## 为什么先加固基线
+
+一台新服务器默认有很多「方便但不安全」的设置：允许 root 直登、弱口令、全端口开放。
+**基线加固是运维/安全的第一步，也是等保的入门要求**。
+
+## 一、账号与密码策略
+
+${F}bash
+# 禁用/锁定无用账号
+passwd -l nobody
+# 密码复杂度（/etc/login.defs / pam_pwquality）
+# 定期改密、设最短长度与复杂度
+${F}
+
+## 二、SSH 加固
+
+${F}bash
+# /etc/ssh/sshd_config
+PermitRootLogin no          # 禁止 root 直接登录
+PasswordAuthentication no    # 只用密钥登录
+Port 2222                   # 改默认端口，减少扫描噪音（非绝对安全）
+AllowUsers deploy           # 限定可登录用户
+${F}
+
+改完 ${C}systemctl restart sshd${C}（注意别把自己踢出去，先留一个会话测试）。
+
+## 三、防火墙与最小化
+
+${F}bash
+# 只开必要端口
+firewall-cmd --add-port=2222/tcp --permanent
+firewall-cmd --remove-service=dhcpv6-client --permanent
+firewall-cmd --reload
+# 关掉用不到的服务
+systemctl disable --now telnet.socket
+${F}
+
+## 四、文件与权限
+
+- 关键配置文件 ${C}chmod 600${C}（如 ${C}/etc/shadow${C}）。
+- 用专用低权用户跑应用，不用 root。
+- 定期审计 SUID 文件：${C}find / -perm -4000 -type f 2>/dev/null${C}。
+
+## ⚠ 踩坑与经验
+
+1. **改 SSH 前先开第二个会话测试**：否则配错直接失联，只能去机房/控制台救。
+2. **密钥登录也要保护私钥**：私钥文件权限 ${C}600${C}，别到处拷。
+3. **防火墙别一刀切**：先加放行规则再删默认，避免把自己关外面。
+4. **最小化=少装少开**：每个多余服务都是攻击面。
+
+## ✅ 排障清单
+
+- [ ] 禁 root 直登、用密钥
+- [ ] 防火墙只放必要端口
+- [ ] 应用用低权用户跑
+- [ ] 定期审计 SUID 与账号
+`
+          }
+        ]
+      },
+      /* ---------------- 中级 ---------------- */
+      {
+        id: "mid",
+        name: "中级",
+        desc: "能做漏洞发现与修复：渗透测试、认证授权设计、加密密钥管理、审计入侵排查。",
+        chapters: [
+          {
+            id: "security-mid-1",
+            title: "渗透测试流程与工具",
+            minutes: 19,
+            updated: "2026-09-16",
+            applies: "授权环境",
+            tags: ["渗透", "红队"],
+            terms: ["信息收集", "漏洞扫描", "Burp Suite"],
+            body: `
+## 什么是渗透测试
+
+**在授权范围内，模拟攻击者的方法找漏洞**，目的是在真黑客之前发现问题。
+⚠ 未经授权的渗透测试违法，务必拿到书面授权、限定范围。
+
+## 一、标准流程（PTES 简化版）
+
+1. **前期交互**：明确范围、目标、时间窗、报告形式。
+2. **情报收集（ recon）**：
+   ${F}bash
+nmap -sV -p- target.com          # 端口与版本探测
+subfinder -d target.com          # 子域名枚举
+whatweb target.com               # 识别 Web 框架/组件
+   ${F}
+3. **漏洞扫描**：用 AWVS / Nessus / nuclei 扫已知漏洞。
+4. **利用（exploitation）**：用 sqlmap 验证注入、Burp 改包测越权。
+5. **后渗透**：拿 shell 后看能提权/横向到哪。
+6. **报告**：漏洞 + 危害 + 复现步骤 + 修复建议。
+
+## 二、必备工具
+
+- **Burp Suite**：拦截/改包、重放、扫描 Web 漏洞。
+- **sqlmap**：自动化 SQL 注入检测与利用。
+- **nmap / masscan**：端口与资产探测。
+- **Metasploit**：漏洞利用框架。
+
+## ⚠ 踩坑与经验
+
+1. **只扫不验证 = 噪音**：扫描器报的「中危」要人工确认是否误报。
+2. **注意测试强度**：暴力破解、大流量扫描可能把目标打挂，约定速率。
+3. **报告要可复现**：给 PoC（如具体请求），开发才能修。
+4. **授权边界内行动**：多扫一个域名都可能越界，严格按范围。
+
+## ✅ 排障清单
+
+- [ ] 理解渗透测试「授权先行」的红线
+- [ ] 走通 recon→扫描→利用→报告 流程
+- [ ] 会用 nmap / Burp / sqlmap 基础能力
+- [ ] 报告含可复现 PoC 与修复建议
+`
+          },
+          {
+            id: "security-mid-2",
+            title: "认证与授权设计",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "通用后端",
+            tags: ["认证", "授权"],
+            terms: ["认证", "RBAC", "JWT"],
+            body: `
+## 认证 vs 授权
+
+- **认证（Authentication）**：你是谁？——登录、令牌。
+- **授权（Authorization）**：你能干啥？——权限、角色。
+
+两者都漏一个，系统就不安全。
+
+## 一、认证设计要点
+
+${F}text
+✅ 密码用慢哈希存储：bcrypt / scrypt / Argon2（绝不 md5/sha1+盐裸存）
+✅ 登录失败限流 + 锁定，防暴破
+✅ 支持 MFA（多因素），关键操作二次验证
+✅ 会话用安全 Cookie：HttpOnly + Secure + SameSite
+${F}
+
+## 二、授权：RBAC 最小权限
+
+${F}js
+// 角色→权限，用户→角色；接口按权限点校验
+function can(user, action) {
+  return user.roles.some(r => ROLES[r].perms.includes(action));
+}
+// 每个请求都必须查「这个用户对这个资源有权吗」
+if (!can(ctx.user, "order:read:" + ctx.params.id))
+  return forbidden();
+${F}
+
+## 三、JWT 的坑
+
+- **别把敏感信息塞 payload**：它只是 base64，谁都能解码。
+- **必须校验签名与过期**：不校验 = 伪造令牌任意登录。
+- **无法即时吊销**：退出登录要靠短过期 + 黑名单/刷新令牌机制。
+
+## ⚠ 踩坑与经验
+
+1. **越权（IDOR）最高发**：接口只信前端传的 ${C}userId${C}，不校验归属，A 改 B 的数据。
+2. **权限点在代码散落**：用统一中间件/注解集中校验，避免漏。
+3. **JWT 用 none 算法攻击**：服务端必须显式拒绝 ${C}alg: none${C}。
+4. **退出登录要真失效**：只清前端 Cookie 不够，服务端也要记失效。
+
+## ✅ 排障清单
+
+- [ ] 密码用慢哈希，支持 MFA
+- [ ] 授权用 RBAC + 每个请求校验归属
+- [ ] 知道 JWT 不能存敏感、必须校验签名
+- [ ] 防 IDOR 越权
+`
+          },
+          {
+            id: "security-mid-3",
+            title: "加密与密钥管理",
+            minutes: 17,
+            updated: "2026-09-16",
+            applies: "通用",
+            tags: ["加密", "密钥"],
+            terms: ["对称加密", "非对称加密", "KMS"],
+            body: `
+## 为什么加密不是「调个函数」
+
+选错算法、密钥乱放，等于没加密。
+加密要解决两个问题：**数据 confidentiality（保密）** 和 **integrity（完整不可篡改）**。
+
+## 一、对称 vs 非对称
+
+- **对称（AES）**：一把密钥加解密，快，适合加密大量数据。
+- **非对称（RSA/ECC）**：公钥加密私钥解，慢，适合交换密钥/签名。
+- **实战组合**：用 RSA 交换 AES 密钥，再用 AES 加密正文（TLS 思路）。
+
+## 二、TLS 是底线
+
+${F}bash
+# 检查站点 TLS 配置与证书链
+openssl s_client -connect target.com:443 -servername target.com
+# 看证书有效期、是否启用强套件
+${F}
+
+**杜绝**：自签证书上生产、TLS 1.0/1.1、弱套件（RC4/3DES）。
+
+## 三、密钥管理（KMS / Vault）
+
+${F}text
+❌ 密钥写进代码/配置文件提交 Git
+❌ 明文存在服务器磁盘
+✅ 用 KMS（云密钥管理）或 HashiCorp Vault 集中管
+✅ 密钥定期轮换，泄露可秒级吊销
+✅ 应用运行时动态拉取，不落盘
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **自己发明加密算法 = 自寻死路**：用经过审计的标准库（如 libsodium）。
+2. **硬编码 AK/SK 进前端**：任何人都能从 JS 里抠出来，前端只放临时令牌。
+3. **密钥不轮换**：一旦泄露影响面随时间扩大。
+4. **随机数要用密码学安全源**：${C}Math.random${C} 不适合做密钥/令牌。
+
+## ✅ 排障清单
+
+- [ ] 会用 AES 对称 + RSA 非对称组合
+- [ ] 站点强制 TLS 1.2+ 强套件
+- [ ] 密钥走 KMS/Vault 不落代码
+- [ ] 有密钥轮换与吊销机制
+`
+          },
+          {
+            id: "security-mid-4",
+            title: "日志审计与入侵排查",
+            minutes: 16,
+            updated: "2026-09-16",
+            applies: "Linux / 应用",
+            tags: ["审计", "入侵排查"],
+            terms: ["日志审计", "入侵迹象", "取证"],
+            body: `
+## 日志是安全的眼睛
+
+没有日志，攻击发生了你都不知道；日志不全，出了事无法溯源。
+**安全建设九成靠「看得见」**。
+
+## 一、该采集哪些日志
+
+- **系统**：${C}/var/log/auth.log${C}（登录）、${C}/var/log/syslog${C}
+- **应用**：访问日志、错误日志、关键操作审计日志
+- **网络/边界**：WAF、防火墙、LB 访问日志
+- **云**：CloudTrail / 操作审计
+
+## 二、入侵排查步骤
+
+${F}bash
+# 1 看异常登录
+grep "Failed password" /var/log/auth.log | awk '{print $11}' | sort | uniq -c | sort -rn
+# 2 看谁在线、起过什么
+w ; last ; history
+# 3 看可疑进程/连接
+ss -antp | grep ESTAB
+# 4 看定时任务（常被种后门）
+crontab -l ; ls /etc/cron.*
+# 5 看新出现的 SUID / 异常文件
+find / -perm -4000 -type f 2>/dev/null
+${F}
+
+## 三、集中化
+
+${F}text
+单机 tail 不够用：用 ELK / Loki / 云日志服务集中收集
+→ 统一检索 + 告警规则（如「1 分钟 50 次失败登录」触发告警）
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **日志只存本地 = 易被删**：攻击者清掉 ${C}/var/log${C} 就抹痕，集中化留存。
+2. **没时间戳/时区混乱**：统一 NTP 时间，排查时才对得上序。
+3. **只记成功不记失败**：失败尝试（登录、越权）往往更关键。
+4. **告警无意义阈值**：满屏告警等于没告警，按真实风险设规则。
+
+## ✅ 排障清单
+
+- [ ] 知道要采集系统/应用/边界/云四类日志
+- [ ] 会用命令排查异常登录/进程/后门
+- [ ] 日志集中化 + 有告警规则
+- [ ] 统一时间源
+`
+          }
+        ]
+      },
+      /* ---------------- 高级 ---------------- */
+      {
+        id: "adv",
+        name: "高级",
+        desc: "能做安全体系建设：SDL、WAF 与风控、应急响应取证、合规与数据治理。",
+        chapters: [
+          {
+            id: "security-adv-1",
+            title: "安全开发生命周期（SDL）",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "研发流程",
+            tags: ["SDL", "安全左移"],
+            terms: ["SDL", "威胁建模", "安全测试"],
+            body: `
+## 什么是 SDL
+
+Security Development Lifecycle：把安全活动**嵌入软件开发的每个阶段**，而不是上线前临门一脚。
+核心理念是**安全左移**——问题越早发现，修复成本越低。
+
+## 一、各阶段的安全活动
+
+${F}text
+需求   → 明确安全/合规要求、定义信任边界
+设计   → 威胁建模（STRIDE）：身份 spoofing / 篡改 tampering / 抵赖
+        / 信息泄露 / 拒绝服务 / 越权
+编码   → 安全编码规范 + 静态扫描（SAST）
+测试   → 依赖扫描（SCA）+ 动态扫描（DAST）+ 渗透测试
+发布   → 安全配置基线 + 上线检查单
+运营   → 监控告警 + 应急响应预案
+${F}
+
+## 二、威胁建模（STRIDE）示例
+
+${F}text
+场景：用户上传头像
+S 伪造身份？→ 强制登录校验
+T 文件被篡改？→ 校验类型/大小/病毒扫描
+I 泄露他人头像？→ 对象存储设私有 + 签名 URL
+D 上传打挂服务？→ 限流 + 限制文件大小
+E 越权访问？→ 校验归属，防 IDOR
+${F}
+
+## 三、把安全做成卡点
+
+- **CI 内置 SAST/SCA**：高危漏洞不让合并。
+- **依赖更新自动化**：Dependabot 自动提 PR 修 CVE。
+- **安全门禁**：发布前必须过安全 checklist。
+
+## ⚠ 踩坑与经验
+
+1. **SDL 不是安全团队一个人的事**：开发/测试/运维都要有安全职责。
+2. **威胁建模别写成八股**：聚焦真实数据流和信任边界，别堆文档。
+3. **卡点太多会失效**：只在关键节点设强卡点，其余靠工具自动。
+4. **遗留系统难一步到位**：先补可落地的自动化扫描，再逐步建模。
+
+## ✅ 排障清单
+
+- [ ] 理解安全左移与各阶段活动
+- [ ] 会用 STRIDE 做威胁建模
+- [ ] 安全活动嵌入 CI 卡点
+`
+          },
+          {
+            id: "security-adv-2",
+            title: "WAF 与风控体系",
+            minutes: 17,
+            updated: "2026-09-16",
+            applies: "Web 防护",
+            tags: ["WAF", "风控"],
+            terms: ["WAF", "规则", "风控模型"],
+            body: `
+## 什么是 WAF
+
+Web Application Firewall：在 HTTP 层**过滤恶意请求**（SQLi、XSS、扫描器、CC 攻击）。
+它是纵深防御的一环，不是银弹——代码层漏洞仍要修。
+
+## 一、WAF 工作模式
+
+${F}text
+反向代理模式：流量先过 WAF 再到源站（云 WAF 常用）
+透明桥接模式：串在链路里，源站无感知
+规则来源：OWASP CRS 通用规则 + 业务自定义规则
+${F}
+
+## 二、风控体系（比 WAF 更上层）
+
+WAF 防「攻击流量」，风控防「滥用行为」：
+
+${F}text
+规则引擎：同 IP 短时高频 → 限流；异地登录 → 二次验证
+模型引擎：用户行为基线异常（如平时小额、突然大额）→ 拦截复核
+名单体系：黑/白/灰名单，设备指纹、账户信誉分
+${F}
+
+## 三、配置要点
+
+${F}bash
+# 先「观察模式」跑一段时间，确认不误杀再切「拦截模式」
+# 典型误杀：老浏览器、特定 UA、内网探针
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **一上来就拦截 = 误杀客户**：先用观察模式收集误报，再逐步收紧。
+2. **WAF 拦不住逻辑漏洞**：越权、业务逻辑 bug 得靠代码和风控。
+3. **规则要随业务更新**：新接口、新参数要补白名单，否则正常请求被拦。
+4. **风控别只靠规则**：纯规则易被绕过，叠加模型和行为分析。
+
+## ✅ 排障清单
+
+- [ ] 理解 WAF 与风控的分工
+- [ ] 先观察模式再拦截，防止误杀
+- [ ] 知道 WAF 拦不了逻辑/越权漏洞
+- [ ] 风控规则+模型+名单结合
+`
+          },
+          {
+            id: "security-adv-3",
+            title: "应急响应与取证",
+            minutes: 18,
+            updated: "2026-09-16",
+            applies: "安全事件",
+            tags: ["应急", "取证"],
+            terms: ["应急响应", "遏制", "取证"],
+            body: `
+## 为什么需要应急响应预案
+
+出事时慌乱最致命。**有预案 = 知道第一步该干嘛、谁来决定、怎么止血**。
+应急响应（Incident Response）是安全体系的「救命绳」。
+
+## 一、标准流程（NIST IR）
+
+1. **准备（Preparation）**：预案、联系人、工具、权限就绪。
+2. **检测与分析（Detection）**：告警/用户反馈 → 确认是否真事件、定级。
+3. **遏制（Containment）**：先止血！断网、封 IP、改口令、下线服务。
+4. **根除（Eradication）**：清后门、补漏洞、加固。
+5. **恢复（Recovery）**：从干净备份恢复，监控确认无异常。
+6. **复盘（Lessons Learned）**：写报告、改流程、补漏洞。
+
+## 二、取证要点（边处置边留证）
+
+${F}bash
+# 别急着重启！先采集易失数据
+cp /var/log/auth.log /evidence/        # 日志
+ps aux > /evidence/proc.txt            # 进程快照
+ss -antp > /evidence/net.txt           # 网络连接
+# 文件完整性：记录关键文件 hash 便于比对
+md5sum /usr/bin/* > /evidence/bin.md5
+${F}
+
+## 三、黄金法则
+
+${F}text
+先遏制再溯源：止血优先于抓黑客
+保留证据链：操作留痕，便于复盘与可能的司法取证
+单点处置不如整体加固：修复根因，不止封一个 IP
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **一发现就重启 = 销毁证据**：内存里的后门、连接全没了，先取证再重启。
+2. **只封 IP 不治本**：攻击者换 IP 又来，必须根除漏洞。
+3. **没有备份 = 恢复无望**：定期演练从备份恢复，别等出事才发现备份是坏的。
+4. **复盘对事不对人**：目标是改流程，不是追责任。
+
+## ✅ 排障清单
+
+- [ ] 记住 IR 六阶段（准备→检测→遏制→根除→恢复→复盘）
+- [ ] 先遏制止血，再取证溯源
+- [ ] 处置前先采集易失证据
+- [ ] 有可恢复的备份并演练过
+`
+          },
+          {
+            id: "security-adv-4",
+            title: "合规与数据安全治理",
+            minutes: 17,
+            updated: "2026-09-16",
+            applies: "企业合规",
+            tags: ["合规", "数据治理"],
+            terms: ["等保", "数据分级", "隐私保护"],
+            body: `
+## 为什么要合规
+
+合规不是纸上谈兵：等保 2.0、GDPR、个人信息保护法，都是**法律刚性要求**。
+不合规 = 罚款、停业、法律责任；同时合规也是安全建设的框架。
+
+## 一、数据分类分级
+
+${F}text
+公开 / 内部 / 敏感 / 核心（绝密）
+→ 不同级别：加密要求、访问审批、留存期限、跨境限制都不同
+例：身份证号、手机号 = 个人敏感信息，须脱敏存储与展示
+${F}
+
+## 二、合规落地的关键控制项
+
+- **访问控制**：最小权限 + 审批留痕。
+- **加密**：传输 TLS、存储加密、密钥集中管。
+- **审计**：操作全程留痕、日志不可篡改。
+- **留存与销毁**：到期自动销毁，不无限囤数据。
+- **跨境/第三方**：数据出域评估，供应商签 DPA。
+
+## 三、隐私保护设计（Privacy by Design）
+
+${F}text
+✅ 默认最少采集：不收集的就不问
+✅ 展示脱敏：手机号 138****8000
+✅ 用户可撤回授权、可删除（被遗忘权）
+✅ 数据用途明示并限定，不外溢
+${F}
+
+## ⚠ 踩坑与经验
+
+1. **合规不是堆文档**：制度要有技术控制支撑，否则一查就露馅。
+2. **过度收集数据 = 风险自找**：收集越多，泄露代价越大，也越难合规。
+3. **第三方/外包是盲区**：供应商出事你也担责，合同 + 审计不能少。
+4. **等保「测评过」≠ 真安全**：测评是快照，日常运营才是长期仗。
+
+## ✅ 排障清单
+
+- [ ] 理解数据分类分级与差异化管控
+- [ ] 知道合规关键控制项（访问/加密/审计/留存）
+- [ ] 落实隐私 by Design（最少采集、脱敏、可撤回）
+- [ ] 管好第三方数据风险
+`
+          }
+        ]
+      }
+    ]
+  };
 
   window.DOCS = {
-    version: "1.1",
-    updated: "2026-09-15",
+    version: "1.2",
+    updated: "2026-09-16",
     // 侧栏顺序：运维/SRE → Java 后端 → 网络与操作系统 → 数据库/DBA → 前端 Web
-    //           →(devops / security 仍建设中，置后)
+    //           → 云原生/DevOps → 安全（已完成正文）
     dirs: [
       OPS,
       window.JAVA, window.NETWORK, window.DBA, window.FRONTEND,
-      ...DIRS
+      DEVOPS, SECURITY
     ]
   };
 })();

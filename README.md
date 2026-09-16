@@ -240,6 +240,15 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-16 · feat: 补全「云原生/DevOps」与「安全」两大技术教程方向（缓存版本 `20260916a→20260916b`）
+
+- **内容**：将原先仅占位骨架的 `devops`（云原生/DevOps）与 `security`（安全）两个方向补齐为完整实战教程，与「运维/SRE」「Java 后端」等方向同结构（侧栏顺序：`ops → java → network → dba → frontend → devops → security`）。
+  - **云原生/DevOps（14 章）**：初级（Docker 镜像与容器操作、Git 与代码评审、CI 流水线基本配置、Linux 与网络基础）→ 中级（Dockerfile 最佳实践与镜像瘦身、CI/CD 流水线设计、K8s 部署与 Helm、基础设施即代码 Terraform、制品与版本管理）→ 高级（GitOps 与持续交付、多集群与多环境管理、发布策略蓝绿/金丝雀、工程效能度量 DORA、平台化建设）。
+  - **安全（11 章）**：初级（Web 安全基础 OWASP Top 10、常见漏洞原理 SQLi/XSS/CSRF、Linux 安全基线）→ 中级（渗透测试流程与工具、认证与授权设计、加密与密钥管理、日志审计与入侵排查）→ 高级（安全开发生命周期 SDL、WAF 与风控体系、应急响应与取证、合规与数据安全治理）。
+  - 每章含 `minutes`/`updated`/`applies`/`tags`/`terms` 与带代码块、踩坑清单、排障清单的实战正文，沿用 `${C}`/`${F}` 模板占位符与 marked 渲染（GitHub Actions 的 `${{ }}` 已做转义，按字面显示）。
+- **改动面**：`js/docs-data.js`（新增 25 章正文，移除不再使用的 `skeleton()` 死代码）、`index.html`、`sw.js` 缓存版本升 `20260916a→20260916b`。
+- **验证**：`node --check js/docs-data.js` 通过；require 后 `window.DOCS.dirs` 顺序正确，devops 14 章 / security 11 章全部正文非空、字段完整；模板占位符运行时已正确转为反引号。
+
 ### 2026-09-16 · fix: 修复发版后「技术教程」页偶发整页空白（Service Worker 旧缓存未失效，缓存版本 `20260915c→20260916a`）
 
 - **现象**：`20260915c` 热修后，部分访客打开「技术教程」任意页（索引 / 方向 / 阅读）整页空白（`#main` 为空、标题回退为首页标题），而站内点击跳转又正常。本地起静态服务 + Chromium 实测确认：**关掉 Service Worker 后三个页面全部正常渲染（满宽、`opacity:1`、内容完整）**——说明代码本身没问题，是 SW 缓存了上一次 messy 部署期间的不完整资源组合（`iti-pwa-v20260915c`），且因版本号未变、SW 不重新安装，一直继续服务损坏缓存。
