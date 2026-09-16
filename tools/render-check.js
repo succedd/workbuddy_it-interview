@@ -1,7 +1,12 @@
 /* =========================================================================
- *  tools/_render_check.js  —  用真实 Chrome 渲染技术教程页面并核验
- *  用法：node tools/_render_check.js [--live <baseUrl>] [--shot <out.png>]
+ *  tools/render-check.js  —  用真实 Chrome 渲染技术教程页面并核验
+ *  用法：node tools/render-check.js [--live <baseUrl>] [--shot <out.png>] [--stub-api]
  *  默认对本地 http://127.0.0.1:8199 做检查（脚本内起静态服务）。
+ *
+ *  --stub-api：把「站点自身以外的所有请求」直接应答 200 {}，用于在沙箱/受限网络里
+ *              核验页面渲染。原因：app.js 的启动链会 await 第三方统计与云端接口
+ *              （iti-api.netlify.app / *.workers.dev）。网络被阻断时这些请求会一直挂起，
+ *              启动链停在中途 → 整页空白。此时不是站点代码有问题，而是环境不可达。
  * ========================================================================= */
 const http = require("http");
 const fs = require("fs");
@@ -39,7 +44,9 @@ function startServer() {
 const args = process.argv.slice(2);
 const liveIdx = args.indexOf("--live");
 const BASE = liveIdx >= 0 ? args[liveIdx + 1].replace(/\/$/, "") : `http://127.0.0.1:${PORT}`;
+const STUB = args.includes("--stub-api");
 const SHOT = args.includes("--shot") ? args[args.indexOf("--shot") + 1] : null;
+const SITE_HOST = BASE.replace(/^https?:\/\//, "").split("/")[0];
 
 // 待验证的（方向 / 分级 / 章节）
 const TARGETS = [
@@ -63,6 +70,16 @@ const TARGETS = [
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 1000 });
+    if (STUB) {
+      // 站点自身以外的请求一律快速应答，避免第三方接口挂起拖死启动链
+      await page.setRequestInterception(true);
+      page.on("request", (r) => {
+        let host = "";
+        try { host = new URL(r.url()).host; } catch (_) { return r.continue(); }
+        if (host === SITE_HOST || r.url().startsWith("data:")) return r.continue();
+        r.respond({ status: 200, contentType: "application/json", body: "{}" });
+      });
+    }
     const errs = [];
     // 本地跑时，访客统计接口（iti-api.netlify.app）会被 CORS 拦掉，属预期，不计入
     const isNoise = (t) => /iti-api\.netlify\.app|Access to fetch at|ERR_FAILED|Failed to load resource/.test(t);
