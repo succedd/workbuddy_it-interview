@@ -1,0 +1,90 @@
+{
+  "chain": true,
+  "topic": "T050",
+  "questions": [
+    {
+      "title": "Vue3 为什么用 Proxy 重写了响应式系统？相比 Vue2 的 Object.defineProperty 解决了哪些痛点？",
+      "body": "考察点：响应式原理演进。要求说清 Vue2 基于 Object.defineProperty 的三大局限，以及 Vue3 用 Proxy 是如何从机制上天然解决的，并点出 Proxy 带来的代价（兼容性与初始化方式差异）。",
+      "answer": "**要点**：\n- **Vue2 的局限**：`Object.defineProperty` 只能在对象已有属性上定义 getter/setter，因此①无法监听属性的「新增」与「删除」（需用 `Vue.set`/`Vue.delete`  hack）；②对数组是通过重写 7 个变异方法特判实现的，直接通过下标或 `.length` 改值无法触发；③初始化时必须递归遍历对象所有属性并逐个 define，深层对象越多初始化越慢。\n- **Proxy 的解决**：`new Proxy(target, handler)` 拦截的是「整个对象」的读取/设置/删除/枚举等 13 种 trap，无需预先知道属性名，新增/删除属性、`arr[index]=x`、`arr.length=0` 都能被 `set`/`deleteProperty` 捕获，且是**惰性递归**（访问到嵌套对象时才对它包 Proxy），初始化更快。\n- **代价与取舍**：Proxy 是 ES6 特性，**无法 polyfill**，所以 Vue3 放弃了 IE11；另外 Proxy 拦截的是引用本身，直接整体替换 `reactive` 对象会丢失响应性（需用 `Object.assign` 或 `ref` 包一层）。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": ["Vue3", "响应式", "Proxy", "前端原理"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    },
+    {
+      "title": "Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？",
+      "body": "考察点：响应式核心机制（副作用函数 / 依赖收集 / 派发更新）。要能讲清「读时收集、写时派发」的闭环，以及 activeEffect 和 target->key->effectSet 三层依赖结构。",
+      "answer": "**要点**：\n- **依赖收集（track）**：组件渲染或 `watch`/`computed` 会先把自己包装成「副作用函数」并标记为 `activeEffect`，然后执行函数体触发对被代理对象的 `get`。get 拦截器里调用 `track(target, key)`，把当前 `activeEffect` 存入「`target` → `key` → `Set<effect>`」的三层依赖映射中。\n- **派发更新（trigger）**：当代码修改属性触发 `set` 拦截器，调用 `trigger(target, key)`，从依赖映射里取出该 key 对应的所有 effect 并依次执行（组件 effect 触发重新渲染，computed/watch 触发回调）。\n- **一个关键点**：收集发生在「读取」时、派发发生在「写入」时。所以一个属性只有**被读过**才会建立依赖；从未在模板/副作用里读过的属性，即使被改了也不会触发更新。这也是「解构出普通值」会断响应、以及 `ref` 需要 `.value` 才能触发 track 的根本原因。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": ["Vue3", "响应式", "依赖收集", "track", "trigger"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/guide/extras/reactivity-in-depth.html"
+    },
+    {
+      "title": "场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 <button @click=\"count++\">，点击后视图为什么不更新？怎么改？",
+      "body": "考察点：解构导致响应式丢失这一高频陷阱。要求定位「解构得到的是普通原始值、脱离了 Proxy 引用」这一根因，并给出至少两种正确写法。",
+      "answer": "**要点**：\n- **根因**：`const { count } = state` 是把 `state.count` 当时的数值（原始类型）拷贝到一个普通局部变量 `count` 里，这个 `count` 和 `reactive` 代理对象已经没有任何引用关系；`@click=\"count++\"` 只是改了普通变量，不会触发 Proxy 的 `set` 拦截器，自然没有 track/trigger，视图不更新。\n- **改法一（最直观）**：模板里直接写 `state.count`，不要解构——`state` 仍是 Proxy，`state.count++` 会正常走 set→trigger。\n- **改法二（需要解构时）**：用 `toRefs(state)` 把每个属性转成 `ref`，`const { count } = toRefs(state)`，此时 `count` 是 ref，模板里 `count`（自动解包）或 `count.value++` 都会走响应式。\n- **改法三**：如果只要单个值，用 `toRef(state, 'count')` 也行。**口诀**：解构 reactive 对象要用 `toRefs`，否则拿到的是「死值」。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": ["Vue3", "reactive", "toRefs", "响应式陷阱"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    },
+    {
+      "title": "单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？\nA. reactive 可以直接用于基本类型（数字/字符串）\nB. ref 在模板中使用时必须写 .value\nC. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value\nD. reactive 对象被整体重新赋值仍保持响应式",
+      "body": "考察点：ref 与 reactive 的选用规则与模板解包行为。要能判断每个选项对错并讲清理由。",
+      "answer": "**正确答案：C**\n- **A 错**：`reactive` 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 `ref`。\n- **B 错**：`ref` 在 **JS 逻辑里**要用 `.value` 访问，但在**模板中会自动解包**，直接写 `{{ count }}` 即可，无需 `.value`。\n- **C 对**：这是官方推荐分工——基本类型用 `ref`、对象用 `reactive`；`ref` 在模板自动解包是编译期处理的（前提是 ref 是顶层属性，嵌套在 reactive 里也会解包）。\n- **D 错**：`reactive` 整体重新赋值（`state = {…}`）会断开原代理引用、丢失响应性；正确做法是用 `Object.assign(state, newObj)` 原地合并，或改用 `ref` 包一层用 `.value` 替换。\n**选型口诀**：「基本用 ref，对象用 reactive；要替换整对象就 ref 包一层」。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "中级",
+      "type": "单选题",
+      "tags": ["Vue3", "ref", "reactive", "单选题"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html"
+    },
+    {
+      "title": "故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name='x' 后，DevTools 里数据已变但视图不刷新。如何定位并修复？",
+      "body": "考察点：shallowRef 浅响应陷阱与调试思路。要求区分 shallowRef 与 ref 的追踪粒度，并给出整体替换 / triggerRef / 改用 ref 三种修复路径。",
+      "answer": "**要点**：\n- **定位**：`shallowRef` 与 `ref` 的区别在于——`ref` 会对 `.value` 做**深层响应式**（包 Proxy），而 `shallowRef` 只追踪 `.value` 这一层引用是否「被替换」。直接改 `config.value.items[0].name` 是改了内部深层属性，没有替换 `.value` 本身，所以 set 拦截器根本没被触发，视图当然不更新（数据在 DevTools 里变只是因为你直接改了对象引用）。\n- **修复一（推荐，符合 shallow 设计意图）**：整体替换 `.value` —— `config.value = { ...config.value, items: config.value.items.map((it,i)=> i===0?{...it,name:'x'}:it) }`，让 `.value` 引用改变即可触发。\n- **修复二（临时强制）**：改完深层后调 `triggerRef(config)` 手动派发一次更新（适合不想改数据结构的场景）。\n- **修复三（根本）**：如果本来就需要深层响应，说明不该用 shallow，直接换成 `ref(bigObj)` 或 `reactive(bigObj)`。\n**经验**：`shallowRef` 是为「大对象 + 只整体替换」场景做性能优化的，用错粒度就会出现「数据变了视图不动」的诡异 bug。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "中级",
+      "type": "故障排查题",
+      "tags": ["Vue3", "shallowRef", "triggerRef", "响应式排查"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/api/reactivity-advanced.html"
+    },
+    {
+      "title": "开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。",
+      "body": "考察点：渲染机制与 diff 优化原理（本链 diff 环节）。要求讲清编译器在编译期能做哪些静态分析，以及运行时如何只比对动态节点，而非整棵 vnode 树。",
+      "answer": "**要点**：\n- **静态提升（hoistStatic）**：编译器在编译期识别出「永远不变的静态节点/属性」，把它们提升到 `render` 函数外面只创建一次，后续更新直接复用同一 vnode，不再参与 diff，减少比对数量。\n- **PatchFlag（动态标记）**：对模板里真正会变的节点，编译器在编译期就给它打上「动态类型编码」，例如 `TEXT`（只有文本变）、`CLASS`、`PROPS`（并附上具体属性名数组）。运行时 diff 不再递归比所有属性，而是**只按 PatchFlag 去更新对应那一项**（如只比 class、只比指定的 props），把 O(全属性) 降成 O(标记项)。\n- **Block Tree（动态区块）**：编译器把模板按 `v-if`/`v-for`/插槽等「结构可能变化」处切成 Block，每个 Block 内收集一个 `dynamicChildren` 动态子节点数组。diff 时**只遍历 dynamicChildren 这个扁平数组**，而不是整棵子树，跳过了所有静态子树；`v-for` 列表的 key 比对也只在动态节点间进行。\n- **一句话总结**：Vue2 的 diff 是「递归比整棵树」，Vue3 靠「编译期标记 + 运行时只走动态节点」把比对成本从树规模降到「动态节点数」，这是 Vue3 渲染性能大幅领先的关键之一。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "高级",
+      "type": "开放讨论题",
+      "tags": ["Vue3", "编译优化", "PatchFlag", "虚拟DOM", "diff"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/guide/extras/rendering-mechanism.html"
+    },
+    {
+      "title": "场景题：用组合式 API 设计一个可复用的 useDebounceSearch composable：输入变化防抖 300ms 发请求，需处理请求竞态（后发先到覆盖结果）、组件卸载时取消、loading 状态。给出实现思路与关键陷阱。",
+      "body": "考察点：组合式 API 工程实践（逻辑抽取复用、生命周期清理、竞态/取消控制）。要求给出一个完整可落地的实现骨架，并点出新手常踩的坑。",
+      "answer": "**要点**：\n- **骨架**：用 `ref` 暴露 `data/loading/error`，用 `watch` 监听入参（如 keyword），在回调里 `clearTimeout` 旧定时器后 `setTimeout` 300ms 再发请求；请求用 `AbortController` 创建 signal，发之前 `abort()` 掉上一次的请求，组件卸载时也要 `abort()` + `clearTimeout`。\n- **竞态处理（关键）**：网络慢时「后发的请求先返回」会覆盖「先发的旧结果」。解法有二：①用 `AbortController`，新请求发起前 `abort()` 旧请求，旧请求直接抛错被 `try/catch` 吞掉、不写 data；②用自增的 `reqId`，`await` 回来后判断 `if(reqId!==currentId) return`，丢弃过期响应。两种可叠加。\n- **清理陷阱**：定时器必须 `clearTimeout`、fetch 必须 `abort`，否则组件卸载后 setState/写 ref 会警告或泄漏；用 `onScopeDispose`（组合式作用域销毁时）或 `onUnmounted` 统一清理。\n- **loading 与防抖叠加**：防抖期间应置 `loading=true`、拿到结果后置 `false`；注意「最后一次请求失败」也要复位 loading，避免 UI 卡在 loading。\n- **复用性**：composable 只管逻辑、不依赖具体组件，返回 `{}` 解构即用；这正是组合式 API 相比 mixin 的最大优势——来源清晰、无命名冲突。",
+      "category": "Vue3",
+      "positions": ["前端开发工程师"],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": ["Vue3", "组合式API", "composable", "防抖", "竞态"],
+      "years": "近3年",
+      "source": "https://cn.vuejs.org/guide/reusability/composables.html"
+    }
+  ]
+}
