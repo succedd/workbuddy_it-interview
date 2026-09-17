@@ -145,9 +145,6 @@
 | 2026-09-15 | 2026-09-15-a | Kafka 追问链（经典主题 T043，分布式域：架构→单分区顺序性→重复消费→可靠性三端→高吞吐→Exactly-Once→offset 管理） | +7 |
 | 2026-09-15 | 2026-09-15-b | 浏览器追问链（经典主题 T049，前端域：CRP→重排/重绘→白屏排查→CORS→HTTP 缓存→存储对比→多进程架构） | +7 |
 | 2026-09-15 | 2026-09-15-c | 动态规划入门高频题（经典主题 T056，算法域：爬楼梯→打家劫舍→DP 思想→零钱兑换→LIS→背包对比→选型） | +7 |
-| 2026-09-17 | 2026-09-17-a | Vue3 追问链（经典主题 T050，前端域：响应式原理→生命周期→diff→组合式 API） | +7 |
-| 2026-09-17 | 2026-09-17-b | 模型部署追问链（经典主题 T062，大模型域：量化→推理框架→显存优化→成本权衡） | +7 |
-| 2026-09-17 | 2026-09-17-c | 职业规划与HR高频追问链（经典主题 T066，场景与软技能域：离职原因→优缺点→薪资谈判） | +7 |
 
 ## 部署与自定义域名
 
@@ -242,6 +239,14 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
+
+### 2026-09-17 · feat: 「前端 Web」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916h→20260916i`，release=`3c9d62bb1734039a5806ebdb161398fb53bbbe83` / main=`885b49225cf9dff186d5eb085fc697f58f0fdb9c`）
+
+- **为什么**：延续前四个方向的做法——按技术官网文档目录为骨架完整详细地展开，本次轮到「前端 Web」。
+- **本次范围**：15 章（初级 5 / 中级 5 / 高级 5）全部重写，正文 40.5KB → **约 66KB**（约 4.4k 字符/章）。**保留全部 15 个原章节 ID**，分享链接与阅读进度不受影响。
+- **官方目录基线**：MDN（HTML elements / CSS Layout / JavaScript Guide / Events / HTTP Caching / CSP / Performance API）/ WHATWG（HTML·DOM Standard / Event loops）/ RFC 9110·9111 / react.dev 新官方文档（Managing State / Render and Commit）/ Vue 3（Reactivity in Depth·Rendering Mechanism）/ Vite（Why Vite·Dep Pre-Bundling）/ Rollup / TypeScript Handbook（Narrowing·Generics）/ web.dev（Rendering Performance·Core Web Vitals）/ Sentry / micro-frontends.org / Module Federation / qiankun / React Native / Electron Security / 小程序官方文档 / OWASP Cheat Sheet（XSS·CSRF）。
+- **工程面**：版本 `20260916h→20260916i`；`tools/render-check.js` TARGETS 扩充 6 个前端章节（渲染核验目标累计 24 章）。验证：`validate-docs.js` 98 篇唯一、`smoke-test.js` 26/26、本地真实 Chrome 渲染 24/24 OK（两轮复跑稳定）。
+- **待重构**：网络与操作系统 共 1 个方向。
 
 ### 2026-09-17 · feat: 「数据库 / DBA」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916g→20260916h`，release=`327a8ed604b9d84595c5584640fd7e50fee351c1` / main=`e3afaa3f5a78049dfdefdbe8c9c9c096c2060d24`）
 
