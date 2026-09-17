@@ -1,6 +1,6 @@
 {
   "note": "经典题转写任务清单：自动化每次运行先跑 enrich_questions.py --topic-next 取第一个未完成主题，按追问链生成 5-8 题批次（由浅入深、题间 relatedIds 串联），合并成功后用 --topic-done <id> --batch <批号> 标记完成。cat/positions 必须用 published.json 中真实存在的名称。",
-  "updated": "2026-09-15",
+  "updated": "2026-09-17",
   "topics": [
     {
       "id": "T001",
@@ -669,7 +669,8 @@
       ],
       "source": "https://cn.vuejs.org/guide/introduction.html",
       "count": 7,
-      "done": false
+      "done": true,
+      "batch": "2026-09-17-a"
     },
     {
       "id": "T051",
@@ -829,7 +830,8 @@
       ],
       "source": "https://huggingface.co/docs",
       "count": 5,
-      "done": false
+      "done": true,
+      "batch": "2026-09-17-b"
     },
     {
       "id": "T063",
@@ -884,7 +886,8 @@
       ],
       "source": "https://github.com/Snailclimb/JavaGuide",
       "count": 5,
-      "done": false
+      "done": true,
+      "batch": "2026-09-17-c"
     },
     {
       "id": "T067",
