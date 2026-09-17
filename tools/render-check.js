@@ -122,22 +122,27 @@ const TARGETS = [
     for (const [dir, lv, ch, expect] of TARGETS) {
       errs.length = 0;
       await page.goto(`${BASE}/#/docs/${dir}/${lv}/${ch}`, { waitUntil: "networkidle2", timeout: 60000 });
-      await new Promise((r) => setTimeout(r, 1500));
-      const info = await page.evaluate(() => {
-        const m = document.querySelector("#main, main, .main") || document.body;
-        const cs = getComputedStyle(m);
-        return {
-          width: Math.round(m.getBoundingClientRect().width),
-          maxWidth: cs.maxWidth,
-          opacity: cs.opacity,
-          h2: [...m.querySelectorAll("h2")].length,
-          tables: m.querySelectorAll("table").length,
-          pre: m.querySelectorAll("pre").length,
-          bodyLen: (m.innerText || "").length,
-          hasBaseline: (m.innerText || "").includes("官方文档基线"),
-          badTokens: (m.innerText || "").match(/\$\{C\}|\$\{F\}|\$C\}|\$F\}/g) || [],
-        };
-      });
+      // 轮询等待正文渲染完成（最长 15s），代替固定 sleep —— SPA 同页跳转无网络请求，networkidle 立即满足
+      let info = null;
+      for (let t = 0; t < 30; t++) {
+        await new Promise((r) => setTimeout(r, 500));
+        info = await page.evaluate(() => {
+          const m = document.querySelector("#main, main, .main") || document.body;
+          const cs = getComputedStyle(m);
+          return {
+            width: Math.round(m.getBoundingClientRect().width),
+            maxWidth: cs.maxWidth,
+            opacity: cs.opacity,
+            h2: [...m.querySelectorAll("h2")].length,
+            tables: m.querySelectorAll("table").length,
+            pre: m.querySelectorAll("pre").length,
+            bodyLen: (m.innerText || "").length,
+            hasBaseline: (m.innerText || "").includes("官方文档基线"),
+            badTokens: (m.innerText || "").match(/\$\{C\}|\$\{F\}|\$C\}|\$F\}/g) || [],
+          };
+        });
+        if (info.bodyLen > 1500 && info.h2 >= 5) break;   // 已渲染完成
+      }
       const ok = info.bodyLen > 1500 && info.h2 >= 5 && info.hasBaseline &&
         info.opacity === "1" && info.badTokens.length === 0 && errs.length === 0 &&
         Math.abs(info.width - 1180) < 40;      if (!ok) bad++;
