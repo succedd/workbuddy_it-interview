@@ -240,6 +240,14 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-17 · feat: 「数据库 / DBA」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916g→20260916h`，release=`327a8ed604b9d84595c5584640fd7e50fee351c1` / main=`e3afaa3f5a78049dfdefdbe8c9c9c096c2060d24`）
+
+- **为什么**：延续前三个方向的做法——按技术官网文档目录为骨架完整详细地展开，本次轮到「数据库 / DBA」。
+- **本次范围**：14 章（初级 4 / 中级 5 / 高级 5）全部重写，正文 38.1KB → **60.9KB**（约 4.4k 字符/章）。**保留全部 14 个原章节 ID**，分享链接与阅读进度不受影响。
+- **官方目录基线**：MySQL 8.0 RM（Backup and Recovery / Security·ACL / Data Types / Character Sets / Partitioning / Replication·GTID·半同步 / Group Replication·InnoDB Cluster / EXPLAIN Output Format / InnoDB Locking / Online DDL）/ PostgreSQL Documentation（Queries / Concurrency Control·MVCC / Backup·PITR）/ redis.io（Data Types / Persistence·混合持久化 / ACL / Latency / Sentinel / Cluster）/ ShardingSphere（分片、弹性伸缩）/ Vitess / gh-ost / pt-online-schema-change / Percona Toolkit（pt-query-digest / pt-table-checksum / pt-table-sync）/ sysbench / Canal CDC / Google SRE Book（SLO / Data Integrity）/ USE Method。
+- **工程面**：版本 `20260916g→20260916h`；`tools/render-check.js` TARGETS 扩充 6 个 DBA 章节。验证：`validate-docs.js` 98 篇唯一、`smoke-test.js` 26/26、本地真实 Chrome 渲染 18/18 OK（含 6 个 DBA 章节）。
+- **待重构**：网络与操作系统 / 前端 Web 共 2 个方向。
+
 ### 2026-09-17 · feat: 「Java 后端」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916f→20260916g`，release=`fece518d5c` / main=`2afaac3acd`）
 
 - **为什么**：延续「安全」「云原生/DevOps」两个方向的做法——按技术官网文档的目录为骨架完整详细地展开，本次轮到最大的「Java 后端」方向。
