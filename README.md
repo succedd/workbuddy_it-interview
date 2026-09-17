@@ -240,6 +240,14 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-17 · feat: 「Java 后端」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916f→20260916g`，release=`fece518d5c` / main=`2afaac3acd`）
+
+- **为什么**：延续「安全」「云原生/DevOps」两个方向的做法——按技术官网文档的目录为骨架完整详细地展开，本次轮到最大的「Java 后端」方向。
+- **本次范围**：19 章（初级 6 / 中级 7 / 高级 6）全部重写，正文由平均 **1511 字/章 → 约 5.7k 字符/章**（合计 108.6KB，原 61.6KB）。**保留全部 19 个原章节 ID**，分享链接与阅读进度不受影响。
+- **官方目录基线**：Oracle Java Tutorials / JLS §10·§11·§17（JMM）/ JVMS §2.5 / HotSpot GC Tuning Guide 与 Troubleshooting Guide / JEP 333·377·439·444（ZGC、CMS 移除、分代 ZGC、虚拟线程）/ Spring Framework Reference（IoC 生命周期与三级缓存、AOP、七种事务传播）/ Spring Boot Reference（自动配置、17 级配置优先级、Actuator）/ Maven POM Reference 与 Dependency Mechanism（nearest wins）/ Gradle User Manual / Pro Git（对象模型、rebase 铁律）/ MySQL 8.0 RM（数据类型、EXPLAIN 输出格式、InnoDB 索引结构、复制与 Group Replication）/ redis.io（Data Types、Persistence、Replication、Distributed Locks）/ RabbitMQ Reliability Guide / Kafka Design（三种交付语义）/ Kleppmann fencing token 论证 / Stripe Idempotency / microservices.io（Saga、Transactional Outbox、Idempotent Consumer、Circuit Breaker、Bulkhead）/ Resilience4j User Guide（熔断状态机参数）/ Sentinel Wiki / Google SRE Book（过载保护、容量规划）/ USE Method / USL 扩展律。
+- **工程面**：版本 `20260916f→20260916g`（`index.html` 34 处 + `sw.js`）；`tools/render-check.js` 的 TARGETS 扩充 6 个 Java 章节（注意 Java 方向章节路由用真实 ID 如 `syntax-collection`，与 devops 的序号式 ID 两套命名并存）。验证：`validate-docs.js` 98 篇唯一、`smoke-test.js` 26/26、本地真实 Chrome 渲染 12/12 OK（含 6 个 Java 章节）。
+- **待重构**：网络与操作系统 / 数据库·DBA / 前端 Web 共 3 个方向。
+
 ### 2026-09-16 · feat: 「云原生 / DevOps」方向教程按官方文档目录重写并大幅深化（缓存版本 `20260916e→20260916f`，release=`d50514322d` / main=`0004fdf886`）
 
 - **为什么**：延续上一轮「安全」方向的做法——用户希望技术教程**以技术官网文档的目录为骨架**、完整详细有条理地展开。
