@@ -68,6 +68,12 @@ const TARGETS = [
   ["dba", "mid", "redis-internals", "Redis 数据结构与持久化"],
   ["dba", "adv", "sharding-middleware", "分库分表与中间件"],
   ["dba", "adv", "consistency-check", "数据一致性校验"],
+  ["frontend", "basic", "html-css-layout", "HTML 语义化与 CSS 布局"],
+  ["frontend", "basic", "dom-event", "DOM 与事件"],
+  ["frontend", "mid", "es6-async", "ES6+ 与异步编程"],
+  ["frontend", "mid", "component-state", "组件设计与状态管理"],
+  ["frontend", "adv", "render-perf", "浏览器渲染原理与性能优化"],
+  ["frontend", "adv", "fe-security", "前端安全"],
 ];
 
 (async () => {
