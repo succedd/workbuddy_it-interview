@@ -56,6 +56,12 @@ const TARGETS = [
   ["devops", "adv", "devops-adv-3", "发布策略"],
   ["devops", "adv", "devops-adv-5", "平台工程"],
   ["security", "basic", "security-basic-1", "OWASP Top 10"],
+  ["java", "basic", "syntax-collection", "集合"],
+  ["java", "basic", "springboot-first", "Spring Boot"],
+  ["java", "mid", "jvm-gc", "JVM"],
+  ["java", "mid", "spring-principle", "Spring"],
+  ["java", "adv", "jvm-troubleshoot", "JVM"],
+  ["java", "adv", "high-concurrency", "并发"],
 ];
 
 (async () => {
