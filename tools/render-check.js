@@ -62,6 +62,12 @@ const TARGETS = [
   ["java", "mid", "spring-principle", "Spring"],
   ["java", "adv", "jvm-troubleshoot", "JVM"],
   ["java", "adv", "high-concurrency", "并发"],
+  ["dba", "basic", "sql-basics", "SQL 基础与查询优化入门"],
+  ["dba", "basic", "backup-restore", "备份与恢复基本操作"],
+  ["dba", "mid", "index-execplan", "索引原理与执行计划"],
+  ["dba", "mid", "redis-internals", "Redis 数据结构与持久化"],
+  ["dba", "adv", "sharding-middleware", "分库分表与中间件"],
+  ["dba", "adv", "consistency-check", "数据一致性校验"],
 ];
 
 (async () => {
