@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库</title>
+  <meta name="description" content="要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库">
+  <meta property="og:description" content="要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优…">
+  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview.is-a.dev/q/1181.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优…">
+  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview.is-a.dev/q/1181.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？","text":"考察点：显存 OOM 排查与调优。要求给出从监控定位到具体参数的完整链路，区分「碎片」与「并发上限」两类问题。","answerCount":1,"datePublished":"2026-09-17T02:35:52.721Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优化一（限并发/限长）：调小 max_num_seqs、收紧 max_model_len，让「并发×平均长度」落在显存预算内；对超长请求做截断或拒绝。 优化二（省 KV）：开启 FP8/KV Cache 量化把每 token 的 KV 显存减半；开启 prefix caching 让相同系统提示/多轮前缀复用 block，长 prompt 场景显存与首 token 延迟双降。 优化三（架构）：把「长上下文推理」与「短请求」分到不同实例（不同 max_model_len），避免长请求挤占短请求资源；必要时多卡张量并行把单请求显存摊薄。 排错顺序：先看是不是静态批处理 → 再调 max_num_seqs/max_model_len → 再上 KV 量化/prefix cache → 最后才加卡。","url":"https://it-interview.is-a.dev/#/question/1181"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">算法工程师</span><span class="chip tag">OOM</span><span class="chip tag">KV Cache</span><span class="chip tag">显存优化</span><span class="chip tag">vLLM</span><span class="chip tag">故障排查</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：显存 OOM 排查与调优。要求给出从监控定位到具体参数的完整链路，区分「碎片」与「并发上限」两类问题。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>定位</strong>：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是<strong>并发上限 <code>max_num_seqs</code> 设太高</strong>或<strong>单个请求上下文过长</strong>把 block 占满。</li>
+<li><strong>优化一（限并发/限长）</strong>：调小 <code>max_num_seqs</code>、收紧 <code>max_model_len</code>，让「并发×平均长度」落在显存预算内；对超长请求做截断或拒绝。</li>
+<li><strong>优化二（省 KV）</strong>：开启 <strong>FP8/KV Cache 量化</strong>把每 token 的 KV 显存减半；开启 <strong>prefix caching</strong> 让相同系统提示/多轮前缀复用 block，长 prompt 场景显存与首 token 延迟双降。</li>
+<li><strong>优化三（架构）</strong>：把「长上下文推理」与「短请求」分到不同实例（不同 <code>max_model_len</code>），避免长请求挤占短请求资源；必要时多卡张量并行把单请求显存摊薄。</li>
+<li><strong>排错顺序</strong>：先看是不是静态批处理 → 再调 max_num_seqs/max_model_len → 再上 KV 量化/prefix cache → 最后才加卡。</li>
+</ul></div>
+    <a class="cta" href="https://it-interview.is-a.dev/#/question/1181">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
