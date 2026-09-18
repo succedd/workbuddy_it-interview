@@ -211,6 +211,131 @@ ${F}
 - [ ] 能独立起一个「DB + API + Web」三容器栈并让它们互通
 - [ ] 清楚容器不是安全边界，密钥不写进镜像
 
+<!--dd:devops-basic-1-->
+
+## 🔬 深挖：镜像分层、联合文件系统与容器隔离
+
+### 一、镜像为什么是「分层」的
+
+Dockerfile 里每条会改变文件系统的指令（RUN / COPY / ADD）都会产生**一个新层**。层是**只读**的，最终容器看到的是这些层的叠加视图：
+
+${C}${C}${C}
+镜像 app:1.0
+  Layer 4: COPY app.jar     ← 代码（每次发版变）
+  Layer 3: RUN apk add ...   ← 依赖（偶尔变）
+  Layer 2: ENV / WORKDIR     ← 元数据（不产生文件层）
+  Layer 1: FROM alpine       ← 基础镜像（几乎不变）
+        ↓ 运行时再加一个可写层
+  Writable Layer（容器层）    ← 容器所有写操作都在这里
+${C}${C}${C}
+
+${F}bash
+docker history app:1.0                                              # 看每层大小与来源指令
+docker image inspect app:1.0 --format '{{len .RootFS.Layers}}'      # 层数
+docker save app:1.0 -o app.tar && tar -tf app.tar | head            # 每层一个 tar
+${F}
+
+**三个直接推论**：
+1. **层是共享的**：两台机器拉同一个基础镜像只下一次；改一行代码重新构建，只有最后一层变——这是镜像分发高效的根本；
+2. **可写层的代价**：容器的所有写入（日志、临时文件、上传）都进可写层，删除容器即丢失；
+3. **层数不宜过多**：每层有元数据开销，多步用 ${C}&&${C} 合并是常规优化。
+
+### 二、overlay2：写时复制与「删文件反而没变小」
+
+${C}${C}${C}
+lowerdir（只读层，多个） + upperdir（可写层） → merged（容器看到的统一视图）
+
+读文件：先找 upperdir，没有则逐层向下找
+写文件：文件只在下层时，先复制到 upperdir（copy-up）再写
+删文件：文件只在下层时，在 upperdir 建「白障标记（whiteout）」
+        ★ 这解释了「在容器里删了大文件，镜像层并不会变小」
+${C}${C}${C}
+
+**关键工程含义**：下载、解压、编译、清理**必须在同一条 RUN 里**。分两条 RUN 时，第一层里的文件永远留在镜像中，第二层的删除只是加了个白障标记。
+
+${F}dockerfile
+# ❌ 两条 RUN：第一层的 400MB 永久留在镜像
+RUN curl -o /tmp/sdk.tgz https://example.com/sdk.tgz
+RUN tar -xzf /tmp/sdk.tgz -C /opt && make -C /opt/sdk && rm -rf /tmp/sdk.tgz
+
+# ✅ 一条 RUN：中间产物在同一层内被清掉
+RUN curl -o /tmp/sdk.tgz https://example.com/sdk.tgz \
+ && tar -xzf /tmp/sdk.tgz -C /opt \
+ && make -C /opt/sdk \
+ && rm -rf /tmp/sdk.tgz /opt/sdk/*.o
+${F}
+
+### 三、卷：bind / volume / tmpfs
+
+| 类型 | 写法 | 数据位置 | 适用 |
+|---|---|---|---|
+| bind mount | ${C}-v /host/path:/ctr/path${C} | 宿主机指定路径 | 挂配置、开发时挂代码 |
+| **volume** | ${C}-v myvol:/data${C} | Docker 管理的 ${C}/var/lib/docker/volumes${C} | **生产持久化首选** |
+| tmpfs | ${C}--tmpfs /tmp${C} | 内存 | 敏感临时数据 |
+
+**为什么生产优先 volume**：由 Docker 管理生命周期（${C}volume ls/prune${C}）、跨平台一致、可用 volume driver 对接 NFS/云盘。
+
+**卷必须显式备份**（不会随镜像分发）：
+
+${F}bash
+docker run --rm -v myvol:/data -v "$PWD":/backup alpine \
+  tar czf /backup/myvol-$(date +%F).tar.gz -C /data .
+${F}
+
+### 四、网络四种模式与端口映射的真实机制
+
+| 模式 | 说明 | 适用 |
+|---|---|---|
+| bridge（默认） | 接在 ${C}docker0${C} 网桥上，独立 IP，NAT 出网 | 单机多容器 |
+| host | 直接用宿主机网络栈（无 NAT，性能最好） | 高性能场景（端口会冲突） |
+| none | 无网络接口 | 完全隔离的计算任务 |
+| container:${C}<id>${C} | 共享另一容器的网络命名空间 | 边车模式 |
+
+**${C}-p 8080:80${C} 的本质是 iptables 的 DNAT 规则**，不是代理转发：
+
+${F}bash
+iptables -t nat -L DOCKER -n --line-numbers    # 宿主机 8080 → 容器 IP:80（DNAT）
+                                               # 容器出网靠 MASQUERADE（SNAT）
+
+docker network create mynet
+docker run -d --name db  --network mynet postgres
+docker run -d --name app --network mynet myapp  # app 里可直接连 db:5432
+# ★ 默认 bridge 网络不支持容器名解析，这是「推荐自定义网络」的关键原因（内嵌 DNS）
+${F}
+
+### 五、容器隔离的真相：不是虚拟机
+
+${C}${C}${C}
+容器 = namespace（视图隔离）+ cgroup（资源限制）+ 联合文件系统
+  命名空间：PID / NET / MNT / UTS / IPC / USER / CGROUP
+  cgroup v2：CPU / 内存 / IO / PIDs 的限制与统计
+
+与虚拟机的本质差别：
+  虚拟机：独立内核 → 强隔离，启动秒级~分钟级
+  容器：共享宿主内核 → 弱隔离，启动毫秒级
+  => 内核漏洞可穿透容器；容器内看到的内核版本与宿主机一致
+${C}${C}${C}
+
+**三条安全实践**：① 非 root 运行 + 根文件系统只读；② 不用 ${C}--privileged${C}，只加具体 capability；③ 不把 ${C}/var/run/docker.sock${C} 挂进容器（等于给宿主 root）。
+
+**PID 1 与信号**：容器里 PID 1 是应用本身，而 PID 1 未注册处理函数的信号会被**忽略**，导致 ${C}docker stop${C}（SIGTERM）杀不死应用，最终被 SIGKILL 硬杀、连接被硬切。解法：
+
+${F}dockerfile
+ENTRYPOINT ["/sbin/tini", "--", "java", "-jar", "app.jar"]   # tini 转发信号
+# 或 docker run --init
+# 或应用自身正确处理 SIGTERM（Spring Boot 支持优雅停机）
+${F}
+
+### 六、引擎架构：docker CLI 只是在「遥控」
+
+${C}${C}${C}
+docker CLI --REST/gRPC--> dockerd（网络/卷/构建/镜像）
+                            └--> containerd（容器生命周期）
+                                   └--> runc（真正创建 namespace/cgroup）
+${C}${C}${C}
+
+**实用价值**：K8s 早期通过 dockershim 对接 dockerd，1.24 起移除、直接对接 **containerd**——这就是「K8s 不再需要 Docker」的技术背景。**OCI 镜像格式才是通用标准**，符合 OCI 的运行时（containerd / CRI-O / gVisor / Kata）都能跑同一个镜像。
+
 ## 📚 延伸阅读
 
 - Docker Docs · [Get Started](https://docs.docker.com/get-started/)：官方入门路线的 8 个模块，建议按顺序过一遍
@@ -389,6 +514,100 @@ ${F}
 - [ ] 能用 ${C}git reflog${C} 从误操作中恢复
 - [ ] 会配 ${C}.gitignore${C} 与 ${C}CODEOWNERS${C}，知道分支保护规则怎么设
 - [ ] 知道密钥误提交后的正确处置顺序（先轮换再清历史）
+
+<!--dd:devops-basic-2-->
+
+## 🔬 深挖：分支模型的取舍与「可评审性」
+
+### 一、三种分支模型的真实差异
+
+| 模型 | 形态 | 发布节奏 | 适用 |
+|---|---|---|---|
+| **GitHub Flow** | main + 短生命周期特性分支 + PR | 随时可发 | 大多数 Web 服务（推荐默认） |
+| **Trunk-Based** | 直接/极短分支进 trunk，配合特性开关 | 一天多次 | 高频发布、成熟 CI/CD |
+| **Git Flow** | main / develop / release / hotfix / feature | 有明确版本窗口 | 客户端软件、需长期维护多版本 |
+
+**核心变量是「分支存活时间」**：活 1 天冲突少、评审快；活 3 周则合并要靠人工理解、评审变成「看一大坨 diff」、回归风险陡增。所以真正该优化的不是「选哪种模型」，而是**把分支压在几天内**。
+
+**Git Flow 的代价**：${C}develop${C} 与 ${C}main${C} 长期并存 = 两个真相，修 bug 要往两边 cherry-pick，极易漏。只有「必须同时维护 1.x 与 2.x」的产品才值得付这个成本。
+
+### 二、PR 的可评审性
+
+${C}${C}${C}
+PR 规模与评审效果（工程经验值）
+  < 200 行     → 评审者能认真读完，缺陷发现率最高
+  200~400 行   → 需 30 分钟以上专注，容易被「扫过」
+  > 400 行     → 退化为「看起来没问题，approve」
+  > 1000 行    → 几乎不可能有效评审
+${C}${C}${C}
+
+**把大改动拆小的四种手段**：
+1. **按可独立合并的步骤拆**：先加字段与兼容逻辑 → 再加新功能 → 最后删旧逻辑（expand-contract）；
+2. **纯重构单独一个 PR**（不含行为变更），否则 diff 里一半是格式调整，看不出真实改动；
+3. **特性开关**：代码先合（开关关），再单独 PR 打开 —— 发布与合并解耦；
+4. **格式化与逻辑分离**：先跑一次全量格式化单独提交。
+
+### 三、评审者该看什么（按优先级）
+
+${C}${C}${C}
+① 正确性与边界：null / 空集合 / 并发 / 超时 / 重试路径是否覆盖？
+② 安全：权限校验是否在服务端？输入是否进入 SQL/命令/模板？
+③ 数据与兼容：改了字段/接口，旧客户端与旧数据怎么办？需要迁移或双写吗？
+④ 可观测：出错能定位吗？失败模式是否可感知？
+⑤ 测试：是否验证了行为而非实现？边界用例有没有？
+⑥ 复杂度：有没有更简单的实现？是否引入不必要的依赖或抽象？
+⑦ 命名与风格（最低优先级，尽量交给 linter/formatter）
+${C}${C}${C}
+
+**区分「阻塞」与「建议」**：会出故障或有安全风险的必须改；命名偏好类只作为建议。GitHub 的 Request changes / Comment / Approve 三档正是用来区分意图的。
+
+**作者的三个义务**：写清上下文（为什么改、怎么验证、影响范围、回滚方式）、自查一遍 diff（调试代码/临时文件最容易在这里被发现）、把格式化与锁文件升级作为噪声单独说明。
+
+### 四、分支保护：把约定变成强制
+
+${C}${C}${C}
+main 分支保护清单
+  ☑ Require pull request before merging
+  ☑ Require approvals ≥ 1（核心仓库 2，且需 CODEOWNERS 批准）
+  ☑ Dismiss stale approvals（有新提交即作废旧批准）
+  ☑ Require review from Code Owners
+  ☑ Require status checks to pass（lint / test / build / scan）
+  ☑ Require branches to be up to date
+  ☑ Require linear history（禁 merge 提交）
+  ☑ Do not allow bypassing（管理员也必须遵守）
+${C}${C}${C}
+
+**${C}CODEOWNERS${C} 是被低估的工具**：把「谁负责哪个目录」写进代码，PR 自动请求对应负责人评审，比口头约定可靠得多。
+
+**注意一个陷阱**：${C}Require branches to be up to date${C} 遇到频繁变动的 main，会让 PR 反复需要同步（体验差）。折中用 **merge queue**：队列系统负责同步与串行验证，既保证 main 常绿，又不让开发者反复手动 rebase。
+
+### 五、合并方式影响历史与回滚
+
+| 方式 | 结果 | 影响 |
+|---|---|---|
+| Merge commit | 保留分支结构与每步提交 | 历史真实但 ${C}--graph${C} 很乱 |
+| Squash merge | 压成 1 个提交 | main 线性清晰；丢失中间粒度（bisect 只能定位到整个 PR） |
+| Rebase merge | 逐个重放到 main | 线性且保留粒度；SHA 变化，需注意协作者已拉取的分支 |
+
+**回滚成本**：Squash 后回滚一个 PR = 一次 ${C}git revert${C}（最简单，**多数团队首选**）；revert 合并提交需要 ${C}-m 1${C}（易错）；Rebase 后可按单个中间提交精确 revert，但要求团队理解 rebase 纪律。
+
+### 六、Commit 规范与自动 Changelog
+
+**Conventional Commits 的价值在于可被机器消费**：
+
+${F}
+<type>(<scope>): <subject>
+
+feat(auth): 支持手机号 + 验证码登录
+fix(order): 修复并发下单导致库存超卖
+refactor!: 移除 v1 用户接口
+
+类型：feat / fix / docs / style / refactor / perf / test / build / ci / chore / revert
+${F}
+
+有了它，${C}semantic-release${C} / ${C}release-please${C} 可自动生成 CHANGELOG、按类型决定版本提升（${C}feat${C} → minor、${C}fix${C} → patch、${C}BREAKING CHANGE${C} → major）——这正是**语义化版本可自动化的前提**。
+
+**提交钩子**（pre-commit / commit-msg）在本地就拦住不合格提交，比在 CI 里发现快得多。**但钩子可被 ${C}--no-verify${C} 绕过**，所以 CI 侧仍需一层兜底。
 
 ## 📚 延伸阅读
 
@@ -598,6 +817,158 @@ ${F}
 - [ ] 会用 ${C}github.sha${C} 而非 ${C}latest${C} 为制品打标签
 - [ ] 流水线能在 10 分钟内给出反馈
 
+<!--dd:devops-basic-3-->
+
+## 🔬 深挖：GitHub Actions 的执行模型与安全边界
+
+### 一、workflow 的组成与执行语义
+
+${F}yaml
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+  workflow_dispatch:
+  schedule: [{ cron: "0 18 * * *" }]        # UTC！注意时区换算
+concurrency:
+  group: ci-\${{ github.ref }}                # 同分支只保留最新一次
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs: { ver: "\${{ steps.v.outputs.ver }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: echo "ver=$(date +%s)" >> "$GITHUB_OUTPUT"
+  deploy:
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    environment: production                  # 可要求人工审批
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./deploy.sh "\${{ needs.test.outputs.ver }}"
+${F}
+
+**三个必须理解的语义**：
+1. **每个 job 是一台全新机器**——文件系统与环境变量不共享，跨 job 传文件用 artifacts、传小数据用 outputs；
+2. **job 内 step 共享文件系统与环境变量**——所以「装依赖 + 跑测试」应在同一 job；
+3. **托管 runner 是临时的**——任务结束即销毁，任何状态都要显式保存（缓存或 artifacts）。
+
+### 二、缓存 vs artifacts
+
+| 维度 | cache | artifacts |
+|---|---|---|
+| 目的 | 加速（依赖、中间产物） | 保留产物（报告、构建输出） |
+| 生命周期 | 短期（默认 7 天未访问即清） | 按 retention（默认 90 天） |
+| 命中策略 | key 精确匹配 + restore-keys 前缀回退 | 按名字完全一致 |
+
+${F}yaml
+# 缓存 key 必须带依赖清单哈希，否则依赖改了还命中旧缓存
+- uses: actions/cache@v4
+  with:
+    path: ~/.m2/repository
+    key: maven-\${{ runner.os }}-\${{ hashFiles('**/pom.xml') }}
+    restore-keys: maven-\${{ runner.os }}-
+# 更好：用 setup-java 的 cache 参数（策略已调好）
+- uses: actions/setup-java@v4
+  with: { distribution: temurin, java-version: "21", cache: maven }
+${F}
+
+**两个反模式**：key 里没有依赖哈希（依赖升级仍用旧缓存 → 诡异编译错误）；把 cache 当 artifacts 用（需要长期保留的文件会被清）。
+
+### 三、矩阵构建
+
+${F}yaml
+strategy:
+  fail-fast: false            # 默认 true：一个失败就取消其他；调试时设 false 看全貌
+  max-parallel: 4
+  matrix:
+    os: [ubuntu-latest, windows-latest]
+    java: ["17", "21"]
+    exclude:
+      - { os: windows-latest, java: "17" }
+    include:
+      - { os: ubuntu-latest, java: "21", experimental: true }
+${F}
+
+注意成本 = 组合数 × 单 job 计费。用 ${C}continue-on-error: \${{ matrix.experimental }}${C} 让实验性组合失败不阻塞主流程。
+
+### 四、权限最小化：GITHUB_TOKEN 与 OIDC
+
+${F}yaml
+permissions: {}                 # 顶层默认全关（推荐起点）
+jobs:
+  build:
+    permissions: { contents: read }
+  comment:
+    permissions: { pull-requests: write }    # 只有这个 job 能评论 PR
+${F}
+
+**OIDC 免密钥上云**（替代长期 AK/SK）：
+
+${F}yaml
+permissions: { id-token: write, contents: read }
+steps:
+  - uses: aws-actions/configure-aws-credentials@v4
+    with:
+      role-to-assume: arn:aws:iam::123456789012:role/gh-actions-deploy
+      aws-region: ap-east-1
+      # 无长期密钥：GitHub 签发短期 OIDC token，云侧按仓库/分支 claim 校验
+${F}
+
+**OIDC 的三重收益**：无长期密钥可泄露、凭据分钟级失效、云侧可按「哪个仓库的哪个分支」精细授权。
+
+### 五、十个高危配置（供应链视角）
+
+| 风险 | 说明 | 修法 |
+|---|---|---|
+| ${C}pull_request_target${C} + checkout PR head | 在有 secrets 的上下文执行 PR 代码 → 泄密 | 禁该组合；需要时分离「读文件」与「执行」 |
+| Action 未锁 SHA（${C}@v4${C} / ${C}@main${C}） | tag 可移动、分支可改 | 锁到 commit SHA（Dependabot 可代更新） |
+| 打印 secrets | 日志泄露 | 平台脱敏 + 审查 + ${C}::add-mask::${C} |
+| 自托管 runner 跑公开仓库 PR | 任意人可在你的内网机器执行代码 | 公开仓库禁用自托管 |
+| ${C}curl ... | bash${C} | 执行远程可变脚本 | 下载后校验哈希/签名 |
+| 密钥写进 workflow | 明文进 Git | 用 secrets / environment；开 secret scanning |
+| 缓存投毒 | PR 可写主分支缓存 | 缓存 key 加 ref 维度隔离 |
+| 构建可任意外联 | 源码/密钥可外传 | 出口白名单 |
+| 缺 environment 审批 | 生产部署无人工卡点 | ${C}environment${C} + Required reviewers |
+| 复用不可信仓库的工作流 | ${C}uses: org/repo/.github/workflows/x.yml@main${C} 被改 | 锁 SHA + 仅允许内部可信仓库 |
+
+**一条底线**：**CI 就是生产环境**。它持有制品库写权限、生产部署凭据、全部仓库读权限——「谁的代码能在 CI 里跑」等价于「谁能操作生产」。
+
+### 六、可复用工作流与 composite action
+
+${F}yaml
+# ① 可复用工作流：把一个完整流程做成「函数」
+# .github/workflows/_build.yml
+on:
+  workflow_call:
+    inputs:  { java-version: { type: string, default: "21" } }
+    secrets: { registry-token: { required: true } }
+jobs: { build: { runs-on: ubuntu-latest, steps: [] } }
+
+# 调用方
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yml
+    with: { java-version: "21" }
+    secrets: inherit
+${F}
+
+${F}yaml
+# ② composite action：把一组 step 封装成本地 action（更细粒度）
+# .github/actions/setup/action.yml
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with: { node-version: "22", cache: npm }
+    - run: npm ci
+      shell: bash
+${F}
+
+**选择口径**：复用「整个 job 或流水线」→ reusable workflow；复用「几步环境准备」→ composite action。两者结合可让 10 个仓库共享一份 CI 实现（改一处全生效），这是多仓库组织降低维护成本的现实路径。
+
 ## 📚 延伸阅读
 
 - [GitHub Actions 文档总入口](https://docs.github.com/actions)：Workflow syntax 那一页建议直接收藏
@@ -800,6 +1171,129 @@ ${F}
 - [ ] 会用 ${C}curl -w${C} 做延迟归因，会区分 DNS / 建连 / TLS / 服务处理耗时
 - [ ] 知道 ${C}df${C} 满但 ${C}du${C} 不大时用 ${C}lsof +L1${C} 找句柄泄漏
 
+<!--dd:devops-basic-4-->
+
+## 🔬 深挖：Linux 排障的因果链与网络分层定位
+
+### 一、进程、信号与 systemd
+
+${F}bash
+# 常用信号（kill -l 看全部）
+SIGTERM(15)  优雅退出（可捕获做清理）★ 优先使用
+SIGKILL(9)   强杀，不可捕获（最后手段，会丢数据）
+SIGHUP(1)    传统上「重载配置」
+SIGSTOP/SIGCONT  暂停/继续
+
+ps -eo pid,ppid,stat,etime,rss,cmd --sort=-rss | head
+# STAT 关键字符：S 可中断睡眠 / R 运行 / D 不可中断（IO 等待）★ D 多 = 磁盘瓶颈
+#                Z 僵尸 / T 停止 / s 会话首进程 / l 多线程 / < 高优先级
+${F}
+
+**僵尸进程（Z）**：子进程已结束但父进程未 wait 收尸——不占 CPU/内存，但占 PID 表项；**要杀它的父进程**（杀僵尸本身无效）。孤儿进程则是父进程先退出、被 init/systemd 收养（PID 变 1）。
+
+**systemd 是排障第一入口**：
+
+${F}bash
+systemctl status app.service                # 状态 + 最近日志 + 退出码 ★ 先看这个
+systemctl list-units --failed               # 哪些单元失败
+journalctl -u app -n 200 --no-pager
+journalctl -u app --since "10 min ago" -p err
+systemctl cat app.service                   # 看单元定义（含所有 override）
+systemd-analyze blame | head                # 启动耗时排序（开机慢的排查）
+${F}
+
+**systemd 依赖与重启策略**：${C}After=network-online.target${C} 只保证顺序不保证网络可用，要配 ${C}Wants=${C}/${C}Requires=${C} 表达依赖；${C}Restart=on-failure${C} + ${C}RestartSec${C} 实现自动拉起，但要避免「配置错误导致无限重启风暴」（加 ${C}StartLimitBurst${C}）。
+
+### 二、三率与资源瓶颈的判定
+
+${C}${C}${C}
+CPU：top/uptime 的 load average vs 核心数；us（用户态）/sy（内核态）/wa（IO 等待）/st（被虚拟化抢占）
+  load 高但 CPU 不高 → 大量 D 状态进程（IO 瓶颈）或排队等锁
+  sy 高 → 系统调用频繁（上下文切换 / 小包网络 / 频繁 IO）
+  wa 高 → 磁盘或网络存储瓶颈
+  上下文切换高 → vmstat 的 cs 列；线程过多或锁竞争
+
+内存：free -h（available 才是可用内存）、/proc/meminfo
+  缺内存特征：swap 使用增长 + 频繁 IO + 进程被 OOM Killer 杀（dmesg | grep -i oom）
+  缓存占用高不等于内存不足（buff/cache 可回收）
+
+IO：iostat -x 1 的 %util、await、r/s vs w/s、avgqu-sz
+  %util 接近 100 且 await 上升 → 磁盘饱和
+  await 高但 util 不高 → 可能被上层阻塞或队列调度问题
+${C}${C}${C}
+
+${F}bash
+vmstat 1 5                       # r/b(运行/阻塞) si/so(swap) us/sy/id/wa cs(上下文切换)
+iostat -x 1                      # 每设备的 util / await / 队列深度
+pidstat -d 1                     # 按进程看 IO（谁在写盘）
+ss -s                            # socket 汇总（TIME_WAIT 数量）
+${F}
+
+### 三、网络分层定位：从本机到对端
+
+${F}bash
+# ① 接口与地址（L2/L3）
+ip -br addr                      # 简洁看接口与地址
+ip -s link                       # 错误/丢包计数（errors/dropped 增长 = 物理或驱动问题）
+ethtool eth0                     # 速率、双工（半双工会导致诡异性能问题）
+
+# ② 路由（L3）
+ip route get 8.8.8.8             # 实际会走哪条路由出（比 route -n 更准）
+
+# ③ 监听与连接（L4）
+ss -lntp                         # 监听端口与进程
+ss -antp state established       # 已建立连接
+ss -s                            # 汇总（TIME_WAIT 过多 → 短连接风暴）
+
+# ④ 应用层
+curl -v --max-time 5 https://target/    # 分阶段耗时（DNS/连接/TLS/首字节）
+curl -w "@-" -o /dev/null -s https://target/ <<'EOF'
+    dns=%{time_namelookup} conn=%{time_connect} tls=%{time_appconnect} \
+    ttfb=%{time_starttransfer} total=%{time_total}\n
+EOF
+
+# ⑤ 抓包（终极手段，注意性能与隐私）
+tcpdump -i eth0 -nn 'host 10.0.0.5 and port 3306' -c 100 -w /tmp/x.pcap
+# 抓 TCP 重传（网络质量的直接证据）
+tcpdump -i eth0 -nn 'tcp[tcpflags] & tcp-rst != 0' -c 20
+${F}
+
+**分阶段耗时的解读**：${C}dns${C} 高 → DNS 慢或解析失败；${C}conn${C} 高 → 网络延迟或目标端口不通；${C}tls${C} 高 → 握手慢（跨地域、证书链大）；${C}ttfb${C} 高 → 服务端处理慢；${C}total${C} − ${C}ttfb${C} 大 → 传输慢（带宽或大响应体）。
+
+### 四、文件描述符与磁盘满
+
+${F}bash
+# FD 耗尽：「Too many open files」
+ulimit -n                                # 当前限制（软限制）
+cat /proc/<pid>/limits | grep "open files"
+ls /proc/<pid>/fd | wc -l                # 该进程实际打开数
+lsof -p <pid> | wc -l
+# 注意：系统级上限也要够（fs.file-max），且 systemd 单元需单独设 LimitNOFILE
+
+# 磁盘满：du 与 lsof 的经典组合
+df -h                                    # 哪个挂载点满
+du -xh --max-depth=1 / | sort -h | tail  # 逐层下钻找目录
+# 更隐蔽的情况：文件已删但进程仍持有（空间未释放）
+lsof +L1                                 # 列出所有「已删除但仍被占用」的文件 ★ 关键
+# 修法：重启持有进程；或 : > /proc/<pid>/fd/<n> 清空内容
+find / -xdev -size +1G -type f -exec ls -lh {} \; 2>/dev/null | head
+${F}
+
+**inode 满也会导致「磁盘没满但写不进去」**：${C}df -i${C} 查看 inode 使用率——大量小文件（如 session 文件、缓存碎片）是典型原因。
+
+### 五、排障的方法论：先因果链，再工具
+
+${C}${C}${C}
+① 现象是什么？（哪个用户可见的功能坏了？影响面多大？）
+② 最近做了什么变更？（发布、配置、容量、依赖升级 —— 80% 的问题由变更引起）
+③ 是「全挂」还是「部分挂」？（全挂看入口与依赖；部分挂看单实例/单机房/特定参数）
+④ 观测数据怎么说？（监控曲线、日志错误率、依赖的 RT —— 先看仪表盘再看日志）
+⑤ 提出假设 → 用最小代价验证（不要在生产上做不可逆操作试错）
+⑥ 定位后先止血（回滚/限流/扩容），再根因分析
+${C}${C}${C}
+
+**排障的两条纪律**：① **先止血后根因**——用户还在受损时不要在群里讨论原理，先回滚；② **每次变更只改一个变量**——同时改三处会让「哪个起了作用」永久未知，这也是很多「修好了但不知道为什么」的成因。
+
 ## 📚 延伸阅读
 
 - [Linux man-pages 在线版](https://man7.org/linux/man-pages/)：${C}man 7 signal${C}、${C}man 5 proc${C}、${C}man 7 tcp${C} 建议精读
@@ -1001,6 +1495,129 @@ ${F}
 - [ ] 会用 ${C}--mount=type=cache${C} 与 ${C}buildx${C} 缓存加速 CI 构建
 - [ ] 会用 ${C}dive${C} 或 ${C}docker history${C} 定位镜像里的体积与敏感层
 - [ ] 需要多架构时能用 ${C}buildx --platform${C} 一次产出
+
+<!--dd:devops-mid-1-->
+
+## 🔬 深挖：多阶段构建与基础镜像的取舍
+
+### 一、多阶段构建的三种用途
+
+${F}dockerfile
+# ---------- 阶段 1：构建（体积大、含工具链，不进最终镜像）----------
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /src
+COPY pom.xml .
+RUN mvn -B dependency:go-offline          # ★ 先只拷 pom 并下依赖：代码改动不会让依赖层失效
+COPY src ./src
+RUN mvn -B clean package -DskipTests
+
+# ---------- 阶段 2：运行（最小化）----------
+FROM eclipse-temurin:21-jre-alpine
+RUN addgroup -S app && adduser -S -G app app       # 非 root 用户
+WORKDIR /app
+COPY --from=build --chown=app:app /src/target/app.jar ./app.jar
+USER app
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:8080/actuator/health/liveness || exit 1
+ENTRYPOINT ["java","-XX:MaxRAMPercentage=75","-jar","app.jar"]
+${F}
+
+| 用途 | 做法 |
+|---|---|
+| **瘦身** | 构建阶段带 maven/gcc，运行阶段只留产物（镜像可小一个数量级） |
+| **构建隔离** | 编译工具不进入运行时（减少攻击面与 CVE 面） |
+| **多技术栈产物汇聚** | 前端构建产出静态文件 + 后端构建产出 jar，一起放进同一个运行镜像 |
+
+### 二、层缓存失效的判定规则与顺序
+
+**规则**：指令的「输入」变了，该层及其**之后所有层**都会失效重建。输入的构成：
+
+| 指令 | 缓存输入 | 实践影响 |
+|---|---|---|
+| ${C}COPY x y${C} | 被拷文件的**内容哈希**（含权限） | 拷整个源码目录 → 改一行代码全量重建 |
+| ${C}RUN cmd${C} | 命令字符串 + 基础层 | 命令不变则命中（但上游变了它也变） |
+| ${C}ENV/ARG/WORKDIR${C} | 其值 | ARG 变化会导致后续层全失效 |
+| ${C}FROM img${C} | 镜像 digest | 基础镜像更新 → 全量重建 |
+
+**因此依赖安装的顺序是刻意设计的**：先 COPY 依赖清单（变化少）→ 装依赖 → 再 COPY 源码（变化频繁）。这样「只改代码」时依赖层命中缓存，构建时间从几分钟降到几十秒。
+
+${F}dockerfile
+# Node 项目的同一原理
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+COPY . .                                   # 源码最后拷，改代码不触发重新装依赖
+${F}
+
+**必须配 ${C}.dockerignore${C}**：否则 ${C}COPY . .${C} 会把 ${C}node_modules${C}、${C}.git${C}、构建产物、本地配置全拷进去——既撑大上下文（构建变慢），又可能泄露密钥（${C}.env${C}），还会让缓存频繁失效（${C}.git${C} 每提交都变）。
+
+### 三、基础镜像选择：把「体积/CVE/兼容」三角摆平
+
+| 基础镜像 | 体积 | libc | 特点 |
+|---|---|---|---|
+| ${C}debian:bookworm-slim${C} | ~75MB | glibc | 兼容性最好，包管理可用，推荐默认 |
+| ${C}alpine${C} | ~7MB | **musl** | 最小，但 musl 与 glibc 有差异：DNS 解析、locale、部分 native 库会出问题 |
+| ${C}distroless${C} | ~20MB | glibc | 无 shell、无包管理、仅含运行时——攻击面最小，但排障困难（进不去容器） |
+| ${C}scratch${C} | ~0 | —— | 只放静态编译的二进制（Go/Rust），最小 |
+| ${C}ubuntu${C} | ~78MB | glibc | 与开发环境一致 |
+
+**三个判断口径**：
+1. **Java/Node/Python**：优先 ${C}slim${C}（glibc 兼容），除非对体积极度敏感且验证过 musl 兼容性；
+2. **Go/Rust 静态二进制**：用 ${C}scratch${C} 或 ${C}distroless/static${C} 最好；
+3. **选 distroless 前先想清楚排障方案**（无 shell 意味着不能用 ${C}kubectl exec${C} 进去看）——通常需要配套：镜像里加 debug 变体、用 ephemeral containers（K8s 1.23+）或 ${C}kubectl debug${C} 注入临时容器。
+
+**关于 alpine 与 musl 的经典坑**：musl 的 DNS 解析不走 NSS（不读 ${C}/etc/nsswitch.conf${C}），在依赖内部 DNS 或 SRV 记录的环境里会解析失败；Java 在 alpine 上需要额外配 ${C}libc6-compat${C}。如果团队没有余力排查这类问题，**用 slim 是更省心的默认选择**。
+
+### 四、构建期密钥：绝不能用 ARG/ENV
+
+${F}dockerfile
+# ❌ 错误：秘密进入层历史（docker history 可见，镜像可被拉到就泄露）
+ARG NPM_TOKEN
+RUN echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc && npm ci
+
+# ✅ 正确：BuildKit 的 secret mount（不落层、不出现在 history）
+# syntax=docker/dockerfile:1.7
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm ci
+# 构建命令：
+# DOCKER_BUILDKIT=1 docker build --secret id=npmrc,src=$HOME/.npmrc .
+${F}
+
+**同一原理适用于**：私有仓库凭据（maven settings.xml、pip.conf）、SSH 私钥（${C}--mount=type=ssh${C}）、许可证文件。**判断标准很简单：镜像分发出去后，这个值被看到是否有害？有害就不能用 ARG/ENV/COPY。**
+
+### 五、非 root 运行与文件属主
+
+${F}dockerfile
+RUN groupadd -r app && useradd -r -g app -u 10001 app
+COPY --chown=10001:0 app.jar /app/app.jar     # 用数字 UID（K8s 的 runAsNonRoot 只认数字）
+USER 10001
+# 需要写目录时显式创建并授权（不要 chmod 777）
+RUN mkdir -p /app/logs && chown 10001:0 /app/logs
+${F}
+
+**注意两个坑**：① 用 ${C}adduser${C}（alpine 是 ${C}adduser -S${C}）时 UID 是动态分配的，镜像间不一致可能引发卷权限问题——**显式指定 UID** 更可控；② 非 root 后端口 <1024 无法绑定，所以应用应监听 8080 而非 80（或加 ${C}CAP_NET_BIND_SERVICE${C}）。
+
+### 六、标签策略与多架构
+
+${C}${C}${C}
+镜像标签的四种形态（推荐组合使用）
+  myapp:1.4.2            不可变（精确版本）        ★ 生产部署用它
+  myapp:1.4.2-<git-sha>  不可变 + 构建溯源
+  myapp:1.4              可移动（跟随补丁）
+  myapp:latest           可移动（危险：同一名字不同内容，回滚会失真）
+${C}${C}${C}
+
+**${C}latest${C} 的致命问题**：它不符合「标签 → 内容」的固定映射，导致「昨天的 latest 与今天的不一样」。**生产部署必须用不可变标签或 digest**（${C}image:1.4.2@sha256:...${C} 最严格），否则回滚时你并不知道回到了什么。
+
+**多架构构建**（ARM 服务器与 Mac 开发者都需要）：
+
+${F}bash
+docker buildx create --name multi --use
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t myrepo/app:1.4.2 --push .
+# 原理：QEMU 模拟跨架构构建（慢但可用），或原生 ARM 节点构建（快）
+${F}
+
+**别忽略这个细节**：本地开发（Mac M 系列 = arm64）与生产（x86 服务器）架构不同，如果本地用 ${C}docker build${C} 构建后推到生产，会出现 ${C}exec format error${C}。**统一用 buildx 多架构构建或在 CI（x86）里构建**是根本解法。
 
 ## 📚 延伸阅读
 
@@ -1229,6 +1846,100 @@ DORA（DevOps Research and Assessment）的研究给出了四个可量化的指�
 - [ ] 生产部署走 Environment + 审批，生产密钥仅该环境可见
 - [ ] 有明确的一键回滚路径，且数据库变更向前兼容
 - [ ] 用 DORA 四指标衡量流水线，而不是代码行数
+
+<!--dd:devops-mid-2-->
+
+## 🔬 深挖：流水线的门禁设计与「构建一次」原则
+
+### 一、阶段划分与门禁
+
+${C}${C}${C}
+① 静态检查（秒级，最先跑，快速失败）
+   lint / 格式化校验 / 类型检查 / 提交信息校验
+② 单元测试（分钟级）+ 覆盖率门槛
+③ 安全扫描（与测试并行）
+   SAST（代码）、SCA（依赖）、secret 扫描、IaC 扫描
+④ 构建 + 镜像扫描 + 签名（产出不可变制品）
+⑤ 集成测试 / E2E（分钟到十几分钟）
+⑥ 部署到测试环境 → 自动化验收
+⑦ 部署到生产（人工审批 or 自动，取决于风险与成熟度）
+
+门禁原则：越便宜的检查越靠前（lint 秒级，不该在编译之后才跑）
+${C}${C}${C}
+
+**并行化的收益计算**：把「测试 + 扫描 + 构建镜像」并行，流水线时长从「和」变成「最大值」。但要注意**并行会放大资源成本**，而且**只有真正独立的任务才能并行**（如扫描不依赖构建产物时）。
+
+### 二、「构建一次，多处部署」与不可变制品
+
+${C}${C}${C}
+❌ 反模式：每个环境重新构建
+   开发分支构建 → 测环境；main 构建 → 预发；tag 构建 → 生产
+   → 三个产物内容不同（依赖解析、时间戳、构建缓存差异），
+     测环境验证过的不是生产要跑的东西，「测试通过」失去意义
+
+✅ 正确：一次构建，逐环境晋级
+   构建一次 → 产物带上不可变版本号/Git SHA → 各环境部署同一 digest
+   → 环境差异只体现在「配置」上（通过 ConfigMap/env/配置中心注入）
+${C}${C}${C}
+
+**这条原则是流水线设计的第一性原理**，它同时带来：可追溯（生产跑的 commit 是哪个一目了然）、可回滚（回退到上一个已验证的 digest）、可复现（不存在「重新构建后行为变了」）。
+
+**配置必须与产物分离**：镜像里不放任何环境相关的值（数据库地址、密钥、开关），一律运行时注入。这是十二要素应用（12-Factor）的第三条（Config）——**混进镜像的配置，就是「同一产物在不同环境行为不同」的根源**。
+
+### 三、环境晋级与审批的粒度
+
+| 环境 | 部署方式 | 门禁 |
+|---|---|---|
+| dev | 每次推送自动 | 无（或只要 lint/test 过） |
+| test/staging | 自动（main 分支） | 自动化测试 + 基础扫描 |
+| pre-prod | 自动或半自动 | 完整回归 + 性能冒烟 |
+| production | 手动触发 / 审批 | 环境审批 + 变更窗口（如避免周五晚） |
+
+**审批不等于安全**：审批只是「有人签字」，真正降低风险的是**部署策略**（金丝雀、自动回滚、特性开关）与**快速回滚能力**。所以成熟团队的趋势是「**减少审批、增强自动化控制**」——用「自动金丝雀 + 指标自动回滚」替代「人工点确认」。
+
+### 四、流水线即代码的可复用抽象
+
+${C}${C}${C}
+层级（从粗到细）
+  ① 模板/可复用工作流：一条完整流水线（如「Java 服务标准流水线」）
+  ② 复合 action / 共享步骤：一组环境准备（setup + cache + login）
+  ③ 共享脚本/工具：仓库里的 scripts/ 或内部 CLI
+
+最佳结构（多仓库组织）
+  平台仓（shared-workflows）：
+    .github/workflows/java-service.yml       ← 标准流水线模板
+    .github/actions/setup-java/              ← 环境准备
+  业务仓：
+    uses: myorg/shared-workflows/.github/workflows/java-service.yml@v1  ← 只传参数
+    （锁 tag 便于集中升级；安全要求高时锁 SHA）
+${C}${C}${C}
+
+**为什么必须抽公共层**：N 个仓库各自维护一份流水线，意味着「安全扫描升级」「缓存策略优化」要改 N 次，最终必然出现「有些仓库没有扫描」的不一致。**平台团队的职责之一就是把「正确的做法」变成「默认的做法」**。
+
+### 五、流水线安全与凭据管理
+
+| 项 | 做法 |
+|---|---|
+| 凭据来源 | 优先 **OIDC 联邦**（无长期密钥）；其次密钥管理服务（Vault/KMS）运行时注入 |
+| 凭据范围 | 按环境隔离（测试环境密钥不能部署生产）、按 job 隔离（测试 job 拿不到部署凭据） |
+| 制品写入 | 只有发布流水线能写制品库；禁止开发者个人凭据推送镜像 |
+| 变更可审计 | 流水线定义走 PR 评审；部署记录关联 commit 与操作人 |
+| 密钥扫描 | pre-commit + CI 双重扫描（防误提交） |
+
+**一条重要的架构建议**：**部署凭据不要交给「测试/构建」阶段**。把流水线拆成「构建（无部署权限）」与「部署（最小权限，只对目标环境）」两个阶段，由受保护的环境门禁隔离——这样即使构建阶段被投毒，也拿不到生产权限。
+
+### 六、用 DORA 指标度量流水线本身
+
+| 指标 | 定义 | 目标方向 |
+|---|---|---|
+| **部署频率** | 单位时间上生产次数 | 越高越好（反映批量大小） |
+| **变更前置时间** | commit 到生产运行的时长 | 越短越好 |
+| **变更失败率** | 导致故障/回滚的部署占比 | 越低越好 |
+| **恢复时长（MTTR）** | 故障到恢复的时长 | 越短越好 |
+
+**四指标必须一起看**：只追求部署频率而失败率飙升，说明在裸奔；只追求低失败率而不部署，说明流程过重。**「高频 + 低失败率 + 快恢复」= 小批量 + 自动化验证 + 快速回滚**，这三者构成互相支撑的闭环。
+
+**度量流水线自身的关键项**：排队时间（是否 runner 不足）、单次时长（缓存命中率）、flaky 测试比例（不稳定测试会让团队失去对红灯的信任——**flaky 测试必须被修复或隔离，否则门禁形同虚设**）、失败原因分布（环境/代码/依赖各占多少）。
 
 ## 📚 延伸阅读
 
@@ -1584,6 +2295,154 @@ ${F}
 - [ ] 会用 ${C}describe${C} / ${C}logs --previous${C} / ${C}get endpoints${C} 三类命令定位故障
 - [ ] Helm chart 的 values 分层进 Git，变更走 ${C}template${C} / ${C}diff${C} 预检，能 ${C}rollback${C}
 
+<!--dd:devops-mid-3-->
+
+## 🔬 深挖：控制器的协调循环与探针的误用
+
+### 一、声明式与控制器模式：K8s 的灵魂
+
+${C}${C}${C}
+你提交 desired state（期望状态）：
+  Deployment: replicas: 3, image: app:1.4.2
+
+控制器（reconcile loop）不断做：
+  observed = 读集群实际状态（有几个 Pod 在跑？镜像对不对？）
+  if observed != desired:
+      执行动作（创建/删除 Pod）让实际逼近期望
+  （循环永不停止 —— 这就是「自愈」的来源）
+${C}${C}${C}
+
+**理解这一点能解释 K8s 的三个「怪现象」**：① 手动删掉一个 Pod，它会自动重建（因为期望 3 个）；② 改了 Deployment 的镜像，不是「修改现有 Pod」而是**创建新 Pod + 删旧 Pod**（Pod 不可变）；③ 你手动改 Pod 的标签，ReplicaSet 立刻把它「纠正」回去（标签是它认领 Pod 的依据）。
+
+**声明式的代价**：状态收敛需要时间（不是瞬时），所以「提交后立刻验证」常常失败——必须等条件（${C}kubectl rollout status${C}、等待 Ready）而不是等待固定秒数。
+
+### 二、探针三件套：误用会导致「连续重启」或「流量进不来」
+
+| 探针 | 回答的问题 | 失败动作 | 误用后果 |
+|---|---|---|---|
+| **readinessProbe** | 现在能接流量吗？ | 从 Service 摘除（不重启） | 配得太严 → 实例频繁被摘除、容量抖动 |
+| **livenessProbe** | 进程还活着吗？ | **重启容器** | 配了下游依赖检查 → 依赖抖动导致**全量重启雪崩** |
+| **startupProbe** | 启动完成了吗？ | 在成功前抑制 liveness | 启动慢的应用不配 → 启动中被 liveness 杀掉，反复重启 |
+
+${F}yaml
+# 正确的分工示例
+startupProbe:                       # 给慢启动应用（JVM 冷启动可能 60s）
+  httpGet: { path: /actuator/health/liveness, port: 8080 }
+  failureThreshold: 30              # 30 × 10s = 最多容忍 300s 启动
+  periodSeconds: 10
+livenessProbe:                      # ★ 只检查「进程自身」，绝不含下游依赖
+  httpGet: { path: /actuator/health/liveness, port: 8080 }
+  periodSeconds: 10
+  failureThreshold: 3
+readinessProbe:                     # 可以包含「必要依赖是否就绪」
+  httpGet: { path: /actuator/health/readiness, port: 8080 }
+  periodSeconds: 5
+  failureThreshold: 2
+${F}
+
+**一条铁律**：**liveness 绝不能检查数据库/缓存/下游服务**——下游抖动时所有实例的 liveness 同时失败，K8s 会把全部实例重启，把「部分降级」升级成「完全不可用」。依赖检查应该放在 **readiness**（临时摘流量，等依赖恢复自动回来）。
+
+**还要配 ${C}initialDelaySeconds${C} / ${C}terminationGracePeriodSeconds${C}**：优雅停机的宽限期要大于应用处理完在途请求的时间，否则慢请求被硬切。
+
+### 三、Service 与 kube-proxy：流量怎么到达 Pod
+
+${C}${C}${C}
+Service（ClusterIP）→ kube-proxy 在每个节点维护转发规则 → 后端 Endpoints（就绪的 Pod IP）
+两种实现：
+  iptables 模式：规则随 Service/Endpoint 数量线性增长 → 大规模下更新慢、查询 O(n)
+  IPVS 模式：哈希表 O(1)，支持更多调度算法（rr/lc/wrr…）→ 大规模集群推荐
+${C}${C}${C}
+
+| Service 类型 | 作用 | 依赖 |
+|---|---|---|
+| ClusterIP | 集群内访问（默认） | 仅 kube-proxy |
+| NodePort | 每节点开端口（30000-32767） | 节点 IP（易被滥用作为外部入口） |
+| LoadBalancer | 云 LB 自动创建 | 云厂商实现 |
+| ExternalName | DNS CNAME 到外部域 | 无 | 无 |
+
+**Headless Service（${C}clusterIP: None${C}）**：不做负载均衡，直接用 DNS 返回所有 Pod IP——StatefulSet 与需要「客户端自己做负载均衡/发现全部实例」的场景（如 Kafka、ZooKeeper、自研一致性哈希）必须用它。
+
+**K8s 网络模型的三条规则**：每个 Pod 一个 IP；Pod 间可直接通信（无 NAT）；Pod 与节点间可直接通信。**这也是为什么需要 NetworkPolicy**——默认全通，安全必须显式声明。
+
+### 四、requests/limits 与 QoS 等级
+
+${F}yaml
+resources:
+  requests: { cpu: 250m, memory: 512Mi }    # ★ 调度依据 + QoS 判定依据
+  limits:   { memory: 1Gi }                 # 硬上限：超了 OOMKilled
+  # CPU 通常不设 limits（或设较大）：CPU 可压缩，限得太死会因节流(throttling)拖慢响应
+  # memory 必须设 limits：内存不可压缩，不设会拖垮节点
+${F}
+
+| QoS 等级 | 条件 | 被驱逐优先级 |
+|---|---|---|
+| **Guaranteed** | 每个容器 cpu/memory 的 request == limit | 最后（最安全） |
+| **Burstable** | 有 request，但不等 | 中间 |
+| **BestEffort** | 完全没设 | 最先被驱逐（最危险） |
+
+**三个实践要点**：① **内存 request 必须接近真实用量**，否则节点会超卖、压力大时互相 OOM；② **CPU limits 慎设**——CPU 是可压缩资源，设了 limits 会导致 CFS 节流（${C}container_cpu_cfs_throttled${C} 指标飙升），表现为「CPU 没用满但延迟很高」；③ 关键服务（数据库、网关）一律 **Guaranteed**，避免被其他 Pod 挤掉。
+
+**Java 在容器里的经典陷阱**：JVM 早期版本按**宿主机**内存算堆大小，导致容器 OOM。解法：用 ${C}-XX:MaxRAMPercentage=75${C}（JDK 10+ 已默认容器感知）或显式 ${C}-Xmx${C}；同时 ${C}ActiveProcessorCount${C} 也要注意（JVM 可能看到宿主机全部 CPU 而开过多 GC 线程）。**JVM 参数应按 limits 而非宿主机来配**。
+
+### 五、调度控制：从「随便放」到「精确放置」
+
+${F}yaml
+# ① nodeSelector：最简单（按标签选节点）
+nodeSelector: { disktype: ssd }
+
+# ② 亲和/反亲和：表达「要和谁在一起 / 不要在一起」
+affinity:
+  podAntiAffinity:                       # ★ 同一 Deployment 的 Pod 尽量分散到不同节点
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector: { matchLabels: { app: api } }
+          topologyKey: kubernetes.io/hostname
+# ③ 污点与容忍：节点拒绝一般 Pod，只有声明容忍的才能上
+#    kubectl taint node gpu-1 nvidia.com/gpu=true:NoSchedule
+tolerations:
+  - { key: nvidia.com/gpu, operator: Exists, effect: NoSchedule }
+
+# ④ PDB：自愿中断（节点维护、驱赶）时保证最小可用数
+--- 
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+spec:
+  minAvailable: 2                        # 或 maxUnavailable: 1
+  selector: { matchLabels: { app: api } }
+${F}
+
+**PDB 最容易被忽略但最关键**：没有 PDB，集群升级或节点缩容时可能**同时**驱逐某服务的全部 Pod，造成完全中断。**凡是「多副本 + 有可用性要求」的服务都应配置 PDB**。
+
+**拓扑分布约束（topologySpreadConstraints）** 是比反亲和更现代的选择：能表达「跨可用区均匀分布」而不是「尽量不在一起」，适合 Zone 级容灾。
+
+### 六、ConfigMap/Secret 与 Helm 的核心机制
+
+${C}${C}${C}
+ConfigMap/Secret 的两种挂载方式与更新行为差异（高频考点）
+  ① 以卷挂载（volume）：内容更新后，Pod 内文件会「最终」同步更新（约 1 分钟）
+     但应用需要自己 reload；subPath 挂载的文件不会更新
+  ② 以环境变量注入（envFrom/valueFrom）：★ 容器启动后永不变更
+     必须重启 Pod 才能生效（常用 checksum 注解触发滚动更新）
+${C}${C}${C}
+
+${F}yaml
+# 用配置哈希注解强制「配置变了就滚动更新」（最常用的实用技巧）
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum/config: "{{ include (print $.Template.BasePath \"/configmap.yaml\") . | sha256sum }}"
+${F}
+
+**Helm 的四个核心概念**：Chart（包）、values（参数）、template（Go 模板）、Release（一次安装的实例）。几个必须知道的机制：
+- **${C}helm upgrade${C} 是「三路合并」**：合并「旧 release 的 manifest」「新渲染的 manifest」「集群实际状态」——这解释了「为什么手动 kubectl 改过的资源在 upgrade 后可能被保留或改回」这类困惑；
+- **hooks**（pre-install / post-upgrade / pre-delete 等）用于执行数据库迁移这类一次性任务，但注意失败时资源可能残留（需 ${C}hook-delete-policy${C}）；
+- **状态存在 Secret 里**（${C}sh.helm.release.v1.*${C}），所以 Helm 依赖集群（不能离线渲染历史）；
+- **${C}helm template${C} 与 ${C}--dry-run${C} 是排查渲染问题的第一手段**（比直接 upgrade 安全）；${C}helm diff${C} 插件能看变更内容。
+
+**Helm 与 Kustomize 的分工**：Helm 适合分发「可配置的第三方组件」（社区生态丰富）；Kustomize 适合「自己的应用多环境差异」（无模板、纯覆盖、YAML 原生）。两者可组合（Helm 渲染基础，Kustomize 做覆盖），但**不要在一个组件上混用两套抽象**——那会让排障变得极其困难。
+
 ## 📚 延伸阅读
 
 - [Kubernetes Concepts 官方目录](https://kubernetes.io/docs/concepts/)：Workloads 与 Services & Networking 两章是必读
@@ -1863,6 +2722,135 @@ ${F}
 - [ ] 会用 ${C}plan -refresh-only${C} 检测漂移，会 ${C}import${C} 纳管存量资源
 - [ ] 对照十二要素检查过配置外置、无状态进程、日志到 stdout
 
+<!--dd:devops-mid-4-->
+
+## 🔬 深挖：Terraform 的 state 与十二要素的工程解读
+
+### 一、state 是 Terraform 的「真相」，也是最大的风险点
+
+Terraform 不是「读现状再改」，而是**用 state 记录「我创建了什么」**，再与配置对比求出 diff：
+
+${C}${C}${C}
+配置（.tf）  ──┐
+                ├──> plan（三方对比）──> apply
+state（.tfstate）┘         ↑
+集群/云实际状态 ────────────┘
+${C}${C}${C}
+
+**由此产生三个必知结论**：
+1. **state 丢了就等于失控**：Terraform 不知道资源存在，会尝试重新创建（可能报「已存在」或产生重复资源）；所以 state 必须**远程存储 + 版本化 + 备份**；
+2. **state 是敏感的**：数据库口令、私钥、证书都会**明文**存在 state 里（即使你在变量里标了 ${C}sensitive${C}，也只是不打印，state 里仍有）——所以 state 的存储桶必须加密 + 严格最小权限；
+3. **多人协作必须有锁**：两个人同时 apply 会互相覆盖，造成「幽灵资源」。远程后端要开锁（S3+DynamoDB / Terraform Cloud / GitLab 托管 state）。
+
+${F}hcl
+terraform {
+  backend "s3" {
+    bucket         = "my-tf-state"
+    key            = "prod/network/terraform.tfstate"   # 按「环境/组件」分 key，缩小爆炸半径
+    region         = "ap-east-1"
+    encrypt        = true
+    dynamodb_table = "tf-lock"                          # ★ 状态锁，防并发 apply
+  }
+}
+${F}
+
+**state 拆分的粒度**是重要设计决策：全放一个 state 会「改安全组要重跑整个基础设施」（风险与耗时都放大）；拆成「网络 / 数据层 / 应用层」多个 state，用 ${C}data${C} 源互相引用，能让变更范围可控。**但拆得太细会让依赖关系难以表达**——以「变更频率 + 变更责任团队」为拆分依据是实践中最有效的口径。
+
+### 二、plan / apply 的正确工作流
+
+${F}bash
+terraform fmt -recursive          # 格式化
+terraform validate                # 语法与引用校验
+terraform plan -out=tfplan        # ★ 保存计划（apply 时用同一份，避免「审查的」与「执行的」不一致）
+terraform show -json tfplan | jq '.resource_changes[] | {addr:.address, act:.change.actions}'
+terraform apply tfplan
+# 漂移检测（别人在控制台手改过？）
+terraform plan -detailed-exitcode  # 退出码 2 = 有差异
+${F}
+
+**三个纪律**：
+1. **plan 必须被审查**（尤其出现 ${C}destroy${C} / ${C}replace${C}——「replace」意味着先删后建，对有状态资源可能是灾难）；
+2. **apply 用保存的 plan 文件**，而不是重新 plan（否则中间若有变更，执行内容与评审内容不一致）；
+3. **禁止在控制台手改**被 Terraform 管理的资源——会产生漂移，下次 apply 可能把你的手工修改「改回去」，或者更糟：${C}create${C} 与已存在资源冲突。
+
+**${C}-target${C} 是应急手段而非日常工具**：它会跳过依赖图的部分检查，容易造成状态不一致（其他资源以为前置条件已满足）。用它之后应立刻跑一次完整 plan 确认无意外差异。
+
+### 三、模块化与重构
+
+${F}hcl
+# 模块调用：把「一套经过验证的做法」封装复用
+module "web_cluster" {
+  source = "./modules/app-cluster"
+  name   = "web"
+  size   = 3
+  image  = var.app_image
+}
+
+# 重构：资源地址变了（模块/名字改动）会导致「删旧建新」→ 用 moved 块告诉 Terraform
+moved {
+  from = aws_instance.web
+  to   = module.web_cluster.aws_instance.this
+}
+${F}
+
+**${C}moved${C} 块（1.1+）是重构的关键工具**：它让「重命名/搬进模块」不再产生 destroy/create。同理 ${C}terraform state mv${C} 是命令行的等价做法（但 moved 块可以被评审、留痕，更推荐）。
+
+**导入已存在的资源**用 ${C}import${C} 块（1.5+）或 ${C}terraform import${C}：但导入后**必须逐项核对配置**，因为导入只带来 state、不带来配置——配置漏写字段会导致下次 apply 时把字段改回默认值（静默修改线上资源，很危险）。
+
+### 四、防「误删」的四道保险
+
+${C}${C}${C}
+① 生命周期保护：prevent_destroy = true（对有状态资源：数据库、存储桶）
+② 敏感资源保护：deletion_protection（云厂商侧也开一份）
+③ 变更审查：CI 里 plan 输出 destroy 高危时人工确认
+④ 权限隔离：日常开发账号无权 destroy 生产资源（分离 plan 与 apply 的权限）
+${C}${C}${C}
+
+${F}hcl
+resource "aws_db_instance" "main" {
+  # ...
+  lifecycle {
+    prevent_destroy = true            # 有人 apply 删除时会直接报错
+    ignore_changes  = [password]      # 密码由外部轮换，不让 Terraform 管
+  }
+}
+${F}
+
+**CI 中的 Terraform 门禁**：${C}terraform plan${C} 作为 PR 的必需检查 + 把 plan 结果评论到 PR（可见性）+ ${C}tflint${C} 做静态检查 + ${C}checkov${C}/${C}tfsec${C} 做安全扫描 + apply 只在 main 分支（且限制并发）。
+
+### 五、十二要素（12-Factor）在容器时代的逐条对照
+
+| 原则 | 含义 | 容器时代的落地 |
+|---|---|---|
+| 1 代码库 | 一份代码库，多次部署 | 一仓多环境部署（不是一环境一仓） |
+| 2 依赖 | 显式声明并隔离 | lockfile + 镜像内自带运行时（不依赖宿主机） |
+| 3 配置 | 存于环境 | **环境变量 / ConfigMap**；绝不烘焙进镜像 |
+| 4 后端服务 | 当作附加资源 | DB/缓存/MQ 用地址连接，可随时替换（连接串来自配置） |
+| 5 构建/发布/运行 | 严格分离 | **构建一次，多处部署**；镜像 = 发布产物 |
+| 6 进程 | 无状态，共享无物 | 进程可随时被杀；状态放外部存储（含 session） |
+| 7 端口绑定 | 自绑定端口对外服务 | 容器内监听端口，不对进程做守护化 |
+| 8 并发 | 通过进程模型扩展 | 水平扩副本（不是靠线程调优）；Web 与 Worker 分离 |
+| 9 易处理 | 快速启动、优雅终止 | 处理 SIGTERM + 优雅停机（在途请求跑完） |
+| 10 环境等价 | 各环境尽量一致 | 同镜像同版本，差异只在配置；避免「只有生产装了 X」 |
+| 11 日志 | 当作事件流 | **写 stdout/stderr**，不自己管理文件与轮转 |
+| 12 管理进程 | 一次性任务 | 迁移/初始化任务用 Job / initContainer，不混在服务启动里 |
+
+**最常被违反的两条**：**第 3 条（配置进镜像）**与**第 11 条（应用自己写文件日志）**。前者导致「同一镜像在不同环境行为不同」，后者在容器里会导致磁盘被撑满（可写层）与日志无法被采集。**把日志写 stdout 是云原生的硬要求**——采集交给平台（Fluent Bit / Vector / 日志采集 DaemonSet）。
+
+### 六、IaC 的安全与合规
+
+${C}${C}${C}
+① 密钥不进代码：用 Vault / KMS / Variables（CI secrets），并启用 secret 扫描
+   ★ 注意 state 里会有明文密钥 —— 所以 state 存储必须加密 + 权限最小化
+② 静态扫描（IaC 层）：checkov / tfsec / trivy config
+   检查项：S3 公开访问、安全组 0.0.0.0/0、未加密存储、日志未开启
+③ 策略即代码：OPA / Sentinel / CloudFormation Guard 做「组织规范」强制
+   例：禁止创建公网 ALB、必须打标签、实例类型白名单、必须加密
+④ 合规即代码：把等保/审计要求写成策略，自动检查而不是人工核对
+${C}${C}${C}
+
+**一条实践建议**：**把「安全默认」做进模块**。团队用 ${C}module "s3_bucket"${C} 时，模块内部默认开启加密、版本化、禁止公开访问——这样「正确」是默认选项，「错误」需要显式声明。这比事后扫描有效得多（扫描只能发现问题，模块能避免问题）。
+
 ## 📚 延伸阅读
 
 - [Terraform Language 官方文档](https://developer.hashicorp.com/terraform/language)：按 Syntax → State → Modules 顺序读
@@ -2076,6 +3064,108 @@ ${F}
 - [ ] 有明确的保留策略，且不会清掉回滚所需的版本
 - [ ] 依赖持续扫描（SCA），并跟踪基础镜像/框架的 EOL 时间表
 - [ ] 部署时用 digest 固定，而不是浮动 tag
+
+<!--dd:devops-mid-5-->
+
+## 🔬 深挖：语义化版本的解析行为与不可变制品
+
+### 一、语义化版本不只是「约定」，它决定依赖解析结果
+
+${C}${C}${C}
+MAJOR.MINOR.PATCH
+  MAJOR：不兼容的 API 变更（升级需改代码）
+  MINOR：向后兼容的功能新增
+  PATCH：向后兼容的问题修复
+
+预发布与构建元数据（会被工具识别）：
+  1.2.3-alpha.1 / 1.2.3-rc.2 / 1.2.3+build.5
+  ★ 预发布版本的排序低于同版本正式版：1.2.3-rc.1 < 1.2.3
+${C}${C}${C}
+
+**范围修饰符（npm / semver 生态）的真实含义**：
+
+| 写法 | 等价范围 | 风险 |
+|---|---|---|
+| ${C}1.2.3${C} | 精确 | 最安全，但无法自动拿补丁 |
+| ${C}^1.2.3${C} | >=1.2.3 <2.0.0 | 允许 minor 升级——**可能引入行为变更**（提交者自认为兼容不等于真的兼容） |
+| ${C}~1.2.3${C} | >=1.2.3 <1.3.0 | 只允许补丁升级（更保守） |
+| ${C}1.2.x${C} / ${C}*${C} | 通配 | ${C}*${C} 极度危险（可能拉到大版本） |
+| ${C}>=1.2.3${C} | 无上界 | 危险（可能跨大版本） |
+
+**这就解释了「为什么 lockfile 是必须的」**：${C}package.json${C} 写 ${C}^1.2.3${C} 只表达意图，**真正的解析结果由 lockfile 固定**。没有 lockfile 时，今天装和明天装可能得到不同版本 —— 「本地能跑、CI 挂」的经典成因。**CI 必须用 ${C}npm ci${C} / ${C}mvn -o${C} 等以 lockfile 为准的命令，而不是 ${C}npm install${C}**。
+
+### 二、不可变制品与「构建一次」
+
+${C}${C}${C}
+❌ 允许重新构建同一版本号：
+   app:1.4.2 昨天构建一次、今天因为要修一个热修又构建一次并复用 1.4.2
+   → 同名不同内容：回滚到 1.4.2 到底回到哪一份？无法回答
+   → 不可复现：出问题时无法确定当时部署的是什么
+
+✅ 不可变制品：
+   版本号一旦发布，内容永不改变
+   任何变更 → 新版本号（补丁版本 1.4.3）
+   制品库开启「禁止覆盖」策略（大多仓库支持）
+${C}${C}${C}
+
+**如何保证「构建可复现」**（同一份源码 + 同一环境 → 字节一致或行为一致）：
+- 锁依赖（lockfile / BOM）；
+- 固定工具链版本（JDK/Node 版本在 CI 镜像里固定，不用 ${C}latest${C}）；
+- 去掉时间戳与非确定性的元数据（或统一注入 ${C}SOURCE_DATE_EPOCH${C}）；
+- 固定构建基础镜像的 digest（而不是 tag）。
+
+### 三、制品仓库的职责划分
+
+| 仓库类型 | 存什么 | 代表 |
+|---|---|---|
+| 依赖代理（Proxy） | 缓存公共仓库、防止外网依赖 | Nexus / Artifactory 的 proxy repo |
+| 私有仓库（Hosted） | 自研包（jar/npm/pypi） | Nexus hosted |
+| 镜像仓库 | 容器镜像（含多个 tag 与 manifest） | Harbor / ECR / ACR |
+| 通用制品（Generic） | 二进制、安装包、SBOM 附件 | Artifactory generic |
+
+**必须开启的三条策略**：① **禁止覆盖已发布版本**（不可变性）；② **保留策略 + 定期清理**（否则存储成本失控，但清理不能碰「正在被部署的版本」）；③ **访问审计**（谁拉了哪个版本，泄露溯源用）。
+
+**${C}latest${C} 与 tag 复用的风险**（再强调一次，因为它是最常见的实践错误）：tag 可被覆盖时，K8s 的 ${C}imagePullPolicy: IfNotPresent${C} 会因「本地已有同名 tag」而不拉新镜像 —— 部署「成功了」但跑的还是旧代码。**根本解法：用不可变 tag 或 digest 部署，并配 ${C}Always${C}（或不指定，默认策略对非 latest 是 IfNotPresent）**。
+
+### 四、SBOM、Provenance 与签名：把「不可变」升级为「可证明」
+
+${C}${C}${C}
+三件套一起发布（与镜像同 digest 绑定）：
+  sbom.json          ← 里面有什么（依赖清单）
+  provenance.json    ← 谁在什么环境用什么源码构建的（SLSA 里的 attestation）
+  signature          ← 用构建者身份签名，并可验证（cosign / Notation）
+
+部署侧强制校验（准入控制器）
+  → 无签名 / 签名无效 / SBOM 有阻断级 CVE → 拒绝入集群
+${C}${C}${C}
+
+${F}bash
+# 签名并附加证明（Sigstore keyless：用 OIDC 身份签名，无需自管私钥）
+cosign sign  --yes myrepo/app@sha256:abc123...
+cosign attest --yes --predicate provenance.json --type slsaprovenance myrepo/app@sha256:abc123...
+cosign verify --certificate-identity-regexp 'https://github.com/myorg/.*' \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              myrepo/app@sha256:abc123...
+${F}
+
+**为什么必须用 digest 而不是 tag 签名/部署**：tag 可移动，签名只对「那一刻的那个内容」有效。用 digest 才能把「签名」与「内容」牢牢绑定——这是供应链安全从「靠约定」走向「靠密码学」的关键一步。
+
+### 五、版本与制品的台账：出问题时的第一份答案
+
+新 CVE 爆发时（如又一个 Log4Shell 级别的漏洞），团队要能在十分钟内回答三个问题：
+
+${C}${C}${C}
+① 我们有没有用这个组件？（→ SBOM 检索）
+② 受影响的是哪些服务、哪些版本？（→ 制品台账 + SBOM 关联）
+③ 现在线上跑的是不是受影响版本？（→ 部署记录 ↔ digest ↔ 版本号）
+${C}${C}${C}
+
+**建立这三条关联是「应急就绪」的基础设施**，很多团队在事件发生后才痛苦地手工翻找。落地要点：
+- 每次构建产出 **SBOM 并入库**（与镜像同 digest）；
+- 部署记录里**记录 digest 与版本号**（而不是只记 tag）；
+- 部署记录与代码提交**关联**（哪个 commit、哪个 PR）。
+
+**一个组织层面的实践**：把「漏洞响应演练」列为年度动作——发布一个「假 CVE」，计时从通告到确认「我们受影响的服务清单」。**演练结果通常会让团队发现台账不全**，而这个发现本身就是最大的收益。
 
 ## 📚 延伸阅读
 
@@ -2362,6 +3452,147 @@ ${F}
 - [ ] Sync/Health 状态已接入监控告警，${C}OutOfSync${C} 有告警
 - [ ] 渐进式发布用 Argo Rollouts / Flagger 衔接，而非纯 GitOps 全量替换
 
+<!--dd:devops-adv-1-->
+
+## 🔬 深挖：GitOps 的四原则与同步引擎
+
+### 一、GitOps 的四条原则
+
+${C}${C}${C}
+① 声明式（Declarative）：期望状态全部以声明方式描述（YAML/HCL）
+② 版本化且不可变（Versioned & Immutable）：唯一真相来源是 Git，历史可追溯、可回滚
+③ 自动拉取（Pulled Automatically）：集群侧的 agent 主动拉取，不由外部推送
+④ 持续协调（Continuously Reconciled）：agent 持续对比并修正漂移（自愈）
+${C}${C}${C}
+
+**Push 与 Pull 的对比**（这是 GitOps 最核心的架构选择）：
+
+| 维度 | Push 模型（CI 直接 kubectl/helm apply） | Pull 模型（GitOps） |
+|---|---|---|
+| 凭据方向 | **CI 持有集群写凭据**（暴露面大） | 集群持有只读 Git 凭据（暴露面小） |
+| 网络要求 | CI 需能访问集群 API | 集群需能访问 Git（内网出网可行） |
+| 漂移检测 | 无（除非自己实现） | 内建（持续对比） |
+| 自愈 | 无 | 有（可配置自动修正） |
+| 审计 | CI 日志 | **Git 历史（谁改了什么，天然可审计）** |
+| 集群不可达时 | 部署失败 | 恢复后自动补齐（最终一致） |
+
+**Pull 模型最大的安全优势**：**「谁能改 Git（受 PR 与审批保护）」等价于「谁能改集群」**，而 CI 不再持有集群管理凭据——供应链攻击的收益大幅降低。这是 GitOps 在企业落地的首要理由（其次才是自愈与审计）。
+
+### 二、Argo CD 的架构与同步机制
+
+${C}${C}${C}
+Argo CD 的四个关键组件
+  API Server     ：UI/CLI 入口，鉴权与聚合
+  Repo Server    ：拉 Git、渲染（helm template / kustomize build），缓存
+  Application Controller ：对比 desired vs live，决定 sync 与 sync status
+  ApplicationSet Controller：批量生成 Application（多集群/多环境模板化）
+
+Application 的四个关键字段
+  source     ：repoURL + path + targetRevision + (helm|kustomize|plain)
+  destination：目标集群 + namespace
+  syncPolicy ：自动同步 / 自动修剪 / 自愈 / 同步窗口
+  ignoreDifferences：忽略某些字段的漂移（如 HPA 改的 replicas）
+${C}${C}${C}
+
+${F}yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/myorg/k8s-manifests
+    targetRevision: main
+    path: apps/app/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  syncPolicy:
+    automated:
+      prune: true        # ★ 删掉 Git 里的资源 → 集群里也删（危险，但保证「Git 是唯一真相」）
+      selfHeal: true     # 有人手改 → 自动改回
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true      # 只 apply 有差异的资源（大规模下显著提速）
+    retry:
+      limit: 5
+      backoff: { duration: 5s, factor: 2, maxDuration: 3m }
+${F}
+
+**${C}prune: true${C} 是需要谨慎决定的一项**：它让「删除 Git 里的 manifest」真正删除集群资源。好处是彻底消除「孤儿资源」，风险是一次误删（比如把整目录挪走）会连带删除线上资源。**常见折中**：生产环境先只开 ${C}selfHeal${C}，用 ${C}prune${C} 但配合「同步窗口 + 人工确认」（不自动 sync，只提示有差异）。
+
+**${C}ignoreDifferences${C} 的典型用途**：HPA 修改了 ${C}spec.replicas${C}、云厂商 webhook 注入了默认字段（如 sidecar 注入）、证书控制器改了字段 —— 这些「合理的漂移」会让应用永远显示 ${C}OutOfSync${C}，必须显式忽略，否则告警会被麻木。
+
+### 三、Sync Waves 与 Hooks：让「没人管顺序」变成「有顺序」
+
+K8s 的 apply 顺序本身不可控（控制器异步），但有依赖的场景（命名空间 → CRD → 配置 → 应用）必须排序：
+
+${F}yaml
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"     # 数字越小越先执行（默认 0）
+    argocd.argoproj.io/hook: PreSync       # PreSync / Sync / PostSync / SyncFail
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+${F}
+
+**典型编排**：${C}wave=-1${C} 建 Namespace/CRD → ${C}wave=0${C} 建 Secret/ConfigMap → ${C}wave=1${C} 建 Deployment/Service → ${C}wave=2${C} 建 Ingress/HPA → ${C}PostSync${C} 跑冒烟测试 Job。
+
+**数据库迁移的位置**：放在 ${C}PreSync${C} 还是 ${C}PostSync${C} 取决于兼容性策略——若采用 expand-contract（先加兼容字段，后删旧字段），迁移应在 ${C}PreSync${C}（新旧代码都能跑）；如果迁移会破坏旧版本（不可回滚的变更），必须单独设计（拆成多阶段发布）。
+
+### 四、密钥管理与多环境仓库布局
+
+**密钥绝不能明文进 Git**（即使私有仓库）。三种主流做法：
+
+| 方案 | 原理 | 特点 |
+|---|---|---|
+| Sealed Secrets | 用集群公钥加密后提交（只有集群私钥能解） | 简单；但轮换与多集群共享麻烦 |
+| External Secrets | Git 里只放「引用」，实际值从 Vault/云 KMS 拉 | **推荐**：密钥不在 Git，轮换由密钥服务负责 |
+| SOPS + KMS | 文件级加密，Git 里是密文，解密需 KMS 权限 | 适合配置文件里混有少量敏感项 |
+
+${F}yaml
+# External Secrets：Git 里只有「去哪拿」，没有「值是多少」
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+spec:
+  secretStoreRef: { name: vault-backend, kind: ClusterSecretStore }
+  target: { name: app-secret }
+  data:
+    - secretKey: DB_PASSWORD
+      remoteRef: { key: prod/app/db, property: password }
+${F}
+
+**仓库布局的两种主流选择**：
+
+${C}${C}${C}
+A. 每环境一仓（或一分支）
+   优点：权限隔离清晰（prod 仓只允许少数人合并）
+   缺点：同一变更要改多处，容易不一致
+
+B. 单仓多目录（overlays/prod、overlays/staging）
+   优点：一处变更、结构统一、便于对比
+   缺点：需要目录级 CODEOWNERS 控制生产目录的审批权
+${C}${C}${C}
+
+**推荐 B（单仓多目录）**：配合 ${C}CODEOWNERS${C} 把 ${C}overlays/prod/**${C} 指定给 SRE 评审，既保持一致性，又有审批隔离。分支隔离（prod 分支）虽然直观，但容易产生长期分叉与 cherry-pick 地狱。
+
+### 五、回滚：GitOps 下的正确姿势
+
+${C}${C}${C}
+① Git 回滚（推荐）
+   git revert <commit> → 推送 → 控制器自动同步回旧状态
+   优点：有审计、与其他变更是同一流程、状态不漂移
+② Argo CD 的「历史回滚」按钮
+   本质是回滚 Application 的 targetRevision 或参数，不改变 Git 内容
+   ⚠ 会被下一次同步覆盖（因为 Git 还是新状态）→ 只能作为「临时止血」
+③ 紧急情况（Git 不可用/集群不可达）
+   允许 kubectl 手工回滚镜像，但必须在恢复后「把 Git 改回一致状态」
+   否则 selfHeal 会立刻把它改回去（或用 ignoreDifferences 暂缓）
+${C}${C}${C}
+
+**最重要的一条纪律**：**GitOps 下不存在「手改线上」这种长期状态**。任何紧急手工操作都必须以「回写 Git」收尾，否则系统会自愈回旧状态（这可能恰好是你想要的，也可能造成二次故障）。所以应急预案里要写清「手工操作后 30 分钟内必须回写 Git」。
+
 ## 📚 延伸阅读
 
 - [OpenGitOps 原则（官方）](https://opengitops.dev/)：四原则的原始定义，一页读完
@@ -2626,6 +3857,162 @@ ${F}
 - [ ] 集群创建/升级走 Cluster API + ClusterClass，升级不跨 minor
 - [ ] 有跨集群网络与镜像复制的规划，成本按标签分摊
 - [ ] 非生产集群有缩容策略
+
+<!--dd:devops-adv-2-->
+
+## 🔬 深挖：Kustomize 的覆盖机制与多集群治理
+
+### 一、Kustomize 的核心：base + overlay
+
+${C}${C}${C}
+base/                     ← 共性（所有环境相同的部分）
+  deployment.yaml
+  service.yaml
+  kustomization.yaml
+overlays/
+  dev/
+    kustomization.yaml    ← 引用 base + 打补丁 + 改副本数/镜像/域名
+    patch-replicas.yaml
+  prod/
+    kustomization.yaml
+    patch-resources.yaml
+    patch-ingress.yaml
+${C}${C}${C}
+
+${F}yaml
+# overlays/prod/kustomization.yaml
+resources:
+  - ../../base
+  - hpa.yaml
+namePrefix: prod-                     # 资源名前缀（防跨环境同名冲突，尤其在共享集群时）
+commonLabels: { env: prod }
+images:
+  - name: myrepo/app
+    newTag: "1.4.2"                   # ★ 发布就是改这一行（配合 GitOps 的自动化）
+patches:
+  - path: patch-resources.yaml
+    target: { kind: Deployment, name: app }
+replicas:
+  - { name: app, count: 6 }
+configMapGenerator:
+  - name: app-config
+    literals: [ "LOG_LEVEL=info" ]    # 生成带内容哈希的 ConfigMap 名 → 自动触发滚动更新
+${F}
+
+**${C}configMapGenerator${C} 的隐藏价值**：它会生成带**内容哈希后缀**的 ConfigMap 名（如 ${C}app-config-8h7f56m2b${C}），Deployment 引用被同步更新——于是「配置变了 → Pod 模板变了 → 自动滚动更新」。这解决了「改了 ConfigMap 但应用没重启、配置没生效」的经典问题（K8s 原生的 ConfigMap 更新不会重启 Pod）。
+
+### 二、两种补丁策略的选择
+
+| 策略 | 写法 | 特点 |
+|---|---|---|
+| **strategic merge** | 直接写要覆盖的片段（YAML 结构化合并） | 可读性好，按 k8s 的合并语义（如 containers 按 name 合并） |
+| **JSON 6902** | ${C}[{"op":"replace","path":"/spec/replicas"}]${C} | 精确（能做删除与数组下标操作），但不直观、易过期 |
+
+${F}yaml
+# strategic merge：只写差异部分（推荐默认）
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: app }
+spec:
+  template:
+    spec:
+      containers:
+        - name: app                      # ★ 必须带 name 才能正确合并到对应容器
+          resources:
+            limits: { memory: 2Gi }
+---
+# JSON 6902：需要「删除」或「精确改数组某元素」时用
+# patch-delete-probe.yaml
+- op: remove
+  path: /spec/template/spec/containers/0/livenessProbe
+${F}
+
+**最常见的踩坑**：strategic merge 里忘了写 ${C}name${C}（容器/卷），结果 Kustomize 会**追加一个新容器**而不是合并——导致 Pod 里出现两个容器、启动失败。**规律记忆：凡是数组元素（containers / volumes / env），合并都要靠 ${C}name${C} 匹配。**
+
+### 三、Kustomize 与 Helm 的取舍
+
+| 维度 | Kustomize | Helm |
+|---|---|---|
+| 抽象方式 | 无模板，纯覆盖（YAML 原生） | Go template + values |
+| 学习成本 | 低（会 YAML 就会） | 中（模板语法、函数、作用域） |
+| 参数化能力 | 弱（无循环/条件，靠 overlay 的数量） | 强（循环、条件、函数） |
+| 错误可见性 | 高（渲染结果就是 YAML 的叠加） | 低（模板渲染错误定位困难） |
+| 生态 | 内置 kubectl，无额外依赖 | 社区 chart 生态庞大 |
+| 复杂配置 | 需要大量 overlay 文件 | 一个 values.yaml 搞定 |
+
+**实践口径**：
+- **自己的应用**：Kustomize（无模板税，diff 清晰，配合 GitOps 直观）；
+- **第三方组件**（Prometheus/Ingress/DB Operator）：Helm（复用社区 chart，不值得自己写）；
+- **组合方式**：${C}kustomize build${C} 对 Helm 渲染结果再打补丁（Argo CD 支持 ${C}helmCharts${C}），或用渲染后提交（helm template 落盘到 Git，纯 GitOps）——但**不要在同一资源上混用两套抽象**。
+
+### 四、Cluster API：把「集群本身」也声明化
+
+${C}${C}${C}
+传统流程：点控制台建集群 → 手工装插件 → 配置网络 → 记录在文档里（极易漂移）
+Cluster API：集群本身也是 CRD（Cluster / MachineDeployment / MachinePool）
+  → 集群的创建/升级/扩缩容都是声明式的
+  → 集群的版本与节点池可被 GitOps 管理、可回滚
+  → 多集群成为「声明一份 Cluster 清单」的事
+
+典型能力：
+  集群升级：改 version 字段 → 控制器滚动替换控制面与节点（带健康检查）
+  节点池：MachineDeployment 的 replicas 声明式扩缩
+  多集群：management cluster 统一管理一批 workload cluster
+${C}${C}${C}
+
+**Cluster API 的价值在「规模化之后」才显现**：管 2 个集群用不上；管 20 个以上、且需要「所有集群用同一套基线」时，声明式集群管理的收益（一致性、可审计、可复制）非常明显。**它的成本是引入了一个需要长期维护的控制面**，小团队应先用「模板 + 脚本 + 巡检」过渡。
+
+### 五、多集群的划分依据与流量治理
+
+${C}${C}${C}
+划分维度（按需求选，不要全都要）
+  ① 环境：dev / staging / prod（最常见，隔离最重要）
+  ② 地域：多区域就近接入（合规 + 延迟）
+  ③ 租户/业务线：强隔离（不同团队、不同合规要求）
+  ④ 隔离等级：有状态/无状态分开；含敏感数据单独集群
+
+★ 判断准则：需要「独立的爆炸半径」或「独立的权限边界」才拆集群
+  仅仅为了「命名空间不够用」而拆集群，是自找运维成本
+${C}${C}${C}
+
+**多集群的流量入口**：
+
+| 方案 | 说明 | 适用 |
+|---|---|---|
+| DNS/GSLB 权重 | 按地域或权重做解析 | 简单、跨云通用；切换有 TTL 延迟 |
+| 全局负载均衡（云 LB + 多集群后端） | 云侧统一入口 | 同云多集群 |
+| 服务网格多集群（东西向网关） | 跨集群服务发现与 mTLS | 需要跨集群调用的复杂场景 |
+| GitOps 统一下发（Argo CD ApplicationSet） | 声明式生成多集群应用 | 所有场景的「管理面」 |
+
+**ApplicationSet 是多集群 GitOps 的关键**：用生成器（list / cluster / git / matrix）批量生成 Application——例如「为 ${C}prod${C} 环境的所有已注册集群部署同一个应用」，一次配置、N 个集群生效。
+
+${F}yaml
+# ApplicationSet：集群生成器 + git 目录生成器（矩阵）
+spec:
+  generators:
+    - matrix:
+        generators:
+          - clusters: { selector: { matchLabels: { env: prod } } }
+          - git:
+              repoURL: https://github.com/myorg/k8s-manifests
+              revision: main
+              directories: [{ path: apps/* }]
+  template:
+    metadata: { name: '{{path.basename}}-{{name}}' }
+    spec:
+      source: { repoURL: '{{url}}', path: '{{path}}', targetRevision: main }
+      destination: { server: '{{server}}', namespace: '{{path.basename}}' }
+${F}
+
+### 六、多集群的一致性治理
+
+三个必须统一的东西（否则「同一个应用在 A 集群正常、B 集群异常」会成为常态）：
+
+1. **基线**：节点镜像、容器运行时版本、核心插件（CNI/CSI/指标）版本、内核参数——用「集群模板」或 Cluster API 统一；
+2. **策略**：准入策略（Pod Security / 资源配额 / 镜像来源白名单）用**策略引擎集中下发**（如以 GitOps 方式同步同一套 Kyverno/Gatekeeper 策略到所有集群）；
+3. **观测**：统一采集与查询入口（Prometheus 联邦/远端写入 + 统一 Grafana），否则排查要登录 N 个集群。
+
+**成本提醒**：多集群的运维成本大致随集群数量**超线性**增长（版本偏差、凭据轮换、网络策略、监控盲区）。所以选型时务必自问「**这个拆分解决的是什么具体问题**」——答案通常是「隔离」「合规」「就近」，而不是「更先进」。
 
 ## 📚 延伸阅读
 
@@ -2926,6 +4313,124 @@ ${F}
 - [ ] 有发布后验证清单（技术指标 + 业务指标 + 日志 + 依赖 + 合成监控）
 - [ ] 高频变更功能用特性开关，做到「不发布即可调整」
 
+<!--dd:devops-adv-3-->
+
+## 🔬 深挖：发布策略的可用性数学与回滚姿态
+
+### 一、滚动更新的可用性计算
+
+${F}yaml
+spec:
+  replicas: 6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1        # 更新期间最多 1 个不可用 → 最低 5 个可用
+      maxSurge: 1              # 最多额外 1 个 → 峰值 7 个（需要节点有余量！）
+  minReadySeconds: 10          # Pod Ready 后再观察 10 秒才算「成功」，别太短
+  progressDeadlineSeconds: 600 # 超过则标记失败（要配告警，否则「卡住的发布」无人知）
+${F}
+
+**必须注意的三件事**：
+1. **${C}maxSurge${C} 需要容量余量**：replicas 6 + surge 1 = 7，若节点资源刚好 6 份，新 Pod 会 Pending → 发布卡住。**在 K8s 上发布前要确认「集群有 surge 的余量」**（或配 Cluster Autoscaler + 节点就绪时间预算）；
+2. **${C}readinessProbe${C} 决定发布速度与安全**：探针太松（启动就 Ready）会让流量打到未初始化完成的应用；太严（依赖检查）会导致发布长时间卡住。启动慢的服务必须配 ${C}startupProbe${C}；
+3. **${C}progressDeadlineSeconds${C} 必须配告警**：它只是标记失败、**不会自动回滚**。要接告警或配合 Argo Rollouts 的自动回滚。
+
+### 二、蓝绿：资源换简单，但数据是难点
+
+${C}${C}${C}
+蓝（当前版本）100% 流量
+  ↓ 部署绿（新版本）→ 预热 → 切换全部流量到绿
+绿 100% 流量（蓝保留作为回滚目标）
+  ↓ 观察期内确认无异常 → 释放蓝
+
+优点：切换瞬时、回滚瞬时（切回蓝）
+代价：双倍资源（至少切换窗口内）；数据层兼容是最大难点
+${C}${C}${C}
+
+**数据层的三个问题**（决定蓝绿能否成立）：
+1. **schema 变更要前后兼容**：绿版本需要新字段时，蓝版本仍在跑 → 新字段必须可空或有默认值（expand-contract：先加字段 → 双写 → 迁移 → 切换 → 清理）；
+2. **不可逆的数据变更**（如数据格式转换、表结构重命名）会让「切回蓝」失败——这类变更必须拆成多阶段发布，或放弃蓝绿改用金丝雀+前滚；
+3. **会话/缓存**：切流量后旧实例上的本地会话与缓存会失效，需要评估是否需要外部化（Redis 会话）。
+
+**判断标准**：**「切回旧版本是否会读到不认识的数据」**——如果会，蓝绿的回滚能力就是假的，不能把它当安全网。
+
+### 三、金丝雀：流量切分的四种实现
+
+| 实现层 | 手段 | 精度 | 特点 |
+|---|---|---|---|
+| Ingress | 按权重注解（nginx canary annotations） | 粗（百分比） | 简单，不依赖额外组件 |
+| 网关/Service Mesh | 按权重 + 按 header/用户/地域路由 | 细 | 能做「指定用户才走新版」（内部试用） |
+| Service | 双 Deployment + 副本数比例 | 粗（受副本数限制） | 无额外组件，比例不精确（3:1 只能是 25%） |
+| Argo Rollouts / Flagger | 声明式金丝雀 + 自动分析指标 + 自动回滚 | 细 | **完整闭环，推荐** |
+
+${F}yaml
+# Argo Rollouts：金丝雀 + 自动分析（指标不达标自动回滚）
+spec:
+  strategy:
+    canary:
+      steps:
+        - setWeight: 5
+        - pause: { duration: 5m }
+        - analysis: { templates: [{ templateName: success-rate }] }   # ★ 自动判定
+        - setWeight: 25
+        - pause: { duration: 10m }
+        - analysis: { templates: [{ templateName: success-rate }] }
+        - setWeight: 100
+      # 分析用 Prometheus 查询：错误率 > 阈值 或 P99 > 阈值 → 自动中止并回滚
+${F}
+
+**自动分析是金丝雀的核心价值**：没有它，金丝雀只是「手动放量 + 人肉看监控」，而人的注意力无法持续 30 分钟盯曲线。**分析指标选择**：错误率（最关键）、P99 延迟、饱和度（CPU/连接池）、以及业务指标（下单成功率、支付转化）——**业务指标最能发现「技术指标正常但业务异常」的问题**。
+
+### 四、特性开关：把「部署」与「发布」解耦
+
+${C}${C}${C}
+部署（deploy）  = 代码上了生产（对所有用户可见？不一定）
+发布（release） = 功能对用户开放（由开关控制）
+
+价值：
+  ① 部署失败与功能问题解耦（代码上去了但开关关着，出问题不影响用户）
+  ② 回滚不再需要重新部署（关开关即可，秒级）
+  ③ 可以做 A/B 与灰度（按用户分桶）
+  ④ trunk-based 开发的前提（未完成的功能也能进主干）
+${C}${C}${C}
+
+**开关的工程化管理**（否则会变成技术债）：
+- **开关要有归属与生命周期**（谁负责、何时清理）——长期存在的开关会形成 2^N 组合的测试地狱；
+- **默认值要安全**（异常时回退到「旧行为」而不是「新行为」）；
+- **命名要表达语义**（${C}enable_new_checkout_flow${C}，而不是 ${C}flag_20260918${C}）；
+- **开关上线前必须经过「关闭状态」的测试**（新功能上线后，开关关闭路径往往再也没人测）。
+
+**「回滚」的三种姿态**（按速度与彻底性排序）：
+
+| 姿态 | 手段 | 速度 | 局限 |
+|---|---|---|---|
+| 关开关 | 配置中心改一个值 | 秒级 | 只对「开关控制的行为」有效 |
+| 镜像回退 | 回退 digest | 分钟级 | 依赖数据兼容（schema 不能已破坏） |
+| 前滚修复 | 再发一版修好 | 十几分钟~小时 | 最彻底，但有窗口期 |
+
+**成熟团队的标配是「三种都要有，且优先用最快的」**：能关开关就关开关；不能则回退镜像；数据已变更则前滚。**这套决策必须在事故前就写进预案并演练过**，而不是事发时讨论。
+
+### 五、数据库变更的兼容性设计（expand-contract）
+
+这是发布策略中最容易被忽视、也最容易造成事故的部分。四步法：
+
+${C}${C}${C}
+① Expand（扩展）：只加不删。新增字段/表/索引（可空、有默认值）
+   → 新旧代码都能正常读写（旧代码忽略新字段）
+② 双写/迁移：新代码同时写新旧结构；后台任务回填存量数据
+③ Migrate（切换读）：读路径切到新结构；保留旧结构兼容旧版本（回滚窗口）
+④ Contract（收缩）：确认新版本稳定、回滚窗口已过 → 删除旧字段/表
+${C}${C}${C}
+
+**四个必守规则**：
+1. **绝不与发布同时执行破坏性 DDL**（删列/改类型/加非空约束）——一旦发布出问题要回滚，旧代码会遇到「不认识的 schema」；
+2. **大表 DDL 要用在线工具**（gh-ost / pt-online-schema-change），避免长时间锁表；
+3. **索引变更也要走 expand-contract**（先建新索引 → 切换 → 删旧索引），不要在同一次发布里「删旧建新」；
+4. **迁移脚本要可重入且幂等**（失败重跑不能造成二次破坏），并记录执行状态。
+
+**一条硬性纪律**：**发布顺序永远是「先兼容、后变更、再清理」**，任何「一步到位」的 schema 变更都是把回滚能力押上去赌——赢了省一次发布，输了就是一次无法快速恢复的故障。
+
 ## 📚 延伸阅读
 
 - [Kubernetes Deployment 官方文档](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)：${C}maxSurge${C}/${C}maxUnavailable${C}/${C}minReadySeconds${C} 的权威定义与滚动过程图解
@@ -3216,6 +4721,123 @@ ${F}
 - [ ] 日志有分级与采样，不是全量堆积
 - [ ] 有值班机制（含告警量上限与补偿），Runbook 可从告警直达
 - [ ] 每次 P1/P2 事故都做无责复盘，改进项有 owner 与截止时间并闭环
+
+<!--dd:devops-adv-4-->
+
+## 🔬 深挖：SLO 的数学与可观测性的关联能力
+
+### 一、SLI 的选取：从用户旅程出发
+
+${C}${C}${C}
+不要选「CPU 使用率」当 SLI（那是资源指标，不是用户体验）
+按用户旅程选（四种黄金信号）：
+  ① 延迟（Latency）：成功请求的 P50/P95/P99（★ 用成功请求，失败请求的延迟没意义）
+  ② 流量（Traffic）：QPS（作为分母，用于完整性与容量）
+  ③ 错误（Errors）：失败请求占比（明确「什么算失败」：5xx？还是包含 4xx 业务失败？）
+  ④ 饱和度（Saturation）：最关键资源的利用率（预测容量瓶颈）
+
+SLI 的两种口径（都要明确定义）
+  基于请求：good_events / valid_events（适合请求型服务，最推荐）
+  基于时间窗口的可用性：可接受延迟内的请求比例
+${C}${C}${C}
+
+**SLI 定义的三个必须澄清的边界**：① 分母是什么（所有请求？排除健康检查？排除内部调用？）；② 什么算「好」（HTTP 200？还是包含业务成功？）；③ 测点在哪（边缘网关测 → 包含网络；服务内部测 → 更准但漏掉网络问题）。**不澄清这三点的 SLI 无法被一致实现**，最终变成「各团队各算一套」。
+
+### 二、错误预算与「烧完就冻结发布」的政策
+
+${C}${C}${C}
+SLO = 99.9% → 30 天内的错误预算 = 0.1% 的时间/请求
+  30 天总分钟数 43200 → 允许不可用 43.2 分钟
+  或按请求算：100 万请求 → 允许 1000 个失败
+
+政策（把数学变成行动规则，这是 SLO 真正的价值）
+  预算消耗 < 50%  ：正常发布
+  预算消耗 50%~100%：谨慎发布（只发修复与小改动）
+  预算耗尽          ：★ 冻结功能发布，全员优先做可靠性工作
+  预算还剩很多      ：可以冒险（跑压测、做重构、加快发布节奏）
+${C}${C}${C}
+
+**错误预算改变的是「决策权分配」**：它把「要不要发版」从「产品与研发的博弈」变成「由数据自动决定」——这是 SRE 最有组织价值的部分，远超监控本身。
+
+**SLO 的两条实践建议**：
+1. **从一个服务、一个 SLO 开始**（别一开始就给所有服务定 SLO，会产生大量无人维护的 SLO）；
+2. **SLO 要比「实际能力」略低**（对外宣传 99.9%，内部目标 99.95%）——留出缓冲，避免 SLO 频繁破线导致团队对指标麻木。
+
+### 三、多窗口燃烧率告警：比「阈值告警」更聪明的做法
+
+传统阈值告警（如「5 分钟错误率 > 1%」）的问题：慢速劣化（每小时 0.2% 错误）永远不会触发阈值，但一个月下来预算被烧光。**燃烧率（burn rate）**解决这个问题：
+
+${C}${C}${C}
+burn_rate = 实际错误率 / 允许错误率
+  例：SLO 99.9% → 允许错误率 0.1%
+      实际 1% → burn_rate = 10（预算以 10 倍速消耗，33.6 小时烧完 30 天预算）
+
+多窗口多燃烧率（推荐配置，宽窄结合避免误报与漏报）
+  窗口 1h + 燃烧率 14.4  → 严重（2 天烧完预算）→ 立即告警（page）
+  窗口 6h + 燃烧率 6     → 中度（5 天烧完）→ 工单（ticket）
+  窗口 3d + 燃烧率 1     → 缓慢劣化 → 记录/复盘
+  （配长窗口做「确认」，短窗口做「快速发现」，两窗同时满足才告警）
+${C}${C}${C}
+
+**为什么必须「长窗口 + 短窗口」同时满足**：只用短窗口会对瞬时抖动误报（噪音导致告警疲劳）；只用长窗口则反应太慢（已经烧了 6 小时才发现）。「短窗快发现 + 长窗确认」是多窗口燃烧率告警的核心设计。
+
+### 四、可观测性三支柱的「关联」才是关键
+
+${C}${C}${C}
+Metrics（指标）：聚合、便宜、适合告警与趋势 —— 但不知道「是哪次请求」
+Logs（日志）    ：详细、能定位原因 —— 但量大、检索慢、成本高
+Traces（链路）  ：能回答「慢在哪一跳」—— 但有采样、成本与埋点成本
+
+★ 三者的价值在于「互相跳转」：
+  指标告警（错误率上升）→ 点击进入 → 看该时刻的典型 Trace → 找到慢的那一跳
+                       → 从 Span 跳到该服务的日志（同 trace_id）
+  这才叫「可观测」，否则只是三个独立的数据源
+${C}${C}${C}
+
+**实现关联的三个技术要点**：
+1. **统一的 trace_id 贯穿全链路**（含 MQ、异步线程、定时任务）——这是关联的前提；
+2. **日志里带 trace_id**（MDC / 结构化日志字段），指标告警面板上能直接跳到日志查询；
+3. **指标维度可下钻**（按服务、接口、实例、版本、租户）——**「按版本标注指标」是发布期最有用的维度**（能立刻看出「新版本错误率是否更高」）。
+
+**采样与成本**：全量 Trace 成本极高，采用「头部采样（1~10%）+ 尾部采样（错误/超时 100%）」——**保证有问题的链路一定被记录**，这是可观测性的性价比关键。
+
+### 五、告警质量：从「谁在响」到「该不该响」
+
+${C}${C}${C}
+告警分三类（处理方式完全不同）
+  ① Page（立即叫人）：用户正在受损，必须立刻处理 → 燃烧率/可用性/关键业务指标
+  ② Ticket（工单）：需要处理但不紧急 → 磁盘将满、证书将过期、配额接近上限
+  ③ Log（仅记录）：用于复盘与趋势 → 单实例重启、非关键降级
+
+告警质量的两个硬指标
+  信噪比（可操作性）：每条告警响起时，看的人是否清楚「该做什么」
+  准确率：误报率必须低（>20% 误报就会导致麻木，最终全部忽略）
+${C}${C}${C}
+
+**必须做的三件事**：
+1. **每条告警都要有「处置手册」链接**（runbook：怎么确认、怎么止血、升级路径）——没有 runbook 的告警会让 on-call 陷入研究而不是恢复；
+2. **压测/演练后的告警复盘**：哪些告警没响（漏报）、哪些响得没用（噪音），持续修剪；
+3. **告警数量有上限意识**：一个 on-call 班次超过 2~3 次 page 就说明系统或告警需要改进（不是「值班的人不够努力」）。
+
+### 六、Toil、On-call 与无责复盘
+
+${C}${C}${C}
+Toil（杂务）：手动、重复、可自动化、无长期价值、随规模线性增长的工作
+  例：手工扩容、手工签发证书、手工清理磁盘、逐台重启
+  SRE 的目标：把 Toil 控制在 50% 以下，把时间投入到工程性改进上
+
+On-call 的三条纪律
+  ① 有明确的响应时限（SLA）与升级路径
+  ② 有交接机制与「上一个班次的状态」记录
+  ③ 有补偿与休整（长期被打断会导致 burnout 与离职）
+${C}${C}${C}
+
+**无责复盘（Blameless Postmortem）的三个要点**：
+1. **聚焦系统而不是人**：问「为什么这个操作会难以避免地导致这个结果」（设计缺陷、缺失的护栏），而不是「谁按错了」；
+2. **产出可验证的改进项**：每个改进项有负责人与截止时间，并在下次复盘中检查完成情况（**不检查的改进项等于没有**）；
+3. **共享**：复盘文档要能被其他团队检索（同类系统会踩同一个坑）。
+
+**SRE 的最终衡量不是「指标好看」，而是「变化速度与可靠性同时提升」**：如果上线频率提高了但事故也同步增加，说明可靠性工作没跟上；如果事故少了但发布变成季度一次，说明靠「冻结变更」换来的稳定，代价是业务响应能力——**错误预算机制正是为了让这两者保持动态平衡**。
 
 ## 📚 延伸阅读
 
@@ -3536,6 +5158,100 @@ ${F}
 - [ ] 用 DORA + 开发者满意度度量成效，不用功能数量
 - [ ] 需要领域抽象时用 Operator / Crossplane 把运维知识编码进 CRD
 - [ ] 采用是「渐进」的：新服务默认走黄金路径，老服务不强制迁移
+
+<!--dd:devops-adv-5-->
+
+## 🔬 深挖：平台即产品与 Golden Path
+
+### 一、平台工程的本质：把「组织知识」变成「默认路径」
+
+${C}${C}${C}
+平台解决的问题（按优先级）
+  ① 认知负荷：开发者要懂 K8s/YAML/网络/安全/观测 → 太多非业务知识
+  ② 一致性：每个团队各搭一套 → 安全与可靠性参差不齐（出事的那套拖累全部）
+  ③ 交付速度：每上新服务要重做 CI/CD/监控/告警/日志
+  ④ 合规与安全：要求靠人记 → 必然遗漏
+
+平台的答案：Golden Path（黄金路径）
+  一条「被铺好的、有支持的、默认正确」的路
+  ★ 关键：「有支持的」——走出黄金路径要自担成本（但不禁止，保留灵活性）
+${C}${C}${C}
+
+**Golden Path 与「强制标准」的区别**：强制标准（只能用我们的方式）会引发绕过与对抗（尤其在快速迭代的业务压力下）；Golden Path 是「**默认最省事**」——用它 30 分钟上线一个带 CI/CD、监控、告警、日志、安全扫描的服务；不用它则要自己搭这一切。**用「省事」而不是「禁止」来驱动采纳，是平台成败的分水岭。**
+
+### 二、平台的抽象层级：过度抽象与抽象不足
+
+${C}${C}${C}
+抽象层次（从低到高）
+  L0：给 K8s 集群 + 文档（最灵活，认知负荷最高）
+  L1：给 Helm Chart / Kustomize 模板（半自助）
+  L2：给「应用 CRD」+ 平台控制器（如 kind: WebService，平台负责 Deployment+Service+Ingress+HPA+监控）
+  L3：给「服务目录 + 一键创建」（如 Backstage 脚手架 + 平台托管）
+  L4：完全黑盒 PaaS（最省事，但对特殊需求毫无办法）
+
+抽象过度（L4）的代价
+  业务需要「自定义探针 / 特殊调度 / sidecar」时无路可走
+  → 最终逼业务绕过平台自己搞一套 → 平台失去意义
+
+抽象不足（L0/L1）的代价
+  每个团队重复解决同样的问题，安全与观测参差不齐
+  → 平台团队沦为「答疑窗口」而不是「能力提供者」
+${C}${C}${C}
+
+**推荐策略：默认抽象到 L2，同时「保留逃生舱」（escape hatch）**——应用 CRD 里直接暴露底层的 ${C}podTemplate${C} 覆盖点，让特殊需求不必绕过平台。**判断抽象是否合适的标准：80% 的常见需求用默认值即可，20% 的特殊需求不需要走出平台。**
+
+### 三、Backstage：软件目录与脚手架
+
+${C}${C}${C}
+Backstage 的三块能力（可分别采用）
+  ① Software Catalog（软件目录）：catalog-info.yaml 描述「谁拥有什么服务、依赖谁、文档在哪」
+     → 解决「服务台账散落在各团队 wiki」的问题
+     → 打通「这个服务谁负责」的最后一公里（告警时能 @ 到人）
+  ② Software Templates（脚手架）：一键生成项目（含 CI/CD、监控、告警、README、CODEOWNERS）
+     → 把「新服务的正确做法」固化
+  ③ TechDocs：文档即代码（Markdown 在仓库里，与代码同版本）
+     → 文档不会过期（不会出现「wiki 说的是三年前的架构」）
+
+★ 真正让平台「活」起来的是「目录 + 模板 + 自动化插件」三者的联动：
+   从模板创建服务 → 自动注册到目录 → 自动开通仓库/流水线/监控 → 自动加告警与 owner
+${C}${C}${C}
+
+**落地顺序建议**：**先做「目录」（成本低、收益立刻可见，且是其他能力的基础）→ 再做「模板」→ 最后做「插件生态集成」**。很多团队一上来就做插件集成（看起来很酷），结果目录不全，所有能力都缺「主语」。
+
+### 四、平台的度量：别用「平台功能数」衡量
+
+${C}${C}${C}
+无效指标（反模式）
+  ✗ 平台有多少个功能 / 插件
+  ✗ 平台团队交付了多少个 PR
+  ✗ 有多少团队「必须」用平台
+
+有效指标（结合 DORA）
+  ✓ 采纳率：多少个服务/团队在用 Golden Path（目标：新服务 100% 默认走它）
+  ✓ 自助率：常见操作（建环境、看日志、发布、回滚）有多少是自助完成的
+  ✓ 交付前置时间：从代码提交到生产的时长（平台应让它下降）
+  ✓ 认知负荷：新成员独立上线一个服务的耗时（平台应让它下降）
+  ✓ 支持负担：平台团队每周处理的人工请求数（应随平台成熟而下降，而不是上升）
+  ✓ 安全合规默认达成率：新服务自动满足基线的比例（如「100% 新服务默认有告警」）
+${C}${C}${C}
+
+**「支持负担」是最诚实的指标**：如果平台上线半年后平台团队还在疲于回答同样的临时请求，说明**能力没有真正沉淀为自助服务**，平台只是变成了新的瓶颈。
+
+### 五、平台团队的组织与反模式
+
+| 反模式 | 表现 | 后果 |
+|---|---|---|
+| **平台即瓶颈** | 所有变更要平台团队执行 | 交付变慢，业务绕过平台 |
+| **平台即警察** | 只做审批与规范检查 | 业务对抗，走地下流程 |
+| **平台即项目** | 一次性交付后无人维护 | 半年后平台与生态脱节，被弃用 |
+| **无产品经理** | 平台团队按自己的技术偏好建设 | 做出来的东西没人用 |
+| **不接触用户** | 从不访谈内部开发者 | 解决的是想象的问题 |
+
+**正确的组织形态**：**平台团队 = 内部产品团队**，需要：产品经理（理解内部用户需求与优先级）、开发者体验（DX）角色、SRE/基础架构工程师、以及**定期的用户研究**（访谈、观测真实使用数据、跟踪「绕过平台」的行为——**绕过行为是最有价值的信号**，它直接告诉你痛点在哪）。
+
+**平台与应用的边界**：平台负责「**横切能力**」（CI/CD、部署、观测、网络、密钥、安全基线、目录），应用团队负责「**业务逻辑与业务可用性**」。**边界模糊会导致双方都不负责**——例如「告警规则谁定」：平台提供机制与默认规则，应用负责业务告警的阈值。
+
+**最后一点认知**：平台工程不是「买个工具装上」。Backstage 装起来一天，让目录真实完整需要一年（需要推动每个团队填 owner 与依赖）。**平台的成功 20% 靠技术、80% 靠组织推动与持续运营**——这也是为什么「平台团队要有产品思维」不是一句口号，而是落地成败的关键。
 
 ## 📚 延伸阅读
 
