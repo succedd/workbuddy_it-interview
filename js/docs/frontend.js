@@ -8,8 +8,8 @@
  * ========================================================================= */
 (function () {
   "use strict";
-  const F = "\u0060\u0060\u0060";   // 代码块围栏 ```
-  const C = "\u0060";               // 行内代码 `
+  const F = "\u0060\u0060\u0060";   // 代码块围栏 ${F}
+  const C = "\u0060";               // 行内代码 ${C}
 
   const FRONTEND = {
     id: "frontend",
@@ -123,6 +123,49 @@ MDN「Stacking context」章是面试高频出处：${C}z-index${C} 只在**同�
 - [ ] 布局选型有 Flex/Grid 决策依据
 - [ ] z-index 有 token 化管理，无 9999
 - [ ] 移动 Safari 上验证过 100vh 类布局
+
+## 🔬 深挖：现代 CSS 布局的进阶机制
+
+### 包含块（containing block）决定了百分比与定位的参照系
+百分比宽度相对**包含块**计算，而包含块不等于「父元素」：静态/相对定位元素的包含块是最近的**块级祖先的内容盒**；绝对定位元素找最近的**已定位祖先的内边距盒**；固定定位的包含块是视口（除非祖先有 ${C}transform/filter/perspective${C}——此时退化为该祖先）。记住这条，「absolute 为什么跑到别处去了」就有答案。
+
+### margin 折叠（collapsing margins）
+相邻**垂直**外边距会合并为较大者，且**父子的上/下外边距也可能穿透折叠**（父元素没有 padding/border/overflow 隔离时）。这就是「给子元素加 margin-top，却把父元素整体推下去」的根因。破除手段：给父元素加 padding/border/overflow，或用 ${C}display: flow-root${C}；**Flex/Grid 子项之间不发生外边距折叠**。
+
+### 块级格式化上下文（BFC）
+BFC 是「独立布局环境」，内部布局不影响外部。形成条件（MDN 列全）：float 非 none、position 为 absolute/fixed、overflow 非 visible、display 为 flow-root/inline-block/table-cell/flex/grid。BFC 解决三件事：外边距穿透、清除浮动、阻止被浮动元素环绕。**现代首选 ${C}display: flow-root${C}**——语义最纯、无 overflow 副作用。
+
+### Grid 的 minmax / auto-fit / auto-fill：无媒体查询的响应式卡片墙
+${F}css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+/* auto-fit：空轨道被折叠，卡片拉伸铺满（常用）
+   auto-fill：保留空轨道，卡片不拉伸、会留白 —— 两者只差这一点 */
+${F}
+
+### :has() 与容器查询：CSS 终于会「看上下文」
+- ${C}:has()${C}：父级/前向选择（${C}.card:has(img)${C} = 「有图的卡片」），主流浏览器已可用；
+- ${C}@container${C} **容器查询**：@media 看的是**视口**，组件复用场景更该看**容器宽度**——同一卡片放进窄侧栏自动切窄版布局：
+
+${F}css
+.card-wrap { container-type: inline-size; }
+@container (min-width: 480px) { .card { display: flex; } }
+${F}
+
+### @layer 与逻辑属性
+- ${C}@layer reset, base, components, utilities;${C} 显式声明层叠优先级，**摆脱「!important 军备竞赛」**；
+- 逻辑属性（${C}margin-inline${C} / ${C}padding-block${C} / ${C}inset-inline-start${C}）自动适配 LTR/RTL，是国际化项目的现代写法。
+
+### 新旧方案对照
+| 需求 | 旧方案 | 现代方案 |
+|---|---|---|
+| 清浮动 / 防穿透 | overflow: hidden | display: flow-root |
+| 响应式卡片墙 | 媒体查询 + 百分比 | repeat(auto-fit, minmax(...)) |
+| 组件按容器自适应 | JS 测量 + 切 class | @container + cqw |
+| 覆盖第三方样式 | !important | @layer 顺序 |
 
 ## 📚 延伸阅读
 
@@ -239,6 +282,55 @@ ${F}
 - [ ] 金额不用浮点直接运算
 - [ ] 团队统一禁用 ==（ESLint eqeqeq）
 
+## 🔬 深挖：执行上下文、模块与元编程
+
+### 执行上下文与暂时性死区（TDZ）
+每次函数调用创建**执行上下文**（变量环境 + 词法环境 + this 绑定）。声明提升的本质：${C}var${C} 在进入上下文时被初始化为 ${C}undefined${C}；${C}let/const${C} 也被提升但**未初始化**，访问即报错——这段区间就是 TDZ。
+
+${F}js
+console.log(a); // undefined（var 提升）
+var a = 1;
+console.log(b); // ReferenceError: Cannot access 'b' before initialization
+let b = 2;
+${F}
+
+### 垃圾回收与内存泄漏的真实模式
+V8 用**分代回收**：新生代（Scavenge 复制）→ 老生代（标记-清除 + 标记-整理）。可达性从根（全局、栈上引用）出发，不可达才回收。真实泄漏不是「忘了置 null」，而是**意外的长生命周期引用**：闭包抓住大对象、定时器未清、监听器未移除、缓存无上限。
+
+${F}js
+// WeakMap 存「随对象消亡而消亡」的元数据——不阻止 GC
+const meta = new WeakMap();
+meta.set(el, computedStuff);   // el 被回收时条目自动消失
+${F}
+
+### ESM vs CommonJS：live binding 与静态结构
+ESM 是**静态结构 + 实时绑定**：import 拿到的是「引用」而非拷贝，导出方改了值，导入方看得到最新值；CommonJS 是运行时的值拷贝。ESM 的静态特性让打包器能做 tree-shaking 与循环依赖分析。
+
+${F}js
+// counter.mjs
+export let count = 0;
+export const inc = () => { count++; };
+// main.mjs
+import { count, inc } from "./counter.mjs";
+inc();
+console.log(count);   // 1 —— live binding 看到更新
+${F}
+
+### Proxy / Reflect：元编程通道
+${C}Proxy${C} 拦截对象操作（get/set/has/ownKeys…），Vue 3 响应式正基于此；${C}Reflect${C} 提供与拦截器一一对应的默认行为，保证「不拦截时行为不变」（代理内调用 ${C}Reflect.get${C} 才不会破坏原型 getter 的 this）。
+
+### 迭代协议与生成器
+${C}Symbol.iterator${C} 让对象可 ${C}for...of${C}；生成器 ${C}function*${C} + ${C}yield${C} 把「惰性序列」写成同步风格（自定义分页迭代器、无限流、异步队列）。
+
+${F}js
+function* paginate(load, total) {
+  for (let page = 1; page <= total; page++) yield load(page); // 用一页取一页
+}
+${F}
+
+### 数值与日期陷阱
+${C}0.1 + 0.2 !== 0.3${C}（IEEE 754 二进制浮点）；金额一律用**整数分**或 decimal 库；${C}new Date()${C} 月份从 0 开始、隐式字符串化带时区坑，跨时区用 ISO 字符串 + 显式时区（或新标准 ${C}Temporal${C}）。
+
 ## 📚 延伸阅读
 
 - MDN → JavaScript Guide（从头到尾过一遍，官方体系最完整）
@@ -342,6 +434,44 @@ ${F}
 - [ ] 组件卸载时移除全部监听（含 window 级）
 - [ ] 纯文本插入用 textContent，杜绝 innerHTML 拼用户输入
 
+## 🔬 深挖：渲染时机与 Observer 家族
+
+### rAF / rIC：与渲染节奏对齐
+- ${C}requestAnimationFrame${C}：下一帧**渲染前**执行，动画与视觉更新必须用它（与刷新率对齐，通常 60/120Hz）；
+- ${C}requestIdleCallback${C}：浏览器**空闲时**执行，做低优先级任务（预取、日志上报），不支持时用 setTimeout 兜底。
+
+**不要**用 ${C}setTimeout${C} 做动画——它不理解渲染节奏，必然抖动与掉帧。
+
+### Observer 家族：把「轮询」换成「通知」
+${F}js
+// 元素尺寸变化（替代 window.resize 里读 offsetWidth 的布局抖动写法）
+new ResizeObserver((entries) => {
+  for (const e of entries) layout(e.contentRect);
+}).observe(el);
+
+// 元素进出视口（图片懒加载、曝光埋点）——比监听 scroll 高效得多
+new IntersectionObserver((es) => {
+  es.forEach((e) => e.isIntersecting && load(e.target));
+}, { rootMargin: "200px" }).observe(img);
+
+// DOM 结构变化（脱离已废弃的 DOMNodeInserted）
+new MutationObserver(cb).observe(root, { childList: true, subtree: true });
+${F}
+
+### Shadow DOM 的事件重定向（composed）
+组件内部事件默认只在自己的 shadow root 内传播；只有 ${C}composed: true${C} 的事件才能**穿透**到宿主外部。跨 shadow 边界时 ${C}e.target${C} 会被**重定向**为宿主元素（保护内部结构），需要真实内层目标时用 ${C}e.composedPath()${C}。
+
+### 指针事件与手势
+现代统一用 **Pointer Events**（pointerdown/move/up）替代 mouse + touch 两套代码；${C}setPointerCapture${C} 让元素在指针移出后仍收到事件——拖拽实现的必备 API；配合 ${C}touch-action${C} 声明手势归属（防浏览器滚动抢事件）。
+
+### 焦点管理与可访问性
+- 模态框打开时做**焦点陷阱**（Tab 循环在框内），关闭时焦点**归还**触发元素；
+- ${C}display:none${C}/不可见元素不可聚焦；${C}tabindex="-1"${C} 可编程聚焦但不进 Tab 序列，${C}tabindex="0"${C} 才进序列；
+- 交互优先用原生 ${C}button/a${C}，自定义控件补 ${C}role${C} + 键盘处理（Enter/Space）。
+
+### 委托的性能边界
+委托把 N 个监听器降到 1 个，但**高频事件（scroll/mousemove/pointermove）**即使委托也要节流或用 rAF 合帧；且委托依赖冒泡——不冒泡的 ${C}focus/blur${C} 要用捕获阶段或 ${C}focusin/focusout${C}。
+
 ## 📚 延伸阅读
 
 - WHATWG DOM Standard → §2.7 Event dispatch（三阶段的规范原文）
@@ -433,6 +563,46 @@ MDN 明确强调这是 fetch 最常见的误用点。配套：${C}AbortControlle
 - [ ] fetch 统一封装 res.ok 检查 + 超时 + 取消
 - [ ] CORS 预检配置（Max-Age / credentials）明确成文
 - [ ] 关键页面缓存策略有发版验证（改版后能立刻看到新版）
+
+## 🔬 深挖：连接、优先级与缓存调优
+
+### 连接复用与队头阻塞
+HTTP/1.1 的 ${C}keep-alive${C} 复用 TCP 连接，但请求是**串行**的——一个慢响应会卡住整条连接（应用层队头阻塞）。浏览器用「每域名 6 条连接」缓解，反而催生了域名分片；**HTTP/2 单连接多路复用废掉了分片**（此后再分片反而退化）。HTTP/3 用 QUIC 把丢包影响限制在单流内。
+
+### 四个 pre* 提示的差异
+| 提示 | 做什么 | 用在哪 |
+|---|---|---|
+| ${C}dns-prefetch${C} | 只解析 DNS | 大量第三方域 |
+| ${C}preconnect${C} | DNS + TCP + TLS | 关键第三方（CDN / 字体） |
+| ${C}preload${C} | 提前下**当前页**必需资源 | LCP 图、关键字体、关键脚本 |
+| ${C}prefetch${C} | 空闲时预取**下一页**可能用的 | 大概率跳转的路由 |
+
+**preload 不是越多越好**：抢占带宽会拖慢真正关键资源，只 preload 确证的关键项。
+
+### Cache-Control 指令全表（RFC 9111）
+| 指令 | 含义 |
+|---|---|
+| ${C}max-age=N${C} | 相对过期秒数（强缓存） |
+| ${C}s-maxage=N${C} | 仅**共享缓存**（CDN）的过期时间 |
+| ${C}no-cache${C} | 可缓存，但每次用前必须回源校验 |
+| ${C}no-store${C} | 完全不缓存（含中间代理） |
+| ${C}must-revalidate${C} | 过期后必须校验，不许用过期的 |
+| ${C}immutable${C} | 内容永不变化（配合内容哈希） |
+| ${C}stale-while-revalidate=N${C} | 后台异步校验期间先用过期副本 |
+| ${C}private/public${C} | 只允许浏览器 / 允许共享缓存 |
+| ${C}Vary: <header>${C} | 缓存键纳入哪些请求头（如 Accept-Encoding） |
+
+### 强/弱 ETag 与条件请求
+${C}ETag${C} 是内容指纹，比 ${C}Last-Modified${C}（秒级精度）更精确；弱校验 ${C}W/"..."${C} 表示「语义等价即可」。命中条件请求返回 **304 且无 body**——省的是整包流量，不是请求本身。
+
+### 实战：Service Worker 缓存与 HTTP 缓存的分层
+SW 拦截 fetch，可自建策略（CacheFirst / NetworkFirst / StaleWhileRevalidate）。注意**两层缓存会叠加**：SW 的 Cache Storage 存的是 HTTP 响应，若资源带 ${C}immutable${C} 长缓存，SW 逻辑更新了也拿不到新资源——**发版必须靠 SW 版本升级 + skipWaiting 流程**（本站 it-interview 右下角的「有新版本，点击刷新」胶囊正是此机制）。
+
+${F}js
+// SW 发版：新 SW 安装后等待，由页面提示用户点击再接管
+self.addEventListener("install", (e) => { /* 预缓存新版本资源 */ });
+self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then(cleanOld)); });
+${F}
 
 ## 📚 延伸阅读
 
@@ -528,6 +698,55 @@ ${F}
 - [ ] iOS 真机验证过 100vh / input 聚焦 / hover 降级
 - [ ] 图片 srcset + lazy + 首屏 LCP 图预加载
 - [ ] 测试矩阵含：小屏安卓 / 大屏 iPhone / 横屏 / 桌面缩放
+
+## 🔬 深挖：容器查询、媒体特性与图片/字体策略
+
+### 从「视口断点」到「容器断点」
+媒体查询看视口，**组件复用处会失灵**（同一卡片放进窄侧栏与宽主区表现一样）。容器查询让组件按**自身容器**自适应，是组件化时代的正确姿势：
+
+${F}css
+.sidebar { container: sidebar / inline-size; }
+
+@container sidebar (max-width: 320px) {
+  .widget { font-size: 13px; }   /* 只在窄容器里缩小 */
+}
+/* 容器单位：cqw/cqh 相对容器尺寸（cqmin/cqmax 取小/大） */
+.widget-title { font-size: clamp(1rem, 4cqw, 1.5rem); }
+${F}
+
+### 流式字号的「可访问性」底线
+${C}clamp()${C} 做流式字号很方便，但**用户手动放大字号时，vw 流式值可能不跟随**。原则：正文用相对单位（rem）保证用户缩放有效；只有装饰性大标题才用 vw/cqw 流式。永远不要用 ${C}user-scalable=no${C} 换布局省事。
+
+### 关键媒体特性
+| 特性 | 用途 |
+|---|---|
+| ${C}hover: hover/none${C} | 区分鼠标 / 触屏，隔离 hover 样式 |
+| ${C}pointer: fine/coarse${C} | 指针精度（coarse 时做大触控区） |
+| ${C}prefers-color-scheme${C} | 暗色模式适配 |
+| ${C}prefers-reduced-motion${C} | 尊重「减少动态」无障碍设置，降级动画 |
+| ${C}prefers-contrast${C} | 高对比度需求 |
+| ${C}display-mode${C} | 区分 PWA 独立窗口与浏览器标签 |
+
+### 响应式图片的完整决策
+${F}html
+<picture>
+  <source type="image/avif" srcset="hero.avif 1x, hero@2x.avif 2x" />
+  <source type="image/webp" srcset="hero.webp 1x, hero@2x.webp 2x" />
+  <img src="hero.jpg" alt="hero" width="1200" height="600"
+       sizes="(max-width: 768px) 100vw, 600px"
+       loading="eager" fetchpriority="high" decoding="async" />
+</picture>
+<!-- 宽高必写：防 CLS；首屏图 eager + fetchpriority=high；屏外图 loading=lazy -->
+${F}
+
+### 响应式字体加载与 CLS
+${C}font-display: swap${C}（先用回退字体，避免 FOIT 空白）配合 ${C}size-adjust${C} / ${C}ascent-override${C} 减少字体切换造成的 CLS；关键字体可 ${C}preload${C}，但**别 preload 全部字重**（字体文件大，会抢带宽）。
+
+### 安全区与刘海屏
+${F}css
+/* viewport-fit=cover + env(safe-area-inset-*) 处理刘海 / 底部横条 */
+.footer { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+${F}
 
 ## 📚 延伸阅读
 
@@ -644,6 +863,68 @@ ${F}
 - [ ] unhandledrejection 全局监听在跑
 - [ ] Promise.all 的失败策略符合业务（all vs allSettled）
 
+## 🔬 深挖：任务队列边界与异步控制模式
+
+### 任务与渲染的时序真相
+一次事件循环的完整顺序是：**取一个宏任务 → 清空所有微任务 → 执行 rAF 回调 → 渲染 → 下一轮**。关键推论：
+- 微任务**永远在渲染之前**全部清空，所以「在微任务里改 DOM」不会触发多次渲染（好），但**微任务里跑重活会饿死渲染**（页面卡死但 CPU 不高）；
+- ${C}requestAnimationFrame${C} 回调在渲染前、微任务之后——它是「下次绘制前」的钩子。
+
+${F}js
+// 反例：微任务链中的重计算 → 页面无响应
+Promise.resolve().then(function loop() { heavy(); Promise.resolve().then(loop); });
+// 正例：切片到宏任务/空闲时间，让出渲染机会
+async function slice(items) {
+  for (const it of items) { work(it); await new Promise((r) => setTimeout(r)); }
+}
+${F}
+
+### async 函数的真实执行过程
+${C}async fn()${C} 调用后**同步执行到第一个 await**，遇到 await 时把后续代码注册为微任务并返回一个 Promise。这解释了：为什么「async 函数里的同步段」在调用栈上立即执行，而 await 之后的部分延后。
+
+### 异步迭代：for await...of
+处理流式数据、分页拉取、SSE 的现代写法——迭代器返回 Promise 即可被 ${C}for await${C} 消费：
+
+${F}js
+async function* fetchPages(url) {
+  let next = url;
+  while (next) {
+    const res = await fetch(next); next = res.headers.get("Link");
+    yield await res.json();
+  }
+}
+for await (const page of fetchPages("/api/list")) render(page); // 天然串行、天然背压
+${F}
+
+### 并发控制：别让 1000 个请求同时冲出去
+${C}Promise.all${C} 会**无条件并发全部**——列表页 1000 条详情会瞬间打爆浏览器连接数（而且浏览器并发上限本就是 ~6，多余的排队）。正确做法是**限流并发**：
+
+${F}js
+async function mapLimit(items, limit, fn) {
+  const ret = new Array(items.length);
+  let i = 0;
+  const workers = Array.from({ length: limit }, async () => {
+    while (i < items.length) { const idx = i++; ret[idx] = await fn(items[idx], idx); }
+  });
+  await Promise.all(workers);
+  return ret;   // 始终保持 limit 个在飞，其余排队
+}
+${F}
+
+### 取消与过期：竞态的正确处理
+搜索联想场景：旧请求可能**晚于**新请求返回，覆盖掉新结果（stale response）。两条正解：① 用 ${C}AbortController${C} 取消旧请求；② 给每次请求打序号/时间戳，落地前比对是否仍是最新一次。
+
+${F}js
+let seq = 0;
+async function search(q) {
+  const cur = ++seq;
+  const res = await fetch("/api/s?q=" + encodeURIComponent(q));
+  const data = await res.json();
+  if (cur !== seq) return;   // 已有更新的请求，丢弃这次结果
+  render(data);
+}
+${F}
+
 ## 📚 延伸阅读
 
 - MDN → Using promises（官方教程）+ Concurrency model and the event loop
@@ -733,6 +1014,48 @@ ${F}
 - [ ] 列表 key 用业务 ID
 - [ ] 性能优化先 Profiler 取证，再动手
 - [ ] 了解 Fiber 可中断渲染与 Vue 编译时优化各自解决什么
+
+## 🔬 深挖：调度、编译时优化与并发渲染
+
+### React 的调度器：让渲染「可中断」
+React 18 的并发特性建立在**时间切片**之上：渲染工作被拆成小单元，每 5ms 左右检查是否该让出主线程（${C}scheduler${C} 用 ${C}MessageChannel${C} 而非 setTimeout，避免 4ms 嵌套延迟）。这带来两个面向业务的 API：
+
+${F}jsx
+// startTransition：把「非紧急更新」标低优先级 —— 输入框保持跟手，列表渲染可被打断
+const [query, setQuery] = useState("");
+function onChange(e) {
+  setQuery(e.target.value);                    // 紧急：输入框立刻更新
+  startTransition(() => setFilter(e.target.value)); // 非紧急：大列表可被中断
+}
+// useDeferredValue：拿到「滞后的值」，用它渲染重组件
+const deferred = useDeferredValue(query);
+${F}
+
+**Suspense 与流式 SSR**：组件「未就绪」时抛出 Promise，React 捕获后先渲染 fallback，数据好了再补上——这就是 Suspense 的机制，也是 React Server Components / 流式渲染的基础。理解这一点，「为什么异步组件能被『暂停』」就不再神秘。
+
+### Vue 的编译时优化：把工作放到构建期
+Vue 3 的模板在**编译时**就被分析，运行时只做最少的事（官方 Rendering Mechanism 章）：
+- **静态提升（hoistStatic）**：静态节点只创建一次，不参与 diff；
+- **PatchFlags**：给动态节点打标记（如「只有 text 会变」），diff 时直接跳到该字段；
+- **Block Tree**：把动态节点收集成扁平数组，diff 不再递归整棵树；
+- **${C}v-memo${C}**：显式缓存大子树。
+
+**核心差异总结**：React 靠**运行时调度 + 手动 memo**控制成本；Vue 靠**编译期标记**把成本前置。React 更灵活（一切是 JS），Vue 更「自动」（模板可分析）。
+
+### 响应式模型的取舍
+- React 走**不可变**：状态是快照，比较靠引用（${C}Object.is${C}）——所以改状态必须产生新引用；
+- Vue 走**可变 + 代理追踪**：直接改属性即可，框架靠 Proxy 知道谁依赖谁——所以别解构丢响应，也别把 reactive 当普通对象传。
+
+### 两者共通的「更新队列」
+- React：setState 不是立即渲染，而是**批处理**（React 18 起连 setTimeout/原生事件里也自动批处理），多次 set 合并为一次渲染；
+- Vue：数据变更推入**队列**，同一 tick 内的多次改动去重，${C}nextTick${C} 后统一更新 DOM。
+
+${F}js
+// Vue：改完想立刻读 DOM，等 nextTick
+count.value++;
+await nextTick();
+console.log(el.textContent);   // 已是新值
+${F}
 
 ## 📚 延伸阅读
 
@@ -834,6 +1157,86 @@ ${F}
 - [ ] reducer / setter 纯函数
 - [ ] 组件 API 有受控/非受控双模式（基础组件）
 
+<!--dd:component-state-->
+
+## 🔬 深挖：状态的「不可变性」与渲染的「闭合性」
+
+### 一、用状态机替代布尔标志（react.dev 官方范式）
+
+初学者常写 ${C}isLoading / isError / isSuccess${C} 三个布尔量，很快就出现「三个都 true」的不可能状态。react.dev「Reacting to Input with State」给出的做法是：先枚举**全部视觉状态**，找出**唯一真值**，再为每个状态写死 UI。
+
+${F}jsx
+// ❌ 布尔组合爆炸：4 个布尔 = 16 种组合，其中 11 种是非法的
+const [isLoading, setLoading] = useState(false);
+const [isError, setError] = useState(false);
+const [isEmpty, setEmpty] = useState(false);
+
+// ✅ 单一枚举：非法状态在类型层面就不存在
+const [status, setStatus] = useState("idle"); // idle | typing | submitting | success | error
+${F}
+
+**判断口径**：如果两个状态变量的合法组合少于它们的笛卡尔积，就应该合并成一个枚举。这条规则能消灭绝大多数「UI 闪烁出错误分支」的 bug。
+
+### 二、渲染的闭合性：谁「记住」了旧值
+
+每次渲染都会重新执行整个函数体，闭包里捕获的是**那一次渲染的变量快照**。由此产生三类高频事故：
+
+${F}jsx
+// 事故 1：定时器读到旧 state（stale closure）
+useEffect(() => {
+  const t = setInterval(() => console.log(count), 1000); // 永远打印 0
+  return () => clearInterval(t);
+}, []); // 依赖数组为空 -> 只捕获了首次渲染的 count
+
+// 修法 A：函数式更新（推荐，无需把 count 放进依赖）
+setCount((c) => c + 1);
+
+// 修法 B：用 ref 做「最新值信箱」
+const countRef = useRef(count);
+useEffect(() => { countRef.current = count; });
+${F}
+
+${F}jsx
+// 事故 2：连续三次 setCount(count + 1) 只加 1（批处理 + 快照）
+setCount(count + 1); setCount(count + 1); setCount(count + 1); // +1
+setCount((c) => c + 1); setCount((c) => c + 1); setCount((c) => c + 1); // +3
+${F}
+
+React 18 起 **automatic batching** 把 ${C}setTimeout / Promise.then / 原生事件${C} 里的更新也合并进一次渲染；需要读「更新后的 DOM」时用 ${C}flushSync${C}（慎用，会破坏批处理收益）。
+
+### 三、状态颗粒度与重渲染治理
+
+重渲染强度取决于「订阅了什么」而不是「存了什么」：
+
+| 手段 | 作用 | 代价 |
+|---|---|---|
+| 状态下沉到子组件 | 缩小受影响子树 | 需要重新组织组件边界 |
+| ${C}React.memo${C} + 稳定 props | 跳过 props 未变的子树 | 浅比较成本；props 引用不稳定则失效 |
+| selector 订阅（Zustand / Pinia） | 只订阅用到的切片 | 需要写选择器，注意返回新对象要浅比较 |
+| 状态下沉到 URL / 表单 DOM | 完全不触发重渲染 | 只适用于可序列化/可还原的状态 |
+
+Vue 3 侧的关键差异：响应式基于 **Proxy 依赖收集**，${C}reactive${C} 对象里**未被读取的属性**不会触发重渲染；但 ${C}ref${C} 在模板里自动解包、在 ${C}setup${C} 里不会——这是初学者最常见的「改了值视图不动」根因。用 ${C}watch${C} 时优先 ${C}watchEffect${C}（自动收集依赖）能规避漏依赖。
+
+### 四、状态的归属决策树
+
+${F}
+这份数据能从 props/其他状态算出来吗？
+├─ 能 → 不要存（渲染时现算，或用 useMemo/computed 缓存）
+└─ 不能 → 有多少个组件需要它？
+    ├─ 1 个 → 组件内部 useState / ref
+    ├─ 2 个同级 → 提升到最近公共父级
+    ├─ 跨越 3 层以上 → Context / provide-inject / 全局 store
+    └─ 需要被链接分享 / 刷新保留 → URL query / localStorage（并定义还原逻辑）
+${F}
+
+**反模式提醒**：「派生数据存进 state」是 bug 温床——一旦源数据变了忘了同步，就出现两份真相。React 官方文档明确：能算出来的东西不要放进 state。
+
+### 五、面试追问三连
+
+1. 为什么 ${C}useEffect${C} 里拿到的 state 是旧的？→ 闭包快照 + 依赖数组决定了「哪次渲染的函数被记住」。
+2. ${C}setState${C} 是同步还是异步？→ 更新是同步入队、异步（批处理后）渲染；拒绝用「异步」这个词回答，要说清「入队 vs 提交」。
+3. 为什么不建议把整个 store 作为 Context value？→ 每次 store 变都会让所有消费者重渲染；应该拆 Context 或用 selector 订阅。
+
 ## 📚 延伸阅读
 
 - react.dev → Managing State（官方状态章节，含 Reducer/useContext 模式）
@@ -918,6 +1321,76 @@ pnpm workspace 是当前主流：硬链接省磁盘、严格依赖（防幽灵�
 - [ ] ESLint/Prettier/类型检查进 CI，本地钩子兜底
 - [ ] 环境变量无敏感信息，前缀纪律清晰
 - [ ] 依赖升级流程化（lockfile 入库 + 变更日志）
+
+<!--dd:build-tooling-->
+
+## 🔬 深挖：打包器到底在做什么
+
+### 一、三类工具的职责边界
+
+| 工具 | 定位 | 启动方式 | 生产构建 |
+|---|---|---|---|
+| Vite（dev） | 原生 ESM + 依赖预构建 | 按需编译，秒级启动 | 交给 Rollup |
+| Vite（build） | Rollup 打包 | —— | 静态分析 + 摇树 |
+| webpack | 全量打包（含 dev） | 先打 bundle 再起服务 | 自身完成 |
+| esbuild / SWC / Rspack | 编译器/打包器（Rust/Go） | 快 10~100 倍 | 可作底座 |
+
+**为什么 Vite 开发快**：不打包，把源码当作原生 ESM 直接交给浏览器；但裸模块名（${C}import react from "react"${C}）浏览器不认，于是先用 esbuild 把依赖**预构建**进 ${C}node_modules/.vite${C}——这才是「首次启动慢、之后快」的原因。依赖改了才重新预构建（${C}optimizeDeps.include/exclude${C} 可手动干预）。
+
+### 二、HMR 的真相：它不是整页刷新
+
+HMR（热模块替换）依赖一条 **WebSocket** 通道 + 模块级「接受者」边界：
+
+${F}
+文件改动 → 文件监听（chokidar）
+        → 沿 import 图向上找「接受者」（accept）
+        → 只把该模块的新代码推送（ESM: 带 ?t=时间戳 重新 import）
+        → 未找到接受者 → 向上冒泡 → 最终整页刷新
+${F}
+
+这解释了三个常见现象：① 只改了 utility 函数却整页刷新（没人 accept，冒泡到入口）；② CSS 改动几乎总是精确替换（CSS HMR 由样式注入实现，不走 JS 图）；③ 组件文件加了非组件导出后热更新行为变化（Fast Refresh 只对「纯组件模块」生效）。
+
+### 三、tree-shaking 的三个前提（缺一不可）
+
+1. **ESM 静态结构**：${C}import/export${C} 才能在编译期确定引用关系；${C}require${C} 动态、无法摇。
+2. **无副作用声明**：包要在 ${C}package.json${C} 里写 ${C}"sideEffects": false${C}（或列出有副作用的文件），否则打包器不敢删。
+3. **顶层调用可分析**：${C}const x = doSomething(); export default x;${C} 这类顶层副作用会阻止删除。
+
+${F}json
+// 正确的 sideEffects 声明：CSS 导入有副作用，必须保留
+{ "sideEffects": ["*.css", "*.scss"] }
+${F}
+
+排查「包体积没降」的顺序：先看是否 CJS 依赖（最常见）→ 再看是否整包引入（${C}import _ from "lodash"${C} vs ${C}import debounce from "lodash/debounce"${C}）→ 最后看是否有副作用标注缺失。
+
+### 四、分包策略：让缓存命中率最大化
+
+${F}js
+// Vite / Rollup 手动分包：把「很少变的第三方」单独切出来
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks(id) {
+        if (id.includes("node_modules")) {
+          if (/react|scheduler/.test(id)) return "vendor-react";   // 框架单独一块
+          if (/lodash|dayjs/.test(id)) return "vendor-utils";
+          return "vendor";                                          // 其余第三方
+        }
+        // 业务公共代码交给默认算法，避免手工切碎
+      },
+    },
+  },
+}
+${F}
+
+配合**内容哈希**（${C}[name].[hash].js${C}）+ 长缓存（${C}Cache-Control: max-age=31536000, immutable${C}）+ HTML 入口 ${C}no-cache${C}，才能做到「改了业务代码，框架 chunk 仍在用户浏览器缓存里」。
+
+### 五、构建期必须验证的四件事
+
+- **sourcemap 选择**：生产用 ${C}hidden-source-map${C}（生成但不在产物里引用），既能上报还原又不泄源码；
+- **环境变量**：只有 ${C}VITE_${C}/${C}NEXT_PUBLIC_${C} 前缀会被注入 → 前缀即「公开」的语义，**不要**把密钥放进去（它们会被打成明文）；
+- **产物分析**：${C}rollup-plugin-visualizer${C} / ${C}webpack-bundle-analyzer${C} 看谁占了大头，而不是凭感觉；
+- **构建可重复**：锁文件入库、${C}npm ci${C} 而非 ${C}install${C}、固定 Node 版本，否则「CI 产物 ≠ 本地产物」。
 
 ## 📚 延伸阅读
 
@@ -1027,6 +1500,88 @@ TS 类型在编译后**完全擦除**，运行时没有任何校验。接口数�
 - [ ] 边界数据（API 响应）经 unknown + 守卫/zod 校验
 - [ ] 常用 Utility Types 熟练（Partial/Pick/Omit/Record/ReturnType）
 - [ ] 类型检查进 CI（tsc --noEmit），不靠编辑器
+
+<!--dd:typescript-->
+
+## 🔬 深挖：类型系统的运行机制
+
+### 一、结构化类型：TS 不看名字，只看形状
+
+${F}ts
+interface Point { x: number; y: number }
+class Vector { constructor(public x: number, public y: number) {} }
+const p: Point = new Vector(1, 2); // ✅ 合法：形状兼容，与继承无关
+${F}
+
+这与 Java/C# 的**名义类型**（必须显式 implements）是根本区别，也是「为什么空接口 ${C}{}${C} 能接受任何非 null 值」「为什么多传一个属性反而报错」的原因：
+
+${F}ts
+interface Opt { a: number }
+const o: Opt = { a: 1, b: 2 };   // ❌ 对象字面量 → 触发「多余属性检查」
+const tmp = { a: 1, b: 2 };
+const o2: Opt = tmp;             // ✅ 变量中转后不检查多余属性
+${F}
+
+### 二、协变、逆变与「函数参数双变」
+
+TS 对函数参数默认开启 ${C}strictFunctionTypes${C} 后是**逆变**（contravariant）、返回值**协变**。记忆口诀：**「入参要更宽，出参要更窄」**。
+
+${F}ts
+type Handler = (e: MouseEvent) => void;
+let h: Handler = (e: Event) => {};   // ✅ 参数更宽（逆变）——安全
+let h2: Handler = (e: MouseEvent & { extra: 1 }) => {}; // ❌ 参数更窄——不安全
+${F}
+
+理解这一点，才能解释「为什么 ${C}Array<Dog>${C} 不能赋给 ${C}Array<Animal>${C}」（数组可写 → 不变），以及事件回调里 ${C}this${C} 与 ${C}bivarianceHack${C} 的历史包袱。
+
+### 三、条件类型 + infer：把类型当函数算
+
+${F}ts
+// 分发（distributive）条件类型：对联合类型逐个应用
+type ToArray<T> = T extends unknown ? T[] : never;
+type R = ToArray<string | number>;   // string[] | number[]（不是 (string|number)[]）
+
+// 用 [T] 包裹可关闭分发
+type ToArrayNonDist<T> = [T] extends [unknown] ? T[] : never;
+
+// infer：在模式匹配位置「提取」类型
+type Unwrap<T> = T extends Promise<infer U> ? Unwrap<U> : T;
+type Awaited2 = Unwrap<Promise<Promise<number>>>;  // number
+
+// 从函数签名提取参数/返回值
+type Params<T> = T extends (...a: infer P) => any ? P : never;
+${F}
+
+关键陷阱：条件类型遇到 ${C}any${C} 会返回联合两支的结果；遇到 ${C}never${C} 因分发规则直接得到 ${C}never${C}——这就是「工具类型在 never 上突然失效」的原因。
+
+### 四、映射类型与模板字面量类型
+
+${F}ts
+// 映射类型：批量改造属性修饰符（+/- readonly、+/- ?）
+type Mutable<T> = { -readonly [K in keyof T]-?: T[K] };
+
+// keyof 重映射（as 子句）实现过滤器
+type Getters<T> = { [K in keyof T as ${C}get\${Capitalize<string & K>}${C}]: () => T[K] };
+
+// 模板字面量类型：类型层面的字符串拼接与解析
+type Event = "click" | "focus";
+type Handler = ${C}on\${Capitalize<Event>}${C};   // "onClick" | "onFocus"
+${F}
+
+这让「事件名 ↔ 处理器名」这类约定**由编译器强制**，而不是靠注释约定。代价是类型体操越深，${C}tsc${C} 越慢、报错信息越难读——工程经验：**库作者可以玩深，业务代码优先用显式接口**。
+
+### 五、${C}strict${C} 全家桶逐项含义（不要盲开，要知其所以然）
+
+| 选项 | 拦住的真实 bug |
+|---|---|
+| ${C}strictNullChecks${C} | ${C}undefined${C} 当值用，运行时报「无法读取 undefined 的属性」 |
+| ${C}noImplicitAny${C} | 隐式 any 泛滥导致类型检查形同虚设 |
+| ${C}strictFunctionTypes${C} | 回调参数逆变错误（上面那个反例） |
+| ${C}strictPropertyInitialization${C} | 类字段声明了却没在构造函数赋值 |
+| ${C}noUncheckedIndexedAccess${C} | ${C}arr[i]${C} 在越界时是 ${C}undefined${C} 却被当成 ${C}T${C}（默认不检查，建议单开） |
+| ${C}exactOptionalPropertyTypes${C} | 区分「没这个属性」与「属性是 undefined」 |
+
+配合 ${C}// @ts-expect-error${C}（**当且仅当**下一行确实报错才通过，比 ${C}// @ts-ignore${C} 更安全——错报会反过来报错）与 ${C}satisfies${C}（校验同时保留字面量推断）能显著提升类型代码的可维护性。
 
 ## 📚 延伸阅读
 
@@ -1139,6 +1694,71 @@ ${F}
 - [ ] LCP 资源 preload + fetchpriority
 - [ ] 泄漏四件套（listener/timer/observer/闭包）在 code review 清单里
 
+<!--dd:render-perf-->
+
+## 🔬 深挖：从「关键渲染路径」到 INP
+
+### 一、关键渲染路径（CRP）六步
+
+${F}
+HTML → DOM ─┐
+            ├→ Render Tree → Layout(回流) → Paint(重绘) → Composite(合成)
+CSS  → CSSOM┘
+${F}
+
+两个**阻塞**是性能的第一性约束：
+- ${C}<script>${C} 默认**阻塞 DOM 构建**，且会等待前置 CSSOM 就绪（因为脚本可能读样式）；用 ${C}defer${C}（保序、DOMContentLoaded 前执行）或 ${C}async${C}（无序、下载完即执行，适合无依赖的独立脚本）。
+- ${C}<link rel=stylesheet>${C} **阻塞渲染**（避免闪无样式内容 FOUC），所以关键 CSS 应内联、非关键 CSS 异步加载（${C}media="print" onload${C} 或 ${C}rel=preload as=style${C}）。
+
+### 二、Layout / Paint / Composite 的成本阶梯
+
+| 变更的属性 | 触发阶段 | 相对成本 |
+|---|---|---|
+| ${C}width / top / font-size${C} | Layout → Paint → Composite | 最贵 |
+| ${C}color / box-shadow / background${C} | Paint → Composite | 中 |
+| ${C}transform / opacity${C} | 仅 Composite（GPU） | 最便宜 |
+
+**只改 transform/opacity 能免掉 Layout+Paint** 是「动画要用 transform 而不是 left/top」的根因。注意 ${C}transform: translateZ(0)${C} / ${C}will-change${C} 会**提升合成层**，滥用会引发「层爆炸」——每层都要占显存并增加合成开销，反而更慢。正确做法是动画期间加 ${C}will-change${C}、结束后移除。
+
+### 三、INP：为什么「点击卡顿」不只看 FCP/LCP
+
+Core Web Vitals 现在以 **INP（Interaction to Next Paint）** 衡量交互响应，它统计从「用户输入」到「下一帧绘制」的延迟，本质是在测**主线程被长任务占用多久**：
+
+${F}js
+// 归因：用 PerformanceObserver 抓长任务
+new PerformanceObserver((list) => {
+  for (const e of list.getEntries()) {
+    console.log("longtask", e.duration, e.startTime, e.attribution);
+  }
+}).observe({ type: "longtask", buffered: true });
+
+// 找出「谁阻塞了主线程」——长任务里逐段打点
+performance.mark("task-start");
+heavyWork();
+performance.mark("task-end");
+performance.measure("heavyWork", "task-start", "task-end");
+${F}
+
+治理手段按性价比排序：**① 把长任务切碎**（把 200ms 的循环拆成 5ms 的块，用 ${C}scheduler.yield()${C} 或 ${C}setTimeout(…,0)${C} 让出主线程）；**② 减少一次渲染的计算量**（虚拟列表、memo、缓存）；**③ 移到 Worker**（纯数据转换）；**④ 移到 GPU**（动画）。
+
+### 四、虚拟列表的原理与三个坑
+
+原理只有一句话：**只渲染可视窗口 + 上下缓冲区的元素，用撑高的占位元素维持滚动条**。
+
+${F}
+容器（固定高度，overflow:auto）
+ ├─ 占位层：高度 = itemHeight * total  （保证滚动条语义正确）
+ └─ 可视区：transform: translateY(offsetY)  （只放 20~30 个真实 DOM）
+${F}
+
+三个坑：① **不定高**元素无法用乘法算 offset，需要「测量 + 累积偏移表」（rc-virtual-list / vue-virtual-scroller 的做法）；② **keep-alive 状态丢失**——复用 DOM 时必须显式保存/恢复输入框内容与滚动位置；③ **无障碍与查找**——DOM 里没有的元素无法被 Ctrl+F 找到，需要提供搜索入口替代。
+
+### 五、图片与字体的三个具体抓手
+
+- **LCP 元素**（通常是大图/首屏标题）要 ${C}fetchpriority="high"${C} + 预加载，且**不要**对它用 ${C}loading="lazy"${C}（lazy 会让 LCP 恶化）；
+- 图片用 ${C}srcset + sizes${C} 让浏览器按 DPR/视口选尺寸，并给出**宽度高度**（或 ${C}aspect-ratio${C}）以避免 CLS；
+- 字体：${C}font-display: swap${C} 先显示回退字体（防 FOIT 白屏），配 ${C}size-adjust${C} / ${C}ascent-override${C} 减小字体切换时的抖动（CLS）。
+
 ## 📚 延伸阅读
 
 - web.dev → Rendering Performance / Core Web Vitals（Google 性能方法论源头）
@@ -1223,6 +1843,88 @@ ${F}
 - [ ] release + sourcemap 工作流跑通，map 不上线
 - [ ] 关键用户路径有自定义指标（web.dev Custom Metrics 口径）
 - [ ] 告警有 owner、SLA 与修复闭环记录
+
+<!--dd:fe-monitor-->
+
+## 🔬 深挖：监控 SDK 是怎么造出来的
+
+### 一、指标采集：统一用 PerformanceObserver
+
+老 API（${C}performance.timing${C}）已被废弃，现代做法是监听各类 entry：
+
+${F}js
+const po = new PerformanceObserver((list) => {
+  for (const e of list.getEntries()) report(e.entryType, e.toJSON());
+});
+po.observe({
+  type: "largest-contentful-paint", buffered: true, // LCP
+});
+po.observe({ type: "layout-shift", buffered: true });      // CLS（需累加 sessionWindow）
+po.observe({ type: "event", buffered: true, durationThreshold: 40 }); // INP
+po.observe({ type: "resource", buffered: true });          // 资源瀑布
+po.observe({ type: "navigation", buffered: true });        // TTFB / DOMContentLoaded
+${F}
+
+**必须等页面隐藏（${C}visibilitychange${C} → hidden）再上报** LCP/CLS/INP 的最终值——它们在被观测期间会持续更新，提前上报会得到偏乐观的假数据。
+
+CLS 有个容易算错的细节：规范定义的是 **session window**（相邻偏移间隔 <1s 且总时长 <5s 的最大窗口），不是简单求和。很多自研 SDK 直接累加导致数值虚高。
+
+### 二、错误捕获：四类漏报与补法
+
+| 错误类型 | 捕获方式 | 常见漏报原因 |
+|---|---|---|
+| JS 运行时错误 | ${C}window.onerror${C} / ${C}error${C} 事件 | —— |
+| 未处理的 Promise | ${C}unhandledrejection${C} | 只监听 error 事件会漏掉 |
+| 资源加载失败（img/script/css） | ${C}addEventListener("error", h, true)${C} | 资源错误**不冒泡**，必须**捕获阶段** |
+| 框架内部错误 | React ${C}ErrorBoundary${C} / Vue ${C}app.config.errorHandler${C} | 组件渲染错误不会传到 window |
+
+${F}js
+// 跨域脚本报错的经典现象：Script error. 无堆栈
+// 解法：script 标签加 crossorigin + 服务端返回 Access-Control-Allow-Origin
+window.addEventListener("error", (e) => {
+  // 资源错误：e.target 是元素，e.message 为 undefined
+  if (e.target && (e.target.src || e.target.href)) {
+    report("resource", { url: e.target.src || e.target.href });
+  }
+}, true); // ← capture=true 是关键
+${F}
+
+### 三、sourcemap 反解：线上堆栈可读的前提
+
+产物的 ${C}app.a1b2c3.js:1:84213${C} 对人毫无意义。正确链路：
+
+${F}
+构建：生成 sourcemap（hidden-source-map，不写 sourceMappingURL 注释）
+上报：把 (文件名, 行, 列, version) 一起报
+还原：服务端用 source-map 库按版本取 map 反解出「原始文件 + 函数名 + 行号」
+${F}
+
+**必须按版本存 map**：发版后旧 map 不能删，否则老客户端上报的堆栈永远解不开（建议保留 30~90 天）。
+
+### 四、上报通道与会话串联
+
+${F}js
+// 组件卸载时上报必须用 sendBeacon：不阻塞卸载
+window.addEventListener("pagehide", () => {
+  navigator.sendBeacon("/collect", JSON.stringify(payload));
+});
+
+// 埋点队列：合并 + 定时 + 断网重试，避免请求风暴
+const queue = [];
+setInterval(() => {
+  if (!queue.length) return;
+  fetch("/collect", { method: "POST", body: JSON.stringify(queue.splice(0)), keepalive: true })
+    .catch(() => queue.length = 0); // 失败丢弃，避免内存膨胀
+}, 5000);
+${F}
+
+**会话串联**：一次会话内的所有事件共享 ${C}sessionId${C}（存 sessionStorage），跨会话用 ${C}userId${C}。用户反馈「刚才卡了」时，能凭 sessionId 拉出完整的行为时间线与 JS 堆栈——这是监控真正有用的时刻。
+
+### 五、用户行为回放（rrweb 原理）与噪声治理
+
+回放不是录像，而是**记录 DOM 变更指令流**：初始化时全量快照 DOM，之后用 ${C}MutationObserver${C} 记录增删改、用 ${C}PerformanceObserver${C}? 记录鼠标/输入/滚动（输入框默认脱敏），回放时按时间轴重放到一个沙箱 iframe。体积极小但有隐私风险——**默认必须脱敏**（${C}maskAllInputs${C}）。
+
+噪声治理三条：① 按 **错误指纹**（message + 堆栈前几行 + 页面）聚合，不做逐条列举；② 采样率按流量分级（错误 100%、性能 1~10%、自定义埋点按需）；③ 明确区分「真实缺陷 / 第三方脚本 / 浏览器插件 / 爬虫 UA」，否则告警会迅速被无视。
 
 ## 📚 延伸阅读
 
@@ -1314,6 +2016,75 @@ ${F}
 - [ ] 样式隔离方案（Shadow DOM/前缀）落地
 - [ ] 子应用加载失败有兜底 UI 与告警
 
+<!--dd:micro-frontend-->
+
+## 🔬 深挖：隔离是微前端的全部难点
+
+### 一、三种隔离手段的能力对照
+
+| 方案 | JS 隔离 | 样式隔离 | 通信 | 主要代价 |
+|---|---|---|---|---|
+| iframe | 天然完全隔离 | 天然完全隔离 | postMessage（异步） | 性能差、弹窗/滚动/焦点易穿帮、SEO 差 |
+| Shadow DOM | 无（仅作用域） | 真正隔离 | 同页面直接调用 | 事件重定向、第三方 UI 库穿透不了 |
+| JS 沙箱（Proxy + 快照） | 靠代理 window 实现 | 靠样式重写/前缀 | 自定义事件总线 | 沙箱漏洞（如直改原型） |
+
+**qiankun 的核心机制**：加载子应用 HTML → 抽出 script 用 ${C}new Function(...)${C} 包裹执行（而不是 ${C}<script>${C} 标签，便于注入自定义 window 作用域）→ 用 Proxy 拦截子应用对 ${C}window${C} 的读写（写操作进入沙箱快照，卸载时还原）→ 样式用 ${C}scoped${C} 前缀重写 + 动态样式表增删。
+
+**wujie（无界）的选择**：用 **iframe 承载子应用 JS 执行环境**（真沙箱，零漏洞）+ **Shadow DOM 承载渲染**（无性能损耗），把「执行」和「渲染」拆开取各自优点。
+
+### 二、模块联邦（Module Federation）为什么改变了游戏规则
+
+传统微前端是**运行时拼装**（主应用加载子应用的 bundle），模块联邦让**构建期就可以跨应用共享模块**：
+
+${F}js
+// 提供方（remote）：暴露组件
+new ModuleFederationPlugin({ name: "shop", filename: "remoteEntry.js",
+  exposes: { "./Cart": "./src/Cart.tsx" },
+  shared: { react: { singleton: true, requiredVersion: "^18" } } });
+
+// 消费方（host）：运行时按需拉取
+new ModuleFederationPlugin({ name: "shell",
+  remotes: { shop: "shop@https://cdn.x.com/remoteEntry.js" },
+  shared: { react: { singleton: true } } });
+${F}
+
+${C}shared${C} 里的 ${C}singleton: true${C} 是精髓——保证 React 只有一个实例（多实例会导致 Hooks 失效、Context 不通）。代价是**版本漂移**：各子应用构建时的 React 小版本可能不一致，需要显式约定 ${C}requiredVersion${C} 并做验证。
+
+### 三、通信契约：别让子应用互相认识
+
+微前端最怕「子应用 A 直接 import 子应用 B 的模块」——一旦如此，独立部署立刻失效。正确做法是**只通过主应用提供的契约通信**：
+
+${F}js
+// 主应用下发能力（props / 注入），子应用只依赖接口而不依赖实现
+const props = {
+  container: el,
+  token: getToken(),                    // 认证：由主应用统一持有
+  eventBus: createBus(),                // 通信：只发事件与字符串/可序列化数据
+  routerBase: "/shop",
+  onRouteChange: (fn) => subscribe(fn),
+};
+mount(props);   // 子应用暴露 mount / unmount 生命周期
+${F}
+
+**约束**：跨应用传递的数据必须**可序列化**，且事件命名要带域前缀（${C}shop:cart-updated${C}），避免命名冲突。共享状态（如登录态）由主应用持有、以单向数据流下发。
+
+### 四、路由与部署的两种形态
+
+- **路由分发型（最常见）**：主应用持有路由表，按路径挂载不同子应用。要处理「主应用路由与子应用路由的前缀对齐」「浏览器前进后退」「刷新时子应用直达」。
+- **组件分发型**：把子应用的某个组件嵌进宿主页面（如把风控面板嵌进审批页），需要宿主与子应用同时在线，耦合度更高，一般只在强业务协作时使用。
+
+部署侧的关键是**版本治理**：子应用清单（manifest）里记录 ${C}{name, url, version}${C}，主应用按环境加载对应清单；发布时先上子应用再更新清单（保证兼容窗口），并保留回滚到上一版 URL 的能力。
+
+### 五、值不值得：先算这笔账
+
+微前端解决的是**组织问题**（多团队独立开发、独立部署、技术栈并存），不是技术问题。引入前先自问：
+
+- 团队数 ≤ 2、技术栈统一 → 用**单体 + 目录规范 + 代码分割**即可，微前端是纯成本；
+- 已有多个历史系统需要聚合（后台中台、门户）→ 微前端合适，iframe 往往是最省事的第一选择；
+- 只是想要「独立部署」→ 先考虑**组件库 + 私有 npm + 单仓多包（monorepo）**。
+
+隐性成本清单：主-子版本兼容矩阵、样式冲突排查、公共依赖重复加载（首屏体积）、跨应用调试链路（谁的错误？）、以及每个子应用都要维护一套构建与发布流水线。
+
 ## 📚 延伸阅读
 
 - micro-frontends.org（思想源头，一篇讲透）
@@ -1402,6 +2173,90 @@ ${F}
 - [ ] 小程序 setData 路径更新纪律落地
 - [ ] Electron contextIsolation + IPC 白名单
 - [ ] 各端真机回归清单成文（发版必过）
+
+<!--dd:cross-platform-->
+
+## 🔬 深挖：跨端方案的渲染路径与差异
+
+### 一、先分清「跨端」的三条技术路线
+
+| 路线 | 代表 | 渲染路径 | 一致性 |
+|---|---|---|---|
+| WebView 套壳 | Hybrid / 小程序 WebView | 原生 Web 引擎 | 与浏览器一致，性能受 WebView 限制 |
+| 自绘引擎 | Flutter | Skia/Impeller 直接绘制，无原生控件 | 各端像素级一致 |
+| 原生控件映射 | React Native | JS 线程 → 桥 → 原生组件 | 贴近原生手感，但组件属性有平台差异 |
+| 编译到原生 | 小程序（双线程） | 逻辑层 JS + 渲染层 WebView 分离 | 由宿主 App 能力决定 |
+
+**小程序的本质**是有两个线程：逻辑层（JSCore/V8，无 DOM）与渲染层（WebView），两者通过 ${C}setData${C} 序列化通信。这解释了三条铁律：① 不能直接操作 DOM；② ${C}setData${C} 数据量越大越卡（跨线程序列化）；③ 频繁 ${C}setData${C} 必须合并。
+
+### 二、JSBridge：H5 与原生怎么说话
+
+${F}
+H5 → 原生：① 拦截 URL scheme（iframe.src = "app://scan"）
+          ② 原生往 window 注入对象（window.NativeBridge.scan()）—— 主流
+          ③ prompt/console 劫持（老方案，已淘汰）
+
+原生 → H5：evaluateJavascript 执行回调函数（须全局暴露 + 用完清理）
+${F}
+
+${F}js
+// 健壮的 JSBridge 封装：超时 + 一次性的回调注册表
+let seq = 0;
+const callbacks = new Map();
+function callNative(method, params = {}, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const id = ++seq;
+    callbacks.set(id, { resolve, reject });
+    window.__nativeCallback = (cbId, data) => {   // 原生回调入口
+      const cb = callbacks.get(cbId);
+      if (cb) { callbacks.delete(cbId); cb.resolve(data); }
+    };
+    setTimeout(() => {
+      if (callbacks.delete(id)) reject(new Error(method + " timeout"));
+    }, timeout);
+    window.NativeBridge && window.NativeBridge.post(JSON.stringify({ id, method, params }));
+  });
+}
+${F}
+
+**注入时机**是最大的坑：Android 需等 ${C}window.onload${C} 后（有的机型要延迟），iOS WKWebView 用 ${C}addScriptMessageHandler${C} 且要防**循环引用**（handler 强引用 controller → 内存泄漏）。因此所有桥调用都必须**带超时与降级**，否则页面会永久 pending。
+
+### 三、WebView 平台差异速查
+
+| 问题 | iOS (WKWebView) | Android (WebView) |
+|---|---|---|
+| 内核 | 强制 WebKit（无第三方内核） | 可用系统 WebView / X5 / 自研，**版本碎片化严重** |
+| 软键盘 | 弹起会推高视口 | 默认 resize 模式，可覆盖内容 |
+| 滚动 | ${C}-webkit-overflow-scrolling${C} 已默认弹性 | 需注意嵌套滚动冲突 |
+| 本地存储 | 独立沙箱，清理 App 会清 | 同上；无痕模式受限 |
+| 定位/相机 | 需 info.plist 权限 + 用户授权 | 需运行时权限 |
+
+**1px 边框**：${C}devicePixelRatio${C} 下用 ${C}transform: scaleY(0.5)${C} 加伪元素最稳（不要用 ${C}0.5px${C}，部分机型不渲染）。**安全区**：${C}env(safe-area-inset-bottom)${C} + ${C}viewport-fit=cover${C}。**软键盘遮挡输入框**：监听 ${C}visualViewport${C} 的 resize/scroll 调整布局，比监听 ${C}window.resize${C} 更可靠（iOS 上 window.resize 不触发）。
+
+### 四、离线包：把首屏从「秒」压到「毫秒」
+
+${F}
+App 启动 → 检查本地离线包版本 → 有新版本则后台静默下载（zip）
+        → 校验（MD5/签名）→ 解压到沙箱目录
+        → 打开页面时：URL 映射到 file:// 本地路径（不走网络）
+        → 差量更新：只下发变更文件（bsdiff），体积可降 90%
+${F}
+
+要点：① 必须**本地优先 + 兜底线上**（离线包损坏时降级），② 必须有**回滚开关**（配置中心下发，出问题不用发版），③ 与前端**发版节奏对齐**（离线包版本 ≠ 前端版本会导致新旧混用）。
+
+### 五、选型决策
+
+${F}
+需求里有「极致性能 / 复杂动画 / 强原生体验」？
+├─ 是 → Flutter（自绘）或原生
+└─ 否 → 有「动态发版 / 已有 Web 团队」？
+    ├─ 是 → Hybrid（WebView + JSBridge + 离线包）
+    └─ 否 → 需要「iOS/Android 共享业务逻辑」？
+        ├─ 是 → React Native
+        └─ 否 → 只做一个平台 → 原生
+${F}
+
+再补一句工程现实：**跨端方案的长期成本主要在「平台特有能力」**——扫码、支付、推送、生物识别、后台任务，这些最终都要写平台插件。评估时把「插件维护成本」算进预算，而不是只看 UI 一套代码。
 
 ## 📚 延伸阅读
 
@@ -1494,6 +2349,100 @@ CSRF 成立的条件：**浏览器自动携带 cookie + 接口不校验来源**�
 - [ ] cookie SameSite + CSRF Token（或明确的 token 方案论证）
 - [ ] 重定向参数白名单、postMessage 校验 origin
 - [ ] npm audit / 依赖更新进 CI
+
+<!--dd:fe-security-->
+
+## 🔬 深挖：XSS 的上下文决定一切
+
+### 一、XSS 不是「过滤 <script>」，而是「按上下文转义」
+
+同一个字符串插入到不同位置，需要的处理完全不同：
+
+| 输出位置 | 正确做法 | 攻击载荷示例 |
+|---|---|---|
+| HTML 文本 / 属性值 | HTML 实体编码（${C}&lt; &quot; &#39; &amp;${C}） | ${C}<img src=x onerror=alert(1)>${C} |
+| 属性里放 URL | 校验协议白名单（只允许 http/https）+ URL 编码 | ${C}javascript:alert(1)${C} |
+| ${C}<script>${C} 内联 JS | JSON 序列化 + 特殊字符转义（${C}<${C}、${C}>${C}） | ${C}</script><script>alert(1)</script>${C} |
+| CSS 上下文 | 只允许白名单属性值，别拼 ${C}url()${C} | ${C}background:url(javascript:...)${C} |
+
+三类 XSS 的区别就在于**恶意代码存在哪里**：**存储型**（入库，所有访问者中招）、**反射型**（随请求回显）、**DOM 型**（全程不经过服务端，由前端 JS 把不可信数据写入 ${C}innerHTML/eval/location${C}）。
+
+DOM 型最容易被漏掉，因为服务端过滤管不到：
+
+${F}js
+// ❌ 一串危险的 sink
+el.innerHTML = location.hash.slice(1);
+el.insertAdjacentHTML("beforeend", userInput);
+eval(location.search);
+new Function(userInput)();
+location.href = userInput;              // javascript: 伪协议
+setTimeout(userInput, 0);               // 字符串形式等价于 eval
+
+// ✅ 安全等价写法
+el.textContent = location.hash.slice(1);      // 纯文本插入
+el.setAttribute("href", safeUrl(u));          // 先校验协议
+setTimeout(() => doWork(userInput), 0);       // 传函数而非字符串
+${F}
+
+### 二、CSP：把「防不住」变成「跑不通」
+
+CSP 是纵深防御的最后一层——即使注入了脚本，也能让它无法执行：
+
+${F}
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'nonce-r4nd0m' 'strict-dynamic';
+  object-src 'none';
+  base-uri 'self';
+  frame-ancestors 'self';
+  report-uri /csp-report
+${F}
+
+要点：① ${C}'unsafe-inline'${C} 会**直接废掉** script-src 的防护（要逐步拆除内联脚本，改用 nonce）；② ${C}'strict-dynamic'${C} 让被信任脚本动态加载的脚本自动受信任，是配合打包器的现代做法；③ ${C}object-src 'none'${C} 与 ${C}base-uri 'self'${C} 几乎零成本、必须加；④ 先上 ${C}Report-Only${C} 收集违规报告，再切强制模式——否则会打挂线上。
+
+**Trusted Types** 是更彻底的方案：浏览器层面禁止把字符串赋给 ${C}innerHTML${C}，必须传入经策略校验的 ${C}TrustedHTML${C} 对象——把「记得转义」变成「必须走安全工厂」。
+
+### 三、CSRF / 点击劫持 / 供应链
+
+**CSRF 的本质是「浏览器自动带上凭证」**。三种防御按推荐度排序：
+
+1. **SameSite Cookie**（${C}Lax${C} 起步，敏感操作 ${C}Strict${C}）+ ${C}Secure${C} + ${C}HttpOnly${C} —— 现代浏览器默认 ${C}Lax${C} 已经挡掉大部分跨站表单提交；
+2. **自定义请求头 / CSRF Token**（${C}X-Requested-With${C} 或双提交 Cookie）：跨站无法自设头，天然拦截；
+3. **校验 Origin / Referer**（配合白名单）。
+
+纯 Token 放 ${C}Authorization${C} 头的方案本身不受 CSRF 影响，但会换成 **XSS 后 Token 被直接偷走**的问题——所以「放 localStorage 还是 Cookie」不是安全性之争，而是「防 XSS 还是防 CSRF」的取舍：Cookie + HttpOnly 挡住 XSS 窃取，代价是要处理 CSRF；localStorage 反之。
+
+**点击劫持**用 ${C}frame-ancestors 'none'${C}（或 ${C}X-Frame-Options: DENY${C}，前者优先）+ 关键操作二次确认。
+
+**供应链**：前端是被投毒重灾区。三道防线——① ${C}lockfile${C} 入库 + ${C}npm ci${C}；② ${C}npm audit${C} / Dependabot + 只允许白名单 registry；③ 关键脚本加 **SRI**：
+
+${F}html
+<script src="https://cdn.x.com/lib.js"
+        integrity="sha384-<hash>" crossorigin="anonymous"></script>
+${F}
+
+### 四、前端存储与敏感信息
+
+| 数据 | 推荐位置 | 理由 |
+|---|---|---|
+| 会话凭证 | HttpOnly + Secure + SameSite Cookie | JS 读不到，XSS 也偷不走 |
+| 短期 access token | 内存变量（闭包） | 刷新即失效，减少暴露窗口 |
+| 非敏感偏好 | localStorage | 同源可读，无泄露价值 |
+| 绝不出现 | 前端源码 / 构建变量 / 日志 | 打包即公开，等同于泄露 |
+
+**${C}postMessage${C} 必须双向校验**：
+
+${F}js
+// 发送：明确 targetOrigin，绝不用 "*"
+otherWindow.postMessage(data, "https://trusted.example.com");
+
+// 接收：校验来源 + 校验数据结构
+window.addEventListener("message", (e) => {
+  if (e.origin !== "https://trusted.example.com") return;   // 必查
+  if (typeof e.data?.type !== "string") return;             // 必校验结构
+  handle(e.data);
+});
+${F}
 
 ## 📚 延伸阅读
 

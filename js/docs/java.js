@@ -14,8 +14,8 @@
  * ========================================================================= */
 (function () {
   "use strict";
-  const F = "\u0060\u0060\u0060";   // 代码块围栏 ```
-  const C = "\u0060";               // 行内代码 `
+  const F = "\u0060\u0060\u0060";   // 代码块围栏 ${F}
+  const C = "\u0060";               // 行内代码 ${C}
 
   const JAVA = {
     id: "java",
@@ -38,66 +38,68 @@
             tags: ["Java", "集合", "JLS"],
             terms: ["Java", "集合", "HashMap", "equals", "JLS"],
             body: `
-## 官方文档基线
+> **官方文档基线**：[Oracle Java Tutorials · Collections](https://docs.oracle.com/javase/tutorial/collections/) · [Java SE 21 API · java.util](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/package-summary.html) · [JLS §10 Arrays](https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html) · [JLS §11 Exceptions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html)
 
-本章按 Oracle 官方文档目录展开，权威出处只有两个：
+## 一、原理与底层机制
 
-- **Java Tutorials「Collections」trail**（docs.oracle.com/javase/tutorial/collections）：官方把集合划分为 *interfaces / implementations / algorithms* 三条主线，这是本章的骨架。
-- **Java Language Specification §10（Arrays）、§4.3、§8** 与 **API 文档 ${C}java.util${C} 包页**：${C}equals${C}/${C}hashCode${C} 契约写在 ${C}Object${C} 的 API doc 里，不是坊间经验。
+Java 集合框架（Java Collections Framework，JCF）的设计哲学在官方 Tutorials 里被拆成三条主线：**接口（interfaces）、实现（implementations）、算法（algorithms）**。接口定义行为契约（如 ${C}List${C}/${C}Set${C}/${C}Map${C}），实现提供具体数据结构（如 ${C}ArrayList${C}/${C}HashSet${C}/${C}HashMap${C}），算法以「对接口编程」的静态方法形式存在（${C}Collections.sort${C}、${C}Collections.binarySearch${C}）。这套分层的价值是：写业务代码只依赖接口，换实现零成本——这是面试里「为什么用 ${C}List${C} 接收 ${C}ArrayList${C}」的根。
 
-面试问「集合」，本质是考三件事：**契约（specification）、实现（implementation）、选型（which to use）**。顺序不能乱。
-
-## 一、${C}equals${C} / ${C}hashCode${C} 契约：后面所有坑的根
-
-${C}Object${C} 的 API 文档给 ${C}hashCode${C} 定了三条契约（背下来，面试和排查都靠它）：
+${C}equals${C}/${C}hashCode${C} 是后面所有坑的总根，必须从 JVM 与 JLS 两个视角理解。JLS §4.3.1 规定对象同一性由 ${C}==${C} 表达，而逻辑相等由 ${C}equals${C} 约定；${C}Object${C} 的 API 文档给 ${C}hashCode${C} 定了三条契约（背下来，面试和排查都靠它）：
 
 1. 同一对象多次调用 ${C}hashCode${C} 必须返回相同值（前提是 ${C}equals${C} 比较所用的信息没变）；
 2. ${C}equals${C} 相等的两个对象，${C}hashCode${C} **必须**相等；
 3. ${C}hashCode${C} 相等，${C}equals${C} 不必相等（哈希冲突是允许的）。
 
-违反契约 2 的直接后果：对象放进 ${C}HashMap${C} 后「找不到了」——因为查找时先按 hash 分桶，桶都对不上，${C}equals${C} 根本没机会执行。
+违反契约 2 的直接后果：对象放进 ${C}HashMap${C} 后「找不到了」——因为查找时先按 hash 分桶，桶都对不上，${C}equals${C} 根本没机会执行。更底层一点：对象默认的 ${C}hashCode${C} 来自对象头里的 **identity hash code**（与内存地址相关，但经扰动），所以只要重写了 ${C}equals${C} 就必须重写 ${C}hashCode${C}，否则逻辑相等的对象会被当成两个桶里的不同实体。
+
+HashMap 的哈希不是直接拿 key 的 hash 当下标，而是经过一次**扰动函数**（JDK 8 是 ${C}(h = key.hashCode()) ^ (h >>> 16)${C}，把高位也掺入低位）再与表长取模。为什么要扰动？因为下标只用到 hash 的低几位，如果 key 的 hash 高位变化大、低位雷同，就会全挤进少数桶。扰动让高位参与运算，分布更均匀。冲突解决官方选的是「数组 + 链表 + 红黑树」的拉链法变体（而非开放寻址），因为拉链法在删除、扩容时更简单，且链表转红黑树后能兜住极端哈希攻击。
+
+## 二、规范与标准
+
+JLS 与 API 文档对集合的规范是「契约优先」：
+
+- ${C}Collection${C}/${C}Map${C} 接口的 API 文档首页列了**通用约定（general contracts）**，例如「本接口的实现是否支持某操作由具体实现决定，不支持时抛 ${C}UnsupportedOperationException${C}」——这正是 ${C}Arrays.asList()${C} 的 ${C}add${C} 会抛异常的依据，不是 bug，是规范。
+- ${C}Iterator${C} 的 fail-fast 在 Javadoc 里被明确定义为**尽力而为（best-effort）**：*fail-fast behavior ... should be used only to detect bugs*。它**不能**作为并发正确性保证。实现靠一个 ${C}modCount${C} 计数器，迭代期间结构被修改就抛 ${C}ConcurrentModificationException${C}，但文档明确说「不保证一定抛出」。
+- 不可变集合规范：${C}List.of${C}/${C}Set.of${C}/${C}Map.of${C}（Java 9+）返回**真·不可变**集合，任何写操作抛 ${C}UnsupportedOperationException${C}；且它们的 ${C}equals${C}/${C}hashCode${C} 严格按元素/键值对定义，可安全作为 Map 的 key。对比 ${C}Collections.unmodifiableList${C} 只是「视图不可改」，底层集合仍可被原引用改动——这是两者最常踩的坑。
+- 排序接口 ${C}Comparable${C}/${C}Comparator${C} 的约定：${C}compareTo${C} 必须与 ${C}equals${C} 一致（${C}sgn(compareTo(y))==-sgn(compareTo(x))${C} 等三定律），否则放进 ${C}TreeSet${C}/${C}TreeMap${C} 会出现「逻辑相等却被当不同元素」。
+
+## 三、实战
+
+**正确实现契约**（只比业务主键，且 ${C}equals${C}/${C}hashCode${C} 字段完全一致）：
 
 ${F}java
 @Override
 public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof User)) return false;
+    if (!(o instanceof User)) return false;   // 兼容子类，优于 getClass()
     User u = (User) o;
-    return id != null && id.equals(u.id);   // 只比业务主键
+    return id != null && id.equals(u.id);       // 只比业务主键
 }
 @Override
 public int hashCode() {
-    return Objects.hash(id);                 // 字段必须与 equals 完全一致
+    return Objects.hash(id);                     // 字段必须与 equals 完全一致
 }
 ${F}
 
-**两个细节**：① 用 ${C}instanceof${C} 而不是 ${C}getClass()${C}，才兼容子类语义（JLS 对两者都合法，工程上前者更常用）；② hash 用到的字段集合必须是 ${C}equals${C} 字段集合的**子集**，反过来不成立。
-
-## 二、HashMap 的实现原理（官方实现 + OpenJDK 源码口径）
-
-按「API 文档承诺 → 实现怎么做」的顺序讲：
-
-- **API 承诺**：${C}get${C}/${C}put${C} 平均 O(1)（假设 hash 分散）；**不保证顺序**，且「顺序可能随扩容改变」——文档原话 *the order ... may change*，所以任何依赖遍历顺序的代码都是错的。
-- **实现结构**：数组 + 链表 + 红黑树。链表长度 ≥ 8 **且**表长 ≥ 64 时树化；低于 6 退化回链表。
-- **负载因子 0.75**：API 文档明确说这是「时间与空间成本的折中推荐值」，默认别改。
-- **扩容**：超过 ${C}capacity × 0.75${C} 就翻倍 rehash。JDK 8 起用「高位拆分」：扩容后元素要么留在原下标 ${C}i${C}，要么去 ${C}i + oldCap${C}，不用重算 hash。
-- **null 键**：HashMap 允许一个 null 键；Hashtable 和 ConcurrentHashMap 不允许——并发容器拒绝 null 是为了「歧义不可判定」：${C}get${C} 返回 null 到底是「没有」还是「值就是 null」，无法区分。
-
-## 三、ArrayList 与并发修改
-
-- 底层是 ${C}Object[]${C}，默认容量 10，扩容为 **1.5 倍**（${C}oldCap + (oldCap >> 1)${C}）；已知大小时**必须**用 ${C}new ArrayList<>(expectedSize)${C}，避免多次拷贝。
-- **fail-fast**：迭代时结构被修改，抛 ${C}ConcurrentModificationException${C}。注意官方口径：这是**尽力而为（best-effort）**的机制，Javadoc 原话——*fail-fast behavior ... should be used only to detect bugs*。它**不能**作为并发正确性保证，并发场景该用 ${C}CopyOnWriteArrayList${C} 或 ${C}ConcurrentHashMap${C}。
-- 正确的单线程删除姿势：
+**错误范式对照**：❌ 只重写 ${C}equals${C} 不重写 ${C}hashCode${C}（违反契约 2）；❌ 用可变字段参与 ${C}hashCode${C} 后修改该字段，对象在 ${C}HashSet${C} 里「丢失」（桶位算错）；❌ 在 for-each 里 ${C}list.remove()${C} 触发 fail-fast。✅ 正确删除：
 
 ${F}java
 list.removeIf(x -> x.score < 60);                 // 推荐
-// 或显式 Iterator
 for (Iterator<Item> it = list.iterator(); it.hasNext(); ) {
-    if (it.next().isStale()) it.remove();
+    if (it.next().isStale()) it.remove();         // 显式迭代器删除
 }
 ${F}
 
-## 四、集合选型表（Tutorials「Implementations」页的决策版）
+**预扩容**：已知大小时用 ${C}new ArrayList<>(expectedSize)${C}，避免底层 ${C}Object[]${C} 多次 1.5 倍扩容拷贝。流式分组一行顶十行：
+
+${F}java
+Map<String, List<Order>> byUser = orders.stream()
+    .collect(Collectors.groupingBy(Order::getUserId));
+${F}
+
+## 四、覆盖广度
+
+**选型决策表（官方 Implementations 页的决策版）**：
 
 | 场景 | 选 | 为什么 |
 | --- | --- | --- |
@@ -106,32 +108,31 @@ ${F}
 | 需要插入顺序 | ${C}LinkedHashMap${C} | 额外链表维护顺序；也可做 LRU |
 | 去重 | ${C}HashSet${C} / ${C}LinkedHashSet${C} | 元素需正确实现 equals/hashCode |
 | 频繁头部操作 / 当栈 | ${C}ArrayDeque${C} | 官方明确推荐优先于 Stack（Stack 继承 Vector 是历史设计错误） |
-| 多线程 map | ${C}ConcurrentHashMap${C} | 分段细粒度锁；读无锁 |
+| 多线程 map | ${C}ConcurrentHashMap${C} | CAS + 锁单桶头节点，读无锁 |
 | 只读共享 | ${C}List.of(...)${C}（Java 9+） | 不可变，天然线程安全 |
 
-${F}java
-Map<String, List<Order>> byUser = orders.stream()
-    .collect(Collectors.groupingBy(Order::getUserId));   // 一行顶十行
-${F}
+**边界与进阶**：① 并发容器还有 ${C}CopyOnWriteArrayList${C}（读多写少、遍历期间允许写）、${C}ConcurrentSkipListMap${C}（并发有序）；② 海量原始类型用 Eclipse Collections / fastutil 的 primitive 集合，避免 ${C}Integer${C} 装箱的对象头开销（每个对象 12–16 字节头 + 4 字节值 + 对齐，比原生 int 数组胖一个数量级）；③ ${C}EnumMap${C}/${C}EnumSet${C} 用位数组/数组实现，极省内存且极快；④ ${C}BitSet${C} 做布尔标记比 ${C}boolean[]${C} 省 8 倍内存；⑤ ${C}LinkedHashMap${C} 重写 ${C}removeEldestEntry${C} 即可做 LRU 缓存；⑥ ${C}Collections${C} 工具类的 ${C}unmodifiable${C}/${C}synchronized${C}/${C}checked${C} 包装各有边界，包装后的同步集合迭代仍需手动加锁。
 
-## ⚠ 高频误区
+## 五、常见误区
 
-1. **重写 ${C}equals${C} 不重写 ${C}hashCode${C}**：违反契约 2，HashSet/HashMap 行为未定义。
-2. **在 for-each 里 ${C}list.remove()${C}**：触发 fail-fast；且 fail-fast 本身不可依赖。
-3. **${C}Arrays.asList()${C} 当普通 List 用**：返回的是固定大小的视图，${C}add/remove${C} 抛 ${C}UnsupportedOperationException${C}；底层还是原数组，改它会改到源数组。
-4. **拿 ${C}Stack${C} 当栈**：官方文档原话建议用 ${C}Deque${C} 代替。
-5. **TreeMap 的 comparator 与 equals 不一致**：${C}compare${C} 返回 0 时元素会被视为「同一个 key」，逻辑上不同却相等的对象会被覆盖。
-6. **stream 里修改外部状态**：parallel stream 下非线程安全的 collector 直接数据错乱。
+1. **重写 ${C}equals${C} 不重写 ${C}hashCode${C}**：违反契约 2，HashSet/HashMap 行为未定义，是最经典的「偶发 bug」。
+2. **用可变字段参与 ${C}hashCode${C}**：对象进集合后改字段，再 ${C}get${C} 找不到——桶位算错。
+3. **在 for-each 里 ${C}list.remove()${C}**：触发 fail-fast；且 fail-fast 本身不可依赖（文档原话）。
+4. **${C}Arrays.asList()${C} 当普通 List 用**：返回固定大小视图，${C}add/remove${C} 抛 ${C}UnsupportedOperationException${C}；底层还是原数组，改它改到源数组。
+5. **拿 ${C}Stack${C} 当栈**：官方建议用 ${C}Deque${C} 代替（Stack 继承 Vector，同步且设计过时）。
+6. **TreeMap 的 comparator 与 equals 不一致**：${C}compare${C} 返回 0 时元素被视为「同一个 key」，逻辑不同却相等的对象被覆盖。
+7. **把 ${C}Collections.unmodifiableList${C} 当不可变**：底层集合仍可被原引用改动，防御性拷贝要 ${C}new ArrayList<>(src)${C}。
+8. **parallel stream 里改外部状态**：非线程安全的 collector 直接数据错乱。
 
-## ✅ 自检清单
+## 六、自检清单
 
-- [ ] 能默写 ${C}hashCode${C} 三条契约，并解释违反契约 2 的后果
-- [ ] 能画出 HashMap 结构，说清树化条件（8 / 64）与负载因子 0.75 的出处
-- [ ] 知道 fail-fast 的官方定位是「探测 bug」，不是并发保证
-- [ ] 能一眼判断业务场景该用哪种 Map/List/Set
-- [ ] 知道 ${C}List.of${C} 不可变、${C}Arrays.asList${C} 定长的区别
+- [ ] 能默写 ${C}hashCode${C} 三条契约，并解释违反契约 2 的后果与对象头 identity hash code 的关系
+- [ ] 能画出 HashMap 结构，说清扰动函数、树化条件（8 / 64）与负载因子 0.75 的出处
+- [ ] 知道 fail-fast 的官方定位是「探测 bug，非并发保证」，并发场景选对容器
+- [ ] 能一眼判断业务场景该用哪种 Map/List/Set，并说清 ${C}List.of${C} 与 ${C}Arrays.asList${C} 的区别
+- [ ] 重写 ${C}equals${C}/${C}hashCode${C} 时字段集合一致，且用不可变字段
 
-## 📚 延伸阅读
+## 七、延伸
 
 - Java Tutorials · Collections trail（Interfaces / Implementations / Algorithms 三章）
 - ${C}java.util${C} 包 API 文档首页：各接口的「通用约定」都写在这里
@@ -148,15 +149,13 @@ ${F}
             tags: ["Java", "异常", "日志"],
             terms: ["Java", "异常", "SLF4J", "Logback", "MDC"],
             body: `
-## 官方文档基线
+> **官方文档基线**：[Java Tutorials · Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/) · [JLS §11 Exceptions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html) · [SLF4J Manual](https://www.slf4j.org/manual.html) · [Logback Manual](https://logback.qos.ch/manual/)
 
-- **Java Tutorials「Exceptions」trail**：把异常分为 *checked* 与 *unchecked* 并给出官方建议；
-- **JLS §11（Exceptions）**：异常抛出与传播的语言级定义；
-- **SLF4J User Manual** + **Logback Manual**：日志门面与实现的事实标准。
+## 一、原理与底层机制
 
-异常和日志是同一件事的两面：**异常决定程序怎么失败，日志决定人怎么理解失败**。线上排障 80% 的时间花在后者。
+异常和日志是同一件事的两面：**异常决定程序怎么失败，日志决定人怎么理解失败**。线上排障 80% 的时间花在后者。JLS §11 把异常定义为「对方法正常返回路径的中断」——它是一条与返回值并列的控制流通道，由 JVM 的异常表（exception table）在字节码层实现：每个 ${C}try${C} 块在 class 文件里对应一张「范围 + 目标 handler + 捕获类型」的表，抛出时 JVM 线性匹配，匹配不到就沿调用栈向上展开（stack unwinding），每展开一层就执行相应的 ${C}finally${C}。理解这点就能明白：异常远不止 ${C}if/else${C}，它要填栈、要展开、要构造 ${C}StackTraceElement[]${C} 数组——这就是「异常贵」的硬件真相。
 
-## 一、异常体系与 checked 的取舍
+${C}Throwable${C} 的继承树是分层设计：
 
 ${F}
 Throwable
@@ -166,44 +165,49 @@ Throwable
     └── 其他              // checked：IOException, SQLException ...
 ${F}
 
-checked 异常的设计意图是「**可恢复的、调用方必须面对的**」失败（Tutorials 原话：*recoverable conditions*）。工程共识：
+${C}Error${C} 代表 JVM 自身出问题（如 ${C}OutOfMemoryError${C}），按规范**不应也不该**捕获；${C}RuntimeException${C} 代表程序缺陷（NPE、数组越界），属于 unchecked；其余 ${C}Exception${C} 是 checked，编译器强制你处理或声明。三者分工：Error 是「环境崩了」，RuntimeException 是「你代码写错」，checked 是「外部环境不可控但可恢复」。
 
-- **对外/跨层 API** 尽量抛 unchecked，避免 ${C}throws${C} 签名污染每一层；
-- **资源获取失败（IO/网络）**通常包装成业务异常再抛；
-- **绝不用异常做流程控制**——抛出并填充栈的成本远高于普通分支，这是 JVM 层面的事实而非风格偏好。
+## 二、规范与标准
 
-## 二、try-with-resources：资源关闭的唯一正解
+checked 异常的设计意图是「**可恢复的、调用方必须面对的**」失败（Tutorials 原话：*recoverable conditions*）。JLS 规定 checked 异常必须被 ${C}catch${C} 或 ${C}throws${C} 声明，unchecked 则不强制。工程共识与规范之间的关系：
 
-JDK 7 起官方推荐，实现 ${C}AutoCloseable${C} 的资源自动关闭，且异常不会被吞：
+- **对外/跨层 API** 尽量抛 unchecked（自定义业务异常继承 ${C}RuntimeException${C}），避免 ${C}throws${C} 签名污染每一层；这是 Spring 等框架的官方推荐做法。
+- **资源获取失败（IO/网络）**通常包装成业务异常再抛，不要让底层 ${C}SQLException${C} 直接穿透到 Controller。
+- **绝不用异常做流程控制**：抛出并填充栈的成本远高于普通分支——JLS 把异常定义为「非正常路径」，JIT 也不会对异常路径做和正常分支同等的优化。
+
+SLF4J 与 Logback 的规范：SLF4J 是门面（facade），Logback 是实现，两者通过 ${C}StaticLoggerBinder${C} 桥接；日志级别（TRACE < DEBUG < INFO < WARN < ERROR）语义由 Logback 官方定义，不是约定俗成。
+
+## 三、实战
+
+**try-with-resources：资源关闭的唯一正解**（JDK 7+，实现 ${C}AutoCloseable${C}，异常不会被吞）：
 
 ${F}java
 try (var in = Files.newInputStream(path);
      var out = Files.newOutputStream(target)) {
     in.transferTo(out);
 }
-// in/out 关闭顺序与声明相反；若 try 体和 close 都抛异常，
+// 关闭顺序与声明相反；若 try 体和 close 都抛异常，
 // close 的异常以 suppressed 挂在主异常上，一条不丢
 ${F}
 
-对比手写 ${C}finally${C}：老代码在 ${C}finally${C} 里再抛异常会**覆盖**主异常，这是无数「日志里看不到真正原因」的根源。
+对比手写 ${C}finally${C}：老代码在 ${C}finally${C} 里再抛异常会**覆盖**主异常，这是无数「日志里看不到真正原因」的根源。try-with-resources 把 close 异常挂到主异常的 ${C}getSuppressed()${C}，根因与清理异常都不丢。
 
-## 三、异常信息的三条纪律
+**三条纪律**：① 包装必传 ${C}cause${C}——${C}throw new ServiceException("下单失败", e)${C}，丢了 cause 根因就断；② 消息给「现场」不给「结论」，${C}"order not found, id=" + id${C} 而非 ${C}"error"${C}，且不要把手机号/token 拼进消息；③ 同一异常只在一层处理。
 
-1. **保留因果链**：包装时必须传 ${C}cause${C}——${C}throw new ServiceException("下单失败", e)${C}，而不是 ${C}new ServiceException("下单失败")${C}。丢了 cause，根因就断了。
-2. **异常消息给「现场」不给「结论」**：写 ${C}"order not found, id=" + id${C}，不写 ${C}"error"${C}；也不要把敏感信息（手机号、token）拼进消息。
-3. **同一异常只在一层处理**：每层都 catch-log-rethrow 的结果是同一条栈在日志里出现 5 次，排障时互相污染。
-
-## 四、日志：SLF4J 门面 + Logback 实现
-
-**用占位符，不用拼接**（SLF4J User Manual 的第一条建议）：
+**日志正确写法**：
 
 ${F}java
-log.debug("user {} order {} total {}", userId, orderId, total);  // ✅ 惰性求值
-log.debug("user " + userId + " ...");                              // ❌ debug 关闭也照样拼串
+log.debug("user {} order {} total {}", userId, orderId, total);  // ✅ 占位符惰性求值
 if (log.isDebugEnabled()) { /* 仅当还要做昂贵计算时才用 */ }
+MDC.put("traceId", traceId);          // 入口处
+try { log.info("order created"); }     // pattern 里 %X{traceId} 自动带出
+finally { MDC.clear(); }              // 线程池复用，必须清理
+log.error("handle order failed, id={}", orderId, e);   // ✅ 异常对象作最后参数，完整堆栈
 ${F}
 
-**级别语义**（Logback 官方定义）：
+## 四、覆盖广度
+
+**级别语义决策表（Logback 官方定义）**：
 
 | 级别 | 用途 | 判断标准 |
 | --- | --- | --- |
@@ -212,35 +216,19 @@ ${F}
 | INFO | 关键业务节点 | 一次请求 1–3 条封顶 |
 | DEBUG | 排查细节 | 仅排障期开启 |
 
-**链路追踪用 MDC**（Mapped Diagnostic Context，Logback 官方章节）：
+**边界与进阶**：① MDC 必须「有 put 必有 clear」，否则线程池复用会把上一个请求的 traceId 带到下一个请求；② 异常日志的唯一正确姿势是把异常对象作为最后一个参数，而不是拼 ${C}e.getMessage()${C}；③ 异步 Appender（${C}AsyncAppender${C}）能把日志 IO 从请求线程摘出去，但队列满时可能丢日志，要配 ${C}discardingThreshold${C}；④ 结构化日志（JSON + ${C}logstash-logback-encoder${C}）比文本更利于 ES 检索；⑤ 集中式采集（ELK / Loki）要做采样，全量在高 QPS 下会打爆带宽。
 
-${F}java
-MDC.put("traceId", traceId);          // 入口处
-try {
-    log.info("order created");        // pattern 里 %X{traceId} 自动带出
-} finally {
-    MDC.clear();                      // 线程池复用，必须清理
-}
-${F}
+## 五、常见误区
 
-**异常日志唯一正确写法**——把异常对象作为最后一个参数：
-
-${F}java
-log.error("handle order failed, id={}", orderId, e);   // ✅ 完整堆栈
-log.error("handle order failed: " + e.getMessage());   // ❌ 只有 message，栈没了
-e.printStackTrace();                                   // ❌ 绕过日志体系，无时间无级别
-${F}
-
-## ⚠ 高频误区
-
-1. **catch 后什么都不做**（空 catch）：bug 消失术，排障时连自己都骗。
+1. **catch 后什么都不做**（空 catch / ${C}catch (Exception ignored)${C}）：bug 消失术，排障时连自己都骗。
 2. **${C}catch (Exception e)${C} 兜一切**：连 ${C}InterruptedException${C} 都吞——正确做法是恢复中断标志 ${C}Thread.currentThread().interrupt()${C}。
-3. **在循环里打 INFO**：压测时日志 IO 直接把服务打垮，日志的写放大比 SQL 还猛。
+3. **在循环里打 INFO**：压测时日志 IO 直接把服务打垮，写放大比 SQL 还猛。
 4. **日志打印大对象**：对 DTO 不重写 ${C}toString${C} 就打印，会拖出全量字段（可能含密码）；Lombok ${C}@Data${C} + ${C}@Slf4j${C} 组合尤其要注意。
 5. **用 System.out/err**：绕过级别控制与文件轮转，容器场景下还阻塞 stdout。
-6. **异常用于业务分支**（如用 NumberFormatException 判断是否数字）：性能差且语义混乱，该用正则或解析 API。
+6. **异常用于业务分支**（如用 ${C}NumberFormatException${C} 判断是否数字）：性能差且语义混乱，该用正则或解析 API。
+7. **finally 里再抛异常覆盖主异常**：用 try-with-resources 替代。
 
-## ✅ 自检清单
+## 六、自检清单
 
 - [ ] 所有资源都是 try-with-resources，全库 0 个手写 finally-close
 - [ ] 包装异常必带 cause，抽查 10 条历史异常日志能看到根因
@@ -249,7 +237,7 @@ ${F}
 - [ ] 代码里 grep 不到 ${C}printStackTrace${C} 和 ${C}System.out.println${C}
 - [ ] catch ${C}InterruptedException${C} 的地方都恢复了中断标志
 
-## 📚 延伸阅读
+## 七、延伸
 
 - Java Tutorials · Exceptions trail（What's an Exception / How to Throw / try-with-resources）
 - JLS §11：编译器对异常传播的精确规定
@@ -266,18 +254,17 @@ ${F}
             tags: ["Maven", "Gradle", "工程化"],
             terms: ["Maven", "Gradle", "BOM", "依赖管理"],
             body: `
-## 官方文档基线
+> **官方文档基线**：[Maven · Introduction to the POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html) · [Maven · Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html) · [Maven · Build Lifecycle](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html) · [Gradle User Manual](https://docs.gradle.org/current/userguide/userguide.html)
 
-- **Maven 官方文档**：「Introduction to the POM」「Dependency Mechanism」「Build Lifecycle」——POM 的每个元素、依赖范围、生命周期阶段都在这三页里定义；
-- **Gradle User Manual**：以「task graph」为核心构建模型。
+## 一、原理与底层机制
 
-构建工具问题的本质是**依赖管理**：版本从哪来、冲突怎么裁决、传递依赖怎么控制。
+构建工具问题的本质是**依赖管理**：版本从哪来、冲突怎么裁决、传递依赖怎么控制。Maven 与 Gradle 只是用不同模型回答这三个问题。Maven 的模型是「**声明式 POM + 三段生命周期**」：你描述「要什么」，Maven 按固定流水线把「编译→测试→打包」串起来；Gradle 的模型是「**task 依赖图（DAG）+ 编程能力**」：构建脚本本身是 Groovy/Kotlin 程序，task 之间显式声明依赖，Gradle 据此做增量构建与 build cache。理解这个根本差异，就能解释为什么 Maven 配置简单但扩展死板，Gradle 灵活但学习曲线陡。
 
-## 一、Maven 的三大核心概念（官方文档顺序）
+Maven 坐标 ${C}groupId:artifactId:version${C} 是仓库世界的唯一地址。版本解析不是「取最新」，而是按依赖树位置裁决（见第二节）。Gradle 的 configuration 则把「编译 classpath」「运行 classpath」建模成可组合的容器，比 Maven 的 scope 粒度的概念更灵活。
 
-**1. POM（Project Object Model）**：项目坐标 + 依赖 + 插件 + 继承关系的全量描述。坐标 ${C}groupId:artifactId:version${C} 是仓库世界的地址。
+## 二、规范与标准
 
-**2. 依赖机制**——先记住范围（scope）：
+**Maven 依赖范围（scope）的官方语义**（编译期/运行期/传递三维度）：
 
 | scope | 编译期 | 运行期 | 传递给下游 | 典型 |
 | --- | --- | --- | --- | --- |
@@ -287,21 +274,15 @@ ${F}
 | test | 测试期 | 测试期 | ✗ | JUnit |
 | import | 仅 ${C}dependencyManagement${C} | — | — | 导入 BOM |
 
-**传递依赖的冲突仲裁**：官方规则是 **nearest wins（最近者胜）**——依赖树里路径最短的那个版本赢；路径一样长时**先声明的赢**。注意：这不是「最新版赢」，所以同一个库的不同版本可能同时存在于树的不同分支。
+**传递依赖的冲突仲裁**：官方规则 **nearest wins（最近者胜）**——依赖树里路径最短的版本赢；路径等长时**先声明的赢**。这不是「最新版赢」，所以同一库的不同版本可能同时存在于树的不同分支（不同路径各自裁决）。
 
-**3. 生命周期**：三套生命周期（clean / default / site），default 里最常用的是
+**生命周期**：Maven 有三套互不交叉的生命周期（clean / default / site），default 里最常用的是 ${C}validate → compile → test → package → verify → install → deploy${C}；阶段**有序且连带**，执行 ${C}mvn verify${C} 会先跑完前面所有阶段，插件 goal 通过 phase 绑定进生命周期。
 
-${F}
-validate → compile → test → package → verify → install → deploy
-${F}
+## 三、实战
 
-阶段是**有序且连带执行**的：执行 ${C}mvn verify${C} 会先跑完前面所有阶段；插件 goal 通过 phase 绑定进生命周期。
+**版本统一的三件套（错误 vs 正确）**：
 
-## 二、版本统一的三种正规姿势
-
-**① 父 POM ${C}<dependencyManagement>${C}**：只声明版本不下依赖，子模块引用时免写版本号。
-
-**② BOM（Bill of Materials）**：官方推荐的第三方集成方式——
+❌ 子模块里到处写死 ${C}<version>3.3.4</version>${C}，升级时漏改导致同一库多版本。✅ 用 BOM 集中管理：
 
 ${F}xml
 <dependencyManagement>
@@ -317,18 +298,18 @@ ${F}xml
 </dependencyManagement>
 ${F}
 
-**③ ${C}mvn dependency:tree -Dincludes=com.google.guava${C}**：排查「谁把哪个版本带进来」的唯一利器，冲突解决永远从它开始。
+**冲突定位**：永远从 ${C}mvn dependency:tree -Dincludes=com.google.guava${C} 开始，看「谁把哪个版本带进来」，再决定用 ${C}<exclusions>${C} 还是 ${C}dependencyManagement${C} 锁定。Gradle 对等命令是 ${C}./gradlew dependencies --configuration compileClasspath${C}。
 
-## 三、Gradle 的心智模型
+**Wrapper 保证一致性**：
 
-Maven 是「**生命周期 + 约定**」，Gradle 是「**task 依赖图 + 编程能力**」：
+${F}bash
+gradle wrapper --gradle-version 8.10     # 生成 gradlew + gradle-wrapper.properties
+mvn -N io.takari:maven:wrapper           # Maven 对应 mvnw
+${F}
 
-- 构建脚本就是 Kotlin/Groovy 程序，task 之间声明依赖组成 DAG，Gradle 只执行受影响的 task（增量构建、build cache）；
-- 官方明确建议：**优先用内置约定（java 插件）而不是自己写 task**，兼容 Maven 的目录布局与坐标体系；
-- 版本管理对等物是 ${C}platform()${C}（对应 BOM）与 dependency constraints；
-- 团队一致性靠 **Wrapper**：${C}gradle wrapper --gradle-version 8.10${C} 生成 ${C}gradlew${C} 提交进仓库，CI 与所有人共用同一版本。Maven 对应 ${C}mvnw${C}，同样是官方标准实践。
+## 四、覆盖广度
 
-## 四、多模块项目结构（官方推荐布局）
+**多模块布局（官方推荐）**：
 
 ${F}
 my-app/
@@ -339,26 +320,105 @@ my-app/
 └── my-app-web/                # 入口（可执行 jar），依赖上面所有模块
 ${F}
 
-原则：**依赖只能自上而下，禁止成环**；「入口模块」独立出来，打包产物与业务模块解耦。
+原则：**依赖只能自上而下、禁止成环**；入口模块独立出来，打包产物与业务模块解耦。边界与进阶：① Gradle 的 ${C}platform()${C} / ${C}enforcedPlatform()${C} 对应 Maven 的 BOM 与强制版本；② ${C}dependency constraints${C} 可在不引入依赖的前提下钉死版本；③ 发布用 ${C}mvn deploy${C} 到 Nexus/Artifactory，禁止把 jar 手动拷进 ${C}lib/${C}（脱离依赖管理，安全扫描失效）；④ Gradle 的 configuration cache 能把配置阶段也缓存，二次构建秒级；⑤ 构建性能瓶颈多在测试与注解处理器，可用 ${C}build scan${C} 可视化分析。
 
-## ⚠ 高频误区
+## 五、常见误区
 
-1. **SNAPSHOT 上生产**：SNAPSHOT 每次解析都可能变，构建不可重现；发布版本一律用 release 版。
+1. **SNAPSHOT 上生产**：SNAPSHOT 每次解析都可能变，构建不可重现；发布一律用 release 版。
 2. **冲突解决靠本地试**：不跑 ${C}dependency:tree${C} 直接改版本，改完 A 冲突挪到 B。
 3. **把依赖 jar 手动拷进 lib/ 目录**：脱离依赖管理，升级与安全扫描全部失效。
-4. **父 POM 里 ${C}<dependencies>${C} 与 ${C}<dependencyManagement>${C} 混用**：前者会让**所有**子模块无条件继承依赖。
-5. **Gradle 脚本里硬编码本地路径**：${C}/Users/xxx/lib${C} 一进 CI 就炸。
+4. **父 POM 里 ${C}<dependencies>${C} 与 ${C}<dependencyManagement>${C} 混用**：前者让**所有**子模块无条件继承依赖，版本失控。
+5. **Gradle 脚本里硬编码本地路径**：一进 CI 就炸。
 6. **不看 Wrapper 版本**：本机 3.9、CI 3.6，行为差异排查半天。
+7. **用 ${C}compile${C} 装 JDBC 驱动**：应为 ${C}runtime${C}，否则编译期耦合具体驱动。
 
-## ✅ 自检清单
+## 六、自检清单
 
 - [ ] 说得清 nearest wins 与「先声明者胜」两条仲裁规则
-- [ ] 第三方全家桶一律通过 BOM 导入，项目中无散落的硬编码版本
-- [ ] 会用 ${C}mvn dependency:tree -Dincludes=...${C} 定位依赖来源
+- [ ] 第三方全家桶一律通过 BOM/平台导入，项目中无散落硬编码版本
+- [ ] 会用 ${C}mvn dependency:tree${C} / ${C}gradle dependencies${C} 定位依赖来源
 - [ ] mvnw / gradlew 已提交，CI 与本地版本一致
-- [ ] 生产依赖 0 个 SNAPSHOT
+- [ ] 生产依赖 0 个 SNAPSHOT，版本号符合 SemVer
 
-## 📚 延伸阅读
+<!--dd:build-tool-->
+
+## 🔬 深挖：构建工具的依赖解析与增量机制
+
+### 一、Maven 的三大生命周期与「命令行不能跳阶段」
+
+Maven 有三套独立生命周期：**clean**（pre-clean→clean→post-clean）、**default**（validate→compile→test→package→verify→install→deploy）、**site**。执行 ${C}mvn package${C} 时，会**按顺序跑完它前面所有阶段**（validate→compile→test→package），这也是「执行 package 却触发了测试」的原因。
+
+跳过测试的正确姿势：
+${F}bash
+mvn package -DskipTests          # 编译测试代码但不执行
+mvn package -Dmaven.test.skip=true   # 连测试代码都不编译（更快，但可能漏编译错误）
+${F}
+
+### 二、依赖调解：Maven 的两条铁律
+
+当多个路径引入同一个构件的不同版本，Maven 按两条规则裁决——**顺序不可颠倒**：
+
+1. **最短路径优先**：A → B → C(1.0) 与 A → D(2.0)，选 D 的 2.0（路径更短）；
+2. **同深度看声明顺序**：路径长度相同时，取 ${C}<dependencies>${C} 里**先声明**的那个。
+
+这正是「明明没改代码，升级一个依赖后线上报 NoSuchMethodError」的根因。定位命令：
+
+${F}bash
+mvn dependency:tree -Dverbose -Dincludes=com.google.guava:guava
+# -Dverbose 会打印被 omitted 的版本（for duplicate / for conflict），这是关键
+${F}
+
+**${C}dependencyManagement${C} 与 ${C}dependencies${C} 的区别**（面试高频）：
+
+| 位置 | 作用 | 是否真正引入 |
+|---|---|---|
+| ${C}<dependencies>${C} | 直接引入依赖 | 是 |
+| ${C}<dependencyManagement>${C} | 只统一版本号，子模块引用时生效 | 否 |
+
+所以在父 POM 里用 ${C}dependencyManagement${C} 锁版本、子模块写 ${C}<dependency>${C} 不写 ${C}<version>${C}，是最推荐的工程实践——**版本只有一个真相来源**。
+
+### 三、scope 的真实语义
+
+| scope | 编译期 | 测试期 | 运行期 | 打包进产物 | 典型用途 |
+|---|---|---|---|---|---|
+| compile（默认） | ✅ | ✅ | ✅ | ✅ | 业务依赖 |
+| provided | ✅ | ✅ | ❌ | ❌ | servlet-api（容器提供） |
+| runtime | ❌ | ✅ | ✅ | ✅ | JDBC 驱动 |
+| test | ❌ | ✅ | ❌ | ❌ | JUnit |
+| system | ✅ | ✅ | ❌ | ❌ | 本地 jar（应避免） |
+| import | —— | —— | —— | —— | 仅用于 ${C}dependencyManagement${C} 导入 BOM |
+
+**易错点**：Lombok 用 ${C}provided${C}（其实更推荐 ${C}annotationProcessorPaths${C} 显式声明，避免打进产物）；${C}spring-boot-starter-web${C} 已传递 Tomcat，若用 ${C}provided${C} 覆盖要小心。
+
+### 四、Gradle 的增量构建与构建缓存
+
+Gradle 快的核心不是语言（Kotlin DSL），而是**任务级增量**：
+
+${F}
+inputs 未变（源文件哈希 + 类路径 + 参数）
+  ├─ 命中本地增量 → 跳过任务（UP-TO-DATE）
+  └─ 未命中 → 查构建缓存（--build-cache，本地或远端）
+      └─ 命中 → 直接取产物（FROM-CACHE）
+${F}
+
+三个关键命令：
+
+${F}bash
+./gradlew build --build-cache        # 开启构建缓存
+./gradlew build --scan               # 生成构建分析报告（耗时分布）
+./gradlew dependencies --configuration runtimeClasspath  # 看依赖树
+${F}
+
+**Gradle 依赖冲突默认策略与 Maven 相反**：Gradle 默认取**最高版本**（不是最近路径），这常导致「本地好的，CI 上坏」。统一版本的正确工具是 ${C}platform${C}/${C}enforcedPlatform${C}（对齐 Maven 的 BOM）与 ${C}constraints${C}；排查用 ${C}resolutionStrategy.failOnVersionConflict()${C} 让冲突构建失败，而不是静默选一个。
+
+### 五、构建可复现的清单
+
+- 锁文件入库（Gradle）或 ${C}mvn versions:lock-snapshots${C} / 禁用 SNAPSHOT 依赖；
+- ${C}mvn -o${C}（离线）在 CI 上验证「依赖真的全在私服」；
+- 固定 JDK 版本（${C}maven.compiler.release${C} / Gradle toolchain），否则「本机 JDK17 编译、线上 JDK11 跑」；
+- 关闭时间戳导致的不可复现：${C}<project.build.outputTimestamp>${C}，让同一份源码产出字节一致的 jar。
+
+## 七、延伸
 
 - Maven: Introduction to the POM / Dependency Mechanism / Build Lifecycle
 - Gradle User Manual: Dependency Management / Authoring Tasks / The Build Environment
@@ -374,18 +434,15 @@ ${F}
             tags: ["MySQL", "SQL", "InnoDB"],
             terms: ["MySQL", "InnoDB", "SQL", "事务"],
             body: `
-## 官方文档基线
+> **官方文档基线**：[MySQL 8.0 · Data Types](https://dev.mysql.com/doc/refman/8.0/en/data-types.html) · [MySQL 8.0 · SQL Syntax](https://dev.mysql.com/doc/refman/8.0/en/sql-statements.html) · [MySQL 8.0 · InnoDB](https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html) · [MySQL 8.0 · Transaction Isolation](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html)
 
-本章骨架取自 **MySQL 8.0 Reference Manual** 的官方目录：
+## 一、原理与底层机制
 
-- **Ch.3 Tutorial**：入门操作与基本查询；
-- **Ch.11 Data Types**：类型选择的权威依据；
-- **Ch.13 SQL Statement Syntax**：DDL/DML 语法；
-- **Ch.15 InnoDB**：事务与锁的底层实现。
+新手与老手写 SQL 的差距不在「会多少语法」，而在**类型、NULL 语义、JOIN 语义**这三个基本功上。MySQL 是行存 + 聚簇索引（InnoDB）的架构：一行数据按主键物理有序存放，二级索引叶子存「索引列 + 主键」。理解「主键即数据、二级索引要回表」是理解一切索引优化的前提。事务靠 InnoDB 的 redo log（持久性）、undo log（回滚与 MVCC）、buffer pool（内存缓存）三者协作实现 ACID；隔离级别靠 MVCC 读视图 + 间隙锁实现。写 SQL 时脑子里的模型应该是「这行数据在哪个页、要走哪个索引、会不会回表、会不会加锁」。
 
-新手与老手写 SQL 的差距不在「会多少语法」，而在**类型、NULL 语义、JOIN 语义**这三个基本功上。
+## 二、规范与标准
 
-## 一、数据类型选择（Ch.11 的决策版）
+**类型选择（Ch.11 的决策版）**：
 
 | 业务 | 推荐 | 理由 |
 | --- | --- | --- |
@@ -397,12 +454,11 @@ ${F}
 | 状态 | ${C}TINYINT${C} + 字典表 | 别用 VARCHAR 存枚举字面量 |
 | JSON | ${C}JSON${C} | 官方类型有校验与部分更新；查询频繁的字段请升为列 |
 
-**NULL 语义**是三值逻辑（TRUE / FALSE / UNKNOWN）：${C}NULL = NULL${C} 结果是 UNKNOWN 而不是 TRUE，所以判空只能用 ${C}IS NULL${C}；${C}NOT IN${C} 子查询里出现 NULL 时整个条件恒为 UNKNOWN——这是「为什么 NOT IN 查不出数据」的官方答案。
+**NULL 语义**是三值逻辑（TRUE / FALSE / UNKNOWN）：${C}NULL = NULL${C} 结果是 UNKNOWN 而非 TRUE，判空只能用 ${C}IS NULL${C}；${C}NOT IN${C} 子查询里出现 NULL 时整个条件恒为 UNKNOWN——这是「为什么 NOT IN 查不出数据」的官方答案。
 
-## 二、JOIN 语义（最容易「以为懂了」的地方）
+## 三、实战
 
-- ${C}INNER JOIN${C}：两表都匹配的行；
-- ${C}LEFT JOIN${C}：左表全保留，右表无匹配补 NULL——**过滤右表的条件要写进 ON，不能写进 WHERE**，写进 WHERE 会把 LEFT 退化成 INNER：
+**JOIN 语义（错误 vs 正确）**：LEFT JOIN 时过滤右表的条件必须写进 ON，写进 WHERE 会把 LEFT 退化成 INNER：
 
 ${F}sql
 -- ✅ 左表全保留，右侧仅取 status=1 的匹配
@@ -415,30 +471,15 @@ FROM orders o LEFT JOIN payments p ON p.order_id = o.id
 WHERE p.status = 1;
 ${F}
 
-## 三、事务与隔离级别（Ch.15 InnoDB + 官方事务隔离表）
-
-InnoDB 默认 **REPEATABLE READ**（多数数据库默认 READ COMMITTED，别记混）。四种隔离级别对应三类并发异常：
-
-| 隔离级别 | 脏读 | 不可重复读 | 幻读 |
-| --- | --- | --- | --- |
-| READ UNCOMMITTED | 会发生 | 会发生 | 会发生 |
-| READ COMMITTED | 防住 | 会发生 | 会发生 |
-| REPEATABLE READ（默认） | 防住 | 防住 | InnoDB 基本防住（MVCC+间隙锁） |
-| SERIALIZABLE | 防住 | 防住 | 防住（代价是并发骤降） |
-
-事务使用三纪律：**短**（不裹远程调用）、**小**（影响行数可控）、**明确**（显式 ${C}BEGIN${C}/${C}COMMIT${C}，不用自动提交裸奔）。
-
-## 四、写好查询的六条硬规范
-
-1. **不写 ${C}SELECT *${C}**：多取列破坏覆盖索引可能，网络传输白耗；
-2. **索引列不做函数/运算**：${C}WHERE DATE(create_time) = '2026-09-17'${C} 让索引失效，改写成范围条件；
-3. **分页用游标**：深分页 ${C}LIMIT 1000000, 20${C} 要扫 100 万行，改 ${C}WHERE id > :lastId LIMIT 20${C}；
-4. **${C}COUNT(*)${C} 与 ${C}COUNT(col)${C} 语义不同**：前者数行（含 NULL 行），后者数该列非 NULL 的行——官方文档明确区分；
-5. **批量插入合并**：${C}INSERT ... VALUES (...),(...),(...)${C} 远快于循环单条；
-6. **隐式类型转换是坑**：${C}WHERE phone = 13800001111${C}（数字）对 ${C}VARCHAR${C} 列查询会放弃索引并做全表转换，字符串条件必须带引号。
+**深分页改写**：${C}LIMIT 1000000, 20${C} 要扫 100 万行再丢弃，改成游标：
 
 ${F}sql
--- 典型统计：按天订单量（覆盖索引 + 范围条件）
+SELECT * FROM orders WHERE id > :lastId ORDER BY id LIMIT 20;
+${F}
+
+**典型统计（覆盖索引 + 范围条件）**：
+
+${F}sql
 SELECT DATE(create_time) AS d, COUNT(*) AS cnt, SUM(amount) AS amt
 FROM orders
 WHERE create_time >= '2026-09-01' AND create_time < '2026-10-01'
@@ -447,7 +488,20 @@ GROUP BY DATE(create_time)
 ORDER BY d;
 ${F}
 
-## ⚠ 高频误区
+## 四、覆盖广度
+
+**事务与隔离级别（Ch.15 InnoDB + 官方隔离表）**：InnoDB 默认 **REPEATABLE READ**（多数数据库默认 READ COMMITTED，别记混）。
+
+| 隔离级别 | 脏读 | 不可重复读 | 幻读 |
+| --- | --- | --- | --- |
+| READ UNCOMMITTED | 会发生 | 会发生 | 会发生 |
+| READ COMMITTED | 防住 | 会发生 | 会发生 |
+| REPEATABLE READ（默认） | 防住 | 防住 | InnoDB 基本防住（MVCC+间隙锁） |
+| SERIALIZABLE | 防住 | 防住 | 防住（代价是并发骤降） |
+
+**写好查询的硬规范**：① 不写 ${C}SELECT *${C}（破坏覆盖索引、浪费传输）；② 索引列不做函数/运算，${C}WHERE DATE(create_time)=...${C} 让索引失效；③ 分页用游标；④ ${C}COUNT(*)${C} 与 ${C}COUNT(col)${C} 语义不同（前者数行含 NULL，后者数非 NULL）；⑤ 批量插入合并 ${C}INSERT ... VALUES (...),(...)${C}；⑥ 隐式类型转换是坑，${C}WHERE phone = 13800001111${C} 对 VARCHAR 列放弃索引。事务三纪律：**短**（不裹远程调用）、**小**（影响行数可控）、**明确**（显式 ${C}BEGIN${C}/${C}COMMIT${C}）。
+
+## 五、常见误区
 
 1. **用 float/double 存金额**：舍入误差在累加时爆发。
 2. **WHERE 里对索引列套函数**：索引直接失效。
@@ -455,8 +509,9 @@ ${F}
 4. **不用事务包裹多表写**：进程崩了就出现半成品数据。
 5. **TEXT 大字段和业务列混在一张热表**：缓冲池被大字段挤占，整体性能劣化。
 6. **在生产直接跑无 LIMIT 的 UPDATE/DELETE**：先 ${C}SELECT${C} 确认影响面，再改写为 DML。
+7. **以为 ${C}COUNT(*)${C} 慢而用 ${C}COUNT(1)${C}**：现代 InnoDB 两者基本等价，差异在语义不在性能。
 
-## ✅ 自检清单
+## 六、自检清单
 
 - [ ] 金额一律 DECIMAL，时间字段统一时区口径
 - [ ] 能口头解释 NULL 的三值逻辑与 NOT IN 遇 NULL 的行为
@@ -464,7 +519,86 @@ ${F}
 - [ ] 知道当前库的隔离级别，并说得出它的并发异常面
 - [ ] 所有 UPDATE/DELETE 都带精确 WHERE 且先验证影响行数
 
-## 📚 延伸阅读
+<!--dd:mysql-basic-->
+
+## 🔬 深挖：InnoDB 的物理结构与 MVCC
+
+### 一、页：InnoDB 的最小 IO 单位
+
+InnoDB 以 **16KB 页**为基本单位（${C}innodb_page_size${C} 可设 4/8/16/32/64KB，建库后不可改）。一个索引页的内部布局：
+
+${F}
+┌────────────────────────────────────────────┐
+│ File Header（38B：页号、前后页指针、LSN）      │
+│ Page Header（56B：记录数、堆顶、槽数…）        │
+│ Infimum + Supremum 两条虚拟记录               │
+│ User Records（按主键有序的单向链表）           │
+│ Free Space                                   │
+│ Page Directory（稀疏目录：每 4~8 条一个槽）     │
+│ File Trailer（8B：校验和，防半写）             │
+└────────────────────────────────────────────┘
+${F}
+
+关键点：**页内是链表 + 稀疏目录**，所以页内查找是「目录二分 + 链内遍历」；**页间是双向链表**，层级之间是 B+ 树。**三层 B+ 树能存约 2000 万行**（16KB 页 / 约 1KB 行 → 每页 16 行？不对——非叶子节点只存键+指针，可容纳约 1170 个指针，1170 × 1170 × 16 ≈ 2190 万），这就是「一亿行数据 3 次 IO 定位」的来源。
+
+### 二、聚簇索引与二级索引的代价
+
+- **聚簇索引（主键索引）**：叶子节点直接存**整行数据**。所以「主键不宜过大」——每个二级索引的叶子都要存主键值；「主键不宜随机」——随机主键（UUID）导致页分裂与碎片。
+- **二级索引**：叶子存「索引列 + 主键值」。查非索引列需要**回表**：二级索引找到主键 → 再去聚簇索引查一次。一次查询两次 B+ 树下降，这是「覆盖索引能显著提速」的原因。
+
+${F}sql
+-- 回表 2 次：先走 idx_name 拿到主键，再回聚簇索引取 age/addr
+SELECT age, addr FROM user WHERE name = 'tom';
+
+-- 覆盖索引：把要查的列加进联合索引，Extra 显示 Using index，零回表
+ALTER TABLE user ADD INDEX idx_name_age_addr (name, age, addr);
+SELECT age, addr FROM user WHERE name = 'tom';   -- Using index
+${F}
+
+### 三、MVCC：版本链 + ReadView
+
+InnoDB 每行有**隐藏列**：${C}DB_TRX_ID${C}（最后修改它的事务 ID）、${C}DB_ROLL_PTR${C}（指向 undo log 的版本链）、${C}DB_ROW_ID${C}（无主键时才用）。
+
+读操作按可见性规则遍历版本链：
+
+${F}
+当前行（trx_id=100） → undo: 上一版本（trx_id=90） → undo: 更早（trx_id=80）
+ReadView = { m_ids（活跃事务集合）, min_trx_id, max_trx_id, creator_trx_id }
+对于每个版本：
+  trx_id < min_trx_id     → 已提交，可见
+  trx_id >= max_trx_id    → 在我之后才开始，不可见
+  trx_id ∈ m_ids          → 仍活跃，不可见
+  trx_id == creator_trx_id→ 我自己改的，可见
+${F}
+
+**RR 与 RC 的唯一区别**：ReadView 的生成时机。RC **每次 SELECT 都重新生成**（所以能看到别人刚提交的）；RR **只在第一次 SELECT 时生成并复用**（所以整个事务看到同一快照）。这也解释了「RR 下无法读到别人已提交的新数据」——是快照读，不是锁。
+
+⚠️ RR 并不能完全避免幻读：**当前读**（${C}SELECT ... FOR UPDATE${C}、${C}UPDATE${C}、${C}DELETE${C}）会读最新版本并用**间隙锁**防止插入，这是 InnoDB 用锁补齐快照读缺口的设计。
+
+### 四、锁家族与死锁
+
+| 锁 | 加在哪里 | 何时触发 |
+|---|---|---|
+| 记录锁 Record Lock | 单条索引记录 | ${C}WHERE id = 1 FOR UPDATE${C} |
+| 间隙锁 Gap Lock | 两条记录之间的空隙 | RR 下范围查询（防插入） |
+| 临键锁 Next-Key | 记录 + 前面的间隙 | RR 默认行为（左开右闭） |
+| 插入意向锁 | 间隙内的插入意图 | INSERT 被间隙锁阻塞时 |
+
+**加锁的是索引，不是行**：如果 ${C}WHERE${C} 命中不了索引，就退化为**锁全表所有记录 + 所有间隙**——这是「没加索引的 UPDATE 把整张表锁住」的经典事故。排查用：
+
+${F}sql
+SELECT * FROM performance_schema.data_locks\G   -- 8.0（5.7 用 information_schema.innodb_locks）
+SHOW ENGINE INNODB STATUS\G                     -- 最近一次死锁的完整现场
+${F}
+
+**死锁是常态，不是异常**：InnoDB 检测到死锁会**回滚代价小的事务**并报 1213。应用侧必须：① 捕获 1213/1205 做**有限重试**；② 统一多表加锁顺序；③ 事务尽量短小、避免在事务里做 RPC。
+
+### 五、字符集与时区：两个隐藏的坑
+
+- **一律 ${C}utf8mb4${C}**：MySQL 的 ${C}utf8${C} 是**残缺的三字节 UTF-8**，存不了 emoji 与部分生僻字。同时注意连接层（${C}character_set_client/connection/results${C}）与列字符集三者要一致，否则出现「中文变问号」或「索引失效」（不同字符集的列做 JOIN 无法走索引）。
+- **时间字段**：${C}DATETIME${C} 不存时区（字面值），${C}TIMESTAMP${C} 存 UTC 并按 ${C}time_zone${C} 转换且受 2038 限制。跨时区系统**统一用 DATETIME + 应用层存 UTC** 或统一用 TIMESTAMP 并在连接初始化时 ${C}SET time_zone='+00:00'${C}——最怕的是两者混用。
+
+## 七、延伸
 
 - MySQL 8.0 Reference Manual：Ch.3 Tutorial / Ch.11 Data Types / Ch.13 SQL Syntax / Ch.15 InnoDB
 - 官方「Transaction Isolation Levels」表：并发异常与隔离级别的权威对照
@@ -480,30 +614,19 @@ ${F}
             tags: ["Spring Boot", "REST", "配置"],
             terms: ["Spring Boot", "Actuator", "starter", "配置"],
             body: `
-## 官方文档基线
+> **官方文档基线**：[Spring Boot Reference](https://docs.spring.io/spring-boot/docs/current/reference/html/) · [Spring Initializr](https://start.spring.io/) · [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) · [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457.html)
 
-全部取自 **Spring Boot Reference**（docs.spring.io/spring-boot）官方目录：
+## 一、原理与底层机制
 
-- **Getting Started**：第一个应用；
-- **Using Spring Boot**：Build Systems / Structuring Your Code / Configuration / Beans and Dependency Injection；
-- **Externalized Configuration**：配置加载的完整优先级表；
-- **Production-ready Features**：Actuator。
+Spring Boot 解决的是「装配」问题：自动配置（auto-configuration）+ starter 起步依赖 + 内嵌服务器，把「搭一个能上生产的 Web 服务」从半天缩短到五分钟。它不是新框架，是 Spring 的**观点化默认值（opinionated defaults）**。
 
-Spring Boot 解决的问题是**装配**：自动配置（auto-configuration）+ starter 起步依赖 + 内嵌服务器，把「搭一个能上生产的 Web 服务」从半天缩短到五分钟。它不是新框架，是 Spring 的**观点化默认值**。
+${C}@SpringBootApplication${C} 是三合一注解（官方 Javadoc 明确列出）：${C}@SpringBootConfiguration${C}（本类是配置类）、${C}@EnableAutoConfiguration${C}（按 classpath 推断并启用自动配置）、${C}@ComponentScan${C}（扫描本包及子包——**启动类放根包，别放子包**，这是官方「Structuring Your Code」的原话建议）。
 
-## 一、@SpringBootApplication 拆开是什么
+**自动配置原理**：启动时加载各 starter 里的 ${C}AutoConfiguration.imports${C} 清单（Spring Boot 2.7+ 的 SPI 机制，取代旧 spring.factories），按 ${C}@ConditionalOnClass${C}/${C}@ConditionalOnMissingBean${C} 等条件注解判断哪些配置生效。加了 starter-web 就有 MVC + Tomcat，加了 starter-data-jpa 就有 DataSource + EntityManager——**依赖即配置**。理解这点就能解释「引了某 starter 行为就变了」，以及为什么自定义 Bean 能覆盖自动配置（条件注解的优先级规则：用户 Bean 优先）。
 
-它是一个三合一注解（官方 Javadoc 明确列出）：
+## 二、规范与标准
 
-- ${C}@SpringBootConfiguration${C}：本类是配置类；
-- ${C}@EnableAutoConfiguration${C}：按 classpath 推断并启用自动配置；
-- ${C}@ComponentScan${C}：扫描本包及子包——**所以启动类放根包，别放子包**，这是官方「Structuring Your Code」一节的原话建议。
-
-**自动配置原理一句话**：Spring Boot 启动时加载各 starter 里的 ${C}AutoConfiguration.imports${C} 清单，按条件注解（${C}@ConditionalOnClass${C} 等）判断哪些配置生效。加了 spring-boot-starter-web 就有 MVC + Tomcat，加了 starter-data-jpa 就有 DataSource + EntityManager——**依赖即配置**。
-
-## 二、配置体系（Externalized Configuration 章节）
-
-Spring Boot 官方给出了**17 级配置优先级**，工程上记住前六级就够用（从高到低）：
+**配置优先级（Externalized Configuration 章节，官方列出 17 级，工程记前六级就够了，从高到低）**：
 
 1. 命令行参数（${C}--server.port=8081${C}）
 2. ${C}SPRING_APPLICATION_JSON${C} 环境变量
@@ -512,7 +635,7 @@ Spring Boot 官方给出了**17 级配置优先级**，工程上记住前六级�
 5. profile 专属的 ${C}application-{profile}.yml${C}
 6. ${C}application.yml${C}
 
-**类型安全配置**——官方推荐的绑定方式：
+**类型安全配置**——官方推荐的绑定方式，比 ${C}@Value${C} 好在集中、可校验、IDE 可跳转、重构安全：
 
 ${F}java
 @ConfigurationProperties(prefix = "order")
@@ -522,43 +645,42 @@ public record OrderProps(
     @Min(1) int maxRetry) {}
 ${F}
 
-比逐个 ${C}@Value${C} 好在：集中、可校验、IDE 可跳转、重构安全。
+## 三、实战
 
-## 三、一个标准的 REST 服务（官方风格）
+**标准 REST 服务（错误 vs 正确）**：
 
 ${F}java
 @RestController
 @RequestMapping("/api/orders")
 @Validated
 public class OrderController {
-
-    private final OrderService orderService;      // 构造器注入，官方推荐
+    private final OrderService orderService;      // ✅ 构造器注入，官方推荐
     public OrderController(OrderService orderService) { this.orderService = orderService; }
 
     @GetMapping("/{id}")
-    public Order get(@PathVariable Long id) {
-        return orderService.require(id);
-    }
+    public Order get(@PathVariable Long id) { return orderService.require(id); }
 
     @PostMapping
     public ResponseEntity<Order> create(@Valid @RequestBody CreateOrderReq req) {
         var order = orderService.create(req);
-        return ResponseEntity.created(URI.create("/api/orders/" + order.id())).body(order);
+        return ResponseEntity.created(URI.create("/api/orders/" + order.id())).body(order); // ✅ 201 + Location
     }
 }
 ${F}
 
-要点：**构造器注入**（官方文档明确推荐，字段注入无法做 final 与单测隔离）；${C}record${C} 做 DTO；返回 201 + Location 头。
+❌ 字段注入（${C}@Autowired${C} 到字段）：无法声明 final、单测只能靠反射注入、易藏循环依赖。✅ 构造器注入让依赖不可变且可测试。
 
-**错误响应**：Spring Boot 3 对 ${C}/error${C} 默认输出 **ProblemDetail**（RFC 7807 结构，后被 RFC 9457 更新但格式兼容），统一错误体不用自己发明。
+**错误响应**：Spring Boot 3 对 ${C}/error${C} 默认输出 **ProblemDetail**（RFC 7807/9457 结构），统一错误体不用自己发明，前端按 ${C}type/title/status/detail${C} 消费即可。
 
-## 四、Actuator：生产可观测的官方答案
+## 四、覆盖广度
 
-引入 ${C}spring-boot-starter-actuator${C} 后获得：
+**Actuator：生产可观测的官方答案**：
 
 - ${C}/actuator/health${C}：健康检查（数据库/Redis/MQ 状态自动聚合），K8s 与 LB 探针直接用它；
-- ${C}/actuator/metrics${C}：JVM/HTTP/连接池指标，可接 Micrometer → Prometheus；
-- ${C}/actuator/env, /actuator/beans${C}：排障利器，**生产必须收紧暴露面**：
+- ${C}/actuator/metrics${C}：JVM/HTTP/连接池指标，经 Micrometer 接 Prometheus；
+- ${C}/actuator/env, /actuator/beans${C}：排障利器，**生产必须收紧暴露面**。
+
+**优雅停机 + 探针配置**：
 
 ${F}yaml
 management:
@@ -574,16 +696,19 @@ server:
   shutdown: graceful                            # 优雅停机
 ${F}
 
-## ⚠ 高频误区
+**边界与进阶**：① starter 的本质是「依赖描述 + 自动配置」的捆绑，自研中间件应提供自己的 starter；② ${C}@ConditionalOnMissingBean${C} 保证用户自定义 Bean 优先；③ 配置加密（如 jasypt）与配置中心（Nacos/Apollo）对接 Externalized Configuration 的相应优先级；④ 生产禁用 ${C}include: "*"${C}，否则 heapdump/env 裸奔公网等于泄露源码级信息；⑤ 出问题时用 ${C}/actuator/conditions${C}（或启动 ${C}--debug${C}）看哪些自动配置生效/未生效及原因，而不是猜。
+
+## 五、常见误区
 
 1. **启动类放子包**：默认扫描不到同包外的 Bean，出现「明明有 Bean 却注入失败」。
 2. **业务逻辑写在 Controller**：Controller 只做参数转换与编排，业务进 Service 层。
 3. **配置硬编码**：数据库地址写死在类里，跨环境必炸——一切环境差异走配置。
-4. **Actuator 全量暴露**：${C}include: "*"${C} 把 env、heapdump 裸奔公网，等于泄露源码级信息。
-5. **字段注入（@Autowired 到字段）**：无法声明 final，单测只能靠反射注入。
-6. **忽略优雅停机**：官方配置一行 ${C}server.shutdown: graceful${C}，滚动发布不掉正在处理的请求。
+4. **Actuator 全量暴露**：${C}include: "*"${C} 把 env、heapdump 裸奔公网。
+5. **字段注入**：无法声明 final，单测只能靠反射注入。
+6. **忽略优雅停机**：官方一行配置，滚动发布不掉正在处理的请求。
+7. **以为自动配置是黑箱**：不会用 ${C}/actuator/conditions${C} 或 ${C}--debug${C} 排查「为什么某个 starter 没生效」。
 
-## ✅ 自检清单
+## 六、自检清单
 
 - [ ] 启动类在根包，构造器注入，无字段注入
 - [ ] 环境差异全部外置：profile + 环境变量，代码里 grep 不到硬编码地址
@@ -591,9 +716,119 @@ ${F}
 - [ ] health/metrics 已接入探针与监控，暴露面收紧到白名单
 - [ ] graceful shutdown 已开启，发布验证过无请求中断
 
-## 📚 延伸阅读
+<!--dd:springboot-first-->
 
-- Spring Boot Reference：Getting Started → Using Spring Boot → Externalized Configuration → Production-ready Features（按此顺序读一遍胜过十篇博客）
+## 🔬 深挖：自动配置的完整机制
+
+### 一、@SpringBootApplication 拆开看
+
+${F}java
+@SpringBootApplication
+// 等价于下面三个注解之和
+@SpringBootConfiguration      // 本质是 @Configuration，标记入口配置类
+@EnableAutoConfiguration      // 开启自动配置（核心）
+@ComponentScan                // 扫描当前包及子包（所以启动类要放最外层包）
+${F}
+
+**包结构铁律**：启动类必须在**所有业务包的父级**，否则 ${C}@ComponentScan${C} 扫不到，Bean 不存在但代码编译通过——这是初学者最常见的「找不到 Bean」。
+
+### 二、自动配置的三段式：怎么找到、怎么过滤、怎么生效
+
+${F}
+① 找：@EnableAutoConfiguration → @Import(AutoConfigurationImportSelector)
+      → 读 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+        （2.7 之前是 META-INF/spring.factories 的 EnableAutoConfiguration 键）
+      → 得到 ~140 个候选自动配置类全名
+
+② 滤：逐个评估类上的 @Conditional 家族，不满足则跳过
+      @ConditionalOnClass      类路径存在才生效（如存在 DataSource 类）
+      @ConditionalOnMissingBean 用户没自己定义才生效（★ 用户优先的机制）
+      @ConditionalOnProperty   配置项存在/等值才生效
+      @ConditionalOnWebApplication / OnBean / OnResource ...
+
+③ 装：通过者自己就是个 @Configuration，注册其中的 @Bean
+${F}
+
+**记住 ${C}@ConditionalOnMissingBean${C} 这一条**，它解释了 Spring Boot 最重要的设计哲学：**约定优于配置，且用户定义永远覆盖自动配置**。这就是「加一个 ${C}@Bean DataSource${C} 就能接管数据源」的原理。
+
+调试验证手段：
+${F}bash
+java -jar app.jar --debug
+# 或在 application.yml：
+# debug: true
+# 控制台会打印 Positive matches（生效）与 Negative matches（未生效及原因）
+${F}
+
+这是排查「为什么我的自动配置没生效」的最快路径——不要猜，直接看条件评估报告。
+
+### 三、自定义 Starter 的标准做法
+
+一个规范的 starter 需两个模块（或至少一个）+ 自动配置声明：
+
+${F}
+my-spring-boot-starter/
+├── pom.xml
+└── src/main/java/com/x/MyAutoConfiguration.java
+└── src/main/resources/META-INF/spring/
+        org.springframework.boot.autoconfigure.AutoConfiguration.imports
+
+# 文件内容只有一行：
+com.x.MyAutoConfiguration
+${F}
+
+${F}java
+@AutoConfiguration
+@ConditionalOnClass(MyService.class)
+@EnableConfigurationProperties(MyProperties.class)
+public class MyAutoConfiguration {
+    @Bean
+    @ConditionalOnMissingBean          // ★ 允许用户覆盖
+    public MyService myService(MyProperties p) {
+        return new MyService(p.getEndpoint(), p.getTimeout());
+    }
+}
+${F}
+
+配套的 ${C}MyProperties${C} 用 ${C}@ConfigurationProperties(prefix = "my")${C} + 构造器绑定（不可变、可校验），比逐个 ${C}@Value${C} 更好：支持 ${C}@Validated${C} 校验、IDE 提示（配合 ${C}spring-configuration-metadata.json${C}）、宽松绑定（${C}my-end-point${C} 与 ${C}myEndPoint${C} 等价）。
+
+### 四、配置优先级：从上到下，越靠前越高
+
+${F}
+① 命令行参数 --server.port=9090
+② SPRING_APPLICATION_JSON（环境变量里的 JSON）
+③ OS 环境变量（SERVER_PORT）
+④ java:comp/env 的 JNDI
+⑤ application-{profile}.yml（jar 外部）
+⑥ application-{profile}.yml（jar 内部）
+⑦ application.yml
+⑧ @PropertySource 指定的
+⑨ 默认值（SpringApplication.setDefaultProperties / @Value 的默认）
+${F}
+
+**同名配置后者不覆盖前者**——优先级高的赢。这条规则解释了两个高频困惑：①「我在 yml 里改了端口没用」→ 一定是命令行或环境变量覆盖了；②「Docker 里配置没生效」→ 环境变量优先级高于 yml 文件。
+
+要在运行时确认「这个值到底从哪来」，用 Spring Boot 3 的 actuator ${C}/actuator/configprops${C} 或启动时加 ${C}--debug${C} 打印条件报告，而不是靠猜。
+
+### 五、启动流程的关键节点
+
+${F}
+SpringApplication.run()
+ ├─ 推断应用类型（SERVLET / REACTIVE / NONE）→ 决定用哪种 ApplicationContext
+ ├─ 加载 ApplicationContextInitializer 与 ApplicationListener（spring.factories）
+ ├─ 准备 Environment（读取配置、激活 profile）
+ ├─ 打印 Banner（这就是启动时那只猫）
+ ├─ 创建 ApplicationContext
+ ├─ refresh()：BeanDefinition 注册 → BeanFactory 后置处理 → 实例化单例 → 启动内嵌容器
+ └─ 发布 ApplicationReadyEvent（此处才是「真的可以访问了」）
+${F}
+
+**三个实用扩展点**：${C}ApplicationRunner${C} / ${C}CommandLineRunner${C}（启动后执行初始化任务，注意它们**在端口就绪之后**）；${C}SmartLifecycle${C}（控制启动/停止顺序）；${C}@PostConstruct${C}（Bean 初始化回调，此时依赖已注入但容器未就绪）。
+
+**健康检查的正确做法**：用 actuator 的 ${C}/actuator/health/liveness${C} 与 ${C}/actuator/health/readiness${C}（K8s 探针分别对应），而不要用「首页能打开」当健康检查——首页 200 而数据库断了，探针会误判为健康，流量打进来全报错。
+
+## 七、延伸
+
+- Spring Boot Reference：Getting Started → Using Spring Boot → Externalized Configuration → Production-ready Features
 - Spring Initializr（start.spring.io）：官方脚手架
 - RFC 9457（Problem Details for HTTP APIs）
           `
@@ -692,6 +927,91 @@ ${F}
 - [ ] commit 符合 Conventional Commits，一次提交一件事
 - [ ] 用过 reflog 找回误删提交，知道 hard reset 的不可逆边界
 - [ ] force push 只发生在自己独占的分支上，且用 --force-with-lease
+
+<!--dd:git-flow-->
+
+## 🔬 深挖：Git 的对象模型与「撤销」的正确工具
+
+### 一、一切皆对象：Git 的四个对象与 SHA
+
+Git 不是保存「文件差异」，而是保存**快照**，全部落在 ${C}.git/objects${C}（压缩后的 zlib 文件）：
+
+| 对象 | 内容 | 由什么生成 |
+|---|---|---|
+| blob | 文件内容（**不含文件名**） | ${C}git hash-object${C} / add |
+| tree | 目录结构：文件名 → blob/tree 的 SHA | ${C}git write-tree${C} |
+| commit | 一个 tree + 父提交 + 作者/时间 + message | ${C}git commit${C} |
+| tag（附注标签） | 指向某个对象 + 标签信息 | ${C}git tag -a${C} |
+
+两个深刻推论：
+- **同名同内容的文件在所有提交里共享同一个 blob**——所以 Git 存相似版本不浪费空间；
+- **改动历史会改 SHA**（因为父提交变了），这就是「rebase 后再推必须 force」的根本原因，也解释了为什么「rebase 公共分支」是禁忌。
+
+常用探针：
+${F}bash
+git cat-file -t <sha>       # 看对象类型
+git cat-file -p <sha>       # 看对象内容
+git rev-parse HEAD          # 展开引用为 SHA
+git ls-tree HEAD src/       # 看 tree
+${F}
+
+### 二、merge 与 rebase 的真实差异
+
+${F}
+        A---B---C  feature
+       /
+  D---E---F---G  main
+
+# merge：产生一个新的合并提交 M（父为 C 与 G），历史真实但分叉
+        A---B---C
+       /         \
+  D---E---F---G---M
+# 运行期 M 上出现冲突要解决一次
+
+# rebase：把 A/B/C 逐个「重放」到 G 之后，产生新 SHA（A' B' C'）
+  D---E---F---G---A'---B'---C'
+# 运行期每个提交都可能冲突（--rebase-merges 可保留合并结构）
+${F}
+
+**选择口径**：本地未推送的个人分支用 rebase（历史线性、易 review）；已推送的公共分支用 merge（不改写别人已拉取的历史）。**永远不要 rebase main/release**。
+
+### 三、撤销：reselect 正确工具（最容易搞错的一节）
+
+| 场景 | 正确命令 | 为什么 |
+|---|---|---|
+| 改错了工作区文件（未 add） | ${C}git restore <file>${C} | 只动工作区，安全 |
+| 已 add 未 commit | ${C}git restore --staged <file>${C} | 撤出暂存区，内容仍保留 |
+| 已 commit 未推送，想改内容 | ${C}git reset --soft HEAD~1${C} | 保留改动在暂存区 |
+| 已 commit 未推送，想丢弃提交与改动 | ${C}git reset --hard HEAD~1${C} | ⚠️ 丢弃改动，不可逆 |
+| 已推送 | ${C}git revert <sha>${C} | 生成反向提交，不改历史（协作安全） |
+| 误删分支 / 误 reset | ${C}git reflog${C} + ${C}git reset --hard <sha>${C} | reflog 是本地「后悔药」 |
+| 只想把某个提交搬到别处 | ${C}git cherry-pick <sha>${C} | 复制提交内容（生成新 SHA） |
+
+三档 ${C}reset${C} 的记忆法：**soft 只动 HEAD（改动全留在暂存区）、mixed（默认）动 HEAD+暂存区、hard 三处全动（工作区也清）**。
+
+**reflog 是最后的防线**：它记录 HEAD 的每次移动（默认保留 90 天），即便分支被删、reset 错的提交也还在。但注意 ${C}git gc${C} 后未引用的对象会被真正清理。
+
+### 四、bisect：二分定位「哪个提交引入了 bug」
+
+${F}bash
+git bisect start
+git bisect bad                 # 当前版本是坏的
+git bisect good v1.2.0         # 已知好的版本
+# Git 自动 checkout 中间的提交，你测一次后回答：
+git bisect good                # 或 git bisect bad
+# ... log2(N) 次后输出「first bad commit」
+git bisect reset               # 结束，回到原分支
+${F}
+
+配合自动化脚本可全自动：${C}git bisect run ./test.sh${C}——脚本退出码 0 表示 good、非 0 表示 bad。1000 个提交只需约 10 轮，这是排查「不知何时引入的回归」最高效的手段。
+
+### 五、commit 卫生与冲突的正确处理
+
+- **小步提交、单一职责**：一个提交只做一件事，回滚时才可能精准（回滚一个混合提交往往要连带回滚不相关内容）；
+- **message 写清「为什么」**而非「做了什么」（diff 已经说明了做了什么）；
+- **冲突不要慌**：${C}git status${C} 会列出 both modified 的文件，冲突标记 <<<<<<< ======= >>>>>>> 之间是两方内容；解决后 ${C}git add${C} 标记已解决，${C}git rebase --continue${C} 或 ${C}git commit${C}；
+- **rebase 中途想放弃**：${C}git rebase --abort${C} 回到起点（abort 不会丢你的提交，比手工解冲突安全）；
+- **别在冲突时乱删标记**：先把文件读到完整，理解两边的意图，再合并；删掉 <<<< 但忘了 ====== 会留下语法错误。
 
 ## 📚 延伸阅读
 
@@ -797,6 +1117,85 @@ JDK 17+ 别忘了容器感知（${C}UseContainerSupport${C} 默认开启），�
 - [ ] 线上服务的 GC 日志接入了采集，能回答「每周多少次 Mixed GC、平均停顿多少」
 - [ ] OOM 参数已配：dump 会自动落在指定目录
 - [ ] 容器环境用 MaxRAMPercentage 而不是写死 -Xmx
+
+<!--dd:jvm-gc-->
+
+## 🔬 深挖：内存布局、分配路径与收集器选型
+
+### 一、运行时数据区：哪些是线程私有、哪些共享
+
+| 区域 | 共享性 | 存什么 | 会不会 OOM |
+|---|---|---|---|
+| 程序计数器 | 私有 | 下一条字节码地址 | 不会（唯一不会 OOM 的区域） |
+| 虚拟机栈 | 私有 | 栈帧（局部变量表、操作数栈、返回地址） | StackOverflowError / OOM |
+| 本地方法栈 | 私有 | native 方法栈帧 | 同上 |
+| **堆** | 共享 | 对象实例、数组 | OOM: Java heap space |
+| **方法区/元空间** | 共享 | 类元信息、常量、静态变量 | OOM: Metaspace |
+| 直接内存 | 进程外 | NIO DirectByteBuffer | OOM: Direct buffer memory |
+
+**重要纠偏**：JDK 8 起永久代（PermGen）被**元空间（Metaspace）**取代，元空间在**本地内存**（不再受 ${C}-XX:MaxPermSize${C} 控制，改用 ${C}-XX:MaxMetaspaceSize${C}）。所以「本地内存被吃光」时，除了堆还要查元空间、线程栈数量（${C}-Xss${C} × 线程数）、DirectMemory（${C}-XX:MaxDirectMemorySize${C}）和 JNI 泄漏——堆 dump 里看不到它们。
+
+### 二、对象的一生：分配 → 晋升 → 回收
+
+${F}
+new → ① 栈上分配？（逃逸分析 + 标量替换，无逃逸才能栈分配/拆散为标量）
+    → ② TLAB 分配（线程本地分配缓冲，避免多线程争抢 Eden 指针 → 这就是「分配不需要锁」的秘密）
+    → ③ Eden 分配（TLAB 不够 → CAS 抢 Eden 指针）
+    → ④ Minor GC 存活 → 复制到 Survivor（S0/S1，对象年龄 +1）
+    → ⑤ 年龄达阈值（默认 15，-XX:MaxTenuringThreshold）或 Survivor 同年龄对象总和 > 一半 → 晋升老年代
+    → ⑥ 大对象（-XX:PretenureSizeThreshold）直接进老年代
+    → ⑦ Full GC 回收老年代
+${F}
+
+**动态年龄判定**是易漏的细节：不是只有「满 15 岁」才晋升——Survivor 中**相同年龄对象大小总和超过 Survivor 一半**时，该年龄及以上的对象直接晋升。这就是「新生代设置不当导致对象过早晋升」的常见原因。
+
+### 三、收集算法与收集器的演进
+
+| 收集器 | 算法 | 特点 | 适用 |
+|---|---|---|---|
+| Serial | 复制（新生） | 单线程、STW | 客户端、小内存 |
+| ParNew | 复制 | Serial 的多线程版 | 已随 CMS 退役 |
+| Parallel Scavenge | 复制 | **吞吐量优先**（${C}-XX:GCTimeRatio${C}） | 批处理、后台计算 |
+| CMS | 标记-清除 | 低停顿、并发标记 | 已废弃（JDK 14 移除） |
+| **G1** | 分区复制（Region） | 可预测停顿模型（${C}MaxGCPauseMillis${C}） | 通用默认（JDK 9+） |
+| ZGC | 染色指针 + 读屏障 | 停顿 < 1ms、TB 级堆 | 大内存低延迟（JDK 15+ 生产就绪） |
+| Shenandoah | Brooks 转发指针 | 低停顿 | 与 ZGC 定位相近 |
+
+**G1 的两阶段**：并发标记（SATB 快照）后用「回收价值 + 停顿预测」选出**年轻代 Region + 高收益老年代 Region** 组成回收集（CSet）——名字里的 Garbage First 就是这个意思。所以 G1 天然是**分代 + 增量**的，JDK 10 起支持整堆并行 Full GC。
+
+选型口诀（实践版）：**延迟敏感 + 大堆 → ZGC；通用服务 → G1（默认）；吞吐优先的离线计算 → Parallel**。不要盲目上 ZGC：它牺牲吞吐换停顿，且需要更大的堆余量。
+
+### 四、GC 日志：看什么、怎么调
+
+${F}bash
+# 必开的日志参数（JDK 9+ 统一日志框架，不再是 -XX:+PrintGCDetails）
+java -Xlog:gc*,gc+heap=info,gc+age=trace:file=gc.log:time,uptime,level,tags
+${F}
+
+三看：① **频率**（Full GC 是否频繁 → 内存泄漏或堆太小）；② **单次停顿**（是否超出 ${C}-XX:MaxGCPauseMillis${C}）；③ **回收后剩余**（老年代回收后仍高企 → 真有长生命周期对象/泄漏，不是 GC 参数问题）。
+
+常见调参方向：
+
+${F}bash
+-Xms4g -Xmx4g                 # 固定堆，避免动态伸缩带来的抖动（线上必做）
+-XX:MetaspaceSize=256m         # 元空间初始值（避免早期频繁 Full GC 用于扩容元空间）
+-Xmn2g / -XX:NewRatio=1       # 新生代大小（短生命周期对象多则调大）
+-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/data/dump   # ★ 线上必备
+-XX:+ExitOnOutOfMemoryError    # 内存耗尽直接退出，交给 K8s 重启，避免半死不活
+${F}
+
+### 五、六种 OOM 与它们的真实含义
+
+| 报错 | 含义 | 首查方向 |
+|---|---|---|
+| Java heap space | 堆内存不足 | 内存泄漏 or 堆不够 or 一次性加载过量 |
+| GC overhead limit exceeded | GC 回收效率 < 2% 且占用 98% 时间 | 同上（堆已被无效对象占满） |
+| Metaspace | 类加载过多 | 动态代理/CGLIB/热部署/反射滥用 |
+| Direct buffer memory | 直接内存不足 | NIO 未释放、Netty 泄漏检测 |
+| unable to create new native thread | 线程过多 | ${C}ulimit -u${C} 限制或线程泄漏 |
+| Requested array size exceeds VM limit | 数组过大 | 一次读入超大文件/查询无分页 |
+
+**排查顺序**：先 ${C}jstat -gcutil <pid> 1000${C} 看堆趋势 → 若老年代只增不减则 ${C}jmap -dump:live,format=b,file=/tmp/h.hprof <pid>${C}（⚠️ 会 STW，线上先摘流量） → 用 MAT/Eclipse Memory Analyzer 看 **Dominator Tree**（谁真正持有了最多内存）与 **Leak Suspects** 报告。**不要**直接看 histogram 里的实例数量下结论，要去掉「不可达对象」再看。
 
 ## 📚 延伸阅读
 
@@ -910,6 +1309,121 @@ ${F}
 - [ ] ThreadLocal 全部 try/finally remove
 - [ ] 能说出虚拟线程的适用边界（IO 密集、不池化、pinning）
 
+<!--dd:concurrency-->
+
+## 🔬 深挖：JMM、锁升级与线程池
+
+### 一、JMM 的三条规则与 happens-before
+
+Java 内存模型把「线程本地缓存 vs 主内存」的同步抽象为 **happens-before** 规则。只要满足，前一个操作的结果对后一个操作可见：
+
+1. **程序顺序**：同一线程内，前面的操作 hb 后面的；
+2. **监视器锁**：unlock hb 后续对同一锁的 lock；
+3. **volatile 变量**：对 volatile 域的写 hb 后续对它的读；
+4. **线程启动/终止**：${C}start()${C} hb 线程内所有操作；线程内所有操作 hb ${C}join()${C} 返回；
+5. **传递性**：A hb B、B hb C ⇒ A hb C。
+
+**关键认知**：happens-before 保证的是**可见性与有序性**，不是「禁止重排序」本身——底层仍可重排，只要不破坏 HB 语义。这解释了为什么「没加同步的双检锁」会拿到半初始化对象：
+
+${F}java
+// ❌ 经典错误：instance 非 volatile 时，可能发布未初始化完成的对象
+public class Singleton {
+    private static Singleton instance;        // 缺 volatile
+    public static Singleton get() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) instance = new Singleton();  // 可能重排为「分配→发布→初始化」
+            }
+        }
+        return instance;
+    }
+}
+// ✅ 正确：加 volatile（禁止该重排）；或者直接用静态内部类（类加载机制天然线程安全）
+${F}
+
+### 二、synchronized 的锁升级（理解它就能理解「为什么不要随便加锁」）
+
+${F}
+无锁 → 偏向锁 → 轻量级锁（自旋 CAS）→ 重量级锁（OS 互斥量，线程挂起）
+       （JDK 15 起默认关闭偏向锁，JDK 18 移除相关代码）
+${F}
+
+- **偏向锁**：只有一个线程时，把线程 ID 记在对象头 Mark Word，之后进入同步块**零代价**；
+- **轻量级锁**：出现竞争时，CAS 尝试把 Mark Word 设为指向栈上锁记录的指针，失败则**自旋**；
+- **重量级锁**：自旋超过阈值仍失败 → 升级为 OS 级别互斥（用户态→内核态切换，代价最大）。
+
+锁只能升不能降（除非 STW 时批量撤销偏向）。**实践推论**：避免在**长临界区**里竞争（自旋会白烧 CPU），临界区尽量短；读多写少用 ${C}ReentrantReadWriteLock${C} 或 ${C}StampedLock${C}（乐观读）；不要用 ${C}String${C} 常量或包装类型做锁对象（可能被复用/JIT 常量池共用）。
+
+### 三、AQS：整个并发包的骨架
+
+${C}ReentrantLock / Semaphore / CountDownLatch / ReentrantReadWriteLock${C} 都建立在 AQS 之上。AQS = **一个 volatile int state + 一个 CLH 双向队列 + CAS**：
+
+${F}java
+// AQS 的核心：tryAcquire 由子类实现（模板方法），state 语义由子类定义
+// ReentrantLock：state 为 0 表示未占用，>0 表示重入次数，并记录 exclusiveOwnerThread
+// Semaphore：state 为剩余许可数
+// CountDownLatch：state 为计数（只能减）
+
+// 自定义同步器示例：不可重入互斥锁
+class Mutex extends AbstractQueuedSynchronizer {
+    protected boolean tryAcquire(int arg) { return compareAndSetState(0, 1); }
+    protected boolean tryRelease(int arg) { setState(0); return true; }
+    protected boolean isHeldExclusively() { return getState() == 1; }
+    void lock()   { acquire(1); }
+    void unlock() { release(1); }
+}
+${F}
+
+**CAS 的三个问题**：① **ABA**（值 A→B→A 看不出变化，用版本号 ${C}AtomicStampedReference${C} 解决）；② **自旋开销**（高竞争下大量 CPU 空转，故有 ${C}LongAdder${C} 分段累加）；③ **只能保证一个变量**（多变量原子性要靠锁，或封装成一个对象 + ${C}AtomicReference${C}）。
+
+### 四、ThreadLocal：原理与内存泄漏的真相
+
+每个 ${C}Thread${C} 有一个 ${C}ThreadLocalMap${C}（不是 ThreadLocal 存数据），key 是 ThreadLocal 对象的**弱引用**、value 是**强引用**：
+
+${F}
+Thread → ThreadLocalMap.Entry[] → { key: WeakRef(ThreadLocal), value: yourObject }
+${F}
+
+- key 用弱引用是为了让 **ThreadLocal 对象本身**能被回收，避免 key 泄漏；
+- 但 **value 是强引用**，线程不结束（线程池！）则 value 永远活着 → **这才是 Entry 泄漏**；
+- 修法：必须在 ${C}finally${C} 里 ${C}remove()${C}。线程池场景尤其致命——复用线程会把上一次请求的用户数据带给下一个请求，既是内存泄漏也是**数据串号**。
+
+${F}java
+try {
+    MDC.put("traceId", id);            // MDC 内部就是 ThreadLocal
+    doWork();
+} finally {
+    MDC.clear();                       // ★ 必须清理，否则线程复用会串号
+}
+${F}
+
+### 五、线程池：七个参数与四条拒绝策略
+
+${F}java
+new ThreadPoolExecutor(
+    corePoolSize,              // ① 核心线程数（常驻，默认不回收）
+    maximumPoolSize,           // ② 最大线程数
+    keepAliveTime, TimeUnit,   // ③ 空闲线程存活时间（只对 >core 的线程生效）
+    workQueue,                 // ④ 工作队列（决定排队行为）
+    threadFactory,             // ⑤ 线程工厂（★ 必须自定义命名，便于排查）
+    handler                    // ⑥ 拒绝策略
+);
+// ⑦ 另外还有 allowCoreThreadTimeOut（核心线程也可回收）
+${F}
+
+**执行顺序是「核心 → 队列 → 非核心 → 拒绝」**，与直觉相反：先填满队列，队列满了才扩容到 max。所以用**无界队列**（${C}LinkedBlockingQueue${C} 默认容量 ${C}Integer.MAX_VALUE${C}）时，${C}maximumPoolSize${C} **永远用不上**，任务无限堆积 → OOM/超时。
+
+| 拒绝策略 | 行为 | 适用 |
+|---|---|---|
+| AbortPolicy（默认） | 抛 RejectedExecutionException | 需要感知失败的核心任务 |
+| CallerRunsPolicy | 由提交任务的线程自己执行 | 天然背压（拖慢上游） |
+| DiscardPolicy | 静默丢弃 | 日志类可丢任务（危险，无从感知） |
+| DiscardOldestPolicy | 丢队首、重试提交 | 只关心最新数据 |
+
+**参数怎么定**（实践口径）：CPU 密集型 → ${C}N+1${C}；IO 密集型 → ${C}N × (1 + 等待时间/计算时间)${C}。但更可靠的做法是**按实测**：压测下观察队列水位与拒绝次数，而不是套公式。
+
+**池化必配四件套**：线程命名（${C}业务名-thread-%d${C}）、有界队列、明确的拒绝策略、监控（活跃线程数/队列长度/拒绝计数上报到监控系统）。
+
 ## 📚 延伸阅读
 
 - JLS §17.4（Memory Model）与 §17.5（final 语义）
@@ -1003,6 +1517,98 @@ Spring Boot 默认 ${C}proxyTargetClass=true${C}（统一走 CGLIB）。切面�
 - [ ] 新增事务方法默认带 ${C}rollbackFor = Exception.class${C}，或团队有明确约定
 - [ ] 全库搜索过「同类自调用 + 事务/缓存注解」的组合并整改
 - [ ] 审计/日志类写入用 REQUIRES_NEW，主流程回滚不影响留痕
+
+<!--dd:spring-principle-->
+
+## 🔬 深挖：IoC 容器的启动链路与循环依赖
+
+### 一、容器启动的完整阶段
+
+${F}
+new AnnotationConfigApplicationContext(AppConfig.class)
+ ├─ ① 构造 BeanFactory（DefaultListableBeanFactory）
+ ├─ ② 注册配置类 → 解析 @ComponentScan / @Import / @Bean
+ │     → 得到 BeanDefinition（不是 Bean 实例！只是「配方」）
+ ├─ ③ 执行 BeanFactoryPostProcessor
+ │     ★ ConfigurationClassPostProcessor 在此完成注解解析
+ │     ★ PropertySourcesPlaceholderConfigurer 在此替换 \${...} 占位符
+ ├─ ④ 注册 BeanPostProcessor（此时只注册，实例化时调用）
+ ├─ ⑤ 实例化所有非懒加载单例（preInstantiateSingletons）
+ │     ├─ 实例化（构造器）
+ │     ├─ 属性填充（@Autowired 注入）  ← 循环依赖在此发生
+ │     ├─ Aware 回调（BeanNameAware / ApplicationContextAware）
+ │     ├─ BeanPostProcessor.postProcessBeforeInitialization
+ │     ├─ 初始化（@PostConstruct → InitializingBean.afterPropertiesSet → initMethod）
+ │     └─ BeanPostProcessor.postProcessAfterInitialization  ← ★ AOP 代理在此生成
+ └─ ⑥ 发布 ContextRefreshedEvent
+${F}
+
+**关键区分**：${C}BeanFactoryPostProcessor${C} 操作「配方」（BeanDefinition），${C}BeanPostProcessor${C} 操作「成品/半成品」（Bean 实例）。名字只差一个词，作用时机差很远。
+
+### 二、三级缓存与循环依赖的真相
+
+${F}java
+// DefaultSingletonBeanRegistry 的三个 Map
+singletonObjects          // 一级：成品 Bean（完全初始化 + 可能已代理）
+earlySingletonObjects     // 二级：早期引用（已实例化、属性未填充）
+singletonFactories        // 三级：ObjectFactory（用于「需要时」提前生成代理）
+${F}
+
+A 依赖 B、B 依赖 A 的解决过程：
+
+${F}
+1. getBean(A) → 实例化 A → 把 A 的 ObjectFactory 放进三级缓存
+2. 填充 A 的属性 → 发现依赖 B → getBean(B)
+3. 实例化 B → 填充 B 的属性 → 发现依赖 A
+4. getBean(A) 命中三级缓存 → 调用 ObjectFactory.getEarlyBeanReference()
+   → 若 A 需要 AOP，此处提前生成 A 的代理 → 放入二级缓存
+5. B 拿到（可能是代理的）A → B 初始化完成 → 放入一级缓存
+6. A 拿到 B → A 完成初始化 → 放入一级缓存
+${F}
+
+**结论与边界**（面试最爱追问）：
+
+| 问题 | 答案 |
+|---|---|
+| 为什么要三级而不是两级？ | 为了在「需要代理」时才提前创建代理；若没 AOP，二级就够。第三级是「延迟决策」的机制，保证最终暴露的引用与最终 Bean 一致 |
+| 构造器注入的循环依赖能解决吗？ | **不能**。因为实例化都没完成，无从「提前暴露」，会直接抛 ${C}BeanCurrentlyInCreationException${C} |
+| 原型（prototype）作用域呢？ | 不缓存，**不能**解决，同样抛异常 |
+| ${C}@Async${C} 导致的循环依赖报错？ | ${C}@Async${C} 也会触发提前代理，与 ${C}@Transactional${C} 路径不同，可能报「与自身循环」——解法是提取接口、加 ${C}@Lazy${C}，或重构消除循环 |
+| Spring Boot 2.6+ 为什么默认禁止？ | ${C}spring.main.allow-circular-references=false${C} 默认值变更——**官方明确不鼓励依赖循环依赖能力**，应重构 |
+
+${C}@Lazy${C} 是应急手段：注入一个代理，真正调用时才去容器取，从而打破环。
+
+### 三、AOP：JDK 动态代理 vs CGLIB
+
+| 维度 | JDK 动态代理 | CGLIB |
+|---|---|---|
+| 原理 | 运行时生成 implements 接口的类 | 生成目标类的**子类**（字节码增强） |
+| 前提 | 目标类**必须有接口** | 目标类不能是 final、方法不能是 final/private |
+| 性能 | 创建稍慢、调用快（JDK 8 后差距很小） | 创建快、调用稍慢 |
+| Spring Boot 默认 | —— | **默认全部用 CGLIB**（${C}proxyTargetClass=true${C}） |
+
+**事务失效的五种场景**（几乎每次面试都问）：
+
+1. **同类内部自调用**——${C}this.methodB()${C} 不走代理，所以 ${C}@Transactional${C} 不生效。解法：注入自己（${C}@Lazy${C}）、${C}AopContext.currentProxy()${C}、或拆分到另一个 Bean；
+2. **方法非 public**（Spring 5 之前；其实 CGLIB 代理下 protected/包级也可能生效，但**不要依赖**）；
+3. **异常被吞或类型不匹配**——默认只对 ${C}RuntimeException${C} 与 ${C}Error${C} 回滚，受检异常要写 ${C}@Transactional(rollbackFor = Exception.class)${C}；
+4. **在 try-catch 里自己吃掉了异常**——代理收不到异常，自然不回滚；
+5. **传播行为设置不当**——${C}NOT_SUPPORTED / NEVER${C} 会挂起或拒绝事务；${C}REQUIRES_NEW${C} 会新开事务（内层回滚不影响外层，但注意连接占用）。
+
+**验证 AOP 是否真的生效**：看日志里启动时的代理提示（${C}Bean 'x' is not eligible for getting processed by all BeanPostProcessors${C}），或直接打印 ${C}bean.getClass().getName()${C}——带 ${C}$$EnhancerBySpringCGLIB${C} 后缀才是代理。
+
+### 四、Bean 生命周期的六个可扩展点
+
+${F}
+① BeanDefinitionRegistryPostProcessor  → 动态注册 BeanDefinition
+② BeanFactoryPostProcessor             → 改 BeanDefinition（如占位符替换）
+③ InstantiationAwareBeanPostProcessor  → 实例化前后干预（AOP 代理候选在这里）
+④ Aware 接口                            → 拿到容器/环境/BeanName
+⑤ InitializingBean / @PostConstruct / initMethod → 初始化
+⑥ DisposableBean / @PreDestroy / destroyMethod   → 销毁（仅单例）
+${F}
+
+执行顺序记忆：**${C}@PostConstruct${C} → ${C}afterPropertiesSet()${C} → ${C}initMethod${C}**（前者是 JSR-250 注解，由 ${C}CommonAnnotationBeanPostProcessor${C} 处理，在 ${C}InitializingBean${C} 之前）。
 
 ## 📚 延伸阅读
 
@@ -1101,6 +1707,92 @@ ${F}
 - [ ] 联合索引列序 = 等值条件在前、范围/排序列在后
 - [ ] 主键全部自增 BIGINT（或有序分布式 ID），无随机 UUID 主键
 - [ ] 深分页已改游标或延迟关联，线上无 LIMIT 10w+ 的调用
+
+<!--dd:mysql-index-->
+
+## 🔬 深挖：从 B+ 树到执行计划
+
+### 一、为什么是 B+ 树（而不是 B 树 / 红黑树 / 哈希）
+
+| 结构 | 为什么不适合做 MySQL 索引 |
+|---|---|
+| 哈希 | 只支持等值，**不支持范围与排序**；哈希冲突退化 |
+| 二叉/红黑树 | 树太高（百万行 ≈ 20 层），每层一次磁盘 IO，不可接受 |
+| B 树 | 非叶子节点也存数据 → 单页容纳的键更少 → 树更高；且范围查询要中序遍历跳来跳去 |
+| **B+ 树** | 非叶子只存「键 + 指针」（单页约 1170 个指针）→ 树极矮；叶子有**双向链表**且**数据全在叶子** → 范围扫描顺序 IO，天然有序 |
+
+**磁盘友好性才是根本原因**：B+ 树把树高压到 3~4 层，一次查询最多 3~4 次页读取，而 InnoDB 的 Buffer Pool + 预读让根节点与非叶子节点几乎常驻内存，实际常常只需 1 次物理 IO。
+
+### 二、最左前缀：不是「从左到右用」，而是「连续使用」
+
+联合索引 ${C}(a, b, c)${C} 的键是**按 a、再按 b、再按 c 排序**的。判断能否走索引，看查询条件在排序维度上是否**连续**：
+
+${F}sql
+-- 索引 (a, b, c)
+WHERE a=1                 -- ✅ 用 a
+WHERE a=1 AND b=2         -- ✅ 用 a,b
+WHERE a=1 AND b>2 AND c=3 -- ⚠️ 用 a,b；c 无法用于索引定位（b 是范围，c 全局无序）
+WHERE b=2                 -- ❌ 跳过 a，用不上（除非索引跳过扫描/index skip scan，MySQL 8.0.13+ 才有，且代价高）
+WHERE a=1 AND c=3         -- ⚠️ 只能用到 a，c 退化为回表后过滤
+WHERE a=1 AND b=2 ORDER BY c -- ✅ 排序也能用索引（省掉 filesort）
+${F}
+
+**区分度与顺序设计**：把**区分度高**（基数大）的列放前面、等值查询的列放前面、范围查询的列放最后。但现实约束是「是否要覆盖排序」——如果业务固定按 ${C}create_time${C} 倒序分页，把时间放最后能省掉 filesort，这往往比区分度更重要。
+
+### 三、索引下推（ICP）与覆盖索引
+
+**ICP（Index Condition Pushdown，MySQL 5.6+）**：把 WHERE 中「能用索引列判断」的部分**下推到存储引擎层**过滤，减少回表次数。
+
+${F}sql
+-- 索引 (name, age)
+SELECT * FROM user WHERE name LIKE '张%' AND age = 25;
+-- 无 ICP：先在索引找到所有「张%」，逐条回表取整行，再在 Server 层过滤 age=25
+-- 有 ICP：在索引层就判断 age=25（Extra 显示 Using index condition），只对命中的回表
+${F}
+
+**覆盖索引**：查询所需列全在索引里，Extra 显示 ${C}Using index${C}，**完全免回表**。这是分页优化的关键手段：
+
+${F}sql
+-- ❌ 深分页：扫描 1000010 行，丢弃 100万
+SELECT * FROM t ORDER BY id LIMIT 1000000, 10;
+-- ✅ 延迟关联：先用覆盖索引拿到 10 个主键，再回表取整行
+SELECT t.* FROM t
+JOIN (SELECT id FROM t ORDER BY id LIMIT 1000000, 10) AS x ON t.id = x.id;
+-- ✅ 或用游标（记住上一页最后一个 id），彻底避免 OFFSET——推荐
+SELECT * FROM t WHERE id > 1000000 ORDER BY id LIMIT 10;
+${F}
+
+### 四、EXPLAIN 关键列与坏味道
+
+${F}sql
+EXPLAIN ANALYZE SELECT ...\G    -- 8.0.18+：真实执行 + 实际行数（最有用）
+EXPLAIN FORMAT=JSON SELECT ...\G -- 详细成本
+${F}
+
+| 列 | 好值 | 坏味道 |
+|---|---|---|
+| type | ${C}const > eq_ref > ref > range > index > ALL${C} | ${C}ALL${C}（全表）、${C}index${C}（全索引扫描） |
+| key | 用到索引名 | ${C}NULL${C}（没走索引） |
+| rows | 接近实际返回行数 | 估计几千却返回 5 行（统计信息过期 → ${C}ANALYZE TABLE${C}） |
+| filtered | 高（接近 100） | 极低说明大量无效扫描 |
+| Extra | Using index（覆盖）、Using where | Using filesort、Using temporary、Using join buffer (Block Nested Loop) |
+
+**索引失效的六种典型**：
+
+1. **对索引列做函数/运算**：${C}WHERE DATE(create_time) = '2026-01-01'${C} → 改成范围查询 ${C}create_time >= '2026-01-01' AND create_time < '2026-01-02'${C}；
+2. **隐式类型转换**：${C}varchar_col = 123${C}（数字）→ 列被转成数字，索引失效；反之 ${C}int_col = '123'${C} 可以；
+3. **前导模糊**：${C}LIKE '%abc'${C} 无法用索引（${C}'abc%'${C} 可以）；
+4. **OR 连接非索引列**：一侧没索引 → 整体退化为全表；
+5. **否定条件**：${C}!= / NOT IN / IS NOT NULL${C} 常常用不上（优化器判断回表不划算）；
+6. **字符集/排序规则不一致的 JOIN**：${C}utf8${C} 列 JOIN ${C}utf8mb4${C} 列，无法走索引。
+
+### 五、统计信息与优化器的误判
+
+优化器基于**索引统计信息**（${C}innodb_stats_persistent${C} 持久化统计）估算成本。当数据分布突变（大批量导入/删除、长事务导致统计不更新）时会出现「明明有索引却选全表」或反之。
+
+排查三连：${C}SHOW INDEX FROM t${C} 看 ${C}Cardinality${C}（应接近实际不同值数）；${C}ANALYZE TABLE t${C} 手动更新；${C}EXPLAIN ANALYZE${C} 看**估算行数 vs 实际行数**的偏差——偏差大就是统计问题。
+
+必要时用索引提示：${C}SELECT ... FROM t FORCE INDEX (idx_a)${C}，但这只治标；根治要么更新统计，要么调整索引设计（如把两个单列索引合并成一个联合索引，让优化器少做选择）。
 
 ## 📚 延伸阅读
 
@@ -1202,6 +1894,91 @@ ${F}
 - [ ] bigkeys 常态化巡检，删除一律 UNLINK
 - [ ] 说得清自己系统的缓存丢失窗口（everysec ≈ 1s）并确认业务可接受
 
+<!--dd:redis-cache-->
+
+## 🔬 深挖：底层结构、过期淘汰与缓存三兄弟
+
+### 一、八种数据类型的底层编码
+
+| 类型 | 底层编码 | 转换阈值 |
+|---|---|---|
+| String | int / embstr / raw | 整数用 int；≤44 字节用 embstr（一次分配），更长用 raw |
+| List | listpack / quicklist | 元素少且小 → listpack；否则 quicklist（listpack 组成的双向链表） |
+| Hash | listpack / hashtable | ${C}hash-max-listpack-entries 128${C} 且值 ≤64 字节 |
+| Set | intset / listpack / hashtable | 全整数用 intset；大集合用 hashtable |
+| ZSet | listpack / skiplist+dict | 跳表负责范围查询（O(logN)），字典负责按成员查分数（O(1)） |
+| Stream | radix tree + listpack | 消息队列场景 |
+| Bitmap / HLL / GEO | 基于 String 的位运算 / 概率 / 有序分数 | —— |
+
+**为什么 ZSet 同时用跳表和字典**：单用跳表按成员查分数是 O(logN)，单用字典做范围查询要排序。两者组合各取所长、只额外存一份指针，是「用空间换双最优」的经典设计。
+
+**SDS（简单动态字符串）相对于 C 字符串的三个改进**：① 记录 ${C}len${C}（O(1) 取长度）；② 预留空间（追加不必每次 realloc）；③ 二进制安全（不靠 ${C}\0${C} 结尾，能存图片/序列化数据）。这也是「Redis 能存任意二进制」的原因。
+
+### 二、过期策略与淘汰策略（两件不同的事）
+
+${F}
+过期删除（对「已到期」的 key）：
+  惰性删除：访问时才检查是否过期（省 CPU，可能漏）
+  定期删除：每 100ms 随机抽查部分设置了 TTL 的 key 并删除
+  → 两者配合：不保证「过期即释放」，所以内存可能被已过期的 key 短暂占用
+
+内存淘汰（对「内存满了」时选谁删）：
+  maxmemory-policy:
+    noeviction        默认，写入报错 OOM command not allowed
+    allkeys-lru       所有键里按最近最少使用淘汰  ← 纯缓存场景首选
+    volatile-lru      只在设了 TTL 的键里淘汰（没设 TTL 的永不被淘汰，容易撑爆）
+    allkeys-lfu       按访问频次淘汰（应对「偶发批量扫描污染 LRU」更稳，4.0+）
+    volatile-ttl      优先淘汰剩余寿命短的
+    allkeys-random / volatile-random
+${F}
+
+**实践口径**：纯缓存用 ${C}allkeys-lru${C}；Redis 同时存持久数据（如队列、锁、配置）时用 ${C}volatile-lru${C} 并**确保缓存键都设了 TTL**（否则内存满了会报错）。LFU 的两个参数要一起调：${C}lfu-log-factor${C}（计数器增速）与 ${C}lfu-decay-time${C}（衰减周期）。
+
+⚠️ Redis 的 LRU 是**近似 LRU**：采样（默认 5 个）后挑最久未用的，而不是维护全局链表——为了省内存与 CPU。所以「刚写入的 key 被淘汰」是可能的，这也解释了为什么热点数据的 TTL 不宜过短。
+
+### 三、持久化：RDB 与 AOF 的取舍
+
+| 维度 | RDB | AOF |
+|---|---|---|
+| 形式 | 某时刻的**数据快照**（二进制） | **写命令追加**（文本，可读） |
+| 触发 | ${C}save${C}（阻塞）/ ${C}bgsave${C}（fork 子进程）/ 自动阈值 | ${C}appendfsync${C} 策略 |
+| 恢复速度 | 快（直接加载） | 慢（重放命令） |
+| 数据安全性 | 差（可能丢两次快照间的数据） | 好（everysec 最多丢 1 秒） |
+| 体积 | 小 | 大 |
+| 代价 | fork 时 COW 复制页表，大内存下 fork 可能卡顿 | 重写时同样 fork；fsync 频繁伤盘 |
+
+**bgsave 的 COW 陷阱**：fork 出的子进程与父进程**共享内存页**，父进程一旦写入某页就复制一份——所以「写操作越多，快照期间内存峰值越高」。经验值：预留 ${C}maxmemory${C} 的 50% 以上空闲内存，并把 ${C}vm.overcommit_memory=1${C} 打开，否则 fork 可能失败。
+
+**混合持久化（4.0+，推荐）**：${C}aof-use-rdb-preamble yes${C}——AOF 文件前半是 RDB 格式的全量快照、后半是增量命令。兼得「恢复快」与「丢数据少」。
+
+${C}appendfsync${C} 三档：${C}always${C}（每个写都 fsync，最安全、性能最差）、${C}everysec${C}（默认，最多丢 1 秒）、${C}no${C}（交给 OS，可能丢 30 秒）。
+
+### 四、缓存三兄弟与热 key
+
+| 问题 | 表现 | 解法 |
+|---|---|---|
+| **穿透** | 查不存在的 key，每次都打到 DB | ① 缓存空值（短 TTL）；② 布隆过滤器前置拦截；③ 参数校验 |
+| **击穿** | 某个热点 key 过期瞬间，大量并发同时回源 | ① 互斥锁（只放一个线程回源，其余等待后重试）；② 逻辑过期（value 里带过期时间，异步更新，永不物理过期） |
+| **雪崩** | 大量 key 同一时刻过期 / Redis 宕机 | ① TTL 加随机抖动；② 多级缓存（本地 Caffeine + Redis）；③ 熔断降级（Redis 挂了直接读 DB 并限流保护） |
+
+**逻辑过期 vs 互斥锁**的选择：逻辑过期**不阻塞请求**（返回旧数据 + 异步刷新），适合对实时性容忍度高的展示型数据；互斥锁**阻塞但数据新鲜**，适合一致性要求高的场景。
+
+**热 key 的发现与治理**：${C}redis-cli --hotkeys${C}（需 LFU）、${C}MONITOR${C}（仅短时诊断，对性能影响大）、客户端埋点统计。治理手段：**本地缓存**（JVM 内 Caffeine，穿透 Redis 层）、**key 加随机后缀拆分**（把 1 个热 key 拆成 N 个分散到不同分片）、读写分离（从节点分担读）。
+
+### 五、单线程模型与「为什么还会慢」
+
+Redis 的「单线程」特指**命令执行**是单线程的（6.0 起网络 IO 可多线程，但命令执行仍单线程）。好处是免锁、天然原子、可预测；代价是**任何慢命令都会阻塞所有后续请求**。
+
+五个必须避开的慢命令/操作：
+
+1. ${C}KEYS *${C} → 用 ${C}SCAN${C} 游标迭代（注意 SCAN 不保证返回全部，需循环到游标 0）；
+2. 大集合的 ${C}SMEMBERS / HGETALL / LRANGE 0 -1${C} → 分页或 ${C}SSCAN/HSCAN${C}；
+3. ${C}DEL${C} 一个百万元素的 key → 用 ${C}UNLINK${C}（异步释放）；
+4. 大 key 的 ${C}ZADD/ZRANGE${C} → 拆分业务 key（按时间/用户分桶）；
+5. 事务里塞多命令、Lua 脚本过长 → 拆小，或改用 pipeline 分摊 RTT。
+
+**排查工具**：${C}SLOWLOG GET 10${C}（${C}slowlog-log-slower-than 10000${C} 即 10ms 记录）、${C}INFO commandstats${C}（按命令看平均耗时）、${C}LATENCY DOCTOR${C}。判断「大 key」用 ${C}redis-cli --bigkeys${C} 或 ${C}MEMORY USAGE <key>${C}。
+
 ## 📚 延伸阅读
 
 - redis.io/topics：Data Types Tutorial / Persistence / Replication / Sentinel
@@ -1296,6 +2073,114 @@ ${F}
 - [ ] 顺序场景 key 路由到固定分区，消费端不并行破坏顺序
 - [ ] 关键消费者幂等（唯一约束/去重表），重投 10 次结果不变
 - [ ] 有积压监控与预案（扩分区/降级/补偿脚本）
+
+<!--dd:mq-async-->
+
+## 🔬 深挖：消息不丢的三段链路与顺序性
+
+### 一、「消息不丢」必须端到端三段都成立
+
+${F}
+生产者 ──①──> Broker ──②──> 磁盘/副本 ──③──> 消费者
+① 生产确认：acks=all + 重试 + 幂等生产者
+② Broker 侧：刷盘策略 + 副本数 + min.insync.replicas
+③ 消费确认：手动 ack + 处理成功后才提交位点
+${F}
+
+**任一环断裂都会丢消息**，所以要逐段核验：
+
+| 环节 | 丢失场景 | 配置要点 |
+|---|---|---|
+| ① 生产 | ${C}acks=1${C}（leader 写完即回）、失败不重试、缓冲区满被丢弃 | Kafka：${C}acks=all${C} + ${C}retries${C} + ${C}enable.idempotence=true${C}；RabbitMQ：publisher confirm + mandatory |
+| ② Broker | 异步刷盘（OS 缓存未落盘宕机）、副本未同步就切主 | Kafka：${C}min.insync.replicas >= 2${C} + ${C}replication.factor >= 3${C} + ${C}unclean.leader.election.enable=false${C}；RabbitMQ：镜像/仲裁队列 + persistent 消息 |
+| ③ 消费 | 先提交位点后处理（处理失败就丢了）、先 ack 后业务入库 | Kafka：${C}enable.auto.commit=false${C}，处理完成再手动 commit；RabbitMQ：${C}basicAck${C} 放在业务成功之后 |
+
+**关键权衡**：${C}acks=all + min.insync.replicas=2${C} 保证了不丢，但**可用性下降**——3 副本中挂 2 个就无法写入。这是 CAP 的真实代价，必须与业务确认「能接受写不可用还是能接受丢消息」。
+
+### 二、至少一次 → 幂等消费
+
+既然选了不丢（at-least-once），就必然**可能重复**（重试、rebalance、ack 丢失）。所以幂等不是可选项，而是必选项：
+
+${F}java
+// 方案 A：去重表（推荐，通用）
+// message_id 建唯一索引，插入成功才处理，重复插入抛 DuplicateKeyException 直接 ack
+@Transactional
+public void consume(Msg msg) {
+    try {
+        dedupMapper.insert(new Dedup(msg.getId(), now()));   // 唯一索引兜底
+    } catch (DuplicateKeyException e) {
+        log.info("重复消息，跳过 {}", msg.getId());
+        return;                                              // 视为处理成功，正常 ack
+    }
+    doBusiness(msg);
+}
+
+// 方案 B：业务唯一键 + 状态机（最优雅，无需额外表）
+// UPDATE orders SET status='PAID' WHERE id=? AND status='UNPAID'
+// 判断 affectedRows==1 才发后续动作 —— 天然幂等
+${F}
+
+**去重表的两个工程细节**：① 必须**与业务在同一事务**里（否则业务成功、去重记录失败 → 下次重复处理）；② 需要**定期清理**（按时间分区或定期删除 7 天前记录），否则表无界增长。
+
+### 三、顺序性：Kafka 的保证边界
+
+Kafka 只能保证**单分区内有序**，跨分区不保证。所以「同 key 的消息必须有序」的实现就是**用业务主键做分区键**：
+
+${F}java
+// 同一订单的所有事件必须进同一个分区
+ProducerRecord<String, String> rec =
+    new ProducerRecord<>("order-events", orderId, payload);   // key = orderId
+// 默认分区器：hash(key) % numPartitions → 同 key 必同分区 → 分区内有序
+${F}
+
+**三个会破坏顺序的陷阱**：
+1. ${C}max.in.flight.requests.per.connection > 1${C} 且未开幂等 → 重试导致乱序（开 ${C}enable.idempotence=true${C} 后 Kafka 会保证顺序）；
+2. 生产者**自定义分区器**用了轮询 → 同 key 被分散；
+3. 消费端**多线程处理**同一个分区内的消息 → 处理完成顺序不确定。要么单线程消费单分区（慢但有序），要么在应用层做「按 key 路由到固定线程/队列」（内存队列哈希分桶）。
+
+**代价提醒**：为了让 key 有序，必须接受「热点 key 导致分区倾斜」——大客户一个分区、小客户挤在另一个。解法是给 key 加业务维度前缀（如 ${C}orderId + shardId${C}），但那样就不保证全局有序了，需回到业务确认「是否真的需要全局有序」。
+
+### 四、RabbitMQ 的路由模型与死信
+
+${F}
+Producer → Exchange（按 type + routingKey 决定去哪）→ Queue → Consumer
+Exchange 类型：
+  direct  精确匹配 routingKey
+  topic   通配匹配（order.*.paid、order.#）
+  fanout  广播到所有绑定队列（忽略 routingKey）
+  headers 按消息头匹配（少用）
+${F}
+
+**死信队列（DLX）** 是必配的兜底——消息进入死信的三条路径：① 被拒绝（${C}basicNack requeue=false${C}）或 ${C}basicReject${C}；② 消息 TTL 过期；③ 队列达到最大长度被丢弃。配置：
+
+${F}java
+// 业务队列绑定死信交换机，消费失败 nack 不带 requeue → 进死信队列人工排查
+@Bean
+public Queue orderQueue() {
+    return QueueBuilder.durable("order.queue")
+        .withArgument("x-dead-letter-exchange", "dlx.exchange")
+        .withArgument("x-dead-letter-routing-key", "order.dead")
+        .withArgument("x-message-ttl", 60000)         // 消息最长活 60s
+        .withArgument("x-max-length", 100000)          // 队列上限
+        .build();
+}
+${F}
+
+**重试策略必须是「有限次 + 指数退避 + 最终进死信」**：无脑 ${C}requeue=true${C} 会让一条坏消息无限循环，把消费者 CPU 打满（消息毒丸）。
+
+### 五、积压与容量
+
+积压的三个成因与处置：
+
+| 成因 | 现象 | 处置 |
+|---|---|---|
+| 消费能力不足 | 消费速率 < 生产速率，lag 持续增长 | 加消费者（**不超过分区数**，Kafka 一个分区只被组内一个消费者消费）→ 加分区 |
+| 消费卡住 | lag 突然陡增且不动 | 查消费线程栈（下游 DB/HTTP 超时）、查是否死锁 |
+| 突发流量 | 短时 lag 高但自动回落 | 无需处理，但要设告警阈值 |
+
+**容量估算**：分区数 = ${C}目标吞吐 / 单分区吞吐${C}，并预留 2~3 倍余量（分区数只能增不能减，且增加会破坏 key 的顺序保证，需谨慎）。Kafka 单分区顺序写吞吐可观，但**分区过多**会拖慢 leader 选举与 rebalance（建议单 broker 不超过 2000~4000 分区）。
+
+**积压时的应急消费**：把消息拉出来批量处理**跳过非关键逻辑**（但要记录跳过了什么）、增大 ${C}max.poll.records${C} 与并行度、必要时起临时消费组把消息搬到临时队列（避免阻塞主链路）。
 
 ## 📚 延伸阅读
 
@@ -1393,6 +2278,103 @@ ${F}
 - [ ] 每个写接口都有幂等方案：唯一约束 / 状态机 / 幂等键 至少其一
 - [ ] 用过 Redisson watchdog，锁超时与业务耗时匹配过评估
 - [ ] 锁粒度按业务键，压测验证过并发吞吐
+
+<!--dd:distributed-lock-idempotent-->
+
+## 🔬 深挖：分布式锁的正确姿势与幂等设计
+
+### 一、Redis 锁的四个必备条件
+
+${F}java
+// ✅ 完整正确的 Redis 分布式锁
+public boolean tryLock(String key, String requestId, long expireMs) {
+    // ① SET NX PX 原子（不要用 SETNX + EXPIRE 两条命令！
+    //    中间宕机会导致锁永不过期）
+    String r = jedis.set(key, requestId, "NX", "PX", expireMs);
+    return "OK".equals(r);
+}
+
+private static final String UNLOCK_LUA =
+    "if redis.call('get', KEYS[1]) == ARGV[1] then " +   // ② 校验持有者
+    "  return redis.call('del', KEYS[1]) else return 0 end";
+
+public boolean unlock(String key, String requestId) {
+    // ③ Lua 脚本保证「比对 + 删除」原子性（不能用 get 后 del，两步之间锁可能已过期易主）
+    Object r = jedis.eval(UNLOCK_LUA, Collections.singletonList(key),
+                          Collections.singletonList(requestId));
+    return Long.valueOf(1).equals(r);
+}
+// ④ value 必须是唯一 requestId（UUID），否则会误删别人的锁
+${F}
+
+**四个必备条件**：原子加锁（SET NX PX 一条命令）、唯一持有者标识、原子释放（Lua）、**过期时间**（防死锁）。少任何一条都有对应的事故场景。
+
+### 二、锁续期（看门狗）与 Redlock 争议
+
+TTL 设短了业务没跑完锁就过期（两个线程同时持锁）；设长了进程崩溃后要等很久才能恢复。**Redisson 的看门狗**机制：加锁成功后台起定时任务，每 ${C}TTL/3${C} 续期一次直到释放；只有不显式指定 ${C}leaseTime${C} 时看门狗才生效（指定了就不续期）。
+
+**Redlock 的争议要点（面试常问）**：Redis 作者 Antirez 提出向 N 个独立 master 依次加锁、多数成功才算成功；分布式系统专家 Kleppner 指出它**依赖时钟假设**且无法防 GC 停顿/网络延迟导致的租约失效。结论口径：**对绝对正确性有要求的场景，锁应有「fencing token」兜底**（每次加锁拿到单调递增的版本号，写存储时带上版本号，存储侧拒绝更旧版本），或直接用 **ZooKeeper（临时顺序节点）+ etcd（Lease）** 这类共识系统。
+
+### 三、锁的适用边界：锁 ≠ 事务
+
+分布式锁只解决「同一时刻只有一个执行者」，**不解决**：锁内多个操作的原子性（需要事务）、锁过期的业务延续（需要 fencing/幂等）、以及性能瓶颈（串行化的吞吐上限）。
+
+**最重要的实践结论**：能用**幂等 + 唯一约束**替代锁，就不要用锁。
+
+${F}sql
+-- 用数据库唯一索引兜底，比分布式锁更简单、更可靠（不依赖外部组件）
+ALTER TABLE coupon_record ADD UNIQUE KEY uk_user_coupon (user_id, coupon_id);
+-- 并发领取时只有一个成功，其余抛 DuplicateKeyException → 友好提示「已领取」
+${F}
+
+数据库唯一索引的优势：**不依赖时钟、不依赖网络、不依赖额外中间件**，且本身就在事务里。它的局限是「热点行写入」会串行化（高并发下用「唯一约束 + 分段队列异步落库」缓解）。
+
+### 四、幂等设计的三种武器
+
+| 武器 | 原理 | 适用 |
+|---|---|---|
+| **唯一约束** | 数据库唯一索引，插入冲突即重复 | 创建类操作（下单、领券、支付单） |
+| **幂等键（业务唯一号）** | 客户端生成 requestId，服务端去重表/缓存判重 | 开放 API、支付回调、消息消费 |
+| **状态机 + 乐观锁** | 只允许特定前置状态的流转 | 订单状态、审核流程、退款 |
+
+${F}sql
+-- 状态机 + 乐观锁：只允许 UNPAID → PAID，天然幂等
+UPDATE orders SET status = 'PAID', paid_at = NOW(), version = version + 1
+WHERE id = ? AND status = 'UNPAID';
+-- affectedRows = 0 → 说明已被处理过（或状态非法）→ 直接返回成功，不报错
+${F}
+
+**幂等键的三个设计要点**：① 键的生成方是**发起方**（客户端或上游服务），服务端不生成；② 键必须**可复现**（重试时还是同一个键，否则等于没做）；③ 去重记录要有**足够的保留窗口**（至少覆盖最长重试周期，通常 24h~7d），窗口外重复则视为新请求。
+
+### 五、一个完整的幂等接口骨架
+
+${F}java
+public Result pay(String requestId, PayCmd cmd) {
+    // ① 前置校验：参数与权限
+    validate(cmd);
+
+    // ② 幂等表插入（唯一索引 uk_request_id）
+    try {
+        idempotentMapper.insert(new IdemRecord(requestId, "PAY", Status.PROCESSING, now()));
+    } catch (DuplicateKeyException e) {
+        IdemRecord old = idempotentMapper.selectByRequestId(requestId);
+        if (old.getStatus() == Status.SUCCESS) return Result.ok(old.getResult());  // 已成功，直接回原结果
+        if (old.getStatus() == Status.PROCESSING) return Result.of("处理中，请稍后查询"); // 不放行重复执行
+        // FAILED 允许重试：更新为 PROCESSING 并继续
+    }
+
+    try {
+        doPay(cmd);                                             // ③ 真实业务
+        idempotentMapper.markSuccess(requestId, resultJson);     // ④ 记录结果
+        return Result.ok(resultJson);
+    } catch (Exception e) {
+        idempotentMapper.markFailed(requestId, e.getMessage());   // ⑤ 标记失败，允许重试
+        throw e;
+    }
+}
+${F}
+
+注意「PROCESSING 状态不放行」这一点——很多实现只做「查不到就执行」，导致并发重复请求同时穿透。必须**先占位、再执行**。
 
 ## 📚 延伸阅读
 
@@ -1504,6 +2486,89 @@ ${F}
 - [ ] GC 日志接入了分析平台，关注 P999 而不是平均值
 - [ ] 容器内存限制与 JVM 配置匹配（MaxRAMPercentage），区分过 cgroup OOM 与 JVM OOM
 
+<!--dd:jvm-troubleshoot-->
+
+## 🔬 深挖：线上排障的标准作业流程
+
+### 一、工具矩阵：先分清「安全」与「高危」
+
+| 工具 | 作用 | 是否 STW | 线上可用性 |
+|---|---|---|---|
+| ${C}jps -lvm${C} | 列出 Java 进程与启动参数 | 否 | ✅ 安全 |
+| ${C}jstat -gcutil <pid> 1000${C} | 各代使用率与 GC 次数/耗时 | 否 | ✅ 安全，首选 |
+| ${C}jstack <pid>${C} | 线程栈（锁、死锁、热点方法） | 短暂 | ✅ 基本安全 |
+| ${C}jcmd <pid> <cmd>${C} | 官方统一入口（替代多数工具） | 视命令 | ✅ 推荐 |
+| ${C}jmap -histo:live <pid>${C} | 类实例直方图 | **是**（触发 Full GC） | ⚠️ 慎用 |
+| ${C}jmap -dump:live,...${C} | 堆快照 | **是** | ⚠️ 摘流量后再做 |
+| ${C}arthas${C} | 在线诊断（trace/watch/ognl） | 部分命令会 | ✅ 强推，注意不滥用 trace 全量 |
+
+${C}jcmd${C} 是 JDK 7+ 的推荐入口：${C}jcmd <pid> help${C} 可列出所有可用命令，比记忆一堆独立工具更好用。
+
+### 二、CPU 飙高的标准定位流程
+
+${F}bash
+# ① 找出最耗 CPU 的进程
+top -c                      # 记下 PID
+# ② 找出该进程内最耗 CPU 的线程（-H 显示线程）
+top -Hp <pid>               # 记下线程 TID，例如 12345
+# ③ 转成 16 进制（jstack 的 nid 是 16 进制）
+printf "%x\n" 12345         # → 3039
+# ④ 抓线程栈并精确定位
+jstack <pid> > /tmp/jstack.log
+grep -A 30 "nid=0x3039" /tmp/jstack.log
+# ⑤ 或一把梭（连续抓 10 次看同一线程是否霸榜）
+for i in $(seq 1 10); do jstack <pid> | grep -A 12 "nid=0x3039"; sleep 1; done
+${F}
+
+常见三种结论：
+
+| 线程栈特征 | 结论 | 处置 |
+|---|---|---|
+| ${C}RUNNABLE${C} + 业务方法 → 循环/正则/大计算 | 代码热点 | 优化算法或用 Arthas ${C}trace${C} 看耗时分布 |
+| ${C}RUNNABLE${C} + ${C}HashMap.get${C}/链表遍历 | 哈希退化（hashCode 差） | 换 key 设计或数据结构 |
+| 大量线程在 ${C}BLOCKED${C} 等待同一锁 | 锁竞争 | 缩小临界区、分段锁、异步化 |
+| 频繁 Full GC（jstat 显示 FGC 高） | 内存问题伪装成 CPU 问题 | 走内存排查流程 |
+| ${C}UNKNOWN${C} / 大量 native 帧 | JIT 编译线程或 GC 线程在干活 | 看 jstat 与 GC 日志确认 |
+
+### 三、内存问题的定位：一定要看支配树
+
+${F}bash
+# ① 先看趋势（判断是泄漏还是单纯不够）
+jstat -gcutil <pid> 1000 60     # 观察 60 秒，看 O 列（老年代）是否持续上升且 Full GC 后不降
+# ② 导出堆（jmap -dump:live 会触发 Full GC，线上务必摘流量）
+jmap -dump:format=b,file=/data/dump/heap_$(date +%s).hprof <pid>
+# ③ 或用更轻量的一键脚本
+jcmd <pid> GC.heap_dump /data/dump/heap.hprof
+${F}
+
+用 **MAT / Eclipse Memory Analyzer** 分析，顺序很重要：
+
+1. **Leak Suspects** 报告（自动给出最可疑的持有链）；
+2. **Dominator Tree**（按「支配内存量」排序，而不是实例数量）——这才代表「干掉它就释放多少内存」；
+3. 看 **retained heap** 而不是 shallow heap；
+4. 展开引用链（Path to GC Roots，排除弱引用/软引用）找到真正的持有者。
+
+**高频泄漏模式**：静态集合只加不减、缓存无上限（缺 LRU）、ThreadLocal 未 remove、监听器注册未注销、连接/流未关闭、长生命周期对象持有短生命周期对象（如单例里存 Request）。
+
+### 四、死锁与资源耗尽的识别
+
+${F}bash
+jstack <pid> | grep -A 30 "Found one Java-level deadlock"
+jcmd <pid> Thread.print -l        # -l 会额外打印锁的持有关系
+${F}
+
+jstack 会**主动检测**并输出死锁回路（哪两个线程、各自持有/等待哪个锁）。修法是**统一加锁顺序**或用带超时的 ${C}tryLock(timeout)${C}（超时后放弃并释放已持有的锁）。
+
+**「线程数暴涨」的排查**：${C}jstack <pid> | grep "^\\"" | wc -l${C} 数线程；按线程名前缀统计（${C}grep -o '"pool-[0-9]*'${C}）判断是哪个线程池在膨胀；常见原因是**线程池用了无界队列 + 上游超时未设**，或每次请求都 ${C}new Thread${C}。同时确认 ${C}ulimit -u${C}（最大线程数）与物理内存——**每个线程默认 1MB 栈**（${C}-Xss${C}），1000 个线程就是 1GB。
+
+### 五、线上安全操作清单
+
+- **任何会 STW 的操作（jmap dump、heap histogram）都先摘流量**，或在有冗余实例时逐个轮询操作；
+- **先看日志与监控，再动工具**：GC 日志、应用日志的 OOM 上下文、监控的 QPS/RT/线程数曲线往往已经指出了方向；
+- **保留现场**：不要急着重启（重启会丢掉所有现场），先 ${C}jstack${C} + ${C}jstat${C} + dump，再决定是否重启；
+- **必须提前开启**：${C}-XX:+HeapDumpOnOutOfMemoryError${C}、GC 日志落盘轮转、${C}-XX:+ExitOnOutOfMemoryError${C}（避免半死不活）；
+- **Arthas 的纪律**：${C}trace${C} 会拦截方法调用，高 QPS 方法上全量 trace 会拖慢应用，务必加 ${C}-n${C} 限制次数与 ${C}'#cost>100'${C} 条件。
+
 ## 📚 延伸阅读
 
 - Oracle《Troubleshooting Guide for HotSpot VM》：Collectors/OOM/挂起各章节
@@ -1597,6 +2662,85 @@ ${F}
 - [ ] 主从延迟有监控与告警，写后读场景路由到主库
 - [ ] 全局 ID 方案独立于分片自增
 - [ ] 扩容/迁移有双写 + 对账 + 可回退的完整预案
+
+<!--dd:sharding-ha-->
+
+## 🔬 深挖：分片路由、扩容与主从切换
+
+### 一、分片键的选择：先看查询模式，再看数据分布
+
+| 分片策略 | 路由方式 | 优点 | 缺点 |
+|---|---|---|---|
+| 范围（range） | 按值区间映射到库 | 范围查询高效、易扩容（追加新片） | 热点集中（如按时间分片，最新片被打爆） |
+| 哈希（hash） | ${C}hash(key) % N${C} | 分布均匀 | 扩容要**全量重分布**（N 变了，几乎所有数据要搬） |
+| 一致性哈希 | 环 + 虚拟节点 | 扩容只搬 1/N | 实现复杂，仍有轻微不均衡 |
+| 查表/映射表 | 维护 key → 库的映射 | 灵活（可手动调度冷热） | 映射表本身是瓶颈与单点 |
+
+**一致性哈希的本质**：把「库」和「key」都哈希到同一个 0~2³² 的环上，key 顺时针找到的第一个库就是它的归属。新增库时只影响它「后面一段」的 key，平均只搬 ${C}1/N${C} 数据。虚拟节点（每个物理库映射 100~1000 个环上点）解决数据倾斜。
+
+**分片键选择三问**：① 业务查询 90% 以上是否都带这个字段？② 它的分布是否均匀（避免 80% 流量落在一片）？③ 是否会导致跨片 JOIN 与跨片事务？三个都过关才能定。举例：订单表用 ${C}user_id${C}（查询都以用户为中心）而不是 ${C}order_id${C}（看似均匀但业务查询要全片扫描）。
+
+### 二、分片带来的四个新问题
+
+| 问题 | 表现 | 解法 |
+|---|---|---|
+| 跨片查询 | 分页/排序/聚合要合并多片结果 | 冗余字段（把要过滤的字段带上）+ 内存归并；或上 ES 做查询侧 |
+| 跨片 JOIN | 无法在库内 JOIN | 广播表（字典表每片一份）+ 字段冗余 + 应用层组装 |
+| 全局唯一 ID | 自增主键在多片冲突 | 雪花算法（时间 + 机器位 + 序列）、号段模式（Leaf）、Redis INCR |
+| 跨片事务 | 一个事务写多片无原子性 | 避免跨片事务（重新设计分片键）；必须跨片时用 Seata AT / 最终一致 |
+
+**深分页在分片下的放大效应**：${C}LIMIT 100000, 10${C} 需要在 N 个片各取 100010 条再归并——成本是 N 倍。所以分片系统**必须禁用深分页**，改为游标分页或限制最大页码。
+
+### 三、扩容重分片的两种路线
+
+${F}
+路线 A（双写迁移，推荐）
+  ① 新建 2N 个片（翻倍，保证新旧映射是「一分为二」的关系）
+  ② 开启双写（写新片 + 写老片，读仍走老片）
+  ③ 后台按「只搬要迁移的那一半」搬存量（时间可控、可中断续传）
+  ④ 校验一致性（pt-table-checksum / 自研比对）
+  ⑤ 读切到新片（灰度：先 1% 流量，观察后再全量）
+  ⑥ 停止双写、下线老片
+
+路线 B（在线重分片，ShardingSphere 的 resharding）
+  依赖框架的迁移能力，仍需业务侧配合双写与校验，本质与 A 相同
+${F}
+
+**绝对不要用「直接 %N 扩容」**：把 N 从 4 改成 5，几乎 100% 的数据归属都变了，等价于全量迁移且无法双写过渡。
+
+### 四、读写分离与主从延迟
+
+**主从延迟的三种成因**：① 主库并发写入而从库**单线程**回放（5.7+ 支持并行回放，但依赖组提交）→ 大事务会卡住；② 从库上有大查询/备份占用资源；③ 网络带宽或跨机房延迟。
+
+**必须处理延迟的四类查询**：
+
+${F}java
+// ① 写后立刻读（读自己的写）——必须走主库
+@Transactional
+public void createAndQuery() {
+    orderMapper.insert(o);
+    orderMapper.selectById(o.getId());     // 同事务内，走主库（用 ThreadLocal 强制主库标记）
+}
+
+// ② 强一致校验（支付回调后查订单状态）——走主库
+// ③ 幂等判断（判重查询）——走主库
+// ④ 报表/统计——可容忍延迟，走从库且加超时
+${F}
+
+**实现手段**：AOP + 注解（${C}@Master${C}）+ ThreadLocal 上下文 + 动态数据源路由；或强制事务内的读都走主库（因为事务与主库连接绑定）。最简单可靠的规则是「**写操作之后 1 秒内的读走主库**」，但这需要按业务精细设计，不能一刀切。
+
+### 五、高可用切换：MHA / Orchestrator / MGR
+
+| 方案 | 原理 | 切换耗时 | 一致性风险 |
+|---|---|---|---|
+| MHA | 管理节点探测主库 + 选最接近的从库提升 | 10~30s | 异步复制下可能丢最后事务 |
+| Orchestrator | 持续拓扑探测 + Raft 选主 + hooks | 秒级~10s | 同 MHA |
+| MGR（组复制） | Paxos 变体，多数派确认才提交 | 秒级 | 不丢（多数派活着） |
+| 云 RDS 高可用 | 底层共享存储/半同步 + 自动切换 | 常 <10s | 取决于半同步配置 |
+
+**半同步复制（semi-sync）是降低丢数据风险的常用折中**：主库等至少一个从库 ack 后返回（${C}rpl_semi_sync_master_wait_for_slave_count=1${C}），配合 ${C}rpl_semi_sync_master_timeout${C}（超时后自动降级为异步，避免写不可用）。
+
+**切换后必做的三件事**：① **应用重连**（连接池要能识别主库变更，否则旧连接仍指向老主库）——这是切换后「部分请求报错」的最常见原因，需要在 JDBC URL 配 ${C}autoReconnect${C} 或用支持 VIP/域名切换 + 连接池健康检查的方案；② **老主库回切为从**并重置 GTID/清理 relay log（否则双主脑裂）；③ **校验数据一致性**（pt-table-checksum 比对）。
 
 ## 📚 延伸阅读
 
@@ -1693,6 +2837,93 @@ ${F}
 - [ ] Outbox + 消费幂等 + 对账三件套齐备
 - [ ] 全局锁型方案（AT/XA）的使用范围有明确清单，热点路径不踩
 
+<!--dd:dist-tx-->
+
+## 🔬 深挖：分布式事务的六种方案与选型
+
+### 一、先想清楚：真的需要分布式事务吗
+
+分布式事务的代价极高（性能、复杂度、运维）。**90% 的场景可以用「单库事务 + 最终一致」替代**：
+
+- 单库内多表 → 本地事务，不要上分布式事务；
+- 跨库写 → 先考虑**合并到一个库**或**用消息驱动最终一致**；
+- 只有「资金/库存这类必须原子的跨服务操作」才值得上强一致方案。
+
+### 二、六种方案的能力对照
+
+| 方案 | 一致性 | 性能 | 侵入性 | 适用 |
+|---|---|---|---|---|
+| 2PC/XA | 强一致 | 差（同步阻塞、锁持有到事务结束） | 低（数据库支持） | 内部少量跨库操作 |
+| TCC | 强一致（业务层） | 中 | **高**（每个参与者写三个方法） | 资金、库存等强约束核心链路 |
+| 本地消息表 | 最终一致 | 好 | 中 | 跨服务异步通知（最常见） |
+| 事务消息（RocketMQ） | 最终一致 | 好 | 低 | 与 MQ 天然契合的场景 |
+| Saga | 最终一致 | 好 | 中（需写补偿） | 长流程（订单 → 支付 → 履约） |
+| Seata AT | 最终一致（读已提交近似） | 中 | **低**（加注解即可） | 快速接入、非极端一致要求 |
+
+### 三、2PC 为什么慢
+
+${F}
+阶段一 Prepare：协调者问所有参与者「能提交吗」→ 各参与者写 undo/redo 并锁资源、回复 yes/no
+阶段二 Commit：全部 yes → 提交；否则全部回滚
+${F}
+
+三个致命问题：① **同步阻塞**——Prepare 后资源（行锁）一直被持有到第二阶段，长事务拖垮并发；② **协调者单点**——协调者在 Prepare 后宕机，参与者会一直锁着资源（需要超时机制兜底）；③ **数据不一致**——阶段二部分参与者收到 Commit、部分没收到（需人工介入）。
+
+**XA 的工程现状**：MySQL 的 XA 需要 ${C}XA START/END/PREPARE/COMMIT${C} 语义，与连接池（HikariCP）的兼容性一般，实践中不建议在核心链路用。
+
+### 四、TCC 的三个必须处理的问题
+
+${F}java
+public interface OrderTccAction {
+    @TwoPhaseBusinessAction(name = "orderTcc", commitMethod = "confirm", rollbackMethod = "cancel")
+    boolean tryCreate(BusinessActionContext ctx, OrderCmd cmd);   // Try：预留资源（冻结而非扣减）
+
+    boolean confirm(BusinessActionContext ctx);                   // Confirm：确认（真正扣减，必须幂等）
+    boolean cancel(BusinessActionContext ctx);                    // Cancel：取消（释放预留，必须幂等）
+}
+${F}
+
+| 问题 | 场景 | 解法 |
+|---|---|---|
+| **空回滚** | Try 没执行（网络超时未到达），但协调者仍调 Cancel | Cancel 里判断「Try 记录是否存在」，不存在则记一条「已空回滚」记录并直接返回成功 |
+| **悬挂** | Cancel 先于 Try 到达（Try 因网络延迟后到），导致资源被预留却无人确认 | Try 执行前检查「是否已空回滚过」，是则拒绝执行 |
+| **幂等** | 网络重试导致 Confirm/Cancel 被重复调用 | 每个阶段都有状态记录 + 唯一键去重 |
+
+这三个问题是 TCC 面试的必考项，也是它「侵入性高」的真正原因——不是三个方法难写，而是这三个边界条件极易漏。
+
+### 五、本地消息表与事务消息
+
+**本地消息表（最实用的最终一致方案）**：
+
+${F}sql
+-- 业务表与消息表在同一个库、同一个本地事务里写入，保证「业务成功 ⇒ 消息一定被记录」
+BEGIN;
+INSERT INTO orders (id, user_id, amount) VALUES (...);
+INSERT INTO local_message (id, biz_type, biz_id, status, payload)
+       VALUES (UUID(), 'ORDER_CREATED', ?, 'PENDING', ?);
+COMMIT;
+-- 独立线程/定时任务扫描 PENDING 消息 → 发 MQ → 收到确认后置为 SENT
+${F}
+
+要点：① 消息表与业务表**必须同库同事务**（这是整个方案成立的前提）；② 发送侧**至少一次**投递（重试），消费侧靠幂等兜底；③ 状态流转 PENDING → SENT →（超时未确认则保留重试）；④ 表要按时间清理。
+
+**RocketMQ 事务消息**把这个模式内置了：发送**半消息**（对消费者不可见）→ 执行本地事务 → 根据结果 **Commit/Rollback** 半消息 → 若长时间未收到结果，Broker 会**回查**本地事务状态（需要实现回查接口）。本质与本地消息表相同，但省掉了自建消息表与扫描线程。
+
+**Saga** 适合长流程：把跨服务调用拆成 T1…Tn，每个 Ti 配一个补偿 Ci；失败时**反向执行** C(i-1)…C1。注意 Saga **没有隔离性**——中间态对外可见（订单已创建但库存已回滚），需要业务上用「状态标记 + 前置校验」来掩盖中间态。
+
+### 六、选型决策树
+
+${F}
+跨服务操作是什么性质？
+├─ 强一致 + 少量参与者 + 可接受低吞吐 → TCC（资金/库存）
+├─ 强一致 + 同库不同表 → 本地事务（不要上分布式事务！）
+├─ 最终一致 + 有 MQ → 事务消息 / 本地消息表
+├─ 最终一致 + 已有长流程编排 → Saga
+└─ 快速接入 + 非极端一致要求 → Seata AT（注意全局锁与 undo_log 的开销）
+${F}
+
+**反向决策提醒**：如果团队没有成熟的补偿/对账体系，宁可用「**最终一致 + 定时对账**」而不是硬上 TCC——TCC 写错反而比不一致更糟。**对账是分布式事务的最后防线**：每天定时把两边数据全量/增量比对，发现差异走人工或自动修复。
+
 ## 📚 延伸阅读
 
 - microservices.io：Saga / Process Manager / Transactional Outbox / Domain Event pattern 页
@@ -1788,6 +3019,102 @@ ${F}
 - [ ] 阶梯压测找过拐点，限流阈值由此标定
 - [ ] 过载演练过：验证「拒绝部分请求」比「全体超时」的恢复速度快
 - [ ] 重试全部有次数上限与指数退避，重试预算有监控
+
+<!--dd:high-concurrency-->
+
+## 🔬 深挖：从容量估算到限流降级
+
+### 一、容量估算：从业务指标推到技术指标
+
+${F}
+DAU = 100 万
+→ 日活用户的日均请求数 20 次 → 日请求量 2000 万
+→ 高峰集中在 2 小时（占全天 30%）→ 峰值 QPS = 2000万 × 0.3 / (2 × 3600) ≈ 833
+→ 加安全系数 3（防止突发）→ 设计目标 ≈ 2500 QPS
+
+并发数 = QPS × 平均 RT（利特尔法则 Little's Law）
+  RT = 100ms → 并发数 = 2500 × 0.1 = 250 个并发请求
+→ 若单实例能承载 200 并发 → 至少 2 个实例，考虑 N+1 冗余 → 3 个
+${F}
+
+**利特尔法则（${C}L = λW${C}）**是并发估算的基石：系统中的平均请求数 = 到达率 × 平均停留时间。它解释了「为什么 RT 从 50ms 涨到 500ms 会让并发数暴涨 10 倍」——**降级优先降 RT，而不是只加机器**。
+
+### 二、漏斗分层：每一层都要能挡
+
+${F}
+① CDN / 静态化      → 挡住 90% 静态请求（图片、JS、页面骨架）
+② 网关层限流        → 全局限流 + 黑名单 + 鉴权（拒绝最廉价，放在最前面）
+③ 应用层本地缓存     → Caffeine/LRU 挡热点（微秒级，零网络）
+④ 分布式缓存 Redis  → 挡大部分读（亚毫秒级）
+⑤ 数据库            → G1 保护自己：连接池上限 + 慢查询熔断
+${F}
+
+**核心原则：让请求在最早、最便宜的层被拒绝或满足**。反例是「所有请求都打到 DB 才判断权限失败」——把 DB 连接池打满，正常请求也一起挂。
+
+### 三、限流四算法的真实差异
+
+| 算法 | 原理 | 突发流量 | 实现要点 |
+|---|---|---|---|
+| 固定窗口 | 每单位时间计数 | 允许（边界双倍冲击） | 简单，有临界问题（0:59 与 1:00 各放 100） |
+| 滑动窗口 | 按时间片加权统计 | 平滑 | Redis ZSet 或环形数组 |
+| 漏桶 | 恒定速率流出，队列缓冲 | 不允许（整形） | 适合「必须匀速」的下游 |
+| **令牌桶** | 恒定速率放令牌，桶可积累 | 允许（桶容量内） | **最常用**，Guava RateLimiter / Sentinel |
+
+${F}java
+// Guava 令牌桶：单机限流（注意：多实例要除以实例数，或改用 Redis 集中式）
+RateLimiter limiter = RateLimiter.create(1000);        // 每秒 1000 个令牌
+if (!limiter.tryAcquire(200, TimeUnit.MILLISECONDS)) { // 最多等 200ms
+    throw new BizException("系统繁忙，请稍后重试");
+}
+
+// 平滑预热（冷启动保护）：预热 10s 后达到 1000 QPS
+RateLimiter warm = RateLimiter.create(1000, 10, TimeUnit.SECONDS);
+${F}
+
+**分布式限流的取舍**：Redis + Lua 实现全局限流准确但每请求一次网络 RTT；单机限流便宜但总量是「实例数 × 单机阈值」（扩缩容时需跟着调）。**推荐混合**：网关做全局粗粒度限流（如总 QPS 上限），应用内做单机细粒度限流（保护自身资源）。
+
+### 四、熔断与降级的三个状态
+
+${F}
+CLOSED（正常，放行）
+  → 错误率/慢调用比例超阈值 → OPEN（熔断，直接失败，不发请求）
+      → 等待 window（如 10s） → HALF_OPEN（试探，放少量请求）
+          ├─ 试探成功 → CLOSED（恢复）
+          └─ 试探失败 → OPEN（继续熔断）
+${F}
+
+${F}java
+// Resilience4j / Sentinel：熔断配置的三个关键参数
+CircuitBreakerConfig.custom()
+    .slidingWindowSize(100)                // 统计窗口：最近 100 次调用 / 或按时间
+    .failureRateThreshold(50)              // 错误率 > 50% 触发熔断
+    .slowCallRateThreshold(80)             // 慢调用（>600ms）比例
+    .waitDurationInOpenState(Duration.ofSeconds(10))
+    .permittedNumberOfCallsInHalfOpenState(10)
+    .build();
+${F}
+
+**降级的三个层次**（务必提前设计，不要等故障时想）：
+1. **返回缓存/默认值**（推荐商品：实时推荐挂了就返回热销榜）；
+2. **返回兜底静态内容**（无数据时展示「暂无数据」而不是白屏或错误页）；
+3. **静默失败**（非核心链路：埋点、推荐、消息通知失败直接吞掉，绝不能影响主链路）。
+
+**舱壁隔离（Bulkhead）**：不同下游用**独立线程池/信号量**，避免一个慢下游把全部线程占满。这是「A 服务挂了导致商品详情页也挂了」的标准解法。
+
+### 五、压测：不要只压「单接口最高 QPS」
+
+**有效的压测要做到三件事**：
+
+1. **按真实链路压**：用户一次操作可能触发 5 个下游调用，要压「业务闭环」而不是单接口；
+2. **给下游也配桩/容量**：压测时下游未扩容，得到的是「下游被打挂」的假瓶颈；
+3. **找到「拐点」而非「最大值」**：TPS 上升而 RT 开始非线性上升的那个点才是容量上限——超过它系统会进入恶性循环（队列堆积 → 超时 → 重试 → 雪崩）。
+
+**全链路压测的三个必备**：
+- **流量标识（影子标识）**：请求打标后，链路各环节识别并走**影子库/影子表**，避免污染生产数据；
+- **数据隔离**：影子库结构一致但数据独立，压测后清理；
+- **降级开关关闭**：压测时必须关闭自动降级，否则测出来的是降级路径的性能。
+
+**压测结论要落到三张表**：各接口容量（QPS/RT 拐点）、各层瓶颈（CPU/连接池/DB/缓存命中率）、以及**扩容单价**（每 1000 QPS 需要多少资源）——后者才让容量规划可算账。
 
 ## 📚 延伸阅读
 
@@ -1888,6 +3215,102 @@ Sentinel 三类规则：
 - [ ] 集群限流部署到位，单机限流不作为唯一防线
 - [ ] 服务拆分边界有文档，单请求跨服务跳数有上限（如 ≤4）
 
+<!--dd:microservice-governance-->
+
+## 🔬 深挖：注册发现、网关与全链路灰度
+
+### 一、服务注册发现的三次心跳
+
+${F}
+① 注册：服务启动 → 向注册中心写自己的 ip:port + 元数据（权重、版本、机房）
+② 心跳/健康检查：客户端主动上报（Eureka 30s）或注册中心主动探测（Nacos 支持临时/持久两种）
+③ 摘除：心跳超时（Eureka 90s 未续约）或被健康检查判死 → 从可用列表移除
+${F}
+
+**Eureka 与 Nacos 的模型差异**：
+
+| 维度 | Eureka | Nacos |
+|---|---|---|
+| 一致性 | AP（各节点异步复制，可能读到旧列表） | 支持 AP（临时实例，Distro）与 CP（持久实例，Raft） |
+| 健康检查 | 客户端心跳 + 服务端自我保护的「剔除阈值」 | 心跳 / 主动探测 / 也支持不健康即剔除 |
+| 变更推送 | 客户端定时拉取（30s）+ 增量 | 长连接推送（秒级） |
+| 服务端保护机制 | 自我保护模式（心跳丢失比例 > 85% 时不剔除） | 无同类机制 |
+
+**宁可短暂读到旧列表，也不要全量摘除**——Eureka 的自我保护模式就是这个取舍：网络抖动时它选择「不摘除」，避免把健康实例全清空导致服务彻底不可用。
+
+### 二、负载均衡：客户端 vs 服务端
+
+| 方式 | 原理 | 代表 | 特点 |
+|---|---|---|---|
+| 服务端 LB | 独立代理转发 | Nginx、LVS、云 SLB | 集中控制，多一跳，客户端无感知 |
+| 客户端 LB | SDK 拉取实例列表，本地选 | Ribbon、Spring Cloud LoadBalancer、gRPC | 少一跳、可按业务定制策略，但 SDK 侵入 |
+
+**长连接下客户端 LB 的坑**：服务端实例下线后，客户端不知道，长连接仍指向死实例 → 请求报错。解法是「**主动健康检查 + 连接池剔除 + 重试**」：Spring Cloud LoadBalancer 配合 ${C}spring.cloud.loadbalancer.health-check${C} 或 gRPC 的 ${C}KeepAlive + 自动重连${C}。
+
+**一致性哈希在某类场景比轮询好**：需要「同一用户请求落到同一实例」（本地缓存命中率、会话粘性）时用哈希。但要注意实例上下线会引起少量 key 重分布——虚拟节点可缓解。
+
+### 三、网关的核心职责（别把它当纯转发）
+
+${F}
+① 路由            路径/域名/Host → 后端服务
+② 鉴权            统一 JWT/签名校验，业务服务不再各自实现
+③ 限流            全局 + 按租户/接口/IP 的细粒度限流
+④ 熔断降级        下游故障时快速失败
+⑤ 协议转换        HTTP ↔ gRPC / 外部 HTTPS ↔ 内部 HTTP
+⑥ 灰度            按 header/用户/比例路由到不同版本
+⑦ 日志与追踪      生成/透传 TraceId，记录访问日志
+⑧ 请求/响应改写   去除敏感头、统一错误结构
+${F}
+
+**「网关别做重活」原则**：网关是所有流量的必经之路，任何同步阻塞的复杂逻辑（大报文解析、写库、调外部服务）都会成为全局瓶颈。业务逻辑放业务服务，网关只做「快、无状态、可缓存」的判断。
+
+**路由配置与灰度**：Spring Cloud Gateway 用 Predicate（匹配条件）+ Filter（处理），把灰度逻辑放在自定义 Filter 里：
+
+${F}java
+// 按请求头 x-gray 路由到 gray 版本实例
+@Bean
+public RouteLocator routes(RouteLocatorBuilder b) {
+    return b.routes()
+        .route("svc-gray", r -> r.path("/api/order/**")
+            .and().header("x-gray", "1")
+            .uri("lb://order-service-gray"))
+        .route("svc", r -> r.path("/api/order/**")
+            .uri("lb://order-service"))
+        .build();
+}
+${F}
+
+### 四、全链路灰度：难点在「跨服务的上下文透传」
+
+单跳灰度容易，难的是**调用链上所有服务都按同一个灰度标识选实例**：
+
+${F}
+入口网关（定灰度标识：用户 ID 尾号 / 请求头 / 比例）
+ → 把标识写进请求上下文（ThreadLocal）
+ → 出站时（拦截器/过滤器）把标识放进 header（x-gray-tag）
+ → 下游服务读到标识 → 同样用 ThreadLocal 传递 → 同样透传到下一跳
+ → 每个服务都按标识从注册中心选对应 tag 的实例
+${F}
+
+**必做的三件事**：① **元数据打标**（实例注册时带 ${C}tag: gray${C}）；② **透传组件**（Feign/RestTemplate/消息生产者都要拦截注入 header，这是最容易漏的——**异步线程与 MQ 会丢失上下文**，必须显式传递）；③ **兜底规则**（灰度实例不存在时回落默认实例，否则请求失败）。
+
+**异步/线程池导致的上下文丢失**是最常见的灰度失效原因：ThreadLocal 不跨线程。解法是 ${C}TransmittableThreadLocal${C}（阿里 TTL）或手动在提交任务时捕获并恢复上下文。
+
+### 五、链路追踪：TraceId 的生成与透传
+
+${F}
+TraceId（一次完整请求）→ SpanId（一个环节）
+  ├─ Browser 生成 TraceId → 带在 header（traceparent, W3C 标准）
+  ├─ 网关校验/生成 → 注入 MDC（日志自动带上）
+  ├─ 服务调用：header 透传 traceparent + 生成新 span + 记录父子关系
+  ├─ 消息：producer 把 traceId 写进消息头 → consumer 取出恢复上下文
+  └─ 上报到 APM（SkyWalking / Jaeger / Zipkin）→ 拼成完整调用树
+${F}
+
+**「日志里能 grep 到 TraceId」是排障的底线能力**——没有它，一个报错你要手工在 5 个服务的日志里对时间戳。实现要点：${C}MDC.put("traceId", id)${C} + logback pattern 里加 ${C}%X{traceId}${C}，并确保**线程池与 MQ 场景都透传**（同上，用 TTL 或显式传递）。
+
+**采样策略**：全量上报成本高，常见做法是「**头部采样**（按比例，如 1%）+ **尾部采样**（错误/慢请求强制采样）」——保证有问题的链路 100% 被记录，正常链路按比例。
+
 ## 📚 延伸阅读
 
 - microservices.io：Service Registry / API Gateway / Circuit Breaker / Bulkhead / Saga
@@ -1986,6 +3409,93 @@ ${F}
 - [ ] 水位报警基于「触顶时间预测」而非瞬时利用率
 - [ ] 关键资源的 USE 三项指标接入监控面板
 - [ ] 大促后复盘过压测模型误差并校准
+
+<!--dd:capacity-planning-->
+
+## 🔬 深挖：容量规划的方法论与冗余度设计
+
+### 一、容量规划的四步法
+
+${F}
+① 业务指标 → 技术指标
+   DAU / 订单量 / 打开次数 → QPS / 并发数 / 存储量 / 带宽
+② 单机能力测量（压测）
+   单实例在 RT 达标前提下的最大 QPS —— 注意是「拐点」不是「峰值」
+③ 冗余度与实例数
+   实例数 = 峰值 QPS / 单机 QPS × (1 + 冗余系数)  冗余系数通常 0.3~1.0
+④ 成本与弹性策略
+   常备容量（保底）+ 弹性容量（应对峰值）+ 降级预案（极限情况）
+${F}
+
+**四个常见错误**：① 用「平均值」算容量（峰值是平均的 3~10 倍）；② 忽略放大系数（一次用户操作触发 N 个下游调用，容量要乘 N）；③ 用测试环境的单机能力推生产（硬件、数据量、并发模型都不同）；④ 只算 QPS 不算**连接数**（连接池上限往往是真正的瓶颈）。
+
+### 二、存储容量的估算
+
+${F}
+单行大小估算（InnoDB）：
+  业务字段 = 声明长度之和 × 平均填充率（通常 0.5~0.7）
+  + 隐藏列 6B（DB_TRX_ID）+ 7B（DB_ROLL_PTR）
+  + 行头 5B（变长字段长度列表 + NULL 位图 + 记录头）
+  + 页开销 1/16（页目录与页头约占 6%~7%）
+  + 二级索引（每个索引约为「索引列 + 主键」大小 × 行数）
+
+示例：单行 500B 业务数据 → 实际约 600B
+  1000 万行 → 约 6GB 数据 + 索引 2GB + undo/binlog 预留 30% → 约 11GB
+  加 2 年增长与冗余 → 规划 40GB
+${F}
+
+**容易漏算的四项**：① 索引（常被忽略，有时比数据还大）；② undo log（长事务会急剧膨胀）；③ binlog（${C}binlog_row_image=full${C} 时很大，且保留天数决定占用）；④ **临时表与排序空间**（大查询会写磁盘临时表）。
+
+### 三、压测模型：并发数、RPS 与思考时间
+
+${F}
+闭环压测（最接近真实）：N 个并发用户 → 循环「发请求 → 等响应 → 思考时间 → 再发」
+  RPS = N / (RT + ThinkTime)
+
+开环压测（测极限）：固定速率发请求（如 1000 RPS），不看响应
+  适合测「上游不管下游死活」的真实场景（如 MQ 消费者、定时任务）
+
+阶梯加压（推荐）：每 2 分钟提升 20% 负载 → 观察 RT 与错误率拐点 → 找到容量上限
+${F}
+
+**压测必须同时观测三类指标**：① 应用（QPS、RT 分位 P99/P999、错误率、线程池队列、GC）；② 中间件（DB 连接数与慢查询、Redis 命中率与 RT、MQ lag）；③ 系统（CPU、内存、网络、磁盘 IO util、上下文切换）。
+
+**只看平均 RT 会骗人**：P99 才是用户真实体验——平均 50ms 而 P99 3s 的系统，1% 的用户在骂娘。压测报告必须给分位数。
+
+### 四、瓶颈定位：先证伪，别猜
+
+${F}
+CPU 高 → 是业务计算？还是 GC？还是上下文切换？（top/us/vmstat -w）
+  业务计算 → 火焰图（async-profiler）找热点方法
+  GC → jstat -gcutil 看 FGC 频率与耗时
+  上下文切换 → 线程数过多或锁竞争
+
+CPU 不高但 RT 高 → 在等什么？
+  等下游（看调用链各环节耗时占比）
+  等锁（jstack 看 BLOCKED）
+  等 IO（iostat 看 await/util）
+  等连接（连接池 activeCount 打满 → 排队）
+
+QPS 上不去但资源都没满 → 检查前置限制
+  网关限流？连接池上限？DB 最大连接数？Redis 连接数？线程池队列满？
+${F}
+
+**Amdahl 定律的启示**：如果 50% 的时间花在不可并行化的部分（如单线程的 DB 写入、全局锁），那么无限加机器最多只能提速 2 倍。**优化前先算「理论加速比上限」**，避免在错的维度投入。
+
+### 五、冗余度与高可用等级
+
+| 等级 | 形态 | 可用性 | 成本 |
+|---|---|---|---|
+| 单机房单实例 | 有单点 | 99% 级 | 1x |
+| 同机房多实例（N+1） | 抗单实例故障 | 99.9% | 1.3~2x |
+| 同城双机房（双活/主备） | 抗机房级故障 | 99.95% | 2~2.5x |
+| 异地多活 | 抗城市级故障 | 99.99% | 4x+ |
+
+**「N+1 还是 N+2」的判断**：N+1 只能容忍 1 个实例故障；如果故障恢复需要 10 分钟以上（如需要人工介入、数据库主从切换），则要 N+2（容忍「一个已故障 + 一个在滚动发布中不可用」）。
+
+**成本与可靠性的真实权衡**：每提升一个 9（99.9% → 99.99%），成本往往翻倍。所以容量规划的最后一步**不是追求极致，而是与业务确认「可接受的可用性等级」并据此投入**——把预算花在「用户真正会感知到的链路」上（下单、支付），而不是所有链路一刀切。
+
+**降级预案是容量规划的一部分**：容量规划不只回答「需要多少机器」，还要回答「**机器不够时先牺牲什么**」。预案清单要提前定义：哪些接口限流、哪些功能可关闭、哪些数据可以返回缓存/默认值，以及**每个开关谁能拍板执行**。
 
 ## 📚 延伸阅读
 

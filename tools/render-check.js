@@ -74,6 +74,16 @@ const TARGETS = [
   ["frontend", "mid", "component-state", "组件设计与状态管理"],
   ["frontend", "adv", "render-perf", "浏览器渲染原理与性能优化"],
   ["frontend", "adv", "fe-security", "前端安全"],
+  // 网络与操作系统（network.js 全量重写）
+  ["network", "basic", "tcp-ip-model", "计算机网络体系与 TCP/IP"],
+  ["network", "basic", "http-detail", "HTTP 协议详解"],
+  ["network", "mid", "tcp-reliable", "TCP 可靠传输与拥塞控制"],
+  ["network", "mid", "io-multiplexing", "IO 多路复用"],
+  ["network", "adv", "syscall-profiling", "系统调用与性能剖析"],
+  // 运维 / SRE（docs-data.js 内联 OPS）
+  ["ops", "basic", "fs-basics", "Linux 目录结构与文件操作"],
+  ["ops", "mid", "perf-four", "性能分析四板斧"],
+  ["ops", "adv", "slo-sli", "SLO / SLI / 错误预算"],
 ];
 
 (async () => {
