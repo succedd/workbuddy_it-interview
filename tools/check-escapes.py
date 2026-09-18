@@ -10,7 +10,13 @@ check-escapes.py —— 检查 it-interview 教程 JS 文件的转义与结构�
   1) 残缺插值 $C} / $F}（少左花括号）—— 页面上会渲染出裸文本 "$C}"
   2) 裸反引号（会截断 body 模板字符串，导致整文件语法崩溃）
   3) 非法插值 ${x}（只允许 ${C} 与 ${F}）
-  4) 每章代码围栏 ${F} 计数是否为偶数（奇数说明围栏未闭合）
+  4) 每章「还原成真实 Markdown 后」的代码围栏行数是否为偶数（奇数说明围栏未闭合）
+
+注意：围栏在源码里有两种等价写法 —— ${F}（规范写法）与 ${C}${C}${C}
+（历史遗留，escape-md.py 早期把 ``` 逐字符转成了三个 ${C}）。三连 ${C} 在渲染后
+就是一行 ```，同样能闭合围栏，所以判定必须先把占位符还原成真实 Markdown 再数，
+只数字面 ${F} 会把「闭合用的是三连 ${C}」的章节误报成围栏奇数（2026-09-18 实测：
+perm-sudo 章被误报，实际渲染 <pre> 11/11 配平、后续章节未被吞）。
 
 背景：body 内容是反引号模板字符串，行内代码写成 ${C}code${C}，
 代码围栏写成 ${F}lang ... ${F}。源码里除了"结构性反引号"（body 起止定界符）
@@ -23,6 +29,20 @@ import sys
 STRUCTURAL_OK = re.compile(r"^\s*(body:\s*)?`\s*,?\s*$")   # body 起止定界符行（含 body: ` 与行尾逗号）
 CONST_DEF = re.compile(r"^\s*const\s+[FC]\s*=")             # const F / const C 定义行（注释里可能举例反引号）
 COMMENT_LINE = re.compile(r"^\s*(//|\*|/\*)")      # 注释行（允许出现反引号说明）
+
+# 还原后的「整行围栏」：3 个以上反引号，可带语言标记（``` / ```bash）
+FENCE_LINE = re.compile(r"`{3,}[^\s`]*")
+
+
+def count_fences(span: str) -> int:
+    """把占位符还原成真实 Markdown 后，数「整行就是围栏」的行数。
+
+    ${F} -> ```；${C} -> `（因此 ${C}${C}${C} 还原成一行 ```，与 ${F} 等价）。
+    marked 对围栏的判定只看「该行是否以 3 个以上反引号开头（可有语言标记）」，
+    这里与之对齐，避免只数字面 ${F} 造成误报。
+    """
+    md = span.replace("${F}", "```").replace("${C}", "`")
+    return sum(1 for line in md.splitlines() if FENCE_LINE.fullmatch(line.strip()))
 
 
 def check(path: str) -> int:
@@ -53,15 +73,14 @@ def check(path: str) -> int:
             src[m.end():m.end() + 10].split("}")[0], ln))
         problems += 1
 
-    # 4) 每章 ${F} 配平
+    # 4) 每章围栏配平（先还原占位符，再按 Markdown 规则数「整行围栏」）
     marks = [(m.start(), m.group(1))
              for m in re.finditer(r'id:\s*"([A-Za-z0-9_\-]+)"', src)]
     for idx, (pos, name) in enumerate(marks):
         end = marks[idx + 1][0] if idx + 1 < len(marks) else len(src)
-        span = src[pos:end]
-        n = span.count("${F}")
+        n = count_fences(src[pos:end])
         if n % 2:
-            print("  [4] 代码围栏奇数（%d 个 ${F}）  章节 %s" % (n, name))
+            print("  [4] 代码围栏奇数（还原后 %d 个围栏行）  章节 %s" % (n, name))
             problems += 1
 
     print("  %s -> %s" % (path, "OK" if problems == 0 else "%d 个问题" % problems))
