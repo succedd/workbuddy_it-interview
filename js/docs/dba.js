@@ -132,6 +132,193 @@ ${F}
 - [ ] 生产 SQL 无 SELECT *，复杂查询优先用 CTE / 窗口函数
 - [ ] 分组查询在 ONLY_FULL_GROUP_BY 下能通过
 
+<!--dd:sql-basics-->
+
+## 🔬 深挖：一条 SELECT 的完整生命链路与优化器内幕
+
+### 一、从网络字节到结果集：九个阶段
+
+很多人把「写 SQL」当成写自然语言，其实服务端是一条固定流水线，每一段都有它的失败模式：
+
+| 阶段 | 组件 | 干什么 | 典型故障 |
+|---|---|---|---|
+| 1 | 连接层 | TCP 握手、认证插件校验、读取账号权限快照 | 连接风暴、认证失败、超出 max_connections |
+| 2 | 解析器 Parser | 词法 + 语法分析，产出解析树 | 语法错误、SQL 过长超 max_allowed_packet |
+| 3 | 预处理 Preprocessor | 表/列存在性、视图展开、别名解析、权限检查、常量折叠 | Unknown column、权限不足 |
+| 4 | 优化器 Optimizer | 逻辑重写 + 物理计划枚举 + 代价比较，输出执行计划 | 选错索引、错估行数 |
+| 5 | 执行器 Executor | 按计划调用存储引擎接口，做过滤/连接/排序/聚合 | Using temporary 落盘、filesort |
+| 6 | 存储引擎 InnoDB | 缓冲池命中、B+Tree 定位、行锁/MVCC 可见性判断 | 锁等待、缓冲池击穿 |
+| 7 | 返回层 | 结果集编码、按 net_buffer_length 分批发包 | 大结果集打满网络 |
+| 8 | 收尾 | 释放锁与临时表、写慢日志、更新统计 | 长事务未提交 |
+
+要点：**MySQL 8.0 已经彻底移除了查询缓存（Query Cache）**。老文章里「关掉 query_cache」的优化手段在 8.0 上属于无效操作 —— 那条路已经不存在了。
+
+### 二、代价模型：优化器到底在算什么
+
+优化器不做「对错」判断，只做**代价最小化**。代价由两张系统表里的常数决定：
+
+${F}sql
+-- 引擎无关的代价常数（节选）
+SELECT cost_name, cost_value, default_value FROM mysql.server_cost;
+-- io_block_read_cost 默认 1.0，memory_block_read_cost 默认 0.25
+SELECT * FROM mysql.engine_cost;
+${F}
+
+估算行数的公式是：
+
+${F}text
+预计扫描行数 = 表总行数 × 过滤条件选择率
+选择率 ≈ 1 / cardinality（该列不同值个数，来自统计信息）
+${F}
+
+所以**统计信息不准 = 计划必错**。这是「昨天还快今天就慢」的头号原因：数据分布变了（比如某状态值从 1% 涨到 60%），但统计信息还是三天前采样的一百来页。
+
+${F}sql
+-- 看统计信息是否新鲜
+SHOW INDEX FROM orders;
+-- Cardinality 列明显偏离真实值，就重新采样
+ANALYZE TABLE orders;
+-- 8.0 增强：为列建直方图，改善倾斜数据的选择率估算
+ANALYZE TABLE orders UPDATE HISTOGRAM ON status, city WITH 64 BUCKETS;
+SELECT * FROM information_schema.COLUMN_STATISTICS;
+${F}
+
+### 三、优化器到底做了哪些「重写」
+
+理解这些重写，才能看懂 EXPLAIN 里那个「和我写的完全不一样」的 SQL：
+
+1. **子查询转半连接**。${C}WHERE id IN (SELECT ...)${C} 会被尝试改写为半连接，候选策略有 FirstMatch、LooseScan、Materialize-lookup、DuplicateWeedout，由代价决定用哪个。
+2. **派生表合并（derived merge）**。${C}FROM (SELECT ...) t${C} 若不含聚合/去重/窗口函数，会被拍平进外层，于是外层谓词能下推。含 ${C}GROUP BY${C} 或 ${C}LIMIT${C} 则必须物化，性能差别巨大。
+3. **条件下推**。外层的过滤条件下推到视图、派生表、甚至下推到存储引擎（InnoDB 层的索引条件下推 ICP）。
+4. **等价类传播**。${C}a.x = b.x AND a.x = 5${C} 会自动推出 ${C}b.x = 5${C}，于是 b 表也能用上索引。
+5. **索引合并（Index Merge）**。${C}x = 1 OR y = 2${C} 可能变成「两个索引各扫一部分再求并集」。它比全表扫强，但通常**不如一个合适的联合索引**。
+6. **Hash Join（8.0.18+）**。等值连接且驱动表无可用索引时，不再退化成嵌套循环，而是建哈希表。执行计划里会看到 ${C}Using join buffer (hash join)${C}。
+
+### 四、观察工具的正确用法
+
+${F}sql
+-- 1) 基础执行计划：type / key / rows / Extra
+EXPLAIN SELECT o.id, o.amount, c.name
+FROM orders o JOIN customers c ON c.id = o.customer_id
+WHERE o.status = 'PAID' AND o.created_at >= '2026-01-01'
+ORDER BY o.created_at DESC LIMIT 20;
+
+-- 2) 树形：能看出每一步的代价与数据流方向
+EXPLAIN FORMAT=TREE <同样的 SQL>;
+
+-- 3) 真实执行统计（8.0.18+）：把「估算 rows」和「实际 rows」并排看，一眼看出估算错误
+EXPLAIN ANALYZE <同样的 SQL>;
+
+-- 4) 看优化器重写后的 SQL 与舍弃过的候选计划
+SET optimizer_trace = 'enabled=on';
+<查询>
+SELECT * FROM information_schema.OPTIMIZER_TRACE\\G
+SET optimizer_trace = 'enabled=off';
+
+-- 5) 语句级真实耗时分解（替代已废弃的 SHOW PROFILE）
+SELECT * FROM performance_schema.events_statements_history_long
+ORDER BY TIMER_START DESC LIMIT 10;
+${F}
+
+**EXPLAIN ANALYZE 是排查的第一杠杆**：估算 ${C}rows=10${C} 而实际 ${C}actual rows=1200000${C}，那不用再看别的了 —— 先修统计信息或改写条件。
+
+### 五、实战：三分钟把一个慢查询压到毫秒
+
+场景：订单列表页，表 800 万行。
+
+${F}sql
+-- 原始（1.8s）
+SELECT * FROM orders
+WHERE customer_id = 12345 AND status = 'PAID'
+ORDER BY created_at DESC LIMIT 20;
+
+-- EXPLAIN 显示：type=ref, key=idx_customer, rows=18000, Extra=Using filesort
+-- 含义：索引只用到 customer_id，status 与排序全靠回表后过滤 + 文件排序
+${F}
+
+改法一（加联合索引，让过滤与排序都在索引里完成）：
+
+${F}sql
+ALTER TABLE orders ADD INDEX idx_cust_status_time (customer_id, status, created_at DESC);
+-- 索引列顺序遵循：等值条件列在前 → 排序列在后，且方向一致
+-- 再 EXPLAIN：Extra 变成 Using index condition，filesort 消失
+${F}
+
+改法二（覆盖索引，把回表也省掉）：
+
+${F}sql
+-- 若列表页只需要几个字段，把返回列拼进索引末尾即可走「覆盖索引」
+ALTER TABLE orders ADD INDEX idx_cover (customer_id, status, created_at DESC, amount);
+-- Extra 出现 Using index 即为覆盖索引，不再回表
+${F}
+
+改法三（深翻页改造，见下方 8.1）。
+
+### 六、覆盖广度：SQL 写法对照表
+
+| 脆弱写法 | 问题 | 正确做法 |
+|---|---|---|
+| ${C}WHERE phone = 13800000000${C}（列是 varchar） | 隐式转换，索引失效 | 加引号 ${C}'13800000000'${C} |
+| ${C}WHERE DATE(created_at) = '2026-01-01'${C} | 列被函数包裹，索引失效 | ${C}created_at >= '2026-01-01' AND created_at < '2026-01-02'${C} |
+| ${C}WHERE a = 1 OR b = 2${C} | 常见走索引合并或全表 | 拆两条 ${C}UNION ALL${C}，或建联合索引 |
+| ${C}WHERE name LIKE '%张%'${C} | 前缀通配无法走 B+Tree | 改前缀匹配 ${C}'张%'${C}，或上全文索引 |
+| ${C}WHERE id NOT IN (SELECT ...)${C} | NOT IN 遇 NULL 返回空集，且难优化 | ${C}NOT EXISTS${C} 或 ${C}LEFT JOIN ... IS NULL${C} |
+| ${C}SELECT *${C} | 破坏覆盖索引、放大网络与内存 | 明确列清单 |
+| ${C}LIMIT 1000000, 20${C} | 深翻页要扫 100 万行再丢弃 | 游标分页（见下） |
+| 在 WHERE 里对列做运算 ${C}amount+1 > 100${C} | 无法用索引 | 移项 ${C}amount > 99${C} |
+
+### 7. 深翻页（Deep Pagination）的标准解法
+
+${F}sql
+-- 脆弱：扫描并丢弃 100 万行，越翻越慢
+SELECT id, title FROM articles ORDER BY id LIMIT 1000000, 20;
+
+-- 正确 1：游标（keyset）分页 —— 记住上一页最后一个 id，走索引等值定位
+SELECT id, title FROM articles WHERE id > 1000000 ORDER BY id LIMIT 20;
+
+-- 正确 2：延迟关联 —— 先用覆盖索引拿到主键，再回表取字段
+SELECT a.id, a.title
+FROM (SELECT id FROM articles ORDER BY id LIMIT 1000000, 20) t
+JOIN articles a ON a.id = t.id
+ORDER BY a.id;
+${F}
+
+游标分页的代价是**不能跳页**，但换来的是 O(1) 定位；后台列表、日志流、无限滚动场景应当首选。
+
+### 8. NULL 的三值逻辑与聚合陷阱
+
+${F}sql
+-- NULL 参与比较的结果是 UNKNOWN，不是 FALSE
+SELECT NULL = NULL;        -- NULL
+SELECT NULL <> NULL;       -- NULL
+-- 危险：NOT IN 子查询里含 NULL，整体恒不成立，结果为空集
+SELECT * FROM a WHERE id NOT IN (SELECT id FROM b);  -- b.id 有 NULL 时永远返回 0 行
+-- 安全写法
+SELECT * FROM a WHERE NOT EXISTS (SELECT 1 FROM b WHERE b.id = a.id);
+
+-- 聚合函数忽略 NULL，但 COUNT(*) 不忽略
+SELECT COUNT(*), COUNT(col) FROM t;  -- 两者常不相等
+-- AVG 同样忽略 NULL，需要「把 NULL 当 0」时必须显式写
+SELECT AVG(IFNULL(score, 0)) FROM t;
+${F}
+
+### 9. 别踩这些坑
+
+1. **只看 EXPLAIN 的 key 列就下结论**。key 有值不等于高效 —— 还要看 ${C}rows${C}（估算扫多少行）与 ${C}filtered${C}（过滤后剩余百分比）。${C}key${C} 命中但 ${C}rows=2000000${C} 照样慢。
+2. **用 ${C}SELECT *${C} 却在抱怨回表慢**。覆盖索引的前提是「需要的列都在索引里」，${C}*${C} 直接毁掉这个前提。
+3. **以为 ORDER BY 有索引就一定不 filesort**。只有当排序序列在索引中**连续且顺序一致**时才能复用索引；一旦中间夹了范围条件，后面的排序就失效。
+4. **在事务里做分页查询还指望结果稳定**。默认 RR 隔离级别下，快照是事务第一次读时建立的，翻页期间他人插入的数据看不到 —— 这是特性不是 bug，但做「导出全量」时要意识到。
+5. **把 AUTO_INCREMENT 当成严格连续**。并发插入、回滚、批量插入都会造成空洞；它只保证单调递增，不保证连续。
+
+### 10. 自检清单补充
+
+- [ ] 关心慢查询时先跑 ${C}EXPLAIN ANALYZE${C}，比对估算与实际行数
+- [ ] 统计信息有定期 ${C}ANALYZE${C}，倾斜列建了直方图
+- [ ] 深翻页接口已改游标分页或延迟关联
+- [ ] 所有字符串列比较都带引号，无隐式类型转换
+- [ ] 返回列已显式列出，核心查询走覆盖索引
+- [ ] 知道 8.0 无查询缓存，优化手段不照搬旧文
+
 ## 七、延伸
 
 - MySQL 8.0 Reference Manual → 13.2.9 SELECT / 13.2.11 WITH / 13.2.10 Subqueries
@@ -226,6 +413,131 @@ ${F}
 - [ ] 每张表都有 COMMENT，关键列有 COMMENT
 - [ ] 主键选型支持未来数据量级
 - [ ] 大表无物理外键时有应用层校验 + 对账兜底
+
+<!--dd:schema-normalization-->
+
+## 🔬 深挖：范式、反范式与线上 DDL 的工程取舍
+
+### 一、范式不是教条，是「写放大 vs 读放大」的调节旋钮
+
+| 范式 | 约束 | 消除的问题 | 引入的代价 |
+|---|---|---|---|
+| 1NF | 列不可再分、无重复组 | 数组塞进一个字段 | 拆表后需 JOIN |
+| 2NF | 非主键列完全依赖整个主键 | 复合主键下的部分依赖冗余 | 拆表 |
+| 3NF | 非主键列不传递依赖 | 冗余字段不一致 | JOIN 变多 |
+| BCNF | 每个决定因子都是候选键 | 主键内的异常依赖 | 进一步拆表 |
+
+工程上的真实答案是：**核心交易表尽量 3NF，读模型按查询形态反范式**。判断标准很简单 —— 「这条冗余字段会不会被独立修改？」会，就不要冗余；不会（如订单里的商品快照价格），就大胆冗余。
+
+${F}sql
+-- 典型的「有意反范式」：订单行冗余下单时的商品名与单价
+CREATE TABLE order_item (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  order_id      BIGINT UNSIGNED NOT NULL,
+  sku_id        BIGINT UNSIGNED NOT NULL,
+  sku_name      VARCHAR(128) NOT NULL COMMENT '下单时快照，不做外键关联',
+  unit_price    DECIMAL(12,2) NOT NULL COMMENT '成交价快照',
+  qty           INT UNSIGNED NOT NULL,
+  KEY idx_order (order_id)
+);
+-- 理由：商品改名/改价后，历史订单必须保持原样 —— 这是业务要求，不是冗余错误
+${F}
+
+### 二、数据类型选择：体积即性能
+
+| 场景 | 常见错选 | 正确选择 | 说明 |
+|---|---|---|---|
+| 金额 | ${C}FLOAT${C} / ${C}DOUBLE${C} | ${C}DECIMAL(12,2)${C} 或整数分 | 浮点有舍入误差，对账必崩 |
+| 布尔 | ${C}VARCHAR(1)${C} | ${C}TINYINT(1)${C} / ${C}BIT${C} | 省空间、语义清晰 |
+| 状态 | ${C}VARCHAR(20)${C} | ${C}TINYINT UNSIGNED${C} + 字典表 | 索引小、比较快 |
+| 主键 | ${C}INT${C}（21 亿上限） | ${C}BIGINT UNSIGNED${C} | 提前用大类型，避免日后改主键 |
+| 短文本 | ${C}TEXT${C} | ${C}VARCHAR(255)${C} | VARCHAR 可索引、可入行内 |
+| 时间 | ${C}VARCHAR(19)${C} | ${C}DATETIME(3)${C} / ${C}TIMESTAMP${C} | 能比较、能范围查、能索引 |
+| IP | ${C}VARCHAR(15)${C} | ${C}INT UNSIGNED${C} + ${C}INET_ATON${C}/${C}INET_NTOA${C} | 4 字节 vs 15 字节 |
+| 大 JSON | 拆成列 | ${C}JSON${C} + 生成列索引 | 8.0 支持多值索引 |
+
+**为什么不建议用 TEXT 做业务字段**：TEXT/BLOB 的溢出页机制会让行内只留 20 字节指针，每次读取都可能多一次随机 IO；而且 TEXT 列无法直接建索引（只能前缀索引），排序时会强制落盘。
+
+### 三、行格式与溢出页（很多人不知道的一层）
+
+${F}sql
+SHOW TABLE STATUS LIKE 'article'\\G   -- 看 Row_format
+-- DYNAMIC（8.0 默认）：变长列完全溢出到 off-page，行内只存 20 字节指针
+-- COMPACT：前 768 字节留在行内，其余溢出
+-- COMPRESSED：额外压缩，读放大换取存储
+${F}
+
+理解这一层的意义在于：**一张有多个长 VARCHAR 的表，改成 DYNAMIC 后单页能放更多行，索引扫描效率会明显提升**。反之，如果业务大量按长文本前缀查询，DYNAMIC 反而增加溢出页读次数。
+
+### 四、主键设计的两种路线（以及代价）
+
+${F}sql
+-- 路线 A：自增 BIGINT —— 顺序写入，页内追加，几乎不产生页分裂
+id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+
+-- 路线 B：业务主键 / UUID —— 写入随机，页分裂 + 缓冲池命中率下降
+id CHAR(36) PRIMARY KEY   -- 极度不推荐
+${F}
+
+若真的需要全局唯一且不想暴露自增 ID，推荐**雪花 ID（BIGINT）**：
+
+${F}text
+64 bit = 1 bit 符号位 + 41 bit 毫秒时间戳 + 10 bit 机器号 + 12 bit 序列号
+优点：趋势递增（写入仍近似顺序）、8 字节、可解析出时间
+缺点：依赖时钟回拨处理；机器号需集中分配
+${F}
+
+### 五、线上 DDL：为什么「加个字段」能搞垮生产
+
+MySQL 8.0 的 DDL 算法有三种，执行前必须确认：
+
+${F}sql
+-- 关键：ALGORITHM 与 LOCK 会决定这次 DDL 是「瞬间完成」还是「锁表重建」
+ALTER TABLE t ADD COLUMN c INT, ALGORITHM=INSTANT;  -- 8.0.12+ 支持，秒级完成
+ALTER TABLE t ADD INDEX idx_a (a), ALGORITHM=INPLACE, LOCK=NONE; -- 不阻塞读写
+-- 不支持的组合会直接报错，这正是你想要的：宁可报错也不要偷偷锁表
+
+-- 查看当前操作是否支持 INSTANT
+SELECT * FROM information_schema.INNODB_TABLES WHERE NAME LIKE '%t';
+${F}
+
+**INSTANT 的边界（8.0）**：只能在**表末尾追加列**、改列默认值、重命名列、设置列可见性；不能改列类型、不能删除列（8.0.29+ 才支持部分场景）、不能加在中间。这才是「先规划字段顺序，再上线」的现实理由。
+
+对于必须重建表的变更（改类型、加分区、改字符集），用工具在线做：
+
+| 工具 | 原理 | 适用 | 注意 |
+|---|---|---|---|
+| gh-ost | 建影子表 + binlog 抓增量 + 原子改名 | 高写入负载主库 | 需要 binlog_format=ROW；无触发器 |
+| pt-online-schema-change | 触发器同步增量 | 通用、老版本 | 触发器与业务触发器冲突 |
+| native INPLACE | 引擎内重建 | 多数索引变更 | 仍需磁盘空间与新表空间 |
+
+### 六、分区的真实价值与陷阱
+
+${F}sql
+-- 典型场景：日志/流水表按月分区，删除旧数据变成瞬间操作
+CREATE TABLE event_log (
+  id BIGINT UNSIGNED NOT NULL,
+  created_at DATETIME NOT NULL,
+  payload JSON,
+  PRIMARY KEY (id, created_at)   -- 分区键必须包含在主键里
+) PARTITION BY RANGE COLUMNS(created_at) (
+  PARTITION p202601 VALUES LESS THAN ('2026-02-01'),
+  PARTITION p202602 VALUES LESS THAN ('2026-03-01'),
+  PARTITION pmax VALUES LESS THAN (MAXVALUE)
+);
+-- 归档：秒级，不产生大事务、不膨胀 undo
+ALTER TABLE event_log DROP PARTITION p202601;
+${F}
+
+**陷阱**：分区并不会让查询变快，它只让「按分区键裁剪」和「快速删除」变快。如果查询条件不带分区键，优化器要扫全部分区，性能反而不如普通表。
+
+### 七、常见误区
+
+1. **「范式越高越好」**。读多写少的报表/列表页盲目 3NF，换来十几个 JOIN，性能全丢在连接上。
+2. **「反范式就是冗余错误」**。快照语义的冗余是正确设计，关键是明确它与源数据的**一致性边界**（永不回改 vs 需要同步）。
+3. **「ALTER TABLE 一定锁表」**。8.0 上追加列是 INSTANT 的；不确认 ALGORITHM 就动手，与确认后动手，风险差一个数量级。
+4. **「加字段不加默认值也没事」**。列允许 NULL 且无默认值时，旧代码的 INSERT 不报错，但新代码读到 NULL 就崩 —— 与之相比，明确的 ${C}NOT NULL DEFAULT${C} 才是安全起点。
+5. **「分区表能解决大表慢查询」**。分区的收益在运维（归档/清理），不在查询。
 
 ## 七、延伸
 
@@ -330,6 +642,114 @@ Redis 备份（redis.io → Persistence）：RDB 定时 fork 全量快照、AOF 
 - [ ] 权限库（mysql）/ 配置文件一并纳入备份
 - [ ] Redis RDB+AOF 双开且快照异地化
 
+<!--dd:backup-restore-->
+
+## 🔬 深挖：备份的三条正交维度与恢复演练
+
+### 一、先分清「备份」的三个维度
+
+任何一份备份方案，都是这三个选择的组合：
+
+| 维度 | 选项 | 影响 |
+|---|---|---|
+| 形态 | 逻辑（SQL 文本） / 物理（数据文件） | 逻辑可跨版本可挑表；物理快、可增量 |
+| 范围 | 全量 / 增量 / 差异 | 决定恢复耗时与存储成本 |
+| 一致性 | 冷备（停机） / 温备（只读锁） / 热备（在线） | 决定对业务的影响 |
+
+**核心指标只有两个**：RPO（能接受丢多少数据）和 RTO（能接受停多久）。先和业务把这两个数字定下来，再选工具 —— 反过来做，一定会做出「备份了但恢复不了」的方案。
+
+### 二、物理热备：XtraBackup 的关键机制
+
+${F}bash
+# 全量备份（对 InnoDB 在线、不阻塞写入）
+xtrabackup --backup --target-dir=/backup/full \\
+  --user=backup --password=*** --parallel=4 --compress
+
+# 增量备份：基于上一次的 LSN 只拷贝变化页
+xtrabackup --backup --target-dir=/backup/inc1 \\
+  --incremental-basedir=/backup/full
+
+# 关键步骤：prepare（把 redo 应用成一致状态，否则恢复出来的库不可用）
+xtrabackup --prepare --apply-log-only --target-dir=/backup/full
+xtrabackup --prepare --target-dir=/backup/full   # 最后一次不加 --apply-log-only
+
+# 恢复
+xtrabackup --copy-back --target-dir=/backup/full --datadir=/var/lib/mysql
+chown -R mysql:mysql /var/lib/mysql
+${F}
+
+为什么必须有 ${C}--prepare${C}？因为热备过程中数据文件和 redo 是**不同时刻**的拷贝，不 apply redo 就是「撕裂」的库。**没 prepare 的备份等于没有备份**，这是事故里最常见的一条。
+
+### 三、逻辑备份的隐藏陷阱
+
+${F}bash
+# 正确的单库一致性快照（InnoDB）
+mysqldump --single-transaction --source-data=2 \\
+  --routines --triggers --events --set-gtid-purged=OFF \\
+  --hex-blob --default-character-set=utf8mb4 \\
+  dbname > dbname.sql
+${F}
+
+| 参数 | 作用 | 不写会怎样 |
+|---|---|---|
+| ${C}--single-transaction${C} | 用 REPEATABLE READ 快照保证一致 | 备份期间数据前后不一致（InnoDB 表） |
+| ${C}--source-data=2${C} | 记录 binlog 位点（8.0.26 前叫 ${C}--master-data${C}） | 无法做 PITR |
+| ${C}--routines --triggers --events${C} | 含存储过程/触发器/事件 | 恢复后业务逻辑缺失，功能诡异报错 |
+| ${C}--hex-blob${C} | 二进制按十六进制导出 | blob/中文乱码 |
+| ${C}--set-gtid-purged=OFF${C} | 不写入 GTID 信息 | 恢复到有数据的实例上 GTID 冲突 |
+| ${C}--default-character-set=utf8mb4${C} | 明确字符集 | 表情符号被截断 |
+
+**重要提醒**：${C}--single-transaction${C} **只对 InnoDB 有效**。若库里有 MyISAM 表（比如某些老系统表），备份期间它仍会被写入，一致性就破了 —— 这是混杂引擎库做逻辑备份失败的根本原因。
+
+### 四、PITR：把恢复点精确到秒
+
+完整可恢复能力 = **全量备份 + 全量之后的 binlog 序列**。
+
+${F}bash
+# 1) 从全量备份恢复
+mysql < full.sql
+
+# 2) 找到误操作前的位点，用 binlog 补齐
+mysqlbinlog --start-datetime="2026-09-01 00:00:00" \\
+            --stop-datetime="2026-09-18 21:00:00" \\
+            /var/lib/mysql/binlog.000123 | mysql
+
+# 3) 或按 GTID 区间重放
+mysqlbinlog --skip-gtids=false --include-gtids='uuid:1-5000' binlog.000123 | mysql
+
+# 4) 反向解析：从 binlog 里找出被误删的数据
+mysqlbinlog --base64-output=DECODE-ROWS -v binlog.000123 | grep -A 30 "DELETE FROM orders"
+${F}
+
+**前置条件**：${C}binlog_format=ROW${C}、${C}log_bin=ON${C}、${C}binlog_row_image=FULL${C}。如果是 STATEMENT 格式，某些函数（如 ${C}NOW()${C}、${C}UUID()${C}）在重放时会产生与主库不同的结果，恢复就不可靠了。
+
+### 五、恢复演练：不做演练的备份不算备份
+
+${F}bash
+# 最低成本的做法：定期在隔离实例上恢复，并做行数与校验和比对
+# 1) 恢复
+mysql < dbname.sql
+# 2) 逐表比对行数与校验和（用 pt-table-checksum 或自建）
+mysql -e "SELECT COUNT(*) FROM dbname.orders" > after.txt
+diff before.txt after.txt
+# 3) 记录恢复耗时（这是 RTO 的真实值，不是估算值）
+${F}
+
+| 检查项 | 不检查的后果 |
+|---|---|
+| 恢复耗时 | 事故时才发现要 6 小时，业务无法接受 |
+| 行数/校验和 | 备份文件损坏、被截断未被发现 |
+| 应用可用性 | 库恢复了但账号权限、存储过程缺失，服务起不来 |
+| 跨版本兼容 | 5.7 备份恢复进 8.0 报字符集错误 |
+
+### 六、常见误区
+
+1. **「主从复制就是备份」**。${C}DROP TABLE${C}、${C}DELETE${C} 会立刻同步到从库；逻辑错误类故障复制毫无抵抗力。
+2. **「备份成功 = 日志无报错」**。mysqldump 中途连接断开可能只写半截文件，必须以**恢复演练**为准。
+3. **「备份文件存在本地磁盘」**。同一台机器上的备份不叫备份，至少要落到与库物理隔离的存储，并做加密（备份文件含全部业务数据，是最高的数据泄露风险点）。
+4. **「增量备份可以一直叠」**。链越长，恢复越慢、任一层损坏则整链失效。工程上建议「每周全量 + 每日增量」，并定期重做全量。
+5. **「大表用 mysqldump 也还行」**。几百 GB 的库用逻辑备份，恢复时要重建索引，耗时是物理备份的数倍，且会长时间占满 IO。
+
 ## 七、延伸
 
 - MySQL 8.0 Reference Manual → Ch.7 Backup and Recovery（全章精读）· Ch.19 The Binary Log
@@ -427,6 +847,131 @@ ${F}
 - [ ] 权限变更全量可追溯
 - [ ] 季度权限巡检脚本在跑（空密码 / 通配 host / 僵尸账号）
 
+<!--dd:user-privilege-->
+
+## 🔬 深挖：从权限表结构到最小权限落地
+
+### 一、权限存储的六张表（以及为什么不能直接改用户表）
+
+MySQL 把权限分两级存储：**内存中的 ACL 缓存** + **磁盘上的授权表**。
+
+| 表 | 粒度 | 说明 |
+|---|---|---|
+| ${C}mysql.user${C} | 全局 | 账号、认证插件、全局权限、资源限制 |
+| ${C}mysql.db${C} | 库 | 库级权限 |
+| ${C}mysql.tables_priv${C} | 表 | 表级权限 + 列权限掩码 |
+| ${C}mysql.columns_priv${C} | 列 | 列级权限 |
+| ${C}mysql.procs_priv${C} | 存储过程/函数 | 例程权限 |
+| ${C}mysql.global_grants${C} | 全局（8.0 新增） | 动态权限的宿主表 |
+
+**禁止直接 ${C}UPDATE mysql.user${C}** 的原因：磁盘表变了但内存 ACL 缓存不会自动刷新，必须 ${C}FLUSH PRIVILEGES${C} 才生效；而用 ${C}GRANT${C}/${C}REVOKE${C}/${C}CREATE USER${C} 语句是「内存 + 磁盘」同时更新，天然一致。
+
+${F}sql
+-- 看某个账号的全部有效权限
+SHOW GRANTS FOR 'app_rw'@'10.0.%';
+-- 8.0 新增：查看某个账号对具体对象的权限（含通过角色继承来的）
+SHOW GRANTS FOR 'app_rw'@'10.0.%' USING 'role_readonly';
+${F}
+
+### 二、8.0 认证插件的切换与代价
+
+${F}sql
+-- 8.0 默认插件是 caching_sha2_password（更安全，但有兼容成本）
+CREATE USER 'app_rw'@'10.0.%'
+  IDENTIFIED WITH caching_sha2_password BY 'Str0ng!Pass'
+  REQUIRE SSL
+  PASSWORD EXPIRE INTERVAL 90 DAY
+  FAILED_LOGIN_ATTEMPTS 5
+  PASSWORD_LOCK_TIME 1;
+
+-- 老客户端（如某些老版本驱动/PHP）不认新插件，需要显式降级
+ALTER USER 'legacy'@'%' IDENTIFIED WITH mysql_native_password BY '***';
+${F}
+
+安全与兼容的取舍很明确：**新代码一律走 caching_sha2_password + TLS；对确实升级不了的老客户端，单独开一个 native_password 账号并限制来源网段**，不要为了省事把全局 ${C}default_authentication_plugin${C} 降级 —— 那等于让所有账号一起降安全等级。
+
+### 三、角色（Role）：把「权限」变成可版本化的资产
+
+${F}sql
+-- 建角色（角色本身不是账号，不能登录）
+CREATE ROLE 'role_readonly', 'role_app_rw', 'role_dba_readonly';
+
+-- 给角色授权
+GRANT SELECT ON appdb.* TO 'role_readonly';
+GRANT SELECT, INSERT, UPDATE, DELETE ON appdb.* TO 'role_app_rw';
+GRANT SELECT ON performance_schema.*, SELECT ON sys.* TO 'role_dba_readonly';
+
+-- 授予账号角色，并设定默认激活的角色
+GRANT 'role_app_rw' TO 'app_rw'@'10.0.%';
+SET DEFAULT ROLE 'role_app_rw' TO 'app_rw'@'10.0.%';
+
+-- 会话内临时切换角色
+SET ROLE 'role_readonly';
+SELECT CURRENT_ROLE();
+SET ROLE DEFAULT;
+${F}
+
+**角色的真正价值是「环境一致性」**：把 ${C}GRANT ... TO 'role_app_rw'${C} 写成 SQL 文件纳入代码仓库，测试/预发/生产用同一份定义，避免「生产少了个 SELECT 权限导致上线才发现」。
+
+### 四、最小权限的正确落地姿势
+
+${F}sql
+-- 反例 1：应用账号拥有全库全权
+GRANT ALL PRIVILEGES ON *.* TO 'app'@'%';            -- 灾难起点
+
+-- 反例 2：允许从任意网段连入
+CREATE USER 'app'@'%';                                -- 攻击面最大化
+
+-- 正确示范：按「功能 + 网段 + 最小语句集」建账号
+CREATE USER 'svc_order_rw'@'10.20.%' IDENTIFIED WITH caching_sha2_password BY '***' REQUIRE SSL;
+GRANT SELECT, INSERT, UPDATE ON orderdb.orders     TO 'svc_order_rw'@'10.20.%';
+GRANT SELECT, INSERT         ON orderdb.order_item TO 'svc_order_rw'@'10.20.%';
+-- 注意：没有 DELETE。删除走状态位由另一条受控通道做
+GRANT SELECT ON orderdb.v_order_summary TO 'svc_order_rw'@'10.20.%';
+
+-- 只读报表账号：限定来源 + 限定库 + 限制单次资源
+CREATE USER 'bi_ro'@'10.30.%' IDENTIFIED BY '***';
+GRANT SELECT ON appdb.* TO 'bi_ro'@'10.30.%';
+ALTER USER 'bi_ro'@'10.30.%' WITH MAX_QUERIES_PER_HOUR 20000 MAX_USER_CONNECTIONS 10;
+${F}
+
+### 五、绕过权限评估的三种高危路径
+
+| 机制 | 风险 | 缓解 |
+|---|---|---|
+| ${C}DEFINER${C} 存储过程/视图 | 调用者以 DEFINER 身份执行，可能提权（类似 SUID） | 限定 DEFINER 账号权限，禁用 ${C}SQL SECURITY INVOKER${C} 之外的不必要对象 |
+| ${C}FILE${C} 权限 | 可读写服务器文件系统，配合任意文件读写可提权 | 业务账号绝不授予 ${C}FILE${C}；${C}secure_file_priv${C} 指到专用目录 |
+| ${C}GRANT OPTION${C} | 持权者可把权限再转授他人 | 业务账号一律不带 ${C}WITH GRANT OPTION${C} |
+
+${F}sql
+-- 检查是否有账号带 GRANT OPTION 或高危权限
+SELECT user, host, Grant_priv, Super_priv, File_priv, Process_priv
+FROM mysql.user WHERE Grant_priv='Y' OR Super_priv='Y' OR File_priv='Y';
+-- 检查空密码账号（8.0 里可用但绝对不该有）
+SELECT user, host, plugin FROM mysql.user WHERE authentication_string='' ;
+${F}
+
+### 六、审计与追溯
+
+${F}sql
+-- 8.0 自带审计日志（企业版）与「登录失败」记录（社区版可用 general log 兜底）
+SELECT * FROM performance_schema.events_statements_summary_by_account_by_event_name
+ORDER BY COUNT_STAR DESC LIMIT 10;   -- 哪个账号在狂跑语句
+
+-- 开启连接失败日志，便于发现暴力破解
+-- my.cnf: log_error_verbosity=3
+${F}
+
+对于合规场景（等保、SOX），通用做法是开启**独立审计插件**（企业版 audit_log，或 Percona/MariaDB 的审计插件），把「谁、何时、从哪、对哪张表做了什么」落到与数据库分离的存储上 —— 绝不能只落在被审计的这台库上。
+
+### 七、常见误区
+
+1. **「先用 root 跑起来，以后再收权限」**。收权限比给权限难得多，往往要跑通全部用例才能确定最小集合。正确顺序是：开发期就按功能拆账号。
+2. **「改了 mysql.user 再 FLUSH 就行」**。字段结构随版本变化（8.0 拆出了 ${C}global_grants${C}），手写 UPDATE 极易造成权限表不一致。
+3. **「角色授权后立即生效」**。角色需要 ${C}SET DEFAULT ROLE${C} 或显式 ${C}SET ROLE${C}，否则新会话里角色是未激活状态 —— 这常表现为「明明授了权限却 Access denied」。
+4. **「% 通配只是方便」**。${C}'%'${C} 让账号可从任意 IP 尝试，等同把攻击面暴露到公网。内网也应按网段收窄。
+5. **「超级账号密码复杂就够了」**。root 不应允许远程登录；${C}root@localhost${C} 之外不应有第二个超级账号。
+
 ## 七、延伸
 
 - MySQL 8.0 Reference Manual → Ch.8 Security（8.1–8.5 全读）
@@ -511,6 +1056,138 @@ ${F}
 - [ ] 业务时间用 DATETIME，绝对时刻才用 TIMESTAMP
 - [ ] 跨版本迁移前核对默认排序规则差异
 - [ ] 存在 emoji/生僻字列已验证可正常写入
+
+<!--dd:charset-collation-->
+
+## 🔬 深挖：字符集、排序规则与时区的端到端链路
+
+### 一、四个字符集变量必须同时正确
+
+乱码从来不是「一个设置错了」，而是链路上多个环节不一致：
+
+| 变量 | 作用域 | 说明 |
+|---|---|---|
+| ${C}character_set_server${C} | 实例 | 新建库/表的默认字符集 |
+| ${C}character_set_database${C} | 库 | 库级默认 |
+| ${C}character_set_client${C} | 会话 | 客户端发来的字节按此解释 |
+| ${C}character_set_connection${C} | 会话 | 会话内的转换中转站 |
+| ${C}character_set_results${C} | 会话 | 返回给客户端时的编码 |
+| ${C}character_set_filesystem${C} | 实例 | 文件名编码，影响 LOAD DATA 等 |
+| ${C}collation_connection${C} | 会话 | 会话内比较/排序规则 |
+| ${C}collation_server${C} | 实例 | 默认排序规则 |
+
+${F}sql
+-- 一次看清全部环节
+SHOW VARIABLES LIKE 'character_set%';
+SHOW VARIABLES LIKE 'collation%';
+
+-- 客户端连接时一次性对齐（比逐个 SET 可靠）
+SET NAMES utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+-- 连接串里也要写清楚（JDBC 示例）
+-- jdbc:mysql://host:3306/db?useUnicode=true&characterEncoding=utf8mb4
+${F}
+
+### 二、utf8mb4 / utf8mb3 与排序规则后缀的含义
+
+MySQL 里 ${C}utf8${C} 是 ${C}utf8mb3${C} 的别名 —— **最多 3 字节，存不了 emoji 和大部分生僻字**（如 𠮷、𡃁）。这是「存了 emoji 变成问号」的根本原因。
+
+${F}sql
+-- 8.0 里 utf8 已明确等价于 utf8mb3（并给出弃用警告）
+SHOW CHARACTER SET LIKE 'utf8%';
+-- 建表时明确写 utf8mb4
+CREATE TABLE t (name VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci);
+${F}
+
+排序规则名字里的后缀是有语义的：
+
+| 后缀 | 含义 | 影响 |
+|---|---|---|
+| ${C}_ci${C} | case insensitive | 'A' = 'a' 为真，唯一索引会拦 ${C}'a'${C}/${C}'A'${C} |
+| ${C}_cs${C} | case sensitive | 'A' ≠ 'a' |
+| ${C}_ai${C} | accent insensitive | 'e' 与 'é' 视为相同 |
+| ${C}_as${C} | accent sensitive | 区分重音 |
+| ${C}_0900_${C} | Unicode 9.0（8.0 新增） | 默认；比 ${C}general_ci${C} 更符合 Unicode 规范 |
+| ${C}_bin${C} | 按字节比较 | 大小写敏感、最严格，适合 token/哈希列 |
+
+${F}sql
+-- 经典踩坑：用户名唯一索引在 utf8mb4_general_ci 下，'Admin' 与 'admin' 冲突
+-- 若业务需要区分大小写，必须显式指定 _bin 或 _cs
+CREATE TABLE sys_user (
+  username VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs NOT NULL,
+  UNIQUE KEY uk_username (username)
+);
+${F}
+
+**排序规则不一致还会让 JOIN 走不了索引**：两表的列 collation 不同时，比较需要转换，索引失效。
+
+${F}sql
+-- 找出全库 collation 不一致的列（迁移前的必查项）
+SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, CHARACTER_SET_NAME, COLLATION_NAME
+FROM information_schema.COLUMNS
+WHERE CHARACTER_SET_NAME IS NOT NULL
+  AND COLLATION_NAME <> 'utf8mb4_0900_ai_ci'
+ORDER BY TABLE_SCHEMA, TABLE_NAME;
+${F}
+
+### 三、字符集转换的「二次编码」事故
+
+最恶心的一类乱码：数据本身已经是双重编码的错误字节（如 UTF-8 的中文被当成 latin1 再转一次 UTF-8）。修复要逆向走一遍：
+
+${F}sql
+-- 症状：页面显示「ä½ å¥½」这种（UTF-8 字节被 latin1 解释后又存成 UTF-8）
+-- 诊断：确认原始字节流
+SELECT HEX(name) FROM t WHERE id = 1;
+-- E4BDA0E5A5BD 是 UTF-8 的「你好」
+-- E4C3A4C2BD... 这种就是二次编码
+
+-- 修复（务必先备份，先在从库/测试库演练）
+ALTER TABLE t MODIFY name VARCHAR(64) CHARACTER SET latin1;      -- 回到被误解释的状态
+ALTER TABLE t MODIFY name VARCHAR(64) CHARACTER SET utf8mb4;     -- 再按正确编码转回
+${F}
+
+更安全的生产做法是**新建列 + 转换写入 + 校验 + 换列**，而不是原地 MODIFY。原地 MODIFY 一旦判断错方向，数据会被永久破坏。
+
+### 四、列长度语义：VARCHAR(64) 的 64 是什么
+
+${F}sql
+-- utf8mb4 下 VARCHAR(N) 的 N 是「字符数」，不是字节数
+-- 但索引长度限制是按字节算的：InnoDB 单列索引前缀上限 3072 字节（DYNAMIC/COMPRESSED）
+-- 所以 utf8mb4 下 VARCHAR 最多能整列索引约 768 个字符
+-- utf8mb4_0900_ai_ci 下每个字符最多占 4 字节 → 3072/4 = 768
+CREATE TABLE t (a VARCHAR(768) CHARACTER SET utf8mb4, KEY idx_a (a));      -- 刚好
+CREATE TABLE t2 (a VARCHAR(1000) CHARACTER SET utf8mb4);                    -- 建索引会报 1071
+-- 解决：前缀索引（但要接受无法覆盖、无法用于 ORDER BY 全序）
+ALTER TABLE t2 ADD KEY idx_a (a(255));
+${F}
+
+### 五、时区：TIMESTAMP 与 DATETIME 的本质差异
+
+| 类型 | 存储 | 转换 | 范围 | 时区变更影响 |
+|---|---|---|---|---|
+| ${C}TIMESTAMP${C} | 4 字节，UTC 时间戳 | 写入按 session 时区转 UTC，读取按 session 转回 | 1970-01-01 ~ 2038-01-19 | 会变（这是特性） |
+| ${C}DATETIME${C} | 8 字节（5.6+），字面量 | 不做任何转换 | 1000-01-01 ~ 9999-12-31 | 不变 |
+
+${F}sql
+-- 会话时区
+SELECT @@global.time_zone, @@session.time_zone, NOW(), UTC_TIMESTAMP();
+-- 建议：实例统一 UTC 存储 + 应用层按用户时区展示
+-- my.cnf: default-time-zone='+00:00'
+SET time_zone = '+08:00';
+
+-- 常见事故：跨时区部署时 NOW() 存进 DATETIME，运维改服务器时区后历史数据全偏 8 小时
+-- 结论：DATETIME 字段必须由应用显式写入带时区语义的 UTC 值，不要依赖 NOW()
+${F}
+
+**2038 问题**：${C}TIMESTAMP${C} 上限是 2038-01-19 03:14:07 UTC。存放未来时间（如优惠券到期、订阅到期）的字段**必须用 ${C}DATETIME${C}**，否则到期日超过 2038 的数据写不进去。
+
+### 六、常见误区
+
+1. **「改成 utf8mb4 只要一条 ALTER」**。改列字符集只改了「以后怎么解释字节」，已有数据需要同时用 ${C}CONVERT TO CHARACTER SET${C} 才能真正转换，两者含义完全不同。
+2. **「客户端 SET NAMES 就够了」**。若连接池在拿到连接后没执行初始化 SQL，SET NAMES 会被下个使用者继承成错误状态；应在连接串/连接池配置里声明。
+3. **「排序规则只是排序」**。它还决定唯一索引判重、${C}GROUP BY${C} 分组、${C}DISTINCT${C} 去重 —— ${C}_ci${C} 会把不同大小写视作同一值。
+4. **「VARCHAR(255) 就是 255 字节」**。utf8mb4 下最长占 1020 字节，影响行大小与索引前缀预算。
+5. **「emoji 存不了是客户端问题」**。根因几乎总是在数据库侧仍是 utf8mb3。
 
 ## 七、延伸
 
@@ -616,6 +1293,127 @@ Extra 速查：${C}Using index${C}（覆盖 ✅）、${C}Using index condition${
 - [ ] 上线前用 EXPLAIN ANALYZE 验证过真实执行耗时
 - [ ] 删索引前先用 invisible 观察一个业务周期
 
+<!--dd:index-execplan-->
+
+## 🔬 深挖：B+Tree 的物理结构与执行计划逐列精读
+
+### 一、索引的物理结构（为什么是 B+Tree 而不是别的）
+
+${F}text
+InnoDB 页大小 16KB（innodb_page_size）
+B+Tree 三层足以支撑千万级：
+  根页 + 非叶页：每页约存 1000+ 个 (key, 子页号) 指针（BIGINT 主键 8 字节 + 6 字节页号）
+  叶页：存完整行或 (主键, 索引列)
+  1000 × 1000 × 16 行 ≈ 1600 万行，只需 3 次页访问
+关键性质：
+  1) 所有数据在叶子层，叶间双向链表 → 范围扫描与 ORDER BY 友好
+  2) 树高恒定 → 等值查询代价稳定，不像二叉树会退化成 O(n)
+  3) 非叶页常驻内存（根与中间层被反复访问，几乎不会淘汰）
+${F}
+
+**聚簇索引 vs 二级索引**：InnoDB 表数据本身就按主键组织（聚簇索引就是表）。二级索引的叶子存的是 ${C}(索引列, 主键值)${C}，所以二级索引查到后还要**回表**去聚簇索引再查一次 —— 这就是「覆盖索引」存在的原因：需要的列都在二级索引里时，可以直接返回，省掉回表。
+
+${F}sql
+-- 查看聚簇索引与各二级索引
+SELECT INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, CARDINALITY
+FROM information_schema.STATISTICS WHERE TABLE_NAME='orders' ORDER BY INDEX_NAME, SEQ_IN_INDEX;
+${F}
+
+### 二、EXPLAIN 逐列精读
+
+| 列 | 含义 | 判读要点 |
+|---|---|---|
+| ${C}id${C} | 查询块编号 | 同号从上往下执行；子查询编号更大先执行 |
+| ${C}select_type${C} | 查询类型 | SIMPLE / PRIMARY / SUBQUERY / DERIVED / UNION |
+| ${C}table${C} | 访问的表 | ${C}<derived2>${C} 表示物化的派生表 |
+| ${C}type${C} | 访问方式（**最重要**） | 优劣序：system > const > eq_ref > ref > range > index > ALL |
+| ${C}possible_keys${C} | 候选索引 | 有值但 key 为 NULL，说明代价评估后放弃 |
+| ${C}key${C} | 实际选用 | NULL = 未用索引 |
+| ${C}key_len${C} | 使用的索引字节数 | 可反推用了联合索引的几列（见下） |
+| ${C}ref${C} | 与索引比较的对象 | const / 列名 / func |
+| ${C}rows${C} | 估算扫描行数 | 与 filtered 一起看，估算错就要修统计 |
+| ${C}filtered${C} | 过滤后剩余百分比 | 太低说明索引选择性差 |
+| ${C}Extra${C} | 附加信息 | 见下表 |
+
+**Extra 出现即需警惕**：
+
+| Extra | 含义 | 是否要处理 |
+|---|---|---|
+| ${C}Using index${C} | 覆盖索引，不回表 | 好，保持 |
+| ${C}Using index condition${C} | ICP，索引层已过滤 | 好 |
+| ${C}Using where${C} | 取回行后再过滤 | 中性，看 rows |
+| ${C}Using filesort${C} | 排序无法用索引 | **要处理** |
+| ${C}Using temporary${C} | 用了临时表（常为 GROUP BY/DISTINCT） | **要处理** |
+| ${C}Using join buffer${C} | 被驱动表无索引，走连接缓冲 | **要处理** |
+| ${C}Using MRR${C} | 多范围读，减少随机 IO | 好 |
+
+### 三、用 key_len 反推索引使用情况
+
+${F}text
+key_len 是「实际使用的索引列字节长度之和」，可用来验证联合索引用到第几列。
+常用列类型的字节数：
+  TINYINT 1 / SMALLINT 2 / INT 4 / BIGINT 8
+  DATETIME 5（8.0 默认精度，无小数秒）+ 小数秒部分
+  允许 NULL 时 +1 字节
+  变长字符：utf8mb4 每字符最多 4 字节，VARCHAR(N) → 4N + 2（长度前缀）
+
+例：索引 (a INT, b VARCHAR(10) utf8mb4, c DATETIME)，均 NOT NULL
+  仅用 a            → key_len = 4
+  a + b             → 4 + (4*10+2) = 46
+  a + b + c         → 46 + 5 = 51
+EXPLAIN 里 key_len=46 说明 c 没被用上（可能是范围条件或顺序不对）
+${F}
+
+### 四、索引失效的完整清单（含原理）
+
+| 失效写法 | 原因 |
+|---|---|
+| 列上做函数/运算 | 索引按原值排序，变换后无法定位 |
+| 隐式类型转换（int 列传字符串） | 相当于对列做 CAST，变成函数 |
+| ${C}LIKE '%x'${C} | 前缀无法通配定位，只能扫全索引再过滤 |
+| ${C}OR${C} 连接不同列 | 单索引无法同时满足，只能合并或全表 |
+| 联合索引跳过最左列 | B+Tree 按「最左列」全局有序，跳过就无法二分 |
+| 中间列用范围条件 | 范围之后的有序列无法再用于定位 |
+| ${C}NOT IN${C} / ${C}!=${C} / ${C}NOT LIKE${C} | 否定条件通常需扫描大量行 |
+| 排序方向不一致（8.0 前） | 8.0 支持降序索引，混排仍可能触发 filesort |
+| 字符集/排序规则不一致 | JOIN 时需转换，索引失效 |
+
+${F}sql
+-- 8.0 函数索引：让「列上做函数」重新可用
+ALTER TABLE t ADD INDEX idx_lower_name ((LOWER(name)));
+-- 或生成列 + 索引（兼容写法）
+ALTER TABLE t ADD COLUMN name_lc VARCHAR(64) GENERATED ALWAYS AS (LOWER(name)) STORED;
+ALTER TABLE t ADD INDEX idx_name_lc (name_lc);
+${F}
+
+### 五、JOIN 与排序的执行计划判读
+
+${F}sql
+-- 让驱动表走小表：被驱动表必须有可用索引，否则 Nested Loop 会退化成 O(N*M)
+EXPLAIN SELECT ...
+FROM big_table b JOIN small_table s ON s.id = b.small_id
+WHERE s.type = 'A';
+
+-- EXPLAIN FORMAT=TREE 能直接看出驱动顺序与连接算法
+-- 看到 hash join 说明无索引等值连接走了 8.0.18+ 的哈希连接
+${F}
+
+排序的三种情况：
+
+${F}text
+1) 索引天然有序（ORDER BY 列是索引连续性前缀且方向一致）→ Extra 无 filesort
+2) 走 filesort，数据量小 → 内存排序（sort_buffer_size 内）
+3) 走 filesort，数据量大 → 归并排序落盘（+ 临时表），此时磁盘 IO 是瓶颈
+${F}
+
+### 六、常见误区
+
+1. **「索引越多查询越快」**。每个索引都是写放大的来源（INSERT 需维护所有索引），并占用缓冲池。索引数量应「按查询清单反推」。
+2. **「EXPLAIN 的 rows 是真实扫描行数」**。它是基于统计的估算，偏差可达几个数量级；要真实值只能 ${C}EXPLAIN ANALYZE${C}。
+3. **「加了索引优化器就一定用」**。代价模型可能认为全表扫更便宜（小表、选择率差、表已大量缓存），这时它是对的 —— 用 ${C}FORCE INDEX${C} 强扭通常更慢。
+4. **「联合索引列顺序随便」**。顺序由查询形态决定：等值条件列在前、范围列与排序列在后；顺序错了等于没建。
+5. **「删索引是零风险清理」**。先用 ${C}ALTER TABLE ... ALTER INDEX ... INVISIBLE${C} 观察一个业务周期，确认无计划回归再删。
+
 ## 七、延伸
 
 - MySQL 8.0 RM → 8.3 Optimization and Indexes / 8.8.2 EXPLAIN Output Format / 8.2.1 Optimizing SELECT
@@ -714,6 +1512,157 @@ ${F}
 - [ ] 有长事务监控与告警（> 60s）
 - [ ] 团队明确当前隔离级别及其并发异常边界
 - [ ] 大范围更新场景评估过 Gap Lock 影响
+
+<!--dd:tx-isolation-lock-->
+
+## 🔬 深挖：MVCC 的内部实现与 InnoDB 加锁规则
+
+### 一、MVCC 到底存了什么：三件套
+
+| 组件 | 位置 | 作用 |
+|---|---|---|
+| 隐藏列 ${C}DB_TRX_ID${C} | 每行 6 字节 | 最后修改该行的事务 ID |
+| 隐藏列 ${C}DB_ROLL_PTR${C} | 每行 7 字节 | 指向 undo log 中的旧版本链 |
+| undo log 版本链 | 回滚段 | 每次更新把旧值串起来，形成该行的历史版本链 |
+| Read View | 事务内（仅 RR 首次读时建立） | 快照集合：{活跃事务列表, 最小活跃 ID, 下一个待分配 ID} |
+
+读取一行时的判断逻辑（简化）：
+
+${F}text
+for 版本 in 该行版本链（从最新往回）:
+    if 版本.trx_id == 当前事务:        -> 可见（自己的修改自己看得到）
+    elif 版本.trx_id < 视图.最小活跃ID: -> 可见（已提交的旧事务）
+    elif 版本.trx_id >= 视图.下一个待分配ID: -> 不可见（未来事务）
+    else:                               -> 不可见（当时还活跃）
+        沿 roll_ptr 找更早版本，重复判断
+${F}
+
+**RC 与 RR 的唯一实现差异就在这里**：RC 每条语句都重建 Read View，RR 只在事务内第一次读时建一次并复用。所以 RR 下同一个事务里两次查询结果一致（可重复读），而 RC 下会看到别人新提交的数据。
+
+### 二、四种隔离级别与它们真实解决的异常
+
+| 隔离级别 | 脏读 | 不可重复读 | 幻读 | InnoDB 的实现手段 |
+|---|---|---|---|---|
+| READ UNCOMMITTED | 可能 | 可能 | 可能 | 直接读最新版本，不加锁 |
+| READ COMMITTED | 不可能 | 可能 | 可能 | 每语句建 Read View（推荐互联网业务） |
+| REPEATABLE READ（默认） | 不可能 | 不可能 | **InnoDB 用间隙锁基本消除** | 事务级 Read View + next-key lock |
+| SERIALIZABLE | 不可能 | 不可能 | 不可能 | 所有读加共享锁 |
+
+注意两点常被误解：
+
+1. **标准 RR 允许幻读**；InnoDB 的 RR 是靠**间隙锁**把幻读也挡住了 —— 这是实现增强，不是标准要求。
+2. **RR 下也要用「当前读」才能看到最新数据**。加锁读（${C}FOR UPDATE${C} / ${C}LOCK IN SHARE MODE${C}）总是读最新已提交版本，不走快照。
+
+${F}sql
+-- 当前读 vs 快照读
+SELECT * FROM account WHERE id = 1;                     -- 快照读（走 MVCC）
+SELECT * FROM account WHERE id = 1 FOR UPDATE;          -- 当前读 + 排他行锁
+SELECT * FROM account WHERE id = 1 FOR SHARE;           -- 当前读 + 共享行锁（8.0 语法）
+SELECT * FROM account WHERE id = 1 FOR UPDATE SKIP LOCKED;  -- 跳过已锁行（做队列消费利器）
+${F}
+
+### 三、InnoDB 的锁类型与「加锁规则」
+
+| 锁 | 粒度 | 解决的问题 |
+|---|---|---|
+| Record Lock | 单条索引记录 | 阻止他人更新/删除这一行 |
+| Gap Lock | 索引区间（不含记录） | 阻止区间内插入 → 防幻读 |
+| Next-Key Lock | 记录 + 前面的间隙 | **RR 默认行为** |
+| Insert Intention Lock | 插入意向 | 多个插入到不同位置互不阻塞 |
+| AUTO-INC Lock | 自增 | 8.0 默认改为轻量互斥（innodb_autoinc_lock_mode=2） |
+| MDL（元数据锁） | 表结构 | DDL 与 DML 互斥（长事务会阻塞 DDL 的元凶） |
+
+RR 下加锁的三条经验规则（记住这三条能解释绝大多数锁现象）：
+
+${F}text
+1) 等值命中唯一索引（且记录存在）      -> 只加 Record Lock（退化为行锁）
+2) 等值未命中 或 非唯一索引等值         -> 加 Next-Key Lock，并向后多锁一个区间
+3) 范围查询                             -> 扫描到的记录全部加 Next-Key Lock
+   特例：WHERE 有索引但条件不满足时仍会锁住扫过的区间（这是"锁住了不存在的行"的原因）
+${F}
+
+${F}sql
+-- 复现"锁住不存在的行"
+-- 表 t 有索引 idx_a，现有 a 值 1, 5, 10
+BEGIN;
+SELECT * FROM t WHERE a = 7 FOR UPDATE;   -- 未命中，但锁住了 (5,10) 这个间隙
+-- 另一会话执行下面这句会被阻塞（插入到该间隙）
+INSERT INTO t (a) VALUES (8);             -- 等待中
+${F}
+
+### 四、观察锁：performance_schema 是唯一可靠手段
+
+${F}sql
+-- 当前持有与等待的锁（8.0：按引擎分区）
+SELECT * FROM performance_schema.data_locks;
+SELECT * FROM performance_schema.data_lock_waits;
+-- 谁在等谁（可直接定位阻塞源头）
+SELECT w.REQUESTING_ENGINE_TRANSACTION_ID AS waiter,
+       w.BLOCKING_ENGINE_TRANSACTION_ID   AS blocker,
+       l.OBJECT_NAME, l.LOCK_TYPE, l.LOCK_MODE, l.LOCK_DATA
+FROM performance_schema.data_lock_waits w
+JOIN performance_schema.data_locks l
+  ON l.ENGINE_TRANSACTION_ID = w.REQUESTING_ENGINE_TRANSACTION_ID;
+
+-- 找出长事务（>60 秒未提交，是锁堆积与 undo 膨胀的共同根源）
+SELECT trx_id, trx_state, trx_started,
+       TIMESTAMPDIFF(SECOND, trx_started, NOW()) AS age_sec,
+       trx_rows_locked, trx_rows_modified, trx_mysql_thread_id
+FROM information_schema.INNODB_TRX ORDER BY age_sec DESC;
+
+-- 查看最近一次死锁的现场（关键排查依据）
+SHOW ENGINE INNODB STATUS\\G    -- 看 LATEST DETECTED DEADLOCK 段
+${F}
+
+### 五、死锁：成因、检测与工程解法
+
+死锁的四个必要条件都满足才会发生，工程上能做的是**打破「循环等待」**：
+
+| 手段 | 做法 | 效果 |
+|---|---|---|
+| 统一加锁顺序 | 所有事务按主键升序更新 | 消除循环等待，最有效 |
+| 缩短事务 | 把非 DB 操作（RPC、文件、邮件）移到事务外 | 减少持锁时间 |
+| 降隔离级别到 RC | RC 无间隙锁 | 大幅降低间隙锁死锁 |
+| 精确命中主键 | 让等值更新的锁退化为 Record Lock | 缩小锁定范围 |
+| 应用层重试 | 捕获 1213 后随机退避重试 | 兜底 |
+| 死锁检测 | ${C}innodb_deadlock_detect=ON${C}（默认） | 自动回滚代价小的一方 |
+
+${F}sql
+-- 反例：事务 A 先锁 1 再锁 2，事务 B 先锁 2 再锁 1 —— 必然可能死锁
+-- 正确：所有事务都按 id 升序处理
+BEGIN;
+SELECT * FROM account WHERE id = 1 FOR UPDATE;
+SELECT * FROM account WHERE id = 2 FOR UPDATE;
+UPDATE account SET balance = balance - 100 WHERE id = 1;
+UPDATE account SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+-- 若是批量转账，先对 id 集合排序再逐个加锁
+${F}
+
+**一个反直觉的事实**：死锁并不是 bug，而是并发系统在高负载下的正常现象。生产系统的正确姿态不是「消灭死锁」，而是「监控死锁率 + 应用层可重试」。把 ${C}innodb_deadlock_detect${C} 关掉（为了省 CPU）只在极端高并发且能接受超时回滚时使用，且必须同时把 ${C}innodb_lock_wait_timeout${C} 调小。
+
+### 六、乐观锁 vs 悲观锁：选型不是性格问题
+
+| 方案 | 实现 | 适用 | 代价 |
+|---|---|---|---|
+| 悲观锁 | ${C}SELECT ... FOR UPDATE${C} | 冲突率高、临界区短 | 锁等待、死锁、连接占用 |
+| 乐观锁 | 版本号/CAS：${C}UPDATE t SET v=v+1 WHERE id=? AND v=?${C} | 冲突率低、读多写少 | 失败要重试，重试风暴风险 |
+| 无锁原子 | ${C}UPDATE t SET stock=stock-1 WHERE id=? AND stock>0${C} | 扣减类、可合并 | 无法处理复杂约束 |
+
+${F}sql
+-- 乐观锁：判断影响行数而不是先查再改（避免 TOCTOU）
+UPDATE product SET stock = stock - 1, version = version + 1
+WHERE id = 100 AND version = 7 AND stock >= 1;
+-- 受影响行数 = 0 说明版本冲突或库存不足，按业务决定重试或失败
+${F}
+
+### 七、常见误区
+
+1. **「RR 就是完全无锁」**。RR 的读（快照读）无锁，但 RR 的写与加锁读会加 next-key lock，**锁范围比 RC 更大**，反而更容易死锁。这是很多系统把隔离级别降到 RC 的真实原因。
+2. **「用了索引就不会锁表」**。若查询最终仍扫到了大量记录（选择率差），加锁范围实际接近全表；而且 MDL 与表级意向锁是绕不开的。
+3. **「长事务只是占内存」**。长事务让 undo 无法 purge，回滚段持续膨胀、历史版本链变长导致快照读变慢，还会阻塞 DDL —— 是性能问题链的源头。
+4. **「先 SELECT 查库存再 UPDATE」**。两步之间库存可能已被改，必须用「条件更新 + 判断行数」或加锁读。
+5. **「死锁靠加锁顺序就能完全避免」**。只在单表批量操作时成立；多表、外键级联、唯一索引冲突场景仍可能死锁，兜底重试不可省。
 
 ## 七、延伸
 
@@ -815,6 +1764,122 @@ ${F}
 - [ ] optimizer trace 会用，能解释优化器的选择
 - [ ] Buffer Pool 命中率与 MDL 等待有监控
 - [ ] 优化上线后有回归监控防止反弹
+
+<!--dd:slow-query-->
+
+## 🔬 深挖：慢查询治理的闭环方法论
+
+### 一、慢日志：先把数据采准
+
+${F}ini
+# my.cnf 关键参数
+slow_query_log            = 1
+slow_query_log_file       = /var/log/mysql/slow.log
+long_query_time           = 0.5          # 生产建议 0.2~1s，别设 10s（漏掉大量次慢查询）
+log_queries_not_using_indexes = 1        # 记录未走索引的语句
+log_throttle_queries_not_using_indexes = 60   # 防止刷爆日志（每分钟上限）
+min_examined_row_limit    = 100          # 扫描行数小于此值不记录，过滤噪音
+log_slow_admin_statements = 1
+log_slow_slave_statements = 1
+${F}
+
+**动态开关（无需重启）**：
+
+${F}sql
+SET GLOBAL slow_query_log = ON;
+SET GLOBAL long_query_time = 0.5;   -- 注意：对已有连接不生效，需重连
+SET GLOBAL log_queries_not_using_indexes = ON;
+${F}
+
+### 二、从日志到「Top SQL」：指纹化聚合
+
+慢日志是逐条记录，人工看没有意义，必须按**归一化指纹**聚合：
+
+${F}bash
+# 官方自带：简单但够用
+mysqldumpslow -s t -t 20 /var/log/mysql/slow.log      # 按总耗时排序 Top20
+mysqldumpslow -s c -t 20 /var/log/mysql/slow.log      # 按出现次数排序
+
+# Percona 工具链：报告更完整（推荐）
+pt-query-digest --since=24h --limit=20 \\
+  --filter '$event->{db} ne "information_schema"' \\
+  /var/log/mysql/slow.log > digest.txt
+${F}
+
+pt-query-digest 报告必须重点看的四列：
+
+| 列 | 含义 | 判读 |
+|---|---|---|
+| Response time | 总耗时与占比 | 占比 >10% 的语句优先处理 |
+| Calls | 执行次数 | 次数多但单次短 → 优化收益也很大 |
+| Rows examine / Rows sent | 扫描行数 / 返回行数 | 比值远大于 1 说明索引选择性差 |
+| Query_time pct 95/99 | 长尾分布 | 关注 p99，均值会掩盖尖刺 |
+
+**只看均值是典型错误**。一条 p99=8s、均值 20ms 的语句，在高峰期就是雪崩起点。
+
+### 三、归因：把慢查询分到 6 个抽屉里
+
+| 抽屉 | 典型特征 | 修法 |
+|---|---|---|
+| 缺少合适索引 | type=ALL / rows 巨大 / Rows examine ≫ Rows sent | 加联合索引 / 覆盖索引 |
+| 索引用不上 | possible_keys 有值但 key=NULL，或列被函数包裹 | 改写条件、用函数索引 |
+| 排序/分组落盘 | Extra 有 Using filesort / Using temporary | 让排序走入索引；减少分组列 |
+| 深翻页 | LIMIT 偏移极大 | 游标分页 / 延迟关联 |
+| 连接放大 | 嵌套循环 rows 相乘 | 补被驱动表索引；必要时改写为 JOIN 顺序更优的形式 |
+| 大事务/锁等待 | 语句本身不慢但等待久 | 缩短事务、统一加锁顺序 |
+
+### 四、实战：一次完整的治理
+
+${F}sql
+-- 步骤 1：定位。慢日志显示下面这条占总耗时 34%，单次 p99 = 6.2s
+SELECT COUNT(*) FROM orders
+WHERE merchant_id = 88 AND status IN (1,2,3) AND created_at >= '2026-01-01';
+-- EXPLAIN: type=ref, key=idx_merchant, rows=4200000, Extra=Using where
+-- 说明：索引只用了 merchant_id，剩下全在 server 层过滤
+
+-- 步骤 2：归因。merchant_id 选择率太差（该商家订单占全表一半）
+SELECT COUNT(DISTINCT merchant_id), COUNT(*) FROM orders;   -- 比率极低
+
+-- 步骤 3：修复。把范围列与过滤列组织成联合索引，让过滤下沉到索引层
+ALTER TABLE orders ADD INDEX idx_m_status_time (merchant_id, status, created_at);
+-- 重跑 EXPLAIN: key_len 覆盖三列，rows 从 420 万降到 1.2 万，Extra 无 Using where
+
+-- 步骤 4：验证回归。压测同一语句，比对 p50/p99 与扫描行数
+-- 步骤 5：上线。先建 INVISIBLE 观察，再放开（见索引章节）
+${F}
+
+### 五、把治理做成常设机制
+
+单次治理会退化，必须形成闭环：
+
+${F}text
+每周/每日：
+  1) 采集      慢日志 + performance_schema.events_statements_summary_by_digest
+  2) 聚合      pt-query-digest 或按 DIGEST 聚合（8.0 原生推荐）
+  3) 排序      按 (总耗时, 次数, p99) 三维排序，取 Top N
+  4) 归因      对照上面 6 个抽屉分类，指定 owner 与时限
+  5) 修复      改索引/改 SQL/改代码
+  6) 回归      同一语句在预发压测比对，避免"修好一条退化三条"
+  7) 沉淀      把新规则写进开发规范与 CI（拦截全表扫、拦截 SELECT *）
+${F}
+
+${F}sql
+-- 8.0 原生聚合视图比解析慢日志更高效
+SELECT DIGEST_TEXT, COUNT_STAR, AVG_TIMER_WAIT/1e9 AS avg_ms,
+       SUM_ROWS_EXAMINED, SUM_ROWS_SENT,
+       SUM_ROWS_EXAMINED/NULLIF(SUM_ROWS_SENT,0) AS examined_per_row
+FROM performance_schema.events_statements_summary_by_digest
+ORDER BY SUM_TIMER_WAIT DESC LIMIT 20;
+-- 比值 examined_per_row 大于 100 的，基本都是缺索引
+${F}
+
+### 六、常见误区
+
+1. **「long_query_time 设 10 秒就够了」**。这样只能抓到已经炸掉的查询；设 0.5s 甚至 0.2s，才能抓到「正在变慢」的。
+2. **「优化单条 SQL 就够了」**。真正要处理的是**指纹**：一条 p99 慢的语句，往往是被成千上万次调用放大出来的。
+3. **「慢日志开久了影响性能」**。日志写入本身有成本，但可接受；真正有成本的是 ${C}log_queries_not_using_indexes${C} 不加限速，会把日志写爆。用 ${C}log_throttle_queries_not_using_indexes${C} 限流。
+4. **「加索引就解决了」**。写入放大、缓冲池占用、DDL 成本都要一起算；一个表 20 个索引本身就是新问题。
+5. **「压测通过就能上线」**。压测的数据分布常与线上不同（统计数据倾斜时优化器会选不同计划），上线后要用真实分布的统计信息复验。
 
 ## 七、延伸
 
@@ -922,6 +1987,121 @@ ${F}
 - [ ] 从库并行复制已开且参数合理
 - [ ] 每季度切换演练通过
 
+<!--dd:replication-->
+
+## 🔬 深挖：复制的内部线程模型与延迟治理
+
+### 一、binlog 三种格式：不是「选一个」而是「看场景」
+
+| 格式 | 记录内容 | 优点 | 代价 |
+|---|---|---|---|
+| STATEMENT | 原始 SQL | 日志小 | 函数不确定性（NOW/UUID/RAND）、触发器/存储过程可能不一致 |
+| ROW | 每行变更前后镜像 | **确定性最强**，可解析 | 日志大（大事务可能放大几十倍） |
+| MIXED | 智能切换 | 折中 | 仍有不确定性残留 |
+
+${F}sql
+-- 8.0 默认就是 ROW，且强烈建议保持
+SHOW VARIABLES LIKE 'binlog_format';
+-- ROW 模式下的两个关键细节
+-- binlog_row_image=FULL   记录变更前后完整镜像（推荐，便于闪回）
+-- binlog_row_image=MINIMAL 只记录变更列（省空间，但无法做完整闪回）
+SET GLOBAL binlog_row_image = 'FULL';
+-- ROW 模式也能在客户端看到 SQL：用 mysqlbinlog -v 解码
+${F}
+
+### 二、复制的线程模型与关键状态
+
+${F}text
+主库：
+  dump thread       —— 每个从库一个，负责推 binlog
+从库：
+  IO thread         —— 拉 binlog 写入本地 relay log
+  SQL thread        —— 读 relay log 重放（8.0 可多线程）
+  Coordinator+Worker（并行复制）—— 8.0 的 applier 由一个 coordinator 分派给多个 worker
+${F}
+
+${F}sql
+-- 从库状态：一定要看这三个，不能只看 Seconds_Behind_Master
+SHOW REPLICA STATUS\\G
+--   Replica_IO_Running / Replica_SQL_Running 都必须 Yes
+--   Seconds_Behind_Master 的坑：SQL 线程空闲时显示 0，即使落后很久也可能显示 NULL/0
+--   更可靠：比较 GTID 集合与实际最新事务的等待时间
+SELECT * FROM performance_schema.replication_applier_status_by_worker\\G
+SELECT WAIT_FOR_EXECUTED_GTID_SET('uuid:1-9999', 5);   -- 5 秒内追平返回 0
+${F}
+
+**${C}Seconds_Behind_Master${C} 不可信的三种情形**：主库长时间无写入（显示 0 但实际可能落后）、从库 SQL 线程被大事务卡住、GTID 模式下 relay log 有空洞。
+
+### 三、并行复制：为什么大事务是延迟的头号元凶
+
+${F}ini
+# 8.0 推荐配置
+binlog_transaction_dependency_tracking = WRITESET    # 基于行冲突判定并行度（比 COMMIT_ORDER 更激进）
+replica_parallel_type = LOGICAL_CLOCK
+replica_parallel_workers = 8                          # 与 CPU 核数匹配，过多反而上下文切换
+slave_preserve_commit_order = ON                      # 保证提交顺序，GTID 模式必需
+${F}
+
+即使配了 8 个 worker，**单个大事务仍然只能由一个 worker 串行重放**。所以：
+
+${F}text
+延迟曲线常见形态：
+  平稳  ->  突然拉高  ->  缓慢回落
+原因：主库跑了一个 200 万行的 UPDATE/DELETE（单事务）
+修法：把大事务拆成批（每批 1000~5000 行），并在批间 sleep 让从库追上
+${F}
+
+${F}sql
+-- 分批删除的标准写法（避免单事务过大 + 避免长锁）
+-- 不要：DELETE FROM log WHERE created_at < '2026-01-01';   -- 可能删千万行
+-- 而是每批限量，循环直到影响行数为 0
+DELETE FROM log WHERE created_at < '2026-01-01' ORDER BY id LIMIT 2000;
+SELECT SLEEP(0.2);
+${F}
+
+### 四、复制一致性与读写分离的真实风险
+
+读写分离最危险的不是延迟本身，而是**「写后立刻读」读到旧数据**。
+
+| 场景 | 症状 | 解法 |
+|---|---|---|
+| 用户改昵称后立刻刷新 | 还显示旧昵称 | 该请求强制走主库（按业务标记） |
+| 下单后查订单列表 | 查不到刚下的单 | 下单后的 N 秒内该用户走主库 |
+| 分布式事务 | 部分数据在从库 | 用 GTID 等待：${C}WAIT_FOR_EXECUTED_GTID_SET${C} |
+| 后台导出 | 数据前后不一致 | 固定在一个从库上、单连接、RR 快照 |
+
+${F}sql
+-- 精确的「等待指定事务在从库重放完成」
+SELECT @@global.gtid_executed;                 -- 主库提交后拿到 GTID 集合
+SELECT WAIT_FOR_EXECUTED_GTID_SET('3f9d...:1001', 1.0);  -- 在从库等它，超时 1s
+-- 应用层封装：写后读强制走主，或带上 GTID 等待
+${F}
+
+### 五、半同步复制：after_sync 与 after_commit 的区别
+
+${F}sql
+-- 安装并启用半同步（默认是异步，主库提交不等从库）
+INSTALL PLUGIN rpl_semi_sync_source SONAME 'semisync_source.so';
+SET GLOBAL rpl_semi_sync_source_enabled = ON;
+SET GLOBAL rpl_semi_sync_source_timeout = 1000;      -- 超时后自动退化为异步
+SET GLOBAL rpl_semi_sync_source_wait_point = AFTER_SYNC;   -- 8.0 默认且推荐
+${F}
+
+| 等待点 | 含义 | 风险 |
+|---|---|---|
+| ${C}AFTER_COMMIT${C}（旧默认） | 引擎提交后才等从库 ACK | 主库已提交但对客户端未返回，此时主库挂了，客户端可能以为失败而重试 → 重复写入 |
+| ${C}AFTER_SYNC${C}（8.0 默认） | 等从库 ACK 后才在引擎提交 | 主库崩溃时事务未提交，客户端明确失败，语义干净 |
+
+**半同步解决的是「不丢数据」，不是「强一致」**：它保证至少一个从库收到 binlog，但读操作仍可能读到旧值。要强一致得用 MGR（组复制）或共识层。
+
+### 六、常见误区
+
+1. **「有从库就等于有备份」**。逻辑错误（误删、误更新）会同步到从库。备份必须是独立的物理/逻辑副本。
+2. **「从库拿来跑报表没问题」**。大报表会把从库 SQL 线程拖住，导致复制延迟，进而影响依赖从库的业务读 —— 报表流量必须与复制从库隔离。
+3. **「加从库能提升写入能力」**。从库只分担读；写能力仍受主库单点限制，且从库越多主库 dump 线程与网络开销越大。
+4. **「复制过滤可以随意用」**（如 ${C}replicate-do-table${C}）。过滤后 relay log 与 GTID 集合会出现空洞，故障切换时数据不一致，官方明确不推荐在生产使用。
+5. **「GTID 换了就万事大吉」**。GTID 解决了位点漂移，但 ${C}gtid_executed${C} 集合膨胀、${C}gtid_purged${C} 误清、跨版本复制仍有约束（5.7→8.0 单向兼容）。
+
 ## 七、延伸
 
 - MySQL 8.0 RM → Ch.19 Replication（19.2–19.5 全读）
@@ -1026,6 +2206,144 @@ ${F}
 - [ ] 缓存穿透/雪崩/击穿三场景有明确对策
 - [ ] 生产 ${C}KEYS${C} / ${C}FLUSHALL${C} 已通过 rename-command 禁用
 
+<!--dd:redis-internals-->
+
+## 🔬 深挖：编码转换、持久化与内存治理
+
+### 一、底层编码与转换阈值（决定内存与延迟的关键）
+
+Redis 每种逻辑类型都有多种底层编码，**会在超过阈值时自动转换，且通常不可逆**：
+
+| 类型 | 小数据编码 | 大数据编码 | 转换阈值 |
+|---|---|---|---|
+| String | int（可解析为整数时） | embstr（≤44 字节）→ raw | 长度 > 44 字节转 raw |
+| List | listpack | quicklist（多 listpack 节点） | 元素 > 128 或元素 > 64 字节 |
+| Hash | listpack | hashtable | 字段 > 128 或任一值 > 64 字节 |
+| Set | intset（全整数）/ listpack | hashtable | 元素 > 128 或非整数字符串 |
+| ZSet | listpack | skiplist + dict | 元素 > 128 或成员长度 > 64 |
+
+${F}bash
+# 观察真实编码（比猜内存更准）
+redis-cli OBJECT ENCODING myhash        # listpack / hashtable
+redis-cli OBJECT REFCOUNT mykey
+redis-cli MEMORY USAGE mykey            # 单 key 实际内存占用
+redis-cli --bigkeys                     # 扫描各大 key（会阻塞，生产用 SCAN 版脚本）
+redis-cli --hotkeys                     # 需要 LFU 淘汰策略才有效
+${F}
+
+**转换不可逆是设计选择**：hashtable → listpack 需要重新分配连续内存，会引发阻塞；Redis 选择不回退，用内存换稳定。所以「先灌 10 万字段再删除到 100 个」，这个 hash 依然占 hashtable 的内存 —— 必须删 key 重建。
+
+阈值可以调，但代价要知道：
+
+${F}
+# 调大阈值可以省内存（尤其小 hash/小 zset 场景）
+hash-max-listpack-entries 128
+hash-max-listpack-value   64
+zset-max-listpack-entries 128
+list-max-listpack-size    128
+# 注意：调大后，某些 O(n) 操作（如遍历 listpack）的单次阻塞时间会变长
+${F}
+
+### 二、持久化：RDB、AOF 与混合持久化
+
+| 维度 | RDB | AOF | 混合（4.0+，推荐） |
+|---|---|---|---|
+| 内容 | 某时刻数据快照（二进制） | 每条写命令（文本） | RDB 头 + 增量 AOF |
+| 恢复速度 | 快 | 慢（要重放全部命令） | 快 |
+| 数据安全 | 丢失最后一次快照后的数据 | 取决于 appendfsync | 兼顾 |
+| 文件大小 | 小 | 大 | 中 |
+| fork 成本 | 有（COW） | 有（rewrite 时） | 有 |
+
+${F}ini
+# 推荐配置：开启混合持久化
+appendonly yes
+appendfilename "appendonly.aof"
+appendfsync everysec                  # 每秒钟 fsync，最多丢 1 秒（默认且均衡）
+aof-use-rdb-preamble yes              # 混合持久化
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+# RDB 作为兜底与备份载体
+save 900 1
+save 300 10
+save 60 10000
+${F}
+
+${C}appendfsync${C} 三档的真实取舍：
+
+${F}text
+always   ：每条命令 fsync -> 最安全，吞吐可能掉到 1/100（SSD 也扛不住）
+everysec ：后台每秒 fsync -> 生产默认；最坏丢 1 秒数据
+no       ：交给 OS 决定 -> 性能最好，可能丢 30 秒
+${F}
+
+### 三、fork 与 COW：延迟尖刺的真正来源
+
+${F}bash
+# fork 在 64GB 实例上可能耗时上百毫秒（阻塞主线程）
+redis-cli INFO stats | grep latest_fork_usec
+redis-cli INFO memory | grep -E "used_memory_human|used_memory_rss_human|mem_fragmentation_ratio"
+
+# 降低 fork 成本的工程手段
+# 1) 单实例内存不要超过 10~16GB（大内存拆多个实例）
+# 2) 避免 THP（透明大页），会显著放大 COW 拷贝
+#    echo never > /sys/kernel/mm/transparent_hugepage/enabled
+# 3) 关闭自动重写的高峰期触发，把 rewrite 放到低峰（或用主从，在从库做）
+# 4) 开启 repl-diskless-sync，全量同步走网络不落盘
+${F}
+
+**COW 的记忆负担**：fork 后父子进程共享内存页，任一页被写就复制一份。如果 fork 期间写入量很大（页被大量修改），内存可能膨胀接近 2 倍 —— 这是「Redis 内存莫名翻倍」的常见原因。
+
+### 四、内存淘汰与过期策略
+
+${F}ini
+maxmemory 8gb
+maxmemory-policy allkeys-lru      # 8 种策略见下表
+maxmemory-samples 5               # LRU/LFU 采样数，越大越准也越耗 CPU
+${F}
+
+| 策略 | 淘汰范围 | 适用 |
+|---|---|---|
+| noeviction | 不淘汰，写入报错 | 持久化数据存储（当作 DB 用） |
+| allkeys-lru | 所有 key | **通用缓存首选** |
+| allkeys-lfu | 所有 key，按访问频率 | 有明显热点长尾（4.0+） |
+| allkeys-random | 所有 key | 访问分布均匀 |
+| volatile-lru / lfu / random / ttl | 仅设置了过期时间的 key | 同一实例混合持久与缓存，需谨慎 |
+
+过期删除是**双策略**：
+
+${F}text
+惰性删除：访问 key 时检查是否过期 -> 保证不返回过期数据，但内存不主动释放
+定期删除：每秒 10 次（hz 可调）随机抽样 20 个带过期时间的 key，删除过期的；
+          若过期比例 > 25% 则立刻再来一轮 -> 控制内存回收速度
+后果：即使 key 已过期，内存也可能迟迟不释放（尤其大量 key 同一时刻过期）
+解法：给过期时间加随机抖动（如 3600 + rand(0,300)），错峰过期
+${F}
+
+### 五、集群：槽、MOVED/ASK 与跨槽限制
+
+${F}text
+16384 个 hash slot，slot = CRC16(key) % 16384
+MOVED  ：槽永久迁移到别的节点，客户端应更新本地槽映射
+ASK    ：槽正在迁移中，本次临时去目标节点查，不要更新映射
+CROSSSLOT：多 key 命令的 key 不在同一槽 -> 直接报错
+解法：hash tag —— 用 {} 指定参与计算的部分，如 user:{1001}:name 与 user:{1001}:age 同槽
+${F}
+
+${F}bash
+redis-cli -c -p 7000 CLUSTER SLOTS
+redis-cli -c -p 7000 CLUSTER KEYSLOT user:{1001}:name
+# 集群模式不支持跨槽的 MGET/MSET/事务/Lua 多 key 操作
+# 需要原子多 key 时，用 hash tag 把相关 key 固定到同槽
+${F}
+
+### 六、常见误区
+
+1. **「用 KEYS 做线上排查」**。${C}KEYS pattern${C} 是 O(N) 且阻塞单线程；用 ${C}SCAN${C} 游标迭代。
+2. **「Redis 单线程所以不需要考虑并发」**。单线程指的是命令执行，网络 IO 在 6.0+ 已是多线程；而且单线程意味着**一个慢命令阻塞所有人**（大 key 删除、全量遍历、Lua 长脚本）。
+3. **「设了过期时间内存就会及时释放」**。惰性 + 定期删除的组合意味着可能有大量「已过期未回收」的内存，需要监控 ${C}expired_keys${C} 与内存曲线。
+4. **「把所有数据都放 Redis 就快了」**。Redis 是内存系统，成本远高于磁盘；用 LRU 策略时应明确「缓存可丢」的业务语义。
+5. **「主从复制不会丢数据」**。Redis 主从默认是**异步**复制，主库写入成功即返回，故障切换可能丢最近若干条；用 ${C}WAIT${C} 命令可要求至少 N 个副本确认，代价是延迟。
+
 ## 七、延伸
 
 - redis.io → Persistence（官方对两种方案取舍的权威论述）
@@ -1112,6 +2430,160 @@ ${F}
 - [ ] Threads_running 与连接数有告警
 - [ ] PostgreSQL 已用 PgBouncer 等连接池
 - [ ] 有连接泄漏的监控（Sleep 连接增长趋势）
+
+<!--dd:connection-management-->
+
+## 🔬 深挖：连接生命周期、连接池配置与故障应急
+
+### 一、一个 MySQL 连接的完整生命周期
+
+${F}text
+1) TCP 三次握手                      —— 约 0.1ms（内网）
+2) 握手包（协议版本、能力位、salt）    —— 1 RTT
+3) 认证（插件：caching_sha2_password 首次需 RSA/TLS）—— 1~2 RTT，冷启动最贵
+4) 权限加载（读权限表建 ACL）          —— 有缓存，thread_cache 命中时更快
+5) 设置会话变量（字符集/时区/隔离级别） —— 每条 SQL 前的小成本，量大后不可忽略
+6) 执行语句
+7) 断开（可 wait_timeout 被动断开）
+${F}
+
+**关键结论**：建连成本远高于执行一条简单 SQL。所以必须复用连接 —— 这就是连接池存在的全部理由。
+
+${F}sql
+-- 观察连接现状
+SHOW STATUS LIKE 'Threads_connected';       -- 当前连接数
+SHOW STATUS LIKE 'Threads_running';         -- 正在执行（不含 Sleep）—— 真正的负载指标
+SHOW STATUS LIKE 'Max_used_connections';    -- 历史峰值
+SHOW STATUS LIKE 'Threads_created';         -- 新建线程次数
+SHOW VARIABLES LIKE 'thread_cache_size';    -- 线程缓存
+SHOW VARIABLES LIKE 'max_connections';
+SHOW VARIABLES LIKE 'wait_timeout';         -- 空闲连接被服务端断开的秒数（默认 28800）
+SHOW VARIABLES LIKE 'interactive_timeout';
+-- 连接来源分布：定位谁在猛开连接
+SELECT USER, HOST, COUNT(*) c FROM information_schema.PROCESSLIST GROUP BY USER, HOST ORDER BY c DESC;
+${F}
+
+### 二、${C}too many connections${C} 的应急处理
+
+连不上库时，标准救援套路是**预留一个管理连接**：
+
+${F}ini
+# my.cnf：预留 1 个仅供 SUPER 用户使用的额外连接
+extra_max_connections = 3
+extra_port = 33062
+${F}
+
+${F}bash
+# 应急：从额外端口连进去，杀掉空闲连接或调大上限
+mysql -u root -p -P 33062 -h 127.0.0.1
+${F}
+
+${F}sql
+-- 杀掉长时间 Sleep 的连接（先看清楚再杀：确认不是长事务持有者）
+SELECT id, user, host, db, command, time, state, LEFT(info,60)
+FROM information_schema.PROCESSLIST
+WHERE command = 'Sleep' AND time > 600 ORDER BY time DESC;
+-- 批量生成 KILL（人工复核后再执行）
+SELECT CONCAT('KILL ', id, ';') FROM information_schema.PROCESSLIST
+WHERE command='Sleep' AND time > 600;
+-- 临时调大上限（重启失效，仅用于止损）
+SET GLOBAL max_connections = 2000;
+${F}
+
+**注意**：${C}max_connections${C} 不是越大越好。每个连接都会分配线程栈 + 会话缓冲（sort_buffer、join_buffer 等按需分配）。几千连接时会话级内存会吃掉大量物理内存，且线程上下文切换开销剧增。真实容量应该由「连接数 × 单连接内存」与 CPU 核数共同决定。
+
+### 三、连接池核心参数与常见误配
+
+以 HikariCP（Spring Boot 默认，性能最好的 Java 池之一）为例：
+
+${F}yaml
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 20            # 关键：不是越大越好
+      minimum-idle: 5
+      connection-timeout: 3000         # 从池拿连接的超时（ms），必须小于上游超时
+      idle-timeout: 600000             # 空闲连接回收（10 分钟）
+      max-lifetime: 1740000            # 连接最大存活 29 分钟 —— 必须小于 DB 的 wait_timeout
+      keepalive-time: 300000           # 每 5 分钟探活，防止被中间设备静默断开
+      validation-timeout: 3000
+      connection-test-query: SELECT 1  # JDBC4 驱动可省
+      pool-name: order-db-pool
+${F}
+
+**${C}max-lifetime${C} 必须小于 DB 的 ${C}wait_timeout${C}**，否则连接会被服务端单方面断开，而池还认为它可用 —— 表现为随机出现 ${C}Communications link failure${C}。经验值：DB ${C}wait_timeout=1800${C}（30 分钟），池 ${C}max-lifetime=1740000${C}（29 分钟）。
+
+### 四、池大小怎么算：不要凭感觉
+
+推荐用**利特尔法则（Little's Law）**反推：
+
+${F}text
+所需连接数 ≈ 并发请求数 × 单请求平均持有时长 / 请求总时长
+更实用的经验公式：
+  连接数 ≈ CPU核数 × 2 + 磁盘数
+例如 8 核 SSD：8 × 2 + 1 = 17，取 20 左右
+${F}
+
+**反直觉但正确的结论**：连接池从 20 加到 200，吞吐通常不升反降。因为 DB 侧的并行度受限于 CPU 与 IO，连接数超过临界点后，只是让更多线程排队等锁、等 IO，上下文切换成本上升。
+
+${F}sql
+-- 用数据验证池大小是否合理：
+-- 若 Threads_running 长期远小于池上限 -> 池开太大了（浪费）
+-- 若 Threads_running 经常顶到池上限 -> 要么加池，要么先查是不是慢 SQL 占着连接
+SELECT VARIABLE_NAME, VARIABLE_VALUE FROM performance_schema.global_status
+WHERE VARIABLE_NAME IN ('Threads_running','Threads_connected','Threads_created');
+${F}
+
+### 五、连接泄漏：最难查的一类故障
+
+典型症状：**运行几小时后连接池耗尽，重启即恢复**。
+
+${F}java
+// 脆弱写法：任一跳异常就泄漏连接
+Connection c = dataSource.getConnection();
+Statement s = c.createStatement();
+s.execute(u);          // 抛异常 -> close 永远不执行 -> 连接泄漏
+c.close();
+
+// 正确写法 1：try-with-resources（编译期保证关闭，逆序释放）
+try (Connection c = dataSource.getConnection();
+     PreparedStatement ps = c.prepareStatement(SQL)) {
+    ps.setLong(1, id);
+    ps.executeUpdate();
+} catch (SQLException e) {
+    log.error("update failed, id={}", id, e);
+    throw new BizException(e);
+}
+${F}
+
+排查泄漏的手段：
+
+${F}sql
+-- 看哪些连接长时间不释放（Sleep 且 time 很大）
+SELECT id, user, host, db, command, time, state FROM information_schema.PROCESSLIST
+WHERE command='Sleep' ORDER BY time DESC LIMIT 20;
+-- 若同一个应用主机出现大量 Sleep 连接，基本可判定池泄漏
+SELECT SUBSTRING_INDEX(host,':',1) AS ip, COUNT(*) FROM information_schema.PROCESSLIST
+GROUP BY ip ORDER BY 2 DESC;
+${F}
+
+### 六、中间件的价值与代价
+
+| 方案 | 能力 | 代价 |
+|---|---|---|
+| 直连 DB | 简单、无额外跳数 | 无法统一治理、故障切换需改配置 |
+| ProxySQL | 读写分离、连接复用、查询缓存、限流、防火墙 | 多一跳；需自建高可用 |
+| 云数据库代理 | 托管、自动故障切换 | 能力受限、按量计费 |
+
+**ProxySQL 的核心收益是「连接收敛」**：1000 个应用连接收敛成 50 个 DB 连接，DB 侧的线程与内存压力大幅下降。代价是引入新的单点，必须自身做多副本 + Keepalived/VIP。
+
+### 七、常见误区
+
+1. **「池越大并发越高」**。超过临界点后吞吐下降、延迟上升。正确做法是先测「Threads_running 与响应时间曲线」，找到拐点。
+2. **「max-lifetime 不用设」**。不设就会撞上 DB 的 ${C}wait_timeout${C} 与防火墙/负载均衡的空闲回收，产生随机连接失效。
+3. **「用连接池就不会有连接泄漏」**。池只是容器，占着不还照样耗尽。
+4. **「每个请求开一个新连接更简单」**。单次建连成本 + 会话变量初始化可能比查询本身贵十倍，HTTP 短连接 + 无池化是压垮 DB 的常见组合。
+5. **「只监控连接数就够」**。${C}Threads_connected${C} 高但 ${C}Threads_running${C} 低只是池开大了；只有 ${C}Threads_running${C} 高才是真的负载压力。
 
 ## 七、延伸
 
@@ -1220,6 +2692,127 @@ ${F}
 - [ ] 扩容再平衡方案（翻倍法/一致性哈希）有演练
 - [ ] 跨片事务与跨片聚合方案明确
 
+<!--dd:sharding-middleware-->
+
+## 🔬 深挖：分片的决策模型、路由算法与扩容路径
+
+### 一、先量化「要不要分」
+
+不要凭感觉分片。先算四个硬指标：
+
+| 指标 | 阈值参考 | 说明 |
+|---|---|---|
+| 单表行数 | > 2000 万~5000 万 | 更关键的是索引深度与 B+Tree 高度 |
+| 单表数据量 | > 50~100 GB | 超过后备份/DDL 窗口不可接受 |
+| 单库写入 QPS | 接近单实例上限 | 与硬件和事务大小强相关 |
+| 备份/DDL 耗时 | > 业务允许的窗口 | 运维成本才是真实的分片触发点 |
+
+**优先尝试的中间手段**（比直接分片便宜得多）：归档冷数据、垂直拆分业务表、读写分离、加缓存、优化索引。分片是最后一张牌，因为它引入了分布式复杂度。
+
+### 二、分片键选择：决定了 80% 的成败
+
+| 分片键 | 优点 | 风险 |
+|---|---|---|
+| user_id | 用户维度查询天然单分片 | 商家/运营维度查询要广播 |
+| order_id | 均匀、写入分散 | 按用户查必须带 user_id 或建映射表 |
+| merchant_id | 商家维度聚合快 | 大商家造成**数据倾斜/热点分片** |
+| 时间 | 便于按时间归档与删除 | 最新分片必然是写热点 |
+| 复合（gen 因子） | 同时满足多维度 | 需要额外维护映射 |
+
+**「基因法」解决 ID 与分片键不匹配**：订单要按 user_id 分片，但列表页按 order_id 查询，于是把 user_id 的低位比特「遗传」给 order_id：
+
+${F}text
+order_id 生成时：order_id = (snowflake << 3) | (user_id & 0b111)
+路由时：shard = (order_id & 0b111)   -- 直接由 order_id 反推分片，无需额外查询
+共享位数 = log2(分片数)，分片数必须是 2 的幂
+${F}
+
+### 三、路由算法对比
+
+| 算法 | 扩容影响 | 实现 | 适用 |
+|---|---|---|---|
+| hash 取模 | **灾难**：几乎全量搬迁 | 最简单 | 分片数固定不再变 |
+| range | 只搬迁相邻段 | 简单 | 时间/ID 有序，可预分片 |
+| 一致性哈希 | 只影响相邻节点约 1/N | 需虚拟节点 | 缓存类、节点动态增减 |
+| 预分片 + 映射表 | 扩容时只改映射 | 需维护元数据 | **生产首选**（如 1024 个逻辑分片映射到 N 个物理库） |
+
+**预分片是唯一「扩容不需搬迁」的设计**：一开始就按 1024 个逻辑分片建表，物理上先放 4 个库、每库 256 张表；未来扩到 8 个库，只需把部分逻辑分片整体迁移 —— 单次迁移量可控、可灰度、可回滚。
+
+### 四、ShardingSphere 配置骨架
+
+${F}yaml
+spring:
+  shardingsphere:
+    datasource:
+      names: ds0,ds1
+      ds0: { type: HikariDataSource, jdbc-url: jdbc:mysql://db0:3306/order, username: app, password: *** }
+      ds1: { type: HikariDataSource, jdbc-url: jdbc:mysql://db1:3306/order, username: app, password: *** }
+    rules:
+      sharding:
+        tables:
+          t_order:
+            actual-data-nodes: ds$->{0..1}.t_order_$->{0..15}
+            database-strategy:                      # 库分片：user_id 后 1 位决定库
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: db-inline
+            table-strategy:                         # 表分片：user_id 后 4 位决定表
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: tbl-inline
+        sharding-algorithms:
+          db-inline:
+            type: INLINE
+            props: { algorithm-expression: ds$->{user_id % 2} }
+          tbl-inline:
+            type: INLINE
+            props: { algorithm-expression: t_order_$->{user_id % 16} }
+    props:
+      sql-show: false
+${F}
+
+（配置里 ${C}$->{...}${C} 是 ShardingSphere 的 Groovy 行表达式，**必须写 ${C}$->${C} 转义**，否则会被当成模板变量。）
+
+### 五、跨片查询的四种形态与代价
+
+| 类型 | 例子 | 代价 | 解法 |
+|---|---|---|---|
+| 聚合 | ${C}COUNT(*)${C} 全量统计 | 广播到所有分片再合并 | 预聚合表 + 定时任务；或走 ES |
+| 排序分页 | ${C}ORDER BY created_at LIMIT 100000,20${C} | 各分片取前 N 再归并，深翻页爆炸 | 禁止深翻页；按时间范围约束 |
+| JOIN | 订单 JOIN 用户 | 跨库无法直接 JOIN | 冗余字段（把常用用户字段写进订单）；或绑定表（同分片键的表在同一库） |
+| 分布式事务 | 跨片转账 | 需 2PC/Seata/TCC | 尽量避免跨片写；用本地消息表 + 最终一致 |
+
+${F}yaml
+# 绑定表：分片规则一致的父子表，JOIN 会被下推到单库执行，避免笛卡尔广播
+binding-tables:
+  - t_order, t_order_item     # 二者都用 order_id 分片，可本地 JOIN
+# 广播表：小字典表在每个库都有全量副本，JOIN 无需跨库
+broadcast-tables:
+  - t_dict, t_region
+${F}
+
+### 六、扩容与数据迁移：双写方案
+
+${F}text
+目标：从 2 库扩到 4 库，业务不中断、可回滚
+阶段 1  双写：写入同时写旧分片（权威）+ 新分片（影子），读仍走旧
+阶段 2  存量迁移：按分片分批把历史数据搬到新分片（限速、可暂停）
+阶段 3  校验：逐分片比对行数与校验和（pt-table-checksum 思路），差异行修复
+阶段 4  灰度读：按用户白名单切读新分片，观察错误率与延迟
+阶段 5  全量切读 + 停双写：确认无差异后读全部走新，写入只写新
+阶段 6  保留旧分片一段时间（可回滚窗口），之后归档
+${F}
+
+关键纪律：**双写必须是「旧库成功才算成功」**（旧库是权威），新库写入失败只记录告警不阻断业务；阶段 5 之前任何时刻都可以停止迁移并回到旧库。
+
+### 七、常见误区
+
+1. **「分片后性能自然变好」**。分片只提升容量与写入并行度；若查询不带分片键，会退化成广播 N 库再归并，**比不分片更慢**。
+2. **「用 hash 取模，以后加机器就行」**。取模扩容需要全量搬迁，且搬迁期间的数据一致性极难保证。要么预分片，要么一致性哈希。
+3. **「分片后不用考虑全局唯一 ID」**。自增主键在分片后会冲突，必须上雪花 ID/号段模式（数据库号段 + 双 buffer 预取）。
+4. **「跨片事务交给中间件就没事」**。2PC 有性能与协调者单点问题，且对业务错误（如超卖）并无帮助；能设计成单分片事务就不要跨片。
+5. **「分片键可以随时改」**。改分片键等于全量数据重分布，成本与重新分片同级；上线前必须把分片键和主要查询形态一起评审。
+
 ## 七、延伸
 
 - MySQL 8.0 RM → Ch.15 Partitioning（先读通分区限制）
@@ -1313,6 +2906,105 @@ SRE 纪律（Workbook Ch.5）：**故障切换必须自动化 + 定期演练**�
 - [ ] 异地灾备链路监控（复制延迟、binlog 积压）
 - [ ] 切换 Runbook 有图文步骤，新人可照做
 - [ ] MGR/Redis 集群节点跨故障域部署
+
+<!--dd:ha-dr-->
+
+## 🔬 深挖：可用性量化、故障域与切换的工程细节
+
+### 一、把「高可用」换算成数字
+
+| 可用性 | 年停机 | 月停机 | 典型架构代价 |
+|---|---|---|---|
+| 99% | 3.65 天 | 7.2 小时 | 单机 + 定期备份 |
+| 99.9% | 8.76 小时 | 43.2 分钟 | 主从 + 自动切换 |
+| 99.95% | 4.38 小时 | 21.6 分钟 | 半同步 + 多副本 + 演练 |
+| 99.99% | 52.6 分钟 | 4.3 分钟 | 同城双活 + 秒级切换 |
+| 99.999% | 5.26 分钟 | 26 秒 | 异地多活 + 全链路容灾 |
+
+**关键认知**：每提升一个 9，成本大致翻一个数量级。所以第一步不是「上多活」，而是**把 RTO/RPO 与业务对齐**：财务报表可以容忍 5 分钟 RTO 吗？支付链路可以容忍丢 1 秒数据吗？答案不同，架构选择完全不同。
+
+### 二、故障域：从内到外逐层设防
+
+| 层级 | 故障 | 缓解手段 |
+|---|---|---|
+| 进程 | mysqld crash、OOM | 自动拉起、MHA/orchestrator、健康检查 |
+| 主机 | 磁盘坏、网卡故障、内核 panic | 主从切换、VIP 漂移 |
+| 机架 | 交换机断电 | 副本跨机架 |
+| 机房 | 断电、光缆中断 | 同城双机房、半同步到异地 |
+| 地域 | 区域性灾害 | 异地备份、异地只读、多活 |
+
+**一个常见的设计缺陷**：主库与所有从库在同一机柜 —— 机柜断电，整个集群一起没。副本的物理分布必须与故障域对齐。
+
+### 三、切换：最难的不是切，是「不脑裂」
+
+脑裂的本质是**两个节点都认为自己是主库**，都接受写入，导致数据分叉。
+
+${F}text
+脑裂的典型触发链：
+  1) 主库与从库之间网络抖动（主库本身没死）
+  2) 仲裁/探活误判主库下线
+  3) 从库提升为新主库，开始接受写入
+  4) 网络恢复，旧主库也有新写入 —— 两份互不相容的历史
+${F}
+
+防脑裂的三道闸门：
+
+${F}sql
+-- 闸门 1：旧主库自我隔离（fencing）。半同步下旧主库因等不到 ACK 而阻塞写入
+SET GLOBAL rpl_semi_sync_source_timeout = 1000;   -- 1 秒无 ACK 退化为异步（可调大以提高一致性）
+-- 更彻底：检测到异常时主动 SET GLOBAL super_read_only = ON 或直接重启
+SET GLOBAL read_only = ON;
+SET GLOBAL super_read_only = ON;   -- 连 SUPER 用户也只能读，防止人工误写
+
+-- 闸门 2：切换必须由具备仲裁的组件执行，而不是各节点自决
+--   主流的 orchestrator / MHA / 云 RDS 都由中心控制面探测并执行
+-- 闸门 3：切换后强制校验数据位点，差异过大就拒绝提升
+SHOW REPLICA STATUS\\G   -- 检查 Replica_SQL_Running_State 与已执行的 GTID 集合
+${F}
+
+### 四、切换流程：把操作写成可执行的剧本
+
+${F}text
+【计划内切换（如变更、缩容）】
+ 1) 选目标从库，确认延迟为 0（WAIT_FOR_EXECUTED_GTID_SET 追平）
+ 2) 应用侧摘流量（读流量先摘，写流量暂停或进入队列）
+ 3) 从库 SET read_only=OFF / super_read_only=OFF，提升为主
+ 4) 其余从库重新指向新主（GTID 模式下 CHANGE REPLICATION SOURCE TO ... SOURCE_AUTO_POSITION=1）
+ 5) 应用切换连接串 / VIP 漂移 / 中间件改路由
+ 6) 校验：新主可写、从库复制正常、业务回归
+ 7) 旧主降级为从库，重新加入复制集群
+
+【故障切换（自动）】
+ 1) 探活失败连续 N 次（避免误判，通常 3 次 / 间隔 1~3 秒）
+ 2) 挑选数据最新的从库（比较 GTID/Exec_Master_Log_Pos）
+ 3) fencing 旧主（关掉写入能力或强制重启）
+ 4) 提升 + 重定向 + 告警
+ 5) 人工介入恢复旧主、检查数据差异
+${F}
+
+**「挑选数据最新的从库」是核心**：不能按顺序挑第一个，也不能随机挑。GTID 模式下比较 ${C}gtid_executed${C} 的包含关系；位点模式下比较 ${C}Read_Master_Log_Pos${C} 与 ${C}Relay_Master_Log_File${C}。
+
+### 五、容灾演练：唯一的验收方式
+
+${F}text
+演练清单（每季度至少一次）：
+  [ ] 单副本 kill -9：验证自动切换是否在 RTO 内完成
+  [ ] 模拟网络分区（iptables DROP 掉主从端口）：验证不脑裂
+  [ ] 主库磁盘满：验证告警是否触发、是否有只读兜底
+  [ ] 误删表：验证 PITR 能否恢复到指定时间点，实测 RTO
+  [ ] 机房断电演练：验证异地副本可用性与数据差异
+  [ ] 记录每次演练的真实 RTO/RPO，与承诺值对照并写进报告
+${F}
+
+**演练必须做「能改数据的真操作」**，只走流程不实际切换的演练毫无价值 —— 真正的坑永远在「应用连不上新主」「账号权限没同步」「DNS 缓存没刷新」这些环节。
+
+### 六、常见误区
+
+1. **「有主从就是高可用」**。没有自动探活与切换，主库挂了就是纯人工介入，RTO 以小时计。
+2. **「半同步就万无一失」**。${C}rpl_semi_sync_source_timeout${C} 一超时就退化为异步，此时主库挂掉仍会丢数据。要更高保证需要 MGR（多数派提交）。
+3. **「切完就没事了」**。应用连接池里全是旧连接、缓存里的路由映射过期、DNS TTL 未生效 —— 这些「切换后的次生故障」往往比切换本身造成更长的停机。
+4. **「多活就是到处都能写」**。多地域双写会带来写冲突（同一主键两边都改），必须有冲突解决策略（如按地域分片、最后写入获胜、业务层冲突合并）。没有策略的多活等于制造数据事故。
+5. **「容灾机房平时不用管」**。长期不验证的容灾环境，一定会在真用时发现复制断了、磁盘满了、版本不一致。
 
 ## 七、延伸
 
@@ -1416,6 +3108,124 @@ ${F}
 - [ ] 降级预案（非核心功能开关）与容量一起设计
 - [ ] 压测环境与生产配置差异已记录
 
+<!--dd:capacity-bench-->
+
+## 🔬 深挖：从业务指标到资源水位的容量推演
+
+### 一、容量规划的四步推导链
+
+${F}text
+第一步：业务量  ->  DAU、订单量、峰值倍数（通常按日均峰值的 3~5 倍预留）
+第二步：访问量  ->  QPS/TPS = 业务量 × 每单请求数 / 时间窗口 × 峰值系数
+第三步：资源量  ->  CPU 核数、内存、IOPS、连接数、存储容量
+第四步：安全水位 ->  每项资源留出余量（见下表），并设定扩容触发线
+${F}
+
+**最容易错的是第二步**：一个下单动作可能对应 20 次 DB 访问（查库存、查优惠、插订单、插明细、更新账户……），按「订单 QPS」算资源会低估一个数量级。必须从**慢日志/监控里拿到真实的 SQL 调用量**。
+
+${F}sql
+-- 用原生统计拿到真实的语句调用量排行（比估算可靠）
+SELECT DIGEST_TEXT, COUNT_STAR,
+       ROUND(SUM_TIMER_WAIT/1e9,1) AS total_ms,
+       ROUND(AVG_TIMER_WAIT/1e6,3) AS avg_ms,
+       SUM_ROWS_EXAMINED, SUM_ROWS_SENT
+FROM performance_schema.events_statements_summary_by_digest
+ORDER BY COUNT_STAR DESC LIMIT 20;
+-- COUNT_STAR 就是调用次数，可直接换算成 QPS 与资源占用
+${F}
+
+### 二、必须盯住的指标与安全水位
+
+| 类别 | 指标 | 安全水位 | 超线后果 |
+|---|---|---|---|
+| CPU | 使用率 | < 70%（突发可上 80%） | 出现排队，延迟非线性上升 |
+| 内存 | 缓冲池命中率 | > 99% | 命中率下降直接变成随机 IO |
+| 内存 | 缓冲池占用 / 物理内存 | ≤ 70%（留 OS 与连接开销） | OOM Killer 杀进程 |
+| 磁盘 | 使用率 | < 80% | 写满即不可用；且膨胀风险 |
+| 磁盘 | IOPS / 吞吐余量 | < 70% 上限 | 双十一类峰值写不进去 |
+| 磁盘 | 单次 fsync 延迟 | < 5ms（SSD） | 提交延迟直接传导到业务 |
+| 连接 | Threads_connected / max_connections | < 60% | 撞上限即拒绝服务 |
+| 连接 | Threads_running | 与 CPU 核数同量级 | 大量线程争抢，上下文切换 |
+| 复制 | 从库延迟 | < 1s（或按业务容忍度） | 读到旧数据 |
+| 事务 | 长事务数量 | 0（>60s 视为异常） | undo 膨胀、锁堆积、DDL 阻塞 |
+
+${F}sql
+-- 一次性采集核心水位（可直接喂给监控系统）
+SELECT
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Threads_connected') AS conn,
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Threads_running')  AS running,
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_read_requests') AS bp_req,
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_reads')          AS bp_disk,
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_row_lock_waits')             AS lock_waits,
+  (SELECT COUNT(*) FROM information_schema.INNODB_TRX WHERE TIMESTAMPDIFF(SECOND, trx_started, NOW()) > 60)             AS long_trx;
+-- 缓冲池命中率 = 1 - bp_disk / bp_req，低于 0.99 就要关注
+${F}
+
+### 三、压测工具选型
+
+| 工具 | 特点 | 适用 |
+|---|---|---|
+| sysbench | 轻量、参数直观、OLTP 脚本成熟 | 单机基准、回归对比（首选） |
+| mysqlslap | MySQL 自带，无需安装 | 快速冒烟 |
+| HammerDB | TPROC-C（类 TPC-C）标准负载 | 复杂事务模型、选型对比 |
+| go-tpc | 支持 TPC-C/TPC-H，可分布式 | 大规模、分布式压测 |
+| 应用层压测（JMeter/wrk/k6） | 贴近真实业务链路 | 端到端验证 |
+
+${F}bash
+# sysbench 标准三步：prepare -> run -> cleanup
+sysbench oltp_read_write \\
+  --mysql-host=127.0.0.1 --mysql-user=bench --mysql-password=*** \\
+  --mysql-db=bench --tables=16 --table-size=2000000 \\
+  --threads=32 --time=300 --report-interval=10 \\
+  --rand-type=zipfian \\
+  prepare
+
+sysbench oltp_read_write \\
+  --mysql-host=127.0.0.1 --mysql-user=bench --mysql-password=*** \\
+  --mysql-db=bench --tables=16 --table-size=2000000 \\
+  --threads=32 --time=300 --report-interval=10 --rand-type=zipfian \\
+  run
+
+sysbench oltp_read_write --mysql-db=bench cleanup
+${F}
+
+**${C}--rand-type=zipfian${C} 不能省**：均匀分布（uniform）会让索引访问过于平均，压不出真实的热点效应；线上访问几乎总是幂律分布，zipfian 更接近现实。
+
+### 四、压测的正确姿势（八条纪律）
+
+${F}text
+1) 数据量要与线上同量级：空表的 8 万 TPS 毫无参考价值（索引全在内存、无回表成本）
+2) 并发要梯度递增：32 -> 64 -> 128 -> 256，找到吞吐拐点与延迟拐点
+3) 压测机不能成为瓶颈：压测客户端 CPU、网络、连接数都要监控
+4) 观察点要全：不只 QPS/TPS，还要看 p99、Threads_running、缓冲池命中、磁盘 await
+5) 预热：冷启动的第一次访问会读磁盘，先跑 1~2 分钟预热再统计
+6) 压测环境要与生产同规格：CPU 核数、磁盘类型（SSD vs HDD）差异会改变结论的数量级
+7) 只压 DB 不等于压业务：中间件、连接池、网络 RTT 都在链路里
+8) 记录基线：把每次压测结果存档，作为后续版本与配置变更的对比基准
+${F}
+
+### 五、从压测结果读出容量结论
+
+${F}text
+典型输出解读：
+  threads=32   TPS=8200   p99=12ms    <- 线性区
+  threads=64   TPS=15400  p99=18ms    <- 接近线性
+  threads=128  TPS=17200  p99=95ms    <- 吞吐趋平，延迟上升 -> 拐点
+  threads=256  TPS=16900  p99=340ms   <- 吞吐下降，延迟暴涨 -> 已过饱和
+结论：该实例的安全工作区间是 64 并发上下，容量上限约 17000 TPS，
+      按 70% 水位预留 -> 生产长期承载 12000 TPS，超过即扩容或限流
+${F}
+
+**只看 TPS 峰值是危险的**：TPS 从 17200 到 16900 看似只降 2%，但 p99 从 95ms 涨到 340ms —— 用户体验已经崩了。容量结论必须以「延迟可接受时的最大吞吐」为准。
+
+### 六、常见误区
+
+1. **「按 CPU 使用率扩容」**。CPU 不到 50% 但磁盘 IOPS 打满、连接数撞顶、从库延迟破表的情况很常见。容量是**多资源的短板**，不是单项。
+2. **「压测一次就够」**。数据分布、索引、SQL 都在变；容量基线要定期（如每季度）重测。
+3. **「平均延迟达标就行」**。p99 才是用户感知；均值会被大量快请求稀释。
+4. **「扩容就能解决」**。若是慢 SQL 或缺索引导致饱和，扩容只是把问题推迟，且成本线性增长。先做 SQL 治理，再加容量。
+5. **「sysbench 分数高就代表业务能扛」**。sysbench 是简单点查/点更新，不含业务 JOIN、大事务、跨表写；业务压测必须用真实 SQL 或真实链路。
+
 ## 七、延伸
 
 - MySQL 8.0 RM → 8.12 Measuring Performance / 8.12.2 Using Sysbench
@@ -1516,6 +3326,143 @@ ${F}
 - [ ] 回滚方案演练过，旧库可秒级重新开放写入
 - [ ] 灰度切读有结果比对与观察指标
 
+<!--dd:migration-doublewrite-->
+
+## 🔬 深挖：迁移六阶段与双写的失败处理
+
+### 一、迁移的六个阶段与退出条件
+
+| 阶段 | 动作 | 退出条件（不满足不放行） |
+|---|---|---|
+| 1 评估 | 数据量、表结构、依赖、SQL 兼容性盘点 | 有不兼容项已列清单并有对策 |
+| 2 准备 | 新库建表、账号权限、网络连通、监控就位 | 新库可读写、监控可见 |
+| 3 存量迁移 | 分批搬迁历史数据（限速、可暂停） | 行数与校验和一致 |
+| 4 增量同步 | binlog 订阅/触发器/Canal 追平 | 延迟稳定在秒级以内 |
+| 5 双写 + 灰度读 | 写入双写，按白名单切读 | 差异率 0，延迟与错误率达标 |
+| 6 切流 | 读全量切新，写入以新库为权威 | 观察期无异常，旧库可下线 |
+
+**每个阶段都必须可回滚**，这是迁移方案评审的核心问题：「做到第 3 阶段发现不对，怎么退回？」
+
+### 二、存量迁移：按主键分块 + 限速
+
+${F}bash
+# 反例：一条语句搬完，会长时间锁表、打满 IO、产生巨大 binlog
+INSERT INTO newdb.t SELECT * FROM olddb.t;
+
+# 正确：按主键范围分块，每块独立事务，块间限速
+# 用 pt-archiver 可自动化（支持 --limit、--sleep、--max-lag）
+pt-archiver --source h=old_host,D=olddb,t=orders \\
+  --dest h=new_host,D=newdb,t=orders \\
+  --where "created_at < '2026-01-01'" \\
+  --limit 2000 --sleep 0.3 --max-lag 2 \\
+  --bulk-insert --no-delete --progress 10000
+${F}
+
+${F}sql
+-- 或者自建分块搬运（更可控，便于断点续跑）
+-- 每批按主键区间 [lo, hi] 搬运
+INSERT INTO newdb.t (id, c1, c2)
+SELECT id, c1, c2 FROM olddb.t
+WHERE id >= 1000000 AND id < 1020000
+ON DUPLICATE KEY UPDATE c1 = VALUES(c1), c2 = VALUES(c2);
+-- ON DUPLICATE KEY 保证幂等：重跑同一批次不会产生重复行
+-- 记录每批已完成的 hi 值，故障后可精确断点续跑
+${F}
+
+**在从库做存量搬迁**能避免影响主库写入；若必须从主库读，务必限速并监控主库的 IO 与从库延迟。
+
+### 三、增量同步方案对比
+
+| 方案 | 原理 | 延迟 | 对源库影响 | 适用 |
+|---|---|---|---|---|
+| Canal | 伪装从库拉 binlog | 秒级 | 小（一个 dump 连接） | 自建、可控 |
+| 云 DTS | 托管 binlog 订阅 + 迁移 | 秒级 | 小 | 上云迁移、省人力 |
+| 触发器 | 在源表上写触发器同步 | 毫秒 | **大**（每个写都多一次同步写） | 低写入量、老版本无 binlog 订阅 |
+| 双写（应用层） | 业务代码同时写两边 | 毫秒 | 中（多一次写 + 失败处理） | 应用可改、需要精确控制 |
+
+**触发器是最后手段**：它会把源库写入延迟放大、与业务自身的触发器冲突，且源库为 MyISAM 时不可用。能用 binlog 就别用触发器。
+
+### 四、双写的正确姿势：旧库权威 + 单项幂等
+
+${F}java
+// 核心原则：旧库是权威，旧库成功才算成功；新库失败只告警不阻断
+public void saveOrder(Order o) {
+    // 1) 先写旧库（权威）
+    oldOrderMapper.insert(o);
+
+    // 2) 再写新库，失败不影响主流程，但必须留痕以便补偿
+    try {
+        newOrderMapper.insert(o);
+    } catch (Exception e) {
+        // 关键：记录到补偿表，由后台任务重试，绝不可只打日志
+        compensationMapper.save(Compensation.of("order", o.getId(), e.getMessage()));
+        log.error("double-write failed, orderId={}", o.getId(), e);
+    }
+}
+${F}
+
+双写要处理的五种异常：
+
+${F}text
+1) 新库写失败      -> 落补偿表，后台重试（幂等）
+2) 新库写超时      -> 可能已写入成功（超时不等于失败）-> 重试必须幂等
+3) 部分字段不一致  -> 字段映射/默认值/类型转换要单测覆盖
+4) 自增主键冲突    -> 新库不要用自增，统一写入业务主键（雪花 ID）
+5) 旧库回滚新库已提交 -> 反向补偿：按业务主键删除新库对应行
+${F}
+
+**「超时不等于失败」是双写最容易被忽略的一点**。若重试不具备幂等性（如自增计数、追加日志），会直接造成数据翻倍。所以双写的每次重试都必须用「业务主键 + 覆盖写」或「条件更新」。
+
+### 五、数据校验：从抽样到全量
+
+| 层次 | 方法 | 成本 | 能发现的问题 |
+|---|---|---|---|
+| L1 行数 | ${C}SELECT COUNT(*)${C} 比对 | 低 | 漏搬、重复 |
+| L2 聚合 | 分块 ${C}SUM/COUNT${C} 比对 | 低 | 部分字段不一致 |
+| L3 内容 | ${C}CHECKSUM TABLE${C} / 逐行比对 | 中 | 任意字段差异 |
+| L4 全字段 | 按主键抽样 N 万行做全字段 diff | 高 | 类型/精度/字符集差异 |
+| L5 双写期 | 实时比对（写入时对称读取校验） | 高 | 双写逻辑缺陷 |
+
+${F}sql
+-- L2：分块聚合比对，快速定位差异区间（比全表 CHECKSUM 更快收敛）
+SELECT FLOOR(id/100000) AS blk, COUNT(*) c, SUM(CRC32(CONCAT_WS('#', id, status, amount))) s
+FROM t GROUP BY blk ORDER BY blk;
+-- 两个库各跑一次，diff 输出文件即可定位到具体块，再对该块做逐行比对
+${F}
+
+${F}bash
+# pt-table-checksum 用于主从一致性（也适用于两个结构相同的库，通过 --databases 指定）
+pt-table-checksum --host=... --databases=appdb --tables=orders \\
+  --chunk-size=1000 --max-load="Threads_running=30" --replicate=percona.checksums
+# 差异行同步（先 --dry-run 查看，再实跑）
+pt-table-sync --replicate=percona.checksums --print h=... D=appdb t=orders
+${F}
+
+### 六、切流与回滚
+
+${F}text
+切流顺序（降低风险）：
+  1) 只读流量：按用户/租户白名单 -> 1% -> 10% -> 50% -> 100%
+  2) 写流量：必须在新库完全追平且校验通过后才能切
+  3) 切写后旧库进入只读（保留可回滚窗口，通常 1~7 天）
+  4) 观察期内随时可回滚：把读切回旧库（旧库仍在同步，数据不丢）
+
+回滚的前提条件（必须提前准备）：
+  - 旧库保持双向同步或至少保持可写（否则新库期间产生的数据无法回到旧库）
+  - 补偿表清空/对账无差异
+  - 回滚脚本已演练过，且知道确切的回滚时间点
+${F}
+
+**最危险的状态是「停掉旧库同步但还在双写」**：此时旧库落后、新库有增量，一旦想回滚就要做反向数据补齐，成本极高。要么保持双向同步，要么早点决定不回头。
+
+### 七、常见误区
+
+1. **「迁移就是导数据」**。真正的难点是增量追平、双向一致性与回滚能力。
+2. **「双写足够了，不用增量同步」**。双写只能保证双写开始之后的数据；存量与双写期间的间隙必须靠增量同步或批量补齐。
+3. **「新库沿用自增主键」**。两边各自自增会产生主键冲突与语义漂移，异构迁移应统一使用业务主键或雪花 ID。
+4. **「校验行数一致就放心了」**。行数一致但字段值不一致（精度截断、字符集转换、时区偏移）极其常见，必须做到 L3 以上。
+5. **「一次迁移做完就删旧库」**。旧库是最后的回滚手段，保留期应由业务与合规共同确定，通常不少于一个完整账期。
+
 ## 七、延伸
 
 - MySQL 8.0 RM → 15.12 InnoDB Online DDL Operations（ALGORITHM 能力矩阵）
@@ -1606,6 +3553,144 @@ ${F}
 - [ ] 所有 Redis key 都设 TTL
 - [ ] 对账差异的修复 SLA 与 owner 落实
 - [ ] pt-table-sync 操作前必 --print 预览并备份
+
+<!--dd:consistency-check-->
+
+## 🔬 深挖：一致性的四个层次与对账系统设计
+
+### 一、先分清「哪种一致性」
+
+| 层次 | 范围 | 典型问题 | 校验手段 |
+|---|---|---|---|
+| L1 单库内 | 同一实例的多表 | 交易与流水不匹配、余额与明细不符 | 业务规则校验（SQL 自检） |
+| L2 主从 | 主库 vs 从库 | 复制中断、跳过事务、手工写入 | pt-table-checksum |
+| L3 分片 | 分片之间 | 汇总口径不一致、跨片数据缺失 | 分片聚合比对 |
+| L4 跨系统 | DB vs 缓存 vs 消息 vs 下游 | 缓存脏数据、消息丢投、下游未收到 | 对账系统（T+1 全量 + 实时增量） |
+
+**不同层次要用不同工具，用错层会白干**。例如用 pt-table-checksum 去查缓存与 DB 的不一致，方向就错了。
+
+### 二、单库内一致性：用 SQL 自证
+
+${F}sql
+-- 账户余额 = 明细流水之和（找出不平的账户）
+SELECT a.user_id, a.balance, SUM(d.amount) AS detail_sum,
+       a.balance - SUM(d.amount) AS diff
+FROM account a
+JOIN account_detail d ON d.user_id = a.user_id
+GROUP BY a.user_id, a.balance
+HAVING diff <> 0
+ORDER BY ABS(diff) DESC LIMIT 100;
+
+-- 订单主表与明细表金额不符
+SELECT o.id, o.total_amount, SUM(i.unit_price * i.qty) AS item_sum
+FROM orders o JOIN order_item i ON i.order_id = o.id
+GROUP BY o.id, o.total_amount
+HAVING o.total_amount <> item_sum;
+
+-- 孤儿行：明细找不到主表（外键缺失导致的悬挂数据）
+SELECT i.order_id, COUNT(*) FROM order_item i
+LEFT JOIN orders o ON o.id = i.order_id
+WHERE o.id IS NULL GROUP BY i.order_id;
+${F}
+
+这类校验应该**固化成定时任务**（如每小时跑一次），把「数据已经不一致」从被动发现变成主动监控。
+
+### 三、主从一致性：pt-table-checksum 的原理
+
+它不只是「比对行数」，而是**在主库上分块计算校验和，并通过复制把校验和带到从库比对**：
+
+${F}text
+原理链条：
+  1) 按索引把表切成 chunk（默认 1000 行一块）
+  2) 对每块计算校验和：SUM(CRC32(CONCAT_WS('#', col1, col2, ...)))
+  3) 把结果 INSERT 到主库的 percona.checksums 表
+  4) 该 INSERT 通过复制传播到从库 -> 两边都有了主库算出的值
+  5) 在每个从库上本地重算同样区块的校验和，与传播来的值比对
+  6) 不一致的行记入 percona.checksums（diffs 列 = 1）
+  -- 关键：整个过程不改业务数据，且用 --max-load 自动降速
+${F}
+
+${F}bash
+pt-table-checksum --host=primary --user=checker --password=*** \\
+  --databases=appdb \\
+  --chunk-size=1000 --chunk-time=0.5 \\
+  --max-load="Threads_running=25" --critical-load="Threads_running=60" \\
+  --replicate=percona.checksums --no-check-binlog-format
+
+# 只显示有差异的表
+pt-table-checksum --replicate=percona.checksums --databases=appdb ... 2>/dev/null
+# 差异行的定位
+SELECT db, tbl, chunk, this_cnt, master_cnt, this_crc, master_crc
+FROM percona.checksums WHERE master_cnt <> this_cnt OR master_crc <> this_crc;
+${F}
+
+**重要限制**：${C}binlog_format${C} 必须是 ROW（否则校验和语句会以 STATEMENT 形式复制，产生误判）；且表必须有唯一索引或主键用于分块。
+
+### 四、漂移的成因清单
+
+| 成因 | 症状 | 缓解 |
+|---|---|---|
+| 复制中断后手工跳过事务 | 从库缺行/多行 | 禁止 ${C}sql_slave_skip_counter${C}；用 GTID 精确重放 |
+| 从库被写入（有人改了 read_only） | 主从值不同 | 强制 ${C}super_read_only=ON${C} |
+| 双写失败未补偿 | 新库缺行 | 补偿表 + 定时重试 |
+| 缓存与 DB 不一致 | 页面显示旧值 | 延迟双删、订阅 binlog 失效缓存 |
+| 消息丢弃/重复消费 | 下游少算/多算 | 幂等消费 + 对账兜底 |
+| 并发写覆盖 | 计数类字段偏小 | 用原子更新（${C}SET c = c + 1${C}）而非读改写 |
+
+### 五、对账系统：T+1 全量 + 实时增量
+
+${F}text
+【T+1 全量对账】每日低峰期
+  1) 双方各自导出对账文件：业务主键 + 关键金额字段（避免全字段）
+  2) 按主键排序后做归并 diff（比 hash join 更省内存，可流式处理）
+  3) 差异分类：仅一方有（漏/多）、两边都有但金额不同（值漂移）
+  4) 生成差异工单，按金额阈值分级：大额差异立即人工介入，小额自动补偿
+
+【实时增量对账】准实时
+  1) 订阅双方变更流，维护一个「待核对池」（带超时）
+  2) 两边都到达且一致 -> 出池
+  3) 超时仍单边到达 -> 产生疑似差异告警
+  4) 优点：发现快（分钟级）；缺点：状态管理复杂，需处理乱序
+${F}
+
+${F}sql
+-- 对账结果表设计（关键是可追溯、可重跑、可分级）
+CREATE TABLE recon_diff (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  biz_date      DATE NOT NULL,
+  biz_type      VARCHAR(32) NOT NULL,
+  biz_key       VARCHAR(64) NOT NULL,
+  src_value     VARCHAR(128),
+  dst_value     VARCHAR(128),
+  diff_type     TINYINT NOT NULL COMMENT '1=仅源方 2=仅目标方 3=值不一致',
+  severity      TINYINT NOT NULL COMMENT '1=致命 2=严重 3=轻微',
+  status        TINYINT NOT NULL DEFAULT 0 COMMENT '0待处理 1已修复 2已忽略',
+  created_at    DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  UNIQUE KEY uk_run (biz_date, biz_type, biz_key, diff_type),
+  KEY idx_status (status, severity)
+);
+-- 唯一键保证重跑对账时幂等（不会因为重跑而重复生成差异单）
+${F}
+
+### 六、修复策略：以谁为准
+
+${F}text
+决策树：
+  1) 有明确权威方（如交易库）-> 以权威方为准，向另一方补齐
+  2) 双方都可能正确（多活）-> 按业务规则合并（如取金额较大者并告警）
+  3) 无法判断 -> 冻结该笔，人工介入（不要自动「猜」）
+  4) 修复必须幂等且留审计：谁、何时、依据哪条差异单、改了什么
+${F}
+
+**修复切忌「直接 UPDATE 覆盖」**：一定要走与被修复系统一致的业务接口或补偿流程，否则会绕过业务校验、产生新的不一致（例如绕过库存扣减校验直接改库存数字）。
+
+### 七、常见误区
+
+1. **「事务能保证跨系统一致」**。本地事务管不到缓存、消息队列和下游服务；跨系统只能靠「本地消息表 + 重试 + 对账」逼近最终一致。
+2. **「对账就是比对行数」**。金额、状态、时间字段的漂移才是主要损失来源，行数一致完全可能账不平。
+3. **「发现差异就自动修」**。无差别自动修复可能掩盖系统性问题（每天都有差异，说明链路有 bug），必须分级：系统性差异要修代码，偶发差异才自动补。
+4. **「对账跑一次全量就行」**。全量对账窗口长、成本高；实时增量对账才能把发现时间从「一天」压到「分钟」。
+5. **「忽略了时间边界」**。T+1 对账必须明确「哪一天的交易」的口径（按创建时间还是完成时间、是否含跨日退款），口径不一致会产生大量假差异。
 
 ## 七、延伸
 
@@ -1703,6 +3788,176 @@ Redis 侧用 redis_exporter 采集命中率（${C}redis_keyspace_hits/(hits+miss
 - [ ] 告警分级（P0/P1/P2）与升级路径明确
 - [ ] 慢查询日志接入集中日志并带 traceId
 - [ ] 长事务 / MDL 锁等待有监控
+
+<!--dd:db-observability-->
+
+## 🔬 深挖：可观测性三支柱与告警降噪
+
+### 一、三支柱与黄金信号
+
+| 支柱 | 数据库侧的具体内容 | 用途 |
+|---|---|---|
+| Metrics（指标） | QPS/TPS、连接数、缓冲池命中、锁等待、复制延迟、磁盘 IO | 趋势、容量、告警 |
+| Logs（日志） | 错误日志、慢日志、审计日志、binlog | 归因、审计、复盘 |
+| Traces（链路） | 应用中 DB span（SQL 指纹、耗时、影响行数） | 定位到具体接口与 SQL |
+
+数据库监控最实用的两个框架：
+
+${F}text
+RED（面向服务，适合看"用户受影响程度"）：
+  Rate     —— QPS / TPS
+  Errors   —— 错误数、失败比例
+  Duration —— p50 / p95 / p99 延迟
+
+USE（面向资源，适合看"瓶颈在哪"）：
+  Utilization —— CPU、磁盘、缓冲池使用率
+  Saturation  —— 排队长度、锁等待数、Threads_running
+  Errors      —— 磁盘错误、复制错误、连接拒绝
+${F}
+
+**告警应该建在 RED 上，排障时才展开到 USE**。反过来建（只盯 CPU、磁盘）会导致「CPU 高就告警」的噪音，因为 CPU 高未必影响用户。
+
+### 二、必看的 20 个 MySQL 指标
+
+| 组 | 指标 | 关键阈值 |
+|---|---|---|
+| 吞吐 | Queries / Com_select / Com_insert / Com_update | 基线偏离 ±30% |
+| 延迟 | p95 / p99 语句耗时（来自 performance_schema 聚合） | 按接口 SLO |
+| 连接 | Threads_connected / Threads_running / Aborted_connects | 连接 < 60% 上限 |
+| 缓冲池 | Hit Rate = 1 - Innodb_buffer_pool_reads/read_requests | > 99% |
+| 脏页 | Innodb_buffer_pool_pages_dirty / 脏页比例 | < 20% |
+| 刷盘 | Innodb_data_pending_fsyncs / fsync 平均耗时 | 持续 > 5ms 告警 |
+| 日志 | Innodb_os_log_written 写入速率 | redo 写不动即阻塞 |
+| 锁 | Innodb_row_lock_waits / Innodb_row_lock_time_avg | 等待数突增 |
+| 事务 | Trx 长事务数、活跃事务数 | 长事务 > 60s 告警 |
+| 复制 | 从库延迟秒数、IO/SQL 线程状态 | 延迟 > 业务容忍度 |
+| 空间 | 磁盘使用率、表空间增长速率、binlog 留存 | 磁盘 < 80% |
+| 错误 | 错误日志中 ERROR 计数、死锁数 | 死锁率突增 |
+
+${F}sql
+-- 缓冲池命中率（低于 0.99 需关注）
+SELECT ROUND(1 - (
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_reads') /
+  NULLIF((SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_read_requests'),0)
+), 5) AS bp_hit_rate;
+
+-- 脏页比例（过高意味着刷盘压力大，可能触发强制刷盘阻塞）
+SELECT
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_pages_dirty') AS dirty,
+  (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_pages_total') AS total;
+
+-- 死锁与锁等待速率
+SELECT VARIABLE_NAME, VARIABLE_VALUE FROM performance_schema.global_status
+WHERE VARIABLE_NAME IN ('Innodb_deadlocks','Innodb_row_lock_waits','Innodb_row_lock_time_avg');
+${F}
+
+### 三、采集与可视化：Prometheus + mysqld_exporter
+
+${F}yaml
+# docker-compose 片段
+services:
+  mysqld-exporter:
+    image: prom/mysqld-exporter:latest
+    command:
+      - "--mysqld.address=mysql:3306"
+      - "--mysqld.username=exporter"
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: "\${MYSQL_EXPORTER_PASSWORD}"
+    ports: ["9104:9104"]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports: ["9090:9090"]
+${F}
+
+${F}yaml
+# prometheus.yml：抓取配置 + 最小告警规则
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: mysql
+    static_configs:
+      - targets: ["mysqld-exporter:9104"]
+rule_files: ["alerts.yml"]
+${F}
+
+${F}yaml
+# alerts.yml：好告警的三要素 —— 有影响、可行动、可归因
+groups:
+  - name: mysql
+    rules:
+      - alert: MySQLReplicationLagHigh
+        expr: mysql_slave_status_seconds_behind_master > 10
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "从库复制延迟 > 10s（2 分钟）"
+          description: "instance {{ $labels.instance }} 延迟 {{ $value }}s，请检查大事务与从库负载"
+      - alert: MySQLTooManyConnections
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.85
+        for: 5m
+        labels: { severity: warning }
+      - alert: MySQLSlowQueriesSpike
+        expr: rate(mysql_global_status_slow_queries[5m]) > 5
+        for: 5m
+        labels: { severity: warning }
+${F}
+
+（注意：告警规则里的模板变量必须转义为 ${C}$labels${C} / ${C}$value${C}，否则会被当成模板插值。）
+
+### 四、告警降噪：从「告警风暴」到「可行动告警」
+
+| 反模式 | 问题 | 正确做法 |
+|---|---|---|
+| 只给单指标阈值 | CPU 一高就告警，噪音大且无意义 | 多条件与：CPU 高 **且** p99 上升 **且** Threads_running 高 |
+| 无持续时长 | 瞬时抖动触发告警 | 加 ${C}for: 2m${C}（指标需持续满足） |
+| 无分级 | 所有告警都打电话 | critical（影响用户）/ warning（趋势）/ info（记录） |
+| 无抑制 | 主库挂了引发 50 条关联告警 | 上游告警触发时抑制下游（inhibit rules） |
+| 无聚合 | 100 个分片 100 条告警 | 按服务/集群聚合计数，只报「N 个实例异常」 |
+| 阈值拍脑袋 | 超出即告警但业务无感 | 由 SLO 反推阈值（如「p99 > 200ms 持续 5 分钟」） |
+
+**好告警的定义**：收到它的人**知道该做什么**。做不到这一点的告警应该被删除或改成看板。
+
+### 五、链路追踪中的 DB span 怎么读
+
+${F}text
+一个典型的 DB span 包含：
+  db.system=mysql  db.statement 或 db.statement.digest  db.operation=SELECT
+  net.peer.name=mysql-primary  db.name=orderdb
+  rows_affected / rows_returned
+  duration
+
+排查时的三种典型形态：
+  1) 单 span 很长，且是慢 SQL     -> 去优化 SQL（缺索引/大表扫）
+  2) 单 span 不长但数量极多        -> N+1 查询，看应用代码的循环调用
+  3) span 本身不长但等待久         -> 连接池获取连接耗时，看池配置与泄漏
+${F}
+
+**DB span 的 ${C}duration${C} 不包含连接池排队时间**，所以要区分「SQL 慢」还是「拿不到连接」——后者要加连接池的等待时长指标，否则会误判成 SQL 问题。
+
+### 六、从告警到根因的标准动作
+
+${F}text
+1) 确认影响面：哪些接口、多少用户、开始时间（先止血再定位）
+2) 看 RED：是延迟上升、错误率上升，还是吞吐下降
+3) 看 USE：CPU / 磁盘 / 连接 / 缓冲池，定位瓶颈资源
+4) 看锁与事务：INNODB_TRX 长事务、data_lock_waits 阻塞链
+5) 看慢日志与 DIGEST 聚合：找出新出现的或耗时突增的语句
+6) 看变更：最近的发布、DDL、配置变更、数据量突变
+7) 止血：限流、回滚、杀长事务、临时加索引
+8) 复盘：把根因写成可执行的检查项（进入预案或 CI 规则）
+${F}
+
+### 七、常见误区
+
+1. **「指标越多越好」**。采集成本与看板复杂度都会失控；关键是**每个指标都能对应到一个决策或动作**。
+2. **「只看实时看板，不做趋势」**。容量类问题必须看周/月趋势（磁盘增长速率、连接数增长速率），实时看板看不出来。
+3. **「告警阈值固定不变」**。业务量增长后旧阈值必然误报；阈值应随容量基线定期校准。
+4. **「监控只覆盖 DB 自身」**。连接池等待、应用侧 SQL 耗时、网络 RTT 都在链路上，缺一环就无法区分「DB 慢」与「网络/应用慢」。
+5. **「日志只留不查」**。错误日志与慢日志必须被采集到集中日志系统并建立查询入口，否则出事时只能上机器 grep，慢一个数量级。
 
 ## 七、延伸
 

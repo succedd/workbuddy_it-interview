@@ -139,6 +139,112 @@ ${F}
 - [ ] 会按「DNS → 监听端口 → 路由 → 链路」的顺序定位连通性问题
 - [ ] 知道 MTU 分片为何伤性能、路径 MTU 发现解决什么问题
 
+<!--dd:tcp-ip-model-->
+
+## 🔬 深挖：分层模型的工程映射与协议栈收包路径
+
+### 一、OSI 七层 vs TCP/IP 四层：把抽象落到代码上
+
+| OSI | TCP/IP | 实际载体 | 你写的代码在哪一层 |
+|---|---|---|---|
+| 应用/表示/会话 | 应用层 | HTTP、DNS、gRPC、自定义协议 | 业务代码 |
+| 传输 | 传输层 | TCP、UDP、QUIC | Socket API（send/recv） |
+| 网络 | 网际层 | IP、ICMP、路由 | 基本不碰 |
+| 数据链路/物理 | 网络接口层 | 以太网、Wi-Fi、驱动、网卡 | 完全不碰 |
+
+**分层的真实价值是「依赖倒置」**：应用只依赖 socket 抽象，不关心下面是以太网还是 Wi-Fi。但分层也带来代价 —— 每一层都要加头部：
+
+${F}text
+以太网帧头 14 字节 + IP 头 20 字节 + TCP 头 20 字节 = 54 字节
+加上帧尾 FCS 4 字节 = 58 字节
+一个 100 字节的 HTTP 请求体，实际线上传输 158 字节 -> 开销 58%
+这就是小包场景要关注 Nagle、批量合并、HTTP/2 多路复用的原因
+${F}
+
+### 二、MTU 与分片：最经典的性能陷阱
+
+${F}text
+MTU（最大传输单元）以太网默认 1500 字节
+MSS = MTU - IP头(20) - TCP头(20) = 1460 字节（TCP 单段最大数据量）
+问题来源：
+  1) 应用写 4000 字节 -> TCP 拆成 3 段（1460+1460+1080），正常
+  2) 路径中某跳 MTU 更小（如 VPN/隧道 1400）且 DF 位置位
+     -> 路由器回 ICMP "需要分片"，若 ICMP 被防火墙拦截
+     -> 表现为"小请求正常、大请求卡死"，极难排查
+
+诊断与规避：
+  ping -M do -s 1472 <ip>    # 1472+28=1500，试着逐步减小找真实路径 MTU
+  ip link show               # 看本机 MTU
+  内核参数：net.ipv4.tcp_mtu_probing = 1（自动探测，缓解黑洞问题）
+${F}
+
+**容器与隧道环境必须显式下调 MTU**（常见 1400 或 1450），否则表现为「偶发大包超时」。这是 K8s 集群里最常见的网络故障之一。
+
+### 三、四元组与「连接」的本质
+
+一条 TCP 连接在内核里由**四元组**唯一标识：
+
+${F}text
+(源IP, 源端口, 目的IP, 目的端口)
+含义：
+  - 同一个客户端可以在不同源端口上建立多条到同一服务的连接
+  - 服务端监听 socket 只绑定 (目的IP, 目的端口)，不含源信息
+  - 服务端的端口上限由 ip_local_port_range 决定（默认约 32768 个）
+  - accept() 返回的新 socket 才是完整的四元组
+${F}
+
+${F}bash
+# 观察真实连接状态分布（比 netstat 快得多）
+ss -s                                  # 汇总统计
+ss -tan state established | wc -l      # 已建立连接数
+ss -tan state time-wait | wc -l        # TIME_WAIT 数量
+ss -tlnp                               # 监听端口与进程
+ss -tanp 'dport = :3306'               # 按条件过滤（SS 的过滤器语法很强）
+${F}
+
+### 四、Linux 收包全路径（为什么高并发要调软中断）
+
+${F}text
+1) 网卡收到帧 -> DMA 写入内存环形缓冲区（Ring Buffer）
+2) 网卡发起硬件中断 -> 内核中断处理程序（上半部）只做最少的事
+3) 触发软中断 NET_RX_SOFTIRQ -> ksoftirqd 或 NAPI 轮询
+4) NAPI 批量轮询收包（避免每包一中断），构建 skb
+5) 协议栈处理：链路层 -> IP 层（路由、分片重组）-> TCP 层（查找四元组、序号校验、滑动窗口）
+6) 数据放入 socket 接收缓冲区（tcp_rmem 控制）
+7) 唤醒等待该 socket 的进程（epoll 就绪）
+8) 应用 recv() 拷贝到用户态
+${F}
+
+关键洞察：**步骤 1-4 的成本与「包数量」成正比，而不是与「字节数」成正比**。所以：
+
+| 现象 | 含义 | 对策 |
+|---|---|---|
+| softirq 占用某个 CPU 极高 | 网卡中断集中在一个核 | 开启 RPS/RFS 或调整中断亲和 |
+| netstat 有 drops in Ring Buffer | 网卡环形缓冲不够 | 增大 rx/tx ring（ethtool -G） |
+| netstat 有 drops in Socket Buffer | 应用读得太慢 | 增大 tcp_rmem；优化应用消费 |
+| 大量 retrans | 丢包或拥塞 | 看 tcp_retrans_segs、排查链路 |
+
+### 五、把分层模型用于排障：自下而上定位
+
+${F}text
+排查网络问题的固定顺序（每层都通过才往上走）：
+  L1 物理/链路  -> ip link 是否 UP、ethtool 是否有错包、光模块告警
+  L2 网络层     -> ip addr / ip route、ping、traceroute、能否直达
+  L3 传输层     -> ss 看是否有连接、是否 SYN-SENT 卡住（多为防火墙/端口未监听）
+  L4 应用层     -> curl -v、看响应码与头部、看证书
+  L5 应用逻辑   -> 日志、链路追踪、SQL
+经验：按这个顺序走，能在几分钟内排除 80% 的"网络问题"，
+      其中大量其实是 L3（安全组/防火墙）或 L5（应用自身超时）。
+${F}
+
+### 六、常见误区
+
+1. **「分层是纯粹的抽象，性能与层无关」**。每一次跨层拷贝、每个头部、每次中断都有成本；零拷贝、GSO、GRO 这些优化恰恰是「打破分层」的产物。
+2. **「MTU 是固定 1500」**。隧道/容器/PPPoE 场景常常更小，写死 1500 会踩 MTU 黑洞。
+3. **「ping 通就说明网络没问题」**。ICMP 通不代表 TCP 端口可达（防火墙可能只放行 ICMP），也不代表带宽/延迟达标。
+4. **「连接数就是端口数」**。可用端口受 ${C}ip_local_port_range${C} 与四元组组合限制，且服务端监听端口不消耗客户端端口。
+5. **「软中断是内核的事，应用不用管」**。软中断跑满某个 CPU 会直接表现为应用延迟抖动，容器场景下更明显（CPU 限流加剧）。
+
 ## 七、延伸
 
 - 精读 RFC 1122 第 1 章（分层模型与设计哲学），理解分层不是教条而是权衡。
@@ -254,6 +360,136 @@ ${F}
 - [ ] 会给接口与静态资源分别设计合理的 Cache-Control
 - [ ] 知道 HTTP/1.1→2→3 各解决了什么、又留下什么
 - [ ] 每次写 HTTP 客户端都强制设置 connect/read 超时
+
+<!--dd:http-detail-->
+
+## 🔬 深挖：HTTP 版本演进、缓存语义与代理行为
+
+### 一、三个版本的性能模型差异
+
+| 维度 | HTTP/1.1 | HTTP/2 | HTTP/3 |
+|---|---|---|---|
+| 传输层 | TCP | TCP | **QUIC（UDP）** |
+| 并发 | 每连接一个请求（需多连接） | 单连接多路复用（Stream） | 单连接多路复用，无 TCP 队头阻塞 |
+| 头部 | 文本、重复传输 | HPACK 压缩 + 动态表 | QPACK |
+| 队头阻塞 | 应用层严重 | TCP 层仍有（丢包阻塞所有流） | 基本消除 |
+| 建连 | TCP 1RTT + TLS 2RTT | 同上（可用 TLS1.3 降到 1RTT） | QUIC 1RTT，0-RTT 复用 |
+| 服务端推送 | 无 | 有（Push，实际多被弃用） | 有（同 H2） |
+
+**HTTP/2 并没有解决 TCP 层的队头阻塞**：一个 TCP 段丢失，所有 Stream 都要等它重传。这才是 HTTP/3 换用 QUIC 的根本动机 —— QUIC 在用户态实现流控与重传，各 Stream 独立。
+
+${F}text
+HTTP/2 的关键概念：
+  Stream   逻辑流，有唯一 ID（客户端发起的为奇数）
+  Frame    最小传输单位（HEADERS/DATA/SETTINGS/WINDOW_UPDATE/RST_STREAM）
+  流控     连接级 + 流级双窗口，避免单个大流饿死其他流
+  优先级   已在新草案中简化，实际浏览器与服务端支持不一
+${F}
+
+### 二、缓存语义：把 Cache-Control 指令用对
+
+| 指令 | 作用 | 易错点 |
+|---|---|---|
+| ${C}max-age=N${C} | 客户端（浏览器）缓存 N 秒 | 只影响浏览器，不影响 CDN |
+| ${C}s-maxage=N${C} | 共享缓存（CDN/代理）缓存 N 秒 | 覆盖 max-age，必须与 public 一起才可靠 |
+| ${C}no-cache${C} | **可以缓存，但每次必须校验** | 名字有误导性：不是「不缓存」 |
+| ${C}no-store${C} | 完全不缓存（含不落盘） | 敏感数据用这个 |
+| ${C}private${C} | 只允许浏览器缓存 | CDN 不缓存 |
+| ${C}public${C} | 允许共享缓存 | 配合 s-maxage |
+| ${C}must-revalidate${C} | 过期后必须校验，不许用陈旧副本 | 与 stale-* 互斥 |
+| ${C}immutable${C} | N 秒内绝不校验（即使刷新） | 适合带哈希的静态资源 |
+| ${C}stale-while-revalidate=N${C} | 过期后 N 秒内先返旧值并后台更新 | 大幅降低用户等待 |
+
+强缓存 vs 协商缓存的实际流程：
+
+${F}text
+强缓存未过期       -> 直接用本地副本，不发请求（最快）
+强缓存已过期       -> 发条件请求：
+     If-None-Match: <ETag>      -> 服务端比对，未变返 304（无 body）
+     If-Modified-Since: <时间>   -> 秒级精度，弱校验
+     两者都存在时 ETag 优先
+返回 200           -> 用新内容覆盖
+${F}
+
+${F}text
+# 推荐的静态资源策略（内容哈希命名 + 长缓存 + immutable）
+Cache-Control: public, max-age=31536000, immutable
+
+# HTML 入口文件必须短缓存或协商缓存，否则发版不生效
+Cache-Control: no-cache
+
+# 接口：默认不缓存；可短暂缓存的用 s-maxage 只缓存在 CDN
+Cache-Control: private, no-store
+Cache-Control: public, s-maxage=10, stale-while-revalidate=60
+
+# CDN 缓存键要显式声明，否则 Vary/query 会导致命中率暴跌
+Vary: Accept-Encoding
+${F}
+
+### 三、代理与 hop-by-hop 头
+
+${F}text
+端到端头（会被代理转发）：Authorization、Content-Type、Cache-Control...
+逐跳头（代理必须消费掉、不再转发）：
+  Connection、Keep-Alive、Proxy-Authenticate、Proxy-Authorization、
+  TE、Trailer、Transfer-Encoding、Upgrade
+实际影响：
+  - 自己实现网关时若把 Connection 原样转发，可能引发后端连接异常
+  - Transfer-Encoding: chunked 不应同时出现 Content-Length
+  - Upgrade 是 WebSocket 握手的核心，网关必须显式支持转发
+${F}
+
+### 四、状态码的语义边界（用错会造成重试事故）
+
+| 码 | 语义 | 幂等性含义 | 使用要点 |
+|---|---|---|---|
+| 200 | 成功 | 是 | 不要用它表达业务失败 |
+| 201 | 已创建 | 是 | 应带 Location |
+| 202 | 已接受（异步） | 是 | 适合异步任务提交 |
+| 204 | 成功但无内容 | 是 | 不要带 body |
+| 301/308 | 永久重定向 | 是 | 308 保留方法与 body（301 历史上会改为 GET） |
+| 302/307 | 临时重定向 | 是 | 307 保留方法 |
+| 400 | 请求错误 | 是（客户端问题） | 重试无意义 |
+| 401 / 403 | 未认证 / 无权限 | 是 | 401 应带 WWW-Authenticate；不要混用 |
+| 404 | 资源不存在 | 是 | 不要用它表达「参数校验失败」 |
+| 409 | 冲突 | 是 | 并发写冲突（如版本号不匹配） |
+| 422 | 语义错误 | 是 | 请求格式对但业务校验失败 |
+| 429 | 限流 | 是 | 应带 Retry-After |
+| 500 | 服务端错误 | **否（不确定）** | 客户端重试可能造成重复写入 |
+| 502/504 | 网关/超时 | **否** | 超时不代表未执行 —— 重试必须幂等 |
+| 503 | 暂不可用 | 否 | 应带 Retry-After，配合熔断 |
+
+**最关键的一条**：${C}500${C} 与 ${C}504${C} 都**不能**假定服务端「一定没执行」。客户端对这类响应的自动重试，必须配合幂等键（Idempotency-Key）或业务唯一约束，否则就会出现重复下单。
+
+### 五、幂等性与安全方法的严格定义
+
+${F}text
+安全（Safe）   ：不改变服务端状态 —— GET、HEAD、OPTIONS、TRACE
+幂等（Idempotent）：执行 1 次与 N 次效果相同 —— GET、HEAD、PUT、DELETE、OPTIONS
+非幂等         ：POST、PATCH（取决于实现）
+工程含义：
+  - 用 GET 做「删除/扣款」是严重违规（会被预取、被重试、被 CDN 缓存）
+  - PUT 天然幂等 -> 适合「整体替换」语义的资源更新
+  - POST 做创建时，用 Idempotency-Key 头 + 服务端去重表实现幂等
+${F}
+
+${F}text
+POST /v1/orders
+Idempotency-Key: 3f9d2c1a-...
+
+服务端处理：
+  INSERT INTO idempotency (key, biz_id, status, created_at)
+  VALUES (?, ?, 'PROCESSING', NOW())
+  唯一键冲突 -> 直接返回上次的结果（不重复创建）
+${F}
+
+### 六、常见误区
+
+1. **「no-cache 等于不缓存」**。它表示「必须校验」，${C}no-store${C} 才是完全不缓存。用错会导致每次请求都回源，或者该缓存的没缓存。
+2. **「HTTP/2 就没有队头阻塞」**。TCP 层仍有；只有 HTTP/3（QUIC）才在传输层解决。
+3. **「304 不需要 ETag」**。没有 ETag 就只能靠 Last-Modified，精度只有秒级，一秒内的多次修改无法区分。
+4. **「Transfer-Encoding 与 Content-Length 都写上更保险」**。这是协议禁止的组合，会被代理拒绝（400）。
+5. **「GET 请求可以有 body」**。协议未禁止但语义未定义，代理与缓存会忽略它，任何依赖它的设计都是隐患。
 
 ## 七、延伸
 
@@ -386,6 +622,132 @@ ${F}
 - [ ] 会用 ${C}top -H${C} / ${C}vmstat${C} 观察线程与上下文切换
 - [ ] 知道僵尸进程的成因与处置，会捕获 SIGTERM 优雅退出
 
+<!--dd:process-thread-->
+
+## 🔬 深挖：task_struct、上下文切换与调度观测
+
+### 一、进程、线程、协程在内核里的真实差异
+
+${F}text
+进程：独立地址空间 + 独立 task_struct + 独立页表
+线程：共享地址空间（同一 mm_struct），但各自有独立 task_struct 与内核栈
+      -> 所以「线程也只是一个 task」，Linux 不区分进程与线程
+协程：完全在用户态，不进内核，切换不涉及系统调用
+${F}
+
+${F}c
+// Linux 创建线程本质就是 clone() 带一组共享标志
+clone(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_THREAD, ...);
+// 共享 VM（地址空间）、文件系统信息、fd 表、信号处理器
+// 这和 fork() 的差异就是「共享 vs 复制」的一组位
+${F}
+
+关键开销对比（量级，供估算，实际与硬件/内核版本相关）：
+
+| 操作 | 开销量级 | 说明 |
+|---|---|---|
+| 空函数调用 | 数纳秒 | 基线 |
+| 用户态线程切换 | 数十纳秒 | 协程（如 Go goroutine、Java 虚拟线程） |
+| 系统调用（如 getpid） | 数百纳秒 | 含特权级切换 |
+| 线程上下文切换 | 1~10 微秒 | 含内核态切换、TLB 影响 |
+| 进程上下文切换 | 10~100 微秒 | 页表切换，TLB 大面积失效 |
+
+**这解释了为什么高并发网络服务要走「事件驱动 + 少量线程」或「协程」**：C10K 场景若用「一连接一线程」，切换开销本身就吃掉大半 CPU。
+
+### 二、task_struct 里有什么（挑关键字段）
+
+${F}text
+state         运行状态：R（运行/就绪）、S（可中断睡眠）、D（不可中断，如等 IO）、
+              T（停止，被 SIGSTOP）、Z（僵尸，已退出但未被 wait）
+pid / tgid    进程组 ID —— getpid() 返回的是 tgid，同一进程的所有线程 tgid 相同
+mm / active_mm 地址空间（线程共享 mm）
+fs / files    工作目录与打开的文件表（CLONE_FILES 决定是否共享）
+signal        信号处理
+sched_class   调度类：CFS（普通）、RT（实时）、DL（deadline）
+prio / nice   调度优先级
+cputime       累计 CPU 时间（用于统计与 cgroup 限制）
+${F}
+
+*D 状态的进程是最难处理的一种*：不可中断睡眠意味着它不响应信号（连 ${C}kill -9${C} 也杀不掉），通常是卡在磁盘 IO 或 NFS。出现大量 D 进程往往意味着存储层故障。
+
+${F}bash
+# 查看进程状态分布（D 状态多 -> 存储问题）
+ps -eo state | sort | uniq -c
+ps -eo pid,ppid,stat,wchan:25,comm | awk '$3 ~ /D/'
+# wchan 显示进程当前睡在哪个内核函数上 —— 定位 IO 阻塞的关键
+${F}
+
+### 三、上下文切换的成本与测量
+
+${F}bash
+# 1) 系统级切换频率
+vmstat 1
+#   cs    每秒上下文切换次数（含线程与进程）
+#   in    每秒中断次数
+#   经验：cs 持续 > 10 万/秒 且 CPU 使用率不高 -> 切换本身成为瓶颈
+
+# 2) 看是谁在切换
+pidstat -w 1
+#   cswch/s    自愿切换（等 IO、等锁 -> 通常是正常的）
+#   nvcswch/s  非自愿切换（时间片用完被抢占 -> 说明 CPU 争抢严重）
+
+# 3) 内核态与用户态占比
+mpstat -P ALL 1
+#   %sys 高 -> 系统调用/内核处理多；%soft 高 -> 网络软中断忙
+${F}
+
+**判读要点**：${C}nvcswch/s${C} 高才是问题（说明线程数远超 CPU 能提供的并行度）。${C}cswch/s${C} 高但 CPU 空闲，说明大量时间花在等 IO 或等锁上 —— 应该去优化 IO 而不是加 CPU。
+
+### 四、CFS 调度与 CPU 亲和/NUMA
+
+${F}text
+CFS（完全公平调度）：用红黑树按 vruntime 排序，vruntime 增长慢的优先运行
+  nice 值：-20（最高优先级）到 19，每级约 1.25 倍 CPU 份额差异
+  时间片不是固定值，而是由「目标延迟 / 可运行任务数」推导
+  调度粒度参数：sched_min_granularity_ns、sched_latency_ns
+
+实时调度（SCHED_FIFO/SCHED_RR）：抢占普通任务，误用会导致系统「假死」
+批量调度（SCHED_BATCH）：降低唤醒频率，适合离线计算
+${F}
+
+${F}bash
+# CPU 亲和：把进程/线程绑定到指定核，减少缓存与 TLB 抖动
+taskset -cp 2,3 <pid>              # 把已运行进程绑到 CPU 2、3
+taskset -c 0-3 ./server            # 启动时绑定
+# 中断亲和：把网卡中断分散到多核（配合 RPS 使用）
+cat /proc/interrupts | grep eth
+echo 2 > /proc/irq/<irq>/smp_affinity_list
+
+# NUMA：跨节点访问内存延迟高 1.5~2 倍
+numactl --hardware
+numactl --cpunodebind=0 --membind=0 ./server   # 绑定 CPU 与内存在同一节点
+numastat -p <pid>                              # 看是否发生跨节点访问
+${F}
+
+### 五、CPU 使用率的三种口径（别被 top 骗了）
+
+${F}text
+%us    用户态
+%sy    内核态（系统调用、内核逻辑）
+%wa    IO 等待（进程在 D 状态，CPU 其实空闲）
+%hi/%si 硬中断/软中断
+%st   被宿主机/其他虚拟机偷走的时间（容器与云主机场景务必看这一项）
+
+关键判读：
+  %wa 高、%us 低 -> 存储/IO 是瓶颈，加 CPU 没用
+  %st 高        -> 资源被邻居抢走，需要换宿主机或申请独占资源
+  %us 高且单核打满 -> 应用存在串行化热点（单线程瓶颈或锁竞争）
+  %si 高        -> 网络包处理压力大，考虑 RSS/RPS 或多队列
+${F}
+
+### 六、常见误区
+
+1. **「线程越多并发越高」**。线程是重资源（默认栈 8MB 虚拟地址空间、内核栈、task_struct）；线程数远超核数后，切换与管理开销会让吞吐下降。
+2. **「进程比线程安全所以都该用多进程」**。多进程隔离性好但共享数据要靠 IPC，且内存开销成倍（不共享页缓存之外的数据）；选型要看共享状态的需求。
+3. **「CPU 使用率低说明系统不忙」**。可能是大量时间在等 IO（%wa）或等锁；也可能被 CPU 限流（cgroup throttling）压制。
+4. **「kill -9 一定能杀死」**。D 状态进程不响应任何信号，只能等 IO 超时或重启。
+5. **「协程一定比线程快」**。协程快在切换与内存，但一旦调用阻塞式系统调用就会占住底层线程；必须配合非阻塞 IO 才能真正发挥。
+
 ## 七、延伸
 
 - 精读 TLPI 第 24–33 章（进程创建、线程、同步）与第 20–22 章（信号）。
@@ -495,6 +857,134 @@ ${F}
 - [ ] 判断内存是否吃紧优先看 MemAvailable 而非 MemFree
 - [ ] 知道 COW 的收益与「大内存进程 fork 仍可能爆内存」的成因
 - [ ] 能按 RSS → /proc 段 → 堆分析 的路径排查内存泄漏
+
+<!--dd:memory-basics-->
+
+## 🔬 深挖：虚拟内存、缺页与内存指标的真实含义
+
+### 一、虚拟地址到物理地址：多级页表与 TLB
+
+${F}text
+x86-64 四级页表：
+  虚拟地址 48 位有效 -> 拆成 5 段：
+    [47:39] PGD 索引（9 位）
+    [38:30] PUD 索引（9 位）
+    [29:21] PMD 索引（9 位）
+    [20:12] PTE 索引（9 位）
+    [11:0]  页内偏移（12 位 = 4KB 页）
+  一次地址翻译理论上要访问 5 次内存（4 级页表 + 数据本身）
+
+TLB（旁路转换缓冲）：缓存"虚拟页 -> 物理页"的映射
+  TLB 命中 -> 几乎零成本
+  TLB 未命中 -> 页表遍历（page walk），几十到上百纳秒
+  大页（HugePage 2MB）可让一个 TLB 项覆盖 512 倍内存 -> 数据库/JVM 常用
+${F}
+
+**这就是「大量随机访问于大内存」性能骤降的原因**：TLB 覆盖不住工作集，每次访问都要走页表遍历。优化手段是提升局部性（数据结构紧凑、顺序访问）或使用大页。
+
+### 二、缺页（Page Fault）：内存性能的核心机制
+
+| 类型 | 触发条件 | 成本 | 处理 |
+|---|---|---|---|
+| Minor Fault（次要缺页） | 页在内存中，但未建立当前进程的映射（如 COW、首次访问堆） | 微秒级 | 只更新页表 |
+| Major Fault（主要缺页） | 页不在内存，需从磁盘/swap 读入 | 毫秒级（比 minor 慢 3 个数量级） | **触发磁盘 IO** |
+| Invalid Fault | 访问非法地址 | 极高 | 触发 SIGSEGV，进程崩溃 |
+
+${F}bash
+# 观察缺页速率 —— 判断内存压力最直接的信号
+/usr/bin/time -v ./app        # 结束后输出 Minor/Major page faults 总数
+pidstat -r 1                  # 每秒 minflt/s 与 majflt/s
+
+# 系统级
+sar -B 1
+#   fault/s   总缺页
+#   majflt/s  主要缺页 —— 持续非 0 说明内存在换出换入（性能杀手）
+#   pgfree/s、pgscank/s、pgscand/s  内存回收行为
+${F}
+
+**${C}majflt/s${C} 持续大于 0 就是要立刻处理的事故信号**：意味着内存不足开始依赖磁盘。容器里常见于 JVM 堆设得过大 + 未设置容器内存限制，导致宿主或 cgroup 层面反复换出。
+
+### 三、内存映射的两条路径：mmap 与缺页填充
+
+${F}c
+// 1) 匿名映射（堆内存分配、malloc 大块）
+void *p = mmap(NULL, size, PROT_READ|PROT_WRITE,
+               MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+// 只分配虚拟地址空间，不分配物理页；首次写入才触发缺页分配物理页
+
+// 2) 文件映射（读文件、共享库、持久化内存）
+void *q = mmap(NULL, len, PROT_READ|PROT_WRITE,
+               MAP_SHARED, fd, 0);
+// 读写直接命中页缓存，省一次用户态/内核态拷贝
+// 这对大文件随机读性能提升显著（也是很多数据库自研存储的基础）
+${F}
+
+${F}bash
+# 查看进程的内存映射构成
+pmap -x <pid>            # 每个映射段的 RSS/Dirty
+cat /proc/<pid>/smaps    # 更详细：Rss、Pss、Shared_Clean、Private_Dirty
+cat /proc/<pid>/status | grep -E "VmRSS|VmSize|VmSwap"
+#   VmSize（虚拟内存）= 申请的地址空间总和，可能远大于物理内存，不代表占用
+#   VmRSS（常驻内存）= 真正占用的物理内存
+#   VmSwap           = 被换出的量 —— 非 0 就说明存在内存压力
+${F}
+
+### 四、页缓存与脏页回写
+
+${F}text
+所有文件读写都经过页缓存（Page Cache），除非使用 O_DIRECT：
+  读：先从页缓存找 -> 未命中才读磁盘并填充缓存（readahead 预读）
+  写：先写页缓存 -> 标为脏页 -> 由内核回写线程周期性刷盘
+
+关键参数：
+  vm.dirty_ratio            脏页占内存比例上限，超过则写进程自己同步刷盘（阻塞！）
+  vm.dirty_background_ratio 后台刷盘启动阈值
+  vm.dirty_expire_centisecs 脏页最长存活时间
+  典型调优：dirty_background_ratio=5, dirty_ratio=20（大内存机器）
+${F}
+
+**如果 ${C}dirty_ratio${C} 打满，会看到「写入突然卡住」**：此时进程被迫自己刷盘，表现为周期性 IO 尖峰与响应抖动。降低 ${C}dirty_ratio${C} 或改用 ${C}fsync${C} 主动控制节奏，效果通常优于加磁盘。
+
+${F}bash
+# 观察脏页与回写
+vmstat 1
+#   bi/bo  块设备读入/写出（块/秒）
+#   free/buff/cache  内存分布
+grep -E "Dirty|Writeback" /proc/meminfo
+${F}
+
+### 五、内存指标的正确判读
+
+${F}text
+free 命令里最该看的是 available，不是 free：
+  total      总内存
+  used       已用（= total - free - buff/cache）
+  free       **完全未使用** —— 通常很小，这是正常的！空闲内存会被用作缓存
+  buff/cache 可回收的缓存
+  available  预估还能分配给新应用的量（含可回收缓存）—— 判断内存是否紧张的真正依据
+
+常见误解：
+  "free 只剩 1GB，内存要爆了"   -> 错，看 available
+  "cache 很大需要清理"          -> 不需要，cache 是可回收的，drop_caches 只在测试时用
+${F}
+
+OOM Killer 的选择逻辑：
+
+${F}text
+当内存彻底不足且无法回收时，内核按 oom_score 挑进程杀掉：
+  oom_score 与进程内存占用正相关，可调 /proc/<pid>/oom_score_adj（-1000 到 1000）
+  -1000 表示永不被杀（慎用，可能让系统整体挂掉）
+  容器场景：cgroup 内存限制触发的 OOM 只会杀该 cgroup 内的进程
+  排查：dmesg | grep -i "killed process" 能看到被杀进程与当时的完整内存快照
+${F}
+
+### 六、常见误区
+
+1. **「虚拟内存大 = 占用内存大」**。${C}VmSize${C} 只是地址空间；JVM 常常预留几百 GB 虚拟地址但 RSS 只有几 GB。
+2. **「swap 开着会拖慢系统，所以一律关掉」**。关掉能避免延迟抖动，但极端情况下会直接 OOM 杀进程。正确做法是把 ${C}vm.swappiness${C} 调低（如 1~10）而不是完全禁用，并监控 ${C}majflt/s${C}。
+3. **「cache 占内存需要定期清理」**。页缓存是最有价值的内存用途；只有做压测对比时才手工 drop。
+4. **「内存泄漏看 RSS 就够了」**。短期抖动会误导；要看长期趋势（如 24 小时 RSS 斜率）并结合堆分析/对象统计。
+5. **「容器里有内存限制就够了」**。JVM/Go 等运行时若不感知 cgroup 限制（老版本），会按宿主机总量规划堆，直接触发 OOM。必须显式设置（如 ${C}-XX:MaxRAMPercentage${C}）。
 
 ## 七、延伸
 
@@ -623,6 +1113,203 @@ ${F}
 - [ ] 会用 ${C}ss -ti${C} 看 cwnd/RTT/重传，会统计连接状态分布
 - [ ] 知道应用层必须自行处理粘包/拆包，并给出至少两种方案
 
+<!--dd:tcp-reliable-->
+
+## 🔬 深挖：可靠传输的实现细节与拥塞控制
+
+### 一、可靠传输的四个机制如何协作
+
+${F}text
+1) 序号（Sequence Number）
+   每个字节都有序号，不是每个包。这样重传可以精确到字节区间，
+   接收端也能对乱序到达的段做重组。
+
+2) 确认（ACK）+ 累积确认
+   ACK=n 表示"n 之前的所有字节都收到了"（累积语义）。
+   问题：丢了一个中间段，后面的都收到了也只能重复 ACK=n -> 发送端误判拥塞
+
+3) 重传
+   超时重传（RTO）：兜底，慢
+   快速重传：收到 3 个重复 ACK 立即重传，不等超时
+
+4) 滑动窗口（流量控制）
+   接收端通过窗口字段告诉发送端"我还能收多少"，
+   发送端据此限制未确认的在途数据量。
+${F}
+
+### 二、SACK：让重传不盲目
+
+累积确认的致命缺陷：**一次只能告诉发送端"哪一段丢了"，无法表达"后面哪些收到了"**，导致发送端可能重传一大片已收到的数据。
+
+${F}text
+SACK（选择性确认，RFC 2018）：
+  接收端在 TCP 选项里列出已收到的离散区间，如：
+    SACK: [4000-8000], [12000-16000]   -> 说明 8000-12000 丢了
+  发送端只重传 8000-12000，不重传其他
+  Linux 默认开启，协商期在 SYN 的选项里声明
+
+DSACK（重复 SACK）：告知"我收到了重复数据"，
+  用于判断是重传多余了还是网络有重复包，辅助拥塞控制判断
+${F}
+
+### 三、RTO 的计算：Karn 算法与 RTT 抖动
+
+${F}text
+平滑 RTT 估计（Jacobson/Karels 算法）：
+  SRTT    <- (1 - alpha) * SRTT + alpha * RTT          alpha = 1/8
+  RTTVAR  <- (1 - beta) * RTTVAR + beta * |SRTT - RTT| beta  = 1/4
+  RTO     <- SRTT + max(G, K * RTTVAR)                 K = 4，G 为时钟粒度
+
+为什么是 4 倍偏差：
+  覆盖 99% 以上的正常 RTT 波动，避免「假超时 -> 无效重传 -> 加剧拥塞」的雪崩
+
+Karn 算法要解决的问题：
+  重传后的 ACK 无法区分是确认原始传输还是重传传输
+  -> 不把重传样本计入 RTT 估计（除非用时间戳选项消除歧义）
+
+最小 RTO：Linux 下限 200ms（TCP_RTO_MIN），上限 120 秒
+指数退避：每次超时 RTO 翻倍，直到上限 —— 这是"网络断了之后恢复很慢"的原因
+${F}
+
+${F}bash
+# 观察重传与 RTT
+ss -tin                              # 每个连接的 cwnd、rtt、retrans
+nstat -az TcpRetransSegs TcpExtTCPTimeouts TcpExtTCPFastRetrans
+# 或在 /proc/net/netstat 里找 TCPExt 段
+${F}
+
+### 四、拥塞控制：从 Reno 到 BBR 的思路演进
+
+| 算法 | 核心思路 | 优点 | 缺点 |
+|---|---|---|---|
+| Reno | 丢包即减半（AIMD） | 简单稳定 | 高带宽长肥管道下利用率差 |
+| CUBIC（Linux 默认） | 用三次函数增长 cwnd，与 RTT 解耦 | 高带宽场景友好、公平性好 | 仍以丢包为信号 |
+| BBR（Google） | **基于带宽与 RTT 建模**，不以丢包为唯一信号 | 高丢包链路上吞吐大幅提升 | 与 CUBIC 共存时可能不公平 |
+| DCTCP / ECN | 利用 ECN 显式拥塞通知 | 低延迟、低排队 | 需全链路支持 ECN |
+
+${F}text
+拥塞窗口（cwnd）的演化：
+  慢启动：cwnd 指数增长（每 RTT 翻倍），直到 ssthresh 或丢包
+  拥塞避免：进入线性增长（每 RTT +1 MSS）—— 这就是"慢启动不慢、拥塞避免不快"的由来
+  快速重传/恢复：收到 3 个重复 ACK -> ssthresh 减半 -> cwnd 降到 ssthresh，进入快速恢复
+  超时：ssthresh 减半 -> cwnd 回到 1 -> 重新慢启动（惩罚最重）
+
+实际可用吞吐 ≈ cwnd / RTT
+所以「带宽延迟积（BDP）= 带宽 × RTT」决定了需要多大的窗口才能跑满链路：
+  1Gbps × 100ms = 100Mbit = 12.5MB 在途数据
+  窗口不够（受 rwnd 或 cwnd 限制）就永远跑不满带宽
+${F}
+
+${F}bash
+# 切换/查看拥塞控制算法
+sysctl net.ipv4.tcp_congestion_control
+sysctl net.ipv4.tcp_available_congestion_control
+sysctl -w net.ipv4.tcp_congestion_control=bbr
+# 查看单个连接的 cwnd 与拥塞算法
+ss -tin | grep -E "cwnd|bbr|cubic"
+${F}
+
+### 五、Nagle 与延迟确认的「40ms 之谜」
+
+这是最经典的 TCP 性能陷阱，两个机制单独都很合理，叠加后产生灾难：
+
+${F}text
+Nagle 算法（发送端）：
+  有未确认的小数据时不发新的小包，攒够 MSS 或收到 ACK 才发
+  目的：避免大量小包（避免"愚蠢窗口综合征"）
+
+延迟确认（接收端）：
+  收到数据不立刻回 ACK，等一小段（Linux 通常 40ms）看能否捎带数据
+
+叠加后的死锁式等待：
+  发送端：在等我上一个包的 ACK（Nagle 拦住新小包）
+  接收端：在等 40ms 到点才发 ACK
+  -> 每次小交互都白白多等一个延迟确认周期
+
+修复：
+  1) 应用层合并写（write 一次而不是多次小写）
+  2) 设置 TCP_NODELAY（禁用 Nagle）—— 交互式协议（Redis、gRPC、HTTP/2）必开
+  3) 让接收端不用延迟确认（不可控，不推荐作为方案）
+${F}
+
+${F}c
+int flag = 1;
+setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));   // 交互式协议必备
+// 反之，批量传输（如大文件）保持 Nagle 开启反而更好：减少小包数量
+${F}
+
+### 六、TIME_WAIT：不是 bug，是设计
+
+${F}text
+TIME_WAIT 存在的两个理由：
+  1) 让最后的 ACK 有机会重传（若对端没收到 FIN 的 ACK 会重发 FIN）
+  2) 让本次连接的迟到报文在网络中消亡，避免污染使用相同四元组的新连接
+时长：2 * MSL（Linux 固定 60 秒，不可通过配置改短）
+
+危害场景：
+  主动关闭方（通常是反向代理/客户端）大量 TIME_WAIT -> 源端口耗尽
+  表现：Cannot assign requested address
+
+缓解手段（由轻到重）：
+  1) 使用连接池，减少短连接数量（最根本）
+  2) net.ipv4.tcp_tw_reuse = 1（仅对主动发起的连接生效，安全）
+  3) 扩大 net.ipv4.ip_local_port_range
+  4) 增加对端 IP 数量（连接数 = 端口数 × 对端IP数）
+  5) 【不要】tcp_tw_recycle —— 在 NAT 环境下会随机丢包，新内核已移除
+${F}
+
+### 七、粘包与拆包：TCP 是字节流，不是消息流
+
+${F}text
+根本原因：TCP 只保证字节顺序，不保留"写边界"。
+  应用 write 100 字节 -> 接收端 recv 可能返回 1 次 100 字节，
+  也可能返回 40 + 60，甚至和下一个消息合并成 180 字节
+
+三种标准解法：
+  1) 固定长度：每条消息定长（简单但浪费）
+  2) 长度前缀：先 4 字节大端长度，再读 body（最通用，gRPC/Redis 都用）
+  3) 分隔符：以特殊字符结尾（如 HTTP 的 CRLF，需处理转义）
+${F}
+
+${F}java
+// 长度前缀解包的要点：必须用「读满」循环，不能假设一次读全
+DataInputStream in = new DataInputStream(socket.getInputStream());
+while (true) {
+    int len = in.readInt();                 // 阻塞直到读满 4 字节
+    byte[] body = new byte[len];
+    in.readFully(body);                     // 关键：readFully 而非 read
+    handle(body);
+}
+// 用 read() 时返回的字节数可能小于 len，必须循环累积，否则数据被截断
+${F}
+
+### 八、conntrack 表满：容器与高并发场景的隐形杀手
+
+${F}text
+Linux 的 netfilter 会为每条连接记录一条 conntrack 条目
+  默认上限 net.netfilter.nf_conntrack_max（常为 65536 或按内存推算）
+  每条条目约 300 字节，且需定期扫描超时条目
+
+打满后的症状：
+  内核打印 "nf_conntrack: table full, dropping packet"
+  新建连接随机失败（已建立的连接通常还能用）—— 极难定位
+
+调优：
+  sysctl -w net.netfilter.nf_conntrack_max=1048576
+  sysctl -w net.netfilter.nf_conntrack_tcp_timeout_established=3600   # 从默认 5 天缩短
+  # 提高哈希桶减少冲突
+  sysctl -w net.netfilter.nf_conntrack_buckets=262144
+根治：把不需要追踪的流量标记为 NOTRACK（raw 表），或使用无 netfilter 的转发路径
+${F}
+
+### 九、常见误区
+
+1. **「关了 Nagle 一定更快」**。批量传输场景下禁用 Nagle 会产生大量小包，反而拉低吞吐。要按协议特性决定。
+2. **「TIME_WAIT 应该彻底消灭」**。它承担着保证连接语义正确的职责；正确方向是减少短连接，而不是关掉保护。
+3. **「重传一定是网络丢包」**。也可能是对端应用读得太慢导致接收窗口为 0，或本机拥塞窗口受限。
+4. **「设置了 TCP keepalive 就能检测断链」**。默认 keepalive 是 2 小时，等于没有；必须显式调小，或在应用层做心跳（更可控）。
+5. **「BBR 开了就一定快」**。BBR 在低丢包链路上与 CUBIC 差别不大，且与 CUBIC 共存时可能抢占带宽；跨团队共用链路时要评估公平性。
+
 ## 七、延伸
 
 - 精读 RFC 9293 的「连接建立/关闭」与「重传」章节。
@@ -735,6 +1422,154 @@ ${F}
 - [ ] 能写出只允许 TLS 1.2/1.3 的 Nginx 配置
 - [ ] 知道 0-RTT 的重放风险，只对幂等请求启用
 
+<!--dd:https-tls-->
+
+## 🔬 深挖：TLS 1.3 握手、证书链与握手排障
+
+### 一、TLS 1.3 握手：为什么只要 1 个 RTT
+
+${F}text
+TLS 1.2（完整握手）：2-RTT
+  ClientHello -> ServerHello + Certificate + ServerKeyExchange + ServerHelloDone
+  ClientKeyExchange + ChangeCipherSpec + Finished
+  ChangeCipherSpec + Finished
+
+TLS 1.3（完整握手）：1-RTT
+  ClientHello + key_share（客户端预先猜好密钥交换参数）
+  ServerHello + key_share + {EncryptedExtensions + Certificate + CertVerify + Finished}
+  {Finished} + 应用数据
+  关键优化：客户端在第一个包里就把 key_share 发出去，省掉一轮协商
+
+TLS 1.3 + PSK 会话复用：0-RTT
+  客户端用上次的 PSK 直接加密并发送应用数据
+  风险：0-RTT 数据可被重放 -> 只应对幂等请求使用（GET），不可用于支付等写操作
+${F}
+
+${F}text
+TLS 1.3 精简掉的东西（安全原因）：
+  RSA 密钥交换      -> 改为 (EC)DHE，具备前向保密
+  静态 DH 套件      -> 同上
+  CBC 模式套件      -> 只保留 AEAD（AES-GCM、ChaCha20-Poly1305）
+  RC4、3DES        -> 全部移除
+  renegotiation    -> 移除（历史上多次漏洞来源）
+  compression      -> 移除（CRIME 攻击）
+结果：TLS 1.3 的套件远少于 1.2，配置反而更简单
+${F}
+
+### 二、密钥派生：HKDF 与密钥分离
+
+${F}text
+TLS 1.3 用 HKDF（RFC 5869）从共享密钥派生出多层密钥：
+  1) 早期密钥（Early Secret）   <- PSK（若使用）
+  2) 握手密钥（Handshake Secret） <- (EC)DHE 共享密钥
+  3) 主密钥（Master Secret）      <- 握手完成后的密钥
+每一层再派生出：
+  client_application_traffic_secret / server_application_traffic_secret（方向分离）
+  + 独立的 IV 与密钥（由 traffic secret 再派生）
+意义：一个密钥泄露不会连带其他方向的密钥，且支持密钥更新（KeyUpdate）
+${F}
+
+### 三、证书链校验的完整逻辑
+
+客户端验证书不是「看有没有过期」，而是六步：
+
+${F}text
+1) 链完整性：服务器不应只发叶子证书，还要发中间 CA 证书
+   （漏发中间证书是"浏览器正常、Java/curl 报错"的最常见原因）
+2) 签名验证：用上一级公钥验证下一级的签名，逐级向上直到受信任根
+3) 有效期：NotBefore / NotAfter，且要注意客户端时钟是否准确
+4) 域名匹配：Subject Alternative Name（SAN）必须含目标域名
+   CN 字段已被主流浏览器忽略 —— 只填 CN 是无效配置
+5) 用途：Extended Key Usage 必须包含 serverAuth
+6) 吊销检查：CRL 或 OCSP（在线检查会泄露隐私且增加延迟 -> 用 OCSP Stapling）
+${F}
+
+${F}bash
+# 看服务端发的证书链（是否含中间证书）
+openssl s_client -connect example.com:443 -servername example.com -showcerts </dev/null 2>/dev/null | grep -E "s:|i:"
+
+# 只验证链（不校验域名，用于区分"链不全"与"域名不匹配"）
+openssl s_client -connect example.com:443 -servername example.com -CAfile /etc/ssl/certs/ca-certificates.crt </dev/null 2>&1 | grep -E "Verify return code|verify error"
+
+# 看证书详情（SAN、有效期、密钥类型）
+echo | openssl s_client -connect example.com:443 -servername example.com 2>/dev/null | openssl x509 -noout -text | grep -A2 "Subject Alternative Name"
+
+# 测试 TLS 1.3 是否可用
+openssl s_client -connect example.com:443 -tls1_3 </dev/null 2>&1 | head -5
+${F}
+
+### 四、SNI 与 ALPN：一个 IP 托管多站点的关键
+
+${F}text
+SNI（Server Name Indication）：
+  客户端在 ClientHello 里明文告知目标域名，
+  服务端据此选择对应证书 —— 这是"一个 IP 部署多个 HTTPS 站点"的基础。
+  问题：域名明文暴露（隐私）-> 引出 ECH（Encrypted Client Hello），部署尚不普及。
+
+ALPN（Application-Layer Protocol Negotiation）：
+  在同一端口协商后续用 h2 / http/1.1 / h3。
+  没有 ALPN，服务端无法知道客户端想用 HTTP/2。
+  排查："客户端支持 h2 但协商成 http/1.1" -> 通常是服务端未开 h2 或 ALPN 配置缺失。
+${F}
+
+### 五、会话复用：两种机制的区别
+
+| 机制 | 存储位置 | 恢复方式 | 注意 |
+|---|---|---|---|
+| Session ID（1.2） | 服务端 | 客户端带 Session ID，服务端查表 | 多机部署需共享存储或粘性会话 |
+| Session Ticket（1.2） | 客户端 | 服务端用票据密钥加密状态，客户端保存 | 票据密钥必须多机一致，轮换要平滑 |
+| PSK（1.3） | 客户端 | 0-RTT 或 1-RTT 恢复 | 0-RTT 有重放风险 |
+
+**多机部署的经典坑**：负载均衡后有多台服务器，各机票据密钥不同，客户端复用到另一台时票据解密失败 —— 表现为「复用率很低、握手开销一直很大」。解法是统一票据密钥轮换策略（如用共享密钥 + 定时轮换，保留旧密钥一段时间）。
+
+### 六、mTLS（双向认证）的落地要点
+
+${F}text
+服务端要求客户端也出示证书：
+  ssl_verify_client on;                     # Nginx
+  ssl_client_certificate /path/ca.crt;      # 用于验证客户端证书的 CA 链
+  ssl_verify_depth 2;
+
+工程要点：
+  1) 客户端证书也要在有效期管理内 —— 证书过期会导致整批服务调用失败
+  2) 客户端证书吊销同样需要机制（CRL/OCSP），否则离职人员证书仍可用
+  3) 服务网格（Istio 等）默认自动做证书签发与轮换，自建时要自己解决
+  4) 报错信息差异大：verify error:num=19 表示链不完整；self signed certificate 表示未受信 CA
+${F}
+
+### 七、常见错误码与定位路径
+
+| 报错 | 含义 | 定位 |
+|---|---|---|
+| ${C}unable to get local issuer certificate${C} | 链不完整（服务端漏发中间证书） | ${C}openssl s_client -showcerts${C} 看链长度 |
+| ${C}certificate has expired${C} | 证书过期 | 检查 NotAfter 与服务端时钟 |
+| ${C}hostname mismatch${C} | SAN 不含该域名 | 检查 SAN，别只看 CN |
+| ${C}sslv3 alert handshake failure${C} | 套件协商失败 | ${C}openssl s_client -tls1_2${C} 逐版本试；看密码套件交集 |
+| ${C}unsupported protocol${C} | 版本不匹配（如客户端只支持 TLS1.3，服务端只开 1.2） | 显式指定版本测试 |
+| ${C}connection reset by peer${C} | 服务端主动断（常见于 SNI 未匹配到证书、或 WAF 阻断） | 看服务端日志 |
+| ${C}wrong version number${C} | 客户端在与 HTTP 端口说 TLS | 端口搞错了 |
+
+### 八、性能优化清单
+
+${F}text
+1) 优先 TLS 1.3：1-RTT 握手 + 更少套件
+2) 开启会话复用（Session Ticket），并保证多机密钥一致
+3) 用 ECDSA 证书替代 RSA：握手计算量小、体积小（但需客户端支持）
+4) 开启 OCSP Stapling：避免客户端自己去查 OCSP
+5) 会话票据密钥定期轮换（保持前向保密），轮换期保留旧密钥
+6) 在负载均衡/Nginx 层做 TLS 卸载时，注意内网段也应加密（否则内部明文）
+7) 不要在网关后继续做多层 TLS 解密（每层都有 CPU 与延迟成本）
+8) 使用 HTTP/2 或 HTTP/3 摊薄握手成本（一次握手多路复用）
+${F}
+
+### 九、常见误区
+
+1. **「证书只发叶子证书就行」**。必须带中间证书，否则部分客户端（尤其 Java/老 curl）无法构建信任链，而浏览器因有 AIA 自动补链可能看不出问题。
+2. **「配置了 CN 就够了」**。现代实现只认 SAN；只配 CN 的证书会被判定为域名不匹配。
+3. **「内网不用加密」**。零信任与合规要求内网也加密；且内网一旦被突破，明文流量即被完全掌控。
+4. **「0-RTT 越快越好，全量开启」**。0-RTT 可重放，只应对幂等的 GET 使用；开启写操作等于给了重放攻击的机会。
+5. **「TLS 开销可忽略」**。握手期（尤其 RSA 2048）在一些低配设备上是可观的 CPU 成本；高 QPS 网关应实测握手 QPS 上限，并做好复用。
+
 ## 七、延伸
 
 - 通读 RFC 8446 第 1–2 章，理解 1.3 移除不安全算法与前向安全的设计取舍。
@@ -845,6 +1680,143 @@ ${F}
 - [ ] 会用 ${C}dig +trace${C} 定位解析链路中出问题的那一级
 - [ ] 知道 CDN 调度原理与回源保护的必要性
 
+<!--dd:dns-cdn-->
+
+## 🔬 深挖：DNS 解析链路与 CDN 缓存的真实行为
+
+### 一、一次 DNS 解析的完整链路
+
+${F}text
+递归解析器（local DNS / 8.8.8.8）代为查询的迭代过程：
+  1) 查本地缓存，命中即返回（由 TTL 决定有效期）
+  2) 未命中 -> 问根服务器（13 组根，Anycast 就近）
+     根只回答："去问 .com 的权威服务器"
+  3) 问 TLD 服务器（.com）
+     TLD 回答："example.com 的权威服务器是 ns1.example.com"
+  4) 问权威服务器（ns1.example.com）
+     权威回答最终记录：A 记录（IP）或 CNAME（别名）
+  5) 递归解析器缓存并按 TTL 返回给客户端
+
+关键认知：中间任何一层都可能有缓存，而缓存由 TTL 控制。
+所以"改了 DNS 立刻生效"是不可能的 —— 必须等各层 TTL 过期。
+${F}
+
+${F}bash
+# 完整追踪解析链路（从根开始）
+dig +trace example.com
+
+# 只问指定权威服务器（绕开缓存，验证权威配置）
+dig @ns1.example.com example.com A +norecurse
+
+# 看 TTL 与完整回答段
+dig example.com +noall +answer
+
+# 查看本机使用的解析器与缓存
+cat /etc/resolv.conf
+resolvectl status 2>/dev/null || systemd-resolve --status
+${F}
+
+### 二、记录类型与常见误用
+
+| 类型 | 用途 | 关键要点 |
+|---|---|---|
+| A | IPv4 地址 | 多条 A 记录可做轮询，但无健康检查 |
+| AAAA | IPv6 地址 | 客户端双栈时可能优先 AAAA，若 IPv6 不通会拖慢 |
+| CNAME | 别名 | **不能与 MX/NS 共存**；根域通常不允许 CNAME |
+| NS | 权威服务器 | 授权委派 |
+| MX | 邮件 | 与 CNAME 互斥 |
+| TXT | 验证/SPF/DKIM | SPF 过长会有解析失败风险 |
+| SRV | 服务发现 | 带端口与权重，K8s 与 gRPC 常用 |
+| CAA | 限制可签发该域的 CA | 合规与防误签发 |
+
+**CNAME 链的代价**：A -> CNAME B -> CNAME C -> A 记录，每级都要额外解析一次，直接放大首屏延迟。CDN 接入时常见的「CNAME 到厂商域名」就是这类结构，尽量控制在两级以内。
+
+### 三、CDN 调度的两种范式
+
+| 方式 | 原理 | 优点 | 缺点 |
+|---|---|---|---|
+| DNS 调度 | 权威 DNS 根据解析器 IP 返回就近节点 | 实现简单、无额外设备 | 精度受限于解析器位置（递归服务器可能远离用户）；受 ECS 支持影响 |
+| Anycast | 多节点宣告同一 IP，由 BGP 选路 | 就近接入精准、天然容灾 | 需自有 AS 与 IP 段，成本高 |
+
+**EDNS Client Subnet（ECS）**的作用：解析器把用户网段（通常 /24）附带在查询里，让权威 DNS 能按用户位置而非解析器位置返回节点。但 ECS 有隐私争议，且 Google 8.8.8.8 等公共 DNS 默认不带 ECS —— 这是「自建 DNS 与公共 DNS 命中不同节点、速度差异明显」的根因。
+
+### 四、CDN 缓存：命中率才是核心指标
+
+${F}text
+缓存键（Cache Key）由什么组成？
+  默认：URL（含 scheme + host + path + query） + Vary 指定的头
+  常见错误：把不影响内容的参数也放进缓存键 -> 每个用户一个副本 -> 命中率暴跌
+
+典型命中率参考：
+  静态资源（图片/JS/CSS）   > 95%
+  动态接口（短缓存）         30%~70%（视业务）
+  个性化接口（private）      0%（本就不该缓存）
+
+提升命中率的四件事：
+  1) 归一化 query 参数顺序与无用参数（如 utm_*、时间戳）
+  2) 用 Vary 精确声明（只声明真正影响内容的首部，不要写 Vary: *）
+  3) 静态资源用内容哈希命名 -> 可以设超长缓存，命中率接近 100%
+  4) 回源合并（Collapsed Forwarding）：同一资源并发回源只放一个请求到源站
+${F}
+
+### 五、缓存策略的组合拳
+
+${F}text
+# 静态资源：内容哈希 + 一年强缓存 + immutable
+location ~* \\.(js|css|png|jpg|woff2)$ {
+    add_header Cache-Control "public, max-age=31536000, immutable";
+}
+
+# HTML 入口：不缓存或极短缓存，保证发版立刻生效
+location = /index.html {
+    add_header Cache-Control "no-cache";
+}
+
+# 接口：CDN 短缓存 + 允许陈旧回源，兼顾性能与新鲜度
+location /api/config {
+    add_header Cache-Control "public, s-maxage=60, stale-while-revalidate=300";
+    add_header CDN-Cache-Control "max-age=60";     # 只作用于 CDN，不传给浏览器
+}
+${F}
+
+**${C}CDN-Cache-Control${C} 与 ${C}Cache-Control${C} 分离**是很有用的技巧：CDN 侧短暂缓存以吸收回源压力，而浏览器侧完全不缓存，保证用户每次刷新看到最新数据。
+
+### 六、预热与刷新：上线流程的一部分
+
+${F}text
+发布静态资源时的正确顺序（避免"缓存雪崩式回源"）：
+  1) 上传新文件到源站（文件名含哈希，不会覆盖旧文件）
+  2) 预热：主动请求 CDN 节点，把新资源拉进缓存
+  3) 切换入口引用（HTML 里指向新哈希文件名）
+  4) 旧文件保留一段时间（避免用户拿着旧 HTML 请求已删除的资源 -> 404）
+
+若必须覆盖同名文件（如 favicon），则用刷新：
+  刷新（Purge）有速率限制，且不是瞬时全局生效 —— 各节点是异步失效的
+${F}
+
+### 七、多级缓存的层次与穿透风险
+
+${F}text
+浏览器 -> 边缘节点（CDN）-> 中间层（区域缓存/网关）-> 源站
+每一层都需要独立的缓存策略，且要考虑：
+  1) 缓存穿透：查询不存在的 key，每次都打到源站
+     -> 缓存空值（短 TTL）+ 布隆过滤器前置
+  2) 缓存击穿：热点 key 过期瞬间大量并发回源
+     -> 互斥重建（只放一个请求去加载）+ 逻辑过期（不设物理过期）
+  3) 缓存雪崩：大量 key 同时过期
+     -> TTL 加随机抖动
+  4) 缓存一致性：源站更新后各层如何失效
+     -> 主动 purge 边缘节点 + 短 TTL 兜底
+${F}
+
+### 八、常见误区
+
+1. **「改 DNS 立即生效」**。受各层 TTL 与客户端缓存约束，通常需要数分钟到数小时；迁移前应先把 TTL 调小（如 60 秒）再切。
+2. **「CNAME 随便用」**。CNAME 不能与 MX/NS 共存，根域 CNAME 在部分注册商不被支持；CNAME 链过长会显著增加解析延迟。
+3. **「CDN 一切都能加速」**。动态、个性化、需要鉴权的请求往往无法缓存，CDN 只能优化链路（骨干网接入、协议优化），不能提升命中率。
+4. **「命中率低就调大 TTL」**。若缓存键不合理（如把用户 ID 放进 query），再长的 TTL 也没有帮助。
+5. **「只监控 CDN 整体命中率」**。必须按资源类型、按目录、按状态码细分；整体命中率会被少数超大文件拉高，掩盖真实问题。
+
 ## 七、延伸
 
 - 精读 RFC 1034 第 2 章（名称空间与资源记录）与 RFC 1035 第 4 章（报文格式）。
@@ -952,6 +1924,149 @@ ${F}
 - [ ] 知道多路复用是「就绪通知」而非「异步 IO」，并了解 io_uring 的定位
 - [ ] 会用 epoll 的 fd 上限 / somaxconn 排查「连接上不来」
 - [ ] 理解 Redis/Nginx/Node 高并发背后的共同底层
+
+<!--dd:io-multiplexing-->
+
+## 🔬 深挖：epoll 内部实现、触发模式与 Reactor 模型
+
+### 一、三种多路复用的实现差异
+
+| 机制 | 数据结构 | 每次调用复杂度 | 返回值 | 局限 |
+|---|---|---|---|---|
+| select | 位图（fd_set） | O(n) 扫描 + 每次全量拷贝 | 修改位图 | fd 上限 1024；线性扫描 |
+| poll | 数组 | O(n) 扫描 + 每次全量拷贝 | 修改 revents | 无 fd 上限，但仍线性扫描 |
+| epoll | 红黑树 + 就绪链表 | O(1) 获取就绪（只需遍历就绪链表） | 填充就绪数组 | 仅 Linux |
+
+**核心差异不在「扫描方式」，而在「内核是否维护状态」**：
+
+${F}text
+select/poll：
+  应用每次调用都要把整个 fd 集合从用户态拷到内核态，
+  内核再逐个检查每个 fd 是否就绪 -> O(n) 拷贝 + O(n) 检查
+  即使 10000 个连接里只有 1 个活跃，也要检查 10000 次
+
+epoll：
+  epoll_ctl 时把 fd 注册进内核的红黑树（只注册一次），
+  同时在该 fd 的等待队列上挂回调；
+  数据到达时由内核回调把 fd 挂到「就绪链表」；
+  epoll_wait 只需检查就绪链表是否为空 -> O(1)（不含拷贝就绪项）
+  这是 C10K 到 C10M 的关键
+${F}
+
+${F}c
+// epoll 的三个调用
+int ep = epoll_create1(0);
+struct epoll_event ev;
+ev.events = EPOLLIN | EPOLLET;      // 关注可读，使用边沿触发
+ev.data.fd = listen_fd;
+epoll_ctl(ep, EPOLL_CTL_ADD, listen_fd, &ev);       // 注册（只做一次）
+
+struct epoll_event events[1024];
+int n = epoll_wait(ep, events, 1024, -1);            // 阻塞等待，返回就绪数
+for (int i = 0; i < n; i++) { handle(events[i].data.fd); }
+${F}
+
+### 二、LT 与 ET：最容易出 bug 的地方
+
+${F}text
+水平触发（LT，Level Triggered，默认）：
+  只要缓冲区还有数据，每次 epoll_wait 都会返回该 fd
+  优点：编程简单，允许一次只读一部分
+  代价：数据量大时会被反复唤醒（系统调用次数多）
+
+边沿触发（ET，Edge Triggered，需显式 EPOLLET）：
+  只在状态"变化"时通知一次（从无数据变为有数据）
+  优点：通知次数最少，性能更好
+  要求：必须循环读到 EAGAIN 为止，否则剩余数据不会再触发通知 -> 连接"卡死"
+  注意：ET 必须配非阻塞 fd，否则最后一次 read 会永久阻塞
+${F}
+
+${F}c
+// ET 模式的正确读法（关键：循环 + 处理 EAGAIN）
+while (1) {
+    ssize_t n = read(fd, buf, sizeof(buf));
+    if (n > 0) { process(buf, n); continue; }
+    if (n == 0) { close_conn(fd); break; }                 // 对端关闭
+    if (n < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) break; // 读干净了，正常退出
+        if (errno == EINTR) continue;                       // 被信号打断，重试
+        close_conn(fd); break;
+    }
+}
+${F}
+
+### 三、惊群（Thundering Herd）与 EPOLLEXCLUSIVE
+
+${F}text
+问题场景：多个进程/线程在同一个 epoll 实例（或同一个 listen fd）上等待
+  新连接到来 -> 内核唤醒全部等待者 -> 只有一个成功 accept，其余白白被唤醒
+  结果：大量无效上下文切换，高峰期吞吐骤降
+
+三种解法：
+  1) EPOLLEXCLUSIVE（4.5+）：epoll_ctl 时带上该标志，
+     内核只唤醒一个等待者
+  2) SO_REUSEPORT：每个进程各自 listen 同一个端口，
+     内核按四元组哈希分流 —— 现在最常用的方案，天然负载均衡
+  3) 只让一个线程 accept，然后派发给 worker（单 acceptor 模式）
+${F}
+
+${F}c
+// SO_REUSEPORT：多进程/多线程各自独立 listen，内核负责分流
+int on = 1;
+setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on));
+// 配合 SO_REUSEADDR 一起用；注意：连接分布由内核哈希决定，
+// 若各 worker 处理能力不同，可能出现不均衡
+${F}
+
+### 四、Reactor 与 Proactor：两条不同的 I/O 完成路径
+
+${F}text
+Reactor（同步 I/O，就绪通知）：
+  内核告我"可以读了" -> 我自己调用 read 把数据从内核拷到用户态
+  代表：Nginx、Netty、Redis、libevent
+  变体：
+    单 Reactor 单线程     —— 简单，Redis 属于此类（命令执行单线程）
+    单 Reactor 多线程     —— 主线程收连接，worker 线程处理
+    主从 Reactor 多线程   —— 主 Reactor 只 accept，子 Reactor 各自处理 I/O（Netty 默认）
+
+Proactor（异步 I/O，完成通知）：
+  我提交 read 请求并附带缓冲区 -> 内核读完后告我"已经读好了"
+  代表：Windows IOCP、Linux io_uring
+  优势：应用层不参与数据拷贝的等待，理论上更高效
+${F}
+
+**io_uring 的意义**：Linux 5.1 引入，用两个共享内存环形队列（提交队列 SQ + 完成队列 CQ）实现「零系统调用」的批量提交，既支持文件 I/O 也支持网络 I/O，且天然支持真正的异步。它是当前 Linux 高性能 I/O 的方向，但生态（驱动、库、内核版本要求）仍在完善中。
+
+### 五、fd 上限与相关调优
+
+${F}bash
+# 三层限制，都要调（取最小值生效）
+ulimit -n                                   # 进程级（软限制）
+ulimit -Hn                                  # 进程级（硬限制）
+cat /proc/sys/fs/file-max                   # 系统级总上限
+cat /proc/<pid>/limits | grep files         # 某进程的实际限制
+
+# 临时提升（当前 shell）
+ulimit -n 1048576
+# 永久：/etc/security/limits.conf
+#   * soft nofile 1048576
+#   * hard nofile 1048576
+# systemd 服务还需单独设置：
+#   [Service] LimitNOFILE=1048576
+
+# 查看当前系统的 fd 使用情况
+cat /proc/sys/fs/file-nr        # 已分配 / 未使用 / 上限
+lsof -p <pid> | wc -l           # 某进程打开的 fd 数
+ls /proc/<pid>/fd | wc -l       # 更快的方式
+${F}
+
+### 六、常见误区
+
+1. **「epoll 一定比 select 快」**。连接数少且都很活跃时，select 反而可能更快（没有红黑树与回调开销）。epoll 的优势在「连接多但活跃少」。
+2. **「ET 模式性能一定更好」**。ET 的确减少通知次数，但要求应用严格读到 EAGAIN，实现复杂易错；很多框架默认仍用 LT。
+3. **「多线程 + 一个 epoll 就是高性能」**。多线程共享一个 epoll 会引发锁竞争与惊群，通常应「每线程一个 epoll 实例 + SO_REUSEPORT」。
+4. **「非阻塞 + epoll 就不用管 fd 上限」**。fd 是硬约束，达到上限后 accept 会失败并返回 EMFILE，必须提前调优并监控。
+5. **「异步 I/O 一定优于同步 I/O」**。取决于场景：小消息高频交互下，Reactor 的开销与 Proactor 相当甚至更优；大文件传输才是异步 I/O 的主场（zero-copy、真正的 DMA 参与）。
 
 ## 七、延伸
 
@@ -1075,6 +2190,154 @@ ${F}
 - [ ] 空间异常时会同时看 ${C}df -h${C} 与 ${C}df -i${C}
 - [ ] 会用 ${C}iostat${C} / ${C}iotop${C} / ${C}lsof +L1${C} 定位 IO 瓶颈与残留句柄
 - [ ] 知道 overlayfs 写放大与容器必须挂 volume 的原因
+
+<!--dd:fs-disk-io-->
+
+## 🔬 深挖：VFS 层、页缓存回写与磁盘性能判读
+
+### 一、一次文件写的完整路径
+
+${F}text
+应用 write()
+  -> VFS（虚拟文件系统层）：统一接口，决定走哪个具体文件系统
+  -> 具体文件系统（ext4 / XFS）：分配块、更新元数据
+  -> 页缓存（Page Cache）：写入缓存页并标记为脏（dirty）
+  -> 返回给应用（**此时数据还没落盘！**）
+  ...稍后...
+  -> 内核回写线程（writeback）：把脏页提交到块设备层
+  -> IO 调度器（mq-deadline / none）：合并、排序请求
+  -> 块设备驱动 -> 磁盘/SSD 控制器
+  -> 最终持久化（若未 fsync，落盘时间不可控）
+
+关键结论：不调用 fsync 的写入，进程崩溃会丢，机器断电更会丢；
+         数据库必须通过 fsync/fdatasync 明确控制持久化时机。
+${F}
+
+### 二、fsync、fdatasync、O_SYNC 的区别
+
+| 调用 | 保证的内容 | 代价 |
+|---|---|---|
+| ${C}sync()${C} | 刷新所有文件系统的脏页（全局） | 最重，生产慎用 |
+| ${C}fsync(fd)${C} | 刷新该文件的数据 + 元数据（大小、mtime、块映射） | 重（元数据可能要额外 IO） |
+| ${C}fdatasync(fd)${C} | 刷新数据 + 必要元数据（不刷 mtime 等无关项） | 略轻 |
+| ${C}O_SYNC${C} 打开 | 每次 write 都同步落盘 | 最慢，但语义最明确 |
+| ${C}O_DSYNC${C} | 每次 write 保证数据落盘（不保证无关元数据） | 次慢 |
+| ${C}O_DIRECT${C} | 绕过页缓存，直接与设备交互 | 需对齐、丧失缓存收益（数据库常用） |
+
+**数据库为什么爱用 O_DIRECT**：自己管理缓存（Buffer Pool）比依赖 OS 页缓存更可控，避免「双缓存」导致的内存浪费与一致性复杂度。代价是必须自己实现预读（readahead）与合并。
+
+${F}bash
+# 观察脏页与回写（判断是否因刷盘造成卡顿）
+grep -E "^(Dirty|Writeback|WritebackTmp)" /proc/meminfo
+vmstat 1        # bi/bo 列是块设备读写速率
+cat /sys/block/sda/queue/scheduler                 # 当前 IO 调度器
+ls /sys/block/sda/queue/rotational                 # 1=机械盘 0=SSD
+${F}
+
+### 三、顺序 vs 随机：数量级差异的来源
+
+${F}text
+机械硬盘（HDD）：
+  顺序读   约 100~200 MB/s（受限于主轴转速与磁头移动方式）
+  随机 IO  约 75~200 IOPS（每次要移动磁头 + 等待旋转）
+  -> 随机与顺序差 2~3 个数量级，这是"随机 IO 是性能杀手"的物理根源
+
+SSD：
+  顺序读   数百 MB/s ~ 数 GB/s（取决接口：SATA / NVMe）
+  随机 IO  数万 ~ 数十万 IOPS
+  -> 随机与顺序的差距缩小到 1 个数量级以内
+  -> 但仍有代价：写放大、GC 停顿、寿命（TBW）
+
+对应用设计的含义：
+  HDD 时代必须"顺序化"（B+Tree 就是为减少随机 IO 而生）
+  SSD 时代可以接受更多随机，但依旧要避免"每次写一个小块"
+${F}
+
+### 四、IO 调度器的选择
+
+| 调度器 | 适用 | 特点 |
+|---|---|---|
+| none（noop） | NVMe SSD、虚拟化环境 | 不做重排，交给设备；SSD 自身有调度能力 |
+| mq-deadline | 通用、单队列与多队列 | 保证读延迟上限（deadline），默认推荐 |
+| kyber | 低延迟场景 | 按目标延迟调节 |
+| bfq | 桌面/交互式 | 公平性最好，服务器不推荐（开销大） |
+
+${F}bash
+# 查看与切换（多队列设备用 /sys/block/<dev>/queue/scheduler）
+cat /sys/block/nvme0n1/queue/scheduler
+echo mq-deadline > /sys/block/nvme0n1/queue/scheduler
+# 持久化：内核启动参数 elevator=mq-deadline，或 udev 规则
+${F}
+
+### 五、iostat：读懂磁盘真实压力
+
+${F}bash
+iostat -x 1
+${F}
+
+| 列 | 含义 | 判读 |
+|---|---|---|
+| ${C}r/s, w/s${C} | 每秒读写次数（IOPS） | 与设备上限对比 |
+| ${C}rkB/s, wkB/s${C} | 每秒读写字节 | 吞吐是否接近接口上限 |
+| ${C}await${C} | 平均 IO 等待时间（含排队） | **最关键**：持续 > 10ms（HDD）/ > 2ms（SSD）需关注 |
+| ${C}r_await vs w_await${C} | 读/写分别的等待 | 区分是读还是写造成瓶颈 |
+| ${C}aqu-sz${C}（旧版 avgqu-sz） | 平均请求队列长度 | > 1 说明有排队 |
+| ${C}%util${C} | 设备繁忙时间占比 | **注意**：SSD 并行度高，100% 不等于饱和；要看 await |
+| ${C}rareq-sz${C} | 平均请求大小 | 过小说明随机多，合并效果差 |
+
+**最常见误判**：看到 ${C}%util = 100%${C} 就断言磁盘饱和。对 NVMe 而言，${C}%util${C} 高但 ${C}await${C} 很低说明设备并行能力被充分利用，并未饱和。真正的饱和信号是 ${C}await${C} 显著上升 + ${C}aqu-sz${C} 持续 > 1。
+
+### 六、用 fio 量化设备能力
+
+${F}bash
+# 随机读（4K，模拟数据库索引访问）
+fio --name=randread --ioengine=libaio --direct=1 --rw=randread \\
+    --bs=4k --iodepth=32 --numjobs=4 --size=4G --runtime=60 --group_reporting
+
+# 顺序写（1M，模拟日志/大文件）
+fio --name=seqwrite --ioengine=libaio --direct=1 --rw=write \\
+    --bs=1M --iodepth=16 --numjobs=1 --size=8G --runtime=60 --group_reporting
+
+# 混合读写（7:3，接近真实业务）
+fio --name=mix --ioengine=libaio --direct=1 --rw=randrw --rwmixread=70 \\
+    --bs=4k --iodepth=64 --numjobs=8 --size=4G --runtime=60 --group_reporting
+# 关键参数：--iodepth 决定并发深度，--direct=1 绕过缓存才能测出真实设备性能
+${F}
+
+测出来的 IOPS 与延迟应该记录为**容量基线**，用于容量规划与故障对比。
+
+### 七、SSD 特有问题的排查
+
+${F}text
+1) 写放大（WAU）：实际写入量 / 应用写入量
+   原因：4K 随机写触发整块擦除（GC）
+   缓解：对齐写、批量写、TRIM、保留足够空闲空间（op 空间）
+
+2) GC 停顿：SSD 内部垃圾回收导致延迟尖刺
+   观察：await 的 p99 远高于均值
+   缓解：over-provisioning、避免写满（建议使用率 < 80%）
+
+3) 寿命：TBW（总写入字节）耗尽后进入只读模式
+   监控：smartctl -a /dev/nvme0n1 看 Percentage_Used、Data_Units_Written
+
+4) 坏块与介质错误：dmesg 里出现 I/O error、medium error
+   立即：更换设备（不要依赖 RAID 重建）
+${F}
+
+${F}bash
+# NVMe 健康状态
+smartctl -a /dev/nvme0n1 | grep -E "Percentage_Used|Data_Units|Available_Spare|Critical_Warning"
+# 机械盘 SMART
+smartctl -H /dev/sda
+${F}
+
+### 八、常见误区
+
+1. **「write 成功返回就等于落盘」**。只写到页缓存；持久化必须 fsync，否则断电会丢。
+2. **「页缓存越多越好」**。写场景下脏页过多会导致回写风暴与写延迟尖刺；要调 ${C}dirty_ratio${C} 平衡。
+3. **「%util 到 100% 就是磁盘瓶颈」**。对 SSD 不成立，必须结合 ${C}await${C} 与 ${C}aqu-sz${C}。
+4. **「SSD 不需要 TRIM」**。缺失 TRIM 会显著加剧写放大与性能衰减；确保挂载时开启 ${C}discard${C} 或定期执行 ${C}fstrim${C}。
+5. **「RAID 就一定更快更安全」**。RAID 5/6 的写惩罚（写要 4 次 IO）会严重拖慢随机写；且 RAID 不是备份，无法防误删。
 
 ## 七、延伸
 
@@ -1205,6 +2468,171 @@ ${F}
 - [ ] 会用 ${C}nstat${C} / ${C}ss -lnt${C} / ${C}/proc/net/softnet_stat${C} 观测队列溢出与软中断
 - [ ] 坚持「先量化后调优、一次改一处、改完复测」
 
+<!--dd:kernel-net-tune-->
+
+## 🔬 深挖：内核网络参数全景与丢包定位
+
+### 一、参数按「解决什么问题」分类
+
+调参最容易犯的错是「抄一份 sysctl 清单」而不理解在解决什么。正确做法是按问题分类：
+
+| 问题类别 | 关键参数 | 典型场景 |
+|---|---|---|
+| 连接建立能力 | ${C}somaxconn${C}、${C}tcp_max_syn_backlog${C} | 高并发短连接、SYN 洪水 |
+| 端口资源 | ${C}ip_local_port_range${C}、${C}tcp_tw_reuse${C} | 大量主动外连 |
+| 缓冲区 | ${C}tcp_rmem${C}、${C}tcp_wmem${C}、${C}netdev_max_backlog${C} | 大带宽高延迟（长肥管道） |
+| 时间等待 | ${C}tcp_fin_timeout${C}、${C}tcp_max_tw_buckets${C} | TIME_WAIT 堆积 |
+| 拥塞与重传 | ${C}tcp_congestion_control${C}、${C}tcp_retries2${C}、${C}tcp_syn_retries${C} | 弱网、跨境 |
+| 中断与软中断 | ${C}net.core.busy_poll${C}、RPS/RFS 配置 | 小包高 PPS |
+| 连接追踪 | ${C}nf_conntrack_max${C}、${C}nf_conntrack_buckets${C} | 容器、NAT 网关 |
+| 内存与回收 | ${C}tcp_mem${C}、${C}tcp_moderate_rcvbuf${C} | 大量连接并存 |
+
+### 二、最常需要改的参数（附安全取值范围）
+
+${F}ini
+# /etc/sysctl.d/99-network.conf
+
+# --- 队列与连接建立 ---
+net.core.somaxconn = 65535
+# accept 队列上限；应用 listen() 的 backlog 会被此值截断
+net.ipv4.tcp_max_syn_backlog = 65535
+# 半连接队列（收到 SYN 但未完成三次握手）
+
+# --- 网络设备层 ---
+net.core.netdev_max_backlog = 65535
+# 内核收包队列；高 PPS 场景不足会导致 "netdev backlog drops"
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+# SO_RCVBUF/SO_SNDBUF 的硬上限，应用 setsockopt 不能超过它
+net.ipv4.tcp_rmem = 4096 131072 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+# 三个值：最小值 / 默认值 / 最大值，内核会按需自动调优
+
+# --- 端口与 TIME_WAIT ---
+net.ipv4.ip_local_port_range = 10240 65535
+net.ipv4.tcp_tw_reuse = 1
+# 仅对"主动发起连接"复用 TIME_WAIT，安全；不要用 tcp_tw_recycle
+net.ipv4.tcp_fin_timeout = 30
+# FIN_WAIT_2 超时（注意：不等于 TIME_WAIT 的 60 秒，后者固定）
+
+# --- 拥塞与重传 ---
+net.ipv4.tcp_congestion_control = bbr
+net.core.default_qdisc = fq
+# BBR 建议搭配 fq 队列调度，效果更佳
+net.ipv4.tcp_syn_retries = 3
+net.ipv4.tcp_retries2 = 10
+# 建立与传输阶段的重试次数，过大导致"卡很久才报错"
+
+# --- 缓解 SYN 洪水 ---
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_synack_retries = 2
+${F}
+
+${F}bash
+# 应用并校验
+sysctl -p /etc/sysctl.d/99-network.conf
+sysctl net.core.somaxconn net.ipv4.tcp_congestion_control
+${F}
+
+**注意 ${C}tcp_max_syn_backlog${C} 与 ${C}somaxconn${C} 的关系**：前者管半连接队列（SYN 收到但未完成握手），后者管全连接队列（握手完成等待 accept）。应用代码里 ${C}listen(fd, backlog)${C} 的 backlog 会被 ${C}somaxconn${C} 截断 —— 这就是「明明调了 backlog 但连接还是被丢」的原因。
+
+### 三、软中断、RPS/RFS 与中断亲和
+
+${F}text
+单队列网卡的问题：
+  所有收包中断都落在 CPU0 -> CPU0 的 %si（软中断）打满 -> 其他核空闲
+  表现：整体 CPU 使用率不高，但延迟抖动严重、吞吐上不去
+
+解法一：多队列网卡 + 中断亲和
+  网卡按流哈希把包分散到多个硬件队列，每个队列绑定不同 CPU
+
+解法二：RPS（Receive Packet Steering，软件层模拟多队列）
+  在软件层面把包分发给其他 CPU 处理（增加一次 IPI 中断，但均衡了负载）
+
+解法三：RFS（Receive Flow Steering）
+  按"处理该连接的进程所在 CPU"分发，提升缓存命中率
+
+RPS 配置示例：
+  echo f > /sys/class/net/eth0/queues/rx-0/rps_cpus        # CPU 0-3
+  echo 32768 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
+  echo 32768 > /proc/sys/net/core/rps_sock_flow_entries
+${F}
+
+${F}bash
+# 查看中断分布是否均衡
+cat /proc/interrupts | grep -E "eth0|nvme"
+# %si 高的具体核
+mpstat -P ALL 1 | head -20
+# 软中断统计
+cat /proc/softirqs
+${F}
+
+### 四、GRO / GSO / TSO：减少每包开销的三件套
+
+| 机制 | 方向 | 作用 |
+|---|---|---|
+| ${C}TSO${C} | 发送 | 网卡负责把大块数据切分成 MTU 大小的段，减少 CPU 参与 |
+| ${C}GSO${C} | 发送（软件） | 内核层的通用分段卸载，TSO 的软件版 |
+| ${C}GRO${C} | 接收 | 把多个小段合并成大块再交给协议栈，减少上层处理次数 |
+| ${C}LRO${C} | 接收（网卡） | 网卡硬件合并，可能导致重传时行为异常，一般不用 |
+
+${F}bash
+# 查看与开关（ethtool -K 可关，-k 可查）
+ethtool -k eth0 | grep -E "tso|gso|gro"
+ethtool -K eth0 gro on tso on gso on
+# 抓包时的经典问题：开启 GRO/TSO 后 tcpdump 看到"超大包"
+# 这是正常现象（合并后的包），不是链路异常
+${F}
+
+### 五、丢包的分类与定位（最容易搞混的一步）
+
+丢包发生在不同层，症状与解法都不同：
+
+| 丢包位置 | 观测指标 | 原因 | 对策 |
+|---|---|---|---|
+| 网卡环形缓冲 | ${C}ethtool -S eth0${C} 里的 ${C}rx_dropped${C} / ${C}rx_no_buffer${C} | 收包速度超过内核处理 | 增大 ring：${C}ethtool -G eth0 rx 4096${C} |
+| 内核收包队列 | ${C}/proc/net/softnet_stat${C} 第 2 列 | ${C}netdev_max_backlog${C} 不足 | 调大 backlog + 开 RPS |
+| socket 接收缓冲 | ${C}ss -ti${C} 的 drops | 应用读得太慢 | 增大 ${C}tcp_rmem${C}；优化应用消费 |
+| 全连接队列 | ${C}ss -lnt${C} 的 Send-Q（Listen 溢出） | accept 太慢或 backlog 满 | 调大 backlog、提升 accept 线程数 |
+| conntrack | 内核日志 table full | 连接数超过表容量 | 调大 conntrack max 或缩短超时 |
+| 网络设备本身 | ${C}ethtool -S${C} 的 ${C}tx_dropped${C} | 发送队列满、链路协商问题 | 检查链路速率与双工、QoS |
+
+${F}bash
+# 综合诊断一条命令
+nstat -az | grep -Ei "drop|retrans|error|listen|overflow"
+# 或看协议栈统计（含 ListenOverflows / ListenDrops）
+netstat -s | grep -iE "drop|overflow|retrans|reset"
+# 关键几项
+#   ListenOverflows / ListenDrops  -> 全连接队列溢出，accept 跟不上
+#   TCPSynRetrans                  -> SYN 重传（对端未响应，可能被防火墙丢）
+#   TCPBacklogDrop                 -> netdev backlog 溢出
+#   TCPRcvCollapsed                -> 接收合并
+${F}
+
+### 六、eBPF / XDP：把处理下沉到内核
+
+${F}text
+传统路径：网卡 -> 中断 -> 协议栈 -> socket -> 应用
+XDP 路径：网卡驱动层直接执行 eBPF 程序
+  XDP_DROP   在最早的位置丢弃（DDoS 清洗，几乎零成本）
+  XDP_PASS   交给协议栈（默认）
+  XDP_TX     直接回发（反射）
+  XDP_REDIRECT 重定向到其他网卡/CPU
+适用与边界：
+  优点：在包进入协议栈前处理，开销极低，可线速处理
+  限制：驱动必须支持（主流万兆/25G 网卡多已支持）；
+        编程复杂；调试困难
+典型应用：Cilium（K8s 网络）、Facebook Katran（L4 负载均衡）、DDoS 防护
+${F}
+
+### 七、常见误区
+
+1. **「抄一份大厂 sysctl 清单就能提速」**。参数与业务形态强相关；照抄可能把 ${C}tcp_tw_recycle${C} 之类的危险参数带到生产（NAT 环境下随机丢包）。
+2. **「somaxconn 调大就够了」**。应用 listen backlog 与 accept 速度同样关键；只调内核参数而 accept 循环慢，队列照样溢出。
+3. **「%util / CPU 高才是瓶颈」**。网络瓶颈常表现为「CPU 不高但延迟抖动」，根因在软中断集中或 ring buffer 丢弃。
+4. **「B 开了 BBR 就能跑满带宽」**。还需接收窗口（${C}tcp_rmem${C}）与发送窗口足够大，否则带宽延迟积限制吞吐。
+5. **「netstat -s 里的 drops 都是丢包」**。不同计数含义完全不同（backlog drop 与 socket drop 的解法相反），必须先分类再动手。
+
 ## 七、延伸
 
 - 阅读 Linux 内核文档 ${C}Documentation/networking/scaling.txt${C} 与 ${C}napi.txt${C}。
@@ -1318,6 +2746,151 @@ ${F}
 - [ ] 知道背压的必要性与至少三种限流手段
 - [ ] 会为高并发服务设定合理的超时、熔断与线程池上限
 
+<!--dd:high-conn-model-->
+
+## 🔬 深挖：C10K 到 C10M 的瓶颈分解与零拷贝
+
+### 一、并发模型的演进脉络
+
+| 模型 | 结构 | 瓶颈 | 代表 |
+|---|---|---|---|
+| 阻塞式多进程 | fork per connection | 进程创建与切换成本 | 早期 Apache prefork |
+| 阻塞式多线程 | thread per connection | 线程栈内存 + 切换 | Apache worker |
+| 事件驱动（Reactor） | 少量线程 + epoll | 单线程 CPU 上限、回调复杂度 | Nginx、Redis、Node.js |
+| 协程 | 用户态调度 + 非阻塞 IO | 语言运行时成熟度 | Go netpoller、Java 虚拟线程 |
+| 内核旁路 | 用户态协议栈 | 需专门网卡与团队 | DPDK、Solarflare |
+
+**为什么"一连接一线程"撑不到 C10K**：默认线程栈 8MB（虚拟地址，但栈上页在用到时才分配） + 内核栈 + task_struct，再算上切换成本。1 万连接意味着 1 万次潜在的上下文切换竞争 —— 即使每个连接只有少量数据，调度开销也已吞掉大部分 CPU。
+
+### 二、单机连接数的四大约束（必须逐个核算）
+
+${F}text
+约束 1：文件描述符
+  fs.file-max（系统级）与 ulimit -n（进程级）
+  每连接消耗 1 个 fd，加上日志/配置/事件等额外 fd
+  例：目标 100 万连接 -> ulimit -n 至少 110 万，fs.file-max 更大
+
+约束 2：内存（最容易低估）
+  每连接内存 = socket 结构 + 发送缓冲 + 接收缓冲 + 应用侧对象
+  若 tcp_rmem/wmem 各允许 256KB，而内核实际按需增长：
+    实测经验值：每连接 8KB ~ 40KB（取决于流量与应用对象）
+  100 万连接 × 20KB = 20GB —— 这就是"连接数上限 = 内存 / 每连接内存"
+
+约束 3：端口（仅影响主动外连方）
+  可用源端口数 × 对端 IP 数
+  服务端被动接收连接时不消耗源端口，因此"服务端端口耗尽"是误解
+
+约束 4：conntrack 与内核表
+  nf_conntrack_max 默认 65536 量级，远超此数会丢包
+  此外还有 tcp_mem（TCP 整体内存限制）、tcp_max_tw_buckets 等
+
+经验总结：单机 100 万连接在现代服务器上可行，
+  但必须同时调 fd、内存、conntrack，并接受每连接内存被压到很低。
+${F}
+
+${F}bash
+# 逐项核算当前系统的理论上限
+ulimit -n                                       # 进程 fd 上限
+cat /proc/sys/fs/file-max                       # 系统 fd 上限
+cat /proc/sys/net/netfilter/nf_conntrack_max    # conntrack 上限
+free -g                                         # 内存总量
+sysctl net.ipv4.ip_local_port_range             # 可用端口范围（仅主动外连相关）
+${F}
+
+### 三、零拷贝：消除用户态与内核态之间的数据搬移
+
+${F}text
+传统发送一个文件（4 次拷贝 + 4 次上下文切换）：
+  1) read()  : 磁盘 -> 内核页缓存（DMA 拷贝）
+  2) read()  : 内核页缓存 -> 用户缓冲区（CPU 拷贝）
+  3) write() : 用户缓冲区 -> socket 发送缓冲（CPU 拷贝）
+  4) write() : socket 缓冲 -> 网卡（DMA 拷贝）
+
+sendfile（3 次拷贝，2 次上下文切换）：
+  sendfile(out_fd, in_fd, ...) 直接在内核内完成文件到 socket 的搬移
+  跳过用户态，省掉 2 次 CPU 拷贝与 2 次切换
+  限制：不能修改内容（无法做压缩/加密），需硬件支持 SG-DMA 才能做到真正的零 CPU 拷贝
+
+splice：在两个 fd 之间建立管道式搬运，支持 socket <-> pipe
+mmap + write：把文件映射进用户态，省掉 read 的拷贝，但仍有 write 拷贝
+${F}
+
+${F}java
+// Java 的 FileChannel.transferTo 底层就是 sendfile(2)
+try (FileChannel in = FileChannel.open(path);
+     FileChannel out = FileChannel.open(socketPath, WRITE)) {
+    long pos = 0, size = in.size();
+    while (pos < size) {
+        pos += in.transferTo(pos, size - pos, out);   // 循环直到搬完
+    }
+}
+// 注意：单次调用可能只搬部分数据（尤其 socket 缓冲满时），必须循环
+${F}
+
+**Nginx 静态文件服务快的核心原因之一就是 sendfile**；但若开启了 gzip 或 TLS，数据必须经过用户态处理，零拷贝就失效了 —— 这也解释了「开 gzip 后吞吐下降」的部分原因。
+
+### 四、内核旁路（DPDK/XDP）的适用边界
+
+${F}text
+DPDK：完全绕过内核协议栈，在用户态实现 TCP/IP（或直接用 UDP）
+  优点：单机可达数千万 PPS，延迟微秒级
+  代价：
+    - 独占 CPU 核（轮询模式，不能与业务共享）
+    - 独占网卡（需绑定 VFIO/UIO 驱动，失去常规网络工具能力）
+    - 需要自研或引入成熟用户态协议栈（复杂度极高）
+  适用：专用负载均衡、网关、高性能存储网络
+
+XDP：不完全旁路，在驱动层做初步处理后再决定是否进协议栈
+  适合：DDoS 清洗、简单转发、采样统计
+  成本远低于 DPDK，是更务实的起点
+
+判断标准：只有当 PPS（包速率）而非带宽成为瓶颈，
+  且现有架构已无优化空间时，才考虑内核旁路。
+${F}
+
+### 五、压测与定位：如何找出单机瓶颈
+
+${F}bash
+# 1) 先确认瓶颈层次（CPU / 内存 / 网络 / fd / conntrack）
+sar -n DEV 1            # 网卡吞吐与包速率
+sar -n EDEV 1           # 网卡错误与丢包
+sar -n SOCK 1           # socket 使用情况（tw/s、tcp使用量）
+mpstat -P ALL 1         # 各核使用，看 %soft/%sys 分布
+vmstat 1                # cs（上下文切换）、in（中断）
+cat /proc/net/sockstat  # sockets: used / TCP: inuse / orphan / tw
+
+# 2) 压测工具选择
+wrk -t12 -c4000 -d60s http://target/         # HTTP 层，支持长连接
+ab -n 1000000 -c 1000 http://target/         # 简单但功能弱
+h2load -n 1000000 -c 1000 -m 100 https://... # HTTP/2 压测
+# 关键：压测客户端本身的 fd 与端口也要调够，否则是客户端先到上限
+${F}
+
+定位顺序建议：**先看 error/drop（网络）→ 再看 fd/conntrack（资源）→ 最后看 CPU 分布（计算）**。大多数「连不上」或「吞吐上不去」的问题，根源在前两类。
+
+### 六、单机容量的量级参考
+
+${F}text
+（现代 16~32 核服务器，万兆网卡，经验量级，非绝对上限）
+长连接（每连接流量小、消息稀疏）  50 万 ~ 200 万连接
+短连接（HTTP 请求-响应）          数万 ~ 数十万 QPS（取决于业务耗时）
+小包吞吐（UDP 转发类）            100 万 ~ 1000 万 PPS
+大带宽传输                        接近网卡线速（受零拷贝与 TLS 影响）
+
+判断自己的场景属于哪一类，比抄别人的数字更重要：
+  - 长连接多但空闲 -> 瓶颈在内存与 fd
+  - 短连接高频    -> 瓶颈在握手开销、TIME_WAIT、accept 队列
+  - 大包高带宽    -> 瓶颈在零拷贝与 TLS 加密
+${F}
+
+### 七、常见误区
+
+1. **「连接数上限由端口决定」**。服务端监听端口不消耗客户端端口；真正的约束是 fd 与内存。
+2. **「加了 epoll 就能上百万连接」**。还需要 fd、内存、conntrack "三件套"一起调，缺一不可。
+3. **「零拷贝一定更快」**。小文件（小于 MTU）走 sendfile 反而多一次调用开销；大文件才是主战场，且开启 TLS/gzip 后会退化。
+4. **「多线程就是高并发」**。线程数超过 CPU 并行度后，切换与锁竞争会让性能下降；关键是让每个核都处于有效计算状态。
+5. **「压测到了瓶颈就是系统上限」**。常见的是压测机先到上限（fd、端口、CPU），必须同时监控压测端与被压端。
+
 ## 七、延伸
 
 - 阅读 Dan Kegel 的 C10K 原文，理解问题演进的历史脉络。
@@ -1430,6 +3003,157 @@ ${F}
 - [ ] 知道 kube-proxy 的 iptables 与 IPVS 模式差异及适用规模
 - [ ] 排查容器网络遵循「Pod 就绪 → Endpoints → Pod 直连 → DNS → 跨节点 MTU/策略」
 
+<!--dd:container-net-->
+
+## 🔬 深挖：namespace、veth、CNI 与 K8s Service 的数据通路
+
+### 一、容器网络的三块砖
+
+${F}text
+1) network namespace：独立的网络栈
+   每个 netns 有自己的网卡、路由表、iptables 规则、socket 表
+   容器"看起来像一台独立主机"的本质就是它
+
+2) veth pair：一对虚拟网线
+   一端插在容器 netns（如 eth0），另一端插在宿主 netns（如 vethXXX）
+   从一端进入的包会从另一端出来 —— 这是"跨 namespace 通信"的实现
+
+3) bridge：虚拟交换机
+   宿主上的 docker0 / cni0 把多个 veth 连在一起
+   同宿主容器互通走二层转发，不需要经过物理网卡
+${F}
+
+${F}bash
+# 手工复现"Docker 网络"的全过程（理解这套机制的最好方式）
+ip netns add ns1
+ip link add veth1 type veth peer name veth1-br
+ip link set veth1 netns ns1
+ip addr add 172.18.0.1/24 dev veth1-br
+ip link set veth1-br up
+# 在 ns1 里配地址与路由（默认路由指向宿主）
+ip netns exec ns1 ip addr add 172.18.0.2/24 dev veth1
+ip netns exec ns1 ip link set veth1 up
+ip netns exec ns1 ip route add default via 172.18.0.1
+# 宿主开启转发（容器访问外网的前提）
+sysctl -w net.ipv4.ip_forward=1
+${F}
+
+### 二、出网与 DNAT：为什么需要 iptables
+
+${F}text
+容器访问外网：内网地址 172.18.0.2 -> 需转成宿主的外网 IP
+  iptables -t nat -A POSTROUTING -s 172.18.0.0/16 ! -o docker0 -j MASQUERADE
+  这就是 SNAT/MASQUERADE
+
+外部访问容器端口：DNAT
+  iptables -t nat -A DOCKER -p tcp --dport 8080 -j DNAT --to-destination 172.18.0.2:80
+
+由此带来的副作用：
+  1) 每条 NAT 规则都依赖 conntrack 记录连接状态 -> conntrack 表成为瓶颈
+  2) SNAT 后服务端看到的源 IP 是宿主，容器内需要真实 IP 时要额外处理
+  3) iptables 规则随 Pod/Service 数量线性增长 -> 大规模集群下匹配开销显著
+${F}
+
+### 三、跨主机通信：Overlay 与 Underlay
+
+| 方案 | 原理 | 优点 | 缺点 |
+|---|---|---|---|
+| Overlay（VXLAN） | 把二层帧封装进 UDP 包，跨主机传输 | 不依赖底层网络、易部署 | 封装开销（50 字节头部）、MTU 减少、排障复杂 |
+| Underlay（BGP） | Pod IP 直接可路由，不封装 | 无封装开销、性能最好 | 需底层网络配合（BGP 对等） |
+| 混合 | 同子网走二层，跨子网走 Overlay | 折中 | 配置复杂 |
+
+${F}text
+VXLAN 的 MTU 算术（最常见的故障源头）：
+  物理网卡 MTU 1500
+  - IPv4 头 20
+  - UDP 头 8
+  - VXLAN 头 8
+  = 容器内可用 MTU 1464，实际配置常用 1450 或 1400
+
+若不调整：小包正常、大包（如 gRPC 默认 4MB 消息、HTTP/2 大帧）超时或卡死
+症状：应用日志显示"请求超时"，但 ping 与 curl 小请求都正常
+${F}
+
+### 四、CNI 插件对比
+
+| 插件 | 数据面 | 特点 | 适用 |
+|---|---|---|---|
+| Flannel | VXLAN（默认） | 简单、够用 | 中小集群、重易用性 |
+| Calico | BGP / IPIP / VXLAN | 支持 NetworkPolicy、性能好、可 Underlay | 需要网络策略与性能 |
+| Cilium | eBPF | 性能极佳、可观测性强、替代 kube-proxy | 新集群、追求性能与可观测 |
+| 云厂商 CNI | 弹性网卡/VPC 路由 | 与云网络打通、Pod 直接用 VPC IP | 公有云环境 |
+
+### 五、K8s Service 的三种实现
+
+${F}text
+Service 只是一个"虚拟 IP + 端口"的抽象，后端由不同机制实现：
+
+1) iptables 模式（默认）
+   ClusterIP 用 iptables 的 DNAT 规则把请求随机转发到某个 Pod IP
+   问题：规则数随 Service × Endpoint 数量线性增长
+        每次变更要全量重写规则表（大规模集群下变更慢、CPU 抖动）
+        负载均衡是随机的，不是"最少连接"
+
+2) IPVS 模式
+   用内核 IPVS 做四层负载均衡，支持 rr/wrr/lc 等多种调度算法
+   用哈希表存储，规则数量增长时性能稳定
+   缺点：需要内核模块；某些场景下 iptables 规则仍需保留（如 NodePort）
+
+3) eBPF 模式（Cilium 等）
+   用 eBPF 程序在 socket 层直接完成转发，绕过 iptables/IPVS
+   性能最好、可观测性最强，可完全替代 kube-proxy
+   缺点：依赖较新内核，生态相对新
+${F}
+
+### 六、故障排查的标准路径
+
+${F}text
+按"包走到哪一步断掉"逐层排查（容器网络问题的万能顺序）：
+  1) 容器内：ip addr / ip route 是否正确？DNS 能否解析？
+  2) 容器内：能否 ping 通网关（宿主 bridge IP）？
+  3) 宿主上：ip link 看 veth 是否成对、是否 UP
+  4) 宿主上：iptables -t nat -L -n -v 看规则与计数器是否命中
+  5) 跨主机：宿主间能否直接通（物理网络）？VXLAN 端口 4789/UDP 是否放行？
+  6) DNS：CoreDNS Pod 是否正常？/etc/resolv.conf 是否指向正确？
+  7) MTU：大包是否被丢？用 ping -M do -s 逐步试探
+${F}
+
+${F}bash
+# 容器内抓包（在宿主上用 nsenter 进入容器 netns）
+PID=$(docker inspect -f '{{.State.Pid}}' <container>)
+nsenter -t $PID -n tcpdump -i eth0 -nn port 80
+# 或直接在容器里（若镜像包含 tcpdump）
+
+# 检查 VXLAN 接口与邻居表
+ip link show type vxlan
+ip neigh show dev flannel.1
+
+# 检查 conntrack 是否接近上限
+sysctl net.netfilter.nf_conntrack_count net.netfilter.nf_conntrack_max
+
+# 用 mtr 分段定位丢包在哪一跳（比 traceroute 更直观）
+mtr -n -T -P 443 <target>
+${F}
+
+### 七、性能损耗来源清单
+
+| 损耗来源 | 量级 | 缓解 |
+|---|---|---|
+| VXLAN 封装/解封装 | 每包数十微秒 CPU | 用 Underlay/BGP，或开启硬件卸载（VXLAN offload） |
+| iptables 规则链过长 | 随规则数线性增长 | 换 IPVS 或 eBPF |
+| conntrack 查询 | 每包一次哈希查找 | 减少 NAT，或用 eBPF 旁路 |
+| MTU 减少导致分片 | 显著（分片重组昂贵） | 正确设置 MTU，让应用不发超大包 |
+| 用户态代理（如早期 kube-proxy userspace） | 极高 | 不要用 userspace 模式 |
+| 网络策略（NetworkPolicy）实现方式 | 视实现而定 | 优先选 eBPF 实现 |
+
+### 八、常见误区
+
+1. **「容器网络慢是 Docker 的锅」**。VXLAN + iptables 的组合才是主因；同宿主 bridge 转发几乎无损耗。
+2. **「ping 通就说明网络没问题」**。MTU 问题只在大包上显现，小包 ping 完全正常 —— 必须测大包。
+3. **「Service 是真实存在的 IP」**。ClusterIP 是虚拟的，只在 iptables/IPVS/eBPF 规则里存在，任何主机上都不存在这个网卡。
+4. **「改了 iptables 规则只影响新连接」**。移除 conntrack 相关规则会让已有连接失联；变更应通过 K8s API 而非手工改规则。
+5. **「所有跨主机通信都要走 VXLAN」**。同节点通信走 bridge，根本不出宿主；这也是"同节点 Pod 通信比跨节点快很多"的原因。
+
 ## 七、延伸
 
 - 精读 man7 的 ${C}network_namespaces(7)${C} 与 ${C}veth(4)${C}，手动用 ${C}ip${C} 命令搭一个容器网络。
@@ -1533,6 +3257,209 @@ ${F}
 - [ ] 能区分 CPU 型与延迟型问题，并选对工具（火焰图 vs off-CPU）
 - [ ] 能写一条 ${C}bpftrace${C} 一行命令观测某类事件
 - [ ] 知道生产上 strace/perf 的开销边界与符号要求
+
+<!--dd:syscall-profiling-->
+
+## 🔬 深挖：观测工具全景与延迟分解方法
+
+### 一、工具选择：先分类问题，再选工具
+
+| 问题类型 | 首选工具 | 说明 |
+|---|---|---|
+| CPU 忙在哪 | ${C}perf top${C} / ${C}perf record${C} + 火焰图 | 采样分析，开销低 |
+| 等待在哪（off-CPU） | ${C}perf sched${C} / bpftrace offcputime | 找出"不占 CPU 但很慢"的原因 |
+| 系统调用行为 | ${C}strace${C} / ${C}perf trace${C} / bpftrace | 定位失败调用与超时调用 |
+| IO 压力 | ${C}iostat${C} / ${C}biolatency${C} / ${C}biosnoop${C} | 区分"应用慢"与"磁盘慢" |
+| 网络 | ${C}ss${C} / ${C}sar -n${C} / ${C}tcpdump${C} / ${C}tcplife${C} | 连接状态与流量 |
+| 内存 | ${C}vmstat${C} / ${C}pidstat -r${C} / ${C}slabtop${C} / ${C}pmap${C} | 缺页、泄漏、缓存 |
+| 锁与调度 | ${C}perf lock${C} / ${C}perf sched${C} | 锁竞争与调度延迟 |
+| 全局一屏 | ${C}dstat${C} / ${C}sar${C} | 快速判断瓶颈层次 |
+
+**核心原则：先用低开销工具缩小范围，再用高开销工具精确定位。** 反过来做（一上来就 strace）会把问题本身拖慢甚至掩盖。
+
+### 二、USE 方法：系统性排查的骨架
+
+${F}text
+对每一个资源（CPU、内存、磁盘、网络接口、控制器），问三个问题：
+  Utilization（使用率）—— 该资源有多少时间在忙？
+  Saturation（饱和度） —— 有多少工作在排队等待？
+  Errors（错误）       —— 有多少错误事件？
+
+示例对照：
+  CPU    %us+%sy / runqueue 长度 / -（一般无错误）
+  内存   available 占比 / major fault、swap 换入换出 / OOM 事件
+  磁盘   %util / aqu-sz、await / 介质错误（dmesg、smartctl）
+  网络   带宽占用 / ring buffer drop、backlog drop / CRC 错误、重传
+逐项填完这张表，瓶颈一定在其中某一行。这是避免"凭直觉猜"的最有效方法。
+${F}
+
+### 三、perf 与火焰图：CPU 分析的标准流程
+
+${F}bash
+# 1) 快速看热点函数（实时，适合先摸底）
+perf top -p <pid>
+
+# 2) 采样记录（-g 采集调用栈，频率 99Hz 开销可忽略）
+perf record -F 99 -p <pid> -g -- sleep 30
+
+# 3) 生成火焰图
+perf script > out.perf
+# 用 FlameGraph 工具链（github.com/brendangregg/FlameGraph）
+./stackcollapse-perf.pl out.perf > out.folded
+./flamegraph.pl out.folded > flame.svg
+
+# 4) 直接看报告（无需图纸）
+perf report --stdio | head -50
+${F}
+
+**火焰图读法（三个最容易误读的点）**：
+
+${F}text
+1) 宽度 = 该函数占用的采样比例（不是耗时绝对值）
+2) 上下 = 调用栈层次（根在底部，叶子在顶部）
+3) 找"平台"而不是"尖塔"：
+   一个很宽但很平的栈，意味着该函数自身消耗大量 CPU（真正的热点）
+   一个很窄但很深的栈，通常只是调用路径，不是问题所在
+常见形态：
+   宽平台在 libc 的 memcpy -> CPU 花在数据拷贝上（考虑零拷贝/减少拷贝）
+   宽平台在 spin_lock / futex -> 锁竞争（考虑减小临界区或无锁结构）
+   宽平台在 malloc/free -> 分配器压力（考虑对象池）
+${F}
+
+### 四、off-CPU 分析：找出「明明没占 CPU 却很慢」的原因
+
+这是最容易被忽略的一类性能问题：CPU 空闲但请求很慢，因为线程在等锁、等 IO、等网络。
+
+${F}bash
+# 用 bpftrace 统计进程的 off-CPU 时间分布（需要 root，内核支持 BPF）
+bpftrace -e '
+tracepoint:sched:sched_switch /args->prev_comm == "java"/
+{
+  @start[args->prev_pid] = nsecs;
+}
+tracepoint:sched:sched_switch /@start[args->next_pid]/
+{
+  $d = nsecs - @start[args->next_pid];
+  @offcpu = hist($d / 1000000);
+  delete(@start[args->next_pid]);
+}'
+# 结果为毫秒级直方图：能看到等待分布是"几十毫秒"还是"几秒"
+${F}
+
+${F}bash
+# 直接看谁在等谁（阻塞栈）
+perf record -e sched:sched_stat_sleep -e sched:sched_switch -a -g -- sleep 10
+perf script | stackcollapse-perf.pl | flamegraph.pl > offcpu.svg
+
+# 或者追踪"谁调用了 fsync 且耗时多久"（最常见的长尾来源）
+bpftrace -e '
+kprobe:vfs_fsync { @s[tid] = nsecs; }
+kretprobe:vfs_fsync /@s[tid]/ { @ms = hist((nsecs - @s[tid]) / 1000000); delete(@s[tid]); }'
+${F}
+
+### 五、bpftrace 常用「一行命令」工具箱
+
+${F}bash
+# 按进程统计系统调用次数（找最"闹"的进程）
+bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
+
+# 统计每个进程的读写字节（找 IO 大户）
+bpftrace -e 'tracepoint:syscalls:sys_exit_read { @[comm] = sum(args->ret); }'
+
+# 追踪超过 10ms 的磁盘 IO（定位 IO 抖动）
+bpftrace -e 'kprobe:blk_account_io_start { @s[arg0] = nsecs; }
+             kretprobe:blk_account_io_done /@s[arg0]/ {
+               $d = (nsecs - @s[arg0]) / 1000000;
+               if ($d > 10) { printf("%s %dms\\n", comm, $d); }
+               delete(@s[arg0]); }'
+
+# 找出哪些 TCP 连接在重传
+bpftrace -e 'kprobe:tcp_retransmit_skb { @[comm, pid] = count(); }'
+
+# 追踪进程启动（回答"这个进程是谁拉起来的"）
+bpftrace -e 'tracepoint:sched:sched_process_exec { printf("%s -> %s\\n", comm, str(args->filename)); }'
+${F}
+
+### 六、strace：强但危险，必须知道它的代价
+
+${F}text
+strace 的两种模式与开销差异巨大：
+  ptrace 模式（默认）：每个系统调用都要两次上下文切换 + 一次寄存器读写
+    开销可达原程序的 10~100 倍 —— 在生产上可能直接把服务拖死
+  seccomp-bpf / perf trace 模式：开销低得多（部分支持）
+
+安全的替代方案（按优先级）：
+  1) perf trace       —— 基于采样，开销低
+  2) bpftrace 追踪具体 syscall —— 精准且开销可控
+  3) strace -p 短时间附加 + -e 限定 syscall + -f 谨慎使用
+
+若必须用 strace：
+  - 加上 -e trace=<只关心的 syscall> 缩小范围
+  - 用 -T 显示每个调用的耗时，快速找出慢调用
+  - 用 -c 做统计汇总而非打印全部（输出量小很多）
+  - 绝不要在高峰期对核心进程长时间附加
+${F}
+
+${F}bash
+# 统计模式（输出小，适合初步定位）
+strace -c -p <pid>
+# 只看慢调用（显示每个调用的耗时）
+strace -T -e trace=network -p <pid>
+# 看文件相关调用失败原因
+strace -e trace=openat,read,write -f ./app 2>&1 | grep -E "= -1"
+${F}
+
+### 七、延迟分解：把"慢"拆成可测量的段
+
+${F}text
+方法：在关键路径埋时间戳，逐段测量，而不是看总耗时。
+示例（一次 RPC 处理）：
+  t0 收到请求
+  t1 完成参数校验
+  t2 拿到 DB 连接（连接池等待）
+  t3 完成 DB 查询
+  t4 完成序列化
+  t5 发出响应
+
+由此可得到：
+  连接池等待 = t2 - t1     <- 常见的大头，且不体现在 SQL 耗时里
+  DB 执行     = t3 - t2
+  序列化      = t4 - t3
+  网络写      = t5 - t4
+没有这套分解，"接口慢"永远只能靠猜；有了它，一眼看出是哪一段。
+这也是链路追踪（Tracing）的核心价值：把各段耗时自动采集并可视化。
+${F}
+
+### 八、常见性能问题的归因速查表
+
+| 现象 | 先看 | 常见根因 |
+|---|---|---|
+| CPU 高、吞吐低 | perf 火焰图 | 锁竞争、过度序列化、O(n²) 算法、频繁 GC |
+| CPU 不高但请求慢 | off-CPU 分析 | 等锁、等 DB/HTTP、等磁盘 fsync |
+| 延迟周期性尖刺 | ${C}biolatency${C} / ${C}vfs_fsync${C} | 脏页回写风暴、SSD GC、快照/备份任务 |
+| 吞吐上不去、连接排队 | ${C}ss -lnt${C} 的 Send-Q | accept 队列溢出、backlog 太小、accept 线程少 |
+| 内存持续增长 | ${C}pmap${C} / ${C}pidstat -r${C} | 泄漏、缓存无上限、对象池未回收 |
+| 网络重传多 | ${C}nstat${C} / ${C}ss -ti${C} | 丢包、链路拥塞、MTU 黑洞 |
+| 系统调用耗时异常 | ${C}perf trace${C} | 文件系统元数据锁、NFS 卡顿、审计日志 |
+
+### 九、观测自身的纪律
+
+${F}text
+1) 观测是有成本的：先估开销再上，能用低开销工具就别上高开销的
+2) 先看全局再钻细节：dstat/sar 一屏判断层次，再针对性深挖
+3) 采样优于追踪：perf 采样对生产几乎无感，全量追踪可能拖垮服务
+4) 一次只改一个变量：同时改多个参数无法判断哪个起了作用
+5) 留证据：采样数据、火焰图、命令输出都存档，作为复盘与基线对比的材料
+6) 别在生产上"试试看"：所有追踪脚本先在预发验证过再上生产
+${F}
+
+### 十、常见误区
+
+1. **「CPU 使用率高就是性能问题」**。CPU 高但延迟正常、吞吐达标，说明资源被有效利用，不是问题。
+2. **「加了监控就能定位问题」**。指标只能告诉你"哪里不对"，定位到代码行还需要火焰图、追踪与日志的配合。
+3. **「strace 是万能工具」**。它的开销极为可观，且只覆盖系统调用层，看不到用户态热点与阻塞原因。
+4. **「平均延迟达标就没事」**。p99 才是用户感知；平均值会掩盖长尾，而长尾往往才是事故的起点。
+5. **「问题解决就不需要再看」**。性能基线与火焰图应定期存档并对比，才能发现"缓慢劣化"型问题（每次发布慢一点点，几个月后才发现）。
 
 ## 七、延伸
 
