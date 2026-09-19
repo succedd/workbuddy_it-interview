@@ -26,6 +26,8 @@
   const acc = function () { return window.Account; };
 
   const S = {};
+  S.dupCandidates = dupCandidates;   // 20260919m 导出：管理端手动新增的实时提示复用同一套 Dice
+  S.dupMatches = dupMatches;
   window.Submit = S;
 
   /* ==================== 共用小件 ==================== */
@@ -175,7 +177,9 @@ function aiReportHtml(ai, row) {
   }
   /* pool / threshold 可选：「投稿前预筛」只在已发布题里比（给 AI 当线索）；
      「收录进库」要连草稿一起比 —— 草稿重复同样是重复。 */
-  function dupCandidates(title, pool, threshold) {
+  /* 富版（20260919m）：给「管理员手动新增」的实时提示用 —— 返回 {id,title,d,status}，
+     支持排除当前正在编辑的题（excludeId），且调用方可自带比对池（编辑页传全量题含草稿）。 */
+  function dupMatches(title, pool, threshold, excludeId) {
     try {
       const t = normalizeTitle(title);
       if (t.length < 4) return [];
@@ -183,12 +187,16 @@ function aiReportHtml(ai, row) {
       const lim = threshold == null ? 0.5 : threshold;
       const scored = [];
       for (let i = 0; i < src.length; i++) {
+        if (excludeId != null && src[i].id === excludeId) continue;
         const d = dice(t, normalizeTitle(src[i].title));
-        if (d >= lim) scored.push({ d: d, title: String(src[i].title || "").slice(0, 120) });
+        if (d >= lim) scored.push({ d: d, id: src[i].id, title: String(src[i].title || "").slice(0, 120), status: src[i].status });
       }
       scored.sort(function (a, b) { return b.d - a.d; });
-      return scored.slice(0, 6).map(function (x) { return x.title; });
+      return scored.slice(0, 6);
     } catch (e) { return []; }
+  }
+  function dupCandidates(title, pool, threshold) {
+    return dupMatches(title, pool, threshold).map(function (x) { return x.title; });
   }
 
   /* ==================== 登录 / 权限 门禁页 ==================== */
