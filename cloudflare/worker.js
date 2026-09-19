@@ -1224,7 +1224,7 @@ export default {
           return await handleAdminResetPassword(env, request, parseInt(m[1]), corsOrigin);
         if (p === "/admin/users" && request.method === "GET") return await handleAdminUsers(env, request, corsOrigin);
 
-        /* ---- 用户投稿 + 专家群组审核（20260920a 新增）---- */
+        /* ---- 用户投稿 + 专家群组审核 + 待入库（20260919f 新增；inbank 系列 20260919h 追加）---- */
         await ensureSubmitTables(db);      // 建表自愈（内部已 try/catch，失败不影响上面任何接口）
         if (p === "/submit" && request.method === "POST") return await handleSubmit(env, request, corsOrigin);
         if (p === "/me/submissions" && request.method === "GET") return await handleMySubmissions(env, request, corsOrigin);
