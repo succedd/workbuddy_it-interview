@@ -165,6 +165,25 @@
   }
 
   /* ============================ 顶部栏 ============================ */
+  /* ============================ 移动端抽屉（≤720px） ============================
+   * 打开态统一由 body.drawer-open 表达（CSS 负责侧栏位移与遮罩显隐）。
+   * 关键：抽屉里**任何一次站内跳转**都必须自动收起 —— 否则用户点完菜单，侧栏还杵在那儿，
+   * 得再点一次顶栏三条横线才关得掉（用户 2026-09-19 反馈）。 */
+  function drawerOpen() { return document.body.classList.contains("drawer-open"); }
+  function syncDrawerA11y() {
+    const b = document.getElementById("menu-toggle");
+    if (b) b.setAttribute("aria-expanded", drawerOpen() ? "true" : "false");
+  }
+  function closeDrawer() {
+    if (!drawerOpen()) return;
+    document.body.classList.remove("drawer-open");
+    syncDrawerA11y();
+  }
+  function toggleDrawer() {
+    document.body.classList.toggle("drawer-open");
+    syncDrawerA11y();
+  }
+
   function renderTopbar() {
     const theme = App.getTheme();
     const themeIcon = theme === "dark" ? "sun" : theme === "system" ? "monitor" : "moon";
@@ -208,7 +227,8 @@
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
     attachHistory(gs, t => { shPush(t); App.go("/questions?q=" + encodeURIComponent(t)); });
     $("#theme-btn").onclick = cycleTheme;
-    $("#menu-toggle").onclick = () => { document.body.classList.toggle("drawer-open"); };
+    $("#menu-toggle").onclick = () => toggleDrawer();
+    syncDrawerA11y();
     updateNetChip();
     if (Auth.isAdmin()) {
       const ab = $("#admin-btn"); const menu = $("#admin-menu");
@@ -272,7 +292,7 @@
           renderSidebar(parseHash()); return;
         }
         App.go("/category?cat=" + row.dataset.id);
-        document.body.classList.remove("drawer-open");
+        closeDrawer();
       };
     });
   }
@@ -4189,6 +4209,16 @@
       return;
     }
     main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
+    /* 移动端抽屉的三条「自助关闭」通道（只绑一次，别跟着 renderTopbar 重复挂监听）：
+       ① 点抽屉里任意站内链接 → 跳走的同时收起抽屉（这是用户反馈的主问题）；
+       ② 点侧栏外的遮罩 → 收起（此前遮罩被写死 hidden，点了没反应）；
+       ③ Esc 键 / 路由变化 → 兜底收起。
+       注意技术分类树的 `展开/收起` 是 div 不是 a，所以不会被①误关，展开时抽屉保持打开。 */
+    sidebar.addEventListener("click", (e) => { if (e.target.closest('a[href^="#/"]')) closeDrawer(); });
+    const dmask = document.getElementById("drawer-mask");
+    if (dmask) dmask.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+    window.addEventListener("hashchange", closeDrawer);
     renderTopbar();
     /* 页脚：使用指南入口 + 仓库链接（首次填充，之后静态） */
     const footEl = document.getElementById("footer");
