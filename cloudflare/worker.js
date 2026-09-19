@@ -510,11 +510,16 @@ async function handleAdminResetPassword(env, request, targetId, origin) {
 }
 
 /* ============================================================================
- * 用户投稿 + AI 质检（DeepSeek）+ 专家群组审核 —— 20260920a 新增
- * 链路：登录投稿 → 本地预筛 → AI 质检 → 专家/管理员审核 →（管理员）入库发布
+ * 用户投稿 + AI 质检（DeepSeek）+ 专家群组审核 —— 20260919f 新增
+ * 链路：登录投稿 → 本地预筛 → AI 质检 → 专家/管理员审核（approved）
+ *       → 管理员在编辑端「待入库」面板认领入库（bank_id 落地）→ 发布
  * 设计说明见仓库根 用户投稿与AI质检_规划方案.md
  * 原则：① AI 只做范围闸门与粗筛，技术准确性交人工；② 审核权与发布权分离
- *       （发布只能由编辑端完成，专家即使账号被盗也发不了题）。
+ *      （审核可由 expert 做；专家即使账号被盗也发不了题、进不了库）。
+ *      ③ 审核通过 ≠ 入库：`review_status='approved'` 只是拿到「候选资格」，
+ *         真正写进题库要管理员在编辑端逐题确认（见 handleInbank）。
+ * 状态字段：review_status = pending | claimed | approved | rejected
+ *          bank_id      = '' 表示「审核过了但还没入库」（待入库面板的数据来源）
  * ========================================================================== */
 
 const NON_IT_LIMIT   = 3;                 // 累计「非 IT」达此数即永久禁用（用户 2026-09-19 确认）
@@ -945,6 +950,29 @@ async function handleAdminSubmissions(env, request, origin) {
     rows = await db.prepare(
       "SELECT s.id, s.user_id, s.created_at, s.title, s.non_it_strike, u.nick AS authorNick, u.email AS authorEmail, u.status AS authorStatus " +
       "FROM submissions s LEFT JOIN users u ON u.id = s.user_id WHERE s.non_it_strike = 1 ORDER BY s.created_at DESC LIMIT 200").all();
+  } else if (want === "inbox") {
+    /* 「待入库」= 人工已通过、但编辑端还没把它收进本地题库（bank_id 为空）。
+       与其它列表的两处关键差异：① 必须带 body/answer/edited_json —— 编辑端要拿它写进本地 IndexedDB；
+       ② 不能把 ai_json 抹掉 —— AI 的 categoryPath 是分类预填的唯一依据。
+       权限只给 admin：写回 bank_id 属于「发布链路」，专家不该碰。 */
+    if (u.role !== "admin") return jsonResp({ error: "待入库仅管理员可见" }, origin, 403);
+    rows = await db.prepare(
+      "SELECT s.*, u.nick AS authorNick, u.email AS authorEmail, g.name AS groupName, " +
+      "rv.nick AS reviewerNick, rv.email AS reviewerEmail " +
+      "FROM submissions s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN expert_groups g ON g.id = s.group_id " +
+      "LEFT JOIN users rv ON rv.id = s.review_by " +
+      "WHERE s.review_status = 'approved' AND s.bank_id = '' ORDER BY s.review_at ASC LIMIT 100").all();
+  } else if (want === "inbanked") {
+    /* 「已入库」= 管理员已经收进本地题库（bank_id 非空）。
+       存在的意义是**可反悔**：分类选错了、或本地那道题被删了，管理员能在这里看到
+       bank_id 并撤销（撤销就是把 bank_id 写回空串，条目自动回到「待入库」）。
+       只列摘要字段 —— 这个视图是拿来核对/撤销的，不需要正文。 */
+    if (u.role !== "admin") return jsonResp({ error: "入库记录仅管理员可见" }, origin, 403);
+    rows = await db.prepare(
+      "SELECT s.id, s.title, s.category_id, s.difficulty, s.type, s.bank_id, s.review_at, s.review_by, " +
+      "s.ai_verdict, s.ai_score, u.nick AS authorNick, u.email AS authorEmail, rv.nick AS reviewerNick " +
+      "FROM submissions s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN users rv ON rv.id = s.review_by " +
+      "WHERE s.bank_id != '' ORDER BY s.review_at DESC LIMIT 100").all();
   } else {
     return jsonResp({ error: "未知的 status 参数" }, origin, 400);
   }
@@ -955,9 +983,33 @@ async function handleAdminSubmissions(env, request, origin) {
     const gids = await memberGroupIds(db, u.id);
     list = list.filter(r => !r.group_id || gids.indexOf(r.group_id) >= 0);
   }
-  /* 隐藏 AI 原始 JSON 的体积大头（列表页不需要），详情走 review 时才要 */
-  list = list.map(r => { const c = Object.assign({}, r); if (c.ai_json) c.ai_json = ""; return c; });
+  /* 隐藏 AI 原始 JSON 的体积大头（列表页不需要，详情走 review 时才要）；
+     但「待入库」页要拿 ai_json.categoryPath 做分类预填 —— 那里必须保留。 */
+  if (want !== "inbox") list = list.map(r => { const c = Object.assign({}, r); if (c.ai_json) c.ai_json = ""; return c; });
   return jsonResp({ submissions: list, role: u.role }, origin);
+}
+
+/* 入库回写：编辑端把题写进本地题库后，把本地题号写回这里，这条就离开「待入库」。
+   bankId 传空串 = 撤销入库（本地把题删了想重新收一次时用）。 */
+async function handleInbank(env, request, rowId, origin) {
+  const db = env.USERS;
+  const u = await requireRole(db, request, REVIEW_ROLES);
+  if (!u) return jsonResp({ error: "需要审核权限" }, origin, 403);
+  if (u.role !== "admin") return jsonResp({ error: "入库操作仅管理员可用" }, origin, 403);
+
+  let body;
+  try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const bankId = String(body && body.bankId != null ? body.bankId : "").slice(0, 60);
+
+  const row = await db.prepare("SELECT id, review_status FROM submissions WHERE id = ?").bind(rowId).first();
+  if (!row) return jsonResp({ error: "投稿不存在" }, origin, 404);
+  /* 只认「已通过」：被打回或被 AI 判非 IT 的绝不允许顺手入库 */
+  if (row.review_status !== "approved")
+    return jsonResp({ error: "只有「已通过」的投稿才能入库（当前状态：" + row.review_status + "）" }, origin, 400);
+
+  await db.prepare("UPDATE submissions SET bank_id = ? WHERE id = ?").bind(bankId, rowId).run();
+  await logReview(db, rowId, u.id, bankId ? "inbank" : "unbank", bankId);
+  return jsonResp({ ok: true, bankId: bankId }, origin);
 }
 
 async function handleClaim(env, request, rowId, origin) {
@@ -1181,6 +1233,8 @@ export default {
           return await handleClaim(env, request, parseInt(m[1]), corsOrigin);
         if ((m = /^\/admin\/submissions\/(\d+)\/review$/.exec(p)) && request.method === "POST")
           return await handleReview(env, request, parseInt(m[1]), corsOrigin);
+        if ((m = /^\/admin\/submissions\/(\d+)\/inbank$/.exec(p)) && request.method === "POST")
+          return await handleInbank(env, request, parseInt(m[1]), corsOrigin);
         if (p === "/admin/groups" && request.method === "GET") return await handleGroups(env, request, corsOrigin);
         if (p === "/admin/groups" && request.method === "POST") return await handleGroupCreate(env, request, corsOrigin);
         if ((m = /^\/admin\/groups\/(\d+)$/.exec(p)) && request.method === "DELETE")

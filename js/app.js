@@ -92,7 +92,7 @@
       renderSidebar(parseHash());
       const r = parseHash();
       /* 这些页的可见性/内容都取决于服务端角色，提权或降级后需要重跑一次路由 */
-      if (r.parts[0] === "admin" && ["users", "submissions", "groups"].indexOf(r.parts[1]) >= 0) route();
+      if (r.parts[0] === "admin" && ["users", "submissions", "groups", "inbox"].indexOf(r.parts[1]) >= 0) route();
     } catch (e) {}
   };
 
@@ -136,6 +136,12 @@
       if (sub === "groups") {
         if (!App.requireServerAdmin()) return;
         return window.Submit ? Submit.renderGroups() : page404(r.parts.join("/"));
+      }
+      /* 待入库（20260919h）：审核通过 → 收进本机题库。也仅 admin ——
+         写 bank_id 等于走上发布链路，专家不该碰（与群组管理同理）。 */
+      if (sub === "inbox") {
+        if (!App.requireServerAdmin()) return;
+        return window.Submit ? Submit.renderInbox() : page404(r.parts.join("/"));
       }
       if (!App.requireAdmin()) return;
       if (sub === "dashboard") return pageAdminDashboard();
@@ -258,6 +264,9 @@
         ${(window.Account && Account.isReviewer())
           ? `<a class="icon-btn desktop-only" href="#/admin/submissions" title="投稿审核（待审 ${App.reviewPending || 0} 条，角标见左侧「投稿审核」）">${U.icon("check")}</a>`
           : ""}
+        ${(window.Account && Account.isServerAdmin())
+          ? `<a class="icon-btn desktop-only" href="#/admin/inbox" title="待入库（审核通过待收录 ${App.inboxPending || 0} 条，角标见左侧「待入库」）">${U.icon("download")}</a>`
+          : ""}
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
@@ -304,6 +313,13 @@
         <span class="icon">${U.icon("search")}</span>
         <input id="drawer-search" type="text" placeholder="搜索题目、技术、岗位、标签…" autocomplete="off" enterkeyhint="search" aria-label="搜索" />
       </div>
+      <!-- 投稿入口（20260919f 新增，20260919h 提到顶部）：侧栏有二十多项、且它在「导航」13 项
+           之后、要往下滚才看得到 —— 光换颜色不够，直接提到搜索框下面当第一落点，
+           配 .nav-cta（主色底 + 呼吸描边）一眼就能看到。
+           「我的投稿」只在登录后出现：未登录时它必然是空的，摆着只占位置。 -->
+      <div class="nav-section-title nav-cta-title">投稿</div>
+      ${navItem("#/submit", "plus", "投稿题目", p0 === "submit", 0, "nav-cta")}
+      ${(window.Account && Account.isLoggedIn()) ? navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions") : ""}
       <div class="nav-section-title">导航</div>
       ${navItem("#/", "home", "首页", p0 === "home")}
       ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
@@ -318,14 +334,6 @@
       ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
       ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
       ${navItem("#/about", "info", "关于本站", p0 === "about")}`;
-
-    /* 投稿入口（20260919f）：「投稿题目」人人可见（未登录点进去会给登录引导），
-       「我的投稿」只在登录后出现 —— 未登录时它必然是空的，摆着只会占位置。 */
-    html += `<div class="nav-section-title">投稿</div>
-      ${navItem("#/submit", "plus", "投稿题目", p0 === "submit")}`;
-    if (window.Account && Account.isLoggedIn()) {
-      html += navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions");
-    }
 
     /* 移动端专属：「管理员登录」入口。**必须插在「技术分类」之前** —— 分类树很长，
        放最后会被埋到抽屉最底部，手机上得翻过十几个导航项 + 整棵分类树才看得到。
@@ -352,9 +360,11 @@
       html += `<div class="nav-section-title">审核</div>
         ${navItem("#/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`;
     }
-    /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁 */
+    /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁；
+       待入库（20260919h）同理 —— 它是「审核 → 入库」的收尾步骤，只给管理员。 */
     if (window.Account && Account.isServerAdmin()) {
       html += `<div class="nav-section-title">站点</div>
+        ${navItem("#/admin/inbox", "download", "待入库", p0 === "admin" && r.parts[1] === "inbox", App.inboxPending || 0)}
         ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
         ${navItem("#/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`;
     }
@@ -392,8 +402,8 @@
     if (!el) return;
     const p0 = (r && r.parts[0]) || "home";
     const due = App.reviewDue || 0;
-    const item = (href, icon, label, active, badge) =>
-      `<a class="tab-item${active ? " active" : ""}" href="${href}"${active ? ' aria-current="page"' : ""}>` +
+    const item = (href, icon, label, active, badge, extraCls) =>
+      `<a class="tab-item${active ? " active" : ""}${extraCls ? " " + extraCls : ""}" href="${href}"${active ? ' aria-current="page"' : ""}>` +
       `${U.icon(icon)}<span>${label}</span>` +
       `${badge ? `<i class="tab-badge">${badge > 99 ? "99+" : badge}</i>` : ""}</a>`;
     el.innerHTML =
@@ -403,8 +413,9 @@
       item("#/review", "alert", "错题", p0 === "review", due) +
       item("#/favorites", "bookmark", "收藏", p0 === "favorites") +
       /* 投稿（20260919f）：移动端顶栏那排快捷图标被隐藏，抽屉里也埋在下方，
-         这里补一个拇指区入口。.tab-item 是 flex:1 1 0，加到 6 个不会挤压溢出。 */
-      item("#/submit", "plus", "投稿", p0 === "submit");
+         这里补一个拇指区入口。.tab-item 是 flex:1 1 0，加到 6 个不会挤压溢出。
+         20260919h：再加 .tab-cta 实心圆底，免得它跟其它 5 个线性图标一起被忽略。 */
+      item("#/submit", "plus", "投稿", p0 === "submit", 0, "tab-cta");
   }
 
   /* ============================ 移动端手势：左右滑动切题 ============================
@@ -1625,15 +1636,15 @@
     const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "" };
     const sortBy = q.sort || "updated";
     if (q.nocat) base = base.filter(x => x.categoryId == null);   /* 全景图「未归类」节点跳转过来 */
-    /* 来源预筛选（题库全景图来源构成条跳转过来）：?source=ai|manual|import|seed|principles|url|other */
+    /* 来源预筛选（题库全景图来源构成条跳转过来）：?source=ai|manual|import|submission|seed|principles|url|other */
     if (q.source) {
       const sv = String(q.source);
-      if (sv === "ai" || sv === "manual" || sv === "import") {
+      if (sv === "ai" || sv === "manual" || sv === "import" || sv === "submission") {
         filters.source = [sv];                                    // 与来源下拉框口径一致
       } else if (sv === "url") {
         base = base.filter(x => /^https?:\/\//i.test(x.source || ""));
       } else if (sv === "other") {
-        base = base.filter(x => { const s = x.source || ""; return !/^https?:\/\//i.test(s) && ["ai", "manual", "seed", "principles", "import"].indexOf(s) < 0; });
+        base = base.filter(x => { const s = x.source || ""; return !/^https?:\/\//i.test(s) && ["ai", "manual", "import", "submission", "seed", "principles"].indexOf(s) < 0; });
       } else {
         base = base.filter(x => (x.source || "") === sv);         // seed / principles 等
       }
@@ -1746,7 +1757,7 @@
         <input id="q-search" class="full" style="max-width:280px" placeholder="关键词筛选…" value="${U.esc(q.q || "")}" />
         <select id="f-diff" class="select-mini"><option value="">难度</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select>
         <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
-        <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option></select>
+        <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option><option value="submission">用户投稿</option></select>
         ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
         <span class="spacer"></span>
         <div class="seg" id="sort-seg">

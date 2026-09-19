@@ -419,6 +419,9 @@
   A.adminClaimSubmission = (id) => call("POST", "/admin/submissions/" + id + "/claim", {});
   /* action: release（释放认领）/ reject（打回）/ approve（通过）/ edit（只存改动不通过） */
   A.adminReviewSubmission = (id, payload) => call("POST", "/admin/submissions/" + id + "/review", payload || {});
+  /* 入库回写：把本机题库里的新题号写回投稿记录（bankId 传 "" 即撤销入库）。
+     只有管理员能调；服务端还要求该投稿处于 approved 状态。 */
+  A.adminInbank = (id, bankId) => call("POST", "/admin/submissions/" + id + "/inbank", { bankId: String(bankId == null ? "" : bankId) });
   A.adminGroups = () => call("GET", "/admin/groups");
   A.adminGroupCreate = (name, scope, categoryIds) => call("POST", "/admin/groups", { name: name, scope: scope, categoryIds: categoryIds });
   A.adminGroupDelete = (id) => call("DELETE", "/admin/groups/" + id);
