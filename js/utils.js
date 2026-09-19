@@ -112,6 +112,14 @@
       marked.setOptions({ breaks: true, gfm: true });
       var html = marked.parse(text);
       html = window.DOMPurify ? DOMPurify.sanitize(html) : html;
+      /* 表格包一层可横向滚动的容器（2026-09-19）：手机上 4 列表格会被压到窄列只有
+         30~40px，「日志」这种两字词被拆成「一列一个字」，完全没法读。
+         包一层 overflow-x:auto 后，表格保持自然列宽、超出部分横向滚动。
+         全站 markdown 只有这一个出口，改这里即覆盖题目答案 / 教程正文 / AI 输出。
+         注意顺序：先过 DOMPurify 再包，包出来的 div 是我们自己的、不含用户输入。 */
+      html = html
+        .replace(/<table(\s[^>]*)?>/g, '<div class="md-table-wrap"><table$1>')
+        .replace(/<\/table>/g, "</table></div>");
       /* 题内图片懒加载（innerHTML 注入无法依赖浏览器原生的 loading 属性来源） */
       return html.replace(/<img /g, '<img loading="lazy" ');
     } catch (e) { return U.esc(text); }
