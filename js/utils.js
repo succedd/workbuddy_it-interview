@@ -343,6 +343,17 @@
   /* 手动作废某个 name 的脚本缓存，让下次 U.loadScript(name) 走网络重抓（含新的 ?_t= 破缓存） */
   U.invalidateCache = function (name) { delete _scriptCache[name]; delete _scriptRetries[name]; };
 
+  /* ---- 能力探测：设备是否具备「能悬浮的指针」（鼠标 / 触控板）----
+   * 触屏手机 / 平板返回 false。用于**只在桌面上才有意义的提示**：
+   *   ① 键盘快捷键文案（手机上没实体键盘，纯噪音）；
+   *   ② hover 气泡（触屏的 :hover 会「粘住」→ 气泡一直挂在按钮上不消失）。
+   * 探测不到（老浏览器 / 无 matchMedia）时**按桌面处理**——宁可多显示，也不要误藏掉桌面提示。 */
+  U.canHover = function () {
+    try {
+      return !!(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+    } catch (e) { return true; }
+  };
+
   /* ---- Tooltip 浮层（JavaScript 控制，支持多行 / 动态更新 / 自动跟随） ---- */
   let _tooltipEl = null;
   let _tooltipTarget = null;

@@ -1953,21 +1953,27 @@
       $("#next-btn").onclick = () => App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id);
       $("#prev-btn").onclick = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
     } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
-    /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应） */
-    const kbHint = document.createElement("span");
-    kbHint.className = "muted";
-    kbHint.style.cssText = "font-size:11px;margin-left:8px";
-    kbHint.id = "kb-hint";
-    kbHint.textContent = "快捷键：Space 翻答案 · S 收藏";
-    /* 必须挂在「上一题 / 下一题」这一行：批注卡片内部也有 .pill-row，
-       泛选 $(".pill-row") 会命中批注卡片里的按钮行（文档顺序靠前） */
-    const kbRow = $("#prev-btn") ? $("#prev-btn").parentElement : $(".pill-row");
-    if (kbRow) kbRow.appendChild(kbHint);
-    /* 用 tooltip 方式展示快捷键（悬浮高亮） */
-    setTimeout(() => {
-      const btn = $("#show-answer");
-      if (btn) U.tooltip(btn, "空格键：展开/收起答案", { dir: "top" });
-    }, 100);
+    /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应）
+       ⚠️ 但**提示文案只在「有指针 + 能悬浮」的设备上给**（用户 2026-09-19 反馈「手机端出现
+       空格键/展开收起答案，移动端没必要出现」）：手机上没有实体键盘，字样纯属噪音；更要紧的是
+       触屏的 :hover 会「粘住」→ `[data-tooltip]:hover::after` 那行「空格键：展开/收起答案」
+       会一直挂在「查看答案」按钮上不消失。快捷键本身保留（外接蓝牙键盘的平板仍可用）。 */
+    if (U.canHover()) {
+      const kbHint = document.createElement("span");
+      kbHint.className = "muted kbd-hint";
+      kbHint.style.cssText = "font-size:11px;margin-left:8px";
+      kbHint.id = "kb-hint";
+      kbHint.textContent = "快捷键：Space 翻答案 · S 收藏";
+      /* 必须挂在「上一题 / 下一题」这一行：批注卡片内部也有 .pill-row，
+         泛选 $(".pill-row") 会命中批注卡片里的按钮行（文档顺序靠前） */
+      const kbRow = $("#prev-btn") ? $("#prev-btn").parentElement : $(".pill-row");
+      if (kbRow) kbRow.appendChild(kbHint);
+      /* 用 tooltip 方式展示快捷键（悬浮高亮）；打上 data-tooltip-kbd 供 CSS 兜底隐藏 */
+      setTimeout(() => {
+        const btn = $("#show-answer");
+        if (btn) { U.tooltip(btn, "空格键：展开/收起答案", { dir: "top" }); btn.setAttribute("data-tooltip-kbd", "1"); }
+      }, 100);
+    }
     setPageKeys(e => {
       if (typingInField(e)) return;
       if (document.querySelector("#modal-root .modal-mask") || document.querySelector("#modal-root .modal")) return;
@@ -2018,7 +2024,7 @@
         ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
         : `<div class="note" style="margin-top:14px">🎉 当前没有到期的复习任务。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里按记忆曲线排期。</div>`}
       ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
-      ${due.length ? `<div class="muted" style="font-size:12px;margin-top:14px">快捷键：回车 确认「会了」· Esc 关闭弹窗</div>` : ""}
+      ${due.length && U.canHover() ? `<div class="muted kbd-hint" style="font-size:12px;margin-top:14px">快捷键：回车 确认「会了」· Esc 关闭弹窗</div>` : ""}
     `);
     $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
       const qid = parseInt(b.closest(".rv-card").dataset.qid);

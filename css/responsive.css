@@ -34,6 +34,17 @@
   .modal-mask { padding: 0; align-items: flex-end; }
 }
 
+/* 键盘快捷键提示 —— 只在「有能悬浮的指针」（鼠标/触控板）的设备上显示。
+   判据与 `U.canHover()` 一致，这里是**双保险**：即便将来有人新增提示、忘了走 JS 判据，
+   只要挂上 `.kbd-hint` 类也能被兜住。
+   为什么必须藏：① 触屏没有实体键盘，文案是纯噪音；② 触屏的 `:hover` 会「粘住」→
+   `[data-tooltip]:hover::after` 那行「空格键：展开/收起答案」会一直挂在按钮上不消失
+   （用户 2026-09-19 反馈）。 */
+@media (hover: none), (pointer: coarse) {
+  .kbd-hint { display: none !important; }
+  [data-tooltip-kbd]::after { display: none !important; }
+}
+
 .menu-toggle { display: none; }
 @media (min-width: 721px) { .menu-toggle { display: none; } }
 
