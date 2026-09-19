@@ -254,7 +254,14 @@
     const navItem = (href, icon, label, active, badge) =>
       `<a class="side-nav-item ${active ? "active" : ""}${badge ? " has-due" : ""}" href="${href}">${U.icon(icon)}<span>${label}</span>${badge ? `<span class="due-badge">${badge}</span>` : ""}</a>`;
     const p0 = r.parts[0] || "home";
+    /* 抽屉内搜索框（仅 ≤720px 显示，桌面端由 CSS 隐藏）：顶栏搜索在移动端被隐藏，
+       这里补上唯一的搜索入口。`.drawer-search` 必须是 input 的**直接父元素**，
+       否则 attachHistory 挂进去的 .search-dd 下拉会失去定位参照。 */
     let html = `
+      <div class="drawer-search">
+        <span class="icon">${U.icon("search")}</span>
+        <input id="drawer-search" type="text" placeholder="搜索题目、技术、岗位、标签…" autocomplete="off" enterkeyhint="search" aria-label="搜索" />
+      </div>
       <div class="nav-section-title">导航</div>
       ${navItem("#/", "home", "首页", p0 === "home")}
       ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
@@ -285,6 +292,14 @@
     }
     sidebar.innerHTML = html;
     renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）
+    /* 抽屉内搜索：与顶栏搜索共用同一份「最近搜索」历史（SH_KEY），行为一致；
+       显式 closeDrawer()，因为搜同一个词时 hash 不变、不会触发 hashchange 兜底。 */
+    const ds = $("#drawer-search");
+    if (ds) {
+      const goSearch = (t) => { if (!t) return; shPush(t); closeDrawer(); App.go("/questions?q=" + encodeURIComponent(t)); };
+      ds.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); goSearch(ds.value.trim()); } });
+      attachHistory(ds, goSearch);
+    }
     $$("#side-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
         if (e.target.closest(".twist")) {
@@ -420,11 +435,20 @@
   const HOT_TERMS = ["Redis", "MySQL 索引", "消息队列", "JVM", "TCP 三次握手", "分布式事务", "操作系统", "算法"];
   function shGet() { try { return JSON.parse(localStorage.getItem(SH_KEY) || "[]"); } catch (e) { return []; } }
   function shPush(q) { if (!q) return; const arr = shGet().filter(x => x.q !== q); arr.unshift({ q, t: Date.now() }); localStorage.setItem(SH_KEY, JSON.stringify(arr.slice(0, 10))); }
+  /* 全局同一时刻只允许存在一个搜索下拉；document 层「点外面关闭」只装一次（单例委托）。
+     ⚠️ 原先每个 attachHistory 内部各自 document.addEventListener，而 attachHistory 的调用点
+     （首页 hero-search、题目列表 q-search、顶栏、抽屉）都在**每次路由渲染时重跑** ——
+     监听器会随浏览不断累积。改成单例后彻底消除。 */
+  let activeDd = null, ddDocBound = false;
   function attachHistory(input, onGo) {
     if (!input) return;
     let dd = null;
-    const close = () => { if (dd) { dd.remove(); dd = null; } };
+    const close = () => {
+      if (dd) { dd.remove(); dd = null; }
+      if (activeDd && activeDd.input === input) activeDd = null;
+    };
     const open = () => {
+      if (activeDd && activeDd.input !== input) activeDd.close();   // 别的输入留下的下拉先收掉
       close();
       const hist = shGet();
       dd = document.createElement("div");
@@ -438,6 +462,7 @@
       }
       dd.innerHTML = h;
       input.parentNode.appendChild(dd);
+      activeDd = { input, close };
       dd.addEventListener("click", (e) => {
         const del = e.target.closest(".sd-del");
         if (del) { e.stopPropagation(); localStorage.setItem(SH_KEY, JSON.stringify(shGet().filter(x => x.q !== del.dataset.del))); open(); return; }
@@ -449,7 +474,14 @@
     input.addEventListener("focus", open);
     input.addEventListener("input", close);
     input.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-    document.addEventListener("click", (e) => { if (dd && !e.target.closest(".search-dd") && e.target !== input) close(); });
+    if (!ddDocBound) {
+      ddDocBound = true;
+      document.addEventListener("click", (e) => {
+        if (!activeDd) return;
+        if (e.target.closest(".search-dd") || e.target === activeDd.input) return;
+        activeDd.close();
+      });
+    }
   }
 
   function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
