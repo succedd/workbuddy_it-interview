@@ -240,6 +240,14 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-19 · fix: AI 质检模型校正为 `deepseek-flash`（= DeepSeek-V4.1-Flash）+ 关闭思考模式（缓存版本 `20260919f→20260919g`，release=`273dd1f7c761785e09a068281ba68746278776e2` / main=`44d83c7cb9e1e50fc2178812baaa0bbac26cc167`，Worker 版本 `08596f73-c8ed-4102-af12-de942efb72c4`）
+
+- **模型 ID 校正**：查 DeepSeek 官方文档确认，**`deepseek-flash` 的模型版本正是 `DeepSeek-V4.1-Flash`**；原代码用的 `deepseek-chat` 是 V3 时代旧 ID（已不在官方模型表内），而 `deepseek-v4.1-flash` 是第三方网关（EmpirioLabs / Venice 等）的命名，**官方 `api.deepseek.com` 不接受、会报 400 Model Not Exist**。现默认 `deepseek-flash`，并加 `AI_MODEL_ALIASES` 把各种叫法收敛到官方 ID、支持 `DEEPSEEK_MODEL` 环境变量覆盖（换模型不用改代码）。
+- **关闭思考模式（关键修复）**：官方 thinking **默认开启**且 effort 默认 `high`，**思考 token 也计入 `max_tokens`**。质检输出只有几百 token，开着思考会把 1500 的额度烧在推理上 → `finish_reason=length` → 每条投稿都变成「AI 未判定」，功能等于白做。改为 `thinking: { type: "disabled" }` 并把 `max_tokens` 提到 2048；附带好处是**只有非思考模式下 `temperature` 才生效**（思考模式下会被官方静默忽略）。
+- **可运维性**：AI 失败时把 401 / 402 / 429 / 「模型 ID 不接受」直接翻成可动手的中文提示；token 用量记入 `submissions.ai_json._usage` 便于核对账单；**审核面板**现在会显示 AI 不可用的具体原因与本次 token/模型（仅审核端可见，不暴露给投稿人）。
+- **验证**：`node --check` 全绿、`validate-docs.js` 101 篇 `ASSEMBLE_OK`、`check-escapes.py` `TOTAL_PROBLEMS: 0`、`render-check.js --stub-api` `RENDER_OK`、真实 Chrome 冒烟（mock API）`SMOKE_OK`、推送后 4 文件指纹复核通过。
+- **待办**：`DEEPSEEK_API_KEY` 尚未配置（`wrangler secret list` 仅 `ADMIN_EMAIL`）——充值 `https://platform.deepseek.com/top_up`，建 Key `https://platform.deepseek.com/api_keys`，然后 `wrangler secret put DEEPSEEK_API_KEY`（**不需重新部署**）。
+
 ### 2026-09-19 · feat: 用户投稿 + AI 质检 + 管理员/专家审核 + 专家群组（缓存版本 `20260919e→20260919f`，release=`4064c3b7a386dc9f1d1286dc50146a5d5fb2ad30` / main=`77b9378efe98fc95e09f149e936d6f70ee311122`，Worker 版本 `2223cb69-bb09-4f55-a40b-21fe3d6a39a8`）
 
 - **为什么**：用户想「让别人也能录题」，同时要防住乱投 ——「加个 AI 质检，检查通过再管理员审核再入库；与 IT 无关的累计 3 次就永久禁用；投稿必须先登录」。随后又提「有时候投稿多了我一个人审核不过来，做个专家群组，只有群组里的人也能审核」。
