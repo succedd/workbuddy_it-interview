@@ -44,9 +44,9 @@
   - Worker 名称：`it-interview-stats`
   - KV `STATS`（访问统计）id `ef5539a2537d417c83141dd771c98454`
   - D1 `USERS` 数据库 `it-interview-users`，database_id `111f4eda-55e2-475d-b199-27e962dec4fc`
-  - 表：users / sessions / favorites / histories / weak（错题本）/ daily_done / mock_reports
+  - 表：users / sessions / favorites / histories / **weak_bank（错题本，注意不叫 `weak`）** / daily_done / mock_reports / rl_auth
   - **用户投稿体系新增表（2026-09-19）**：submissions（投稿 + AI 质检结论 + 审核状态 + 抢单锁）/ expert_groups（专家群组与负责分类）/ group_members / review_log（审核动作流水）/ rl_submit（按 IP 的投稿限流窗口）。建表语句在 `cloudflare/schema.sql`，且 worker 内置 `ensureSubmitTables()` 每次请求幂等自愈（漏建表也不会 500）。
-- **Worker 密钥**：`ADMIN_EMAIL`、**`DEEPSEEK_API_KEY`（AI 质检用，未配置时 AI 一律返回 `error`，投稿照常进人工队列、不误封号）**。设置：`wrangler secret put DEEPSEEK_API_KEY`（从 stdin 读）。查已配置：`wrangler secret list`
+- **Worker 密钥**：`ADMIN_EMAIL`、**`DEEPSEEK_API_KEY`（AI 质检用，✅ 2026-09-19 已配置，`wrangler secret list` 可见两个）**。设置：`wrangler secret put DEEPSEEK_API_KEY`（从 stdin 读）。查已配置：`wrangler secret list`
 - **AI 质检模型（2026-09-19 复核官方文档后定稿）**：默认 **`deepseek-flash`**，即 **DeepSeek-V4.1-Flash** 本尊。
   - ⚠️ **千万别填 `deepseek-v4.1-flash` / `deepseek-v4-1-flash`** —— 那是 EmpirioLabs、Venice 等**第三方网关**的命名，**在官方 `api.deepseek.com` 上不是合法 ID，会吃 400 Model Not Exist**。官方 `MODEL VERSION` 一栏明确写着 `deepseek-flash` = `DeepSeek-V4.1-Flash`。官方仍在接受的旧名只有 `deepseek-v4-flash`、`deepseek-v4-flash-vision-exp`（已退役，实际由 V4.1-Flash 服务）。
   - 想换模型**不用改代码**：给 Worker 加环境变量 `DEEPSEEK_MODEL`（别名表会把上述各种叫法收敛到官方 ID，未知名字原样透传）。代码见 `worker.js` 的 `AI_MODEL_DEFAULT` / `AI_MODEL_ALIASES` / `resolveAiModel()`。
@@ -91,7 +91,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-19 16:50（线上缓存版本 **`20260919g`**）
+- **最后更新**：2026-09-19 17:55（线上缓存版本 **`20260919g`**；AI 质检**已实际生效**）
+- **【ops】`DEEPSEEK_API_KEY` 已配置 + AI 质检端到端跑通（2026-09-19 17:50）**：用户提供 Key 后写入 Worker，**AI 质检从「形同虚设」变成真正在工作**。
+  - **写入**：`printf 'sk-…' | wrangler secret put DEEPSEEK_API_KEY`（在 `cloudflare/` 下）。`wrangler secret list` 现为 `ADMIN_EMAIL` + `DEEPSEEK_API_KEY`。**未重新部署**（secret 立即生效），**未出现在仓库任何文件里**。
+  - **① 直连探针（`tools/deepseek-probe.py`）**：`deepseek-flash` → HTTP 200、`finish_reason=stop`、usage 265+139=404 token、JSON 解析出 `verdict=pass / score=82 / 5 维度 / categoryPath=[计算机网络, TCP/IP]`。
+    **反向对照拿到了官方原文**：请求 `deepseek-v4.1-flash` → **HTTP 400**，`{"error":{"message":"The supported API model names are deepseek-flash, deepseek-v4-pro, but you passed deepseek-v4.1-flash."}}` —— 这条把「模型名必须用官方 ID」钉死了。
+  - **② 端到端真机验证（走 Netlify 桥）**：注册一次性账号（uid=7）→ 带 token 投稿一道 HTTP/HTTPS 题 → **HTTP 200，`ai.verdict="pass"`、`ai.score=88`，reasons/improvements/categoryPath 都是真实内容**（`["计算机网络与协议","HTTP与HTTPS"]`），`strikesLeft=3`。**证明 Worker 确实取到了 secret 并完成了 LLM 调用与入库。**
+  - **③ 测试数据已彻底清理并复核**：清理前先把 `submissions` / `users` 全表打出来确认「只有这一行是我造的」，再按精确 id 删除。复核结果 **submissions 1→0、users 6→5、测试 uid 计数 0、`E2E-TEST` 匹配 0**，5 个真实账号（id 1/2/3/4/6）全部完好。
+  - **踩到的坑**：清理语句里把错题本表写成 `weak`（真名是 **`weak_bank`**）→ **整条多语句批次原子回滚**，一条都没删。好处是「失败也很安全」（零误删），坏处是白跑一趟。**已把这个表名写进上面的表清单。**
+  - **教训**：`deepseek-probe.py` 只能证明 key/模型没问题，**不能证明 Worker 用上了**；而「AI 未判定」这个现象**对应四种不同故障**（key 没配 / 余额不足 / 模型名错 / 思考吃满 max_tokens），所以必须走到真实 verdict 才算验证通过。完整配方见 skill 的「端到端验证 AI 质检真的生效了」一节。
+  - 失败不影响任何既有功能：key 失效时 AI 返回 `error` → 投稿照常进人工队列、不误封号。
 - **【fix/feat】AI 质检模型校正为 `deepseek-flash`（= DeepSeek-V4.1-Flash）+ 关闭思考模式（缓存版本 `20260919f→20260919g`，release=`273dd1f7c761785e09a068281ba68746278776e2` / main=`44d83c7cb9e1e50fc2178812baaa0bbac26cc167`，Worker 版本 `08596f73-c8ed-4102-af12-de942efb72c4`）**：用户要求「配置 deepseek-v4.1-flash 模型」。
   - **查官方文档后确认：用户说的模型在官方 API 上的正确 ID 是 `deepseek-flash`**（`MODEL VERSION` = `DeepSeek-V4.1-Flash`）。原代码写的是 `deepseek-chat`（V3 时代的旧 ID，现已不在官方模型表内）；而用户口述的 `deepseek-v4.1-flash` 是第三方网关命名，官方不接受。**两头都不对，一处改对** → `AI_MODEL_DEFAULT = "deepseek-flash"`。
   - **新增 `AI_MODEL_ALIASES` + `resolveAiModel(env)`**：把 `deepseek-v4.1-flash` / `deepseek-v4-1-flash` / `deepseek-v4-flash` / `deepseek-v4-flash-vision-exp` 等各种叫法统一收敛到官方 ID；未知名字原样透传（官方上新模型时不用改代码）。同时支持 `DEEPSEEK_MODEL` 环境变量覆盖。
