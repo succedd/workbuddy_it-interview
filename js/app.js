@@ -301,6 +301,87 @@
   window.addEventListener("offline", updateNetChip);
 
   /* ============================ 侧边栏 ============================ */
+  /* ---- 侧栏分区折叠（20260919j）----
+     背景：用户反馈「侧栏分类能不能折叠，比如管理模块，全部展开很乱」。侧栏在管理员视角下
+     是 投稿2 + 导航13 + 技术分类(整棵树) + 管理4 + 审核1 + 站点3，确实又长又杂。
+     设计取舍：
+       · **投稿 / 导航 / 技术分类 默认展开** —— 它们是核心入口，藏起来会让人找不到站；
+       · **管理 / 审核 / 站点 默认折叠** —— 后台类分区，正是「乱」的来源（访客根本看不到它
+         们，只有自己的帐号会看到）。
+       · 但**当前所在页面若属于某个折叠分区，会自动把它打开** —— 否则会出现
+         「我明明在仪表盘，侧栏里却看不到仪表盘」，这是折叠式导航最容易踩的坑。
+       · 自动展开只发生在「路由**切进**该分区」这一下：之后用户手动收起就不会被再次强开
+         （否则点了收起又被弹回来，像个 bug）。离开该分区再回来才会重新自动展开。
+       · 用户的手动选择存 localStorage，跨会话记住；localStorage 不可用（隐私模式）时
+         静默退化成「每次都用默认值」，不影响渲染。
+     ⚠️ 键名一律用英文 slug，**不要用中文标签当键** —— 以后改文案就会把用户的折叠状态丢掉。 */
+  const LS_NAVCOLLAPSE = "iti_nav_collapsed_v1";
+  const NAV_SECS = {
+    submit: { label: "投稿", def: false },
+    nav:    { label: "导航", def: false },
+    cats:   { label: "技术分类", def: false },
+    admin:  { label: "管理", def: true },
+    review: { label: "审核", def: true },
+    site:   { label: "站点", def: true },
+  };
+  let _navCollapsed = null;      // { slug: bool }，惰性装载
+  const _navAutoOpen = {};       // 因「路由切进该分区」而临时展开
+  let _navSecLast = null;        // 上一次渲染时路由所属的分区
+
+  function loadNavCollapsed() {
+    if (_navCollapsed) return _navCollapsed;
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(LS_NAVCOLLAPSE) || "{}") || {}; } catch (_) { saved = {}; }
+    _navCollapsed = {};
+    Object.keys(NAV_SECS).forEach(k => { _navCollapsed[k] = Object.prototype.hasOwnProperty.call(saved, k) ? !!saved[k] : NAV_SECS[k].def; });
+    return _navCollapsed;
+  }
+  function saveNavCollapsed() {
+    try { localStorage.setItem(LS_NAVCOLLAPSE, JSON.stringify(_navCollapsed || {})); } catch (_) { /* 隐私模式：忽略 */ }
+  }
+  /** 当前路由属于哪个分区（用于「所在分区自动展开」）。返回的键必须是 NAV_SECS 里的 slug。 */
+  function navSectionOf(r) {
+    const p0 = r.parts[0] || "home", p1 = r.parts[1] || "";
+    if (p0 === "submit") return "submit";
+    if (p0 === "me" && p1 === "submissions") return "submit";
+    if (p0 === "category") return "cats";
+    if (p0 === "admin") {
+      if (p1 === "submissions") return "review";
+      if (p1 === "inbox" || p1 === "users" || p1 === "groups") return "site";
+      return "admin";
+    }
+    return "nav";
+  }
+  /** 路由切进某分区时把它标记为「自动展开」；同一分区内多次渲染不重复触发。 */
+  function navSyncAutoOpen(r) {
+    const cur = navSectionOf(r);
+    if (cur !== _navSecLast) {
+      _navSecLast = cur;
+      Object.keys(_navAutoOpen).forEach(k => { delete _navAutoOpen[k]; });
+      _navAutoOpen[cur] = true;
+    }
+    return cur;
+  }
+  function navIsOpen(key, r) {
+    if (_navAutoOpen[key]) return true;
+    return !loadNavCollapsed()[key];
+  }
+  /** 渲染一个可折叠分区：标题是 <button>（键盘可用 + aria-expanded），内容包在 .nav-section-body。
+      折叠用 CSS 的 display:none（见 style.css），**不用 height 动画** —— 后者在侧栏这种
+      overflow:auto 的容器里容易出滚动条抖动，而且分区内容高度差异极大。 */
+  function navSec(key, extraCls, inner) {
+    const st = NAV_SECS[key];
+    if (!st) return inner;
+    const open = navIsOpen(key, _navSecCtx);
+    return `<div class="nav-section${open ? "" : " collapsed"}" data-sec="${key}">`
+      + `<button type="button" class="nav-section-title nav-sec-toggle${extraCls ? " " + extraCls : ""}"`
+      + ` data-sec="${key}" aria-expanded="${open ? "true" : "false"}" aria-controls="navsec-${key}">`
+      + `<span class="nav-sec-label">${st.label}</span>`
+      + `<span class="nav-sec-chev" aria-hidden="true">${U.icon("chevronDown")}</span></button>`
+      + `<div class="nav-section-body" id="navsec-${key}">${inner}</div></div>`;
+  }
+  let _navSecCtx = { parts: [] };   // navSec 渲染时用的「当前路由」，由 renderSidebar 赋值
+
   function renderSidebar(r) {
     const navItem = (href, icon, label, active, badge, extraCls) =>
       `<a class="side-nav-item ${active ? "active" : ""}${badge ? " has-due" : ""}${extraCls ? " " + extraCls : ""}" href="${href}">${U.icon(icon)}<span>${label}</span>${badge ? `<span class="due-badge">${badge}</span>` : ""}</a>`;
@@ -308,6 +389,8 @@
     /* 抽屉内搜索框（仅 ≤720px 显示，桌面端由 CSS 隐藏）：顶栏搜索在移动端被隐藏，
        这里补上唯一的搜索入口。`.drawer-search` 必须是 input 的**直接父元素**，
        否则 attachHistory 挂进去的 .search-dd 下拉会失去定位参照。 */
+    _navSecCtx = r;
+    navSyncAutoOpen(r);
     let html = `
       <div class="drawer-search">
         <span class="icon">${U.icon("search")}</span>
@@ -316,60 +399,78 @@
       <!-- 投稿入口（20260919f 新增，20260919h 提到顶部）：侧栏有二十多项、且它在「导航」13 项
            之后、要往下滚才看得到 —— 光换颜色不够，直接提到搜索框下面当第一落点，
            配 .nav-cta（主色底 + 呼吸描边）一眼就能看到。
-           「我的投稿」只在登录后出现：未登录时它必然是空的，摆着只占位置。 -->
-      <div class="nav-section-title nav-cta-title">投稿</div>
-      ${navItem("#/submit", "plus", "投稿题目", p0 === "submit", 0, "nav-cta")}
-      ${(window.Account && Account.isLoggedIn()) ? navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions") : ""}
-      <div class="nav-section-title">导航</div>
-      ${navItem("#/", "home", "首页", p0 === "home")}
-      ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
-      ${navItem("#/category", "layers", "技术体系", p0 === "category")}
-      ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
-      ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
-      ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
-      ${navItem("#/random", "dice", "随机一题", p0 === "random")}
-      ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
-      ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
-      ${navItem("#/history", "history", "浏览历史", p0 === "history")}
-      ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
-      ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
-      ${navItem("#/about", "info", "关于本站", p0 === "about")}`;
+           「我的投稿」只在登录后出现：未登录时它必然是空的，摆着只占位置。
+           20260919j：整块改成可折叠分区（默认展开）。 -->
+      ${navSec("submit", "nav-cta-title", `
+        ${navItem("#/submit", "plus", "投稿题目", p0 === "submit", 0, "nav-cta")}
+        ${(window.Account && Account.isLoggedIn()) ? navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions") : ""}`)}
+      ${navSec("nav", "", `
+        ${navItem("#/", "home", "首页", p0 === "home")}
+        ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
+        ${navItem("#/category", "layers", "技术体系", p0 === "category")}
+        ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
+        ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
+        ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
+        ${navItem("#/random", "dice", "随机一题", p0 === "random")}
+        ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
+        ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
+        ${navItem("#/history", "history", "浏览历史", p0 === "history")}
+        ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
+        ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
+        ${navItem("#/about", "info", "关于本站", p0 === "about")}`)}`;
 
     /* 移动端专属：「管理员登录」入口。**必须插在「技术分类」之前** —— 分类树很长，
        放最后会被埋到抽屉最底部，手机上得翻过十几个导航项 + 整棵分类树才看得到。
        顶栏那个「管理员」按钮在 ≤720px 被隐藏（顶栏放不下），这里是它的替代路径。
        只在**未登录管理员**时渲染：已登录时下方本来就有完整的「管理」分区，
-       再放一个会出现两个同名「管理」标题。 */
+       再放一个会出现两个同名「管理」标题。
+       ⚠️ 这一块**故意不做折叠**（只有一个链接，折起来反而把人挡在门外），保持普通标题。 */
     if (!Auth.isAdmin()) {
       html += `<div class="nav-section-title mobile-only">管理</div>
         <a class="side-nav-item mobile-only" id="side-admin-login" href="#">${U.icon("shield")}<span>管理员登录</span></a>`;
     }
 
-    html += `<div class="nav-section-title">技术分类</div>
-      <div id="side-tree">${renderTree(0, r)}</div>`;
+    html += navSec("cats", "", `<div id="side-tree">${renderTree(0, r)}</div>`);
     if (Auth.isAdmin()) {
-      html += `<div class="nav-section-title">管理</div>
+      html += navSec("admin", "", `
         ${navItem("#/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
         ${navItem("#/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
         ${navItem("#/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
-        ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
+        ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`);
     }
     /* 审核队列（20260919f）：admin + expert 都能进（服务端按 role 裁剪可见范围）。
        角标 = 待审条数，由 Submit.refreshPending() 异步拉取后回写 App.reviewPending。 */
     if (window.Account && Account.isReviewer()) {
-      html += `<div class="nav-section-title">审核</div>
-        ${navItem("#/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`;
+      html += navSec("review", "", `
+        ${navItem("#/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`);
     }
     /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁；
        待入库（20260919h）同理 —— 它是「审核 → 入库」的收尾步骤，只给管理员。 */
     if (window.Account && Account.isServerAdmin()) {
-      html += `<div class="nav-section-title">站点</div>
+      html += navSec("site", "", `
         ${navItem("#/admin/inbox", "download", "待入库", p0 === "admin" && r.parts[1] === "inbox", App.inboxPending || 0)}
         ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
-        ${navItem("#/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`;
+        ${navItem("#/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`);
     }
     sidebar.innerHTML = html;
     renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）
+    /* 分区折叠：点击分区标题收起/展开。**按 aria-expanded 推断当前状态**（它才是真实渲染结果），
+       不重新算一遍 —— 免得「自动展开」与「用户偏好」两套逻辑在这里打架。
+       用户手动操作后清掉 _navAutoOpen：这样连点两次是「收起 → 展开」，不会被路由强开弹回。 */
+    $$("#sidebar .nav-sec-toggle").forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const k = btn.dataset.sec;
+        if (!NAV_SECS[k]) return;
+        const opened = btn.getAttribute("aria-expanded") === "true";
+        delete _navAutoOpen[k];
+        const st = loadNavCollapsed();
+        st[k] = opened;                       // 本来是展开的 → 收起
+        saveNavCollapsed();
+        renderSidebar(parseHash());
+      };
+    });
     /* 抽屉内搜索：与顶栏搜索共用同一份「最近搜索」历史（SH_KEY），行为一致；
        显式 closeDrawer()，因为搜同一个词时 hash 不变、不会触发 hashchange 兜底。 */
     const ds = $("#drawer-search");
