@@ -76,7 +76,13 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-18 21:50（线上缓存版本 **`20260918b`**；本轮另含 `tools/check-escapes.py` 修正，见本节末）
+- **最后更新**：2026-09-19 08:40（线上缓存版本 **`20260919a`**）
+- **【fix】题目列表分页重做（缓存版本 `20260918b→20260919a`，release=`1a49bfeda74b42b4749576d77d4ca61c92b5acd9` / main=`aae91b94369aeaf4372979b5b3a5c149c2755fde`）**：用户反馈「最新题目 → 更多，下面的分页数字一字排开不好看」，并贴出 1…58。根因有两条：
+  - **① 页码无窗口化**：`renderPager` 把 `Math.ceil(total/20)` 个页码**全部无条件渲染**（线上 1153 题 → 58 个 `<button>`），且 `.pager` 是 `display:flex` **没有 `flex-wrap`**，58×34px+57×6px≈2.3k px 远超版心 → 溢出。**改为窗口式分页**：`‹ 上一页` + 首末页 + 当前页 ±2 + 断档折成 `…` + `下一页 ›` + `跳至 [n] / N 页` 输入框；最多 **11 个元素**（旧实现 58 个）。断档只差 1 个数时（如 6→8）直接补上，不出多余省略号。CSS 同步加 `flex-wrap:wrap`、hover/disabled/active 态、窄屏（≤640px）隐藏跳页框并缩到 32px。
+  - **② 筛选/搜索不重置页码（连带 bug，原先会渲染成空白）**：`apply()` 从不重置 `page`。停在末页时输入关键词 → `arr.slice((page-1)*20, page*20)` 取到空数组 → **`#q-grid` 变成空白但 `#q-count` 还显示真实题数**（且因 `arr.length>0` 不进空状态分支，用户看到「有 N 道题却一片空白」）。已修：`apply(resetPage)` 默认回第 1 页；`renderGrid` 夹取 `page ≤ totalPages`；`renderPager` 自身再兜底夹一次；空结果分支顺带清空分页残留。
+  - **③ 顺带修掉 URL 同步 bug + 新增页码深链**：原排序按钮写 URL 用 `url.searchParams.set("sort", s); history.replaceState(null,"",url.pathname+url.search)` —— 但本站路由参数**在 hash 里**（`#/questions?sort=…`），这样写会得到 `/?sort=updated` 这种**没有 hash 的地址，把整条路由抹掉**（刷新即回首页）。已抽出 `syncRouteParams()` 统一按 hash 读写；并新增 `?page=` 深链（刷新/前进后退不丢页，越界自动夹到末页并把 URL 纠正回来）。
+  - **验证**：① 离线桩测（从 `js/app.js` 原文剪出 `pagerWindow`/`renderPager`/`syncRouteParams` 用桩件跑，8 组用例全通过：58 页各位置形态、越界夹取、`page=0`、URL 写入）；② **真实浏览器**（本地 + **线上**）实测：线上 `#/questions?sort=updated` → 1153 题 / **58 页**，分页 **6 个按钮**、`1 2 3 … 58`、`rows=1`（单行）、`hScroll=false`（无横向溢出）；线上 `&page=30` → active=30、`1 … 28 29 30 31 32 … 58`；线上 `&page=999` → 自动夹到 58 页。③ `node --check` + `validate-docs.js`（101 篇 ASSEMBLE_OK）+ `check-escapes.py`（TOTAL_PROBLEMS: 0）；④ 线上 4 个文件（`js/app.js`/`css/style.css`/`index.html`/`sw.js`）**逐字节一致**，`index.html` 32 处 `?v=20260919a`、`sw.js` `VERSION=20260919a`；⑤ **旧功能零回退**：`js/roadmap.js`、`js/cloud.js` 与线上 CONTENT-EQUAL，`guardAgainstShrink`(3)/`applyRemovedQuestions`(4)/`roadmapMastered`(1) 等标记全在。
+  - **⚠️ 环境提醒**：本轮 `curl -x http://127.0.0.1:7897` 代理**已不可用（http=000）**，但**直连正常（http=200）**，核验线上请去掉 `-x`；`agent-browser` 的 `batch` 子命令**会剥掉参数里的引号**（`'#q-pager'` 变成 `#q-pager` 被当 JS 私有字段），需要引号的 `eval`/`click` 请用「同一子壳内串行多次调用」而不是 `batch`。
 - **【feat】技术教程 7 个方向「全维度加厚」全部完成（缓存版本 `20260916i→20260918a`，release=`196e7a9361296cf1e659853bfaa6fed57a9dff98` / main=`ce749bba3ba250c266823ad0cbf7648a95c718ee`）**：用户反馈「教程写的感觉还是有点太粗略了」，要求所有方向统一加深。**7 个方向 101 篇全部加厚，正文各方向 1.4×~2.8×**：
   | 方向 | 加厚前 | 现在 | 倍率 | 篇数 |
   |---|---|---|---|---|
