@@ -807,15 +807,20 @@ async function handleSubmit(env, request, origin) {
     }
   } catch (_) {}
 
+  /* 非 IT 的投稿直接落成「已打回」：它不进人工审核队列（由违规计数系统处理），
+     但仍完整留档，管理员可在审核页的「违规记录」里回溯与改判依据。
+     其余结论（pass / 质量不达标 / 疑似重复 / AI 不可用）一律进队列 —— 人工始终有最终决定权，
+     既不会让 AI 误杀了真正的好题，也不会让 AI 的理由悄悄消失。 */
+  const reviewStatus = ai.verdict === "reject_non_it" ? "rejected" : "pending";
   const ins = await db.prepare(
     "INSERT INTO submissions (user_id, created_at, title, body, answer, difficulty, type, tags, category_id, source_note, " +
-    "ai_verdict, ai_score, ai_json, ai_at, ai_error, non_it_strike, group_id, ip) " +
-    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)")
+    "ai_verdict, ai_score, ai_json, ai_at, ai_error, non_it_strike, group_id, ip, review_status) " +
+    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)")
     .bind(u.id, now, sub.title, sub.body, sub.answer, sub.difficulty, sub.type, sub.tags,
       sub.categoryId, sub.sourceNote,
       ai.verdict, ai.score || 0, JSON.stringify(ai.raw || { reasons: ai.reasons || [] }).slice(0, 8000),
       ai.verdict === "error" ? 0 : now, ai.error || "",
-      groupId, ip).run();
+      groupId, ip, reviewStatus).run();
   const subId = ins.meta && ins.meta.last_row_id;
 
   /* 非 IT → 计一次；达到上限直接永久禁用 + 踢下线 */
@@ -894,6 +899,8 @@ async function handleAdminSubmissions(env, request, origin) {
       "FROM submissions s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN expert_groups g ON g.id = s.group_id " +
       "WHERE s.review_status IN ('approved','rejected') ORDER BY s.review_at DESC LIMIT 100").all();
   } else if (want === "nonit") {
+    /* 违规记录带作者邮箱，属于账号管理的范畴 —— 专家能审核题目，但看不到别人的邮箱 */
+    if (u.role !== "admin") return jsonResp({ error: "违规记录仅管理员可见" }, origin, 403);
     rows = await db.prepare(
       "SELECT s.id, s.user_id, s.created_at, s.title, s.non_it_strike, u.nick AS authorNick, u.email AS authorEmail, u.status AS authorStatus " +
       "FROM submissions s LEFT JOIN users u ON u.id = s.user_id WHERE s.non_it_strike = 1 ORDER BY s.created_at DESC LIMIT 200").all();

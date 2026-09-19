@@ -400,6 +400,32 @@
   /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
   A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
 
+  /* ---------------- 用户投稿 / 审核 / 专家群组（20260919f） ----------------
+   * 后端：Cloudflare Worker + D1（/submit、/me/submissions、/admin/*）。
+   * 权限口径：**真正的门禁全在 Worker**（审核接口按 D1 role 判定：admin 看全部、
+   * expert 只看「自己组 + 未分配」）。前端 isReviewer() 只用来决定入口显不显示，
+   * 用户改前端也拿不到越权数据，所以这里不需要、也不能做安全兜底。
+   * -------------------------------------------------------------------- */
+  /* 可审核 = 服务端角色是 admin 或 expert（与本地密码门禁 Auth.isAdmin 无关） */
+  A.isReviewer = () => { const u = A.getUser(); return !!(u && (u.role === "admin" || u.role === "expert") && A.getToken()); };
+  A.roleLabel = (r) => (r === "admin" ? "管理员" : r === "expert" ? "专家" : "用户");
+
+  /* 投稿：服务端会做「每日限额 → IP 限流 → 本地预筛 → AI 质检」，返回 ai 结论与剩余机会 */
+  A.submitQuestion = (p) => call("POST", "/submit", p);
+  A.mySubmissions = () => call("GET", "/me/submissions");
+  /* status: open（待审+审核中）/ done（已通过+已打回）/ nonit（非 IT 记录，仅 admin） */
+  A.adminListSubmissions = (status) => call("GET", "/admin/submissions?status=" + encodeURIComponent(status || "open"));
+  /* 抢单：乐观锁认领，被别人抢了会抛 409（错误信息里带对方昵称） */
+  A.adminClaimSubmission = (id) => call("POST", "/admin/submissions/" + id + "/claim", {});
+  /* action: release（释放认领）/ reject（打回）/ approve（通过）/ edit（只存改动不通过） */
+  A.adminReviewSubmission = (id, payload) => call("POST", "/admin/submissions/" + id + "/review", payload || {});
+  A.adminGroups = () => call("GET", "/admin/groups");
+  A.adminGroupCreate = (name, scope, categoryIds) => call("POST", "/admin/groups", { name: name, scope: scope, categoryIds: categoryIds });
+  A.adminGroupDelete = (id) => call("DELETE", "/admin/groups/" + id);
+  A.adminGroupMember = (id, userId, remove) => call("POST", "/admin/groups/" + id + "/members", { userId: userId, remove: !!remove });
+  /* 角色调整：服务端只允许 user ⇄ expert，造不出新 admin */
+  A.adminUserRole = (id, role) => call("POST", "/admin/users/" + id + "/role", { role: role });
+
   /* ---------------- UI：登录/注册页 ---------------- */
   A.renderLoginPage = function () {
     const user = A.getUser();
@@ -407,12 +433,19 @@
       <div class="section-head"><h2>${user ? "我的帐号" : "登录 / 注册"}</h2></div>
       <div class="card" style="max-width:440px;margin:0 auto">
         ${user ? `
-          <p>当前用户：<b>${U.esc(user.nick || user.email)}</b>${user.role === "admin" ? ' <span class="tag tag-success">管理员</span>' : ""}</p>
+          <p>当前用户：<b>${U.esc(user.nick || user.email)}</b>${
+            user.role === "admin" ? ' <span class="tag tag-primary">管理员</span>'
+            : user.role === "expert" ? ' <span class="tag tag-ai">专家</span>' : ""}</p>
           <p class="muted" style="font-size:13px">登录后，你的收藏、刷题历史与错题本会自动云同步——换设备也能接着刷。</p>
-          <div style="display:flex;gap:8px;margin-top:16px">
+          <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
             <button class="btn btn-primary" id="acc-sync">立即同步</button>
             <button class="btn" id="acc-pw-toggle">修改密码</button>
             <button class="btn btn-danger" id="acc-logout">退出登录</button>
+          </div>
+          <div class="pill-row" style="margin-top:14px">
+            <a class="btn btn-sm" href="#/submit">${U.icon("plus")} 投稿面试题</a>
+            <a class="btn btn-sm" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
+            ${A.isReviewer() ? `<a class="btn btn-sm" href="#/admin/submissions">${U.icon("check")} 投稿审核</a>` : ""}
           </div>
           <div id="acc-pw-box" style="display:none;margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
             <label class="field"><span>当前密码</span><input id="acc-pw-old" type="password" placeholder="••••••••" /></label>
@@ -500,7 +533,8 @@
       <div class="card" style="padding:0"><table class="data">
         <thead><tr><th>ID</th><th>邮箱</th><th>昵称</th><th>角色</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead>
         <tbody id="u-tb"><tr><td colspan="7">加载中…</td></tr></tbody></table></div>
-      <div class="note" style="margin-top:10px">禁用会立即踢掉该用户的全部登录会话；重置密码同样使其下线。</div>`);
+      <div class="note" style="margin-top:10px">禁用会立即踢掉该用户的全部登录会话；重置密码同样使其下线。
+        「专家」拥有投稿审核权限，可在<a href="#/admin/groups">专家群组</a>里按技术分类分配负责范围。</div>`);
 
     const load = async (q) => {
       const tb = $("#u-tb");
@@ -509,19 +543,36 @@
         tb.innerHTML = (r.users || []).map(u => `
           <tr>
             <td>${u.id}</td><td>${U.esc(u.email)}</td><td>${U.esc(u.nick || "-")}</td>
-            <td>${u.role === "admin" ? '<span class="tag tag-success">admin</span>' : "user"}</td>
+            <td>${u.role === "admin" ? '<span class="tag tag-primary">管理员</span>'
+                  : u.role === "expert" ? '<span class="tag tag-ai">专家</span>'
+                  : '<span class="muted">普通用户</span>'}</td>
             <td>${u.status === 1 ? '<span class="tag tag-success">正常</span>' : '<span class="tag tag-danger">禁用</span>'}</td>
             <td>${new Date(u.createdAt).toLocaleDateString()}</td>
             <td>
               ${u.id === myId
                 ? '<span class="muted" style="font-size:12px">当前登录帐号（改密码请到「帐号」页）</span>'
-                : `<button class="btn btn-sm" data-act="toggle" data-id="${u.id}" data-s="${u.status}">${u.status === 1 ? "禁用" : "启用"}</button>
+                : `${u.role === "admin" ? "" :
+                     `<button class="btn btn-sm" data-act="role" data-id="${u.id}" data-r="${u.role === "expert" ? "user" : "expert"}">${u.role === "expert" ? "取消专家" : "设为专家"}</button>`}
+                   <button class="btn btn-sm" data-act="toggle" data-id="${u.id}" data-s="${u.status}">${u.status === 1 ? "禁用" : "启用"}</button>
                    <button class="btn btn-sm" data-act="reset" data-id="${u.id}">重置密码</button>`}
             </td>
           </tr>`).join("") || '<tr><td colspan="7">暂无用户</td></tr>';
         tb.querySelectorAll("button[data-act]").forEach(b => {
           b.onclick = async () => {
             const id = parseInt(b.dataset.id), act = b.dataset.act;
+            /* 角色调整（20260919f）：设/取消专家。专家可进审核队列，但没有题目编辑端（本地密码）权限。
+               降级为普通用户时服务端会顺手清掉其群组成员关系。 */
+            if (act === "role") {
+              const to = b.dataset.r;
+              const okMsg = to === "expert"
+                ? "设为「专家」？该用户将能进入投稿审核队列（只能审自己群组 + 未分配的投稿），并且不能审核自己提交的题目。"
+                : "取消「专家」？该用户将立即失去审核权限，并从所有专家群组中移除。";
+              if (!(await U.confirm(okMsg, { okText: "确定" }))) return;
+              b.disabled = true;
+              try { await A.adminUserRole(id, to); U.toast(to === "expert" ? "已设为专家" : "已取消专家", "success"); load($("#u-q").value.trim()); }
+              catch (e) { U.toast(e.message, "error"); b.disabled = false; }
+              return;
+            }
             if (act === "toggle") {
               const s = b.dataset.s === "1" ? 0 : 1;
               if (!(await U.confirm(s === 0 ? "禁用该用户？其所有会话将失效。" : "重新启用该用户？", { okText: "确定" }))) return;
