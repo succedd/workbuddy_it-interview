@@ -1512,11 +1512,34 @@
       }
     }
 
-    const apply = () => {
+    /* 分页：每页 20 条。page 支持 ?page= 深链，刷新 / 前进后退不丢页 */
+    const PAGE_SIZE = 20;
+    let page = Math.max(1, parseInt(q.page, 10) || 1);
+    let totalPages = 1;
+
+    /* 路由参数写在 hash 里（#/questions?sort=…&page=…）。改 URL 必须走 hash：
+       直接改 url.search 会写成一个没有 hash 的地址，把整条路由抹掉。 */
+    const syncRouteParams = (patch) => {
+      try {
+        const raw = (location.hash || "#/").slice(1);
+        const qi = raw.indexOf("?");
+        const path = qi < 0 ? raw : raw.slice(0, qi);
+        const sp = new URLSearchParams(qi < 0 ? "" : raw.slice(qi + 1));
+        Object.keys(patch).forEach(k => {
+          const v = patch[k];
+          if (v === null || v === undefined || v === "") sp.delete(k); else sp.set(k, String(v));
+        });
+        const qs = sp.toString();
+        history.replaceState(null, "", "#" + path + (qs ? "?" + qs : ""));
+      } catch (_) {}
+    };
+
+    const apply = (resetPage) => {
       let arr = Search.filter(base, filters);
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
       if (fuseMap) arr = arr.filter(x => fuseMap.has(x.id));
       arr = Search.sort(arr, sortBy);
+      if (resetPage !== false) page = 1;   /* 筛选 / 搜索 / 来源一变就回第一页，否则停在越界页会渲染出空白列表 */
       renderGrid(arr);
     };
     const renderGrid = (arr) => {
@@ -1526,20 +1549,67 @@
         const hot = term ? `<div class="sd-hot" style="margin-top:10px;justify-content:flex-start">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>` : "";
         grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}</div>`;
         $$("#q-grid [data-sug]").forEach(b => b.onclick = () => { $("#q-search").value = b.dataset.sug; filters.q = b.dataset.sug; apply(); });
-        $("#q-count").textContent = "0"; return;
+        $("#q-count").textContent = "0";
+        totalPages = 1; const pg0 = $("#q-pager"); if (pg0) pg0.innerHTML = "";   /* 空结果要清掉分页，否则残留上一页的页码 */
+        return;
       }
       $("#q-count").textContent = arr.length;
+      totalPages = Math.max(1, Math.ceil(arr.length / PAGE_SIZE));
+      if (page > totalPages) page = totalPages;    /* 数据变少时夹住页码，避免停在空页 */
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
-      grid.innerHTML = arr.slice((page - 1) * 20, page * 20).map(x => qCard(x, fuseMap ? fuseMap.get(x.id) : null)).join("");
-      renderPager(arr.length);
+      grid.innerHTML = arr.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(x => qCard(x, fuseMap ? fuseMap.get(x.id) : null)).join("");
+      renderPager();
     };
-    let page = 1;
-    const renderPager = (total) => {
-      const pages = Math.ceil(total / 20); const pg = $("#q-pager"); if (pages <= 1) { pg.innerHTML = ""; return; }
-      let h = "";
-      for (let i = 1; i <= pages; i++) h += `<button class="${i === page ? "active" : ""}" data-p="${i}">${i}</button>`;
+
+    /* 页码窗口：首末页 + 当前页 ±2，中间断档折成省略号 —— 58 页也只占一行，不再铺成一条长龙 */
+    const pagerWindow = (cur, pages) => {
+      const keep = {};
+      [1, cur - 2, cur - 1, cur, cur + 1, cur + 2, pages].forEach(v => { if (v >= 1 && v <= pages) keep[v] = 1; });
+      const nums = Object.keys(keep).map(Number).sort((a, b) => a - b);
+      const out = [];
+      nums.forEach((v, i) => {
+        if (i && v - nums[i - 1] === 2) out.push(nums[i - 1] + 1);   /* 只差一个数就直接补上，不必出省略号 */
+        else if (i && v - nums[i - 1] > 2) out.push("gap");
+        out.push(v);
+      });
+      return out;
+    };
+
+    const goPage = (p) => {
+      const t = Math.min(Math.max(1, p | 0), totalPages);
+      if (t === page) return;
+      page = t;
+      renderGrid(Search.sort(Search.filter(base, filters), sortBy));
+      const g = $("#q-grid");
+      if (!g) return;
+      const topbar = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar-h"), 10) || 60;
+      try { window.scrollTo({ top: g.getBoundingClientRect().top + window.scrollY - topbar - 12, behavior: "smooth" }); } catch (_) {}
+    };
+
+    const renderPager = () => {
+      const pg = $("#q-pager"); if (!pg) return;
+      if (page < 1) page = 1;                       /* 自身兜底夹取，不依赖调用方 */
+      if (page > totalPages) page = totalPages;
+      syncRouteParams({ page: totalPages > 1 && page > 1 ? page : null });
+      if (totalPages <= 1) { pg.innerHTML = ""; return; }
+      const btn = (label, p, cls, dis) => `<button type="button" class="${cls || ""}" data-p="${p}"${dis ? " disabled" : ""}>${label}</button>`;
+      let h = btn("‹ 上一页", page - 1, "pg-nav", page <= 1);
+      pagerWindow(page, totalPages).forEach(v => {
+        h += (v === "gap") ? `<span class="pg-gap">…</span>` : btn(v, v, v === page ? "active" : "", false);
+      });
+      h += btn("下一页 ›", page + 1, "pg-nav", page >= totalPages);
+      h += `<span class="pg-jump">跳至 <input class="pg-input" type="number" min="1" max="${totalPages}" value="${page}" inputmode="numeric" aria-label="跳转到指定页码" /> / ${totalPages} 页</span>`;
       pg.innerHTML = h;
-      $$("#q-pager button").forEach(b => b.onclick = () => { page = parseInt(b.dataset.p); renderGrid(Search.sort(Search.filter(base, filters), sortBy)); });
+      $$("#q-pager button[data-p]").forEach(b => b.onclick = () => goPage(parseInt(b.dataset.p, 10)));
+      const inp = pg.querySelector(".pg-input");
+      if (inp) {
+        const jump = () => {
+          const v = parseInt(inp.value, 10);
+          if (v >= 1 && v <= totalPages) goPage(v); else inp.value = page;
+        };
+        inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); jump(); } });
+        inp.addEventListener("change", jump);
+      }
     };
 
     setMain(`
@@ -1572,10 +1642,10 @@
     if (Auth.isAdmin()) $("#f-status").onchange = e => { filters.status = e.target.value ? [e.target.value] : []; apply(); };
     $$("#sort-seg button").forEach(b => b.onclick = () => {
       $$("#sort-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active");
-      const s = b.dataset.s; const url = new URL(location.href); url.searchParams.set("sort", s); history.replaceState(null, "", url.pathname + url.search);
+      const s = b.dataset.s; syncRouteParams({ sort: s });
       renderGrid(Search.sort(Search.filter(base, filters), s));
     });
-    apply();
+    apply(false);   /* 首屏：尊重 ?page= 深链，不重置页码 */
   }
 
   /* ============================ 题目详情页 ============================ */
