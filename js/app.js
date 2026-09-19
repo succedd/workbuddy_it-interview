@@ -2984,6 +2984,7 @@
         </div>
       </div>
       <label class="field"><span>题目标题</span><input id="f-title" value="${U.esc(q.title)}" /></label>
+      <div id="f-title-dup" class="dup-hint" style="display:none"></div>
       <div class="grid grid-cols-2" style="gap:16px">
         <label class="field"><span>技术分类（可搜索）</span>
           <div class="combo" id="cat-combo">
@@ -3016,6 +3017,29 @@
       wireImagePaste("#f-body"); wireImagePaste("#f-answer");
       wireTagInput("#tag-box", "#tag-add");
       wireCombo("#f-cat-text", "#f-cat", "#cat-list", flatCats);
+      /* 实时相似题提示（20260919m）：此前手动新增只有「保存时」的精确标题比对（findTitleDups），
+         输入过程中毫无提醒 —— 等保存弹窗才发现重复，题已经写完了。这里复用投稿页同一套
+         二元组 Dice（Submit.dupMatches，submit.js 提供），停键 250ms 就地提示相似题，
+         **不拦截保存**：拦截仍由 save() 里的 findTitleDups 兜底，两层语义不同（提示 vs 确认）。 */
+      const dupBox = $("#f-title-dup");
+      let dupTimer = null;
+      const checkTitleDup = () => {
+        if (dupTimer) clearTimeout(dupTimer);
+        dupTimer = setTimeout(() => {
+          if (!dupBox) return;
+          const fn = window.Submit && Submit.dupMatches;
+          const t = $("#f-title").value.trim();
+          if (!fn || t.length < 4) { dupBox.style.display = "none"; dupBox.innerHTML = ""; return; }
+          const hits = fn(t, Services.questions || [], 0.6, isNew ? null : q.id).slice(0, 3);
+          if (!hits.length) { dupBox.style.display = "none"; dupBox.innerHTML = ""; return; }
+          dupBox.style.display = "";
+          dupBox.innerHTML = "⚠️ 题库里有 " + hits.length + " 道相似题："
+            + hits.map(h => ` <a href="#/question/${h.id}">《${U.esc(h.title)}》${Math.round(h.d * 100)}%</a>`).join("、")
+            + "（保存前会再拦一次）";
+        }, 250);
+      };
+      $("#f-title").addEventListener("input", checkTitleDup);
+      checkTitleDup();
     });
 
     async function save(status) {
@@ -4696,4 +4720,4 @@
   /* ---- 暴露给 account.js 等兄弟模块的内部函数（app.js 是 IIFE，默认不外泄） ---- */
   App._internals = { $, setMain, route, renderTopbar, renderSidebar, refreshNav, refreshVisitorStats };
   window.App = App;
-})();
+})();

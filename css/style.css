@@ -312,6 +312,11 @@ label.field > span { display: block; font-size: 13px; font-weight: 600; margin-b
    所以「长提示」一律放这里 —— 可换行、整段可见。
    用 div 而不是 span：`label.field > span` 会把 span 变成字段标题样式。 */
 .field-hint { font-size: 12px; line-height: 1.6; color: var(--text-muted); margin-top: 5px; }
+/* 手动新增的实时相似题提示（20260919m）：警示但不动按钮级配色 ——
+   明色用 amber-700（白底可读），暗色用 amber-300；链接继承同色加下划线。 */
+.dup-hint { font-size: 12.5px; line-height: 1.7; color: #B45309; margin: -2px 0 6px; }
+.dup-hint a { color: inherit; text-decoration: underline; }
+html[data-theme="dark"] .dup-hint { color: #FBBF24; }
 .field-hint b { color: var(--text-secondary); font-weight: 600; }
 .field-hint .eg { color: var(--c-primary); }
 input[type=text], input[type=password], input[type=number], input[type=email], textarea, select {
