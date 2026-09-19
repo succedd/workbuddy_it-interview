@@ -524,7 +524,7 @@
     }
 
     /* ---------- AI 报告（只读） ---------- */
-    function aiReportHtml(ai) {
+    function aiReportHtml(ai, row) {
       if (!ai || !ai.verdict) return '<div class="note" style="margin-top:12px">这条没有可展示的 AI 报告（AI 当时不可用，或数据已被清理）。</div>';
       const score = num(ai.qualityScore != null ? ai.qualityScore : ai.score);
       const dims = (ai.dimensions && typeof ai.dimensions === "object") ? ai.dimensions : {};
@@ -553,6 +553,16 @@
         ((ai.categoryPath && ai.categoryPath.length) ? '<div class="pill-row" style="margin-top:10px"><span class="muted" style="font-size:13px">建议归入：</span>' + ai.categoryPath.map(function (p) { return '<span class="tag tag-outline">' + esc(p) + "</span>"; }).join("") + "</div>" : "") +
         ((ai.reasons && ai.reasons.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 判断依据</div>' + ul(ai.reasons) + "</div>" : "") +
         ((ai.improvements && ai.improvements.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 改进建议</div>' + ul(ai.improvements) + "</div>" : "") +
+        /* AI 不可用时给出「为什么」，否则运维只能去翻 D1。仅在审核面板可见，不暴露给投稿人。 */
+        ((ai.verdict === "error" && row && row.ai_error)
+          ? '<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(220,130,0,.12);font-size:12.5px;line-height:1.6">' +
+            "<b>AI 未参与质检</b>（本条已照常进入人工队列，不影响投稿人）<br>" +
+            '<span class="muted" style="word-break:break-all">' + esc(String(row.ai_error).slice(0, 300)) + "</span></div>"
+          : "") +
+        ((ai._usage && ai._usage.total)
+          ? '<div class="muted" style="font-size:12px;margin-top:8px">本次质检 token ' + num(ai._usage.total) +
+            "（模型 " + esc(String(ai._usage.model || "?")) + "）</div>"
+          : "") +
         "</div>";
     }
 
@@ -583,7 +593,7 @@
             </div>
             <button class="btn btn-sm" id="rv-close">关闭</button>
           </div>
-          ${aiReportHtml(ai)}
+          ${aiReportHtml(ai, row)}
 
           <div class="grid grid-cols-2" style="gap:16px;margin-top:16px">
             <label class="field"><span>题目标题</span><input id="rv-title" value="${esc(pick("title", row.title))}" /></label>
