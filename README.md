@@ -240,6 +240,13 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-19 · ops: 配置 `DEEPSEEK_API_KEY`，AI 质检正式生效（仅运维/文档变更，无代码改动、版本号不变，仍为 `20260919g`）
+
+- **`DEEPSEEK_API_KEY` 已写入 Worker**（`wrangler secret put`，走 stdin）—— AI 质检从「一律未判定」变成真正在工作。**未重新部署**（secret 立即生效），密钥**未落进仓库任何文件**。
+- **直连探针**（`tools/deepseek-probe.py`）：`deepseek-flash` → HTTP 200、`finish_reason=stop`、404 token、JSON 正常解析；对照请求错名 `deepseek-v4.1-flash` → **HTTP 400**「The supported API model names are deepseek-flash, deepseek-v4-pro」。
+- **端到端真机验证**：一次性账号经 Netlify 桥投稿一道 HTTP/HTTPS 题 → `ai.verdict="pass"`、`ai.score=88`、reasons/improvements/categoryPath 均为真实内容 → 证明 Worker 确实取到密钥并完成调用与入库。
+- **测试数据已彻底清理并复核**：submissions 1→0、users 6→5、测试 uid 计数 0，5 个真实账号完好。（清理时踩坑：错题本表真名是 `weak_bank` 而非 `weak`，写错会让整批 SQL 原子回滚。）
+
 ### 2026-09-19 · fix: AI 质检模型校正为 `deepseek-flash`（= DeepSeek-V4.1-Flash）+ 关闭思考模式（缓存版本 `20260919f→20260919g`，release=`273dd1f7c761785e09a068281ba68746278776e2` / main=`44d83c7cb9e1e50fc2178812baaa0bbac26cc167`，Worker 版本 `08596f73-c8ed-4102-af12-de942efb72c4`）
 
 - **模型 ID 校正**：查 DeepSeek 官方文档确认，**`deepseek-flash` 的模型版本正是 `DeepSeek-V4.1-Flash`**；原代码用的 `deepseek-chat` 是 V3 时代旧 ID（已不在官方模型表内），而 `deepseek-v4.1-flash` 是第三方网关（EmpirioLabs / Venice 等）的命名，**官方 `api.deepseek.com` 不接受、会报 400 Model Not Exist**。现默认 `deepseek-flash`，并加 `AI_MODEL_ALIASES` 把各种叫法收敛到官方 ID、支持 `DEEPSEEK_MODEL` 环境变量覆盖（换模型不用改代码）。
