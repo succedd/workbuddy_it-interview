@@ -523,7 +523,26 @@ const SUBMIT_RL_MAX  = 10;                // 每 IP 每小时投稿上限
 const SUBMIT_RL_WIN  = 3600 * 1000;
 const REVIEW_LOCK_MS = 30 * 60 * 1000;    // 抢单锁 30 分钟，超时自动释放
 const AI_TIMEOUT_MS  = 60 * 1000;
-const AI_MODEL       = "deepseek-chat";
+/* 模型 ID：官方现用 ID 就是 `deepseek-flash`，**它的模型版本正是 DeepSeek-V4.1-Flash**
+   （见 api-docs.deepseek.com/quick_start/pricing 的 MODEL VERSION 一行）。
+   ⚠️ 网上/第三方网关常见的 `deepseek-v4.1-flash` / `deepseek-v4-1-flash` 在**官方 API 上不是合法 ID**，
+      直接填会吃 400 Model Not Exist ——「同名 Flash」是极易踩的坑（各网关命名不统一）。
+   官方仍在接受的旧名：`deepseek-v4-flash`、`deepseek-v4-flash-vision-exp`（已退役，实际由 V4.1-Flash 服务）。 */
+const AI_MODEL_DEFAULT = "deepseek-flash";
+const AI_MODEL_ALIASES = {
+  "deepseek-v4.1-flash": "deepseek-flash",
+  "deepseek-v4-1-flash": "deepseek-flash",
+  "deepseek-v4.1-flash-preview": "deepseek-flash",
+  "deepseek-v4-flash": "deepseek-flash",
+  "deepseek-v4-flash-vision-exp": "deepseek-flash",
+};
+/* 想换模型**不用改代码**：给 Worker 配环境变量 DEEPSEEK_MODEL 即可（未知名字原样透传，
+   便于官方上新模型时直接填；别名表只负责把「叫法」收敛到官方 ID）。 */
+function resolveAiModel(env) {
+  const raw = String((env && env.DEEPSEEK_MODEL) || "").trim();
+  if (!raw) return AI_MODEL_DEFAULT;
+  return AI_MODEL_ALIASES[raw.toLowerCase()] || raw;
+}
 const AI_URL         = "https://api.deepseek.com/chat/completions";
 const CAT_KV_KEY     = "submit:cat:compact";
 const CAT_TTL_S      = 12 * 3600;
@@ -671,6 +690,7 @@ async function judgeByAI(env, sub, cats) {
     "请输出 JSON。",
   ].join("\n");
 
+  const model = resolveAiModel(env);
   const ctl = ("AbortController" in globalThis) ? new AbortController() : null;
   const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (_) {} }, AI_TIMEOUT_MS) : null;
   let resp;
@@ -679,11 +699,16 @@ async function judgeByAI(env, sub, cats) {
       method: "POST",
       headers: { "content-type": "application/json", authorization: "Bearer " + key },
       body: JSON.stringify({
-        model: AI_MODEL,
+        model,
         messages: [{ role: "system", content: sys }, { role: "user", content: usr }],
+        /* ⚠️ thinking 默认是「开」的（effort 默认 high），而**思考 token 也计进 max_tokens**：
+           质检属于分类/抽取任务，开了思考会把配额烧在推理上 → finish_reason=length
+           → 每条投稿都变成「AI 未判定」。故显式关掉：更快更省，
+           且**只有非思考模式下 temperature 才真正生效**（思考模式下 temperature 被官方静默忽略）。 */
+        thinking: { type: "disabled" },
         response_format: { type: "json_object" },   // 需 prompt 里出现 "JSON" 字样，上面已满足
         temperature: 0.2,
-        max_tokens: 1500,
+        max_tokens: 2048,
       }),
       signal: ctl && ctl.signal,
     });
@@ -696,7 +721,13 @@ async function judgeByAI(env, sub, cats) {
   if (!resp.ok) {
     let detail = "";
     try { detail = (await resp.text()).slice(0, 200); } catch (_) {}
-    return { verdict: "error", error: "http_" + resp.status + ":" + detail };
+    /* 把「运维能自己动手解决」的状态直接写成中文提示，省掉一轮排查 */
+    const hint = resp.status === 401 ? "（API Key 无效或没配好）"
+               : resp.status === 402 ? "（DeepSeek 账户余额不足，需充值）"
+               : resp.status === 429 ? "（触发 DeepSeek 侧限流，稍后自动重试即可）"
+               : (resp.status === 400 && /model/i.test(detail)) ? "（模型 ID 不被接受：" + model + "）"
+               : "";
+    return { verdict: "error", error: "http_" + resp.status + hint + ":" + detail };
   }
   let data;
   try { data = await resp.json(); } catch (_) { return { verdict: "error", error: "bad_json_envelope" }; }
@@ -724,6 +755,13 @@ async function judgeByAI(env, sub, cats) {
     reasons: arr(obj.reasons, 6),
     improvements: arr(obj.improvements, 6),
     raw: obj,
+    /* 记下 token 用量，便于在 D1 里核对 DeepSeek 账单（按量计费，见 pricing 页） */
+    usage: (data.usage && typeof data.usage === "object") ? {
+      model,
+      prompt: parseInt(data.usage.prompt_tokens) || 0,
+      completion: parseInt(data.usage.completion_tokens) || 0,
+      total: parseInt(data.usage.total_tokens) || 0,
+    } : { model },
   };
 }
 
@@ -812,13 +850,16 @@ async function handleSubmit(env, request, origin) {
      其余结论（pass / 质量不达标 / 疑似重复 / AI 不可用）一律进队列 —— 人工始终有最终决定权，
      既不会让 AI 误杀了真正的好题，也不会让 AI 的理由悄悄消失。 */
   const reviewStatus = ai.verdict === "reject_non_it" ? "rejected" : "pending";
+  /* 审核端留档：AI 原始结论 + 本次 token 用量（便于日后核对 DeepSeek 账单） */
+  const aiJson = Object.assign({}, ai.raw || { reasons: ai.reasons || [] },
+    ai.usage ? { _usage: ai.usage } : {});
   const ins = await db.prepare(
     "INSERT INTO submissions (user_id, created_at, title, body, answer, difficulty, type, tags, category_id, source_note, " +
     "ai_verdict, ai_score, ai_json, ai_at, ai_error, non_it_strike, group_id, ip, review_status) " +
     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)")
     .bind(u.id, now, sub.title, sub.body, sub.answer, sub.difficulty, sub.type, sub.tags,
       sub.categoryId, sub.sourceNote,
-      ai.verdict, ai.score || 0, JSON.stringify(ai.raw || { reasons: ai.reasons || [] }).slice(0, 8000),
+      ai.verdict, ai.score || 0, JSON.stringify(aiJson).slice(0, 8000),
       ai.verdict === "error" ? 0 : now, ai.error || "",
       groupId, ip, reviewStatus).run();
   const subId = ins.meta && ins.meta.last_row_id;
