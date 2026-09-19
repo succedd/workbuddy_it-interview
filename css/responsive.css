@@ -43,6 +43,12 @@
 @media (hover: none), (pointer: coarse) {
   .kbd-hint { display: none !important; }
   [data-tooltip-kbd]::after { display: none !important; }
+  /* 触屏没有 hover → 所有 data-tooltip 气泡都没有意义（点一下就会「粘住」）。
+     而且它们是 `white-space: nowrap` 的长文本 + 居中定位，实测首页统计卡上那 4 个
+     提示把页面撑宽 92px，造成整页可横向拖动 —— 这正是顶栏修好后暴露出来的第二处溢出源。
+     `U.tooltip()` 只绑 mouseenter（本身就是桌面机制）、且另有 .js-tooltip 浮层，
+     所以这里整个隐藏不会丢功能。 */
+  [data-tooltip]::after { display: none !important; }
 }
 
 .menu-toggle { display: none; }
@@ -86,4 +92,54 @@ html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); bo
   .wk-num { font-size: 19px; gap: 4px; }
   .wk-trend { font-size: 10px; padding: 0 5px; }
   .wk-stat { padding: 0 4px; }
+}
+
+/* =========================================================================
+ * 触屏可用性（2026-09-19 移动端实测体检后补）
+ * ========================================================================= */
+
+/* 仅移动端显示的入口（抽屉专属：管理后台 / 管理员登录）。
+   这里用**反向断点**实现——桌面端隐藏、移动端完全不动 display，
+   避免破坏 .side-nav-item 自身的 flex 布局（那样会把图标与文字挤成两行）。 */
+@media (min-width: 721px) { .mobile-only { display: none !important; } }
+
+@media (max-width: 720px) {
+  /* ① 点击区不小于 44×44（Apple HIG）。实测：#menu-toggle 仅 28×36、
+        #theme-btn 36×36、抽屉项高 39px、登录键高 30px —— 手机上容易点空。
+        ⚠️ 只限顶栏/抽屉范围：`.icon-btn` 在管理表格、弹窗关闭等处也大量使用，
+        全局放大 44px 会把那些密集布局撑坏。 */
+  #menu-toggle,
+  .topbar-actions .icon-btn { width: 44px; height: 44px; }
+  .topbar-actions .btn-sm { min-height: 44px; }
+  .side-nav-item { min-height: 44px; }
+  .drawer-search input { height: 44px; }
+  .modal-head .icon-btn { width: 40px; height: 40px; }
+
+  /* ② 输入控件字号提到 16px。iOS Safari 聚焦 <16px 的输入框会**把整页放大且不缩回**。
+        实测：抽屉搜索 14px、首页搜索 15px、题库搜索 13.3px、三个筛选下拉 13px。
+        这里用 !important 是刻意的：`.select-mini`（0,1,0）这类类选择器特异性高于
+        元素选择器（0,0,1），不写 !important 就会被压回去（首轮就是这样漏掉了 3 个下拉）。 */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select, textarea { font-size: 16px !important; }
+
+  /* ③ 正文表格：保持自然列宽 + 横向滚动，杜绝窄列「一个汉字一行」
+        （容器由 js/utils.js#U.md 的 .md-table-wrap 提供；桌面端不加 nowrap，
+         让长句照常换行，不受影响）。 */
+  .md-table-wrap > table { width: auto; min-width: 100%; }
+  .md-table-wrap th, .md-table-wrap td { white-space: nowrap; }
+
+  /* ④ 顶栏帐号昵称限宽：登录后昵称最长 10 字，不限制会重新把顶栏撑爆 */
+  .topbar-actions .acct-name { max-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ⑤ Hero 搜索行：原本是「输入框 + 搜索 + 随机一题 + 技术教程」4 个元素挤一行且不换行，
+        手机放不下 —— 实测 390px 溢出 45px，且输入框被压到只剩 26px 宽。
+        改为：输入框独占一行，3 个按钮在下一行，放不下自然换行（wrap 兜底，不会再溢出）。 */
+  .hero-search { flex-wrap: wrap; }
+  .hero-search input { flex: 1 1 100%; min-width: 0; }
+  .hero-search .btn { flex: 1 1 auto; padding: 0 12px; }
+
+  /* ⑥ 次级点击区：顶栏品牌与 .btn-sm（30 → 36，与 .btn 默认一致）、热门标签 */
+  #topbar .brand { min-height: 44px; }
+  .btn-sm { height: 36px; }
+  .hot-tags .tag { padding: 6px 12px; font-size: 13px; }
 }

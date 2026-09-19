@@ -1,5 +1,8 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* 触屏点按：去掉浏览器默认的浅蓝高亮块（实测为 rgba(51,181,229,.4)）。
+   站内所有可点元素都有自己的 hover / active / 选中态反馈，那层蓝闪只会显廉价。 */
+html { -webkit-tap-highlight-color: transparent; }
 body {
   font-family: var(--font-zh);
   background: var(--bg);
@@ -7,6 +10,9 @@ body {
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* 触屏滚动：容器滚到头后不要「穿透」给背景，也避免安卓下拉刷新误触发整页刷新
+     （本站是 SPA + 本地库，误刷新会重跑开机加载动画）。 */
+  overscroll-behavior-y: contain;
 }
 a { color: var(--c-primary); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -316,6 +322,11 @@ html[data-theme="dark"] .md pre { background: #0b1220; border: 1px solid var(--b
 .md blockquote { border-left: 3px solid var(--c-primary); margin: 1em 0; padding: 4px 14px; color: var(--text-secondary); background: var(--bg-subtle); border-radius: 0 8px 8px 0; }
 .md table { border-collapse: collapse; width: 100%; margin: 1em 0; }
 .md th,.md td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+/* 表格横向滚动容器（由 js/utils.js#U.md 包出）：窄屏救命用。
+   `width:auto; min-width:100%` 让表格在放得下时铺满、放不下时保持自然列宽并横滚，
+   从而不再把窄列压成「一列一个字」。详见 responsive.css 的窄屏 nowrap 规则。 */
+.md-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; margin: 1em 0; }
+.md-table-wrap > table { margin: 0; width: auto; min-width: 100%; }
 .md ul,.md ol { padding-left: 1.4em; }
 .md a { color: var(--c-primary); }
 .md img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); margin: 8px 0; background: var(--bg-subtle); }
@@ -411,8 +422,9 @@ table.data tr:hover td { background: var(--bg-hover); }
 .pager .pg-input { width: 58px; height: 34px; padding: 0 8px; text-align: center; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elevated); color: var(--text); font-family: inherit; font-size: 13px; }
 .pager .pg-input:focus { outline: none; border-color: var(--c-primary); }
 @media (max-width: 640px) {
-  .pager { gap: 4px; }
-  .pager button { min-width: 32px; height: 32px; padding: 0 8px; }
+  .pager { gap: 5px; }
+  /* 40px：32px 在手机上点不准（Apple HIG 建议 44，翻页一排 5 个按钮折中取 40） */
+  .pager button { min-width: 40px; height: 40px; padding: 0 8px; }
   .pager .pg-jump { display: none; }          /* 窄屏没地方放跳页框，隐藏（上一页/下一页仍然可用） */
 }
 

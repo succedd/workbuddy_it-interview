@@ -188,8 +188,10 @@
     const theme = App.getTheme();
     const themeIcon = theme === "dark" ? "sun" : theme === "system" ? "monitor" : "moon";
     const themeLabel = theme === "dark" ? "暗色" : theme === "system" ? "跟随系统" : "亮色";
+    /* 管理入口在 ≤720px 也隐藏（顶栏放不下），改由抽屉里的「管理后台 / 管理员登录」承载，
+       见 renderSidebar —— 功能不丢，只是换了个承载容器。 */
     const adminHtml = Auth.isAdmin()
-      ? `<div class="dropdown-wrap"><button class="btn btn-ghost btn-sm" id="admin-btn">${U.icon("shield")} 管理</button>
+      ? `<div class="dropdown-wrap desktop-only"><button class="btn btn-ghost btn-sm" id="admin-btn">${U.icon("shield")} 管理</button>
          <div class="dropdown" id="admin-menu" style="display:none">
            <a href="#/admin/dashboard">${U.icon("barChart")} 仪表盘</a>
            <a href="#/admin/questions">${U.icon("fileText")} 题目管理</a>
@@ -203,7 +205,7 @@
            <div class="sep"></div>
            <a href="#" id="admin-logout">${U.icon("x")} 退出管理</a>
          </div></div>`
-      : `<button class="btn btn-ghost btn-sm" id="admin-login-btn">${U.icon("user")} 管理员</button>`;
+      : `<button class="btn btn-ghost btn-sm desktop-only" id="admin-login-btn">${U.icon("user")} 管理员</button>`;
     topbar.innerHTML = `
       <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="打开菜单">${U.icon("menu")}</button>
       <a class="brand" href="#/"><span class="logo">I</span> IT面试题库</a>
@@ -212,14 +214,17 @@
         <input id="global-search" type="text" placeholder="搜索题目、技术、岗位、标签…" />
       </div>
       <div class="topbar-actions">
-        <a class="icon-btn" href="#/category" title="技术体系">${U.icon("layers")}</a>
-        <a class="icon-btn" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
-        <a class="icon-btn" href="#/mock" title="模拟面试">${U.icon("play")}</a>
-        <a class="icon-btn" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
+        <!-- 这 4 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
+             完全重复，而顶栏在手机上根本放不下（实测 390px 溢出 172px，导致主题键被裁、
+             「登录」「管理员」被挤出屏外）。保留主题键与帐号入口。 -->
+        <a class="icon-btn desktop-only" href="#/category" title="技术体系">${U.icon("layers")}</a>
+        <a class="icon-btn desktop-only" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
+        <a class="icon-btn desktop-only" href="#/mock" title="模拟面试">${U.icon("play")}</a>
+        <a class="icon-btn desktop-only" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
-        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} ${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
+        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span></a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
         ${adminHtml}
         ${`<span class="vis-chip" title="本机统计（仅记录当前浏览器的访问次数，非全站 PV）">${U.icon("eye")}<span class="vic">今日 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
@@ -251,8 +256,8 @@
 
   /* ============================ 侧边栏 ============================ */
   function renderSidebar(r) {
-    const navItem = (href, icon, label, active, badge) =>
-      `<a class="side-nav-item ${active ? "active" : ""}${badge ? " has-due" : ""}" href="${href}">${U.icon(icon)}<span>${label}</span>${badge ? `<span class="due-badge">${badge}</span>` : ""}</a>`;
+    const navItem = (href, icon, label, active, badge, extraCls) =>
+      `<a class="side-nav-item ${active ? "active" : ""}${badge ? " has-due" : ""}${extraCls ? " " + extraCls : ""}" href="${href}">${U.icon(icon)}<span>${label}</span>${badge ? `<span class="due-badge">${badge}</span>` : ""}</a>`;
     const p0 = r.parts[0] || "home";
     /* 抽屉内搜索框（仅 ≤720px 显示，桌面端由 CSS 隐藏）：顶栏搜索在移动端被隐藏，
        这里补上唯一的搜索入口。`.drawer-search` 必须是 input 的**直接父元素**，
@@ -275,8 +280,19 @@
       ${navItem("#/history", "history", "浏览历史", p0 === "history")}
       ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
       ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
-      ${navItem("#/about", "info", "关于本站", p0 === "about")}
-      <div class="nav-section-title">技术分类</div>
+      ${navItem("#/about", "info", "关于本站", p0 === "about")}`;
+
+    /* 移动端专属：「管理员登录」入口。**必须插在「技术分类」之前** —— 分类树很长，
+       放最后会被埋到抽屉最底部，手机上得翻过十几个导航项 + 整棵分类树才看得到。
+       顶栏那个「管理员」按钮在 ≤720px 被隐藏（顶栏放不下），这里是它的替代路径。
+       只在**未登录管理员**时渲染：已登录时下方本来就有完整的「管理」分区，
+       再放一个会出现两个同名「管理」标题。 */
+    if (!Auth.isAdmin()) {
+      html += `<div class="nav-section-title mobile-only">管理</div>
+        <a class="side-nav-item mobile-only" id="side-admin-login" href="#">${U.icon("shield")}<span>管理员登录</span></a>`;
+    }
+
+    html += `<div class="nav-section-title">技术分类</div>
       <div id="side-tree">${renderTree(0, r)}</div>`;
     if (Auth.isAdmin()) {
       html += `<div class="nav-section-title">管理</div>
@@ -300,6 +316,10 @@
       ds.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); goSearch(ds.value.trim()); } });
       attachHistory(ds, goSearch);
     }
+    /* 抽屉里的「管理员登录」（仅移动端可见）：与顶栏按钮同一个出口 openAdminLogin，
+       先关抽屉再弹登录框，避免登录框叠在抽屉上。 */
+    const sal = $("#side-admin-login");
+    if (sal) sal.onclick = (e) => { e.preventDefault(); closeDrawer(); openAdminLogin(); };
     $$("#side-tree .tree-row").forEach(row => {
       row.onclick = (e) => {
         if (e.target.closest(".twist")) {
