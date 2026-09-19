@@ -400,9 +400,21 @@ table.data th { color: var(--text-secondary); font-weight: 600; background: var(
 table.data tr:hover td { background: var(--bg-hover); }
 
 /* ============ Pagination ============ */
-.pager { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; }
-.pager button { min-width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); }
-.pager button.active { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+.pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; }
+.pager button { min-width: 34px; height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13px; transition: background .15s, border-color .15s, color .15s; }
+.pager button.active { background: var(--c-primary); color: #fff; border-color: var(--c-primary); font-weight: 600; }
+.pager button:disabled { opacity: .45; cursor: not-allowed; }
+.pager button:not(.active):not(:disabled):hover { border-color: var(--c-primary); color: var(--c-primary); background: var(--c-primary-50); }
+.pager .pg-nav { padding: 0 12px; color: var(--text-secondary); }
+.pager .pg-gap { min-width: 22px; text-align: center; color: var(--text-muted); user-select: none; }
+.pager .pg-jump { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+.pager .pg-input { width: 58px; height: 34px; padding: 0 8px; text-align: center; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elevated); color: var(--text); font-family: inherit; font-size: 13px; }
+.pager .pg-input:focus { outline: none; border-color: var(--c-primary); }
+@media (max-width: 640px) {
+  .pager { gap: 4px; }
+  .pager button { min-width: 32px; height: 32px; padding: 0 8px; }
+  .pager .pg-jump { display: none; }          /* 窄屏没地方放跳页框，隐藏（上一页/下一页仍然可用） */
+}
 
 /* ============ Dropzone ============ */
 .dropzone { border: 2px dashed var(--border-strong); border-radius: var(--radius); padding: 30px; text-align: center; color: var(--text-secondary); transition: all .15s; cursor: pointer; }
