@@ -170,6 +170,24 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 .side-nav-item.active { background: var(--c-primary-50); color: var(--c-primary); font-weight: 600; }
 .side-nav-item .ic { width: 17px; height: 17px; }
 
+/* 重点入口强调（20260919h）：侧栏项有二十多个，纯灰字容易被整片略过。
+   「投稿」是本站唯一的用户参与入口，用主色底 + 描边 + 缓慢呼吸描边把它挑出来。
+   注意：呼吸只动 box-shadow，不动 transform/尺寸 —— 免得侧栏跟着抖。 */
+.side-nav-item.nav-cta {
+  background: var(--c-primary-50); color: var(--c-primary); font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22);
+  animation: navCta 3.2s ease-in-out infinite;
+}
+.side-nav-item.nav-cta:hover { background: rgba(37, 99, 235, .18); color: var(--c-primary-600); }
+.side-nav-item.nav-cta.active { background: var(--c-primary); color: #fff; animation: none; box-shadow: none; }
+.side-nav-item.nav-cta .ic { color: currentColor; }
+.nav-section-title.nav-cta-title { color: var(--c-primary); }
+@keyframes navCta {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22); }
+  50%      { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .62); }
+}
+@media (prefers-reduced-motion: reduce) { .side-nav-item.nav-cta { animation: none; } }
+
 /* ============ Cards ============ */
 .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
 .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
@@ -193,6 +211,12 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 /* ============ Forms ============ */
 label.field { display: block; margin-bottom: 14px; }
 label.field > span { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
+/* 字段辅助说明（20260919h）：placeholder 在单行输入框里一定会被截断，
+   所以「长提示」一律放这里 —— 可换行、整段可见。
+   用 div 而不是 span：`label.field > span` 会把 span 变成字段标题样式。 */
+.field-hint { font-size: 12px; line-height: 1.6; color: var(--text-muted); margin-top: 5px; }
+.field-hint b { color: var(--text-secondary); font-weight: 600; }
+.field-hint .eg { color: var(--c-primary); }
 input[type=text], input[type=password], input[type=number], input[type=email], textarea, select {
   width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   background: var(--bg-elevated); color: var(--text); font-size: 14px; font-family: inherit;
@@ -1053,6 +1077,16 @@ body.pan-fs-lock { overflow: hidden; }
 .tab-item.active, .tab-item:hover { color: var(--c-primary); }
 .tab-item.active .ic { animation: tabPop .3s ease-out; }
 .tab-item:active { background: var(--bg-hover); }
+/* 底部栏「投稿」强调（20260919h）：与侧栏 .nav-cta 同一意图 ——
+   移动端它是最主要的参与入口，做成实心圆底图标，跟其它 5 个线性图标区分开。
+   6 个 tab 在 360px 屏上各约 60px，26px 图标不会挤。 */
+.tab-item.tab-cta { color: var(--c-primary); }
+.tab-item.tab-cta > span { color: var(--c-primary); }
+.tab-item.tab-cta .ic {
+  box-sizing: border-box; width: 26px; height: 26px; padding: 4px;
+  background: var(--c-primary); color: #fff; border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, .35);
+}
 .tab-badge {
   position: absolute; top: 3px; left: 50%; margin-left: 3px;
   min-width: 16px; padding: 0 4px; border-radius: 9px;

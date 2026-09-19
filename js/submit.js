@@ -59,17 +59,68 @@
   }
   function authorName(r) { return r.authorNick || r.authorEmail || ("用户 #" + r.user_id); }
 
-  /* 全站技术分类平铺表（供 datalist 搜索用）。缓存一次，分类是静态数据。 */
+  /* 全站技术分类平铺表（供 datalist 搜索用）。缓存一次 —— 分类是静态数据，不用每次重建。
+     ⚠️ 空结果**绝不能缓存**（2026-09-19 实测踩到）：`if (_flat)` 对 `[]` 是真值，所以只要在
+        `Services.reload()` 完成前被调用一次（例如从 hashchange 路由过来、而分类还没装载），
+        就会把空数组永久钉住 —— 之后所有页面都渲染出 0 个分类候选，且看不出任何报错。
+        现在的契约：categories 为空时**照常返回空数组但不写缓存**，下次调用自然重算。 */
   let _flat = null;
   function flatCats() {
-    if (_flat) return _flat;
-    _flat = (Services.categories || []).map(function (c) {
+    if (_flat && _flat.length) return _flat;
+    const cats = Services.categories || [];
+    if (!cats.length) return [];              // 尚未装载：给空结果，但不污染缓存
+    const built = cats.map(function (c) {
       const path = Services.categoryPath(c.id);
       return { id: c.id, name: c.name, path: (path && path.length ? path.join(" / ") : c.name) };
     }).filter(function (c) { return c.path; });
-    _flat.sort(function (a, b) { return a.path.localeCompare(b.path, "zh"); });
+    built.sort(function (a, b) { return a.path.localeCompare(b.path, "zh"); });
+    if (!built.length) return [];             // 全是空 path 的退化情况：同样不缓存
+    _flat = built;
     return _flat;
   }
+
+/* ---------- AI 报告（只读）—— 审核面板与「待入库」面板共用 ---------- */
+function aiReportHtml(ai, row) {
+  if (!ai || !ai.verdict) return '<div class="note" style="margin-top:12px">这条没有可展示的 AI 报告（AI 当时不可用，或数据已被清理）。</div>';
+  const score = num(ai.qualityScore != null ? ai.qualityScore : ai.score);
+  const dims = (ai.dimensions && typeof ai.dimensions === "object") ? ai.dimensions : {};
+  const DIM_LABEL = { clarity: "表述清晰度", depth: "技术深度", answerAccuracy: "答案准确性", usefulness: "实用性", uniqueness: "独特性" };
+  const dimRows = Object.keys(DIM_LABEL).filter(function (k) { return dims[k] != null; }).map(function (k) {
+    const v = num(dims[k]);
+    return '<div style="display:flex;align-items:center;gap:8px;margin:3px 0">' +
+      '<span class="muted" style="font-size:12px;width:80px;flex:none">' + DIM_LABEL[k] + "</span>" + bar(v) +
+      '<span class="muted" style="font-size:12px;width:30px;text-align:right">' + v + "</span></div>";
+  }).join("");
+  const ul = function (arr) {
+    if (!arr || !arr.length) return "";
+    return '<ul style="margin:4px 0 0;padding-left:20px;font-size:13.5px">' + arr.map(function (x) {
+      return '<li style="margin:2px 0">' + esc(x) + "</li>";
+    }).join("") + "</ul>";
+  };
+  return '<div style="margin-top:14px;padding:12px;border-radius:10px;background:rgba(128,128,128,.08)">' +
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
+      vTag(ai.verdict) +
+      (score ? '<span class="muted" style="font-size:13px">质检分 <b>' + score + "</b> / 100</span>" : "") +
+      (ai.isIT === false ? '<span class="tag tag-danger">AI 认为不属于 IT</span>' : "") +
+      (ai.inScope === false ? '<span class="tag tag-warning">AI 认为不在本站体系内</span>' : "") +
+    "</div>" +
+    (score ? '<div style="display:flex;align-items:center;gap:8px;margin-top:8px">' + bar(score) + "</div>" : "") +
+    (dimRows ? '<div style="margin-top:8px">' + dimRows + "</div>" : "") +
+    ((ai.categoryPath && ai.categoryPath.length) ? '<div class="pill-row" style="margin-top:10px"><span class="muted" style="font-size:13px">建议归入：</span>' + ai.categoryPath.map(function (p) { return '<span class="tag tag-outline">' + esc(p) + "</span>"; }).join("") + "</div>" : "") +
+    ((ai.reasons && ai.reasons.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 判断依据</div>' + ul(ai.reasons) + "</div>" : "") +
+    ((ai.improvements && ai.improvements.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 改进建议</div>' + ul(ai.improvements) + "</div>" : "") +
+    /* AI 不可用时给出「为什么」，否则运维只能去翻 D1。仅在审核面板可见，不暴露给投稿人。 */
+    ((ai.verdict === "error" && row && row.ai_error)
+      ? '<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(220,130,0,.12);font-size:12.5px;line-height:1.6">' +
+        "<b>AI 未参与质检</b>（本条已照常进入人工队列，不影响投稿人）<br>" +
+        '<span class="muted" style="word-break:break-all">' + esc(String(row.ai_error).slice(0, 300)) + "</span></div>"
+      : "") +
+    ((ai._usage && ai._usage.total)
+      ? '<div class="muted" style="font-size:12px;margin-top:8px">本次质检 token ' + num(ai._usage.total) +
+        "（模型 " + esc(String(ai._usage.model || "?")) + "）</div>"
+      : "") +
+    "</div>";
+}
   function catIdToPath(id) {
     if (id == null || id === "") return "";
     const f = flatCats().filter(function (c) { return String(c.id) === String(id); })[0];
@@ -85,6 +136,22 @@
     return '<datalist id="' + idAttr + '">' + flatCats().map(function (c) {
       return '<option value="' + esc(c.path) + '"></option>';
     }).join("") + "</datalist>";
+  }
+  /* AI 给的 categoryPath（形如 ["计算机网络与协议","HTTP与HTTPS"]）→ 本地分类 id。
+     ⚠️ 不能直接 join(" / ") 去查表就完事：AI 只看到**前两级**（Worker 喂给它的技术体系
+     只列 depth 0/1），而本地路径可能是三级（"网络 / 协议 / HTTP"）。所以按「由长到短
+     逐级前缀」试，命中即返回；再退化到「末级名字在全站唯一」时才认。两级都匹配不上、
+     或末级重名（如多个方向下都有「基础」）就返回空串 —— 宁可让管理员手选，也不填错。 */
+  function aiCatPathToId(path) {
+    const want = (Array.isArray(path) ? path : []).map(function (x) { return String(x || "").trim(); }).filter(Boolean);
+    if (!want.length) return "";
+    for (let n = want.length; n >= 1; n--) {
+      const id = catPathToId(want.slice(0, n).join(" / "));
+      if (id) return id;
+    }
+    const last = want[want.length - 1];
+    const hits = flatCats().filter(function (c) { return c.name === last; });
+    return hits.length === 1 ? String(hits[0].id) : "";
   }
 
   /* ---------- 本地重复候选（投稿前在浏览器里算，不额外花 AI 额度） ----------
@@ -106,15 +173,18 @@
     return String(s || "").toLowerCase()
       .replace(/[\s,，.。、；;：:？！?!"'“”‘’()（）\[\]【】<>《》/\\|+\-*_~`]/g, "");
   }
-  function dupCandidates(title) {
+  /* pool / threshold 可选：「投稿前预筛」只在已发布题里比（给 AI 当线索）；
+     「收录进库」要连草稿一起比 —— 草稿重复同样是重复。 */
+  function dupCandidates(title, pool, threshold) {
     try {
       const t = normalizeTitle(title);
       if (t.length < 4) return [];
-      const pool = (Services.published ? Services.published() : Services.questions) || [];
+      const src = pool || (Services.published ? Services.published() : Services.questions) || [];
+      const lim = threshold == null ? 0.5 : threshold;
       const scored = [];
-      for (let i = 0; i < pool.length; i++) {
-        const d = dice(t, normalizeTitle(pool[i].title));
-        if (d >= 0.5) scored.push({ d: d, title: String(pool[i].title || "").slice(0, 120) });
+      for (let i = 0; i < src.length; i++) {
+        const d = dice(t, normalizeTitle(src[i].title));
+        if (d >= lim) scored.push({ d: d, title: String(src[i].title || "").slice(0, 120) });
       }
       scored.sort(function (a, b) { return b.d - a.d; });
       return scored.slice(0, 6).map(function (x) { return x.title; });
@@ -153,10 +223,11 @@
       });
     return false;
   }
-  function requireServerAdmin() {
+  function requireServerAdmin(desc) {
     const A = acc();
     if (A && A.isServerAdmin()) return true;
-    gate("shield", "需要管理员权限", "专家群组管理会直接分配审核范围，仅管理员可用。",
+    gate("shield", "需要管理员权限",
+      desc || "专家群组管理会直接分配审核范围，仅管理员可用。",
       "前往登录", function () { App.go("/account"); });
     return false;
   }
@@ -180,24 +251,35 @@
       </div>
       <div class="card">
         <label class="field"><span>题目标题 *</span>
-          <input id="s-title" maxlength="200" placeholder="一句话说清考什么，例如：MySQL 为什么用 B+ 树而不是 B 树？" /></label>
+          <input id="s-title" maxlength="200" placeholder="如：MySQL 为什么用 B+ 树而不是 B 树？" />
+          <div class="field-hint">一句话说清考什么。标题既是查重依据、也决定审核员的第一眼判断 ——
+            别写「一道 MySQL 题」这种笼统标题，把<b>具体考点</b>写进标题。</div></label>
         <div class="grid grid-cols-2" style="gap:16px">
           <label class="field"><span>技术分类（输入关键词后从下拉里选一个）</span>
-            <input id="s-cat" list="s-cat-opts" autocomplete="off" placeholder="如：Java / 并发编程" />
+            <input id="s-cat" list="s-cat-opts" autocomplete="off" placeholder="输入关键词后点选" />
+            <div class="field-hint">必须从下拉候选里点选，不能自己造分类名。拿不准也没关系，AI 与审核员会帮你归位。</div>
             ${catDatalist("s-cat-opts")}</label>
           <label class="field"><span>难度</span>
-            <select id="s-diff" class="full">${diffs.map(function (d) { return "<option" + (d === "中级" ? " selected" : "") + ">" + d + "</option>"; }).join("")}</select></label>
+            <select id="s-diff" class="full">${diffs.map(function (d) { return "<option" + (d === "中级" ? " selected" : "") + ">" + d + "</option>"; }).join("")}</select>
+            <div class="field-hint">按「大多数候选人答不上来」的程度估。</div></label>
           <label class="field"><span>题型</span>
-            <select id="s-type" class="full">${types.map(function (t) { return "<option" + (t === "简答题" ? " selected" : "") + ">" + t + "</option>"; }).join("")}</select></label>
+            <select id="s-type" class="full">${types.map(function (t) { return "<option" + (t === "简答题" ? " selected" : "") + ">" + t + "</option>"; }).join("")}</select>
+            <div class="field-hint">面试里最常以哪种形式被问出来就选哪种。</div></label>
           <label class="field"><span>技术标签（逗号分隔）</span>
-            <input id="s-tags" maxlength="200" placeholder="如：MySQL,索引,B+树" /></label>
+            <input id="s-tags" maxlength="200" placeholder="如：MySQL,索引,B+树" />
+            <div class="field-hint">3～6 个最相关的关键词，方便别人搜到这道题。</div></label>
         </div>
         <label class="field"><span>题目正文 *（Markdown）</span>
-          <textarea id="s-body" style="min-height:150px" placeholder="把题目描述写清楚：背景、约束、具体问什么。"></textarea></label>
+          <textarea id="s-body" style="min-height:150px" placeholder="背景、约束、具体问什么"></textarea>
+          <div class="field-hint">把题干写清楚三件事：<b>背景</b>（什么场景下遇到）、<b>约束</b>（数据规模 / 版本 / 硬件限制）、
+            <b>具体问什么</b>（要候选人回答哪一个点）。</div></label>
         <label class="field"><span>参考答案（Markdown，写得越完整越容易通过）</span>
-          <textarea id="s-answer" style="min-height:190px" placeholder="建议分点作答；不确定的地方写清「待确认」。"></textarea></label>
+          <textarea id="s-answer" style="min-height:190px" placeholder="建议分点作答：是什么 → 为什么"></textarea>
+          <div class="field-hint">分点写，每点讲清「是什么 + 为什么」。<b>追问的深度决定这道题的价值</b>；
+            没把握的地方直接写「待确认」，不要编。</div></label>
         <label class="field"><span>来源备注（可选）</span>
-          <input id="s-note" maxlength="200" placeholder="如：2024 年某厂三面真题 / 来自某开源项目 issue" /></label>
+          <input id="s-note" maxlength="200" placeholder="如：2024 某厂三面真题" />
+          <div class="field-hint">写出处有助于审核员判断可信度；不填也能提交。</div></label>
         <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn btn-primary" id="s-go">${U.icon("sparkles")} 提交并接受 AI 质检</button>
           <a class="btn" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
@@ -523,49 +605,6 @@
       }
     }
 
-    /* ---------- AI 报告（只读） ---------- */
-    function aiReportHtml(ai, row) {
-      if (!ai || !ai.verdict) return '<div class="note" style="margin-top:12px">这条没有可展示的 AI 报告（AI 当时不可用，或数据已被清理）。</div>';
-      const score = num(ai.qualityScore != null ? ai.qualityScore : ai.score);
-      const dims = (ai.dimensions && typeof ai.dimensions === "object") ? ai.dimensions : {};
-      const DIM_LABEL = { clarity: "表述清晰度", depth: "技术深度", answerAccuracy: "答案准确性", usefulness: "实用性", uniqueness: "独特性" };
-      const dimRows = Object.keys(DIM_LABEL).filter(function (k) { return dims[k] != null; }).map(function (k) {
-        const v = num(dims[k]);
-        return '<div style="display:flex;align-items:center;gap:8px;margin:3px 0">' +
-          '<span class="muted" style="font-size:12px;width:80px;flex:none">' + DIM_LABEL[k] + "</span>" + bar(v) +
-          '<span class="muted" style="font-size:12px;width:30px;text-align:right">' + v + "</span></div>";
-      }).join("");
-      const ul = function (arr) {
-        if (!arr || !arr.length) return "";
-        return '<ul style="margin:4px 0 0;padding-left:20px;font-size:13.5px">' + arr.map(function (x) {
-          return '<li style="margin:2px 0">' + esc(x) + "</li>";
-        }).join("") + "</ul>";
-      };
-      return '<div style="margin-top:14px;padding:12px;border-radius:10px;background:rgba(128,128,128,.08)">' +
-        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
-          vTag(ai.verdict) +
-          (score ? '<span class="muted" style="font-size:13px">质检分 <b>' + score + "</b> / 100</span>" : "") +
-          (ai.isIT === false ? '<span class="tag tag-danger">AI 认为不属于 IT</span>' : "") +
-          (ai.inScope === false ? '<span class="tag tag-warning">AI 认为不在本站体系内</span>' : "") +
-        "</div>" +
-        (score ? '<div style="display:flex;align-items:center;gap:8px;margin-top:8px">' + bar(score) + "</div>" : "") +
-        (dimRows ? '<div style="margin-top:8px">' + dimRows + "</div>" : "") +
-        ((ai.categoryPath && ai.categoryPath.length) ? '<div class="pill-row" style="margin-top:10px"><span class="muted" style="font-size:13px">建议归入：</span>' + ai.categoryPath.map(function (p) { return '<span class="tag tag-outline">' + esc(p) + "</span>"; }).join("") + "</div>" : "") +
-        ((ai.reasons && ai.reasons.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 判断依据</div>' + ul(ai.reasons) + "</div>" : "") +
-        ((ai.improvements && ai.improvements.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 改进建议</div>' + ul(ai.improvements) + "</div>" : "") +
-        /* AI 不可用时给出「为什么」，否则运维只能去翻 D1。仅在审核面板可见，不暴露给投稿人。 */
-        ((ai.verdict === "error" && row && row.ai_error)
-          ? '<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(220,130,0,.12);font-size:12.5px;line-height:1.6">' +
-            "<b>AI 未参与质检</b>（本条已照常进入人工队列，不影响投稿人）<br>" +
-            '<span class="muted" style="word-break:break-all">' + esc(String(row.ai_error).slice(0, 300)) + "</span></div>"
-          : "") +
-        ((ai._usage && ai._usage.total)
-          ? '<div class="muted" style="font-size:12px;margin-top:8px">本次质检 token ' + num(ai._usage.total) +
-            "（模型 " + esc(String(ai._usage.model || "?")) + "）</div>"
-          : "") +
-        "</div>";
-    }
-
     /* ---------- 审核面板 ---------- */
     function openPanel(row, aiJson) {
       if (!row) { U.toast("找不到这条投稿的数据，请刷新列表", "warn"); return; }
@@ -874,6 +913,328 @@
     load();
   };
 
+  /* ==================== ⑤ 待入库（审核通过 → 收进本机题库） ====================
+   * 这是「审核」与「发布」之间的最后一道人工闸门，也是投稿变成题目的**唯一**出口：
+   *   审核通过（approved）只说明内容可用、可以收，题还没进库；
+   *   收录 = ① 写进本机 IndexedDB（Services.addQuestion）→ ② 把新题号回写服务端（bank_id）。
+   * 两步分开是有意的：① 失败不会动服务端；② 失败也不丢题 —— 这条投稿仍留在「待入库」，
+   * 刷新再点一次即可（本地已有同标题会被收录前的查重拦下，不会重复入库）。
+   * 反向的「撤销入库」把 bank_id 写回空串，条目自动回到「待入库」，用于分类选错或本地误删。
+   */
+  const IB_LABEL = { inbox: "待入库", inbanked: "已入库" };
+
+  S.renderInbox = function () {
+    document.title = "待入库投稿 · IT面试题库";
+    if (!requireServerAdmin("「待入库」是审核与发布之间的最后一道闸门 —— 把审核通过的投稿收进本机题库。这一步只有管理员能操作。")) return;
+    const A = acc();
+    S._ibStatus = "inbox";
+    S._ibRows = [];
+
+    setMain(crumb("待入库") + `
+      <div class="section-head"><h2>待入库
+        <span class="tag tag-primary" style="vertical-align:middle">管理员 · 审核通过待收录</span>
+      </h2></div>
+      <div class="note ai" style="margin-bottom:14px">
+        <b>审核通过 ≠ 已进题库。</b>专家判过的题在这里等你最后确认一次：点「收录」把它写进<b>本机题库</b>，
+        并把题号回写服务端，这条就离开本列表。默认存为<b>草稿</b>，想直接上线就用「收录并发布」。
+      </div>
+      <div class="tabs" id="ib-tabs">
+        <button class="btn btn-sm btn-primary" data-st="inbox">待入库</button>
+        <button class="btn btn-sm" data-st="inbanked">已入库</button>
+      </div>
+      <div class="toolbar">
+        <span id="ib-info" class="muted" style="font-size:13px"></span>
+        <span style="flex:1"></span>
+        <a class="btn" href="#/admin/questions">${U.icon("layers")} 题目管理</a>
+        <button class="btn" id="ib-refresh">${U.icon("refresh")} 刷新</button>
+      </div>
+      <div class="card" style="padding:0"><table class="data"><thead id="ib-head"></thead>
+        <tbody id="ib-tb"><tr><td>加载中…</td></tr></tbody></table></div>
+      <div id="ib-panel"></div>`);
+
+    const HEAD = {
+      inbox: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:150px'>投稿者</th><th style='width:140px'>审核人</th><th style='width:130px'>AI 质检</th><th style='width:130px'>通过时间</th><th style='width:120px'>操作</th></tr>",
+      inbanked: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:170px'>本机题库</th><th style='width:140px'>审核人</th><th style='width:130px'>通过时间</th><th style='width:140px'>操作</th></tr>",
+    };
+
+    /* 已入库列表里的「本地题号」是否真的存在于本机题库 —— 本地可能已被删/被清库，
+       那种情况必须显眼提示，否则管理员会以为题还在。 */
+    function localQuestion(bankId) {
+      return (Services.questions || []).filter(function (q) { return String(q.id) === String(bankId); })[0];
+    }
+
+    function rowInbox(s) {
+      let ai = {};
+      try { ai = JSON.parse(s.ai_json || "{}") || {}; } catch (_) {}
+      const cat = catIdToPath(aiCatPathToId(ai.categoryPath)) || catIdToPath(s.category_id);
+      return "<tr>" +
+        "<td>" + s.id + "</td>" +
+        '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
+          '<div class="muted" style="font-size:12px">' + esc(cat || "未选分类") + " · " + esc(s.difficulty || "—") + " · " + esc(s.type || "—") +
+          (s.groupName ? " · 分组：" + esc(s.groupName) : "") + "</div>" +
+          (s.edited_by_reviewer ? '<div style="font-size:12px"><span class="tag tag-ai">审核时改过</span></div>' : "") +
+        "</td>" +
+        '<td class="muted" style="font-size:12px">' + esc(authorName(s)) + "</td>" +
+        '<td class="muted" style="font-size:12px">' + esc(s.reviewerNick || "—") + "</td>" +
+        "<td>" + vTag(s.ai_verdict) + (s.ai_score ? ' <span class="muted" style="font-size:12px">' + s.ai_score + "</span>" : "") + "</td>" +
+        '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(s.review_at) + "</td>" +
+        '<td><button class="btn btn-sm btn-primary" data-act="collect" data-id="' + s.id + '">' + U.icon("plus") + " 收录</button></td>" +
+      "</tr>";
+    }
+
+    function rowInbanked(s) {
+      const bid = String(s.bank_id || "");
+      const local = localQuestion(bid);
+      const canOpen = window.Auth && Auth.isAdmin();          // 题目管理走本地密码门禁
+      let cell;
+      if (!local) {
+        cell = '<span class="tag tag-warning">本机已无此题</span><div class="muted" style="font-size:12px">#' + esc(bid) + "</div>";
+      } else if (canOpen) {
+        cell = '<a class="btn btn-sm" href="#/admin/question/' + esc(bid) + '">#' + esc(bid) + "</a> " +
+          (local.status === "published" ? '<span class="tag tag-success">已发布</span>' : '<span class="tag tag-outline">' + esc(local.status || "draft") + "</span>");
+      } else {
+        cell = "<span>#" + esc(bid) + '</span> <span class="tag tag-outline">' + esc(local.status || "draft") + '</span>' +
+          '<div class="muted" style="font-size:12px">解锁管理密码后可点开</div>';
+      }
+      return "<tr>" +
+        "<td>" + s.id + "</td>" +
+        '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
+          '<div class="muted" style="font-size:12px">' + esc(catIdToPath(s.category_id) || "未选分类") + " · " + esc(s.difficulty || "—") + "</div></td>" +
+        "<td>" + cell + "</td>" +
+        '<td class="muted" style="font-size:12px">' + esc(s.reviewerNick || "—") + "</td>" +
+        '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(s.review_at) + "</td>" +
+        '<td><button class="btn btn-sm" data-act="undo" data-id="' + s.id + '">' + U.icon("refresh") + " 撤销入库</button></td>" +
+      "</tr>";
+    }
+
+    function load(status) {
+      S._ibStatus = status || S._ibStatus;
+      const st = S._ibStatus;
+      $("#ib-head").innerHTML = HEAD[st] || HEAD.inbox;
+      const cols = st === "inbox" ? 7 : 6;
+      const tb = $("#ib-tb");
+      tb.innerHTML = '<tr><td colspan="' + cols + '">加载中…</td></tr>';
+      $$("#ib-tabs button").forEach(function (b) {
+        b.className = "btn btn-sm" + (b.dataset.st === st ? " btn-primary" : "");
+      });
+      A.adminListSubmissions(st).then(function (r) {
+        const rows = r.submissions || [];
+        S._ibRows = rows;
+        $("#ib-info").textContent = IB_LABEL[st] + "：" + rows.length + " 条" + (rows.length >= 100 ? "（只显示最近 100 条）" : "");
+        tb.innerHTML = rows.length
+          ? rows.map(function (s) { return st === "inbox" ? rowInbox(s) : rowInbanked(s); }).join("")
+          : '<tr><td colspan="' + cols + '">' + IB_LABEL[st] + "：暂时没有内容。" +
+            (st === "inbox" ? "所有审核通过的投稿都已收录。" : "还没有收录过任何投稿。") + "</td></tr>";
+        $$("#ib-tb button[data-act='collect']").forEach(function (b) {
+          b.onclick = function () {
+            const id = parseInt(b.dataset.id, 10);
+            openCollector(S._ibRows.filter(function (x) { return x.id === id; })[0]);
+          };
+        });
+        $$("#ib-tb button[data-act='undo']").forEach(function (b) {
+          b.onclick = function () { undo(parseInt(b.dataset.id, 10), b); };
+        });
+        if (st === "inbox") {
+          const n = rows.length;
+          if (n !== (window.App.inboxPending || 0)) { window.App.inboxPending = n; refreshNav(); }
+        }
+      }).catch(function (e) {
+        const code = e && e.status;
+        tb.innerHTML = '<tr><td colspan="' + cols + '">' +
+          (code === 403
+            ? '<span class="tag tag-danger">没有管理员权限</span> ' + esc((e && e.message) || "") +
+              '<div class="muted" style="font-size:12px;margin-top:6px">待入库涉及「发布链路」，只对管理员开放。若你的角色是专家，请走「投稿审核」。</div>'
+            : '<span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
+              '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="ib-retry">' + U.icon("refresh") + " 重试</button></div>") +
+          "</td></tr>";
+        const rt = $("#ib-retry");
+        if (rt) rt.onclick = function () { load(S._ibStatus); };
+      });
+    }
+
+    /* ---------- 收录面板：把投稿「翻译」成一道本地题目 ---------- */
+    function openCollector(row) {
+      if (!row) { U.toast("找不到这条投稿的数据，请刷新列表", "warn"); return; }
+      let ai = {};
+      try { ai = JSON.parse(row.ai_json || "{}") || {}; } catch (_) {}
+      let edited = {};
+      try { edited = JSON.parse(row.edited_json || "{}") || {}; } catch (_) {}
+      /* 取值优先级：审核员的改动 > 投稿原文。审核员改过的版本才是被通过的那一版。 */
+      const pick = function (k, fallback) { return (edited[k] != null && edited[k] !== "") ? edited[k] : (fallback == null ? "" : fallback); };
+      const aiCatId = aiCatPathToId(ai.categoryPath);
+      const curCat = pick("categoryId", row.category_id) || aiCatId;
+      let tagList = [];
+      try { tagList = JSON.parse(pick("tags", row.tags) || "[]"); } catch (_) { tagList = []; }
+      if (!Array.isArray(tagList)) tagList = String(tagList || "").split(/[,，]/);
+      tagList = tagList.map(function (t) { return String(t || "").trim(); }).filter(Boolean);
+      const diffs = ["初级", "中级", "高级", "专家"];
+      const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
+      const curDiff = pick("difficulty", row.difficulty) || "中级";
+      const curType = pick("type", row.type) || "简答题";
+
+      $("#ib-panel").innerHTML = `
+        <div class="card" style="margin-top:16px;border-left:4px solid ${ACCENT[row.ai_verdict] || "#64748B"}">
+          <div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px">
+            <div>
+              <h3 style="margin:0 0 4px">#${row.id} ${esc(pick("title", row.title))}</h3>
+              <div class="muted" style="font-size:12px">
+                投稿者：${esc(authorName(row))} · 通过于 ${fmt(row.review_at)}
+                ${row.reviewerNick ? " · 审核：" + esc(row.reviewerNick) : ""}
+                ${row.groupName ? " · 分组：" + esc(row.groupName) : ""}
+                ${row.edited_by_reviewer ? ' · <span class="tag tag-ai">审核时改过</span>' : ""}
+              </div>
+            </div>
+            <button class="btn btn-sm" id="ib-close">关闭</button>
+          </div>
+          ${row.review_note ? '<div class="note" style="margin-top:10px">审核意见：' + esc(String(row.review_note).slice(0, 300)) + "</div>" : ""}
+          ${aiReportHtml(ai, row)}
+          ${((ai.categoryPath && ai.categoryPath.length) && !aiCatId)
+            ? '<div class="note" style="margin-top:10px">AI 建议的分类「' + esc(ai.categoryPath.join(" / ")) +
+              '」在本站技术体系里没有完全对应的节点，已置空 —— 请手动从下拉里点选一个。</div>'
+            : ""}
+
+          <div class="grid grid-cols-2" style="gap:16px;margin-top:16px">
+            <label class="field"><span>题目标题</span><input id="ib-title" value="${esc(pick("title", row.title))}" /></label>
+            <label class="field"><span>技术分类（必选，从下拉里点选）</span>
+              <input id="ib-cat" list="ib-cat-opts" autocomplete="off" value="${esc(catIdToPath(curCat))}" />
+              <input type="hidden" id="ib-cat-id" value="${esc(curCat)}" />
+              ${catDatalist("ib-cat-opts")}</label>
+            <label class="field"><span>难度</span><select id="ib-diff" class="full">${diffs.map(function (d) { return "<option" + (d === curDiff ? " selected" : "") + ">" + d + "</option>"; }).join("")}</select></label>
+            <label class="field"><span>题型</span><select id="ib-type" class="full">${types.map(function (t) { return "<option" + (t === curType ? " selected" : "") + ">" + t + "</option>"; }).join("")}</select></label>
+          </div>
+          <label class="field"><span>标签（逗号分隔，可留空）</span>
+            <input id="ib-tags" value="${esc(tagList.join("，"))}" placeholder="如：索引优化，执行计划" /></label>
+          <label class="field"><span>题目正文（Markdown）</span>
+            <textarea id="ib-body" style="min-height:150px">${esc(pick("body", row.body))}</textarea></label>
+          <label class="field"><span>参考答案（Markdown）</span>
+            <textarea id="ib-answer" style="min-height:200px">${esc(pick("answer", row.answer))}</textarea></label>
+
+          <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:6px">
+            <button class="btn btn-primary" id="ib-draft">${U.icon("check")} 收录（存草稿）</button>
+            <button class="btn" id="ib-pub">${U.icon("upload")} 收录并发布</button>
+            <button class="btn" id="ib-preview">${U.icon("eye")} 预览 Markdown</button>
+          </div>
+          <div id="ib-preview-box" class="md" style="display:none;margin-top:14px;padding:14px;border-radius:10px;background:rgba(128,128,128,.08)"></div>
+          <div class="note" style="margin-top:12px">
+            「收录」只写<b>本机题库</b>（这台浏览器），题号会回写服务端以免重复收录；
+            题目来源记为 <code>submission</code>，备注里留了投稿编号、投稿者与审核人。
+            云端发布仍走原有流程，可在「备份恢复」页查看云端状态。
+          </div>
+        </div>`;
+
+      try { $("#ib-panel").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {}
+
+      $("#ib-cat").addEventListener("input", function () {
+        const id = catPathToId(this.value);
+        if (id) $("#ib-cat-id").value = id;
+      });
+      $("#ib-close").onclick = function () { $("#ib-panel").innerHTML = ""; };
+      $("#ib-preview").onclick = function () {
+        const box = $("#ib-preview-box");
+        if (box.style.display === "none") {
+          box.innerHTML = "<h4>题目正文</h4>" + U.md($("#ib-body").value) + "<h4>参考答案</h4>" + U.md($("#ib-answer").value);
+          U.highlightAll(box);
+          box.style.display = "";
+          this.innerHTML = U.icon("eyeOff") + " 收起预览";
+        } else {
+          box.style.display = "none";
+          this.innerHTML = U.icon("eye") + " 预览 Markdown";
+        }
+      };
+
+      async function doCollect(publish) {
+        const title = $("#ib-title").value.trim();
+        const body = $("#ib-body").value;
+        const catId = $("#ib-cat-id").value;
+        const tags = $("#ib-tags").value.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 12);
+
+        if (title.length < 6) { U.toast("标题至少 6 个字", "warn"); return; }
+        if (!catId) { U.toast("请从下拉候选里点选一个技术分类", "warn"); $("#ib-cat").focus(); return; }
+        if (String(body || "").trim().length < 10) { U.toast("题目正文太短（至少 10 个字）", "warn"); return; }
+
+        /* 收录前的最后一道查重：连草稿一起比 —— 这一步是防「同一篇稿子被收两次」的关键。
+           提示里不放换行（U.confirm 会把文本转义进 <p>，换行不生效）。 */
+        const dups = dupCandidates(title, Services.questions || [], 0.55);
+        if (dups.length) {
+          const names = dups.map(function (t) { return "「" + String(t).slice(0, 30) + "」"; }).join("、");
+          if (!(await U.confirm("本机题库里已有 " + dups.length + " 道标题高度相似的题：" + names + "。仍要收录吗？",
+            { okText: "仍要收录", note: "若确认是同一道题，请关掉本面板，去题目管理里处理已有的那一道。" }))) return;
+        }
+        if (publish && !(await U.confirm("收录后直接发布到题库（所有人可见）？",
+          { okText: "收录并发布", note: "内容已经过人工审核；发布前最好再核对一遍分类与答案。" }))) return;
+
+        const btns = $$("#ib-panel .btn");
+        btns.forEach(function (b) { b.disabled = true; });
+        const first = $("#ib-draft"); if (first) first.innerHTML = "写入本机题库…";
+
+        let newId = null;
+        try {
+          newId = await Services.addQuestion({
+            categoryId: catId ? parseInt(catId, 10) : null,
+            title: title, body: body, answer: $("#ib-answer").value,
+            difficulty: $("#ib-diff").value, type: $("#ib-type").value,
+            tags: tags, years: "",
+            positionIds: [], positionNames: [],
+            source: "submission",
+            aiScore: num(row.ai_score),
+            status: publish ? "published" : "draft",
+            remark: "投稿 #" + row.id + " · 投稿者 " + authorName(row) + (row.reviewerNick ? " · 审核 " + row.reviewerNick : ""),
+          });
+          await Services.reload();
+        } catch (e) {
+          U.toast("写入本机题库失败：" + ((e && e.message) || e), "error");
+          if (first) first.innerHTML = U.icon("check") + " 收录（存草稿）";
+          btns.forEach(function (b) { b.disabled = false; });
+          return;
+        }
+
+        /* 第 ② 步：回写题号。**失败也不回滚本地题** —— 题已经写进去了，删掉才是真丢数据；
+           只提示这条还会留在「待入库」，刷新后别重复点。 */
+        try {
+          await A.adminInbank(row.id, String(newId));
+          U.toast("已收录为题目 #" + newId + (publish ? "（已发布）" : "（草稿）"), "success");
+          $("#ib-panel").innerHTML = "";
+          load(S._ibStatus);
+          S.refreshInboxBadge();
+        } catch (e) {
+          U.toast("题目已写进本机题库（#" + newId + "），但题号回写服务端失败：" + ((e && e.message) || e) +
+            "。这条仍会留在「待入库」，请勿重复收录。", "error", 9000);
+          load(S._ibStatus);
+        }
+      }
+      $("#ib-draft").onclick = function () { doCollect(false); };
+      $("#ib-pub").onclick = function () { doCollect(true); };
+    }
+
+    async function undo(id, btn) {
+      const row = S._ibRows.filter(function (x) { return x.id === id; })[0];
+      if (!row) return;
+      const local = localQuestion(row.bank_id);
+      if (!(await U.confirm("撤销投稿 #" + id + " 的入库记录？", {
+        okText: "撤销入库",
+        note: local
+          ? "本机题目 #" + row.bank_id + " 不会被删除 —— 撤销只是让这条投稿回到「待入库」，方便换个分类重收。要删题请去题目管理。"
+          : "本机题库里已经没有对应题目了，撤销后这条投稿回到「待入库」，可以重新收录。",
+      }))) return;
+      if (btn) btn.disabled = true;
+      try {
+        await A.adminInbank(id, "");
+        U.toast("已撤销入库，该投稿回到「待入库」", "success");
+        load(S._ibStatus);
+        S.refreshInboxBadge();
+      } catch (e) {
+        U.toast((e && e.message) || "撤销失败", "error");
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    $$("#ib-tabs button").forEach(function (b) {
+      b.onclick = function () { $("#ib-panel").innerHTML = ""; load(b.dataset.st); };
+    });
+    $("#ib-refresh").onclick = function () { load(S._ibStatus); };
+    load("inbox");
+  };
+
   /* ==================== 待审角标 ==================== */
 
   /* 只有审核角色才真的发请求；条数变化才重渲染导航，避免无谓的 DOM 抖动。 */
@@ -891,15 +1252,35 @@
     } catch (e) { return 0; }
   };
 
+  /* 侧栏「待入库」角标：只有管理员才真的发请求。与 refreshPending 同构，
+     但**必须分开请求** —— "open" 与 "inbox" 是两个不同的 status，
+     拼在一起会多跑一次全表扫描（列表都是 LIMIT 100 的查询）。 */
+  S.refreshInboxBadge = async function () {
+    const A = acc();
+    if (!A || !A.isServerAdmin()) {
+      if (window.App && App.inboxPending) { App.inboxPending = 0; refreshNav(); }
+      return 0;
+    }
+    try {
+      const r = await A.adminListSubmissions("inbox");
+      const n = (r.submissions || []).length;
+      if (n !== (window.App.inboxPending || 0)) { window.App.inboxPending = n; refreshNav(); }
+      return n;
+    } catch (e) { return 0; }
+  };
+
   try {
-    /* 启动时先按本地缓存的角色判断（不用等 /auth/me 回来），有 token 就拉一次 */
-    if (window.Account && Account.getToken()) S.refreshPending();
+    /* 启动时先按本地缓存的角色判断（不用等 /auth/me 回来），有 token 就拉一次。
+       两个角标各拉各的：待审（open）给 admin+expert，待入库（inbox）只给 admin —— 各自内部
+       都先判角色再发请求，非管理员不会白跑一次网络。 */
+    if (window.Account && Account.getToken()) { S.refreshPending(); S.refreshInboxBadge(); }
     /* 登录 / 退出 / 提权 / 降级后 account.js 会回调 App.onAccountRefreshed，这里包一层补刷角标 */
     if (window.App && typeof App.onAccountRefreshed === "function") {
       const orig = App.onAccountRefreshed;
       App.onAccountRefreshed = function () {
         try { orig.apply(this, arguments); } catch (_) {}
         try { S.refreshPending(); } catch (_) {}
+        try { S.refreshInboxBadge(); } catch (_) {}
       };
     }
   } catch (e) {}

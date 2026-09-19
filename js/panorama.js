@@ -268,6 +268,9 @@
       { name: "内置种子", color: "#10b981", test: function (q) { return q.source === "seed"; } },
       { name: "原理整理", color: "#f59e0b", test: function (q) { return q.source === "principles"; } },
       { name: "批量导入", color: "#ec4899", test: function (q) { return q.source === "import"; } },
+      /* 用户投稿（20260919h）：投稿审核通过后由管理员在「待入库」收录，来源记为 submission。
+         不注册这一条的话它会落进下面的「其他」分支，来源构成图上就分不出来。 */
+      { name: "用户投稿", color: "#14b8a6", test: function (q) { return q.source === "submission"; } },
       { name: "外部文档", color: "#06b6d4", test: function (q) { return /^https?:\/\//i.test(q.source || ""); } }
     ];
     const used = {};
