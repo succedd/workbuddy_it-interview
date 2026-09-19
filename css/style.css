@@ -170,23 +170,86 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 .side-nav-item.active { background: var(--c-primary-50); color: var(--c-primary); font-weight: 600; }
 .side-nav-item .ic { width: 17px; height: 17px; }
 
-/* 重点入口强调（20260919h）：侧栏项有二十多个，纯灰字容易被整片略过。
-   「投稿」是本站唯一的用户参与入口，用主色底 + 描边 + 缓慢呼吸描边把它挑出来。
-   注意：呼吸只动 box-shadow，不动 transform/尺寸 —— 免得侧栏跟着抖。 */
+/* 重点入口强调：侧栏项有二十多个，纯灰字容易被整片略过。
+   「投稿」是本站唯一的用户参与入口，这里用**四层叠加的脉冲**把它挑出来（20260919i 升级）：
+     ① 整块「一大一小」：transform: scale(1 ⇄ 1.04)，峰值在 34%
+     ② 图标心跳：1 → 1.3 → 1 → 1.18 → 1（幅度比整块大，所以看起来是「一小一大」在跳），峰值 20% / 48%
+     ③ 一圈描边向外扩散后淡出（10% 最亮 → 45% 散尽），「一大」那一下的余韵
+     ④ 内发光闪动：底色从边缘亮起来，峰值同样在 34%（最大的时候也最亮）
+   四个峰值错开 ⇒ 任何一刻都有东西在放大/变亮，观感是「一闪一闪」而不是平铺的呼吸。
+   节奏 2.6s 一轮 —— 参照 iOS 聚焦环 / antd 徽标脉冲：**间隔性脉冲比持续高频闪烁更显眼也更不烦人**
+   （持续闪会让人想关掉它）。
+   ⚠️ 只动 transform / opacity / inset 阴影 —— 都走合成层或极小的重绘面，低端机也不掉帧；
+   且 .sidebar 是 overflow-y:auto（即 overflow-x 计算为 auto），放大倍数必须留在内边距里：
+   侧栏 padding 每侧 10px、内容 219px，一旦放大到该边界就会冒出横向滚动条。
+   ⚠️⚠️ **伪元素的 scale 会与外层的 scale 相乘**（实测踩到）：整块放大 1.06 时，::after 自己的
+   1.06 会叠加成 1.123 → 219px 的项撑到 246px → scrollWidth 242 > clientWidth 239，侧栏真的
+   长出横向滚动条。所以倍数必须按「乘法」算，并按**实测**留余量（当前 1.04 × 1.015 = 1.056，
+   外扩 6.1px / 10px，安全；这一条由冒烟脚本的阶段 G 实测把关，改倍数后务必重跑）。
+   ⚠️ 内发光只能用 inset（向内画）：外发光会画到盒子外面，同样会撑出横向滚动条。
+   ⚠️ 不要给 background 加动画：动画的优先级高于普通声明，会把 :hover 的底色彻底盖掉。 */
 .side-nav-item.nav-cta {
+  position: relative;
   background: var(--c-primary-50); color: var(--c-primary); font-weight: 600;
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22);
-  animation: navCta 3.2s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  /* 两条动画各管一半、互不冲突：一条动 transform（一大一小），一条动 inset 阴影（闪）。
+     只用 inset（向内）的阴影是有意的 —— 外发光会画到盒子外面，又会把侧栏撑出横向滚动条。 */
+  animation: navCtaPulse 2.6s cubic-bezier(.4, 0, .2, 1) infinite,
+             navCtaGlow 2.6s ease-in-out infinite;
+  will-change: transform;
+}
+/* 扩散描边：挂在伪元素上单独动，避免与整块的 transform 互相干扰（两个元素各自一格动画更稳） */
+.side-nav-item.nav-cta::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  border: 2px solid var(--c-primary); opacity: 0; pointer-events: none;
+  animation: navCtaRing 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
 .side-nav-item.nav-cta:hover { background: rgba(37, 99, 235, .18); color: var(--c-primary-600); }
+/* 已经站在「投稿」页时不必再催 → 三种动画一起停 */
 .side-nav-item.nav-cta.active { background: var(--c-primary); color: #fff; animation: none; box-shadow: none; }
-.side-nav-item.nav-cta .ic { color: currentColor; }
+.side-nav-item.nav-cta.active::after { animation: none; opacity: 0; }
+.side-nav-item.nav-cta.active .ic { animation: none; }
+.side-nav-item.nav-cta .ic { color: currentColor; transform-origin: 50% 50%; animation: ctaBeat 2.6s ease-in-out infinite; }
 .nav-section-title.nav-cta-title { color: var(--c-primary); }
-@keyframes navCta {
-  0%, 100% { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22); }
-  50%      { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .62); }
+@keyframes navCtaPulse {
+  0%, 100% { transform: scale(1); }
+  34%      { transform: scale(1.04); }
+  62%      { transform: scale(1.012); }
 }
-@media (prefers-reduced-motion: reduce) { .side-nav-item.nav-cta { animation: none; } }
+/* 「闪」那一下：底色从边缘亮起来。
+   峰值刻意放在 34% —— 正好是整块放到最大的时刻，于是「最大的时候也最亮」；
+   而图标的心跳在 20% 与 48% 两次冲顶，所以无论哪一刻都有东西在放大/变亮，
+   合起来就是持续的一闪一闪，而不是全程平铺的呼吸。 */
+@keyframes navCtaGlow {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22); }
+  18%      { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .55), inset 0 0 12px rgba(37, 99, 235, .30); }
+  34%      { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .78), inset 0 0 16px rgba(37, 99, 235, .34); }
+  70%      { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22); }
+}
+/* 光环节奏刻意与图标心跳对齐：图标在 20% 冲到最大时，光环正好最亮（10%），
+   随后一起向外扩散、淡出（45%）—— 先「闪」再「散」，比从头亮到尾更像水波。 */
+@keyframes navCtaRing {
+  0%   { transform: scale(.97);   opacity: 0; }
+  10%  { opacity: .85; }
+  45%  { transform: scale(1.015); opacity: 0; }
+  100% { transform: scale(1.015); opacity: 0; }
+}
+/* 图标心跳：一大一小、一大一小 —— 侧栏与底部栏共用 */
+@keyframes ctaBeat {
+  0%, 100% { transform: scale(1); }
+  20%      { transform: scale(1.3); }
+  34%      { transform: scale(1); }
+  48%      { transform: scale(1.18); }
+  66%      { transform: scale(1); }
+}
+/* 尊重「减少动画」偏好：全部停掉，只留静态的主色底与描边（信息不丢，只是不闪） */
+@media (prefers-reduced-motion: reduce) {
+  .side-nav-item.nav-cta,
+  .side-nav-item.nav-cta .ic,
+  .side-nav-item.nav-cta::after { animation: none; }
+  .side-nav-item.nav-cta::after { opacity: 0; }
+}
 
 /* ============ Cards ============ */
 .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
@@ -1077,15 +1140,39 @@ body.pan-fs-lock { overflow: hidden; }
 .tab-item.active, .tab-item:hover { color: var(--c-primary); }
 .tab-item.active .ic { animation: tabPop .3s ease-out; }
 .tab-item:active { background: var(--bg-hover); }
-/* 底部栏「投稿」强调（20260919h）：与侧栏 .nav-cta 同一意图 ——
+/* 底部栏「投稿」强调（20260919h 实心圆底；20260919i 加脉冲）：与侧栏 .nav-cta 同一意图 ——
    移动端它是最主要的参与入口，做成实心圆底图标，跟其它 5 个线性图标区分开。
-   6 个 tab 在 360px 屏上各约 60px，26px 图标不会挤。 */
+   6 个 tab 在 360px 屏上各约 60px，26px 图标不会挤。
+   脉冲与侧栏同源（复用 ctaBeat），另加一圈围绕圆底扩散的光环。 */
 .tab-item.tab-cta { color: var(--c-primary); }
 .tab-item.tab-cta > span { color: var(--c-primary); }
 .tab-item.tab-cta .ic {
   box-sizing: border-box; width: 26px; height: 26px; padding: 4px;
   background: var(--c-primary); color: #fff; border-radius: 50%;
   box-shadow: 0 2px 6px rgba(37, 99, 235, .35);
+  transform-origin: 50% 50%;
+  animation: ctaBeat 2.6s ease-in-out infinite;
+}
+/* 光环必须绝对定位到圆底图标上：SVG 是替换元素，伪元素挂在它自己身上不生效，只能由 .tab-cta 出。
+   ⚠️ 这里的 top/left/尺寸是照着上面的 padding(7px 2px 6px) 与 26px 图标写死的 ——
+   以后若改 tab 的内边距或图标尺寸，这四行必须同步改，否则光环会偏。 */
+.tab-item.tab-cta::before {
+  content: ""; position: absolute; top: 7px; left: 50%; margin-left: -13px;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--c-primary); opacity: 0; pointer-events: none;
+  animation: tabCtaRing 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@keyframes tabCtaRing {
+  0%   { transform: scale(.85); opacity: .8; }
+  55%  { transform: scale(1.5);  opacity: 0; }
+  100% { transform: scale(1.5);  opacity: 0; }
+}
+/* 已经在「投稿」页：停掉脉冲，只留一次性的选中弹跳 */
+.tab-item.tab-cta.active .ic { animation: tabPop .3s ease-out; }
+.tab-item.tab-cta.active::before { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .tab-item.tab-cta .ic { animation: none; }
+  .tab-item.tab-cta::before { animation: none; opacity: 0; }
 }
 .tab-badge {
   position: absolute; top: 3px; left: 50%; margin-left: 3px;
