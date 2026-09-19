@@ -67,6 +67,23 @@
     return false;
   };
 
+  /* 审核守卫（20260919f）：投稿审核队列专用，admin 与 expert 都能进。
+     与 requireServerAdmin 分开的原因：专家能审核，但**绝不能进帐号管理/群组管理**，
+     两处入口用两道不同的守卫，避免将来有人图省事把 users 页也放开给 expert。 */
+  App.requireReviewer = function () {
+    if (window.Account && Account.isReviewer()) return true;
+    const logged = window.Account && Account.isLoggedIn();
+    main.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("shield")}</div>
+      <h3>需要审核权限</h3><p>${logged ? "当前帐号没有审核权限。请联系管理员把你的角色设为「专家」。" : "请先登录有审核权限的帐号（管理员或专家）。"}</p>
+      <button class="btn btn-primary" id="to-acc2">${U.icon("user")} ${logged ? "切换到其它帐号" : "前往登录"}</button></div>`;
+    if (logged) {
+      $("#to-acc2").onclick = () => { Account.logout(); renderTopbar(); App.go("/account"); };
+    } else {
+      $("#to-acc2").onclick = () => App.go("/account");
+    }
+    return false;
+  };
+
   /* 启动时 /auth/me 刷新完本地用户缓存后由 account.js 回调：重渲染导航，
      若正停在帐号管理页则重跑路由（提权/禁用立即生效，无需手动刷新）。 */
   App.onAccountRefreshed = function () {
@@ -74,7 +91,8 @@
       renderTopbar();
       renderSidebar(parseHash());
       const r = parseHash();
-      if (r.parts[0] === "admin" && r.parts[1] === "users") route();
+      /* 这些页的可见性/内容都取决于服务端角色，提权或降级后需要重跑一次路由 */
+      if (r.parts[0] === "admin" && ["users", "submissions", "groups"].indexOf(r.parts[1]) >= 0) route();
     } catch (e) {}
   };
 
@@ -107,6 +125,17 @@
       if (sub === "users") {
         if (!App.requireServerAdmin()) return;
         return Account.renderAdminPage();
+      }
+      /* 投稿审核（20260919f）：admin + expert 都能进，服务端按 role 裁剪可见范围；
+         expert 可选「未分配」的投稿，避免没人管的分组把投稿卡死。 */
+      if (sub === "submissions") {
+        if (!App.requireReviewer()) return;
+        return window.Submit ? Submit.renderReview() : page404(r.parts.join("/"));
+      }
+      /* 专家群组管理：仅 admin（分组等于分配权限，不能让专家自己扩权） */
+      if (sub === "groups") {
+        if (!App.requireServerAdmin()) return;
+        return window.Submit ? Submit.renderGroups() : page404(r.parts.join("/"));
       }
       if (!App.requireAdmin()) return;
       if (sub === "dashboard") return pageAdminDashboard();
@@ -146,6 +175,9 @@
       }
       case "mock": return pageMock();
       case "panorama": return pagePanorama(r.q);
+      /* 投稿（20260919f）：必须登录，未登录由页面自己给登录引导（不硬跳转，免得丢草稿意图） */
+      case "submit": return window.Submit ? Submit.renderSubmitPage() : page404(r.parts.join("/"));
+      case "me": return (r.parts[1] === "submissions" && window.Submit) ? Submit.renderMine() : page404(r.parts.join("/"));
       case "account": return window.Account ? Account.renderLoginPage() : pageHome();
       default: return page404(r.parts.join("/"));
     }
@@ -221,10 +253,15 @@
         <a class="icon-btn desktop-only" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
         <a class="icon-btn desktop-only" href="#/mock" title="模拟面试">${U.icon("play")}</a>
         <a class="icon-btn desktop-only" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
+        <!-- 投稿 / 审核（20260919f）：审核入口只给有审核角色的帐号（角标=待审条数） -->
+        <a class="icon-btn desktop-only" href="#/submit" title="投稿面试题">${U.icon("plus")}</a>
+        ${(window.Account && Account.isReviewer())
+          ? `<a class="icon-btn desktop-only" href="#/admin/submissions" title="投稿审核（待审 ${App.reviewPending || 0} 条，角标见左侧「投稿审核」）">${U.icon("check")}</a>`
+          : ""}
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
-        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span></a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
+        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
         ${adminHtml}
         ${`<span class="vis-chip" title="本机统计（仅记录当前浏览器的访问次数，非全站 PV）">${U.icon("eye")}<span class="vic">今日 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
@@ -282,6 +319,14 @@
       ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
       ${navItem("#/about", "info", "关于本站", p0 === "about")}`;
 
+    /* 投稿入口（20260919f）：「投稿题目」人人可见（未登录点进去会给登录引导），
+       「我的投稿」只在登录后出现 —— 未登录时它必然是空的，摆着只会占位置。 */
+    html += `<div class="nav-section-title">投稿</div>
+      ${navItem("#/submit", "plus", "投稿题目", p0 === "submit")}`;
+    if (window.Account && Account.isLoggedIn()) {
+      html += navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions");
+    }
+
     /* 移动端专属：「管理员登录」入口。**必须插在「技术分类」之前** —— 分类树很长，
        放最后会被埋到抽屉最底部，手机上得翻过十几个导航项 + 整棵分类树才看得到。
        顶栏那个「管理员」按钮在 ≤720px 被隐藏（顶栏放不下），这里是它的替代路径。
@@ -301,10 +346,17 @@
         ${navItem("#/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
         ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`;
     }
+    /* 审核队列（20260919f）：admin + expert 都能进（服务端按 role 裁剪可见范围）。
+       角标 = 待审条数，由 Submit.refreshPending() 异步拉取后回写 App.reviewPending。 */
+    if (window.Account && Account.isReviewer()) {
+      html += `<div class="nav-section-title">审核</div>
+        ${navItem("#/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`;
+    }
     /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁 */
     if (window.Account && Account.isServerAdmin()) {
       html += `<div class="nav-section-title">站点</div>
-        ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}`;
+        ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
+        ${navItem("#/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`;
     }
     sidebar.innerHTML = html;
     renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）
@@ -349,7 +401,10 @@
       item("#/questions", "layers", "题库", p0 === "questions") +
       item("#/practice", "refresh", "刷题", p0 === "practice") +
       item("#/review", "alert", "错题", p0 === "review", due) +
-      item("#/favorites", "bookmark", "收藏", p0 === "favorites");
+      item("#/favorites", "bookmark", "收藏", p0 === "favorites") +
+      /* 投稿（20260919f）：移动端顶栏那排快捷图标被隐藏，抽屉里也埋在下方，
+         这里补一个拇指区入口。.tab-item 是 flex:1 1 0，加到 6 个不会挤压溢出。 */
+      item("#/submit", "plus", "投稿", p0 === "submit");
   }
 
   /* ============================ 移动端手势：左右滑动切题 ============================
@@ -4521,7 +4576,12 @@
     setMain(html);
   }
 
+  /* 轻量刷新导航（20260919f）：顶栏/侧栏里带「待审条数」角标或角色标签，
+     这些值在路由之外还会被异步接口改（登录后拉一次待审计数），
+     给兄弟模块一个统一出口，避免它们各自去碰 renderTopbar/renderSidebar。 */
+  function refreshNav() { try { renderTopbar(); renderSidebar(parseHash()); } catch (e) {} }
+
   /* ---- 暴露给 account.js 等兄弟模块的内部函数（app.js 是 IIFE，默认不外泄） ---- */
-  App._internals = { $, setMain, route, renderTopbar, refreshVisitorStats };
+  App._internals = { $, setMain, route, renderTopbar, renderSidebar, refreshNav, refreshVisitorStats };
   window.App = App;
 })();
