@@ -85,3 +85,85 @@ CREATE TABLE IF NOT EXISTS mock_reports (
 );
 
 CREATE INDEX IF NOT EXISTS idx_reports_user ON mock_reports(user_id, created_at);
+
+-- ============ 用户投稿 + AI 质检 + 专家审核（20260920a 新增）============
+-- 说明：本文件是「文档 + 手动建表」用；worker.js 里的 ensureSubmitTables() 会在启动时
+-- 用 CREATE TABLE IF NOT EXISTS 再兜一次（幂等），所以即使忘了跑 d1 execute 也能自愈。
+
+-- 投稿（提交时冻结快照，之后编辑端改动不影响审计）
+CREATE TABLE IF NOT EXISTS submissions (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id       INTEGER NOT NULL,
+  created_at    INTEGER NOT NULL,
+
+  title         TEXT NOT NULL,
+  body          TEXT NOT NULL DEFAULT '',
+  answer        TEXT NOT NULL DEFAULT '',
+  difficulty    TEXT NOT NULL DEFAULT '',
+  type          TEXT NOT NULL DEFAULT '',
+  tags          TEXT NOT NULL DEFAULT '',      -- JSON 数组文本
+  category_id   TEXT NOT NULL DEFAULT '',
+  source_note   TEXT NOT NULL DEFAULT '',
+
+  -- AI 质检
+  ai_verdict    TEXT NOT NULL DEFAULT 'pending',  -- pending|pass|reject_non_it|reject_quality|reject_duplicate|error
+  ai_score      INTEGER DEFAULT 0,
+  ai_json       TEXT NOT NULL DEFAULT '',         -- AI 原始返回（审计/复查）
+  ai_at         INTEGER DEFAULT 0,
+  ai_error      TEXT NOT NULL DEFAULT '',
+
+  -- 人工审核
+  review_status TEXT NOT NULL DEFAULT 'pending',  -- pending|reviewing|approved|rejected
+  review_by     INTEGER DEFAULT 0,
+  review_at     INTEGER DEFAULT 0,
+  review_note   TEXT NOT NULL DEFAULT '',
+  bank_id       TEXT NOT NULL DEFAULT '',         -- 入库后回填题库 id
+  edited_by_reviewer INTEGER NOT NULL DEFAULT 0,  -- 审核者是否改过题
+  edited_json   TEXT NOT NULL DEFAULT '',         -- 改题后的内容快照（原文仍在上面的列里）
+
+  -- 风控 / 路由
+  non_it_strike INTEGER NOT NULL DEFAULT 0,       -- 1=计入非 IT 次数（管理员可清零）
+  group_id      INTEGER NOT NULL DEFAULT 0,       -- 0=未分配（所有专家可审）
+  locked_by     INTEGER DEFAULT 0,                -- 抢单锁
+  locked_at     INTEGER DEFAULT 0,
+  ip            TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_sub_user    ON submissions(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_sub_review  ON submissions(review_status, created_at);
+CREATE INDEX IF NOT EXISTS idx_sub_strike  ON submissions(user_id, non_it_strike);
+
+-- 专家群组（按技术方向分域）
+CREATE TABLE IF NOT EXISTS expert_groups (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  name         TEXT NOT NULL UNIQUE,
+  scope        TEXT NOT NULL DEFAULT '',        -- 负责方向说明（给人看）
+  category_ids TEXT NOT NULL DEFAULT '[]',      -- 负责的分类 id（JSON 数组，用于自动路由）
+  created_at   INTEGER NOT NULL,
+  created_by   INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS group_members (
+  group_id   INTEGER NOT NULL,
+  user_id    INTEGER NOT NULL,
+  created_at INTEGER NOT NULL,
+  PRIMARY KEY (group_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_gm_user ON group_members(user_id);
+
+-- 审核动作流水（含被推翻的那一次；只存最后一态不够审计）
+CREATE TABLE IF NOT EXISTS review_log (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  submission_id INTEGER NOT NULL,
+  actor_id      INTEGER NOT NULL,
+  action        TEXT NOT NULL,                  -- claim|release|pass|reject|edit|revert
+  note          TEXT NOT NULL DEFAULT '',
+  at            INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rlog_sub ON review_log(submission_id, at);
+
+-- 投稿 IP 限流（沿用 rl_auth 的窗口计数写法）
+CREATE TABLE IF NOT EXISTS rl_submit (
+  ip           TEXT PRIMARY KEY,
+  cnt          INTEGER NOT NULL DEFAULT 0,
+  window_start INTEGER NOT NULL
+);
