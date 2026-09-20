@@ -10,7 +10,7 @@
   - ⚠️ 旧路径 `C:/Users/Life/WorkBuddy/2026-08-24-14-31-52/workbuddy_it-interview` **已不是 git 仓库**（别再用）；`C:/Users/Life/Desktop/iti-dedup2` 分支/暂存区/`.git` 全部异常且 `js/cloud.js` 落后于线上，**仅可当历史资料，禁止用于发布**。
 - **推送凭据已就绪**：Windows 凭据管理器里存在 GitHub Token（`git credential fill` 可取出，长度 40 的经典 PAT），`git push` 无需额外配置。
 - **分支模型（部署安全铁律，2026-08-31 修正）：**
-  - ⚠️ **实测修正：GitHub Pages 发布源实际是 `main`**（08-31 验证：线上 index.html 版本号与 main 一致、release 当时落后一个版本）——**发版必须 main 与 release 都推**，线上验收以 main 为准
+  - ⚠️ **实测修正（2026-09-20 用 GitHub API 复核）：GitHub Pages 发布源是 `release`**（`GET /repos/succedd/workbuddy_it-interview/pages` 返回 `source.branch="release"`、`cname=it-interview.is-a.dev`、`status=built`）。08-31 曾记作 `main`（当时两分支版本号有差）。**结论不变：发版必须 main 与 release 都推**（站点发布时会同时推两分支），线上验收以 `release` 为准。
   - `release` = 开发基线分支（每日扩充流水线的合并基线读它），所有提交推它
   - 推 release **必须 fast-forward**：push 前 `git ls-remote origin release` 核对线上 tip；若历史分叉，禁止 force push，必须把新代码移植到线上基线之上再推
   - main 若与本地分叉（浏览器端备份/发布经 GitHub API 直推 main 会产生本地没有的提交），**优先 `git merge origin/main` 吸收后再推**，不要盲目 force
@@ -34,6 +34,7 @@
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
 - 静态分享页：`tools/gen-share-pages.js` 生成 264 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA；滚动近文末滑入「连刷同类题」引导条，可关闭）——**新增题目后需重跑一次**（脚本已同步桌面副本）
 - 域名 `it-interview.is-a.dev`（is-a.dev 子域名，CNAME 已配）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
+- **反爬托管层（2026-09-20 新增）**：站点前端正从 GitHub Pages 迁往 **Cloudflare Pages**。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（组装 `dist/`，内部文件不进发布目录）；回归测试 `tools/pages-guard-test.mjs`（41 条）；部署与验证清单 `cloudflare/pages/README.md`。**⚠️ 目前只部署在预览地址 `https://it-interview-889.pages.dev`，生产域名 `it-interview.is-a.dev` 尚未切换（CNAME 仍指 `succedd.github.io`，线上仍为 GitHub Pages）。**
 
 ## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
 
@@ -91,7 +92,19 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-- **最后更新**：2026-09-20（线上缓存版本 **`20260920c`**；登录失败真因已查明并**更正**——不是手机输入问题，而是**库内密码哈希与手敲密码不一致**，桌面端只是复用约 30 天的会话凭证才「看起来能登」；已重置该管理员密码并实测登录通过；站内《使用指南》自检清单已改写为「一分钟分清是凭证不符还是输入被改」）
+- **最后更新**：2026-09-20（线上缓存版本 **`20260920c`**；登录失败真因已查明并**更正**——不是手机输入问题，而是**库内密码哈希与手敲密码不一致**，桌面端只是复用约 30 天的会话凭证才「看起来能登」；已重置该管理员密码并实测登录通过；站内《使用指南》自检清单已改写为「一分钟分清是凭证不符还是输入被改」；另完成**反爬层**开发与部署（站点前端迁 Cloudflare Pages + 高级模式 Worker 守卫，前端代码未改、缓存版本不变，⚠️ **生产域名尚未切换**，详见下条第 1 条）
+- **【feat/ops】反爬层落地：站点前端迁 Cloudflare Pages + 高级模式 Worker 守卫（前端代码未改，缓存版本仍 `20260920c`；已部署到预览地址 `https://it-interview-889.pages.dev`，⚠️ 生产域名尚未切换）**：用户要求「2可以，再做下防爬虫」——即先核查「仓库能不能直接设为私有」，结论是 **GitHub Free 的私有仓库不支持 Pages**（实测探针确认），于是选方案 B：迁到 Cloudflare Pages（免费版原生支持私有仓库 + 高级模式 Worker），并在其上加一层会真正拒绝请求的反爬守卫。
+  - **为什么非换托管不可**：GitHub Pages 是纯静态托管，**没有任何边缘计算能力** —— `data/published.json`（整库 1172 题 + 答案，2.1MB）一条 `curl` 就能整包拿走；`q/*.html` 是 1209 个把**完整答案**写进 `ld+json` 的分享页，沿公开的 `sitemap.xml` 走一遍，同样等于整库下载。robots.txt 只是君子协定，对不读 robots 的采集器毫无约束力。
+  - **⚠️ 坑 1（第一次白干）**：`wrangler pages deploy` **不支持 `functions/` 目录**（那是 Dashboard 直传的能力），只认仓库根的 `_worker.js` 高级模式。第一版守卫写成 `functions/data/[[path]].js` + `functions/q/[[path]].js`，部署后 curl 全是 200 —— 说明那段代码**根本没被执行**。改成 `_worker.js` 后部署输出才出现 `Compiled Worker successfully`。
+  - **⚠️ 坑 2**：`_worker.js` **不能放仓库根** —— Cloudflare 会认它，但 GitHub Pages 会把根目录的它当普通静态文件公开出去。所以放在 `cloudflare/pages/`，由构建脚本拷进 `dist/`。
+  - **新增文件**：`cloudflare/pages/_worker.js`（守卫全部逻辑）、`tools/build-pages.mjs`（白名单组装发布目录 `dist/`，并自检「内部文件未泄漏」）、`tools/pages-guard-test.mjs`（41 条守卫回归）、`cloudflare/pages/README.md`（部署与验证清单）、根 `404.html`（自定义 404）；根 `robots.txt` 补约 30 个 AI 训练 / SEO 采集 UA 的 `Disallow: /` 与 `Disallow: /data/`。
+  - **守卫三道闸门**：① 仓库内部文件正则命中（`tools/` `cloudflare/` `netlify/` `functions/` `HANDOVER.md` `README.md` `netlify.toml` `wrangler.*` 及任何 `/.` 路径）→ 404；② `/data/*` 先过 UA 过滤，**再**要求「浏览器信号」（`Sec-Fetch-Site: same-origin|same-site` 或同源 `Referer`）；③ 全站拦脚本 / 爬虫 / 无头浏览器 / AI 训练 UA，但**搜索引擎白名单**（Googlebot / Bingbot / Baiduspider / Yandex / Applebot / PetalBot / Sogou / 360Spider …）放行，确保收录不受影响。
+  - **两个「自己写错、被回归测试抓出来」的修正**：① **`Applebot-Extended` 含 `Applebot` 子串**，先判白名单会被**误放行** → 新增 `AI_EXCLUSION_RE` 独立先判（`Google-Extended` / `Meta-ExternalAgent` 同理）；② **搜索引擎白名单在 `/data/*` 上不能生效** —— 否则「借一个搜索引擎 UA + 手补 `Sec-Fetch-Site: same-origin`」就整层绕过了（实测该组合返回 200），改为命中白名单直接 403 `search-bot-on-data`（这份 JSON 只有本站 App 自己会取，robots.txt 也写着 `Disallow: /data/`）。
+  - **新增「来源 ASN 判伪」**：UA 自称搜索引擎、但 `request.cf.asOrganization` 完全对不上（典型是某家 VPS）→ 403 `spoofed-search-bot-ua`，堵掉「**伪造 Googlebot 沿 sitemap 扒 1209 个分享页**」这条最省事的绕过路径。拿不到 `cf` 数据时（本地 `wrangler pages dev`）**放行**，避免把「环境缺数据」误判成「伪造」而伤到真实收录。
+  - **验证**：`node tools/pages-guard-test.mjs` → **41/41 通过（`PAGES_GUARD_OK`）**。覆盖：`curl` / `Wget` / `Scrapy` / `python-requests` / `GPTBot` / 无头 Chrome / 空 UA 全拦；真实 Googlebot / Baiduspider / Applebot 放行；`Applebot-Extended` / `Google-Extended` / `Meta-ExternalAgent` 拦；伪造搜索引擎 UA（VPS ASN）拦；微信 `MicroMessenger` 与 `facebookexternalhit`（链接预览）放行；`/tools/` `/cloudflare/` `/netlify/` `HANDOVER.md` `README.md` `netlify.toml` `/.git` 七个内部路径 404；放行的 `/data` 响应带 `x-robots-tag: noindex, nofollow`。另 `node --check` 全绿、`tools/build-pages.mjs` 产出 **1268 个文件**且内部目录零泄漏。
+  - **⛔ 尚未切换生产域名（关键，别误以为已经上线）**：`it-interview.is-a.dev` 的 CNAME 仍指 `succedd.github.io`（已用 `gh api repos/succedd/workbuddy_it-interview/pages` 复核：`source.branch=release`、`cname=it-interview.is-a.dev`、`status=built`），**线上仍是 GitHub Pages，守卫目前只在 `https://it-interview-889.pages.dev` 生效**。切换需要两步人工动作：① 在 `is-a-dev/register` 提 PR 把 `domains/it-interview.json` 的 CNAME 从 `succedd.github.io` 改成 `it-interview-889.pages.dev`（约 1–2 天合并）；② Cloudflare 侧把 `it-interview.is-a.dev` 加为该 Pages 项目的自定义域。**该域名 DNS 归属 is-a.dev 项目、不在本账号下，所以用不了 WAF / Bot Fight Mode** —— 这是本方案的能力上限。
+  - **诚实的边界**：这是**应用层**防护，能挡掉绝大多数随意采集（`curl` 一把梭、现成爬虫框架、AI 训练抓取），但挡不住「会改请求头 + 肯租代理池」的定向攻击 —— 伪造 UA、手工补 `Sec-Fetch-Site` 仍能拿到 `data/published.json`。想再进一步只有两条路：域名接入自己的 Cloudflare 账号开 WAF / Bot Fight Mode，或改产品形态（把答案从静态 JSON / 分享页挪到需要登录的接口后面）。
+  - **本机操作备忘**：wrangler `4.126.0`（`C:/Users/Life/AppData/Roaming/npm/node_modules/wrangler/bin/wrangler.js`），OAuth 凭证在 `~/.wrangler/config/default.toml`；本机网络**必须前置代理**（`export HTTPS_PROXY=http://127.0.0.1:7897`），否则 `wrangler pages deploy` 与 `git push` 都会 `CONNECT tunnel failed / Empty reply from server`。
 - **【fix/更正】登录失败真因查明：不是手机输入问题，而是库内密码与手敲密码不一致（缓存版本 `20260920b→20260920c`，release=`e84712fd3b0214224dd94833a5dd91e54913ba21` / main 同 tip，Worker 未再改动）**：用户回访「平板与手机都手敲、无自动填充，仍报邮箱或密码错误」，**推翻下方 `20260920a` 条的根因判断**（自动填充 / 键盘篡改），以本条为准。
   - **真因（生产实测，不再靠推测）**：① 本机 `wrangler` 已带 OAuth 凭证（账号 `2416217174@qq.com`），可**直连生产 D1** `it-interview-users`（`d1 execute --remote --json`），不必走 Pages；② 查 `users` 表：该账号 `id=3 / role=admin / status=1`、无重复邮箱，`salt` 32 位 hex 与 `pass_hash` 64 位 hex 与其余 4 个账号格式**完全一致**（排除格式 / 算法错位）；③ 走生产桥 `https://iti-api.netlify.app` 新建临时账号实测 **注册 201 / 正确密码 200 / 错误密码 401** → 鉴权链路完全健康（测试账号已删，表复原 5 行）；④ **关键判据**：该账号 `last_login_at` 停在 `2026-09-14 20:16`，而「登录成功会刷新该字段」已用测试账号验证过。
   - **结论**：`js/account.js` 的会话凭证约 30 天有效；桌面端一直复用 `09-14` 签发的旧凭证、**根本没再走密码校验**，所以「电脑端能登」是假象；手机 / 平板没有凭证、必须真比对，才暴露出「库里哈希 ≠ 手敲密码」。旁证：`2026-09-14T01:17:10Z` 提交 `667944d58`（`fix(auth): 帐号自锁治理 + 新增自助改密码`）当天，`last_login_at` 恰好也停在 `09-14`。

@@ -247,6 +247,16 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-20 · ops: 反爬层落地 —— 站点迁 Cloudflare Pages + 高级模式 Worker 守卫（前端未改，缓存版本仍 `20260920c`）
+
+- **起因**：GitHub Pages 是纯静态托管，**没有任何边缘计算能力** —— `data/published.json`（整库 1172 题 + 答案，2.1MB）一条 `curl` 即可整包拿走；`q/*.html` 是 1209 个把完整答案写进 `ld+json` 的分享页，沿公开 `sitemap.xml` 走一遍同样等于整库下载。robots.txt 对不读它的采集器没有约束力。
+- **做法**：站点前端迁移到 **Cloudflare Pages**（免费版原生支持私有仓库 + 高级模式 Worker），在静态资源之上加一层会真正拒绝请求的守卫（`cloudflare/pages/_worker.js`）。
+- **守卫三道闸门**：① 仓库内部文件（`tools/` `cloudflare/` `netlify/` `HANDOVER.md` `README.md` …）→ 404；② `/data/*` 先过 UA 过滤，**再**要求「浏览器信号」（`Sec-Fetch-Site: same-origin|same-site` 或同源 `Referer`）；③ 全站拦脚本 / 爬虫 / 无头浏览器 / AI 训练 UA，但搜索引擎白名单（Googlebot / Bingbot / Baiduspider / Yandex / Applebot / PetalBot …）放行以保 SEO。
+- **额外堵一条路**：UA 自称搜索引擎、但来源网络（`request.cf.asOrganization`）完全对不上 → 403，堵掉「伪造 Googlebot 沿 sitemap 扒 1209 个分享页」这条最省事的绕过。
+- **两个自测抓出来的错**：`Applebot-Extended` 含 `Applebot` 子串会被白名单**误放行**（改为独立先判）；搜索引擎白名单在 `/data/*` 上**不能生效**，否则「借一个搜索引擎 UA + 手补 `Sec-Fetch-Site: same-origin`」就整层绕过了（实测确为 200，已改为 403）。
+- **新增文件**：`cloudflare/pages/_worker.js`、`tools/build-pages.mjs`（白名单组装 `dist/`，内部文件不进发布目录）、`tools/pages-guard-test.mjs`（**41 条回归全过**）、`cloudflare/pages/README.md`（部署 + 验证清单）、根 `404.html`；根 `robots.txt` 补约 30 个 AI 训练 / SEO 采集 UA 的 `Disallow: /`（**对现有 GitHub Pages 也立即生效**）。
+- **⚠️ 尚未切换生产域名**：`it-interview.is-a.dev` 的 CNAME 仍指 `succedd.github.io`，**线上仍是 GitHub Pages**，守卫目前只在预览地址 `https://it-interview-889.pages.dev` 生效。切换需人工两步：`is-a-dev/register` 提 PR 改 CNAME → Cloudflare 加自定义域。该域名 DNS 不在本账号下，**用不了 WAF / Bot Fight Mode**。**这层防护挡得住随意采集，挡不住会改请求头 + 租代理池的定向攻击。**
+
 ### 2026-09-20 · fix: 登录失败根因更正 —— 不是手机输入问题，而是库内密码与手敲密码不一致（缓存版本 `20260919m→20260920a→20260920b→20260920c`，release=`e84712fd3b0214224dd94833a5dd91e54913ba21`）
 
 - **结论先行**：手机 / 平板登录报「邮箱或密码不正确」**不是手机输入的问题**（此前推测的自动填充 / 键盘大小写已被实测推翻）。真因是**库里存的密码哈希，和你手敲的密码不是同一个**。

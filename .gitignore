@@ -24,6 +24,9 @@ tools/.dup-merge-last.json
 # Python 字节码缓存
 __pycache__/
 
+# Cloudflare Pages 构建产物（tools/build-pages.mjs 生成，不入库）
+dist/
+
 # 工作区临时/个人数据（WorkBuddy 会话目录、临时备份文件）
 .workbuddy/
 *.bak

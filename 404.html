@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>页面不存在 · IT 面试题库</title>
+  <!-- 404 页绝不进搜索引擎索引；canonical 指回首页避免被当成重复内容 -->
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://it-interview.is-a.dev/" />
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0F172A" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563EB'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='monospace' font-weight='bold'%3EI%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #0F172A;
+      --secondary: #475569;
+      --muted: #94A3B8;
+      --border: #E2E8F0;
+      --accent: #2563EB;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0B1220;
+        --card: #111C2E;
+        --text: #E2E8F0;
+        --secondary: #94A3B8;
+        --muted: #64748B;
+        --border: #1E293B;
+        --accent: #60A5FA;
+      }
+    }
+    html[data-theme="dark"] {
+      --bg: #0B1220; --card: #111C2E; --text: #E2E8F0; --secondary: #94A3B8;
+      --muted: #64748B; --border: #1E293B; --accent: #60A5FA;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                   "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+    }
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 28px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 12px 32px -12px rgba(15, 23, 42, .12);
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: .04em;
+      margin-bottom: 22px;
+    }
+    .logo i {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      font-style: normal;
+      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+    .code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .02em;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 0 0 26px;
+      font-size: 14px;
+      color: var(--secondary);
+    }
+    .btn {
+      display: inline-block;
+      padding: 11px 22px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity .15s ease;
+    }
+    .btn:hover { opacity: .88; }
+    .hint {
+      margin-top: 20px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .hint a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo"><i>I</i> IT面试题库</div>
+    <div class="code">404</div>
+    <h1>这个页面不存在</h1>
+    <p>地址可能输错了，或者这个链接已经失效。</p>
+    <a class="btn" href="/">返回题库首页</a>
+    <div class="hint">想找某道题？回首页用搜索框，或从左侧技术分类逐层点进去。</div>
+  </main>
+</body>
+</html>
