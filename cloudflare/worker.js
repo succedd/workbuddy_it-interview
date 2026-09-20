@@ -205,7 +205,7 @@ async function handleRegister(env, request, origin) {
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const email = String(body.email || "").trim().toLowerCase();
-  const password = body.password;
+  const password = String(body.password || "").trim();
   const nick = String(body.nick || "").trim().slice(0, 40);
   if (!validEmail(email)) return jsonResp({ error: "邮箱格式不正确" }, origin, 400);
   if (!validPassword(password)) return jsonResp({ error: "密码需 8-72 位" }, origin, 400);
@@ -252,7 +252,7 @@ async function handleLogin(env, request, origin) {
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
   const email = String(body.email || "").trim().toLowerCase();
-  const password = String(body.password || "");
+  const password = String(body.password || "").trim();
   const u = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
   /* 统一报错文案，避免枚举邮箱 */
   if (!u) return jsonResp({ error: "邮箱或密码不正确" }, origin, 401);
@@ -498,7 +498,7 @@ async function handleAdminResetPassword(env, request, targetId, origin) {
     return jsonResp({ error: "不能用「重置密码」改自己的密码（会把自己踢下线）。请到「帐号」页用「修改密码」。" }, origin, 400);
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
-  const password = String(body.password || "");
+  const password = String(body.password || "").trim();
   if (!validPassword(password)) return jsonResp({ error: "新密码需 8-72 位" }, origin, 400);
   const salt = randomHex(16);
   const passHash = await hashPassword(password, salt);

@@ -463,8 +463,8 @@
             <button class="btn btn-sm" id="tab-login">登录</button>
             <button class="btn btn-sm btn-primary" id="tab-reg">注册新帐号</button>
           </div>
-          <label class="field"><span>邮箱</span><input id="acc-email" type="email" placeholder="you@example.com" /></label>
-          <label class="field"><span>密码（至少 8 位）</span><input id="acc-pass" type="password" placeholder="••••••••" /></label>
+          <label class="field"><span>邮箱</span><input id="acc-email" type="email" placeholder="you@example.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" /></label>
+          <label class="field"><span>密码（至少 8 位）</span><input id="acc-pass" type="password" placeholder="••••••••" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" /></label>
           <label class="field" id="nick-row" style="display:none"><span>昵称（可选）</span><input id="acc-nick" type="text" /></label>
           <button class="btn btn-primary full" id="acc-go" style="margin-top:8px">注 册</button>
           <div id="acc-out" style="margin-top:12px;color:#DC2626;font-size:13px"></div>
@@ -511,7 +511,7 @@
     $("#tab-login").onclick = () => { mode = "login"; nickRow.style.display = "none"; goBtn.textContent = "登 录"; };
     $("#tab-reg").onclick   = () => { mode = "reg";   nickRow.style.display = "";     goBtn.textContent = "注 册"; };
     goBtn.onclick = async () => {
-      const email = $("#acc-email").value.trim(), pass = $("#acc-pass").value, nick = ($("#acc-nick") && $("#acc-nick").value.trim()) || "";
+      const email = $("#acc-email").value.trim(), pass = $("#acc-pass").value.trim(), nick = ($("#acc-nick") && $("#acc-nick").value.trim()) || "";
       if (!email || !pass) { out.textContent = "请填写邮箱和密码"; return; }
       goBtn.disabled = true; out.style.color = "#64748B"; out.textContent = mode === "reg" ? "注册中…" : "登录中…";
       try {
