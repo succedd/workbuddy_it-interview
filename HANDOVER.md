@@ -93,7 +93,7 @@
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
 - **最后更新**：2026-09-20（线上缓存版本 **`20260920c`**；登录失败真因已查明并**更正**——不是手机输入问题，而是**库内密码哈希与手敲密码不一致**，桌面端只是复用约 30 天的会话凭证才「看起来能登」；已重置该管理员密码并实测登录通过；站内《使用指南》自检清单已改写为「一分钟分清是凭证不符还是输入被改」；另完成**反爬层**开发与部署（站点前端迁 Cloudflare Pages + 高级模式 Worker 守卫，前端代码未改、缓存版本不变，⚠️ **生产域名尚未切换**，详见下条第 1 条）
-- **【feat/ops】反爬层落地：站点前端迁 Cloudflare Pages + 高级模式 Worker 守卫（前端代码未改，缓存版本仍 `20260920c`；已部署到预览地址 `https://it-interview-889.pages.dev`，⚠️ 生产域名尚未切换）**：用户要求「2可以，再做下防爬虫」——即先核查「仓库能不能直接设为私有」，结论是 **GitHub Free 的私有仓库不支持 Pages**（实测探针确认），于是选方案 B：迁到 Cloudflare Pages（免费版原生支持私有仓库 + 高级模式 Worker），并在其上加一层会真正拒绝请求的反爬守卫。
+- **【feat/ops】反爬层落地：站点前端迁 Cloudflare Pages + 高级模式 Worker 守卫（前端代码未改，缓存版本仍 `20260920c`；**本次提交 release = main = `29cb7226939ea4c9caf0e144aaa8f25078133416`**；已在 Cloudflare Pages 生产别名 `https://it-interview-889.pages.dev` 上逐项实测通过，⚠️ **生产域名 `it-interview.is-a.dev` 尚未切换，线上仍是 GitHub Pages**）**：用户要求「2可以，再做下防爬虫」——即先核查「仓库能不能直接设为私有」，结论是 **GitHub Free 的私有仓库不支持 Pages**（实测探针确认），于是选方案 B：迁到 Cloudflare Pages（免费版原生支持私有仓库 + 高级模式 Worker），并在其上加一层会真正拒绝请求的反爬守卫。
   - **为什么非换托管不可**：GitHub Pages 是纯静态托管，**没有任何边缘计算能力** —— `data/published.json`（整库 1172 题 + 答案，2.1MB）一条 `curl` 就能整包拿走；`q/*.html` 是 1209 个把**完整答案**写进 `ld+json` 的分享页，沿公开的 `sitemap.xml` 走一遍，同样等于整库下载。robots.txt 只是君子协定，对不读 robots 的采集器毫无约束力。
   - **⚠️ 坑 1（第一次白干）**：`wrangler pages deploy` **不支持 `functions/` 目录**（那是 Dashboard 直传的能力），只认仓库根的 `_worker.js` 高级模式。第一版守卫写成 `functions/data/[[path]].js` + `functions/q/[[path]].js`，部署后 curl 全是 200 —— 说明那段代码**根本没被执行**。改成 `_worker.js` 后部署输出才出现 `Compiled Worker successfully`。
   - **⚠️ 坑 2**：`_worker.js` **不能放仓库根** —— Cloudflare 会认它，但 GitHub Pages 会把根目录的它当普通静态文件公开出去。所以放在 `cloudflare/pages/`，由构建脚本拷进 `dist/`。

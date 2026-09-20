@@ -247,7 +247,7 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
-### 2026-09-20 · ops: 反爬层落地 —— 站点迁 Cloudflare Pages + 高级模式 Worker 守卫（前端未改，缓存版本仍 `20260920c`）
+### 2026-09-20 · ops: 反爬层落地 —— 站点迁 Cloudflare Pages + 高级模式 Worker 守卫（前端未改，缓存版本仍 `20260920c`，release=`29cb7226939ea4c9caf0e144aaa8f25078133416` / main 同 tip）
 
 - **起因**：GitHub Pages 是纯静态托管，**没有任何边缘计算能力** —— `data/published.json`（整库 1172 题 + 答案，2.1MB）一条 `curl` 即可整包拿走；`q/*.html` 是 1209 个把完整答案写进 `ld+json` 的分享页，沿公开 `sitemap.xml` 走一遍同样等于整库下载。robots.txt 对不读它的采集器没有约束力。
 - **做法**：站点前端迁移到 **Cloudflare Pages**（免费版原生支持私有仓库 + 高级模式 Worker），在静态资源之上加一层会真正拒绝请求的守卫（`cloudflare/pages/_worker.js`）。
