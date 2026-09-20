@@ -247,6 +247,14 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-20 · ops: 域名切换 PR 已提交 + Cloudflare 自定义域已登记（前端未改，缓存版本仍 `20260920c`）
+
+- **is-a.dev PR #53221** 已提交：`domains/it-interview.json` 的 `CNAME` 由 `succedd.github.io` 改为 `it-interview-889.pages.dev`（仅 +1/−1 行，等维护者合并，通常 1–3 天）。→ https://github.com/is-a-dev/register/pull/53221
+- **is-a.dev 的 PR 模板是硬校验**（`util/check-pr-template.cjs`）：7 个复选框必须写成 `- [x] <!-- MARKER -->`，且 Website Preview / Website Purpose 两个标记之间必须有内容；**不能自造正文结构**。首次提交因此被机器人打上 `incomplete pr`，改为原文照搬模板并勾选后复检通过。
+- **Cloudflare 自定义域已登记**：`it-interview.is-a.dev` 已通过 API 加为 Pages 项目 `it-interview` 的自定义域（`status=initializing`）。⚠️ is-a.dev 已进 Public Suffix List，**自定义域只能在 API 加，Dashboard 加不了**。
+- **⚠️ 自动部署待人工授权一次**：该项目是**直传（Direct Upload）项目**，实测**无法转为 Git 连接**（`8000069`）；新建 Git 连接项目又被 `8000011 Cloudflare Pages Git installation` 挡住 = 账号未装 Cloudflare 的 GitHub App。授权后即可建成「推 `release` → 自动构建部署」。
+- **⚠️ GitHub Actions 兜底也不通**：本机 PAT 缺 `workflow` scope，`Contents API` 与 `Git Data API` 两条路写 `.github/workflows/*` 都被拒。
+- **⛔ 仓库转私有必须排在最后**：私有仓库在 GitHub Free 下没有 Pages，转私有会让当前线上后端失效。顺序：PR 合并 → 域名切 Cloudflare 并验收 → 再转私有。
 ### 2026-09-20 · ops: 反爬层落地 —— 站点迁 Cloudflare Pages + 高级模式 Worker 守卫（前端未改，缓存版本仍 `20260920c`，release=`29cb7226939ea4c9caf0e144aaa8f25078133416` / main 同 tip）
 
 - **起因**：GitHub Pages 是纯静态托管，**没有任何边缘计算能力** —— `data/published.json`（整库 1172 题 + 答案，2.1MB）一条 `curl` 即可整包拿走；`q/*.html` 是 1209 个把完整答案写进 `ld+json` 的分享页，沿公开 `sitemap.xml` 走一遍同样等于整库下载。robots.txt 对不读它的采集器没有约束力。
