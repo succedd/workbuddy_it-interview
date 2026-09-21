@@ -92,6 +92,12 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`e6acb1c`（OG 封面重渲染）｜缓存版本：`20260921a`｜更新时间：2026-09-21 19:35 (+08)**
+
+- **【本地环境】`C://Users//Life//Desktop//iti-pages` 的 git 元数据已失效（不是代码问题，站点与远端不受影响）**：该目录是 `C://Users//Life//Desktop//iti-dedup2` 的 **linked worktree**（其 `.git` 是一个 66 字节的文件 → `gitdir: C:/Users/Life/Desktop/iti-dedup2/.git/worktrees/iti-pages`）。现已确认 **`iti-dedup2/.git/worktrees/` 整个目录不存在**，⇒ 在 `iti-pages` 里执行任何 git 命令都会报 `fatal: not a git repository: (NULL)`。
+  - **影响范围**：仅影响「在 iti-pages 本地目录里做 git 操作」。**线上站点、Actions 自动部署、远端 `release`/`main` 全部正常**（部署链路走 GitHub Actions，不依赖本机目录）。该目录里的文件仍是**旧基线 + 域名替换**的副本，**切勿在此目录 commit/push**，否则会把题库与分享页回退到旧版本。
+  - **恢复方式（任选）**：① 在 `iti-dedup2` 里 `git worktree prune` 后 `git worktree add <新路径> release` 重新挂一个工作区；② 直接把 `iti-pages` 改名留档，重新 `git clone` 一份（推荐，最干净）。
+
 - **🔴【重大事故 + 本轮修复】`it-interview.is-a.dev` 已被 is-a.dev 官方下架 → 站点全量迁到 `https://it-interview-889.pages.dev` 并把域名引用全部修好（缓存版本 `20260920c` → **`20260921a`**；前端功能零删减；新增 `tools/set-site-origin.mjs` 一键换域名工具）**：
   - **下架事实（2026-09-21 UTC，全程零预警）**：维护者 notamitgamer 先 **APPROVE** 了 CNAME 迁移 PR #53221（`03:07:26`，此时只核了 JSON 格式、未看站点）→ 打开站点后留言 `wait. the website is odd.`（`03:15:56`）→ 判 `The website's content violates the terms of service`（`03:18:21`）并**关掉该 PR（未合并）** → 3 分钟后自开并合并 PR **#53294「taking down it-interview.is-a.dev」**（`03:21:55`），`domains/it-interview.json` 被**整文件删除**。
   - **违规条款定位**：is-a.dev ToS 第 4 条禁止清单**第 16 项 = `Any website that is orientated to courses`（任何面向课程的网站）** —— IT 面试题库/刷题站正命中。同条原文写明 `Violation of this section may result in immediate termination without notice.`。**⛔ 结论：不要再向 is-a.dev（及任何同类免费子域）申请域名来放这个站。**
@@ -110,7 +116,8 @@
   - **✅ 本轮第 3 次行为（止血，已完成）**：① **GitHub Pages 已关闭** —— `DELETE /repos/succedd/workbuddy_it-interview/pages` 返回 **204**，复核 `GET .../pages` 为 **404**；② 仓库根 `CNAME` **已从 `release` 与 `main` 两个分支删除**（两分支复核均 404）。⇒ 同时消除了「`*.github.io` 入口永久 301 到死域名」与「旧域名被他人抢注后访客被导向他人站点」两个隐患；**站点自此为单入口：`https://it-interview-889.pages.dev`。**（注：关闭后立即实测 `succedd.github.io/workbuddy_it-interview/` 仍返回 301，属 Fastly 边缘缓存延迟，配置侧已无残留。）
   - **仍未完成（按优先级）**：
     **P0**：对外自定义域方案待定（候选：直接用 `it-interview-889.pages.dev` / `eu.org` 免费域名 / 自购域名）。**代码侧已无硬编码障碍** —— 定了之后只需：跑一次 `node tools/set-site-origin.mjs <新域名> --apply` → 同步 `cloudflare/worker.js` 的 **CORS 白名单**与 **`SITE_ORIGIN`** 两处常量（并重新 `wrangler deploy`）→ 升 `index.html`/`sw.js` 版本号 → 发版。
-    **P1**：`assets/og-cover.png` 图片上仍印着旧域名（分享卡片缩略图会带上它），需按 `assets/og-cover-src.html` 重新生成。
+    **P1（✅ 本轮已完成）**：`assets/og-cover.png` 上印的旧域名**已重新生成并上线**（commit `e6acb1c`）—— 用无头 Chrome 按 `assets/og-cover-src.html` 以 **1200×630 / DPR 1** 重渲染（布局与旧图逐像素级同构），实测线上 `/assets/og-cover.png` 的 sha256 与本地新图完全一致（`0f36e26b55c4cf06…`，167517 字节）。
+    **P2（✅ 已自愈）**：`succedd.github.io/workbuddy_it-interview/` 现返回 **404**（Fastly 边缘缓存已过期），配置侧确认无残留。
 - **【ops】自动部署恢复：AI 误删 `release` 已修复 + AI 现可自行写 workflow（纯运维，前端代码未改，缓存版本仍 `20260920c`；**release = `69313e62789fea5781c5cbe33c73d7ec964480d8`**，main = `fb751a882c241489facd02c44463a16d53caee2a`（本轮期间由另一工具推的质量抽检文档提交））**：
   - **⚠️ 事故复盘（AI 自查，教训已写进 skill）**：上一轮 AI 用 git 底层对象造提交时，把一个「留在远端、本地并不存在」的 SHA 取进变量，变量为空 → `git push origin $C_REL:refs/heads/release` 退化成 `git push origin :refs/heads/release`（**删除远端分支的合法写法**），GitHub 安静执行。而 `release` 正是 **GitHub Pages 的构建源**（`GET /repos/{o}/{r}/pages` → `source.branch=release`）。**影响**：`release` 上的 workflow 提交（`6515c752`）随之消失、`.github/workflows/deploy-pages.yml` 从树里没了 ⇒ 自动部署断链；**站点本身未受影响**（Pages 继续服务上一次构建产物，线上全程 200，题库/反爬/PR/自定义域均无恙）。
   - **恢复**：`POST /repos/succedd/workbuddy_it-interview/git/refs {"ref":"refs/heads/release","sha":"ec5b609…"}` 重建分支（**注意：该接口只有在该 commit 的树里没有 `.github/workflows/*` 时才返回 201**；含 workflow 文件时返回 404），随后补回文档提交 `14a0642`。**三条 API 补救路径（建 ref → PATCH ref → POST merges）在缺 `workflow` scope 时全被拦，别试**。
