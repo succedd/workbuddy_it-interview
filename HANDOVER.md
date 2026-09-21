@@ -92,7 +92,7 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`待填`（自购域名 itinterview.com.cn 全量切换）｜缓存版本：`20260921b`｜更新时间：2026-09-21 22:5x (+08)**
+**最新 release commit：`ae49e19`（自购域名 itinterview.com.cn 全量切换）｜缓存版本：`20260921b`｜更新时间：2026-09-21 22:40 (+08)**
 
 - **✅【已完成·2026-09-21 晚】自购域名 `itinterview.com.cn` 全量切换 —— 站点自此有了自己的、可控的正式入口**：
   - **域名选型结论**：`.com` 主域 `itinterview.com` 被 HugeDomains 挂售 **$3,995**（NS = `nsg1/2.namebrightdns.com`）；`it-interview.com` 被 Afternic 挂售，页面内嵌 JSON `"buyNow":31976000000` ⇒ **一口价 $31,976**（微美元 ÷1e6）；`itinterview.cn` 由个人「龙茂飞」持有（到期 2026-11-07，非挂售但等不到）。⇒ 最终选 **`itinterview.com.cn` @ 腾讯云：首年 ¥33 / 续费 ¥38**（用户已购买，实名审核通过）。
@@ -102,7 +102,8 @@
   - **顺手修掉的两个陈旧硬编码**：`tools/verify-publish.py` 与 `tools/merge-dup-questions.py` 的 `SITE` 常量仍指向**已下架**的 `it-interview.is-a.dev`（会让后续维护脚本把失效 URL 当权威）⇒ 均改为 `https://itinterview.com.cn`；`README.md` 顶部徽章、`cloudflare/部署指南.md` 第 6 节「打开站点」链接同步更新。
   - **OG 封面图已重渲染（像素级）**：源 `assets/og-cover-src.html` 域名虽由脚本改好，但**图里的域名是烤进像素的**，用无头 Chrome 重出 `assets/og-cover.png`（166193 B，sha256 `443bcbc2c0ae8c45ff8ec2243035e146e8d34686ee263bca4959966f3bfdf03e`）并**已肉眼复核图中两处均为 `itinterview.com.cn`**。
   - **缓存版本 `20260921a` → `20260921b`**（`index.html` 35 处 + `sw.js` 1 处，共 2 文件 36 处），确保回归用户能拿到新版。
-  - **新增验收脚本 `tools/accept-switch.py`**（10 项全自动：首页/sw/sitemap/robots/分享页 canonical/题库守卫/反爬与敏感文件/旧域名零残留/www）。**换域名后建议直接跑它**。
+  - **验收实测（2026-09-21 22:40，部署 run 35612690196 success）**：`tools/accept-switch.py` **10/10 通过**（首页 200 v=20260921b、sw 版本一致、sitemap 1196 处新域名 0 处旧、robots 指向新域、分享页 canonical 正确、题库裸取 403 同源 200 version=7 questions=1191、GPTBot/裸 curl 403 + HANDOVER/build-pages 404、旧域名零残留、www 200）；`tools/regress-check.py` **旧功能零回归**（13 个 JS 模块全加载 + 15 组关键功能关键词全命中 + 5 项资源全 200）；线上 OG 图 sha256 = `443bcbc2...` 与本地一致；CORS 预检新域/www/pages.dev 均发放、`evil.example.com` 不发放。
+  - **新增验收脚本 `tools/accept-switch.py`**（10 项全自动）。另有 `tools/regress-check.py` 做「旧功能零回归」核对。**换域名后建议两个都跑。**
   - **切换期间不断站**：`https://it-interview-889.pages.dev` 全程可用（CORS 白名单仍保留它，`SITE_ORIGIN` 已切新域名）。**旧域名 is-a.dev 已死，勿再引用。**
 
 - **【本地环境】`C://Users//Life//Desktop//iti-pages` 的 git 元数据已失效（不是代码问题，站点与远端不受影响）**：该目录是 `C://Users//Life//Desktop//iti-dedup2` 的 **linked worktree**（其 `.git` 是一个 66 字节的文件 → `gitdir: C:/Users/Life/Desktop/iti-dedup2/.git/worktrees/iti-pages`）。现已确认 **`iti-dedup2/.git/worktrees/` 整个目录不存在**，⇒ 在 `iti-pages` 里执行任何 git 命令都会报 `fatal: not a git repository: (NULL)`。
