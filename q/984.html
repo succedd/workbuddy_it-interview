@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？ · IT面试题库">
   <meta property="og:description" content="要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/984.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/984.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/984.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","text":"考察点：CPS 变换、Continuation、挂起点、Job 层级与取消传播。协程是 Kotlin 面试必考核心。","answerCount":1,"datePublished":"2026-09-10T07:22:44.103Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——本质是编译器帮你写回调，但代码保持同步形态。 结构化并发：每个协程属于一个 CoroutineScope，父子 Job 形成树：父取消则全部子取消、子异常按策略向父传播、父等待全部子完成才结束——杜绝「孤儿协程」泄漏（回调时代最大的坑）。 调度器：Dispatchers.Main/IO/Default 控制执行线程；withContext 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。 对比：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。","url":"https://it-interview.is-a.dev/#/question/984"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/984.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","text":"考察点：CPS 变换、Continuation、挂起点、Job 层级与取消传播。协程是 Kotlin 面试必考核心。","answerCount":1,"datePublished":"2026-09-10T07:22:44.103Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——本质是编译器帮你写回调，但代码保持同步形态。 结构化并发：每个协程属于一个 CoroutineScope，父子 Job 形成树：父取消则全部子取消、子异常按策略向父传播、父等待全部子完成才结束——杜绝「孤儿协程」泄漏（回调时代最大的坑）。 调度器：Dispatchers.Main/IO/Default 控制执行线程；withContext 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。 对比：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。","url":"https://it-interview-889.pages.dev/#/question/984"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kotlin</span><span class="chip tag">协程</span><span class="chip tag">挂起函数</span><span class="chip tag">结构化并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CPS 变换、Continuation、挂起点、Job 层级与取消传播。协程是 Kotlin 面试必考核心。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>调度器</strong>：<code>Dispatchers.Main/IO/Default</code> 控制执行线程；<code>withContext</code> 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。</li>
 <li><strong>对比</strong>：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/984">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/984">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=224&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=224&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

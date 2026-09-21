@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？ · IT面试题库">
   <meta property="og:description" content="要点： 常见策略与适用场景： 轮询（Round Robin）：均匀分发，前提是后端实例性能相近； 加权轮询：按机器规格配权重，异构集群的标配； 随机：实现最简，规模大时统计上接近均匀； 最少连接数（Least Connections）：按当前活跃连接分发，能自动避开慢实例，适合请求耗时差异大的场景； 最短响应时间…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1066.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1066.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 常见策略与适用场景： 轮询（Round Robin）：均匀分发，前提是后端实例性能相近； 加权轮询：按机器规格配权重，异构集群的标配； 随机：实现最简，规模大时统计上接近均匀； 最少连接数（Least Connections）：按当前活跃连接分发，能自动避开慢实例，适合请求耗时差异大的场景； 最短响应时间…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1066.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？","text":"考察点：LB 算法、会话保持、哈希倾斜与虚拟节点。中间件与分布式基础。","answerCount":1,"datePublished":"2026-09-10T11:54:12.989Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 常见策略与适用场景： 轮询（Round Robin）：均匀分发，前提是后端实例性能相近； 加权轮询：按机器规格配权重，异构集群的标配； 随机：实现最简，规模大时统计上接近均匀； 最少连接数（Least Connections）：按当前活跃连接分发，能自动避开慢实例，适合请求耗时差异大的场景； 最短响应时间（Least Response Time）：按实测延迟动态调整，对长尾最敏感； IP Hash / 用户 Hash：把同一客户端固定到同一实例，实现会话保持（session stickiness）； 一致性哈希：见下。 一致性哈希要解决的问题：普通取模（hash(key) % N）在扩缩容时会导致几乎所有 key 重新映射——缓存场景下等于全量缓存失效（缓存雪崩式回源）。一致性哈希把哈希空间组织成一个环，节点与 key 都映射到环上，key 归属顺时针方向第一个节点。增删一个节点只影响相邻区间的 key（平均只迁移 1/N 的数据），大幅减少抖动。 副作用与解法（关键）： 哈希倾斜 / 数据不均：节点少时，节点在环上的分布可能极不均匀，导致部分节点承担大部分流量； 解法：虚拟节点（Virtual Nodes）——每个物理节点在环上映射几百个虚拟位置，把分布拉均匀。同时虚拟节点带来权重控制能力（性能强的机器分配更多虚拟节点）； 节点摘除时的抖动：某节点故障，其全部 key 会压到下一个节点上（瞬间流量翻倍，可能压垮）——需要副本（按顺时针取前 N 个健康节点）或负载上限缓解。 必须区分两种场景： 无状态服务：不需要会话保持，用轮询/最少连接即可。强行做哈希反而破坏均衡（热点用户会把某实例打爆）； 有状态场景（缓存分片、分库分表、任务分片、WebSocket 长连接）：一致性哈希价值最大。分库分表的哈希分片就是同一个原理。 会话保持的替代方案（更好的做法）：把 session 外置到 Redis——服务变成无状态，就不需要哈希绑定了。「用负载均衡做会话保持」往往是「该外置状态却偷懒」的信号，代价是扩容受限、故障时用户掉线、热点不均。 另需注意：健康检查（主动探测 + 被动摘除）、摘除后的连接处理（优雅下线：先停止接新连接、等待存量请求结束，否则用户会看到 5xx）、四层 vs 七层 LB（LVS 四层性能高、不解析内容；Nginx/Envoy 七层可做路由与灰度）。","url":"https://it-interview.is-a.dev/#/question/1066"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1066.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？","text":"考察点：LB 算法、会话保持、哈希倾斜与虚拟节点。中间件与分布式基础。","answerCount":1,"datePublished":"2026-09-10T11:54:12.989Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 常见策略与适用场景： 轮询（Round Robin）：均匀分发，前提是后端实例性能相近； 加权轮询：按机器规格配权重，异构集群的标配； 随机：实现最简，规模大时统计上接近均匀； 最少连接数（Least Connections）：按当前活跃连接分发，能自动避开慢实例，适合请求耗时差异大的场景； 最短响应时间（Least Response Time）：按实测延迟动态调整，对长尾最敏感； IP Hash / 用户 Hash：把同一客户端固定到同一实例，实现会话保持（session stickiness）； 一致性哈希：见下。 一致性哈希要解决的问题：普通取模（hash(key) % N）在扩缩容时会导致几乎所有 key 重新映射——缓存场景下等于全量缓存失效（缓存雪崩式回源）。一致性哈希把哈希空间组织成一个环，节点与 key 都映射到环上，key 归属顺时针方向第一个节点。增删一个节点只影响相邻区间的 key（平均只迁移 1/N 的数据），大幅减少抖动。 副作用与解法（关键）： 哈希倾斜 / 数据不均：节点少时，节点在环上的分布可能极不均匀，导致部分节点承担大部分流量； 解法：虚拟节点（Virtual Nodes）——每个物理节点在环上映射几百个虚拟位置，把分布拉均匀。同时虚拟节点带来权重控制能力（性能强的机器分配更多虚拟节点）； 节点摘除时的抖动：某节点故障，其全部 key 会压到下一个节点上（瞬间流量翻倍，可能压垮）——需要副本（按顺时针取前 N 个健康节点）或负载上限缓解。 必须区分两种场景： 无状态服务：不需要会话保持，用轮询/最少连接即可。强行做哈希反而破坏均衡（热点用户会把某实例打爆）； 有状态场景（缓存分片、分库分表、任务分片、WebSocket 长连接）：一致性哈希价值最大。分库分表的哈希分片就是同一个原理。 会话保持的替代方案（更好的做法）：把 session 外置到 Redis——服务变成无状态，就不需要哈希绑定了。「用负载均衡做会话保持」往往是「该外置状态却偷懒」的信号，代价是扩容受限、故障时用户掉线、热点不均。 另需注意：健康检查（主动探测 + 被动摘除）、摘除后的连接处理（优雅下线：先停止接新连接、等待存量请求结束，否则用户会看到 5xx）、四层 vs 七层 LB（LVS 四层性能高、不解析内容；Nginx/Envoy 七层可做路由与灰度）。","url":"https://it-interview-889.pages.dev/#/question/1066"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">服务治理</span><span class="chip tag">负载均衡</span><span class="chip tag">一致性哈希</span><span class="chip tag">虚拟节点</span><span class="chip tag">会话保持</span></div>
     <div class="card"><h2>题目</h2><p>考察点：LB 算法、会话保持、哈希倾斜与虚拟节点。中间件与分布式基础。</p></div>
@@ -100,12 +100,12 @@
 <li><strong>会话保持的替代方案（更好的做法）</strong>：把 session 外置到 <strong>Redis</strong>——服务变成无状态，就不需要哈希绑定了。<strong>「用负载均衡做会话保持」往往是「该外置状态却偷懒」的信号</strong>，代价是扩容受限、故障时用户掉线、热点不均。</li>
 <li><strong>另需注意</strong>：健康检查（主动探测 + 被动摘除）、<strong>摘除后的连接处理</strong>（优雅下线：先停止接新连接、等待存量请求结束，否则用户会看到 5xx）、<strong>四层 vs 七层 LB</strong>（LVS 四层性能高、不解析内容；Nginx/Envoy 七层可做路由与灰度）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1066">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1066">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=132&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=132&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -26,9 +26,14 @@ const MAX_TOP = 20;
 /* CORS 白名单：只对允许的来源回 ACAO（默认本站；可用 ALLOWED_ORIGIN 逗号分隔多个）。
    ⚠️ 必须是纯函数：isolate 并发请求会共享模块级变量、互相覆盖 Origin，
    表现为「同 isolate 内偶现 ACAO 缺失」。修法：把 origin 沿调用链传下去，
-   任何中间不得用模块级状态缓存。 */
+   任何中间不得用模块级状态缓存。
+   ⚠️ 2026-09-21：it-interview.is-a.dev 已被 is-a.dev 官方下架（ToS 第 4 条第 16 项
+   「任何面向课程的网站」），原域名 302 到 is-a.dev/available。**站点当前唯一入口是
+   Cloudflare Pages 的 it-interview-889.pages.dev**，故白名单以它为首位；
+   旧域名保留仅为兼容历史标签页/书签，不再承担流量。换自定义域时把新域名追加进来即可。 */
 function resolveCorsOrigin(env, request) {
-  const origins = ((env && env.ALLOWED_ORIGIN) || "https://it-interview.is-a.dev")
+  const origins = ((env && env.ALLOWED_ORIGIN) ||
+      "https://it-interview-889.pages.dev,https://it-interview.is-a.dev")
     .split(",").map(s => s.trim()).filter(Boolean);
   const origin = (request && request.headers.get("origin")) || "";
   return origin && origins.includes(origin) ? origin : "";
@@ -552,7 +557,10 @@ const AI_URL         = "https://api.deepseek.com/chat/completions";
 const CAT_KV_KEY     = "submit:cat:compact";
 const CAT_TTL_S      = 12 * 3600;
 const REVIEW_ROLES   = ["admin", "expert"];
-const SITE_ORIGIN    = "https://it-interview.is-a.dev";
+/* 站点自身地址：用于回读 /data/published.json 取分类树。
+   ⚠️ 2026-09-21 起 is-a.dev 域名已被下架，必须指向 Cloudflare Pages 实际入口；
+   换自定义域时改这一处（或在 Worker 上设 env SITE_ORIGIN 覆盖）。 */
+const SITE_ORIGIN    = "https://it-interview-889.pages.dev";
 
 /* 建表自愈：即使忘了跑 wrangler d1 execute，启动后第一次请求也会把表补齐。
    ⚠️ 必须整段 try/catch —— 建表失败绝不能连带打断登录/收藏等既有接口。 */
@@ -631,7 +639,21 @@ async function getCategorySnapshot(env) {
     if (hit) return hit;
   } catch (_) {}
   try {
-    const r = await fetch((env.SITE_ORIGIN || SITE_ORIGIN) + "/data/published.json");
+    const origin = env.SITE_ORIGIN || SITE_ORIGIN;
+    /* ⚠️ 必须伪装成「站内页面自己的 fetch」：站点的反爬守卫（cloudflare/pages/_worker.js）
+       对 /data/* 先做 UA 过滤、再要求浏览器信号（Sec-Fetch-Site: same-origin|same-site
+       或同源 Referer）。Worker 的裸 fetch 既无 UA 也无这些头，会被自家的守卫
+       403 missing-browser-signal / 空 UA 拦掉 —— 表现是分类快照恒为空串、
+       AI 投稿质检拿不到技术体系上下文（且因 try/catch 而静默失败，很难发现）。 */
+    const r = await fetch(origin + "/data/published.json", {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "cors",
+        "Referer": origin + "/"
+      }
+    });
     if (!r.ok) throw new Error("http " + r.status);
     const d = await r.json();
     const cats = d.categories || [];

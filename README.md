@@ -1,6 +1,6 @@
 # IT 面试题库管理系统
 
-[![Site](https://img.shields.io/badge/在线访问-it--interview.is--a.dev-2563EB)](https://it-interview.is-a.dev)
+[![Site](https://img.shields.io/badge/在线访问-it--interview-889.pages.dev-2563EB)](https://it-interview-889.pages.dev)
 [![GitHub](https://img.shields.io/badge/GitHub-succedd/workbuddy__it--interview-181717?logo=github)](https://github.com/succedd/workbuddy_it-interview)
 
 纯静态、无后端的 IT 各岗位面试题库管理与刷题平台。前端全部使用原生 HTML/CSS/JS 实现，数据默认存在浏览器 IndexedDB 中；题库快照通过 GitHub Pages 分发，支持"访客自动同步云端题库 + 管理员一键发布到 GitHub"。
@@ -159,6 +159,11 @@
 ## 部署与自定义域名
 
 - **托管**：本站为纯静态站点，托管于 **GitHub Pages**（仓库 `succedd/workbuddy_it-interview` 的 `main` 分支）；推送到 `main` 即触发 Pages 重新构建发布，约 1 分钟全站生效。
+- **⚠️ 2026-09-21 域名已变更（以此条为准，其余为历史记录）**：原域名 `it-interview.is-a.dev` 已被 is-a.dev 官方依服务条款第 4 条
+  第 16 项（`Any website that is orientated to courses`，任何面向课程的网站）**下架** —— `domains/it-interview.json` 被整文件删除、
+  该域名已释放（现 302 到 `https://is-a.dev/available`）。站点现托管于 **Cloudflare Pages**，对外入口为 **https://it-interview-889.pages.dev**，
+  并在其上启用反爬守卫（`/data/published.json` 对非站内请求返回 403）。**不要再向 is-a.dev 申请该域名。**
+  下方所有关于「GitHub Pages 自定义域名 / `succedd.github.io`」的描述均为历史记录，已不再成立。
 - **自定义域名（非跳转）**：线上域名为 `it-interview.is-a.dev`，是 GitHub Pages 的**自定义域名**（在仓库 Settings → Pages 中配置），**并非跳转到 `github.io`**——浏览器地址栏始终显示 `it-interview.is-a.dev`，内容由 GitHub 直接以该域名返回。仓库根目录 `CNAME` 文件声明该域名，DNS 层 `it-interview.is-a.dev` CNAME 指向 `succedd.github.io`。
 - **CDN 分发**：GitHub Pages 内容经 **Fastly 全球边缘节点**分发（响应头 `X-Fastly-Request-ID` / `Via: varnish` 为证），访客就近访问、不回源；云端题库 `data/published.json` 同样走 CDN，并带 `Cache-Control: max-age=600`（边缘缓存 10 分钟）。
 - **域名来源**：`is-a.dev` 为免费域名服务申请的子域名。

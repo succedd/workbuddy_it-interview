@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？ · IT面试题库">
   <meta property="og:description" content="要点： 本质：装饰器是在编译期被改写成函数调用的语法糖。@log class A {} 实际编译为 A = log(A) || A，即把类/方法传进函数、用返回值替换原定义。所以装饰器能做的所有事情，本质都是「在定义阶段修改目标对象」。 五种形态：类装饰器、方法装饰器、属性装饰器、访问器装饰器、参数装饰器。方法装…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1040.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1040.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？ · IT面试题库">
   <meta name="twitter:description" content="要点： 本质：装饰器是在编译期被改写成函数调用的语法糖。@log class A {} 实际编译为 A = log(A) || A，即把类/方法传进函数、用返回值替换原定义。所以装饰器能做的所有事情，本质都是「在定义阶段修改目标对象」。 五种形态：类装饰器、方法装饰器、属性装饰器、访问器装饰器、参数装饰器。方法装…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1040.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？","text":"考察点：装饰器语义、元数据反射、与 DI 框架的关系。理解 NestJS/Angular 的前置知识。","answerCount":1,"datePublished":"2026-09-10T11:52:25.454Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质：装饰器是在编译期被改写成函数调用的语法糖。@log class A {} 实际编译为 A = log(A) || A，即把类/方法传进函数、用返回值替换原定义。所以装饰器能做的所有事情，本质都是「在定义阶段修改目标对象」。 五种形态：类装饰器、方法装饰器、属性装饰器、访问器装饰器、参数装饰器。方法装饰器签名 (target, propertyKey, descriptor)，返回的 descriptor 会替换原描述符——这是实现拦截、缓存、日志的入口。 执行顺序（高频考点）：从下往上——多个装饰器在同一目标上，求值（表达式求值）自上而下，应用（调用）自下而上；类内部则是「参数/属性/方法装饰器先执行，最后才是类装饰器」。 为什么需要 experimentalDecorators + emitDecoratorMetadata： experimentalDecorators 是 TS 对旧版（legacy）装饰器提案的支持开关（TC39 标准装饰器在 TS 5.0 已进入 --target ES2022+ 的实验支持，但语义不同、不能混用，这是很多人踩的坑）； emitDecoratorMetadata 让编译器在装饰器元数据里写出参数类型信息（design:paramtypes），配合 reflect-metadata 才能在运行时读到一个类的构造函数参数是什么类型。 DI 框架为什么离不开它：NestJS/Angular 要自动注入，就必须在运行时知道「构造函数第 1 个参数的类型是 UserService」。TS 的类型在编译后被擦除，唯一的信息来源就是 emitDecoratorMetadata 写下的 design:paramtypes。所以：删掉 emitDecoratorMetadata 或改 import type 会让注入失败——import type 是纯类型导入，编译后不存在，元数据里只能写 Object，于是容器解析不出来。 加分点：装饰器内的 this 指向取决于调用形式（@dec 与 @dec() 差别很大，后者是装饰器工厂）；TS 5 的标准装饰器需要 Symbol.metadata 与运行时 polyfill 配合，迁移前务必确认框架支持情况。","url":"https://it-interview.is-a.dev/#/question/1040"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1040.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？","text":"考察点：装饰器语义、元数据反射、与 DI 框架的关系。理解 NestJS/Angular 的前置知识。","answerCount":1,"datePublished":"2026-09-10T11:52:25.454Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质：装饰器是在编译期被改写成函数调用的语法糖。@log class A {} 实际编译为 A = log(A) || A，即把类/方法传进函数、用返回值替换原定义。所以装饰器能做的所有事情，本质都是「在定义阶段修改目标对象」。 五种形态：类装饰器、方法装饰器、属性装饰器、访问器装饰器、参数装饰器。方法装饰器签名 (target, propertyKey, descriptor)，返回的 descriptor 会替换原描述符——这是实现拦截、缓存、日志的入口。 执行顺序（高频考点）：从下往上——多个装饰器在同一目标上，求值（表达式求值）自上而下，应用（调用）自下而上；类内部则是「参数/属性/方法装饰器先执行，最后才是类装饰器」。 为什么需要 experimentalDecorators + emitDecoratorMetadata： experimentalDecorators 是 TS 对旧版（legacy）装饰器提案的支持开关（TC39 标准装饰器在 TS 5.0 已进入 --target ES2022+ 的实验支持，但语义不同、不能混用，这是很多人踩的坑）； emitDecoratorMetadata 让编译器在装饰器元数据里写出参数类型信息（design:paramtypes），配合 reflect-metadata 才能在运行时读到一个类的构造函数参数是什么类型。 DI 框架为什么离不开它：NestJS/Angular 要自动注入，就必须在运行时知道「构造函数第 1 个参数的类型是 UserService」。TS 的类型在编译后被擦除，唯一的信息来源就是 emitDecoratorMetadata 写下的 design:paramtypes。所以：删掉 emitDecoratorMetadata 或改 import type 会让注入失败——import type 是纯类型导入，编译后不存在，元数据里只能写 Object，于是容器解析不出来。 加分点：装饰器内的 this 指向取决于调用形式（@dec 与 @dec() 差别很大，后者是装饰器工厂）；TS 5 的标准装饰器需要 Symbol.metadata 与运行时 polyfill 配合，迁移前务必确认框架支持情况。","url":"https://it-interview-889.pages.dev/#/question/1040"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip">Node.js工程师</span><span class="chip tag">TypeScript</span><span class="chip tag">装饰器</span><span class="chip tag">reflect-metadata</span><span class="chip tag">依赖注入</span></div>
     <div class="card"><h2>题目</h2><p>考察点：装饰器语义、元数据反射、与 DI 框架的关系。理解 NestJS/Angular 的前置知识。</p></div>
@@ -86,12 +86,12 @@
 <li><strong>DI 框架为什么离不开它</strong>：NestJS/Angular 要自动注入，就必须在运行时知道「构造函数第 1 个参数的类型是 <code>UserService</code>」。TS 的<strong>类型在编译后被擦除</strong>，唯一的信息来源就是 <code>emitDecoratorMetadata</code> 写下的 <code>design:paramtypes</code>。所以：<strong>删掉 <code>emitDecoratorMetadata</code> 或改 <code>import type</code> 会让注入失败</strong>——<code>import type</code> 是纯类型导入，编译后不存在，元数据里只能写 <code>Object</code>，于是容器解析不出来。</li>
 <li><strong>加分点</strong>：装饰器内的 <code>this</code> 指向取决于调用形式（<code>@dec</code> 与 <code>@dec()</code> 差别很大，后者是装饰器工厂）；TS 5 的标准装饰器需要 <code>Symbol.metadata</code> 与运行时 polyfill 配合，迁移前务必确认框架支持情况。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1040">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1040">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=75&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=75&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

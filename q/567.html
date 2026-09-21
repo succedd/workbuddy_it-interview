@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？ · IT面试题库">
   <meta property="og:description" content="作用：git cherry-pick 把指定提交所引入的变更作为一个新提交应用到当前分支（新 hash，仅复制“改动内容”而非原提交对象）。 典型场景： 1. 把已修复的某个 bug 提交单独移植到其它发布分支/hotfix 分支。 2. 误把提交做到错误分支，挑过来后再在原分支 reset 掉。 3. 选择性复…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/567.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/567.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="作用：git cherry-pick 把指定提交所引入的变更作为一个新提交应用到当前分支（新 hash，仅复制“改动内容”而非原提交对象）。 典型场景： 1. 把已修复的某个 bug 提交单独移植到其它发布分支/hotfix 分支。 2. 误把提交做到错误分支，挑过来后再在原分支 reset 掉。 3. 选择性复…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/567.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？","text":"我想把别的分支上的某一个提交（而不是整个分支）拿到当前分支，该用什么命令？请说明 cherry-pick 的作用、典型用途及潜在风险。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"作用：git cherry-pick 把指定提交所引入的变更作为一个新提交应用到当前分支（新 hash，仅复制“改动内容”而非原提交对象）。 典型场景： 1. 把已修复的某个 bug 提交单独移植到其它发布分支/hotfix 分支。 2. 误把提交做到错误分支，挑过来后再在原分支 reset 掉。 3. 选择性复用某次提交，而不想 merge 整条分支。 注意事项 / 风险： cherry-pick 会生成新提交，与原提交 hash 不同；若后续又 merge 原分支，可能产生“重复提交/看似冲突”。 被挑的提交若依赖其前序提交（如改动基于某变量定义），单独挑会冲突或编译失败，此时可能需要连着依赖提交一起挑，或改用 rebase/git rebase --onto。 冲突处理同 merge：--continue / --abort / --skip。 多个提交可 git cherry-pick A..B（左开右闭，不含 A）。","url":"https://it-interview.is-a.dev/#/question/567"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/567.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？","text":"我想把别的分支上的某一个提交（而不是整个分支）拿到当前分支，该用什么命令？请说明 cherry-pick 的作用、典型用途及潜在风险。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"作用：git cherry-pick 把指定提交所引入的变更作为一个新提交应用到当前分支（新 hash，仅复制“改动内容”而非原提交对象）。 典型场景： 1. 把已修复的某个 bug 提交单独移植到其它发布分支/hotfix 分支。 2. 误把提交做到错误分支，挑过来后再在原分支 reset 掉。 3. 选择性复用某次提交，而不想 merge 整条分支。 注意事项 / 风险： cherry-pick 会生成新提交，与原提交 hash 不同；若后续又 merge 原分支，可能产生“重复提交/看似冲突”。 被挑的提交若依赖其前序提交（如改动基于某变量定义），单独挑会冲突或编译失败，此时可能需要连着依赖提交一起挑，或改用 rebase/git rebase --onto。 冲突处理同 merge：--continue / --abort / --skip。 多个提交可 git cherry-pick A..B（左开右闭，不含 A）。","url":"https://it-interview-889.pages.dev/#/question/567"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">cherry-pick</span><span class="chip tag">提交移植</span><span class="chip tag">分支</span></div>
     <div class="card"><h2>题目</h2><p>我想把别的分支上的某一个提交（而不是整个分支）拿到当前分支，该用什么命令？请说明 cherry-pick 的作用、典型用途及潜在风险。</p></div>
@@ -89,12 +89,12 @@ git cherry-pick a1b2c3d   # 把该提交的改动应用到当前分支</code></p
 <li>冲突处理同 merge：<code>--continue</code> / <code>--abort</code> / <code>--skip</code>。</li>
 <li>多个提交可 <code>git cherry-pick A..B</code>（左开右闭，不含 A）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/567">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/567">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SwiftUI 与 UIKit 的架构差异是什么？声明式 UI 相比命令式好在哪、边界在哪？ · IT面试题库">
   <meta property="og:description" content="要点： 命令式（UIKit）：开发者手动管理视图生命周期——创建 view、设置属性、在数据变化时手动 diff 并更新 UI，状态散落在各回调里，状态与 UI 不同步是主要 bug 来源。 声明式（SwiftUI）：UI 是状态的函数（View = f(State)）——改状态，框架自动 diff 出最小更新。…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/988.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/988.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SwiftUI 与 UIKit 的架构差异是什么？声明式 UI 相比命令式好在哪、边界在哪？ · IT面试题库">
   <meta name="twitter:description" content="要点： 命令式（UIKit）：开发者手动管理视图生命周期——创建 view、设置属性、在数据变化时手动 diff 并更新 UI，状态散落在各回调里，状态与 UI 不同步是主要 bug 来源。 声明式（SwiftUI）：UI 是状态的函数（View = f(State)）——改状态，框架自动 diff 出最小更新。…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/988.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SwiftUI 与 UIKit 的架构差异是什么？声明式 UI 相比命令式好在哪、边界在哪？","text":"考察点：数据驱动渲染、单一数据源、Diffing、与 UIKit 互操作、适用边界。","answerCount":1,"datePublished":"2026-09-10T07:22:48.676Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 命令式（UIKit）：开发者手动管理视图生命周期——创建 view、设置属性、在数据变化时手动 diff 并更新 UI，状态散落在各回调里，状态与 UI 不同步是主要 bug 来源。 声明式（SwiftUI）：UI 是状态的函数（View = f(State)）——改状态，框架自动 diff 出最小更新。配合 @State/@ObservedObject/@EnvironmentObject 形成单一数据源单向数据流，天然适配 Combine/async-await。 实现机制：SwiftUI 依赖系统级渲染管线（Metal 之上的自研 Diffing），轻量 struct 视图按需重建，Identifiable 减少列表 diff 成本。 边界：极复杂自定义交互/高性能滚动（ Thousands cells + 手势竞争）仍需 UIKit 深度定制；存量大型项目渐进迁移用 UIHostingController/UIViewRepresentable 互操作。新项目以 SwiftUI 为主 + UIKit 补位是当前主流策略。","url":"https://it-interview.is-a.dev/#/question/988"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/988.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SwiftUI 与 UIKit 的架构差异是什么？声明式 UI 相比命令式好在哪、边界在哪？","text":"考察点：数据驱动渲染、单一数据源、Diffing、与 UIKit 互操作、适用边界。","answerCount":1,"datePublished":"2026-09-10T07:22:48.676Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 命令式（UIKit）：开发者手动管理视图生命周期——创建 view、设置属性、在数据变化时手动 diff 并更新 UI，状态散落在各回调里，状态与 UI 不同步是主要 bug 来源。 声明式（SwiftUI）：UI 是状态的函数（View = f(State)）——改状态，框架自动 diff 出最小更新。配合 @State/@ObservedObject/@EnvironmentObject 形成单一数据源单向数据流，天然适配 Combine/async-await。 实现机制：SwiftUI 依赖系统级渲染管线（Metal 之上的自研 Diffing），轻量 struct 视图按需重建，Identifiable 减少列表 diff 成本。 边界：极复杂自定义交互/高性能滚动（ Thousands cells + 手势竞争）仍需 UIKit 深度定制；存量大型项目渐进迁移用 UIHostingController/UIViewRepresentable 互操作。新项目以 SwiftUI 为主 + UIKit 补位是当前主流策略。","url":"https://it-interview-889.pages.dev/#/question/988"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>SwiftUI 与 UIKit 的架构差异是什么？声明式 UI 相比命令式好在哪、边界在哪？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">iOS开发工程师</span><span class="chip tag">SwiftUI</span><span class="chip tag">UIKit</span><span class="chip tag">声明式UI</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：数据驱动渲染、单一数据源、Diffing、与 UIKit 互操作、适用边界。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>实现机制</strong>：SwiftUI 依赖系统级渲染管线（Metal 之上的自研 Diffing），轻量 struct 视图按需重建，<code>Identifiable</code> 减少列表 diff 成本。</li>
 <li><strong>边界</strong>：极复杂自定义交互/高性能滚动（ Thousands cells + 手势竞争）仍需 UIKit 深度定制；存量大型项目渐进迁移用 <code>UIHostingController</code>/<code>UIViewRepresentable</code> 互操作。新项目以 SwiftUI 为主 + UIKit 补位是当前主流策略。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/988">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/988">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=219&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=219&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

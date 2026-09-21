@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？ · IT面试题库">
   <meta property="og:description" content="基本思路：编译器为每个引用维护“借用何时开始、何时结束”的信息，并在借用生效期间强制“要么多读、要么唯一写”的规则；任何违反（如可变与不可变借用重叠、返回了指向已释放栈内存的引用）都会报编译错误。 传统（词法）生命周期：借用在其词法作用域结束（花括号 }）前都有效，哪怕之后早已不再使用该引用——常导致“明明安全却…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/519.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/519.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？ · IT面试题库">
   <meta name="twitter:description" content="基本思路：编译器为每个引用维护“借用何时开始、何时结束”的信息，并在借用生效期间强制“要么多读、要么唯一写”的规则；任何违反（如可变与不可变借用重叠、返回了指向已释放栈内存的引用）都会报编译错误。 传统（词法）生命周期：借用在其词法作用域结束（花括号 }）前都有效，哪怕之后早已不再使用该引用——常导致“明明安全却…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/519.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？","text":"说明借用检查基于“流敏感”分析、借用区域(borrow region)的概念，以及 NLL 如何放宽词法作用域限制。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"基本思路：编译器为每个引用维护“借用何时开始、何时结束”的信息，并在借用生效期间强制“要么多读、要么唯一写”的规则；任何违反（如可变与不可变借用重叠、返回了指向已释放栈内存的引用）都会报编译错误。 传统（词法）生命周期：借用在其词法作用域结束（花括号 }）前都有效，哪怕之后早已不再使用该引用——常导致“明明安全却编译不过”的误报。 NLL（Non-Lexical Lifetimes，Rust 2018 引入）：改用流敏感（flow-sensitive）借用分析，借用只在最后一次使用之后才结束，而不是等到作用域末尾。例： 在 NLL 之前这会被拒绝，因为 r 的词法作用域还覆盖到 push。 本质：借用检查器结合借用区域 + 控制流图，判断引用的“实际存活区间”，在编译期消除数据竞争与悬垂引用，无需运行时 GC。","url":"https://it-interview.is-a.dev/#/question/519"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/519.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？","text":"说明借用检查基于“流敏感”分析、借用区域(borrow region)的概念，以及 NLL 如何放宽词法作用域限制。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"基本思路：编译器为每个引用维护“借用何时开始、何时结束”的信息，并在借用生效期间强制“要么多读、要么唯一写”的规则；任何违反（如可变与不可变借用重叠、返回了指向已释放栈内存的引用）都会报编译错误。 传统（词法）生命周期：借用在其词法作用域结束（花括号 }）前都有效，哪怕之后早已不再使用该引用——常导致“明明安全却编译不过”的误报。 NLL（Non-Lexical Lifetimes，Rust 2018 引入）：改用流敏感（flow-sensitive）借用分析，借用只在最后一次使用之后才结束，而不是等到作用域末尾。例： 在 NLL 之前这会被拒绝，因为 r 的词法作用域还覆盖到 push。 本质：借用检查器结合借用区域 + 控制流图，判断引用的“实际存活区间”，在编译期消除数据竞争与悬垂引用，无需运行时 GC。","url":"https://it-interview-889.pages.dev/#/question/519"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">新兴方向工程师</span><span class="chip tag">借用检查器</span><span class="chip tag">NLL</span><span class="chip tag">编译期检查</span></div>
     <div class="card"><h2>题目</h2><p>说明借用检查基于“流敏感”分析、借用区域(borrow region)的概念，以及 NLL 如何放宽词法作用域限制。</p></div>
@@ -86,12 +86,12 @@ v.push(2);         // NLL 下允许：r 已不再被使用</code></pre>
 <ul>
 <li><strong>本质</strong>：借用检查器结合<strong>借用区域 + 控制流图</strong>，判断引用的“实际存活区间”，在编译期消除数据竞争与悬垂引用，无需运行时 GC。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/519">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/519">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=17&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=17&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

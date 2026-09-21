@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？ · IT面试题库">
   <meta property="og:description" content="最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/530.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/530.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？ · IT面试题库">
   <meta name="twitter:description" content="最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/530.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？","text":"说明联合索引的存储顺序、最左匹配规则，以及范围查询后索引列失效的现象。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 c 这部分只能回表后过滤（只用到了 a 前缀，c 未走索引）。 范围查询中断：WHERE a=? AND b>? AND c=? 中，a 等值、b 是范围，b 之后的 c 失效（因为 b 是范围后 c 在索引内不再有序）。等值（=）可继续向右，范围（>,\u003c,LIKE 'x%'）会截断右侧。 建议：把等值、高区分度、最常用过滤的列放联合索引左侧；查询条件的列顺序尽量与索引一致；避免对索引列做函数/运算导致失效。","url":"https://it-interview.is-a.dev/#/question/530"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/530.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？","text":"说明联合索引的存储顺序、最左匹配规则，以及范围查询后索引列失效的现象。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 c 这部分只能回表后过滤（只用到了 a 前缀，c 未走索引）。 范围查询中断：WHERE a=? AND b>? AND c=? 中，a 等值、b 是范围，b 之后的 c 失效（因为 b 是范围后 c 在索引内不再有序）。等值（=）可继续向右，范围（>,\u003c,LIKE 'x%'）会截断右侧。 建议：把等值、高区分度、最常用过滤的列放联合索引左侧；查询条件的列顺序尽量与索引一致；避免对索引列做函数/运算导致失效。","url":"https://it-interview-889.pages.dev/#/question/530"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">最左前缀</span><span class="chip tag">联合索引</span><span class="chip tag">索引优化</span></div>
     <div class="card"><h2>题目</h2><p>说明联合索引的存储顺序、最左匹配规则，以及范围查询后索引列失效的现象。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>范围查询中断</strong>：<code>WHERE a=? AND b&gt;? AND c=?</code> 中，a 等值、b 是范围，b 之后的 <strong>c 失效</strong>（因为 b 是范围后 c 在索引内不再有序）。等值（<code>=</code>）可继续向右，范围（<code>&gt;</code>,<code>&lt;</code>,<code>LIKE &#39;x%&#39;</code>）会截断右侧。</li>
 <li><strong>建议</strong>：把<strong>等值、高区分度、最常用过滤</strong>的列放联合索引左侧；查询条件的列顺序尽量与索引一致；避免对索引列做函数/运算导致失效。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/530">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/530">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=27&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=27&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

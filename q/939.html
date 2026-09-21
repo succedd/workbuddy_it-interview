@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="G1 垃圾收集器的工作原理与特点是什么？ · IT面试题库">
   <meta property="og:description" content="定位：JDK 9 起的默认收集器，面向大堆（数 GB~数十 GB）+ 可预测停顿，目标是在吞吐与延迟间取得平衡。 核心设计： 1. Region 化布局：堆划分为 2048 个左右等大 Region（1~32MB），每个 Region 动态扮演 Eden/Survivor/Old/Humongous（大对象）角色…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/939.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/939.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="G1 垃圾收集器的工作原理与特点是什么？ · IT面试题库">
   <meta name="twitter:description" content="定位：JDK 9 起的默认收集器，面向大堆（数 GB~数十 GB）+ 可预测停顿，目标是在吞吐与延迟间取得平衡。 核心设计： 1. Region 化布局：堆划分为 2048 个左右等大 Region（1~32MB），每个 Region 动态扮演 Eden/Survivor/Old/Humongous（大对象）角色…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/939.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"G1 垃圾收集器的工作原理与特点是什么？","text":"请说明 G1 的 Region 划分、回收价值优先、Mixed GC 与停顿预测模型。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位：JDK 9 起的默认收集器，面向大堆（数 GB~数十 GB）+ 可预测停顿，目标是在吞吐与延迟间取得平衡。 核心设计： 1. Region 化布局：堆划分为 2048 个左右等大 Region（1~32MB），每个 Region 动态扮演 Eden/Survivor/Old/Humongous（大对象）角色——不再物理连续分代，物理碎片化但逻辑分代。 2. 回收价值优先：跟踪每个 Region 的回收价值（回收所得空间/所需时间），优先收集\"垃圾最多\"的 Region——这也是名字 Garbage First 的由来。 3. 停顿预测模型：用户设定目标停顿（-XX:MaxGCPauseMillis，默认 200ms），G1 据此选择本轮收集哪些 Region，宁可少收也不超时。 4. Mixed GC：Young GC 正常发生；老年代占比超阈值（IHOP 默认 45%）启动并发标记，随后 Mixed GC 同时回收部分新生代+老年代 Region。 5. 记忆集（RSet）记录跨 Region 引用，避免全堆扫描；SATB 算法保证并发标记正确性。 与 CMS 对比：G1 整体标记整理（Region 间复制），无内存碎片；CMS 并发收集但有碎片和并发失败风险。JDK 14 已移除 CMS。","url":"https://it-interview.is-a.dev/#/question/939"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/939.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"G1 垃圾收集器的工作原理与特点是什么？","text":"请说明 G1 的 Region 划分、回收价值优先、Mixed GC 与停顿预测模型。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位：JDK 9 起的默认收集器，面向大堆（数 GB~数十 GB）+ 可预测停顿，目标是在吞吐与延迟间取得平衡。 核心设计： 1. Region 化布局：堆划分为 2048 个左右等大 Region（1~32MB），每个 Region 动态扮演 Eden/Survivor/Old/Humongous（大对象）角色——不再物理连续分代，物理碎片化但逻辑分代。 2. 回收价值优先：跟踪每个 Region 的回收价值（回收所得空间/所需时间），优先收集\"垃圾最多\"的 Region——这也是名字 Garbage First 的由来。 3. 停顿预测模型：用户设定目标停顿（-XX:MaxGCPauseMillis，默认 200ms），G1 据此选择本轮收集哪些 Region，宁可少收也不超时。 4. Mixed GC：Young GC 正常发生；老年代占比超阈值（IHOP 默认 45%）启动并发标记，随后 Mixed GC 同时回收部分新生代+老年代 Region。 5. 记忆集（RSet）记录跨 Region 引用，避免全堆扫描；SATB 算法保证并发标记正确性。 与 CMS 对比：G1 整体标记整理（Region 间复制），无内存碎片；CMS 并发收集但有碎片和并发失败风险。JDK 14 已移除 CMS。","url":"https://it-interview-889.pages.dev/#/question/939"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>G1 垃圾收集器的工作原理与特点是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip">系统运维工程师</span><span class="chip tag">JVM</span><span class="chip tag">G1</span><span class="chip tag">垃圾回收器</span></div>
     <div class="card"><h2>题目</h2><p>请说明 G1 的 Region 划分、回收价值优先、Mixed GC 与停顿预测模型。</p></div>
@@ -83,12 +83,12 @@
 <li>记忆集（RSet）记录跨 Region 引用，避免全堆扫描；SATB 算法保证并发标记正确性。</li>
 </ol>
 <p><strong>与 CMS 对比</strong>：G1 整体标记整理（Region 间复制），<strong>无内存碎片</strong>；CMS 并发收集但有碎片和并发失败风险。JDK 14 已移除 CMS。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/939">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/939">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Docker 有哪些常见网络模式（bridge/host/none/container）？分别适用什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： bridge（默认）：Docker 为容器创建虚拟网桥 docker0，容器通过 veth 对连入并做 NAT 出网；容器间通过 IP/自定义网络互访。适合大多数独立服务，需 -p 做端口映射对外暴露。 host：容器直接使用宿主机网络栈，无 NAT、无独立 IP，网络性能最好、延迟最低；代价是失去网络隔…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/379.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/379.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Docker 有哪些常见网络模式（bridge/host/none/container）？分别适用什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： bridge（默认）：Docker 为容器创建虚拟网桥 docker0，容器通过 veth 对连入并做 NAT 出网；容器间通过 IP/自定义网络互访。适合大多数独立服务，需 -p 做端口映射对外暴露。 host：容器直接使用宿主机网络栈，无 NAT、无独立 IP，网络性能最好、延迟最低；代价是失去网络隔…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/379.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker 有哪些常见网络模式（bridge/host/none/container）？分别适用什么场景？","text":"考察点：四种网络驱动的差异与适用；默认 bridge 的 NAT 隔离、host 的高性能零隔离、none 的完全隔离、container 的共享网络栈。属简答题。","answerCount":1,"datePublished":"2026-09-01T09:25:35.203Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： bridge（默认）：Docker 为容器创建虚拟网桥 docker0，容器通过 veth 对连入并做 NAT 出网；容器间通过 IP/自定义网络互访。适合大多数独立服务，需 -p 做端口映射对外暴露。 host：容器直接使用宿主机网络栈，无 NAT、无独立 IP，网络性能最好、延迟最低；代价是失去网络隔离（端口直接占用宿主机）。适合对网络性能极度敏感、且单实例运行的场景（如高性能网络工具）。 none：容器只有 loopback，完全无外部网络；适用于纯计算、无需联网的任务或自定义网络插件的场景。 container：新容器共享另一个已存在容器的网络命名空间（IP、端口、网卡相同）；常用于“边车（sidecar）”模式，如日志收集容器与主容器共用网络。 选型口诀：多服务隔离用 bridge、要性能且单例用 host、要绝对隔离用 none、要共享网络用 container。","url":"https://it-interview.is-a.dev/#/question/379"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/379.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker 有哪些常见网络模式（bridge/host/none/container）？分别适用什么场景？","text":"考察点：四种网络驱动的差异与适用；默认 bridge 的 NAT 隔离、host 的高性能零隔离、none 的完全隔离、container 的共享网络栈。属简答题。","answerCount":1,"datePublished":"2026-09-01T09:25:35.203Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： bridge（默认）：Docker 为容器创建虚拟网桥 docker0，容器通过 veth 对连入并做 NAT 出网；容器间通过 IP/自定义网络互访。适合大多数独立服务，需 -p 做端口映射对外暴露。 host：容器直接使用宿主机网络栈，无 NAT、无独立 IP，网络性能最好、延迟最低；代价是失去网络隔离（端口直接占用宿主机）。适合对网络性能极度敏感、且单实例运行的场景（如高性能网络工具）。 none：容器只有 loopback，完全无外部网络；适用于纯计算、无需联网的任务或自定义网络插件的场景。 container：新容器共享另一个已存在容器的网络命名空间（IP、端口、网卡相同）；常用于“边车（sidecar）”模式，如日志收集容器与主容器共用网络。 选型口诀：多服务隔离用 bridge、要性能且单例用 host、要绝对隔离用 none、要共享网络用 container。","url":"https://it-interview-889.pages.dev/#/question/379"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Docker 有哪些常见网络模式（bridge/host/none/container）？分别适用什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Docker网络</span><span class="chip tag">bridge</span><span class="chip tag">host</span><span class="chip tag">容器网络</span></div>
     <div class="card"><h2>题目</h2><p>考察点：四种网络驱动的差异与适用；默认 bridge 的 NAT 隔离、host 的高性能零隔离、none 的完全隔离、container 的共享网络栈。属简答题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>container</strong>：新容器共享另一个<strong>已存在容器的网络命名空间</strong>（IP、端口、网卡相同）；常用于“边车（sidecar）”模式，如日志收集容器与主容器共用网络。</li>
 <li><strong>选型口诀</strong>：多服务隔离用 bridge、要性能且单例用 host、要绝对隔离用 none、要共享网络用 container。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/379">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/379">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=136&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=136&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

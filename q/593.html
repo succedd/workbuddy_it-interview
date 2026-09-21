@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="偏差-方差权衡（Bias-Variance Tradeoff）是什么？ · IT面试题库">
   <meta property="og:description" content="对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\hat f(x))^2] = Bias^2 + Variance + Irreducible\ Noise$$ 其中： 偏差 Bias = $E[\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/593.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/593.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="偏差-方差权衡（Bias-Variance Tradeoff）是什么？ · IT面试题库">
   <meta name="twitter:description" content="对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\hat f(x))^2] = Bias^2 + Variance + Irreducible\ Noise$$ 其中： 偏差 Bias = $E[\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/593.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"偏差-方差权衡（Bias-Variance Tradeoff）是什么？","text":"请用数学分解说明期望泛化误差如何拆成偏差、方差与噪声，并解释模型复杂度与二者的关系。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\\hat f(x))^2] = Bias^2 + Variance + Irreducible\\ Noise$$ 其中： 偏差 Bias = $E[\\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方差 Variance = $E[(\\hat f(x)-E[\\hat f(x)])^2]$：模型对训练集扰动的敏感程度，源于模型太复杂/过拟合。 噪声：数据本身不可约误差。 权衡关系 模型越简单 → 偏差高、方差低（欠拟合）； 模型越复杂 → 偏差低、方差高（过拟合）； 目标是在复杂度中找到使总误差最小的甜点。 应用：正则化、集成（Bagging 降方差、Boosting 降偏差）本质上都是在调节这一权衡。例如随机森林通过平均多个高方差树降低方差；线性回归加 L2 正则抬高偏差、压低方差。","url":"https://it-interview.is-a.dev/#/question/593"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/593.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"偏差-方差权衡（Bias-Variance Tradeoff）是什么？","text":"请用数学分解说明期望泛化误差如何拆成偏差、方差与噪声，并解释模型复杂度与二者的关系。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\\hat f(x))^2] = Bias^2 + Variance + Irreducible\\ Noise$$ 其中： 偏差 Bias = $E[\\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方差 Variance = $E[(\\hat f(x)-E[\\hat f(x)])^2]$：模型对训练集扰动的敏感程度，源于模型太复杂/过拟合。 噪声：数据本身不可约误差。 权衡关系 模型越简单 → 偏差高、方差低（欠拟合）； 模型越复杂 → 偏差低、方差高（过拟合）； 目标是在复杂度中找到使总误差最小的甜点。 应用：正则化、集成（Bagging 降方差、Boosting 降偏差）本质上都是在调节这一权衡。例如随机森林通过平均多个高方差树降低方差；线性回归加 L2 正则抬高偏差、压低方差。","url":"https://it-interview-889.pages.dev/#/question/593"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>偏差-方差权衡（Bias-Variance Tradeoff）是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">深度学习工程师</span><span class="chip tag">机器学习</span><span class="chip tag">偏差方差</span><span class="chip tag">泛化误差</span></div>
     <div class="card"><h2>题目</h2><p>请用数学分解说明期望泛化误差如何拆成偏差、方差与噪声，并解释模型复杂度与二者的关系。</p></div>
@@ -88,12 +88,12 @@
 <li>目标是在复杂度中找到使<strong>总误差最小</strong>的甜点。</li>
 </ul>
 <p><strong>应用</strong>：正则化、集成（Bagging 降方差、Boosting 降偏差）本质上都是在调节这一权衡。例如随机森林通过平均多个高方差树降低方差；线性回归加 L2 正则抬高偏差、压低方差。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/593">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/593">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=174&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=174&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

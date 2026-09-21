@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是递归？写阶乘并说明栈溢出风险。 · IT面试题库">
   <meta property="og:description" content="递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/70.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/70.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是递归？写阶乘并说明栈溢出风险。 · IT面试题库">
   <meta name="twitter:description" content="递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/70.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是递归？写阶乘并说明栈溢出风险。","text":"解释递归要素、基线条件，以及尾递归与迭代替代。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。 改迭代：用循环+累加变量，空间 O(1)。 记忆化（memoization）避免重复子问题（如斐波那契）。","url":"https://it-interview.is-a.dev/#/question/70"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/70.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是递归？写阶乘并说明栈溢出风险。","text":"解释递归要素、基线条件，以及尾递归与迭代替代。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。 改迭代：用循环+累加变量，空间 O(1)。 记忆化（memoization）避免重复子问题（如斐波那契）。","url":"https://it-interview-889.pages.dev/#/question/70"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是递归？写阶乘并说明栈溢出风险。</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">递归</span><span class="chip tag">栈</span><span class="chip tag">算法</span></div>
     <div class="card"><h2>题目</h2><p>解释递归要素、基线条件，以及尾递归与迭代替代。</p></div>
@@ -84,12 +84,12 @@
 <li><strong>改迭代</strong>：用循环+累加变量，空间 O(1)。</li>
 <li>记忆化（memoization）避免重复子问题（如斐波那契）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/70">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/70">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=3&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=3&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

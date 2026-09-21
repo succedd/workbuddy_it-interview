@@ -259,7 +259,7 @@
       ctx.textAlign = "right";
       ctx.fillStyle = "rgba(255,255,255,.55)";
       ctx.font = "500 20px 'PingFang SC','Microsoft YaHei',sans-serif";
-      ctx.fillText(dateStr + "   ·   it-interview.is-a.dev", W - 60, footY);
+      ctx.fillText(dateStr + "   ·   " + location.host, W - 60, footY);
       ctx.textAlign = "left";
 
       // 11) 导出 PNG + 下载 + 尝试复制

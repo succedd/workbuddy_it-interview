@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Jenkins 流水线里如何安全地管理密钥等凭据？有哪些类型和作用域，怎样防止密钥泄露到构建日志？ · IT面试题库">
   <meta property="og:description" content="一、凭据由谁提供、存在哪 Jenkins 的凭据能力由 Credentials Binding 插件提供。为了最大化安全性，凭据在 controller 上以加密形式存储（用 Jenkins controller ID 加密），在 Pipeline 中只通过凭据 ID 引用，这样既降低了真实凭据暴露给普通用户的可…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/444.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/444.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jenkins 流水线里如何安全地管理密钥等凭据？有哪些类型和作用域，怎样防止密钥泄露到构建日志？ · IT面试题库">
   <meta name="twitter:description" content="一、凭据由谁提供、存在哪 Jenkins 的凭据能力由 Credentials Binding 插件提供。为了最大化安全性，凭据在 controller 上以加密形式存储（用 Jenkins controller ID 加密），在 Pipeline 中只通过凭据 ID 引用，这样既降低了真实凭据暴露给普通用户的可…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/444.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jenkins 流水线里如何安全地管理密钥等凭据？有哪些类型和作用域，怎样防止密钥泄露到构建日志？","text":"流水线需要拉取私有仓库、推送镜像、发布制品，必然要用到各类密钥。请说明 Jenkins 凭据的存储方式、作用域区别，以及在 Pipeline 中使用的正确姿势与防泄露要点。","answerCount":1,"datePublished":"2026-09-03T00:53:56.295Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、凭据由谁提供、存在哪 Jenkins 的凭据能力由 Credentials Binding 插件提供。为了最大化安全性，凭据在 controller 上以加密形式存储（用 Jenkins controller ID 加密），在 Pipeline 中只通过凭据 ID 引用，这样既降低了真实凭据暴露给普通用户的可能，也阻止了把可用凭据从一个 controller 复制到另一个。 二、支持的凭据类型 Secret text：API Token、GitHub Personal Access Token 等； Username and password：可分开使用，也可作为 username:password 冒号分隔的整体； Secret file：以文件形式保存的机密内容； SSH Username with private key：SSH 公私钥对（可带 passphrase）； Certificate：PKCS#12 证书文件及可选密码； Docker Host Certificate Authentication：Docker 主机证书认证。 三、作用域（Scope）的区别 Global：供 Pipeline 项目/条目及其所有子对象使用，日常流水线选这个； System：供 Jenkins controller 自身与系统管理功能交互使用（邮件认证、agent 连接等），只作用于单个对象。 四、权限与命名 凭据的增删改受 Credentials > Create 权限控制，需要通过 Matrix-based security 配置。要特别注意默认的「Logged-in users can do anything / Anyone can do anything」等于人人可建凭据，生产环境必须收紧。凭据 ID 建议统一命名规范（一旦设定不可再修改），未指定时 Jenkins 会生成一个 GUID。 五、防泄露要点 1. 在声明式 Pipeline 中用 environment + credentials('凭据ID') 绑定变量，由插件完成注入与日志脱敏，不要在脚本里硬编码明文； 2. 禁止在 echo、sh 中打印凭据变量，谨慎使用 set -x，对派生的敏感值主动掩码； 3. 不要把密钥写进 Jenkinsfile、Dockerfile 或镜像层； 4. 密钥按用途与环境拆分、定期轮换，优先接入外部密钥管理（Vault）或 OIDC 换取短期凭证，而非长期静态凭据； 5. 区分「某个项目可用」与「全局可用」的凭据，按项目域隔离，缩小泄露后的爆炸半径。","url":"https://it-interview.is-a.dev/#/question/444"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/444.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jenkins 流水线里如何安全地管理密钥等凭据？有哪些类型和作用域，怎样防止密钥泄露到构建日志？","text":"流水线需要拉取私有仓库、推送镜像、发布制品，必然要用到各类密钥。请说明 Jenkins 凭据的存储方式、作用域区别，以及在 Pipeline 中使用的正确姿势与防泄露要点。","answerCount":1,"datePublished":"2026-09-03T00:53:56.295Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、凭据由谁提供、存在哪 Jenkins 的凭据能力由 Credentials Binding 插件提供。为了最大化安全性，凭据在 controller 上以加密形式存储（用 Jenkins controller ID 加密），在 Pipeline 中只通过凭据 ID 引用，这样既降低了真实凭据暴露给普通用户的可能，也阻止了把可用凭据从一个 controller 复制到另一个。 二、支持的凭据类型 Secret text：API Token、GitHub Personal Access Token 等； Username and password：可分开使用，也可作为 username:password 冒号分隔的整体； Secret file：以文件形式保存的机密内容； SSH Username with private key：SSH 公私钥对（可带 passphrase）； Certificate：PKCS#12 证书文件及可选密码； Docker Host Certificate Authentication：Docker 主机证书认证。 三、作用域（Scope）的区别 Global：供 Pipeline 项目/条目及其所有子对象使用，日常流水线选这个； System：供 Jenkins controller 自身与系统管理功能交互使用（邮件认证、agent 连接等），只作用于单个对象。 四、权限与命名 凭据的增删改受 Credentials > Create 权限控制，需要通过 Matrix-based security 配置。要特别注意默认的「Logged-in users can do anything / Anyone can do anything」等于人人可建凭据，生产环境必须收紧。凭据 ID 建议统一命名规范（一旦设定不可再修改），未指定时 Jenkins 会生成一个 GUID。 五、防泄露要点 1. 在声明式 Pipeline 中用 environment + credentials('凭据ID') 绑定变量，由插件完成注入与日志脱敏，不要在脚本里硬编码明文； 2. 禁止在 echo、sh 中打印凭据变量，谨慎使用 set -x，对派生的敏感值主动掩码； 3. 不要把密钥写进 Jenkinsfile、Dockerfile 或镜像层； 4. 密钥按用途与环境拆分、定期轮换，优先接入外部密钥管理（Vault）或 OIDC 换取短期凭证，而非长期静态凭据； 5. 区分「某个项目可用」与「全局可用」的凭据，按项目域隔离，缩小泄露后的爆炸半径。","url":"https://it-interview-889.pages.dev/#/question/444"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Jenkins 流水线里如何安全地管理密钥等凭据？有哪些类型和作用域，怎样防止密钥泄露到构建日志？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">CI/CD工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">Jenkins</span><span class="chip tag">凭据管理</span><span class="chip tag">流水线安全</span></div>
     <div class="card"><h2>题目</h2><p>流水线需要拉取私有仓库、推送镜像、发布制品，必然要用到各类密钥。请说明 Jenkins 凭据的存储方式、作用域区别，以及在 Pipeline 中使用的正确姿势与防泄露要点。</p></div>
@@ -99,12 +99,12 @@
 <li>密钥按用途与环境拆分、定期轮换，优先接入外部密钥管理（Vault）或 OIDC 换取短期凭证，而非长期静态凭据；</li>
 <li>区分「某个项目可用」与「全局可用」的凭据，按项目域隔离，缩小泄露后的爆炸半径。</li>
 </ol></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/444">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/444">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=139&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=139&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

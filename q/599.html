@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="凸优化中的凸函数、梯度与最优性条件是什么？ · IT面试题库">
   <meta property="og:description" content="凸函数定义：定义域 D 为凸集，对任意 $x,y\in D$ 与 $t\in[0,1]$： $$f(tx+(1-t)y)\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/599.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/599.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="凸优化中的凸函数、梯度与最优性条件是什么？ · IT面试题库">
   <meta name="twitter:description" content="凸函数定义：定义域 D 为凸集，对任意 $x,y\in D$ 与 $t\in[0,1]$： $$f(tx+(1-t)y)\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/599.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"凸优化中的凸函数、梯度与最优性条件是什么？","text":"请说明凸函数的定义与「局部极小即全局极小」的性质，并给出可微凸函数的最优点条件，联系梯度下降为何适用于凸问题。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"凸函数定义：定义域 D 为凸集，对任意 $x,y\\in D$ 与 $t\\in[0,1]$： $$f(tx+(1-t)y)\\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局极小唯一。 一阶最优性条件（可微凸函数） $x^$ 为全局最小 $\\iff \\nabla f(x^)=0$（无约束）。 等价地，$f(y)\\ge f(x)+\\nabla f(x)^T(y-x)$ 对所有 y 成立。 与梯度下降 梯度 $\\nabla f(x)$ 指向上升最快方向，故沿 $-\\nabla f(x)$ 下降。对凸函数，只要梯度为 0 即达全局最优，因此梯度下降能稳定收敛（配合合适学习率/步长）。 非凸问题则只能保证收敛到局部极小，这也是深度学习难以保证全局最优的原因。 二阶导数判别：二阶可导时 $f''(x)\\ge0$（一元）或 Hessian 半正定（多元）即为凸。","url":"https://it-interview.is-a.dev/#/question/599"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/599.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"凸优化中的凸函数、梯度与最优性条件是什么？","text":"请说明凸函数的定义与「局部极小即全局极小」的性质，并给出可微凸函数的最优点条件，联系梯度下降为何适用于凸问题。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"凸函数定义：定义域 D 为凸集，对任意 $x,y\\in D$ 与 $t\\in[0,1]$： $$f(tx+(1-t)y)\\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局极小唯一。 一阶最优性条件（可微凸函数） $x^$ 为全局最小 $\\iff \\nabla f(x^)=0$（无约束）。 等价地，$f(y)\\ge f(x)+\\nabla f(x)^T(y-x)$ 对所有 y 成立。 与梯度下降 梯度 $\\nabla f(x)$ 指向上升最快方向，故沿 $-\\nabla f(x)$ 下降。对凸函数，只要梯度为 0 即达全局最优，因此梯度下降能稳定收敛（配合合适学习率/步长）。 非凸问题则只能保证收敛到局部极小，这也是深度学习难以保证全局最优的原因。 二阶导数判别：二阶可导时 $f''(x)\\ge0$（一元）或 Hessian 半正定（多元）即为凸。","url":"https://it-interview-889.pages.dev/#/question/599"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>凸优化中的凸函数、梯度与最优性条件是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">数据科学家</span><span class="chip tag">数学</span><span class="chip tag">凸优化</span><span class="chip tag">梯度</span><span class="chip tag">最优性</span></div>
     <div class="card"><h2>题目</h2><p>请说明凸函数的定义与「局部极小即全局极小」的性质，并给出可微凸函数的最优点条件，联系梯度下降为何适用于凸问题。</p></div>
@@ -92,12 +92,12 @@
 <li>非凸问题则只能保证收敛到局部极小，这也是深度学习难以保证全局最优的原因。</li>
 </ul>
 <p><strong>二阶导数判别</strong>：二阶可导时 $f&#39;&#39;(x)\ge0$（一元）或 Hessian 半正定（多元）即为凸。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/599">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/599">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=175&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=175&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

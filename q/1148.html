@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。 · IT面试题库">
   <meta property="og:description" content="不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1148.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1148.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。 · IT面试题库">
   <meta name="twitter:description" content="不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1148.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。","text":"请站在“发布可靠性”视角，说明这四件套各自解决的痛点，以及它们如何组合成“出问题能秒级回退、新功能能灰度放量”的发布能力。","answerCount":1,"datePublished":"2026-09-14T02:47:35.336Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，回滚=把流量/部署指回上一稳定版本（重新部署旧镜像或切 Ingress/路由），秒级完成；关键是“回滚路径要演练过”，不能事故时才第一次试。 特性开关（feature toggle）：把“代码上线”与“功能开放”解耦——新逻辑随开关默认关闭上线，确认无碍再按比例放量，出问题只关开关不必回滚代码，把回滚粒度从“整个版本”降到“单个功能”。 协同逻辑：不可变制品+IaC 保证“能回退且回得对”，一键回滚是兜底手段，特性开关是更轻量的日常减震；四件套合起来让“快速发布”与“安全可退”不再二选一。","url":"https://it-interview.is-a.dev/#/question/1148"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1148.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。","text":"请站在“发布可靠性”视角，说明这四件套各自解决的痛点，以及它们如何组合成“出问题能秒级回退、新功能能灰度放量”的发布能力。","answerCount":1,"datePublished":"2026-09-14T02:47:35.336Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，回滚=把流量/部署指回上一稳定版本（重新部署旧镜像或切 Ingress/路由），秒级完成；关键是“回滚路径要演练过”，不能事故时才第一次试。 特性开关（feature toggle）：把“代码上线”与“功能开放”解耦——新逻辑随开关默认关闭上线，确认无碍再按比例放量，出问题只关开关不必回滚代码，把回滚粒度从“整个版本”降到“单个功能”。 协同逻辑：不可变制品+IaC 保证“能回退且回得对”，一键回滚是兜底手段，特性开关是更轻量的日常减震；四件套合起来让“快速发布”与“安全可退”不再二选一。","url":"https://it-interview-889.pages.dev/#/question/1148"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">DevOps工程师</span><span class="chip tag">发布系统</span><span class="chip tag">不可变制品</span><span class="chip tag">环境即代码</span><span class="chip tag">一键回滚</span><span class="chip tag">特性开关</span></div>
     <div class="card"><h2>题目</h2><p>请站在“发布可靠性”视角，说明这四件套各自解决的痛点，以及它们如何组合成“出问题能秒级回退、新功能能灰度放量”的发布能力。</p></div>
@@ -78,12 +78,12 @@
 <p><strong>一键回滚</strong>：基于不可变制品与 IaC，回滚=把流量/部署指回上一稳定版本（重新部署旧镜像或切 Ingress/路由），秒级完成；关键是“回滚路径要演练过”，不能事故时才第一次试。</p>
 <p><strong>特性开关（feature toggle）</strong>：把“代码上线”与“功能开放”解耦——新逻辑随开关默认关闭上线，确认无碍再按比例放量，出问题只关开关不必回滚代码，把回滚粒度从“整个版本”降到“单个功能”。</p>
 <p><strong>协同逻辑</strong>：不可变制品+IaC 保证“能回退且回得对”，一键回滚是兜底手段，特性开关是更轻量的日常减震；四件套合起来让“快速发布”与“安全可退”不再二选一。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1148">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1148">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

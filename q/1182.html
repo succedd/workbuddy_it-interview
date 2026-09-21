@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。 · IT面试题库">
   <meta property="og:description" content="要点： 成本拆解公式：单实例成本 ≈ 显卡单价 × 卡数；总吞吐 ≈ 单实例 QPS × 实例数；单请求成本 ≈ 实例成本 / 总吞吐。而「能塞几张卡」由权重+KV Cache 显存决定，所以量化直接决定实例密度（显存减半≈同卡多开一倍实例）。 「小模型+量化」路线：INT4 小模型显存小、单卡可开多实例、单价低…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1182.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1182.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。 · IT面试题库">
   <meta name="twitter:description" content="要点： 成本拆解公式：单实例成本 ≈ 显卡单价 × 卡数；总吞吐 ≈ 单实例 QPS × 实例数；单请求成本 ≈ 实例成本 / 总吞吐。而「能塞几张卡」由权重+KV Cache 显存决定，所以量化直接决定实例密度（显存减半≈同卡多开一倍实例）。 「小模型+量化」路线：INT4 小模型显存小、单卡可开多实例、单价低…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1182.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。","text":"考察点：成本建模与权衡。要求把成本拆成「显存→实例数→吞吐→单价」的链路，并给出可操作的拐点判断，而非空谈「越大越好」。","answerCount":1,"datePublished":"2026-09-17T02:35:52.781Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 成本拆解公式：单实例成本 ≈ 显卡单价 × 卡数；总吞吐 ≈ 单实例 QPS × 实例数；单请求成本 ≈ 实例成本 / 总吞吐。而「能塞几张卡」由权重+KV Cache 显存决定，所以量化直接决定实例密度（显存减半≈同卡多开一倍实例）。 「小模型+量化」路线：INT4 小模型显存小、单卡可开多实例、单价低，适合量大、延迟敏感、质量门槛不高的通用场景（客服、摘要），边际成本随量化线性下降。 「大模型+高并发」路线：大模型质量高但单实例贵、吞吐受限于显存与 KV，适合质量敏感、量相对小的场景；高并发要靠连续批处理把单卡 QPS 拉满才划算。 拐点怎么算：把两类方案代入「单请求成本 = 卡单价×卡数 / (单卡QPS×卡数) = 卡单价 / 单卡QPS」，比较在目标 QPS 下谁的「卡单价/有效QPS」更低；通常当质量达标时，量化小模型在绝大多数中低复杂任务上单请求成本最低，只有质量不达标才上大模型。 结论：成本权衡的本质是「用质量换显存密度」，量化是杠杆，连续批处理是把杠杆放大的引擎。","url":"https://it-interview.is-a.dev/#/question/1182"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1182.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。","text":"考察点：成本建模与权衡。要求把成本拆成「显存→实例数→吞吐→单价」的链路，并给出可操作的拐点判断，而非空谈「越大越好」。","answerCount":1,"datePublished":"2026-09-17T02:35:52.781Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 成本拆解公式：单实例成本 ≈ 显卡单价 × 卡数；总吞吐 ≈ 单实例 QPS × 实例数；单请求成本 ≈ 实例成本 / 总吞吐。而「能塞几张卡」由权重+KV Cache 显存决定，所以量化直接决定实例密度（显存减半≈同卡多开一倍实例）。 「小模型+量化」路线：INT4 小模型显存小、单卡可开多实例、单价低，适合量大、延迟敏感、质量门槛不高的通用场景（客服、摘要），边际成本随量化线性下降。 「大模型+高并发」路线：大模型质量高但单实例贵、吞吐受限于显存与 KV，适合质量敏感、量相对小的场景；高并发要靠连续批处理把单卡 QPS 拉满才划算。 拐点怎么算：把两类方案代入「单请求成本 = 卡单价×卡数 / (单卡QPS×卡数) = 卡单价 / 单卡QPS」，比较在目标 QPS 下谁的「卡单价/有效QPS」更低；通常当质量达标时，量化小模型在绝大多数中低复杂任务上单请求成本最低，只有质量不达标才上大模型。 结论：成本权衡的本质是「用质量换显存密度」，量化是杠杆，连续批处理是把杠杆放大的引擎。","url":"https://it-interview-889.pages.dev/#/question/1182"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip tag">成本权衡</span><span class="chip tag">推理成本</span><span class="chip tag">量化</span><span class="chip tag">吞吐</span></div>
     <div class="card"><h2>题目</h2><p>考察点：成本建模与权衡。要求把成本拆成「显存→实例数→吞吐→单价」的链路，并给出可操作的拐点判断，而非空谈「越大越好」。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>拐点怎么算</strong>：把两类方案代入「单请求成本 = 卡单价×卡数 / (单卡QPS×卡数) = 卡单价 / 单卡QPS」，比较在目标 QPS 下谁的「卡单价/有效QPS」更低；通常<strong>当质量达标时，量化小模型在绝大多数中低复杂任务上单请求成本最低</strong>，只有质量不达标才上大模型。</li>
 </ul>
 <p><strong>结论</strong>：成本权衡的本质是「用质量换显存密度」，量化是杠杆，连续批处理是把杠杆放大的引擎。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1182">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1182">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

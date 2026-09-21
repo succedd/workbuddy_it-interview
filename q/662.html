@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？ · IT面试题库">
   <meta property="og:description" content="要点一：对象创建的五个步骤 1) 类加载检查：JVM 遇到 new 指令，先检查该指令的参数能否在常量池中定位到一个类的符号引用，并检查该类是否已被加载、解析和初始化；没有则先执行类加载。 2) 分配内存：为新生对象在堆中划分空间，所需大小在类加载完成后即可完全确定。 内存规整时用指针碰撞（移动分界指针）； 内存…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/662.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/662.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？ · IT面试题库">
   <meta name="twitter:description" content="要点一：对象创建的五个步骤 1) 类加载检查：JVM 遇到 new 指令，先检查该指令的参数能否在常量池中定位到一个类的符号引用，并检查该类是否已被加载、解析和初始化；没有则先执行类加载。 2) 分配内存：为新生对象在堆中划分空间，所需大小在类加载完成后即可完全确定。 内存规整时用指针碰撞（移动分界指针）； 内存…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/662.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？","text":"追问链终点。考察点：类加载检查→分配内存→零值初始化→设置对象头→执行 init；分配内存的指针碰撞与空闲列表；并发分配下的 TLAB/CAS；句柄与直接指针两种访问方式。","answerCount":1,"datePublished":"2026-09-08T13:40:44.619Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：对象创建的五个步骤 1) 类加载检查：JVM 遇到 new 指令，先检查该指令的参数能否在常量池中定位到一个类的符号引用，并检查该类是否已被加载、解析和初始化；没有则先执行类加载。 2) 分配内存：为新生对象在堆中划分空间，所需大小在类加载完成后即可完全确定。 内存规整时用指针碰撞（移动分界指针）； 内存不规整时用空闲列表（从列表里找一块足够大的空间）。 是否规整取决于垃圾收集器是否带压缩整理功能（Serial/ParNew 规整，CMS 不规整）。 3) 并发安全：分配动作本身要处理并发，做法是 CAS + 失败重试保证原子性，或给每个线程预分配一小块本地线程分配缓冲 TLAB（-XX:+UseTLAB，默认开启）。 4) 零值初始化：把分配到的内存空间（不含对象头）都初始化为零值，保证实例字段不赋初值就能直接使用。 5) 设置对象头 + 执行 ()：对象头中写入哈希码、GC 分代年龄、锁状态、类元数据指针等；随后执行构造方法按程序员意愿初始化。 要点二：对象的内存布局 分为三块：对象头（Mark Word + 类型指针，数组还要有长度）、实例数据（父类与子类字段，同宽字段一起分配）、对齐填充（HotSpot 要求对象大小为 8 字节的整数倍）。 要点三：两种访问定位方式 句柄访问：堆中划出句柄池，reference 存句柄地址，句柄里再分别指向对象实例数据（堆）与类型数据（方法区）。 优点：对象被移动（GC 复制算法很常见）时只需改句柄中的指针，reference 本身不变，reference 存储地址稳定。 直接指针（HotSpot 采用）：reference 直接存对象地址，对象内存中再保存类型数据的指针。 优点：少一次指针定位开销，访问速度更快；由于对象访问在 Java 中极其频繁，这点开销累积起来非常可观。 缺点：对象移动时必须修改所有 reference。 要点四：回答要点小结 面试时按「检查 → 分配 → 并发 → 零值 → 对象头 → init」六段答出流程，再补一句 HotSpot 采用直接指针，就完整了。","url":"https://it-interview.is-a.dev/#/question/662"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/662.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？","text":"追问链终点。考察点：类加载检查→分配内存→零值初始化→设置对象头→执行 init；分配内存的指针碰撞与空闲列表；并发分配下的 TLAB/CAS；句柄与直接指针两种访问方式。","answerCount":1,"datePublished":"2026-09-08T13:40:44.619Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：对象创建的五个步骤 1) 类加载检查：JVM 遇到 new 指令，先检查该指令的参数能否在常量池中定位到一个类的符号引用，并检查该类是否已被加载、解析和初始化；没有则先执行类加载。 2) 分配内存：为新生对象在堆中划分空间，所需大小在类加载完成后即可完全确定。 内存规整时用指针碰撞（移动分界指针）； 内存不规整时用空闲列表（从列表里找一块足够大的空间）。 是否规整取决于垃圾收集器是否带压缩整理功能（Serial/ParNew 规整，CMS 不规整）。 3) 并发安全：分配动作本身要处理并发，做法是 CAS + 失败重试保证原子性，或给每个线程预分配一小块本地线程分配缓冲 TLAB（-XX:+UseTLAB，默认开启）。 4) 零值初始化：把分配到的内存空间（不含对象头）都初始化为零值，保证实例字段不赋初值就能直接使用。 5) 设置对象头 + 执行 ()：对象头中写入哈希码、GC 分代年龄、锁状态、类元数据指针等；随后执行构造方法按程序员意愿初始化。 要点二：对象的内存布局 分为三块：对象头（Mark Word + 类型指针，数组还要有长度）、实例数据（父类与子类字段，同宽字段一起分配）、对齐填充（HotSpot 要求对象大小为 8 字节的整数倍）。 要点三：两种访问定位方式 句柄访问：堆中划出句柄池，reference 存句柄地址，句柄里再分别指向对象实例数据（堆）与类型数据（方法区）。 优点：对象被移动（GC 复制算法很常见）时只需改句柄中的指针，reference 本身不变，reference 存储地址稳定。 直接指针（HotSpot 采用）：reference 直接存对象地址，对象内存中再保存类型数据的指针。 优点：少一次指针定位开销，访问速度更快；由于对象访问在 Java 中极其频繁，这点开销累积起来非常可观。 缺点：对象移动时必须修改所有 reference。 要点四：回答要点小结 面试时按「检查 → 分配 → 并发 → 零值 → 对象头 → init」六段答出流程，再补一句 HotSpot 采用直接指针，就完整了。","url":"https://it-interview-889.pages.dev/#/question/662"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">计算机视觉工程师CV</span><span class="chip">深度学习工程师</span><span class="chip tag">目标检测</span><span class="chip tag">YOLO</span><span class="chip tag">FasterRCNN</span></div>
     <div class="card"><h2>题目</h2><p>追问链终点。考察点：类加载检查→分配内存→零值初始化→设置对象头→执行 init；分配内存的指针碰撞与空闲列表；并发分配下的 TLAB/CAS；句柄与直接指针两种访问方式。</p></div>
@@ -104,12 +104,12 @@
 <ul>
 <li>面试时按「检查 → 分配 → 并发 → 零值 → 对象头 → init」六段答出流程，再补一句 HotSpot 采用直接指针，就完整了。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/662">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/662">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是过拟合与欠拟合？如何诊断与缓解？ · IT面试题库">
   <meta property="og:description" content="定义 欠拟合：模型在训练集和测试集上都表现差，未能学到数据规律（偏差高）。 过拟合：模型在训练集上误差很低、测试集上误差高，泛化能力差（方差高）。 典型表现（学习曲线） 欠拟合：train error 与 test error 都高且接近。 过拟合：train error 很低，test error 明显更高，两…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/592.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/592.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是过拟合与欠拟合？如何诊断与缓解？ · IT面试题库">
   <meta name="twitter:description" content="定义 欠拟合：模型在训练集和测试集上都表现差，未能学到数据规律（偏差高）。 过拟合：模型在训练集上误差很低、测试集上误差高，泛化能力差（方差高）。 典型表现（学习曲线） 欠拟合：train error 与 test error 都高且接近。 过拟合：train error 很低，test error 明显更高，两…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/592.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是过拟合与欠拟合？如何诊断与缓解？","text":"请解释过拟合（overfitting）与欠拟合（underfitting）的含义，给出典型表现，并分别列举常用缓解手段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定义 欠拟合：模型在训练集和测试集上都表现差，未能学到数据规律（偏差高）。 过拟合：模型在训练集上误差很低、测试集上误差高，泛化能力差（方差高）。 典型表现（学习曲线） 欠拟合：train error 与 test error 都高且接近。 过拟合：train error 很低，test error 明显更高，两者 gap 大。 缓解欠拟合 用更强模型（更高阶/更深网络）、增加特征、减少正则化强度、延长训练。 缓解过拟合 更多训练数据 / 数据增强； 正则化：L1、L2（权重衰减）、Dropout； 早停（Early Stopping）； 交叉验证选超参； 降低模型复杂度、特征选择 / 降维。","url":"https://it-interview.is-a.dev/#/question/592"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/592.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是过拟合与欠拟合？如何诊断与缓解？","text":"请解释过拟合（overfitting）与欠拟合（underfitting）的含义，给出典型表现，并分别列举常用缓解手段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定义 欠拟合：模型在训练集和测试集上都表现差，未能学到数据规律（偏差高）。 过拟合：模型在训练集上误差很低、测试集上误差高，泛化能力差（方差高）。 典型表现（学习曲线） 欠拟合：train error 与 test error 都高且接近。 过拟合：train error 很低，test error 明显更高，两者 gap 大。 缓解欠拟合 用更强模型（更高阶/更深网络）、增加特征、减少正则化强度、延长训练。 缓解过拟合 更多训练数据 / 数据增强； 正则化：L1、L2（权重衰减）、Dropout； 早停（Early Stopping）； 交叉验证选超参； 降低模型复杂度、特征选择 / 降维。","url":"https://it-interview-889.pages.dev/#/question/592"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是过拟合与欠拟合？如何诊断与缓解？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">深度学习工程师</span><span class="chip tag">机器学习</span><span class="chip tag">过拟合</span><span class="chip tag">欠拟合</span><span class="chip tag">泛化</span></div>
     <div class="card"><h2>题目</h2><p>请解释过拟合（overfitting）与欠拟合（underfitting）的含义，给出典型表现，并分别列举常用缓解手段。</p></div>
@@ -98,12 +98,12 @@
 <pre><code class="language-text">模型复杂度 ↑  : 欠拟合 → 适中 → 过拟合
 训练误差     : 高   → 低   → 很低
 测试误差     : 高   → 低   → 升高(gap 变大)</code></pre></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/592">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/592">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=174&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=174&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

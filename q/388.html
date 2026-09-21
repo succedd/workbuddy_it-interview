@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Paxos / Raft 这类共识算法解决了什么问题？Raft 是如何保证分布式一致性的（选主 + 日志复制）？ · IT面试题库">
   <meta property="og:description" content="要点： 解决什么：在节点会宕机、网络会丢包/延迟的异步环境里，让一组节点对“一串操作日志的顺序”达成一致，从而构建高可用的强一致存储（etcd/Consul/TiKV 皆基于此）。 为什么需要：2PC 有单点与阻塞，无法在部分节点失效时继续安全推进；共识算法则能在多数派（quorum，≥ N/2+1）存活时持续服…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/388.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/388.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Paxos / Raft 这类共识算法解决了什么问题？Raft 是如何保证分布式一致性的（选主 + 日志复制）？ · IT面试题库">
   <meta name="twitter:description" content="要点： 解决什么：在节点会宕机、网络会丢包/延迟的异步环境里，让一组节点对“一串操作日志的顺序”达成一致，从而构建高可用的强一致存储（etcd/Consul/TiKV 皆基于此）。 为什么需要：2PC 有单点与阻塞，无法在部分节点失效时继续安全推进；共识算法则能在多数派（quorum，≥ N/2+1）存活时持续服…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/388.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Paxos / Raft 这类共识算法解决了什么问题？Raft 是如何保证分布式一致性的（选主 + 日志复制）？","text":"考察点：共识算法的目标（在不可靠节点/网络下就某个值达成一致）；Raft 把复杂问题拆成“领导者选举、日志复制、安全性”三子问题，相比 Paxos 更易理解。属高级题。","answerCount":1,"datePublished":"2026-09-01T09:25:54.510Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决什么：在节点会宕机、网络会丢包/延迟的异步环境里，让一组节点对“一串操作日志的顺序”达成一致，从而构建高可用的强一致存储（etcd/Consul/TiKV 皆基于此）。 为什么需要：2PC 有单点与阻塞，无法在部分节点失效时继续安全推进；共识算法则能在多数派（quorum，≥ N/2+1）存活时持续服务。 Raft 选主：节点在 follower / candidate / leader 三角色间转换； follower 收不到 leader 心跳就超时变为 candidate 发起选举，获多数票者成为 leader，任期（term）单调递增防止脑裂。 Raft 日志复制：所有写请求先到 leader，leader 将命令追加到日志并并行复制给 follower，收到多数派确认（即提交的日志）后才apply 到状态机并响应客户端。 安全性：选举时只有“日志足够新”的 candidate 能当选；leader 不覆盖已提交的日志，保证已提交条目永不丢失、各节点顺序一致。 Paxos vs Raft：Paxos 理论优雅但难实现；Raft 以“可理解性”为目标，把问题拆成选主/复制/安全三块，成为工业界主流。","url":"https://it-interview.is-a.dev/#/question/388"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/388.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Paxos / Raft 这类共识算法解决了什么问题？Raft 是如何保证分布式一致性的（选主 + 日志复制）？","text":"考察点：共识算法的目标（在不可靠节点/网络下就某个值达成一致）；Raft 把复杂问题拆成“领导者选举、日志复制、安全性”三子问题，相比 Paxos 更易理解。属高级题。","answerCount":1,"datePublished":"2026-09-01T09:25:54.510Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决什么：在节点会宕机、网络会丢包/延迟的异步环境里，让一组节点对“一串操作日志的顺序”达成一致，从而构建高可用的强一致存储（etcd/Consul/TiKV 皆基于此）。 为什么需要：2PC 有单点与阻塞，无法在部分节点失效时继续安全推进；共识算法则能在多数派（quorum，≥ N/2+1）存活时持续服务。 Raft 选主：节点在 follower / candidate / leader 三角色间转换； follower 收不到 leader 心跳就超时变为 candidate 发起选举，获多数票者成为 leader，任期（term）单调递增防止脑裂。 Raft 日志复制：所有写请求先到 leader，leader 将命令追加到日志并并行复制给 follower，收到多数派确认（即提交的日志）后才apply 到状态机并响应客户端。 安全性：选举时只有“日志足够新”的 candidate 能当选；leader 不覆盖已提交的日志，保证已提交条目永不丢失、各节点顺序一致。 Paxos vs Raft：Paxos 理论优雅但难实现；Raft 以“可理解性”为目标，把问题拆成选主/复制/安全三块，成为工业界主流。","url":"https://it-interview-889.pages.dev/#/question/388"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Paxos / Raft 这类共识算法解决了什么问题？Raft 是如何保证分布式一致性的（选主 + 日志复制）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Raft</span><span class="chip tag">Paxos</span><span class="chip tag">共识算法</span><span class="chip tag">日志复制</span><span class="chip tag">选主</span></div>
     <div class="card"><h2>题目</h2><p>考察点：共识算法的目标（在不可靠节点/网络下就某个值达成一致）；Raft 把复杂问题拆成“领导者选举、日志复制、安全性”三子问题，相比 Paxos 更易理解。属高级题。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>安全性</strong>：选举时只有“日志足够新”的 candidate 能当选；leader 不覆盖已提交的日志，保证已提交条目永不丢失、各节点顺序一致。</li>
 <li><strong>Paxos vs Raft</strong>：Paxos 理论优雅但难实现；Raft 以“可理解性”为目标，把问题拆成选主/复制/安全三块，成为工业界主流。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/388">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/388">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=118&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=118&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

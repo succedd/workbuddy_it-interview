@@ -92,6 +92,26 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+- **🔴【重大事故 + 本轮修复】`it-interview.is-a.dev` 已被 is-a.dev 官方下架 → 站点全量迁到 `https://it-interview-889.pages.dev` 并把域名引用全部修好（缓存版本 `20260920c` → **`20260921a`**；前端功能零删减；新增 `tools/set-site-origin.mjs` 一键换域名工具）**：
+  - **下架事实（2026-09-21 UTC，全程零预警）**：维护者 notamitgamer 先 **APPROVE** 了 CNAME 迁移 PR #53221（`03:07:26`，此时只核了 JSON 格式、未看站点）→ 打开站点后留言 `wait. the website is odd.`（`03:15:56`）→ 判 `The website's content violates the terms of service`（`03:18:21`）并**关掉该 PR（未合并）** → 3 分钟后自开并合并 PR **#53294「taking down it-interview.is-a.dev」**（`03:21:55`），`domains/it-interview.json` 被**整文件删除**。
+  - **违规条款定位**：is-a.dev ToS 第 4 条禁止清单**第 16 项 = `Any website that is orientated to courses`（任何面向课程的网站）** —— IT 面试题库/刷题站正命中。同条原文写明 `Violation of this section may result in immediate termination without notice.`。**⛔ 结论：不要再向 is-a.dev（及任何同类免费子域）申请域名来放这个站。**
+  - **下架后的连带故障（本轮已全部修复）**：
+    ① `it-interview.is-a.dev` → **302 到 `https://is-a.dev/available?d=it-interview`**（记录已释放，他人可抢注）；
+    ② `succedd.github.io/workbuddy_it-interview/` → **301 跳到那条死链**（仓库根 `CNAME` 文件与 Pages 的 `cname` 仍指着旧域名，把 GitHub Pages 入口一起拖废）；
+    ③ **后端 CORS 白名单硬编码旧域名** ⇒ 从新域名发起的**登录 / 注册 / 云同步 / 统计请求全部拿不到 `Access-Control-Allow-Origin`，被浏览器拦掉**（站点能打开、功能却是坏的；本轮用 OPTIONS 预检实测确认）；
+    ④ **Worker 回读 `/data/published.json` 会被自家反爬守卫 403**（裸 fetch 无 UA、无浏览器信号）⇒ AI 投稿质检的分类快照恒为空串、且因 try/catch 而**静默失败**。
+  - **本轮修复清单（实测通过）**：
+    ① **`cloudflare/worker.js`**：CORS 白名单改为 `https://it-interview-889.pages.dev` 优先（旧域名保留仅为兼容历史标签页）；`SITE_ORIGIN` 指向新站；抓取 `published.json` 时补齐浏览器 UA + `Sec-Fetch-Site: same-origin` + 同源 `Referer` 以穿过自家守卫。**已 `wrangler deploy` 上线，Version ID `62de923e-6c9b-4081-a836-a6fc3d1bcd76`**；实测：新域名拿到 ACAO、旧域名仍放行、陌生域名不发放。
+    ② **前端 6 处硬编码域名改为运行时推导**：`js/sharecard.js`（分享卡水印 ×2 + **二维码内容**，后者原本生成的是死链）、`js/daily-quote.js`（每日一句水印）、`js/app.js`（关于页站点链接 + 公众号二维码图链接）⇒ **以后再换域名无需改代码**。
+    ③ **静态与生成文件域名替换：1217 个文件 / 10610 处**（`index.html` 的 canonical+og、`404.html`、`sitemap.xml` **1196 处**、`robots.txt`、`assets/og-cover-src.html`、`tools/gen-share-pages.js`、`tools/pages-guard-test.mjs`、`netlify/public/index.html`，以及 `q/*.html` **全部 1228 页**）。
+    ④ **新增 `tools/set-site-origin.mjs`**：`node tools/set-site-origin.mjs <新域名> --apply` 一条命令完成上述替换（默认 dry-run、幂等、**只动功能性引用、刻意不碰文档里的历史叙述**）。⇒ **下次换域名只需跑这一条 + 重新发版。**
+    ⑤ 缓存版本 `20260920c` → **`20260921a`**（`index.html` 35 处 + `sw.js` 的 `VERSION`）。
+  - **⚠️ 本轮教训（下次换域名必查）**：前端 `location.origin` 是自适应的，但 **CORS 白名单**与**服务端回读自身数据**这两处不在前端可见范围里，且故障是**静默的**（页面照常打开、请求无报错提示）。换域名的检查清单应为：前端硬编码 → 静态/SEO 文件 → **CORS 白名单** → **服务端回读路径** → 分享卡与二维码。
+  - **仍未完成（按优先级）**：
+    **P0**：仓库根 `CNAME` 与 GitHub Pages 自定义域仍指着已死域名 —— 需删除/重置，否则 `*.github.io` 入口永久 301，且旧域名一旦被他人抢注存在访客被导向他人站点的隐患。
+    **P0**：自定义域方案待定（候选：直接用 `it-interview-889.pages.dev` / `eu.org` 免费域名 / 自购域名）。**定了之后跑一次 `tools/set-site-origin.mjs` + 同步 `worker.js` 两处常量 + 发版即可**，代码侧已无硬编码障碍。
+    **P1**：`assets/og-cover.png` 图片上仍印着旧域名，需按 `assets/og-cover-src.html` 重新生成。
+
 - **【ops】自动部署恢复：AI 误删 `release` 已修复 + AI 现可自行写 workflow（纯运维，前端代码未改，缓存版本仍 `20260920c`；**release = `69313e62789fea5781c5cbe33c73d7ec964480d8`**，main = `fb751a882c241489facd02c44463a16d53caee2a`（本轮期间由另一工具推的质量抽检文档提交））**：
   - **⚠️ 事故复盘（AI 自查，教训已写进 skill）**：上一轮 AI 用 git 底层对象造提交时，把一个「留在远端、本地并不存在」的 SHA 取进变量，变量为空 → `git push origin $C_REL:refs/heads/release` 退化成 `git push origin :refs/heads/release`（**删除远端分支的合法写法**），GitHub 安静执行。而 `release` 正是 **GitHub Pages 的构建源**（`GET /repos/{o}/{r}/pages` → `source.branch=release`）。**影响**：`release` 上的 workflow 提交（`6515c752`）随之消失、`.github/workflows/deploy-pages.yml` 从树里没了 ⇒ 自动部署断链；**站点本身未受影响**（Pages 继续服务上一次构建产物，线上全程 200，题库/反爬/PR/自定义域均无恙）。
   - **恢复**：`POST /repos/succedd/workbuddy_it-interview/git/refs {"ref":"refs/heads/release","sha":"ec5b609…"}` 重建分支（**注意：该接口只有在该 commit 的树里没有 `.github/workflows/*` 时才返回 201**；含 workflow 文件时返回 404），随后补回文档提交 `14a0642`。**三条 API 补救路径（建 ref → PATCH ref → POST merges）在缺 `workflow` scope 时全被拦，别试**。

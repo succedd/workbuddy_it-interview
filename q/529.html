@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？ · IT面试题库">
   <meta property="og:description" content="窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/529.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/529.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？ · IT面试题库">
   <meta name="twitter:description" content="窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/529.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？","text":"解释窗口函数的“分组但不聚合 collapsing”语义，给出 ROW_NUMBER/RANK/DENSE_RANK 与 SUM() OVER 示例。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 RANK()：并列同号、跳过后续号（1,1,3）。 DENSE_RANK()：并列同号、不跳号（1,1,2）。 聚合类 SUM/AVG/COUNT(...) OVER (...)：计算累计/移动值。 与 GROUP BY 区别：GROUP BY 把同组聚成一行；窗口函数保留原行并附加计算列。 示例（各部门按工资排名）： 示例（累计销售额）： 典型用途：取每组 TopN、去重取最新、计算同比/环比、累计求和。","url":"https://it-interview.is-a.dev/#/question/529"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/529.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？","text":"解释窗口函数的“分组但不聚合 collapsing”语义，给出 ROW_NUMBER/RANK/DENSE_RANK 与 SUM() OVER 示例。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 RANK()：并列同号、跳过后续号（1,1,3）。 DENSE_RANK()：并列同号、不跳号（1,1,2）。 聚合类 SUM/AVG/COUNT(...) OVER (...)：计算累计/移动值。 与 GROUP BY 区别：GROUP BY 把同组聚成一行；窗口函数保留原行并附加计算列。 示例（各部门按工资排名）： 示例（累计销售额）： 典型用途：取每组 TopN、去重取最新、计算同比/环比、累计求和。","url":"https://it-interview-889.pages.dev/#/question/529"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">窗口函数</span><span class="chip tag">OVER</span><span class="chip tag">PARTITION BY</span><span class="chip tag">SQL进阶</span></div>
     <div class="card"><h2>题目</h2><p>解释窗口函数的“分组但不聚合 collapsing”语义，给出 ROW_NUMBER/RANK/DENSE_RANK 与 SUM() OVER 示例。</p></div>
@@ -97,12 +97,12 @@ FROM orders;</code></pre>
 <ul>
 <li><strong>典型用途</strong>：取每组 TopN、去重取最新、计算同比/环比、累计求和。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/529">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/529">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=27&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=27&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

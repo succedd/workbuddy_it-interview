@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。 · IT面试题库">
   <meta property="og:description" content="问题背景：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 ObjectFactory（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。 核心矛盾： 正常生命周期里，AOP …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1106.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1106.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。 · IT面试题库">
   <meta name="twitter:description" content="问题背景：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 ObjectFactory（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。 核心矛盾： 正常生命周期里，AOP …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1106.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。","text":"考察点：三级缓存中第三级的真正作用（延迟决定暴露原始对象还是代理对象）、提前生成代理对 Bean 生命周期语义的破坏、设计与兼容性权衡。追问链压轴题，检验对循环依赖机制的理解深度。","answerCount":1,"datePublished":"2026-09-11T11:56:25.925Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题背景：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 ObjectFactory（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。 核心矛盾： 正常生命周期里，AOP 代理在初始化完成之后由 BeanPostProcessor（postProcessAfterInitialization）生成——即 Bean 要先走完填充、初始化才生成代理； 循环依赖时 B 需要在 A 未完成初始化时就拿到 A 的引用；如果此时把原始对象给 B，而最终容器里发布的是代理对象，B 持有的引用和容器对外暴露的就不是同一个对象——行为不一致； 如果为了统一而提前给所有可能有循环依赖的 Bean 生成代理，又破坏了 Spring 的生命周期约定：代理生成应发生在初始化之后，无条件提前生成等于改变所有 Bean 的创建时序，即使绝大多数 Bean 根本不会被循环依赖触及。 ObjectFactory 的解法（延迟决策）：第三级缓存存的是「工厂」而不是对象——只有真正发生循环依赖、别的 Bean 来要早期引用时，工厂才被调用一次：内部走 getEarlyBeanReference()，若该 Bean 需要 AOP 就在这一刻生成代理返回并放入二级缓存，否则返回原始对象。效果是： 不发生循环依赖的 Bean 完全不受影响，代理仍按标准时序在初始化后生成； 发生循环依赖的 Bean 由工厂按需决定暴露什么，保证 B 拿到的引用与容器最终发布的一致； 工厂调用后即从三级缓存移到二级缓存，保证多次索取拿到的是同一个早期引用。 结论要点：第三级缓存本质上把「暴露原始对象还是代理」的决策延迟到必须暴露的那一刻，用极小的复杂度代价（多一层工厂）同时保住了「标准代理时序」和「循环依赖下引用一致性」两个目标。这也是为什么直接在二级缓存囤半成品、或提前全局生成代理，都不是等价方案。","url":"https://it-interview.is-a.dev/#/question/1106"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1106.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。","text":"考察点：三级缓存中第三级的真正作用（延迟决定暴露原始对象还是代理对象）、提前生成代理对 Bean 生命周期语义的破坏、设计与兼容性权衡。追问链压轴题，检验对循环依赖机制的理解深度。","answerCount":1,"datePublished":"2026-09-11T11:56:25.925Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题背景：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 ObjectFactory（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。 核心矛盾： 正常生命周期里，AOP 代理在初始化完成之后由 BeanPostProcessor（postProcessAfterInitialization）生成——即 Bean 要先走完填充、初始化才生成代理； 循环依赖时 B 需要在 A 未完成初始化时就拿到 A 的引用；如果此时把原始对象给 B，而最终容器里发布的是代理对象，B 持有的引用和容器对外暴露的就不是同一个对象——行为不一致； 如果为了统一而提前给所有可能有循环依赖的 Bean 生成代理，又破坏了 Spring 的生命周期约定：代理生成应发生在初始化之后，无条件提前生成等于改变所有 Bean 的创建时序，即使绝大多数 Bean 根本不会被循环依赖触及。 ObjectFactory 的解法（延迟决策）：第三级缓存存的是「工厂」而不是对象——只有真正发生循环依赖、别的 Bean 来要早期引用时，工厂才被调用一次：内部走 getEarlyBeanReference()，若该 Bean 需要 AOP 就在这一刻生成代理返回并放入二级缓存，否则返回原始对象。效果是： 不发生循环依赖的 Bean 完全不受影响，代理仍按标准时序在初始化后生成； 发生循环依赖的 Bean 由工厂按需决定暴露什么，保证 B 拿到的引用与容器最终发布的一致； 工厂调用后即从三级缓存移到二级缓存，保证多次索取拿到的是同一个早期引用。 结论要点：第三级缓存本质上把「暴露原始对象还是代理」的决策延迟到必须暴露的那一刻，用极小的复杂度代价（多一层工厂）同时保住了「标准代理时序」和「循环依赖下引用一致性」两个目标。这也是为什么直接在二级缓存囤半成品、或提前全局生成代理，都不是等价方案。","url":"https://it-interview-889.pages.dev/#/question/1106"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">三级缓存</span><span class="chip tag">ObjectFactory</span><span class="chip tag">AOP代理</span><span class="chip tag">循环依赖</span></div>
     <div class="card"><h2>题目</h2><p>考察点：三级缓存中第三级的真正作用（延迟决定暴露原始对象还是代理对象）、提前生成代理对 Bean 生命周期语义的破坏、设计与兼容性权衡。追问链压轴题，检验对循环依赖机制的理解深度。</p></div>
@@ -87,12 +87,12 @@
 <li>工厂调用后即从三级缓存移到二级缓存，保证多次索取拿到的是<strong>同一个</strong>早期引用。</li>
 </ul>
 <p><strong>结论要点</strong>：第三级缓存本质上把「暴露原始对象还是代理」的决策<strong>延迟到必须暴露的那一刻</strong>，用极小的复杂度代价（多一层工厂）同时保住了「标准代理时序」和「循环依赖下引用一致性」两个目标。这也是为什么直接在二级缓存囤半成品、或提前全局生成代理，都不是等价方案。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1106">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1106">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

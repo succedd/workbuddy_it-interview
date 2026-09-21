@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？ · IT面试题库">
   <meta property="og:description" content="核心原理：抓包工具把自己扮演成了「受信任的中间人 CA」 HTTPS 默认不允许第三方看到明文内容，但抓包工具通过一个巧妙的方式绕过：它让自己成为客户端和服务器之间的透明代理，分别建立两条独立的 HTTPS 连接。 具体流程： 1. 客户端发起 HTTPS 请求 → 抓包工具拦截 → 假装自己是目标服务器，用自己…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/480.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/480.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="核心原理：抓包工具把自己扮演成了「受信任的中间人 CA」 HTTPS 默认不允许第三方看到明文内容，但抓包工具通过一个巧妙的方式绕过：它让自己成为客户端和服务器之间的透明代理，分别建立两条独立的 HTTPS 连接。 具体流程： 1. 客户端发起 HTTPS 请求 → 抓包工具拦截 → 假装自己是目标服务器，用自己…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/480.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？","text":"抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？","answerCount":1,"datePublished":"2026-09-05T06:18:11.640Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心原理：抓包工具把自己扮演成了「受信任的中间人 CA」 HTTPS 默认不允许第三方看到明文内容，但抓包工具通过一个巧妙的方式绕过：它让自己成为客户端和服务器之间的透明代理，分别建立两条独立的 HTTPS 连接。 具体流程： 1. 客户端发起 HTTPS 请求 → 抓包工具拦截 → 假装自己是目标服务器，用自己的证书和客户端握手。 2. 抓包工具再假装自己是客户端，和真实服务器建立正常的 HTTPS 连接。 3. 因为抓包工具同时握有两边的会话密钥，所以它可以解密客户端发来的数据、查看/修改后再用另一边的密钥加密转发给服务器，实现「明文透传」。 关键前提：客户端必须信任抓包工具的根证书 抓包工具会动态生成一份针对目标域名的证书，并用抓包工具自己扮演的「根 CA」签名。 如果在客户端（浏览器/操作系统）里安装了抓包工具生成的根证书并设为受信任，浏览器就会认为这份动态证书是合法的，握手成功，抓包工具就能拿到会话密钥。 这也是为什么用手机/电脑装 Fiddler/Charles 时，必须手动把它们的根证书导入系统信任列表。 这和真正的 MITM 攻击有什么区别？ 真正的 MITM 是黑客恶意劫持；抓包工具是开发者主动安装、知情同意的调试手段。 但机制上完全一样——都是「中间人 + 伪造证书 + 客户端信任」。所以生产环境、生产证书绝对不能装这类工具根证书，否则等于把 HTTPS 形同虚设。 补充：现代浏览器对未知根证书的管控越来越严，Chrome 引入了 CT（Certificate Transparency）日志、EPC（Extended Validation）证书限制等措施，部分场景下抓包工具需要配合安装特定版本的根证书才能正常工作。","url":"https://it-interview.is-a.dev/#/question/480"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/480.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？","text":"抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？","answerCount":1,"datePublished":"2026-09-05T06:18:11.640Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心原理：抓包工具把自己扮演成了「受信任的中间人 CA」 HTTPS 默认不允许第三方看到明文内容，但抓包工具通过一个巧妙的方式绕过：它让自己成为客户端和服务器之间的透明代理，分别建立两条独立的 HTTPS 连接。 具体流程： 1. 客户端发起 HTTPS 请求 → 抓包工具拦截 → 假装自己是目标服务器，用自己的证书和客户端握手。 2. 抓包工具再假装自己是客户端，和真实服务器建立正常的 HTTPS 连接。 3. 因为抓包工具同时握有两边的会话密钥，所以它可以解密客户端发来的数据、查看/修改后再用另一边的密钥加密转发给服务器，实现「明文透传」。 关键前提：客户端必须信任抓包工具的根证书 抓包工具会动态生成一份针对目标域名的证书，并用抓包工具自己扮演的「根 CA」签名。 如果在客户端（浏览器/操作系统）里安装了抓包工具生成的根证书并设为受信任，浏览器就会认为这份动态证书是合法的，握手成功，抓包工具就能拿到会话密钥。 这也是为什么用手机/电脑装 Fiddler/Charles 时，必须手动把它们的根证书导入系统信任列表。 这和真正的 MITM 攻击有什么区别？ 真正的 MITM 是黑客恶意劫持；抓包工具是开发者主动安装、知情同意的调试手段。 但机制上完全一样——都是「中间人 + 伪造证书 + 客户端信任」。所以生产环境、生产证书绝对不能装这类工具根证书，否则等于把 HTTPS 形同虚设。 补充：现代浏览器对未知根证书的管控越来越严，Chrome 引入了 CT（Certificate Transparency）日志、EPC（Extended Validation）证书限制等措施，部分场景下抓包工具需要配合安装特定版本的根证书才能正常工作。","url":"https://it-interview-889.pages.dev/#/question/480"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">抓包</span><span class="chip tag">Fiddler</span><span class="chip tag">Charles</span><span class="chip tag">Burp</span><span class="chip tag">中间人</span></div>
     <div class="card"><h2>题目</h2><p>抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？</p></div>
@@ -93,12 +93,12 @@
 <li>但机制上完全一样——都是「中间人 + 伪造证书 + 客户端信任」。所以生产环境、生产证书绝对不能装这类工具根证书，否则等于把 HTTPS 形同虚设。</li>
 </ul>
 <blockquote><strong>补充</strong>：现代浏览器对未知根证书的管控越来越严，Chrome 引入了 CT（Certificate Transparency）日志、EPC（Extended Validation）证书限制等措施，部分场景下抓包工具需要配合安装特定版本的根证书才能正常工作。</blockquote></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/480">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/480">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

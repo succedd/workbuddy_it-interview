@@ -138,7 +138,7 @@
     ctx.fillText("IT 面试题库", bx + 58, by + 17);
     ctx.fillStyle = "rgba(255,255,255,.72)";
     ctx.font = '15px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
-    ctx.fillText("it-interview.is-a.dev", bx + 58, by + 38);
+    ctx.fillText(location.host, bx + 58, by + 38);
 
     // 题目标题
     ctx.fillStyle = "#fff";
@@ -345,10 +345,10 @@
         ctx.fillStyle = "#64748B"; ctx.font = F("500", 18);
         ctx.fillText("坚持学习的人，运气都不会太差", CX + 40, fy + 36);
         ctx.fillStyle = "#2563EB"; ctx.font = F("700", 21);
-        ctx.fillText("it-interview.is-a.dev", CX + 40, fy + 72);
+        ctx.fillText(location.host, CX + 40, fy + 72);
         ctx.restore();
       } catch (e) { reject(e); return; }
-      loadQr("https://it-interview.is-a.dev/").then(img => {
+      loadQr(location.origin + "/").then(img => {
         if (img) {
           const size = 104, x = CX + CW - 40 - size, y = CY + CH - 122;
           ctx.save();

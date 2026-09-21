@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？ · IT面试题库">
   <meta property="og:description" content="问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/586.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/586.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？ · IT面试题库">
   <meta name="twitter:description" content="问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/586.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？","text":"业务执行时间不确定，锁 TTL 难以预估。请说明看门狗（watchdog）续期机制的思想，以及使用 Redisson 等客户端时续期与释放的注意点。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一次）； 客户端正常释放锁时，取消看门狗并删除 key； 客户端崩溃 → 看门狗随之停止 → 锁在 TTL 到期后自动释放，避免死锁。 Redisson 实践：lock() 默认带 watchdog（每 10s 续期到 30s），lock(leaseTime) 显式指定后不自动续期；释放用 unlock()（内部校验+删除）。 注意点： 1. 续期本身须原子（用 Lua 或 PEXPIRE）； 2. 续期间隔应小于 TTL，且留网络余量； 3. 必须配合唯一 value + 安全释放（Lua/DELEX），否则续期/释放会动到他人锁； 4. 看门狗不能解决“GC/STW 长停顿导致续期失败”的极端场景，超高安全要求仍需 fencing token（etcd/ZK）。","url":"https://it-interview.is-a.dev/#/question/586"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/586.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？","text":"业务执行时间不确定，锁 TTL 难以预估。请说明看门狗（watchdog）续期机制的思想，以及使用 Redisson 等客户端时续期与释放的注意点。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一次）； 客户端正常释放锁时，取消看门狗并删除 key； 客户端崩溃 → 看门狗随之停止 → 锁在 TTL 到期后自动释放，避免死锁。 Redisson 实践：lock() 默认带 watchdog（每 10s 续期到 30s），lock(leaseTime) 显式指定后不自动续期；释放用 unlock()（内部校验+删除）。 注意点： 1. 续期本身须原子（用 Lua 或 PEXPIRE）； 2. 续期间隔应小于 TTL，且留网络余量； 3. 必须配合唯一 value + 安全释放（Lua/DELEX），否则续期/释放会动到他人锁； 4. 看门狗不能解决“GC/STW 长停顿导致续期失败”的极端场景，超高安全要求仍需 fencing token（etcd/ZK）。","url":"https://it-interview-889.pages.dev/#/question/586"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">锁续期</span><span class="chip tag">watchdog</span><span class="chip tag">Redisson</span><span class="chip tag">分布式锁</span></div>
     <div class="card"><h2>题目</h2><p>业务执行时间不确定，锁 TTL 难以预估。请说明看门狗（watchdog）续期机制的思想，以及使用 Redisson 等客户端时续期与释放的注意点。</p></div>
@@ -89,12 +89,12 @@
 <li>必须配合<strong>唯一 value + 安全释放</strong>（Lua/DELEX），否则续期/释放会动到他人锁；</li>
 <li>看门狗不能解决“GC/STW 长停顿导致续期失败”的极端场景，超高安全要求仍需 fencing token（etcd/ZK）。</li>
 </ol></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/586">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/586">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

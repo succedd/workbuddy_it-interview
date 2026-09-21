@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="iOS 中 UIViewController 的生命周期方法是怎样的？ · IT面试题库">
   <meta property="og:description" content="加载阶段：loadView（创建视图）→ viewDidLoad（视图载入后一次性初始化）。 可见阶段：viewWillAppear → viewDidAppear（视图即将/已经显示，适合开始动画、拉数据）。 消失阶段：viewWillDisappear → viewDidDisappear（停止计时器、取消监…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/751.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/751.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="iOS 中 UIViewController 的生命周期方法是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="加载阶段：loadView（创建视图）→ viewDidLoad（视图载入后一次性初始化）。 可见阶段：viewWillAppear → viewDidAppear（视图即将/已经显示，适合开始动画、拉数据）。 消失阶段：viewWillDisappear → viewDidDisappear（停止计时器、取消监…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/751.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 中 UIViewController 的生命周期方法是怎样的？","text":"列举并解释 VC 从加载到销毁的关键生命周期回调。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"加载阶段：loadView（创建视图）→ viewDidLoad（视图载入后一次性初始化）。 可见阶段：viewWillAppear → viewDidAppear（视图即将/已经显示，适合开始动画、拉数据）。 消失阶段：viewWillDisappear → viewDidDisappear（停止计时器、取消监听）。 内存警告/卸载：didReceiveMemoryWarning 后，在低内存且视图不可见时 viewDidUnload（iOS 6 后多由系统自动回收）。理解顺序才能正确管理资源与刷新。","url":"https://it-interview.is-a.dev/#/question/751"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/751.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 中 UIViewController 的生命周期方法是怎样的？","text":"列举并解释 VC 从加载到销毁的关键生命周期回调。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"加载阶段：loadView（创建视图）→ viewDidLoad（视图载入后一次性初始化）。 可见阶段：viewWillAppear → viewDidAppear（视图即将/已经显示，适合开始动画、拉数据）。 消失阶段：viewWillDisappear → viewDidDisappear（停止计时器、取消监听）。 内存警告/卸载：didReceiveMemoryWarning 后，在低内存且视图不可见时 viewDidUnload（iOS 6 后多由系统自动回收）。理解顺序才能正确管理资源与刷新。","url":"https://it-interview-889.pages.dev/#/question/751"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>iOS 中 UIViewController 的生命周期方法是怎样的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">UIKit</span><span class="chip tag">生命周期</span><span class="chip tag">UIViewController</span></div>
     <div class="card"><h2>题目</h2><p>列举并解释 VC 从加载到销毁的关键生命周期回调。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>可见阶段</strong>：<code>viewWillAppear</code> → <code>viewDidAppear</code>（视图即将/已经显示，适合开始动画、拉数据）。</p>
 <p><strong>消失阶段</strong>：<code>viewWillDisappear</code> → <code>viewDidDisappear</code>（停止计时器、取消监听）。</p>
 <p><strong>内存警告/卸载</strong>：<code>didReceiveMemoryWarning</code> 后，在低内存且视图不可见时 <code>viewDidUnload</code>（iOS 6 后多由系统自动回收）。理解顺序才能正确管理资源与刷新。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/751">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/751">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=221&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=221&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

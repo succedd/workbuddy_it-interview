@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？ · IT面试题库">
   <meta property="og:description" content="要点： 阶段一（准备/投票）：协调者向所有参与者发 prepare，参与者执行事务但不提交，写 undo/redo 日志并锁定资源，返回“同意”或“中止”。 阶段二（提交/回滚）：若全部同意，协调者发 commit，参与者正式提交并释放锁；只要有一个中止或超时，则统一发 rollback。 优点：原理简单，能保证…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/387.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/387.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？ · IT面试题库">
   <meta name="twitter:description" content="要点： 阶段一（准备/投票）：协调者向所有参与者发 prepare，参与者执行事务但不提交，写 undo/redo 日志并锁定资源，返回“同意”或“中止”。 阶段二（提交/回滚）：若全部同意，协调者发 commit，参与者正式提交并释放锁；只要有一个中止或超时，则统一发 rollback。 优点：原理简单，能保证…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/387.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？","text":"考察点：2PC 的“准备阶段 + 提交阶段”流程、协调者与参与者角色；同步阻塞、单点故障、数据不一致等固有缺陷，引出对 3PC/Paxos 的需求。属高级题。","answerCount":1,"datePublished":"2026-09-01T09:25:54.451Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 阶段一（准备/投票）：协调者向所有参与者发 prepare，参与者执行事务但不提交，写 undo/redo 日志并锁定资源，返回“同意”或“中止”。 阶段二（提交/回滚）：若全部同意，协调者发 commit，参与者正式提交并释放锁；只要有一个中止或超时，则统一发 rollback。 优点：原理简单，能保证跨多资源的原子提交（要么全成、要么全败），是 XA 分布式事务的基础。 缺点（致命）：①同步阻塞——全程锁资源，性能差；②单点风险——协调者挂了整个流程卡死；③数据不一致——若协调者在发出 commit 后崩溃、部分参与者收到部分没收到，会出现“半提交”；④保守——任一参与者/网络超时即回滚，容错弱。 演进：3PC 引入超时与预询问降低阻塞但仍未根治；现代多倾向用 TCC、本地消息表、Saga 或 Paxos/Raft 族协议替代。","url":"https://it-interview.is-a.dev/#/question/387"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/387.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？","text":"考察点：2PC 的“准备阶段 + 提交阶段”流程、协调者与参与者角色；同步阻塞、单点故障、数据不一致等固有缺陷，引出对 3PC/Paxos 的需求。属高级题。","answerCount":1,"datePublished":"2026-09-01T09:25:54.451Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 阶段一（准备/投票）：协调者向所有参与者发 prepare，参与者执行事务但不提交，写 undo/redo 日志并锁定资源，返回“同意”或“中止”。 阶段二（提交/回滚）：若全部同意，协调者发 commit，参与者正式提交并释放锁；只要有一个中止或超时，则统一发 rollback。 优点：原理简单，能保证跨多资源的原子提交（要么全成、要么全败），是 XA 分布式事务的基础。 缺点（致命）：①同步阻塞——全程锁资源，性能差；②单点风险——协调者挂了整个流程卡死；③数据不一致——若协调者在发出 commit 后崩溃、部分参与者收到部分没收到，会出现“半提交”；④保守——任一参与者/网络超时即回滚，容错弱。 演进：3PC 引入超时与预询问降低阻塞但仍未根治；现代多倾向用 TCC、本地消息表、Saga 或 Paxos/Raft 族协议替代。","url":"https://it-interview-889.pages.dev/#/question/387"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">2PC</span><span class="chip tag">两阶段提交</span><span class="chip tag">分布式事务</span><span class="chip tag">一致性协议</span></div>
     <div class="card"><h2>题目</h2><p>考察点：2PC 的“准备阶段 + 提交阶段”流程、协调者与参与者角色；同步阻塞、单点故障、数据不一致等固有缺陷，引出对 3PC/Paxos 的需求。属高级题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>缺点（致命）</strong>：①<strong>同步阻塞</strong>——全程锁资源，性能差；②<strong>单点风险</strong>——协调者挂了整个流程卡死；③<strong>数据不一致</strong>——若协调者在发出 commit 后崩溃、部分参与者收到部分没收到，会出现“半提交”；④<strong>保守</strong>——任一参与者/网络超时即回滚，容错弱。</li>
 <li><strong>演进</strong>：3PC 引入超时与预询问降低阻塞但仍未根治；现代多倾向用 TCC、本地消息表、Saga 或 Paxos/Raft 族协议替代。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/387">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/387">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=118&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=118&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

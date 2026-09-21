@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Docker 镜像的分层（layer）机制是怎样的？镜像、容器、仓库三者是什么关系？ · IT面试题库">
   <meta property="og:description" content="要点： 分层只读：Docker 镜像由一系列只读层叠加构成，每一层是上一层的增量（如基础系统层、依赖层、应用层）；多个镜像可共享相同底层，节省磁盘与传输。 写时复制（CoW）：容器启动时，Docker 在镜像层之上加一个可写层（容器层）；容器内的增删改只发生在这一层，不改动下层镜像，保证了镜像的不可变与多实例隔离…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/377.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/377.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Docker 镜像的分层（layer）机制是怎样的？镜像、容器、仓库三者是什么关系？ · IT面试题库">
   <meta name="twitter:description" content="要点： 分层只读：Docker 镜像由一系列只读层叠加构成，每一层是上一层的增量（如基础系统层、依赖层、应用层）；多个镜像可共享相同底层，节省磁盘与传输。 写时复制（CoW）：容器启动时，Docker 在镜像层之上加一个可写层（容器层）；容器内的增删改只发生在这一层，不改动下层镜像，保证了镜像的不可变与多实例隔离…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/377.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker 镜像的分层（layer）机制是怎样的？镜像、容器、仓库三者是什么关系？","text":"考察点：镜像由只读层叠加而成、写时复制（CoW）原理；镜像（模板）、容器（运行实例）、仓库（存储分发）的职责边界，是 Docker 入门基石。","answerCount":1,"datePublished":"2026-09-01T09:25:31.211Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 分层只读：Docker 镜像由一系列只读层叠加构成，每一层是上一层的增量（如基础系统层、依赖层、应用层）；多个镜像可共享相同底层，节省磁盘与传输。 写时复制（CoW）：容器启动时，Docker 在镜像层之上加一个可写层（容器层）；容器内的增删改只发生在这一层，不改动下层镜像，保证了镜像的不可变与多实例隔离。 三者关系：镜像是静态模板（类似类）；容器是镜像的运行实例（类似对象），可读写；仓库（Registry）是存放与分发镜像的服务（如 Docker Hub、私有 Harbor）。docker pull 取镜像、docker run 由镜像起容器。 镜像 ID 与标签：镜像用内容寻址的 digest 唯一标识，tag 只是可读别名，便于版本管理。","url":"https://it-interview.is-a.dev/#/question/377"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/377.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker 镜像的分层（layer）机制是怎样的？镜像、容器、仓库三者是什么关系？","text":"考察点：镜像由只读层叠加而成、写时复制（CoW）原理；镜像（模板）、容器（运行实例）、仓库（存储分发）的职责边界，是 Docker 入门基石。","answerCount":1,"datePublished":"2026-09-01T09:25:31.211Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 分层只读：Docker 镜像由一系列只读层叠加构成，每一层是上一层的增量（如基础系统层、依赖层、应用层）；多个镜像可共享相同底层，节省磁盘与传输。 写时复制（CoW）：容器启动时，Docker 在镜像层之上加一个可写层（容器层）；容器内的增删改只发生在这一层，不改动下层镜像，保证了镜像的不可变与多实例隔离。 三者关系：镜像是静态模板（类似类）；容器是镜像的运行实例（类似对象），可读写；仓库（Registry）是存放与分发镜像的服务（如 Docker Hub、私有 Harbor）。docker pull 取镜像、docker run 由镜像起容器。 镜像 ID 与标签：镜像用内容寻址的 digest 唯一标识，tag 只是可读别名，便于版本管理。","url":"https://it-interview-889.pages.dev/#/question/377"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Docker 镜像的分层（layer）机制是怎样的？镜像、容器、仓库三者是什么关系？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Docker</span><span class="chip tag">镜像分层</span><span class="chip tag">写时复制</span><span class="chip tag">容器</span></div>
     <div class="card"><h2>题目</h2><p>考察点：镜像由只读层叠加而成、写时复制（CoW）原理；镜像（模板）、容器（运行实例）、仓库（存储分发）的职责边界，是 Docker 入门基石。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>三者关系</strong>：<strong>镜像</strong>是静态模板（类似类）；<strong>容器</strong>是镜像的运行实例（类似对象），可读写；<strong>仓库（Registry）</strong>是存放与分发镜像的服务（如 Docker Hub、私有 Harbor）。<code>docker pull</code> 取镜像、<code>docker run</code> 由镜像起容器。</li>
 <li><strong>镜像 ID 与标签</strong>：镜像用内容寻址的 digest 唯一标识，tag 只是可读别名，便于版本管理。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/377">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/377">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=136&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=136&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

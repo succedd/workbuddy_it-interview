@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？ · IT面试题库">
   <meta property="og:description" content="一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/441.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/441.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？ · IT面试题库">
   <meta name="twitter:description" content="一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/441.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？","text":"用 Argo CD 部署应用时，需要先跑数据库迁移、再发应用、最后做冒烟验证。请说明同步阶段与同步波次的机制、排序规则，以及裁剪（prune）时的顺序特点。","answerCount":1,"datePublished":"2026-09-03T00:53:51.934Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：所有 PreSync 成功之后、与应用 manifests 同时执行。 PostSync：同步成功且所有资源进入 Healthy 之后执行，适合冒烟测试与通知。 SyncFail：同步失败时执行，用于清理与告警。 Skip：Argo CD 跳过该资源（常用于绕开 Helm chart 里有问题的 hook）。 Hook 的清理由 argocd.argoproj.io/hook-delete-policy 决定：HookSucceeded、HookFailed、BeforeHookCreation（不指定时的默认行为，创建新 hook 前先删掉旧的）。 二、Sync Waves：阶段内的精确排序 用注解 argocd.argoproj.io/sync-wave: \"5\" 指定波次，值为整数，默认 0，可以是负数（例如把 DB 迁移 Job 放在 -1，保证跑在所有资源之前）。 完整排序优先级：阶段（phase）→ 波次（由小到大）→ 资源 kind（Namespace 优先，然后是其它内置资源，最后是 CRD）→ 名称。 两个关键行为： 1. 同步时先找到第一个存在「不同步或不健康」资源的波次，应用它，然后重复该过程直到全部波次同步且健康。这意味着如果第一个波次里的资源永远不健康，整个应用就永远到不了 Healthy。 2. 每两个波次之间有约 2 秒延迟（可用环境变量 ARGOCD_SYNC_WAVE_DELAY 调整），目的是给其它控制器（如 Deployment 控制器）反应时间，避免 Argo CD 拿着旧对象状态过早判定健康、过早触发 Hook。 三、裁剪时顺序相反 开启 prune 时，波次顺序会反转：波次号大的先删，且任一波次删除失败即停止，不会继续删除更低波次，从而保证「先删依赖方、后删被依赖方」。 四、注意 Hook 不会在选择性同步（selective sync）中执行；SyncFail Hook 自身失败时，Argo CD 只会把整体操作标记为失败，不会再做额外动作。","url":"https://it-interview.is-a.dev/#/question/441"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/441.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？","text":"用 Argo CD 部署应用时，需要先跑数据库迁移、再发应用、最后做冒烟验证。请说明同步阶段与同步波次的机制、排序规则，以及裁剪（prune）时的顺序特点。","answerCount":1,"datePublished":"2026-09-03T00:53:51.934Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：所有 PreSync 成功之后、与应用 manifests 同时执行。 PostSync：同步成功且所有资源进入 Healthy 之后执行，适合冒烟测试与通知。 SyncFail：同步失败时执行，用于清理与告警。 Skip：Argo CD 跳过该资源（常用于绕开 Helm chart 里有问题的 hook）。 Hook 的清理由 argocd.argoproj.io/hook-delete-policy 决定：HookSucceeded、HookFailed、BeforeHookCreation（不指定时的默认行为，创建新 hook 前先删掉旧的）。 二、Sync Waves：阶段内的精确排序 用注解 argocd.argoproj.io/sync-wave: \"5\" 指定波次，值为整数，默认 0，可以是负数（例如把 DB 迁移 Job 放在 -1，保证跑在所有资源之前）。 完整排序优先级：阶段（phase）→ 波次（由小到大）→ 资源 kind（Namespace 优先，然后是其它内置资源，最后是 CRD）→ 名称。 两个关键行为： 1. 同步时先找到第一个存在「不同步或不健康」资源的波次，应用它，然后重复该过程直到全部波次同步且健康。这意味着如果第一个波次里的资源永远不健康，整个应用就永远到不了 Healthy。 2. 每两个波次之间有约 2 秒延迟（可用环境变量 ARGOCD_SYNC_WAVE_DELAY 调整），目的是给其它控制器（如 Deployment 控制器）反应时间，避免 Argo CD 拿着旧对象状态过早判定健康、过早触发 Hook。 三、裁剪时顺序相反 开启 prune 时，波次顺序会反转：波次号大的先删，且任一波次删除失败即停止，不会继续删除更低波次，从而保证「先删依赖方、后删被依赖方」。 四、注意 Hook 不会在选择性同步（selective sync）中执行；SyncFail Hook 自身失败时，Argo CD 只会把整体操作标记为失败，不会再做额外动作。","url":"https://it-interview-889.pages.dev/#/question/441"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">CI/CD工程师</span><span class="chip">平台工程师</span><span class="chip tag">ArgoCD</span><span class="chip tag">GitOps</span><span class="chip tag">同步编排</span></div>
     <div class="card"><h2>题目</h2><p>用 Argo CD 部署应用时，需要先跑数据库迁移、再发应用、最后做冒烟验证。请说明同步阶段与同步波次的机制、排序规则，以及裁剪（prune）时的顺序特点。</p></div>
@@ -95,12 +95,12 @@
 <p>开启 prune 时，波次顺序会<strong>反转</strong>：波次号大的先删，且任一波次删除失败即停止，不会继续删除更低波次，从而保证「先删依赖方、后删被依赖方」。</p>
 <h3>四、注意</h3>
 <p>Hook <strong>不会在选择性同步（selective sync）中执行</strong>；SyncFail Hook 自身失败时，Argo CD 只会把整体操作标记为失败，不会再做额外动作。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/441">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/441">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=142&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=142&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

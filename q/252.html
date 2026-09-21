@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？ · IT面试题库">
   <meta property="og:description" content="结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/252.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/252.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/252.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","text":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","answerCount":1,"datePublished":"2026-08-28T06:18:20.509Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象、引用计数 +1；只要还有一个 strong 引用存在，对象就不会释放。适用于“拥有”关系，如 ViewController 持有 ViewModel。 weak：不增加引用计数；当对象只剩 weak 引用时被释放，且所有 weak 引用自动置为 nil。必须声明为可选。常用于代理（delegate）、打破循环引用。 unowned：同样不增加计数，但假设引用对象生命周期一定不短于自己、不会自动置 nil；若对象已释放仍访问会崩溃。适用于非可选、生命周期确定的关系（如 Card 必有 owner）。 循环引用（retain cycle）：两个对象互相 strong 引用，计数永不为 0 → 内存泄漏。解决：把其中一方改为 weak 或 unowned；闭包捕获 self 时也应使用 [weak self]。","url":"https://it-interview.is-a.dev/#/question/252"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/252.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","text":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","answerCount":1,"datePublished":"2026-08-28T06:18:20.509Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象、引用计数 +1；只要还有一个 strong 引用存在，对象就不会释放。适用于“拥有”关系，如 ViewController 持有 ViewModel。 weak：不增加引用计数；当对象只剩 weak 引用时被释放，且所有 weak 引用自动置为 nil。必须声明为可选。常用于代理（delegate）、打破循环引用。 unowned：同样不增加计数，但假设引用对象生命周期一定不短于自己、不会自动置 nil；若对象已释放仍访问会崩溃。适用于非可选、生命周期确定的关系（如 Card 必有 owner）。 循环引用（retain cycle）：两个对象互相 strong 引用，计数永不为 0 → 内存泄漏。解决：把其中一方改为 weak 或 unowned；闭包捕获 self 时也应使用 [weak self]。","url":"https://it-interview-889.pages.dev/#/question/252"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">iOS开发工程师</span><span class="chip tag">ARC</span><span class="chip tag">内存管理</span><span class="chip tag">循环引用</span></div>
     <div class="card"><h2>题目</h2><p>iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>unowned</strong>：同样不增加计数，但假设引用对象生命周期一定不短于自己、不会自动置 nil；若对象已释放仍访问会崩溃。适用于非可选、生命周期确定的关系（如 Card 必有 owner）。</li>
 </ul>
 <p><strong>循环引用（retain cycle）</strong>：两个对象互相 strong 引用，计数永不为 0 → 内存泄漏。解决：把其中一方改为 weak 或 unowned；闭包捕获 self 时也应使用 <code>[weak self]</code>。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/252">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/252">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=218&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=218&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

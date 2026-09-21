@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？ · IT面试题库">
   <meta property="og:description" content="设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u &gt; n) &amp; 1u; 读取多位掩码：int field = (reg &gt;&gt; 4) &amp; 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 =…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/605.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/605.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？ · IT面试题库">
   <meta name="twitter:description" content="设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u &gt; n) &amp; 1u; 读取多位掩码：int field = (reg &gt;&gt; 4) &amp; 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 =…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/605.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？","text":"给出对 32 位寄存器某一位或多位进行置 1、清 0、读取、翻转的标准写法，并说明位域（bit-field）的注意事项。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u > n) & 1u; 读取多位掩码：int field = (reg >> 4) & 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 = 会误清其他位。注意该 RMW 本身非原子，若 ISR 同时访问需加临界区。 位域（bit-field） 好处：可读性好；风险：位域的位序、对齐是编译器实现定义（不同编译器/端序可能不同），做跨平台/硬件寄存器映射时不推荐，优先用移位宏保证可移植。 硬件 SDK（如 STM32 CMSIS）通常已用 volatile 定义寄存器，应用层用移位宏操作最稳妥。","url":"https://it-interview.is-a.dev/#/question/605"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/605.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？","text":"给出对 32 位寄存器某一位或多位进行置 1、清 0、读取、翻转的标准写法，并说明位域（bit-field）的注意事项。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u > n) & 1u; 读取多位掩码：int field = (reg >> 4) & 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 = 会误清其他位。注意该 RMW 本身非原子，若 ISR 同时访问需加临界区。 位域（bit-field） 好处：可读性好；风险：位域的位序、对齐是编译器实现定义（不同编译器/端序可能不同），做跨平台/硬件寄存器映射时不推荐，优先用移位宏保证可移植。 硬件 SDK（如 STM32 CMSIS）通常已用 volatile 定义寄存器，应用层用移位宏操作最稳妥。","url":"https://it-interview-889.pages.dev/#/question/605"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">驱动开发工程师</span><span class="chip">固件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">嵌入式软件工程师</span><span class="chip tag">嵌入式C</span><span class="chip tag">位操作</span><span class="chip tag">寄存器</span><span class="chip tag">RMW</span></div>
     <div class="card"><h2>题目</h2><p>给出对 32 位寄存器某一位或多位进行置 1、清 0、读取、翻转的标准写法，并说明位域（bit-field）的注意事项。</p></div>
@@ -86,12 +86,12 @@
 <li>好处：可读性好；<strong>风险</strong>：位域的<strong>位序、对齐是编译器实现定义</strong>（不同编译器/端序可能不同），做跨平台/硬件寄存器映射时<strong>不推荐</strong>，优先用移位宏保证可移植。</li>
 </ul>
 <p>硬件 SDK（如 STM32 CMSIS）通常已用 <code>volatile</code> 定义寄存器，应用层用移位宏操作最稳妥。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/605">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/605">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=242&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=242&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

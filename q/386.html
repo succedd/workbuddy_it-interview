@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？ · IT面试题库">
   <meta property="og:description" content="要点： CP 阵营：ZooKeeper / etcd（强一致协调服务、选主、分布式锁）；HBase（依赖 HDFS 与 ZK，写入强一致）；传统单主 MySQL 主从（异步复制下从库可能滞后，但主库写入是强一致，整体更偏 CP）。 AP 阵营：Eureka（注册中心设计上优先可用，节点间数据最终一致）；Cassa…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/386.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/386.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？ · IT面试题库">
   <meta name="twitter:description" content="要点： CP 阵营：ZooKeeper / etcd（强一致协调服务、选主、分布式锁）；HBase（依赖 HDFS 与 ZK，写入强一致）；传统单主 MySQL 主从（异步复制下从库可能滞后，但主库写入是强一致，整体更偏 CP）。 AP 阵营：Eureka（注册中心设计上优先可用，节点间数据最终一致）；Cassa…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/386.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？","text":"考察点：把抽象理论与具体中间件对应起来，判断每个组件偏向 CP 还是 AP，以及它的适用边界。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:25:54.377Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： CP 阵营：ZooKeeper / etcd（强一致协调服务、选主、分布式锁）；HBase（依赖 HDFS 与 ZK，写入强一致）；传统单主 MySQL 主从（异步复制下从库可能滞后，但主库写入是强一致，整体更偏 CP）。 AP 阵营：Eureka（注册中心设计上优先可用，节点间数据最终一致）；Cassandra / DynamoDB（可调一致性，默认 AP、可配 Quorum 提升）；Redis（集群异步复制，主节点写入成功即返回，故障切换可能丢数据，偏 AP）。 Elasticsearch：近实时、分片副本异步复制，写入后默认 1 秒才可见，属 AP 取向的最终一致搜索系统。 归类方法：看“分区时它是否宁可拒绝请求也要保一致”——是则 CP，否且保证可用则 AP；很多系统提供一致性级别（如 Cassandra 的 ONE/QUORUM/ALL）让使用者按需滑动。 注意：归类是“取向”而非绝对，要结合实际配置与读写路径判断，不能死记。","url":"https://it-interview.is-a.dev/#/question/386"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/386.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？","text":"考察点：把抽象理论与具体中间件对应起来，判断每个组件偏向 CP 还是 AP，以及它的适用边界。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:25:54.377Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： CP 阵营：ZooKeeper / etcd（强一致协调服务、选主、分布式锁）；HBase（依赖 HDFS 与 ZK，写入强一致）；传统单主 MySQL 主从（异步复制下从库可能滞后，但主库写入是强一致，整体更偏 CP）。 AP 阵营：Eureka（注册中心设计上优先可用，节点间数据最终一致）；Cassandra / DynamoDB（可调一致性，默认 AP、可配 Quorum 提升）；Redis（集群异步复制，主节点写入成功即返回，故障切换可能丢数据，偏 AP）。 Elasticsearch：近实时、分片副本异步复制，写入后默认 1 秒才可见，属 AP 取向的最终一致搜索系统。 归类方法：看“分区时它是否宁可拒绝请求也要保一致”——是则 CP，否且保证可用则 AP；很多系统提供一致性级别（如 Cassandra 的 ONE/QUORUM/ALL）让使用者按需滑动。 注意：归类是“取向”而非绝对，要结合实际配置与读写路径判断，不能死记。","url":"https://it-interview-889.pages.dev/#/question/386"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CAP归类</span><span class="chip tag">ZooKeeper</span><span class="chip tag">Redis</span><span class="chip tag">MySQL</span><span class="chip tag">组件选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把抽象理论与具体中间件对应起来，判断每个组件偏向 CP 还是 AP，以及它的适用边界。属场景题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>归类方法</strong>：看“分区时它是否宁可拒绝请求也要保一致”——是则 CP，否且保证可用则 AP；很多系统提供一致性级别（如 Cassandra 的 ONE/QUORUM/ALL）让使用者按需滑动。</li>
 <li><strong>注意</strong>：归类是“取向”而非绝对，要结合实际配置与读写路径判断，不能死记。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/386">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/386">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=118&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=118&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

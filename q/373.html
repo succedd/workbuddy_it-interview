@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="在 Linux 中如何查找文件？find 命令有哪些常用用法？ · IT面试题库">
   <meta property="og:description" content="要点： 按名称：find /path -name &#39;.log&#39;（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/373.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/373.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在 Linux 中如何查找文件？find 命令有哪些常用用法？ · IT面试题库">
   <meta name="twitter:description" content="要点： 按名称：find /path -name &#39;.log&#39;（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/373.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在 Linux 中如何查找文件？find 命令有哪些常用用法？","text":"考察点：find 的多维度匹配（名称/类型/大小/时间/权限）与“查到即执行”（-exec/-delete）；区分 find（实时遍历）与 locate（索引库）的取舍。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:59.666Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 按名称：find /path -name '.log'（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin -60 最近 60 分钟内的；常用作“找最近变更”。 按权限/属主：-perm 644、-user root。 查到即处理：find . -name '.tmp' -delete 直接删；或 find . -name '*.log' -exec gzip {} \\; 对每个结果执行命令（{} 占位、\\; 表示逐条）。 find vs locate：find 实时遍历磁盘、最准但慢；locate 查 prebuilt 索引库、极快但不实时（需 updatedb），适合粗略找已知文件名。","url":"https://it-interview.is-a.dev/#/question/373"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/373.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在 Linux 中如何查找文件？find 命令有哪些常用用法？","text":"考察点：find 的多维度匹配（名称/类型/大小/时间/权限）与“查到即执行”（-exec/-delete）；区分 find（实时遍历）与 locate（索引库）的取舍。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:59.666Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 按名称：find /path -name '.log'（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin -60 最近 60 分钟内的；常用作“找最近变更”。 按权限/属主：-perm 644、-user root。 查到即处理：find . -name '.tmp' -delete 直接删；或 find . -name '*.log' -exec gzip {} \\; 对每个结果执行命令（{} 占位、\\; 表示逐条）。 find vs locate：find 实时遍历磁盘、最准但慢；locate 查 prebuilt 索引库、极快但不实时（需 updatedb），适合粗略找已知文件名。","url":"https://it-interview-889.pages.dev/#/question/373"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>在 Linux 中如何查找文件？find 命令有哪些常用用法？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">find</span><span class="chip tag">文件查找</span><span class="chip tag">locate</span><span class="chip tag">shell</span></div>
     <div class="card"><h2>题目</h2><p>考察点：find 的多维度匹配（名称/类型/大小/时间/权限）与“查到即执行”（-exec/-delete）；区分 find（实时遍历）与 locate（索引库）的取舍。属场景题。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>查到即处理</strong>：<code>find . -name &#39;<em>.tmp&#39; -delete</code> 直接删；或 <code>find . -name &#39;</em>.log&#39; -exec gzip {} \;</code> 对每个结果执行命令（<code>{}</code> 占位、<code>\;</code> 表示逐条）。</li>
 <li><strong>find vs locate</strong>：find 实时遍历磁盘、最准但慢；locate 查 prebuilt 索引库、极快但不实时（需 <code>updatedb</code>），适合粗略找已知文件名。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/373">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/373">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Prometheus 的四种指标类型分别适合什么？为什么直方图比摘要（Summary）更常用？ · IT面试题库">
   <meta property="og:description" content="要点： 四种类型： 1. Counter（计数器）：只增不减（进程重启归零）。必须配合 rate()/increase() 才有意义。适合请求总数、错误数、处理字节数。禁止用它表达「当前值」（如在线人数），也不要用它做「减少」语义（那是 Gauge）； 2. Gauge（瞬时值）：可增可减，直接读当前值。适合内存…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1077.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1077.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Prometheus 的四种指标类型分别适合什么？为什么直方图比摘要（Summary）更常用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 四种类型： 1. Counter（计数器）：只增不减（进程重启归零）。必须配合 rate()/increase() 才有意义。适合请求总数、错误数、处理字节数。禁止用它表达「当前值」（如在线人数），也不要用它做「减少」语义（那是 Gauge）； 2. Gauge（瞬时值）：可增可减，直接读当前值。适合内存…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1077.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 的四种指标类型分别适合什么？为什么直方图比摘要（Summary）更常用？","text":"考察点：Counter/Gauge/Histogram/Summary 的语义、聚合能力差异、P99 计算。监控基础但常被答错。","answerCount":1,"datePublished":"2026-09-10T11:54:52.210Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四种类型： 1. Counter（计数器）：只增不减（进程重启归零）。必须配合 rate()/increase() 才有意义。适合请求总数、错误数、处理字节数。禁止用它表达「当前值」（如在线人数），也不要用它做「减少」语义（那是 Gauge）； 2. Gauge（瞬时值）：可增可减，直接读当前值。适合内存占用、CPU 使用率、队列长度、连接数、温度。 3. Histogram（直方图）：把观测值落到预定义的 bucket（le 标签）里，同时给出 _sum 与 _count。桶边界在客户端侧固定，服务端可以对多个实例的桶直接相加聚合，再用 histogram_quantile() 算分位数； 4. Summary（摘要）：客户端直接计算分位数（如 p50/p90/p99）并暴露，另有 _sum/_count。 为什么 Histogram 更常用（关键差异）： Summary 的分位数无法聚合——每个实例算自己的 p99，跨实例求平均或求和都是错的（1 个实例的 p99 是 100ms、另一个是 200ms，平均成 150ms 没有意义，真实全局 p99 可能是 190ms+）。而 Histogram 的桶可以先跨实例求和再算分位数，这对「一个服务多副本」的常态是刚需； Summary 的精度不可调（分位数在客户端固定，改了要重启）；Histogram 的桶边界可以按经验调整，配合 histogram_quantile(0.99, rate(...)) 在查询时灵活求任意分位； 代价：Histogram 的桶边界选错会导致误差大（桶太粗），且桶数量带来的时间序列基数要控制；Summary 更省序列但牺牲了聚合能力。 必须点出的准确性问题：histogram_quantile() 得到的是近似值（在桶内线性插值）——最大值受最后一个桶的上界限制（如果最后一个桶是 le=\"10\"，那算出的 p99 不可能超过 10）。所以经验法则：最后一个桶应设为「业务上可接受的最坏值」的上界（如 +Inf 之外再设一个 30s），否则 P99 会失真。 选型建议： 求和/计数类 → Counter； 瞬时状态 → Gauge； 延迟分布、响应大小分布（需要跨实例聚合、需要任意分位）→ Histogram（默认选择）； 极少数「无法预设桶边界、且不需要跨实例聚合」的场景（如高度动态的量级）才考虑 Summary。 工程实践： 减少时间序列基数（Cardinality）是 Prometheus 的头号运营问题——绝不要把用户 ID、请求 ID、完整 URL、订单号放进标签。标签只放可枚举、低基数的值（服务名、方法、状态码、路由模板而不是原始路径）； Counter 的常见错误：用 increase() 算「每小时」时注意它是一个区间函数，且进程重启会导致负值（Prometheus 有重启检测修正，但不总是可靠）——用 rate() 更稳； 直方图桶的默认 DefBuckets（.005 至 10 秒）对慢接口（秒级） 明显偏低，需要自定义（这点常被忽略，导致慢接口的 P99 永远显示 10 秒封顶）； 命名要规范（_total 后缀给 Counter、_seconds 给时长、单位统一），否则看板与告警的表达式会各写一套。","url":"https://it-interview.is-a.dev/#/question/1077"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1077.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 的四种指标类型分别适合什么？为什么直方图比摘要（Summary）更常用？","text":"考察点：Counter/Gauge/Histogram/Summary 的语义、聚合能力差异、P99 计算。监控基础但常被答错。","answerCount":1,"datePublished":"2026-09-10T11:54:52.210Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四种类型： 1. Counter（计数器）：只增不减（进程重启归零）。必须配合 rate()/increase() 才有意义。适合请求总数、错误数、处理字节数。禁止用它表达「当前值」（如在线人数），也不要用它做「减少」语义（那是 Gauge）； 2. Gauge（瞬时值）：可增可减，直接读当前值。适合内存占用、CPU 使用率、队列长度、连接数、温度。 3. Histogram（直方图）：把观测值落到预定义的 bucket（le 标签）里，同时给出 _sum 与 _count。桶边界在客户端侧固定，服务端可以对多个实例的桶直接相加聚合，再用 histogram_quantile() 算分位数； 4. Summary（摘要）：客户端直接计算分位数（如 p50/p90/p99）并暴露，另有 _sum/_count。 为什么 Histogram 更常用（关键差异）： Summary 的分位数无法聚合——每个实例算自己的 p99，跨实例求平均或求和都是错的（1 个实例的 p99 是 100ms、另一个是 200ms，平均成 150ms 没有意义，真实全局 p99 可能是 190ms+）。而 Histogram 的桶可以先跨实例求和再算分位数，这对「一个服务多副本」的常态是刚需； Summary 的精度不可调（分位数在客户端固定，改了要重启）；Histogram 的桶边界可以按经验调整，配合 histogram_quantile(0.99, rate(...)) 在查询时灵活求任意分位； 代价：Histogram 的桶边界选错会导致误差大（桶太粗），且桶数量带来的时间序列基数要控制；Summary 更省序列但牺牲了聚合能力。 必须点出的准确性问题：histogram_quantile() 得到的是近似值（在桶内线性插值）——最大值受最后一个桶的上界限制（如果最后一个桶是 le=\"10\"，那算出的 p99 不可能超过 10）。所以经验法则：最后一个桶应设为「业务上可接受的最坏值」的上界（如 +Inf 之外再设一个 30s），否则 P99 会失真。 选型建议： 求和/计数类 → Counter； 瞬时状态 → Gauge； 延迟分布、响应大小分布（需要跨实例聚合、需要任意分位）→ Histogram（默认选择）； 极少数「无法预设桶边界、且不需要跨实例聚合」的场景（如高度动态的量级）才考虑 Summary。 工程实践： 减少时间序列基数（Cardinality）是 Prometheus 的头号运营问题——绝不要把用户 ID、请求 ID、完整 URL、订单号放进标签。标签只放可枚举、低基数的值（服务名、方法、状态码、路由模板而不是原始路径）； Counter 的常见错误：用 increase() 算「每小时」时注意它是一个区间函数，且进程重启会导致负值（Prometheus 有重启检测修正，但不总是可靠）——用 rate() 更稳； 直方图桶的默认 DefBuckets（.005 至 10 秒）对慢接口（秒级） 明显偏低，需要自定义（这点常被忽略，导致慢接口的 P99 永远显示 10 秒封顶）； 命名要规范（_total 后缀给 Counter、_seconds 给时长、单位统一），否则看板与告警的表达式会各写一套。","url":"https://it-interview-889.pages.dev/#/question/1077"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Prometheus 的四种指标类型分别适合什么？为什么直方图比摘要（Summary）更常用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Prometheus</span><span class="chip tag">指标类型</span><span class="chip tag">Histogram</span><span class="chip tag">Summary</span><span class="chip tag">P99</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Counter/Gauge/Histogram/Summary 的语义、聚合能力差异、P99 计算。监控基础但常被答错。</p></div>
@@ -102,12 +102,12 @@
 <p>  - Counter 的常见错误：<strong>用 <code>increase()</code> 算「每小时」时注意它是一个区间函数</strong>，且<strong>进程重启会导致负值</strong>（Prometheus 有重启检测修正，但不总是可靠）——用 <code>rate()</code> 更稳；</p>
 <p>  - 直方图桶的默认 <code>DefBuckets</code>（.005 至 10 秒）对<strong>慢接口（秒级）</strong> 明显偏低，需要自定义（这点常被忽略，导致慢接口的 P99 永远显示 10 秒封顶）；</p>
 <p>  - 命名要规范（<code>_total</code> 后缀给 Counter、<code>_seconds</code> 给时长、单位统一），<strong>否则看板与告警的表达式会各写一套</strong>。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1077">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1077">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

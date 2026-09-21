@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？ · IT面试题库">
   <meta property="og:description" content="要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1225.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1225.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？ · IT面试题库">
   <meta name="twitter:description" content="要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1225.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？","text":"追问链第 3 问：故障发生时的决策——人肉切还是哨兵切。","answerCount":1,"datePublished":"2026-09-21T02:33:11.305Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错，夜间无人时无法自愈。 不丢数据的关键：切换前确认候选从节点的复制偏移尽量贴近原主（减少数据差）；若原主可恢复，先对比 offset 再做决策；对强一致场景宁可短暂停写也别切到落后太多的从。 哨兵自动故障转移：Sentinel 持续探测，判定主客观下线后自动选主、切换并通知客户端，无需人工介入，具备自愈能力。代价是需额外维护哨兵集群、配置 quorum，且自动切换若判定有误（如网络抖动误判）可能切错。 权衡：核心业务用哨兵/Cluster 实现自动切换保可用性；对一致性极端敏感的场景，可在哨兵之上叠加 WAIT 与人工确认策略。","url":"https://it-interview.is-a.dev/#/question/1225"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1225.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？","text":"追问链第 3 问：故障发生时的决策——人肉切还是哨兵切。","answerCount":1,"datePublished":"2026-09-21T02:33:11.305Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错，夜间无人时无法自愈。 不丢数据的关键：切换前确认候选从节点的复制偏移尽量贴近原主（减少数据差）；若原主可恢复，先对比 offset 再做决策；对强一致场景宁可短暂停写也别切到落后太多的从。 哨兵自动故障转移：Sentinel 持续探测，判定主客观下线后自动选主、切换并通知客户端，无需人工介入，具备自愈能力。代价是需额外维护哨兵集群、配置 quorum，且自动切换若判定有误（如网络抖动误判）可能切错。 权衡：核心业务用哨兵/Cluster 实现自动切换保可用性；对一致性极端敏感的场景，可在哨兵之上叠加 WAIT 与人工确认策略。","url":"https://it-interview-889.pages.dev/#/question/1225"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip">后端架构师</span><span class="chip tag">Redis</span><span class="chip tag">主从切换</span><span class="chip tag">故障转移</span><span class="chip tag">哨兵</span><span class="chip tag">高可用</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 3 问：故障发生时的决策——人肉切还是哨兵切。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>哨兵自动故障转移</strong>：Sentinel 持续探测，判定主客观下线后自动选主、切换并通知客户端，无需人工介入，具备自愈能力。代价是需额外维护哨兵集群、配置 quorum，且自动切换若判定有误（如网络抖动误判）可能切错。</li>
 <li><strong>权衡</strong>：核心业务用哨兵/Cluster 实现自动切换保可用性；对一致性极端敏感的场景，可在哨兵之上叠加 <code>WAIT</code> 与人工确认策略。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1225">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1225">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

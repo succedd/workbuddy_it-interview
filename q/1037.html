@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="GraphQL 真的「不需要版本」吗？Schema 该怎么演进才能不破坏现有客户端？ · IT面试题库">
   <meta property="og:description" content="要点： 理念来源：GraphQL 的设计是「按字段按需获取」，客户端只声明自己要什么字段。所以新增字段不会影响任何老客户端（它不请求就收不到，也不会有多余数据）——加字段天然向后兼容，这是「无版本」这一说法的底气。REST 里加字段也可能影响反序列化严格的客户端，GraphQL 从协议层规避了。 但「无版本」≠ …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1037.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1037.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GraphQL 真的「不需要版本」吗？Schema 该怎么演进才能不破坏现有客户端？ · IT面试题库">
   <meta name="twitter:description" content="要点： 理念来源：GraphQL 的设计是「按字段按需获取」，客户端只声明自己要什么字段。所以新增字段不会影响任何老客户端（它不请求就收不到，也不会有多余数据）——加字段天然向后兼容，这是「无版本」这一说法的底气。REST 里加字段也可能影响反序列化严格的客户端，GraphQL 从协议层规避了。 但「无版本」≠ …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1037.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GraphQL 真的「不需要版本」吗？Schema 该怎么演进才能不破坏现有客户端？","text":"考察点：无版本化理念的边界、schema 演进纪律、破坏性变更识别。设计类题。","answerCount":1,"datePublished":"2026-09-10T11:51:40.422Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 理念来源：GraphQL 的设计是「按字段按需获取」，客户端只声明自己要什么字段。所以新增字段不会影响任何老客户端（它不请求就收不到，也不会有多余数据）——加字段天然向后兼容，这是「无版本」这一说法的底气。REST 里加字段也可能影响反序列化严格的客户端，GraphQL 从协议层规避了。 但「无版本」≠ 可以随便改。以下都是破坏性变更（breaking change）：删除字段/类型/枚举值、字段类型变更（如 String → Int）、非空性收紧（String → String!，会让老查询因缺值直接报错）、把字段设为必填参数、参数类型变更、改字段语义但保留名字（最危险，客户端不会报错却拿到错误含义的数据）。 正确演进姿势： 1. 先加后弃（Additive then Deprecate）：新字段加进去、老字段标 @deprecated(reason: \"...\") 并在文档中给出替代，graphql-inspector / Apollo Studio 的 schema check 会在 CI 里自动拦截破坏性变更； 2. 观察真实使用量再删：靠 Apollo 的 field usage 统计确认「没有任何客户端在请求了」才删，不要靠猜； 3. 需要改变语义时：新建字段名（如 priceV2）而不是复用旧名； 4. 用 @deprecated 的 reason 传达迁移窗口，配合 changelog 通知调用方。 什么时候确实需要版本：① 出现根本性领域模型重构（旧 schema 无法平滑过渡）；② 合规要求物理隔离旧接口。此时更实用的做法是在网关层暴露 /graphql/v2，或用 schema 联合（Apollo Federation）把新旧子图并行一段过渡期。 配套纪律：schema 必须进版本控制并做 CI 校验（schema registry）；客户端尽量用 fragment + codegen 生成类型，这样字段被弃用时编译期就能发现，而不是等线上报错。","url":"https://it-interview.is-a.dev/#/question/1037"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1037.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GraphQL 真的「不需要版本」吗？Schema 该怎么演进才能不破坏现有客户端？","text":"考察点：无版本化理念的边界、schema 演进纪律、破坏性变更识别。设计类题。","answerCount":1,"datePublished":"2026-09-10T11:51:40.422Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 理念来源：GraphQL 的设计是「按字段按需获取」，客户端只声明自己要什么字段。所以新增字段不会影响任何老客户端（它不请求就收不到，也不会有多余数据）——加字段天然向后兼容，这是「无版本」这一说法的底气。REST 里加字段也可能影响反序列化严格的客户端，GraphQL 从协议层规避了。 但「无版本」≠ 可以随便改。以下都是破坏性变更（breaking change）：删除字段/类型/枚举值、字段类型变更（如 String → Int）、非空性收紧（String → String!，会让老查询因缺值直接报错）、把字段设为必填参数、参数类型变更、改字段语义但保留名字（最危险，客户端不会报错却拿到错误含义的数据）。 正确演进姿势： 1. 先加后弃（Additive then Deprecate）：新字段加进去、老字段标 @deprecated(reason: \"...\") 并在文档中给出替代，graphql-inspector / Apollo Studio 的 schema check 会在 CI 里自动拦截破坏性变更； 2. 观察真实使用量再删：靠 Apollo 的 field usage 统计确认「没有任何客户端在请求了」才删，不要靠猜； 3. 需要改变语义时：新建字段名（如 priceV2）而不是复用旧名； 4. 用 @deprecated 的 reason 传达迁移窗口，配合 changelog 通知调用方。 什么时候确实需要版本：① 出现根本性领域模型重构（旧 schema 无法平滑过渡）；② 合规要求物理隔离旧接口。此时更实用的做法是在网关层暴露 /graphql/v2，或用 schema 联合（Apollo Federation）把新旧子图并行一段过渡期。 配套纪律：schema 必须进版本控制并做 CI 校验（schema registry）；客户端尽量用 fragment + codegen 生成类型，这样字段被弃用时编译期就能发现，而不是等线上报错。","url":"https://it-interview-889.pages.dev/#/question/1037"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>GraphQL 真的「不需要版本」吗？Schema 该怎么演进才能不破坏现有客户端？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">后端架构师</span><span class="chip">后端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">GraphQL</span><span class="chip tag">Schema演进</span><span class="chip tag">兼容性</span><span class="chip tag">deprecated</span><span class="chip tag">API设计</span></div>
     <div class="card"><h2>题目</h2><p>考察点：无版本化理念的边界、schema 演进纪律、破坏性变更识别。设计类题。</p></div>
@@ -87,12 +87,12 @@
 <li><strong>什么时候确实需要版本</strong>：① 出现<strong>根本性领域模型重构</strong>（旧 schema 无法平滑过渡）；② 合规要求物理隔离旧接口。此时更实用的做法是<strong>在网关层暴露 <code>/graphql/v2</code></strong>，或用 <strong>schema 联合（Apollo Federation）</strong>把新旧子图并行一段过渡期。</li>
 <li><strong>配套纪律</strong>：schema 必须进版本控制并做 CI 校验（schema registry）；客户端尽量用 <strong>fragment + codegen</strong> 生成类型，这样字段被弃用时<strong>编译期就能发现</strong>，而不是等线上报错。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1037">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1037">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=95&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=95&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【系统设计】如果从零搭建一套微服务基础设施，你会如何为「注册中心、网关、配置中心」选型和组合？给出关键权衡。 · IT面试题库">
   <meta property="og:description" content="要点： 注册中心选型权衡：① Nacos（推荐 Spring Cloud Alibaba 体系）——同时支持 CP+AP 模式切换、自带配置中心、国内生态好、可视化强，中小团队一站式；② Eureka——纯 AP、自我保护适合对一致性要求不高的内网，但已停更；③ Consul——基于 Raft 强一致 + 多数据…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1215.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1215.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【系统设计】如果从零搭建一套微服务基础设施，你会如何为「注册中心、网关、配置中心」选型和组合？给出关键权衡。 · IT面试题库">
   <meta name="twitter:description" content="要点： 注册中心选型权衡：① Nacos（推荐 Spring Cloud Alibaba 体系）——同时支持 CP+AP 模式切换、自带配置中心、国内生态好、可视化强，中小团队一站式；② Eureka——纯 AP、自我保护适合对一致性要求不高的内网，但已停更；③ Consul——基于 Raft 强一致 + 多数据…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1215.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【系统设计】如果从零搭建一套微服务基础设施，你会如何为「注册中心、网关、配置中心」选型和组合？给出关键权衡。","text":"追问链第 6 问（收口）：把前面几问串起来，做一个整体技术选型决策。","answerCount":1,"datePublished":"2026-09-21T02:16:41.224Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 注册中心选型权衡：① Nacos（推荐 Spring Cloud Alibaba 体系）——同时支持 CP+AP 模式切换、自带配置中心、国内生态好、可视化强，中小团队一站式；② Eureka——纯 AP、自我保护适合对一致性要求不高的内网，但已停更；③ Consul——基于 Raft 强一致 + 多数据中心 + 健康检查强大，但运维偏重；④ etcd/ZooKeeper——CP 强一致，适合 Kubernetes 生态（K8s 本身用 etcd 做服务发现）。建议：K8s 环境优先用 Service+etcd；非 K8s 的 Spring 体系优先 Nacos。 网关选型：① Spring Cloud Gateway（WebFlux 响应式、Predicate+Filter 链、与 Spring 生态无缝，适合 Java 团队）；② Kong（基于 Nginx+Lua，性能好、插件丰富、与语言无关）；③ APISIX（云原生、etcd 存储、动态路由强）。网关要承载鉴权、限流、灰度、日志、跨域等横切关注点，选型看团队栈与性能诉求。 配置中心选型：Nacos（与注册中心合一，省运维）、Apollo（携程开源，灰度发布、权限、审计极强，适合配置治理要求高的团队）、或 K8s ConfigMap+Operator。建议：配置治理复杂度高选 Apollo，求简选 Nacos。 组合与落地原则：① 技术栈统一优先（Spring 体系用 Nacos+Gateway，减少心智负担）；② 高可用——三个组件都要集群部署+多副本+持久化，注册/配置中心数据不能丢；③ 渐进式——先用注册发现+网关打通，再上配置中心与全链路监控，避免一次性铺太大翻车；④ 始终保留「降级开关」，任一组件故障时业务可走兜底。","url":"https://it-interview.is-a.dev/#/question/1215"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1215.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【系统设计】如果从零搭建一套微服务基础设施，你会如何为「注册中心、网关、配置中心」选型和组合？给出关键权衡。","text":"追问链第 6 问（收口）：把前面几问串起来，做一个整体技术选型决策。","answerCount":1,"datePublished":"2026-09-21T02:16:41.224Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 注册中心选型权衡：① Nacos（推荐 Spring Cloud Alibaba 体系）——同时支持 CP+AP 模式切换、自带配置中心、国内生态好、可视化强，中小团队一站式；② Eureka——纯 AP、自我保护适合对一致性要求不高的内网，但已停更；③ Consul——基于 Raft 强一致 + 多数据中心 + 健康检查强大，但运维偏重；④ etcd/ZooKeeper——CP 强一致，适合 Kubernetes 生态（K8s 本身用 etcd 做服务发现）。建议：K8s 环境优先用 Service+etcd；非 K8s 的 Spring 体系优先 Nacos。 网关选型：① Spring Cloud Gateway（WebFlux 响应式、Predicate+Filter 链、与 Spring 生态无缝，适合 Java 团队）；② Kong（基于 Nginx+Lua，性能好、插件丰富、与语言无关）；③ APISIX（云原生、etcd 存储、动态路由强）。网关要承载鉴权、限流、灰度、日志、跨域等横切关注点，选型看团队栈与性能诉求。 配置中心选型：Nacos（与注册中心合一，省运维）、Apollo（携程开源，灰度发布、权限、审计极强，适合配置治理要求高的团队）、或 K8s ConfigMap+Operator。建议：配置治理复杂度高选 Apollo，求简选 Nacos。 组合与落地原则：① 技术栈统一优先（Spring 体系用 Nacos+Gateway，减少心智负担）；② 高可用——三个组件都要集群部署+多副本+持久化，注册/配置中心数据不能丢；③ 渐进式——先用注册发现+网关打通，再上配置中心与全链路监控，避免一次性铺太大翻车；④ 始终保留「降级开关」，任一组件故障时业务可走兜底。","url":"https://it-interview-889.pages.dev/#/question/1215"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【系统设计】如果从零搭建一套微服务基础设施，你会如何为「注册中心、网关、配置中心」选型和组合？给出关键权衡。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip">云架构师</span><span class="chip tag">技术选型</span><span class="chip tag">微服务</span><span class="chip tag">Nacos</span><span class="chip tag">Gateway</span><span class="chip tag">Apollo</span><span class="chip tag">高可用</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 6 问（收口）：把前面几问串起来，做一个整体技术选型决策。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>配置中心选型</strong>：Nacos（与注册中心合一，省运维）、Apollo（携程开源，灰度发布、权限、审计极强，适合配置治理要求高的团队）、或 K8s ConfigMap+Operator。建议：配置治理复杂度高选 Apollo，求简选 Nacos。</li>
 <li><strong>组合与落地原则</strong>：① 技术栈统一优先（Spring 体系用 Nacos+Gateway，减少心智负担）；② 高可用——三个组件都要集群部署+多副本+持久化，注册/配置中心数据不能丢；③ 渐进式——先用注册发现+网关打通，再上配置中心与全链路监控，避免一次性铺太大翻车；④ 始终保留「降级开关」，任一组件故障时业务可走兜底。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1215">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1215">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=121&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=121&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

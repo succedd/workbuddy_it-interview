@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Next.js 的 SSR / SSG / ISR / CSR 四种渲染模式怎么选？判断依据是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 四种模式速览（App Router 语义）： SSG / 静态（默认）：构建时渲染，产物是静态 HTML，最快、最省。适用于内容不变或低频变化的页面（文档、博客、营销页、商品详情在多数场景也可）。 ISR（增量静态再生）：静态 + 定时/按需更新。export const revalidate = 60 …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1056.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1056.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Next.js 的 SSR / SSG / ISR / CSR 四种渲染模式怎么选？判断依据是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 四种模式速览（App Router 语义）： SSG / 静态（默认）：构建时渲染，产物是静态 HTML，最快、最省。适用于内容不变或低频变化的页面（文档、博客、营销页、商品详情在多数场景也可）。 ISR（增量静态再生）：静态 + 定时/按需更新。export const revalidate = 60 …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1056.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Next.js 的 SSR / SSG / ISR / CSR 四种渲染模式怎么选？判断依据是什么？","text":"考察点：渲染模式与数据特性匹配、性能与新鲜度取舍。App Router 时代的核心选择。","answerCount":1,"datePublished":"2026-09-10T11:53:08.871Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四种模式速览（App Router 语义）： SSG / 静态（默认）：构建时渲染，产物是静态 HTML，最快、最省。适用于内容不变或低频变化的页面（文档、博客、营销页、商品详情在多数场景也可）。 ISR（增量静态再生）：静态 + 定时/按需更新。export const revalidate = 60 表示「最多 60 秒后过期，下次请求触发后台重建，先返回旧内容（stale-while-revalidate）」。这是电商列表类页面性价比最高的选择。 SSR（服务端渲染）：每个请求都即时渲染。适合强个性化或实时性要求高的页面——用户中心、订单详情、依赖登录态与实时库存/价格；用 cookies()/headers() 访问请求数据会自动让路由进入动态渲染。 CSR（客户端渲染）：组件标 'use client'，数据在浏览器里取。适合交互密集、依赖浏览器 API、无需 SEO 的部分——仪表盘图表、编辑器、实时通知、用户输入后的二次查询。 判断依据（按顺序问四个问题）： 1. 需要 SEO / 首屏内容可见吗？ 不需要 → 可以 CSR（最省服务端成本）；需要 → 往下。 2. 内容对每个用户不同吗？ 相同 → SSG/ISR；不同 → SSR。 3. 内容新鲜度要求多高？ 分钟级容错 → ISR；秒级/强一致 → SSR。 4. 页面内是不是有混合需求？ 现代答案是混合：外层 SSG/ISR 的静态骨架 + 内部一个小范围 'use client' 组件做动态部分（Streaming + Suspense 让静态部分先出、动态部分后补）。不要为一个小区域把整页降级为 SSR。 实践要点与坑： ISR 的「陈旧窗口」：revalidate 期间用户会看到旧数据，业务能接受才用；需要「发布即生效」用 On-Demand Revalidation（revalidatePath/revalidateTag）配合后台钩子主动失效； 动态渲染的传染性：一个组件用了 cookies()、no-store 的 fetch 或 dynamic = 'force-dynamic'，会让整个路由变为动态，静态化收益全丢——排查性能问题时先查这条； export const dynamic/revalidate 是路由段配置，粒度是页面/布局级，不是组件级； SSR ≠ 更好的性能：TTFB 取决于服务端渲染耗时，服务端数据请求慢会让首字节更慢，有时不如静态 + 客户端补数据（需按实测决定）； 自托管时注意：ISR 依赖持久化的缓存存储与共享文件系统，多实例部署必须有共享缓存（Redis/S3），否则各实例数据不一致。","url":"https://it-interview.is-a.dev/#/question/1056"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1056.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Next.js 的 SSR / SSG / ISR / CSR 四种渲染模式怎么选？判断依据是什么？","text":"考察点：渲染模式与数据特性匹配、性能与新鲜度取舍。App Router 时代的核心选择。","answerCount":1,"datePublished":"2026-09-10T11:53:08.871Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四种模式速览（App Router 语义）： SSG / 静态（默认）：构建时渲染，产物是静态 HTML，最快、最省。适用于内容不变或低频变化的页面（文档、博客、营销页、商品详情在多数场景也可）。 ISR（增量静态再生）：静态 + 定时/按需更新。export const revalidate = 60 表示「最多 60 秒后过期，下次请求触发后台重建，先返回旧内容（stale-while-revalidate）」。这是电商列表类页面性价比最高的选择。 SSR（服务端渲染）：每个请求都即时渲染。适合强个性化或实时性要求高的页面——用户中心、订单详情、依赖登录态与实时库存/价格；用 cookies()/headers() 访问请求数据会自动让路由进入动态渲染。 CSR（客户端渲染）：组件标 'use client'，数据在浏览器里取。适合交互密集、依赖浏览器 API、无需 SEO 的部分——仪表盘图表、编辑器、实时通知、用户输入后的二次查询。 判断依据（按顺序问四个问题）： 1. 需要 SEO / 首屏内容可见吗？ 不需要 → 可以 CSR（最省服务端成本）；需要 → 往下。 2. 内容对每个用户不同吗？ 相同 → SSG/ISR；不同 → SSR。 3. 内容新鲜度要求多高？ 分钟级容错 → ISR；秒级/强一致 → SSR。 4. 页面内是不是有混合需求？ 现代答案是混合：外层 SSG/ISR 的静态骨架 + 内部一个小范围 'use client' 组件做动态部分（Streaming + Suspense 让静态部分先出、动态部分后补）。不要为一个小区域把整页降级为 SSR。 实践要点与坑： ISR 的「陈旧窗口」：revalidate 期间用户会看到旧数据，业务能接受才用；需要「发布即生效」用 On-Demand Revalidation（revalidatePath/revalidateTag）配合后台钩子主动失效； 动态渲染的传染性：一个组件用了 cookies()、no-store 的 fetch 或 dynamic = 'force-dynamic'，会让整个路由变为动态，静态化收益全丢——排查性能问题时先查这条； export const dynamic/revalidate 是路由段配置，粒度是页面/布局级，不是组件级； SSR ≠ 更好的性能：TTFB 取决于服务端渲染耗时，服务端数据请求慢会让首字节更慢，有时不如静态 + 客户端补数据（需按实测决定）； 自托管时注意：ISR 依赖持久化的缓存存储与共享文件系统，多实例部署必须有共享缓存（Redis/S3），否则各实例数据不一致。","url":"https://it-interview-889.pages.dev/#/question/1056"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Next.js 的 SSR / SSG / ISR / CSR 四种渲染模式怎么选？判断依据是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">前端架构师</span><span class="chip tag">Next.js</span><span class="chip tag">SSR</span><span class="chip tag">SSG</span><span class="chip tag">ISR</span><span class="chip tag">渲染模式</span></div>
     <div class="card"><h2>题目</h2><p>考察点：渲染模式与数据特性匹配、性能与新鲜度取舍。App Router 时代的核心选择。</p></div>
@@ -96,12 +96,12 @@
 <p>  - <strong><code>export const dynamic</code>/<code>revalidate</code> 是路由段配置</strong>，粒度是<strong>页面/布局</strong>级，不是组件级；</p>
 <p>  - <strong>SSR ≠ 更好的性能</strong>：TTFB 取决于服务端渲染耗时，服务端数据请求慢会让首字节更慢，有时不如静态 + 客户端补数据（需按实测决定）；</p>
 <p>  - <strong>自托管时注意</strong>：ISR 依赖持久化的缓存存储与共享文件系统，多实例部署必须有<strong>共享缓存</strong>（Redis/S3），否则各实例数据不一致。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1056">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1056">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=66&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=66&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

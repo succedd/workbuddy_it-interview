@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Jenkins 声明式流水线与脚本式流水线有什么区别？该怎么选？ · IT面试题库">
   <meta property="og:description" content="要点： 声明式（Declarative，推荐默认）： 结构化的固定语法块：pipeline { agent / stages { stage { steps { ... } } } / post }，必须写在 pipeline {} 里； 优势：schema 明确、易读易审（团队统一风格）、内置常用能力——pos…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1083.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1083.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jenkins 声明式流水线与脚本式流水线有什么区别？该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="要点： 声明式（Declarative，推荐默认）： 结构化的固定语法块：pipeline { agent / stages { stage { steps { ... } } } / post }，必须写在 pipeline {} 里； 优势：schema 明确、易读易审（团队统一风格）、内置常用能力——pos…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1083.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jenkins 声明式流水线与脚本式流水线有什么区别？该怎么选？","text":"考察点：Pipeline DSL 两种风格、可维护性、共享库结合。CI 实践基础题。","answerCount":1,"datePublished":"2026-09-10T11:55:12.975Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 声明式（Declarative，推荐默认）： 结构化的固定语法块：pipeline { agent / stages { stage { steps { ... } } } / post }，必须写在 pipeline {} 里； 优势：schema 明确、易读易审（团队统一风格）、内置常用能力——post 生命周期钩子（success/failure/always 等）、when 条件、options（超时、重试、丢弃旧构建）、environment（环境变量）、matrix（多维度并行）；Jenkins 会校验语法（语法错误在解析期就能发现，而不是跑到一半才炸）； 局限：表达能力受限，复杂逻辑（循环生成 stage、动态判断）需要借助 script {} 块退回 Groovy 写法。 脚本式（Scripted）： 就是纯 Groovy 代码调用 Jenkins 的 node {}/stage()/sh 等 API，没有固定结构； 优势：完全灵活——任意循环、条件、函数抽取、数据结构（可以在流水线里维护 map/list）；复杂编排（动态 stage、多分支组合）更自然； 局限：无语法校验、可读性依赖团队自觉、新手容易写出不可维护的巨石脚本、缺少 post/options 这类开箱能力需手工实现。 选择建议： 默认用声明式——它是官方推荐路线，可读性与可维护性优先，且新特性（matrix 等）优先支持声明式； 需要复杂逻辑时：在声明式里用 script {} 局部退回脚本式，而不是整体换风格； 逻辑量大时不要塞进 Jenkinsfile：抽到 Shared Library（共享库） 里，用 vars/ 定义全局步骤（buildAndPush() 这种），Jenkinsfile 只留编排意图——这是大规模实践里唯一能持续维护的方式； 已经有大量脚本式流水线：不必强迁，但新流水线用声明式，并在重构时逐步替换。 两种风格共同的实践要点： agent 尽量设为 none + 每个 stage 单独指定（避免一个 agent 跑完全程导致工作区污染、并行受限）； 用 timeout 防止挂死（无超时的构建会占满 executor，拖垮整个 CI）； 并行化：parallel 或 matrix 缩短反馈时间（CI 速度直接决定研发效率）； 失败要快：把编译、单测、lint 放前面，部署/集成测试放后面，避免长时间构建后才发现低级错误； 日志与产物：archiveArtifacts、junit 报告收集（测试结果可视化比 grep 日志有用得多）； 幂等与可重入：构建应能重跑而不会因为「上次残留」而失败。 加分点：声明式的 post { always { cleanWs() } } 是防止磁盘被工作区塞满的标准动作（Jenkins 磁盘爆满是最高频的运维事故）；options { buildDiscarder(...) } 控制构建保留数；凭据一律用 withCredentials / credentials()，绝不写在 Jenkinsfile 里（见凭据管理题）。","url":"https://it-interview.is-a.dev/#/question/1083"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1083.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jenkins 声明式流水线与脚本式流水线有什么区别？该怎么选？","text":"考察点：Pipeline DSL 两种风格、可维护性、共享库结合。CI 实践基础题。","answerCount":1,"datePublished":"2026-09-10T11:55:12.975Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 声明式（Declarative，推荐默认）： 结构化的固定语法块：pipeline { agent / stages { stage { steps { ... } } } / post }，必须写在 pipeline {} 里； 优势：schema 明确、易读易审（团队统一风格）、内置常用能力——post 生命周期钩子（success/failure/always 等）、when 条件、options（超时、重试、丢弃旧构建）、environment（环境变量）、matrix（多维度并行）；Jenkins 会校验语法（语法错误在解析期就能发现，而不是跑到一半才炸）； 局限：表达能力受限，复杂逻辑（循环生成 stage、动态判断）需要借助 script {} 块退回 Groovy 写法。 脚本式（Scripted）： 就是纯 Groovy 代码调用 Jenkins 的 node {}/stage()/sh 等 API，没有固定结构； 优势：完全灵活——任意循环、条件、函数抽取、数据结构（可以在流水线里维护 map/list）；复杂编排（动态 stage、多分支组合）更自然； 局限：无语法校验、可读性依赖团队自觉、新手容易写出不可维护的巨石脚本、缺少 post/options 这类开箱能力需手工实现。 选择建议： 默认用声明式——它是官方推荐路线，可读性与可维护性优先，且新特性（matrix 等）优先支持声明式； 需要复杂逻辑时：在声明式里用 script {} 局部退回脚本式，而不是整体换风格； 逻辑量大时不要塞进 Jenkinsfile：抽到 Shared Library（共享库） 里，用 vars/ 定义全局步骤（buildAndPush() 这种），Jenkinsfile 只留编排意图——这是大规模实践里唯一能持续维护的方式； 已经有大量脚本式流水线：不必强迁，但新流水线用声明式，并在重构时逐步替换。 两种风格共同的实践要点： agent 尽量设为 none + 每个 stage 单独指定（避免一个 agent 跑完全程导致工作区污染、并行受限）； 用 timeout 防止挂死（无超时的构建会占满 executor，拖垮整个 CI）； 并行化：parallel 或 matrix 缩短反馈时间（CI 速度直接决定研发效率）； 失败要快：把编译、单测、lint 放前面，部署/集成测试放后面，避免长时间构建后才发现低级错误； 日志与产物：archiveArtifacts、junit 报告收集（测试结果可视化比 grep 日志有用得多）； 幂等与可重入：构建应能重跑而不会因为「上次残留」而失败。 加分点：声明式的 post { always { cleanWs() } } 是防止磁盘被工作区塞满的标准动作（Jenkins 磁盘爆满是最高频的运维事故）；options { buildDiscarder(...) } 控制构建保留数；凭据一律用 withCredentials / credentials()，绝不写在 Jenkinsfile 里（见凭据管理题）。","url":"https://it-interview-889.pages.dev/#/question/1083"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Jenkins 声明式流水线与脚本式流水线有什么区别？该怎么选？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">CI/CD工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Jenkins</span><span class="chip tag">Pipeline</span><span class="chip tag">声明式</span><span class="chip tag">脚本式</span><span class="chip tag">CI/CD</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Pipeline DSL 两种风格、可维护性、共享库结合。CI 实践基础题。</p></div>
@@ -105,12 +105,12 @@
 <ul>
 <li><strong>加分点</strong>：声明式的 <code>post { always { cleanWs() } }</code> 是防止磁盘被工作区塞满的标准动作（<strong>Jenkins 磁盘爆满是最高频的运维事故</strong>）；<code>options { buildDiscarder(...) }</code> 控制构建保留数；<strong>凭据一律用 <code>withCredentials</code> / <code>credentials()</code></strong>，绝不写在 Jenkinsfile 里（见凭据管理题）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1083">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1083">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=139&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=139&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

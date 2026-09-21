@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？ · IT面试题库">
   <meta property="og:description" content="看异常信息一眼区分 java.lang.OutOfMemoryError: Java heap space → 堆（对象太多/太大，GC 回收不掉）。 ...: Metaspace（或 PermGen）→ 类元数据区，常因动态生成类（CGLIB、Groovy、反射、ClassLoader 泄漏）撑爆。 ...: …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/415.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/415.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？ · IT面试题库">
   <meta name="twitter:description" content="看异常信息一眼区分 java.lang.OutOfMemoryError: Java heap space → 堆（对象太多/太大，GC 回收不掉）。 ...: Metaspace（或 PermGen）→ 类元数据区，常因动态生成类（CGLIB、Groovy、反射、ClassLoader 泄漏）撑爆。 ...: …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/415.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？","text":"考察点：不同 OOM 的异常信息（Java heap space / Metaspace / Direct buffer memory）对应不同区域；排查工具与启动参数各异。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T10:09:38.755Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"看异常信息一眼区分 java.lang.OutOfMemoryError: Java heap space → 堆（对象太多/太大，GC 回收不掉）。 ...: Metaspace（或 PermGen）→ 类元数据区，常因动态生成类（CGLIB、Groovy、反射、ClassLoader 泄漏）撑爆。 ...: Direct buffer memory → 堆外直接内存（Netty/NIO 的 ByteBuffer.allocateDirect），受 -XX:MaxDirectMemorySize 限制。 ...: unable to create new native thread → 线程数到上限（ulimit/内存），非堆问题。 ...: GC overhead limit exceeded → 98% 时间做 GC 却只回收 2% 内存，典型泄漏前兆。 各自治法 堆溢出：按上题 jmap+MAT 找大对象/泄漏；调大 -Xmx 只是缓解，根因仍是引用未释放。 元空间溢出：加 -XX:MaxMetaspaceSize，用 -verbose:class / jstat -class 看类加载数；排查 ClassLoader 泄漏（热部署未卸载）。 直接内存溢出：加 -XX:MaxDirectMemorySize，用 NMT（-XX:NativeMemoryTracking=detail + jcmd VM.native_memory）看堆外分布；检查 Netty 池化 ByteBuf 是否未释放。 通用：保留 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path 自动留档。","url":"https://it-interview.is-a.dev/#/question/415"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/415.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？","text":"考察点：不同 OOM 的异常信息（Java heap space / Metaspace / Direct buffer memory）对应不同区域；排查工具与启动参数各异。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T10:09:38.755Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"看异常信息一眼区分 java.lang.OutOfMemoryError: Java heap space → 堆（对象太多/太大，GC 回收不掉）。 ...: Metaspace（或 PermGen）→ 类元数据区，常因动态生成类（CGLIB、Groovy、反射、ClassLoader 泄漏）撑爆。 ...: Direct buffer memory → 堆外直接内存（Netty/NIO 的 ByteBuffer.allocateDirect），受 -XX:MaxDirectMemorySize 限制。 ...: unable to create new native thread → 线程数到上限（ulimit/内存），非堆问题。 ...: GC overhead limit exceeded → 98% 时间做 GC 却只回收 2% 内存，典型泄漏前兆。 各自治法 堆溢出：按上题 jmap+MAT 找大对象/泄漏；调大 -Xmx 只是缓解，根因仍是引用未释放。 元空间溢出：加 -XX:MaxMetaspaceSize，用 -verbose:class / jstat -class 看类加载数；排查 ClassLoader 泄漏（热部署未卸载）。 直接内存溢出：加 -XX:MaxDirectMemorySize，用 NMT（-XX:NativeMemoryTracking=detail + jcmd VM.native_memory）看堆外分布；检查 Netty 池化 ByteBuf 是否未释放。 通用：保留 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path 自动留档。","url":"https://it-interview-889.pages.dev/#/question/415"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">OOM</span><span class="chip tag">FullGC</span><span class="chip tag">元空间</span><span class="chip tag">直接内存</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：不同 OOM 的异常信息（Java heap space / Metaspace / Direct buffer memory）对应不同区域；排查工具与启动参数各异。属故障排查题。</p></div>
@@ -88,12 +88,12 @@
 <li>直接内存溢出：加 <code>-XX:MaxDirectMemorySize</code>，用 NMT（<code>-XX:NativeMemoryTracking=detail</code> + <code>jcmd &lt;pid&gt; VM.native_memory</code>）看堆外分布；检查 Netty 池化 ByteBuf 是否未释放。</li>
 <li>通用：保留 <code>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path</code> 自动留档。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/415">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/415">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

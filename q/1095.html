@@ -16,8 +16,8 @@ B. 七层监听器的 Cookie 插入模式下，由 CLB 负责植入会话保持 
 C. 开启会话保持后，流量一定会在所有后端服务器间完全均匀分布；
 D. 四层会话保持是「同一子网的所有请求」转发到同一台服务器，七层是「同一源 IP 的所有请求」转发到同一台服务器。 · IT面试题库">
   <meta property="og:description" content="正确答案：B。 逐项辨析： A 错误：四层没有应用层概念，无法读写 Cookie。四层会话保持基于源 IP：CLB 以请求源地址（子网）作为会话关联依据，把同一 IP（子网）的请求转发到同一台后端； B 正确：Cookie 插入模式下，第一次请求进入 CLB 时按调度算法选后端，后端返回的响应（不带 Cookie…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1095.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1095.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【单选】关于 CLB 的会话保持（Session Persistence），以下说法正确的是：
@@ -26,9 +26,9 @@ B. 七层监听器的 Cookie 插入模式下，由 CLB 负责植入会话保持 
 C. 开启会话保持后，流量一定会在所有后端服务器间完全均匀分布；
 D. 四层会话保持是「同一子网的所有请求」转发到同一台服务器，七层是「同一源 IP 的所有请求」转发到同一台服务器。 · IT面试题库">
   <meta name="twitter:description" content="正确答案：B。 逐项辨析： A 错误：四层没有应用层概念，无法读写 Cookie。四层会话保持基于源 IP：CLB 以请求源地址（子网）作为会话关联依据，把同一 IP（子网）的请求转发到同一台后端； B 正确：Cookie 插入模式下，第一次请求进入 CLB 时按调度算法选后端，后端返回的响应（不带 Cookie…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1095.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选】关于 CLB 的会话保持（Session Persistence），以下说法正确的是：\nA. 四层监听器的会话保持基于 Cookie 实现，需要后端服务器配合写入 Cookie；\nB. 七层监听器的 Cookie 插入模式下，由 CLB 负责植入会话保持 Cookie，后端服务器无需任何修改；\nC. 开启会话保持后，流量一定会在所有后端服务器间完全均匀分布；\nD. 四层会话保持是「同一子网的所有请求」转发到同一台服务器，七层是「同一源 IP 的所有请求」转发到同一台服务器。","text":"考察点：四层 IP 会话保持与七层 Cookie 会话保持的机制辨析、会话保持与流量均衡的矛盾。承接健康检查题，进入 CLB 配置类高频考点。","answerCount":1,"datePublished":"2026-09-11T11:56:07.856Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B。 逐项辨析： A 错误：四层没有应用层概念，无法读写 Cookie。四层会话保持基于源 IP：CLB 以请求源地址（子网）作为会话关联依据，把同一 IP（子网）的请求转发到同一台后端； B 正确：Cookie 插入模式下，第一次请求进入 CLB 时按调度算法选后端，后端返回的响应（不带 Cookie）经过 CLB 时由 CLB 插入会话保持 Cookie 返回客户端；后续带该 Cookie 的请求被 CLB 读出保持数值、定向到同一台服务器，后端全程无需修改； C 错误：会话保持会把同一客户端的请求持续定向到同一后端，恰恰会打破均匀分布——官方 FAQ 明确提到「开启会话保持可能造成访问不均，可关闭会话保持观察」； D 错误：方向说反了——四层是按源 IP（子网）关联，七层才是按 Cookie关联，两者都不是「同一子网→同一服务器」这种说法。 延伸要点：会话保持是「有状态」过渡方案；理想架构是后端本身无状态（登录态放 Redis 等集中存储），此时可关闭会话保持获得更好的负载均衡效果。","url":"https://it-interview.is-a.dev/#/question/1095"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1095.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选】关于 CLB 的会话保持（Session Persistence），以下说法正确的是：\nA. 四层监听器的会话保持基于 Cookie 实现，需要后端服务器配合写入 Cookie；\nB. 七层监听器的 Cookie 插入模式下，由 CLB 负责植入会话保持 Cookie，后端服务器无需任何修改；\nC. 开启会话保持后，流量一定会在所有后端服务器间完全均匀分布；\nD. 四层会话保持是「同一子网的所有请求」转发到同一台服务器，七层是「同一源 IP 的所有请求」转发到同一台服务器。","text":"考察点：四层 IP 会话保持与七层 Cookie 会话保持的机制辨析、会话保持与流量均衡的矛盾。承接健康检查题，进入 CLB 配置类高频考点。","answerCount":1,"datePublished":"2026-09-11T11:56:07.856Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B。 逐项辨析： A 错误：四层没有应用层概念，无法读写 Cookie。四层会话保持基于源 IP：CLB 以请求源地址（子网）作为会话关联依据，把同一 IP（子网）的请求转发到同一台后端； B 正确：Cookie 插入模式下，第一次请求进入 CLB 时按调度算法选后端，后端返回的响应（不带 Cookie）经过 CLB 时由 CLB 插入会话保持 Cookie 返回客户端；后续带该 Cookie 的请求被 CLB 读出保持数值、定向到同一台服务器，后端全程无需修改； C 错误：会话保持会把同一客户端的请求持续定向到同一后端，恰恰会打破均匀分布——官方 FAQ 明确提到「开启会话保持可能造成访问不均，可关闭会话保持观察」； D 错误：方向说反了——四层是按源 IP（子网）关联，七层才是按 Cookie关联，两者都不是「同一子网→同一服务器」这种说法。 延伸要点：会话保持是「有状态」过渡方案；理想架构是后端本身无状态（登录态放 Redis 等集中存储），此时可关闭会话保持获得更好的负载均衡效果。","url":"https://it-interview-889.pages.dev/#/question/1095"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -81,7 +81,7 @@ D. 四层会话保持是「同一子网的所有请求」转发到同一台服�
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【单选】关于 CLB 的会话保持（Session Persistence），以下说法正确的是：
 A. 四层监听器的会话保持基于 Cookie 实现，需要后端服务器配合写入 Cookie；
 B. 七层监听器的 Cookie 插入模式下，由 CLB 负责植入会话保持 Cookie，后端服务器无需任何修改；
@@ -98,12 +98,12 @@ D. 四层会话保持是「同一子网的所有请求」转发到同一台服�
 <li><strong>D 错误</strong>：方向说反了——<strong>四层是按源 IP（子网）</strong>关联，<strong>七层才是按 Cookie</strong>关联，两者都不是「同一子网→同一服务器」这种说法。</li>
 </ul>
 <p><strong>延伸要点</strong>：会话保持是「有状态」过渡方案；理想架构是后端本身无状态（登录态放 Redis 等集中存储），此时可关闭会话保持获得更好的负载均衡效果。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1095">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1095">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

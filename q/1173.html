@@ -16,8 +16,8 @@ B. ref 在模板中使用时必须写 .value
 C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
 D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
   <meta property="og:description" content="正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1173.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1173.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？
@@ -26,9 +26,9 @@ B. ref 在模板中使用时必须写 .value
 C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
 D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
   <meta name="twitter:description" content="正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1173.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？\nA. reactive 可以直接用于基本类型（数字/字符串）\nB. ref 在模板中使用时必须写 .value\nC. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value\nD. reactive 对象被整体重新赋值仍保持响应式","text":"考察点：ref 与 reactive 的选用规则与模板解包行为。要能判断每个选项对错并讲清理由。","answerCount":1,"datePublished":"2026-09-17T02:27:46.344Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基本类型用 ref、对象用 reactive；ref 在模板自动解包是编译期处理的（前提是 ref 是顶层属性，嵌套在 reactive 里也会解包）。 D 错：reactive 整体重新赋值（state = {…}）会断开原代理引用、丢失响应性；正确做法是用 Object.assign(state, newObj) 原地合并，或改用 ref 包一层用 .value 替换。 选型口诀：「基本用 ref，对象用 reactive；要替换整对象就 ref 包一层」。","url":"https://it-interview.is-a.dev/#/question/1173"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1173.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？\nA. reactive 可以直接用于基本类型（数字/字符串）\nB. ref 在模板中使用时必须写 .value\nC. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value\nD. reactive 对象被整体重新赋值仍保持响应式","text":"考察点：ref 与 reactive 的选用规则与模板解包行为。要能判断每个选项对错并讲清理由。","answerCount":1,"datePublished":"2026-09-17T02:27:46.344Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基本类型用 ref、对象用 reactive；ref 在模板自动解包是编译期处理的（前提是 ref 是顶层属性，嵌套在 reactive 里也会解包）。 D 错：reactive 整体重新赋值（state = {…}）会断开原代理引用、丢失响应性；正确做法是用 Object.assign(state, newObj) 原地合并，或改用 ref 包一层用 .value 替换。 选型口诀：「基本用 ref，对象用 reactive；要替换整对象就 ref 包一层」。","url":"https://it-interview-889.pages.dev/#/question/1173"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -81,7 +81,7 @@ D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？
 A. reactive 可以直接用于基本类型（数字/字符串）
 B. ref 在模板中使用时必须写 .value
@@ -97,12 +97,12 @@ D. reactive 对象被整体重新赋值仍保持响应式</h1>
 <li><strong>D 错</strong>：<code>reactive</code> 整体重新赋值（<code>state = {…}</code>）会断开原代理引用、丢失响应性；正确做法是用 <code>Object.assign(state, newObj)</code> 原地合并，或改用 <code>ref</code> 包一层用 <code>.value</code> 替换。</li>
 </ul>
 <p><strong>选型口诀</strong>：「基本用 ref，对象用 reactive；要替换整对象就 ref 包一层」。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1173">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1173">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=63&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=63&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

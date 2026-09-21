@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？ · IT面试题库">
   <meta property="og:description" content="TLS 1.2 vs TLS 1.3 的核心差异： | 维度 | TLS 1.2 | TLS 1.3 | |------|---------|---------| | 握手次数 | 4 次消息（2 RTT） | 3 次消息（1 RTT），甚至支持 0-RTT 恢复 | | 密钥交换 | 支持 RSA、ECDHE …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/481.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/481.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？ · IT面试题库">
   <meta name="twitter:description" content="TLS 1.2 vs TLS 1.3 的核心差异： | 维度 | TLS 1.2 | TLS 1.3 | |------|---------|---------| | 握手次数 | 4 次消息（2 RTT） | 3 次消息（1 RTT），甚至支持 0-RTT 恢复 | | 密钥交换 | 支持 RSA、ECDHE …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/481.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？","text":"TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？","answerCount":1,"datePublished":"2026-09-05T06:18:12.798Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TLS 1.2 vs TLS 1.3 的核心差异： | 维度 | TLS 1.2 | TLS 1.3 | |------|---------|---------| | 握手次数 | 4 次消息（2 RTT） | 3 次消息（1 RTT），甚至支持 0-RTT 恢复 | | 密钥交换 | 支持 RSA、ECDHE 等多种 | 只保留 ECDHE，RSA 密钥交换被移除 | | 前向保密 | RSA 模式无前向保密 | 强制前向保密，每次会话独立临时密钥 | | 密码套件 | 种类繁杂，很多已不安全 | 精简为 AES-GCM、ChaCha20-Poly1305 等 AEAD 算法 | | 握手安全性 | 部分字段明文传输 | 所有握手字段（除 ClientHello）均加密 | | 废弃算法 | 支持 MD5、SHA1、CBC 模式等弱算法 | 全部废弃，只保留现代安全算法 | 为什么推荐 TLS 1.3： 1. 更快：1-RTT 完成握手，配合 0-RTT 会话恢复几乎零延迟；对移动端、弱网体验提升明显。 2. 更安全：强制前向保密，即使服务器私钥泄露也无法解密历史流量；移除了大量已知漏洞的弱算法（如 RSA 密钥交换、CBC 填充攻击、静态 DH 等）。 3. 更简单：协议字段更少，实现出错概率更低，减少了「实现侧漏洞」的风险。 4. 抗降级：TLS 1.3 客户端如果发现服务端不支持 1.3，会直接拒绝连接，避免被降级到 TLS 1.2 遭受 POODLE 等攻击。 追问：HTTP/3 底层基于 QUIC，而 QUIC 内置 TLS 1.3，因此 HTTP/3 天然就是「TLS 1.3 + UDP + 多路复用」的组合，是目前性能与安全性兼顾的最佳实践。","url":"https://it-interview.is-a.dev/#/question/481"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/481.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？","text":"TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？","answerCount":1,"datePublished":"2026-09-05T06:18:12.798Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TLS 1.2 vs TLS 1.3 的核心差异： | 维度 | TLS 1.2 | TLS 1.3 | |------|---------|---------| | 握手次数 | 4 次消息（2 RTT） | 3 次消息（1 RTT），甚至支持 0-RTT 恢复 | | 密钥交换 | 支持 RSA、ECDHE 等多种 | 只保留 ECDHE，RSA 密钥交换被移除 | | 前向保密 | RSA 模式无前向保密 | 强制前向保密，每次会话独立临时密钥 | | 密码套件 | 种类繁杂，很多已不安全 | 精简为 AES-GCM、ChaCha20-Poly1305 等 AEAD 算法 | | 握手安全性 | 部分字段明文传输 | 所有握手字段（除 ClientHello）均加密 | | 废弃算法 | 支持 MD5、SHA1、CBC 模式等弱算法 | 全部废弃，只保留现代安全算法 | 为什么推荐 TLS 1.3： 1. 更快：1-RTT 完成握手，配合 0-RTT 会话恢复几乎零延迟；对移动端、弱网体验提升明显。 2. 更安全：强制前向保密，即使服务器私钥泄露也无法解密历史流量；移除了大量已知漏洞的弱算法（如 RSA 密钥交换、CBC 填充攻击、静态 DH 等）。 3. 更简单：协议字段更少，实现出错概率更低，减少了「实现侧漏洞」的风险。 4. 抗降级：TLS 1.3 客户端如果发现服务端不支持 1.3，会直接拒绝连接，避免被降级到 TLS 1.2 遭受 POODLE 等攻击。 追问：HTTP/3 底层基于 QUIC，而 QUIC 内置 TLS 1.3，因此 HTTP/3 天然就是「TLS 1.3 + UDP + 多路复用」的组合，是目前性能与安全性兼顾的最佳实践。","url":"https://it-interview-889.pages.dev/#/question/481"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">TLS</span><span class="chip tag">TLS1.3</span><span class="chip tag">HTTP3</span><span class="chip tag">QUIC</span><span class="chip tag">前向保密</span></div>
     <div class="card"><h2>题目</h2><p>TLS 1.2 和 TLS 1.3 握手有什么区别？为什么现在推荐用 TLS 1.3？</p></div>
@@ -90,12 +90,12 @@
 <li><strong>抗降级</strong>：TLS 1.3 客户端如果发现服务端不支持 1.3，会直接拒绝连接，避免被降级到 TLS 1.2 遭受 POODLE 等攻击。</li>
 </ol>
 <blockquote><strong>追问</strong>：HTTP/3 底层基于 QUIC，而 QUIC 内置 TLS 1.3，因此 HTTP/3 天然就是「TLS 1.3 + UDP + 多路复用」的组合，是目前性能与安全性兼顾的最佳实践。</blockquote></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/481">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/481">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

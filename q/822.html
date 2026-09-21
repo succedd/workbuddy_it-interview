@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Deployment 如何做滚动更新与回滚？ReplicaSet、maxSurge/maxUnavailable、探针分别起什么作用？ · IT面试题库">
   <meta property="og:description" content="要点： 1. Deployment 与 ReplicaSet：Deployment 为 Pod 和 ReplicaSet 提供声明式更新能力；每次改镜像/配置，Deployment 新建一个 ReplicaSet 并按策略把副本从旧 RS 迁到新 RS，旧 RS 保留以支持回滚。 2. 滚动更新参数（strate…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/822.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/822.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Deployment 如何做滚动更新与回滚？ReplicaSet、maxSurge/maxUnavailable、探针分别起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. Deployment 与 ReplicaSet：Deployment 为 Pod 和 ReplicaSet 提供声明式更新能力；每次改镜像/配置，Deployment 新建一个 ReplicaSet 并按策略把副本从旧 RS 迁到新 RS，旧 RS 保留以支持回滚。 2. 滚动更新参数（strate…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/822.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Deployment 如何做滚动更新与回滚？ReplicaSet、maxSurge/maxUnavailable、探针分别起什么作用？","text":"考察点：Deployment 的声明式更新机制、ReplicaSet 关系、滚动参数与探针区别。追问：readinessProbe 失败和 livenessProbe 失败后果有何不同？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. Deployment 与 ReplicaSet：Deployment 为 Pod 和 ReplicaSet 提供声明式更新能力；每次改镜像/配置，Deployment 新建一个 ReplicaSet 并按策略把副本从旧 RS 迁到新 RS，旧 RS 保留以支持回滚。 2. 滚动更新参数（strategy.rollingUpdate）： maxSurge：滚动中最多比期望副本数多出的 Pod 数（默认 25%）； maxUnavailable：滚动中最多不可用的 Pod 数（默认 25%）； 二者共同控制「零停机」的更新速度。 3. 回滚：kubectl rollout history 看修订历史，kubectl rollout undo deployment/xxx 回退到上一版（也可指定 --to-revision）。 4. 探针区别： livenessProbe 失败 → kubelet 重启该容器（怀疑死锁/卡死）； readinessProbe 失败 → 从 Service 的 EndpointSlice 中摘除该 Pod IP，不再接流量，但不重启； startupProbe 在启动完成前屏蔽存活/就绪探针，给慢启动应用留出初始化时间。 关键：只有就绪探针正确，滚动更新期间流量才不会被导到还没准备好的新 Pod；探针配错（如就绪探针探测路径不存在）会导致新副本永远不就绪、更新卡住。","url":"https://it-interview.is-a.dev/#/question/822"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/822.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Deployment 如何做滚动更新与回滚？ReplicaSet、maxSurge/maxUnavailable、探针分别起什么作用？","text":"考察点：Deployment 的声明式更新机制、ReplicaSet 关系、滚动参数与探针区别。追问：readinessProbe 失败和 livenessProbe 失败后果有何不同？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. Deployment 与 ReplicaSet：Deployment 为 Pod 和 ReplicaSet 提供声明式更新能力；每次改镜像/配置，Deployment 新建一个 ReplicaSet 并按策略把副本从旧 RS 迁到新 RS，旧 RS 保留以支持回滚。 2. 滚动更新参数（strategy.rollingUpdate）： maxSurge：滚动中最多比期望副本数多出的 Pod 数（默认 25%）； maxUnavailable：滚动中最多不可用的 Pod 数（默认 25%）； 二者共同控制「零停机」的更新速度。 3. 回滚：kubectl rollout history 看修订历史，kubectl rollout undo deployment/xxx 回退到上一版（也可指定 --to-revision）。 4. 探针区别： livenessProbe 失败 → kubelet 重启该容器（怀疑死锁/卡死）； readinessProbe 失败 → 从 Service 的 EndpointSlice 中摘除该 Pod IP，不再接流量，但不重启； startupProbe 在启动完成前屏蔽存活/就绪探针，给慢启动应用留出初始化时间。 关键：只有就绪探针正确，滚动更新期间流量才不会被导到还没准备好的新 Pod；探针配错（如就绪探针探测路径不存在）会导致新副本永远不就绪、更新卡住。","url":"https://it-interview-889.pages.dev/#/question/822"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Deployment 如何做滚动更新与回滚？ReplicaSet、maxSurge/maxUnavailable、探针分别起什么作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">云计算工程师</span><span class="chip tag">Deployment</span><span class="chip tag">滚动更新</span><span class="chip tag">回滚</span><span class="chip tag">探针</span><span class="chip tag">ReplicaSet</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Deployment 的声明式更新机制、ReplicaSet 关系、滚动参数与探针区别。追问：readinessProbe 失败和 livenessProbe 失败后果有何不同？</p></div>
@@ -89,12 +89,12 @@
 <p>   - <strong>readinessProbe 失败</strong> → 从 Service 的 EndpointSlice 中摘除该 Pod IP，不再接流量，但<strong>不重启</strong>；</p>
 <p>   - <strong>startupProbe</strong> 在启动完成前屏蔽存活/就绪探针，给慢启动应用留出初始化时间。</p>
 <p><strong>关键</strong>：只有就绪探针正确，滚动更新期间流量才不会被导到还没准备好的新 Pod；探针配错（如就绪探针探测路径不存在）会导致新副本永远不就绪、更新卡住。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/822">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/822">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=137&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=137&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

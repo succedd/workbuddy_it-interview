@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ClickHouse 为何查询快（列存/MergeTree/向量化）？ · IT面试题库">
   <meta property="og:description" content="列存：按列存储，分析查询只扫所需列，压缩率高、I/O 少。 MergeTree 家族：数据按主键排序分区，后台异步 merge 小 parts，支持稀疏索引快速定位。 向量化执行：用 SIMD 批量处理数据，充分利用 CPU 缓存与指令并行，远快于逐行解释。 其他：MPP 分布式并行、数据压缩（LZ4/ZSTD）…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/710.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/710.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ClickHouse 为何查询快（列存/MergeTree/向量化）？ · IT面试题库">
   <meta name="twitter:description" content="列存：按列存储，分析查询只扫所需列，压缩率高、I/O 少。 MergeTree 家族：数据按主键排序分区，后台异步 merge 小 parts，支持稀疏索引快速定位。 向量化执行：用 SIMD 批量处理数据，充分利用 CPU 缓存与指令并行，远快于逐行解释。 其他：MPP 分布式并行、数据压缩（LZ4/ZSTD）…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/710.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ClickHouse 为何查询快（列存/MergeTree/向量化）？","text":"解释 ClickHouse 高性能的分析引擎设计。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"列存：按列存储，分析查询只扫所需列，压缩率高、I/O 少。 MergeTree 家族：数据按主键排序分区，后台异步 merge 小 parts，支持稀疏索引快速定位。 向量化执行：用 SIMD 批量处理数据，充分利用 CPU 缓存与指令并行，远快于逐行解释。 其他：MPP 分布式并行、数据压缩（LZ4/ZSTD）、物化视图预聚合。适合高并发即席 OLAP，不适合高频单点写入。","url":"https://it-interview.is-a.dev/#/question/710"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/710.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ClickHouse 为何查询快（列存/MergeTree/向量化）？","text":"解释 ClickHouse 高性能的分析引擎设计。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"列存：按列存储，分析查询只扫所需列，压缩率高、I/O 少。 MergeTree 家族：数据按主键排序分区，后台异步 merge 小 parts，支持稀疏索引快速定位。 向量化执行：用 SIMD 批量处理数据，充分利用 CPU 缓存与指令并行，远快于逐行解释。 其他：MPP 分布式并行、数据压缩（LZ4/ZSTD）、物化视图预聚合。适合高并发即席 OLAP，不适合高频单点写入。","url":"https://it-interview-889.pages.dev/#/question/710"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>ClickHouse 为何查询快（列存/MergeTree/向量化）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据仓库工程师</span><span class="chip">实时计算工程师</span><span class="chip tag">ClickHouse</span><span class="chip tag">列存</span><span class="chip tag">MergeTree</span><span class="chip tag">向量化</span></div>
     <div class="card"><h2>题目</h2><p>解释 ClickHouse 高性能的分析引擎设计。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>MergeTree 家族</strong>：数据按主键排序分区，后台异步 merge 小 parts，支持稀疏索引快速定位。</p>
 <p><strong>向量化执行</strong>：用 SIMD 批量处理数据，充分利用 CPU 缓存与指令并行，远快于逐行解释。</p>
 <p><strong>其他</strong>：MPP 分布式并行、数据压缩（LZ4/ZSTD）、物化视图预聚合。适合高并发即席 OLAP，不适合高频单点写入。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/710">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/710">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=169&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=169&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

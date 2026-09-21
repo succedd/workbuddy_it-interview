@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？ · IT面试题库">
   <meta property="og:description" content="要点： 不丢：TAILDIR Source（持久化 offset，断点续传）+ File Channel（磁盘持久化）+ HDFS Sink 两阶段事务（先写临时文件 .tmp，事务提交后改名）——进程崩溃也不丢已提交 batch。代价是吞吐低于 memory channel，权衡看业务。 不重：Flume 保证…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/999.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/999.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？ · IT面试题库">
   <meta name="twitter:description" content="要点： 不丢：TAILDIR Source（持久化 offset，断点续传）+ File Channel（磁盘持久化）+ HDFS Sink 两阶段事务（先写临时文件 .tmp，事务提交后改名）——进程崩溃也不丢已提交 batch。代价是吞吐低于 memory channel，权衡看业务。 不重：Flume 保证…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/999.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？","text":"考察点：file channel+taildir 组合、事务两阶段、roll 策略、拦截器与分区落地。","answerCount":1,"datePublished":"2026-09-10T07:23:33.142Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 不丢：TAILDIR Source（持久化 offset，断点续传）+ File Channel（磁盘持久化）+ HDFS Sink 两阶段事务（先写临时文件 .tmp，事务提交后改名）——进程崩溃也不丢已提交 batch。代价是吞吐低于 memory channel，权衡看业务。 不重：Flume 保证 at-least-once——宕机恢复可能重放部分数据，严格不重要在下游做幂等（按事件唯一 id 去重/按文件 offset 位图）。诚实答案：Flume 原生就是 at-least-once。 小文件三参数：hdfs.rollInterval（时间）、rollSize（128M 对齐块）、rollCount（条数）——任一触发滚动；生产常配「10min 或 128M 先到先滚」。再用 hdfs.path 按日期/小时分区（%Y%m%d/%H 转义）+ 时区处理（useLocalTimeStamp）。 补充：高吞吐用 memory channel+kafka channel 组合，把可靠性交给 Kafka；监控 channel 填充率，堵了先查 sink 下游（HDFS Namenode 抖动/权限）。","url":"https://it-interview.is-a.dev/#/question/999"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/999.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？","text":"考察点：file channel+taildir 组合、事务两阶段、roll 策略、拦截器与分区落地。","answerCount":1,"datePublished":"2026-09-10T07:23:33.142Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 不丢：TAILDIR Source（持久化 offset，断点续传）+ File Channel（磁盘持久化）+ HDFS Sink 两阶段事务（先写临时文件 .tmp，事务提交后改名）——进程崩溃也不丢已提交 batch。代价是吞吐低于 memory channel，权衡看业务。 不重：Flume 保证 at-least-once——宕机恢复可能重放部分数据，严格不重要在下游做幂等（按事件唯一 id 去重/按文件 offset 位图）。诚实答案：Flume 原生就是 at-least-once。 小文件三参数：hdfs.rollInterval（时间）、rollSize（128M 对齐块）、rollCount（条数）——任一触发滚动；生产常配「10min 或 128M 先到先滚」。再用 hdfs.path 按日期/小时分区（%Y%m%d/%H 转义）+ 时区处理（useLocalTimeStamp）。 补充：高吞吐用 memory channel+kafka channel 组合，把可靠性交给 Kafka；监控 channel 填充率，堵了先查 sink 下游（HDFS Namenode 抖动/权限）。","url":"https://it-interview-889.pages.dev/#/question/999"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">大数据开发工程师</span><span class="chip">数据采集工程师</span><span class="chip tag">Flume</span><span class="chip tag">HDFS</span><span class="chip tag">小文件</span><span class="chip tag">at-least-once</span></div>
     <div class="card"><h2>题目</h2><p>考察点：file channel+taildir 组合、事务两阶段、roll 策略、拦截器与分区落地。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>小文件三参数</strong>：<code>hdfs.rollInterval</code>（时间）、<code>rollSize</code>（128M 对齐块）、<code>rollCount</code>（条数）——任一触发滚动；生产常配「10min 或 128M 先到先滚」。再用 <code>hdfs.path</code> 按日期/小时分区（%Y%m%d/%H 转义）+ 时区处理（<code>useLocalTimeStamp</code>）。</li>
 <li><strong>补充</strong>：高吞吐用 memory channel+kafka channel 组合，把可靠性交给 Kafka；监控 channel 填充率，堵了先查 sink 下游（HDFS Namenode 抖动/权限）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/999">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/999">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=168&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=168&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

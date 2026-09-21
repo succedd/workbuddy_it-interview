@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="音视频【边界】弱网对抗为什么没有终点？「卡了」的时候，播放器/系统都在背后做什么博弈？ · IT面试题库">
   <meta property="og:description" content="弱网对抗是一场持续的概率博弈，因为网络状况不可预知且随时变化： 1. 自适应码率（ABR）：播放器实时探测带宽，动态切换清晰度档位——你在地铁里看到的「变糊」就是它切的（用画质换流畅）； 2. 缓冲区策略：缓冲多一点抗抖动但延迟大，缓冲少一点延迟低但易卡——每个播放器都在调这个滑块； 3. 丢包处理：重传（延迟↑…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/336.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/336.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="音视频【边界】弱网对抗为什么没有终点？「卡了」的时候，播放器/系统都在背后做什么博弈？ · IT面试题库">
   <meta name="twitter:description" content="弱网对抗是一场持续的概率博弈，因为网络状况不可预知且随时变化： 1. 自适应码率（ABR）：播放器实时探测带宽，动态切换清晰度档位——你在地铁里看到的「变糊」就是它切的（用画质换流畅）； 2. 缓冲区策略：缓冲多一点抗抖动但延迟大，缓冲少一点延迟低但易卡——每个播放器都在调这个滑块； 3. 丢包处理：重传（延迟↑…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/336.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"音视频【边界】弱网对抗为什么没有终点？「卡了」的时候，播放器/系统都在背后做什么博弈？","text":"同一部影片，WiFi 上清晰流畅、地铁里自动变糊——是谁在什么时候做的决定？延迟、卡顿、清晰度为什么构成一个不可兼得的三角？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"弱网对抗是一场持续的概率博弈，因为网络状况不可预知且随时变化： 1. 自适应码率（ABR）：播放器实时探测带宽，动态切换清晰度档位——你在地铁里看到的「变糊」就是它切的（用画质换流畅）； 2. 缓冲区策略：缓冲多一点抗抖动但延迟大，缓冲少一点延迟低但易卡——每个播放器都在调这个滑块； 3. 丢包处理：重传（延迟↑）vs 前向纠错（带宽↑）vs 丢弃（质量↓）——实时场景必须选； 4. 编码端配合：码率、分辨率、帧率动态调整。 三角铁律：低延迟 × 高清晰 × 零卡顿不可兼得（有限带宽下），所有产品都在这个三角里找自己的定位。音视频工程师的核心功力，就是理解并量化这个三角。","url":"https://it-interview.is-a.dev/#/question/336"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/336.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"音视频【边界】弱网对抗为什么没有终点？「卡了」的时候，播放器/系统都在背后做什么博弈？","text":"同一部影片，WiFi 上清晰流畅、地铁里自动变糊——是谁在什么时候做的决定？延迟、卡顿、清晰度为什么构成一个不可兼得的三角？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"弱网对抗是一场持续的概率博弈，因为网络状况不可预知且随时变化： 1. 自适应码率（ABR）：播放器实时探测带宽，动态切换清晰度档位——你在地铁里看到的「变糊」就是它切的（用画质换流畅）； 2. 缓冲区策略：缓冲多一点抗抖动但延迟大，缓冲少一点延迟低但易卡——每个播放器都在调这个滑块； 3. 丢包处理：重传（延迟↑）vs 前向纠错（带宽↑）vs 丢弃（质量↓）——实时场景必须选； 4. 编码端配合：码率、分辨率、帧率动态调整。 三角铁律：低延迟 × 高清晰 × 零卡顿不可兼得（有限带宽下），所有产品都在这个三角里找自己的定位。音视频工程师的核心功力，就是理解并量化这个三角。","url":"https://it-interview-889.pages.dev/#/question/336"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>音视频【边界】弱网对抗为什么没有终点？「卡了」的时候，播放器/系统都在背后做什么博弈？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">音视频与流媒体工程师</span><span class="chip">音视频开发工程师</span><span class="chip">流媒体架构师</span><span class="chip">WebRTC工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">音视频与流媒体</span></div>
     <div class="card"><h2>题目</h2><p>同一部影片，WiFi 上清晰流畅、地铁里自动变糊——是谁在什么时候做的决定？延迟、卡顿、清晰度为什么构成一个不可兼得的三角？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>编码端配合</strong>：码率、分辨率、帧率动态调整。</li>
 </ol>
 <p><strong>三角铁律</strong>：低延迟 × 高清晰 × 零卡顿不可兼得（有限带宽下），所有产品都在这个三角里找自己的定位。<strong>音视频工程师的核心功力，就是理解并量化这个三角</strong>。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/336">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/336">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=249&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=249&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

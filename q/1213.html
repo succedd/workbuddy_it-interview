@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。 · IT面试题库">
   <meta property="og:description" content="要点： 第一步：界定 503 含义与范围。Gateway 的 503 通常来自后端路由失败（no available instance）或转发超时/连接拒绝。先确认是全量接口还是特定服务 503：全量→网关或注册中心层面的共性问题；特定→某个下游服务故障。同时看是否伴随 504（超时）还是纯 503（无可用实例）…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1213.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1213.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。 · IT面试题库">
   <meta name="twitter:description" content="要点： 第一步：界定 503 含义与范围。Gateway 的 503 通常来自后端路由失败（no available instance）或转发超时/连接拒绝。先确认是全量接口还是特定服务 503：全量→网关或注册中心层面的共性问题；特定→某个下游服务故障。同时看是否伴随 504（超时）还是纯 503（无可用实例）…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1213.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。","text":"追问链第 4 问：网关是统一入口，503 是「上游不可用」信号，但要锁定真正责任人。","answerCount":1,"datePublished":"2026-09-21T02:16:37.915Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：界定 503 含义与范围。Gateway 的 503 通常来自后端路由失败（no available instance）或转发超时/连接拒绝。先确认是全量接口还是特定服务 503：全量→网关或注册中心层面的共性问题；特定→某个下游服务故障。同时看是否伴随 504（超时）还是纯 503（无可用实例）。 第二步：查注册中心。登录 Nacos/Eureka 控制台，看目标服务实例列表是否为空、健康状态、最后心跳时间。若实例数骤降或为 0，说明是注册中心侧问题（实例被误剔除、健康探测失败、或注册中心自身不可用导致列表未刷新）；同时检查网关本地缓存的服务列表是否过期。 第三步：查下游服务。若注册中心实例正常，直接拨测下游 Pod 的 readiness/health 与业务端口，确认进程是否存活、线程池/连接池是否打满、GC 是否长时间 Stop-The-World。下游自身故障（OOM、慢 SQL、依赖雪崩）会让网关拿不到健康响应而 503/504。 第四步：查网关自身。看 Gateway 路由配置/断言是否变更、连接池（reactor-netty）是否耗尽、是否超时配置过短触发熔断、网关节点 CPU/内存/文件句柄是否瓶颈。结合全链路追踪（SkyWalking/Jaeger）定位耗时落在哪一段。 止血与根治：临时对故障服务熔断降级/返回兜底；长期加实例健康检查、限流、舱壁隔离，避免单点拖垮网关。","url":"https://it-interview.is-a.dev/#/question/1213"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1213.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。","text":"追问链第 4 问：网关是统一入口，503 是「上游不可用」信号，但要锁定真正责任人。","answerCount":1,"datePublished":"2026-09-21T02:16:37.915Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：界定 503 含义与范围。Gateway 的 503 通常来自后端路由失败（no available instance）或转发超时/连接拒绝。先确认是全量接口还是特定服务 503：全量→网关或注册中心层面的共性问题；特定→某个下游服务故障。同时看是否伴随 504（超时）还是纯 503（无可用实例）。 第二步：查注册中心。登录 Nacos/Eureka 控制台，看目标服务实例列表是否为空、健康状态、最后心跳时间。若实例数骤降或为 0，说明是注册中心侧问题（实例被误剔除、健康探测失败、或注册中心自身不可用导致列表未刷新）；同时检查网关本地缓存的服务列表是否过期。 第三步：查下游服务。若注册中心实例正常，直接拨测下游 Pod 的 readiness/health 与业务端口，确认进程是否存活、线程池/连接池是否打满、GC 是否长时间 Stop-The-World。下游自身故障（OOM、慢 SQL、依赖雪崩）会让网关拿不到健康响应而 503/504。 第四步：查网关自身。看 Gateway 路由配置/断言是否变更、连接池（reactor-netty）是否耗尽、是否超时配置过短触发熔断、网关节点 CPU/内存/文件句柄是否瓶颈。结合全链路追踪（SkyWalking/Jaeger）定位耗时落在哪一段。 止血与根治：临时对故障服务熔断降级/返回兜底；长期加实例健康检查、限流、舱壁隔离，避免单点拖垮网关。","url":"https://it-interview-889.pages.dev/#/question/1213"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">网关</span><span class="chip tag">SpringCloudGateway</span><span class="chip tag">503</span><span class="chip tag">故障排查</span><span class="chip tag">全链路追踪</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 4 问：网关是统一入口，503 是「上游不可用」信号，但要锁定真正责任人。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>第四步：查网关自身</strong>。看 Gateway 路由配置/断言是否变更、连接池（reactor-netty）是否耗尽、是否超时配置过短触发熔断、网关节点 CPU/内存/文件句柄是否瓶颈。结合全链路追踪（SkyWalking/Jaeger）定位耗时落在哪一段。</li>
 <li><strong>止血与根治</strong>：临时对故障服务<strong>熔断降级/返回兜底</strong>；长期加实例健康检查、限流、舱壁隔离，避免单点拖垮网关。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1213">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1213">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=121&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=121&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="线上接口偶发 502 / 503 / 504，分别意味着什么？请给出排查思路。 · IT面试题库">
   <meta property="og:description" content="要点： 502 Bad Gateway：网关/代理收到来自上游（应用、后端）的无效响应（如后端进程崩溃、返回了非 HTTP 报文、Nginx 连不上后端）。排查：检查上游服务是否存活、端口/健康检查、后端是否 OOM、反向代理的 upstream 配置。 503 Service Unavailable：服务端暂时…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/763.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/763.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线上接口偶发 502 / 503 / 504，分别意味着什么？请给出排查思路。 · IT面试题库">
   <meta name="twitter:description" content="要点： 502 Bad Gateway：网关/代理收到来自上游（应用、后端）的无效响应（如后端进程崩溃、返回了非 HTTP 报文、Nginx 连不上后端）。排查：检查上游服务是否存活、端口/健康检查、后端是否 OOM、反向代理的 upstream 配置。 503 Service Unavailable：服务端暂时…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/763.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上接口偶发 502 / 503 / 504，分别意味着什么？请给出排查思路。","text":"考察点：5xx 网关/代理类状态码语义差异，以及与 HTTP 演进、反向代理、超时、限流的关联。高阶故障排查。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 502 Bad Gateway：网关/代理收到来自上游（应用、后端）的无效响应（如后端进程崩溃、返回了非 HTTP 报文、Nginx 连不上后端）。排查：检查上游服务是否存活、端口/健康检查、后端是否 OOM、反向代理的 upstream 配置。 503 Service Unavailable：服务端暂时无法处理（维护中、被限流/熔断、连接池耗尽、过载保护触发）。排查：看是否发布了维护页、限流阈值是否过低、依赖的 DB/缓存是否打满、线程池/连接池是否耗尽。 504 Gateway Timeout：网关在规定时间内没收到上游响应（后端处理太慢或卡死）。排查：后端慢查询/死锁、GC 停顿、下游依赖超时；适当调大网关 proxy_read_timeout，但根因是优化后端耗时。 通用思路：先看网关访问日志定位是哪一种；再查上游监控（CPU、内存、慢接口、依赖链路）；结合 HTTP/1.1 持久连接与超时配置、以及限流/熔断规则综合判断，避免只调超时掩盖根因。","url":"https://it-interview.is-a.dev/#/question/763"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/763.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上接口偶发 502 / 503 / 504，分别意味着什么？请给出排查思路。","text":"考察点：5xx 网关/代理类状态码语义差异，以及与 HTTP 演进、反向代理、超时、限流的关联。高阶故障排查。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 502 Bad Gateway：网关/代理收到来自上游（应用、后端）的无效响应（如后端进程崩溃、返回了非 HTTP 报文、Nginx 连不上后端）。排查：检查上游服务是否存活、端口/健康检查、后端是否 OOM、反向代理的 upstream 配置。 503 Service Unavailable：服务端暂时无法处理（维护中、被限流/熔断、连接池耗尽、过载保护触发）。排查：看是否发布了维护页、限流阈值是否过低、依赖的 DB/缓存是否打满、线程池/连接池是否耗尽。 504 Gateway Timeout：网关在规定时间内没收到上游响应（后端处理太慢或卡死）。排查：后端慢查询/死锁、GC 停顿、下游依赖超时；适当调大网关 proxy_read_timeout，但根因是优化后端耗时。 通用思路：先看网关访问日志定位是哪一种；再查上游监控（CPU、内存、慢接口、依赖链路）；结合 HTTP/1.1 持久连接与超时配置、以及限流/熔断规则综合判断，避免只调超时掩盖根因。","url":"https://it-interview-889.pages.dev/#/question/763"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>线上接口偶发 502 / 503 / 504，分别意味着什么？请给出排查思路。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">状态码</span><span class="chip tag">502</span><span class="chip tag">503</span><span class="chip tag">504</span><span class="chip tag">网关</span></div>
     <div class="card"><h2>题目</h2><p>考察点：5xx 网关/代理类状态码语义差异，以及与 HTTP 演进、反向代理、超时、限流的关联。高阶故障排查。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>504 Gateway Timeout</strong>：网关在<strong>规定时间内没收到上游响应</strong>（后端处理太慢或卡死）。排查：后端慢查询/死锁、GC 停顿、下游依赖超时；适当调大网关 <code>proxy_read_timeout</code>，但根因是优化后端耗时。</li>
 <li><strong>通用思路</strong>：先看网关访问日志定位是哪一种；再查上游监控（CPU、内存、慢接口、依赖链路）；结合 HTTP/1.1 持久连接与超时配置、以及限流/熔断规则综合判断，避免只调超时掩盖根因。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/763">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/763">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

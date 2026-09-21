@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？ · IT面试题库">
   <meta property="og:description" content="不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE &#39;%${kw}%&#39; 危险…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/553.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/553.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？ · IT面试题库">
   <meta name="twitter:description" content="不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE &#39;%${kw}%&#39; 危险…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/553.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？","text":"以 MyBatis 的 #{} 与 ${} 为例，说明为什么 ORM 不是“注入免疫”的，以及哪些场景容易踩坑。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE '%${kw}%' 危险，应改为 LIKE CONCAT('%', #{kw}, '%') 或 Java 端拼接好再 #{}。 IN 列表：用 + #{} 生成多个占位符，而不是 ${ids}。 ORDER BY / 表名 / 列名：这些不能参数化，只能用白名单枚举校验，绝不能把用户输入直接 ${}。 Hibernate / JPA：用 HQL/JPQL 的命名参数（setParameter）安全；但若拼接 HQL 字符串或用原生 createSQLQuery 拼接，同样注入。 结论：ORM 防注入前提是使用参数化 API，拼接（尤其 ${}、原生 SQL 拼接）一律视为危险。","url":"https://it-interview.is-a.dev/#/question/553"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/553.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？","text":"以 MyBatis 的 #{} 与 ${} 为例，说明为什么 ORM 不是“注入免疫”的，以及哪些场景容易踩坑。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE '%${kw}%' 危险，应改为 LIKE CONCAT('%', #{kw}, '%') 或 Java 端拼接好再 #{}。 IN 列表：用 + #{} 生成多个占位符，而不是 ${ids}。 ORDER BY / 表名 / 列名：这些不能参数化，只能用白名单枚举校验，绝不能把用户输入直接 ${}。 Hibernate / JPA：用 HQL/JPQL 的命名参数（setParameter）安全；但若拼接 HQL 字符串或用原生 createSQLQuery 拼接，同样注入。 结论：ORM 防注入前提是使用参数化 API，拼接（尤其 ${}、原生 SQL 拼接）一律视为危险。","url":"https://it-interview-889.pages.dev/#/question/553"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip">渗透测试工程师</span><span class="chip tag">SQL注入</span><span class="chip tag">ORM</span><span class="chip tag">MyBatis</span><span class="chip tag">Hibernate</span></div>
     <div class="card"><h2>题目</h2><p>以 MyBatis 的 #{} 与 ${} 为例，说明为什么 ORM 不是“注入免疫”的，以及哪些场景容易踩坑。</p></div>
@@ -87,12 +87,12 @@
 </ul>
 <p><strong>Hibernate / JPA</strong>：用 HQL/JPQL 的命名参数（setParameter）安全；但若拼接 HQL 字符串或用原生 createSQLQuery 拼接，同样注入。</p>
 <p>结论：ORM 防注入<strong>前提是使用参数化 API</strong>，拼接（尤其 ${}、原生 SQL 拼接）一律视为危险。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/553">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/553">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=204&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=204&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

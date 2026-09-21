@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么在 WinForms/WPF 里用 `.Result` 或 `.Wait()` 等待 async 方法会死锁，而在 Console/ASP.NET Core 里不会？如何避免？ · IT面试题库">
   <meta property="og:description" content="根因：await 默认会捕获当前的 SynchronizationContext（若非空则用其 Post 把后续代码调度回原线程；否则用线程池 TaskScheduler）。 死锁过程（UI 单线程上下文）： 1. UI 线程调用 GetDataAsync().Result，阻塞在等待 Task 完成； 2. 内…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/521.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/521.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么在 WinForms/WPF 里用 `.Result` 或 `.Wait()` 等待 async 方法会死锁，而在 Console/ASP.NET Core 里不会？如何避免？ · IT面试题库">
   <meta name="twitter:description" content="根因：await 默认会捕获当前的 SynchronizationContext（若非空则用其 Post 把后续代码调度回原线程；否则用线程池 TaskScheduler）。 死锁过程（UI 单线程上下文）： 1. UI 线程调用 GetDataAsync().Result，阻塞在等待 Task 完成； 2. 内…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/521.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么在 WinForms/WPF 里用 `.Result` 或 `.Wait()` 等待 async 方法会死锁，而在 Console/ASP.NET Core 里不会？如何避免？","text":"解释 SynchronizationContext、await 默认捕获并 Post 回原上下文、单线程上下文下的循环等待，以及 ConfigureAwait(false) 的作用。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：await 默认会捕获当前的 SynchronizationContext（若非空则用其 Post 把后续代码调度回原线程；否则用线程池 TaskScheduler）。 死锁过程（UI 单线程上下文）： 1. UI 线程调用 GetDataAsync().Result，阻塞在等待 Task 完成； 2. 内部 await 完成后，试图把续体（continuation）Post 回 UI 线程执行； 3. 但 UI 线程正被 .Result 阻塞，无法处理该 Post——互相等待，死锁。 为何 Console/ASP.NET Core 不死锁：它们没有（单线程）SynchronizationContext（为 null），续体被调度到线程池线程执行，UI 线程的阻塞与续体在不同线程，不互锁。但 ASP.NET Core 下仍会占用线程池线程导致线程饥饿，属不良实践。 避免方案： 1. 一路 async 到底：用 await 取代 .Result/.Wait()（最佳实践）； 2. 库代码加 ConfigureAwait(false)：告知运行时无需回到原上下文，既防死锁又省线程切换； 3. 避免在构造函数/同步接口实现里阻塞等待异步——改用工厂、IAsyncInitializable 等模式。","url":"https://it-interview.is-a.dev/#/question/521"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/521.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么在 WinForms/WPF 里用 `.Result` 或 `.Wait()` 等待 async 方法会死锁，而在 Console/ASP.NET Core 里不会？如何避免？","text":"解释 SynchronizationContext、await 默认捕获并 Post 回原上下文、单线程上下文下的循环等待，以及 ConfigureAwait(false) 的作用。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：await 默认会捕获当前的 SynchronizationContext（若非空则用其 Post 把后续代码调度回原线程；否则用线程池 TaskScheduler）。 死锁过程（UI 单线程上下文）： 1. UI 线程调用 GetDataAsync().Result，阻塞在等待 Task 完成； 2. 内部 await 完成后，试图把续体（continuation）Post 回 UI 线程执行； 3. 但 UI 线程正被 .Result 阻塞，无法处理该 Post——互相等待，死锁。 为何 Console/ASP.NET Core 不死锁：它们没有（单线程）SynchronizationContext（为 null），续体被调度到线程池线程执行，UI 线程的阻塞与续体在不同线程，不互锁。但 ASP.NET Core 下仍会占用线程池线程导致线程饥饿，属不良实践。 避免方案： 1. 一路 async 到底：用 await 取代 .Result/.Wait()（最佳实践）； 2. 库代码加 ConfigureAwait(false)：告知运行时无需回到原上下文，既防死锁又省线程切换； 3. 避免在构造函数/同步接口实现里阻塞等待异步——改用工厂、IAsyncInitializable 等模式。","url":"https://it-interview-889.pages.dev/#/question/521"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么在 WinForms/WPF 里用 `.Result` 或 `.Wait()` 等待 async 方法会死锁，而在 Console/ASP.NET Core 里不会？如何避免？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">.NET开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">async/await</span><span class="chip tag">死锁</span><span class="chip tag">SynchronizationContext</span><span class="chip tag">ConfigureAwait</span></div>
     <div class="card"><h2>题目</h2><p>解释 SynchronizationContext、await 默认捕获并 Post 回原上下文、单线程上下文下的循环等待，以及 ConfigureAwait(false) 的作用。</p></div>
@@ -87,12 +87,12 @@
 <p>  1. <strong>一路 async 到底</strong>：用 <code>await</code> 取代 <code>.Result</code>/<code>.Wait()</code>（最佳实践）；</p>
 <p>  2. <strong>库代码加 <code>ConfigureAwait(false)</code></strong>：告知运行时无需回到原上下文，既防死锁又省线程切换；</p>
 <p>  3. 避免在构造函数/同步接口实现里阻塞等待异步——改用工厂、<code>IAsyncInitializable</code> 等模式。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/521">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/521">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=19&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=19&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

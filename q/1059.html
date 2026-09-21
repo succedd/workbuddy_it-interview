@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库">
   <meta property="og:description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1059.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1059.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库">
   <meta name="twitter:description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1059.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？","text":"考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。","answerCount":1,"datePublished":"2026-09-10T11:53:15.976Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→ 进入下一轮。 两条铁律：① 每个宏任务之间会清空微任务队列；② 微任务执行期间新产生的微任务会在同一轮继续执行（所以「微任务里递归 Promise」会饿死渲染，页面卡死）。 执行顺序实例： setTimeout(fn, 0) 为什么不是「立即执行」：它至少要等下一个宏任务轮次，且浏览器有 4ms 的最小钳制（嵌套调用超过 5 层时）；requestAnimationFrame 在渲染前执行，适合动画；requestIdleCallback 在空闲时执行，适合低优先级任务。 Node.js 的不同（阶段模型）：事件循环分为 timers → pending callbacks → idle/prepare → poll → check（setImmediate）→ close callbacks，每个阶段之间（以及每个阶段内部）会清空微任务队列。要点： process.nextTick 优先级高于 Promise 微任务——它有自己的 nextTick 队列，且总在微任务之前清空（滥用会饿死 IO）； setImmediate 与 setTimeout(0) 的顺序不确定：在主模块（同步代码）里，两者顺序取决于进程启动耗时（通常不确定）；但在 I/O 回调里，setImmediate 总是先于 setTimeout（因为 IO 回调后先到 check 阶段，再到 timers 阶段）； Node 11+ 起两者都对齐到浏览器的「宏任务间清微任务」语义，早期版本的差异（微任务何时清空）已修正。 实践结论：想「尽快执行但仍让出渲染」→ 微任务（Promise/queueMicrotask）；想「下一帧前执行」→ rAF；想把长任务切片避免阻塞 INP → 用 setTimeout/scheduler.postTask/MessageChannel 主动让出；别用 setTimeout 做「同步后的立即刷新」，DOM 更新在微任务里就能被读到（await nextTick() / Vue 的 nextTick 就是基于微任务）。 渲染相关：微任务清空后才可能渲染，所以「改 DOM 后立刻读取布局」会强制同步布局（reflow）；Flush 频率取决于是否被 JS 长任务占满——这也是长任务拖慢 INP 的底层原因。","url":"https://it-interview.is-a.dev/#/question/1059"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1059.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？","text":"考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。","answerCount":1,"datePublished":"2026-09-10T11:53:15.976Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→ 进入下一轮。 两条铁律：① 每个宏任务之间会清空微任务队列；② 微任务执行期间新产生的微任务会在同一轮继续执行（所以「微任务里递归 Promise」会饿死渲染，页面卡死）。 执行顺序实例： setTimeout(fn, 0) 为什么不是「立即执行」：它至少要等下一个宏任务轮次，且浏览器有 4ms 的最小钳制（嵌套调用超过 5 层时）；requestAnimationFrame 在渲染前执行，适合动画；requestIdleCallback 在空闲时执行，适合低优先级任务。 Node.js 的不同（阶段模型）：事件循环分为 timers → pending callbacks → idle/prepare → poll → check（setImmediate）→ close callbacks，每个阶段之间（以及每个阶段内部）会清空微任务队列。要点： process.nextTick 优先级高于 Promise 微任务——它有自己的 nextTick 队列，且总在微任务之前清空（滥用会饿死 IO）； setImmediate 与 setTimeout(0) 的顺序不确定：在主模块（同步代码）里，两者顺序取决于进程启动耗时（通常不确定）；但在 I/O 回调里，setImmediate 总是先于 setTimeout（因为 IO 回调后先到 check 阶段，再到 timers 阶段）； Node 11+ 起两者都对齐到浏览器的「宏任务间清微任务」语义，早期版本的差异（微任务何时清空）已修正。 实践结论：想「尽快执行但仍让出渲染」→ 微任务（Promise/queueMicrotask）；想「下一帧前执行」→ rAF；想把长任务切片避免阻塞 INP → 用 setTimeout/scheduler.postTask/MessageChannel 主动让出；别用 setTimeout 做「同步后的立即刷新」，DOM 更新在微任务里就能被读到（await nextTick() / Vue 的 nextTick 就是基于微任务）。 渲染相关：微任务清空后才可能渲染，所以「改 DOM 后立刻读取布局」会强制同步布局（reflow）；Flush 频率取决于是否被 JS 长任务占满——这也是长任务拖慢 INP 的底层原因。","url":"https://it-interview-889.pages.dev/#/question/1059"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">前端架构师</span><span class="chip tag">浏览器</span><span class="chip tag">事件循环</span><span class="chip tag">微任务</span><span class="chip tag">EventLoop</span><span class="chip tag">Node.js</span></div>
     <div class="card"><h2>题目</h2><p>考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。</p></div>
@@ -95,12 +95,12 @@ console.log(&#39;4&#39;)
 <li><strong>实践结论</strong>：想「尽快执行但仍让出渲染」→ <strong>微任务</strong>（Promise/<code>queueMicrotask</code>）；想「下一帧前执行」→ <code>rAF</code>；想把<strong>长任务切片</strong>避免阻塞 INP → 用 <code>setTimeout</code>/<code>scheduler.postTask</code>/<code>MessageChannel</code> 主动让出；<strong>别用 <code>setTimeout</code> 做「同步后的立即刷新」</strong>，DOM 更新在微任务里就能被读到（<code>await nextTick()</code> / Vue 的 <code>nextTick</code> 就是基于微任务）。</li>
 <li><strong>渲染相关</strong>：微任务清空后才可能渲染，所以「改 DOM 后立刻读取布局」会<strong>强制同步布局（reflow）</strong>；Flush 频率取决于是否被 JS 长任务占满——<strong>这也是长任务拖慢 INP 的底层原因</strong>。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1059">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1059">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=60&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=60&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程 · IT面试题库">
   <meta property="og:description" content="排查步骤： 1. 确认两台实例是否真的在同一 VPC、有效内网 IP 和子网路由。 2. 使用 A ping B 的内网 IP，若有问题再使用 telnet B 22 测试，定位是 ICMP 还是 TCP 不通。 3. 检查安全组：入方向是否允许来自 A 的源 IP/安全组，出方向是否允许去往 B；注意安全组是有…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/201.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/201.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程 · IT面试题库">
   <meta name="twitter:description" content="排查步骤： 1. 确认两台实例是否真的在同一 VPC、有效内网 IP 和子网路由。 2. 使用 A ping B 的内网 IP，若有问题再使用 telnet B 22 测试，定位是 ICMP 还是 TCP 不通。 3. 检查安全组：入方向是否允许来自 A 的源 IP/安全组，出方向是否允许去往 B；注意安全组是有…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/201.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程","text":"同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查步骤： 1. 确认两台实例是否真的在同一 VPC、有效内网 IP 和子网路由。 2. 使用 A ping B 的内网 IP，若有问题再使用 telnet B 22 测试，定位是 ICMP 还是 TCP 不通。 3. 检查安全组：入方向是否允许来自 A 的源 IP/安全组，出方向是否允许去往 B；注意安全组是有状态的，若之前允许过连接可能回包放行，但单独建立连接仍需入站规则。 4. 检查网络 ACL：确认子网级 ACL 入/出方向是否放行相应端口和 ICMP；ACL 无状态，需要双向都要允许返回流量。 5. 检查操作系统防火墙：登录 A/B 执行 systemctl status firewalld/ufw，iptables -L -n -v，查看是否禁 ping 或限制端口。 6. 检查路由表：确认子网路由表未包含黑洞路由或错误下一跳；如果跨子网需要确认 VPC 路由器正确。 7. 检查网卡 IP 配置：ip addr、ip route，确认没有多网卡导致路由异常，rp_filter 是否开启。 8. 若以上都正常，可抓包 tcpdump -i eth0 host -nn 观察丢包位置。 要点：安全组有状态，网络 ACL 无状态；安全组默认拒绝，ACL 默认放行。","url":"https://it-interview.is-a.dev/#/question/201"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/201.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程","text":"同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查步骤： 1. 确认两台实例是否真的在同一 VPC、有效内网 IP 和子网路由。 2. 使用 A ping B 的内网 IP，若有问题再使用 telnet B 22 测试，定位是 ICMP 还是 TCP 不通。 3. 检查安全组：入方向是否允许来自 A 的源 IP/安全组，出方向是否允许去往 B；注意安全组是有状态的，若之前允许过连接可能回包放行，但单独建立连接仍需入站规则。 4. 检查网络 ACL：确认子网级 ACL 入/出方向是否放行相应端口和 ICMP；ACL 无状态，需要双向都要允许返回流量。 5. 检查操作系统防火墙：登录 A/B 执行 systemctl status firewalld/ufw，iptables -L -n -v，查看是否禁 ping 或限制端口。 6. 检查路由表：确认子网路由表未包含黑洞路由或错误下一跳；如果跨子网需要确认 VPC 路由器正确。 7. 检查网卡 IP 配置：ip addr、ip route，确认没有多网卡导致路由异常，rp_filter 是否开启。 8. 若以上都正常，可抓包 tcpdump -i eth0 host -nn 观察丢包位置。 要点：安全组有状态，网络 ACL 无状态；安全组默认拒绝，ACL 默认放行。","url":"https://it-interview-889.pages.dev/#/question/201"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span></div>
     <div class="card"><h2>题目</h2><p>同一 VPC 内两台云主机无法互相访问，请给出完整的网络排查流程</p></div>
@@ -85,12 +85,12 @@
 <li>若以上都正常，可抓包 tcpdump -i eth0 host &lt;peer-ip&gt; -nn 观察丢包位置。</li>
 </ol>
 <p>要点：安全组有状态，网络 ACL 无状态；安全组默认拒绝，ACL 默认放行。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/201">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/201">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

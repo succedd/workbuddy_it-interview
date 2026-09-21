@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。 · IT面试题库">
   <meta property="og:description" content="根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1103.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1103.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。 · IT面试题库">
   <meta name="twitter:description" content="根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1103.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。","text":"考察点：代理机制的自我调用（self-invocation）盲区、@Transactional/@Async 失效的经典场景、三种修复方案的推荐度排序。追问链 AOP 环节的高频生产事故。","answerCount":1,"datePublished":"2026-09-11T11:56:23.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明确说明：self invocation via this will bypass the advice。 原理展开（为什么代理救不了 this）：代理增强发生在「外部调用先经过代理」这一层；一旦调用已经进入目标对象内部，后续 this 调用就是普通 Java 方法调用（相当于字节码层面的直接调用），与 Spring 无关。 修复方案（按推荐度）： 首选：避免自调用（重构拆分）——把 B 拆到另一个 Bean，通过注入相互调用，让调用重新走代理；官方称为 best approach，代价是需要少量重构； 次选：注入自身引用（self injection）——把自身 Bean 注入给自己（或用 ObjectProvider 拿代理），通过自引用调 B，让调用走代理；注意可能触发循环依赖，Spring 允许这类自注入； 兜底：AopContext.currentProxy()——((XxxService) AopContext.currentProxy()).B()，需要开启 exposeProxy；官方明确「highly discouraged」——代码与 Spring AOP 强耦合，仅作最后手段。 举一反三（同类失效场景清单）：同类 this 调用、方法非 public（CGLIB/JDK 代理都无法拦截 private）、异常被 catch 吞掉不抛出、final 方法无法被 CGLIB 覆盖——排查「注解不生效」类工单时优先对照这张清单。","url":"https://it-interview.is-a.dev/#/question/1103"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1103.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。","text":"考察点：代理机制的自我调用（self-invocation）盲区、@Transactional/@Async 失效的经典场景、三种修复方案的推荐度排序。追问链 AOP 环节的高频生产事故。","answerCount":1,"datePublished":"2026-09-11T11:56:23.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明确说明：self invocation via this will bypass the advice。 原理展开（为什么代理救不了 this）：代理增强发生在「外部调用先经过代理」这一层；一旦调用已经进入目标对象内部，后续 this 调用就是普通 Java 方法调用（相当于字节码层面的直接调用），与 Spring 无关。 修复方案（按推荐度）： 首选：避免自调用（重构拆分）——把 B 拆到另一个 Bean，通过注入相互调用，让调用重新走代理；官方称为 best approach，代价是需要少量重构； 次选：注入自身引用（self injection）——把自身 Bean 注入给自己（或用 ObjectProvider 拿代理），通过自引用调 B，让调用走代理；注意可能触发循环依赖，Spring 允许这类自注入； 兜底：AopContext.currentProxy()——((XxxService) AopContext.currentProxy()).B()，需要开启 exposeProxy；官方明确「highly discouraged」——代码与 Spring AOP 强耦合，仅作最后手段。 举一反三（同类失效场景清单）：同类 this 调用、方法非 public（CGLIB/JDK 代理都无法拦截 private）、异常被 catch 吞掉不抛出、final 方法无法被 CGLIB 覆盖——排查「注解不生效」类工单时优先对照这张清单。","url":"https://it-interview-889.pages.dev/#/question/1103"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">AOP</span><span class="chip tag">自调用</span><span class="chip tag">事务失效</span><span class="chip tag">@Async</span><span class="chip tag">代理</span></div>
     <div class="card"><h2>题目</h2><p>考察点：代理机制的自我调用（self-invocation）盲区、@Transactional/@Async 失效的经典场景、三种修复方案的推荐度排序。追问链 AOP 环节的高频生产事故。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>兜底：AopContext.currentProxy()</strong>——<code>((XxxService) AopContext.currentProxy()).B()</code>，需要开启 exposeProxy；官方明确「highly discouraged」——代码与 Spring AOP 强耦合，仅作最后手段。</li>
 </ul>
 <p><strong>举一反三（同类失效场景清单）</strong>：同类 this 调用、方法非 public（CGLIB/JDK 代理都无法拦截 private）、异常被 catch 吞掉不抛出、final 方法无法被 CGLIB 覆盖——排查「注解不生效」类工单时优先对照这张清单。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1103">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1103">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

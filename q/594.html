@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？ · IT面试题库">
   <meta property="og:description" content="设损失 $J(\theta)$，梯度 $g=\nabla_\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\theta \leftarrow \theta - \eta \frac1m\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/594.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/594.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="设损失 $J(\theta)$，梯度 $g=\nabla_\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\theta \leftarrow \theta - \eta \frac1m\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/594.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？","text":"请对比 BGD、SGD、Mini-batch GD 三者在每次更新使用的样本量、收敛稳定性、速度与内存占用上的差异，并说明实践中的默认选择。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设损失 $J(\\theta)$，梯度 $g=\\nabla_\\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\\theta \\leftarrow \\theta - \\eta \\frac1m\\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。 2. 随机梯度下降（SGD） 每次仅用1 个样本更新。 优点：更新快、可在线学习、带噪声有助于跳出局部极小；缺点：梯度震荡大、收敛不稳定，需仔细调学习率。 3. 小批量梯度下降（Mini-batch GD） 每次用 b（如 32/64/128） 个样本。 折中：兼顾稳定与效率，可利用矩阵运算/GPU 并行，是深度学习的事实标准。 对比表 | 方法 | 单步样本 | 稳定性 | 速度/内存 | |---|---|---|---| | BGD | m | 高 | 慢/高 | | SGD | 1 | 低 | 快/低 | | Mini-batch | b | 中 | 快/中 | 实践中几乎都用 Mini-batch，并配合学习率衰减、Momentum/Adam 等优化器。","url":"https://it-interview.is-a.dev/#/question/594"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/594.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？","text":"请对比 BGD、SGD、Mini-batch GD 三者在每次更新使用的样本量、收敛稳定性、速度与内存占用上的差异，并说明实践中的默认选择。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设损失 $J(\\theta)$，梯度 $g=\\nabla_\\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\\theta \\leftarrow \\theta - \\eta \\frac1m\\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。 2. 随机梯度下降（SGD） 每次仅用1 个样本更新。 优点：更新快、可在线学习、带噪声有助于跳出局部极小；缺点：梯度震荡大、收敛不稳定，需仔细调学习率。 3. 小批量梯度下降（Mini-batch GD） 每次用 b（如 32/64/128） 个样本。 折中：兼顾稳定与效率，可利用矩阵运算/GPU 并行，是深度学习的事实标准。 对比表 | 方法 | 单步样本 | 稳定性 | 速度/内存 | |---|---|---|---| | BGD | m | 高 | 慢/高 | | SGD | 1 | 低 | 快/低 | | Mini-batch | b | 中 | 快/中 | 实践中几乎都用 Mini-batch，并配合学习率衰减、Momentum/Adam 等优化器。","url":"https://it-interview-889.pages.dev/#/question/594"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">深度学习工程师</span><span class="chip tag">机器学习</span><span class="chip tag">梯度下降</span><span class="chip tag">优化</span></div>
     <div class="card"><h2>题目</h2><p>请对比 BGD、SGD、Mini-batch GD 三者在每次更新使用的样本量、收敛稳定性、速度与内存占用上的差异，并说明实践中的默认选择。</p></div>
@@ -96,12 +96,12 @@
 <p>| SGD | 1 | 低 | 快/低 |</p>
 <p>| Mini-batch | b | 中 | 快/中 |</p>
 <p>实践中几乎都用 Mini-batch，并配合学习率衰减、Momentum/Adam 等优化器。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/594">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/594">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=174&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=174&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

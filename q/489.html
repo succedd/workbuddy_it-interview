@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？ · IT面试题库">
   <meta property="og:description" content="滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/489.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/489.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？ · IT面试题库">
   <meta name="twitter:description" content="滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/489.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？","text":"请解释滑动窗口如何实现可靠传输与流水线发送，以及流量控制（接收窗口）与拥塞控制（拥塞窗口）如何共同限制发送速率。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂不可发送。 流量控制 vs 拥塞控制（两者限制量不同来源）： 流量控制：通过接收方的接收窗口 rwnd（窗口通告）防止发送方淹没接收方缓冲区，纯端到端、接收方视角。 拥塞控制：通过发送方维护的拥塞窗口 cwnd 防止压垮网络，网络视角。 实际发送窗口上限 = min(cwnd, rwnd)。 可靠传输的辅助：配合累计确认（ACK 表示此前连续都收到）、超时重传与快速重传（3 个重复 ACK），丢包时窗口回退重发，保证数据不丢、不乱、不重。","url":"https://it-interview.is-a.dev/#/question/489"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/489.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？","text":"请解释滑动窗口如何实现可靠传输与流水线发送，以及流量控制（接收窗口）与拥塞控制（拥塞窗口）如何共同限制发送速率。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂不可发送。 流量控制 vs 拥塞控制（两者限制量不同来源）： 流量控制：通过接收方的接收窗口 rwnd（窗口通告）防止发送方淹没接收方缓冲区，纯端到端、接收方视角。 拥塞控制：通过发送方维护的拥塞窗口 cwnd 防止压垮网络，网络视角。 实际发送窗口上限 = min(cwnd, rwnd)。 可靠传输的辅助：配合累计确认（ACK 表示此前连续都收到）、超时重传与快速重传（3 个重复 ACK），丢包时窗口回退重发，保证数据不丢、不乱、不重。","url":"https://it-interview-889.pages.dev/#/question/489"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">网络规划工程师</span><span class="chip">网络架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">滑动窗口</span><span class="chip tag">流量控制</span></div>
     <div class="card"><h2>题目</h2><p>请解释滑动窗口如何实现可靠传输与流水线发送，以及流量控制（接收窗口）与拥塞控制（拥塞窗口）如何共同限制发送速率。</p></div>
@@ -88,12 +88,12 @@
 <li>实际发送窗口上限 = <code>min(cwnd, rwnd)</code>。</li>
 </ul>
 <p><strong>可靠传输的辅助</strong>：配合<strong>累计确认</strong>（ACK 表示此前连续都收到）、<strong>超时重传</strong>与<strong>快速重传</strong>（3 个重复 ACK），丢包时窗口回退重发，保证数据不丢、不乱、不重。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/489">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/489">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

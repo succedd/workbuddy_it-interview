@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。 · IT面试题库">
   <meta property="og:description" content="要点：分支策略的本质权衡是「发布节奏的隔离需求」与「集成成本」，没有绝对最优，取决于发布频率与团队规模。 Git Flow：master + develop 双主干，feature/release/hotfix 支撑「多版本并行维护」。适合发布周期长、多版本并存的产品（App 发版、SDK、私有化部署），隔离清晰…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/861.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/861.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。 · IT面试题库">
   <meta name="twitter:description" content="要点：分支策略的本质权衡是「发布节奏的隔离需求」与「集成成本」，没有绝对最优，取决于发布频率与团队规模。 Git Flow：master + develop 双主干，feature/release/hotfix 支撑「多版本并行维护」。适合发布周期长、多版本并存的产品（App 发版、SDK、私有化部署），隔离清晰…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/861.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。","text":"考察点：分支策略是团队协作与 CI/CD 效率的核心权衡。追问：如果团队要求「随时可发布」，两种策略分别靠什么机制保证？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：分支策略的本质权衡是「发布节奏的隔离需求」与「集成成本」，没有绝对最优，取决于发布频率与团队规模。 Git Flow：master + develop 双主干，feature/release/hotfix 支撑「多版本并行维护」。适合发布周期长、多版本并存的产品（App 发版、SDK、私有化部署），隔离清晰但分支多、合并成本高、集成晚，容易攒出大冲突。 Trunk-based：所有人向主干提交，分支存活通常 \u003c 2 天，靠 feature flag 控制未完成功能。适合持续部署的互联网服务：集成早、冲突小、主干始终可发布；代价是必须配套自动化测试、CI 门禁和 feature flag 基础设施。 选型建议：20 人团队若做 SaaS/在线服务，选 trunk-based + GitHub Flow 简化版（PR 短命分支 + 必须过 CI + squash 合并），配合每日主干构建；若交付的是需要给客户维护 1.x/2.x 的产品，用 Git Flow 的 release/hotfix 分支承载版本维护，feature 开发仍走短命分支，两者并不互斥。 「随时可发布」的保证机制：trunk-based 靠 CI 门禁 + feature flag（未完成功能关闭开关也可上线）；Git Flow 靠 release 分支上的验收与 cherry-pick 修缺陷。前者把成本花在自动化，后者花在人工流程。","url":"https://it-interview.is-a.dev/#/question/861"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/861.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。","text":"考察点：分支策略是团队协作与 CI/CD 效率的核心权衡。追问：如果团队要求「随时可发布」，两种策略分别靠什么机制保证？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：分支策略的本质权衡是「发布节奏的隔离需求」与「集成成本」，没有绝对最优，取决于发布频率与团队规模。 Git Flow：master + develop 双主干，feature/release/hotfix 支撑「多版本并行维护」。适合发布周期长、多版本并存的产品（App 发版、SDK、私有化部署），隔离清晰但分支多、合并成本高、集成晚，容易攒出大冲突。 Trunk-based：所有人向主干提交，分支存活通常 \u003c 2 天，靠 feature flag 控制未完成功能。适合持续部署的互联网服务：集成早、冲突小、主干始终可发布；代价是必须配套自动化测试、CI 门禁和 feature flag 基础设施。 选型建议：20 人团队若做 SaaS/在线服务，选 trunk-based + GitHub Flow 简化版（PR 短命分支 + 必须过 CI + squash 合并），配合每日主干构建；若交付的是需要给客户维护 1.x/2.x 的产品，用 Git Flow 的 release/hotfix 分支承载版本维护，feature 开发仍走短命分支，两者并不互斥。 「随时可发布」的保证机制：trunk-based 靠 CI 门禁 + feature flag（未完成功能关闭开关也可上线）；Git Flow 靠 release 分支上的验收与 cherry-pick 修缺陷。前者把成本花在自动化，后者花在人工流程。","url":"https://it-interview-889.pages.dev/#/question/861"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">分支策略</span><span class="chip tag">GitFlow</span><span class="chip tag">TrunkBased</span><span class="chip tag">CI/CD</span><span class="chip tag">协作</span></div>
     <div class="card"><h2>题目</h2><p>考察点：分支策略是团队协作与 CI/CD 效率的核心权衡。追问：如果团队要求「随时可发布」，两种策略分别靠什么机制保证？</p></div>
@@ -80,12 +80,12 @@
 <li><strong>选型建议</strong>：20 人团队若做 SaaS/在线服务，选 trunk-based + GitHub Flow 简化版（PR 短命分支 + 必须过 CI + squash 合并），配合每日主干构建；若交付的是需要给客户维护 1.x/2.x 的产品，用 Git Flow 的 release/hotfix 分支承载版本维护，feature 开发仍走短命分支，两者并不互斥。</li>
 <li><strong>「随时可发布」的保证机制</strong>：trunk-based 靠 CI 门禁 + feature flag（未完成功能关闭开关也可上线）；Git Flow 靠 release 分支上的验收与 cherry-pick 修缺陷。前者把成本花在自动化，后者花在人工流程。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/861">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/861">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

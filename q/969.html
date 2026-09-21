@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？ · IT面试题库">
   <meta property="og:description" content="要点： 何时用 Few-shot：任务边界模糊、输出格式特殊、零样本效果不稳，或需要模型「照葫芦画瓢」时；简单明确的任务零样本即可，硬加示例反而拖慢。 示例怎么挑：示例要高质量、与真实输入分布一致、覆盖边界情况；数量通常 3–5 个足够，质量 &gt; 数量。 顺序与格式：示例顺序会影响输出（近因效应，靠后的示例权重更…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/969.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/969.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？ · IT面试题库">
   <meta name="twitter:description" content="要点： 何时用 Few-shot：任务边界模糊、输出格式特殊、零样本效果不稳，或需要模型「照葫芦画瓢」时；简单明确的任务零样本即可，硬加示例反而拖慢。 示例怎么挑：示例要高质量、与真实输入分布一致、覆盖边界情况；数量通常 3–5 个足够，质量 &gt; 数量。 顺序与格式：示例顺序会影响输出（近因效应，靠后的示例权重更…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/969.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？","text":"考察点：Few-shot 的适用场景、示例质量 vs 数量、顺序/格式对输出的影响，以及与零样本的区别。顺接结构化提示之后。","answerCount":1,"datePublished":"2026-09-10T02:30:02.079Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 何时用 Few-shot：任务边界模糊、输出格式特殊、零样本效果不稳，或需要模型「照葫芦画瓢」时；简单明确的任务零样本即可，硬加示例反而拖慢。 示例怎么挑：示例要高质量、与真实输入分布一致、覆盖边界情况；数量通常 3–5 个足够，质量 > 数量。 顺序与格式：示例顺序会影响输出（近因效应，靠后的示例权重更高）；所有示例必须格式统一（相同输入/输出结构），并在末尾留一个「仅输入」让模型续写。 与零样本区别：零样本靠指令泛化；少样本通过「演示」显式锚定风格与格式，特别适合固定分类标签体系或特定输出 schema。 坑：示例若带偏见或错误，模型会照学；示例标签不平衡会偏向多数类；示例过长会挤占上下文、抬高成本。","url":"https://it-interview.is-a.dev/#/question/969"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/969.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？","text":"考察点：Few-shot 的适用场景、示例质量 vs 数量、顺序/格式对输出的影响，以及与零样本的区别。顺接结构化提示之后。","answerCount":1,"datePublished":"2026-09-10T02:30:02.079Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 何时用 Few-shot：任务边界模糊、输出格式特殊、零样本效果不稳，或需要模型「照葫芦画瓢」时；简单明确的任务零样本即可，硬加示例反而拖慢。 示例怎么挑：示例要高质量、与真实输入分布一致、覆盖边界情况；数量通常 3–5 个足够，质量 > 数量。 顺序与格式：示例顺序会影响输出（近因效应，靠后的示例权重更高）；所有示例必须格式统一（相同输入/输出结构），并在末尾留一个「仅输入」让模型续写。 与零样本区别：零样本靠指令泛化；少样本通过「演示」显式锚定风格与格式，特别适合固定分类标签体系或特定输出 schema。 坑：示例若带偏见或错误，模型会照学；示例标签不平衡会偏向多数类；示例过长会挤占上下文、抬高成本。","url":"https://it-interview-889.pages.dev/#/question/969"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Prompt Engineering</span><span class="chip tag">少样本</span><span class="chip tag">Few-shot</span><span class="chip tag">示例设计</span><span class="chip tag">in-context</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Few-shot 的适用场景、示例质量 vs 数量、顺序/格式对输出的影响，以及与零样本的区别。顺接结构化提示之后。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>与零样本区别</strong>：零样本靠指令泛化；少样本通过「演示」显式锚定风格与格式，特别适合固定分类标签体系或特定输出 schema。</li>
 <li><strong>坑</strong>：示例若带偏见或错误，模型会照学；示例标签不平衡会偏向多数类；示例过长会挤占上下文、抬高成本。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/969">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/969">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=192&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=192&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

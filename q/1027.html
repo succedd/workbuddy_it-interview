@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？ · IT面试题库">
   <meta property="og:description" content="要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Ro…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1027.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1027.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？ · IT面试题库">
   <meta name="twitter:description" content="要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Ro…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1027.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？","text":"考察点：多进程模型、cluster 负载均衡、共享状态、优雅重启。Node 生产部署必考。","answerCount":1,"datePublished":"2026-09-10T11:51:12.345Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Round-Robin（cluster.SCHED_RR，由主进程分发连接），在 Linux 上比交由内核抢占（SCHED_NONE）更均衡，能缓解「连接分布不均导致某些 worker 忙死」。 生产替代方案：pm2 -i max（内部也是 cluster）或直接用容器编排——每容器一进程，由 K8s/HPA 扩副本，这比单机多进程更符合云原生思路（隔离性、滚动更新都更好）。 核心坑： 端口冲突：worker 都 listen 同一端口是允许的（cluster 内部做了处理），但在 cluster 外自己再起进程会 EADDRINUSE； 内存不共享：多进程意味着内存里的 session/限流计数/cache 各存各的，多副本下会不一致——必须外置到 Redis； 定时任务重复执行：每个 worker 都会跑 setInterval，导致任务被执行 N 次，需要分布式锁或把定时任务独立成进程； 滚动重启：cluster 支持零停机重启——逐个 worker.disconnect()（先停止接收新连接、等存量请求处理完）再 fork 新的，不能所有 worker 一起杀； worker 崩溃不自动重启：必须监听 exit 事件主动 fork，且要防止崩溃风暴（异常启动即崩 → 无限 fork，需加退避与最大重启次数）。 加分点：worker.send()/process.send() 做进程间通信；cluster.isPrimary 区分角色（旧版为 isMaster）。","url":"https://it-interview.is-a.dev/#/question/1027"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1027.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？","text":"考察点：多进程模型、cluster 负载均衡、共享状态、优雅重启。Node 生产部署必考。","answerCount":1,"datePublished":"2026-09-10T11:51:12.345Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 问题本质：Node 的 JS 执行是单线程的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且一个致命错误会带走整个服务。 cluster 模块：主进程（primary）用 cluster.fork() 派生多个 worker，共享同一个监听端口。默认策略是 Round-Robin（cluster.SCHED_RR，由主进程分发连接），在 Linux 上比交由内核抢占（SCHED_NONE）更均衡，能缓解「连接分布不均导致某些 worker 忙死」。 生产替代方案：pm2 -i max（内部也是 cluster）或直接用容器编排——每容器一进程，由 K8s/HPA 扩副本，这比单机多进程更符合云原生思路（隔离性、滚动更新都更好）。 核心坑： 端口冲突：worker 都 listen 同一端口是允许的（cluster 内部做了处理），但在 cluster 外自己再起进程会 EADDRINUSE； 内存不共享：多进程意味着内存里的 session/限流计数/cache 各存各的，多副本下会不一致——必须外置到 Redis； 定时任务重复执行：每个 worker 都会跑 setInterval，导致任务被执行 N 次，需要分布式锁或把定时任务独立成进程； 滚动重启：cluster 支持零停机重启——逐个 worker.disconnect()（先停止接收新连接、等存量请求处理完）再 fork 新的，不能所有 worker 一起杀； worker 崩溃不自动重启：必须监听 exit 事件主动 fork，且要防止崩溃风暴（异常启动即崩 → 无限 fork，需加退避与最大重启次数）。 加分点：worker.send()/process.send() 做进程间通信；cluster.isPrimary 区分角色（旧版为 isMaster）。","url":"https://it-interview-889.pages.dev/#/question/1027"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Express</span><span class="chip tag">cluster</span><span class="chip tag">多核</span><span class="chip tag">优雅重启</span><span class="chip tag">Node.js</span></div>
     <div class="card"><h2>题目</h2><p>考察点：多进程模型、cluster 负载均衡、共享状态、优雅重启。Node 生产部署必考。</p></div>
@@ -88,12 +88,12 @@
 <ul>
 <li><strong>加分点</strong>：<code>worker.send()</code>/<code>process.send()</code> 做进程间通信；<code>cluster.isPrimary</code> 区分角色（旧版为 <code>isMaster</code>）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1027">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1027">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=91&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=91&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

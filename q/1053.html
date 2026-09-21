@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？ · IT面试题库">
   <meta property="og:description" content="要点： dev 为什么能用原生 ESM：省掉打包步骤，按需编译——浏览器请求哪个模块才编译哪个，所以冷启动与 HMR 都是毫秒级（不与项目规模成正比，这是相对 Webpack 的最大优势）。配合 esbuild 做 TS/JSX 转换（Go 实现，比 babel 快一到两个数量级）与依赖预构建（把 CJS 依赖转…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1053.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1053.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？ · IT面试题库">
   <meta name="twitter:description" content="要点： dev 为什么能用原生 ESM：省掉打包步骤，按需编译——浏览器请求哪个模块才编译哪个，所以冷启动与 HMR 都是毫秒级（不与项目规模成正比，这是相对 Webpack 的最大优势）。配合 esbuild 做 TS/JSX 转换（Go 实现，比 babel 快一到两个数量级）与依赖预构建（把 CJS 依赖转…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1053.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？","text":"考察点：dev 与 build 的取舍、ESM 的请求风暴、Rollup 的产物质量。理解 Vite 的设计权衡。","answerCount":1,"datePublished":"2026-09-10T11:52:53.711Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： dev 为什么能用原生 ESM：省掉打包步骤，按需编译——浏览器请求哪个模块才编译哪个，所以冷启动与 HMR 都是毫秒级（不与项目规模成正比，这是相对 Webpack 的最大优势）。配合 esbuild 做 TS/JSX 转换（Go 实现，比 babel 快一到两个数量级）与依赖预构建（把 CJS 依赖转成 ESM，并把 lodash-es 那种「几百个小文件」的包合并成单文件，避免请求风暴）。 为什么生产不能这样交付： 1. 请求数爆炸：一个中型应用有上千个模块，原生 ESM 会发出上千次请求（HTTP/1.1 下更糟；HTTP/2 也扛不住深层依赖瀑布）。生产用户在网络上的往返延迟会把这点优势彻底抹掉； 2. 没有产物优化：原生 ESM 无法做 Tree Shaking、死代码消除、作用域提升（Scope Hoisting）、code splitting、CSS 提取、资源内联与压缩——这些都需要全局的模块图分析，必须打包； 3. CJS/UMD 依赖兼容：很多 npm 包仍是 CJS，浏览器不能直接执行，生产必须靠打包器统一处理； 4. 浏览器差异与缓存粒度：文件粒度的模块缓存虽好，但会让版本管理与失效控制变复杂，打包成少量 chunk 更好控制。 为什么选 Rollup 而不是 esbuild： Rollup 的 Tree Shaking 与产物质量是生态标杆——输出更干净、Scope Hoisting 更彻底，长期是库构建的首选； esbuild 极快但功能取舍激进：对某些 CJS/特殊语法、装饰器、以及代码分割与 CSS 处理的完善度不如 Rollup 生态，插件生态也薄； Vite 的策略是各取所长：dev 用 esbuild 换速度（不被功能细节拖累），build 用 Rollup 换产物质量与插件兼容（这也是为什么 Vite 的插件 API 大量沿用 Rollup 的钩子——插件能在两边复用）。 演进补充：Vite 5/6 引入 Rolldown（Rust 版 Rollup） 的目标就是「用 Rust 的速度提供 Rollup 的产物质量」，逐步统一 dev 与 build 的底层；当前早期版本与 Rollup 的兼容性仍在补齐（部分 Rollup 插件需要适配），生产引入要评估。 回答时要点出本质：dev 的最优目标是「快」（启动/HMR），business 无需打包；build 的最优目标是「小而稳」（体积/兼容/缓存），必须全局分析。 两者目标不同，用同一套策略一定是妥协，Vite 选择分别优化。","url":"https://it-interview.is-a.dev/#/question/1053"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1053.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？","text":"考察点：dev 与 build 的取舍、ESM 的请求风暴、Rollup 的产物质量。理解 Vite 的设计权衡。","answerCount":1,"datePublished":"2026-09-10T11:52:53.711Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： dev 为什么能用原生 ESM：省掉打包步骤，按需编译——浏览器请求哪个模块才编译哪个，所以冷启动与 HMR 都是毫秒级（不与项目规模成正比，这是相对 Webpack 的最大优势）。配合 esbuild 做 TS/JSX 转换（Go 实现，比 babel 快一到两个数量级）与依赖预构建（把 CJS 依赖转成 ESM，并把 lodash-es 那种「几百个小文件」的包合并成单文件，避免请求风暴）。 为什么生产不能这样交付： 1. 请求数爆炸：一个中型应用有上千个模块，原生 ESM 会发出上千次请求（HTTP/1.1 下更糟；HTTP/2 也扛不住深层依赖瀑布）。生产用户在网络上的往返延迟会把这点优势彻底抹掉； 2. 没有产物优化：原生 ESM 无法做 Tree Shaking、死代码消除、作用域提升（Scope Hoisting）、code splitting、CSS 提取、资源内联与压缩——这些都需要全局的模块图分析，必须打包； 3. CJS/UMD 依赖兼容：很多 npm 包仍是 CJS，浏览器不能直接执行，生产必须靠打包器统一处理； 4. 浏览器差异与缓存粒度：文件粒度的模块缓存虽好，但会让版本管理与失效控制变复杂，打包成少量 chunk 更好控制。 为什么选 Rollup 而不是 esbuild： Rollup 的 Tree Shaking 与产物质量是生态标杆——输出更干净、Scope Hoisting 更彻底，长期是库构建的首选； esbuild 极快但功能取舍激进：对某些 CJS/特殊语法、装饰器、以及代码分割与 CSS 处理的完善度不如 Rollup 生态，插件生态也薄； Vite 的策略是各取所长：dev 用 esbuild 换速度（不被功能细节拖累），build 用 Rollup 换产物质量与插件兼容（这也是为什么 Vite 的插件 API 大量沿用 Rollup 的钩子——插件能在两边复用）。 演进补充：Vite 5/6 引入 Rolldown（Rust 版 Rollup） 的目标就是「用 Rust 的速度提供 Rollup 的产物质量」，逐步统一 dev 与 build 的底层；当前早期版本与 Rollup 的兼容性仍在补齐（部分 Rollup 插件需要适配），生产引入要评估。 回答时要点出本质：dev 的最优目标是「快」（启动/HMR），business 无需打包；build 的最优目标是「小而稳」（体积/兼容/缓存），必须全局分析。 两者目标不同，用同一套策略一定是妥协，Vite 选择分别优化。","url":"https://it-interview-889.pages.dev/#/question/1053"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Vite</span><span class="chip tag">Rollup</span><span class="chip tag">esbuild</span><span class="chip tag">构建</span><span class="chip tag">TreeShaking</span></div>
     <div class="card"><h2>题目</h2><p>考察点：dev 与 build 的取舍、ESM 的请求风暴、Rollup 的产物质量。理解 Vite 的设计权衡。</p></div>
@@ -92,12 +92,12 @@
 <li><strong>演进补充</strong>：Vite 5/6 引入 <strong>Rolldown（Rust 版 Rollup）</strong> 的目标就是「<strong>用 Rust 的速度提供 Rollup 的产物质量</strong>」，逐步统一 dev 与 build 的底层；当前早期版本与 Rollup 的兼容性仍在补齐（部分 Rollup 插件需要适配），生产引入要评估。</li>
 <li><strong>回答时要点出本质</strong>：<strong>dev 的最优目标是「快」（启动/HMR），business 无需打包；build 的最优目标是「小而稳」（体积/兼容/缓存），必须全局分析。</strong> 两者目标不同，用同一套策略一定是妥协，Vite 选择分别优化。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1053">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1053">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=70&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=70&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

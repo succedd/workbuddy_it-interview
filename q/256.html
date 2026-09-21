@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？ · IT面试题库">
   <meta property="og:description" content="结论 旧架构通过 Bridge 用 JSON 序列化异步传递 JS 与原生通信，存在序列化开销、只能异步、模块启动时全量加载等问题。新架构（RN 0.76 起默认，0.82 起移除旧 Bridge）引入： JSI（JavaScript Interface）：C++ 层，JS 可直接持有原生对象引用，支持同步调用，…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/256.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/256.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？ · IT面试题库">
   <meta name="twitter:description" content="结论 旧架构通过 Bridge 用 JSON 序列化异步传递 JS 与原生通信，存在序列化开销、只能异步、模块启动时全量加载等问题。新架构（RN 0.76 起默认，0.82 起移除旧 Bridge）引入： JSI（JavaScript Interface）：C++ 层，JS 可直接持有原生对象引用，支持同步调用，…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/256.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？","text":"React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？","answerCount":1,"datePublished":"2026-08-28T06:18:20.794Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 旧架构通过 Bridge 用 JSON 序列化异步传递 JS 与原生通信，存在序列化开销、只能异步、模块启动时全量加载等问题。新架构（RN 0.76 起默认，0.82 起移除旧 Bridge）引入： JSI（JavaScript Interface）：C++ 层，JS 可直接持有原生对象引用，支持同步调用，无需序列化。 Fabric：新渲染系统，基于 JSI，布局可在任意线程同步计算，支持 React 18 并发特性，提升动画与一致性。 TurboModules：原生模块按需懒加载（取代启动时全量加载），并通过 Codegen 在编译期生成类型安全的接口。 收益：同步调用（需要时）、更低内存、更快冷启动、构建期类型校验。第三方库若未迁移到 TurboModules/Fabric 已成为采用风险。","url":"https://it-interview.is-a.dev/#/question/256"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/256.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？","text":"React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？","answerCount":1,"datePublished":"2026-08-28T06:18:20.794Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 旧架构通过 Bridge 用 JSON 序列化异步传递 JS 与原生通信，存在序列化开销、只能异步、模块启动时全量加载等问题。新架构（RN 0.76 起默认，0.82 起移除旧 Bridge）引入： JSI（JavaScript Interface）：C++ 层，JS 可直接持有原生对象引用，支持同步调用，无需序列化。 Fabric：新渲染系统，基于 JSI，布局可在任意线程同步计算，支持 React 18 并发特性，提升动画与一致性。 TurboModules：原生模块按需懒加载（取代启动时全量加载），并通过 Codegen 在编译期生成类型安全的接口。 收益：同步调用（需要时）、更低内存、更快冷启动、构建期类型校验。第三方库若未迁移到 TurboModules/Fabric 已成为采用风险。","url":"https://it-interview-889.pages.dev/#/question/256"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">React Native开发工程师</span><span class="chip tag">React Native</span><span class="chip tag">新架构</span><span class="chip tag">JSI</span><span class="chip tag">Fabric</span></div>
     <div class="card"><h2>题目</h2><p>React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>TurboModules</strong>：原生模块按需懒加载（取代启动时全量加载），并通过 Codegen 在编译期生成类型安全的接口。</li>
 </ul>
 <p><strong>收益</strong>：同步调用（需要时）、更低内存、更快冷启动、构建期类型校验。第三方库若未迁移到 TurboModules/Fabric 已成为采用风险。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/256">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/256">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=229&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=229&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

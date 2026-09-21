@@ -16,8 +16,8 @@ B. 协商缓存命中时服务器返回 304，不重新传输响应体；
 C. 同时出现 Cache-Control: max-age 与 Expires 时，Expires 优先级更高；
 D. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified 做校验。 · IT面试题库">
   <meta property="og:description" content="正确答案：B。协商缓存命中时，服务器用 304 Not Modified 响应，只回状态行与首部、不传输响应体，浏览器直接用本地副本，省下带宽但不省一次 RTT。 A 错误：命中强缓存（Cache-Control max-age 未过期或 Expires 未到）时浏览器根本不发请求，直接从本地缓存读取，Water…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1131.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1131.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【单选题】关于浏览器缓存对“输入 URL 后加载”的影响，下列说法正确的是？
@@ -26,9 +26,9 @@ B. 协商缓存命中时服务器返回 304，不重新传输响应体；
 C. 同时出现 Cache-Control: max-age 与 Expires 时，Expires 优先级更高；
 D. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified 做校验。 · IT面试题库">
   <meta name="twitter:description" content="正确答案：B。协商缓存命中时，服务器用 304 Not Modified 响应，只回状态行与首部、不传输响应体，浏览器直接用本地副本，省下带宽但不省一次 RTT。 A 错误：命中强缓存（Cache-Control max-age 未过期或 Expires 未到）时浏览器根本不发请求，直接从本地缓存读取，Water…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1131.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】关于浏览器缓存对“输入 URL 后加载”的影响，下列说法正确的是？\nA. 命中强缓存时浏览器仍会向服务器发一次请求确认资源是否过期；\nB. 协商缓存命中时服务器返回 304，不重新传输响应体；\nC. 同时出现 Cache-Control: max-age 与 Expires 时，Expires 优先级更高；\nD. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified 做校验。","text":"考查 HTTP 缓存两类机制（强缓存 / 协商缓存）的语义与优先级。","answerCount":1,"datePublished":"2026-09-14T02:47:24.827Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B。协商缓存命中时，服务器用 304 Not Modified 响应，只回状态行与首部、不传输响应体，浏览器直接用本地副本，省下带宽但不省一次 RTT。 A 错误：命中强缓存（Cache-Control max-age 未过期或 Expires 未到）时浏览器根本不发请求，直接从本地缓存读取，Waterfall 显示 from cache。 C 错误：Cache-Control（max-age）是 HTTP/1.1 的相对时间，优先级高于 HTTP/1.0 的 Expires 绝对时间；二者同时存在以 Cache-Control 为准。 D 错误：ETag（基于内容哈希）与 Last-Modified（基于修改时间）同时存在时，规范规定 ETag 优先级更高，且 ETag 能更精细地识别内容变化（秒级以下、周期性重写内容不变的情况）。","url":"https://it-interview.is-a.dev/#/question/1131"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1131.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】关于浏览器缓存对“输入 URL 后加载”的影响，下列说法正确的是？\nA. 命中强缓存时浏览器仍会向服务器发一次请求确认资源是否过期；\nB. 协商缓存命中时服务器返回 304，不重新传输响应体；\nC. 同时出现 Cache-Control: max-age 与 Expires 时，Expires 优先级更高；\nD. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified 做校验。","text":"考查 HTTP 缓存两类机制（强缓存 / 协商缓存）的语义与优先级。","answerCount":1,"datePublished":"2026-09-14T02:47:24.827Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B。协商缓存命中时，服务器用 304 Not Modified 响应，只回状态行与首部、不传输响应体，浏览器直接用本地副本，省下带宽但不省一次 RTT。 A 错误：命中强缓存（Cache-Control max-age 未过期或 Expires 未到）时浏览器根本不发请求，直接从本地缓存读取，Waterfall 显示 from cache。 C 错误：Cache-Control（max-age）是 HTTP/1.1 的相对时间，优先级高于 HTTP/1.0 的 Expires 绝对时间；二者同时存在以 Cache-Control 为准。 D 错误：ETag（基于内容哈希）与 Last-Modified（基于修改时间）同时存在时，规范规定 ETag 优先级更高，且 ETag 能更精细地识别内容变化（秒级以下、周期性重写内容不变的情况）。","url":"https://it-interview-889.pages.dev/#/question/1131"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -81,7 +81,7 @@ D. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified �
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【单选题】关于浏览器缓存对“输入 URL 后加载”的影响，下列说法正确的是？
 A. 命中强缓存时浏览器仍会向服务器发一次请求确认资源是否过期；
 B. 协商缓存命中时服务器返回 304，不重新传输响应体；
@@ -93,12 +93,12 @@ D. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified �
 <p><strong>A 错误</strong>：命中强缓存（Cache-Control max-age 未过期或 Expires 未到）时浏览器根本不发请求，直接从本地缓存读取，Waterfall 显示 from cache。</p>
 <p><strong>C 错误</strong>：Cache-Control（max-age）是 HTTP/1.1 的相对时间，优先级高于 HTTP/1.0 的 Expires 绝对时间；二者同时存在以 Cache-Control 为准。</p>
 <p><strong>D 错误</strong>：ETag（基于内容哈希）与 Last-Modified（基于修改时间）同时存在时，规范规定 ETag 优先级更高，且 ETag 能更精细地识别内容变化（秒级以下、周期性重写内容不变的情况）。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1131">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1131">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

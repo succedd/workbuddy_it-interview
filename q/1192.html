@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring Boot 的自动配置（Auto-configuration）核心机制是什么？AutoConfigurationImportSelector 是如何找到并加载候选配置类的？ · IT面试题库">
   <meta property="og:description" content="要点： 入口：@EnableAutoConfiguration 通过 @Import 引入 AutoConfigurationImportSelector（它实现 DeferredImportSelector，延迟到普通配置类处理完再执行）。其 selectImports() 读取候选配置类清单。 清单来源（版本…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1192.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1192.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring Boot 的自动配置（Auto-configuration）核心机制是什么？AutoConfigurationImportSelector 是如何找到并加载候选配置类的？ · IT面试题库">
   <meta name="twitter:description" content="要点： 入口：@EnableAutoConfiguration 通过 @Import 引入 AutoConfigurationImportSelector（它实现 DeferredImportSelector，延迟到普通配置类处理完再执行）。其 selectImports() 读取候选配置类清单。 清单来源（版本…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1192.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Boot 的自动配置（Auto-configuration）核心机制是什么？AutoConfigurationImportSelector 是如何找到并加载候选配置类的？","text":"考察点：自动配置加载全流程，以及 spring.factories 与 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 的版本差异。要求讲清『扫描清单 → 条件过滤 → 注册 Bean』三步。","answerCount":1,"datePublished":"2026-09-20T02:21:41.987Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 入口：@EnableAutoConfiguration 通过 @Import 引入 AutoConfigurationImportSelector（它实现 DeferredImportSelector，延迟到普通配置类处理完再执行）。其 selectImports() 读取候选配置类清单。 清单来源（版本差异）：Spring Boot 2.7 之前扫描各 jar 的 META-INF/spring.factories 中 EnableAutoConfiguration 键；2.7 起废弃 spring.factories，改为扫描 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports（每行一个全限定类名）。spring-boot-autoconfigure 自带一份数百个内置配置类清单。 条件过滤（按需加载）：清单里的类都是 @Configuration，几乎都带 @Conditional 注解。核心三件套：@ConditionalOnClass（classpath 有指定类才生效，如引入 spring-web 才加载 WebMvc 自动配置）、@ConditionalOnMissingBean（容器中已有同类型 Bean 就跳过，保证用户自定义优先）、@ConditionalOnProperty（配置项匹配才生效，如配了 spring.datasource.url 才加载数据源）。 结果：只有满足条件的配置类才被注册为 BeanDefinition，进而创建默认 Bean；用户可用自己的 @Bean 覆盖，或用 spring.autoconfigure.exclude 排除。 核心：自动配置 = 『按依赖列清单 + 按条件筛清单 + 用户 Bean 优先』，所以『引入 starter 即自动生效、可被自定义覆盖』。","url":"https://it-interview.is-a.dev/#/question/1192"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1192.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Boot 的自动配置（Auto-configuration）核心机制是什么？AutoConfigurationImportSelector 是如何找到并加载候选配置类的？","text":"考察点：自动配置加载全流程，以及 spring.factories 与 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 的版本差异。要求讲清『扫描清单 → 条件过滤 → 注册 Bean』三步。","answerCount":1,"datePublished":"2026-09-20T02:21:41.987Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 入口：@EnableAutoConfiguration 通过 @Import 引入 AutoConfigurationImportSelector（它实现 DeferredImportSelector，延迟到普通配置类处理完再执行）。其 selectImports() 读取候选配置类清单。 清单来源（版本差异）：Spring Boot 2.7 之前扫描各 jar 的 META-INF/spring.factories 中 EnableAutoConfiguration 键；2.7 起废弃 spring.factories，改为扫描 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports（每行一个全限定类名）。spring-boot-autoconfigure 自带一份数百个内置配置类清单。 条件过滤（按需加载）：清单里的类都是 @Configuration，几乎都带 @Conditional 注解。核心三件套：@ConditionalOnClass（classpath 有指定类才生效，如引入 spring-web 才加载 WebMvc 自动配置）、@ConditionalOnMissingBean（容器中已有同类型 Bean 就跳过，保证用户自定义优先）、@ConditionalOnProperty（配置项匹配才生效，如配了 spring.datasource.url 才加载数据源）。 结果：只有满足条件的配置类才被注册为 BeanDefinition，进而创建默认 Bean；用户可用自己的 @Bean 覆盖，或用 spring.autoconfigure.exclude 排除。 核心：自动配置 = 『按依赖列清单 + 按条件筛清单 + 用户 Bean 优先』，所以『引入 starter 即自动生效、可被自定义覆盖』。","url":"https://it-interview-889.pages.dev/#/question/1192"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Spring Boot 的自动配置（Auto-configuration）核心机制是什么？AutoConfigurationImportSelector 是如何找到并加载候选配置类的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">自动配置</span><span class="chip tag">AutoConfigurationImportSelector</span><span class="chip tag">条件注解</span></div>
     <div class="card"><h2>题目</h2><p>考察点：自动配置加载全流程，以及 spring.factories 与 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 的版本差异。要求讲清『扫描清单 → 条件过滤 → 注册 Bean』三步。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>结果</strong>：只有满足条件的配置类才被注册为 BeanDefinition，进而创建默认 Bean；用户可用自己的 @Bean 覆盖，或用 spring.autoconfigure.exclude 排除。</li>
 </ul>
 <p><strong>核心</strong>：自动配置 = 『按依赖列清单 + 按条件筛清单 + 用户 Bean 优先』，所以『引入 starter 即自动生效、可被自定义覆盖』。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1192">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1192">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=82&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=82&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？ · IT面试题库">
   <meta property="og:description" content="注册与生命周期：页面里 navigator.serviceWorker.register(&#39;/sw.js&#39;) 注册，SW 经历 install（预缓存 App Shell：HTML/关键 JS/CSS）→ activate（清理旧缓存）→ fetch 拦截，独立于页面运行、可接管后续导航。 预缓存（App She…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1133.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1133.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？ · IT面试题库">
   <meta name="twitter:description" content="注册与生命周期：页面里 navigator.serviceWorker.register(&#39;/sw.js&#39;) 注册，SW 经历 install（预缓存 App Shell：HTML/关键 JS/CSS）→ activate（清理旧缓存）→ fetch 拦截，独立于页面运行、可接管后续导航。 预缓存（App She…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1133.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？","text":"请设计一个基于 Service Worker 的页面加载加速与离线方案，说明 cache-first / stale-while-revalidate 策略，并指出它与传统 HTTP 缓存的区别及常见上线坑。","answerCount":1,"datePublished":"2026-09-14T02:47:25.076Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"注册与生命周期：页面里 navigator.serviceWorker.register('/sw.js') 注册，SW 经历 install（预缓存 App Shell：HTML/关键 JS/CSS）→ activate（清理旧缓存）→ fetch 拦截，独立于页面运行、可接管后续导航。 预缓存（App Shell）：install 时用 cache.addAll 把外壳资源塞进 Cache Storage，二次访问即使断网也能从 SW 里直接返回，实现“秒开 + 离线”。 运行时代理策略：fetch 事件里对导航用 network-first（保证内容新鲜）或 stale-while-revalidate（先返缓存、后台更新），对静态资源用 cache-first；这正是 SW 比“只能声明式控制”的 HTTP 缓存更灵活的地方——它能按路由、按资源类型编程决定来源。 与 HTTP 缓存的边界：HTTP 缓存由响应首部被动驱动、浏览器统一决策；SW 由你主动编程拦截，能做“永远可用壳 + 后台刷新”，但也因此更易出“更新失效”问题。 常见坑：① 更新 SW 后旧缓存不清理会导致用户一直拿旧版（activate 里精确删旧 cache 名称）；② scope 默认限制在注册路径之下，跨目录失效；③ 调试困难，需手动 unregister；④ 不要缓存带有用户态的响应，否则串号。","url":"https://it-interview.is-a.dev/#/question/1133"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1133.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？","text":"请设计一个基于 Service Worker 的页面加载加速与离线方案，说明 cache-first / stale-while-revalidate 策略，并指出它与传统 HTTP 缓存的区别及常见上线坑。","answerCount":1,"datePublished":"2026-09-14T02:47:25.076Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"注册与生命周期：页面里 navigator.serviceWorker.register('/sw.js') 注册，SW 经历 install（预缓存 App Shell：HTML/关键 JS/CSS）→ activate（清理旧缓存）→ fetch 拦截，独立于页面运行、可接管后续导航。 预缓存（App Shell）：install 时用 cache.addAll 把外壳资源塞进 Cache Storage，二次访问即使断网也能从 SW 里直接返回，实现“秒开 + 离线”。 运行时代理策略：fetch 事件里对导航用 network-first（保证内容新鲜）或 stale-while-revalidate（先返缓存、后台更新），对静态资源用 cache-first；这正是 SW 比“只能声明式控制”的 HTTP 缓存更灵活的地方——它能按路由、按资源类型编程决定来源。 与 HTTP 缓存的边界：HTTP 缓存由响应首部被动驱动、浏览器统一决策；SW 由你主动编程拦截，能做“永远可用壳 + 后台刷新”，但也因此更易出“更新失效”问题。 常见坑：① 更新 SW 后旧缓存不清理会导致用户一直拿旧版（activate 里精确删旧 cache 名称）；② scope 默认限制在注册路径之下，跨目录失效；③ 调试困难，需手动 unregister；④ 不要缓存带有用户态的响应，否则串号。","url":"https://it-interview-889.pages.dev/#/question/1133"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">技术经理</span><span class="chip tag">Service Worker</span><span class="chip tag">离线</span><span class="chip tag">缓存策略</span><span class="chip tag">App Shell</span><span class="chip tag">PWA</span></div>
     <div class="card"><h2>题目</h2><p>请设计一个基于 Service Worker 的页面加载加速与离线方案，说明 cache-first / stale-while-revalidate 策略，并指出它与传统 HTTP 缓存的区别及常见上线坑。</p></div>
@@ -78,12 +78,12 @@
 <p><strong>运行时代理策略</strong>：fetch 事件里对导航用 network-first（保证内容新鲜）或 stale-while-revalidate（先返缓存、后台更新），对静态资源用 cache-first；这正是 SW 比“只能声明式控制”的 HTTP 缓存更灵活的地方——它能按路由、按资源类型编程决定来源。</p>
 <p><strong>与 HTTP 缓存的边界</strong>：HTTP 缓存由响应首部被动驱动、浏览器统一决策；SW 由你主动编程拦截，能做“永远可用壳 + 后台刷新”，但也因此更易出“更新失效”问题。</p>
 <p><strong>常见坑</strong>：① 更新 SW 后旧缓存不清理会导致用户一直拿旧版（activate 里精确删旧 cache 名称）；② scope 默认限制在注册路径之下，跨目录失效；③ 调试困难，需手动 unregister；④ 不要缓存带有用户态的响应，否则串号。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1133">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1133">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

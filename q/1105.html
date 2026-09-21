@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。 · IT面试题库">
   <meta property="og:description" content="机制边界（为什么这次救不回来）： 三级缓存解决循环依赖的前提是「先实例化、后注入」：A 实例化（构造器已执行完）后可以先把早期引用暴露出去，让 B 先拿半成品 A 用，A 稍后再补完初始化； 构造器注入打破了这个前提：A 还没构造出来就依赖 B，B 又要在构造器里拿到 A——「先有鸡还是先有蛋」无法暴露任何早期引…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1105.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1105.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。 · IT面试题库">
   <meta name="twitter:description" content="机制边界（为什么这次救不回来）： 三级缓存解决循环依赖的前提是「先实例化、后注入」：A 实例化（构造器已执行完）后可以先把早期引用暴露出去，让 B 先拿半成品 A 用，A 稍后再补完初始化； 构造器注入打破了这个前提：A 还没构造出来就依赖 B，B 又要在构造器里拿到 A——「先有鸡还是先有蛋」无法暴露任何早期引…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1105.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。","text":"考察点：循环依赖的解决边界（构造器注入/prototype 无法用三级缓存解决）、BeanCurrentlyInCreationException 的成因、依赖图梳理与重构方案。追问链收尾：从「三级缓存是什么」深入到「什么时候三级缓存也无能为力」。","answerCount":1,"datePublished":"2026-09-11T11:56:25.840Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"机制边界（为什么这次救不回来）： 三级缓存解决循环依赖的前提是「先实例化、后注入」：A 实例化（构造器已执行完）后可以先把早期引用暴露出去，让 B 先拿半成品 A 用，A 稍后再补完初始化； 构造器注入打破了这个前提：A 还没构造出来就依赖 B，B 又要在构造器里拿到 A——「先有鸡还是先有蛋」无法暴露任何早期引用，Spring 官方文档明确： predominantly constructor injection 可能造成不可解决的循环依赖，运行期检测到后直接抛 BeanCurrentlyInCreationException； 另一边界：prototype 作用域的循环依赖也无法解决——原型 Bean 不进单例缓存，Spring 不缓存它的中间状态，直接报错； 相关参数：Spring Boot 2.6+ 默认禁止循环引用（spring.main.allow-circular-references=false），很多「升级后突然启动失败」的工单源于此。 排查路径： 从异常栈提取循环链（A → B → A），结合 @Autowired/构造器注解画出依赖图，确认是构造器注入、字段注入还是 setter 注入； 确认涉及的 Bean 作用域（是否混入 prototype）； 检查是否为近期升级 Spring Boot 引入的默认行为变化。 解决方案（按优先级）： 首选：重构消灭循环——循环依赖几乎总是设计问题（职责耦合），提取公共逻辑到第三个 Bean，或用事件/回调解耦； 次选：把其中一方的构造器注入改为 setter/字段注入（官方文档给出的可行方案——虽不推荐但可让三级缓存接管）； 应急：在依赖点加 @Lazy——注入的是延迟代理，首次使用才真正解析，绕开启动期循环； 反模式：随手打开 allow-circular-references 只是把问题藏起来，不解决耦合本身。","url":"https://it-interview.is-a.dev/#/question/1105"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1105.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。","text":"考察点：循环依赖的解决边界（构造器注入/prototype 无法用三级缓存解决）、BeanCurrentlyInCreationException 的成因、依赖图梳理与重构方案。追问链收尾：从「三级缓存是什么」深入到「什么时候三级缓存也无能为力」。","answerCount":1,"datePublished":"2026-09-11T11:56:25.840Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"机制边界（为什么这次救不回来）： 三级缓存解决循环依赖的前提是「先实例化、后注入」：A 实例化（构造器已执行完）后可以先把早期引用暴露出去，让 B 先拿半成品 A 用，A 稍后再补完初始化； 构造器注入打破了这个前提：A 还没构造出来就依赖 B，B 又要在构造器里拿到 A——「先有鸡还是先有蛋」无法暴露任何早期引用，Spring 官方文档明确： predominantly constructor injection 可能造成不可解决的循环依赖，运行期检测到后直接抛 BeanCurrentlyInCreationException； 另一边界：prototype 作用域的循环依赖也无法解决——原型 Bean 不进单例缓存，Spring 不缓存它的中间状态，直接报错； 相关参数：Spring Boot 2.6+ 默认禁止循环引用（spring.main.allow-circular-references=false），很多「升级后突然启动失败」的工单源于此。 排查路径： 从异常栈提取循环链（A → B → A），结合 @Autowired/构造器注解画出依赖图，确认是构造器注入、字段注入还是 setter 注入； 确认涉及的 Bean 作用域（是否混入 prototype）； 检查是否为近期升级 Spring Boot 引入的默认行为变化。 解决方案（按优先级）： 首选：重构消灭循环——循环依赖几乎总是设计问题（职责耦合），提取公共逻辑到第三个 Bean，或用事件/回调解耦； 次选：把其中一方的构造器注入改为 setter/字段注入（官方文档给出的可行方案——虽不推荐但可让三级缓存接管）； 应急：在依赖点加 @Lazy——注入的是延迟代理，首次使用才真正解析，绕开启动期循环； 反模式：随手打开 allow-circular-references 只是把问题藏起来，不解决耦合本身。","url":"https://it-interview-889.pages.dev/#/question/1105"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">循环依赖</span><span class="chip tag">构造器注入</span><span class="chip tag">BeanCurrentlyInCreationException</span><span class="chip tag">三级缓存</span></div>
     <div class="card"><h2>题目</h2><p>考察点：循环依赖的解决边界（构造器注入/prototype 无法用三级缓存解决）、BeanCurrentlyInCreationException 的成因、依赖图梳理与重构方案。追问链收尾：从「三级缓存是什么」深入到「什么时候三级缓存也无能为力」。</p></div>
@@ -93,12 +93,12 @@
 <li>应急：在依赖点加 <strong>@Lazy</strong>——注入的是延迟代理，首次使用才真正解析，绕开启动期循环；</li>
 <li>反模式：随手打开 allow-circular-references 只是把问题藏起来，不解决耦合本身。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1105">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1105">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

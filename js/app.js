@@ -4698,9 +4698,9 @@
             <div class="about-contact-list">
               <div class="about-contact-row"><span class="about-contact-k">${U.icon("user")} 微信</span><span class="about-contact-v">13750847246</span></div>
               <div class="about-contact-row"><span class="about-contact-k">${U.icon("fileText")} 公众号</span><span class="about-contact-v">阅己书语</span></div>
-              <div class="about-contact-row"><span class="about-contact-k">${U.icon("link")} 站点</span><a href="https://it-interview.is-a.dev" target="_blank" rel="noopener">it-interview.is-a.dev</a></div>
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("link")} 站点</span><a href="${location.origin}" target="_blank" rel="noopener">${location.host}</a></div>
             </div>
-            <a class="about-qr" href="https://it-interview.is-a.dev/assets/qrcode-yueji-shuyu.png" target="_blank" rel="noopener" title="点击查看大图">
+            <a class="about-qr" href="${location.origin}/assets/qrcode-yueji-shuyu.png" target="_blank" rel="noopener" title="点击查看大图">
               <img src="assets/qrcode-yueji-shuyu.png" alt="阅己书语公众号二维码" loading="lazy" />
               <span class="about-qr-cap">微信搜一搜 · 阅己书语</span>
             </a>

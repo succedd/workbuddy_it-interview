@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。 · IT面试题库">
   <meta property="og:description" content="要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1211.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1211.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。 · IT面试题库">
   <meta name="twitter:description" content="要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1211.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"服务注册与发现（Service Registry & Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。","text":"追问链第 2 问：服务多了之后，调用方如何知道被调方地址？硬编码 IP 为什么不行？","answerCount":1,"datePublished":"2026-09-21T02:16:33.806Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸缩。 核心机制：① 服务注册——实例启动后向注册中心发送注册请求（含服务名、IP、端口、元数据）；② 心跳/健康检查——实例定期发心跳，注册中心在超时未收到时将其剔除（Nacos 临时实例用心跳、永久实例用主动探测）；③ 服务发现——调用方拉取或订阅（长连接推送）服务列表并本地缓存；④ 一致性权衡——Eureka 用 AP（自我保护，网络分区时不剔除），Consul/Nacos(CP 模式) 用 Raft 保证强一致，选型要在可用性与一致性间取舍。 三者关系：注册发现解决「找谁」，网关解决「统一入口与路由」，配置中心解决「运行时参数动态调整」，它们是微服务基础设施的「三件套」。","url":"https://it-interview.is-a.dev/#/question/1211"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1211.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"服务注册与发现（Service Registry & Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。","text":"追问链第 2 问：服务多了之后，调用方如何知道被调方地址？硬编码 IP 为什么不行？","answerCount":1,"datePublished":"2026-09-21T02:16:33.806Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸缩。 核心机制：① 服务注册——实例启动后向注册中心发送注册请求（含服务名、IP、端口、元数据）；② 心跳/健康检查——实例定期发心跳，注册中心在超时未收到时将其剔除（Nacos 临时实例用心跳、永久实例用主动探测）；③ 服务发现——调用方拉取或订阅（长连接推送）服务列表并本地缓存；④ 一致性权衡——Eureka 用 AP（自我保护，网络分区时不剔除），Consul/Nacos(CP 模式) 用 Raft 保证强一致，选型要在可用性与一致性间取舍。 三者关系：注册发现解决「找谁」，网关解决「统一入口与路由」，配置中心解决「运行时参数动态调整」，它们是微服务基础设施的「三件套」。","url":"https://it-interview-889.pages.dev/#/question/1211"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">服务注册</span><span class="chip tag">服务发现</span><span class="chip tag">Eureka</span><span class="chip tag">Nacos</span><span class="chip tag">Consul</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 2 问：服务多了之后，调用方如何知道被调方地址？硬编码 IP 为什么不行？</p></div>
@@ -79,12 +79,12 @@
 <li><strong>核心机制</strong>：① <strong>服务注册</strong>——实例启动后向注册中心发送注册请求（含服务名、IP、端口、元数据）；② <strong>心跳/健康检查</strong>——实例定期发心跳，注册中心在超时未收到时将其<strong>剔除</strong>（Nacos 临时实例用心跳、永久实例用主动探测）；③ <strong>服务发现</strong>——调用方拉取或订阅（长连接推送）服务列表并本地缓存；④ <strong>一致性权衡</strong>——Eureka 用 AP（自我保护，网络分区时不剔除），Consul/Nacos(CP 模式) 用 Raft 保证强一致，选型要在可用性与一致性间取舍。</li>
 <li><strong>三者关系</strong>：注册发现解决「找谁」，网关解决「统一入口与路由」，配置中心解决「运行时参数动态调整」，它们是微服务基础设施的「三件套」。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1211">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1211">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=121&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=121&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

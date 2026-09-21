@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Core Web Vitals 的三个指标（LCP / INP / CLS）分别衡量什么？各自怎么优化？ · IT面试题库">
   <meta property="og:description" content="要点： LCP（Largest Contentful Paint，最大内容绘制）：衡量加载性能，指视口内最大元素渲染完成的时间。良好阈值 ≤2.5s。优化手段： 资源优先级：首屏关键图用 、给 LCP 图片加 fetchpriority=&quot;high&quot;，不要对它用 loading=&quot;lazy&quot;（会把 LCP 推迟到…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1044.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1044.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Core Web Vitals 的三个指标（LCP / INP / CLS）分别衡量什么？各自怎么优化？ · IT面试题库">
   <meta name="twitter:description" content="要点： LCP（Largest Contentful Paint，最大内容绘制）：衡量加载性能，指视口内最大元素渲染完成的时间。良好阈值 ≤2.5s。优化手段： 资源优先级：首屏关键图用 、给 LCP 图片加 fetchpriority=&quot;high&quot;，不要对它用 loading=&quot;lazy&quot;（会把 LCP 推迟到…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1044.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Core Web Vitals 的三个指标（LCP / INP / CLS）分别衡量什么？各自怎么优化？","text":"考察点：真实用户体验指标、优化手段与指标之间的取舍。性能优化从「感觉快」到「可量化」必备。","answerCount":1,"datePublished":"2026-09-10T11:52:29.973Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： LCP（Largest Contentful Paint，最大内容绘制）：衡量加载性能，指视口内最大元素渲染完成的时间。良好阈值 ≤2.5s。优化手段： 资源优先级：首屏关键图用 、给 LCP 图片加 fetchpriority=\"high\"，不要对它用 loading=\"lazy\"（会把 LCP 推迟到滚动后，这是最常见的自伤）； 减少服务端时间：TTFB 是 LCP 的下界，靠 CDN、缓存、后端优化压下去； 消除渲染阻塞：CSS 内联关键部分、JS 用 defer/async、字体用 font-display: swap 并 preconnect 字体域； 图片尺寸合适（避免用 4000px 原图当缩略图）、优先 AVIF/WebP。 INP（Interaction to Next Paint，交互到下次绘制）：2024 年起取代 FID，衡量整页交互响应性（取交互延迟的高分位）。良好阈值 ≤200ms。优化手段：拆分长任务（scheduler.postTask/setTimeout 切片）、把重计算挪进 Web Worker、避免布局抖动（读写分离，先批量读再批量写）、事件处理用防抖/节流、减少 hydration 与主线程竞争。 CLS（Cumulative Layout Shift，累积布局偏移）：衡量视觉稳定性，良好阈值 ≤0.1。优化手段：给图片/视频/iframe/广告位预留尺寸（width/height 或 aspect-ratio）、字体加载不跳变（size-adjust 或匹配 fallback 字体度量）、不要在已有内容上方动态插入（banner、提示条），非得插入就用 transform 从已占位元素里滑出。 指标间的取舍要讲清：懒加载能省带宽但会推迟 LCP；预加载能救 LCP 但与关键资源抢带宽（需排优先级）；把首屏图片转成占位色块能压 CLS 但可能加大 LCP。所以优化顺序是先量化再动手——用 CrUX/PageSpeed 看是哪个指标不达标，别盲目全局优化。 落地方法：PerformanceObserver 采集 LCP/CLS/INP 上报（web-vitals 库最省事），按设备/网络/页面维度分桶看 P75——因为 Chrome 的评分标准就是 P75，平均值会被少数慢样本掩盖真实分布。","url":"https://it-interview.is-a.dev/#/question/1044"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1044.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Core Web Vitals 的三个指标（LCP / INP / CLS）分别衡量什么？各自怎么优化？","text":"考察点：真实用户体验指标、优化手段与指标之间的取舍。性能优化从「感觉快」到「可量化」必备。","answerCount":1,"datePublished":"2026-09-10T11:52:29.973Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： LCP（Largest Contentful Paint，最大内容绘制）：衡量加载性能，指视口内最大元素渲染完成的时间。良好阈值 ≤2.5s。优化手段： 资源优先级：首屏关键图用 、给 LCP 图片加 fetchpriority=\"high\"，不要对它用 loading=\"lazy\"（会把 LCP 推迟到滚动后，这是最常见的自伤）； 减少服务端时间：TTFB 是 LCP 的下界，靠 CDN、缓存、后端优化压下去； 消除渲染阻塞：CSS 内联关键部分、JS 用 defer/async、字体用 font-display: swap 并 preconnect 字体域； 图片尺寸合适（避免用 4000px 原图当缩略图）、优先 AVIF/WebP。 INP（Interaction to Next Paint，交互到下次绘制）：2024 年起取代 FID，衡量整页交互响应性（取交互延迟的高分位）。良好阈值 ≤200ms。优化手段：拆分长任务（scheduler.postTask/setTimeout 切片）、把重计算挪进 Web Worker、避免布局抖动（读写分离，先批量读再批量写）、事件处理用防抖/节流、减少 hydration 与主线程竞争。 CLS（Cumulative Layout Shift，累积布局偏移）：衡量视觉稳定性，良好阈值 ≤0.1。优化手段：给图片/视频/iframe/广告位预留尺寸（width/height 或 aspect-ratio）、字体加载不跳变（size-adjust 或匹配 fallback 字体度量）、不要在已有内容上方动态插入（banner、提示条），非得插入就用 transform 从已占位元素里滑出。 指标间的取舍要讲清：懒加载能省带宽但会推迟 LCP；预加载能救 LCP 但与关键资源抢带宽（需排优先级）；把首屏图片转成占位色块能压 CLS 但可能加大 LCP。所以优化顺序是先量化再动手——用 CrUX/PageSpeed 看是哪个指标不达标，别盲目全局优化。 落地方法：PerformanceObserver 采集 LCP/CLS/INP 上报（web-vitals 库最省事），按设备/网络/页面维度分桶看 P75——因为 Chrome 的评分标准就是 P75，平均值会被少数慢样本掩盖真实分布。","url":"https://it-interview-889.pages.dev/#/question/1044"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Core Web Vitals 的三个指标（LCP / INP / CLS）分别衡量什么？各自怎么优化？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">性能优化</span><span class="chip tag">Core Web Vitals</span><span class="chip tag">LCP</span><span class="chip tag">INP</span><span class="chip tag">CLS</span></div>
     <div class="card"><h2>题目</h2><p>考察点：真实用户体验指标、优化手段与指标之间的取舍。性能优化从「感觉快」到「可量化」必备。</p></div>
@@ -87,12 +87,12 @@
 <li><strong>指标间的取舍要讲清</strong>：懒加载能省带宽但会<strong>推迟 LCP</strong>；预加载能救 LCP 但与关键资源<strong>抢带宽</strong>（需排优先级）；把首屏图片转成占位色块能压 CLS 但可能加大 LCP。所以优化顺序是<strong>先量化再动手</strong>——用 CrUX/PageSpeed 看是哪个指标不达标，别盲目全局优化。</li>
 <li><strong>落地方法</strong>：<code>PerformanceObserver</code> 采集 LCP/CLS/INP 上报（<code>web-vitals</code> 库最省事），按<strong>设备/网络/页面维度</strong>分桶看 P75——因为 Chrome 的评分标准就是 P75，平均值会被少数慢样本掩盖真实分布。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1044">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1044">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=77&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=77&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？ · IT面试题库">
   <meta property="og:description" content="要点： 统一下发格式：约定 { code, message, data }。在「最外层」中间件里包住 await next()，读取业务往 ctx.body 里写的结果再统一包装。 全局异常捕获：Koa 的错误会因为 await 链而冒泡到最外层，所以最外层中间件用 try/catch 就能兜住所有下游（包括路由…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1030.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1030.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？ · IT面试题库">
   <meta name="twitter:description" content="要点： 统一下发格式：约定 { code, message, data }。在「最外层」中间件里包住 await next()，读取业务往 ctx.body 里写的结果再统一包装。 全局异常捕获：Koa 的错误会因为 await 链而冒泡到最外层，所以最外层中间件用 try/catch 就能兜住所有下游（包括路由…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1030.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？","text":"考察点：中间件工程化、错误语义、与洋葱模型的结合。实操题。","answerCount":1,"datePublished":"2026-09-10T11:51:18.857Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 统一下发格式：约定 { code, message, data }。在「最外层」中间件里包住 await next()，读取业务往 ctx.body 里写的结果再统一包装。 全局异常捕获：Koa 的错误会因为 await 链而冒泡到最外层，所以最外层中间件用 try/catch 就能兜住所有下游（包括路由里的异步错误）——这是洋葱模型相比 Express 的最大便利。 几个关键细节： err.expose === true 是 Koa 对「可安全暴露给客户端」的错误标记，ctx.throw(400, '参数错误') 自动置位；未标记的（数据库报错等）必须脱敏，绝不能把堆栈吐给前端； 不要在包装层强改已 set 的 Content-Type（文件流、SSR 页面会坏）； 业务友好错误建议自定义 BizError extends Error 并带 code，避免用 HTTP 500 表达业务失败； 顺序：统一响应/异常中间件必须放在最外层（第一个 use），日志与 trace 中间件紧随其后，路由最后。 加分点：配合 ctx.state.traceId 把请求 ID 写进日志与响应头，便于全链路排查。","url":"https://it-interview.is-a.dev/#/question/1030"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1030.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？","text":"考察点：中间件工程化、错误语义、与洋葱模型的结合。实操题。","answerCount":1,"datePublished":"2026-09-10T11:51:18.857Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 统一下发格式：约定 { code, message, data }。在「最外层」中间件里包住 await next()，读取业务往 ctx.body 里写的结果再统一包装。 全局异常捕获：Koa 的错误会因为 await 链而冒泡到最外层，所以最外层中间件用 try/catch 就能兜住所有下游（包括路由里的异步错误）——这是洋葱模型相比 Express 的最大便利。 几个关键细节： err.expose === true 是 Koa 对「可安全暴露给客户端」的错误标记，ctx.throw(400, '参数错误') 自动置位；未标记的（数据库报错等）必须脱敏，绝不能把堆栈吐给前端； 不要在包装层强改已 set 的 Content-Type（文件流、SSR 页面会坏）； 业务友好错误建议自定义 BizError extends Error 并带 code，避免用 HTTP 500 表达业务失败； 顺序：统一响应/异常中间件必须放在最外层（第一个 use），日志与 trace 中间件紧随其后，路由最后。 加分点：配合 ctx.state.traceId 把请求 ID 写进日志与响应头，便于全链路排查。","url":"https://it-interview-889.pages.dev/#/question/1030"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Koa</span><span class="chip tag">中间件</span><span class="chip tag">异常处理</span><span class="chip tag">洋葱模型</span><span class="chip tag">实践</span></div>
     <div class="card"><h2>题目</h2><p>考察点：中间件工程化、错误语义、与洋葱模型的结合。实操题。</p></div>
@@ -105,12 +105,12 @@
 <ul>
 <li><strong>加分点</strong>：配合 <code>ctx.state.traceId</code> 把请求 ID 写进日志与响应头，便于全链路排查。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1030">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1030">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=92&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=92&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

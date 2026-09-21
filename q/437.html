@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Next.js App Router 里 Server Components 与 Client Components 该怎么划分？&#39;use client&#39; 的边界是如何生效的？ · IT面试题库">
   <meta property="og:description" content="一、默认与划分依据 App Router 中 layout 和 page 默认是 Server Component。判断标准不是「页面在哪渲染」，而是这段逻辑需要哪种环境的能力： 用 Client Component 当你需要：状态与事件处理器（onClick、onChange）、生命周期逻辑（useEffect…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/437.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/437.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Next.js App Router 里 Server Components 与 Client Components 该怎么划分？&#39;use client&#39; 的边界是如何生效的？ · IT面试题库">
   <meta name="twitter:description" content="一、默认与划分依据 App Router 中 layout 和 page 默认是 Server Component。判断标准不是「页面在哪渲染」，而是这段逻辑需要哪种环境的能力： 用 Client Component 当你需要：状态与事件处理器（onClick、onChange）、生命周期逻辑（useEffect…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/437.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Next.js App Router 里 Server Components 与 Client Components 该怎么划分？'use client' 的边界是如何生效的？","text":"团队刚迁移到 App Router，经常遇到「在服务端组件里用了 useState 报错」或「把整个页面标成客户端组件导致 bundle 变大」。请说明划分依据与边界规则。","answerCount":1,"datePublished":"2026-09-03T00:53:28.094Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、默认与划分依据 App Router 中 layout 和 page 默认是 Server Component。判断标准不是「页面在哪渲染」，而是这段逻辑需要哪种环境的能力： 用 Client Component 当你需要：状态与事件处理器（onClick、onChange）、生命周期逻辑（useEffect）、浏览器专有 API（localStorage、window、navigator.geolocation）、自定义 hooks。 用 Server Component 当你需要：贴近数据源取数（数据库、API）、安全地使用 API key 等密钥、减少发往浏览器的 JavaScript、改善 FCP 并向客户端流式传输内容。 典型组合：页面作为 Server Component 取数，把结果作为 props 传给一个只负责点赞交互的 Client Component。 二、'use client' 是「边界」而不是「这个组件在客户端渲染」 把它写在文件顶部（import 之上）就声明了 Server 与 Client 模块图之间的边界：一旦某个文件被标记，它 import 的模块以及它直接渲染的组件都会进入客户端 bundle，所以不必给每个组件都加指令。 关键例外：作为 props 或 children 传入的 Server Component 不在 Client Component 的模块图里。它们仍在服务端渲染，以已渲染结果的形式传进来。这就是 （客户端管开关）包裹 （服务端取数）这种模式成立的原因。 因此优化 bundle 的正确做法是把 'use client' 下沉到最小的交互单元，而不是给整个 layout 打标记。 三、渲染与加载流程 服务端：Server Components 被渲染成一种紧凑的序列化格式 RSC Payload，其中包含 Server Components 的渲染结果、Client Components 的占位及其 JS 文件引用、以及从 Server 传给 Client 的 props；再用 Client Components + RSC Payload 预渲染出 HTML。 客户端首次加载：HTML 先给出快速的非交互预览 → RSC Payload 用于协调两棵组件树 → JavaScript hydrate（把事件处理器挂到 DOM 上）后页面可交互。 后续导航：RSC Payload 被预取并缓存，实现近乎瞬时的导航；Client Components 完全在客户端渲染，不再需要服务端产出的 HTML。 四、三个必踩的坑 props 必须可序列化：传给 Client Component 的函数、Symbol 等无法序列化。 Context 不支持 Server Component：React context 需要包一层接收 children 的 Client Provider，且 provider 应尽量放在树的最深处，以便 Next.js 优化其余静态部分。 环境污染：只有 NEXT_PUBLIC_ 前缀的环境变量会进客户端 bundle，其余会被替换成空字符串——看似能跑实则失效。用 server-only / client-only 包可以让误用在构建期报错。","url":"https://it-interview.is-a.dev/#/question/437"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/437.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Next.js App Router 里 Server Components 与 Client Components 该怎么划分？'use client' 的边界是如何生效的？","text":"团队刚迁移到 App Router，经常遇到「在服务端组件里用了 useState 报错」或「把整个页面标成客户端组件导致 bundle 变大」。请说明划分依据与边界规则。","answerCount":1,"datePublished":"2026-09-03T00:53:28.094Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、默认与划分依据 App Router 中 layout 和 page 默认是 Server Component。判断标准不是「页面在哪渲染」，而是这段逻辑需要哪种环境的能力： 用 Client Component 当你需要：状态与事件处理器（onClick、onChange）、生命周期逻辑（useEffect）、浏览器专有 API（localStorage、window、navigator.geolocation）、自定义 hooks。 用 Server Component 当你需要：贴近数据源取数（数据库、API）、安全地使用 API key 等密钥、减少发往浏览器的 JavaScript、改善 FCP 并向客户端流式传输内容。 典型组合：页面作为 Server Component 取数，把结果作为 props 传给一个只负责点赞交互的 Client Component。 二、'use client' 是「边界」而不是「这个组件在客户端渲染」 把它写在文件顶部（import 之上）就声明了 Server 与 Client 模块图之间的边界：一旦某个文件被标记，它 import 的模块以及它直接渲染的组件都会进入客户端 bundle，所以不必给每个组件都加指令。 关键例外：作为 props 或 children 传入的 Server Component 不在 Client Component 的模块图里。它们仍在服务端渲染，以已渲染结果的形式传进来。这就是 （客户端管开关）包裹 （服务端取数）这种模式成立的原因。 因此优化 bundle 的正确做法是把 'use client' 下沉到最小的交互单元，而不是给整个 layout 打标记。 三、渲染与加载流程 服务端：Server Components 被渲染成一种紧凑的序列化格式 RSC Payload，其中包含 Server Components 的渲染结果、Client Components 的占位及其 JS 文件引用、以及从 Server 传给 Client 的 props；再用 Client Components + RSC Payload 预渲染出 HTML。 客户端首次加载：HTML 先给出快速的非交互预览 → RSC Payload 用于协调两棵组件树 → JavaScript hydrate（把事件处理器挂到 DOM 上）后页面可交互。 后续导航：RSC Payload 被预取并缓存，实现近乎瞬时的导航；Client Components 完全在客户端渲染，不再需要服务端产出的 HTML。 四、三个必踩的坑 props 必须可序列化：传给 Client Component 的函数、Symbol 等无法序列化。 Context 不支持 Server Component：React context 需要包一层接收 children 的 Client Provider，且 provider 应尽量放在树的最深处，以便 Next.js 优化其余静态部分。 环境污染：只有 NEXT_PUBLIC_ 前缀的环境变量会进客户端 bundle，其余会被替换成空字符串——看似能跑实则失效。用 server-only / client-only 包可以让误用在构建期报错。","url":"https://it-interview-889.pages.dev/#/question/437"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Next.js App Router 里 Server Components 与 Client Components 该怎么划分？&#39;use client&#39; 的边界是如何生效的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">Next.js</span><span class="chip tag">RSC</span><span class="chip tag">服务端组件</span></div>
     <div class="card"><h2>题目</h2><p>团队刚迁移到 App Router，经常遇到「在服务端组件里用了 useState 报错」或「把整个页面标成客户端组件导致 bundle 变大」。请说明划分依据与边界规则。</p></div>
@@ -94,12 +94,12 @@
 <li><strong>Context 不支持 Server Component</strong>：React context 需要包一层接收 <code>children</code> 的 Client Provider，且 provider 应尽量放在树的最深处，以便 Next.js 优化其余静态部分。</li>
 <li><strong>环境污染</strong>：只有 <code>NEXT_PUBLIC_</code> 前缀的环境变量会进客户端 bundle，其余会被替换成空字符串——看似能跑实则失效。用 <code>server-only</code> / <code>client-only</code> 包可以让误用在<strong>构建期</strong>报错。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/437">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/437">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=66&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=66&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

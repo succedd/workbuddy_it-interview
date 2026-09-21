@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？ · IT面试题库">
   <meta property="og:description" content="解决的问题：单实例 + 主从异步复制下，主宕机、锁未同步到从，从升主后另一客户端可再获同一把锁 → 互斥被破坏。Redlock 用多独立节点替代单点。 Redlock 流程（N=5，无复制的独立 master）： 1. 客户端记录当前时间 T0； 2. 并行向 全部 N 个节点用相同 key/随机值申请锁，每个请…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/584.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/584.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？ · IT面试题库">
   <meta name="twitter:description" content="解决的问题：单实例 + 主从异步复制下，主宕机、锁未同步到从，从升主后另一客户端可再获同一把锁 → 互斥被破坏。Redlock 用多独立节点替代单点。 Redlock 流程（N=5，无复制的独立 master）： 1. 客户端记录当前时间 T0； 2. 并行向 全部 N 个节点用相同 key/随机值申请锁，每个请…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/584.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？","text":"单实例 Redis 主从切换可能让两个客户端同时持锁。请说明 Redlock 的思路（N 个独立节点、多数派），以及它追求的安全性与存在的批评。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"解决的问题：单实例 + 主从异步复制下，主宕机、锁未同步到从，从升主后另一客户端可再获同一把锁 → 互斥被破坏。Redlock 用多独立节点替代单点。 Redlock 流程（N=5，无复制的独立 master）： 1. 客户端记录当前时间 T0； 2. 并行向 全部 N 个节点用相同 key/随机值申请锁，每个请求带远小于锁 TTL 的超时； 3. 客户端计算耗时；仅当成功在多数节点（≥ N/2+1，5 取 3）加锁，且总耗时 \u003c 锁有效时间时，才算获取成功； 4. 成功则有效时间 = TTL − 耗时；失败则释放所有节点（包括以为失败的）。 追求的保证： 安全性（互斥）：多数节点同时持锁才能保证不被重复获取； 活性：靠 TTL 自动释放 + 随机退避重试。 争议（Martin Kleppmann 批评）： 依赖各节点时钟近似；若发生 STW 停顿/时钟跳跃，仍可能两个客户端同时持锁； 需要 N 个独立 Redis，运维复杂； 他认为高安全场景应优先用带 fencing token 的方案（如 ZooKeeper/etcd 的序列化令牌）。 结论：Redlock 适合“性能优先、可接受极低概率失效”的场景；强一致关键路径仍建议 etcd/ZK 或数据库锁。","url":"https://it-interview.is-a.dev/#/question/584"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/584.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？","text":"单实例 Redis 主从切换可能让两个客户端同时持锁。请说明 Redlock 的思路（N 个独立节点、多数派），以及它追求的安全性与存在的批评。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"解决的问题：单实例 + 主从异步复制下，主宕机、锁未同步到从，从升主后另一客户端可再获同一把锁 → 互斥被破坏。Redlock 用多独立节点替代单点。 Redlock 流程（N=5，无复制的独立 master）： 1. 客户端记录当前时间 T0； 2. 并行向 全部 N 个节点用相同 key/随机值申请锁，每个请求带远小于锁 TTL 的超时； 3. 客户端计算耗时；仅当成功在多数节点（≥ N/2+1，5 取 3）加锁，且总耗时 \u003c 锁有效时间时，才算获取成功； 4. 成功则有效时间 = TTL − 耗时；失败则释放所有节点（包括以为失败的）。 追求的保证： 安全性（互斥）：多数节点同时持锁才能保证不被重复获取； 活性：靠 TTL 自动释放 + 随机退避重试。 争议（Martin Kleppmann 批评）： 依赖各节点时钟近似；若发生 STW 停顿/时钟跳跃，仍可能两个客户端同时持锁； 需要 N 个独立 Redis，运维复杂； 他认为高安全场景应优先用带 fencing token 的方案（如 ZooKeeper/etcd 的序列化令牌）。 结论：Redlock 适合“性能优先、可接受极低概率失效”的场景；强一致关键路径仍建议 etcd/ZK 或数据库锁。","url":"https://it-interview-889.pages.dev/#/question/584"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">Redlock</span><span class="chip tag">分布式锁</span><span class="chip tag">多数派</span><span class="chip tag">安全性</span></div>
     <div class="card"><h2>题目</h2><p>单实例 Redis 主从切换可能让两个客户端同时持锁。请说明 Redlock 的思路（N 个独立节点、多数派），以及它追求的安全性与存在的批评。</p></div>
@@ -93,12 +93,12 @@
 <li>他认为高安全场景应优先用带 fencing token 的方案（如 ZooKeeper/etcd 的序列化令牌）。</li>
 </ul>
 <p><strong>结论</strong>：Redlock 适合“性能优先、可接受极低概率失效”的场景；强一致关键路径仍建议 etcd/ZK 或数据库锁。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/584">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/584">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

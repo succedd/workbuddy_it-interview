@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="观察者模式是什么？在哪些流行框架里能看到它的影子？ · IT面试题库">
   <meta property="og:description" content="要点： 定义：定义对象间一对多依赖，当「被观察者（Subject）」状态变化时，自动通知所有「观察者（Observer）」并更新；双方松耦合，观察者可在运行时动态增删。 结构：Subject 维护观察者列表（register/remove/notify），Observer 提供 update() 回调。 Spri…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/404.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/404.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="观察者模式是什么？在哪些流行框架里能看到它的影子？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定义：定义对象间一对多依赖，当「被观察者（Subject）」状态变化时，自动通知所有「观察者（Observer）」并更新；双方松耦合，观察者可在运行时动态增删。 结构：Subject 维护观察者列表（register/remove/notify），Observer 提供 update() 回调。 Spri…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/404.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"观察者模式是什么？在哪些流行框架里能看到它的影子？","text":"考察点：一对多的依赖通知机制（主题变更自动推送给所有观察者）；联系 Spring 事件、消息队列、Vue/React 响应式、DOM 事件等真实场景。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:43:10.767Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定义：定义对象间一对多依赖，当「被观察者（Subject）」状态变化时，自动通知所有「观察者（Observer）」并更新；双方松耦合，观察者可在运行时动态增删。 结构：Subject 维护观察者列表（register/remove/notify），Observer 提供 update() 回调。 Spring 事件机制：ApplicationEvent（事件）+ ApplicationListener/@EventListener（观察者）+ ApplicationEventPublisher（发布），业务解耦常用它做「下单后发短信/记日志」等副作用。 消息队列：生产者-消费者本质是分布式的观察者（Kafka topic → 多个 consumer group 订阅）。 前端响应式：Vue 的响应式 data 变更触发依赖收集的依赖（Watcher）重渲染；React 的 useState 更新触发组件重渲染，皆为观察者思想。 DOM 事件：addEventListener 也是观察者——事件源变化通知所有监听器。 注意点：观察者过多或通知链过长会造成性能与调试困难；通知中避免再修改主题状态引发递归通知。","url":"https://it-interview.is-a.dev/#/question/404"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/404.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"观察者模式是什么？在哪些流行框架里能看到它的影子？","text":"考察点：一对多的依赖通知机制（主题变更自动推送给所有观察者）；联系 Spring 事件、消息队列、Vue/React 响应式、DOM 事件等真实场景。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:43:10.767Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定义：定义对象间一对多依赖，当「被观察者（Subject）」状态变化时，自动通知所有「观察者（Observer）」并更新；双方松耦合，观察者可在运行时动态增删。 结构：Subject 维护观察者列表（register/remove/notify），Observer 提供 update() 回调。 Spring 事件机制：ApplicationEvent（事件）+ ApplicationListener/@EventListener（观察者）+ ApplicationEventPublisher（发布），业务解耦常用它做「下单后发短信/记日志」等副作用。 消息队列：生产者-消费者本质是分布式的观察者（Kafka topic → 多个 consumer group 订阅）。 前端响应式：Vue 的响应式 data 变更触发依赖收集的依赖（Watcher）重渲染；React 的 useState 更新触发组件重渲染，皆为观察者思想。 DOM 事件：addEventListener 也是观察者——事件源变化通知所有监听器。 注意点：观察者过多或通知链过长会造成性能与调试困难；通知中避免再修改主题状态引发递归通知。","url":"https://it-interview-889.pages.dev/#/question/404"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>观察者模式是什么？在哪些流行框架里能看到它的影子？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">观察者模式</span><span class="chip tag">Spring事件</span><span class="chip tag">响应式</span><span class="chip tag">发布订阅</span></div>
     <div class="card"><h2>题目</h2><p>考察点：一对多的依赖通知机制（主题变更自动推送给所有观察者）；联系 Spring 事件、消息队列、Vue/React 响应式、DOM 事件等真实场景。属场景题。</p></div>
@@ -83,12 +83,12 @@
 <li><strong>DOM 事件</strong>：<code>addEventListener</code> 也是观察者——事件源变化通知所有监听器。</li>
 <li><strong>注意点</strong>：观察者过多或通知链过长会造成性能与调试困难；通知中避免再修改主题状态引发递归通知。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/404">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/404">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=97&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=97&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 &lt;button @click=&quot;count++&quot;&gt;，点击后视图为什么不更新？怎么改？ · IT面试题库">
   <meta property="og:description" content="要点： 根因：const { count } = state 是把 state.count 当时的数值（原始类型）拷贝到一个普通局部变量 count 里，这个 count 和 reactive 代理对象已经没有任何引用关系；@click=&quot;count++&quot; 只是改了普通变量，不会触发 Proxy 的 set 拦截…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1172.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1172.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 &lt;button @click=&quot;count++&quot;&gt;，点击后视图为什么不更新？怎么改？ · IT面试题库">
   <meta name="twitter:description" content="要点： 根因：const { count } = state 是把 state.count 当时的数值（原始类型）拷贝到一个普通局部变量 count 里，这个 count 和 reactive 代理对象已经没有任何引用关系；@click=&quot;count++&quot; 只是改了普通变量，不会触发 Proxy 的 set 拦截…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1172.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 \u003cbutton @click=\"count++\">，点击后视图为什么不更新？怎么改？","text":"考察点：解构导致响应式丢失这一高频陷阱。要求定位「解构得到的是普通原始值、脱离了 Proxy 引用」这一根因，并给出至少两种正确写法。","answerCount":1,"datePublished":"2026-09-17T02:27:46.236Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 根因：const { count } = state 是把 state.count 当时的数值（原始类型）拷贝到一个普通局部变量 count 里，这个 count 和 reactive 代理对象已经没有任何引用关系；@click=\"count++\" 只是改了普通变量，不会触发 Proxy 的 set 拦截器，自然没有 track/trigger，视图不更新。 改法一（最直观）：模板里直接写 state.count，不要解构——state 仍是 Proxy，state.count++ 会正常走 set→trigger。 改法二（需要解构时）：用 toRefs(state) 把每个属性转成 ref，const { count } = toRefs(state)，此时 count 是 ref，模板里 count（自动解包）或 count.value++ 都会走响应式。 改法三：如果只要单个值，用 toRef(state, 'count') 也行。口诀：解构 reactive 对象要用 toRefs，否则拿到的是「死值」。","url":"https://it-interview.is-a.dev/#/question/1172"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1172.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 \u003cbutton @click=\"count++\">，点击后视图为什么不更新？怎么改？","text":"考察点：解构导致响应式丢失这一高频陷阱。要求定位「解构得到的是普通原始值、脱离了 Proxy 引用」这一根因，并给出至少两种正确写法。","answerCount":1,"datePublished":"2026-09-17T02:27:46.236Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 根因：const { count } = state 是把 state.count 当时的数值（原始类型）拷贝到一个普通局部变量 count 里，这个 count 和 reactive 代理对象已经没有任何引用关系；@click=\"count++\" 只是改了普通变量，不会触发 Proxy 的 set 拦截器，自然没有 track/trigger，视图不更新。 改法一（最直观）：模板里直接写 state.count，不要解构——state 仍是 Proxy，state.count++ 会正常走 set→trigger。 改法二（需要解构时）：用 toRefs(state) 把每个属性转成 ref，const { count } = toRefs(state)，此时 count 是 ref，模板里 count（自动解包）或 count.value++ 都会走响应式。 改法三：如果只要单个值，用 toRef(state, 'count') 也行。口诀：解构 reactive 对象要用 toRefs，否则拿到的是「死值」。","url":"https://it-interview-889.pages.dev/#/question/1172"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 &lt;button @click=&quot;count++&quot;&gt;，点击后视图为什么不更新？怎么改？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vue3</span><span class="chip tag">reactive</span><span class="chip tag">toRefs</span><span class="chip tag">响应式陷阱</span></div>
     <div class="card"><h2>题目</h2><p>考察点：解构导致响应式丢失这一高频陷阱。要求定位「解构得到的是普通原始值、脱离了 Proxy 引用」这一根因，并给出至少两种正确写法。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>改法二（需要解构时）</strong>：用 <code>toRefs(state)</code> 把每个属性转成 <code>ref</code>，<code>const { count } = toRefs(state)</code>，此时 <code>count</code> 是 ref，模板里 <code>count</code>（自动解包）或 <code>count.value++</code> 都会走响应式。</li>
 <li><strong>改法三</strong>：如果只要单个值，用 <code>toRef(state, &#39;count&#39;)</code> 也行。<strong>口诀</strong>：解构 reactive 对象要用 <code>toRefs</code>，否则拿到的是「死值」。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1172">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1172">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=63&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=63&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

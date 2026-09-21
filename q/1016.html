@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 逻辑分页：SqlSession.selectList(query, rowBounds) 或在内存里 List.subList。做法是把全表数据查出来再截取，数据量一大就是 OOM。性能随总量线性恶化，深分页尤其灾难。 物理分页：改写 SQL 加上 LIMIT ?, ?（MySQL）/ OFFSET ..…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1016.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1016.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 逻辑分页：SqlSession.selectList(query, rowBounds) 或在内存里 List.subList。做法是把全表数据查出来再截取，数据量一大就是 OOM。性能随总量线性恶化，深分页尤其灾难。 物理分页：改写 SQL 加上 LIMIT ?, ?（MySQL）/ OFFSET ..…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1016.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？","text":"考察点：逻辑分页 vs 物理分页、拦截器机制、深分页。这是最容易在生产翻车的点之一。","answerCount":1,"datePublished":"2026-09-10T11:50:42.015Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 逻辑分页：SqlSession.selectList(query, rowBounds) 或在内存里 List.subList。做法是把全表数据查出来再截取，数据量一大就是 OOM。性能随总量线性恶化，深分页尤其灾难。 物理分页：改写 SQL 加上 LIMIT ?, ?（MySQL）/ OFFSET ... FETCH NEXT（SQL Server）/ ROWNUM（Oracle），把分页交给数据库，只传输需要的那一页。 PageHelper 原理：基于 MyBatis 的 Interceptor 插件机制，拦截 Executor#query。调用 PageHelper.startPage(pageNum, pageSize) 时把分页参数放进 ThreadLocal，拦截器在查询前取出参数，由 SqlUtil 按数据库方言拼接出分页 SQL，并额外执行一条 count 查询得到总数，最后把结果包装成 PageInfo。 三个经典坑：① ThreadLocal 未清理——startPage 之后如果没执行查询（或异常），分页参数会残留，污染下一次查询（这是线上事故高发点）；② startPage 必须紧贴目标查询语句，中间插了别的查询就会错位；③ 深分页 LIMIT 1000000, 20 数据库仍要扫描并丢弃前 100 万行，需改用游标（keyset）分页：WHERE id > lastId ORDER BY id LIMIT 20。 加分点：count SQL 可以被自动优化（去除 order by），也可以 PageHelper.startPage(1, 10, false) 关闭 count 查询以省一次开销。","url":"https://it-interview.is-a.dev/#/question/1016"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1016.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？","text":"考察点：逻辑分页 vs 物理分页、拦截器机制、深分页。这是最容易在生产翻车的点之一。","answerCount":1,"datePublished":"2026-09-10T11:50:42.015Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 逻辑分页：SqlSession.selectList(query, rowBounds) 或在内存里 List.subList。做法是把全表数据查出来再截取，数据量一大就是 OOM。性能随总量线性恶化，深分页尤其灾难。 物理分页：改写 SQL 加上 LIMIT ?, ?（MySQL）/ OFFSET ... FETCH NEXT（SQL Server）/ ROWNUM（Oracle），把分页交给数据库，只传输需要的那一页。 PageHelper 原理：基于 MyBatis 的 Interceptor 插件机制，拦截 Executor#query。调用 PageHelper.startPage(pageNum, pageSize) 时把分页参数放进 ThreadLocal，拦截器在查询前取出参数，由 SqlUtil 按数据库方言拼接出分页 SQL，并额外执行一条 count 查询得到总数，最后把结果包装成 PageInfo。 三个经典坑：① ThreadLocal 未清理——startPage 之后如果没执行查询（或异常），分页参数会残留，污染下一次查询（这是线上事故高发点）；② startPage 必须紧贴目标查询语句，中间插了别的查询就会错位；③ 深分页 LIMIT 1000000, 20 数据库仍要扫描并丢弃前 100 万行，需改用游标（keyset）分页：WHERE id > lastId ORDER BY id LIMIT 20。 加分点：count SQL 可以被自动优化（去除 order by），也可以 PageHelper.startPage(1, 10, false) 关闭 count 查询以省一次开销。","url":"https://it-interview-889.pages.dev/#/question/1016"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MyBatis</span><span class="chip tag">分页</span><span class="chip tag">PageHelper</span><span class="chip tag">拦截器</span><span class="chip tag">深分页</span></div>
     <div class="card"><h2>题目</h2><p>考察点：逻辑分页 vs 物理分页、拦截器机制、深分页。这是最容易在生产翻车的点之一。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>三个经典坑</strong>：① <strong>ThreadLocal 未清理</strong>——<code>startPage</code> 之后如果没执行查询（或异常），分页参数会残留，<strong>污染下一次查询</strong>（这是线上事故高发点）；② <code>startPage</code> 必须<strong>紧贴</strong>目标查询语句，中间插了别的查询就会错位；③ <strong>深分页</strong> <code>LIMIT 1000000, 20</code> 数据库仍要扫描并丢弃前 100 万行，需改用<strong>游标（keyset）分页</strong>：<code>WHERE id &gt; lastId ORDER BY id LIMIT 20</code>。</li>
 <li><strong>加分点</strong>：count SQL 可以被自动优化（去除 order by），也可以 <code>PageHelper.startPage(1, 10, false)</code> 关闭 count 查询以省一次开销。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1016">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1016">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=84&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=84&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

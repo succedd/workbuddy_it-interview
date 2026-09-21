@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。 · IT面试题库">
   <meta property="og:description" content="要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mod…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/970.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/970.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。 · IT面试题库">
   <meta name="twitter:description" content="要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mod…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/970.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。","text":"考察点：结构化输出约束的工程落地（JSON mode / Structured Outputs / 函数调用），以及代码侧兜底解析。这是把 LLM 接入系统的关键。","answerCount":1,"datePublished":"2026-09-10T02:30:02.141Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mode（如 OpenAI structured outputs 按 schema 强制约束）或 函数调用（tool use）——把要抽取的结构定义为工具参数 schema，让模型以「调用函数」形式返回，比纯文本 JSON 可靠得多。 代码兜底层：去掉 `json 标记、捕获解析异常、字段缺失时重试或要求模型修正；校验字段类型与必填；设足 max_tokens 防止截断。 经验：不要只靠 prompt 说「请输出 JSON」就信任结果，必须「厂商 schema 约束 + 代码校验」双保险。","url":"https://it-interview.is-a.dev/#/question/970"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/970.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。","text":"考察点：结构化输出约束的工程落地（JSON mode / Structured Outputs / 函数调用），以及代码侧兜底解析。这是把 LLM 接入系统的关键。","answerCount":1,"datePublished":"2026-09-10T02:30:02.141Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mode（如 OpenAI structured outputs 按 schema 强制约束）或 函数调用（tool use）——把要抽取的结构定义为工具参数 schema，让模型以「调用函数」形式返回，比纯文本 JSON 可靠得多。 代码兜底层：去掉 `json 标记、捕获解析异常、字段缺失时重试或要求模型修正；校验字段类型与必填；设足 max_tokens 防止截断。 经验：不要只靠 prompt 说「请输出 JSON」就信任结果，必须「厂商 schema 约束 + 代码校验」双保险。","url":"https://it-interview-889.pages.dev/#/question/970"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Prompt Engineering</span><span class="chip tag">结构化输出</span><span class="chip tag">JSON</span><span class="chip tag">函数调用</span><span class="chip tag">tool use</span></div>
     <div class="card"><h2>题目</h2><p>考察点：结构化输出约束的工程落地（JSON mode / Structured Outputs / 函数调用），以及代码侧兜底解析。这是把 LLM 接入系统的关键。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>代码兜底层</strong>：去掉 ```json 标记、捕获解析异常、字段缺失时重试或要求模型修正；校验字段类型与必填；设足 max_tokens 防止截断。</li>
 <li><strong>经验</strong>：不要只靠 prompt 说「请输出 JSON」就信任结果，必须「厂商 schema 约束 + 代码校验」双保险。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/970">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/970">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=192&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=192&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一个面向大客户的多云资源告警聚合与工单上报系统 · IT面试题库">
   <meta property="og:description" content="架构思路： 1. 接入层：为每个云配置云监控适配器，通过 API 轮询或事件 Webhook 接收告警，例如 AWS CloudWatch Alarms -&gt; SNS -&gt; HTTPS，Azure Monitor -&gt; Action Group -&gt; Webhook，阿里云云监控 -&gt; 消息服务 -&gt; Webho…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/205.html">
+  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <meta property="og:url" content="https://it-interview-889.pages.dev/q/205.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一个面向大客户的多云资源告警聚合与工单上报系统 · IT面试题库">
   <meta name="twitter:description" content="架构思路： 1. 接入层：为每个云配置云监控适配器，通过 API 轮询或事件 Webhook 接收告警，例如 AWS CloudWatch Alarms -&gt; SNS -&gt; HTTPS，Azure Monitor -&gt; Action Group -&gt; Webhook，阿里云云监控 -&gt; 消息服务 -&gt; Webho…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/205.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一个面向大客户的多云资源告警聚合与工单上报系统","text":"设计一个面向大客户的多云资源告警聚合与工单上报系统","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"架构思路： 1. 接入层：为每个云配置云监控适配器，通过 API 轮询或事件 Webhook 接收告警，例如 AWS CloudWatch Alarms -> SNS -> HTTPS，Azure Monitor -> Action Group -> Webhook，阿里云云监控 -> 消息服务 -> Webhook。 2. 消息层：使用 Kafka 或云消息队列缓冲告警，实现削峰填谷。 3. 处理层：告警处理服务消费消息，完成标准化（统一字段：customer, resource_id, region, metric, severity, timestamp）、去重（如相同资源同指标在窗口内合并）、分级、聚合。 4. 存储层：将原始告警和聚合结果写入时序数据库/搜索系统（如 InfluxDB/ES），便于搜索和报表。 5. 通知层：根据路由规则通过邮件、钉钉/飞书、短信、电话通知到售后支持团队；按客户SLA设置升级策略。 6. 工单层：自动在 ITSM 系统创建工单，关联客户、资源、告警历史、处理人，支持人工补录和状态同步。 7. 报表层：定时任务生成资源使用情况、故障统计、SLA达成率报表。 关键组件：多云适配器、事件总线、规则引擎、聚合去重器、通知网关、工单服务、报表服务。 风险点：云 API 限流和凭证安全；告警风暴；通知渠道可靠性；多租户数据隔离；工单系统耦合；SLA 违约风险。","url":"https://it-interview.is-a.dev/#/question/205"}}}</script>
+  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
+  <link rel="canonical" href="https://it-interview-889.pages.dev/q/205.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一个面向大客户的多云资源告警聚合与工单上报系统","text":"设计一个面向大客户的多云资源告警聚合与工单上报系统","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"架构思路： 1. 接入层：为每个云配置云监控适配器，通过 API 轮询或事件 Webhook 接收告警，例如 AWS CloudWatch Alarms -> SNS -> HTTPS，Azure Monitor -> Action Group -> Webhook，阿里云云监控 -> 消息服务 -> Webhook。 2. 消息层：使用 Kafka 或云消息队列缓冲告警，实现削峰填谷。 3. 处理层：告警处理服务消费消息，完成标准化（统一字段：customer, resource_id, region, metric, severity, timestamp）、去重（如相同资源同指标在窗口内合并）、分级、聚合。 4. 存储层：将原始告警和聚合结果写入时序数据库/搜索系统（如 InfluxDB/ES），便于搜索和报表。 5. 通知层：根据路由规则通过邮件、钉钉/飞书、短信、电话通知到售后支持团队；按客户SLA设置升级策略。 6. 工单层：自动在 ITSM 系统创建工单，关联客户、资源、告警历史、处理人，支持人工补录和状态同步。 7. 报表层：定时任务生成资源使用情况、故障统计、SLA达成率报表。 关键组件：多云适配器、事件总线、规则引擎、聚合去重器、通知网关、工单服务、报表服务。 风险点：云 API 限流和凭证安全；告警风暴；通知渠道可靠性；多租户数据隔离；工单系统耦合；SLA 违约风险。","url":"https://it-interview-889.pages.dev/#/question/205"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
     <h1>设计一个面向大客户的多云资源告警聚合与工单上报系统</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">系统设计题</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span></div>
     <div class="card"><h2>题目</h2><p>设计一个面向大客户的多云资源告警聚合与工单上报系统</p></div>
@@ -85,12 +85,12 @@
 </ol>
 <p>关键组件：多云适配器、事件总线、规则引擎、聚合去重器、通知网关、工单服务、报表服务。</p>
 <p>风险点：云 API 限流和凭证安全；告警风暴；通知渠道可靠性；多租户数据隔离；工单系统耦合；SLA 违约风险。</p></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/205">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://it-interview-889.pages.dev/#/question/205">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
