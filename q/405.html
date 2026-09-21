@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="高级：主流框架（如 Spring）用到了哪些设计模式？如何判断一个场景「该用设计模式」还是「过度设计」？ · IT面试题库">
   <meta property="og:description" content="要点： Spring 中的模式映射：IOC 容器 = 工厂（getBean 生产对象）；AOP = 代理（JDK 动态代理/CGLIB 织入切面）；事件 = 观察者；JdbcTemplate/RestTemplate = 模板方法（固定骨架 + 回调钩子）；HandlerAdapter = 适配器；BeanPos…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/405.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/405.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="高级：主流框架（如 Spring）用到了哪些设计模式？如何判断一个场景「该用设计模式」还是「过度设计」？ · IT面试题库">
   <meta name="twitter:description" content="要点： Spring 中的模式映射：IOC 容器 = 工厂（getBean 生产对象）；AOP = 代理（JDK 动态代理/CGLIB 织入切面）；事件 = 观察者；JdbcTemplate/RestTemplate = 模板方法（固定骨架 + 回调钩子）；HandlerAdapter = 适配器；BeanPos…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/405.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"高级：主流框架（如 Spring）用到了哪些设计模式？如何判断一个场景「该用设计模式」还是「过度设计」？","text":"考察点：把模式与框架实现对应（IOC=工厂、AOP=代理、事件=观察者、模板方法=JdbcTemplate、适配器=HandlerAdapter）；更重要的——识别模式滥用的信号。属开放讨论题。","answerCount":1,"datePublished":"2026-09-01T09:43:12.453Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Spring 中的模式映射：IOC 容器 = 工厂（getBean 生产对象）；AOP = 代理（JDK 动态代理/CGLIB 织入切面）；事件 = 观察者；JdbcTemplate/RestTemplate = 模板方法（固定骨架 + 回调钩子）；HandlerAdapter = 适配器；BeanPostProcessor 链式 = 责任链；ApplicationContext 多实现 = 策略/门面。 该用的信号：行为存在多种可互换实现且会变（策略）；创建逻辑复杂或需统一收口（工厂）；需要解耦通知（观察者）；需要复用算法骨架（模板方法）。 过度设计的信号：为「可能将来会变」提前抽象、引入一堆接口却只有一种实现；小分支硬拆成多个类导致可读性下降；团队看不懂、新人维护成本高。 判断原则（YAGNI/KISS）：先写最直接能跑的代码，当出现第二种真实需求或明显的重复/分支膨胀时，再抽模式；不要凭想象的需求提前设计。 面试加分：能说出「模式是手段不是目的」，并权衡「灵活性 vs 可读性/复杂度」，比背定义更值钱。","url":"https://it-interview-889.pages.dev/#/question/405"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/405.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"高级：主流框架（如 Spring）用到了哪些设计模式？如何判断一个场景「该用设计模式」还是「过度设计」？","text":"考察点：把模式与框架实现对应（IOC=工厂、AOP=代理、事件=观察者、模板方法=JdbcTemplate、适配器=HandlerAdapter）；更重要的——识别模式滥用的信号。属开放讨论题。","answerCount":1,"datePublished":"2026-09-01T09:43:12.453Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Spring 中的模式映射：IOC 容器 = 工厂（getBean 生产对象）；AOP = 代理（JDK 动态代理/CGLIB 织入切面）；事件 = 观察者；JdbcTemplate/RestTemplate = 模板方法（固定骨架 + 回调钩子）；HandlerAdapter = 适配器；BeanPostProcessor 链式 = 责任链；ApplicationContext 多实现 = 策略/门面。 该用的信号：行为存在多种可互换实现且会变（策略）；创建逻辑复杂或需统一收口（工厂）；需要解耦通知（观察者）；需要复用算法骨架（模板方法）。 过度设计的信号：为「可能将来会变」提前抽象、引入一堆接口却只有一种实现；小分支硬拆成多个类导致可读性下降；团队看不懂、新人维护成本高。 判断原则（YAGNI/KISS）：先写最直接能跑的代码，当出现第二种真实需求或明显的重复/分支膨胀时，再抽模式；不要凭想象的需求提前设计。 面试加分：能说出「模式是手段不是目的」，并权衡「灵活性 vs 可读性/复杂度」，比背定义更值钱。","url":"https://itinterview.com.cn/#/question/405"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>高级：主流框架（如 Spring）用到了哪些设计模式？如何判断一个场景「该用设计模式」还是「过度设计」？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">Spring</span><span class="chip tag">设计模式映射</span><span class="chip tag">过度设计</span><span class="chip tag">YAGNI</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把模式与框架实现对应（IOC=工厂、AOP=代理、事件=观察者、模板方法=JdbcTemplate、适配器=HandlerAdapter）；更重要的——识别模式滥用的信号。属开放讨论题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>判断原则（YAGNI/KISS）</strong>：先写最直接能跑的代码，当出现<strong>第二种真实需求</strong>或明显的重复/分支膨胀时，再抽模式；不要凭想象的需求提前设计。</li>
 <li><strong>面试加分</strong>：能说出「模式是手段不是目的」，并权衡「灵活性 vs 可读性/复杂度」，比背定义更值钱。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/405">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/405">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=97&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=97&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

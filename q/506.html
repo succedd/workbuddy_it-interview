@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么基类析构函数通常要声明为 virtual（虚析构函数）？ · IT面试题库">
   <meta property="og:description" content="问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/506.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/506.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么基类析构函数通常要声明为 virtual（虚析构函数）？ · IT面试题库">
   <meta name="twitter:description" content="问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/506.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么基类析构函数通常要声明为 virtual（虚析构函数）？","text":"请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆序执行），完整释放整个对象。 规则： 只要类可能被多态使用（通过基类指针/引用管理派生对象），基类析构就应声明为 virtual。 含虚函数的类几乎总应有虚析构。 若类不需作为基类/不被多态删除，则不必加虚析构（避免无谓的 vptr 开销）。 抽象基类（含纯虚函数）同理，且通常 ~Base() = default 或 = 0 并提供定义。","url":"https://it-interview-889.pages.dev/#/question/506"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/506.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么基类析构函数通常要声明为 virtual（虚析构函数）？","text":"请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆序执行），完整释放整个对象。 规则： 只要类可能被多态使用（通过基类指针/引用管理派生对象），基类析构就应声明为 virtual。 含虚函数的类几乎总应有虚析构。 若类不需作为基类/不被多态删除，则不必加虚析构（避免无谓的 vptr 开销）。 抽象基类（含纯虚函数）同理，且通常 ~Base() = default 或 = 0 并提供定义。","url":"https://itinterview.com.cn/#/question/506"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么基类析构函数通常要声明为 virtual（虚析构函数）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">C++</span><span class="chip tag">虚析构</span><span class="chip tag">多态</span></div>
     <div class="card"><h2>题目</h2><p>请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。</p></div>
@@ -85,12 +85,12 @@ delete p; // 若 ~Base() 非虚 → 只调 ~Base()，Derived 部分泄漏！</co
 <li>若类<strong>不需作为基类/不被多态删除</strong>，则不必加虚析构（避免无谓的 vptr 开销）。</li>
 <li>抽象基类（含纯虚函数）同理，且通常 <code>~Base() = default</code> 或 <code>= 0</code> 并提供定义。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/506">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/506">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=11&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=11&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

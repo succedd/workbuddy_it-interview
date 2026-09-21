@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。 · IT面试题库">
   <meta property="og:description" content="无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 c…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/513.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/513.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。 · IT面试题库">
   <meta name="twitter:description" content="无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 c…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/513.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。","text":"说明无缓冲 channel 的同步语义、所有 goroutine 阻塞时的 deadlock 报错，以及 select + default/超时 的用法。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 channel 收数据，但没有任何 goroutine 往里发： 避免/应对手段： 用 select 的 default 分支做非阻塞收发：select { case v := \u003c-ch: ... default: ... } 用 select + time.After / context 超时跳出等待： 给 channel 加缓冲 make(chan int, n)，让发送方先写入而不立即阻塞（但不能消除逻辑死锁）。 确保有 goroutine 负责关闭/写入，并遵循“谁发送谁关闭”、用 for range ch 在关闭后退出接收。","url":"https://it-interview-889.pages.dev/#/question/513"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/513.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。","text":"说明无缓冲 channel 的同步语义、所有 goroutine 阻塞时的 deadlock 报错，以及 select + default/超时 的用法。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 channel 收数据，但没有任何 goroutine 往里发： 避免/应对手段： 用 select 的 default 分支做非阻塞收发：select { case v := \u003c-ch: ... default: ... } 用 select + time.After / context 超时跳出等待： 给 channel 加缓冲 make(chan int, n)，让发送方先写入而不立即阻塞（但不能消除逻辑死锁）。 确保有 goroutine 负责关闭/写入，并遵循“谁发送谁关闭”、用 for range ch 在关闭后退出接收。","url":"https://itinterview.com.cn/#/question/513"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Go开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip tag">channel</span><span class="chip tag">死锁</span><span class="chip tag">select</span></div>
     <div class="card"><h2>题目</h2><p>说明无缓冲 channel 的同步语义、所有 goroutine 阻塞时的 deadlock 报错，以及 select + default/超时 的用法。</p></div>
@@ -92,12 +92,12 @@ case &lt;-time.After(time.Second):
 }</code></pre>
 <p>  - 给 channel 加缓冲 <code>make(chan int, n)</code>，让发送方先写入而不立即阻塞（但不能消除逻辑死锁）。</p>
 <p>  - 确保有 goroutine 负责关闭/写入，并遵循“谁发送谁关闭”、用 <code>for range ch</code> 在关闭后退出接收。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/513">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/513">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=16&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=16&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

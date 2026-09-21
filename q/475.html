@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？ · IT面试题库">
   <meta property="og:description" content="分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance）…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/475.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/475.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？ · IT面试题库">
   <meta name="twitter:description" content="分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance）…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/475.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？","text":"分区与消费组是 Kafka 水平扩展与广播/点对点语义的基础，再平衡机制则直接关系到消费可用性，常作为场景/故障排查题。","answerCount":1,"datePublished":"2026-09-03T01:03:44.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance） 当消费者加入/退出（扩缩容、宕机、心跳超时、订阅变更）时，组协调器（Group Coordinator）会触发再平衡，重新分配分区归属。期间： 所有消费者暂停消费（stop-the-world），先提交已处理位移； 重新分配完成后各自从新分配的分区继续消费。 注意点 再平衡会造成短暂消费停顿；老版本「stop-the-world」式再平衡抖动大，Sticky（黏性）分配策略会尽量保留原归属、只迁移必要分区，显著减少 churn。实践中要避免频繁重平衡（如调大 session.timeout、控制每次拉取量）。","url":"https://it-interview-889.pages.dev/#/question/475"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/475.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？","text":"分区与消费组是 Kafka 水平扩展与广播/点对点语义的基础，再平衡机制则直接关系到消费可用性，常作为场景/故障排查题。","answerCount":1,"datePublished":"2026-09-03T01:03:44.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance） 当消费者加入/退出（扩缩容、宕机、心跳超时、订阅变更）时，组协调器（Group Coordinator）会触发再平衡，重新分配分区归属。期间： 所有消费者暂停消费（stop-the-world），先提交已处理位移； 重新分配完成后各自从新分配的分区继续消费。 注意点 再平衡会造成短暂消费停顿；老版本「stop-the-world」式再平衡抖动大，Sticky（黏性）分配策略会尽量保留原归属、只迁移必要分区，显著减少 churn。实践中要避免频繁重平衡（如调大 session.timeout、控制每次拉取量）。","url":"https://itinterview.com.cn/#/question/475"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kafka</span><span class="chip tag">分区</span><span class="chip tag">消费者组</span></div>
     <div class="card"><h2>题目</h2><p>分区与消费组是 Kafka 水平扩展与广播/点对点语义的基础，再平衡机制则直接关系到消费可用性，常作为场景/故障排查题。</p></div>
@@ -87,12 +87,12 @@
 </ul>
 <h3>注意点</h3>
 <p>再平衡会造成短暂消费停顿；老版本「stop-the-world」式再平衡抖动大，<strong>Sticky（黏性）分配策略</strong>会尽量保留原归属、只迁移必要分区，显著减少 churn。实践中要避免频繁重平衡（如调大 <code>session.timeout</code>、控制每次拉取量）。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/475">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/475">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=127&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=127&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

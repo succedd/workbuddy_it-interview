@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？ · IT面试题库">
   <meta property="og:description" content="要点： RNN 的两个死穴：① 串行计算（t 依赖 t-1）无法并行，训练慢；② 长程依赖衰减（梯度消失/信息稀释），LSTM/GRU 只是缓解。 Self-Attention 本质：每个词的表示 = 全序列词表示的加权求和，权重由相似度决定——Query·Key 算相关性 → softmax 归一化 → 加权 …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1002.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1002.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： RNN 的两个死穴：① 串行计算（t 依赖 t-1）无法并行，训练慢；② 长程依赖衰减（梯度消失/信息稀释），LSTM/GRU 只是缓解。 Self-Attention 本质：每个词的表示 = 全序列词表示的加权求和，权重由相似度决定——Query·Key 算相关性 → softmax 归一化 → 加权 …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1002.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？","text":"考察点：RNN 的串行瓶颈与长程依赖、QKV 机制、位置编码、复杂度权衡。","answerCount":1,"datePublished":"2026-09-10T07:23:48.659Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： RNN 的两个死穴：① 串行计算（t 依赖 t-1）无法并行，训练慢；② 长程依赖衰减（梯度消失/信息稀释），LSTM/GRU 只是缓解。 Self-Attention 本质：每个词的表示 = 全序列词表示的加权求和，权重由相似度决定——Query·Key 算相关性 → softmax 归一化 → 加权 Value。任意两词一步直达（路径长度 O(1)），长程依赖不再是问题；全序列并行计算。 位置问题：注意力本身无序（置换等变），必须注入位置信息——正弦位置编码/可学习编码（BERT）/旋转位置编码 RoPE（LLaMA 系）。 代价与变体：注意力复杂度 O(n²)，长文本贵——催生稀疏注意力、FlashAttention（IO 感知加速）、线性注意力。Multi-Head 是把「多种相关性」并行建模（语法头/语义头各司其职）。 一句话：Transformer = 用「可并行的全局加权检索」替换「串行的状态传递」，这是 BERT/GPT 时代的架构基石。","url":"https://it-interview-889.pages.dev/#/question/1002"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1002.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？","text":"考察点：RNN 的串行瓶颈与长程依赖、QKV 机制、位置编码、复杂度权衡。","answerCount":1,"datePublished":"2026-09-10T07:23:48.659Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： RNN 的两个死穴：① 串行计算（t 依赖 t-1）无法并行，训练慢；② 长程依赖衰减（梯度消失/信息稀释），LSTM/GRU 只是缓解。 Self-Attention 本质：每个词的表示 = 全序列词表示的加权求和，权重由相似度决定——Query·Key 算相关性 → softmax 归一化 → 加权 Value。任意两词一步直达（路径长度 O(1)），长程依赖不再是问题；全序列并行计算。 位置问题：注意力本身无序（置换等变），必须注入位置信息——正弦位置编码/可学习编码（BERT）/旋转位置编码 RoPE（LLaMA 系）。 代价与变体：注意力复杂度 O(n²)，长文本贵——催生稀疏注意力、FlashAttention（IO 感知加速）、线性注意力。Multi-Head 是把「多种相关性」并行建模（语法头/语义头各司其职）。 一句话：Transformer = 用「可并行的全局加权检索」替换「串行的状态传递」，这是 BERT/GPT 时代的架构基石。","url":"https://itinterview.com.cn/#/question/1002"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">自然语言处理工程师NLP</span><span class="chip">算法工程师</span><span class="chip tag">NLP</span><span class="chip tag">Transformer</span><span class="chip tag">Self-Attention</span><span class="chip tag">BERT</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RNN 的串行瓶颈与长程依赖、QKV 机制、位置编码、复杂度权衡。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>代价与变体</strong>：注意力复杂度 O(n²)，长文本贵——催生稀疏注意力、FlashAttention（IO 感知加速）、线性注意力。Multi-Head 是把「多种相关性」并行建模（语法头/语义头各司其职）。</li>
 <li><strong>一句话</strong>：Transformer = 用「可并行的全局加权检索」替换「串行的状态传递」，这是 BERT/GPT 时代的架构基石。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1002">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1002">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=183&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=183&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

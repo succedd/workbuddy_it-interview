@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TCP 为什么需要三次握手建立连接、四次挥手释放连接？ · IT面试题库">
   <meta property="og:description" content="三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/486.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/486.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 为什么需要三次握手建立连接、四次挥手释放连接？ · IT面试题库">
   <meta name="twitter:description" content="三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/486.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 为什么需要三次握手建立连接、四次挥手释放连接？","text":"请描述 TCP 三次握手与四次挥手的过程，并解释为什么建立是三次、释放是四次。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方进入 ESTABLISHED）。 为什么三次？两次不够：若旧 SYN 迟到，服务器单凭两次握手就开连接会浪费资源；三次能让双方都确认“对方能收、自己能发”。 四次挥手（释放连接）——TCP 全双工，每个方向需单独关闭： 1. 客户端 FIN=1, seq=u → 服务器（客户端 FIN_WAIT_1）。 2. 服务器 ACK=1, ack=u+1 → 客户端（服务器 CLOSE_WAIT，客户端 FIN_WAIT_2）。此时服务器仍可发数据。 3. 服务器发完数据后 FIN=1, seq=w → 客户端（服务器 LAST_ACK）。 4. 客户端 ACK=1, ack=w+1 → 服务器（服务器 CLOSED；客户端 TIME_WAIT 等待 2MSL 后 CLOSED）。 为什么四次？因为收到 FIN 只表示对方不再发数据，但本方可能还有数据要发，故 ACK 与 FIN 不能合并（不像 SYN+ACK 可合并），需分两次往返。 TIME_WAIT 等待 2MSL：确保最后 ACK 到达；让旧报文在网络中消逝，防止影响新连接。","url":"https://it-interview-889.pages.dev/#/question/486"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/486.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 为什么需要三次握手建立连接、四次挥手释放连接？","text":"请描述 TCP 三次握手与四次挥手的过程，并解释为什么建立是三次、释放是四次。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三次握手（建立连接）——确认双方收发能力： 1. 客户端 SYN=1, seq=x → 服务器（进入 SYN_SENT）。 2. 服务器 SYN=1, ACK=1, seq=y, ack=x+1 → 客户端（进入 SYN_RCVD）。 3. 客户端 ACK=1, seq=x+1, ack=y+1 → 服务器（双方进入 ESTABLISHED）。 为什么三次？两次不够：若旧 SYN 迟到，服务器单凭两次握手就开连接会浪费资源；三次能让双方都确认“对方能收、自己能发”。 四次挥手（释放连接）——TCP 全双工，每个方向需单独关闭： 1. 客户端 FIN=1, seq=u → 服务器（客户端 FIN_WAIT_1）。 2. 服务器 ACK=1, ack=u+1 → 客户端（服务器 CLOSE_WAIT，客户端 FIN_WAIT_2）。此时服务器仍可发数据。 3. 服务器发完数据后 FIN=1, seq=w → 客户端（服务器 LAST_ACK）。 4. 客户端 ACK=1, ack=w+1 → 服务器（服务器 CLOSED；客户端 TIME_WAIT 等待 2MSL 后 CLOSED）。 为什么四次？因为收到 FIN 只表示对方不再发数据，但本方可能还有数据要发，故 ACK 与 FIN 不能合并（不像 SYN+ACK 可合并），需分两次往返。 TIME_WAIT 等待 2MSL：确保最后 ACK 到达；让旧报文在网络中消逝，防止影响新连接。","url":"https://itinterview.com.cn/#/question/486"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>TCP 为什么需要三次握手建立连接、四次挥手释放连接？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">网络规划工程师</span><span class="chip">网络架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">三次握手</span><span class="chip tag">四次挥手</span></div>
     <div class="card"><h2>题目</h2><p>请描述 TCP 三次握手与四次挥手的过程，并解释为什么建立是三次、释放是四次。</p></div>
@@ -89,12 +89,12 @@
 </ol>
 <p>为什么四次？因为收到 FIN 只表示对方不再发数据，但本方可能还有数据要发，故 ACK 与 FIN 不能合并（不像 SYN+ACK 可合并），需分两次往返。</p>
 <p><strong>TIME_WAIT 等待 2MSL</strong>：确保最后 ACK 到达；让旧报文在网络中消逝，防止影响新连接。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/486">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/486">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？ · IT面试题库">
   <meta property="og:description" content="要点： Event：数据传输基本单元 = header（元数据 Map）+ body（字节数组），大小默认受 batchSize/容量限制。 Agent 三组件：Source（采集接入：taildir/exec/netcat/kafka/avro）→ Channel（缓冲：memory=快但宕机丢、file=持久…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/998.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/998.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： Event：数据传输基本单元 = header（元数据 Map）+ body（字节数组），大小默认受 batchSize/容量限制。 Agent 三组件：Source（采集接入：taildir/exec/netcat/kafka/avro）→ Channel（缓冲：memory=快但宕机丢、file=持久…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/998.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？","text":"考察点：Agent 三组件、Event 流、事务机制、可靠性语义。","answerCount":1,"datePublished":"2026-09-10T07:23:28.810Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Event：数据传输基本单元 = header（元数据 Map）+ body（字节数组），大小默认受 batchSize/容量限制。 Agent 三组件：Source（采集接入：taildir/exec/netcat/kafka/avro）→ Channel（缓冲：memory=快但宕机丢、file=持久可靠、kafka=天然高可用可重放）→ Sink（写出：hdfs/kafka/avro 下游 agent）。一个 Agent 可多 source 汇聚到一个 channel，可扇出到多 sink。 事务保证：source→channel、channel→sink 各自走事务（put/take），channel 决定可靠性等级——memory channel 进程崩丢 batch；file/kafka channel 可做到不丢。 串联模式：多级 agent 用 avro source/sink 串联（边缘采集→汇总→落存储），是日志采集的标准拓扑；spooldir/TAILDIR（记录 offset 断点续传）是文件采集首选。","url":"https://it-interview-889.pages.dev/#/question/998"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/998.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？","text":"考察点：Agent 三组件、Event 流、事务机制、可靠性语义。","answerCount":1,"datePublished":"2026-09-10T07:23:28.810Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Event：数据传输基本单元 = header（元数据 Map）+ body（字节数组），大小默认受 batchSize/容量限制。 Agent 三组件：Source（采集接入：taildir/exec/netcat/kafka/avro）→ Channel（缓冲：memory=快但宕机丢、file=持久可靠、kafka=天然高可用可重放）→ Sink（写出：hdfs/kafka/avro 下游 agent）。一个 Agent 可多 source 汇聚到一个 channel，可扇出到多 sink。 事务保证：source→channel、channel→sink 各自走事务（put/take），channel 决定可靠性等级——memory channel 进程崩丢 batch；file/kafka channel 可做到不丢。 串联模式：多级 agent 用 avro source/sink 串联（边缘采集→汇总→落存储），是日志采集的标准拓扑；spooldir/TAILDIR（记录 offset 断点续传）是文件采集首选。","url":"https://itinterview.com.cn/#/question/998"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">数据采集工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">Flume</span><span class="chip tag">日志采集</span><span class="chip tag">Source</span><span class="chip tag">Channel</span><span class="chip tag">Sink</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Agent 三组件、Event 流、事务机制、可靠性语义。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>事务保证</strong>：source→channel、channel→sink 各自走事务（put/take），<strong>channel 决定可靠性等级</strong>——memory channel 进程崩丢 batch；file/kafka channel 可做到不丢。</li>
 <li><strong>串联模式</strong>：多级 agent 用 avro source/sink 串联（边缘采集→汇总→落存储），是日志采集的标准拓扑；<code>spooldir</code>/<code>TAILDIR</code>（记录 offset 断点续传）是文件采集首选。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/998">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/998">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=168&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=168&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

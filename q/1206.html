@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Prometheus 的时间序列由什么构成？PromQL 里 rate()、irate()、increase() 三个函数有什么区别，分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： 时间序列构成：每条序列 = 一个 metric name + 一组 labels（键值对） + 时间戳 + 样本值（float64）。label 用于维度切分与过滤（如 method=&quot;POST&quot;、status=&quot;500&quot;）；相同 name 不同 label 组合是不同的序列。 rate(range)：计…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1206.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1206.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Prometheus 的时间序列由什么构成？PromQL 里 rate()、irate()、increase() 三个函数有什么区别，分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： 时间序列构成：每条序列 = 一个 metric name + 一组 labels（键值对） + 时间戳 + 样本值（float64）。label 用于维度切分与过滤（如 method=&quot;POST&quot;、status=&quot;500&quot;）；相同 name 不同 label 组合是不同的序列。 rate(range)：计…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1206.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 的时间序列由什么构成？PromQL 里 rate()、irate()、increase() 三个函数有什么区别，分别适合什么场景？","text":"考察点：数据模型（metric name + labels）与三个最易混淆的 PromQL 速率函数的适用边界。要求强调『rate/irate 只能用于 Counter』，并讲清平均 vs 瞬时 vs 总量。","answerCount":1,"datePublished":"2026-09-20T02:22:32.906Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 时间序列构成：每条序列 = 一个 metric name + 一组 labels（键值对） + 时间戳 + 样本值（float64）。label 用于维度切分与过滤（如 method=\"POST\"、status=\"500\"）；相同 name 不同 label 组合是不同的序列。 rate(range)：计算窗口内 Counter 的『每秒平均增长率』，自动处理 Counter 重启归零。适合看平滑的平均 QPS/错误率，窗口通常 ≥ 2 个 scrape interval，如 rate(http_requests_total[5m])。 irate(range)：基于窗口内最后两个样本点计算『瞬时增长率』，对突变更敏感、更灵敏但噪声更大。适合看实时毛刺，不适合画长期趋势平均。 increase(range)：计算窗口内 Counter 的『增量（总量）』，即 rate × 窗口秒数。适合看『5 分钟内总请求数/总错误数』这类累计量，而非每秒速率。 重要约束：rate/irate/increase 都要求作用在 Counter（单调递增）上；对 Gauge 用它们没有意义（应使用 delta()/changes() 等）。 核心：序列 = name + labels + 时间 + 值；rate 看平均速率、irate 看瞬时、increase 看窗口总量，三者都要求 Counter 且窗口足够大。","url":"https://it-interview-889.pages.dev/#/question/1206"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1206.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 的时间序列由什么构成？PromQL 里 rate()、irate()、increase() 三个函数有什么区别，分别适合什么场景？","text":"考察点：数据模型（metric name + labels）与三个最易混淆的 PromQL 速率函数的适用边界。要求强调『rate/irate 只能用于 Counter』，并讲清平均 vs 瞬时 vs 总量。","answerCount":1,"datePublished":"2026-09-20T02:22:32.906Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 时间序列构成：每条序列 = 一个 metric name + 一组 labels（键值对） + 时间戳 + 样本值（float64）。label 用于维度切分与过滤（如 method=\"POST\"、status=\"500\"）；相同 name 不同 label 组合是不同的序列。 rate(range)：计算窗口内 Counter 的『每秒平均增长率』，自动处理 Counter 重启归零。适合看平滑的平均 QPS/错误率，窗口通常 ≥ 2 个 scrape interval，如 rate(http_requests_total[5m])。 irate(range)：基于窗口内最后两个样本点计算『瞬时增长率』，对突变更敏感、更灵敏但噪声更大。适合看实时毛刺，不适合画长期趋势平均。 increase(range)：计算窗口内 Counter 的『增量（总量）』，即 rate × 窗口秒数。适合看『5 分钟内总请求数/总错误数』这类累计量，而非每秒速率。 重要约束：rate/irate/increase 都要求作用在 Counter（单调递增）上；对 Gauge 用它们没有意义（应使用 delta()/changes() 等）。 核心：序列 = name + labels + 时间 + 值；rate 看平均速率、irate 看瞬时、increase 看窗口总量，三者都要求 Counter 且窗口足够大。","url":"https://itinterview.com.cn/#/question/1206"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Prometheus 的时间序列由什么构成？PromQL 里 rate()、irate()、increase() 三个函数有什么区别，分别适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">Prometheus</span><span class="chip tag">数据模型</span><span class="chip tag">PromQL</span><span class="chip tag">rate</span><span class="chip tag">irate</span></div>
     <div class="card"><h2>题目</h2><p>考察点：数据模型（metric name + labels）与三个最易混淆的 PromQL 速率函数的适用边界。要求强调『rate/irate 只能用于 Counter』，并讲清平均 vs 瞬时 vs 总量。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>重要约束</strong>：rate/irate/increase 都要求作用在 Counter（单调递增）上；对 Gauge 用它们没有意义（应使用 delta()/changes() 等）。</li>
 </ul>
 <p><strong>核心</strong>：序列 = name + labels + 时间 + 值；rate 看平均速率、irate 看瞬时、increase 看窗口总量，三者都要求 Counter 且窗口足够大。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1206">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1206">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

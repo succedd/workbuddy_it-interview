@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Webpack 的 HMR（热更新）原理是什么？为什么有时候改一行代码会整页刷新？ · IT面试题库">
   <meta property="og:description" content="要点： 完整链路： 1. 文件监听：watchpack 监听文件系统变化（注意它靠文件时间戳/轮询，某些编辑器「原子写」或容器挂载会遇到监听不到的情况）； 2. 重新编译：只重新构建受影响的模块（增量编译），产出新的 chunk； 3. 推送：通过 WebSocket（webpack-dev-server 的 H…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1050.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1050.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Webpack 的 HMR（热更新）原理是什么？为什么有时候改一行代码会整页刷新？ · IT面试题库">
   <meta name="twitter:description" content="要点： 完整链路： 1. 文件监听：watchpack 监听文件系统变化（注意它靠文件时间戳/轮询，某些编辑器「原子写」或容器挂载会遇到监听不到的情况）； 2. 重新编译：只重新构建受影响的模块（增量编译），产出新的 chunk； 3. 推送：通过 WebSocket（webpack-dev-server 的 H…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1050.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Webpack 的 HMR（热更新）原理是什么？为什么有时候改一行代码会整页刷新？","text":"考察点：HMR 运行时、模块替换边界、accept 机制。理解后才能调好开发体验。","answerCount":1,"datePublished":"2026-09-10T11:52:41.927Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 完整链路： 1. 文件监听：watchpack 监听文件系统变化（注意它靠文件时间戳/轮询，某些编辑器「原子写」或容器挂载会遇到监听不到的情况）； 2. 重新编译：只重新构建受影响的模块（增量编译），产出新的 chunk； 3. 推送：通过 WebSocket（webpack-dev-server 的 HMR 客户端）把 manifest（更新的模块哈希）+ 新 chunk 推给浏览器； 4. 运行时替换：webpack/hot/dev-server 与 module.hot 运行时接收更新，从变化的模块向上寻找「能接受更新的边界」。 accept 与冒泡（核心机制）：模块通过 module.hot.accept([依赖], callback) 声明「我能处理这些依赖的更新」。更新到来时，运行时从变更模块开始向父级冒泡： 若某模块 accept 了它 → 调用其 callback（通常只是重新执行模块代码，react-refresh 借此实现组件级不丢状态更新）； 若某个模块自己不 accept，且没有父级 accept 它 → 冒泡到顶层（entry）→ 没有边界可替换 → 只能 location.reload() 整页刷新。 这就是「改一行就刷新整页」的根因：该模块不在任何 accept 边界内。 为什么常见会整页刷新： 1. React/Vue 组件没配 HMR（老项目手写 ReactDOM.render、未用 react-refresh/vue-loader 的 hot 模式）； 2. 改的是「被 entry 直接使用且非组件」的文件（路由配置、常量、工具函数、store 定义）——它们通常没有 accept 边界； 3. .babelrc/tsconfig/环境变量等构建配置变更 → 需要重建整个模块图，只能刷新； 4. hot: false 或 hotOnly 配置问题、HMR 客户端连不上 WS（端口/代理/HTTPS 混合内容）→ 降级为 live reload。 如何改善：确保框架 loader 开 hot（react-refresh/babel、vue-loader v15+ 自动处理）；用 module.hot.accept 为自定义的顶层模块加边界（如把 router/store 的更新做成 accept 回调里重建）；用 hotOnly 关闭「自动刷新兜底」以便发现未覆盖的边界；webpack-dev-server 的 client.overlay 与日志里会明确写「Hot Module Replacement was not applied, full reload」——先看这条日志再优化。 加分点：HMR 与 React Fast Refresh 的区别——Fast Refresh 是 HMR 之上专为 React 组件实现的能力，能做到保留组件局部 state、区分「只是渲染函数变了」与「Hook 签名变了（则重置状态）」；函数组件之外的文件（常量、工具）变化仍会触发整树刷新。","url":"https://it-interview-889.pages.dev/#/question/1050"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1050.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Webpack 的 HMR（热更新）原理是什么？为什么有时候改一行代码会整页刷新？","text":"考察点：HMR 运行时、模块替换边界、accept 机制。理解后才能调好开发体验。","answerCount":1,"datePublished":"2026-09-10T11:52:41.927Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 完整链路： 1. 文件监听：watchpack 监听文件系统变化（注意它靠文件时间戳/轮询，某些编辑器「原子写」或容器挂载会遇到监听不到的情况）； 2. 重新编译：只重新构建受影响的模块（增量编译），产出新的 chunk； 3. 推送：通过 WebSocket（webpack-dev-server 的 HMR 客户端）把 manifest（更新的模块哈希）+ 新 chunk 推给浏览器； 4. 运行时替换：webpack/hot/dev-server 与 module.hot 运行时接收更新，从变化的模块向上寻找「能接受更新的边界」。 accept 与冒泡（核心机制）：模块通过 module.hot.accept([依赖], callback) 声明「我能处理这些依赖的更新」。更新到来时，运行时从变更模块开始向父级冒泡： 若某模块 accept 了它 → 调用其 callback（通常只是重新执行模块代码，react-refresh 借此实现组件级不丢状态更新）； 若某个模块自己不 accept，且没有父级 accept 它 → 冒泡到顶层（entry）→ 没有边界可替换 → 只能 location.reload() 整页刷新。 这就是「改一行就刷新整页」的根因：该模块不在任何 accept 边界内。 为什么常见会整页刷新： 1. React/Vue 组件没配 HMR（老项目手写 ReactDOM.render、未用 react-refresh/vue-loader 的 hot 模式）； 2. 改的是「被 entry 直接使用且非组件」的文件（路由配置、常量、工具函数、store 定义）——它们通常没有 accept 边界； 3. .babelrc/tsconfig/环境变量等构建配置变更 → 需要重建整个模块图，只能刷新； 4. hot: false 或 hotOnly 配置问题、HMR 客户端连不上 WS（端口/代理/HTTPS 混合内容）→ 降级为 live reload。 如何改善：确保框架 loader 开 hot（react-refresh/babel、vue-loader v15+ 自动处理）；用 module.hot.accept 为自定义的顶层模块加边界（如把 router/store 的更新做成 accept 回调里重建）；用 hotOnly 关闭「自动刷新兜底」以便发现未覆盖的边界；webpack-dev-server 的 client.overlay 与日志里会明确写「Hot Module Replacement was not applied, full reload」——先看这条日志再优化。 加分点：HMR 与 React Fast Refresh 的区别——Fast Refresh 是 HMR 之上专为 React 组件实现的能力，能做到保留组件局部 state、区分「只是渲染函数变了」与「Hook 签名变了（则重置状态）」；函数组件之外的文件（常量、工具）变化仍会触发整树刷新。","url":"https://itinterview.com.cn/#/question/1050"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Webpack 的 HMR（热更新）原理是什么？为什么有时候改一行代码会整页刷新？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Webpack</span><span class="chip tag">HMR</span><span class="chip tag">热更新</span><span class="chip tag">模块替换</span><span class="chip tag">开发体验</span></div>
     <div class="card"><h2>题目</h2><p>考察点：HMR 运行时、模块替换边界、accept 机制。理解后才能调好开发体验。</p></div>
@@ -98,12 +98,12 @@
 <li><strong>如何改善</strong>：确保框架 loader 开 hot（<code>react-refresh/babel</code>、<code>vue-loader</code> v15+ 自动处理）；用 <code>module.hot.accept</code> 为<strong>自定义的顶层模块</strong>加边界（如把 router/store 的更新做成 accept 回调里重建）；用 <code>hotOnly</code> 关闭「自动刷新兜底」以便发现未覆盖的边界；<code>webpack-dev-server</code> 的 <code>client.overlay</code> 与日志里会明确写「<strong>Hot Module Replacement was not applied, full reload</strong>」——<strong>先看这条日志再优化</strong>。</li>
 <li><strong>加分点</strong>：HMR 与 <strong>React Fast Refresh</strong> 的区别——Fast Refresh 是 HMR 之上专为 React 组件实现的能力，能做到<strong>保留组件局部 state</strong>、区分「只是渲染函数变了」与「Hook 签名变了（则重置状态）」；函数组件之外的文件（常量、工具）变化仍会触发整树刷新。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1050">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1050">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=69&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=69&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

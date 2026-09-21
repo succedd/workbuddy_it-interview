@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？ · IT面试题库">
   <meta property="og:description" content="要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/617.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/617.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/617.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？","text":"考察点：理解 RAG 出现的动机，能说清大模型的三类固有短板（知识时效性、幻觉、私有/实时数据不可达）以及 RAG 的缓解思路。","answerCount":1,"datePublished":"2026-09-06T02:23:24.442Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依据（grounded generation），显著降低无依据作答。 私有/垂直数据不可达：企业内网文档、工单、代码库等无法进入公开训练集；RAG 让模型在不微调的前提下访问这些受控语料，兼顾数据安全与可用性。 边界提示：RAG 解决“知识获取”，微调解决“能力/风格塑造”；需要固定领域行为时用微调，需要动态知识时用 RAG，二者常结合使用。","url":"https://it-interview-889.pages.dev/#/question/617"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/617.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？","text":"考察点：理解 RAG 出现的动机，能说清大模型的三类固有短板（知识时效性、幻觉、私有/实时数据不可达）以及 RAG 的缓解思路。","answerCount":1,"datePublished":"2026-09-06T02:23:24.442Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依据（grounded generation），显著降低无依据作答。 私有/垂直数据不可达：企业内网文档、工单、代码库等无法进入公开训练集；RAG 让模型在不微调的前提下访问这些受控语料，兼顾数据安全与可用性。 边界提示：RAG 解决“知识获取”，微调解决“能力/风格塑造”；需要固定领域行为时用微调，需要动态知识时用 RAG，二者常结合使用。","url":"https://itinterview.com.cn/#/question/617"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">RAG</span><span class="chip tag">检索增强生成</span><span class="chip tag">大模型</span><span class="chip tag">幻觉</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解 RAG 出现的动机，能说清大模型的三类固有短板（知识时效性、幻觉、私有/实时数据不可达）以及 RAG 的缓解思路。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>私有/垂直数据不可达</strong>：企业内网文档、工单、代码库等无法进入公开训练集；RAG 让模型在不微调的前提下访问这些受控语料，兼顾数据安全与可用性。</li>
 <li><strong>边界提示</strong>：RAG 解决“知识获取”，微调解决“能力/风格塑造”；需要固定领域行为时用微调，需要动态知识时用 RAG，二者常结合使用。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/617">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/617">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=193&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=193&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

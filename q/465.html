@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Selenium 的隐式等待和显式等待有什么区别？为什么官方明确警告不要混用？ · IT面试题库">
   <meta property="og:description" content="一、为什么需要等待 导航命令只会等待页面的 readyState（默认等 complete），而它只关心 HTML 中定义的资源是否加载完毕。SPA 应用中元素往往由 JS 动态创建或改变可见性，readyState 完成时目标元素可能还不在页面上。而 Selenium 要求元素同时存在且可见才能交互，于是代码执…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/465.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/465.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Selenium 的隐式等待和显式等待有什么区别？为什么官方明确警告不要混用？ · IT面试题库">
   <meta name="twitter:description" content="一、为什么需要等待 导航命令只会等待页面的 readyState（默认等 complete），而它只关心 HTML 中定义的资源是否加载完毕。SPA 应用中元素往往由 JS 动态创建或改变可见性，readyState 完成时目标元素可能还不在页面上。而 Selenium 要求元素同时存在且可见才能交互，于是代码执…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/465.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Selenium 的隐式等待和显式等待有什么区别？为什么官方明确警告不要混用？","text":"元素还没渲染出来就去操作，是 UI 自动化用例不稳定的头号原因。请说明两种等待机制的原理与适用场景，并解释混用会造成什么后果。","answerCount":1,"datePublished":"2026-09-03T00:55:35.731Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、为什么需要等待 导航命令只会等待页面的 readyState（默认等 complete），而它只关心 HTML 中定义的资源是否加载完毕。SPA 应用中元素往往由 JS 动态创建或改变可见性，readyState 完成时目标元素可能还不在页面上。而 Selenium 要求元素同时存在且可见才能交互，于是代码执行与浏览器状态形成竞态——这正是 flaky test 的主要来源。 二、隐式等待（Implicit Wait） 是一个全局设置，对整个会话的每一次元素定位都生效，默认值为 0（找不到立即报错）。 设置后，找不到元素时驱动会轮询直到超时；一旦找到就立刻返回，所以设置得大并不必然拖慢整个会话。 优点是一处配置全局生效；缺点是只能等「元素存在」，无法表达「元素可点击」「文本变成某个值」这类业务条件。 三、显式等待（Explicit Wait） 是在代码中针对某一个具体条件轮询，条件为真才继续，超时则抛出 timeout 错误。 可以精确描述每一处需要的状态，且默认会自动等待目标元素存在。 可定制性强：能调整轮询间隔（polling interval / poll_frequency）、总超时长度、需要自动忽略的异常类型，以及自定义超时提示信息。Java 对应 FluentWait，Python 对应 WebDriverWait 的参数。 这是官方更推荐的机制，因为它让「我在等什么」成为显式契约，而不是隐式魔法。 四、为什么绝对不能混用 官方警告：混合使用会导致不可预测的等待时间。典型例子是隐式等待设 10 秒、显式等待设 15 秒，超时却可能发生在 20 秒。原因是两者叠加生效而非取最大值——隐式等待会作用于显式等待内部的每一次元素查找，把超时时间悄悄拉长，排查时极难定位。 工程上的标准做法：全局不设隐式等待，统一使用显式等待。 五、sleep 为什么不行 固定 sleep 是最容易被采用的方案，但代码无法知道到底要等多久：设短了偶发失败，设长了让整轮回归变得极慢，两头不讨好。 六、排查不稳定用例的通用顺序 看失败日志与截图 → 手工确认是不是真的产品缺陷 → 确认是否由新版本变更引入 → 再检查脚本是不是少了等待，或者元素被浮层遮挡导致点到了别的元素上。","url":"https://it-interview-889.pages.dev/#/question/465"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/465.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Selenium 的隐式等待和显式等待有什么区别？为什么官方明确警告不要混用？","text":"元素还没渲染出来就去操作，是 UI 自动化用例不稳定的头号原因。请说明两种等待机制的原理与适用场景，并解释混用会造成什么后果。","answerCount":1,"datePublished":"2026-09-03T00:55:35.731Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、为什么需要等待 导航命令只会等待页面的 readyState（默认等 complete），而它只关心 HTML 中定义的资源是否加载完毕。SPA 应用中元素往往由 JS 动态创建或改变可见性，readyState 完成时目标元素可能还不在页面上。而 Selenium 要求元素同时存在且可见才能交互，于是代码执行与浏览器状态形成竞态——这正是 flaky test 的主要来源。 二、隐式等待（Implicit Wait） 是一个全局设置，对整个会话的每一次元素定位都生效，默认值为 0（找不到立即报错）。 设置后，找不到元素时驱动会轮询直到超时；一旦找到就立刻返回，所以设置得大并不必然拖慢整个会话。 优点是一处配置全局生效；缺点是只能等「元素存在」，无法表达「元素可点击」「文本变成某个值」这类业务条件。 三、显式等待（Explicit Wait） 是在代码中针对某一个具体条件轮询，条件为真才继续，超时则抛出 timeout 错误。 可以精确描述每一处需要的状态，且默认会自动等待目标元素存在。 可定制性强：能调整轮询间隔（polling interval / poll_frequency）、总超时长度、需要自动忽略的异常类型，以及自定义超时提示信息。Java 对应 FluentWait，Python 对应 WebDriverWait 的参数。 这是官方更推荐的机制，因为它让「我在等什么」成为显式契约，而不是隐式魔法。 四、为什么绝对不能混用 官方警告：混合使用会导致不可预测的等待时间。典型例子是隐式等待设 10 秒、显式等待设 15 秒，超时却可能发生在 20 秒。原因是两者叠加生效而非取最大值——隐式等待会作用于显式等待内部的每一次元素查找，把超时时间悄悄拉长，排查时极难定位。 工程上的标准做法：全局不设隐式等待，统一使用显式等待。 五、sleep 为什么不行 固定 sleep 是最容易被采用的方案，但代码无法知道到底要等多久：设短了偶发失败，设长了让整轮回归变得极慢，两头不讨好。 六、排查不稳定用例的通用顺序 看失败日志与截图 → 手工确认是不是真的产品缺陷 → 确认是否由新版本变更引入 → 再检查脚本是不是少了等待，或者元素被浮层遮挡导致点到了别的元素上。","url":"https://itinterview.com.cn/#/question/465"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Selenium 的隐式等待和显式等待有什么区别？为什么官方明确警告不要混用？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试工程师</span><span class="chip tag">Selenium</span><span class="chip tag">显式等待</span><span class="chip tag">用例稳定性</span></div>
     <div class="card"><h2>题目</h2><p>元素还没渲染出来就去操作，是 UI 自动化用例不稳定的头号原因。请说明两种等待机制的原理与适用场景，并解释混用会造成什么后果。</p></div>
@@ -95,12 +95,12 @@
 <p>固定 sleep 是最容易被采用的方案，但代码无法知道到底要等多久：设短了偶发失败，设长了让整轮回归变得极慢，两头不讨好。</p>
 <h3>六、排查不稳定用例的通用顺序</h3>
 <p>看失败日志与截图 → 手工确认是不是真的产品缺陷 → 确认是否由新版本变更引入 → 再检查脚本是不是少了等待，或者元素被浮层遮挡导致点到了别的元素上。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/465">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/465">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=112&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=112&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -16,8 +16,8 @@ B. KV Cache 随序列长度近似线性增长，是长上下文高并发时显�
 C. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈
 D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片 · IT面试题库">
   <meta property="og:description" content="正确答案：B A 错：KV Cache 是每层的 Key/Value 矩阵随 token 累加缓存，占用 ≈ 2 × 层数 × 隐藏维 × seq_len × batch，与序列长度近似线性，长上下文时急剧膨胀。 B 对：这是显存随并发/上下文上涨的根本原因，也是部署里必须重点管理的对象（长文本 + 高并发 = …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1180.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1180.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？
@@ -26,9 +26,9 @@ B. KV Cache 随序列长度近似线性增长，是长上下文高并发时显�
 C. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈
 D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片 · IT面试题库">
   <meta name="twitter:description" content="正确答案：B A 错：KV Cache 是每层的 Key/Value 矩阵随 token 累加缓存，占用 ≈ 2 × 层数 × 隐藏维 × seq_len × batch，与序列长度近似线性，长上下文时急剧膨胀。 B 对：这是显存随并发/上下文上涨的根本原因，也是部署里必须重点管理的对象（长文本 + 高并发 = …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1180.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？\nA. KV Cache 大小与上下文长度无关，只和模型层数有关\nB. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项\nC. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈\nD. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片","text":"考察点：KV Cache 与显存优化原理。要能判断每个选项对错，讲清 KV Cache 的线性增长特性与 PagedAttention 的真实做法。","answerCount":1,"datePublished":"2026-09-17T02:35:52.535Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B A 错：KV Cache 是每层的 Key/Value 矩阵随 token 累加缓存，占用 ≈ 2 × 层数 × 隐藏维 × seq_len × batch，与序列长度近似线性，长上下文时急剧膨胀。 B 对：这是显存随并发/上下文上涨的根本原因，也是部署里必须重点管理的对象（长文本 + 高并发 = 显存杀手）。 C 错：INT4 只压缩「权重」，KV Cache 默认仍是 FP16/BF16，量化权重后 KV Cache 反而可能成为占比更大的显存项（所以才有 FP8 KV Cache 这类优化）。 D 错：PagedAttention 恰好不预分配最大长度——它像操作系统虚拟内存一样把 KV Cache 切成固定大小的 block 按需分配、请求间共享前缀 block，从而消除预分配碎片，而不是预分配。 记忆点：权重量化省的是「参数显存」，KV Cache 省的是「上下文显存」，两者是两笔账。","url":"https://it-interview-889.pages.dev/#/question/1180"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1180.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？\nA. KV Cache 大小与上下文长度无关，只和模型层数有关\nB. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项\nC. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈\nD. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片","text":"考察点：KV Cache 与显存优化原理。要能判断每个选项对错，讲清 KV Cache 的线性增长特性与 PagedAttention 的真实做法。","answerCount":1,"datePublished":"2026-09-17T02:35:52.535Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B A 错：KV Cache 是每层的 Key/Value 矩阵随 token 累加缓存，占用 ≈ 2 × 层数 × 隐藏维 × seq_len × batch，与序列长度近似线性，长上下文时急剧膨胀。 B 对：这是显存随并发/上下文上涨的根本原因，也是部署里必须重点管理的对象（长文本 + 高并发 = 显存杀手）。 C 错：INT4 只压缩「权重」，KV Cache 默认仍是 FP16/BF16，量化权重后 KV Cache 反而可能成为占比更大的显存项（所以才有 FP8 KV Cache 这类优化）。 D 错：PagedAttention 恰好不预分配最大长度——它像操作系统虚拟内存一样把 KV Cache 切成固定大小的 block 按需分配、请求间共享前缀 block，从而消除预分配碎片，而不是预分配。 记忆点：权重量化省的是「参数显存」，KV Cache 省的是「上下文显存」，两者是两笔账。","url":"https://itinterview.com.cn/#/question/1180"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -81,7 +81,7 @@ D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来�
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？
 A. KV Cache 大小与上下文长度无关，只和模型层数有关
 B. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项
@@ -97,12 +97,12 @@ D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来�
 <li><strong>D 错</strong>：PagedAttention 恰好<strong>不</strong>预分配最大长度——它像操作系统虚拟内存一样把 KV Cache 切成固定大小的 block 按需分配、请求间共享前缀 block，从而<strong>消除预分配碎片</strong>，而不是预分配。</li>
 </ul>
 <p><strong>记忆点</strong>：权重量化省的是「参数显存」，KV Cache 省的是「上下文显存」，两者是两笔账。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1180">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1180">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

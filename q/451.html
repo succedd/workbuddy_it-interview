@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？ · IT面试题库">
   <meta property="og:description" content="完整处理流程 1. 客户端向 Spring Cloud Gateway 发起请求。 2. Gateway Handler Mapping 用路由断言判断请求是否匹配某条 Route；没有匹配的路由就直接返回 404。 3. 匹配成功后交给 Gateway Web Handler，请求进入这条路由专属的过滤器链。 …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/451.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/451.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？ · IT面试题库">
   <meta name="twitter:description" content="完整处理流程 1. 客户端向 Spring Cloud Gateway 发起请求。 2. Gateway Handler Mapping 用路由断言判断请求是否匹配某条 Route；没有匹配的路由就直接返回 404。 3. 匹配成功后交给 Gateway Web Handler，请求进入这条路由专属的过滤器链。 …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/451.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？","text":"考察点：Handler Mapping → Web Handler → 过滤器链的三段流程，pre/post 过滤器以代理请求为分界线。属简答题（中级）。","answerCount":1,"datePublished":"2026-09-03T00:54:17.947Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"完整处理流程 1. 客户端向 Spring Cloud Gateway 发起请求。 2. Gateway Handler Mapping 用路由断言判断请求是否匹配某条 Route；没有匹配的路由就直接返回 404。 3. 匹配成功后交给 Gateway Web Handler，请求进入这条路由专属的过滤器链。 4. 过滤器链以「代理请求」这个动作分成两段（官方文档示意图里的那条虚线）：先执行所有 pre 过滤器逻辑，然后发出代理请求，最后执行 post 过滤器逻辑。 断言（Predicate）与过滤器（Filter）的分工 Predicate 决定「这个请求走不走这条路由」，在 Handler Mapping 阶段生效，命中即止。内置的有 Path、Method、Header、Cookie、After/Before/Between（时间）等。 Filter 决定「走这条路由时请求被怎么加工」，在 Web Handler 阶段生效，且分两个时间点： pre（代理请求发出前）：鉴权、限流、灰度路由、路径重写（如 StripPrefix）、请求头改写； post（代理请求返回后）：响应头处理、访问日志、熔断统计、响应内容改写。 工程注意点 路由 URI 中未指定端口时，HTTP 默认 80、HTTPS 默认 443。 Gateway 构建在响应式栈（WebFlux + Netty）之上，过滤器里不能写阻塞代码，否则会占住 Event Loop 拖垮整个网关；必须做阻塞调用时要放到独立线程池隔离。 网关适合承载横切关注点（鉴权、限流、灰度、链路追踪），业务编排逻辑不要下沉到网关，否则会让它变成新的单体。","url":"https://it-interview-889.pages.dev/#/question/451"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/451.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？","text":"考察点：Handler Mapping → Web Handler → 过滤器链的三段流程，pre/post 过滤器以代理请求为分界线。属简答题（中级）。","answerCount":1,"datePublished":"2026-09-03T00:54:17.947Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"完整处理流程 1. 客户端向 Spring Cloud Gateway 发起请求。 2. Gateway Handler Mapping 用路由断言判断请求是否匹配某条 Route；没有匹配的路由就直接返回 404。 3. 匹配成功后交给 Gateway Web Handler，请求进入这条路由专属的过滤器链。 4. 过滤器链以「代理请求」这个动作分成两段（官方文档示意图里的那条虚线）：先执行所有 pre 过滤器逻辑，然后发出代理请求，最后执行 post 过滤器逻辑。 断言（Predicate）与过滤器（Filter）的分工 Predicate 决定「这个请求走不走这条路由」，在 Handler Mapping 阶段生效，命中即止。内置的有 Path、Method、Header、Cookie、After/Before/Between（时间）等。 Filter 决定「走这条路由时请求被怎么加工」，在 Web Handler 阶段生效，且分两个时间点： pre（代理请求发出前）：鉴权、限流、灰度路由、路径重写（如 StripPrefix）、请求头改写； post（代理请求返回后）：响应头处理、访问日志、熔断统计、响应内容改写。 工程注意点 路由 URI 中未指定端口时，HTTP 默认 80、HTTPS 默认 443。 Gateway 构建在响应式栈（WebFlux + Netty）之上，过滤器里不能写阻塞代码，否则会占住 Event Loop 拖垮整个网关；必须做阻塞调用时要放到独立线程池隔离。 网关适合承载横切关注点（鉴权、限流、灰度、链路追踪），业务编排逻辑不要下沉到网关，否则会让它变成新的单体。","url":"https://itinterview.com.cn/#/question/451"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Spring Cloud Gateway</span><span class="chip tag">API网关</span><span class="chip tag">过滤器链</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Handler Mapping → Web Handler → 过滤器链的三段流程，pre/post 过滤器以代理请求为分界线。属简答题（中级）。</p></div>
@@ -93,12 +93,12 @@
 <li>Gateway 构建在响应式栈（WebFlux + Netty）之上，过滤器里<strong>不能写阻塞代码</strong>，否则会占住 Event Loop 拖垮整个网关；必须做阻塞调用时要放到独立线程池隔离。</li>
 <li>网关适合承载横切关注点（鉴权、限流、灰度、链路追踪），业务编排逻辑不要下沉到网关，否则会让它变成新的单体。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/451">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/451">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=131&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=131&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

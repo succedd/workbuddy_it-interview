@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。 · IT面试题库">
   <meta property="og:description" content="要点： vLLM：定位「高吞吐生产服务」，核心卖点是 PagedAttention + 连续批处理 + 开放生态，对主流开源模型支持好、易水平扩展，最适合对外高并发 API。缺点是对最新模型/定制算子的支持略滞后。 TensorRT-LLM（Triton）：NVIDIA 官方、在固定模型上把 kernel 融合/…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1183.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1183.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。 · IT面试题库">
   <meta name="twitter:description" content="要点： vLLM：定位「高吞吐生产服务」，核心卖点是 PagedAttention + 连续批处理 + 开放生态，对主流开源模型支持好、易水平扩展，最适合对外高并发 API。缺点是对最新模型/定制算子的支持略滞后。 TensorRT-LLM（Triton）：NVIDIA 官方、在固定模型上把 kernel 融合/…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1183.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。","text":"考察点：推理框架对比与选型。要求说清三者定位差异（高并发生产 vs 极致延迟 vs 本地快速试用），并落到具体建议。","answerCount":1,"datePublished":"2026-09-17T02:35:52.835Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： vLLM：定位「高吞吐生产服务」，核心卖点是 PagedAttention + 连续批处理 + 开放生态，对主流开源模型支持好、易水平扩展，最适合对外高并发 API。缺点是对最新模型/定制算子的支持略滞后。 TensorRT-LLM（Triton）：NVIDIA 官方、在固定模型上把 kernel 融合/量化做到极致，单请求延迟和能效最优，但编译部署重、迭代慢、强绑定 NVIDIA 卡，适合延迟/成本极致且模型固定的场景。 Ollama：开箱即用、本地一键跑，面向开发调试、单机试用、小流量演示，吞吐和并发能力弱，不适合严肃生产。 选型建议：①生产高并发 API → vLLM（或 SGLang）打底；②某模型要榨干延迟/成本且不愿频繁换 → TensorRT-LLM 编译部署；③本地开发/演示 → Ollama。落地时通常「Ollama 验证 → vLLM 上生产」，需要极限性能再叠加 TRT-LLM。 关键：框架只是引擎，前面「量化+连续批处理+KV 优化」的套路三家都通用，选型主要看「生态/延迟/运维成本」三角。","url":"https://it-interview-889.pages.dev/#/question/1183"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1183.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。","text":"考察点：推理框架对比与选型。要求说清三者定位差异（高并发生产 vs 极致延迟 vs 本地快速试用），并落到具体建议。","answerCount":1,"datePublished":"2026-09-17T02:35:52.835Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： vLLM：定位「高吞吐生产服务」，核心卖点是 PagedAttention + 连续批处理 + 开放生态，对主流开源模型支持好、易水平扩展，最适合对外高并发 API。缺点是对最新模型/定制算子的支持略滞后。 TensorRT-LLM（Triton）：NVIDIA 官方、在固定模型上把 kernel 融合/量化做到极致，单请求延迟和能效最优，但编译部署重、迭代慢、强绑定 NVIDIA 卡，适合延迟/成本极致且模型固定的场景。 Ollama：开箱即用、本地一键跑，面向开发调试、单机试用、小流量演示，吞吐和并发能力弱，不适合严肃生产。 选型建议：①生产高并发 API → vLLM（或 SGLang）打底；②某模型要榨干延迟/成本且不愿频繁换 → TensorRT-LLM 编译部署；③本地开发/演示 → Ollama。落地时通常「Ollama 验证 → vLLM 上生产」，需要极限性能再叠加 TRT-LLM。 关键：框架只是引擎，前面「量化+连续批处理+KV 优化」的套路三家都通用，选型主要看「生态/延迟/运维成本」三角。","url":"https://itinterview.com.cn/#/question/1183"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip tag">推理框架</span><span class="chip tag">vLLM</span><span class="chip tag">TensorRT-LLM</span><span class="chip tag">Ollama</span><span class="chip tag">选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：推理框架对比与选型。要求说清三者定位差异（高并发生产 vs 极致延迟 vs 本地快速试用），并落到具体建议。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>选型建议</strong>：①生产高并发 API → vLLM（或 SGLang）打底；②某模型要榨干延迟/成本且不愿频繁换 → TensorRT-LLM 编译部署；③本地开发/演示 → Ollama。落地时通常「Ollama 验证 → vLLM 上生产」，需要极限性能再叠加 TRT-LLM。</li>
 </ul>
 <p><strong>关键</strong>：框架只是引擎，前面「量化+连续批处理+KV 优化」的套路三家都通用，选型主要看「生态/延迟/运维成本」三角。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1183">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1183">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

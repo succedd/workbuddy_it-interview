@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？ · IT面试题库">
   <meta property="og:description" content="并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/411.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/411.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？ · IT面试题库">
   <meta name="twitter:description" content="并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/411.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？","text":"考察点：RNN 串行、梯度易消失；CNN 局部感受野需堆叠才能看远处；Transformer 全局、可并行但缺归纳偏置、数据饥渴。属对比题。","answerCount":1,"datePublished":"2026-09-01T09:51:57.279Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或 O(n)。 Transformer 任意两位置路径长度恒为 O(1)（一步注意力直达），天然擅长长序列，但代价是注意力矩阵 O(n²)。 归纳偏置（先验） RNN/CNN 自带时序/局部先验，小数据也能学。 Transformer 几乎无归纳偏置，更通用但更依赖大数据，小样本易过拟合。 代价 注意力复杂度 O(n²·d)，长序列显存/算力吃紧；后续用稀疏/线性注意力、FlashAttention、分块等缓解。","url":"https://it-interview-889.pages.dev/#/question/411"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/411.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？","text":"考察点：RNN 串行、梯度易消失；CNN 局部感受野需堆叠才能看远处；Transformer 全局、可并行但缺归纳偏置、数据饥渴。属对比题。","answerCount":1,"datePublished":"2026-09-01T09:51:57.279Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或 O(n)。 Transformer 任意两位置路径长度恒为 O(1)（一步注意力直达），天然擅长长序列，但代价是注意力矩阵 O(n²)。 归纳偏置（先验） RNN/CNN 自带时序/局部先验，小数据也能学。 Transformer 几乎无归纳偏置，更通用但更依赖大数据，小样本易过拟合。 代价 注意力复杂度 O(n²·d)，长序列显存/算力吃紧；后续用稀疏/线性注意力、FlashAttention、分块等缓解。","url":"https://itinterview.com.cn/#/question/411"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip tag">RNN</span><span class="chip tag">CNN</span><span class="chip tag">Transformer对比</span><span class="chip tag">归纳偏置</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RNN 串行、梯度易消失；CNN 局部感受野需堆叠才能看远处；Transformer 全局、可并行但缺归纳偏置、数据饥渴。属对比题。</p></div>
@@ -93,12 +93,12 @@
 <ul>
 <li>注意力复杂度 O(n²·d)，长序列显存/算力吃紧；后续用稀疏/线性注意力、FlashAttention、分块等缓解。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/411">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/411">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=188&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=188&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

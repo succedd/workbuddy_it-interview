@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？ · IT面试题库">
   <meta property="og:description" content="要点： 依赖收集（track）：组件渲染或 watch/computed 会先把自己包装成「副作用函数」并标记为 activeEffect，然后执行函数体触发对被代理对象的 get。get 拦截器里调用 track(target, key)，把当前 activeEffect 存入「target → key → S…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1171.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1171.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？ · IT面试题库">
   <meta name="twitter:description" content="要点： 依赖收集（track）：组件渲染或 watch/computed 会先把自己包装成「副作用函数」并标记为 activeEffect，然后执行函数体触发对被代理对象的 get。get 拦截器里调用 track(target, key)，把当前 activeEffect 存入「target → key → S…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1171.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？","text":"考察点：响应式核心机制（副作用函数 / 依赖收集 / 派发更新）。要能讲清「读时收集、写时派发」的闭环，以及 activeEffect 和 target->key->effectSet 三层依赖结构。","answerCount":1,"datePublished":"2026-09-17T02:27:46.160Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 依赖收集（track）：组件渲染或 watch/computed 会先把自己包装成「副作用函数」并标记为 activeEffect，然后执行函数体触发对被代理对象的 get。get 拦截器里调用 track(target, key)，把当前 activeEffect 存入「target → key → Set 」的三层依赖映射中。 派发更新（trigger）：当代码修改属性触发 set 拦截器，调用 trigger(target, key)，从依赖映射里取出该 key 对应的所有 effect 并依次执行（组件 effect 触发重新渲染，computed/watch 触发回调）。 一个关键点：收集发生在「读取」时、派发发生在「写入」时。所以一个属性只有被读过才会建立依赖；从未在模板/副作用里读过的属性，即使被改了也不会触发更新。这也是「解构出普通值」会断响应、以及 ref 需要 .value 才能触发 track 的根本原因。","url":"https://it-interview-889.pages.dev/#/question/1171"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1171.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？","text":"考察点：响应式核心机制（副作用函数 / 依赖收集 / 派发更新）。要能讲清「读时收集、写时派发」的闭环，以及 activeEffect 和 target->key->effectSet 三层依赖结构。","answerCount":1,"datePublished":"2026-09-17T02:27:46.160Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 依赖收集（track）：组件渲染或 watch/computed 会先把自己包装成「副作用函数」并标记为 activeEffect，然后执行函数体触发对被代理对象的 get。get 拦截器里调用 track(target, key)，把当前 activeEffect 存入「target → key → Set 」的三层依赖映射中。 派发更新（trigger）：当代码修改属性触发 set 拦截器，调用 trigger(target, key)，从依赖映射里取出该 key 对应的所有 effect 并依次执行（组件 effect 触发重新渲染，computed/watch 触发回调）。 一个关键点：收集发生在「读取」时、派发发生在「写入」时。所以一个属性只有被读过才会建立依赖；从未在模板/副作用里读过的属性，即使被改了也不会触发更新。这也是「解构出普通值」会断响应、以及 ref 需要 .value 才能触发 track 的根本原因。","url":"https://itinterview.com.cn/#/question/1171"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vue3</span><span class="chip tag">响应式</span><span class="chip tag">依赖收集</span><span class="chip tag">track</span><span class="chip tag">trigger</span></div>
     <div class="card"><h2>题目</h2><p>考察点：响应式核心机制（副作用函数 / 依赖收集 / 派发更新）。要能讲清「读时收集、写时派发」的闭环，以及 activeEffect 和 target-&gt;key-&gt;effectSet 三层依赖结构。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>派发更新（trigger）</strong>：当代码修改属性触发 <code>set</code> 拦截器，调用 <code>trigger(target, key)</code>，从依赖映射里取出该 key 对应的所有 effect 并依次执行（组件 effect 触发重新渲染，computed/watch 触发回调）。</li>
 <li><strong>一个关键点</strong>：收集发生在「读取」时、派发发生在「写入」时。所以一个属性只有<strong>被读过</strong>才会建立依赖；从未在模板/副作用里读过的属性，即使被改了也不会触发更新。这也是「解构出普通值」会断响应、以及 <code>ref</code> 需要 <code>.value</code> 才能触发 track 的根本原因。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1171">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1171">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=63&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=63&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。 · IT面试题库">
   <meta property="og:description" content="整体流程：导航（DNS→TCP→TLS）→ 响应（下载 HTML）→ 解析 → 渲染。 关键渲染路径（CRP）： 1. 解析 HTML 构建 DOM 树：浏览器将 HTML 字节流词法分析、构建文档树。 （无 async/defer）会阻塞 HTML 解析；预加载扫描器会提前请求 CSS/JS/图片等资源。 2.…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/558.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/558.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。 · IT面试题库">
   <meta name="twitter:description" content="整体流程：导航（DNS→TCP→TLS）→ 响应（下载 HTML）→ 解析 → 渲染。 关键渲染路径（CRP）： 1. 解析 HTML 构建 DOM 树：浏览器将 HTML 字节流词法分析、构建文档树。 （无 async/defer）会阻塞 HTML 解析；预加载扫描器会提前请求 CSS/JS/图片等资源。 2.…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/558.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。","text":"请描述浏览器渲染一个页面所经历的主要流程，重点说明关键渲染路径（Critical Rendering Path）中的几个阶段：解析 HTML/CSS、构建 DOM/CSSOM、生成渲染树、布局（Layout）、绘制（Paint）与合成（Composite），并指出 script 和 CSS 在流程中的阻塞关系。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"整体流程：导航（DNS→TCP→TLS）→ 响应（下载 HTML）→ 解析 → 渲染。 关键渲染路径（CRP）： 1. 解析 HTML 构建 DOM 树：浏览器将 HTML 字节流词法分析、构建文档树。 （无 async/defer）会阻塞 HTML 解析；预加载扫描器会提前请求 CSS/JS/图片等资源。 2. 解析 CSS 构建 CSSOM 树：CSS 规则转换为样式映射，并级联计算出每个节点的计算样式。等待 CSS 不会阻塞 HTML 解析，但会阻塞后续 JS 执行。 3. 合成渲染树（Render Tree）：合并 DOM 与 CSSOM，只包含可见节点（display:none 的不包含，visibility:hidden 包含）。 4. 布局（Layout / Reflow）：计算渲染树中每个节点的几何信息（大小、位置）。首次计算叫布局，后续重新计算叫重排。 5. 绘制（Paint）：将每个节点转为屏幕像素（文本、颜色、边框、阴影等）。 6. 合成（Composite）：将不同图层按正确顺序合并到屏幕（如 opacity、transform、will-change 会提升为独立图层，在 GPU 上合成）。 阻塞要点：JS 会阻塞解析（除非 async/defer）；CSSOM 未就绪会阻塞 JS 执行；首屏渲染依赖 14KB 关键 CSS/HTML。优化方向是减少 CRP 长度、尽早下载关键资源、合理使用 async/defer。","url":"https://it-interview-889.pages.dev/#/question/558"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/558.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。","text":"请描述浏览器渲染一个页面所经历的主要流程，重点说明关键渲染路径（Critical Rendering Path）中的几个阶段：解析 HTML/CSS、构建 DOM/CSSOM、生成渲染树、布局（Layout）、绘制（Paint）与合成（Composite），并指出 script 和 CSS 在流程中的阻塞关系。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"整体流程：导航（DNS→TCP→TLS）→ 响应（下载 HTML）→ 解析 → 渲染。 关键渲染路径（CRP）： 1. 解析 HTML 构建 DOM 树：浏览器将 HTML 字节流词法分析、构建文档树。 （无 async/defer）会阻塞 HTML 解析；预加载扫描器会提前请求 CSS/JS/图片等资源。 2. 解析 CSS 构建 CSSOM 树：CSS 规则转换为样式映射，并级联计算出每个节点的计算样式。等待 CSS 不会阻塞 HTML 解析，但会阻塞后续 JS 执行。 3. 合成渲染树（Render Tree）：合并 DOM 与 CSSOM，只包含可见节点（display:none 的不包含，visibility:hidden 包含）。 4. 布局（Layout / Reflow）：计算渲染树中每个节点的几何信息（大小、位置）。首次计算叫布局，后续重新计算叫重排。 5. 绘制（Paint）：将每个节点转为屏幕像素（文本、颜色、边框、阴影等）。 6. 合成（Composite）：将不同图层按正确顺序合并到屏幕（如 opacity、transform、will-change 会提升为独立图层，在 GPU 上合成）。 阻塞要点：JS 会阻塞解析（除非 async/defer）；CSSOM 未就绪会阻塞 JS 执行；首屏渲染依赖 14KB 关键 CSS/HTML。优化方向是减少 CRP 长度、尽早下载关键资源、合理使用 async/defer。","url":"https://itinterview.com.cn/#/question/558"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">页面重构工程师</span><span class="chip tag">浏览器渲染</span><span class="chip tag">关键渲染路径</span><span class="chip tag">DOM</span><span class="chip tag">CSSOM</span></div>
     <div class="card"><h2>题目</h2><p>请描述浏览器渲染一个页面所经历的主要流程，重点说明关键渲染路径（Critical Rendering Path）中的几个阶段：解析 HTML/CSS、构建 DOM/CSSOM、生成渲染树、布局（Layout）、绘制（Paint）与合成（Composite），并指出 script 和 CSS 在流程中的阻塞关系。</p></div>
@@ -84,12 +84,12 @@
 <li><strong>合成（Composite）</strong>：将不同图层按正确顺序合并到屏幕（如 <code>opacity</code>、<code>transform</code>、<code>will-change</code> 会提升为独立图层，在 GPU 上合成）。</li>
 </ol>
 <p><strong>阻塞要点</strong>：JS 会阻塞解析（除非 async/defer）；CSSOM 未就绪会阻塞 JS 执行；首屏渲染依赖 14KB 关键 CSS/HTML。优化方向是减少 CRP 长度、尽早下载关键资源、合理使用 async/defer。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/558">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/558">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=56&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=56&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

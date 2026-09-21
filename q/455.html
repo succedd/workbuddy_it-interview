@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？ · IT面试题库">
   <meta property="og:description" content="先看三个维度：基数、频率、单调性 基数（cardinality）决定 balancer 最多能切出多少个 chunk：每个唯一分片键值同一时刻只能落在一个 chunk 内。用 continent 分片，基数只有 7，集群最多 7 个 chunk、加再多分片也没用。低基数字段必须组成复合分片键提高基数。 频率（fr…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/455.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/455.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="先看三个维度：基数、频率、单调性 基数（cardinality）决定 balancer 最多能切出多少个 chunk：每个唯一分片键值同一时刻只能落在一个 chunk 内。用 continent 分片，基数只有 7，集群最多 7 个 chunk、加再多分片也没用。低基数字段必须组成复合分片键提高基数。 频率（fr…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/455.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？","text":"分片键决定了文档在分片间的分布，也决定了查询是定向路由还是全分片广播。请结合基数、频率、单调性和查询模式给出选型思路与反面案例。","answerCount":1,"datePublished":"2026-09-03T00:54:37.016Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先看三个维度：基数、频率、单调性 基数（cardinality）决定 balancer 最多能切出多少个 chunk：每个唯一分片键值同一时刻只能落在一个 chunk 内。用 continent 分片，基数只有 7，集群最多 7 个 chunk、加再多分片也没用。低基数字段必须组成复合分片键提高基数。 频率（frequency）指某个分片键值出现得多频繁：如果大部分文档集中在少数几个值上，对应 chunk 会持续膨胀，最终变成无法再切分的 jumbo chunk，水平扩展直接失效。此时用唯一值或低频值组成复合键。 单调性（monotonicity）是最常见的坑：每个集群都有一个上界为 MaxKey 的 chunk，若分片键单调递增（自增 _id、时间戳），所有新写入都会打到这一个 chunk 上，落在同一分片，形成写入热点——插入压力全压在一台机器，而其他分片空转。MongoDB 会在 chunk 拆分时把含 maxKey 的新 chunk 挪到别的分片来缓解，但治标不治本。单调递增场景应改用哈希分片（{field: 'hashed'}）或用「低频前缀 + 高基数字段」的复合键。 再看查询模式 查询条件带分片键时，mongos 只把请求路由到相关分片（targeted operation）；不带分片键就是 scatter-gather 广播到全部分片，分片越多越慢、无法线性扩展。所以分片键要同时覆盖最频繁的查询/更新条件。 例外：需要对海量数据做聚合分析时，scatter-gather 反而是并行计算的优点，不必强求。 约束与运维 分片键字段必须有索引（单字段索引或复合索引前缀）；分片后分片键值不可变（_id 除外，其他字段理论上可改但会触发跨分片迁移，代价高）；字段值有大小限制；集合上的唯一索引必须以分片键为前缀，否则无法保证全局唯一。 选错了代价很大：早期只能忍受，MongoDB 5.0+ 可用 reshardCollection 换分片键、用 refineCollectionShardKey 追加后缀字段；7.0 起可用 analyzeShardKey 基于采样查询量化评估候选键的基数/频率/单调性与读写分布，选型时应优先用它做数据驱动的判断。","url":"https://it-interview-889.pages.dev/#/question/455"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/455.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？","text":"分片键决定了文档在分片间的分布，也决定了查询是定向路由还是全分片广播。请结合基数、频率、单调性和查询模式给出选型思路与反面案例。","answerCount":1,"datePublished":"2026-09-03T00:54:37.016Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先看三个维度：基数、频率、单调性 基数（cardinality）决定 balancer 最多能切出多少个 chunk：每个唯一分片键值同一时刻只能落在一个 chunk 内。用 continent 分片，基数只有 7，集群最多 7 个 chunk、加再多分片也没用。低基数字段必须组成复合分片键提高基数。 频率（frequency）指某个分片键值出现得多频繁：如果大部分文档集中在少数几个值上，对应 chunk 会持续膨胀，最终变成无法再切分的 jumbo chunk，水平扩展直接失效。此时用唯一值或低频值组成复合键。 单调性（monotonicity）是最常见的坑：每个集群都有一个上界为 MaxKey 的 chunk，若分片键单调递增（自增 _id、时间戳），所有新写入都会打到这一个 chunk 上，落在同一分片，形成写入热点——插入压力全压在一台机器，而其他分片空转。MongoDB 会在 chunk 拆分时把含 maxKey 的新 chunk 挪到别的分片来缓解，但治标不治本。单调递增场景应改用哈希分片（{field: 'hashed'}）或用「低频前缀 + 高基数字段」的复合键。 再看查询模式 查询条件带分片键时，mongos 只把请求路由到相关分片（targeted operation）；不带分片键就是 scatter-gather 广播到全部分片，分片越多越慢、无法线性扩展。所以分片键要同时覆盖最频繁的查询/更新条件。 例外：需要对海量数据做聚合分析时，scatter-gather 反而是并行计算的优点，不必强求。 约束与运维 分片键字段必须有索引（单字段索引或复合索引前缀）；分片后分片键值不可变（_id 除外，其他字段理论上可改但会触发跨分片迁移，代价高）；字段值有大小限制；集合上的唯一索引必须以分片键为前缀，否则无法保证全局唯一。 选错了代价很大：早期只能忍受，MongoDB 5.0+ 可用 reshardCollection 换分片键、用 refineCollectionShardKey 追加后缀字段；7.0 起可用 analyzeShardKey 基于采样查询量化评估候选键的基数/频率/单调性与读写分布，选型时应优先用它做数据驱动的判断。","url":"https://itinterview.com.cn/#/question/455"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">数据库架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">MongoDB</span><span class="chip tag">分片键</span><span class="chip tag">水平扩展</span></div>
     <div class="card"><h2>题目</h2><p>分片键决定了文档在分片间的分布，也决定了查询是定向路由还是全分片广播。请结合基数、频率、单调性和查询模式给出选型思路与反面案例。</p></div>
@@ -89,12 +89,12 @@
 <li>分片键字段必须有索引（单字段索引或复合索引前缀）；分片后分片键值不可变（<code>_id</code> 除外，其他字段理论上可改但会触发跨分片迁移，代价高）；字段值有大小限制；集合上的唯一索引必须以分片键为前缀，否则无法保证全局唯一。</li>
 <li>选错了代价很大：早期只能忍受，MongoDB 5.0+ 可用 <code>reshardCollection</code> 换分片键、用 <code>refineCollectionShardKey</code> 追加后缀字段；7.0 起可用 <code>analyzeShardKey</code> 基于采样查询量化评估候选键的基数/频率/单调性与读写分布，选型时应优先用它做数据驱动的判断。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/455">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/455">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=34&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=34&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

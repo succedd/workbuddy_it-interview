@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？ · IT面试题库">
   <meta property="og:description" content="LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/492.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/492.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？ · IT面试题库">
   <meta name="twitter:description" content="LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/492.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？","text":"请说明自顶向下（LL）与自底向上（LR）分析的基本原理、对文法的要求，以及常见变体（如 LL(1)、LR(0)/SLR/LALR/LR(1)）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分析器。 优点：直观、易手写；缺点：能分析的文法类较小。 LR 分析（自底向上，Left-to-right scan, Rightmost derivation in reverse）： 从左向右扫描、最右推导逆过程（规约），用状态栈 + 移进/规约动作表，从叶子逐步规约到开始符号。 变体能力递增：LR(0) \u003c SLR \u003c LALR(1) \u003c LR(1)（CLRLR）。LALR 因表小而实用（如 Yacc/Bison 默认），LR(1) 最强大但状态爆炸。 优点：能分析绝大多数上下文无关文法，错误定位早；缺点：手工构造难，依赖自动生成工具。 对比：LL 简单但文法受限、需改造；LR 能力强、覆盖广，是工业编译器后端主力。","url":"https://it-interview-889.pages.dev/#/question/492"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/492.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？","text":"请说明自顶向下（LL）与自底向上（LR）分析的基本原理、对文法的要求，以及常见变体（如 LL(1)、LR(0)/SLR/LALR/LR(1)）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"LL 分析（自顶向下，Left-to-right scan, Leftmost derivation）： 从左向右扫描、最左推导，用预测分析表 + 栈构造分析树，试图从开始符号推导出输入。 典型 LL(1)：向前看 1 个 Token 即可唯一决定产生式，要求无左递归、无二义、提取左公因子。工具：递归下降、预测分析器。 优点：直观、易手写；缺点：能分析的文法类较小。 LR 分析（自底向上，Left-to-right scan, Rightmost derivation in reverse）： 从左向右扫描、最右推导逆过程（规约），用状态栈 + 移进/规约动作表，从叶子逐步规约到开始符号。 变体能力递增：LR(0) \u003c SLR \u003c LALR(1) \u003c LR(1)（CLRLR）。LALR 因表小而实用（如 Yacc/Bison 默认），LR(1) 最强大但状态爆炸。 优点：能分析绝大多数上下文无关文法，错误定位早；缺点：手工构造难，依赖自动生成工具。 对比：LL 简单但文法受限、需改造；LR 能力强、覆盖广，是工业编译器后端主力。","url":"https://itinterview.com.cn/#/question/492"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>LL 分析与 LR 分析有何区别？各自的能力和适用场景如何？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">编译器工程师</span><span class="chip tag">LL</span><span class="chip tag">LR</span><span class="chip tag">语法分析</span></div>
     <div class="card"><h2>题目</h2><p>请说明自顶向下（LL）与自底向上（LR）分析的基本原理、对文法的要求，以及常见变体（如 LL(1)、LR(0)/SLR/LALR/LR(1)）。</p></div>
@@ -86,12 +86,12 @@
 <li>优点：能分析绝大多数上下文无关文法，错误定位早；缺点：手工构造难，依赖自动生成工具。</li>
 </ul>
 <p><strong>对比</strong>：LL 简单但文法受限、需改造；LR 能力强、覆盖广，是工业编译器后端主力。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/492">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/492">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=7&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=7&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

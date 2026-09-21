@@ -24,7 +24,7 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCAL_DATA = os.path.join(ROOT, 'data', 'published.json')
-SITE = 'https://it-interview.is-a.dev'
+SITE = 'https://itinterview.com.cn'  # 2026-09-21：is-a.dev 已被官方下架，改用自购域名
 RAW = 'https://raw.githubusercontent.com/succedd/workbuddy_it-interview/{br}/q/{qid}.html'
 REPO = 'https://github.com/succedd/workbuddy_it-interview.git'
 

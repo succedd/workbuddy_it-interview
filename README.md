@@ -1,6 +1,6 @@
 # IT 面试题库管理系统
 
-[![Site](https://img.shields.io/badge/在线访问-it--interview-889.pages.dev-2563EB)](https://it-interview-889.pages.dev)
+[![Site](https://img.shields.io/badge/在线访问-itinterview.com.cn-2563EB)](https://itinterview.com.cn)
 [![GitHub](https://img.shields.io/badge/GitHub-succedd/workbuddy__it--interview-181717?logo=github)](https://github.com/succedd/workbuddy_it-interview)
 
 纯静态、无后端的 IT 各岗位面试题库管理与刷题平台。前端全部使用原生 HTML/CSS/JS 实现，数据默认存在浏览器 IndexedDB 中；题库快照通过 GitHub Pages 分发，支持"访客自动同步云端题库 + 管理员一键发布到 GitHub"。

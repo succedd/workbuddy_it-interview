@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 三种发布策略的对比： 滚动发布（Rolling）：逐批替换实例，不需要双倍资源，是 K8s 默认策略。风险：发布期间新旧版本共存，必须兼容；回滚需要再滚一遍（慢）； 蓝绿部署（Blue-Green）：准备一套完整的新环境（绿），验证后在负载均衡层一键切换全部流量。优势：切换与回滚都极快（秒级）、验证充分；…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1067.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1067.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三种发布策略的对比： 滚动发布（Rolling）：逐批替换实例，不需要双倍资源，是 K8s 默认策略。风险：发布期间新旧版本共存，必须兼容；回滚需要再滚一遍（慢）； 蓝绿部署（Blue-Green）：准备一套完整的新环境（绿），验证后在负载均衡层一键切换全部流量。优势：切换与回滚都极快（秒级）、验证充分；…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1067.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？","text":"考察点：发布策略对比、流量治理、压测的隔离要求。属于「上线工程」的高阶题。","answerCount":1,"datePublished":"2026-09-10T11:54:16.249Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三种发布策略的对比： 滚动发布（Rolling）：逐批替换实例，不需要双倍资源，是 K8s 默认策略。风险：发布期间新旧版本共存，必须兼容；回滚需要再滚一遍（慢）； 蓝绿部署（Blue-Green）：准备一套完整的新环境（绿），验证后在负载均衡层一键切换全部流量。优势：切换与回滚都极快（秒级）、验证充分；成本：需要双倍资源；难点：数据库变更无法「一键切换」（新版本改了 schema，切回旧版本会崩）——所以蓝绿只解决「应用层」的原子切换； 灰度/金丝雀（Canary）：只把小部分流量给新版本，观察指标后逐步放量。优势：风险最小、资源增量小；代价是发布周期长，且需要完整的流量治理能力（按用户/header/权重路由，见网关题）。 选择依据：资源充足且要求「秒级回滚」→ 蓝绿；追求「最小风险」且能承受慢→ 灰度；普通迭代 → 滚动 + 自动化的健康检查与回滚。 数据库变更才是发布最大的难点（务必点出）：应用可以多版本共存，数据库结构不能。正确做法是两阶段（Expand-Contract）： 1. 扩展阶段：先加新列/新表（只加不改），代码双写或兼容读； 2. 数据迁移与回填（后台任务，可断点续跑）； 3. 切读新字段，观察一段时间； 4. 收缩阶段：确认旧版本已全部下线，再删旧列。 任何「删除/改名/改类型」的变更都必须单独发版、且在旧版本彻底下线之后——这是跨版本发布失败的第一大原因。 全链路压测的落地要点： 为什么要全链路：单接口压测无法发现下游容量瓶颈、连接池耗尽、缓存穿透、限流阈值不合理——真实故障往往出现在链路的第 3、4 跳； 核心是「隔离」：压测流量必须在数据层面与真实用户隔离，否则会产生脏订单/脏消息。手段：流量染色（压测请求带特殊标记，全链路透传）、影子表/影子库、消息的压测 Topic、mock 第三方（支付、短信绝不能真调）； 必须做的三件事：① 压测前确认数据隔离方案无误（这是红线，压出脏数据比不压更糟）；② 压测期间监控全链路，记录每个环节的容量水位与瓶颈点；③ 压测后产出容量报告（各服务能扛多少 QPS、瓶颈在哪、扩几台能扛住峰值）并据此设定限流阈值与告警线； 常规形态：全链路压测一般定期（如大促前）做一次即可，成本高；日常用单服务压测 + 关键路径压测覆盖。 共同的基础设施依赖：服务治理要做到上面这些，前提是流量可标识、可路由、可观测——也就是：统一的流量打标能力、动态路由/权重配置（配置中心）、分版本/分用户的细粒度指标。没有这三样，灰度与压测都只能停留在 PPT 上。","url":"https://it-interview-889.pages.dev/#/question/1067"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1067.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？","text":"考察点：发布策略对比、流量治理、压测的隔离要求。属于「上线工程」的高阶题。","answerCount":1,"datePublished":"2026-09-10T11:54:16.249Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三种发布策略的对比： 滚动发布（Rolling）：逐批替换实例，不需要双倍资源，是 K8s 默认策略。风险：发布期间新旧版本共存，必须兼容；回滚需要再滚一遍（慢）； 蓝绿部署（Blue-Green）：准备一套完整的新环境（绿），验证后在负载均衡层一键切换全部流量。优势：切换与回滚都极快（秒级）、验证充分；成本：需要双倍资源；难点：数据库变更无法「一键切换」（新版本改了 schema，切回旧版本会崩）——所以蓝绿只解决「应用层」的原子切换； 灰度/金丝雀（Canary）：只把小部分流量给新版本，观察指标后逐步放量。优势：风险最小、资源增量小；代价是发布周期长，且需要完整的流量治理能力（按用户/header/权重路由，见网关题）。 选择依据：资源充足且要求「秒级回滚」→ 蓝绿；追求「最小风险」且能承受慢→ 灰度；普通迭代 → 滚动 + 自动化的健康检查与回滚。 数据库变更才是发布最大的难点（务必点出）：应用可以多版本共存，数据库结构不能。正确做法是两阶段（Expand-Contract）： 1. 扩展阶段：先加新列/新表（只加不改），代码双写或兼容读； 2. 数据迁移与回填（后台任务，可断点续跑）； 3. 切读新字段，观察一段时间； 4. 收缩阶段：确认旧版本已全部下线，再删旧列。 任何「删除/改名/改类型」的变更都必须单独发版、且在旧版本彻底下线之后——这是跨版本发布失败的第一大原因。 全链路压测的落地要点： 为什么要全链路：单接口压测无法发现下游容量瓶颈、连接池耗尽、缓存穿透、限流阈值不合理——真实故障往往出现在链路的第 3、4 跳； 核心是「隔离」：压测流量必须在数据层面与真实用户隔离，否则会产生脏订单/脏消息。手段：流量染色（压测请求带特殊标记，全链路透传）、影子表/影子库、消息的压测 Topic、mock 第三方（支付、短信绝不能真调）； 必须做的三件事：① 压测前确认数据隔离方案无误（这是红线，压出脏数据比不压更糟）；② 压测期间监控全链路，记录每个环节的容量水位与瓶颈点；③ 压测后产出容量报告（各服务能扛多少 QPS、瓶颈在哪、扩几台能扛住峰值）并据此设定限流阈值与告警线； 常规形态：全链路压测一般定期（如大促前）做一次即可，成本高；日常用单服务压测 + 关键路径压测覆盖。 共同的基础设施依赖：服务治理要做到上面这些，前提是流量可标识、可路由、可观测——也就是：统一的流量打标能力、动态路由/权重配置（配置中心）、分版本/分用户的细粒度指标。没有这三样，灰度与压测都只能停留在 PPT 上。","url":"https://itinterview.com.cn/#/question/1067"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">服务治理</span><span class="chip tag">灰度发布</span><span class="chip tag">蓝绿部署</span><span class="chip tag">全链路压测</span><span class="chip tag">数据库变更</span></div>
     <div class="card"><h2>题目</h2><p>考察点：发布策略对比、流量治理、压测的隔离要求。属于「上线工程」的高阶题。</p></div>
@@ -99,12 +99,12 @@
 <ul>
 <li><strong>共同的基础设施依赖</strong>：服务治理要做到上面这些，前提是<strong>流量可标识、可路由、可观测</strong>——也就是：统一的<strong>流量打标能力</strong>、<strong>动态路由/权重配置</strong>（配置中心）、<strong>分版本/分用户的细粒度指标</strong>。<strong>没有这三样，灰度与压测都只能停留在 PPT 上。</strong></li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1067">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1067">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=132&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=132&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

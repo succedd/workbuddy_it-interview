@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Elasticsearch 查询第 1000 页（from=9990, size=10）时超时甚至节点 OOM，根因是什么？有哪些替代方案？ · IT面试题库">
   <meta property="og:description" content="根因：深分页是「全局排序 + 全分片重算」 搜索请求通常跨越多个分片。每个分片都必须把前面所有页的命中结果（即 from + size 条）加载进内存并排序，再返回给协调节点。 协调节点需要合并排序 分片数 × (from + size) 条文档。翻到第 1000 页时，即使只展示 10 条，集群也要在内存里排序…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/456.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/456.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Elasticsearch 查询第 1000 页（from=9990, size=10）时超时甚至节点 OOM，根因是什么？有哪些替代方案？ · IT面试题库">
   <meta name="twitter:description" content="根因：深分页是「全局排序 + 全分片重算」 搜索请求通常跨越多个分片。每个分片都必须把前面所有页的命中结果（即 from + size 条）加载进内存并排序，再返回给协调节点。 协调节点需要合并排序 分片数 × (from + size) 条文档。翻到第 1000 页时，即使只展示 10 条，集群也要在内存里排序…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/456.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Elasticsearch 查询第 1000 页（from=9990, size=10）时超时甚至节点 OOM，根因是什么？有哪些替代方案？","text":"业务反馈后台导出和「跳页」功能经常超时，集群出现 circuit_breaking_exception 和节点掉线。请从分布式检索的执行过程说明根因，并给出可行的分页方案。","answerCount":1,"datePublished":"2026-09-03T00:54:39.567Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：深分页是「全局排序 + 全分片重算」 搜索请求通常跨越多个分片。每个分片都必须把前面所有页的命中结果（即 from + size 条）加载进内存并排序，再返回给协调节点。 协调节点需要合并排序 分片数 × (from + size) 条文档。翻到第 1000 页时，即使只展示 10 条，集群也要在内存里排序、丢弃数万条结果，内存与 CPU 暴涨，直接表现为超时、circuit_breaking_exception，甚至节点 OOM 掉线。 硬限制：默认不能用 from/size 翻过 10000 条，这是 index.max_result_window 设的保护阈值。盲目调大该参数只是把 OOM 风险往后推。 附带问题：ES 用 Lucene 内部 doc ID 作为同分排序的 tie-breaker，同一数据的不同副本 doc ID 可能不同，排序值相同的文档在翻页时顺序可能不一致。 方案一：search_after（实时深分页首选） 用上一页最后一条的 sort 值作为下一页的游标，每次请求 query 与 sort 必须完全一致，且 from 必须为 0 或 -1。 排序必须带一个全局唯一的 tie-breaker 字段（通常是 _id 的 doc_values 副本），否则翻页可能漏数据或重复。 配合 PIT（Point In Time） 使用：POST /my-index/_pit?keep_alive=1m 拿到 PIT ID，后续请求带上它，保证翻页期间看到的是同一份索引快照；PIT 会自动附加 _shard_doc 隐式 tie-breaker。用完要主动 DELETE /_pit 释放。不需要总数时可加 track_total_hits: false 提速。 局限：无跳转能力，只能「下一页」，适合信息流/无限滚动。 方案二：scroll（仅离线批量导出） 官方已不建议用 scroll 做深分页。它是快照式游标，适合把索引全量重索引到新索引这类离线批处理；结果反映的是初始请求时刻的数据状态，且搜索上下文占用集群资源。 方案三：从产品侧规避 限制可翻页数（如最多 100 页）、改用「按时间/ID 区间筛选」代替跳页、导出场景走异步任务 + _doc 顺序全量拉取。","url":"https://it-interview-889.pages.dev/#/question/456"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/456.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Elasticsearch 查询第 1000 页（from=9990, size=10）时超时甚至节点 OOM，根因是什么？有哪些替代方案？","text":"业务反馈后台导出和「跳页」功能经常超时，集群出现 circuit_breaking_exception 和节点掉线。请从分布式检索的执行过程说明根因，并给出可行的分页方案。","answerCount":1,"datePublished":"2026-09-03T00:54:39.567Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：深分页是「全局排序 + 全分片重算」 搜索请求通常跨越多个分片。每个分片都必须把前面所有页的命中结果（即 from + size 条）加载进内存并排序，再返回给协调节点。 协调节点需要合并排序 分片数 × (from + size) 条文档。翻到第 1000 页时，即使只展示 10 条，集群也要在内存里排序、丢弃数万条结果，内存与 CPU 暴涨，直接表现为超时、circuit_breaking_exception，甚至节点 OOM 掉线。 硬限制：默认不能用 from/size 翻过 10000 条，这是 index.max_result_window 设的保护阈值。盲目调大该参数只是把 OOM 风险往后推。 附带问题：ES 用 Lucene 内部 doc ID 作为同分排序的 tie-breaker，同一数据的不同副本 doc ID 可能不同，排序值相同的文档在翻页时顺序可能不一致。 方案一：search_after（实时深分页首选） 用上一页最后一条的 sort 值作为下一页的游标，每次请求 query 与 sort 必须完全一致，且 from 必须为 0 或 -1。 排序必须带一个全局唯一的 tie-breaker 字段（通常是 _id 的 doc_values 副本），否则翻页可能漏数据或重复。 配合 PIT（Point In Time） 使用：POST /my-index/_pit?keep_alive=1m 拿到 PIT ID，后续请求带上它，保证翻页期间看到的是同一份索引快照；PIT 会自动附加 _shard_doc 隐式 tie-breaker。用完要主动 DELETE /_pit 释放。不需要总数时可加 track_total_hits: false 提速。 局限：无跳转能力，只能「下一页」，适合信息流/无限滚动。 方案二：scroll（仅离线批量导出） 官方已不建议用 scroll 做深分页。它是快照式游标，适合把索引全量重索引到新索引这类离线批处理；结果反映的是初始请求时刻的数据状态，且搜索上下文占用集群资源。 方案三：从产品侧规避 限制可翻页数（如最多 100 页）、改用「按时间/ID 区间筛选」代替跳页、导出场景走异步任务 + _doc 顺序全量拉取。","url":"https://itinterview.com.cn/#/question/456"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Elasticsearch 查询第 1000 页（from=9990, size=10）时超时甚至节点 OOM，根因是什么？有哪些替代方案？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">搜索算法工程师</span><span class="chip tag">Elasticsearch</span><span class="chip tag">深度分页</span><span class="chip tag">search_after</span></div>
     <div class="card"><h2>题目</h2><p>业务反馈后台导出和「跳页」功能经常超时，集群出现 circuit_breaking_exception 和节点掉线。请从分布式检索的执行过程说明根因，并给出可行的分页方案。</p></div>
@@ -95,12 +95,12 @@
 <ul>
 <li>限制可翻页数（如最多 100 页）、改用「按时间/ID 区间筛选」代替跳页、导出场景走异步任务 + <code>_doc</code> 顺序全量拉取。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/456">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/456">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=38&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=38&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

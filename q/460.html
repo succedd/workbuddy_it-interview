@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="OWASP Top 10 2025 相比 2021 版有哪些主要变化？新增了哪些风险类别？ · IT面试题库">
   <meta property="og:description" content="一、2025 版十大类别 OWASP Top 10 2025 是该项目自 2003 年以来的第八版，共两个新增类别、一次扩展合并： 1. A01 失效的访问控制（Broken Access Control）——连续两届排名第一，平均 3.73% 的被测应用命中该类的 40 个 CWE；SSRF 已被并入本类 2.…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/460.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/460.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="OWASP Top 10 2025 相比 2021 版有哪些主要变化？新增了哪些风险类别？ · IT面试题库">
   <meta name="twitter:description" content="一、2025 版十大类别 OWASP Top 10 2025 是该项目自 2003 年以来的第八版，共两个新增类别、一次扩展合并： 1. A01 失效的访问控制（Broken Access Control）——连续两届排名第一，平均 3.73% 的被测应用命中该类的 40 个 CWE；SSRF 已被并入本类 2.…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/460.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"OWASP Top 10 2025 相比 2021 版有哪些主要变化？新增了哪些风险类别？","text":"OWASP Top 10 是 Web 应用安全风险的权威榜单，面试常用来考察候选人对安全风险演进的跟踪程度。请说明 2025 版（第八版）的十个类别，并重点讲清相对 2021 版新增、扩展与更名的部分。","answerCount":1,"datePublished":"2026-09-03T00:55:26.992Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、2025 版十大类别 OWASP Top 10 2025 是该项目自 2003 年以来的第八版，共两个新增类别、一次扩展合并： 1. A01 失效的访问控制（Broken Access Control）——连续两届排名第一，平均 3.73% 的被测应用命中该类的 40 个 CWE；SSRF 已被并入本类 2. A02 安全配置错误（Security Misconfiguration）——从 2021 年的第 5 位升到第 2 位，平均 3.00% 3. A03 软件供应链故障（Software Supply Chain Failures）——新增 4. A04 加密失败（Cryptographic Failures）——从第 2 位降到第 4 位，平均 3.80% 5. A05 注入（Injection）——从第 3 位降到第 5 位，涵盖从 XSS（高频低影响）到 SQL 注入（低频高影响） 6. A06 不安全设计（Insecure Design）——从第 4 位降到第 6 位 7. A07 认证失败（Authentication Failures）——维持第 7 位，名称去掉了原有的「身份识别」前缀 8. A08 软件或数据完整性故障（Software or Data Integrity Failures）——维持第 8 位 9. A09 安全日志与告警失败（Security Logging & Alerting Failures）——维持第 9 位，更名强调 alerting 10. A10 异常条件处理不当（Mishandling of Exceptional Conditions）——新增 二、三个关键变化 A03 是 A06:2021「易受攻击和过时的组件」的扩展：范围从依赖组件本身扩大到整个依赖生态、构建系统和分发基础设施。它在数据中出现的次数最少（只有 5 个 CWE），却是社区投票中最受关注的议题，且 CVE 的平均可利用性与影响分最高——官方认为数据偏低是因为这一类目前难以被自动化检测覆盖。 A10 是全新类别，包含 24 个 CWE，聚焦错误处理不当、逻辑错误、fail open 等系统在异常状态下失效的场景。 A09 更名为「安全日志与告警失败」。官方明确表态：只有日志而没有告警，对识别安全事件几乎没有价值。 三、两个方法论上的变化 1. 聚焦根因而非症状。例如用「加密失败」而不是「敏感数据泄露」，用「失效的访问控制」而不是「越权读取他人数据」。这样更容易给出可落地的整改指引。本版共纳入 589 个 CWE 参与分析（2021 年约 400 个，2017 年约 30 个），并为每个类别的 CWE 数量设了 40 的上限，平均每类 25 个。 2. 数据采集口径改变。统计的是「被测应用中至少命中一次某 CWE 的比例」，而不是漏洞出现次数——手工测试往往只报一次，自动化扫描会逐条上报，统计频次反而会掩盖真实的流行度。 四、面试可以补的落地动作 Top 10 应当作为体检清单而不是标准答案：结合自身业务做威胁建模，优先堵 A01 越权与 A02 配置错误——这两类投入产出比最高；再建立 A03 依赖清单（SBOM）与构建链路的完整性校验。","url":"https://it-interview-889.pages.dev/#/question/460"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/460.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"OWASP Top 10 2025 相比 2021 版有哪些主要变化？新增了哪些风险类别？","text":"OWASP Top 10 是 Web 应用安全风险的权威榜单，面试常用来考察候选人对安全风险演进的跟踪程度。请说明 2025 版（第八版）的十个类别，并重点讲清相对 2021 版新增、扩展与更名的部分。","answerCount":1,"datePublished":"2026-09-03T00:55:26.992Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、2025 版十大类别 OWASP Top 10 2025 是该项目自 2003 年以来的第八版，共两个新增类别、一次扩展合并： 1. A01 失效的访问控制（Broken Access Control）——连续两届排名第一，平均 3.73% 的被测应用命中该类的 40 个 CWE；SSRF 已被并入本类 2. A02 安全配置错误（Security Misconfiguration）——从 2021 年的第 5 位升到第 2 位，平均 3.00% 3. A03 软件供应链故障（Software Supply Chain Failures）——新增 4. A04 加密失败（Cryptographic Failures）——从第 2 位降到第 4 位，平均 3.80% 5. A05 注入（Injection）——从第 3 位降到第 5 位，涵盖从 XSS（高频低影响）到 SQL 注入（低频高影响） 6. A06 不安全设计（Insecure Design）——从第 4 位降到第 6 位 7. A07 认证失败（Authentication Failures）——维持第 7 位，名称去掉了原有的「身份识别」前缀 8. A08 软件或数据完整性故障（Software or Data Integrity Failures）——维持第 8 位 9. A09 安全日志与告警失败（Security Logging & Alerting Failures）——维持第 9 位，更名强调 alerting 10. A10 异常条件处理不当（Mishandling of Exceptional Conditions）——新增 二、三个关键变化 A03 是 A06:2021「易受攻击和过时的组件」的扩展：范围从依赖组件本身扩大到整个依赖生态、构建系统和分发基础设施。它在数据中出现的次数最少（只有 5 个 CWE），却是社区投票中最受关注的议题，且 CVE 的平均可利用性与影响分最高——官方认为数据偏低是因为这一类目前难以被自动化检测覆盖。 A10 是全新类别，包含 24 个 CWE，聚焦错误处理不当、逻辑错误、fail open 等系统在异常状态下失效的场景。 A09 更名为「安全日志与告警失败」。官方明确表态：只有日志而没有告警，对识别安全事件几乎没有价值。 三、两个方法论上的变化 1. 聚焦根因而非症状。例如用「加密失败」而不是「敏感数据泄露」，用「失效的访问控制」而不是「越权读取他人数据」。这样更容易给出可落地的整改指引。本版共纳入 589 个 CWE 参与分析（2021 年约 400 个，2017 年约 30 个），并为每个类别的 CWE 数量设了 40 的上限，平均每类 25 个。 2. 数据采集口径改变。统计的是「被测应用中至少命中一次某 CWE 的比例」，而不是漏洞出现次数——手工测试往往只报一次，自动化扫描会逐条上报，统计频次反而会掩盖真实的流行度。 四、面试可以补的落地动作 Top 10 应当作为体检清单而不是标准答案：结合自身业务做威胁建模，优先堵 A01 越权与 A02 配置错误——这两类投入产出比最高；再建立 A03 依赖清单（SBOM）与构建链路的完整性校验。","url":"https://itinterview.com.cn/#/question/460"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>OWASP Top 10 2025 相比 2021 版有哪些主要变化？新增了哪些风险类别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">渗透测试工程师</span><span class="chip tag">OWASP Top 10</span><span class="chip tag">Web安全</span><span class="chip tag">安全趋势</span></div>
     <div class="card"><h2>题目</h2><p>OWASP Top 10 是 Web 应用安全风险的权威榜单，面试常用来考察候选人对安全风险演进的跟踪程度。请说明 2025 版（第八版）的十个类别，并重点讲清相对 2021 版新增、扩展与更名的部分。</p></div>
@@ -100,12 +100,12 @@
 </ol>
 <h3>四、面试可以补的落地动作</h3>
 <p>Top 10 应当作为<strong>体检清单</strong>而不是标准答案：结合自身业务做威胁建模，优先堵 A01 越权与 A02 配置错误——这两类投入产出比最高；再建立 A03 依赖清单（SBOM）与构建链路的完整性校验。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/460">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/460">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=203&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=203&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring 事务的 7 种传播行为分别是什么，各自语义为何？ · IT面试题库">
   <meta property="og:description" content="REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1114.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1114.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 事务的 7 种传播行为分别是什么，各自语义为何？ · IT面试题库">
   <meta name="twitter:description" content="REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1114.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 事务的 7 种传播行为分别是什么，各自语义为何？","text":"请梳理 REQUIRED、SUPPORTS、MANDATORY、REQUIRES_NEW、NOT_SUPPORTED、NEVER、NESTED 七种传播行为的语义与典型适用场景。","answerCount":1,"datePublished":"2026-09-13T02:40:15.072Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW：挂起外层事务，新建独立事务，内层提交/回滚与外层互不影响——适合写审计日志、内部独立记账。 NOT_SUPPORTED / NEVER：NOT_SUPPORTED 挂起外层以非事务执行；NEVER 若已存在事务直接抛异常。 NESTED：在当前事务中建保存点，内层回滚只到保存点、外层仍可继续；依赖 JDBC 保存点，且仅同一物理事务（与 REQUIRES_NEW 的「两个物理事务」本质不同）。","url":"https://it-interview-889.pages.dev/#/question/1114"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1114.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 事务的 7 种传播行为分别是什么，各自语义为何？","text":"请梳理 REQUIRED、SUPPORTS、MANDATORY、REQUIRES_NEW、NOT_SUPPORTED、NEVER、NESTED 七种传播行为的语义与典型适用场景。","answerCount":1,"datePublished":"2026-09-13T02:40:15.072Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW：挂起外层事务，新建独立事务，内层提交/回滚与外层互不影响——适合写审计日志、内部独立记账。 NOT_SUPPORTED / NEVER：NOT_SUPPORTED 挂起外层以非事务执行；NEVER 若已存在事务直接抛异常。 NESTED：在当前事务中建保存点，内层回滚只到保存点、外层仍可继续；依赖 JDBC 保存点，且仅同一物理事务（与 REQUIRES_NEW 的「两个物理事务」本质不同）。","url":"https://itinterview.com.cn/#/question/1114"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Spring 事务的 7 种传播行为分别是什么，各自语义为何？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">事务传播</span><span class="chip tag">Propagation</span></div>
     <div class="card"><h2>题目</h2><p>请梳理 REQUIRED、SUPPORTS、MANDATORY、REQUIRES_NEW、NOT_SUPPORTED、NEVER、NESTED 七种传播行为的语义与典型适用场景。</p></div>
@@ -78,12 +78,12 @@
 <p><strong>REQUIRES_NEW</strong>：挂起外层事务，新建独立事务，内层提交/回滚与外层互不影响——适合写审计日志、内部独立记账。</p>
 <p><strong>NOT_SUPPORTED / NEVER</strong>：NOT_SUPPORTED 挂起外层以非事务执行；NEVER 若已存在事务直接抛异常。</p>
 <p><strong>NESTED</strong>：在当前事务中建保存点，内层回滚只到保存点、外层仍可继续；依赖 JDBC 保存点，且仅同一物理事务（与 REQUIRES_NEW 的「两个物理事务」本质不同）。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1114">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1114">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=81&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

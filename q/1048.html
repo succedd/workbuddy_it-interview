@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="qiankun 的 JS 沙箱和样式隔离是怎么实现的？为什么仍然会出现全局污染？ · IT面试题库">
   <meta property="og:description" content="要点： JS 沙箱的两种实现： 1. 快照沙箱（SnapshotSandbox）：子应用挂载前记录 window 的所有属性快照，卸载时对比并回滚新增/修改。问题：性能开销随 window 属性数增长；不支持多个子应用同时运行（无法区分谁改的）；且异步回调里对 window 的修改可能在快照之后发生，回滚不到。 …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1048.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1048.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="qiankun 的 JS 沙箱和样式隔离是怎么实现的？为什么仍然会出现全局污染？ · IT面试题库">
   <meta name="twitter:description" content="要点： JS 沙箱的两种实现： 1. 快照沙箱（SnapshotSandbox）：子应用挂载前记录 window 的所有属性快照，卸载时对比并回滚新增/修改。问题：性能开销随 window 属性数增长；不支持多个子应用同时运行（无法区分谁改的）；且异步回调里对 window 的修改可能在快照之后发生，回滚不到。 …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1048.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"qiankun 的 JS 沙箱和样式隔离是怎么实现的？为什么仍然会出现全局污染？","text":"考察点：沙箱机制（快照/Proxy）、样式隔离方案与其失效场景。要求讲出「为什么隔离不彻底」。","answerCount":1,"datePublished":"2026-09-10T11:52:40.665Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： JS 沙箱的两种实现： 1. 快照沙箱（SnapshotSandbox）：子应用挂载前记录 window 的所有属性快照，卸载时对比并回滚新增/修改。问题：性能开销随 window 属性数增长；不支持多个子应用同时运行（无法区分谁改的）；且异步回调里对 window 的修改可能在快照之后发生，回滚不到。 2. Proxy 沙箱（LegacySandbox / ProxySandbox）：用 Proxy 拦截对 window 的读写，每个子应用一份「假 window」，写入落到自己的记录里，读取时先查自己再回落到真 window。这是现代方案，支持多实例并存，性能也更好；但它只能拦截通过 window.xxx 的属性访问。 样式隔离的三种做法： 1. strictStyleIsolation（Shadow DOM）：把子应用挂到 Shadow Root 里，样式与 DOM 完全隔离。代价：外部无法穿透设置样式（主应用主题、UI 库注入的样式进不去），React 事件委托、document.querySelector 会失效，很多 UI 库直接不兼容； 2. experimentalStyleIsolation（动态改写选择器）：给子应用 CSS 加上前缀（如 div[data-qiankun=\"app1\"] .title），是约定式隔离； 3. CSS Modules / scoped 子应用改造：靠子应用自身工程化，最稳但需改造。 为什么污染仍然会发生（核心答案）： JS 侧：① 子应用直接操作 document（插入 script/style、改 title、注册全局事件）、location、localStorage——这些不在 window 代理范围内；② 子应用在 setTimeout / Promise / 事件回调里访问 window，若沙箱已卸载则改到真 window；③ 第三方库在加载时就把东西挂到真实全局（如 jQuery 插件、window.React 的某些用法）；④ 微前端框架注入的公共依赖（如 React）被多个子应用共享改写。 CSS 侧：① 动态插入的 （css-in-js、按需加载的样式）比静态改写的时机晚，前缀改写可能赶不上；② keyframes 名、@font-face、CSS 变量（--primary）是全局命名空间，同名即冲突；③ body/html 上的样式改的是全局，隔离方案管不到；④ 子应用引入的第三方 UI 库重置样式（normalize/reset）会打乱主应用。 工程上的务实解法：强制子应用使用作用域化 CSS（CSS Modules/scoped，禁全局选择器）；统一公共依赖由主应用提供（externals/shared，避免多份 React）；约定子应用不得操作 document 与全局 CSS 变量，把「改 body 样式」收敛成主应用提供 API；用规范化契约代替指望框架自动兜底——沙箱是降低风险，不是消除风险。","url":"https://it-interview-889.pages.dev/#/question/1048"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1048.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"qiankun 的 JS 沙箱和样式隔离是怎么实现的？为什么仍然会出现全局污染？","text":"考察点：沙箱机制（快照/Proxy）、样式隔离方案与其失效场景。要求讲出「为什么隔离不彻底」。","answerCount":1,"datePublished":"2026-09-10T11:52:40.665Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： JS 沙箱的两种实现： 1. 快照沙箱（SnapshotSandbox）：子应用挂载前记录 window 的所有属性快照，卸载时对比并回滚新增/修改。问题：性能开销随 window 属性数增长；不支持多个子应用同时运行（无法区分谁改的）；且异步回调里对 window 的修改可能在快照之后发生，回滚不到。 2. Proxy 沙箱（LegacySandbox / ProxySandbox）：用 Proxy 拦截对 window 的读写，每个子应用一份「假 window」，写入落到自己的记录里，读取时先查自己再回落到真 window。这是现代方案，支持多实例并存，性能也更好；但它只能拦截通过 window.xxx 的属性访问。 样式隔离的三种做法： 1. strictStyleIsolation（Shadow DOM）：把子应用挂到 Shadow Root 里，样式与 DOM 完全隔离。代价：外部无法穿透设置样式（主应用主题、UI 库注入的样式进不去），React 事件委托、document.querySelector 会失效，很多 UI 库直接不兼容； 2. experimentalStyleIsolation（动态改写选择器）：给子应用 CSS 加上前缀（如 div[data-qiankun=\"app1\"] .title），是约定式隔离； 3. CSS Modules / scoped 子应用改造：靠子应用自身工程化，最稳但需改造。 为什么污染仍然会发生（核心答案）： JS 侧：① 子应用直接操作 document（插入 script/style、改 title、注册全局事件）、location、localStorage——这些不在 window 代理范围内；② 子应用在 setTimeout / Promise / 事件回调里访问 window，若沙箱已卸载则改到真 window；③ 第三方库在加载时就把东西挂到真实全局（如 jQuery 插件、window.React 的某些用法）；④ 微前端框架注入的公共依赖（如 React）被多个子应用共享改写。 CSS 侧：① 动态插入的 （css-in-js、按需加载的样式）比静态改写的时机晚，前缀改写可能赶不上；② keyframes 名、@font-face、CSS 变量（--primary）是全局命名空间，同名即冲突；③ body/html 上的样式改的是全局，隔离方案管不到；④ 子应用引入的第三方 UI 库重置样式（normalize/reset）会打乱主应用。 工程上的务实解法：强制子应用使用作用域化 CSS（CSS Modules/scoped，禁全局选择器）；统一公共依赖由主应用提供（externals/shared，避免多份 React）；约定子应用不得操作 document 与全局 CSS 变量，把「改 body 样式」收敛成主应用提供 API；用规范化契约代替指望框架自动兜底——沙箱是降低风险，不是消除风险。","url":"https://itinterview.com.cn/#/question/1048"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>qiankun 的 JS 沙箱和样式隔离是怎么实现的？为什么仍然会出现全局污染？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端架构师</span><span class="chip">前端开发工程师</span><span class="chip tag">微前端</span><span class="chip tag">qiankun</span><span class="chip tag">沙箱</span><span class="chip tag">样式隔离</span><span class="chip tag">Proxy</span></div>
     <div class="card"><h2>题目</h2><p>考察点：沙箱机制（快照/Proxy）、样式隔离方案与其失效场景。要求讲出「为什么隔离不彻底」。</p></div>
@@ -93,12 +93,12 @@
 <ul>
 <li><strong>工程上的务实解法</strong>：强制子应用使用<strong>作用域化 CSS</strong>（CSS Modules/scoped，禁全局选择器）；统一<strong>公共依赖由主应用提供</strong>（<code>externals</code>/shared，避免多份 React）；约定<strong>子应用不得操作 document 与全局 CSS 变量</strong>，把「改 body 样式」收敛成主应用提供 API；用<strong>规范化契约</strong>代替指望框架自动兜底——<strong>沙箱是降低风险，不是消除风险</strong>。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1048">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1048">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=78&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=78&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

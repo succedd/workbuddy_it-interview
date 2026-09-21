@@ -31,7 +31,11 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 /* 历史上用过、需要被替换掉的站点域名（按长度降序，避免子串互相影响） */
-const KNOWN_OLD_HOSTS = ["it-interview.is-a.dev"];
+const KNOWN_OLD_HOSTS = [
+  /* 2026-09-21：is-a.dev 域名被下架后的临时入口，自购域名上线时也要一并替换掉 */
+  "it-interview-889.pages.dev",
+  "it-interview.is-a.dev",
+].sort((a, b) => b.length - a.length); /* 长的在前，避免子串互相影响 */
 
 /* 功能性文件（相对仓库根） */
 const TARGET_FILES = [

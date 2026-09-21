@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="编译过程主要包括哪几个阶段？各阶段输入输出是什么？ · IT面试题库">
   <meta property="og:description" content="典型编译分前端（与源语言相关）与后端（与目标机相关）两大部分，主要阶段： 1. 词法分析（Lexical Analysis）：读入字符流，按词法规则切分为单词（Token）序列，剔除空白/注释。工具如 Lex/Flex。输入：字符流；输出：Token 流。 2. 语法分析（Syntax Analysis）：根据文…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/491.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/491.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="编译过程主要包括哪几个阶段？各阶段输入输出是什么？ · IT面试题库">
   <meta name="twitter:description" content="典型编译分前端（与源语言相关）与后端（与目标机相关）两大部分，主要阶段： 1. 词法分析（Lexical Analysis）：读入字符流，按词法规则切分为单词（Token）序列，剔除空白/注释。工具如 Lex/Flex。输入：字符流；输出：Token 流。 2. 语法分析（Syntax Analysis）：根据文…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/491.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编译过程主要包括哪几个阶段？各阶段输入输出是什么？","text":"请从源程序到目标代码，说明编译的主要阶段（词法、语法、语义、中间代码、优化、目标代码）及其衔接。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"典型编译分前端（与源语言相关）与后端（与目标机相关）两大部分，主要阶段： 1. 词法分析（Lexical Analysis）：读入字符流，按词法规则切分为单词（Token）序列，剔除空白/注释。工具如 Lex/Flex。输入：字符流；输出：Token 流。 2. 语法分析（Syntax Analysis）：根据文法将 Token 流构造成语法树（Parse Tree）或 AST。工具如 Yacc/Bison。检测语法错误。 3. 语义分析（Semantic Analysis）：检查类型、作用域、声明等静态语义，进行类型推导与标注，收集符号表。输出带语义信息的 AST。 4. 中间代码生成（IR）：翻译为与机器无关的中间表示（如三地址码、四元式、LLVM IR），便于优化与后端复用。 5. 代码优化（Optimization）：在 IR 上做等价变换提升效率（常量折叠、公共子表达式删除、死代码消除、循环优化等）。 6. 目标代码生成：把 IR 映射到具体指令集（寄存器分配、指令选择、调度），生成汇编/机器码。 衔接：源程序 →(词法)→ Token →(语法)→ 语法树 →(语义+IR)→ 中间代码 →(优化)→ 优化后IR →(目标生成)→ 目标代码。","url":"https://it-interview-889.pages.dev/#/question/491"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/491.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编译过程主要包括哪几个阶段？各阶段输入输出是什么？","text":"请从源程序到目标代码，说明编译的主要阶段（词法、语法、语义、中间代码、优化、目标代码）及其衔接。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"典型编译分前端（与源语言相关）与后端（与目标机相关）两大部分，主要阶段： 1. 词法分析（Lexical Analysis）：读入字符流，按词法规则切分为单词（Token）序列，剔除空白/注释。工具如 Lex/Flex。输入：字符流；输出：Token 流。 2. 语法分析（Syntax Analysis）：根据文法将 Token 流构造成语法树（Parse Tree）或 AST。工具如 Yacc/Bison。检测语法错误。 3. 语义分析（Semantic Analysis）：检查类型、作用域、声明等静态语义，进行类型推导与标注，收集符号表。输出带语义信息的 AST。 4. 中间代码生成（IR）：翻译为与机器无关的中间表示（如三地址码、四元式、LLVM IR），便于优化与后端复用。 5. 代码优化（Optimization）：在 IR 上做等价变换提升效率（常量折叠、公共子表达式删除、死代码消除、循环优化等）。 6. 目标代码生成：把 IR 映射到具体指令集（寄存器分配、指令选择、调度），生成汇编/机器码。 衔接：源程序 →(词法)→ Token →(语法)→ 语法树 →(语义+IR)→ 中间代码 →(优化)→ 优化后IR →(目标生成)→ 目标代码。","url":"https://itinterview.com.cn/#/question/491"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>编译过程主要包括哪几个阶段？各阶段输入输出是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">编译器工程师</span><span class="chip tag">编译原理</span><span class="chip tag">编译阶段</span><span class="chip tag">词法分析</span></div>
     <div class="card"><h2>题目</h2><p>请从源程序到目标代码，说明编译的主要阶段（词法、语法、语义、中间代码、优化、目标代码）及其衔接。</p></div>
@@ -83,12 +83,12 @@
 <li><strong>目标代码生成</strong>：把 IR 映射到具体指令集（寄存器分配、指令选择、调度），生成汇编/机器码。</li>
 </ol>
 <p>衔接：<code>源程序 →(词法)→ Token →(语法)→ 语法树 →(语义+IR)→ 中间代码 →(优化)→ 优化后IR →(目标生成)→ 目标代码</code>。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/491">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/491">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=7&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=7&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

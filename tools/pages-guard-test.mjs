@@ -27,7 +27,7 @@ const mod = await import(
 );
 const worker = mod.default;
 
-const ORIGIN = "https://it-interview-889.pages.dev";
+const ORIGIN = "https://itinterview.com.cn";
 
 function makeRequest(p, opts = {}) {
   const h = new Map();

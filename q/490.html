@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="浏览器输入 URL 到页面显示，DNS 解析与整体过程是怎样的？ · IT面试题库">
   <meta property="og:description" content="整体流程（面试常考综合题）： 1. DNS 解析（域名→IP），递归+迭代结合： 先查浏览器缓存 → 本地 hosts → 本地 DNS 解析器缓存； 未命中则向本地 DNS 服务器（LDNS）发起递归查询； LDNS 依次向根域（.）→ 顶级域（.com）→ 权威域迭代查询，最终拿到 A/AAAA 记录 IP …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/490.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/490.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浏览器输入 URL 到页面显示，DNS 解析与整体过程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="整体流程（面试常考综合题）： 1. DNS 解析（域名→IP），递归+迭代结合： 先查浏览器缓存 → 本地 hosts → 本地 DNS 解析器缓存； 未命中则向本地 DNS 服务器（LDNS）发起递归查询； LDNS 依次向根域（.）→ 顶级域（.com）→ 权威域迭代查询，最终拿到 A/AAAA 记录 IP …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/490.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器输入 URL 到页面显示，DNS 解析与整体过程是怎样的？","text":"请描述从地址栏输入域名到网页渲染，DNS 如何逐级解析，并简述整体网络链路。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"整体流程（面试常考综合题）： 1. DNS 解析（域名→IP），递归+迭代结合： 先查浏览器缓存 → 本地 hosts → 本地 DNS 解析器缓存； 未命中则向本地 DNS 服务器（LDNS）发起递归查询； LDNS 依次向根域（.）→ 顶级域（.com）→ 权威域迭代查询，最终拿到 A/AAAA 记录 IP 返回。 结果被缓存（按 TTL）。可用 DNS 预解析 加速。 2. 建立连接：浏览器与服务器进行 TCP 三次握手（HTTPS 还需 TLS 握手）。 3. 发送请求：构造 HTTP 请求报文（方法、URL、Header、Cookie 等）发出。 4. 服务器响应：返回状态码与 HTML；可能经 CDN/负载均衡。 5. 浏览器渲染：解析 HTML 构建 DOM，解析 CSS 构建 CSSOM，合成渲染树 → 布局（Layout）→ 绘制（Paint）→ 合成（Composite）；遇到 JS 可能阻塞解析（defer/async 优化），继续请求子资源（图片/JS/CSS）。 6. 断开：HTTP/1.1 默认 keep-alive 复用连接，结束经 TCP 四次挥手。","url":"https://it-interview-889.pages.dev/#/question/490"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/490.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器输入 URL 到页面显示，DNS 解析与整体过程是怎样的？","text":"请描述从地址栏输入域名到网页渲染，DNS 如何逐级解析，并简述整体网络链路。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"整体流程（面试常考综合题）： 1. DNS 解析（域名→IP），递归+迭代结合： 先查浏览器缓存 → 本地 hosts → 本地 DNS 解析器缓存； 未命中则向本地 DNS 服务器（LDNS）发起递归查询； LDNS 依次向根域（.）→ 顶级域（.com）→ 权威域迭代查询，最终拿到 A/AAAA 记录 IP 返回。 结果被缓存（按 TTL）。可用 DNS 预解析 加速。 2. 建立连接：浏览器与服务器进行 TCP 三次握手（HTTPS 还需 TLS 握手）。 3. 发送请求：构造 HTTP 请求报文（方法、URL、Header、Cookie 等）发出。 4. 服务器响应：返回状态码与 HTML；可能经 CDN/负载均衡。 5. 浏览器渲染：解析 HTML 构建 DOM，解析 CSS 构建 CSSOM，合成渲染树 → 布局（Layout）→ 绘制（Paint）→ 合成（Composite）；遇到 JS 可能阻塞解析（defer/async 优化），继续请求子资源（图片/JS/CSS）。 6. 断开：HTTP/1.1 默认 keep-alive 复用连接，结束经 TCP 四次挥手。","url":"https://itinterview.com.cn/#/question/490"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>浏览器输入 URL 到页面显示，DNS 解析与整体过程是怎样的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">网络规划工程师</span><span class="chip">网络架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">DNS</span><span class="chip tag">HTTP</span><span class="chip tag">网络综合</span></div>
     <div class="card"><h2>题目</h2><p>请描述从地址栏输入域名到网页渲染，DNS 如何逐级解析，并简述整体网络链路。</p></div>
@@ -86,12 +86,12 @@
 <p><strong>4. 服务器响应</strong>：返回状态码与 HTML；可能经 CDN/负载均衡。</p>
 <p><strong>5. 浏览器渲染</strong>：解析 HTML 构建 DOM，解析 CSS 构建 CSSOM，合成渲染树 → 布局（Layout）→ 绘制（Paint）→ 合成（Composite）；遇到 JS 可能阻塞解析（defer/async 优化），继续请求子资源（图片/JS/CSS）。</p>
 <p><strong>6. 断开</strong>：HTTP/1.1 默认 keep-alive 复用连接，结束经 TCP 四次挥手。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/490">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/490">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=6&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

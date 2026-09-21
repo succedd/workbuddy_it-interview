@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？ · IT面试题库">
   <meta property="og:description" content="同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/562.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/562.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？ · IT面试题库">
   <meta name="twitter:description" content="同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/562.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？","text":"浏览器报错 'No Access-Control-Allow-Origin header'。请解释同源策略、CORS 机制，说明什么情况下会发 OPTIONS 预检请求，并列出常见跨域解决方案（CORS、代理、JSONP、Nginx 反向代理等）及其适用场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）。 Access-Control-Allow-Credentials: true：允许携带 Cookie。 Access-Control-Allow-Methods / Access-Control-Allow-Headers：预检允许的Methods/Headers。 Access-Control-Max-Age：预检结果缓存时长。 预检请求（OPTIONS）：当请求“非简单”时，浏览器先发 OPTIONS 询问服务器是否允许真实请求。触发条件（满足任一即非简单）： 方法非 GET/HEAD/POST； Content-Type 非 text/plain、multipart/form-data、application/x-www-form-urlencoded； 携带自定义请求头（如 Authorization、X-Token）； 使用 ReadableStream 等。 预检通过后浏览器才发真实请求。 常见解决方案： 1. CORS（首选）：后端加响应头，最标准。 2. 开发代理：Vite/webpack devServer proxy，把跨域请求转发为同源。 3. Nginx 反向代理：生产环境常用，由同源网关转发。 4. JSONP：仅 GET，利用 不受同源限制，已逐渐淘汰。 5. WebSocket / postMessage：特定场景的跨文档通信。","url":"https://it-interview-889.pages.dev/#/question/562"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/562.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？","text":"浏览器报错 'No Access-Control-Allow-Origin header'。请解释同源策略、CORS 机制，说明什么情况下会发 OPTIONS 预检请求，并列出常见跨域解决方案（CORS、代理、JSONP、Nginx 反向代理等）及其适用场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）。 Access-Control-Allow-Credentials: true：允许携带 Cookie。 Access-Control-Allow-Methods / Access-Control-Allow-Headers：预检允许的Methods/Headers。 Access-Control-Max-Age：预检结果缓存时长。 预检请求（OPTIONS）：当请求“非简单”时，浏览器先发 OPTIONS 询问服务器是否允许真实请求。触发条件（满足任一即非简单）： 方法非 GET/HEAD/POST； Content-Type 非 text/plain、multipart/form-data、application/x-www-form-urlencoded； 携带自定义请求头（如 Authorization、X-Token）； 使用 ReadableStream 等。 预检通过后浏览器才发真实请求。 常见解决方案： 1. CORS（首选）：后端加响应头，最标准。 2. 开发代理：Vite/webpack devServer proxy，把跨域请求转发为同源。 3. Nginx 反向代理：生产环境常用，由同源网关转发。 4. JSONP：仅 GET，利用 不受同源限制，已逐渐淘汰。 5. WebSocket / postMessage：特定场景的跨文档通信。","url":"https://itinterview.com.cn/#/question/562"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">页面重构工程师</span><span class="chip tag">跨域</span><span class="chip tag">CORS</span><span class="chip tag">预检</span><span class="chip tag">同源策略</span></div>
     <div class="card"><h2>题目</h2><p>浏览器报错 &#39;No Access-Control-Allow-Origin header&#39;。请解释同源策略、CORS 机制，说明什么情况下会发 OPTIONS 预检请求，并列出常见跨域解决方案（CORS、代理、JSONP、Nginx 反向代理等）及其适用场景。</p></div>
@@ -97,12 +97,12 @@
 <li><strong>JSONP</strong>：仅 GET，利用 <code>&lt;script&gt;</code> 不受同源限制，已逐渐淘汰。</li>
 <li><strong>WebSocket / postMessage</strong>：特定场景的跨文档通信。</li>
 </ol></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/562">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/562">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=56&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=56&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

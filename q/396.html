@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="编程题：求「无重复字符的最长子串」长度（LeetCode 3），请用滑动窗口实现并说明复杂度。 · IT面试题库">
   <meta property="og:description" content="要点： 思路：维护一个「窗口 [left, right]」内字符互不重复。右指针不断右移把字符纳入窗口；若新字符已在窗口内（出现位置 &gt;= left），则把 left 跳到「该字符上次位置 + 1」以剔除重复，保证窗口合法性。每步用哈希记录字符最新下标。 关键代码（Python）： 复杂度：每个字符最多被 lef…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/396.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/396.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="编程题：求「无重复字符的最长子串」长度（LeetCode 3），请用滑动窗口实现并说明复杂度。 · IT面试题库">
   <meta name="twitter:description" content="要点： 思路：维护一个「窗口 [left, right]」内字符互不重复。右指针不断右移把字符纳入窗口；若新字符已在窗口内（出现位置 &gt;= left），则把 left 跳到「该字符上次位置 + 1」以剔除重复，保证窗口合法性。每步用哈希记录字符最新下标。 关键代码（Python）： 复杂度：每个字符最多被 lef…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/396.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：求「无重复字符的最长子串」长度（LeetCode 3），请用滑动窗口实现并说明复杂度。","text":"考察点：滑动窗口 + 哈希/数组记录字符最后出现位置；窗口收缩条件；为什么是 O(n) 而非 O(n^2)；边界处理。属编程题。","answerCount":1,"datePublished":"2026-09-01T09:42:50.275Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 思路：维护一个「窗口 [left, right]」内字符互不重复。右指针不断右移把字符纳入窗口；若新字符已在窗口内（出现位置 >= left），则把 left 跳到「该字符上次位置 + 1」以剔除重复，保证窗口合法性。每步用哈希记录字符最新下标。 关键代码（Python）： 复杂度：每个字符最多被 left、right 各访问一次，时间 O(n)；哈希表大小受字符集限制，空间 O(字符集)（ASCII 即 O(128)）。 为什么不是 O(n^2)：虽然 left 会回跳，但 left、right 都只单向不减地前进，总移动次数 ≤ 2n。 变体：求最长无重复子串本身、含 K 个不同字符的最长子串，都是同一框架微调。","url":"https://it-interview-889.pages.dev/#/question/396"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/396.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：求「无重复字符的最长子串」长度（LeetCode 3），请用滑动窗口实现并说明复杂度。","text":"考察点：滑动窗口 + 哈希/数组记录字符最后出现位置；窗口收缩条件；为什么是 O(n) 而非 O(n^2)；边界处理。属编程题。","answerCount":1,"datePublished":"2026-09-01T09:42:50.275Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 思路：维护一个「窗口 [left, right]」内字符互不重复。右指针不断右移把字符纳入窗口；若新字符已在窗口内（出现位置 >= left），则把 left 跳到「该字符上次位置 + 1」以剔除重复，保证窗口合法性。每步用哈希记录字符最新下标。 关键代码（Python）： 复杂度：每个字符最多被 left、right 各访问一次，时间 O(n)；哈希表大小受字符集限制，空间 O(字符集)（ASCII 即 O(128)）。 为什么不是 O(n^2)：虽然 left 会回跳，但 left、right 都只单向不减地前进，总移动次数 ≤ 2n。 变体：求最长无重复子串本身、含 K 个不同字符的最长子串，都是同一框架微调。","url":"https://itinterview.com.cn/#/question/396"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>编程题：求「无重复字符的最长子串」长度（LeetCode 3），请用滑动窗口实现并说明复杂度。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">滑动窗口</span><span class="chip tag">无重复子串</span><span class="chip tag">哈希</span><span class="chip tag">LeetCode3</span></div>
     <div class="card"><h2>题目</h2><p>考察点：滑动窗口 + 哈希/数组记录字符最后出现位置；窗口收缩条件；为什么是 O(n) 而非 O(n^2)；边界处理。属编程题。</p></div>
@@ -94,12 +94,12 @@
 <li><strong>为什么不是 O(n^2)</strong>：虽然 <code>left</code> 会回跳，但 <code>left</code>、<code>right</code> 都只单向不减地前进，总移动次数 ≤ 2n。</li>
 <li><strong>变体</strong>：求最长无重复子串本身、含 K 个不同字符的最长子串，都是同一框架微调。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/396">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/396">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=3&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=3&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

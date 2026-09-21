@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="软件工程【演化】模式解决「代码怎么写」，那「需求天天变、上线就返工」靠什么解决？ · IT面试题库">
   <meta property="og:description" content="分层对抗不同的失败模式： 1. 设计模式 对抗「代码腐化」（写好后的演化成本）； 2. 软件架构模式（分层、微内核、事件驱动）对抗「系统规模失控」； 3. 敏捷开发 对抗「需求确认太晚」——小步交付、快速反馈，把「做错」尽早暴露； 4. DevOps/CI/CD 对抗「集成与发布风险」——高频小步上线，让每次变更…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/296.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/296.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="软件工程【演化】模式解决「代码怎么写」，那「需求天天变、上线就返工」靠什么解决？ · IT面试题库">
   <meta name="twitter:description" content="分层对抗不同的失败模式： 1. 设计模式 对抗「代码腐化」（写好后的演化成本）； 2. 软件架构模式（分层、微内核、事件驱动）对抗「系统规模失控」； 3. 敏捷开发 对抗「需求确认太晚」——小步交付、快速反馈，把「做错」尽早暴露； 4. DevOps/CI/CD 对抗「集成与发布风险」——高频小步上线，让每次变更…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/296.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"软件工程【演化】模式解决「代码怎么写」，那「需求天天变、上线就返工」靠什么解决？","text":"代码写得再干净，需求理解错了照样白干。软件工程方法（敏捷/DevOps/架构模式）分别在对抗什么失败模式？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分层对抗不同的失败模式： 1. 设计模式 对抗「代码腐化」（写好后的演化成本）； 2. 软件架构模式（分层、微内核、事件驱动）对抗「系统规模失控」； 3. 敏捷开发 对抗「需求确认太晚」——小步交付、快速反馈，把「做错」尽早暴露； 4. DevOps/CI/CD 对抗「集成与发布风险」——高频小步上线，让每次变更都可回滚； 5. 代码规范与重构 对抗「人的差异与时间侵蚀」。 一句话主线：软件工程的一切方法都在对抗「熵增」——需求会变、人会变、代码会烂，方法是为此设计的护栏。","url":"https://it-interview-889.pages.dev/#/question/296"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/296.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"软件工程【演化】模式解决「代码怎么写」，那「需求天天变、上线就返工」靠什么解决？","text":"代码写得再干净，需求理解错了照样白干。软件工程方法（敏捷/DevOps/架构模式）分别在对抗什么失败模式？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分层对抗不同的失败模式： 1. 设计模式 对抗「代码腐化」（写好后的演化成本）； 2. 软件架构模式（分层、微内核、事件驱动）对抗「系统规模失控」； 3. 敏捷开发 对抗「需求确认太晚」——小步交付、快速反馈，把「做错」尽早暴露； 4. DevOps/CI/CD 对抗「集成与发布风险」——高频小步上线，让每次变更都可回滚； 5. 代码规范与重构 对抗「人的差异与时间侵蚀」。 一句话主线：软件工程的一切方法都在对抗「熵增」——需求会变、人会变、代码会烂，方法是为此设计的护栏。","url":"https://itinterview.com.cn/#/question/296"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>软件工程【演化】模式解决「代码怎么写」，那「需求天天变、上线就返工」靠什么解决？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">后端开发工程师</span><span class="chip">应用架构师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">软件工程与设计模式</span></div>
     <div class="card"><h2>题目</h2><p>代码写得再干净，需求理解错了照样白干。软件工程方法（敏捷/DevOps/架构模式）分别在对抗什么失败模式？</p></div>
@@ -82,12 +82,12 @@
 <li><strong>代码规范与重构</strong> 对抗「人的差异与时间侵蚀」。</li>
 </ol>
 <p><strong>一句话主线：软件工程的一切方法都在对抗「熵增」</strong>——需求会变、人会变、代码会烂，方法是为此设计的护栏。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/296">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/296">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=96&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=96&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

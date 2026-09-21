@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？ · IT面试题库">
   <meta property="og:description" content="排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/464.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/464.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？ · IT面试题库">
   <meta name="twitter:description" content="排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/464.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？","text":"这是性能测试中最典型的「压不上去」场景。很多人第一反应是被测系统到了容量上限，实际未必。请给出一套分层排查思路，先分清瓶颈在压力机、网络还是被测系统。","answerCount":1,"datePublished":"2026-09-03T00:55:34.104Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或删除所有 Listener，尤其是 View Results Tree 和 View Results in Table——它们会在内存中累积每一个样本，直接拖垮压测机；用了 -l 落盘后监听器可以全部删掉。 降低资源占用：输出用 CSV 而不是 XML、只保存需要的字段、关闭 functional mode、尽量少用断言、脚本语言选性能最好的（见 JSR223 章节）。 检查压力机自身的 CPU、内存、网络与文件句柄；可用 JavaTest Sampler（不产生网络访问）测出该平台大致的吞吐上限作为基线。 第二步：确认线程数是否合理（警惕协调遗漏） 线程数取决于硬件能力与测试计划设计，也受服务端响应速度影响（服务端越快，JMeter 反而越忙）。线程数没有正确测算会遇到 Coordinated Omission 问题，得到错误或失真的结果。正确做法是逐步加压找拐点，而不是一上来就堆几千线程。 第三步：分层判断瓶颈在哪 在 TPS 停滞的同时，观察下面几组信号的组合： 压力机资源打满、服务端还很闲 → 压测端瓶颈，加机器 服务端 CPU 打满 → 应用计算或 GC 瓶颈 CPU 不高但响应时间持续上涨 → 锁竞争、线程池排队、慢 SQL、外部依赖等待 网络带宽或连接池打满 → 基础设施瓶颈 错误率随并发上升 → 多半是连接池、超时或限流配置 第四步：单机顶不住就横向扩展 需要大规模负载时，用分布式模式在多个节点跑 CLI 实例，由 Controller 汇总结果；也可以跑多个自治实例，最后合并 JTL 统一分析。注意此时 Controller 的结果汇总与网络传输本身也可能成为新的瓶颈。 脚本设计层面也常是元凶 需要大量随机数据时应提前生成到文件，用 CSV Data Set 读取，避免运行时现算。 少用大量相似 sampler，改用同一 sampler 循环 + 变量参数化。 一个常见误区 看到「TPS 不涨、响应时间变长」就下结论说系统到达容量上限。其实先确认三件事——压测机有没有顶满、是不是 GUI 模式、有没有开监听器——往往就能解决一半的问题。","url":"https://it-interview-889.pages.dev/#/question/464"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/464.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？","text":"这是性能测试中最典型的「压不上去」场景。很多人第一反应是被测系统到了容量上限，实际未必。请给出一套分层排查思路，先分清瓶颈在压力机、网络还是被测系统。","answerCount":1,"datePublished":"2026-09-03T00:55:34.104Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或删除所有 Listener，尤其是 View Results Tree 和 View Results in Table——它们会在内存中累积每一个样本，直接拖垮压测机；用了 -l 落盘后监听器可以全部删掉。 降低资源占用：输出用 CSV 而不是 XML、只保存需要的字段、关闭 functional mode、尽量少用断言、脚本语言选性能最好的（见 JSR223 章节）。 检查压力机自身的 CPU、内存、网络与文件句柄；可用 JavaTest Sampler（不产生网络访问）测出该平台大致的吞吐上限作为基线。 第二步：确认线程数是否合理（警惕协调遗漏） 线程数取决于硬件能力与测试计划设计，也受服务端响应速度影响（服务端越快，JMeter 反而越忙）。线程数没有正确测算会遇到 Coordinated Omission 问题，得到错误或失真的结果。正确做法是逐步加压找拐点，而不是一上来就堆几千线程。 第三步：分层判断瓶颈在哪 在 TPS 停滞的同时，观察下面几组信号的组合： 压力机资源打满、服务端还很闲 → 压测端瓶颈，加机器 服务端 CPU 打满 → 应用计算或 GC 瓶颈 CPU 不高但响应时间持续上涨 → 锁竞争、线程池排队、慢 SQL、外部依赖等待 网络带宽或连接池打满 → 基础设施瓶颈 错误率随并发上升 → 多半是连接池、超时或限流配置 第四步：单机顶不住就横向扩展 需要大规模负载时，用分布式模式在多个节点跑 CLI 实例，由 Controller 汇总结果；也可以跑多个自治实例，最后合并 JTL 统一分析。注意此时 Controller 的结果汇总与网络传输本身也可能成为新的瓶颈。 脚本设计层面也常是元凶 需要大量随机数据时应提前生成到文件，用 CSV Data Set 读取，避免运行时现算。 少用大量相似 sampler，改用同一 sampler 循环 + 变量参数化。 一个常见误区 看到「TPS 不涨、响应时间变长」就下结论说系统到达容量上限。其实先确认三件事——压测机有没有顶满、是不是 GUI 模式、有没有开监听器——往往就能解决一半的问题。","url":"https://itinterview.com.cn/#/question/464"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">性能测试工程师</span><span class="chip">测试开发工程师</span><span class="chip tag">JMeter</span><span class="chip tag">TPS瓶颈</span><span class="chip tag">压测排查</span></div>
     <div class="card"><h2>题目</h2><p>这是性能测试中最典型的「压不上去」场景。很多人第一反应是被测系统到了容量上限，实际未必。请给出一套分层排查思路，先分清瓶颈在压力机、网络还是被测系统。</p></div>
@@ -101,12 +101,12 @@
 </ul>
 <h3>一个常见误区</h3>
 <p>看到「TPS 不涨、响应时间变长」就下结论说系统到达容量上限。其实先确认三件事——压测机有没有顶满、是不是 GUI 模式、有没有开监听器——往往就能解决一半的问题。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/464">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/464">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=109&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=109&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

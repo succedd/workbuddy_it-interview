@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库与缓存一致性：为什么 Cache-Aside 推荐『先更新数据库，再删除缓存』，而不是『更新缓存』？先删缓存再更新库、与先更新库再删缓存，哪种并发问题更小？ · IT面试题库">
   <meta property="og:description" content="要点： 为什么不更新缓存（而删除）：若采用『先更新 DB 再更新缓存』或反过来，两个并发写请求 A、B 更新同一条数据时，可能出现『A 更新 DB → B 更新 DB → B 更新缓存 → A 更新缓存』，最终 DB 是 B 的值、缓存却是 A 的值，产生不一致。删缓存把『双写』变成『单写 DB + 失效』，读时…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1202.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1202.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库与缓存一致性：为什么 Cache-Aside 推荐『先更新数据库，再删除缓存』，而不是『更新缓存』？先删缓存再更新库、与先更新库再删缓存，哪种并发问题更小？ · IT面试题库">
   <meta name="twitter:description" content="要点： 为什么不更新缓存（而删除）：若采用『先更新 DB 再更新缓存』或反过来，两个并发写请求 A、B 更新同一条数据时，可能出现『A 更新 DB → B 更新 DB → B 更新缓存 → A 更新缓存』，最终 DB 是 B 的值、缓存却是 A 的值，产生不一致。删缓存把『双写』变成『单写 DB + 失效』，读时…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1202.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库与缓存一致性：为什么 Cache-Aside 推荐『先更新数据库，再删除缓存』，而不是『更新缓存』？先删缓存再更新库、与先更新库再删缓存，哪种并发问题更小？","text":"考察点：缓存一致性的核心权衡——为什么不『更新缓存』而『删缓存』，以及两种删除顺序的并发分析。要求讲清『先更新库再删缓存』不一致概率更低的原因，以及删失败如何补偿。","answerCount":1,"datePublished":"2026-09-20T02:22:09.162Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么不更新缓存（而删除）：若采用『先更新 DB 再更新缓存』或反过来，两个并发写请求 A、B 更新同一条数据时，可能出现『A 更新 DB → B 更新 DB → B 更新缓存 → A 更新缓存』，最终 DB 是 B 的值、缓存却是 A 的值，产生不一致。删缓存把『双写』变成『单写 DB + 失效』，读时再回填，冲突面更小。 Cache-Aside 写策略（推荐）：更新数据库 → 删除缓存。读策略：命中缓存直接返回，miss 则查 DB 并写回缓存。 两种删除顺序对比：①『先删缓存再更新 DB』：在删缓存与更新 DB 之间若来了读请求，会把旧数据读回缓存，产生脏数据，且缓存失效前一直读脏值，并发问题更大；②『先更新 DB 再删缓存』：仅在『删缓存失败』这种小概率情况下才会不一致，且缓存本身有 TTL 兜底，不一致窗口更小，是业界推荐顺序。 删失败的补偿：删除缓存若失败，可用重试机制（重试 3 次仍失败则记日志告警人工介入）；更优雅的是订阅 DB Binlog 异步删除（见下一题）。 核心：Cache-Aside『先更库再删缓存』把不一致收敛到『删缓存失败』这一小概率事件，再靠重试/Binlog 兜底，是性价比最高的一致性方案。","url":"https://it-interview-889.pages.dev/#/question/1202"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1202.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库与缓存一致性：为什么 Cache-Aside 推荐『先更新数据库，再删除缓存』，而不是『更新缓存』？先删缓存再更新库、与先更新库再删缓存，哪种并发问题更小？","text":"考察点：缓存一致性的核心权衡——为什么不『更新缓存』而『删缓存』，以及两种删除顺序的并发分析。要求讲清『先更新库再删缓存』不一致概率更低的原因，以及删失败如何补偿。","answerCount":1,"datePublished":"2026-09-20T02:22:09.162Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么不更新缓存（而删除）：若采用『先更新 DB 再更新缓存』或反过来，两个并发写请求 A、B 更新同一条数据时，可能出现『A 更新 DB → B 更新 DB → B 更新缓存 → A 更新缓存』，最终 DB 是 B 的值、缓存却是 A 的值，产生不一致。删缓存把『双写』变成『单写 DB + 失效』，读时再回填，冲突面更小。 Cache-Aside 写策略（推荐）：更新数据库 → 删除缓存。读策略：命中缓存直接返回，miss 则查 DB 并写回缓存。 两种删除顺序对比：①『先删缓存再更新 DB』：在删缓存与更新 DB 之间若来了读请求，会把旧数据读回缓存，产生脏数据，且缓存失效前一直读脏值，并发问题更大；②『先更新 DB 再删缓存』：仅在『删缓存失败』这种小概率情况下才会不一致，且缓存本身有 TTL 兜底，不一致窗口更小，是业界推荐顺序。 删失败的补偿：删除缓存若失败，可用重试机制（重试 3 次仍失败则记日志告警人工介入）；更优雅的是订阅 DB Binlog 异步删除（见下一题）。 核心：Cache-Aside『先更库再删缓存』把不一致收敛到『删缓存失败』这一小概率事件，再靠重试/Binlog 兜底，是性价比最高的一致性方案。","url":"https://itinterview.com.cn/#/question/1202"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>数据库与缓存一致性：为什么 Cache-Aside 推荐『先更新数据库，再删除缓存』，而不是『更新缓存』？先删缓存再更新库、与先更新库再删缓存，哪种并发问题更小？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存一致性</span><span class="chip tag">Cache-Aside</span><span class="chip tag">延迟双删</span></div>
     <div class="card"><h2>题目</h2><p>考察点：缓存一致性的核心权衡——为什么不『更新缓存』而『删缓存』，以及两种删除顺序的并发分析。要求讲清『先更新库再删缓存』不一致概率更低的原因，以及删失败如何补偿。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>删失败的补偿</strong>：删除缓存若失败，可用重试机制（重试 3 次仍失败则记日志告警人工介入）；更优雅的是订阅 DB Binlog 异步删除（见下一题）。</li>
 </ul>
 <p><strong>核心</strong>：Cache-Aside『先更库再删缓存』把不一致收敛到『删缓存失败』这一小概率事件，再靠重试/Binlog 兜底，是性价比最高的一致性方案。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1202">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1202">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

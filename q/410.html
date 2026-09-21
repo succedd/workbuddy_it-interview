@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？ · IT面试题库">
   <meta property="og:description" content="Encoder 层（堆叠 N 次） 多头自注意力：token 间互相看，捕捉源序列内部依赖。 前馈网络（FFN）：对每个位置独立做两层线性 + 激活（如 ReLU/GELU）。 每个子层外都有残差连接 + 层归一化（Add &amp; Norm），缓解梯度消失、稳定训练。 Decoder 层（堆叠 N 次） 带掩码的多头…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/410.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/410.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="Encoder 层（堆叠 N 次） 多头自注意力：token 间互相看，捕捉源序列内部依赖。 前馈网络（FFN）：对每个位置独立做两层线性 + 激活（如 ReLU/GELU）。 每个子层外都有残差连接 + 层归一化（Add &amp; Norm），缓解梯度消失、稳定训练。 Decoder 层（堆叠 N 次） 带掩码的多头…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/410.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？","text":"考察点：Encoder 每层 = 多头自注意力 + 前馈 + 残差/层归一；Decoder 多一层对 Encoder 输出的交叉注意力；理解交叉注意力如何把源语言信息注入解码。属结构分析题。","answerCount":1,"datePublished":"2026-09-01T09:51:57.200Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Encoder 层（堆叠 N 次） 多头自注意力：token 间互相看，捕捉源序列内部依赖。 前馈网络（FFN）：对每个位置独立做两层线性 + 激活（如 ReLU/GELU）。 每个子层外都有残差连接 + 层归一化（Add & Norm），缓解梯度消失、稳定训练。 Decoder 层（堆叠 N 次） 带掩码的多头自注意力（Masked Self-Attention）：只能看已生成的位置（因果掩码），保证自回归不偷看未来。 Encoder-Decoder 交叉注意力（Cross-Attention）：query 来自上一层 Decoder，key/value 来自 Encoder 输出。这是翻译等任务里源语言信息如何流入解码的关键。 前馈网络 + 残差/层归一。 交叉注意力的作用 它把源序列的表示作为 K/V，让 Decoder 在生成每个目标词时回看源序列中相关的词（如对齐『猫』与『cat』）。 没有它，Decoder 只能靠自身表示，无法利用编码器萃取的源信息。 要点 Encoder 双向可见、Decoder 单向（因果）；Encoder 输出被所有 Decoder 层共享为 K/V。","url":"https://it-interview-889.pages.dev/#/question/410"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/410.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？","text":"考察点：Encoder 每层 = 多头自注意力 + 前馈 + 残差/层归一；Decoder 多一层对 Encoder 输出的交叉注意力；理解交叉注意力如何把源语言信息注入解码。属结构分析题。","answerCount":1,"datePublished":"2026-09-01T09:51:57.200Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Encoder 层（堆叠 N 次） 多头自注意力：token 间互相看，捕捉源序列内部依赖。 前馈网络（FFN）：对每个位置独立做两层线性 + 激活（如 ReLU/GELU）。 每个子层外都有残差连接 + 层归一化（Add & Norm），缓解梯度消失、稳定训练。 Decoder 层（堆叠 N 次） 带掩码的多头自注意力（Masked Self-Attention）：只能看已生成的位置（因果掩码），保证自回归不偷看未来。 Encoder-Decoder 交叉注意力（Cross-Attention）：query 来自上一层 Decoder，key/value 来自 Encoder 输出。这是翻译等任务里源语言信息如何流入解码的关键。 前馈网络 + 残差/层归一。 交叉注意力的作用 它把源序列的表示作为 K/V，让 Decoder 在生成每个目标词时回看源序列中相关的词（如对齐『猫』与『cat』）。 没有它，Decoder 只能靠自身表示，无法利用编码器萃取的源信息。 要点 Encoder 双向可见、Decoder 单向（因果）；Encoder 输出被所有 Decoder 层共享为 K/V。","url":"https://itinterview.com.cn/#/question/410"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip tag">Encoder</span><span class="chip tag">Decoder</span><span class="chip tag">交叉注意力</span><span class="chip tag">Transformer</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Encoder 每层 = 多头自注意力 + 前馈 + 残差/层归一；Decoder 多一层对 Encoder 输出的交叉注意力；理解交叉注意力如何把源语言信息注入解码。属结构分析题。</p></div>
@@ -94,12 +94,12 @@
 <ul>
 <li>Encoder 双向可见、Decoder 单向（因果）；Encoder 输出被所有 Decoder 层共享为 K/V。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/410">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/410">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=188&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=188&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

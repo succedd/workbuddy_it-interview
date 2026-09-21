@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1178.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1178.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1178.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？","text":"考察点：量化算法原理对比。要求讲清 GPTQ 用二阶信息逐层量化+补偿、AWQ 保护「显著权重」两条路线，以及各自适用面。","answerCount":1,"datePublished":"2026-09-17T02:35:52.414Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能接受量化耗时的场景。 AWQ（Activation-aware Weight Quantization）：核心观察是「少量显著性权重（对激活影响大）决定性能」。它不量化这些显著权重、只量化其余权重，并按激活大小给权重乘一个可学习的缩放 protection 系数，等价于用激活分布指导量化。特点是「不依赖昂贵反量化补偿、对校准集敏感低、部署简单」，常作为 LLM 推理框架的默认 INT4 方案（如 4-bit AWQ）。 选型：追求极限精度且能跑离线量化→GPTQ；追求简单、稳、框架开箱即用→AWQ 更主流。两者都是 W4A16（权重 4bit、激活 16bit）范式。","url":"https://it-interview-889.pages.dev/#/question/1178"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1178.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？","text":"考察点：量化算法原理对比。要求讲清 GPTQ 用二阶信息逐层量化+补偿、AWQ 保护「显著权重」两条路线，以及各自适用面。","answerCount":1,"datePublished":"2026-09-17T02:35:52.414Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能接受量化耗时的场景。 AWQ（Activation-aware Weight Quantization）：核心观察是「少量显著性权重（对激活影响大）决定性能」。它不量化这些显著权重、只量化其余权重，并按激活大小给权重乘一个可学习的缩放 protection 系数，等价于用激活分布指导量化。特点是「不依赖昂贵反量化补偿、对校准集敏感低、部署简单」，常作为 LLM 推理框架的默认 INT4 方案（如 4-bit AWQ）。 选型：追求极限精度且能跑离线量化→GPTQ；追求简单、稳、框架开箱即用→AWQ 更主流。两者都是 W4A16（权重 4bit、激活 16bit）范式。","url":"https://itinterview.com.cn/#/question/1178"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip tag">GPTQ</span><span class="chip tag">AWQ</span><span class="chip tag">权重量化</span><span class="chip tag">大模型部署</span></div>
     <div class="card"><h2>题目</h2><p>考察点：量化算法原理对比。要求讲清 GPTQ 用二阶信息逐层量化+补偿、AWQ 保护「显著权重」两条路线，以及各自适用面。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>AWQ（Activation-aware Weight Quantization）</strong>：核心观察是「少量显著性权重（对激活影响大）决定性能」。它<strong>不量化这些显著权重、只量化其余权重</strong>，并按激活大小给权重乘一个可学习的缩放 protection 系数，等价于用激活分布指导量化。特点是「不依赖昂贵反量化补偿、对校准集敏感低、部署简单」，常作为 LLM 推理框架的默认 INT4 方案（如 4-bit AWQ）。</li>
 <li><strong>选型</strong>：追求极限精度且能跑离线量化→GPTQ；追求简单、稳、框架开箱即用→AWQ 更主流。两者都是 W4A16（权重 4bit、激活 16bit）范式。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1178">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1178">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=197&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

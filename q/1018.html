@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Django 的中间件（Middleware）执行顺序如何？信号（Signal）适合放什么逻辑？为什么说信号容易被滥用？ · IT面试题库">
   <meta property="og:description" content="要点： 中间件是洋葱模型，双向执行：请求阶段按 MIDDLEWARE 列表从上到下执行，响应阶段从下到上回穿。所以「先做的前置动作，最后收尾」；一个中间件在 __call__ 中 response = self.get_response(request) 之前的代码属于请求阶段，之后属于响应阶段。 顺序讲究：Se…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1018.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1018.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Django 的中间件（Middleware）执行顺序如何？信号（Signal）适合放什么逻辑？为什么说信号容易被滥用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 中间件是洋葱模型，双向执行：请求阶段按 MIDDLEWARE 列表从上到下执行，响应阶段从下到上回穿。所以「先做的前置动作，最后收尾」；一个中间件在 __call__ 中 response = self.get_response(request) 之前的代码属于请求阶段，之后属于响应阶段。 顺序讲究：Se…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1018.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Django 的中间件（Middleware）执行顺序如何？信号（Signal）适合放什么逻辑？为什么说信号容易被滥用？","text":"考察点：请求/响应双向流水线、同步 vs 异步中间件、信号解耦的代价。","answerCount":1,"datePublished":"2026-09-10T11:50:48.042Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 中间件是洋葱模型，双向执行：请求阶段按 MIDDLEWARE 列表从上到下执行，响应阶段从下到上回穿。所以「先做的前置动作，最后收尾」；一个中间件在 __call__ 中 response = self.get_response(request) 之前的代码属于请求阶段，之后属于响应阶段。 顺序讲究：SecurityMiddleware、SessionMiddleware、AuthenticationMiddleware、CsrfViewMiddleware 的官方默认顺序不能乱——因为后置的中间件要依赖前面已注入的 request.user、request.session。改顺序是线上 403/500 的高发原因。 信号（Signal）：post_save/pre_save/post_delete、request_finished、user_logged_in 等，用于在模型层发出通知、由别处订阅，典型用途是审计日志、缓存失效、发通知。 信号为什么容易被滥用：① 隐式调用、难追踪——一次 save() 触发的副作用散落在多个 app，调试时看不到调用栈；② 在信号里做重活会拖慢写操作，甚至引发递归（post_save 里又 save()）；③ 事务边界不清——信号在事务提交前触发，此时发出去的通知可能指向一个后来回滚的数据。 更稳的替代：显式调用 service 层方法，或把副作用交给事务提交后的队列（Celery on_commit / transaction.on_commit）。 加分点：Django 5 的异步中间件支持 async def __call__，同步中间件会被 sync_to_async 包装，混用时会引入线程切换开销。","url":"https://it-interview-889.pages.dev/#/question/1018"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1018.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Django 的中间件（Middleware）执行顺序如何？信号（Signal）适合放什么逻辑？为什么说信号容易被滥用？","text":"考察点：请求/响应双向流水线、同步 vs 异步中间件、信号解耦的代价。","answerCount":1,"datePublished":"2026-09-10T11:50:48.042Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 中间件是洋葱模型，双向执行：请求阶段按 MIDDLEWARE 列表从上到下执行，响应阶段从下到上回穿。所以「先做的前置动作，最后收尾」；一个中间件在 __call__ 中 response = self.get_response(request) 之前的代码属于请求阶段，之后属于响应阶段。 顺序讲究：SecurityMiddleware、SessionMiddleware、AuthenticationMiddleware、CsrfViewMiddleware 的官方默认顺序不能乱——因为后置的中间件要依赖前面已注入的 request.user、request.session。改顺序是线上 403/500 的高发原因。 信号（Signal）：post_save/pre_save/post_delete、request_finished、user_logged_in 等，用于在模型层发出通知、由别处订阅，典型用途是审计日志、缓存失效、发通知。 信号为什么容易被滥用：① 隐式调用、难追踪——一次 save() 触发的副作用散落在多个 app，调试时看不到调用栈；② 在信号里做重活会拖慢写操作，甚至引发递归（post_save 里又 save()）；③ 事务边界不清——信号在事务提交前触发，此时发出去的通知可能指向一个后来回滚的数据。 更稳的替代：显式调用 service 层方法，或把副作用交给事务提交后的队列（Celery on_commit / transaction.on_commit）。 加分点：Django 5 的异步中间件支持 async def __call__，同步中间件会被 sync_to_async 包装，混用时会引入线程切换开销。","url":"https://itinterview.com.cn/#/question/1018"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Django 的中间件（Middleware）执行顺序如何？信号（Signal）适合放什么逻辑？为什么说信号容易被滥用？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Django</span><span class="chip tag">中间件</span><span class="chip tag">Signal</span><span class="chip tag">事务</span></div>
     <div class="card"><h2>题目</h2><p>考察点：请求/响应双向流水线、同步 vs 异步中间件、信号解耦的代价。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>更稳的替代</strong>：显式调用 service 层方法，或把副作用交给<strong>事务提交后</strong>的队列（Celery <code>on_commit</code> / <code>transaction.on_commit</code>）。</li>
 <li><strong>加分点</strong>：Django 5 的<strong>异步中间件</strong>支持 <code>async def __call__</code>，同步中间件会被 <code>sync_to_async</code> 包装，混用时会引入线程切换开销。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1018">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1018">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=87&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=87&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

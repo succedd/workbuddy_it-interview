@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？ · IT面试题库">
   <meta property="og:description" content="要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/647.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/647.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？ · IT面试题库">
   <meta name="twitter:description" content="要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/647.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？","text":"追问链第三环：幻读。考察点：快照读与当前读的本质区别；RR 靠 MVCC 解决快照读幻读、靠 next-key lock 解决当前读幻读的双轨机制；为什么说 RR 只是\"很大程度避免\"而非\"彻底解决\"幻读。","answerCount":1,"datePublished":"2026-09-07T13:18:41.763Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次查询\"看不到\"新插入的行，两次结果一致，快照读层面的幻读被 MVCC 解决。 要点二：select ... for update 是当前读，改走 next-key lock 机制 锁定读/更新语句（select ... for update、update、delete）是当前读：必须读最新已提交版本，快照无能为力。此时 InnoDB 在 RR 下对扫描范围加 next-key lock（记录锁 + 间隙锁），把记录本身和记录前的间隙都锁住。 事务 B 若想在该间隙内插入新行，插入操作会被阻塞（生成插入意向锁进入等待），直到 A 提交。这样当前读也\"看不到\"幻影行，幻读被锁机制解决。 要点三：为什么只是\"很大程度避免\"而非\"彻底解决\" RR 下快照读与当前读是两套机制：若事务内先快照读、后当前读（或先快照读、再 update 别人刚插入的行），两次读取可能交叉出现\"看不见又改得到\"的现象，极端时序下幻读仍可能发生。 工程启示：同一事务内对同一批数据保持一致的读取方式；需要严格防幻读的场景显式用锁定读（for update）并缩小事务范围，而不是盲目升级串行化（性能代价过大）。","url":"https://it-interview-889.pages.dev/#/question/647"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/647.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？","text":"追问链第三环：幻读。考察点：快照读与当前读的本质区别；RR 靠 MVCC 解决快照读幻读、靠 next-key lock 解决当前读幻读的双轨机制；为什么说 RR 只是\"很大程度避免\"而非\"彻底解决\"幻读。","answerCount":1,"datePublished":"2026-09-07T13:18:41.763Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次查询\"看不到\"新插入的行，两次结果一致，快照读层面的幻读被 MVCC 解决。 要点二：select ... for update 是当前读，改走 next-key lock 机制 锁定读/更新语句（select ... for update、update、delete）是当前读：必须读最新已提交版本，快照无能为力。此时 InnoDB 在 RR 下对扫描范围加 next-key lock（记录锁 + 间隙锁），把记录本身和记录前的间隙都锁住。 事务 B 若想在该间隙内插入新行，插入操作会被阻塞（生成插入意向锁进入等待），直到 A 提交。这样当前读也\"看不到\"幻影行，幻读被锁机制解决。 要点三：为什么只是\"很大程度避免\"而非\"彻底解决\" RR 下快照读与当前读是两套机制：若事务内先快照读、后当前读（或先快照读、再 update 别人刚插入的行），两次读取可能交叉出现\"看不见又改得到\"的现象，极端时序下幻读仍可能发生。 工程启示：同一事务内对同一批数据保持一致的读取方式；需要严格防幻读的场景显式用锁定读（for update）并缩小事务范围，而不是盲目升级串行化（性能代价过大）。","url":"https://itinterview.com.cn/#/question/647"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">RESTful</span><span class="chip tag">API设计</span><span class="chip tag">HTTP</span></div>
     <div class="card"><h2>题目</h2><p>追问链第三环：幻读。考察点：快照读与当前读的本质区别；RR 靠 MVCC 解决快照读幻读、靠 next-key lock 解决当前读幻读的双轨机制；为什么说 RR 只是&quot;很大程度避免&quot;而非&quot;彻底解决&quot;幻读。</p></div>
@@ -87,12 +87,12 @@
 <li>RR 下快照读与当前读是两套机制：若事务内先快照读、后当前读（或先快照读、再 update 别人刚插入的行），两次读取可能交叉出现&quot;看不见又改得到&quot;的现象，极端时序下幻读仍可能发生。</li>
 <li>工程启示：同一事务内对同一批数据保持一致的读取方式；需要严格防幻读的场景显式用锁定读（for update）并缩小事务范围，而不是盲目升级串行化（性能代价过大）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/647">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/647">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？ · IT面试题库">
   <meta property="og:description" content="定位流程（应用内线程级） ① 找最忙进程：top 看整体 CPU；top -Hp 列出该进程内各线程占用，记下最忙线程的十进制 TID。 ② 转十六进制：printf &#39;%x\n&#39; 得到 nid（如 0x1a2b），用于匹配 jstack 线程栈里的 nid=0x1a2b。 ③ 抓线程栈：jstack &gt; sta…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/413.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/413.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？ · IT面试题库">
   <meta name="twitter:description" content="定位流程（应用内线程级） ① 找最忙进程：top 看整体 CPU；top -Hp 列出该进程内各线程占用，记下最忙线程的十进制 TID。 ② 转十六进制：printf &#39;%x\n&#39; 得到 nid（如 0x1a2b），用于匹配 jstack 线程栈里的 nid=0x1a2b。 ③ 抓线程栈：jstack &gt; sta…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/413.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？","text":"考察点：容器/进程级定位（top）→ 线程级（top -Hp）→ 线程栈（jstack + 十六进制 nid）→ 热点方法（async-profiler / 火焰图）；区分业务死循环与 GC 线程。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T10:09:34.707Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位流程（应用内线程级） ① 找最忙进程：top 看整体 CPU；top -Hp 列出该进程内各线程占用，记下最忙线程的十进制 TID。 ② 转十六进制：printf '%x\\n' 得到 nid（如 0x1a2b），用于匹配 jstack 线程栈里的 nid=0x1a2b。 ③ 抓线程栈：jstack > stack.log，搜该 nid 读到它正在执行的方法/代码行——死循环、正则回溯、锁等待常在此暴露。 ④ 看热点（更直观）：用 async-profiler 生成火焰图（profiler.sh -d 30 -f flame.svg ），一眼看出占比最高的调用栈；Arthas 的 thread -n 3 也能直接列出最忙线程栈。 ⑤ 区分根因：若高 CPU 来自 GC task thread，那是频繁 Full GC（见后续题），不是业务代码；若是业务线程，看栈里具体方法。 注意：容器下 top 默认显示宿主机 CPU，需配合 top -Hp 与 cat /proc/ /status，或在 k8s 用 kubectl top pods；采样前先保留现场，别急着重启。","url":"https://it-interview-889.pages.dev/#/question/413"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/413.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？","text":"考察点：容器/进程级定位（top）→ 线程级（top -Hp）→ 线程栈（jstack + 十六进制 nid）→ 热点方法（async-profiler / 火焰图）；区分业务死循环与 GC 线程。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T10:09:34.707Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位流程（应用内线程级） ① 找最忙进程：top 看整体 CPU；top -Hp 列出该进程内各线程占用，记下最忙线程的十进制 TID。 ② 转十六进制：printf '%x\\n' 得到 nid（如 0x1a2b），用于匹配 jstack 线程栈里的 nid=0x1a2b。 ③ 抓线程栈：jstack > stack.log，搜该 nid 读到它正在执行的方法/代码行——死循环、正则回溯、锁等待常在此暴露。 ④ 看热点（更直观）：用 async-profiler 生成火焰图（profiler.sh -d 30 -f flame.svg ），一眼看出占比最高的调用栈；Arthas 的 thread -n 3 也能直接列出最忙线程栈。 ⑤ 区分根因：若高 CPU 来自 GC task thread，那是频繁 Full GC（见后续题），不是业务代码；若是业务线程，看栈里具体方法。 注意：容器下 top 默认显示宿主机 CPU，需配合 top -Hp 与 cat /proc/ /status，或在 k8s 用 kubectl top pods；采样前先保留现场，别急着重启。","url":"https://itinterview.com.cn/#/question/413"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">CPU飙高</span><span class="chip tag">jstack</span><span class="chip tag">火焰图</span><span class="chip tag">线程定位</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：容器/进程级定位（top）→ 线程级（top -Hp）→ 线程栈（jstack + 十六进制 nid）→ 热点方法（async-profiler / 火焰图）；区分业务死循环与 GC 线程。属故障排查题。</p></div>
@@ -82,12 +82,12 @@
 <li>⑤ 区分根因：若高 CPU 来自 <code>GC task thread</code>，那是频繁 Full GC（见后续题），不是业务代码；若是业务线程，看栈里具体方法。</li>
 </ul>
 <p><strong>注意</strong>：容器下 <code>top</code> 默认显示宿主机 CPU，需配合 <code>top -Hp</code> 与 <code>cat /proc/&lt;pid&gt;/status</code>，或在 k8s 用 <code>kubectl top pods</code>；采样前先保留现场，别急着重启。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/413">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/413">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

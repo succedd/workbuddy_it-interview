@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？ · IT面试题库">
   <meta property="og:description" content="环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1145.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1145.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？ · IT面试题库">
   <meta name="twitter:description" content="环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1145.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？","text":"请说明用 GitLab CI 的 environment 与 manual job 做环境晋级（promotion）的做法，以及为什么 prod 这步必须有人工确认或自动门禁。","answerCount":1,"datePublished":"2026-09-14T02:47:34.757Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual job）：prod 的 deploy job 设 when: manual，流水线跑到这步停下来等人在 GitLab 界面点“play”才执行；这把“是否真的上线”的最终决定权留给人类，避免流水线自动推生产。 自动门禁：在 manual 之外加自动检查（冒烟测试结果、安全扫描通过、审批工单状态），不满足则自动拦下，比纯人工更可靠。 为什么 prod 必须卡点：自动推生产一旦出错就是全量事故；人工/自动门禁用极小成本换取“最后一次确认”，并与回滚预案、监控告警联动，是发布可靠性的底线。","url":"https://it-interview-889.pages.dev/#/question/1145"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1145.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？","text":"请说明用 GitLab CI 的 environment 与 manual job 做环境晋级（promotion）的做法，以及为什么 prod 这步必须有人工确认或自动门禁。","answerCount":1,"datePublished":"2026-09-14T02:47:34.757Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual job）：prod 的 deploy job 设 when: manual，流水线跑到这步停下来等人在 GitLab 界面点“play”才执行；这把“是否真的上线”的最终决定权留给人类，避免流水线自动推生产。 自动门禁：在 manual 之外加自动检查（冒烟测试结果、安全扫描通过、审批工单状态），不满足则自动拦下，比纯人工更可靠。 为什么 prod 必须卡点：自动推生产一旦出错就是全量事故；人工/自动门禁用极小成本换取“最后一次确认”，并与回滚预案、监控告警联动，是发布可靠性的底线。","url":"https://itinterview.com.cn/#/question/1145"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip tag">多环境</span><span class="chip tag">晋级</span><span class="chip tag">manual job</span><span class="chip tag">environment</span><span class="chip tag">发布卡点</span></div>
     <div class="card"><h2>题目</h2><p>请说明用 GitLab CI 的 environment 与 manual job 做环境晋级（promotion）的做法，以及为什么 prod 这步必须有人工确认或自动门禁。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>手动卡点（manual job）</strong>：prod 的 deploy job 设 <code>when: manual</code>，流水线跑到这步停下来等人在 GitLab 界面点“play”才执行；这把“是否真的上线”的最终决定权留给人类，避免流水线自动推生产。</p>
 <p><strong>自动门禁</strong>：在 manual 之外加自动检查（冒烟测试结果、安全扫描通过、审批工单状态），不满足则自动拦下，比纯人工更可靠。</p>
 <p><strong>为什么 prod 必须卡点</strong>：自动推生产一旦出错就是全量事故；人工/自动门禁用极小成本换取“最后一次确认”，并与回滚预案、监控告警联动，是发布可靠性的底线。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1145">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1145">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？ · IT面试题库">
   <meta property="og:description" content="要点： 本质差异：治理能力放在哪一层： Spring Cloud（SDK / 代码内治理）：服务发现、负载均衡、熔断、重试、限流都由应用内 SDK 实现（spring-cloud-loadbalancer、Sentinel 等）。能力在业务进程里； Service Mesh（Sidecar / 进程外治理）：把上…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1076.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1076.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？ · IT面试题库">
   <meta name="twitter:description" content="要点： 本质差异：治理能力放在哪一层： Spring Cloud（SDK / 代码内治理）：服务发现、负载均衡、熔断、重试、限流都由应用内 SDK 实现（spring-cloud-loadbalancer、Sentinel 等）。能力在业务进程里； Service Mesh（Sidecar / 进程外治理）：把上…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1076.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？","text":"考察点：SDK 治理 vs Sidecar 治理、多语言、成本权衡。架构演进方向题。","answerCount":1,"datePublished":"2026-09-10T11:54:47.787Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质差异：治理能力放在哪一层： Spring Cloud（SDK / 代码内治理）：服务发现、负载均衡、熔断、重试、限流都由应用内 SDK 实现（spring-cloud-loadbalancer、Sentinel 等）。能力在业务进程里； Service Mesh（Sidecar / 进程外治理）：把上述能力下沉到与业务容器并排的代理（Envoy），业务进程只发普通 HTTP/gRPC 请求到 localhost，治理由 Sidecar 完成。能力在基础设施层。 Service Mesh 解决了 Spring Cloud 的哪些真实痛点： 1. 多语言：Spring Cloud 只服务 Java。有 Go/Python/Node 混合栈时，每种语言都要重写一套治理逻辑（且质量参差）；Sidecar 对语言完全无感——这是 Mesh 最强动机； 2. 升级困难：SDK 治理意味着升级框架 = 改所有业务代码 + 重新发版（几百个服务一起动）；Sidecar 升级不需要动业务代码； 3. 职责错配：让业务团队为「熔断/重试/超时」写代码，本身就是基础设施问题下沉到了业务；且治理逻辑容易写错（团队水平不均导致线上行为不一致）； 4. 零信任与安全：Mesh 天然提供 mTLS（服务间自动加密与身份认证）、细粒度授权策略，这是 SDK 模式很难统一做好的； 5. 可观测性统一：Sidecar 可以统一采集所有流量的指标、链路、访问日志，不需要每个服务都正确埋点。 代价（必须讲清，否则是片面回答）： 1. 多一跳网络：每次调用多经过一次本地 Sidecar，延迟增加（通常 0.5–2ms 量级）与 CPU/内存开销（每个 Pod 多一个容器）； 2. 运维复杂度显著上升：引入 Istio/控制平面、CRD、证书轮转、数据面升级——需要平台团队，没有平台能力就上 Mesh 是自找麻烦； 3. 调试变难：请求被 iptables/流量劫持（或 eBPF）拦到 Sidecar，排障要跨进程；某些协议（原生 gRPC、数据库连接、非 HTTP 协议）需要特殊配置甚至不支持； 4. 治理能力重叠与冲突：如果应用里还留着 SDK 重试/熔断，会与 Sidecar 的规则叠加（前面说过，重试叠加会放大故障）——迁移时必须逐个关掉 SDK 侧能力； 5. 配置与团队认知成本：Istio 的 VirtualService/DestinationRule 学习曲线陡，配置写错会静默导致流量异常。 务实的判断（给出可执行结论）： 纯 Java 单一技术栈 + 规模不大（几十个服务）：Spring Cloud 足够，成本收益比更高；上 Mesh 是过度设计； 多语言栈 / 服务数上百 / 有平台团队 / 有合规（mTLS、审计）要求：Mesh 的收益会显著超过成本； 过渡路径（推荐）：不要一步到位换 Mesh——① 先把治理能力收敛成统一 SDK/模板（统一超时/熔断配置）；② 再把入口网关统一（Ingress Gateway）；③ 逐步只把「mTLS、流量路由、可观测性」下沉到 Sidecar，熔断限流仍留在应用侧（很多团队的中间路线）； 替代趋势：Sidecar-less（Ambient Mesh / eBPF） 正在降低「每 Pod 一个代理」的开销（Istio Ambient 用 ztunnel 做 L4、按需启 L7 代理），值得关注但成熟度需评估。 本质结论：Spring Cloud 是「SDK 治理」，Service Mesh 是「基础设施治理」——选择不是技术优劣，而是「谁来承担治理复杂度」的组织问题：业务团队还是平台团队。","url":"https://it-interview-889.pages.dev/#/question/1076"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1076.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？","text":"考察点：SDK 治理 vs Sidecar 治理、多语言、成本权衡。架构演进方向题。","answerCount":1,"datePublished":"2026-09-10T11:54:47.787Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质差异：治理能力放在哪一层： Spring Cloud（SDK / 代码内治理）：服务发现、负载均衡、熔断、重试、限流都由应用内 SDK 实现（spring-cloud-loadbalancer、Sentinel 等）。能力在业务进程里； Service Mesh（Sidecar / 进程外治理）：把上述能力下沉到与业务容器并排的代理（Envoy），业务进程只发普通 HTTP/gRPC 请求到 localhost，治理由 Sidecar 完成。能力在基础设施层。 Service Mesh 解决了 Spring Cloud 的哪些真实痛点： 1. 多语言：Spring Cloud 只服务 Java。有 Go/Python/Node 混合栈时，每种语言都要重写一套治理逻辑（且质量参差）；Sidecar 对语言完全无感——这是 Mesh 最强动机； 2. 升级困难：SDK 治理意味着升级框架 = 改所有业务代码 + 重新发版（几百个服务一起动）；Sidecar 升级不需要动业务代码； 3. 职责错配：让业务团队为「熔断/重试/超时」写代码，本身就是基础设施问题下沉到了业务；且治理逻辑容易写错（团队水平不均导致线上行为不一致）； 4. 零信任与安全：Mesh 天然提供 mTLS（服务间自动加密与身份认证）、细粒度授权策略，这是 SDK 模式很难统一做好的； 5. 可观测性统一：Sidecar 可以统一采集所有流量的指标、链路、访问日志，不需要每个服务都正确埋点。 代价（必须讲清，否则是片面回答）： 1. 多一跳网络：每次调用多经过一次本地 Sidecar，延迟增加（通常 0.5–2ms 量级）与 CPU/内存开销（每个 Pod 多一个容器）； 2. 运维复杂度显著上升：引入 Istio/控制平面、CRD、证书轮转、数据面升级——需要平台团队，没有平台能力就上 Mesh 是自找麻烦； 3. 调试变难：请求被 iptables/流量劫持（或 eBPF）拦到 Sidecar，排障要跨进程；某些协议（原生 gRPC、数据库连接、非 HTTP 协议）需要特殊配置甚至不支持； 4. 治理能力重叠与冲突：如果应用里还留着 SDK 重试/熔断，会与 Sidecar 的规则叠加（前面说过，重试叠加会放大故障）——迁移时必须逐个关掉 SDK 侧能力； 5. 配置与团队认知成本：Istio 的 VirtualService/DestinationRule 学习曲线陡，配置写错会静默导致流量异常。 务实的判断（给出可执行结论）： 纯 Java 单一技术栈 + 规模不大（几十个服务）：Spring Cloud 足够，成本收益比更高；上 Mesh 是过度设计； 多语言栈 / 服务数上百 / 有平台团队 / 有合规（mTLS、审计）要求：Mesh 的收益会显著超过成本； 过渡路径（推荐）：不要一步到位换 Mesh——① 先把治理能力收敛成统一 SDK/模板（统一超时/熔断配置）；② 再把入口网关统一（Ingress Gateway）；③ 逐步只把「mTLS、流量路由、可观测性」下沉到 Sidecar，熔断限流仍留在应用侧（很多团队的中间路线）； 替代趋势：Sidecar-less（Ambient Mesh / eBPF） 正在降低「每 Pod 一个代理」的开销（Istio Ambient 用 ztunnel 做 L4、按需启 L7 代理），值得关注但成熟度需评估。 本质结论：Spring Cloud 是「SDK 治理」，Service Mesh 是「基础设施治理」——选择不是技术优劣，而是「谁来承担治理复杂度」的组织问题：业务团队还是平台团队。","url":"https://itinterview.com.cn/#/question/1076"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">云架构师</span><span class="chip tag">SpringCloud</span><span class="chip tag">ServiceMesh</span><span class="chip tag">Sidecar</span><span class="chip tag">Istio</span><span class="chip tag">架构演进</span></div>
     <div class="card"><h2>题目</h2><p>考察点：SDK 治理 vs Sidecar 治理、多语言、成本权衡。架构演进方向题。</p></div>
@@ -105,12 +105,12 @@
 <ul>
 <li><strong>本质结论</strong>：<strong>Spring Cloud 是「SDK 治理」，Service Mesh 是「基础设施治理」</strong>——选择不是技术优劣，而是<strong>「谁来承担治理复杂度」的组织问题</strong>：业务团队还是平台团队。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1076">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1076">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=122&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=122&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

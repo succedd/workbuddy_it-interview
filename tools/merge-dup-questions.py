@@ -306,7 +306,7 @@ def rebuild_removed(data, merges):
     return added, skipped, bad
 
 
-SITE = "https://it-interview.is-a.dev"
+SITE = "https://itinterview.com.cn"  # 2026-09-21：is-a.dev 已被官方下架，改用自购域名
 REDIRECT_TPL = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>

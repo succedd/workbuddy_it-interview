@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="故障排查题：线上监控突然告警——数据库 CPU 飙升、连接数打满、响应变慢。你如何快速判断这是缓存穿透、击穿还是雪崩？各自的『止血』手段是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 第一步：看请求 key 特征与监控。① 若大量请求是『格式合法但根本不存在的 id』、缓存命中率骤降且 DB QPS 主要由这类查询构成 → 穿透；② 若是『某个/少数热点 key』在某一瞬间并发 miss、DB 单点被打 → 击穿；③ 若『大量 key 同时失效』或 Redis 本身不可达、应用大面积缓…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1201.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1201.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="故障排查题：线上监控突然告警——数据库 CPU 飙升、连接数打满、响应变慢。你如何快速判断这是缓存穿透、击穿还是雪崩？各自的『止血』手段是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 第一步：看请求 key 特征与监控。① 若大量请求是『格式合法但根本不存在的 id』、缓存命中率骤降且 DB QPS 主要由这类查询构成 → 穿透；② 若是『某个/少数热点 key』在某一瞬间并发 miss、DB 单点被打 → 击穿；③ 若『大量 key 同时失效』或 Redis 本身不可达、应用大面积缓…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1201.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查题：线上监控突然告警——数据库 CPU 飙升、连接数打满、响应变慢。你如何快速判断这是缓存穿透、击穿还是雪崩？各自的『止血』手段是什么？","text":"考察点：把三种缓存异常的『表象差异』映射到排查动作，以及对应的应急止血手段。要求能结合监控指标（缓存命中率、DB QPS、请求 key 特征）定位，而不是盲目重启。","answerCount":1,"datePublished":"2026-09-20T02:22:09.082Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：看请求 key 特征与监控。① 若大量请求是『格式合法但根本不存在的 id』、缓存命中率骤降且 DB QPS 主要由这类查询构成 → 穿透；② 若是『某个/少数热点 key』在某一瞬间并发 miss、DB 单点被打 → 击穿；③ 若『大量 key 同时失效』或 Redis 本身不可达、应用大面积缓存 miss → 雪崩。 穿透止血：在入口封禁恶意 IP / 限流；对不存在 key 缓存空值（短 TTL）；若已接布隆过滤器则确认其是否生效、是否需要重建。临时可加 WAF/网关层拦截异常流量。 击穿止血：对热点 key 加分布式锁（只让一个线程回源），抢不到锁的线程返回旧值或快速降级；极端热点 key 临时改为不过期 + 后台刷新。 雪崩止血：先熔断/限流保护数据库，避免被冲垮；Redis 宕机则切到高可用从节点；若是大量 key 同时过期，给存量 key 的 TTL 补随机扰动、或对热点数据提前预热。 通用：止血后必须补『缓存预热 + 随机 TTL + 多级缓存（本地 Caffeine + Redis）』做长期防御，并盯紧命中率、DB 实际查库 QPS、P99 延迟等核心指标。 核心：先靠监控和请求特征定性（穿透=不存在的 key、击穿=单热点、雪崩=大面积失效/宕机），再对症下药止血，最后补架构防御。","url":"https://it-interview-889.pages.dev/#/question/1201"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1201.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查题：线上监控突然告警——数据库 CPU 飙升、连接数打满、响应变慢。你如何快速判断这是缓存穿透、击穿还是雪崩？各自的『止血』手段是什么？","text":"考察点：把三种缓存异常的『表象差异』映射到排查动作，以及对应的应急止血手段。要求能结合监控指标（缓存命中率、DB QPS、请求 key 特征）定位，而不是盲目重启。","answerCount":1,"datePublished":"2026-09-20T02:22:09.082Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：看请求 key 特征与监控。① 若大量请求是『格式合法但根本不存在的 id』、缓存命中率骤降且 DB QPS 主要由这类查询构成 → 穿透；② 若是『某个/少数热点 key』在某一瞬间并发 miss、DB 单点被打 → 击穿；③ 若『大量 key 同时失效』或 Redis 本身不可达、应用大面积缓存 miss → 雪崩。 穿透止血：在入口封禁恶意 IP / 限流；对不存在 key 缓存空值（短 TTL）；若已接布隆过滤器则确认其是否生效、是否需要重建。临时可加 WAF/网关层拦截异常流量。 击穿止血：对热点 key 加分布式锁（只让一个线程回源），抢不到锁的线程返回旧值或快速降级；极端热点 key 临时改为不过期 + 后台刷新。 雪崩止血：先熔断/限流保护数据库，避免被冲垮；Redis 宕机则切到高可用从节点；若是大量 key 同时过期，给存量 key 的 TTL 补随机扰动、或对热点数据提前预热。 通用：止血后必须补『缓存预热 + 随机 TTL + 多级缓存（本地 Caffeine + Redis）』做长期防御，并盯紧命中率、DB 实际查库 QPS、P99 延迟等核心指标。 核心：先靠监控和请求特征定性（穿透=不存在的 key、击穿=单热点、雪崩=大面积失效/宕机），再对症下药止血，最后补架构防御。","url":"https://itinterview.com.cn/#/question/1201"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>故障排查题：线上监控突然告警——数据库 CPU 飙升、连接数打满、响应变慢。你如何快速判断这是缓存穿透、击穿还是雪崩？各自的『止血』手段是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存异常</span><span class="chip tag">故障排查</span><span class="chip tag">应急止血</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把三种缓存异常的『表象差异』映射到排查动作，以及对应的应急止血手段。要求能结合监控指标（缓存命中率、DB QPS、请求 key 特征）定位，而不是盲目重启。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>通用</strong>：止血后必须补『缓存预热 + 随机 TTL + 多级缓存（本地 Caffeine + Redis）』做长期防御，并盯紧命中率、DB 实际查库 QPS、P99 延迟等核心指标。</li>
 </ul>
 <p><strong>核心</strong>：先靠监控和请求特征定性（穿透=不存在的 key、击穿=单热点、雪崩=大面积失效/宕机），再对症下药止血，最后补架构防御。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1201">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1201">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？ · IT面试题库">
   <meta property="og:description" content="G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/512.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/512.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？ · IT面试题库">
   <meta name="twitter:description" content="G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/512.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？","text":"解释 GMP 三要素、GOMAXPROCS 的含义、工作窃取(Work Stealing)与本地/全局队列，以及为什么需要 P。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：逻辑处理器/调度上下文，持有本地运行队列（容量 256）、mcache 等；数量由 GOMAXPROCS 决定，默认等于 CPU 核数——即同一时刻最多 GOMAXPROCS 个 G 真正并行。 为什么需要 P：把“调度资源”与“执行线程”解耦。若没有 P，系统调用阻塞 M 会冻结整条运行队列；借助 P，被阻塞的 M 可把手里的 P 移交给空闲 M，CPU 不空转。P 的本地队列也减少了全局锁竞争。 取任务顺序（M 调度循环）：① 优先取 P 本地队列（无锁、缓存友好）；② 每 61 次调度检查一次全局队列（避免饥饿）；③ 网络轮询器 netpoll 中已就绪的 G；④ 从其他 P 偷取一半 G（Work Stealing，负载均衡）。 补充：Go 1.14+ 采用基于信号（SIGURG）的异步抢占，防止一个 G 长时间占用 P 导致饥饿。","url":"https://it-interview-889.pages.dev/#/question/512"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/512.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？","text":"解释 GMP 三要素、GOMAXPROCS 的含义、工作窃取(Work Stealing)与本地/全局队列，以及为什么需要 P。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：逻辑处理器/调度上下文，持有本地运行队列（容量 256）、mcache 等；数量由 GOMAXPROCS 决定，默认等于 CPU 核数——即同一时刻最多 GOMAXPROCS 个 G 真正并行。 为什么需要 P：把“调度资源”与“执行线程”解耦。若没有 P，系统调用阻塞 M 会冻结整条运行队列；借助 P，被阻塞的 M 可把手里的 P 移交给空闲 M，CPU 不空转。P 的本地队列也减少了全局锁竞争。 取任务顺序（M 调度循环）：① 优先取 P 本地队列（无锁、缓存友好）；② 每 61 次调度检查一次全局队列（避免饥饿）；③ 网络轮询器 netpoll 中已就绪的 G；④ 从其他 P 偷取一半 G（Work Stealing，负载均衡）。 补充：Go 1.14+ 采用基于信号（SIGURG）的异步抢占，防止一个 G 长时间占用 P 导致饥饿。","url":"https://itinterview.com.cn/#/question/512"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Go开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip tag">GMP</span><span class="chip tag">并发调度</span><span class="chip tag">Goroutine</span></div>
     <div class="card"><h2>题目</h2><p>解释 GMP 三要素、GOMAXPROCS 的含义、工作窃取(Work Stealing)与本地/全局队列，以及为什么需要 P。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>取任务顺序</strong>（M 调度循环）：① 优先取 P 本地队列（无锁、缓存友好）；② 每 61 次调度检查一次全局队列（避免饥饿）；③ 网络轮询器 netpoll 中已就绪的 G；④ 从其他 P 偷取一半 G（Work Stealing，负载均衡）。</li>
 <li><strong>补充</strong>：Go 1.14+ 采用基于信号（SIGURG）的<strong>异步抢占</strong>，防止一个 G 长时间占用 P 导致饥饿。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/512">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/512">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=16&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=16&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

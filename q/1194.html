@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SpringApplication.run() 的整体启动流程可以拆成哪几个主要阶段？refreshContext 处于什么位置、负责什么？ · IT面试题库">
   <meta property="og:description" content="要点： 前期准备阶段：① 记录启动计时；② 通过 SpringApplicationRunListeners 发布 starting 事件；③ prepareEnvironment 准备并组装 Environment（读取 profile、命令行参数、配置文件）；④ printBanner 打印 Banner；⑤…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1194.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1194.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SpringApplication.run() 的整体启动流程可以拆成哪几个主要阶段？refreshContext 处于什么位置、负责什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 前期准备阶段：① 记录启动计时；② 通过 SpringApplicationRunListeners 发布 starting 事件；③ prepareEnvironment 准备并组装 Environment（读取 profile、命令行参数、配置文件）；④ printBanner 打印 Banner；⑤…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1194.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SpringApplication.run() 的整体启动流程可以拆成哪几个主要阶段？refreshContext 处于什么位置、负责什么？","text":"考察点：启动主流程的阶段划分（环境准备→上下文创建→刷新→运行），以及 refreshContext 作为『容器完整初始化』核心阶段的作用，尤其内嵌 Web 服务器在 onRefresh 阶段启动这一点。","answerCount":1,"datePublished":"2026-09-20T02:21:46.411Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 前期准备阶段：① 记录启动计时；② 通过 SpringApplicationRunListeners 发布 starting 事件；③ prepareEnvironment 准备并组装 Environment（读取 profile、命令行参数、配置文件）；④ printBanner 打印 Banner；⑤ createApplicationContext 根据 webApplicationType 创建对应上下文（SERVLET 用 AnnotationConfigServletWebServerApplicationContext）。 上下文预处理：prepareContext 把主配置类（primarySources）注册进容器，执行 ApplicationContextInitializer，准备 BeanFactory。 refreshContext（核心）：调用 AbstractApplicationContext.refresh()，完成 Spring 容器的完整初始化，标准 12 步：prepareRefresh → obtainFreshBeanFactory → prepareBeanFactory → invokeBeanFactoryPostProcessors → registerBeanPostProcessors → initMessageSource → initApplicationEventMulticaster → onRefresh → registerListeners → finishBeanFactoryInitialization（实例化非懒加载单例）→ finishRefresh。 onRefresh 是 Spring Boot 的扩展点：ServletWebServerApplicationContext 在 onRefresh 中调用 createWebServer() 启动内嵌 Tomcat/Undertow/Netty；所以『内嵌 Web 服务器是在容器刷新阶段启动的』，不是 run() 末尾。 收尾：afterRefresh → listeners.running → 返回 ConfigurableApplicationContext。 核心：run() 是一条流水线，refreshContext 是『把 Bean 真正装配进容器并拉起 Web 服务器』的分水岭。","url":"https://it-interview-889.pages.dev/#/question/1194"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1194.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SpringApplication.run() 的整体启动流程可以拆成哪几个主要阶段？refreshContext 处于什么位置、负责什么？","text":"考察点：启动主流程的阶段划分（环境准备→上下文创建→刷新→运行），以及 refreshContext 作为『容器完整初始化』核心阶段的作用，尤其内嵌 Web 服务器在 onRefresh 阶段启动这一点。","answerCount":1,"datePublished":"2026-09-20T02:21:46.411Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 前期准备阶段：① 记录启动计时；② 通过 SpringApplicationRunListeners 发布 starting 事件；③ prepareEnvironment 准备并组装 Environment（读取 profile、命令行参数、配置文件）；④ printBanner 打印 Banner；⑤ createApplicationContext 根据 webApplicationType 创建对应上下文（SERVLET 用 AnnotationConfigServletWebServerApplicationContext）。 上下文预处理：prepareContext 把主配置类（primarySources）注册进容器，执行 ApplicationContextInitializer，准备 BeanFactory。 refreshContext（核心）：调用 AbstractApplicationContext.refresh()，完成 Spring 容器的完整初始化，标准 12 步：prepareRefresh → obtainFreshBeanFactory → prepareBeanFactory → invokeBeanFactoryPostProcessors → registerBeanPostProcessors → initMessageSource → initApplicationEventMulticaster → onRefresh → registerListeners → finishBeanFactoryInitialization（实例化非懒加载单例）→ finishRefresh。 onRefresh 是 Spring Boot 的扩展点：ServletWebServerApplicationContext 在 onRefresh 中调用 createWebServer() 启动内嵌 Tomcat/Undertow/Netty；所以『内嵌 Web 服务器是在容器刷新阶段启动的』，不是 run() 末尾。 收尾：afterRefresh → listeners.running → 返回 ConfigurableApplicationContext。 核心：run() 是一条流水线，refreshContext 是『把 Bean 真正装配进容器并拉起 Web 服务器』的分水岭。","url":"https://itinterview.com.cn/#/question/1194"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>SpringApplication.run() 的整体启动流程可以拆成哪几个主要阶段？refreshContext 处于什么位置、负责什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">启动流程</span><span class="chip tag">SpringApplication</span><span class="chip tag">refreshContext</span></div>
     <div class="card"><h2>题目</h2><p>考察点：启动主流程的阶段划分（环境准备→上下文创建→刷新→运行），以及 refreshContext 作为『容器完整初始化』核心阶段的作用，尤其内嵌 Web 服务器在 onRefresh 阶段启动这一点。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>收尾</strong>：afterRefresh → listeners.running → 返回 ConfigurableApplicationContext。</li>
 </ul>
 <p><strong>核心</strong>：run() 是一条流水线，refreshContext 是『把 Bean 真正装配进容器并拉起 Web 服务器』的分水岭。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1194">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1194">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=82&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=82&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

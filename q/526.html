@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？ · IT面试题库">
   <meta property="og:description" content="1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/526.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/526.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？ · IT面试题库">
   <meta name="twitter:description" content="1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/526.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？","text":"说明每范式的约束（原子性、消除部分依赖、消除传递依赖）及反范式化的典型场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键 → 需拆分出商品表。 3NF（第三范式）：满足 2NF，且非主键属性不传递依赖于主键（消除“传递函数依赖”）。例：员工表(员工ID, 部门ID, 部门名)，部门名依赖部门ID、部门ID 依赖员工ID → 传递依赖，应把部门信息拆到部门表。 为什么要反范式化（适当冗余）：严格范式会带来大量 join，高并发读场景下性能差。常见反范式做法：在订单表冗余“用户名”避免 join；用宽表/汇总表加速报表。权衡：用写入冗余/一致性成本换取读取性能，常配合缓存。","url":"https://it-interview-889.pages.dev/#/question/526"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/526.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？","text":"说明每范式的约束（原子性、消除部分依赖、消除传递依赖）及反范式化的典型场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键 → 需拆分出商品表。 3NF（第三范式）：满足 2NF，且非主键属性不传递依赖于主键（消除“传递函数依赖”）。例：员工表(员工ID, 部门ID, 部门名)，部门名依赖部门ID、部门ID 依赖员工ID → 传递依赖，应把部门信息拆到部门表。 为什么要反范式化（适当冗余）：严格范式会带来大量 join，高并发读场景下性能差。常见反范式做法：在订单表冗余“用户名”避免 join；用宽表/汇总表加速报表。权衡：用写入冗余/一致性成本换取读取性能，常配合缓存。","url":"https://itinterview.com.cn/#/question/526"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">DBA数据库管理员</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">数据库范式</span><span class="chip tag">1NF</span><span class="chip tag">2NF</span><span class="chip tag">3NF</span></div>
     <div class="card"><h2>题目</h2><p>说明每范式的约束（原子性、消除部分依赖、消除传递依赖）及反范式化的典型场景。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>3NF（第三范式）</strong>：满足 2NF，且<strong>非主键属性不传递依赖于主键</strong>（消除“传递函数依赖”）。例：员工表(员工ID, 部门ID, 部门名)，部门名依赖部门ID、部门ID 依赖员工ID → 传递依赖，应把部门信息拆到部门表。</li>
 <li><strong>为什么要反范式化（适当冗余）</strong>：严格范式会带来<strong>大量 join</strong>，高并发读场景下性能差。常见反范式做法：在订单表冗余“用户名”避免 join；用<strong>宽表/汇总表</strong>加速报表。权衡：用写入冗余/一致性成本换取读取性能，常配合缓存。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/526">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/526">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=26&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=26&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

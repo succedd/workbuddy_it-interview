@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？ · IT面试题库">
   <meta property="og:description" content="要点： 1. free 看 available 而不是 free：available = 估算可用于启动新进程的内存（含可回收 page cache），free 只是完全空闲部分；available 低但 free 高通常是缓存占着，属正常，无需恐慌。 2. swap 颠簸才是真危险：vmstat 1 看 si …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/826.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/826.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. free 看 available 而不是 free：available = 估算可用于启动新进程的内存（含可回收 page cache），free 只是完全空闲部分；available 低但 free 高通常是缓存占着，属正常，无需恐慌。 2. swap 颠簸才是真危险：vmstat 1 看 si …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/826.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？","text":"考察点：free 的 available 与 free 区别、swap 颠簸 si/so 判据、OOM 从 dmesg 找凶手。追问：available 低但 free 高，需要紧张吗？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. free 看 available 而不是 free：available = 估算可用于启动新进程的内存（含可回收 page cache），free 只是完全空闲部分；available 低但 free 高通常是缓存占着，属正常，无需恐慌。 2. swap 颠簸才是真危险：vmstat 1 看 si / so（每秒换入 / 换出），持续 > 0 说明内存真的不够、在和磁盘来回倒腾，延迟会陡增；sar -r 1 看 kbmemfree / kbmemused / %commit。 3. 定位内存大户：top 按内存排序（M）、pidstat -r、或 pmap -x 看进程映射中哪段匿名内存 / 堆在涨，据此判断泄漏点。 4. OOM 找凶手：dmesg -T | grep -i 'out of memory' 或 /var/log/messages 中有 Killed process (xxx)，包含 oom_score_adj 与占用内存，定位被杀死的进程；再用 cat /proc/ /status 的 VmRSS 复盘。 结论：available 低先确认 si / so 与 cache 回收情况，再查具体进程增长曲线；只有 %commit（已承诺内存）逼近内存上限且持续 swap 才真正逼近 OOM。","url":"https://it-interview-889.pages.dev/#/question/826"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/826.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？","text":"考察点：free 的 available 与 free 区别、swap 颠簸 si/so 判据、OOM 从 dmesg 找凶手。追问：available 低但 free 高，需要紧张吗？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. free 看 available 而不是 free：available = 估算可用于启动新进程的内存（含可回收 page cache），free 只是完全空闲部分；available 低但 free 高通常是缓存占着，属正常，无需恐慌。 2. swap 颠簸才是真危险：vmstat 1 看 si / so（每秒换入 / 换出），持续 > 0 说明内存真的不够、在和磁盘来回倒腾，延迟会陡增；sar -r 1 看 kbmemfree / kbmemused / %commit。 3. 定位内存大户：top 按内存排序（M）、pidstat -r、或 pmap -x 看进程映射中哪段匿名内存 / 堆在涨，据此判断泄漏点。 4. OOM 找凶手：dmesg -T | grep -i 'out of memory' 或 /var/log/messages 中有 Killed process (xxx)，包含 oom_score_adj 与占用内存，定位被杀死的进程；再用 cat /proc/ /status 的 VmRSS 复盘。 结论：available 低先确认 si / so 与 cache 回收情况，再查具体进程增长曲线；只有 %commit（已承诺内存）逼近内存上限且持续 swap 才真正逼近 OOM。","url":"https://itinterview.com.cn/#/question/826"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">内存</span><span class="chip tag">OOM</span><span class="chip tag">free</span><span class="chip tag">vmstat</span><span class="chip tag">swap</span></div>
     <div class="card"><h2>题目</h2><p>考察点：free 的 available 与 free 区别、swap 颠簸 si/so 判据、OOM 从 dmesg 找凶手。追问：available 低但 free 高，需要紧张吗？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>OOM 找凶手</strong>：<code>dmesg -T | grep -i &#39;out of memory&#39;</code> 或 <code>/var/log/messages</code> 中有 <code>Killed process &lt;pid&gt; (xxx)</code>，包含 oom_score_adj 与占用内存，定位被杀死的进程；再用 <code>cat /proc/&lt;pid&gt;/status</code> 的 VmRSS 复盘。</li>
 </ol>
 <p><strong>结论</strong>：available 低先确认 si / so 与 cache 回收情况，再查具体进程增长曲线；只有 %commit（已承诺内存）逼近内存上限且持续 swap 才真正逼近 OOM。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/826">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/826">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=46&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

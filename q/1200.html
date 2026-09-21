@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是缓存雪崩？它的两个主要诱因分别是什么？各自对应的应对手段有哪些？ · IT面试题库">
   <meta property="og:description" content="要点： 定义：缓存雪崩指『大量缓存数据在同一时间过期（失效）』，或『Redis 实例故障宕机』时，大量用户请求都无法在缓存中处理，全部直达数据库，导致数据库压力骤增甚至宕机，引发系统连锁崩溃。 诱因一：大量数据同时过期。应对：① 均匀设置过期时间——给 TTL 加随机扰动，避免同一时刻集体失效；② 互斥锁——保证…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1200.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1200.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是缓存雪崩？它的两个主要诱因分别是什么？各自对应的应对手段有哪些？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定义：缓存雪崩指『大量缓存数据在同一时间过期（失效）』，或『Redis 实例故障宕机』时，大量用户请求都无法在缓存中处理，全部直达数据库，导致数据库压力骤增甚至宕机，引发系统连锁崩溃。 诱因一：大量数据同时过期。应对：① 均匀设置过期时间——给 TTL 加随机扰动，避免同一时刻集体失效；② 互斥锁——保证…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1200.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是缓存雪崩？它的两个主要诱因分别是什么？各自对应的应对手段有哪些？","text":"考察点：雪崩的两种诱因（大量 key 同时过期 / Redis 故障宕机）应对思路完全不同——前者是过期时间策略与构建缓存的并发控制，后者是高可用与熔断限流。要求分因施策。","answerCount":1,"datePublished":"2026-09-20T02:22:09.030Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定义：缓存雪崩指『大量缓存数据在同一时间过期（失效）』，或『Redis 实例故障宕机』时，大量用户请求都无法在缓存中处理，全部直达数据库，导致数据库压力骤增甚至宕机，引发系统连锁崩溃。 诱因一：大量数据同时过期。应对：① 均匀设置过期时间——给 TTL 加随机扰动，避免同一时刻集体失效；② 互斥锁——保证同一时间只有一个请求构建缓存；③ 双 key 策略——主 key 设过期、备 key 永久，主 key miss 时返回备 key 内容；④ 后台更新缓存——缓存不设有效期，由后台线程定时/消息通知更新（适合缓存预热）。 诱因二：Redis 故障宕机。应对：① 服务熔断 / 请求限流——Redis 挂了先暂停访问缓存或直接限流，保护数据库不被冲垮；② 构建高可靠集群——用主从 + 哨兵 / Cluster，主节点宕机从节点顶上，避免单点故障引发雪崩。 核心：雪崩的根因是『缓存层整体失效 → 压力全压 DB』，治理上『过期策略打散 + 高可用 + 熔断限流』三管齐下。","url":"https://it-interview-889.pages.dev/#/question/1200"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1200.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是缓存雪崩？它的两个主要诱因分别是什么？各自对应的应对手段有哪些？","text":"考察点：雪崩的两种诱因（大量 key 同时过期 / Redis 故障宕机）应对思路完全不同——前者是过期时间策略与构建缓存的并发控制，后者是高可用与熔断限流。要求分因施策。","answerCount":1,"datePublished":"2026-09-20T02:22:09.030Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定义：缓存雪崩指『大量缓存数据在同一时间过期（失效）』，或『Redis 实例故障宕机』时，大量用户请求都无法在缓存中处理，全部直达数据库，导致数据库压力骤增甚至宕机，引发系统连锁崩溃。 诱因一：大量数据同时过期。应对：① 均匀设置过期时间——给 TTL 加随机扰动，避免同一时刻集体失效；② 互斥锁——保证同一时间只有一个请求构建缓存；③ 双 key 策略——主 key 设过期、备 key 永久，主 key miss 时返回备 key 内容；④ 后台更新缓存——缓存不设有效期，由后台线程定时/消息通知更新（适合缓存预热）。 诱因二：Redis 故障宕机。应对：① 服务熔断 / 请求限流——Redis 挂了先暂停访问缓存或直接限流，保护数据库不被冲垮；② 构建高可靠集群——用主从 + 哨兵 / Cluster，主节点宕机从节点顶上，避免单点故障引发雪崩。 核心：雪崩的根因是『缓存层整体失效 → 压力全压 DB』，治理上『过期策略打散 + 高可用 + 熔断限流』三管齐下。","url":"https://itinterview.com.cn/#/question/1200"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是缓存雪崩？它的两个主要诱因分别是什么？各自对应的应对手段有哪些？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存雪崩</span><span class="chip tag">高可用</span><span class="chip tag">熔断限流</span></div>
     <div class="card"><h2>题目</h2><p>考察点：雪崩的两种诱因（大量 key 同时过期 / Redis 故障宕机）应对思路完全不同——前者是过期时间策略与构建缓存的并发控制，后者是高可用与熔断限流。要求分因施策。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>诱因二：Redis 故障宕机</strong>。应对：① 服务熔断 / 请求限流——Redis 挂了先暂停访问缓存或直接限流，保护数据库不被冲垮；② 构建高可靠集群——用主从 + 哨兵 / Cluster，主节点宕机从节点顶上，避免单点故障引发雪崩。</li>
 </ul>
 <p><strong>核心</strong>：雪崩的根因是『缓存层整体失效 → 压力全压 DB』，治理上『过期策略打散 + 高可用 + 熔断限流』三管齐下。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1200">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1200">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

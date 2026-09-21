@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查题·高级】CLB 控制台显示后端健康检查「异常」，但用户部分访问正常、部分 502；改小不健康阈值后异常更频繁。请给出系统的排查步骤，并解释为什么「健康检查异常但业务时好时坏」。最后说明：线上要摘除一台后端做维护，「权重置 0」和「直接解绑」该怎么选？ · IT面试题库">
   <meta property="og:description" content="排查步骤（自底向上逐层验证）： 绕过 CLB 直连验证：从内网直接访问「后端 IP + 业务端口」，确认应用本身可服务； 查端口与进程：确认后端服务在健康检查端口上监听（netstat/ss），不是只绑在 127.0.0.1； 查防火墙/安全组：后端本机防火墙、防护软件、iptables、安全组是否放行了 CLB…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1097.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1097.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查题·高级】CLB 控制台显示后端健康检查「异常」，但用户部分访问正常、部分 502；改小不健康阈值后异常更频繁。请给出系统的排查步骤，并解释为什么「健康检查异常但业务时好时坏」。最后说明：线上要摘除一台后端做维护，「权重置 0」和「直接解绑」该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="排查步骤（自底向上逐层验证）： 绕过 CLB 直连验证：从内网直接访问「后端 IP + 业务端口」，确认应用本身可服务； 查端口与进程：确认后端服务在健康检查端口上监听（netstat/ss），不是只绑在 127.0.0.1； 查防火墙/安全组：后端本机防火墙、防护软件、iptables、安全组是否放行了 CLB…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1097.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查题·高级】CLB 控制台显示后端健康检查「异常」，但用户部分访问正常、部分 502；改小不健康阈值后异常更频繁。请给出系统的排查步骤，并解释为什么「健康检查异常但业务时好时坏」。最后说明：线上要摘除一台后端做维护，「权重置 0」和「直接解绑」该怎么选？","text":"考察点：健康检查异常的标准排查清单（直连验证/端口/防火墙/检查参数/iptables）、健康检查按探测节点独立判定导致的「部分可用」现象、权重置 0 与解绑的差异及灰度下线实践。CLB 售后高阶综合题。","answerCount":1,"datePublished":"2026-09-11T11:56:08.134Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查步骤（自底向上逐层验证）： 绕过 CLB 直连验证：从内网直接访问「后端 IP + 业务端口」，确认应用本身可服务； 查端口与进程：确认后端服务在健康检查端口上监听（netstat/ss），不是只绑在 127.0.0.1； 查防火墙/安全组：后端本机防火墙、防护软件、iptables、安全组是否放行了 CLB 探测源（VIP 或 100.64.0.0/10 网段）；这是最常见的根因； 查检查参数：检查路径是否存在（建议用静态页面）、检查域名、期望状态码是否配置正确； 查后端负载：高负载（CPU 打满、连接队列堆积）会让探测响应超过超时时间——业务「能通」但探测「超时失败」。 为什么异常但业务时好时坏：健康检查探测是由 CLB 集群的多台物理机各自独立执行的——探测频率实际是「每台物理机各自按间隔探测」，某台物理机判定失败只影响它自己的转发，其余物理机仍正常转发流量。这解释了两个现象：① 后端实际收到的探测频率比配置的高（8 台物理机 5 秒各探一次，后端 5 秒内可能收到 8 次探测，改小间隔会更糟）；② 部分探测节点判定失败、其余正常时，业务就表现为「部分请求 502、部分正常」。解决方向是把探测间隔调大（如 15s）并修掉根因，而不是继续调小阈值。 权重置 0 vs 解绑（灰度下线怎么选）： 权重置 0：TCP/UDP/HTTP(S) 监听器新增连接不再转发，但存量连接继续转发直至自然结束——适合优雅摘流量：老连接处理完再下线，不掉请求； 解绑：TCP/UDP 的存量连接立即停止转发（连接被掐断），HTTP/HTTPS 存量连接继续转发完毕后断开——更激进，适合需要立刻撤流量的故障机。 结论：计划内维护选权重置 0（先观察存量连接排空再下线），故障机可解绑快切。","url":"https://it-interview-889.pages.dev/#/question/1097"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1097.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查题·高级】CLB 控制台显示后端健康检查「异常」，但用户部分访问正常、部分 502；改小不健康阈值后异常更频繁。请给出系统的排查步骤，并解释为什么「健康检查异常但业务时好时坏」。最后说明：线上要摘除一台后端做维护，「权重置 0」和「直接解绑」该怎么选？","text":"考察点：健康检查异常的标准排查清单（直连验证/端口/防火墙/检查参数/iptables）、健康检查按探测节点独立判定导致的「部分可用」现象、权重置 0 与解绑的差异及灰度下线实践。CLB 售后高阶综合题。","answerCount":1,"datePublished":"2026-09-11T11:56:08.134Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查步骤（自底向上逐层验证）： 绕过 CLB 直连验证：从内网直接访问「后端 IP + 业务端口」，确认应用本身可服务； 查端口与进程：确认后端服务在健康检查端口上监听（netstat/ss），不是只绑在 127.0.0.1； 查防火墙/安全组：后端本机防火墙、防护软件、iptables、安全组是否放行了 CLB 探测源（VIP 或 100.64.0.0/10 网段）；这是最常见的根因； 查检查参数：检查路径是否存在（建议用静态页面）、检查域名、期望状态码是否配置正确； 查后端负载：高负载（CPU 打满、连接队列堆积）会让探测响应超过超时时间——业务「能通」但探测「超时失败」。 为什么异常但业务时好时坏：健康检查探测是由 CLB 集群的多台物理机各自独立执行的——探测频率实际是「每台物理机各自按间隔探测」，某台物理机判定失败只影响它自己的转发，其余物理机仍正常转发流量。这解释了两个现象：① 后端实际收到的探测频率比配置的高（8 台物理机 5 秒各探一次，后端 5 秒内可能收到 8 次探测，改小间隔会更糟）；② 部分探测节点判定失败、其余正常时，业务就表现为「部分请求 502、部分正常」。解决方向是把探测间隔调大（如 15s）并修掉根因，而不是继续调小阈值。 权重置 0 vs 解绑（灰度下线怎么选）： 权重置 0：TCP/UDP/HTTP(S) 监听器新增连接不再转发，但存量连接继续转发直至自然结束——适合优雅摘流量：老连接处理完再下线，不掉请求； 解绑：TCP/UDP 的存量连接立即停止转发（连接被掐断），HTTP/HTTPS 存量连接继续转发完毕后断开——更激进，适合需要立刻撤流量的故障机。 结论：计划内维护选权重置 0（先观察存量连接排空再下线），故障机可解绑快切。","url":"https://itinterview.com.cn/#/question/1097"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【故障排查题·高级】CLB 控制台显示后端健康检查「异常」，但用户部分访问正常、部分 502；改小不健康阈值后异常更频繁。请给出系统的排查步骤，并解释为什么「健康检查异常但业务时好时坏」。最后说明：线上要摘除一台后端做维护，「权重置 0」和「直接解绑」该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">CLB</span><span class="chip tag">健康检查异常</span><span class="chip tag">探测频率</span><span class="chip tag">权重置0</span><span class="chip tag">灰度下线</span></div>
     <div class="card"><h2>题目</h2><p>考察点：健康检查异常的标准排查清单（直连验证/端口/防火墙/检查参数/iptables）、健康检查按探测节点独立判定导致的「部分可用」现象、权重置 0 与解绑的差异及灰度下线实践。CLB 售后高阶综合题。</p></div>
@@ -88,12 +88,12 @@
 <li><strong>解绑</strong>：TCP/UDP 的<strong>存量连接立即停止转发</strong>（连接被掐断），HTTP/HTTPS 存量连接继续转发完毕后断开——更激进，适合需要立刻撤流量的故障机。</li>
 <li>结论：<strong>计划内维护选权重置 0（先观察存量连接排空再下线）</strong>，故障机可解绑快切。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1097">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1097">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

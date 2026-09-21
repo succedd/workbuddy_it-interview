@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="音视频【本质】WebRTC 为什么被称为里程碑？它把「实时音视频」的门槛从什么变成了什么？ · IT面试题库">
   <meta property="og:description" content="WebRTC 之前，实时音视频是少数大厂的专利：采集渲染 API 各平台不同、编解码器要授权、NAT 穿透（你的设备在路由器后面，对方怎么连进来）是专门学问、抗弱网（丢包重传/抖动缓冲/码率自适应）全是自定义工程。 WebRTC 把整条链标准化并内置进浏览器： 1. 采集与渲染 API 跨平台统一； 2. 编解码…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/335.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/335.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="音视频【本质】WebRTC 为什么被称为里程碑？它把「实时音视频」的门槛从什么变成了什么？ · IT面试题库">
   <meta name="twitter:description" content="WebRTC 之前，实时音视频是少数大厂的专利：采集渲染 API 各平台不同、编解码器要授权、NAT 穿透（你的设备在路由器后面，对方怎么连进来）是专门学问、抗弱网（丢包重传/抖动缓冲/码率自适应）全是自定义工程。 WebRTC 把整条链标准化并内置进浏览器： 1. 采集与渲染 API 跨平台统一； 2. 编解码…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/335.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"音视频【本质】WebRTC 为什么被称为里程碑？它把「实时音视频」的门槛从什么变成了什么？","text":"在 WebRTC 之前，做视频会议要自己写采集、编解码、抗弱网、NAT 穿透——每一项都是几年功力。WebRTC 把哪些东西标准化了？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"WebRTC 之前，实时音视频是少数大厂的专利：采集渲染 API 各平台不同、编解码器要授权、NAT 穿透（你的设备在路由器后面，对方怎么连进来）是专门学问、抗弱网（丢包重传/抖动缓冲/码率自适应）全是自定义工程。 WebRTC 把整条链标准化并内置进浏览器： 1. 采集与渲染 API 跨平台统一； 2. 编解码（VP8/VP9/H.264/Opus）内建免授权； 3. ICE/STUN/TURN 把 NAT 穿透标准化； 4. SRTP 加密传输 + 抗弱网策略内置。 门槛从「数年专项团队」降到「几行 JS」——在线教育、会议、连麦直播的爆发由此而来。标准化释放创新的规律，在 WebRTC 与 HTML5 上如出一辙。","url":"https://it-interview-889.pages.dev/#/question/335"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/335.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"音视频【本质】WebRTC 为什么被称为里程碑？它把「实时音视频」的门槛从什么变成了什么？","text":"在 WebRTC 之前，做视频会议要自己写采集、编解码、抗弱网、NAT 穿透——每一项都是几年功力。WebRTC 把哪些东西标准化了？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"WebRTC 之前，实时音视频是少数大厂的专利：采集渲染 API 各平台不同、编解码器要授权、NAT 穿透（你的设备在路由器后面，对方怎么连进来）是专门学问、抗弱网（丢包重传/抖动缓冲/码率自适应）全是自定义工程。 WebRTC 把整条链标准化并内置进浏览器： 1. 采集与渲染 API 跨平台统一； 2. 编解码（VP8/VP9/H.264/Opus）内建免授权； 3. ICE/STUN/TURN 把 NAT 穿透标准化； 4. SRTP 加密传输 + 抗弱网策略内置。 门槛从「数年专项团队」降到「几行 JS」——在线教育、会议、连麦直播的爆发由此而来。标准化释放创新的规律，在 WebRTC 与 HTML5 上如出一辙。","url":"https://itinterview.com.cn/#/question/335"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>音视频【本质】WebRTC 为什么被称为里程碑？它把「实时音视频」的门槛从什么变成了什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">音视频与流媒体工程师</span><span class="chip">音视频开发工程师</span><span class="chip">流媒体架构师</span><span class="chip">WebRTC工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">音视频与流媒体</span></div>
     <div class="card"><h2>题目</h2><p>在 WebRTC 之前，做视频会议要自己写采集、编解码、抗弱网、NAT 穿透——每一项都是几年功力。WebRTC 把哪些东西标准化了？</p></div>
@@ -82,12 +82,12 @@
 <li>SRTP 加密传输 + 抗弱网策略内置。</li>
 </ol>
 <p><strong>门槛从「数年专项团队」降到「几行 JS」</strong>——在线教育、会议、连麦直播的爆发由此而来。<strong>标准化释放创新的规律，在 WebRTC 与 HTML5 上如出一辙</strong>。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/335">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/335">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=249&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=249&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

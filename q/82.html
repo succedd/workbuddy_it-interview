@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 消费组重平衡（rebalance）是什么？ · IT面试题库">
   <meta property="og:description" content="重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/82.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/82.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 消费组重平衡（rebalance）是什么？ · IT面试题库">
   <meta name="twitter:description" content="重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/82.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 消费组重平衡（rebalance）是什么？","text":"解释触发原因、stop-the-world 影响与优化。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重平衡期间整个组暂停消费（stop-the-world），大 group 影响明显。 优化：合理设超时、避免在消费逻辑里做重活（超过 max.poll.interval.ms）、升级到支持增量协作重平衡（Cooperative Sticky）的版本减少停顿、控制 group 规模。","url":"https://it-interview-889.pages.dev/#/question/82"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/82.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 消费组重平衡（rebalance）是什么？","text":"解释触发原因、stop-the-world 影响与优化。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重平衡期间整个组暂停消费（stop-the-world），大 group 影响明显。 优化：合理设超时、避免在消费逻辑里做重活（超过 max.poll.interval.ms）、升级到支持增量协作重平衡（Cooperative Sticky）的版本减少停顿、控制 group 规模。","url":"https://itinterview.com.cn/#/question/82"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Kafka 消费组重平衡（rebalance）是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">大数据工程师</span><span class="chip tag">Kafka</span><span class="chip tag">重平衡</span><span class="chip tag">消费组</span></div>
     <div class="card"><h2>题目</h2><p>解释触发原因、stop-the-world 影响与优化。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>触发</strong>：消费者加入/离开（崩溃、超时 <code>session.timeout</code>、心跳 <code>heartbeat.interval</code>）、订阅主题分区数变化、消费者超过 <code>max.poll.interval</code> 未 poll。</p>
 <p><strong>影响</strong>：重平衡期间<strong>整个组暂停消费</strong>（stop-the-world），大 group 影响明显。</p>
 <p><strong>优化</strong>：合理设超时、避免在消费逻辑里做重活（超过 <code>max.poll.interval.ms</code>）、升级到支持<strong>增量协作重平衡</strong>（Cooperative Sticky）的版本减少停顿、控制 group 规模。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/82">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/82">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=127&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=127&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

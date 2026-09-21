@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用 Redis 实现去重、基数统计与布隆过滤器式判重？ · IT面试题库">
   <meta property="og:description" content="精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1127.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1127.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Redis 实现去重、基数统计与布隆过滤器式判重？ · IT面试题库">
   <meta name="twitter:description" content="精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1127.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Redis 实现去重、基数统计与布隆过滤器式判重？","text":"日活 UV 统计、爬虫 URL 去重、抽奖不重复等场景，如何选择合适的 Redis 数据类型（Set / Bitmap / HyperLogLog / 布隆过滤器）？","answerCount":1,"datePublished":"2026-09-13T02:40:24.599Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只需「大约多少人」而非具体名单时，用 HyperLogLog 的 PFADD/PFCOUNT，12 KB 内存估数亿级基数，误差约 0.81%，代价是不存明细。 布隆过滤器式判重：Redis 本身无原生 BF 命令（部分模块/RedisBloom 提供），核心是用多位哈希降低误判；爬虫 URL 去重可用 Set（精确）或 HLL/Bitmap（近似）。选型：要精确明细用 Set，只要计数用 HLL，只要标记用 Bitmap。","url":"https://it-interview-889.pages.dev/#/question/1127"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1127.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Redis 实现去重、基数统计与布隆过滤器式判重？","text":"日活 UV 统计、爬虫 URL 去重、抽奖不重复等场景，如何选择合适的 Redis 数据类型（Set / Bitmap / HyperLogLog / 布隆过滤器）？","answerCount":1,"datePublished":"2026-09-13T02:40:24.599Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只需「大约多少人」而非具体名单时，用 HyperLogLog 的 PFADD/PFCOUNT，12 KB 内存估数亿级基数，误差约 0.81%，代价是不存明细。 布隆过滤器式判重：Redis 本身无原生 BF 命令（部分模块/RedisBloom 提供），核心是用多位哈希降低误判；爬虫 URL 去重可用 Set（精确）或 HLL/Bitmap（近似）。选型：要精确明细用 Set，只要计数用 HLL，只要标记用 Bitmap。","url":"https://itinterview.com.cn/#/question/1127"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何用 Redis 实现去重、基数统计与布隆过滤器式判重？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">Set</span><span class="chip tag">Bitmap</span><span class="chip tag">HyperLogLog</span><span class="chip tag">去重</span><span class="chip tag">布隆过滤器</span></div>
     <div class="card"><h2>题目</h2><p>日活 UV 统计、爬虫 URL 去重、抽奖不重复等场景，如何选择合适的 Redis 数据类型（Set / Bitmap / HyperLogLog / 布隆过滤器）？</p></div>
@@ -77,12 +77,12 @@
 <p><strong>位图判重</strong>：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。</p>
 <p><strong>基数统计</strong>：UV 只需「大约多少人」而非具体名单时，用 HyperLogLog 的 PFADD/PFCOUNT，12 KB 内存估数亿级基数，误差约 0.81%，代价是不存明细。</p>
 <p><strong>布隆过滤器式判重</strong>：Redis 本身无原生 BF 命令（部分模块/RedisBloom 提供），核心是用多位哈希降低误判；爬虫 URL 去重可用 Set（精确）或 HLL/Bitmap（近似）。选型：要精确明细用 Set，只要计数用 HLL，只要标记用 Bitmap。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1127">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1127">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

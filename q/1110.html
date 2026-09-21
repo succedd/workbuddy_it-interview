@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？ · IT面试题库">
   <meta property="og:description" content="前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1110.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1110.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？ · IT面试题库">
   <meta name="twitter:description" content="前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1110.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？","text":"源桶已开启跨地域复制，目标地域却看不到新对象。请按顺序列出排查链路，并说明该机制的一致性前提。","answerCount":1,"datePublished":"2026-09-13T02:40:01.457Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象因前缀不匹配或命中排除规则而不会复制。 一致性模型：CRR 是异步最终一致，通常秒级到分钟级；新对象立即可见是误区。复制保留元数据与版本 ID，删除标记也会复制（除非单独关闭删除复制），因此目标桶不能作为「防误删」的唯一手段。","url":"https://it-interview-889.pages.dev/#/question/1110"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1110.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？","text":"源桶已开启跨地域复制，目标地域却看不到新对象。请按顺序列出排查链路，并说明该机制的一致性前提。","answerCount":1,"datePublished":"2026-09-13T02:40:01.457Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象因前缀不匹配或命中排除规则而不会复制。 一致性模型：CRR 是异步最终一致，通常秒级到分钟级；新对象立即可见是误区。复制保留元数据与版本 ID，删除标记也会复制（除非单独关闭删除复制），因此目标桶不能作为「防误删」的唯一手段。","url":"https://itinterview.com.cn/#/question/1110"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">COS</span><span class="chip tag">跨地域复制</span><span class="chip tag">容灾</span><span class="chip tag">版本控制</span></div>
     <div class="card"><h2>题目</h2><p>源桶已开启跨地域复制，目标地域却看不到新对象。请按顺序列出排查链路，并说明该机制的一致性前提。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>复制角色与权限</strong>：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。</p>
 <p><strong>规则与目标</strong>：检查复制规则的目标桶、存储类型、前缀是否匹配；对象因前缀不匹配或命中排除规则而不会复制。</p>
 <p><strong>一致性模型</strong>：CRR 是异步最终一致，通常秒级到分钟级；新对象立即可见是误区。复制保留元数据与版本 ID，删除标记也会复制（除非单独关闭删除复制），因此目标桶不能作为「防误删」的唯一手段。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1110">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1110">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

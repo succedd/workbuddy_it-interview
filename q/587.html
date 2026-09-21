@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？ · IT面试题库">
   <meta property="og:description" content="1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/587.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/587.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？ · IT面试题库">
   <meta name="twitter:description" content="1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/587.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？","text":"Kafka 以高吞吐著称，常被问到它为什么快。请解释：(1) 生产者写入时为什么是顺序写而不是随机写；(2) 同一个分区内消息的消费顺序如何保证；(3) 跨分区是否能保证全局顺序。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度。 配合 sendfile 零拷贝读取，消费端也是顺序读，避免大量 lseek/random read。 2. 分区内顺序 同一分区内的消息严格按 offset 递增顺序存储与消费，单分区内消费顺序 = 生产顺序（在单生产者、未开启乱序重试的前提下）。 这是 Kafka 仅提供分区级有序的核心原因。 3. 跨分区无全局顺序 不同分区的 offset 相互独立，不能保证跨分区的全局顺序。需要全局有序时只能使用单分区（牺牲并行度），或按业务键（如 user_id）做 key 分区，使同键消息落到同分区。","url":"https://it-interview-889.pages.dev/#/question/587"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/587.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？","text":"Kafka 以高吞吐著称，常被问到它为什么快。请解释：(1) 生产者写入时为什么是顺序写而不是随机写；(2) 同一个分区内消息的消费顺序如何保证；(3) 跨分区是否能保证全局顺序。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度。 配合 sendfile 零拷贝读取，消费端也是顺序读，避免大量 lseek/random read。 2. 分区内顺序 同一分区内的消息严格按 offset 递增顺序存储与消费，单分区内消费顺序 = 生产顺序（在单生产者、未开启乱序重试的前提下）。 这是 Kafka 仅提供分区级有序的核心原因。 3. 跨分区无全局顺序 不同分区的 offset 相互独立，不能保证跨分区的全局顺序。需要全局有序时只能使用单分区（牺牲并行度），或按业务键（如 user_id）做 key 分区，使同键消息落到同分区。","url":"https://itinterview.com.cn/#/question/587"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">大数据工程师</span><span class="chip">大数据开发工程师</span><span class="chip">实时计算工程师</span><span class="chip tag">Kafka</span><span class="chip tag">顺序写</span><span class="chip tag">分区顺序</span><span class="chip tag">吞吐</span></div>
     <div class="card"><h2>题目</h2><p>Kafka 以高吞吐著称，常被问到它为什么快。请解释：(1) 生产者写入时为什么是顺序写而不是随机写；(2) 同一个分区内消息的消费顺序如何保证；(3) 跨分区是否能保证全局顺序。</p></div>
@@ -90,12 +90,12 @@
 </ul>
 <pre><code class="language-text">partition-0: [m1][m2][m3]  &lt;- 顺序保证
 partition-1: [m1][m2]       &lt;- 与 partition-0 无顺序关系</code></pre></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/587">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/587">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=162&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=162&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

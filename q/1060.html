@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？ · IT面试题库">
   <meta property="og:description" content="要点： 渲染管线的完整步骤： 1. Style：匹配选择器、计算每个元素的最终样式（层叠/继承）； 2. Layout（重排/Reflow）：计算几何位置与尺寸（盒模型、flex/grid 排布）；代价最高，且会级联影响子树与后续兄弟； 3. Paint（重绘）：生成绘制指令（背景、边框、文字、阴影）； 4. C…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1060.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1060.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？ · IT面试题库">
   <meta name="twitter:description" content="要点： 渲染管线的完整步骤： 1. Style：匹配选择器、计算每个元素的最终样式（层叠/继承）； 2. Layout（重排/Reflow）：计算几何位置与尺寸（盒模型、flex/grid 排布）；代价最高，且会级联影响子树与后续兄弟； 3. Paint（重绘）：生成绘制指令（背景、边框、文字、阴影）； 4. C…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1060.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？","text":"考察点：Layout/Paint/Composite 分层、触发条件、动画性能优化。高级前端必考。","answerCount":1,"datePublished":"2026-09-10T11:53:21.846Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 渲染管线的完整步骤： 1. Style：匹配选择器、计算每个元素的最终样式（层叠/继承）； 2. Layout（重排/Reflow）：计算几何位置与尺寸（盒模型、flex/grid 排布）；代价最高，且会级联影响子树与后续兄弟； 3. Paint（重绘）：生成绘制指令（背景、边框、文字、阴影）； 4. Composite（合成）：把各图层（layer）栅格化后端合成，由 GPU 完成。 哪些属性「跳过」哪些阶段： 只触发合成（不重排不重绘，性能最好）：transform（translate/scale/rotate）、opacity、filter（部分情况）。前提是元素已被提升为独立图层（compositing layer），否则仍可能触发重绘； 只重绘（不重排）：color、background-color、visibility、box-shadow、outline、border-radius（不改尺寸时）； 触发重排（最贵）：width/height、margin/padding、top/left/bottom/right（定位偏移）、display、font-size、border-width、以及读取 offsetTop/getBoundingClientRect/scrollTop（强制同步布局）。 为什么 transform 能在合成层动画：现代浏览器把动画中的 transform/opacity 交给 合成器线程，不占用主线程——所以即使主线程被 JS 阻塞，这类动画依然流畅。而 left/top 动画每一帧都要重排 + 重绘，主线程一忙就掉帧。这是「用 transform 代替 left/top 做动画」的硬理由，不是风格偏好。 图层提升的手段与代价：will-change: transform、transform: translateZ(0)/translate3d、backface-visibility: hidden、opacity 动画等会触发提升。代价：每个图层占独立显存/内存，图层过多导致内存暴涨、栅格化开销增加，反而更慢。所以： will-change 只在动画开始前加、结束后移除（长期挂着会常驻图层），不要给大量元素或全局 加； 不要为了「性能」无脑给列表每一项加 translateZ(0)——几百个图层是常见的内存事故。 实践优化清单： 读写分离（批量读 → 批量写），避免 layout thrashing（读写交替导致多次强制同步布局）； 动画优先 transform/opacity；用 position: fixed/absolute 让元素脱离文档流，减少重排影响面； 复杂列表/表格用 contain: layout paint（CSS Containment）限定重排重绘范围；content-visibility: auto 跳过屏幕外内容的渲染； 用 DevTools Rendering 面板勾选 \"Paint flashing\" 与 \"Layer borders\" 直接看哪些区域在重绘、哪些元素成了图层；Performance 面板看 Frames 里的 Layout/Paint 耗时*定位真凶。","url":"https://it-interview-889.pages.dev/#/question/1060"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1060.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？","text":"考察点：Layout/Paint/Composite 分层、触发条件、动画性能优化。高级前端必考。","answerCount":1,"datePublished":"2026-09-10T11:53:21.846Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 渲染管线的完整步骤： 1. Style：匹配选择器、计算每个元素的最终样式（层叠/继承）； 2. Layout（重排/Reflow）：计算几何位置与尺寸（盒模型、flex/grid 排布）；代价最高，且会级联影响子树与后续兄弟； 3. Paint（重绘）：生成绘制指令（背景、边框、文字、阴影）； 4. Composite（合成）：把各图层（layer）栅格化后端合成，由 GPU 完成。 哪些属性「跳过」哪些阶段： 只触发合成（不重排不重绘，性能最好）：transform（translate/scale/rotate）、opacity、filter（部分情况）。前提是元素已被提升为独立图层（compositing layer），否则仍可能触发重绘； 只重绘（不重排）：color、background-color、visibility、box-shadow、outline、border-radius（不改尺寸时）； 触发重排（最贵）：width/height、margin/padding、top/left/bottom/right（定位偏移）、display、font-size、border-width、以及读取 offsetTop/getBoundingClientRect/scrollTop（强制同步布局）。 为什么 transform 能在合成层动画：现代浏览器把动画中的 transform/opacity 交给 合成器线程，不占用主线程——所以即使主线程被 JS 阻塞，这类动画依然流畅。而 left/top 动画每一帧都要重排 + 重绘，主线程一忙就掉帧。这是「用 transform 代替 left/top 做动画」的硬理由，不是风格偏好。 图层提升的手段与代价：will-change: transform、transform: translateZ(0)/translate3d、backface-visibility: hidden、opacity 动画等会触发提升。代价：每个图层占独立显存/内存，图层过多导致内存暴涨、栅格化开销增加，反而更慢。所以： will-change 只在动画开始前加、结束后移除（长期挂着会常驻图层），不要给大量元素或全局 加； 不要为了「性能」无脑给列表每一项加 translateZ(0)——几百个图层是常见的内存事故。 实践优化清单： 读写分离（批量读 → 批量写），避免 layout thrashing（读写交替导致多次强制同步布局）； 动画优先 transform/opacity；用 position: fixed/absolute 让元素脱离文档流，减少重排影响面； 复杂列表/表格用 contain: layout paint（CSS Containment）限定重排重绘范围；content-visibility: auto 跳过屏幕外内容的渲染； 用 DevTools Rendering 面板勾选 \"Paint flashing\" 与 \"Layer borders\" 直接看哪些区域在重绘、哪些元素成了图层；Performance 面板看 Frames 里的 Layout/Paint 耗时*定位真凶。","url":"https://itinterview.com.cn/#/question/1060"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">前端架构师</span><span class="chip tag">浏览器</span><span class="chip tag">渲染管线</span><span class="chip tag">重排重绘</span><span class="chip tag">合成层</span><span class="chip tag">性能优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Layout/Paint/Composite 分层、触发条件、动画性能优化。高级前端必考。</p></div>
@@ -100,12 +100,12 @@
 <p>  - 动画优先 <code>transform</code>/<code>opacity</code>；用 <code>position: fixed/absolute</code> 让元素脱离文档流，减少重排影响面；</p>
 <p>  - 复杂列表/表格用 <code>contain: layout paint</code>（<strong>CSS Containment</strong>）限定重排重绘范围；<code>content-visibility: auto</code> 跳过屏幕外内容的渲染；</p>
 <p>  - 用 DevTools <strong>Rendering 面板勾选 &quot;Paint flashing&quot; 与 &quot;Layer borders&quot;</strong> 直接看哪些区域在重绘、哪些元素成了图层；<strong>Performance 面板看 Frames 里的 Layout/Paint 耗时</strong>定位真凶。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1060">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1060">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=60&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=60&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

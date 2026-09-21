@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？ · IT面试题库">
   <meta property="og:description" content="要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/770.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/770.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/770.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？","text":"考察点：4xx 状态码语义，401 Unauthorized（未认证）vs 403 Forbidden（已认证但无权限），以及实际排查切入点。场景题。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访问该资源的权限。含义是「知道你是你，但不让你看」。常见于角色权限不足、IP 黑名单、CSRF 校验失败。 排查区分：先看响应头 WWW-Authenticate 是否出现（401 常带它提示认证方式）；检查请求是否携带合法 Token（401 多半是鉴权链路问题）；若带上正确管理员 Token 仍 403，则是权限/角色配置问题。 记忆口诀：401=「你是谁」（认证 authentication），403=「不准进」（授权 authorization）。","url":"https://it-interview-889.pages.dev/#/question/770"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/770.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？","text":"考察点：4xx 状态码语义，401 Unauthorized（未认证）vs 403 Forbidden（已认证但无权限），以及实际排查切入点。场景题。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 401 Unauthorized（未认证）：客户端没有提供有效的身份凭证，或凭证缺失/过期。含义是「你是谁还没证明」，应引导登录/重新获取 Token。常见于没带 Authorization 头、Token 过期、签名错误。 403 Forbidden（已认证但无权限）：服务器知道你是谁，但你的账号没有访问该资源的权限。含义是「知道你是你，但不让你看」。常见于角色权限不足、IP 黑名单、CSRF 校验失败。 排查区分：先看响应头 WWW-Authenticate 是否出现（401 常带它提示认证方式）；检查请求是否携带合法 Token（401 多半是鉴权链路问题）；若带上正确管理员 Token 仍 403，则是权限/角色配置问题。 记忆口诀：401=「你是谁」（认证 authentication），403=「不准进」（授权 authorization）。","url":"https://itinterview.com.cn/#/question/770"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>客户端调用接口返回 401 和 403，分别是什么意思？如何区分「认证」与「授权」问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">状态码</span><span class="chip tag">401</span><span class="chip tag">403</span><span class="chip tag">认证授权</span></div>
     <div class="card"><h2>题目</h2><p>考察点：4xx 状态码语义，401 Unauthorized（未认证）vs 403 Forbidden（已认证但无权限），以及实际排查切入点。场景题。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>排查区分</strong>：先看响应头 <code>WWW-Authenticate</code> 是否出现（401 常带它提示认证方式）；检查请求是否携带合法 Token（401 多半是鉴权链路问题）；若带上正确管理员 Token 仍 403，则是权限/角色配置问题。</li>
 <li><strong>记忆口诀</strong>：401=「你是谁」（认证 authentication），403=「不准进」（授权 authorization）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/770">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/770">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=51&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

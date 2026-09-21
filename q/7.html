@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 反射是什么？有哪些应用场景与风险？ · IT面试题库">
   <meta property="og:description" content="反射 是在运行时动态获取类信息并操作类成员（构造器、方法、字段）的机制，核心类为 Class、Method、Field、Constructor。 应用：框架（Spring IOC 实例化 Bean、MyBatis 映射结果集）、注解处理器、序列化/反序列化、动态代理。 风险： 1. 破坏封装（可访问 privat…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/7.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/7.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 反射是什么？有哪些应用场景与风险？ · IT面试题库">
   <meta name="twitter:description" content="反射 是在运行时动态获取类信息并操作类成员（构造器、方法、字段）的机制，核心类为 Class、Method、Field、Constructor。 应用：框架（Spring IOC 实例化 Bean、MyBatis 映射结果集）、注解处理器、序列化/反序列化、动态代理。 风险： 1. 破坏封装（可访问 privat…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/7.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 反射是什么？有哪些应用场景与风险？","text":"请解释反射机制及其典型用途，并说明为何在框架中大量使用以及安全隐患。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"反射 是在运行时动态获取类信息并操作类成员（构造器、方法、字段）的机制，核心类为 Class、Method、Field、Constructor。 应用：框架（Spring IOC 实例化 Bean、MyBatis 映射结果集）、注解处理器、序列化/反序列化、动态代理。 风险： 1. 破坏封装（可访问 private）； 2. 性能开销（相比直接调用有校验与方法调用开销）； 3. 安全（攻击者可借反序列化+反射执行恶意代码，如 Fastjson 漏洞）。 缓解：模块化限制、禁止危险反序列化、使用白名单。","url":"https://it-interview-889.pages.dev/#/question/7"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/7.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 反射是什么？有哪些应用场景与风险？","text":"请解释反射机制及其典型用途，并说明为何在框架中大量使用以及安全隐患。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"反射 是在运行时动态获取类信息并操作类成员（构造器、方法、字段）的机制，核心类为 Class、Method、Field、Constructor。 应用：框架（Spring IOC 实例化 Bean、MyBatis 映射结果集）、注解处理器、序列化/反序列化、动态代理。 风险： 1. 破坏封装（可访问 private）； 2. 性能开销（相比直接调用有校验与方法调用开销）； 3. 安全（攻击者可借反序列化+反射执行恶意代码，如 Fastjson 漏洞）。 缓解：模块化限制、禁止危险反序列化、使用白名单。","url":"https://itinterview.com.cn/#/question/7"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Java 反射是什么？有哪些应用场景与风险？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">反射</span><span class="chip tag">框架</span></div>
     <div class="card"><h2>题目</h2><p>请解释反射机制及其典型用途，并说明为何在框架中大量使用以及安全隐患。</p></div>
@@ -82,12 +82,12 @@
 <li>安全（攻击者可借反序列化+反射执行恶意代码，如 Fastjson 漏洞）。</li>
 </ol>
 <p><strong>缓解</strong>：模块化限制、禁止危险反序列化、使用白名单。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/7">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/7">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

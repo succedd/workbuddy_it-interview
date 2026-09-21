@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题 · IT面试题库">
   <meta property="og:description" content="排查流程： 1. 确认现象：客户反馈的是公网入站访问慢，还是出站访问慢；延迟是持续还是抖动；涉及地域。 2. 云监控分析：检查负载均衡的延迟指标、后端连接数、出带宽、请求数，确认瓶颈出现在 LB 还是后端。 3. 后端实例检查：查看 CPU、内存、磁盘 IO、丢包、TCP 重传等；高并发可能打满带宽。 4. 网络…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/206.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/206.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题 · IT面试题库">
   <meta name="twitter:description" content="排查流程： 1. 确认现象：客户反馈的是公网入站访问慢，还是出站访问慢；延迟是持续还是抖动；涉及地域。 2. 云监控分析：检查负载均衡的延迟指标、后端连接数、出带宽、请求数，确认瓶颈出现在 LB 还是后端。 3. 后端实例检查：查看 CPU、内存、磁盘 IO、丢包、TCP 重传等；高并发可能打满带宽。 4. 网络…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/206.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题","text":"客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查流程： 1. 确认现象：客户反馈的是公网入站访问慢，还是出站访问慢；延迟是持续还是抖动；涉及地域。 2. 云监控分析：检查负载均衡的延迟指标、后端连接数、出带宽、请求数，确认瓶颈出现在 LB 还是后端。 3. 后端实例检查：查看 CPU、内存、磁盘 IO、丢包、TCP 重传等；高并发可能打满带宽。 4. 网络链路测试：从多个地域使用 mtr -r -c 100 、traceroute、ping 测试，关注中间跳丢包和延迟；使用 tcping 测试端口延迟。 5. 应用日志：分析慢请求日志，确认响应时间中网络时间与应用处理时间比例。 6. 带宽与限速：查看是否触发出/入带宽上限、PPS 限制、安全组限速；如果是大流量业务可考虑开通带宽包或升配。 7. 如果本地到云的网络路径正常，但云到后端异常，检查负载均衡健康检查、会话保持和安全组。 8. 若怀疑云厂商骨干网问题，收集 mtr 报告和 traceroute 结果，提交云厂商工单要求查网络质量。 示例：mtr -r -c 100 -n ；curl -o /dev/null -s -w 'connect=%{time_connect} starttransfer=%{time_starttransfer} total=%{time_total}\\n'","url":"https://it-interview-889.pages.dev/#/question/206"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/206.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题","text":"客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查流程： 1. 确认现象：客户反馈的是公网入站访问慢，还是出站访问慢；延迟是持续还是抖动；涉及地域。 2. 云监控分析：检查负载均衡的延迟指标、后端连接数、出带宽、请求数，确认瓶颈出现在 LB 还是后端。 3. 后端实例检查：查看 CPU、内存、磁盘 IO、丢包、TCP 重传等；高并发可能打满带宽。 4. 网络链路测试：从多个地域使用 mtr -r -c 100 、traceroute、ping 测试，关注中间跳丢包和延迟；使用 tcping 测试端口延迟。 5. 应用日志：分析慢请求日志，确认响应时间中网络时间与应用处理时间比例。 6. 带宽与限速：查看是否触发出/入带宽上限、PPS 限制、安全组限速；如果是大流量业务可考虑开通带宽包或升配。 7. 如果本地到云的网络路径正常，但云到后端异常，检查负载均衡健康检查、会话保持和安全组。 8. 若怀疑云厂商骨干网问题，收集 mtr 报告和 traceroute 结果，提交云厂商工单要求查网络质量。 示例：mtr -r -c 100 -n ；curl -o /dev/null -s -w 'connect=%{time_connect} starttransfer=%{time_starttransfer} total=%{time_total}\\n'","url":"https://itinterview.com.cn/#/question/206"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">网络运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span></div>
     <div class="card"><h2>题目</h2><p>客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</p></div>
@@ -85,12 +85,12 @@
 <li>若怀疑云厂商骨干网问题，收集 mtr 报告和 traceroute 结果，提交云厂商工单要求查网络质量。</li>
 </ol>
 <p>示例：mtr -r -c 100 -n &lt;公网IP&gt;；curl -o /dev/null -s -w &#39;connect=%{time_connect} starttransfer=%{time_starttransfer} total=%{time_total}\n&#39; &lt;URL&gt;</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/206">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/206">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

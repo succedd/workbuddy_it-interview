@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路 · IT面试题库">
   <meta property="og:description" content="要点一：CNAME 是把&quot;内容调度&quot;交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/654.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/654.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路 · IT面试题库">
   <meta name="twitter:description" content="要点一：CNAME 是把&quot;内容调度&quot;交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/654.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路","text":"追问链第二环：从 DNS 过渡到 CDN 调度。考察点：CNAME 在 CDN 调度中的枢纽作用；GSLB 全局负载均衡如何按用户位置分配最佳边缘节点 IP；DNS 解析与 CDN 调度的结合点。","answerCount":1,"datePublished":"2026-09-07T13:21:58.765Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：CNAME 是把\"内容调度\"交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯云自主研发的 GSLB 调度体系处理。 为什么要这样做：厂商需要\"截获\"解析请求才能按用户 Local DNS 的来源（地域、运营商）动态返回最合适的边缘节点 IP。静态 A 记录做不到这种按请求者的智能调度，CNAME 是实现全局负载均衡的最小侵入方式。 要点二：完整请求链路（腾讯云 CDN） 1) 用户请求 www.test.com/1.jpg，先向 Local DNS 发起域名解析； 2) Local DNS 解析时发现配置了 CNAME www.test.com.cdn.dnsv1.com，解析请求被送至 Tencent DNS（GSLB），GSLB 为该请求分配最佳节点 IP； 3) Local DNS 获取并缓存该解析 IP，返回给用户； 4) 用户向该 IP 发起对 1.jpg 的访问请求。 要点三：节点命中与未命中的分叉 若该边缘节点已缓存 1.jpg，直接把数据返回给用户，请求结束——这是 CDN 低延迟的关键路径。 若节点未缓存，节点会向业务源站发起对 1.jpg 的请求（回源），获取资源后按用户自定义的缓存策略将资源缓存至节点，再返回给用户。之后该节点的同类请求即可命中缓存。","url":"https://it-interview-889.pages.dev/#/question/654"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/654.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路","text":"追问链第二环：从 DNS 过渡到 CDN 调度。考察点：CNAME 在 CDN 调度中的枢纽作用；GSLB 全局负载均衡如何按用户位置分配最佳边缘节点 IP；DNS 解析与 CDN 调度的结合点。","answerCount":1,"datePublished":"2026-09-07T13:21:58.765Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：CNAME 是把\"内容调度\"交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯云自主研发的 GSLB 调度体系处理。 为什么要这样做：厂商需要\"截获\"解析请求才能按用户 Local DNS 的来源（地域、运营商）动态返回最合适的边缘节点 IP。静态 A 记录做不到这种按请求者的智能调度，CNAME 是实现全局负载均衡的最小侵入方式。 要点二：完整请求链路（腾讯云 CDN） 1) 用户请求 www.test.com/1.jpg，先向 Local DNS 发起域名解析； 2) Local DNS 解析时发现配置了 CNAME www.test.com.cdn.dnsv1.com，解析请求被送至 Tencent DNS（GSLB），GSLB 为该请求分配最佳节点 IP； 3) Local DNS 获取并缓存该解析 IP，返回给用户； 4) 用户向该 IP 发起对 1.jpg 的访问请求。 要点三：节点命中与未命中的分叉 若该边缘节点已缓存 1.jpg，直接把数据返回给用户，请求结束——这是 CDN 低延迟的关键路径。 若节点未缓存，节点会向业务源站发起对 1.jpg 的请求（回源），获取资源后按用户自定义的缓存策略将资源缓存至节点，再返回给用户。之后该节点的同类请求即可命中缓存。","url":"https://itinterview.com.cn/#/question/654"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">机器学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">过拟合</span><span class="chip tag">欠拟合</span><span class="chip tag">正则化</span></div>
     <div class="card"><h2>题目</h2><p>追问链第二环：从 DNS 过渡到 CDN 调度。考察点：CNAME 在 CDN 调度中的枢纽作用；GSLB 全局负载均衡如何按用户位置分配最佳边缘节点 IP；DNS 解析与 CDN 调度的结合点。</p></div>
@@ -90,12 +90,12 @@
 <li>若该边缘节点已缓存 1.jpg，直接把数据返回给用户，请求结束——这是 CDN 低延迟的关键路径。</li>
 <li>若节点未缓存，节点会向业务源站发起对 1.jpg 的请求（回源），获取资源后按用户自定义的缓存策略将资源缓存至节点，再返回给用户。之后该节点的同类请求即可命中缓存。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/654">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/654">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=52&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=52&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

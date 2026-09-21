@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是测试金字塔？为什么端到端（E2E）测试应当尽量少？ · IT面试题库">
   <meta property="og:description" content="测试金字塔（Mike Cohn / Fowler 实践版）：自底向上三层，数量递减： 1. 单元测试（Unit）：底层、最多、最快，针对单个函数/类，用 mock 隔离依赖。 2. 集成测试（Integration）：中层、适中，验证代码与外部（DB/API/文件）的真实交互，一次测一个边界。 3. 端到端测试（…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/575.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/575.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是测试金字塔？为什么端到端（E2E）测试应当尽量少？ · IT面试题库">
   <meta name="twitter:description" content="测试金字塔（Mike Cohn / Fowler 实践版）：自底向上三层，数量递减： 1. 单元测试（Unit）：底层、最多、最快，针对单个函数/类，用 mock 隔离依赖。 2. 集成测试（Integration）：中层、适中，验证代码与外部（DB/API/文件）的真实交互，一次测一个边界。 3. 端到端测试（…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/575.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是测试金字塔？为什么端到端（E2E）测试应当尽量少？","text":"团队写了大量 UI 自动化用例，运行慢且经常 flaky。请解释测试金字塔（单元/集成/端到端）的层数与比例建议，并说明为什么高层测试要“少而精”。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"测试金字塔（Mike Cohn / Fowler 实践版）：自底向上三层，数量递减： 1. 单元测试（Unit）：底层、最多、最快，针对单个函数/类，用 mock 隔离依赖。 2. 集成测试（Integration）：中层、适中，验证代码与外部（DB/API/文件）的真实交互，一次测一个边界。 3. 端到端测试（E2E）：顶层、最少，跑完整集成系统（常经 UI/接口），给最大信心。 比例建议：写大量小快单测、一些集成测试、极少高层 E2E（“the more high-level you get the fewer tests you should have”）。 为什么 E2E 要少： 脆弱/误报（flaky）：依赖环境多，常因无关原因随机失败，且失败常是假阳性； 慢：启动全栈、跑 UI，耗时高，拖慢 CI 反馈； 维护贵：界面一改全要改，信任度下降（“狼来了”效应）； 冗余：边界/异常等已在下层充分覆盖，高层不必重复。 实践：E2E 只覆盖最核心用户旅程（如电商“搜索→加购→结算”）；把速度与稳定性留给单测。违反金字塔（倒三角/冰激凌筒）会导致 CI 又慢又不可信。","url":"https://it-interview-889.pages.dev/#/question/575"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/575.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是测试金字塔？为什么端到端（E2E）测试应当尽量少？","text":"团队写了大量 UI 自动化用例，运行慢且经常 flaky。请解释测试金字塔（单元/集成/端到端）的层数与比例建议，并说明为什么高层测试要“少而精”。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"测试金字塔（Mike Cohn / Fowler 实践版）：自底向上三层，数量递减： 1. 单元测试（Unit）：底层、最多、最快，针对单个函数/类，用 mock 隔离依赖。 2. 集成测试（Integration）：中层、适中，验证代码与外部（DB/API/文件）的真实交互，一次测一个边界。 3. 端到端测试（E2E）：顶层、最少，跑完整集成系统（常经 UI/接口），给最大信心。 比例建议：写大量小快单测、一些集成测试、极少高层 E2E（“the more high-level you get the fewer tests you should have”）。 为什么 E2E 要少： 脆弱/误报（flaky）：依赖环境多，常因无关原因随机失败，且失败常是假阳性； 慢：启动全栈、跑 UI，耗时高，拖慢 CI 反馈； 维护贵：界面一改全要改，信任度下降（“狼来了”效应）； 冗余：边界/异常等已在下层充分覆盖，高层不必重复。 实践：E2E 只覆盖最核心用户旅程（如电商“搜索→加购→结算”）；把速度与稳定性留给单测。违反金字塔（倒三角/冰激凌筒）会导致 CI 又慢又不可信。","url":"https://itinterview.com.cn/#/question/575"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是测试金字塔？为什么端到端（E2E）测试应当尽量少？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">测试工程师</span><span class="chip">功能测试工程师</span><span class="chip">自动化测试工程师</span><span class="chip tag">测试金字塔</span><span class="chip tag">单元测试</span><span class="chip tag">E2E</span><span class="chip tag">测试策略</span></div>
     <div class="card"><h2>题目</h2><p>团队写了大量 UI 自动化用例，运行慢且经常 flaky。请解释测试金字塔（单元/集成/端到端）的层数与比例建议，并说明为什么高层测试要“少而精”。</p></div>
@@ -88,12 +88,12 @@
 <li><strong>冗余</strong>：边界/异常等已在下层充分覆盖，高层不必重复。</li>
 </ul>
 <p><strong>实践</strong>：E2E 只覆盖最核心用户旅程（如电商“搜索→加购→结算”）；把速度与稳定性留给单测。违反金字塔（倒三角/冰激凌筒）会导致 CI 又慢又不可信。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/575">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/575">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=105&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=105&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

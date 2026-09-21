@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="云监控告警触发后，售后第一响应人的标准响应流程是什么？如何确认告警真实性、评估影响并初步定级？ · IT面试题库">
   <meta property="og:description" content="收到 Critical 类告警后的标准 SOP（先沟通、先定级、先保护现场，再排查）： 1. 确认告警真实性：先看是否瞬时抖动（持续周期未到就自行恢复）、是否误报（监控 Agent 异常/数据断点）、是否已知变更（发布/压测/维护窗口）触发。 2. 评估业务影响面：影响哪些客户、哪些核心链路？是否已有客户投诉或外…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/342.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/342.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="云监控告警触发后，售后第一响应人的标准响应流程是什么？如何确认告警真实性、评估影响并初步定级？ · IT面试题库">
   <meta name="twitter:description" content="收到 Critical 类告警后的标准 SOP（先沟通、先定级、先保护现场，再排查）： 1. 确认告警真实性：先看是否瞬时抖动（持续周期未到就自行恢复）、是否误报（监控 Agent 异常/数据断点）、是否已知变更（发布/压测/维护窗口）触发。 2. 评估业务影响面：影响哪些客户、哪些核心链路？是否已有客户投诉或外…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/342.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"云监控告警触发后，售后第一响应人的标准响应流程是什么？如何确认告警真实性、评估影响并初步定级？","text":"考察告警到达后的标准化第一响应动作（先稳后查），而非一上来就登机器改配置。","answerCount":1,"datePublished":"2026-08-31T02:48:10.394Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"收到 Critical 类告警后的标准 SOP（先沟通、先定级、先保护现场，再排查）： 1. 确认告警真实性：先看是否瞬时抖动（持续周期未到就自行恢复）、是否误报（监控 Agent 异常/数据断点）、是否已知变更（发布/压测/维护窗口）触发。 2. 评估业务影响面：影响哪些客户、哪些核心链路？是否已有客户投诉或外部拨测报警？单实例还是批量？ 3. 初步定级：按影响面与紧急度定为 P1/P2/P3（如核心生产不可用=P1，单非核心实例=P3）。 4. 同步与拉群：在客户/内部群同步『已知悉 + 正在排查 + 预计同步节奏』，避免客户重复催问；需要授权的高危操作先确认。 5. 再进入排查：定级后才登机器或用工具定位，不要在未确认影响时直接重启/变更。 核心原则：先沟通、先定级、先保护现场，再定位根因。","url":"https://it-interview-889.pages.dev/#/question/342"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/342.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"云监控告警触发后，售后第一响应人的标准响应流程是什么？如何确认告警真实性、评估影响并初步定级？","text":"考察告警到达后的标准化第一响应动作（先稳后查），而非一上来就登机器改配置。","answerCount":1,"datePublished":"2026-08-31T02:48:10.394Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"收到 Critical 类告警后的标准 SOP（先沟通、先定级、先保护现场，再排查）： 1. 确认告警真实性：先看是否瞬时抖动（持续周期未到就自行恢复）、是否误报（监控 Agent 异常/数据断点）、是否已知变更（发布/压测/维护窗口）触发。 2. 评估业务影响面：影响哪些客户、哪些核心链路？是否已有客户投诉或外部拨测报警？单实例还是批量？ 3. 初步定级：按影响面与紧急度定为 P1/P2/P3（如核心生产不可用=P1，单非核心实例=P3）。 4. 同步与拉群：在客户/内部群同步『已知悉 + 正在排查 + 预计同步节奏』，避免客户重复催问；需要授权的高危操作先确认。 5. 再进入排查：定级后才登机器或用工具定位，不要在未确认影响时直接重启/变更。 核心原则：先沟通、先定级、先保护现场，再定位根因。","url":"https://itinterview.com.cn/#/question/342"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>云监控告警触发后，售后第一响应人的标准响应流程是什么？如何确认告警真实性、评估影响并初步定级？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">告警响应</span><span class="chip tag">SOP</span><span class="chip tag">事件定级</span><span class="chip tag">故障处理</span></div>
     <div class="card"><h2>题目</h2><p>考察告警到达后的标准化第一响应动作（先稳后查），而非一上来就登机器改配置。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>再进入排查</strong>：定级后才登机器或用工具定位，<strong>不要在未确认影响时直接重启/变更</strong>。</li>
 </ol>
 <p>核心原则：先沟通、先定级、先保护现场，再定位根因。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/342">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/342">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=152&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=152&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

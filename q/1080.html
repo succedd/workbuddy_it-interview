@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Grafana 的告警（Unified Alerting）与 Prometheus 的告警规则该怎么分工？ · IT面试题库">
   <meta property="og:description" content="要点： 先分清三者职责： Prometheus：规则求值引擎——按 evaluation_interval 执行告警规则表达式，触发后把告警推给 Alertmanager； Alertmanager：告警分发中心——负责分组（grouping）、抑制（inhibition）、静默（silence）、去重、路由（r…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1080.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1080.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Grafana 的告警（Unified Alerting）与 Prometheus 的告警规则该怎么分工？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先分清三者职责： Prometheus：规则求值引擎——按 evaluation_interval 执行告警规则表达式，触发后把告警推给 Alertmanager； Alertmanager：告警分发中心——负责分组（grouping）、抑制（inhibition）、静默（silence）、去重、路由（r…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1080.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Grafana 的告警（Unified Alerting）与 Prometheus 的告警规则该怎么分工？","text":"考察点：告警架构分层、Alertmanager 与 Grafana 的能力边界、避免重复告警。监控体系建设题。","answerCount":1,"datePublished":"2026-09-10T11:55:05.192Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先分清三者职责： Prometheus：规则求值引擎——按 evaluation_interval 执行告警规则表达式，触发后把告警推给 Alertmanager； Alertmanager：告警分发中心——负责分组（grouping）、抑制（inhibition）、静默（silence）、去重、路由（route）、重试与通知模板； Grafana：可视化 + 统一告警——既能查询多种数据源，也能自己求值与发送告警（Unified Alerting）；同时是值班与排障的入口。 两种主流架构： 1. Prometheus 规则 + Alertmanager（经典）：指标告警走这条路。优势是成熟稳定、抑制/静默/分组能力最强，与 PromQL 的无状态求值语义贴合，告警规则与指标同源易审计（规则文件进 Git）；劣势是只能基于指标（日志/链路告警要走别处），且多集群时需要处理 Alertmanager 的高可用与配置同步； 2. Grafana Unified Alerting（统一告警）：可对任意数据源（Prometheus、Loki、MySQL、Elasticsearch、云监控）配置告警，一个界面管理全部告警，且能从看板面板一键创建告警（看板与告警强关联，运维体验好）；劣势是避免把「重逻辑」放在 Grafana（它的求值是一次查询，缺少 Alertmanager 那套成熟的抑制/分组细节；且 Grafana 挂掉则告警链路中断，需要高可用部署）。 推荐分工（务实做法）： 基础设施与 SLO 类指标告警（CPU、内存、磁盘、可用性、错误率、延迟）→ Prometheus 规则 + Alertmanager：表达式可版本化、抑制规则成熟（如「机器宕机时抑制其上的所有服务告警」）、与容量告警天然匹配； 业务与技术混合告警（日志错误关键词、业务数据库指标、第三方 API 状态、复合条件）→ Grafana Unified Alerting：它的多数据源能力在这里无可替代； 应用内明确的不变量（如「订单支付成功率 1%」更贴近业务影响，且能自适应流量波动； 告警要有 owner：每条规则标注负责团队，否则会出现「没人认领的告警长期存在」； 定期复盘告警质量：统计触发次数、误报率、平均处理时长，持续删掉噪音告警——告警规则是要持续运营的资产，不是一次配置。","url":"https://it-interview-889.pages.dev/#/question/1080"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1080.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Grafana 的告警（Unified Alerting）与 Prometheus 的告警规则该怎么分工？","text":"考察点：告警架构分层、Alertmanager 与 Grafana 的能力边界、避免重复告警。监控体系建设题。","answerCount":1,"datePublished":"2026-09-10T11:55:05.192Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先分清三者职责： Prometheus：规则求值引擎——按 evaluation_interval 执行告警规则表达式，触发后把告警推给 Alertmanager； Alertmanager：告警分发中心——负责分组（grouping）、抑制（inhibition）、静默（silence）、去重、路由（route）、重试与通知模板； Grafana：可视化 + 统一告警——既能查询多种数据源，也能自己求值与发送告警（Unified Alerting）；同时是值班与排障的入口。 两种主流架构： 1. Prometheus 规则 + Alertmanager（经典）：指标告警走这条路。优势是成熟稳定、抑制/静默/分组能力最强，与 PromQL 的无状态求值语义贴合，告警规则与指标同源易审计（规则文件进 Git）；劣势是只能基于指标（日志/链路告警要走别处），且多集群时需要处理 Alertmanager 的高可用与配置同步； 2. Grafana Unified Alerting（统一告警）：可对任意数据源（Prometheus、Loki、MySQL、Elasticsearch、云监控）配置告警，一个界面管理全部告警，且能从看板面板一键创建告警（看板与告警强关联，运维体验好）；劣势是避免把「重逻辑」放在 Grafana（它的求值是一次查询，缺少 Alertmanager 那套成熟的抑制/分组细节；且 Grafana 挂掉则告警链路中断，需要高可用部署）。 推荐分工（务实做法）： 基础设施与 SLO 类指标告警（CPU、内存、磁盘、可用性、错误率、延迟）→ Prometheus 规则 + Alertmanager：表达式可版本化、抑制规则成熟（如「机器宕机时抑制其上的所有服务告警」）、与容量告警天然匹配； 业务与技术混合告警（日志错误关键词、业务数据库指标、第三方 API 状态、复合条件）→ Grafana Unified Alerting：它的多数据源能力在这里无可替代； 应用内明确的不变量（如「订单支付成功率 1%」更贴近业务影响，且能自适应流量波动； 告警要有 owner：每条规则标注负责团队，否则会出现「没人认领的告警长期存在」； 定期复盘告警质量：统计触发次数、误报率、平均处理时长，持续删掉噪音告警——告警规则是要持续运营的资产，不是一次配置。","url":"https://itinterview.com.cn/#/question/1080"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Grafana 的告警（Unified Alerting）与 Prometheus 的告警规则该怎么分工？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Grafana</span><span class="chip tag">告警</span><span class="chip tag">Alertmanager</span><span class="chip tag">抑制</span><span class="chip tag">SLO</span></div>
     <div class="card"><h2>题目</h2><p>考察点：告警架构分层、Alertmanager 与 Grafana 的能力边界、避免重复告警。监控体系建设题。</p></div>
@@ -104,12 +104,12 @@
 <p>  - <strong>基于 SLO 的告警优于基于阈值</strong>：用「<strong>错误预算消耗速率</strong>」告警（如 1 小时消耗掉 2% 预算）比「错误率 &gt; 1%」更贴近业务影响，且能自适应流量波动；</p>
 <p>  - <strong>告警要有 owner</strong>：每条规则标注负责团队，否则会出现「没人认领的告警长期存在」；</p>
 <p>  - <strong>定期复盘告警质量</strong>：统计<strong>触发次数、误报率、平均处理时长</strong>，持续删掉噪音告警——<strong>告警规则是要持续运营的资产，不是一次配置。</strong></p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1080">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1080">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=144&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=144&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

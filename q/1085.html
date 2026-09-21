@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Jenkins 与 GitLab CI / GitHub Actions 相比该选哪个？什么情况下应该迁走？ · IT面试题库">
   <meta property="og:description" content="要点： 三者的本质差异： Jenkins：自建、可完全定制的通用自动化平台。优势是生态最广（1800+ 插件）、能对接任何系统（老式部署、内网环境、特殊硬件）、对复杂/异形流水线的适应力最强；代价是运维成本高（主从节点、插件冲突与安全漏洞、磁盘与构建队列管理、版本升级）——它需要一个平台团队来养； GitLab …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1085.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1085.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jenkins 与 GitLab CI / GitHub Actions 相比该选哪个？什么情况下应该迁走？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三者的本质差异： Jenkins：自建、可完全定制的通用自动化平台。优势是生态最广（1800+ 插件）、能对接任何系统（老式部署、内网环境、特殊硬件）、对复杂/异形流水线的适应力最强；代价是运维成本高（主从节点、插件冲突与安全漏洞、磁盘与构建队列管理、版本升级）——它需要一个平台团队来养； GitLab …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1085.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jenkins 与 GitLab CI / GitHub Actions 相比该选哪个？什么情况下应该迁走？","text":"考察点：CI 平台对比、维护成本、与代码托管的关系。选型决策题。","answerCount":1,"datePublished":"2026-09-10T11:55:20.029Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三者的本质差异： Jenkins：自建、可完全定制的通用自动化平台。优势是生态最广（1800+ 插件）、能对接任何系统（老式部署、内网环境、特殊硬件）、对复杂/异形流水线的适应力最强；代价是运维成本高（主从节点、插件冲突与安全漏洞、磁盘与构建队列管理、版本升级）——它需要一个平台团队来养； GitLab CI：与代码托管深度一体（.gitlab-ci.yml 随代码走、Merge Request 联动、Container Registry、环境/部署看板、安全扫描原生集成）。一个平台搞定代码 + CI + CD + 制品，运维负担低（SaaS 或自建一体化）；配置为 YAML，表达能力不如 Groovy 但足够； GitHub Actions：Marketplace 生态最活跃（几万个现成 action）、公开仓库免费额度大、与 GitHub 的 PR/Issue/Release 联动最顺；缺点是强绑定 GitHub（自建 runner 可缓解）、私有仓库的计费按分钟（大规模使用要算成本）、复杂流程编排（动态矩阵、多阶段依赖）不如 Jenkins 灵活。 选型判断（按场景给结论）： 1. 代码在 GitHub / GitLab 且流程相对标准 → 直接用其内置 CI：总成本最低（不用自建、不用买机器、与 PR 流程天然衔接）。新建项目不应默认上 Jenkins； 2. 需要跨平台编排、对接遗留系统（老式服务器、专有部署工具、内网隔离环境）、有复杂审批与多环境流水线 → Jenkins 仍是最合适的选择； 3. 需要强隔离的构建环境 / 特殊硬件（GPU、ARM、IoT 设备测试） → 三者都可以用自托管 runner（Jenkins agent / GitLab Runner / Actions self-hosted），差别不大； 4. 合规与数据主权要求（代码与构建日志不能出内网） → 自建 GitLab + Runner 或自建 Jenkins；GitHub Actions 需自托管 runner 才能满足。 什么情况下应该从 Jenkins 迁走： 维护成本超过收益：插件冲突频发、升级困难（版本落后导致安全告警积压）、专职人力投在流水线平台而非业务； 团队小、流水线需求标准（构建 + 测试 + 推镜像 + 部署 K8s）：内置 CI 能覆盖 95% 需求，迁移收益直接体现为人力释放； 渴望「配置即代码」的一致性：.gitlab-ci.yml/workflow 随代码评审，比 Jenkins 的 UI 配置更可审计（Jenkins 用 JCasC 也能做到，但要多一层工程）； 安全与合规审计要求：SaaS CI 的原生 SAST/依赖扫描/密钥检测比在 Jenkins 里拼装插件更完整。 迁移的现实建议： 不要一次性全迁——按「新建项目用新平台，存量项目慢跑迁移」的并行策略，先迁最简单的流水线建立信心与模板； 先沉淀共享模板（GitLab 的 include:/extends、Actions 的 reusable workflow），迁移才不是复制粘贴； 保留 Jenkins 做「长尾/特殊」流水线——混合模式在很多公司是稳态，不是过渡态； 成本要算全：SaaS 的分钟计费（大仓库、频繁构建、长测试会显著上升）× 构建量 vs 自建的机器 + 人力——很多团队「省了机器钱，花了更多人时间」。 一句话结论：Jenkins 赢在「万能」，GitLab CI / GitHub Actions 赢在「省心」。 判断标准是：你的组织是否愿意为一个通用 CI 平台投入专职人力——愿意且需要万能 → Jenkins；不愿意且需求标准 → 用代码托管自带的那套。","url":"https://it-interview-889.pages.dev/#/question/1085"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1085.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jenkins 与 GitLab CI / GitHub Actions 相比该选哪个？什么情况下应该迁走？","text":"考察点：CI 平台对比、维护成本、与代码托管的关系。选型决策题。","answerCount":1,"datePublished":"2026-09-10T11:55:20.029Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三者的本质差异： Jenkins：自建、可完全定制的通用自动化平台。优势是生态最广（1800+ 插件）、能对接任何系统（老式部署、内网环境、特殊硬件）、对复杂/异形流水线的适应力最强；代价是运维成本高（主从节点、插件冲突与安全漏洞、磁盘与构建队列管理、版本升级）——它需要一个平台团队来养； GitLab CI：与代码托管深度一体（.gitlab-ci.yml 随代码走、Merge Request 联动、Container Registry、环境/部署看板、安全扫描原生集成）。一个平台搞定代码 + CI + CD + 制品，运维负担低（SaaS 或自建一体化）；配置为 YAML，表达能力不如 Groovy 但足够； GitHub Actions：Marketplace 生态最活跃（几万个现成 action）、公开仓库免费额度大、与 GitHub 的 PR/Issue/Release 联动最顺；缺点是强绑定 GitHub（自建 runner 可缓解）、私有仓库的计费按分钟（大规模使用要算成本）、复杂流程编排（动态矩阵、多阶段依赖）不如 Jenkins 灵活。 选型判断（按场景给结论）： 1. 代码在 GitHub / GitLab 且流程相对标准 → 直接用其内置 CI：总成本最低（不用自建、不用买机器、与 PR 流程天然衔接）。新建项目不应默认上 Jenkins； 2. 需要跨平台编排、对接遗留系统（老式服务器、专有部署工具、内网隔离环境）、有复杂审批与多环境流水线 → Jenkins 仍是最合适的选择； 3. 需要强隔离的构建环境 / 特殊硬件（GPU、ARM、IoT 设备测试） → 三者都可以用自托管 runner（Jenkins agent / GitLab Runner / Actions self-hosted），差别不大； 4. 合规与数据主权要求（代码与构建日志不能出内网） → 自建 GitLab + Runner 或自建 Jenkins；GitHub Actions 需自托管 runner 才能满足。 什么情况下应该从 Jenkins 迁走： 维护成本超过收益：插件冲突频发、升级困难（版本落后导致安全告警积压）、专职人力投在流水线平台而非业务； 团队小、流水线需求标准（构建 + 测试 + 推镜像 + 部署 K8s）：内置 CI 能覆盖 95% 需求，迁移收益直接体现为人力释放； 渴望「配置即代码」的一致性：.gitlab-ci.yml/workflow 随代码评审，比 Jenkins 的 UI 配置更可审计（Jenkins 用 JCasC 也能做到，但要多一层工程）； 安全与合规审计要求：SaaS CI 的原生 SAST/依赖扫描/密钥检测比在 Jenkins 里拼装插件更完整。 迁移的现实建议： 不要一次性全迁——按「新建项目用新平台，存量项目慢跑迁移」的并行策略，先迁最简单的流水线建立信心与模板； 先沉淀共享模板（GitLab 的 include:/extends、Actions 的 reusable workflow），迁移才不是复制粘贴； 保留 Jenkins 做「长尾/特殊」流水线——混合模式在很多公司是稳态，不是过渡态； 成本要算全：SaaS 的分钟计费（大仓库、频繁构建、长测试会显著上升）× 构建量 vs 自建的机器 + 人力——很多团队「省了机器钱，花了更多人时间」。 一句话结论：Jenkins 赢在「万能」，GitLab CI / GitHub Actions 赢在「省心」。 判断标准是：你的组织是否愿意为一个通用 CI 平台投入专职人力——愿意且需要万能 → Jenkins；不愿意且需求标准 → 用代码托管自带的那套。","url":"https://itinterview.com.cn/#/question/1085"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Jenkins 与 GitLab CI / GitHub Actions 相比该选哪个？什么情况下应该迁走？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">CI/CD工程师</span><span class="chip">技术经理</span><span class="chip tag">Jenkins</span><span class="chip tag">GitLabCI</span><span class="chip tag">GitHubActions</span><span class="chip tag">选型</span><span class="chip tag">CI/CD</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CI 平台对比、维护成本、与代码托管的关系。选型决策题。</p></div>
@@ -104,12 +104,12 @@
 <ul>
 <li><strong>一句话结论</strong>：<strong>Jenkins 赢在「万能」，GitLab CI / GitHub Actions 赢在「省心」。</strong> 判断标准是：<strong>你的组织是否愿意为一个通用 CI 平台投入专职人力</strong>——愿意且需要万能 → Jenkins；不愿意且需求标准 → 用代码托管自带的那套。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1085">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1085">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=139&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=139&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

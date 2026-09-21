@@ -17,7 +17,7 @@ const https = require("https");
 const http = require("http");
 
 const OUT_DIR = path.join(__dirname, "..", "q");
-const SITE = "https://it-interview-889.pages.dev";
+const SITE = "https://itinterview.com.cn";
 const OG_IMAGE = `${SITE}/assets/og-cover.png`;
 const DEFAULT_DESC = "IT 面试题库 · 按岗位/年限/难度刷题 · 答案解析 · 收藏与错题重练";
 

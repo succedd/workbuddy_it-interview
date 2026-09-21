@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Nacos 集群的数据一致性是怎么保证的？Raft 和 Distro 各用在什么数据上？ · IT面试题库">
   <meta property="og:description" content="要点： 核心设计：Nacos 按数据类型分别选择一致性模型（这是它相比 Eureka（纯 AP）/ ZooKeeper（纯 CP）最大的差异点）： 配置数据（Config）→ CP → Raft：配置必须强一致。若集群内不同节点返回不同配置，同一服务的实例会按不同配置运行，行为不一致比短暂不可用危险得多。Naco…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1070.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1070.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nacos 集群的数据一致性是怎么保证的？Raft 和 Distro 各用在什么数据上？ · IT面试题库">
   <meta name="twitter:description" content="要点： 核心设计：Nacos 按数据类型分别选择一致性模型（这是它相比 Eureka（纯 AP）/ ZooKeeper（纯 CP）最大的差异点）： 配置数据（Config）→ CP → Raft：配置必须强一致。若集群内不同节点返回不同配置，同一服务的实例会按不同配置运行，行为不一致比短暂不可用危险得多。Naco…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1070.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Nacos 集群的数据一致性是怎么保证的？Raft 和 Distro 各用在什么数据上？","text":"考察点：CP/AP 在同组件内的划分、Raft 与 Distro 协议、Quorum 与脑裂。进阶原理题。","answerCount":1,"datePublished":"2026-09-10T11:54:23.419Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心设计：Nacos 按数据类型分别选择一致性模型（这是它相比 Eureka（纯 AP）/ ZooKeeper（纯 CP）最大的差异点）： 配置数据（Config）→ CP → Raft：配置必须强一致。若集群内不同节点返回不同配置，同一服务的实例会按不同配置运行，行为不一致比短暂不可用危险得多。Nacos 1.x 用自研 JRaft，2.x 用 JRaft（基于 SOFAJRaft），写操作需多数派（Quorum = ⌊N/2⌋+1）确认。 服务注册数据（Naming）：拆成两半—— 临时实例 → AP → Distro 协议：要高可用（注册中心挂了不能影响已有服务调用），采用自研 Distro：每个节点负责一部分数据（分片），只同步给其他节点但不要求多数派写成功（异步复制），节点间通过定期对账（校验 digest）修复不一致。可写、可用性优先，容忍短暂不一致。 持久实例 → CP → Raft：持久实例少且需强一致，直接走 Raft。 Distro 协议的关键点：数据分片 + 责任节点——每个实例的数据由某个节点负责写入（客户端连到非责任节点时，请求会被转发给责任节点）。这让「写」不需要全集群共识，因此有节点故障时注册仍可用；代价是读取可能是旧值（靠对账最终一致）。这也解释了「为什么临时实例注册快、但可能短暂查不到」。 Raft 在运维上要求你懂的事： 节点数必须是奇数（3/5/7），因为 Quorum 按多数派算；偶数节点不提升容错能力（4 节点和 3 节点都只能容 1 台故障，反而增加不一致概率）； 只能容忍 ⌊N/2⌋ 台故障——3 节点挂 2 台即无法写入（配置改不了，但已加载的配置仍生效，这点要说清，否则会误判为全站故障）； 脑裂：网络分区时，少数派无法写入（拒绝服务而不是写坏数据）——这是 CP 的正确行为，用「短时间不可写」换「数据不分裂」； 性能瓶颈在 Leader：所有写都经 Leader，配置写 QPS 有上限；Raft 的写延迟包含网络往返 + 磁盘 fsync，所以 Nacos 的磁盘 IO 性能直接影响配置发布速度。 部署实践： 生产至少 3 节点，跨可用区部署时注意Raft 的网络延迟（跨区 RTT 高会拖慢写，需权衡容灾与性能）； 必须外置 MySQL（Nacos 使用外部存储而非内嵌 Derby），且 MySQL 做主从/高可用——MySQL 挂了 Nacos 也会有影响，这是隐性依赖； 配置本地快照（客户端侧）与推空保护是「Nacos 集群整体不可用时业务仍能运行」的最后一道保险； 版本升级要按官方顺序（1.x → 2.x 有通信协议变化，需先升客户端/或开启兼容模式）——升级顺序错会导致服务注册异常。","url":"https://it-interview-889.pages.dev/#/question/1070"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1070.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Nacos 集群的数据一致性是怎么保证的？Raft 和 Distro 各用在什么数据上？","text":"考察点：CP/AP 在同组件内的划分、Raft 与 Distro 协议、Quorum 与脑裂。进阶原理题。","answerCount":1,"datePublished":"2026-09-10T11:54:23.419Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心设计：Nacos 按数据类型分别选择一致性模型（这是它相比 Eureka（纯 AP）/ ZooKeeper（纯 CP）最大的差异点）： 配置数据（Config）→ CP → Raft：配置必须强一致。若集群内不同节点返回不同配置，同一服务的实例会按不同配置运行，行为不一致比短暂不可用危险得多。Nacos 1.x 用自研 JRaft，2.x 用 JRaft（基于 SOFAJRaft），写操作需多数派（Quorum = ⌊N/2⌋+1）确认。 服务注册数据（Naming）：拆成两半—— 临时实例 → AP → Distro 协议：要高可用（注册中心挂了不能影响已有服务调用），采用自研 Distro：每个节点负责一部分数据（分片），只同步给其他节点但不要求多数派写成功（异步复制），节点间通过定期对账（校验 digest）修复不一致。可写、可用性优先，容忍短暂不一致。 持久实例 → CP → Raft：持久实例少且需强一致，直接走 Raft。 Distro 协议的关键点：数据分片 + 责任节点——每个实例的数据由某个节点负责写入（客户端连到非责任节点时，请求会被转发给责任节点）。这让「写」不需要全集群共识，因此有节点故障时注册仍可用；代价是读取可能是旧值（靠对账最终一致）。这也解释了「为什么临时实例注册快、但可能短暂查不到」。 Raft 在运维上要求你懂的事： 节点数必须是奇数（3/5/7），因为 Quorum 按多数派算；偶数节点不提升容错能力（4 节点和 3 节点都只能容 1 台故障，反而增加不一致概率）； 只能容忍 ⌊N/2⌋ 台故障——3 节点挂 2 台即无法写入（配置改不了，但已加载的配置仍生效，这点要说清，否则会误判为全站故障）； 脑裂：网络分区时，少数派无法写入（拒绝服务而不是写坏数据）——这是 CP 的正确行为，用「短时间不可写」换「数据不分裂」； 性能瓶颈在 Leader：所有写都经 Leader，配置写 QPS 有上限；Raft 的写延迟包含网络往返 + 磁盘 fsync，所以 Nacos 的磁盘 IO 性能直接影响配置发布速度。 部署实践： 生产至少 3 节点，跨可用区部署时注意Raft 的网络延迟（跨区 RTT 高会拖慢写，需权衡容灾与性能）； 必须外置 MySQL（Nacos 使用外部存储而非内嵌 Derby），且 MySQL 做主从/高可用——MySQL 挂了 Nacos 也会有影响，这是隐性依赖； 配置本地快照（客户端侧）与推空保护是「Nacos 集群整体不可用时业务仍能运行」的最后一道保险； 版本升级要按官方顺序（1.x → 2.x 有通信协议变化，需先升客户端/或开启兼容模式）——升级顺序错会导致服务注册异常。","url":"https://itinterview.com.cn/#/question/1070"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Nacos 集群的数据一致性是怎么保证的？Raft 和 Distro 各用在什么数据上？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">Nacos</span><span class="chip tag">Raft</span><span class="chip tag">Distro</span><span class="chip tag">一致性</span><span class="chip tag">CP/AP</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CP/AP 在同组件内的划分、Raft 与 Distro 协议、Quorum 与脑裂。进阶原理题。</p></div>
@@ -96,12 +96,12 @@
 <p>  - <strong>必须外置 MySQL</strong>（Nacos 使用外部存储而非内嵌 Derby），且 MySQL 做主从/高可用——<strong>MySQL 挂了 Nacos 也会有影响</strong>，这是隐性依赖；</p>
 <p>  - <strong>配置本地快照</strong>（客户端侧）与<strong>推空保护</strong>是「Nacos 集群整体不可用时业务仍能运行」的最后一道保险；</p>
 <p>  - <strong>版本升级要按官方顺序</strong>（1.x → 2.x 有通信协议变化，需先升客户端/或开启兼容模式）——升级顺序错会导致服务注册异常。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1070">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1070">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=130&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=130&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

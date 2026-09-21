@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？ · IT面试题库">
   <meta property="og:description" content="要点： Top10 IP：awk &#39;{print $1}&#39; access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/372.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/372.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？ · IT面试题库">
   <meta name="twitter:description" content="要点： Top10 IP：awk &#39;{print $1}&#39; access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/372.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？","text":"考察点：不写程序、纯用命令行组合完成日志统计的工程能力；考查 sort/uniq/awk/head 的管道编排与性能意识（大文件不能一次性 load 进内存）。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:57.582Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Top10 IP：awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep -o 'keyword' access.log | wc -l（-o 每匹配一行，适合关键词在一行多次出现）；或 grep -c 'keyword' access.log（按行计数）。 性能要点：管道是流式处理，不需要把整个文件读进内存，所以能处理超大日志；若日志已按时间滚动，可先 grep 缩小范围再统计。 进阶：频次统计本质就是“取列→排序→去重计数→排序取头”，这套组合拳是运维排查的标配，应熟练到条件反射。","url":"https://it-interview-889.pages.dev/#/question/372"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/372.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？","text":"考察点：不写程序、纯用命令行组合完成日志统计的工程能力；考查 sort/uniq/awk/head 的管道编排与性能意识（大文件不能一次性 load 进内存）。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:57.582Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Top10 IP：awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep -o 'keyword' access.log | wc -l（-o 每匹配一行，适合关键词在一行多次出现）；或 grep -c 'keyword' access.log（按行计数）。 性能要点：管道是流式处理，不需要把整个文件读进内存，所以能处理超大日志；若日志已按时间滚动，可先 grep 缩小范围再统计。 进阶：频次统计本质就是“取列→排序→去重计数→排序取头”，这套组合拳是运维排查的标配，应熟练到条件反射。","url":"https://itinterview.com.cn/#/question/372"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">日志分析</span><span class="chip tag">sort</span><span class="chip tag">uniq</span><span class="chip tag">awk</span><span class="chip tag">shell</span></div>
     <div class="card"><h2>题目</h2><p>考察点：不写程序、纯用命令行组合完成日志统计的工程能力；考查 sort/uniq/awk/head 的管道编排与性能意识（大文件不能一次性 load 进内存）。属场景题。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>性能要点</strong>：管道是流式处理，不需要把整个文件读进内存，所以能处理超大日志；若日志已按时间滚动，可先 <code>grep</code> 缩小范围再统计。</li>
 <li><strong>进阶</strong>：频次统计本质就是“取列→排序→去重计数→排序取头”，这套组合拳是运维排查的标配，应熟练到条件反射。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/372">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/372">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？ · IT面试题库">
   <meta property="og:description" content="核心结论：缓存与 DB 无法在分布式下做到强一致，目标是最终一致。业界主流用Cache-Aside（旁路缓存）+ 先更新 DB、再删除缓存。 先更新 DB，再删缓存（推荐）： 流程：写 DB → 删缓存（或下次读时回填）。 并发风险低：极端情况下“读请求在 DB 写前读到旧值且缓存恰失效”才不一致，概率低；且靠缓…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/579.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/579.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？ · IT面试题库">
   <meta name="twitter:description" content="核心结论：缓存与 DB 无法在分布式下做到强一致，目标是最终一致。业界主流用Cache-Aside（旁路缓存）+ 先更新 DB、再删除缓存。 先更新 DB，再删缓存（推荐）： 流程：写 DB → 删缓存（或下次读时回填）。 并发风险低：极端情况下“读请求在 DB 写前读到旧值且缓存恰失效”才不一致，概率低；且靠缓…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/579.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？","text":"用了 Redis 缓存 + MySQL。更新数据时，缓存和 DB 怎么操作才能保证最终一致？请分析“先更新 DB 再删缓存”“先删缓存再更新 DB”的并发问题，并说明延迟双删与消息队列重试的思路。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心结论：缓存与 DB 无法在分布式下做到强一致，目标是最终一致。业界主流用Cache-Aside（旁路缓存）+ 先更新 DB、再删除缓存。 先更新 DB，再删缓存（推荐）： 流程：写 DB → 删缓存（或下次读时回填）。 并发风险低：极端情况下“读请求在 DB 写前读到旧值且缓存恰失效”才不一致，概率低；且靠缓存 TTL 兜底最终一致。 先删缓存，再更新 DB 的问题：删缓存后、DB 提交前，若有读请求会把旧值重新填回缓存 → 不一致窗口更大，故一般不选。 延迟双删：删缓存 → 更新 DB → 延迟一段时间再删一次缓存，抵消并发读回填的旧值。延迟时间取“读业务耗时”之上。 删除失败兜底： 消息队列重试：删缓存失败则发 MQ，消费端重试直到成功； 给缓存加 TTL，作为最终兜底，保证旧数据不会永远留存。 注意：更新缓存（写穿）vs 删缓存——只读缓存场景优先“删缓存 + 读时回填”，避免无效写与并发写覆盖。强一致需求应直接读 DB，不依赖缓存。","url":"https://it-interview-889.pages.dev/#/question/579"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/579.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？","text":"用了 Redis 缓存 + MySQL。更新数据时，缓存和 DB 怎么操作才能保证最终一致？请分析“先更新 DB 再删缓存”“先删缓存再更新 DB”的并发问题，并说明延迟双删与消息队列重试的思路。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心结论：缓存与 DB 无法在分布式下做到强一致，目标是最终一致。业界主流用Cache-Aside（旁路缓存）+ 先更新 DB、再删除缓存。 先更新 DB，再删缓存（推荐）： 流程：写 DB → 删缓存（或下次读时回填）。 并发风险低：极端情况下“读请求在 DB 写前读到旧值且缓存恰失效”才不一致，概率低；且靠缓存 TTL 兜底最终一致。 先删缓存，再更新 DB 的问题：删缓存后、DB 提交前，若有读请求会把旧值重新填回缓存 → 不一致窗口更大，故一般不选。 延迟双删：删缓存 → 更新 DB → 延迟一段时间再删一次缓存，抵消并发读回填的旧值。延迟时间取“读业务耗时”之上。 删除失败兜底： 消息队列重试：删缓存失败则发 MQ，消费端重试直到成功； 给缓存加 TTL，作为最终兜底，保证旧数据不会永远留存。 注意：更新缓存（写穿）vs 删缓存——只读缓存场景优先“删缓存 + 读时回填”，避免无效写与并发写覆盖。强一致需求应直接读 DB，不依赖缓存。","url":"https://itinterview.com.cn/#/question/579"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">缓存一致性</span><span class="chip tag">延迟双删</span><span class="chip tag">Cache-Aside</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>用了 Redis 缓存 + MySQL。更新数据时，缓存和 DB 怎么操作才能保证最终一致？请分析“先更新 DB 再删缓存”“先删缓存再更新 DB”的并发问题，并说明延迟双删与消息队列重试的思路。</p></div>
@@ -87,12 +87,12 @@
 <li>给缓存加 <strong>TTL</strong>，作为最终兜底，保证旧数据不会永远留存。</li>
 </ul>
 <p><strong>注意</strong>：更新缓存（写穿）vs 删缓存——只读缓存场景优先“删缓存 + 读时回填”，避免无效写与并发写覆盖。强一致需求应直接读 DB，不依赖缓存。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/579">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/579">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=133&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=133&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

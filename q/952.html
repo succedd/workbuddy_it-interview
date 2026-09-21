@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 RAG？它的典型架构和流程是怎样的？ · IT面试题库">
   <meta property="og:description" content="RAG（Retrieval-Augmented Generation，检索增强生成）：让大模型回答问题前，先从外部知识库检索相关内容，把检索结果作为上下文交给模型生成答案。 解决的问题：①模型训练数据有截止时间，不知道新知识；②私有领域知识（企业文档）不在训练语料里；③幻觉——无依据地编造；④微调成本高，RAG …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/952.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/952.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 RAG？它的典型架构和流程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="RAG（Retrieval-Augmented Generation，检索增强生成）：让大模型回答问题前，先从外部知识库检索相关内容，把检索结果作为上下文交给模型生成答案。 解决的问题：①模型训练数据有截止时间，不知道新知识；②私有领域知识（企业文档）不在训练语料里；③幻觉——无依据地编造；④微调成本高，RAG …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/952.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 RAG？它的典型架构和流程是怎样的？","text":"请说明检索增强生成（RAG）解决什么问题，以及离线建库与在线检索生成两个阶段的完整流程。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RAG（Retrieval-Augmented Generation，检索增强生成）：让大模型回答问题前，先从外部知识库检索相关内容，把检索结果作为上下文交给模型生成答案。 解决的问题：①模型训练数据有截止时间，不知道新知识；②私有领域知识（企业文档）不在训练语料里；③幻觉——无依据地编造；④微调成本高，RAG 只需更新知识库即可\"热更新\"知识。 离线阶段（建库）： 1. 文档加载（PDF/Word/网页）→ 切片 chunking（按段落/语义切，带重叠窗口，常见 300~800 token）； 2. 向量化 embedding（文本→高维向量）； 3. 存入向量数据库（Milvus、Chroma、pgvector 等）建索引。 在线阶段（问答）： 1. 用户问题同样向量化 → 在向量库中做相似度检索（常配混合检索：向量+关键词 BM25）→ 取 Top-K 片段； 2. 重排序 rerank 精排，拼装 Prompt（问题+检索片段+指令）； 3. 大模型生成答案（可要求标注引用来源）。 评估维度：检索质量（召回率/命中率）、答案忠实度（是否基于检索内容）、相关性；常见优化点在切片策略、混合检索与 rerank、元数据过滤。","url":"https://it-interview-889.pages.dev/#/question/952"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/952.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 RAG？它的典型架构和流程是怎样的？","text":"请说明检索增强生成（RAG）解决什么问题，以及离线建库与在线检索生成两个阶段的完整流程。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RAG（Retrieval-Augmented Generation，检索增强生成）：让大模型回答问题前，先从外部知识库检索相关内容，把检索结果作为上下文交给模型生成答案。 解决的问题：①模型训练数据有截止时间，不知道新知识；②私有领域知识（企业文档）不在训练语料里；③幻觉——无依据地编造；④微调成本高，RAG 只需更新知识库即可\"热更新\"知识。 离线阶段（建库）： 1. 文档加载（PDF/Word/网页）→ 切片 chunking（按段落/语义切，带重叠窗口，常见 300~800 token）； 2. 向量化 embedding（文本→高维向量）； 3. 存入向量数据库（Milvus、Chroma、pgvector 等）建索引。 在线阶段（问答）： 1. 用户问题同样向量化 → 在向量库中做相似度检索（常配混合检索：向量+关键词 BM25）→ 取 Top-K 片段； 2. 重排序 rerank 精排，拼装 Prompt（问题+检索片段+指令）； 3. 大模型生成答案（可要求标注引用来源）。 评估维度：检索质量（召回率/命中率）、答案忠实度（是否基于检索内容）、相关性；常见优化点在切片策略、混合检索与 rerank、元数据过滤。","url":"https://itinterview.com.cn/#/question/952"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 RAG？它的典型架构和流程是怎样的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">算法工程师</span><span class="chip">AI产品工程师</span><span class="chip tag">RAG</span><span class="chip tag">大模型</span><span class="chip tag">向量检索</span></div>
     <div class="card"><h2>题目</h2><p>请说明检索增强生成（RAG）解决什么问题，以及离线建库与在线检索生成两个阶段的完整流程。</p></div>
@@ -88,12 +88,12 @@
 <li>大模型生成答案（可要求标注引用来源）。</li>
 </ol>
 <p><strong>评估维度</strong>：检索质量（召回率/命中率）、答案忠实度（是否基于检索内容）、相关性；常见优化点在切片策略、混合检索与 rerank、元数据过滤。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/952">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/952">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=187&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=187&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？ · IT面试题库">
   <meta property="og:description" content="3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1113.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1113.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？ · IT面试题库">
   <meta name="twitter:description" content="3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1113.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？","text":"为生产系统的非结构化数据设计备份容灾方案，要求防误删、抗地域级故障、且成本可控。请给出一个可落地的架构设计与关键决策。","answerCount":1,"datePublished":"2026-09-13T02:40:01.849Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异地桶，RPO 取决于复制延迟（分钟级），RTO 取决于是否需跨地域拉取；极端合规场景可再加云外归档。 成本与演练：热数据标准、温数据低频、冷数据归档，配合生命周期自动沉降；每季度做一次真实恢复演练量化 RTO/RPO，并监控碎片与历史版本容量，防止隐性成本膨胀。","url":"https://it-interview-889.pages.dev/#/question/1113"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1113.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？","text":"为生产系统的非结构化数据设计备份容灾方案，要求防误删、抗地域级故障、且成本可控。请给出一个可落地的架构设计与关键决策。","answerCount":1,"datePublished":"2026-09-13T02:40:01.849Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异地桶，RPO 取决于复制延迟（分钟级），RTO 取决于是否需跨地域拉取；极端合规场景可再加云外归档。 成本与演练：热数据标准、温数据低频、冷数据归档，配合生命周期自动沉降；每季度做一次真实恢复演练量化 RTO/RPO，并监控碎片与历史版本容量，防止隐性成本膨胀。","url":"https://itinterview.com.cn/#/question/1113"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">COS</span><span class="chip tag">备份容灾</span><span class="chip tag">3-2-1</span><span class="chip tag">架构设计</span></div>
     <div class="card"><h2>题目</h2><p>为生产系统的非结构化数据设计备份容灾方案，要求防误删、抗地域级故障、且成本可控。请给出一个可落地的架构设计与关键决策。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>防误删层</strong>：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。</p>
 <p><strong>抗地域故障层</strong>：用 CRR 将版本化对象复制到异地桶，RPO 取决于复制延迟（分钟级），RTO 取决于是否需跨地域拉取；极端合规场景可再加云外归档。</p>
 <p><strong>成本与演练</strong>：热数据标准、温数据低频、冷数据归档，配合生命周期自动沉降；每季度做一次真实恢复演练量化 RTO/RPO，并监控碎片与历史版本容量，防止隐性成本膨胀。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1113">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1113">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

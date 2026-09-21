@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？ · IT面试题库">
   <meta property="og:description" content="浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1128.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1128.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？ · IT面试题库">
   <meta name="twitter:description" content="浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1128.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？","text":"请说明浏览器多进程模型中各进程/线程的职责划分，以及多进程相比单进程解决了哪些问题（崩溃隔离、安全沙箱、性能与稳定性）。","answerCount":1,"datePublished":"2026-09-14T02:47:24.609Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离）一个独立渲染进程，负责 HTML/CSS/JS 的解析、布局、绘制与 JS 执行；它运行在沙箱里，无法直接访问磁盘与系统。 GPU 进程：专门负责图形合成（Composite）与 3D/Canvas/WebGL，把渲染进程产出的图层高效上屏。 为什么多进程：单进程时代一个标签页崩溃或脚本死循环会拖垮整个浏览器、且任何组件被攻破就等于拿到整机权限；多进程用“进程隔离 + 沙箱”把故障与安全风险限制在单个标签页内，并让多核得到更充分利用。","url":"https://it-interview-889.pages.dev/#/question/1128"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1128.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？","text":"请说明浏览器多进程模型中各进程/线程的职责划分，以及多进程相比单进程解决了哪些问题（崩溃隔离、安全沙箱、性能与稳定性）。","answerCount":1,"datePublished":"2026-09-14T02:47:24.609Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离）一个独立渲染进程，负责 HTML/CSS/JS 的解析、布局、绘制与 JS 执行；它运行在沙箱里，无法直接访问磁盘与系统。 GPU 进程：专门负责图形合成（Composite）与 3D/Canvas/WebGL，把渲染进程产出的图层高效上屏。 为什么多进程：单进程时代一个标签页崩溃或脚本死循环会拖垮整个浏览器、且任何组件被攻破就等于拿到整机权限；多进程用“进程隔离 + 沙箱”把故障与安全风险限制在单个标签页内，并让多核得到更充分利用。","url":"https://itinterview.com.cn/#/question/1128"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">技术经理</span><span class="chip tag">浏览器架构</span><span class="chip tag">多进程</span><span class="chip tag">渲染进程</span><span class="chip tag">沙箱</span></div>
     <div class="card"><h2>题目</h2><p>请说明浏览器多进程模型中各进程/线程的职责划分，以及多进程相比单进程解决了哪些问题（崩溃隔离、安全沙箱、性能与稳定性）。</p></div>
@@ -78,12 +78,12 @@
 <p><strong>渲染进程</strong>：每个标签页（同站隔离）一个独立渲染进程，负责 HTML/CSS/JS 的解析、布局、绘制与 JS 执行；它运行在沙箱里，无法直接访问磁盘与系统。</p>
 <p><strong>GPU 进程</strong>：专门负责图形合成（Composite）与 3D/Canvas/WebGL，把渲染进程产出的图层高效上屏。</p>
 <p><strong>为什么多进程</strong>：单进程时代一个标签页崩溃或脚本死循环会拖垮整个浏览器、且任何组件被攻破就等于拿到整机权限；多进程用“进程隔离 + 沙箱”把故障与安全风险限制在单个标签页内，并让多核得到更充分利用。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1128">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1128">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=49&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

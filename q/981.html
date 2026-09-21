@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 的能力边界在哪里？哪些场景不该用 Java，为什么 GraalVM 与虚拟线程是在补这些短板？ · IT面试题库">
   <meta property="og:description" content="要点： 传统三大边界：① 启动敏感——JVM 预热慢，Serverless/FaaS/CLI 场景冷启动秒级不可接受；② 内存足迹——GC 堆+元空间基础开销大，小容器/边缘设备吃亏；③ 确定性延迟——GC 停顿对硬实时/游戏引擎不友好（ZGC 已把停顿压到亚毫秒，但内存放大仍存在）。 补位逻辑一：GraalVM…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/981.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/981.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 的能力边界在哪里？哪些场景不该用 Java，为什么 GraalVM 与虚拟线程是在补这些短板？ · IT面试题库">
   <meta name="twitter:description" content="要点： 传统三大边界：① 启动敏感——JVM 预热慢，Serverless/FaaS/CLI 场景冷启动秒级不可接受；② 内存足迹——GC 堆+元空间基础开销大，小容器/边缘设备吃亏；③ 确定性延迟——GC 停顿对硬实时/游戏引擎不友好（ZGC 已把停顿压到亚毫秒，但内存放大仍存在）。 补位逻辑一：GraalVM…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/981.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 的能力边界在哪里？哪些场景不该用 Java，为什么 GraalVM 与虚拟线程是在补这些短板？","text":"考察点：启动延迟与内存足迹、极致性能场景、Java 的性能模型短板、GraalVM Native Image / 虚拟线程 / 值类型的补位逻辑。","answerCount":1,"datePublished":"2026-09-10T06:37:39.085Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 传统三大边界：① 启动敏感——JVM 预热慢，Serverless/FaaS/CLI 场景冷启动秒级不可接受；② 内存足迹——GC 堆+元空间基础开销大，小容器/边缘设备吃亏；③ 确定性延迟——GC 停顿对硬实时/游戏引擎不友好（ZGC 已把停顿压到亚毫秒，但内存放大仍存在）。 补位逻辑一：GraalVM Native Image——AOT 把字节码静态编译为原生二进制，启动毫秒级、内存小一个量级；代价是放弃运行时动态性（反射/动态代理需配置可达性元数据）。 补位逻辑二：虚拟线程（JDK 21）——此前 Java 的「线程=OS线程」使百万并发连接只能靠响应式编程（复杂难调试）；虚拟线程把阻塞成本降到近零，让「一请求一线程」的同步写法重新 scalable。 仍然不该用的场景：内核/驱动（需无运行时）、游戏引擎热路径（GC+JIT 不确定）、超低资源嵌入式。 一句话：Java 的边界=「运行时开销」的边界；GraalVM 攻启动与足迹、虚拟线程攻并发模型，都是在收窄这条边界而非消灭它。","url":"https://it-interview-889.pages.dev/#/question/981"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/981.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 的能力边界在哪里？哪些场景不该用 Java，为什么 GraalVM 与虚拟线程是在补这些短板？","text":"考察点：启动延迟与内存足迹、极致性能场景、Java 的性能模型短板、GraalVM Native Image / 虚拟线程 / 值类型的补位逻辑。","answerCount":1,"datePublished":"2026-09-10T06:37:39.085Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 传统三大边界：① 启动敏感——JVM 预热慢，Serverless/FaaS/CLI 场景冷启动秒级不可接受；② 内存足迹——GC 堆+元空间基础开销大，小容器/边缘设备吃亏；③ 确定性延迟——GC 停顿对硬实时/游戏引擎不友好（ZGC 已把停顿压到亚毫秒，但内存放大仍存在）。 补位逻辑一：GraalVM Native Image——AOT 把字节码静态编译为原生二进制，启动毫秒级、内存小一个量级；代价是放弃运行时动态性（反射/动态代理需配置可达性元数据）。 补位逻辑二：虚拟线程（JDK 21）——此前 Java 的「线程=OS线程」使百万并发连接只能靠响应式编程（复杂难调试）；虚拟线程把阻塞成本降到近零，让「一请求一线程」的同步写法重新 scalable。 仍然不该用的场景：内核/驱动（需无运行时）、游戏引擎热路径（GC+JIT 不确定）、超低资源嵌入式。 一句话：Java 的边界=「运行时开销」的边界；GraalVM 攻启动与足迹、虚拟线程攻并发模型，都是在收窄这条边界而非消灭它。","url":"https://itinterview.com.cn/#/question/981"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Java 的能力边界在哪里？哪些场景不该用 Java，为什么 GraalVM 与虚拟线程是在补这些短板？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">GraalVM</span><span class="chip tag">虚拟线程</span><span class="chip tag">技术选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：启动延迟与内存足迹、极致性能场景、Java 的性能模型短板、GraalVM Native Image / 虚拟线程 / 值类型的补位逻辑。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>仍然不该用的场景</strong>：内核/驱动（需无运行时）、游戏引擎热路径（GC+JIT 不确定）、超低资源嵌入式。</li>
 </ul>
 <p><strong>一句话</strong>：Java 的边界=「运行时开销」的边界；GraalVM 攻启动与足迹、虚拟线程攻并发模型，都是在收窄这条边界而非消灭它。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/981">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/981">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

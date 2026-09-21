@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ClickHouse 的 MergeTree 为什么会出现「最终一致」？ReplacingMergeTree 与 FINAL 的正确用法是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 背景：MergeTree 写入是「攒 part、后台异步合并」——同一主键的多版本在合并（merge）完成前同时存在，所以是最终一致：写入立即可见但可能重复。 ReplacingMergeTree：后台合并时按主键保留版本列（ver）最新的一行——但合并时机不可控（可能几分钟后），不能依赖它实时去重。 F…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1011.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1011.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ClickHouse 的 MergeTree 为什么会出现「最终一致」？ReplacingMergeTree 与 FINAL 的正确用法是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 背景：MergeTree 写入是「攒 part、后台异步合并」——同一主键的多版本在合并（merge）完成前同时存在，所以是最终一致：写入立即可见但可能重复。 ReplacingMergeTree：后台合并时按主键保留版本列（ver）最新的一行——但合并时机不可控（可能几分钟后），不能依赖它实时去重。 F…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1011.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ClickHouse 的 MergeTree 为什么会出现「最终一致」？ReplacingMergeTree 与 FINAL 的正确用法是什么？","text":"考察点：part 合并机制、ReplacingMergeTree 版本列、FINAL 的代价、查询端去重方案。","answerCount":1,"datePublished":"2026-09-10T07:26:48.947Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 背景：MergeTree 写入是「攒 part、后台异步合并」——同一主键的多版本在合并（merge）完成前同时存在，所以是最终一致：写入立即可见但可能重复。 ReplacingMergeTree：后台合并时按主键保留版本列（ver）最新的一行——但合并时机不可控（可能几分钟后），不能依赖它实时去重。 FINAL 关键字：查询时强制合并到最新——语义正确但代价大（读放大、单线程化），只适合低频后台查询，不适合高频在线 API。 生产正确姿势：① 写入端按「查询日期分区 + 唯一业务键」只写当日 part，查询加 WHERE 分区 = 最新 规避旧版本；② 查询端 argMax(col, ver) GROUP BY 主键 显式去重（最常用、可控）；③ 高频更新的表根本别用 ClickHouse，回 MySQL 或换 Doris/StarRocks。","url":"https://it-interview-889.pages.dev/#/question/1011"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1011.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ClickHouse 的 MergeTree 为什么会出现「最终一致」？ReplacingMergeTree 与 FINAL 的正确用法是什么？","text":"考察点：part 合并机制、ReplacingMergeTree 版本列、FINAL 的代价、查询端去重方案。","answerCount":1,"datePublished":"2026-09-10T07:26:48.947Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 背景：MergeTree 写入是「攒 part、后台异步合并」——同一主键的多版本在合并（merge）完成前同时存在，所以是最终一致：写入立即可见但可能重复。 ReplacingMergeTree：后台合并时按主键保留版本列（ver）最新的一行——但合并时机不可控（可能几分钟后），不能依赖它实时去重。 FINAL 关键字：查询时强制合并到最新——语义正确但代价大（读放大、单线程化），只适合低频后台查询，不适合高频在线 API。 生产正确姿势：① 写入端按「查询日期分区 + 唯一业务键」只写当日 part，查询加 WHERE 分区 = 最新 规避旧版本；② 查询端 argMax(col, ver) GROUP BY 主键 显式去重（最常用、可控）；③ 高频更新的表根本别用 ClickHouse，回 MySQL 或换 Doris/StarRocks。","url":"https://itinterview.com.cn/#/question/1011"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>ClickHouse 的 MergeTree 为什么会出现「最终一致」？ReplacingMergeTree 与 FINAL 的正确用法是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">数据仓库工程师</span><span class="chip">数据库架构师</span><span class="chip tag">ClickHouse</span><span class="chip tag">ReplacingMergeTree</span><span class="chip tag">FINAL</span><span class="chip tag">argMax</span></div>
     <div class="card"><h2>题目</h2><p>考察点：part 合并机制、ReplacingMergeTree 版本列、FINAL 的代价、查询端去重方案。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>FINAL 关键字</strong>：查询时强制合并到最新——语义正确但<strong>代价大</strong>（读放大、单线程化），只适合低频后台查询，不适合高频在线 API。</li>
 <li><strong>生产正确姿势</strong>：① 写入端按「查询日期分区 + 唯一业务键」只写当日 part，查询加 <code>WHERE 分区 = 最新</code> 规避旧版本；② 查询端 <code>argMax(col, ver) GROUP BY 主键</code> 显式去重（最常用、可控）；③ 高频更新的表根本别用 ClickHouse，回 MySQL 或换 Doris/StarRocks。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1011">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1011">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=39&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=39&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

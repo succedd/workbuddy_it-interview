@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Prometheus 采用 Pull（拉取）模型采集指标，它是怎么工作的？和 Pushgateway、传统 Push 监控（如 StatsD）有什么不同？ · IT面试题库">
   <meta property="og:description" content="要点： 工作原理：Prometheus Server 按 scrape_interval 主动 HTTP 拉取各目标（target）暴露的 /metrics 端点（文本格式）。被监控方只需提供一个可被 Prometheus 访问的 HTTP 端点，配合服务发现（K8s/Consul 等）动态发现 targets。…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1205.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1205.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Prometheus 采用 Pull（拉取）模型采集指标，它是怎么工作的？和 Pushgateway、传统 Push 监控（如 StatsD）有什么不同？ · IT面试题库">
   <meta name="twitter:description" content="要点： 工作原理：Prometheus Server 按 scrape_interval 主动 HTTP 拉取各目标（target）暴露的 /metrics 端点（文本格式）。被监控方只需提供一个可被 Prometheus 访问的 HTTP 端点，配合服务发现（K8s/Consul 等）动态发现 targets。…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1205.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 采用 Pull（拉取）模型采集指标，它是怎么工作的？和 Pushgateway、传统 Push 监控（如 StatsD）有什么不同？","text":"考察点：理解 Pull 模型的工作机制与适用边界，以及 Pushgateway 『补位』而非『替代』的定位。要求讲清 Pull 的优缺点，而不是简单说『Prometheus 去拉数据』。","answerCount":1,"datePublished":"2026-09-20T02:22:30.742Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 工作原理：Prometheus Server 按 scrape_interval 主动 HTTP 拉取各目标（target）暴露的 /metrics 端点（文本格式）。被监控方只需提供一个可被 Prometheus 访问的 HTTP 端点，配合服务发现（K8s/Consul 等）动态发现 targets。 Pull 的优点：被监控方无需知道 Prometheus 地址、解耦采集器；天然适配云原生服务发现；目标不健康时拉取失败会直接暴露出来，便于统一探测。 与传统 Push 的区别：Push 模型（如 StatsD）由客户端主动把数据发给中心收集器，适合防火墙后暴露不出端点、或短生命周期任务；但中心需开放接收端口、客户端耦合收集器地址。 Pushgateway 的定位：填补 Pull 的盲区——批处理/CronJob 等短任务结束后进程即退出，Prometheus 来不及拉取，这类任务主动 push 到 Pushgateway，再由 Prometheus 去拉 Pushgateway。它是补位而非替代，且 Pushgateway 的数据不会自动过期需手动清理，不适合做常规长期指标通道。 核心：Prometheus 以 Pull 为主、Pushgateway 为补；Pull 解耦被监控方与采集器，是云原生监控的默认范式。","url":"https://it-interview-889.pages.dev/#/question/1205"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1205.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Prometheus 采用 Pull（拉取）模型采集指标，它是怎么工作的？和 Pushgateway、传统 Push 监控（如 StatsD）有什么不同？","text":"考察点：理解 Pull 模型的工作机制与适用边界，以及 Pushgateway 『补位』而非『替代』的定位。要求讲清 Pull 的优缺点，而不是简单说『Prometheus 去拉数据』。","answerCount":1,"datePublished":"2026-09-20T02:22:30.742Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 工作原理：Prometheus Server 按 scrape_interval 主动 HTTP 拉取各目标（target）暴露的 /metrics 端点（文本格式）。被监控方只需提供一个可被 Prometheus 访问的 HTTP 端点，配合服务发现（K8s/Consul 等）动态发现 targets。 Pull 的优点：被监控方无需知道 Prometheus 地址、解耦采集器；天然适配云原生服务发现；目标不健康时拉取失败会直接暴露出来，便于统一探测。 与传统 Push 的区别：Push 模型（如 StatsD）由客户端主动把数据发给中心收集器，适合防火墙后暴露不出端点、或短生命周期任务；但中心需开放接收端口、客户端耦合收集器地址。 Pushgateway 的定位：填补 Pull 的盲区——批处理/CronJob 等短任务结束后进程即退出，Prometheus 来不及拉取，这类任务主动 push 到 Pushgateway，再由 Prometheus 去拉 Pushgateway。它是补位而非替代，且 Pushgateway 的数据不会自动过期需手动清理，不适合做常规长期指标通道。 核心：Prometheus 以 Pull 为主、Pushgateway 为补；Pull 解耦被监控方与采集器，是云原生监控的默认范式。","url":"https://itinterview.com.cn/#/question/1205"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Prometheus 采用 Pull（拉取）模型采集指标，它是怎么工作的？和 Pushgateway、传统 Push 监控（如 StatsD）有什么不同？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">Prometheus</span><span class="chip tag">Pull模型</span><span class="chip tag">Pushgateway</span><span class="chip tag">服务发现</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解 Pull 模型的工作机制与适用边界，以及 Pushgateway 『补位』而非『替代』的定位。要求讲清 Pull 的优缺点，而不是简单说『Prometheus 去拉数据』。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>Pushgateway 的定位</strong>：填补 Pull 的盲区——批处理/CronJob 等短任务结束后进程即退出，Prometheus 来不及拉取，这类任务主动 push 到 Pushgateway，再由 Prometheus 去拉 Pushgateway。它是补位而非替代，且 Pushgateway 的数据不会自动过期需手动清理，不适合做常规长期指标通道。</li>
 </ul>
 <p><strong>核心</strong>：Prometheus 以 Pull 为主、Pushgateway 为补；Pull 解耦被监控方与采集器，是云原生监控的默认范式。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1205">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1205">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

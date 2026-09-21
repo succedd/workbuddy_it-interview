@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CVM 密钥对（SSH Key）登录的原理是什么？相比密码登录有什么优劣？密钥丢失或想从密钥登录改回密码登录该如何处理？ · IT面试题库">
   <meta property="og:description" content="原理 密钥对 = 公钥（服务器 ~/.ssh/authorized_keys）+ 私钥（本地）。登录时服务端用公钥挑战、客户端用私钥应答，无需传输密码，杜绝暴力破解与窃听。 与密码登录对比 优点：免密、抗爆破、可禁密码登录提升安全；适合自动化（Ansible/CI）。 缺点：私钥丢失 = 进不去（需控制台重置/救…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/423.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/423.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CVM 密钥对（SSH Key）登录的原理是什么？相比密码登录有什么优劣？密钥丢失或想从密钥登录改回密码登录该如何处理？ · IT面试题库">
   <meta name="twitter:description" content="原理 密钥对 = 公钥（服务器 ~/.ssh/authorized_keys）+ 私钥（本地）。登录时服务端用公钥挑战、客户端用私钥应答，无需传输密码，杜绝暴力破解与窃听。 与密码登录对比 优点：免密、抗爆破、可禁密码登录提升安全；适合自动化（Ansible/CI）。 缺点：私钥丢失 = 进不去（需控制台重置/救…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/423.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CVM 密钥对（SSH Key）登录的原理是什么？相比密码登录有什么优劣？密钥丢失或想从密钥登录改回密码登录该如何处理？","text":"考察点：非对称加密登录原理、密钥 vs 密码取舍、密钥丢失应急、密钥↔密码切换。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:14:39.788Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理 密钥对 = 公钥（服务器 ~/.ssh/authorized_keys）+ 私钥（本地）。登录时服务端用公钥挑战、客户端用私钥应答，无需传输密码，杜绝暴力破解与窃听。 与密码登录对比 优点：免密、抗爆破、可禁密码登录提升安全；适合自动化（Ansible/CI）。 缺点：私钥丢失 = 进不去（需控制台重置/救援盘）、多密钥管理繁琐。 密钥丢失怎么办 控制台『绑定/解绑密钥』或『重置密码』：重置密码后可用密码登录，再补生成新密钥对。 若实例只允许密钥且私钥丢：用 VNC/控制台登录（若有密码）或卸载系统盘挂救援实例改 authorized_keys。 密钥 ↔ 密码切换 改回密码登录：确保 sshd_config 中 PasswordAuthentication yes 并重启 sshd，再用控制台重置密码即可密码登录。 强制密钥：设 PasswordAuthentication no。 安全建议：私钥权限 600、禁 root 直登用普通用户+sudo、密钥+密码按需双保险。","url":"https://it-interview-889.pages.dev/#/question/423"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/423.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CVM 密钥对（SSH Key）登录的原理是什么？相比密码登录有什么优劣？密钥丢失或想从密钥登录改回密码登录该如何处理？","text":"考察点：非对称加密登录原理、密钥 vs 密码取舍、密钥丢失应急、密钥↔密码切换。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:14:39.788Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理 密钥对 = 公钥（服务器 ~/.ssh/authorized_keys）+ 私钥（本地）。登录时服务端用公钥挑战、客户端用私钥应答，无需传输密码，杜绝暴力破解与窃听。 与密码登录对比 优点：免密、抗爆破、可禁密码登录提升安全；适合自动化（Ansible/CI）。 缺点：私钥丢失 = 进不去（需控制台重置/救援盘）、多密钥管理繁琐。 密钥丢失怎么办 控制台『绑定/解绑密钥』或『重置密码』：重置密码后可用密码登录，再补生成新密钥对。 若实例只允许密钥且私钥丢：用 VNC/控制台登录（若有密码）或卸载系统盘挂救援实例改 authorized_keys。 密钥 ↔ 密码切换 改回密码登录：确保 sshd_config 中 PasswordAuthentication yes 并重启 sshd，再用控制台重置密码即可密码登录。 强制密钥：设 PasswordAuthentication no。 安全建议：私钥权限 600、禁 root 直登用普通用户+sudo、密钥+密码按需双保险。","url":"https://itinterview.com.cn/#/question/423"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>CVM 密钥对（SSH Key）登录的原理是什么？相比密码登录有什么优劣？密钥丢失或想从密钥登录改回密码登录该如何处理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">密钥对</span><span class="chip tag">SSH</span><span class="chip tag">登录</span><span class="chip tag">安全</span><span class="chip tag">腾讯云</span></div>
     <div class="card"><h2>题目</h2><p>考察点：非对称加密登录原理、密钥 vs 密码取舍、密钥丢失应急、密钥↔密码切换。属场景题。</p></div>
@@ -93,12 +93,12 @@
 <li>强制密钥：设 <code>PasswordAuthentication no</code>。</li>
 </ul>
 <p><strong>安全建议</strong>：私钥权限 600、禁 root 直登用普通用户+sudo、密钥+密码按需双保险。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/423">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/423">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

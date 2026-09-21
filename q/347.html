@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="腾讯云 CVM 的服务可用性（SLA）承诺是多少？如何界定「实例不可用」，未达标时赔偿机制是怎样的？ · IT面试题库">
   <meta property="og:description" content="一、服务可用性承诺 单实例月度服务可用性不低于 99.95%（CVM 产品简介同步标注 99.95% 可用性、9 个 9 数据可靠性）；跨可用区多实例部署可进一步提升容错能力。 二、实例不可用的界定 配置了出入允许规则的 CVM 实例，以 TCP 或 UDP 协议与任一 IP 地址双向（出/入）均无法联通，且该状…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/347.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/347.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="腾讯云 CVM 的服务可用性（SLA）承诺是多少？如何界定「实例不可用」，未达标时赔偿机制是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="一、服务可用性承诺 单实例月度服务可用性不低于 99.95%（CVM 产品简介同步标注 99.95% 可用性、9 个 9 数据可靠性）；跨可用区多实例部署可进一步提升容错能力。 二、实例不可用的界定 配置了出入允许规则的 CVM 实例，以 TCP 或 UDP 协议与任一 IP 地址双向（出/入）均无法联通，且该状…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/347.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"腾讯云 CVM 的服务可用性（SLA）承诺是多少？如何界定「实例不可用」，未达标时赔偿机制是怎样的？","text":"考察对腾讯云服务等级协议的理解：可用性指标、不可用判定标准、赔偿触发条件与申请路径。","answerCount":1,"datePublished":"2026-08-31T08:25:58.758Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、服务可用性承诺 单实例月度服务可用性不低于 99.95%（CVM 产品简介同步标注 99.95% 可用性、9 个 9 数据可靠性）；跨可用区多实例部署可进一步提升容错能力。 二、实例不可用的界定 配置了出入允许规则的 CVM 实例，以 TCP 或 UDP 协议与任一 IP 地址双向（出/入）均无法联通，且该状态持续 1 分钟以上，视为该分钟内实例不可用；单次持续不足 1 分钟不计入。 三、计量口径 单实例服务月度总分钟数 = 当月天数 × 24 × 60；单实例服务不可用分钟数 = 不可用解决时间 − 开始时间（不足 2 分钟按 2 分钟计等规则）。 四、赔偿机制 当实际可用性低于承诺值，客户可在控制台按 SLA 条款提交赔偿申请，按不可用分钟数对应的阶梯比例以代金券等形式赔付；需提供实例 ID、故障时段、监控等证据。 五、不适用情形 内测实例、客户自身原因（安全组误配、欠费、违规操作）、不可抗力等不在赔偿范围——这点和华为云/AWS 的 SLA 免责逻辑一致，只是产品名不同。","url":"https://it-interview-889.pages.dev/#/question/347"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/347.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"腾讯云 CVM 的服务可用性（SLA）承诺是多少？如何界定「实例不可用」，未达标时赔偿机制是怎样的？","text":"考察对腾讯云服务等级协议的理解：可用性指标、不可用判定标准、赔偿触发条件与申请路径。","answerCount":1,"datePublished":"2026-08-31T08:25:58.758Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、服务可用性承诺 单实例月度服务可用性不低于 99.95%（CVM 产品简介同步标注 99.95% 可用性、9 个 9 数据可靠性）；跨可用区多实例部署可进一步提升容错能力。 二、实例不可用的界定 配置了出入允许规则的 CVM 实例，以 TCP 或 UDP 协议与任一 IP 地址双向（出/入）均无法联通，且该状态持续 1 分钟以上，视为该分钟内实例不可用；单次持续不足 1 分钟不计入。 三、计量口径 单实例服务月度总分钟数 = 当月天数 × 24 × 60；单实例服务不可用分钟数 = 不可用解决时间 − 开始时间（不足 2 分钟按 2 分钟计等规则）。 四、赔偿机制 当实际可用性低于承诺值，客户可在控制台按 SLA 条款提交赔偿申请，按不可用分钟数对应的阶梯比例以代金券等形式赔付；需提供实例 ID、故障时段、监控等证据。 五、不适用情形 内测实例、客户自身原因（安全组误配、欠费、违规操作）、不可抗力等不在赔偿范围——这点和华为云/AWS 的 SLA 免责逻辑一致，只是产品名不同。","url":"https://itinterview.com.cn/#/question/347"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>腾讯云 CVM 的服务可用性（SLA）承诺是多少？如何界定「实例不可用」，未达标时赔偿机制是怎样的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">腾讯云</span><span class="chip tag">CVM</span><span class="chip tag">SLA</span><span class="chip tag">服务等级协议</span><span class="chip tag">赔偿</span></div>
     <div class="card"><h2>题目</h2><p>考察对腾讯云服务等级协议的理解：可用性指标、不可用判定标准、赔偿触发条件与申请路径。</p></div>
@@ -83,12 +83,12 @@
 <p>当实际可用性低于承诺值，客户可在控制台按 SLA 条款提交赔偿申请，按不可用分钟数对应的阶梯比例以代金券等形式赔付；需提供实例 ID、故障时段、监控等证据。</p>
 <p><strong>五、不适用情形</strong></p>
 <p>内测实例、客户自身原因（安全组误配、欠费、违规操作）、不可抗力等不在赔偿范围——这点和华为云/AWS 的 SLA 免责逻辑一致，只是产品名不同。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/347">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/347">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

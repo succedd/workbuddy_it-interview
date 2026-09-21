@@ -33,7 +33,7 @@ const MAX_TOP = 20;
    旧域名保留仅为兼容历史标签页/书签，不再承担流量。换自定义域时把新域名追加进来即可。 */
 function resolveCorsOrigin(env, request) {
   const origins = ((env && env.ALLOWED_ORIGIN) ||
-      "https://it-interview-889.pages.dev,https://it-interview.is-a.dev")
+      "https://itinterview.com.cn,https://www.itinterview.com.cn,https://it-interview-889.pages.dev")
     .split(",").map(s => s.trim()).filter(Boolean);
   const origin = (request && request.headers.get("origin")) || "";
   return origin && origins.includes(origin) ? origin : "";
@@ -560,7 +560,7 @@ const REVIEW_ROLES   = ["admin", "expert"];
 /* 站点自身地址：用于回读 /data/published.json 取分类树。
    ⚠️ 2026-09-21 起 is-a.dev 域名已被下架，必须指向 Cloudflare Pages 实际入口；
    换自定义域时改这一处（或在 Worker 上设 env SITE_ORIGIN 覆盖）。 */
-const SITE_ORIGIN    = "https://it-interview-889.pages.dev";
+const SITE_ORIGIN    = "https://itinterview.com.cn";
 
 /* 建表自愈：即使忘了跑 wrangler d1 execute，启动后第一次请求也会把表补齐。
    ⚠️ 必须整段 try/catch —— 建表失败绝不能连带打断登录/收藏等既有接口。 */

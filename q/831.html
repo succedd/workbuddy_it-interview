@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 为什么需要：单体库里一个本地事务就能保证 ACID；但下单、扣库存、扣余额分散在多个服务/库后，一次操作跨多个资源，本地事务管不到全局，必须用分布式事务保证跨服务的业务正确性。 2. CAP 定理：一致性（C）、可用性（A）、分区容错（P）三者最多取二；分布式系统必然有网络分区（P 必选），所以实际…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/831.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/831.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 为什么需要：单体库里一个本地事务就能保证 ACID；但下单、扣库存、扣余额分散在多个服务/库后，一次操作跨多个资源，本地事务管不到全局，必须用分布式事务保证跨服务的业务正确性。 2. CAP 定理：一致性（C）、可用性（A）、分区容错（P）三者最多取二；分布式系统必然有网络分区（P 必选），所以实际…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/831.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？","text":"考察点：是否理解单机 ACID 在分布式下失效的根因，以及 CAP/BASE 给出的工程权衡。追问：为什么大多数互联网系统选择最终一致而不是强一致？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 为什么需要：单体库里一个本地事务就能保证 ACID；但下单、扣库存、扣余额分散在多个服务/库后，一次操作跨多个资源，本地事务管不到全局，必须用分布式事务保证跨服务的业务正确性。 2. CAP 定理：一致性（C）、可用性（A）、分区容错（P）三者最多取二；分布式系统必然有网络分区（P 必选），所以实际是在 CP（强一致、牺牲可用） 与 AP（高可用、牺牲强一致） 之间选。 3. BASE 理论：在 AP 基础上放宽——Basically Available（基本可用）、Soft state（软状态，允许中间态）、Eventual consistency（最终一致）。即不要求每刻都一致，只要经过一段时间后达成一致。 4. 取舍：金融核心账务等强一致场景走 CP（如 2PC/XA）；电商、社交等高频场景走 AP + 最终一致（消息表/事务消息），用牺牲短暂不一致换吞吐与可用性。 结论：分布式事务不是「把本地事务搬过来」，而是按业务一致性要求，在「强一致（慢但准）」和「最终一致（快但短暂不一致、需补偿）」之间做架构取舍。","url":"https://it-interview-889.pages.dev/#/question/831"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/831.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？","text":"考察点：是否理解单机 ACID 在分布式下失效的根因，以及 CAP/BASE 给出的工程权衡。追问：为什么大多数互联网系统选择最终一致而不是强一致？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 为什么需要：单体库里一个本地事务就能保证 ACID；但下单、扣库存、扣余额分散在多个服务/库后，一次操作跨多个资源，本地事务管不到全局，必须用分布式事务保证跨服务的业务正确性。 2. CAP 定理：一致性（C）、可用性（A）、分区容错（P）三者最多取二；分布式系统必然有网络分区（P 必选），所以实际是在 CP（强一致、牺牲可用） 与 AP（高可用、牺牲强一致） 之间选。 3. BASE 理论：在 AP 基础上放宽——Basically Available（基本可用）、Soft state（软状态，允许中间态）、Eventual consistency（最终一致）。即不要求每刻都一致，只要经过一段时间后达成一致。 4. 取舍：金融核心账务等强一致场景走 CP（如 2PC/XA）；电商、社交等高频场景走 AP + 最终一致（消息表/事务消息），用牺牲短暂不一致换吞吐与可用性。 结论：分布式事务不是「把本地事务搬过来」，而是按业务一致性要求，在「强一致（慢但准）」和「最终一致（快但短暂不一致、需补偿）」之间做架构取舍。","url":"https://itinterview.com.cn/#/question/831"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">分布式事务</span><span class="chip tag">CAP</span><span class="chip tag">BASE</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否理解单机 ACID 在分布式下失效的根因，以及 CAP/BASE 给出的工程权衡。追问：为什么大多数互联网系统选择最终一致而不是强一致？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>取舍</strong>：金融核心账务等强一致场景走 CP（如 2PC/XA）；电商、社交等高频场景走 AP + 最终一致（消息表/事务消息），用牺牲短暂不一致换吞吐与可用性。</li>
 </ol>
 <p><strong>结论</strong>：分布式事务不是「把本地事务搬过来」，而是按业务一致性要求，在「强一致（慢但准）」和「最终一致（快但短暂不一致、需补偿）」之间做架构取舍。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/831">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/831">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=119&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=119&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路 · IT面试题库">
   <meta property="og:description" content="要点一：先分层——&quot;看到旧内容&quot;可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清&quot;部分用户&quot;的地域/运营商分布与是否强刷（Ctrl+F…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/656.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/656.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路 · IT面试题库">
   <meta name="twitter:description" content="要点一：先分层——&quot;看到旧内容&quot;可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清&quot;部分用户&quot;的地域/运营商分布与是否强刷（Ctrl+F…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/656.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路","text":"追问链第四环：DNS 缓存与 CDN 缓存双重\"不生效\"排查。考察点：区分 DNS 层未生效与 CDN/浏览器缓存层旧内容；dig/nslookup 查 CNAME 链与 TTL；HTTP 响应头定位命中层级；缓存刷新与 TTL 收敛操作。","answerCount":1,"datePublished":"2026-09-07T13:21:58.891Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：先分层——\"看到旧内容\"可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清\"部分用户\"的地域/运营商分布与是否强刷（Ctrl+F5）后复现，可快速缩小层次。 要点二：逐层验证手段 DNS 层：dig www.example.com（或 nslookup）观察返回的 CNAME 链与最终 IP 是否为新值；对比 dig @8.8.8.8 与 @223.5.5.5 等不同 Local DNS 的结果判断是全局未生效还是部分运营商缓存滞后；检查解析记录 TTL，TTL 越长传播越慢。 CDN 层：curl -I 查看响应头（X-Cache: HIT/MISS、Age、Etag、Last-Modified），HIT + 旧 Etag 说明节点缓存旧内容；提交 URL 级缓存刷新强制回源。 浏览器层：强刷/无痕窗口/清缓存验证，响应头 Cache-Control 是否过于宽松。 要点三：处置与预防 处置：DNS 切换提前降低 TTL（如 300 秒以内）等旧 TTL 过期后再变更；内容更新走\"新文件名 + 预热 + 旧文件刷新\"；紧急时对受影响 URL/目录全量刷新。 预防：变更 SOP 里写明\"先降 TTL→再改记录→验证 dig 多地结果→刷新 CDN→抽样验证响应头\"；发布流程默认带缓存刷新与预热步骤，避免依赖用户侧自然过期。","url":"https://it-interview-889.pages.dev/#/question/656"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/656.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路","text":"追问链第四环：DNS 缓存与 CDN 缓存双重\"不生效\"排查。考察点：区分 DNS 层未生效与 CDN/浏览器缓存层旧内容；dig/nslookup 查 CNAME 链与 TTL；HTTP 响应头定位命中层级；缓存刷新与 TTL 收敛操作。","answerCount":1,"datePublished":"2026-09-07T13:21:58.891Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：先分层——\"看到旧内容\"可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清\"部分用户\"的地域/运营商分布与是否强刷（Ctrl+F5）后复现，可快速缩小层次。 要点二：逐层验证手段 DNS 层：dig www.example.com（或 nslookup）观察返回的 CNAME 链与最终 IP 是否为新值；对比 dig @8.8.8.8 与 @223.5.5.5 等不同 Local DNS 的结果判断是全局未生效还是部分运营商缓存滞后；检查解析记录 TTL，TTL 越长传播越慢。 CDN 层：curl -I 查看响应头（X-Cache: HIT/MISS、Age、Etag、Last-Modified），HIT + 旧 Etag 说明节点缓存旧内容；提交 URL 级缓存刷新强制回源。 浏览器层：强刷/无痕窗口/清缓存验证，响应头 Cache-Control 是否过于宽松。 要点三：处置与预防 处置：DNS 切换提前降低 TTL（如 300 秒以内）等旧 TTL 过期后再变更；内容更新走\"新文件名 + 预热 + 旧文件刷新\"；紧急时对受影响 URL/目录全量刷新。 预防：变更 SOP 里写明\"先降 TTL→再改记录→验证 dig 多地结果→刷新 CDN→抽样验证响应头\"；发布流程默认带缓存刷新与预热步骤，避免依赖用户侧自然过期。","url":"https://itinterview.com.cn/#/question/656"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">机器学习工程师</span><span class="chip">算法工程师</span><span class="chip">数据科学家</span><span class="chip tag">模型评估</span><span class="chip tag">精确率</span><span class="chip tag">召回率</span><span class="chip tag">F1</span></div>
     <div class="card"><h2>题目</h2><p>追问链第四环：DNS 缓存与 CDN 缓存双重&quot;不生效&quot;排查。考察点：区分 DNS 层未生效与 CDN/浏览器缓存层旧内容；dig/nslookup 查 CNAME 链与 TTL；HTTP 响应头定位命中层级；缓存刷新与 TTL 收敛操作。</p></div>
@@ -90,12 +90,12 @@
 <li>处置：DNS 切换提前降低 TTL（如 300 秒以内）等旧 TTL 过期后再变更；内容更新走&quot;新文件名 + 预热 + 旧文件刷新&quot;；紧急时对受影响 URL/目录全量刷新。</li>
 <li>预防：变更 SOP 里写明&quot;先降 TTL→再改记录→验证 dig 多地结果→刷新 CDN→抽样验证响应头&quot;；发布流程默认带缓存刷新与预热步骤，避免依赖用户侧自然过期。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/656">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/656">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=52&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=52&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

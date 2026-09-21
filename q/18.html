@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="事件冒泡与事件委托是什么？ · IT面试题库">
   <meta property="og:description" content="DOM 事件流分三阶段：捕获（根→目标）、目标、冒泡（目标→根）。 事件冒泡：事件从触发元素向上层父元素传播。 事件委托：利用冒泡，在父元素上统一监听，通过 event.target 判断来源处理子元素事件。 好处：动态增删子元素无需重新绑定、减少监听器数量、提升性能。注意 stopPropagation() 会…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/18.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/18.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="事件冒泡与事件委托是什么？ · IT面试题库">
   <meta name="twitter:description" content="DOM 事件流分三阶段：捕获（根→目标）、目标、冒泡（目标→根）。 事件冒泡：事件从触发元素向上层父元素传播。 事件委托：利用冒泡，在父元素上统一监听，通过 event.target 判断来源处理子元素事件。 好处：动态增删子元素无需重新绑定、减少监听器数量、提升性能。注意 stopPropagation() 会…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/18.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"事件冒泡与事件委托是什么？","text":"解释捕获/冒泡阶段，并说明事件委托的实现与好处。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"DOM 事件流分三阶段：捕获（根→目标）、目标、冒泡（目标→根）。 事件冒泡：事件从触发元素向上层父元素传播。 事件委托：利用冒泡，在父元素上统一监听，通过 event.target 判断来源处理子元素事件。 好处：动态增删子元素无需重新绑定、减少监听器数量、提升性能。注意 stopPropagation() 会阻断委托。","url":"https://it-interview-889.pages.dev/#/question/18"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/18.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"事件冒泡与事件委托是什么？","text":"解释捕获/冒泡阶段，并说明事件委托的实现与好处。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"DOM 事件流分三阶段：捕获（根→目标）、目标、冒泡（目标→根）。 事件冒泡：事件从触发元素向上层父元素传播。 事件委托：利用冒泡，在父元素上统一监听，通过 event.target 判断来源处理子元素事件。 好处：动态增删子元素无需重新绑定、减少监听器数量、提升性能。注意 stopPropagation() 会阻断委托。","url":"https://itinterview.com.cn/#/question/18"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>事件冒泡与事件委托是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">事件</span><span class="chip tag">事件委托</span></div>
     <div class="card"><h2>题目</h2><p>解释捕获/冒泡阶段，并说明事件委托的实现与好处。</p></div>
@@ -80,12 +80,12 @@
   if (e.target.matches(&#39;li&#39;)) handle(e.target);
 });</code></pre>
 <p><strong>好处</strong>：动态增删子元素无需重新绑定、减少监听器数量、提升性能。注意 <code>stopPropagation()</code> 会阻断委托。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/18">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/18">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=14&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=14&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

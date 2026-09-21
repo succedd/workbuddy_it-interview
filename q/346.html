@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何配置云监控告警规则才能既灵敏又不引发『告警疲劳』？阈值、持续周期、触发条件、恢复通知与重复等待怎么设？ · IT面试题库">
   <meta property="og:description" content="配置告警规则要在『灵敏』与『不疲劳』间平衡，关键参数： 阈值：别太紧（正常毛刺就告警）也别太松（真故障漏报）；对波动大的指标可用动态基线/同比环比替代固定阈值。 持续周期（连续触发次数）：设『连续 N 个周期满足才触发』，过滤瞬时抖动，是最有效的降噪手段之一。 触发条件：指标类用表达式（如 CPU&gt;90% 且持续…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/346.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/346.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何配置云监控告警规则才能既灵敏又不引发『告警疲劳』？阈值、持续周期、触发条件、恢复通知与重复等待怎么设？ · IT面试题库">
   <meta name="twitter:description" content="配置告警规则要在『灵敏』与『不疲劳』间平衡，关键参数： 阈值：别太紧（正常毛刺就告警）也别太松（真故障漏报）；对波动大的指标可用动态基线/同比环比替代固定阈值。 持续周期（连续触发次数）：设『连续 N 个周期满足才触发』，过滤瞬时抖动，是最有效的降噪手段之一。 触发条件：指标类用表达式（如 CPU&gt;90% 且持续…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/346.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何配置云监控告警规则才能既灵敏又不引发『告警疲劳』？阈值、持续周期、触发条件、恢复通知与重复等待怎么设？","text":"考察通过合理配置告警规则（阈值/持续周期/恢复通知/重复等待/静默）减少误报与噪声的设计思路。","answerCount":1,"datePublished":"2026-08-31T02:48:10.445Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"配置告警规则要在『灵敏』与『不疲劳』间平衡，关键参数： 阈值：别太紧（正常毛刺就告警）也别太松（真故障漏报）；对波动大的指标可用动态基线/同比环比替代固定阈值。 持续周期（连续触发次数）：设『连续 N 个周期满足才触发』，过滤瞬时抖动，是最有效的降噪手段之一。 触发条件：指标类用表达式（如 CPU>90% 且持续 5m）；事件类区分系统事件与自定义事件。 恢复通知 + 重复等待：开启恢复通知让值班知道已恢复；设置重复等待避免同一告警反复轰炸（即降噪）。 静默/维护期：变更、压测窗口设静默，避免已知操作产生噪声。 分级通知：Critical 打电话、Warning 仅群消息，避免所有告警一个级别导致真告警被淹没（『狼来了』效应）。 治理目标：每条告警都『可行动』——收到就能明确下一步，否则就合并或删掉。","url":"https://it-interview-889.pages.dev/#/question/346"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/346.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何配置云监控告警规则才能既灵敏又不引发『告警疲劳』？阈值、持续周期、触发条件、恢复通知与重复等待怎么设？","text":"考察通过合理配置告警规则（阈值/持续周期/恢复通知/重复等待/静默）减少误报与噪声的设计思路。","answerCount":1,"datePublished":"2026-08-31T02:48:10.445Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"配置告警规则要在『灵敏』与『不疲劳』间平衡，关键参数： 阈值：别太紧（正常毛刺就告警）也别太松（真故障漏报）；对波动大的指标可用动态基线/同比环比替代固定阈值。 持续周期（连续触发次数）：设『连续 N 个周期满足才触发』，过滤瞬时抖动，是最有效的降噪手段之一。 触发条件：指标类用表达式（如 CPU>90% 且持续 5m）；事件类区分系统事件与自定义事件。 恢复通知 + 重复等待：开启恢复通知让值班知道已恢复；设置重复等待避免同一告警反复轰炸（即降噪）。 静默/维护期：变更、压测窗口设静默，避免已知操作产生噪声。 分级通知：Critical 打电话、Warning 仅群消息，避免所有告警一个级别导致真告警被淹没（『狼来了』效应）。 治理目标：每条告警都『可行动』——收到就能明确下一步，否则就合并或删掉。","url":"https://itinterview.com.cn/#/question/346"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>如何配置云监控告警规则才能既灵敏又不引发『告警疲劳』？阈值、持续周期、触发条件、恢复通知与重复等待怎么设？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">告警规则</span><span class="chip tag">降噪</span><span class="chip tag">误报</span><span class="chip tag">告警疲劳</span></div>
     <div class="card"><h2>题目</h2><p>考察通过合理配置告警规则（阈值/持续周期/恢复通知/重复等待/静默）减少误报与噪声的设计思路。</p></div>
@@ -83,12 +83,12 @@
 <li><strong>分级通知</strong>：Critical 打电话、Warning 仅群消息，避免所有告警一个级别导致真告警被淹没（『狼来了』效应）。</li>
 </ul>
 <p>治理目标：每条告警都『可行动』——收到就能明确下一步，否则就合并或删掉。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/346">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/346">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=152&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=152&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

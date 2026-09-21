@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？ · IT面试题库">
   <meta property="og:description" content="要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/834.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/834.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？ · IT面试题库">
   <meta name="twitter:description" content="要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/834.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？","text":"考察点：是否理解 Pod 作为最小调度单元的设计语义（共享网络/存储命名空间、逻辑主机）。追问：一个 Pod 里放多个容器适合什么场景？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协作。 共享什么：Pod 内所有容器共享同一个网络命名空间（同一 IP + 端口空间，用 localhost 互访）和共享存储卷；不同 Pod 默认各有独立 IP，跨 Pod 通信走集群网络。 两种用法：单容器 Pod（最常见，Pod 视为容器的包装器，K8s 直接管理 Pod 而非容器）；多容器 Pod（边车/适配器等需共享资源的高级场景），例如「主容器提供 Web 服务 + sidecar 容器刷新共享卷文件」。 结论：绝大多数情况用 Deployment 间接管理 Pod 副本，而非手写裸 Pod；Pod 提供的是「共享上下文 + 协同调度」这一层抽象，容器负责运行，Pod 负责编排边界。","url":"https://it-interview-889.pages.dev/#/question/834"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/834.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？","text":"考察点：是否理解 Pod 作为最小调度单元的设计语义（共享网络/存储命名空间、逻辑主机）。追问：一个 Pod 里放多个容器适合什么场景？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协作。 共享什么：Pod 内所有容器共享同一个网络命名空间（同一 IP + 端口空间，用 localhost 互访）和共享存储卷；不同 Pod 默认各有独立 IP，跨 Pod 通信走集群网络。 两种用法：单容器 Pod（最常见，Pod 视为容器的包装器，K8s 直接管理 Pod 而非容器）；多容器 Pod（边车/适配器等需共享资源的高级场景），例如「主容器提供 Web 服务 + sidecar 容器刷新共享卷文件」。 结论：绝大多数情况用 Deployment 间接管理 Pod 副本，而非手写裸 Pod；Pod 提供的是「共享上下文 + 协同调度」这一层抽象，容器负责运行，Pod 负责编排边界。","url":"https://itinterview.com.cn/#/question/834"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">云计算工程师</span><span class="chip tag">Pod</span><span class="chip tag">容器</span><span class="chip tag">Kubernetes</span><span class="chip tag">调度</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否理解 Pod 作为最小调度单元的设计语义（共享网络/存储命名空间、逻辑主机）。追问：一个 Pod 里放多个容器适合什么场景？</p></div>
@@ -80,12 +80,12 @@
 <li><strong>两种用法</strong>：单容器 Pod（最常见，Pod 视为容器的包装器，K8s 直接管理 Pod 而非容器）；多容器 Pod（边车/适配器等需共享资源的高级场景），例如「主容器提供 Web 服务 + sidecar 容器刷新共享卷文件」。</li>
 </ul>
 <p><strong>结论</strong>：绝大多数情况用 Deployment 间接管理 Pod 副本，而非手写裸 Pod；Pod 提供的是「共享上下文 + 协同调度」这一层抽象，容器负责运行，Pod 负责编排边界。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/834">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/834">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=137&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=137&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

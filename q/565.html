@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。 · IT面试题库">
   <meta property="og:description" content="GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本）…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/565.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/565.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。 · IT面试题库">
   <meta name="twitter:description" content="GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本）…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/565.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。","text":"GitFlow 定义了 master/develop/feature/release/hotfix 等长期分支。请说明各分支职责与典型流程，并开放性讨论：在 CI/CD 高频发布、main 即生产的今天，GitFlow 的优缺点与适用边界。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本），完成后合并回 master 与 develop。 hotfix/*：从 master 拉出修线上紧急 bug，修完合并回 master 与 develop。 流程：feature→develop→release→master(打tag) + develop。 优缺点（开放讨论）： 优点：结构清晰、适合有明确版本节奏/多版本并行维护（如客户端、嵌入式）的团队；hotfix 路径明确。 缺点：分支多、流程重；长期存在的 develop/release 易与 master 脱节；与“小步快跑、持续部署”理念冲突。 现代取舍： 高频 CI/CD、main 即生产的团队更倾向 Trunk-Based Development（TBD）：仅 main + 短命 feature 分支，靠保护分支 + CI + Feature Flag 控制发布。 结论：GitFlow 仍适合需要维护多个已发布版本、发布周期较长的项目；纯 Web 服务且持续交付的场景，TBD/GitHub Flow 更轻量高效。选型取决于发布频率与多版本需求，而非一概而论。","url":"https://it-interview-889.pages.dev/#/question/565"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/565.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。","text":"GitFlow 定义了 master/develop/feature/release/hotfix 等长期分支。请说明各分支职责与典型流程，并开放性讨论：在 CI/CD 高频发布、main 即生产的今天，GitFlow 的优缺点与适用边界。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本），完成后合并回 master 与 develop。 hotfix/*：从 master 拉出修线上紧急 bug，修完合并回 master 与 develop。 流程：feature→develop→release→master(打tag) + develop。 优缺点（开放讨论）： 优点：结构清晰、适合有明确版本节奏/多版本并行维护（如客户端、嵌入式）的团队；hotfix 路径明确。 缺点：分支多、流程重；长期存在的 develop/release 易与 master 脱节；与“小步快跑、持续部署”理念冲突。 现代取舍： 高频 CI/CD、main 即生产的团队更倾向 Trunk-Based Development（TBD）：仅 main + 短命 feature 分支，靠保护分支 + CI + Feature Flag 控制发布。 结论：GitFlow 仍适合需要维护多个已发布版本、发布周期较长的项目；纯 Web 服务且持续交付的场景，TBD/GitHub Flow 更轻量高效。选型取决于发布频率与多版本需求，而非一概而论。","url":"https://itinterview.com.cn/#/question/565"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">GitFlow</span><span class="chip tag">分支模型</span><span class="chip tag">Trunk-Based</span></div>
     <div class="card"><h2>题目</h2><p>GitFlow 定义了 master/develop/feature/release/hotfix 等长期分支。请说明各分支职责与典型流程，并开放性讨论：在 CI/CD 高频发布、main 即生产的今天，GitFlow 的优缺点与适用边界。</p></div>
@@ -92,12 +92,12 @@
 <li>高频 CI/CD、main 即生产的团队更倾向 <strong>Trunk-Based Development（TBD）</strong>：仅 main + 短命 feature 分支，靠保护分支 + CI + Feature Flag 控制发布。</li>
 <li>结论：GitFlow 仍适合需要维护多个已发布版本、发布周期较长的项目；纯 Web 服务且持续交付的场景，TBD/GitHub Flow 更轻量高效。选型取决于发布频率与多版本需求，而非一概而论。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/565">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/565">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

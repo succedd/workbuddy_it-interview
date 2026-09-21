@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？ · IT面试题库">
   <meta property="og:description" content="要点： 原型对象：每个函数（构造函数）都有 prototype 属性，指向一个对象；用 new 创建实例时，实例的隐式原型 __proto__ 会指向构造函数的 prototype。 原型链与属性查找：访问 obj.x 时，先在自身找，找不到就沿 __proto__ 向上（父原型）查找，直至 Object.pro…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/390.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/390.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？ · IT面试题库">
   <meta name="twitter:description" content="要点： 原型对象：每个函数（构造函数）都有 prototype 属性，指向一个对象；用 new 创建实例时，实例的隐式原型 __proto__ 会指向构造函数的 prototype。 原型链与属性查找：访问 obj.x 时，先在自身找，找不到就沿 __proto__ 向上（父原型）查找，直至 Object.pro…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/390.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？","text":"考察点：每个对象有隐式原型 __proto__ 指向其构造函数的 prototype；属性沿原型链向上查找；__proto__（实例侧）与 prototype（构造函数侧）的对应关系。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:26:05.793Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原型对象：每个函数（构造函数）都有 prototype 属性，指向一个对象；用 new 创建实例时，实例的隐式原型 __proto__ 会指向构造函数的 prototype。 原型链与属性查找：访问 obj.x 时，先在自身找，找不到就沿 __proto__ 向上（父原型）查找，直至 Object.prototype（顶端为 null），这条链即“原型链”；找到即返回，全程未找到返回 undefined。 __proto__ vs prototype：prototype 是构造函数的属性（用来被实例继承的模板）；__proto__ 是实例对象的属性，指向它的原型。即 实例.__proto__ === 构造函数.prototype。 方法共享：挂在 prototype 上的方法被所有实例共享（不占每实例内存），这是 JS 实现“类方法共享”的机制。 现代写法：ES6 class 只是原型继承的语法糖，extends 底层仍是原型链。","url":"https://it-interview-889.pages.dev/#/question/390"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/390.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？","text":"考察点：每个对象有隐式原型 __proto__ 指向其构造函数的 prototype；属性沿原型链向上查找；__proto__（实例侧）与 prototype（构造函数侧）的对应关系。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:26:05.793Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原型对象：每个函数（构造函数）都有 prototype 属性，指向一个对象；用 new 创建实例时，实例的隐式原型 __proto__ 会指向构造函数的 prototype。 原型链与属性查找：访问 obj.x 时，先在自身找，找不到就沿 __proto__ 向上（父原型）查找，直至 Object.prototype（顶端为 null），这条链即“原型链”；找到即返回，全程未找到返回 undefined。 __proto__ vs prototype：prototype 是构造函数的属性（用来被实例继承的模板）；__proto__ 是实例对象的属性，指向它的原型。即 实例.__proto__ === 构造函数.prototype。 方法共享：挂在 prototype 上的方法被所有实例共享（不占每实例内存），这是 JS 实现“类方法共享”的机制。 现代写法：ES6 class 只是原型继承的语法糖，extends 底层仍是原型链。","url":"https://itinterview.com.cn/#/question/390"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">原型链</span><span class="chip tag">prototype</span><span class="chip tag">__proto__</span><span class="chip tag">属性查找</span></div>
     <div class="card"><h2>题目</h2><p>考察点：每个对象有隐式原型 __proto__ 指向其构造函数的 prototype；属性沿原型链向上查找；__proto__（实例侧）与 prototype（构造函数侧）的对应关系。属场景题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>方法共享</strong>：挂在 <code>prototype</code> 上的方法被所有实例共享（不占每实例内存），这是 JS 实现“类方法共享”的机制。</li>
 <li><strong>现代写法</strong>：ES6 <code>class</code> 只是原型继承的语法糖，<code>extends</code> 底层仍是原型链。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/390">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/390">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

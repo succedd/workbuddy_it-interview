@@ -16,8 +16,8 @@ B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
 C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
 D. git stash 保存的是工作区和暂存区的改动 · IT面试题库">
   <meta property="og:description" content="要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/871.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/871.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="下列关于 Git 常用操作的说法，正确的是：
@@ -26,9 +26,9 @@ B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
 C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
 D. git stash 保存的是工作区和暂存区的改动 · IT面试题库">
   <meta name="twitter:description" content="要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/871.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"下列关于 Git 常用操作的说法，正确的是：\nA. git pull 等价于 git fetch + git merge\nB. git reset --hard 可以恢复任意已删除的提交历史，无任何风险\nC. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支\nD. git stash 保存的是工作区和暂存区的改动","text":"考察点：易混操作辨析——fetch/pull、reset/revert、stash 的准确语义。追问：为什么「撤销已推送的提交」要用 revert 而不是 reset --hard + force push？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针、重写历史，公共分支上使用会波及所有协作者。它「能找回的部分」仅限于 reflog 里还有记录的提交，并非无风险。 C 对：revert 通过新增一个「反操作提交」抵消目标提交，历史只增不改，是唯一安全的公共分支撤销手段。 D 对：stash 默认同时收走工作区与暂存区的未提交改动；git stash pop 恢复到工作区，git stash apply --index 可连暂存区状态一起恢复。 选择题背后的原则：改历史的命令（reset、rebase、filter-branch）只用于本地/私有分支；公共历史一律用只增不改的 revert。","url":"https://it-interview-889.pages.dev/#/question/871"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/871.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"下列关于 Git 常用操作的说法，正确的是：\nA. git pull 等价于 git fetch + git merge\nB. git reset --hard 可以恢复任意已删除的提交历史，无任何风险\nC. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支\nD. git stash 保存的是工作区和暂存区的改动","text":"考察点：易混操作辨析——fetch/pull、reset/revert、stash 的准确语义。追问：为什么「撤销已推送的提交」要用 revert 而不是 reset --hard + force push？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：正确答案为 A、C、D（B 错误）。 A 对：pull = fetch（拉取远程更新到本地远程跟踪分支）+ merge（合并进当前分支）；配 git pull --rebase 则第二步改为变基，历史更线性。 B 错：reset --hard 会丢弃工作区和暂存区改动，未提交的工作直接丢失；且它移动分支指针、重写历史，公共分支上使用会波及所有协作者。它「能找回的部分」仅限于 reflog 里还有记录的提交，并非无风险。 C 对：revert 通过新增一个「反操作提交」抵消目标提交，历史只增不改，是唯一安全的公共分支撤销手段。 D 对：stash 默认同时收走工作区与暂存区的未提交改动；git stash pop 恢复到工作区，git stash apply --index 可连暂存区状态一起恢复。 选择题背后的原则：改历史的命令（reset、rebase、filter-branch）只用于本地/私有分支；公共历史一律用只增不改的 revert。","url":"https://itinterview.com.cn/#/question/871"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -81,7 +81,7 @@ D. git stash 保存的是工作区和暂存区的改动 · IT面试题库">
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>下列关于 Git 常用操作的说法，正确的是：
 A. git pull 等价于 git fetch + git merge
 B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
@@ -97,12 +97,12 @@ D. git stash 保存的是工作区和暂存区的改动</h1>
 <li><strong>D 对</strong>：stash 默认同时收走工作区与暂存区的未提交改动；<code>git stash pop</code> 恢复到工作区，<code>git stash apply --index</code> 可连暂存区状态一起恢复。</li>
 <li><strong>选择题背后的原则</strong>：改历史的命令（reset、rebase、filter-branch）只用于本地/私有分支；公共历史一律用只增不改的 revert。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/871">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/871">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=99&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

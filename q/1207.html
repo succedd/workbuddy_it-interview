@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="故障排查题：你新配了一条 Prometheus 告警规则，但该告警时它不触发（或反过来一直 firing 误报）。请列出常见排查方向与原因。 · IT面试题库">
   <meta property="og:description" content="要点： 第一步：看 Prometheus UI 的 Alerts 页，确认该规则当前状态。若已是 FIRING 但没收到通知 → 问题在 Alertmanager 通知链路；若根本没 FIRING → 问题在表达式/数据。 没 FIRING 的常见原因：① expr 写错、阈值方向反了（&gt; 写成 &lt;），在 Gra…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1207.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1207.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="故障排查题：你新配了一条 Prometheus 告警规则，但该告警时它不触发（或反过来一直 firing 误报）。请列出常见排查方向与原因。 · IT面试题库">
   <meta name="twitter:description" content="要点： 第一步：看 Prometheus UI 的 Alerts 页，确认该规则当前状态。若已是 FIRING 但没收到通知 → 问题在 Alertmanager 通知链路；若根本没 FIRING → 问题在表达式/数据。 没 FIRING 的常见原因：① expr 写错、阈值方向反了（&gt; 写成 &lt;），在 Gra…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1207.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查题：你新配了一条 Prometheus 告警规则，但该告警时它不触发（或反过来一直 firing 误报）。请列出常见排查方向与原因。","text":"考察点：告警排障的二分定位法——先确认『规则是否 FIRING』，再区分是 expr/for/数据问题还是 Alertmanager 通知链路问题。要求给出可操作的排查顺序。","answerCount":1,"datePublished":"2026-09-20T02:22:32.976Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：看 Prometheus UI 的 Alerts 页，确认该规则当前状态。若已是 FIRING 但没收到通知 → 问题在 Alertmanager 通知链路；若根本没 FIRING → 问题在表达式/数据。 没 FIRING 的常见原因：① expr 写错、阈值方向反了（> 写成 \u003c），在 Graph 里手动跑 expr 验证；② for 时长太长或目标只闪一下就恢复，先用 for: 0 验证是否真命中；③ label 拼写/大小写不匹配导致查询为空，用 label_values 确认 label 存在；④ 目标 down、scrape 失败（Targets 页非 UP），没有数据自然算不出。 FIRING 但没通知的常见原因：① Alertmanager 的 route/receiver 配错，告警没路由到正确接收人；② 被 silences 静默规则压制；③ group_wait/group_interval 还没到发送窗口，看起来像『没发』。 窗口/分辨率：rate()[1m] 窗口太小或 scrape 间隔过大，可能取不到足够样本导致结果异常。 核心：先确认 FIRING 状态二分定位——没 FIRING 是 expr/for/数据问题，FIRING 没通知是 Alertmanager 路由/静默问题，不要一上来就改配置。","url":"https://it-interview-889.pages.dev/#/question/1207"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1207.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查题：你新配了一条 Prometheus 告警规则，但该告警时它不触发（或反过来一直 firing 误报）。请列出常见排查方向与原因。","text":"考察点：告警排障的二分定位法——先确认『规则是否 FIRING』，再区分是 expr/for/数据问题还是 Alertmanager 通知链路问题。要求给出可操作的排查顺序。","answerCount":1,"datePublished":"2026-09-20T02:22:32.976Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：看 Prometheus UI 的 Alerts 页，确认该规则当前状态。若已是 FIRING 但没收到通知 → 问题在 Alertmanager 通知链路；若根本没 FIRING → 问题在表达式/数据。 没 FIRING 的常见原因：① expr 写错、阈值方向反了（> 写成 \u003c），在 Graph 里手动跑 expr 验证；② for 时长太长或目标只闪一下就恢复，先用 for: 0 验证是否真命中；③ label 拼写/大小写不匹配导致查询为空，用 label_values 确认 label 存在；④ 目标 down、scrape 失败（Targets 页非 UP），没有数据自然算不出。 FIRING 但没通知的常见原因：① Alertmanager 的 route/receiver 配错，告警没路由到正确接收人；② 被 silences 静默规则压制；③ group_wait/group_interval 还没到发送窗口，看起来像『没发』。 窗口/分辨率：rate()[1m] 窗口太小或 scrape 间隔过大，可能取不到足够样本导致结果异常。 核心：先确认 FIRING 状态二分定位——没 FIRING 是 expr/for/数据问题，FIRING 没通知是 Alertmanager 路由/静默问题，不要一上来就改配置。","url":"https://itinterview.com.cn/#/question/1207"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>故障排查题：你新配了一条 Prometheus 告警规则，但该告警时它不触发（或反过来一直 firing 误报）。请列出常见排查方向与原因。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">DevOps工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">Prometheus</span><span class="chip tag">告警规则</span><span class="chip tag">故障排查</span><span class="chip tag">Alertmanager</span></div>
     <div class="card"><h2>题目</h2><p>考察点：告警排障的二分定位法——先确认『规则是否 FIRING』，再区分是 expr/for/数据问题还是 Alertmanager 通知链路问题。要求给出可操作的排查顺序。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>窗口/分辨率</strong>：<code>rate()[1m]</code> 窗口太小或 scrape 间隔过大，可能取不到足够样本导致结果异常。</li>
 </ul>
 <p><strong>核心</strong>：先确认 FIRING 状态二分定位——没 FIRING 是 expr/for/数据问题，FIRING 没通知是 Alertmanager 路由/静默问题，不要一上来就改配置。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1207">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1207">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=143&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

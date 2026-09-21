@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？ · IT面试题库">
   <meta property="og:description" content="迁移即代码：用 Flyway/Liquibase 等把 schema 变更写成带版本的迁移脚本，随应用代码一起进 CI，流水线在部署前自动按版本顺序执行，保证“代码与库结构同源”。 数据库难回滚的本质：DROP 列、改类型这类破坏性变更一旦执行，旧代码回滚后也读不了新结构；所以“应用能回滚”不等于“发布可回退”，…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1147.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1147.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？ · IT面试题库">
   <meta name="twitter:description" content="迁移即代码：用 Flyway/Liquibase 等把 schema 变更写成带版本的迁移脚本，随应用代码一起进 CI，流水线在部署前自动按版本顺序执行，保证“代码与库结构同源”。 数据库难回滚的本质：DROP 列、改类型这类破坏性变更一旦执行，旧代码回滚后也读不了新结构；所以“应用能回滚”不等于“发布可回退”，…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1147.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？","text":"请说明把 schema 迁移纳入流水线的做法，并指出为什么“数据库没有回滚键”、必须用向后兼容与 expand-contract 模式来保证可回退。","answerCount":1,"datePublished":"2026-09-14T02:47:35.123Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"迁移即代码：用 Flyway/Liquibase 等把 schema 变更写成带版本的迁移脚本，随应用代码一起进 CI，流水线在部署前自动按版本顺序执行，保证“代码与库结构同源”。 数据库难回滚的本质：DROP 列、改类型这类破坏性变更一旦执行，旧代码回滚后也读不了新结构；所以“应用能回滚”不等于“发布可回退”，DB 必须单独设计可逆性。 expand-contract（扩展-收缩）模式：分两阶段——扩展期先加新列/新表、双写并回填、旧代码兼容新结构（只增不改）；收缩期确认无误后再删旧列。任何一个子阶段出问题都能停在当前安全态。 向后兼容铁律：迁移后的库必须能被“上一版应用”读写，这样应用回滚才安全；破坏性变更拆成“先兼容、后清理”两次发布，绝不一次到位。 与特性开关配合：大表加字段/改索引用在线 DDL（如 MySQL 的 INSTANT/INPLACE）避免锁表，并用 feature flag 控制新逻辑灰度，DB 变更与应用发布解耦。","url":"https://it-interview-889.pages.dev/#/question/1147"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1147.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？","text":"请说明把 schema 迁移纳入流水线的做法，并指出为什么“数据库没有回滚键”、必须用向后兼容与 expand-contract 模式来保证可回退。","answerCount":1,"datePublished":"2026-09-14T02:47:35.123Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"迁移即代码：用 Flyway/Liquibase 等把 schema 变更写成带版本的迁移脚本，随应用代码一起进 CI，流水线在部署前自动按版本顺序执行，保证“代码与库结构同源”。 数据库难回滚的本质：DROP 列、改类型这类破坏性变更一旦执行，旧代码回滚后也读不了新结构；所以“应用能回滚”不等于“发布可回退”，DB 必须单独设计可逆性。 expand-contract（扩展-收缩）模式：分两阶段——扩展期先加新列/新表、双写并回填、旧代码兼容新结构（只增不改）；收缩期确认无误后再删旧列。任何一个子阶段出问题都能停在当前安全态。 向后兼容铁律：迁移后的库必须能被“上一版应用”读写，这样应用回滚才安全；破坏性变更拆成“先兼容、后清理”两次发布，绝不一次到位。 与特性开关配合：大表加字段/改索引用在线 DDL（如 MySQL 的 INSTANT/INPLACE）避免锁表，并用 feature flag 控制新逻辑灰度，DB 变更与应用发布解耦。","url":"https://itinterview.com.cn/#/question/1147"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip tag">数据库迁移</span><span class="chip tag">可回滚</span><span class="chip tag">expand-contract</span><span class="chip tag">Flyway</span><span class="chip tag">CI/CD</span></div>
     <div class="card"><h2>题目</h2><p>请说明把 schema 迁移纳入流水线的做法，并指出为什么“数据库没有回滚键”、必须用向后兼容与 expand-contract 模式来保证可回退。</p></div>
@@ -78,12 +78,12 @@
 <p><strong>expand-contract（扩展-收缩）模式</strong>：分两阶段——扩展期先加新列/新表、双写并回填、旧代码兼容新结构（只增不改）；收缩期确认无误后再删旧列。任何一个子阶段出问题都能停在当前安全态。</p>
 <p><strong>向后兼容铁律</strong>：迁移后的库必须能被“上一版应用”读写，这样应用回滚才安全；破坏性变更拆成“先兼容、后清理”两次发布，绝不一次到位。</p>
 <p><strong>与特性开关配合</strong>：大表加字段/改索引用在线 DDL（如 MySQL 的 INSTANT/INPLACE）避免锁表，并用 feature flag 控制新逻辑灰度，DB 变更与应用发布解耦。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1147">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1147">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

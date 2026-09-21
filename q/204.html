@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务 · IT面试题库">
   <meta property="og:description" content="处理流程： 1. 告警确认：确认 GPU 掉卡和温度过高告警的客户、实例、GPU 卡位置、发生时间，评估影响。 2. 通知客户：按 SLA 通知客户，告知可能影响（如计算任务失败、性能下降）。 3. 远程排查：登录实例执行 nvidia-smi、nvidia-smi -q -d TEMPERATURE、dmesg…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/204.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/204.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务 · IT面试题库">
   <meta name="twitter:description" content="处理流程： 1. 告警确认：确认 GPU 掉卡和温度过高告警的客户、实例、GPU 卡位置、发生时间，评估影响。 2. 通知客户：按 SLA 通知客户，告知可能影响（如计算任务失败、性能下降）。 3. 远程排查：登录实例执行 nvidia-smi、nvidia-smi -q -d TEMPERATURE、dmesg…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/204.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务","text":"收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"处理流程： 1. 告警确认：确认 GPU 掉卡和温度过高告警的客户、实例、GPU 卡位置、发生时间，评估影响。 2. 通知客户：按 SLA 通知客户，告知可能影响（如计算任务失败、性能下降）。 3. 远程排查：登录实例执行 nvidia-smi、nvidia-smi -q -d TEMPERATURE、dmesg | grep -i nvidia、journalctl -k | grep -i nvidia，确认 GPU 是否识别、温度、功耗、ECC 错误。 4. 判断故障性质：若 nvidia-smi 无输出且 lspci 也看不到 GPU，可能是硬件掉卡或 PCIe 链路问题；若 lspci 可见但 nvidia-smi 不识别，可能是驱动或内核模块问题。 5. 处理措施：如果是驱动问题，尝试重装或升级驱动并重启；如果是硬件故障，安排迁移实例到其他宿主机、更换 GPU 卡或重启；若是散热问题，协调机房检查风扇和环境温度。 6. 根因分析收集：执行 nvidia-bug-report.sh，收集内核日志、GPU 序列号、驱动版本、宿主机日志，提交厂商分析。 7. 跟进闭环：更新工单，记录处理动作，回访客户确认业务恢复。 需要收集的日志：nvidia-smi 输出、nvidia-bug-report.sh、dmesg、/var/log/syslog、GPU 序列号和位置、监控历史。","url":"https://it-interview-889.pages.dev/#/question/204"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/204.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务","text":"收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"处理流程： 1. 告警确认：确认 GPU 掉卡和温度过高告警的客户、实例、GPU 卡位置、发生时间，评估影响。 2. 通知客户：按 SLA 通知客户，告知可能影响（如计算任务失败、性能下降）。 3. 远程排查：登录实例执行 nvidia-smi、nvidia-smi -q -d TEMPERATURE、dmesg | grep -i nvidia、journalctl -k | grep -i nvidia，确认 GPU 是否识别、温度、功耗、ECC 错误。 4. 判断故障性质：若 nvidia-smi 无输出且 lspci 也看不到 GPU，可能是硬件掉卡或 PCIe 链路问题；若 lspci 可见但 nvidia-smi 不识别，可能是驱动或内核模块问题。 5. 处理措施：如果是驱动问题，尝试重装或升级驱动并重启；如果是硬件故障，安排迁移实例到其他宿主机、更换 GPU 卡或重启；若是散热问题，协调机房检查风扇和环境温度。 6. 根因分析收集：执行 nvidia-bug-report.sh，收集内核日志、GPU 序列号、驱动版本、宿主机日志，提交厂商分析。 7. 跟进闭环：更新工单，记录处理动作，回访客户确认业务恢复。 需要收集的日志：nvidia-smi 输出、nvidia-bug-report.sh、dmesg、/var/log/syslog、GPU 序列号和位置、监控历史。","url":"https://itinterview.com.cn/#/question/204"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip tag"></span><span class="chip tag"></span><span class="chip tag"></span></div>
     <div class="card"><h2>题目</h2><p>收到 GPU 卡掉卡或温度过高告警，如何跟进处理并避免影响客户业务</p></div>
@@ -84,12 +84,12 @@
 <li>跟进闭环：更新工单，记录处理动作，回访客户确认业务恢复。</li>
 </ol>
 <p>需要收集的日志：nvidia-smi 输出、nvidia-bug-report.sh、dmesg、/var/log/syslog、GPU 序列号和位置、监控历史。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/204">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/204">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

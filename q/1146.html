@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？ · IT面试题库">
   <meta property="og:description" content="先量化瓶颈：看 job 日志里各步骤耗时，区分是“依赖下载（npm/pip/maven 拉包）”还是“编译/测试本身”慢；再查 cache 是否真命中（key 变了、runner 漂移都会导致未命中）。 第一层：依赖缓存：把 node_modules / ~/.m2 / pip 缓存按 lock 文件哈希做 ke…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1146.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1146.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？ · IT面试题库">
   <meta name="twitter:description" content="先量化瓶颈：看 job 日志里各步骤耗时，区分是“依赖下载（npm/pip/maven 拉包）”还是“编译/测试本身”慢；再查 cache 是否真命中（key 变了、runner 漂移都会导致未命中）。 第一层：依赖缓存：把 node_modules / ~/.m2 / pip 缓存按 lock 文件哈希做 ke…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1146.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？","text":"请给出一个可复现的构建提速排查与设计流程：先量化每次构建卡在哪，再用三层手段系统性降低构建时长。","answerCount":1,"datePublished":"2026-09-14T02:47:34.985Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先量化瓶颈：看 job 日志里各步骤耗时，区分是“依赖下载（npm/pip/maven 拉包）”还是“编译/测试本身”慢；再查 cache 是否真命中（key 变了、runner 漂移都会导致未命中）。 第一层：依赖缓存：把 node_modules / ~/.m2 / pip 缓存按 lock 文件哈希做 key，命中即跳过全量下载；注意 cache key 要与依赖文件强绑定，否则会用到脏缓存。 第二层：私有制品库：搭 Nexus/Artifactory/私有 npm registry，把公共依赖与自研二方包代理缓存到内网，既提速又避免公网波动；CI 只拉内网，稳定性与速度双升。 第三层：镜像预热：对 Docker 构建，用基础镜像预拉（或镜像仓库 P2P 分发）、dind 缓存层复用、--cache-from 复用上一层；避免每次从零拉 base image。 并发与配额：runner 数量/队列上限也会让 job 排队超时，需结合监控看是“排队久”还是“执行久”，分别扩 runner 或优化单 job。","url":"https://it-interview-889.pages.dev/#/question/1146"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1146.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？","text":"请给出一个可复现的构建提速排查与设计流程：先量化每次构建卡在哪，再用三层手段系统性降低构建时长。","answerCount":1,"datePublished":"2026-09-14T02:47:34.985Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先量化瓶颈：看 job 日志里各步骤耗时，区分是“依赖下载（npm/pip/maven 拉包）”还是“编译/测试本身”慢；再查 cache 是否真命中（key 变了、runner 漂移都会导致未命中）。 第一层：依赖缓存：把 node_modules / ~/.m2 / pip 缓存按 lock 文件哈希做 key，命中即跳过全量下载；注意 cache key 要与依赖文件强绑定，否则会用到脏缓存。 第二层：私有制品库：搭 Nexus/Artifactory/私有 npm registry，把公共依赖与自研二方包代理缓存到内网，既提速又避免公网波动；CI 只拉内网，稳定性与速度双升。 第三层：镜像预热：对 Docker 构建，用基础镜像预拉（或镜像仓库 P2P 分发）、dind 缓存层复用、--cache-from 复用上一层；避免每次从零拉 base image。 并发与配额：runner 数量/队列上限也会让 job 排队超时，需结合监控看是“排队久”还是“执行久”，分别扩 runner 或优化单 job。","url":"https://itinterview.com.cn/#/question/1146"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">DevOps工程师</span><span class="chip tag">构建提速</span><span class="chip tag">缓存</span><span class="chip tag">私有制品库</span><span class="chip tag">镜像预热</span><span class="chip tag">CI性能</span></div>
     <div class="card"><h2>题目</h2><p>请给出一个可复现的构建提速排查与设计流程：先量化每次构建卡在哪，再用三层手段系统性降低构建时长。</p></div>
@@ -78,12 +78,12 @@
 <p><strong>第二层：私有制品库</strong>：搭 Nexus/Artifactory/私有 npm registry，把公共依赖与自研二方包代理缓存到内网，既提速又避免公网波动；CI 只拉内网，稳定性与速度双升。</p>
 <p><strong>第三层：镜像预热</strong>：对 Docker 构建，用基础镜像预拉（或镜像仓库 P2P 分发）、dind 缓存层复用、--cache-from 复用上一层；避免每次从零拉 base image。</p>
 <p><strong>并发与配额</strong>：runner 数量/队列上限也会让 job 排队超时，需结合监控看是“排队久”还是“执行久”，分别扩 runner 或优化单 job。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1146">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1146">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=140&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

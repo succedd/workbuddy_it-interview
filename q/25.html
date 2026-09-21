@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="localStorage、sessionStorage、cookie 的区别？ · IT面试题库">
   <meta property="og:description" content="生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/25.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/25.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="localStorage、sessionStorage、cookie 的区别？ · IT面试题库">
   <meta name="twitter:description" content="生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/25.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"localStorage、sessionStorage、cookie 的区别？","text":"从生命周期、容量、请求携带、安全性对比。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage 不随请求发送。 安全：cookie 可设 HttpOnly（防 XSS 读取）、Secure、SameSite。 本项目用法：主题/登录态/API Key 用 localStorage 或 sessionStorage；敏感 token 优先 HttpOnly cookie（但静态站只能用 storage）。","url":"https://it-interview-889.pages.dev/#/question/25"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/25.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"localStorage、sessionStorage、cookie 的区别？","text":"从生命周期、容量、请求携带、安全性对比。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage 不随请求发送。 安全：cookie 可设 HttpOnly（防 XSS 读取）、Secure、SameSite。 本项目用法：主题/登录态/API Key 用 localStorage 或 sessionStorage；敏感 token 优先 HttpOnly cookie（但静态站只能用 storage）。","url":"https://itinterview.com.cn/#/question/25"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>localStorage、sessionStorage、cookie 的区别？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">存储</span><span class="chip tag">cookie</span></div>
     <div class="card"><h2>题目</h2><p>从生命周期、容量、请求携带、安全性对比。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>安全</strong>：cookie 可设 HttpOnly（防 XSS 读取）、Secure、SameSite。</li>
 </ul>
 <p><strong>本项目用法</strong>：主题/登录态/API Key 用 localStorage 或 sessionStorage；敏感 token 优先 HttpOnly cookie（但静态站只能用 storage）。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/25">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/25">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

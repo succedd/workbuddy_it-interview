@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="容器启动后立刻退出（Exited 0 / 反复重启）的常见原因有哪些？如何排查？ · IT面试题库">
   <meta property="og:description" content="要点： 主进程退出：Docker 容器生命周期 = 主进程生命周期。若 CMD 跑的是 bash -c &#39;xxx&#39; 且命令执行完就结束，容器自然 Exited(0)。长期服务必须前台运行（如 nginx -g &#39;daemon off;&#39;），不能用后台 daemon 形式。 命令写法错误：CMD [&quot;echo&quot;,&quot;…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/381.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/381.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="容器启动后立刻退出（Exited 0 / 反复重启）的常见原因有哪些？如何排查？ · IT面试题库">
   <meta name="twitter:description" content="要点： 主进程退出：Docker 容器生命周期 = 主进程生命周期。若 CMD 跑的是 bash -c &#39;xxx&#39; 且命令执行完就结束，容器自然 Exited(0)。长期服务必须前台运行（如 nginx -g &#39;daemon off;&#39;），不能用后台 daemon 形式。 命令写法错误：CMD [&quot;echo&quot;,&quot;…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/381.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"容器启动后立刻退出（Exited 0 / 反复重启）的常见原因有哪些？如何排查？","text":"考察点：主进程前台运行、CMD/ENTRYPOINT 写法、健康检查与 restart 策略、日志查看（docker logs）；区分“正常退出”和“崩溃循环”。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T09:25:38.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 主进程退出：Docker 容器生命周期 = 主进程生命周期。若 CMD 跑的是 bash -c 'xxx' 且命令执行完就结束，容器自然 Exited(0)。长期服务必须前台运行（如 nginx -g 'daemon off;'），不能用后台 daemon 形式。 命令写法错误：CMD [\"echo\",\"hi\"] 会立刻结束；ENTRYPOINT 与 CMD 拼接错误会导致找不到可执行文件而瞬间退出（Exited 127/126）。 查看现场：docker ps -a 看退出码；docker logs 看真实报错；docker inspect 看 State、ExitCode、Error 与挂载/环境变量。 重启循环：若设了 --restart=always 且主进程持续崩溃，会 CrashLoopBackOff；先去掉 restart 策略手动 docker run 复现，读日志定位根因（配置缺失、端口被占、依赖未就绪）。 依赖未就绪：启动时下游（DB/Redis）还没起，应用连不上直接退出；加就绪探测或 depends_on+重试逻辑，而非无限重启掩盖问题。","url":"https://it-interview-889.pages.dev/#/question/381"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/381.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"容器启动后立刻退出（Exited 0 / 反复重启）的常见原因有哪些？如何排查？","text":"考察点：主进程前台运行、CMD/ENTRYPOINT 写法、健康检查与 restart 策略、日志查看（docker logs）；区分“正常退出”和“崩溃循环”。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T09:25:38.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 主进程退出：Docker 容器生命周期 = 主进程生命周期。若 CMD 跑的是 bash -c 'xxx' 且命令执行完就结束，容器自然 Exited(0)。长期服务必须前台运行（如 nginx -g 'daemon off;'），不能用后台 daemon 形式。 命令写法错误：CMD [\"echo\",\"hi\"] 会立刻结束；ENTRYPOINT 与 CMD 拼接错误会导致找不到可执行文件而瞬间退出（Exited 127/126）。 查看现场：docker ps -a 看退出码；docker logs 看真实报错；docker inspect 看 State、ExitCode、Error 与挂载/环境变量。 重启循环：若设了 --restart=always 且主进程持续崩溃，会 CrashLoopBackOff；先去掉 restart 策略手动 docker run 复现，读日志定位根因（配置缺失、端口被占、依赖未就绪）。 依赖未就绪：启动时下游（DB/Redis）还没起，应用连不上直接退出；加就绪探测或 depends_on+重试逻辑，而非无限重启掩盖问题。","url":"https://itinterview.com.cn/#/question/381"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>容器启动后立刻退出（Exited 0 / 反复重启）的常见原因有哪些？如何排查？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">容器退出</span><span class="chip tag">docker logs</span><span class="chip tag">CrashLoop</span><span class="chip tag">排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：主进程前台运行、CMD/ENTRYPOINT 写法、健康检查与 restart 策略、日志查看（docker logs）；区分“正常退出”和“崩溃循环”。属故障排查题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>重启循环</strong>：若设了 <code>--restart=always</code> 且主进程持续崩溃，会 CrashLoopBackOff；先去掉 restart 策略手动 <code>docker run</code> 复现，读日志定位根因（配置缺失、端口被占、依赖未就绪）。</li>
 <li><strong>依赖未就绪</strong>：启动时下游（DB/Redis）还没起，应用连不上直接退出；加就绪探测或 <code>depends_on</code>+重试逻辑，而非无限重启掩盖问题。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/381">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/381">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=136&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=136&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

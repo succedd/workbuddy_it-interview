@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？ · IT面试题库">
   <meta property="og:description" content="可靠传输核心机制：①序列号+确认应答（累计确认）；②超时重传（RTO 自适应）与快速重传（收到 3 个重复 ACK 立即重发，不必等超时）；③校验和检错；④去重与排序；⑤流量控制+拥塞控制。 流量控制（滑动窗口）——保护接收方：接收方通过 TCP 头的窗口字段通告剩余缓冲区大小（rwnd），发送方未确认的在途数据…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/918.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/918.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？ · IT面试题库">
   <meta name="twitter:description" content="可靠传输核心机制：①序列号+确认应答（累计确认）；②超时重传（RTO 自适应）与快速重传（收到 3 个重复 ACK 立即重发，不必等超时）；③校验和检错；④去重与排序；⑤流量控制+拥塞控制。 流量控制（滑动窗口）——保护接收方：接收方通过 TCP 头的窗口字段通告剩余缓冲区大小（rwnd），发送方未确认的在途数据…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/918.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？","text":"请说明 TCP 可靠传输的核心机制，以及流量控制（滑动窗口）与拥塞控制（四大算法）的区别。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"可靠传输核心机制：①序列号+确认应答（累计确认）；②超时重传（RTO 自适应）与快速重传（收到 3 个重复 ACK 立即重发，不必等超时）；③校验和检错；④去重与排序；⑤流量控制+拥塞控制。 流量控制（滑动窗口）——保护接收方：接收方通过 TCP 头的窗口字段通告剩余缓冲区大小（rwnd），发送方未确认的在途数据不能超过它，防止接收方被打爆。接收方处理不过来时窗口收缩甚至为 0（零窗口需窗口探测恢复）。 拥塞控制——保护网络，四大算法： 1. 慢启动：cwnd 从小值起指数增长； 2. 拥塞避免：到达阈值 ssthresh 后线性增长； 3. 快速重传：3 个重复 ACK 触发立即重发； 4. 快速恢复：cwnd 减半后线性增长（而非回到 1）。 区别一句话：滑动窗口看对端的接收能力，拥塞控制看网络的承载能力，实际发送窗口 = min(rwnd, cwnd)。","url":"https://it-interview-889.pages.dev/#/question/918"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/918.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？","text":"请说明 TCP 可靠传输的核心机制，以及流量控制（滑动窗口）与拥塞控制（四大算法）的区别。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"可靠传输核心机制：①序列号+确认应答（累计确认）；②超时重传（RTO 自适应）与快速重传（收到 3 个重复 ACK 立即重发，不必等超时）；③校验和检错；④去重与排序；⑤流量控制+拥塞控制。 流量控制（滑动窗口）——保护接收方：接收方通过 TCP 头的窗口字段通告剩余缓冲区大小（rwnd），发送方未确认的在途数据不能超过它，防止接收方被打爆。接收方处理不过来时窗口收缩甚至为 0（零窗口需窗口探测恢复）。 拥塞控制——保护网络，四大算法： 1. 慢启动：cwnd 从小值起指数增长； 2. 拥塞避免：到达阈值 ssthresh 后线性增长； 3. 快速重传：3 个重复 ACK 触发立即重发； 4. 快速恢复：cwnd 减半后线性增长（而非回到 1）。 区别一句话：滑动窗口看对端的接收能力，拥塞控制看网络的承载能力，实际发送窗口 = min(rwnd, cwnd)。","url":"https://itinterview.com.cn/#/question/918"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">网络工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">可靠传输</span><span class="chip tag">拥塞控制</span><span class="chip tag">滑动窗口</span></div>
     <div class="card"><h2>题目</h2><p>请说明 TCP 可靠传输的核心机制，以及流量控制（滑动窗口）与拥塞控制（四大算法）的区别。</p></div>
@@ -83,12 +83,12 @@
 <li><strong>快速恢复</strong>：cwnd 减半后线性增长（而非回到 1）。</li>
 </ol>
 <p>区别一句话：滑动窗口看<strong>对端</strong>的接收能力，拥塞控制看<strong>网络</strong>的承载能力，实际发送窗口 = min(rwnd, cwnd)。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/918">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/918">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=50&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=50&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

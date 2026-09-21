@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Transformer 的 Self-Attention 原理是什么？ · IT面试题库">
   <meta property="og:description" content="Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/85.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/85.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Transformer 的 Self-Attention 原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/85.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 的 Self-Attention 原理是什么？","text":"解释 Q/K/V、注意力分数与多头机制。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）。 3. softmax 归一化得到注意力权重。 4. 权重对 V 加权求和得输出。 多头（Multi-Head）：并行多组 Q/K/V 投影，各自捕捉不同子空间关系（语法、语义、位置），拼接后线性融合，增强表达能力。 位置编码：因 attention 本身无序，需加入位置信息（正弦编码或可学习编码/RoPE）。","url":"https://it-interview-889.pages.dev/#/question/85"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/85.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 的 Self-Attention 原理是什么？","text":"解释 Q/K/V、注意力分数与多头机制。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）。 3. softmax 归一化得到注意力权重。 4. 权重对 V 加权求和得输出。 多头（Multi-Head）：并行多组 Q/K/V 投影，各自捕捉不同子空间关系（语法、语义、位置），拼接后线性融合，增强表达能力。 位置编码：因 attention 本身无序，需加入位置信息（正弦编码或可学习编码/RoPE）。","url":"https://itinterview.com.cn/#/question/85"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Transformer 的 Self-Attention 原理是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">AI应用开发工程师</span><span class="chip tag">Transformer</span><span class="chip tag">注意力</span><span class="chip tag">大模型</span></div>
     <div class="card"><h2>题目</h2><p>解释 Q/K/V、注意力分数与多头机制。</p></div>
@@ -83,12 +83,12 @@
 </ol>
 <p><strong>多头（Multi-Head）</strong>：并行多组 Q/K/V 投影，各自捕捉不同子空间关系（语法、语义、位置），拼接后线性融合，增强表达能力。</p>
 <p><strong>位置编码</strong>：因 attention 本身无序，需加入位置信息（正弦编码或可学习编码/RoPE）。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/85">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/85">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=188&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=188&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -24,8 +24,8 @@ queueMicrotask(() =&gt; console.log(&#39;micro&#39;));
 console.log(&#39;end&#39;);
 ``` · IT面试题库">
   <meta property="og:description" content="要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log(&#39;start&#39;)、console.log(&#39;end&#39;) 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/869.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/869.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。
@@ -38,9 +38,9 @@ queueMicrotask(() =&gt; console.log(&#39;micro&#39;));
 console.log(&#39;end&#39;);
 ``` · IT面试题库">
   <meta name="twitter:description" content="要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log(&#39;start&#39;)、console.log(&#39;end&#39;) 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/869.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。\n\n```js\nconsole.log('start');\nsetTimeout(() => console.log('timeout'), 0);\nPromise.resolve().then(() => console.log('promise1'));\nqueueMicrotask(() => console.log('micro'));\nconsole.log('end');\n```","text":"考察点：能否把「同步代码 → 微任务队列清空 → 下一个宏任务」的调度模型应用到具体代码上。追问：如果把 setTimeout 的延迟改成 0，它能先于 Promise 执行吗？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log('start')、console.log('end') 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队列；Promise.resolve().then 与 queueMicrotask 的回调进入微任务队列。注意：登记 ≠ 执行。 第二轮（排空微任务）：同步代码结束、栈空，事件循环清空微任务队列——按入队顺序执行 promise1、micro。 第三轮（宏任务）：微任务队列已空且渲染机会过后，才取出 setTimeout 的回调输出 timeout。即使 delay 为 0，宏任务也必须等本轮微任务全部清空，且 0ms 只是「最早可用时机」而非立即执行。 常见误区：认为 setTimeout(fn, 0) 比 Promise.then 快——错在把「先登记」当成了「先执行」，队列优先级才是决定因素。","url":"https://it-interview-889.pages.dev/#/question/869"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/869.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。\n\n```js\nconsole.log('start');\nsetTimeout(() => console.log('timeout'), 0);\nPromise.resolve().then(() => console.log('promise1'));\nqueueMicrotask(() => console.log('micro'));\nconsole.log('end');\n```","text":"考察点：能否把「同步代码 → 微任务队列清空 → 下一个宏任务」的调度模型应用到具体代码上。追问：如果把 setTimeout 的延迟改成 0，它能先于 Promise 执行吗？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：输出顺序为 start → end → promise1 → micro → timeout。 第一轮（同步）：整段脚本作为一个宏任务执行，console.log('start')、console.log('end') 直接入栈执行，先行输出。 入队时机：setTimeout 的回调（0ms 后）进入任务队列；Promise.resolve().then 与 queueMicrotask 的回调进入微任务队列。注意：登记 ≠ 执行。 第二轮（排空微任务）：同步代码结束、栈空，事件循环清空微任务队列——按入队顺序执行 promise1、micro。 第三轮（宏任务）：微任务队列已空且渲染机会过后，才取出 setTimeout 的回调输出 timeout。即使 delay 为 0，宏任务也必须等本轮微任务全部清空，且 0ms 只是「最早可用时机」而非立即执行。 常见误区：认为 setTimeout(fn, 0) 比 Promise.then 快——错在把「先登记」当成了「先执行」，队列优先级才是决定因素。","url":"https://itinterview.com.cn/#/question/869"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -93,7 +93,7 @@ console.log(&#39;end&#39;);
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>编程题：写出下面代码在浏览器中的完整输出顺序，并解释每一步为什么。
 
 ```js
@@ -113,12 +113,12 @@ console.log(&#39;end&#39;);
 <li><strong>第三轮（宏任务）</strong>：微任务队列已空且渲染机会过后，才取出 <code>setTimeout</code> 的回调输出 <code>timeout</code>。即使 delay 为 0，宏任务也必须等本轮微任务全部清空，且 0ms 只是「最早可用时机」而非立即执行。</li>
 <li><strong>常见误区</strong>：认为 setTimeout(fn, 0) 比 Promise.then 快——错在把「先登记」当成了「先执行」，队列优先级才是决定因素。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/869">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/869">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

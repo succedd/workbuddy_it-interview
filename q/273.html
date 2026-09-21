@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库【诞生】为什么不直接把数据存成文件，非要有数据库？ · IT面试题库">
   <meta property="og:description" content="存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/273.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/273.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库【诞生】为什么不直接把数据存成文件，非要有数据库？ · IT面试题库">
   <meta name="twitter:description" content="存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/273.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库【诞生】为什么不直接把数据存成文件，非要有数据库？","text":"自己写个程序把数据保存成 JSON 文件，小项目完全够用。到底是哪几个问题，把「存文件」逼成了「数据库」？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看什么 → 需要访问控制与审计。 数据库 = 把这四件事做对的系统。事务 ACID、索引、锁——每一章面试题都对应一个「存文件方案」的死穴。","url":"https://it-interview-889.pages.dev/#/question/273"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/273.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库【诞生】为什么不直接把数据存成文件，非要有数据库？","text":"自己写个程序把数据保存成 JSON 文件，小项目完全够用。到底是哪几个问题，把「存文件」逼成了「数据库」？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看什么 → 需要访问控制与审计。 数据库 = 把这四件事做对的系统。事务 ACID、索引、锁——每一章面试题都对应一个「存文件方案」的死穴。","url":"https://itinterview.com.cn/#/question/273"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>数据库【诞生】为什么不直接把数据存成文件，非要有数据库？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">数据库工程师</span><span class="chip">DBA数据库管理员</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">数据库与数据存储</span></div>
     <div class="card"><h2>题目</h2><p>自己写个程序把数据保存成 JSON 文件，小项目完全够用。到底是哪几个问题，把「存文件」逼成了「数据库」？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>多用户与权限</strong>：谁改了什么、谁能看什么 → 需要访问控制与审计。</li>
 </ol>
 <p><strong>数据库 = 把这四件事做对的系统</strong>。事务 ACID、索引、锁——每一章面试题都对应一个「存文件方案」的死穴。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/273">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/273">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=25&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=25&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

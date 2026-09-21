@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="强引用、软引用、弱引用、虚引用有什么区别？ · IT面试题库">
   <meta property="og:description" content="1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因&quot;该断的强引用没断&quot;（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/937.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/937.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="强引用、软引用、弱引用、虚引用有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因&quot;该断的强引用没断&quot;（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/937.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"强引用、软引用、弱引用、虚引用有什么区别？","text":"请说明四种引用类型的回收时机与典型应用场景。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因\"该断的强引用没断\"（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓存——图片缓存、网页缓存；回收前会尽量保留，OOM 前的最后防线。 3. 弱引用 WeakReference：下次 GC 必然回收（无论内存是否充足）。典型：ThreadLocalMap 的 Entry 的 key 就是弱引用（线程存活时 key 可被回收防止泄漏，value 需手动 remove）；WeakHashMap。 4. 虚引用 PhantomReference：形同虚设——get 永远返回 null，唯一作用是配合引用队列（ReferenceQueue）在对象被回收时收到通知，用于管理堆外/直接内存的释放（NIO 的 Cleaner 机制）。 记忆：强度递减——强（永不回收）> 软（内存不足回收）> 弱（GC 就回收）> 虚（只做回收通知）。","url":"https://it-interview-889.pages.dev/#/question/937"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/937.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"强引用、软引用、弱引用、虚引用有什么区别？","text":"请说明四种引用类型的回收时机与典型应用场景。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因\"该断的强引用没断\"（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓存——图片缓存、网页缓存；回收前会尽量保留，OOM 前的最后防线。 3. 弱引用 WeakReference：下次 GC 必然回收（无论内存是否充足）。典型：ThreadLocalMap 的 Entry 的 key 就是弱引用（线程存活时 key 可被回收防止泄漏，value 需手动 remove）；WeakHashMap。 4. 虚引用 PhantomReference：形同虚设——get 永远返回 null，唯一作用是配合引用队列（ReferenceQueue）在对象被回收时收到通知，用于管理堆外/直接内存的释放（NIO 的 Cleaner 机制）。 记忆：强度递减——强（永不回收）> 软（内存不足回收）> 弱（GC 就回收）> 虚（只做回收通知）。","url":"https://itinterview.com.cn/#/question/937"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>强引用、软引用、弱引用、虚引用有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">引用类型</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>请说明四种引用类型的回收时机与典型应用场景。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>虚引用 PhantomReference</strong>：<strong>形同虚设</strong>——get 永远返回 null，唯一作用是配合<strong>引用队列（ReferenceQueue）</strong>在对象被回收时收到通知，用于<strong>管理堆外/直接内存</strong>的释放（NIO 的 Cleaner 机制）。</li>
 </ol>
 <p><strong>记忆</strong>：强度递减——强（永不回收）&gt; 软（内存不足回收）&gt; 弱（GC 就回收）&gt; 虚（只做回收通知）。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/937">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/937">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="磁盘明明还有几十 G 空间，却无法创建新文件/写入数据，可能是什么原因？如何排查？ · IT面试题库">
   <meta property="og:description" content="要点： 现象与根因：ext4/xfs 等文件系统每个文件/目录都占用一个 inode。如果存在海量极小文件（如缓存碎片、会话文件、邮件队列），会先把 inode 耗尽；此时数据块还有剩余，df -h 显示空间充足，但 touch 新建文件会报 No space left on device。 第一步区分：df -…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/376.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/376.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="磁盘明明还有几十 G 空间，却无法创建新文件/写入数据，可能是什么原因？如何排查？ · IT面试题库">
   <meta name="twitter:description" content="要点： 现象与根因：ext4/xfs 等文件系统每个文件/目录都占用一个 inode。如果存在海量极小文件（如缓存碎片、会话文件、邮件队列），会先把 inode 耗尽；此时数据块还有剩余，df -h 显示空间充足，但 touch 新建文件会报 No space left on device。 第一步区分：df -…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/376.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"磁盘明明还有几十 G 空间，却无法创建新文件/写入数据，可能是什么原因？如何排查？","text":"考察点：区分“空间满”与“inode 耗尽”——小文件极多时会把 inode 用光，即使数据块还剩很多也无法新建文件；考查 df -i 与 find 排查手段。属高级故障排查题。","answerCount":1,"datePublished":"2026-09-01T09:09:04.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 现象与根因：ext4/xfs 等文件系统每个文件/目录都占用一个 inode。如果存在海量极小文件（如缓存碎片、会话文件、邮件队列），会先把 inode 耗尽；此时数据块还有剩余，df -h 显示空间充足，但 touch 新建文件会报 No space left on device。 第一步区分：df -h 看空间剩余，再 df -i 看 inode 使用率——若后者接近 100% 而前者充裕，即可确认是 inode 耗尽。 定位小文件聚集地：find /path -xdev -type f | awk '{print $1}' 太慢，更实用的是按目录统计 inode 数：for d in /*; do echo $(find $d -xdev 2>/dev/null | wc -l) $d; done | sort -n，找出文件数异常多的目录。 清理与根治：删除无用小文件（如清 /tmp、邮件 spool、缓存目录）；根治需从业务侧减少碎片文件、合并存储，或在格式化时按预期文件数调大 inode 比例（如 mkfs.ext4 -i 调小 bytes-per-inode）。 排障经验：把“空间满”和“inode 满”当成两个独立故障分别核查，是资深运维的基本功。","url":"https://it-interview-889.pages.dev/#/question/376"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/376.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"磁盘明明还有几十 G 空间，却无法创建新文件/写入数据，可能是什么原因？如何排查？","text":"考察点：区分“空间满”与“inode 耗尽”——小文件极多时会把 inode 用光，即使数据块还剩很多也无法新建文件；考查 df -i 与 find 排查手段。属高级故障排查题。","answerCount":1,"datePublished":"2026-09-01T09:09:04.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 现象与根因：ext4/xfs 等文件系统每个文件/目录都占用一个 inode。如果存在海量极小文件（如缓存碎片、会话文件、邮件队列），会先把 inode 耗尽；此时数据块还有剩余，df -h 显示空间充足，但 touch 新建文件会报 No space left on device。 第一步区分：df -h 看空间剩余，再 df -i 看 inode 使用率——若后者接近 100% 而前者充裕，即可确认是 inode 耗尽。 定位小文件聚集地：find /path -xdev -type f | awk '{print $1}' 太慢，更实用的是按目录统计 inode 数：for d in /*; do echo $(find $d -xdev 2>/dev/null | wc -l) $d; done | sort -n，找出文件数异常多的目录。 清理与根治：删除无用小文件（如清 /tmp、邮件 spool、缓存目录）；根治需从业务侧减少碎片文件、合并存储，或在格式化时按预期文件数调大 inode 比例（如 mkfs.ext4 -i 调小 bytes-per-inode）。 排障经验：把“空间满”和“inode 满”当成两个独立故障分别核查，是资深运维的基本功。","url":"https://itinterview.com.cn/#/question/376"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>磁盘明明还有几十 G 空间，却无法创建新文件/写入数据，可能是什么原因？如何排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">inode耗尽</span><span class="chip tag">df -i</span><span class="chip tag">小文件</span><span class="chip tag">磁盘排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：区分“空间满”与“inode 耗尽”——小文件极多时会把 inode 用光，即使数据块还剩很多也无法新建文件；考查 df -i 与 find 排查手段。属高级故障排查题。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>清理与根治</strong>：删除无用小文件（如清 <code>/tmp</code>、邮件 spool、缓存目录）；根治需从业务侧减少碎片文件、合并存储，或在格式化时按预期文件数调大 inode 比例（如 <code>mkfs.ext4 -i</code> 调小 bytes-per-inode）。</li>
 <li><strong>排障经验</strong>：把“空间满”和“inode 满”当成两个独立故障分别核查，是资深运维的基本功。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/376">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/376">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

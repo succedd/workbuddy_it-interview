@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 SQL 注入？如何防范？ · IT面试题库">
   <meta property="og:description" content="原理：用户输入被拼接进 SQL 语句并被当作 SQL 语法执行。例如登录拼接 SELECT * FROM user WHERE name=&#39;&quot;+u+&quot;&#39; AND pwd=&#39;&quot;+p+&quot;&#39;，密码输入 &#39; OR &#39;1&#39;=&#39;1 即可绕过校验；更危险的还有 &#39;; DROP TABLE ... 或 UNION 拖库。 危害：…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/920.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/920.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 SQL 注入？如何防范？ · IT面试题库">
   <meta name="twitter:description" content="原理：用户输入被拼接进 SQL 语句并被当作 SQL 语法执行。例如登录拼接 SELECT * FROM user WHERE name=&#39;&quot;+u+&quot;&#39; AND pwd=&#39;&quot;+p+&quot;&#39;，密码输入 &#39; OR &#39;1&#39;=&#39;1 即可绕过校验；更危险的还有 &#39;; DROP TABLE ... 或 UNION 拖库。 危害：…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/920.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 SQL 注入？如何防范？","text":"请说明 SQL 注入的原理与危害，并给出参数化查询、最小权限等防范手段。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：用户输入被拼接进 SQL 语句并被当作 SQL 语法执行。例如登录拼接 SELECT * FROM user WHERE name='\"+u+\"' AND pwd='\"+p+\"'，密码输入 ' OR '1'='1 即可绕过校验；更危险的还有 '; DROP TABLE ... 或 UNION 拖库。 危害：越权登录、拖库、篡改数据、执行系统命令（配合 xp_cmdshell/UDF）等。 防范（纵深防御）： 1. 参数化查询/预编译（根本手段）：PreparedStatement、MyBatis #{} 占位符——SQL 结构与数据彻底分离，注入字符只会被当普通字符串。注意 MyBatis 的 ${} 是字符串拼接，必须避免用于外部输入。 2. 输入校验：白名单校验类型/格式/长度，转义特殊字符（辅助手段，不能只靠它）。 3. 最小权限：应用数据库账号只授予必要库表的最小权限，禁止 root 直连。 4. 隐藏与兜底：不向前端暴露 SQL 报错细节；开启 WAF；定期用 sqlmap 等做安全测试。","url":"https://it-interview-889.pages.dev/#/question/920"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/920.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 SQL 注入？如何防范？","text":"请说明 SQL 注入的原理与危害，并给出参数化查询、最小权限等防范手段。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：用户输入被拼接进 SQL 语句并被当作 SQL 语法执行。例如登录拼接 SELECT * FROM user WHERE name='\"+u+\"' AND pwd='\"+p+\"'，密码输入 ' OR '1'='1 即可绕过校验；更危险的还有 '; DROP TABLE ... 或 UNION 拖库。 危害：越权登录、拖库、篡改数据、执行系统命令（配合 xp_cmdshell/UDF）等。 防范（纵深防御）： 1. 参数化查询/预编译（根本手段）：PreparedStatement、MyBatis #{} 占位符——SQL 结构与数据彻底分离，注入字符只会被当普通字符串。注意 MyBatis 的 ${} 是字符串拼接，必须避免用于外部输入。 2. 输入校验：白名单校验类型/格式/长度，转义特殊字符（辅助手段，不能只靠它）。 3. 最小权限：应用数据库账号只授予必要库表的最小权限，禁止 root 直连。 4. 隐藏与兜底：不向前端暴露 SQL 报错细节；开启 WAF；定期用 sqlmap 等做安全测试。","url":"https://itinterview.com.cn/#/question/920"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 SQL 注入？如何防范？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">渗透测试工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">安全</span><span class="chip tag">SQL注入</span><span class="chip tag">Web安全</span></div>
     <div class="card"><h2>题目</h2><p>请说明 SQL 注入的原理与危害，并给出参数化查询、最小权限等防范手段。</p></div>
@@ -82,12 +82,12 @@
 <li><strong>最小权限</strong>：应用数据库账号只授予必要库表的最小权限，禁止 root 直连。</li>
 <li><strong>隐藏与兜底</strong>：不向前端暴露 SQL 报错细节；开启 WAF；定期用 sqlmap 等做安全测试。</li>
 </ol></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/920">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/920">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=201&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=201&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

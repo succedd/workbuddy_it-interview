@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="HashMap 的底层数据结构是什么？为什么 JDK 8 要在链表长度到 8 时转成红黑树？ · IT面试题库">
   <meta property="og:description" content="JDK 8 之前：HashMap 底层是「数组 + 链表」，数组（桶）存放每个哈希槽的头节点，冲突时以链表挂在桶后。 JDK 8 及之后：底层是「数组 + 链表 + 红黑树」。链表长度 &lt; 8 时仍是链表；当某桶链表长度 ≥ 8 且 数组容量 ≥ 64 时，链表转为红黑树；当树节点数 ≤ 6 时又退化为链表。 为…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/353.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/353.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HashMap 的底层数据结构是什么？为什么 JDK 8 要在链表长度到 8 时转成红黑树？ · IT面试题库">
   <meta name="twitter:description" content="JDK 8 之前：HashMap 底层是「数组 + 链表」，数组（桶）存放每个哈希槽的头节点，冲突时以链表挂在桶后。 JDK 8 及之后：底层是「数组 + 链表 + 红黑树」。链表长度 &lt; 8 时仍是链表；当某桶链表长度 ≥ 8 且 数组容量 ≥ 64 时，链表转为红黑树；当树节点数 ≤ 6 时又退化为链表。 为…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/353.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HashMap 的底层数据结构是什么？为什么 JDK 8 要在链表长度到 8 时转成红黑树？","text":"考察点：JDK 7 与 JDK 8 的底层差异、数组+链表+红黑树的设计权衡、树化与退化的阈值。","answerCount":1,"datePublished":"2026-08-31T08:46:19.737Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"JDK 8 之前：HashMap 底层是「数组 + 链表」，数组（桶）存放每个哈希槽的头节点，冲突时以链表挂在桶后。 JDK 8 及之后：底层是「数组 + 链表 + 红黑树」。链表长度 \u003c 8 时仍是链表；当某桶链表长度 ≥ 8 且 数组容量 ≥ 64 时，链表转为红黑树；当树节点数 ≤ 6 时又退化为链表。 为什么转红黑树：链表查询是 O(n)，在哈希冲突严重、某个桶挂了很多元素时性能会退化；红黑树查询是 O(log n)，能把极端情况下的查找从线性降为对数级。 为什么默认阈值 8、退化 6：泊松分布下单个桶挂到 8 个的概率极低（约千万分之六），说明大概率是哈希质量差或恶意构造，此时转树保底；设 6 而不是 8 做退化，是为了在链表/树之间留一个「滞回区间」，避免元素在阈值附近频繁插入删除时反复树化/退化造成性能抖动。","url":"https://it-interview-889.pages.dev/#/question/353"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/353.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HashMap 的底层数据结构是什么？为什么 JDK 8 要在链表长度到 8 时转成红黑树？","text":"考察点：JDK 7 与 JDK 8 的底层差异、数组+链表+红黑树的设计权衡、树化与退化的阈值。","answerCount":1,"datePublished":"2026-08-31T08:46:19.737Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"JDK 8 之前：HashMap 底层是「数组 + 链表」，数组（桶）存放每个哈希槽的头节点，冲突时以链表挂在桶后。 JDK 8 及之后：底层是「数组 + 链表 + 红黑树」。链表长度 \u003c 8 时仍是链表；当某桶链表长度 ≥ 8 且 数组容量 ≥ 64 时，链表转为红黑树；当树节点数 ≤ 6 时又退化为链表。 为什么转红黑树：链表查询是 O(n)，在哈希冲突严重、某个桶挂了很多元素时性能会退化；红黑树查询是 O(log n)，能把极端情况下的查找从线性降为对数级。 为什么默认阈值 8、退化 6：泊松分布下单个桶挂到 8 个的概率极低（约千万分之六），说明大概率是哈希质量差或恶意构造，此时转树保底；设 6 而不是 8 做退化，是为了在链表/树之间留一个「滞回区间」，避免元素在阈值附近频繁插入删除时反复树化/退化造成性能抖动。","url":"https://itinterview.com.cn/#/question/353"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>HashMap 的底层数据结构是什么？为什么 JDK 8 要在链表长度到 8 时转成红黑树？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Java集合</span><span class="chip tag">HashMap</span><span class="chip tag">数据结构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：JDK 7 与 JDK 8 的底层差异、数组+链表+红黑树的设计权衡、树化与退化的阈值。</p></div>
@@ -77,12 +77,12 @@
 <p><strong>JDK 8 及之后</strong>：底层是「数组 + 链表 + 红黑树」。链表长度 &lt; 8 时仍是链表；当某桶链表长度 ≥ 8 <strong>且</strong> 数组容量 ≥ 64 时，链表转为红黑树；当树节点数 ≤ 6 时又退化为链表。</p>
 <p><strong>为什么转红黑树</strong>：链表查询是 O(n)，在哈希冲突严重、某个桶挂了很多元素时性能会退化；红黑树查询是 O(log n)，能把极端情况下的查找从线性降为对数级。</p>
 <p><strong>为什么默认阈值 8、退化 6</strong>：泊松分布下单个桶挂到 8 个的概率极低（约千万分之六），说明大概率是哈希质量差或恶意构造，此时转树保底；设 6 而不是 8 做退化，是为了在链表/树之间留一个「滞回区间」，避免元素在阈值附近频繁插入删除时反复树化/退化造成性能抖动。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/353">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/353">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=12&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

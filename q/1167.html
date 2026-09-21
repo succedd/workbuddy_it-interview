@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？ · IT面试题库">
   <meta property="og:description" content="思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j&lt;i 且 nums[j]&lt;nums[i]）；取全局 max。 要点（O…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1167.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1167.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？ · IT面试题库">
   <meta name="twitter:description" content="思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j&lt;i 且 nums[j]&lt;nums[i]）；取全局 max。 要点（O…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1167.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？","text":"考察点：LIS 的二分优化——tails 数组（耐心排序）思想，以及状态定义的进阶（高级编程题）。","answerCount":1,"datePublished":"2026-09-15T11:50:08.811Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j\u003ci 且 nums[j]\u003cnums[i]）；取全局 max。 要点（O(n log n) 优化 · tails 数组）： tails[k] 表示『长度为 k+1 的递增子序列中，结尾元素的最小可能值』；tails 始终有序。 遍历 x：用二分在 tails 中找第一个 ≥ x 的位置 pos 并替换 tails[pos]=x；若 x 比所有都大则追加。tails 的最终长度即 LIS 长度。 要点：tails 数组存的不是真实子序列，只是长度与最小结尾，用于高效决策；要还原序列需额外记录前驱。","url":"https://it-interview-889.pages.dev/#/question/1167"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1167.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？","text":"考察点：LIS 的二分优化——tails 数组（耐心排序）思想，以及状态定义的进阶（高级编程题）。","answerCount":1,"datePublished":"2026-09-15T11:50:08.811Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j\u003ci 且 nums[j]\u003cnums[i]）；取全局 max。 要点（O(n log n) 优化 · tails 数组）： tails[k] 表示『长度为 k+1 的递增子序列中，结尾元素的最小可能值』；tails 始终有序。 遍历 x：用二分在 tails 中找第一个 ≥ x 的位置 pos 并替换 tails[pos]=x；若 x 比所有都大则追加。tails 的最终长度即 LIS 长度。 要点：tails 数组存的不是真实子序列，只是长度与最小结尾，用于高效决策；要还原序列需额外记录前驱。","url":"https://itinterview.com.cn/#/question/1167"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip tag">动态规划</span><span class="chip tag">LIS</span><span class="chip tag">二分优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：LIS 的二分优化——tails 数组（耐心排序）思想，以及状态定义的进阶（高级编程题）。</p></div>
@@ -92,12 +92,12 @@ def lengthOfLIS(nums):
         else: tails[pos] = x
     return len(tails)</code></pre>
 <p><strong>要点</strong>：<code>tails</code> 数组存的不是真实子序列，只是长度与最小结尾，用于高效决策；要还原序列需额外记录前驱。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1167">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1167">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=3&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=3&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？ · IT面试题库">
   <meta property="og:description" content="风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/583.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/583.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？ · IT面试题库">
   <meta name="twitter:description" content="风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/583.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","text":"线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 DEL 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放（Lua 脚本原子校验）： 只有 get 到的 value 等于自己当初设的唯一随机值才删除； 用 Lua 保证“判断+删除”原子，避免判断后、删除前锁过期被别人抢走的中间态。 Redis 8.4+ 可用等价命令 DELEX key IFEQ 。 配套：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。","url":"https://it-interview-889.pages.dev/#/question/583"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/583.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","text":"线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 DEL 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放（Lua 脚本原子校验）： 只有 get 到的 value 等于自己当初设的唯一随机值才删除； 用 Lua 保证“判断+删除”原子，避免判断后、删除前锁过期被别人抢走的中间态。 Redis 8.4+ 可用等价命令 DELEX key IFEQ 。 配套：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。","url":"https://itinterview.com.cn/#/question/583"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">分布式锁</span><span class="chip tag">误删防护</span><span class="chip tag">Lua脚本</span><span class="chip tag">Redis</span></div>
     <div class="card"><h2>题目</h2><p>线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 <code>DEL</code> 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。</p></div>
@@ -93,12 +93,12 @@ end</code></pre>
 <li>Redis 8.4+ 可用等价命令 <code>DELEX key IFEQ &lt;value&gt;</code>。</li>
 </ul>
 <p><strong>配套</strong>：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/583">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/583">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

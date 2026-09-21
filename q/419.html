@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是自定义镜像？如何制作一个干净的 CVM 自定义镜像（排除密码/密钥/历史日志等敏感信息），它能在哪些场景发挥作用（批量部署、容灾、跨地域/跨账号迁移）？ · IT面试题库">
   <meta property="og:description" content="什么是自定义镜像 镜像是 CVM 实例系统盘（+ 可选数据盘）在某一时刻的快照化模板，包含操作系统、已装软件、配置；用它可以快速『克隆』出环境相同的新实例。 制作干净镜像的步骤 ① 源实例清理敏感与临时信息：重置/删除账户密码与密钥（清空 ~/.ssh/authorized_keys）、清命令历史（history…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/419.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/419.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是自定义镜像？如何制作一个干净的 CVM 自定义镜像（排除密码/密钥/历史日志等敏感信息），它能在哪些场景发挥作用（批量部署、容灾、跨地域/跨账号迁移）？ · IT面试题库">
   <meta name="twitter:description" content="什么是自定义镜像 镜像是 CVM 实例系统盘（+ 可选数据盘）在某一时刻的快照化模板，包含操作系统、已装软件、配置；用它可以快速『克隆』出环境相同的新实例。 制作干净镜像的步骤 ① 源实例清理敏感与临时信息：重置/删除账户密码与密钥（清空 ~/.ssh/authorized_keys）、清命令历史（history…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/419.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是自定义镜像？如何制作一个干净的 CVM 自定义镜像（排除密码/密钥/历史日志等敏感信息），它能在哪些场景发挥作用（批量部署、容灾、跨地域/跨账号迁移）？","text":"考察点：镜像概念、制作流程（关机/快照建镜像）、敏感信息清理、使用场景与共享/复制。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:14:36.504Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"什么是自定义镜像 镜像是 CVM 实例系统盘（+ 可选数据盘）在某一时刻的快照化模板，包含操作系统、已装软件、配置；用它可以快速『克隆』出环境相同的新实例。 制作干净镜像的步骤 ① 源实例清理敏感与临时信息：重置/删除账户密码与密钥（清空 ~/.ssh/authorized_keys）、清命令历史（history -c 并删 ~/.bash_history）、删临时文件与业务数据、卸载数据盘（若不希望数据进镜像）。 ② 关机（推荐，保证文件系统一致）后在控制台『制作镜像』，或先对系统盘创建快照再转镜像。 ③ 跨账号/跨地域：镜像可共享给指定账号、或跨地域复制；导入自定义镜像需先开通。 使用场景 批量部署：同一镜像开 N 台实例，环境一致，避免逐台配置。 容灾/回滚：保留『黄金镜像』，出问题快速重建。 迁移：跨地域（如广州→上海）、跨账号交付整套环境。 注意：镜像含系统盘全量数据，务必清理后再制作；共享镜像注意合规与授权。","url":"https://it-interview-889.pages.dev/#/question/419"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/419.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是自定义镜像？如何制作一个干净的 CVM 自定义镜像（排除密码/密钥/历史日志等敏感信息），它能在哪些场景发挥作用（批量部署、容灾、跨地域/跨账号迁移）？","text":"考察点：镜像概念、制作流程（关机/快照建镜像）、敏感信息清理、使用场景与共享/复制。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:14:36.504Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"什么是自定义镜像 镜像是 CVM 实例系统盘（+ 可选数据盘）在某一时刻的快照化模板，包含操作系统、已装软件、配置；用它可以快速『克隆』出环境相同的新实例。 制作干净镜像的步骤 ① 源实例清理敏感与临时信息：重置/删除账户密码与密钥（清空 ~/.ssh/authorized_keys）、清命令历史（history -c 并删 ~/.bash_history）、删临时文件与业务数据、卸载数据盘（若不希望数据进镜像）。 ② 关机（推荐，保证文件系统一致）后在控制台『制作镜像』，或先对系统盘创建快照再转镜像。 ③ 跨账号/跨地域：镜像可共享给指定账号、或跨地域复制；导入自定义镜像需先开通。 使用场景 批量部署：同一镜像开 N 台实例，环境一致，避免逐台配置。 容灾/回滚：保留『黄金镜像』，出问题快速重建。 迁移：跨地域（如广州→上海）、跨账号交付整套环境。 注意：镜像含系统盘全量数据，务必清理后再制作；共享镜像注意合规与授权。","url":"https://itinterview.com.cn/#/question/419"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是自定义镜像？如何制作一个干净的 CVM 自定义镜像（排除密码/密钥/历史日志等敏感信息），它能在哪些场景发挥作用（批量部署、容灾、跨地域/跨账号迁移）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">自定义镜像</span><span class="chip tag">镜像制作</span><span class="chip tag">容灾</span><span class="chip tag">迁移</span><span class="chip tag">腾讯云</span></div>
     <div class="card"><h2>题目</h2><p>考察点：镜像概念、制作流程（关机/快照建镜像）、敏感信息清理、使用场景与共享/复制。属场景题。</p></div>
@@ -90,12 +90,12 @@
 <li>迁移：跨地域（如广州→上海）、跨账号交付整套环境。</li>
 </ul>
 <p><strong>注意</strong>：镜像含系统盘全量数据，务必清理后再制作；共享镜像注意合规与授权。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/419">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/419">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=151&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

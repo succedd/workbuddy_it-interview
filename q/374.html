@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Linux 的文件权限模型是怎样的？rwx、数字表示法、chmod/chown 分别怎么用？什么是特殊权限位？ · IT面试题库">
   <meta property="og:description" content="要点： 权限结构：每文件对“属主(u)/属组(g)/其他(o)”三类主体各设 r(读4)/w(写2)/x(执行1) 三位，共 9 位；数字法即三位八进制，如 755 = rwxr-xr-x、644 = rw-r--r--。 chmod：chmod 755 file 数字赋权；chmod u+x file 符号法只…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/374.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/374.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Linux 的文件权限模型是怎样的？rwx、数字表示法、chmod/chown 分别怎么用？什么是特殊权限位？ · IT面试题库">
   <meta name="twitter:description" content="要点： 权限结构：每文件对“属主(u)/属组(g)/其他(o)”三类主体各设 r(读4)/w(写2)/x(执行1) 三位，共 9 位；数字法即三位八进制，如 755 = rwxr-xr-x、644 = rw-r--r--。 chmod：chmod 755 file 数字赋权；chmod u+x file 符号法只…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/374.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux 的文件权限模型是怎样的？rwx、数字表示法、chmod/chown 分别怎么用？什么是特殊权限位？","text":"考察点：ugo 三类主体与 rwx 九位权限位；数字法（如 755）换算；chmod 改权限、chown 改属主；特殊权限 SUID/SGID/Sticky bit 的含义与风险。属简答题。","answerCount":1,"datePublished":"2026-09-01T09:09:02.307Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 权限结构：每文件对“属主(u)/属组(g)/其他(o)”三类主体各设 r(读4)/w(写2)/x(执行1) 三位，共 9 位；数字法即三位八进制，如 755 = rwxr-xr-x、644 = rw-r--r--。 chmod：chmod 755 file 数字赋权；chmod u+x file 符号法只给属主加执行；-R 递归目录。 chown：chown user:group file 同时改属主与属组；-R 递归；常需 root 执行。 特殊权限位： SUID（4）：放在属主 x 位（如 /usr/bin/passwd 的 -rwsr-xr-x），使执行者临时获得文件属主权限，常用于需要提权的命令——配置不当是提权漏洞来源。 SGID（2）：目录上设 SGID 后，其下新建文件继承该目录的属组。 Sticky Bit（1）：如 /tmp 的 drwxrwxrwt，仅文件属主能删自己的文件，他人不能删。 排查提示：ls -l 看到权限串里有 s/t 即为特殊位，安全审计时要重点检查 SUID 程序。","url":"https://it-interview-889.pages.dev/#/question/374"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/374.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux 的文件权限模型是怎样的？rwx、数字表示法、chmod/chown 分别怎么用？什么是特殊权限位？","text":"考察点：ugo 三类主体与 rwx 九位权限位；数字法（如 755）换算；chmod 改权限、chown 改属主；特殊权限 SUID/SGID/Sticky bit 的含义与风险。属简答题。","answerCount":1,"datePublished":"2026-09-01T09:09:02.307Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 权限结构：每文件对“属主(u)/属组(g)/其他(o)”三类主体各设 r(读4)/w(写2)/x(执行1) 三位，共 9 位；数字法即三位八进制，如 755 = rwxr-xr-x、644 = rw-r--r--。 chmod：chmod 755 file 数字赋权；chmod u+x file 符号法只给属主加执行；-R 递归目录。 chown：chown user:group file 同时改属主与属组；-R 递归；常需 root 执行。 特殊权限位： SUID（4）：放在属主 x 位（如 /usr/bin/passwd 的 -rwsr-xr-x），使执行者临时获得文件属主权限，常用于需要提权的命令——配置不当是提权漏洞来源。 SGID（2）：目录上设 SGID 后，其下新建文件继承该目录的属组。 Sticky Bit（1）：如 /tmp 的 drwxrwxrwt，仅文件属主能删自己的文件，他人不能删。 排查提示：ls -l 看到权限串里有 s/t 即为特殊位，安全审计时要重点检查 SUID 程序。","url":"https://itinterview.com.cn/#/question/374"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Linux 的文件权限模型是怎样的？rwx、数字表示法、chmod/chown 分别怎么用？什么是特殊权限位？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">权限</span><span class="chip tag">chmod</span><span class="chip tag">chown</span><span class="chip tag">SUID</span><span class="chip tag">Sticky</span></div>
     <div class="card"><h2>题目</h2><p>考察点：ugo 三类主体与 rwx 九位权限位；数字法（如 755）换算；chmod 改权限、chown 改属主；特殊权限 SUID/SGID/Sticky bit 的含义与风险。属简答题。</p></div>
@@ -86,12 +86,12 @@
 <ul>
 <li><strong>排查提示</strong>：<code>ls -l</code> 看到权限串里有 <code>s</code>/<code>t</code> 即为特殊位，安全审计时要重点检查 SUID 程序。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/374">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/374">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

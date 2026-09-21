@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="API 网关的性能瓶颈通常出在哪里？超时与重试该怎么配置才不会放大故障？ · IT面试题库">
   <meta property="og:description" content="要点： 网关的定位决定了它的风险：所有流量都过它，所以它的延迟直接叠加到每个请求上，它的故障等于全站故障。因此网关要尽量薄——只做路由、鉴权、限流、日志，不做业务逻辑与数据聚合（BFF 是另一层的事）。 性能瓶颈的六个高发点： 1. 线程模型选错：同步阻塞模型（每请求占一个线程）在长连接/慢下游场景下线程池瞬间打…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1064.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1064.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="API 网关的性能瓶颈通常出在哪里？超时与重试该怎么配置才不会放大故障？ · IT面试题库">
   <meta name="twitter:description" content="要点： 网关的定位决定了它的风险：所有流量都过它，所以它的延迟直接叠加到每个请求上，它的故障等于全站故障。因此网关要尽量薄——只做路由、鉴权、限流、日志，不做业务逻辑与数据聚合（BFF 是另一层的事）。 性能瓶颈的六个高发点： 1. 线程模型选错：同步阻塞模型（每请求占一个线程）在长连接/慢下游场景下线程池瞬间打…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1064.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"API 网关的性能瓶颈通常出在哪里？超时与重试该怎么配置才不会放大故障？","text":"考察点：网关自身资源、连接管理、重试风暴。网关是单点，配错就是全局故障。","answerCount":1,"datePublished":"2026-09-10T11:54:06.326Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 网关的定位决定了它的风险：所有流量都过它，所以它的延迟直接叠加到每个请求上，它的故障等于全站故障。因此网关要尽量薄——只做路由、鉴权、限流、日志，不做业务逻辑与数据聚合（BFF 是另一层的事）。 性能瓶颈的六个高发点： 1. 线程模型选错：同步阻塞模型（每请求占一个线程）在长连接/慢下游场景下线程池瞬间打满 → 应选异步非阻塞（Spring Cloud Gateway 基于 Netty、Nginx/Envoy 事件驱动）； 2. 下游连接管理：没配连接池/长连接复用，每个请求都三次握手 + TLS 握手（TLS 握手的 CPU 开销尤其大）；连接池过小会排队，过大则把下游打爆——要与下游容量匹配； 3. DNS 解析：每次转发都重新解析域名（Java 默认 DNS 缓存策略可能不生效），导致解析成为瓶颈；需配 DNS 缓存或走服务发现直连 IP； 4. TLS 加解密 CPU：QPS 高时 TLS 握手与对称加密吃 CPU，需开硬件加速/会话复用（session tickets、TLS 1.3 的 0-RTT）； 5. 日志与插件开销：INFO 级别打印完整请求体/响应体、同步写磁盘日志、每个请求跑多个重插件（鉴权 + 加密 + 转换）——网关日志必须异步且采样； 6. 转发链过长：网关 → BFF → 服务，每跳都加延迟与故障面，应尽量扁平。 超时配置的正确姿势（分层且递增）： 超时必须分层设置且外层大于内层（客户端超时 > 网关超时 > 下游服务超时），否则外层先超时断开，内层还在跑——资源白耗； 设置连接超时（短，如 1s，连不上就快速失败）与读超时（按业务 P99 定，如 3s）两个，很多框架默认读超时是无限的，这是打爆网关的常见原因； 区分接口类型：查询接口短超时；导出/报表类长超时并单独走异步任务返回。 重试是最危险的功能（重点）： 重试会放大流量——下游已过载时，重试会让流量变成 2 倍、3 倍，把「小抖动」变成「雪崩」； 铁律：① 只在幂等请求上重试（GET/PUT，或带幂等键的 POST）；② 限制次数（1–2 次）与总预算（含重试的总耗时不超过上游超时）；③ 退避 + 抖动（exponential backoff with jitter），避免所有实例同时重试（惊群）；④ 熔断联动——熔断器打开时禁止重试，且重试不该绕过熔断；⑤ 重试要能中止（上游已断开则不再重试）； 不要在多层同时重试（网关重试 + 服务重试 + SDK 重试 = 3 次方放大），只在最靠近故障点的一层重试。 加分点：网关要能过载保护——并发上限（信号量/连接数限制）、队列长度上限、超限快速拒绝（拒绝比排队好，排队会把延迟推高并耗尽资源）；上线前用压测确定网关自身容量上限并留 30% 余量；网关实例数至少 2 个（消除单点）并做健康检查摘除。","url":"https://it-interview-889.pages.dev/#/question/1064"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1064.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"API 网关的性能瓶颈通常出在哪里？超时与重试该怎么配置才不会放大故障？","text":"考察点：网关自身资源、连接管理、重试风暴。网关是单点，配错就是全局故障。","answerCount":1,"datePublished":"2026-09-10T11:54:06.326Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 网关的定位决定了它的风险：所有流量都过它，所以它的延迟直接叠加到每个请求上，它的故障等于全站故障。因此网关要尽量薄——只做路由、鉴权、限流、日志，不做业务逻辑与数据聚合（BFF 是另一层的事）。 性能瓶颈的六个高发点： 1. 线程模型选错：同步阻塞模型（每请求占一个线程）在长连接/慢下游场景下线程池瞬间打满 → 应选异步非阻塞（Spring Cloud Gateway 基于 Netty、Nginx/Envoy 事件驱动）； 2. 下游连接管理：没配连接池/长连接复用，每个请求都三次握手 + TLS 握手（TLS 握手的 CPU 开销尤其大）；连接池过小会排队，过大则把下游打爆——要与下游容量匹配； 3. DNS 解析：每次转发都重新解析域名（Java 默认 DNS 缓存策略可能不生效），导致解析成为瓶颈；需配 DNS 缓存或走服务发现直连 IP； 4. TLS 加解密 CPU：QPS 高时 TLS 握手与对称加密吃 CPU，需开硬件加速/会话复用（session tickets、TLS 1.3 的 0-RTT）； 5. 日志与插件开销：INFO 级别打印完整请求体/响应体、同步写磁盘日志、每个请求跑多个重插件（鉴权 + 加密 + 转换）——网关日志必须异步且采样； 6. 转发链过长：网关 → BFF → 服务，每跳都加延迟与故障面，应尽量扁平。 超时配置的正确姿势（分层且递增）： 超时必须分层设置且外层大于内层（客户端超时 > 网关超时 > 下游服务超时），否则外层先超时断开，内层还在跑——资源白耗； 设置连接超时（短，如 1s，连不上就快速失败）与读超时（按业务 P99 定，如 3s）两个，很多框架默认读超时是无限的，这是打爆网关的常见原因； 区分接口类型：查询接口短超时；导出/报表类长超时并单独走异步任务返回。 重试是最危险的功能（重点）： 重试会放大流量——下游已过载时，重试会让流量变成 2 倍、3 倍，把「小抖动」变成「雪崩」； 铁律：① 只在幂等请求上重试（GET/PUT，或带幂等键的 POST）；② 限制次数（1–2 次）与总预算（含重试的总耗时不超过上游超时）；③ 退避 + 抖动（exponential backoff with jitter），避免所有实例同时重试（惊群）；④ 熔断联动——熔断器打开时禁止重试，且重试不该绕过熔断；⑤ 重试要能中止（上游已断开则不再重试）； 不要在多层同时重试（网关重试 + 服务重试 + SDK 重试 = 3 次方放大），只在最靠近故障点的一层重试。 加分点：网关要能过载保护——并发上限（信号量/连接数限制）、队列长度上限、超限快速拒绝（拒绝比排队好，排队会把延迟推高并耗尽资源）；上线前用压测确定网关自身容量上限并留 30% 余量；网关实例数至少 2 个（消除单点）并做健康检查摘除。","url":"https://itinterview.com.cn/#/question/1064"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>API 网关的性能瓶颈通常出在哪里？超时与重试该怎么配置才不会放大故障？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">API网关</span><span class="chip tag">性能</span><span class="chip tag">超时</span><span class="chip tag">重试</span><span class="chip tag">熔断</span></div>
     <div class="card"><h2>题目</h2><p>考察点：网关自身资源、连接管理、重试风暴。网关是单点，配错就是全局故障。</p></div>
@@ -99,12 +99,12 @@
 <ul>
 <li><strong>加分点</strong>：网关要能<strong>过载保护</strong>——并发上限（信号量/连接数限制）、队列长度上限、超限快速拒绝（<strong>拒绝比排队好</strong>，排队会把延迟推高并耗尽资源）；上线前用<strong>压测确定网关自身容量上限</strong>并留 30% 余量；网关实例数至少 2 个（消除单点）并做健康检查摘除。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1064">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1064">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=131&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=131&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

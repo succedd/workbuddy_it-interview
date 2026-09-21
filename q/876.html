@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？ · IT面试题库">
   <meta property="og:description" content="根因：$(ls) 的结果只是纯文本，Shell 会按 IFS（默认空格/Tab/换行）做单词分割（word splitting），于是 my photo.jpg 被拆成 my 和 photo.jpg 两个元素；ls 本身也会把多文件拼成一行。 正确写法： 直接遍历通配符，让 Shell 自己按文件名切分：for …">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/876.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/876.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？ · IT面试题库">
   <meta name="twitter:description" content="根因：$(ls) 的结果只是纯文本，Shell 会按 IFS（默认空格/Tab/换行）做单词分割（word splitting），于是 my photo.jpg 被拆成 my 和 photo.jpg 两个元素；ls 本身也会把多文件拼成一行。 正确写法： 直接遍历通配符，让 Shell 自己按文件名切分：for …">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/876.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？","text":"考察命令替换 + 单词分割 + 文件名含空格导致的经典故障。","answerCount":1,"datePublished":"2026-09-09T02:22:06.014Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：$(ls) 的结果只是纯文本，Shell 会按 IFS（默认空格/Tab/换行）做单词分割（word splitting），于是 my photo.jpg 被拆成 my 和 photo.jpg 两个元素；ls 本身也会把多文件拼成一行。 正确写法： 直接遍历通配符，让 Shell 自己按文件名切分：for f in .jpg; do ...; done（glob 结果天然按文件，不二次分割）。 若必须读行，用 while IFS= read -r line; do ...; done \u003c \u003c(find . -name '.jpg')，read -r 保留空格与反斜杠。 永远给变量加双引号：\"$f\"，防止再次被分割或路径展开（globbing）。","url":"https://it-interview-889.pages.dev/#/question/876"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/876.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？","text":"考察命令替换 + 单词分割 + 文件名含空格导致的经典故障。","answerCount":1,"datePublished":"2026-09-09T02:22:06.014Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：$(ls) 的结果只是纯文本，Shell 会按 IFS（默认空格/Tab/换行）做单词分割（word splitting），于是 my photo.jpg 被拆成 my 和 photo.jpg 两个元素；ls 本身也会把多文件拼成一行。 正确写法： 直接遍历通配符，让 Shell 自己按文件名切分：for f in .jpg; do ...; done（glob 结果天然按文件，不二次分割）。 若必须读行，用 while IFS= read -r line; do ...; done \u003c \u003c(find . -name '.jpg')，read -r 保留空格与反斜杠。 永远给变量加双引号：\"$f\"，防止再次被分割或路径展开（globbing）。","url":"https://itinterview.com.cn/#/question/876"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">Shell</span><span class="chip tag">单词分割</span><span class="chip tag">for循环</span><span class="chip tag">通配符</span></div>
     <div class="card"><h2>题目</h2><p>考察命令替换 + 单词分割 + 文件名含空格导致的经典故障。</p></div>
@@ -80,12 +80,12 @@
 <li>若必须读行，用 <code>while IFS= read -r line; do ...; done &lt; &lt;(find . -name &#39;*.jpg&#39;)</code>，<code>read -r</code> 保留空格与反斜杠。</li>
 <li>永远给变量加双引号：<code>&quot;$f&quot;</code>，防止再次被分割或路径展开（globbing）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/876">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/876">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=45&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=45&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

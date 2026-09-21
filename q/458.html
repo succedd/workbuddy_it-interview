@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？ · IT面试题库">
   <meta property="og:description" content="提交流程（Percolator 风格两阶段提交） 1. BEGIN 时 TiDB 向 PD 取一个全局唯一、单调递增的时间戳 start_ts，它既是事务 ID，也是本次事务读取的快照版本（TiDB 的 MVCC 快照）。注意与 MySQL 不同：TiDB 在 BEGIN 时就取快照，MySQL 是在事务内第一条…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/458.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/458.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="提交流程（Percolator 风格两阶段提交） 1. BEGIN 时 TiDB 向 PD 取一个全局唯一、单调递增的时间戳 start_ts，它既是事务 ID，也是本次事务读取的快照版本（TiDB 的 MVCC 快照）。注意与 MySQL 不同：TiDB 在 BEGIN 时就取快照，MySQL 是在事务内第一条…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/458.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？","text":"TiDB 兼容 MySQL 协议但底层是分布式 KV。请说明一次写事务从 BEGIN 到 COMMIT 的完整流程、冲突在哪里检测，以及两种事务模式的取舍。","answerCount":1,"datePublished":"2026-09-03T00:54:43.997Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"提交流程（Percolator 风格两阶段提交） 1. BEGIN 时 TiDB 向 PD 取一个全局唯一、单调递增的时间戳 start_ts，它既是事务 ID，也是本次事务读取的快照版本（TiDB 的 MVCC 快照）。注意与 MySQL 不同：TiDB 在 BEGIN 时就取快照，MySQL 是在事务内第一条读 InnoDB 的 SELECT 时才取。 2. 读请求：TiDB 先从 PD 拿 Region 路由信息，再从 TiKV 读取 start_ts 版本的数据。 3. 写请求：只做基本约束校验（类型、NOT NULL），有效数据暂存在 TiDB 的事务私有内存里，此时还没落盘。 4. COMMIT 触发 2PC：①从待写数据中选出一个 Primary Key；②按 Region 对所有 key 分组；③向所有涉及的 TiKV 发 prewrite，TiKV 检查版本冲突与过期版本并对合法数据加锁；④全部 prewrite 成功后向 PD 取 commit_ts；⑤先在 Primary Key 所在的 TiKV 上完成提交并清理 prewrite 阶段留下的锁——主锁的提交成功与否就是整个事务的原子性判定点；⑥返回客户端提交成功，剩余锁异步清理。 冲突在哪里检测 TiDB 实例是无状态的、彼此不感知，所以冲突检测下沉到 TiKV 层的内存锁管理（prewrite 阶段），由 scheduler-concurrency（默认 2048000 槽位）控制并发。监控上若 Scheduler latch wait duration 很高而写本身不慢，基本可判定存在大量写冲突。 乐观 vs 悲观 乐观事务：不加行锁，把冲突检测推迟到提交时。并发写同一行很少时性能最好（省掉加锁开销）；高冲突时大量事务在 COMMIT 失败，性能反而不如悲观。还有两个副作用：主键/唯一约束是延迟检查的（DML 不报错、COMMIT 才报 duplicate）；数据缓存在内存，大事务有 OOM 风险。 悲观事务：从 v3.0.8 起是默认模式，语义与 MySQL 一致，写语句执行时即加锁，REPEATABLE READ 下提交一般不再抛异常。 选型：高冲突（热点行扣减、秒杀）必须用悲观；低冲突、追求吞吐才考虑乐观，且应用层必须能正确处理 COMMIT 返回错误并重试。自动重试默认关闭（会破坏 RR 隔离、导致丢失更新），v8.0.0 起已彻底移除乐观事务自动重试。 容量限制 单行不超过 6 MB；单个事务总大小默认不超过 100 MB（配置项 txn-total-size-limit，上限 1 TB），且事务执行时 TiDB 进程内存可能涨到事务大小的 2–3 倍，批量写入必须分片分批提交。","url":"https://it-interview-889.pages.dev/#/question/458"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/458.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？","text":"TiDB 兼容 MySQL 协议但底层是分布式 KV。请说明一次写事务从 BEGIN 到 COMMIT 的完整流程、冲突在哪里检测，以及两种事务模式的取舍。","answerCount":1,"datePublished":"2026-09-03T00:54:43.997Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"提交流程（Percolator 风格两阶段提交） 1. BEGIN 时 TiDB 向 PD 取一个全局唯一、单调递增的时间戳 start_ts，它既是事务 ID，也是本次事务读取的快照版本（TiDB 的 MVCC 快照）。注意与 MySQL 不同：TiDB 在 BEGIN 时就取快照，MySQL 是在事务内第一条读 InnoDB 的 SELECT 时才取。 2. 读请求：TiDB 先从 PD 拿 Region 路由信息，再从 TiKV 读取 start_ts 版本的数据。 3. 写请求：只做基本约束校验（类型、NOT NULL），有效数据暂存在 TiDB 的事务私有内存里，此时还没落盘。 4. COMMIT 触发 2PC：①从待写数据中选出一个 Primary Key；②按 Region 对所有 key 分组；③向所有涉及的 TiKV 发 prewrite，TiKV 检查版本冲突与过期版本并对合法数据加锁；④全部 prewrite 成功后向 PD 取 commit_ts；⑤先在 Primary Key 所在的 TiKV 上完成提交并清理 prewrite 阶段留下的锁——主锁的提交成功与否就是整个事务的原子性判定点；⑥返回客户端提交成功，剩余锁异步清理。 冲突在哪里检测 TiDB 实例是无状态的、彼此不感知，所以冲突检测下沉到 TiKV 层的内存锁管理（prewrite 阶段），由 scheduler-concurrency（默认 2048000 槽位）控制并发。监控上若 Scheduler latch wait duration 很高而写本身不慢，基本可判定存在大量写冲突。 乐观 vs 悲观 乐观事务：不加行锁，把冲突检测推迟到提交时。并发写同一行很少时性能最好（省掉加锁开销）；高冲突时大量事务在 COMMIT 失败，性能反而不如悲观。还有两个副作用：主键/唯一约束是延迟检查的（DML 不报错、COMMIT 才报 duplicate）；数据缓存在内存，大事务有 OOM 风险。 悲观事务：从 v3.0.8 起是默认模式，语义与 MySQL 一致，写语句执行时即加锁，REPEATABLE READ 下提交一般不再抛异常。 选型：高冲突（热点行扣减、秒杀）必须用悲观；低冲突、追求吞吐才考虑乐观，且应用层必须能正确处理 COMMIT 返回错误并重试。自动重试默认关闭（会破坏 RR 隔离、导致丢失更新），v8.0.0 起已彻底移除乐观事务自动重试。 容量限制 单行不超过 6 MB；单个事务总大小默认不超过 100 MB（配置项 txn-total-size-limit，上限 1 TB），且事务执行时 TiDB 进程内存可能涨到事务大小的 2–3 倍，批量写入必须分片分批提交。","url":"https://itinterview.com.cn/#/question/458"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端架构师</span><span class="chip tag">TiDB</span><span class="chip tag">分布式事务</span><span class="chip tag">两阶段提交</span></div>
     <div class="card"><h2>题目</h2><p>TiDB 兼容 MySQL 协议但底层是分布式 KV。请说明一次写事务从 BEGIN 到 COMMIT 的完整流程、冲突在哪里检测，以及两种事务模式的取舍。</p></div>
@@ -94,12 +94,12 @@
 <ul>
 <li>单行不超过 <strong>6 MB</strong>；单个事务总大小默认不超过 <strong>100 MB</strong>（配置项 <code>txn-total-size-limit</code>，上限 1 TB），且事务执行时 TiDB 进程内存可能涨到事务大小的 2–3 倍，批量写入必须分片分批提交。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/458">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/458">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=40&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=40&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

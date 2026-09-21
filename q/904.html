@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="主键自增 ID 和 UUID 作为主键各有什么优缺点？ · IT面试题库">
   <meta property="og:description" content="自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/904.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/904.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="主键自增 ID 和 UUID 作为主键各有什么优缺点？ · IT面试题库">
   <meta name="twitter:description" content="自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/904.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"主键自增 ID 和 UUID 作为主键各有什么优缺点？","text":"设计表主键时，为什么推荐自增 ID 而不是 UUID？分布式场景下雪花 ID 是如何兼顾两者的？","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+ 树中间，频繁引发页分裂（挪数据、碎片化、写放大），性能差。 UUID 的优点：全局唯一、可分布式生成、不依赖数据库。 分布式场景：雪花 ID（Snowflake）：64 位 = 时间戳 + 机器 ID + 序列号。趋势递增（保留顺序插入优点）、分布式唯一、本地生成无单点。注意时钟回拨问题需处理。 结论：单机优先自增 ID；分布式用雪花 ID 等趋势递增方案；确实需要全局随机唯一（如对外暴露的资源标识）时，可以\"内键自增 + 外部业务唯一键\"分离。","url":"https://it-interview-889.pages.dev/#/question/904"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/904.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"主键自增 ID 和 UUID 作为主键各有什么优缺点？","text":"设计表主键时，为什么推荐自增 ID 而不是 UUID？分布式场景下雪花 ID 是如何兼顾两者的？","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+ 树中间，频繁引发页分裂（挪数据、碎片化、写放大），性能差。 UUID 的优点：全局唯一、可分布式生成、不依赖数据库。 分布式场景：雪花 ID（Snowflake）：64 位 = 时间戳 + 机器 ID + 序列号。趋势递增（保留顺序插入优点）、分布式唯一、本地生成无单点。注意时钟回拨问题需处理。 结论：单机优先自增 ID；分布式用雪花 ID 等趋势递增方案；确实需要全局随机唯一（如对外暴露的资源标识）时，可以\"内键自增 + 外部业务唯一键\"分离。","url":"https://itinterview.com.cn/#/question/904"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>主键自增 ID 和 UUID 作为主键各有什么优缺点？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端架构师</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">主键设计</span><span class="chip tag">分布式ID</span></div>
     <div class="card"><h2>题目</h2><p>设计表主键时，为什么推荐自增 ID 而不是 UUID？分布式场景下雪花 ID 是如何兼顾两者的？</p></div>
@@ -78,12 +78,12 @@
 <p><strong>UUID 的优点</strong>：全局唯一、可分布式生成、不依赖数据库。</p>
 <p><strong>分布式场景：雪花 ID（Snowflake）</strong>：64 位 = 时间戳 + 机器 ID + 序列号。趋势递增（保留顺序插入优点）、分布式唯一、本地生成无单点。注意<strong>时钟回拨</strong>问题需处理。</p>
 <p>结论：单机优先自增 ID；分布式用雪花 ID 等趋势递增方案；确实需要全局随机唯一（如对外暴露的资源标识）时，可以&quot;内键自增 + 外部业务唯一键&quot;分离。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/904">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/904">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

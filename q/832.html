@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="2PC、TCC、本地消息表/事务消息、Saga，分别适合什么场景？选型时看哪些维度？ · IT面试题库">
   <meta property="og:description" content="要点：按四个维度决策——一致性要求、性能/吞吐、业务侵入性、是否可补偿。 1. 2PC / XA：强一致、短事务、参与方少（如数据库间同步）。缺点长锁、低可用，不适合高并发核心链路。 2. TCC：需要强一致又怕长锁的高价值核心链路（支付、账务）。性能好，但业务侵入强，需手写 Try/Confirm/Cancel…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/832.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/832.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="2PC、TCC、本地消息表/事务消息、Saga，分别适合什么场景？选型时看哪些维度？ · IT面试题库">
   <meta name="twitter:description" content="要点：按四个维度决策——一致性要求、性能/吞吐、业务侵入性、是否可补偿。 1. 2PC / XA：强一致、短事务、参与方少（如数据库间同步）。缺点长锁、低可用，不适合高并发核心链路。 2. TCC：需要强一致又怕长锁的高价值核心链路（支付、账务）。性能好，但业务侵入强，需手写 Try/Confirm/Cancel…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/832.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"2PC、TCC、本地消息表/事务消息、Saga，分别适合什么场景？选型时看哪些维度？","text":"考察点：是否具备分布式事务的方案选型能力，而非只会一种。追问：长流程跨多服务的编排为什么常用 Saga？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：按四个维度决策——一致性要求、性能/吞吐、业务侵入性、是否可补偿。 1. 2PC / XA：强一致、短事务、参与方少（如数据库间同步）。缺点长锁、低可用，不适合高并发核心链路。 2. TCC：需要强一致又怕长锁的高价值核心链路（支付、账务）。性能好，但业务侵入强，需手写 Try/Confirm/Cancel 并解决幂等/空回滚/防悬挂。 3. 本地消息表 / 事务消息（RocketMQ）：高并发、可短暂不一致、业务可补偿的场景（下单扣库存、通知）。吞吐量高、耦合低，代价是最终一致 + 需消费幂等。 4. Saga：长流程、跨多服务的业务编排（如旅行订票：航班+酒店+租车）。把大事务拆成一串本地事务，每步有对应补偿，任一步失败就反向按序补偿；适合不能长时间持锁的长事务，但隔离性差、需处理补偿复杂性。 决策口诀：要强一致且短 → 2PC；要强一致且高频 → TCC；要高吞吐可补偿 → 消息最终一致；要编排长流程 → Saga。永远先问「这业务到底要不要在写入瞬间就一致」，多数情况下最终一致就够。","url":"https://it-interview-889.pages.dev/#/question/832"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/832.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"2PC、TCC、本地消息表/事务消息、Saga，分别适合什么场景？选型时看哪些维度？","text":"考察点：是否具备分布式事务的方案选型能力，而非只会一种。追问：长流程跨多服务的编排为什么常用 Saga？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：按四个维度决策——一致性要求、性能/吞吐、业务侵入性、是否可补偿。 1. 2PC / XA：强一致、短事务、参与方少（如数据库间同步）。缺点长锁、低可用，不适合高并发核心链路。 2. TCC：需要强一致又怕长锁的高价值核心链路（支付、账务）。性能好，但业务侵入强，需手写 Try/Confirm/Cancel 并解决幂等/空回滚/防悬挂。 3. 本地消息表 / 事务消息（RocketMQ）：高并发、可短暂不一致、业务可补偿的场景（下单扣库存、通知）。吞吐量高、耦合低，代价是最终一致 + 需消费幂等。 4. Saga：长流程、跨多服务的业务编排（如旅行订票：航班+酒店+租车）。把大事务拆成一串本地事务，每步有对应补偿，任一步失败就反向按序补偿；适合不能长时间持锁的长事务，但隔离性差、需处理补偿复杂性。 决策口诀：要强一致且短 → 2PC；要强一致且高频 → TCC；要高吞吐可补偿 → 消息最终一致；要编排长流程 → Saga。永远先问「这业务到底要不要在写入瞬间就一致」，多数情况下最终一致就够。","url":"https://itinterview.com.cn/#/question/832"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>2PC、TCC、本地消息表/事务消息、Saga，分别适合什么场景？选型时看哪些维度？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">方案选型</span><span class="chip tag">2PC</span><span class="chip tag">TCC</span><span class="chip tag">Saga</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否具备分布式事务的方案选型能力，而非只会一种。追问：长流程跨多服务的编排为什么常用 Saga？</p></div>
@@ -81,12 +81,12 @@
 <li><strong>Saga</strong>：<strong>长流程、跨多服务</strong>的业务编排（如旅行订票：航班+酒店+租车）。把大事务拆成一串本地事务，每步有对应补偿，任一步失败就<strong>反向按序补偿</strong>；适合不能长时间持锁的长事务，但隔离性差、需处理补偿复杂性。</li>
 </ol>
 <p><strong>决策口诀</strong>：要强一致且短 → 2PC；要强一致且高频 → TCC；要高吞吐可补偿 → 消息最终一致；要编排长流程 → Saga。永远先问「这业务到底要不要在写入瞬间就一致」，多数情况下最终一致就够。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/832">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/832">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=119&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=119&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

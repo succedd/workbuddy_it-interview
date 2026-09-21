@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Webpack 的 Loader 和 Plugin 有什么区别？写一个自定义 Loader 要注意什么？ · IT面试题库">
   <meta property="og:description" content="要点： Loader：处理「单个文件模块」的转换。它在模块加载时对源文件做「输入源码 → 输出源码」的纯转换（ts→js、scss→css、图片→URL/base64）。特征： 在 module.rules 里按 test 匹配，从右到左 / 从下到上链式执行（use: [&#39;style-loader&#39;,&#39;css-…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1051.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1051.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Webpack 的 Loader 和 Plugin 有什么区别？写一个自定义 Loader 要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： Loader：处理「单个文件模块」的转换。它在模块加载时对源文件做「输入源码 → 输出源码」的纯转换（ts→js、scss→css、图片→URL/base64）。特征： 在 module.rules 里按 test 匹配，从右到左 / 从下到上链式执行（use: [&#39;style-loader&#39;,&#39;css-…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1051.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Webpack 的 Loader 和 Plugin 有什么区别？写一个自定义 Loader 要注意什么？","text":"考察点：职责边界、执行时机、职责链与异步处理。基础但常被答得含糊。","answerCount":1,"datePublished":"2026-09-10T11:52:45.929Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Loader：处理「单个文件模块」的转换。它在模块加载时对源文件做「输入源码 → 输出源码」的纯转换（ts→js、scss→css、图片→URL/base64）。特征： 在 module.rules 里按 test 匹配，从右到左 / 从下到上链式执行（use: ['style-loader','css-loader','sass-loader']，实际先 sass → css → style）； 必须返回字符串或 Buffer（或用 this.callback(null, content, map)）； Loader 是管道的一环，不应有副作用（不写文件、不发请求），也不该关心「什么时候构建完成」。 Plugin：干预「整个构建流程」。它注册在 compiler 的钩子（hooks）上——compilation、emit、done、optimizeChunks 等，可以读写产物、拆分 chunk、生成 HTML、注入变量、做资源分析。特征： 是一个带 apply(compiler) 方法的类/函数； 能访问 Compilation 对象（整个模块图、chunks、assets），拥有全局视野； 可以有副作用（compilation.emitAsset 写文件、compiler.hooks.done 里上报统计）。 一句话区分：Loader 是「文件级、转换、链式、无全局视野」；Plugin 是「构建级、监听钩子、可操作产物、有全局视野」。 写自定义 Loader 的注意点： 1. 必须处理异步：用 this.async() 返回 callback，或直接返回 Promise；忘记异步化会让构建结果错乱（尤其涉及读文件、网络）； 2. 必须考虑是否走缓存：this.cacheable(true)（默认 true），有外部依赖时要 this.addDependency(file)，否则改配置文件不会触发重建（经典 bug）； 3. 源码要透传 Source Map：用 this.callback(null, code, map) 传下去，否则调试断点全错位； 4. 取参数用 this.getOptions(schema)（Webpack 5），并 提供 JSON Schema 做校验——参数写错要在构建期报错而不是运行时静默； 5. 别自己拼字符串做语法转换：优先用 babel/swc 等成熟解析器 + AST，正则替换必然在边界情况翻车； 6. this.resourcePath / this.query / loader-utils 是常用上下文；pitch 阶段的 Loader 能「提前返回」从而短路后续 loader（style-loader 的注入就用了这思路）； 7. 用 this.getLogger() 输出日志，别用 console.log（会污染构建输出且可能被并发交错）。 加分点：Webpack 5 的 LoaderContext 支持 getOptions + schema；多个 Loader 串联时成本叠加，能用 rule.include/exclude 缩小范围就别省那行配置（babel-loader 误处理 node_modules 是构建慢的头号原因）。","url":"https://it-interview-889.pages.dev/#/question/1051"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1051.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Webpack 的 Loader 和 Plugin 有什么区别？写一个自定义 Loader 要注意什么？","text":"考察点：职责边界、执行时机、职责链与异步处理。基础但常被答得含糊。","answerCount":1,"datePublished":"2026-09-10T11:52:45.929Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Loader：处理「单个文件模块」的转换。它在模块加载时对源文件做「输入源码 → 输出源码」的纯转换（ts→js、scss→css、图片→URL/base64）。特征： 在 module.rules 里按 test 匹配，从右到左 / 从下到上链式执行（use: ['style-loader','css-loader','sass-loader']，实际先 sass → css → style）； 必须返回字符串或 Buffer（或用 this.callback(null, content, map)）； Loader 是管道的一环，不应有副作用（不写文件、不发请求），也不该关心「什么时候构建完成」。 Plugin：干预「整个构建流程」。它注册在 compiler 的钩子（hooks）上——compilation、emit、done、optimizeChunks 等，可以读写产物、拆分 chunk、生成 HTML、注入变量、做资源分析。特征： 是一个带 apply(compiler) 方法的类/函数； 能访问 Compilation 对象（整个模块图、chunks、assets），拥有全局视野； 可以有副作用（compilation.emitAsset 写文件、compiler.hooks.done 里上报统计）。 一句话区分：Loader 是「文件级、转换、链式、无全局视野」；Plugin 是「构建级、监听钩子、可操作产物、有全局视野」。 写自定义 Loader 的注意点： 1. 必须处理异步：用 this.async() 返回 callback，或直接返回 Promise；忘记异步化会让构建结果错乱（尤其涉及读文件、网络）； 2. 必须考虑是否走缓存：this.cacheable(true)（默认 true），有外部依赖时要 this.addDependency(file)，否则改配置文件不会触发重建（经典 bug）； 3. 源码要透传 Source Map：用 this.callback(null, code, map) 传下去，否则调试断点全错位； 4. 取参数用 this.getOptions(schema)（Webpack 5），并 提供 JSON Schema 做校验——参数写错要在构建期报错而不是运行时静默； 5. 别自己拼字符串做语法转换：优先用 babel/swc 等成熟解析器 + AST，正则替换必然在边界情况翻车； 6. this.resourcePath / this.query / loader-utils 是常用上下文；pitch 阶段的 Loader 能「提前返回」从而短路后续 loader（style-loader 的注入就用了这思路）； 7. 用 this.getLogger() 输出日志，别用 console.log（会污染构建输出且可能被并发交错）。 加分点：Webpack 5 的 LoaderContext 支持 getOptions + schema；多个 Loader 串联时成本叠加，能用 rule.include/exclude 缩小范围就别省那行配置（babel-loader 误处理 node_modules 是构建慢的头号原因）。","url":"https://itinterview.com.cn/#/question/1051"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Webpack 的 Loader 和 Plugin 有什么区别？写一个自定义 Loader 要注意什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Webpack</span><span class="chip tag">Loader</span><span class="chip tag">Plugin</span><span class="chip tag">构建工具</span><span class="chip tag">源码</span></div>
     <div class="card"><h2>题目</h2><p>考察点：职责边界、执行时机、职责链与异步处理。基础但常被答得含糊。</p></div>
@@ -100,12 +100,12 @@
 <ul>
 <li><strong>加分点</strong>：Webpack 5 的 <strong><code>LoaderContext</code> 支持 <code>getOptions</code> + <code>schema</code></strong>；多个 Loader 串联时<strong>成本叠加</strong>，能用 <code>rule.include/exclude</code> 缩小范围就别省那行配置（<code>babel-loader</code> 误处理 <code>node_modules</code> 是构建慢的头号原因）。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1051">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1051">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=69&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=69&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

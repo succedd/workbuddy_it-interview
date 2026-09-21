@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 CSRF 跨站请求伪造？攻击成立的前提是什么？ · IT面试题库">
   <meta property="og:description" content="CSRF（Cross-Site Request Forgery）：攻击者诱导已登录的受害者在第三方站点触发一个非预期请求（如转账、改密码），浏览器会自动带上目标域的 Cookie，使服务器误以为是用户本人发起的合法请求。 与 XSS 的区别：XSS 是“利用被信任的站点执行恶意脚本”；CSRF 是“利用被信任的用…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/554.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/554.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 CSRF 跨站请求伪造？攻击成立的前提是什么？ · IT面试题库">
   <meta name="twitter:description" content="CSRF（Cross-Site Request Forgery）：攻击者诱导已登录的受害者在第三方站点触发一个非预期请求（如转账、改密码），浏览器会自动带上目标域的 Cookie，使服务器误以为是用户本人发起的合法请求。 与 XSS 的区别：XSS 是“利用被信任的站点执行恶意脚本”；CSRF 是“利用被信任的用…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/554.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 CSRF 跨站请求伪造？攻击成立的前提是什么？","text":"请说明 CSRF 的攻击模型，它与 XSS 的本质区别，以及攻击成立所需的几个前提条件。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CSRF（Cross-Site Request Forgery）：攻击者诱导已登录的受害者在第三方站点触发一个非预期请求（如转账、改密码），浏览器会自动带上目标域的 Cookie，使服务器误以为是用户本人发起的合法请求。 与 XSS 的区别：XSS 是“利用被信任的站点执行恶意脚本”；CSRF 是“利用被信任的用户在其已登录状态下发起非预期请求”。 攻击成立前提： 1. 用户已在目标站点处于登录/认证状态（会话 Cookie 有效）； 2. 攻击请求参数可预测/可构造（如 GET 链接、固定表单字段），无需用户干预； 3. 服务器缺少额外校验（如 CSRF Token、二次确认），仅凭 Cookie 就认可请求。 典型载体：自动提交的隐藏表单、 、预加载链接等。","url":"https://it-interview-889.pages.dev/#/question/554"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/554.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 CSRF 跨站请求伪造？攻击成立的前提是什么？","text":"请说明 CSRF 的攻击模型，它与 XSS 的本质区别，以及攻击成立所需的几个前提条件。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CSRF（Cross-Site Request Forgery）：攻击者诱导已登录的受害者在第三方站点触发一个非预期请求（如转账、改密码），浏览器会自动带上目标域的 Cookie，使服务器误以为是用户本人发起的合法请求。 与 XSS 的区别：XSS 是“利用被信任的站点执行恶意脚本”；CSRF 是“利用被信任的用户在其已登录状态下发起非预期请求”。 攻击成立前提： 1. 用户已在目标站点处于登录/认证状态（会话 Cookie 有效）； 2. 攻击请求参数可预测/可构造（如 GET 链接、固定表单字段），无需用户干预； 3. 服务器缺少额外校验（如 CSRF Token、二次确认），仅凭 Cookie 就认可请求。 典型载体：自动提交的隐藏表单、 、预加载链接等。","url":"https://itinterview.com.cn/#/question/554"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>什么是 CSRF 跨站请求伪造？攻击成立的前提是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">CSRF</span><span class="chip tag">Web安全</span><span class="chip tag">跨站请求伪造</span></div>
     <div class="card"><h2>题目</h2><p>请说明 CSRF 的攻击模型，它与 XSS 的本质区别，以及攻击成立所需的几个前提条件。</p></div>
@@ -82,12 +82,12 @@
 <li>服务器<strong>缺少额外校验</strong>（如 CSRF Token、二次确认），仅凭 Cookie 就认可请求。</li>
 </ol>
 <p>典型载体：自动提交的隐藏表单、&lt;img src&gt;、预加载链接等。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/554">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/554">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=206&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=206&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

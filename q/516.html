@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。 · IT面试题库">
   <meta property="og:description" content="所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &amp;T（不可变引用）或 &amp;mut T（可变引用）在不转移所…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/516.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/516.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。 · IT面试题库">
   <meta name="twitter:description" content="所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &amp;T（不可变引用）或 &amp;mut T（可变引用）在不转移所…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/516.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。","text":"说明 Move 语义、同一时刻可变/不可变借用的约束、以及 'a 生命周期标注解决什么问题。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &T（不可变引用）或 &mut T（可变引用）在不转移所有权的前提下访问值。核心约束：同一时刻，要么有多个不可变借用，要么有唯一一个可变借用（不可二者共存），彻底杜绝数据竞争。 生命周期(Lifetime)：引用必须比它所指向的数据活得更久，否则产生悬垂指针。编译器用生命周期标注（如 fn longest (x: &'a str, y: &'a str) -> &'a str）来推导引用有效期，确保返回的引用不会比输入活得更久；多数情况编译器能自动省略（elision）标注。 三者关系：所有权负责“谁释放”，借用负责“共享/修改的规则”，生命周期负责“引用安全的时效性”。编译期由借用检查器（Borrow Checker）强制这些规则。","url":"https://it-interview-889.pages.dev/#/question/516"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/516.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。","text":"说明 Move 语义、同一时刻可变/不可变借用的约束、以及 'a 生命周期标注解决什么问题。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &T（不可变引用）或 &mut T（可变引用）在不转移所有权的前提下访问值。核心约束：同一时刻，要么有多个不可变借用，要么有唯一一个可变借用（不可二者共存），彻底杜绝数据竞争。 生命周期(Lifetime)：引用必须比它所指向的数据活得更久，否则产生悬垂指针。编译器用生命周期标注（如 fn longest (x: &'a str, y: &'a str) -> &'a str）来推导引用有效期，确保返回的引用不会比输入活得更久；多数情况编译器能自动省略（elision）标注。 三者关系：所有权负责“谁释放”，借用负责“共享/修改的规则”，生命周期负责“引用安全的时效性”。编译期由借用检查器（Borrow Checker）强制这些规则。","url":"https://itinterview.com.cn/#/question/516"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">新兴方向工程师</span><span class="chip tag">所有权</span><span class="chip tag">借用</span><span class="chip tag">生命周期</span></div>
     <div class="card"><h2>题目</h2><p>说明 Move 语义、同一时刻可变/不可变借用的约束、以及 &#39;a 生命周期标注解决什么问题。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>生命周期(Lifetime)</strong>：引用必须比它所指向的数据活得更久，否则产生悬垂指针。编译器用生命周期标注（如 <code>fn longest&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str</code>）来推导引用有效期，确保返回的引用不会比输入活得更久；多数情况编译器能<strong>自动省略（elision）</strong>标注。</li>
 <li><strong>三者关系</strong>：所有权负责“谁释放”，借用负责“共享/修改的规则”，生命周期负责“引用安全的时效性”。编译期由<strong>借用检查器（Borrow Checker）</strong>强制这些规则。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/516">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/516">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=17&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=17&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

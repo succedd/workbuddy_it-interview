@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：你写了一个 @Configuration 定义了 DataSource @Bean，但应用启动后仍然用的是 Spring Boot 默认的 HikariCP 数据源，你的配置没生效。请分析可能原因并给出让自定义 Bean 真正覆盖自动配置的做法。 · IT面试题库">
   <meta property="og:description" content="要点： 原因 1：包扫描没扫到你的 @Configuration。@ComponentScan 默认只扫主类所在包及其子包；若你的配置类放在根包之外，不会注册，自然不生效。先把配置类挪到可被扫描的包下，或显式 @Import 它。 原因 2：Bean 类型/名称对不上，没触发 @ConditionalOnMiss…">
-  <meta property="og:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview-889.pages.dev/q/1193.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1193.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：你写了一个 @Configuration 定义了 DataSource @Bean，但应用启动后仍然用的是 Spring Boot 默认的 HikariCP 数据源，你的配置没生效。请分析可能原因并给出让自定义 Bean 真正覆盖自动配置的做法。 · IT面试题库">
   <meta name="twitter:description" content="要点： 原因 1：包扫描没扫到你的 @Configuration。@ComponentScan 默认只扫主类所在包及其子包；若你的配置类放在根包之外，不会注册，自然不生效。先把配置类挪到可被扫描的包下，或显式 @Import 它。 原因 2：Bean 类型/名称对不上，没触发 @ConditionalOnMiss…">
-  <meta name="twitter:image" content="https://it-interview-889.pages.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview-889.pages.dev/q/1193.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你写了一个 @Configuration 定义了 DataSource @Bean，但应用启动后仍然用的是 Spring Boot 默认的 HikariCP 数据源，你的配置没生效。请分析可能原因并给出让自定义 Bean 真正覆盖自动配置的做法。","text":"考察点：@ConditionalOnMissingBean 的覆盖机制，以及『自动配置类在用户配置之后处理』这一加载顺序。要求指出常见坑并给出正确覆盖姿势，而不是一律用 exclude。","answerCount":1,"datePublished":"2026-09-20T02:21:44.178Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原因 1：包扫描没扫到你的 @Configuration。@ComponentScan 默认只扫主类所在包及其子包；若你的配置类放在根包之外，不会注册，自然不生效。先把配置类挪到可被扫描的包下，或显式 @Import 它。 原因 2：Bean 类型/名称对不上，没触发 @ConditionalOnMissingBean。自动配置类用 @ConditionalOnMissingBean(type=\"javax.sql.DataSource\") 判断『容器中是否已存在 DataSource 类型 Bean』。你的 @Bean 返回类型必须是 DataSource（或其子类型），否则自动配置仍会注册自己的。 原因 3：被 @AutoConfigureBefore/After 顺序影响或配了排除项。少数情况自动配置顺序或 spring.autoconfigure.exclude 把你想要的覆盖掉了，可用 --debug 看 ConditionEvaluationReport 确认谁生效。 正确覆盖做法：直接在你的 @Configuration 里写一个返回 DataSource 的 @Bean 方法即可——用户定义的 Bean 先于自动配置注册，自动配置类的 @ConditionalOnMissingBean 检测到已存在同类型 Bean 就会跳过，你的 Bean 生效，无需 exclude。 核心：覆盖自动配置靠的不是『exclude 掉它』，而是『提供一个同类型的 @Bean』，让 @ConditionalOnMissingBean 自然让路。","url":"https://it-interview-889.pages.dev/#/question/1193"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1193.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你写了一个 @Configuration 定义了 DataSource @Bean，但应用启动后仍然用的是 Spring Boot 默认的 HikariCP 数据源，你的配置没生效。请分析可能原因并给出让自定义 Bean 真正覆盖自动配置的做法。","text":"考察点：@ConditionalOnMissingBean 的覆盖机制，以及『自动配置类在用户配置之后处理』这一加载顺序。要求指出常见坑并给出正确覆盖姿势，而不是一律用 exclude。","answerCount":1,"datePublished":"2026-09-20T02:21:44.178Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原因 1：包扫描没扫到你的 @Configuration。@ComponentScan 默认只扫主类所在包及其子包；若你的配置类放在根包之外，不会注册，自然不生效。先把配置类挪到可被扫描的包下，或显式 @Import 它。 原因 2：Bean 类型/名称对不上，没触发 @ConditionalOnMissingBean。自动配置类用 @ConditionalOnMissingBean(type=\"javax.sql.DataSource\") 判断『容器中是否已存在 DataSource 类型 Bean』。你的 @Bean 返回类型必须是 DataSource（或其子类型），否则自动配置仍会注册自己的。 原因 3：被 @AutoConfigureBefore/After 顺序影响或配了排除项。少数情况自动配置顺序或 spring.autoconfigure.exclude 把你想要的覆盖掉了，可用 --debug 看 ConditionEvaluationReport 确认谁生效。 正确覆盖做法：直接在你的 @Configuration 里写一个返回 DataSource 的 @Bean 方法即可——用户定义的 Bean 先于自动配置注册，自动配置类的 @ConditionalOnMissingBean 检测到已存在同类型 Bean 就会跳过，你的 Bean 生效，无需 exclude。 核心：覆盖自动配置靠的不是『exclude 掉它』，而是『提供一个同类型的 @Bean』，让 @ConditionalOnMissingBean 自然让路。","url":"https://itinterview.com.cn/#/question/1193"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview-889.pages.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>场景题：你写了一个 @Configuration 定义了 DataSource @Bean，但应用启动后仍然用的是 Spring Boot 默认的 HikariCP 数据源，你的配置没生效。请分析可能原因并给出让自定义 Bean 真正覆盖自动配置的做法。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">自动配置</span><span class="chip tag">覆盖</span><span class="chip tag">ConditionalOnMissingBean</span></div>
     <div class="card"><h2>题目</h2><p>考察点：@ConditionalOnMissingBean 的覆盖机制，以及『自动配置类在用户配置之后处理』这一加载顺序。要求指出常见坑并给出正确覆盖姿势，而不是一律用 exclude。</p></div>
@@ -81,12 +81,12 @@
 <li><strong>正确覆盖做法</strong>：直接在你的 @Configuration 里写一个返回 DataSource 的 @Bean 方法即可——用户定义的 Bean 先于自动配置注册，自动配置类的 @ConditionalOnMissingBean 检测到已存在同类型 Bean 就会跳过，你的 Bean 生效，无需 exclude。</li>
 </ul>
 <p><strong>核心</strong>：覆盖自动配置靠的不是『exclude 掉它』，而是『提供一个同类型的 @Bean』，让 @ConditionalOnMissingBean 自然让路。</p></div>
-    <a class="cta" href="https://it-interview-889.pages.dev/#/question/1193">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1193">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview-889.pages.dev/#/practice?scope=cat&cat=82&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=82&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
