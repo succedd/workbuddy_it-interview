@@ -94,7 +94,29 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`afdbbad`（Cloudflare 迁移后的文案校准）｜缓存版本：`20260921c`｜更新时间：2026-09-22 07:20 (+08)**
+**最新 release commit：`888a583`（迁移遗留说明清理）｜缓存版本：`20260921c`（本轮无前端改动，故不升）｜更新时间：2026-09-22 08:10 (+08)**
+
+- **✅【已完成·2026-09-22 上午】迁移遗留审计与清理（**无功能改动**，缓存版本保持 `20260921c`）**：
+  - **背景**：用户问「因为迁移，该修改的全部调整修改了吧，怕会失效有些」→ 对「域名 + 托管方式」变更后的**全部引用**做了一次系统审计（PWA manifest / Service Worker 缓存 / CSP / 重定向配置 / 环境变量覆盖项 / 服务端回读路径 / 工具脚本 / 文档操作指引）。
+  - **审计结论：代码侧没有失效项** —— 以下几项全部实测通过：
+    - `manifest.json` 用相对路径（`start_url: "/"`、`scope: "/"`）⇒ 自动跟随域名 ✅
+    - `sw.js` 的 `APP_SHELL` 全是相对路径，且 `/data/tech-maps.json` 的预缓存有 try/catch 兜底 ✅
+    - `tools/pages-guard-test.mjs` 的 `ORIGIN` 已随域名更新 ✅
+    - **🔴 服务端回读通路（最高危的静默失效点）实测正常** —— `worker.js#getCategorySnapshot` 从 `SITE_ORIGIN + /data/published.json` 拉分类树，**失败会被 try/catch 吞掉**（表现为分类快照恒空串、AI 投稿质检拿不到技术体系上下文）。实测：线上 Worker **没有被设过** `env.SITE_ORIGIN` 覆盖（绑定仅 `ADMIN_EMAIL` / `DEEPSEEK_API_KEY` / `STATS` / `USERS`），代码常量 `https://itinterview.com.cn` 生效，回读结果 **200 / 2,167,247 字节 / 276 个分类** ✅
+    - 后端通路：Netlify 桥 `/stats` → **200**、CORS 预检正确；`workers.dev` 直连 **000**（国内 DNS 污染，属预期 —— 桥正是为此存在）✅
+    - `api-endpoints.json` / `data/tech-maps.json` / `manifest.json` / `sw.js` / `sitemap.xml` 带浏览器 UA 均 **200** ✅
+  - **但查到 7 处会误导后续维护者（含 AI 工具）的内容，已全部修正**：
+    1. `cloudflare/部署指南.md` **与代码直接矛盾**：写着「CORS 已配置为 `*`」，实际 `resolveCorsOrigin()` 是**白名单制**（只对三域回 ACAO）⇒ 已改为准确描述并标红「换域名必须同步此表，否则登录/云同步静默失败」
+    2. 同文件 **缺 D1 步骤**：全文只写 KV。照它重建 Worker 会漏掉 `USERS` 绑定 ⇒ **登录 / 注册 / 云同步全废**。已补 D1 创建 + `schema.sql` 导入 + `wrangler.toml` 双绑定示例
+    3. 同文件接口表只有 3 条，实际 **18 条**（含 `auth/*`、`me/*`、`submit`、`admin/*`）⇒ 已补全；并新增「环境变量」节，点名 `SITE_ORIGIN` / `ALLOWED_ORIGIN` 两个「**设错就静默失效**」的覆盖项（当前线上均未设置，走代码常量 = 安全）
+    4. `cloudflare/worker.js` 的 CORS 注释仍写「当前唯一入口是 pages.dev」⇒ 更正为 `itinterview.com.cn`
+    5. `cloudflare/pages/_worker.js` 注释**低估了自身能力**：称「本站域名 DNS 不在本账号，所以用不了 Cloudflare WAF / Bot Fight Mode」。**实际上 `itinterview.com.cn` 的 zone 就在本账号（status active）⇒ 现在可以叠加 Zone 级防护**。已更新注释并给出建议（开 Bot Fight Mode + Security Level=High，把「应用层」升级为「网络层」）。另修正分享页数量 1209 → **1228**
+    6. `HANDOVER.md` 第 1–3 节的操作指引**全部指向死域名 / 已关闭服务**：GitHub Pages 发布源那节、「部署 = push，GitHub Pages 约 1 分钟生效」、验证用 `curl is-a.dev`、域名栏、反爬托管层「迁移进行中 + PR #53221 待合并」⇒ 全部更正为当前事实（Cloudflare Pages + Actions + com.cn）；分享页数量 264 → **1228**
+    7. `tools/build-pages.mjs` 注释「否则误伤 GitHub Pages」⇒ GitHub Pages 已关闭
+  - **顺手增强**：`tools/set-site-origin.mjs` 的 `KNOWN_OLD_HOSTS` 补入 `itinterview.com.cn` / `www.itinterview.com.cn` ⇒ **下次换域名时能连历史几代残留一并清理**；`api-endpoints.json` 注释去掉已放弃的 eu.org 方案，`updated` → 2026-09-22。
+  - **部署结果**：Worker 重新用注释同步 deploy ⇒ Version **`9921c460-aa43-4059-a221-f8559697c498`**（KV + D1 双绑定正常）。Actions `888a583` **success**。
+  - **验证**：`build-pages.mjs` 1287 文件 / 内部文件未泄漏；`pages-guard-test.mjs` **41/41 `PAGES_GUARD_OK`**；`accept-switch.py` **10/10**；`regress-check.py` **旧功能零回归**；CORS 三域发放 + `evil.example.com` 不发放。
+  - ⚠️ **本轮未开 Cloudflare Zone 级防护** —— 本机 OAuth token 只有 `zone:read`（对 zone settings 返回 **9109 Unauthorized**），**需要用户去 Cloudflare 后台手动开**。建议顺序：Security Level = High → Bot Fight Mode 开 → （可选）HSTS。
 
 - **✅【已完成·2026-09-22 上午】Cloudflare 迁移后的文案校准（缓存版本 `20260921b` → `20260921c`）**：
   - **背景**：用户问「迁到 Cloudflare 后，页脚（使用指南 · 关于本站 · GitHub · 数据存于本机浏览器）这类文案是不是要改」。
