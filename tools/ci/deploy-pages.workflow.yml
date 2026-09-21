@@ -1,0 +1,51 @@
+# it-interview · 推 release 自动部署到 Cloudflare Pages
+# ============================================================
+# 【怎么启用】把本文件内容原样贴到仓库的 .github/workflows/ 下（推荐路径：
+# 仓库 Actions 页 → "set up a workflow yourself" → 全选删掉 → 粘贴 → Commit）。
+# 仓库 Secret `CLOUDFLARE_API_TOKEN` 已配好；文件落地即生效。
+#
+# 【为什么用 Actions 而不是 Cloudflare 的 Git 集成】
+#   现有 Pages 项目 it-interview 是「直传(Direct Upload)」项目，Cloudflare 不允许
+#   再转成 Git 连接（API 报 8000069）；改用 Git 连接必须新建项目 → 子域不再是
+#   it-interview-889.pages.dev → is-a.dev 的 CNAME 变更 PR #53221 会作废。
+#   所以走 Actions，部署到【同一个】现有项目。
+#
+# 【它做三件事】
+#   1) 白名单组装 dist/ —— tools/、cloudflare/、HANDOVER.md 等内部文件根本不进产物
+#   2) 跑反爬守卫回归（41 条）—— 任何一条不过就中止，绝不把坏版本推上线
+#   3) wrangler 直传到 it-interview 项目的 release 分支（生产）
+# ============================================================
+
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [release]
+  workflow_dispatch:
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build dist (whitelist)
+        run: node tools/build-pages.mjs
+
+      - name: Anti-scrape guard regression
+        run: node tools/pages-guard-test.mjs
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 6e7bbb8c6002ed51eabf4fd5c1f3e066
+        # 必须带 --branch release，否则会落成 preview 部署、生产别名不更新
+        run: npx --yes wrangler@4 pages deploy dist --project-name it-interview --branch release
