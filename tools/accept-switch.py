@@ -28,6 +28,21 @@ WWW = "https://www.itinterview.com.cn"
 BAD_HOSTS = ["it-interview.is-a.dev", "succedd.github.io"]
 PROXY = "http://127.0.0.1:7897"
 
+
+def _proxy_alive(host="127.0.0.1", port=7897):
+    """本机代理时有时无（2026-09-22 实测 7897 已关，GitHub 与本站均可直连）。
+    探一次：活着才套代理，否则一律直连，避免脚本因代理失效而整体误报。"""
+    import socket
+    try:
+        s = socket.create_connection((host, port), timeout=1)
+        s.close()
+        return True
+    except OSError:
+        return False
+
+
+USE_PROXY = _proxy_alive()
+
 BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
               "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
 
@@ -42,7 +57,7 @@ def rec(no, name, ok, detail=""):
 def curl(url, extra=None, proxy=True, ua=None):
     """返回 (http_code, body_text_or_None, headers_text)"""
     cmd = ["curl", "-s", "-k", "-o", "-", "-w", "\n__HTTP__%{http_code}"]
-    if proxy:
+    if proxy and USE_PROXY:
         cmd += ["-x", PROXY]
     if ua:
         cmd += ["-A", ua]

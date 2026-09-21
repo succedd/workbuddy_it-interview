@@ -13,6 +13,21 @@ import sys
 
 SITE = "https://itinterview.com.cn"
 PROXY = "http://127.0.0.1:7897"
+
+
+def _proxy_alive(host="127.0.0.1", port=7897):
+    """本机代理时有时无（2026-09-22 实测 7897 已关，GitHub 与本站均可直连）。
+    探一次：活着才套代理，否则一律直连，避免脚本因代理失效而整体误报。"""
+    import socket
+    try:
+        s = socket.create_connection((host, port), timeout=1)
+        s.close()
+        return True
+    except OSError:
+        return False
+
+
+USE_PROXY = _proxy_alive()
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
 
@@ -49,8 +64,10 @@ ASSETS = ["/manifest.json", "/sw.js", "/api-endpoints.json",
 
 
 def curl(url, extra=None):
-    cmd = ["curl", "-s", "-k", "-L", "-o", "-", "-w", "\n__HTTP__%{http_code}",
-           "-x", PROXY, "-A", UA]
+    cmd = ["curl", "-s", "-k", "-L", "-o", "-", "-w", "\n__HTTP__%{http_code}"]
+    if USE_PROXY:
+        cmd += ["-x", PROXY]
+    cmd += ["-A", UA]
     if extra:
         cmd += extra
     cmd.append(url)
