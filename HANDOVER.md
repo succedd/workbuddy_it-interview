@@ -92,7 +92,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`ae49e19`（自购域名 itinterview.com.cn 全量切换）｜缓存版本：`20260921b`｜更新时间：2026-09-21 22:40 (+08)**
+**最新 release commit：`afdbbad`（Cloudflare 迁移后的文案校准）｜缓存版本：`20260921c`｜更新时间：2026-09-22 07:20 (+08)**
+
+- **✅【已完成·2026-09-22 上午】Cloudflare 迁移后的文案校准（缓存版本 `20260921b` → `20260921c`）**：
+  - **背景**：用户问「迁到 Cloudflare 后，页脚（使用指南 · 关于本站 · GitHub · 数据存于本机浏览器）这类文案是不是要改」。
+  - **结论：面向用户的文案全部准确，无需改动** —— ① 页脚「数据存于本机浏览器 · 登录后云端同步」讲的是真实数据流（题库与个人学习数据存在浏览器 IndexedDB，登录后才同步云端），**不是遗留描述**；② 使用指南 `js/guide.js` 的「数据在哪」「进度存在哪」「离线能用吗」逐条核对均成立；③ 关于本站的站点链接用 `location.origin` 动态渲染，**自动跟随域名**；④ 「发布题库」相关文案写的是 GitHub（配置 `github_pat_` Token 推 `data/published.json`）—— 与 `js/cloud.js#putFile` 的 GitHub Contents API 实现一致，**是准确的，不要改**。
+  - **真正过时的是 README.md**（7 处 + 技术栈 2 行）：「题库快照通过 GitHub Pages 分发」「托管于 GitHub Pages（main 分支）」「CDN 经 Fastly」等 → 已全部改为 **Cloudflare Pages + GitHub Actions**；「部署与自定义域名」章节整段重写（部署链路 / 正式入口 / 备用预览域 / 反爬守卫），旧 GitHub Pages 段落降级为「历史记录（已不成立，仅供追溯）」；项目结构去掉已删除的 `CNAME` 行；「重要说明」里题量 200+ → 1000+。
+  - **代码注释 3 处**：`js/app.js`（「GitHub Pages 根路径部署下即线上 URL」）、`js/cloud.js`（「随 GitHub Pages 一起发布」）、`sw.js`（「GitHub Pages HTML 固定 max-age=600」）。
+  - **刻意保留、不要去动**：`README.md` 的 `## 更新日志` 与「反爬迁移」等**历史章节**（记录当时决策与状态，日志性质）；`js/docs/*.js` 里的 `*.github.io` 是技术文档外部链接（Argo Rollouts / esbuild / WICG）；`js/account.js` 与 `netlify/functions/proxy.js` 里的 Netlify 是**仍在运行**的国内直连反代桥。
+  - commit `afdbbad95c8569e8a0de13b52d5e1239ae5e73c5`（父 `8caf4866`，快进推送）。
+  - **⚠️ 环境变化（2026-09-22 实测）**：本机代理 `127.0.0.1:7897` **已失效**（7890/7897/10808/10809/1080/8080 端口全关），但 **GitHub 直连可用** —— `git ls-remote` 与 `git push` 不带任何代理即成功。**后续联网操作先试直连**，不要再默认套 7897。
+
 
 - **✅【已完成·2026-09-21 晚】自购域名 `itinterview.com.cn` 全量切换 —— 站点自此有了自己的、可控的正式入口**：
   - **域名选型结论**：`.com` 主域 `itinterview.com` 被 HugeDomains 挂售 **$3,995**（NS = `nsg1/2.namebrightdns.com`）；`it-interview.com` 被 Afternic 挂售，页面内嵌 JSON `"buyNow":31976000000` ⇒ **一口价 $31,976**（微美元 ÷1e6）；`itinterview.cn` 由个人「龙茂飞」持有（到期 2026-11-07，非挂售但等不到）。⇒ 最终选 **`itinterview.com.cn` @ 腾讯云：首年 ¥33 / 续费 ¥38**（用户已购买，实名审核通过）。
