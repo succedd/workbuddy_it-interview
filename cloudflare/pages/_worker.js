@@ -1,8 +1,8 @@
 // Cloudflare Pages 高级模式 Worker（_worker.js）—— 反爬守卫 v2
 // ---------------------------------------------------------------
-// 为什么需要它：本站在 GitHub Pages 上是纯静态托管，没有任何边缘计算能力，
+// 为什么需要它：本站原先在 GitHub Pages 上是纯静态托管，没有任何边缘计算能力，
 // 于是 data/published.json（整库题目+答案，约 2MB）只要一条 curl 就能整包拿走；
-// q/*.html 又是 1209 个把「完整答案」写进 ld+json 的分享页，沿公开的 sitemap
+// q/*.html 又是 1228 个把「完整答案」写进 ld+json 的分享页，沿公开的 sitemap
 // 走一遍同样等于整库下载。迁移到 Cloudflare Pages 后，终于有一层可编程边缘，
 // 于是把「数据 / 分享页」两条出口收在这里。
 //
@@ -20,8 +20,12 @@
 //   这是「应用层」防护，能挡掉 99% 的随意采集（curl 一把梭、现成爬虫框架、
 //   AI 训练抓取），但挡不住「自己会改请求头、还肯花钱租代理池」的定向攻击——
 //   伪造 UA + 手工补 Sec-Fetch-Site 仍可拿到 data/published.json。
-//   本站域名 it-interview.is-a.dev 的 DNS 归属 is-a.dev 项目、不在本账号下，
-//   所以用不了 Cloudflare WAF / Bot Fight Mode，这已是可行范围内的上限。
+//   ✅ 2026-09-21 起域名换为自购的 itinterview.com.cn，zone 就在本账号下
+//   （id 48961f3585fdc652af950bd2163c0382），**因此现在可以叠加 Zone 级防护**：
+//   Security Level / Bot Fight Mode / WAF 自定义规则（免费版 5 条）/ Rate Limiting /
+//   HSTS。这些在旧的 is-a.dev 时代做不到（当时 DNS 归属 is-a.dev 项目、不在本账号）。
+//   建议：Cloudflare 后台开 Bot Fight Mode + Security Level=High，
+//   把这里从「应用层」升级为「网络层」防护。
 //   要再进一步只能改产品形态：把答案从分享页/静态 JSON 里挪到需要登录的接口。
 
 const BOT_RE = new RegExp(

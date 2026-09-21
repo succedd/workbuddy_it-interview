@@ -45,7 +45,7 @@ const ROOT_FILES = [
 // 站点必需：整目录拷贝
 const ROOT_DIRS = ["assets", "css", "data", "js", "q", "vendor"];
 
-// 高级模式 Worker：必须落在 dist 根，且不能出现在仓库根（否则误伤 GitHub Pages）
+// 高级模式 Worker：必须落在 dist 根（Pages 只认部署目录根的 _worker.js）
 const WORKER_SRC = path.join(ROOT, "cloudflare", "pages", "_worker.js");
 const WORKER_DEST = path.join(DIST, "_worker.js");
 

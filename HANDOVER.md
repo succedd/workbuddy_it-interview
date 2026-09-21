@@ -10,7 +10,7 @@
   - ⚠️ 旧路径 `C:/Users/Life/WorkBuddy/2026-08-24-14-31-52/workbuddy_it-interview` **已不是 git 仓库**（别再用）；`C:/Users/Life/Desktop/iti-dedup2` 分支/暂存区/`.git` 全部异常且 `js/cloud.js` 落后于线上，**仅可当历史资料，禁止用于发布**。
 - **推送凭据已就绪**：Windows 凭据管理器里存在 GitHub Token（`git credential fill` 可取出，长度 40 的经典 PAT），`git push` 无需额外配置。
 - **分支模型（部署安全铁律，2026-08-31 修正）：**
-  - ⚠️ **实测修正（2026-09-20 用 GitHub API 复核）：GitHub Pages 发布源是 `release`**（`GET /repos/succedd/workbuddy_it-interview/pages` 返回 `source.branch="release"`、`cname=it-interview.is-a.dev`、`status=built`）。08-31 曾记作 `main`（当时两分支版本号有差）。**结论不变：发版必须 main 与 release 都推**（站点发布时会同时推两分支），线上验收以 `release` 为准。
+  - ⚠️ **2026-09-21 更正：GitHub Pages 已彻底关闭**（`DELETE /repos/succedd/workbuddy_it-interview/pages` → **204**，复核 GET → 404），仓库根 `CNAME` 也已从 `release`/`main` 两分支删除。**线上正式入口 = `https://itinterview.com.cn`（自购域名）**，由 Cloudflare Pages（直传项目 `it-interview`）承载，推 `release` 即触发 `.github/workflows/deploy-pages.yml` 自动部署。⚠️ **`main` 不再需要同步推送**（GitHub Pages 已非发布源，main 仅作默认分支保留）；线上验收一律以 `release` 为准。
   - `release` = 开发基线分支（每日扩充流水线的合并基线读它），所有提交推它
   - 推 release **必须 fast-forward**：push 前 `git ls-remote origin release` 核对线上 tip；若历史分叉，禁止 force push，必须把新代码移植到线上基线之上再推
   - main 若与本地分叉（浏览器端备份/发布经 GitHub API 直推 main 会产生本地没有的提交），**优先 `git merge origin/main` 吸收后再推**，不要盲目 force
@@ -23,8 +23,8 @@
 - `index.html` 所有资源带 `?v=20260829h` 缓存戳（约 21 处）——**改动任何 js/css 后必须整体 bump**：
   `sed -i 's/v=20260829旧/v=20260829新/g' index.html`（字母递增 u→v→w…）
 - `sw.js` 第 8 行 `const VERSION = "..."` 必须与 index.html 同步 bump（SW 缓存靠它失效）
-- 部署 = `git push origin HEAD:release`，GitHub Pages 约 1 分钟生效
-- 验证：`curl https://it-interview.is-a.dev/?nocache=<ts>` 确认新版本号命中
+- 部署 = `git push origin <40位字面量SHA>:refs/heads/release` → GitHub Actions **`Deploy to Cloudflare Pages`** 自动执行（白名单组装 dist → 反爬守卫 41 条回归 → wrangler 直传），约 1–2 分钟生效。⚠️ **禁止用变量做 refspec**（`$VAR:refs/heads/x` 变量取空会删除远端分支）
+- 验证：`curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" "https://itinterview.com.cn/?nocache=<ts>"` 确认新版本号命中。⚠️ **裸 curl 会被反爬守卫 403**，必须带浏览器 UA；最省事的做法是直接跑 `python tools/accept-switch.py`（10 项验收）
 
 ## 3. 技术栈与结构
 
@@ -32,9 +32,11 @@
 - **第三方库已本地化 vendor/**（dexie/marked/purify/highlight/fuse + hljs 主题 css 进 SW 壳缓存；echarts/xlsx 大库按需加载 `U.loadScript`）——新增库要同步 sw.js 的 APP_SHELL；vendor 库无版本参数，缓存失效靠 SW VERSION 整体 bump
 - 行尾是 CRLF：node 脚本批量改文件需归一化 `\r\n`，否则 diff 爆炸；优先用逐处编辑工具
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
-- 静态分享页：`tools/gen-share-pages.js` 生成 264 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA；滚动近文末滑入「连刷同类题」引导条，可关闭）——**新增题目后需重跑一次**（脚本已同步桌面副本）
-- 域名 `it-interview.is-a.dev`（is-a.dev 子域名，CNAME 已配）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
-- **反爬托管层（2026-09-20 新增）**：站点前端正从 GitHub Pages 迁往 **Cloudflare Pages**。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（组装 `dist/`，内部文件不进发布目录）；回归测试 `tools/pages-guard-test.mjs`（41 条）；部署与验证清单 `cloudflare/pages/README.md`。**⚠️ 域名切换已启动**：`is-a-dev/register` PR #53221 已提交并已通过机器人模板校验（等维护者合并，1–3 天）；Cloudflare 侧已用 API 把 `it-interview.is-a.dev` 加为本项目自定义域（`status=initializing`，等 CNAME 生效后自动验证）。**在 PR 合并前，线上仍由 GitHub Pages 提供服务**（CNAME 仍指 `succedd.github.io`）。
+- 静态分享页：`tools/gen-share-pages.js` 生成 1228 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA；滚动近文末滑入「连刷同类题」引导条，可关闭）——**新增题目后需重跑一次**（脚本已同步桌面副本）
+- 域名 **`https://itinterview.com.cn`**（自购域名，2026-09-21 上线；`www.itinterview.com.cn` 同域也已 active）；备用预览域 `https://it-interview-889.pages.dev`（CORS 白名单仍保留，旧链接不失效）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
+- **反爬托管层（2026-09-21 已全部落地）**：站点前端已从 GitHub Pages **迁至 Cloudflare Pages**（直传项目 `it-interview`），并用高级模式 `_worker.js` 在边缘拦截采集。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（白名单组装 `dist/`，`tools/`、`cloudflare/`、`HANDOVER.md` 等内部文件不进发布产物）；回归测试 `tools/pages-guard-test.mjs`（41 条，**CI 里必跑，不过则中止部署**）；部署与验证清单 `cloudflare/pages/README.md`。**⚠️ 历史提示：`is-a-dev/register` PR #53221 已被维护者关闭（未合并），域名 `it-interview.is-a.dev` 已下架释放 —— 勿再引用、勿再申请。**
+- ✅ **2026-09-21 新增能力（取代旧注释里「用不了 WAF」的说法）**：`itinterview.com.cn` 的 zone 就在本账号下（id `48961f3585fdc652af950bd2163c0382`，status active），**因此现在可以启用 Zone 级防护** —— Security Level、Bot Fight Mode、WAF 自定义规则（免费版 5 条）、Rate Limiting、HSTS、Always Use HTTPS。这些在 is-a.dev 时代都做不到（域名 DNS 归属 is-a.dev 项目、不在本账号）。
+  - 现状实测（2026-09-22）：HTTP → **301 到 HTTPS** ✅ 已生效；**未开 HSTS**（无 `Strict-Transport-Security` 头）；响应头已有 `x-content-type-options: nosniff` 与 `referrer-policy: strict-origin-when-cross-origin`（Pages 默认）。若要进一步压采集，去 Cloudflare 后台开 Bot Fight Mode + Security Level「High」。
 
 ## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
 

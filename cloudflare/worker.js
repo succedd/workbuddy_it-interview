@@ -27,10 +27,11 @@ const MAX_TOP = 20;
    ⚠️ 必须是纯函数：isolate 并发请求会共享模块级变量、互相覆盖 Origin，
    表现为「同 isolate 内偶现 ACAO 缺失」。修法：把 origin 沿调用链传下去，
    任何中间不得用模块级状态缓存。
-   ⚠️ 2026-09-21：it-interview.is-a.dev 已被 is-a.dev 官方下架（ToS 第 4 条第 16 项
-   「任何面向课程的网站」），原域名 302 到 is-a.dev/available。**站点当前唯一入口是
-   Cloudflare Pages 的 it-interview-889.pages.dev**，故白名单以它为首位；
-   旧域名保留仅为兼容历史标签页/书签，不再承担流量。换自定义域时把新域名追加进来即可。 */
+   ⚠️ 2026-09-21 域名沿革：is-a.dev 被官方下架（ToS 第 4 条第 16 项「任何面向课程的网站」）
+   → 落到 Cloudflare Pages 的 it-interview-889.pages.dev → 当天切到自购域名。
+   **站点当前正式入口 = https://itinterview.com.cn（www 同域亦 active）**，故白名单以它为首位；
+   pages.dev 保留仅为兼容历史标签页/书签与对照探测，不再承担主流量。
+   换域名时把新域名追加进来即可（或用环境变量 ALLOWED_ORIGIN 覆盖，逗号分隔）。 */
 function resolveCorsOrigin(env, request) {
   const origins = ((env && env.ALLOWED_ORIGIN) ||
       "https://itinterview.com.cn,https://www.itinterview.com.cn,https://it-interview-889.pages.dev")

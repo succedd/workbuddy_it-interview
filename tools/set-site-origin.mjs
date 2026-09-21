@@ -11,10 +11,14 @@
  *  为什么有这个脚本（2026-09-21）：
  *    is-a.dev 依据服务条款第 4 条第 16 项（Any website that is orientated to
  *    courses）下架了本站域名 it-interview.is-a.dev，原域名 302 到
- *    https://is-a.dev/available。站点因此落到 Cloudflare Pages 的
- *    it-interview-889.pages.dev，且**将来还会再换一次自定义域**。
+ *    https://is-a.dev/available。站点因此先落到 Cloudflare Pages 的
+ *    it-interview-889.pages.dev，随后（同日）切到自购域名 itinterview.com.cn。
  *    域名散落在 index.html / 404.html / sitemap.xml / robots.txt / 工具常量
- *    以及 1209 个 q/*.html 分享页里，手改必然漏。本脚本把它们收敛为一条命令。
+ *    以及 1228 个 q/*.html 分享页里，手改必然漏。本脚本把它们收敛为一条命令。
+ *
+ *  ⚠️ 换域名后别忘了配套三件事：① `cloudflare/worker.js` 的 CORS 白名单与
+ *     SITE_ORIGIN；② 用无头 Chrome 重渲染 assets/og-cover.png（域名烤进像素）；
+ *     ③ 升 index.html/sw.js 版本号后跑 `python tools/accept-switch.py` 验收。
  *
  *  ⚠️ 只处理「功能性引用」：
  *      - 浏览器真正会去解析、跳转、抓取的 URL（canonical / og:url / og:image /
@@ -30,11 +34,16 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-/* 历史上用过、需要被替换掉的站点域名（按长度降序，避免子串互相影响） */
+/* 历史上用过、需要被替换掉的站点域名（按长度降序，避免子串互相影响）。
+   下次换域名时，把「当时的当前域名」也追加进来 —— 这样新域名上线时，
+   各代历史域名的残留会被一条命令一并清理干净。 */
 const KNOWN_OLD_HOSTS = [
-  /* 2026-09-21：is-a.dev 域名被下架后的临时入口，自购域名上线时也要一并替换掉 */
+  /* 2026-09-21 一天内换了两代：is-a.dev 被下架 → 落到 pages.dev → 切到自购的 com.cn。
+     三个都留着，将来再换域时能连历史残留一起替换。 */
   "it-interview-889.pages.dev",
   "it-interview.is-a.dev",
+  "itinterview.com.cn",
+  "www.itinterview.com.cn",
 ].sort((a, b) => b.length - a.length); /* 长的在前，避免子串互相影响 */
 
 /* 功能性文件（相对仓库根） */
