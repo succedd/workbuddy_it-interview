@@ -3,7 +3,7 @@
 [![Site](https://img.shields.io/badge/在线访问-itinterview.com.cn-2563EB)](https://itinterview.com.cn)
 [![GitHub](https://img.shields.io/badge/GitHub-succedd/workbuddy__it--interview-181717?logo=github)](https://github.com/succedd/workbuddy_it-interview)
 
-纯静态、无后端的 IT 各岗位面试题库管理与刷题平台。前端全部使用原生 HTML/CSS/JS 实现，数据默认存在浏览器 IndexedDB 中；题库快照通过 GitHub Pages 分发，支持"访客自动同步云端题库 + 管理员一键发布到 GitHub"。
+纯静态、无后端的 IT 各岗位面试题库管理与刷题平台。前端全部使用原生 HTML/CSS/JS 实现，数据默认存在浏览器 IndexedDB 中；题库快照由 Cloudflare Pages 分发（源文件托管在 GitHub），支持"访客自动同步云端题库 + 管理员一键发布到 GitHub"。
 
 ## 主要功能
 
@@ -54,7 +54,7 @@
   - 手动同步云端题库。
 
 ### 云端共享题库
-- 云端主库：`data/published.json`，随 GitHub Pages 一起发布。
+- 云端主库：`data/published.json`，随 Cloudflare Pages 一起发布（源文件在 GitHub 仓库，推送即由 Actions 自动部署）。
 - **访客**：首次打开自动拉取云端题库并覆盖本地种子数据；之后若云端有更新自动同步。
 - **编辑端**：在管理后台配置了 GitHub 发布 Token 的浏览器被视为编辑端，本地数据不会自动被云端覆盖；编辑完成后点"发布"即可把本地题库推送到 GitHub 仓库，所有访客下一次打开自动获取最新题库。
 - **自动发布**（v20260824a）：编辑端开启后（默认开启），题目/分类/岗位的任何增删改（含 AI 出题、批量导入）停止 10 秒后自动推送到 GitHub，顶栏徽章实时显示「未发布 / 发布中 / 已同步 / 失败」状态，失败自动重试；关闭页面前若有未发布改动会弹出提醒。
@@ -92,7 +92,7 @@
 - **定期自动化**：WorkBuddy 定时任务「题库定期自动扩充」每周一 10:00 运行——下载线上最新题库 → 按轮转表联网取材 → 写批次 → 校验合并 → 提交并发布（配置 `GH_PUBLISH_TOKEN` 环境变量后自动推送到 `main`/`release`）。
 - **手动运行**：`python tools/enrich_questions.py tools/batches/2026-08-27-a.json`
 
-> 说明：流水线只改动 `data/published.json`；真正的「发布到线上」由 GitHub Pages（源分支 `main`）分发，访客下次打开即见新题。若未配置 `GH_PUBLISH_TOKEN` 且无 git 凭据，自动化会保留本地提交并提示手动推送 / 用编辑器发布。
+> 说明：流水线只改动 `data/published.json`；真正的「发布到线上」由 Cloudflare Pages 分发 —— 部署源分支是 `release`，推送到该分支即经 GitHub Actions 自动构建部署，访客下次打开即见新题。若未配置 `GH_PUBLISH_TOKEN` 且无 git 凭据，自动化会保留本地提交并提示手动推送 / 用编辑器发布。
 
 ### 自动扩充记录
 
@@ -158,15 +158,13 @@
 
 ## 部署与自定义域名
 
-- **托管**：本站为纯静态站点，托管于 **GitHub Pages**（仓库 `succedd/workbuddy_it-interview` 的 `main` 分支）；推送到 `main` 即触发 Pages 重新构建发布，约 1 分钟全站生效。
-- **⚠️ 2026-09-21 域名已变更（以此条为准，其余为历史记录）**：原域名 `it-interview.is-a.dev` 已被 is-a.dev 官方依服务条款第 4 条
-  第 16 项（`Any website that is orientated to courses`，任何面向课程的网站）**下架** —— `domains/it-interview.json` 被整文件删除、
-  该域名已释放（现 302 到 `https://is-a.dev/available`）。站点现托管于 **Cloudflare Pages**，对外入口为 **https://it-interview-889.pages.dev**，
-  并在其上启用反爬守卫（`/data/published.json` 对非站内请求返回 403）。**不要再向 is-a.dev 申请该域名。**
-  下方所有关于「GitHub Pages 自定义域名 / `succedd.github.io`」的描述均为历史记录，已不再成立。
-- **自定义域名（非跳转）**：线上域名为 `it-interview.is-a.dev`，是 GitHub Pages 的**自定义域名**（在仓库 Settings → Pages 中配置），**并非跳转到 `github.io`**——浏览器地址栏始终显示 `it-interview.is-a.dev`，内容由 GitHub 直接以该域名返回。仓库根目录 `CNAME` 文件声明该域名，DNS 层 `it-interview.is-a.dev` CNAME 指向 `succedd.github.io`。
-- **CDN 分发**：GitHub Pages 内容经 **Fastly 全球边缘节点**分发（响应头 `X-Fastly-Request-ID` / `Via: varnish` 为证），访客就近访问、不回源；云端题库 `data/published.json` 同样走 CDN，并带 `Cache-Control: max-age=600`（边缘缓存 10 分钟）。
-- **域名来源**：`is-a.dev` 为免费域名服务申请的子域名。
+- **托管**：本站为纯静态站点，托管于 **Cloudflare Pages**（项目 `it-interview`，与域名同属一个 Cloudflare 账号）。
+- **部署链路**：**GitHub → GitHub Actions → Cloudflare Pages**。推送到 `release` 分支即触发 `.github/workflows/deploy-pages.yml`（组装 `dist/` → 跑反爬守卫回归 → 部署到 Pages），约 1 分钟全站生效。**日常发版只需推 `release`。**
+- **正式入口**：**https://itinterview.com.cn**（自购域名，`www.itinterview.com.cn` 同域可用）。DNS 托管在 Cloudflare，两条 CNAME（`@` / `www` → `it-interview-889.pages.dev`，Proxied 橙云）。
+- **备用预览域**：**https://it-interview-889.pages.dev**（Pages 默认域，始终可用；后端 CORS 白名单中保留它，旧链接不失效）。
+- **反爬守卫**：Pages 的 **Advanced Mode `_worker.js`**（源码 `cloudflare/pages/_worker.js`，构建时由 `tools/build-pages.mjs` 组装进 `dist/`）在边缘拦截 —— `/data/published.json` 等数据文件对**非站内请求**返回 403，仓库内部文件（`tools/`、`cloudflare/`、`HANDOVER.md` 等）一律 404 不出面。
+- **⚠️ 2026-09-21 域名变更（以此条为准）**：原域名 `it-interview.is-a.dev` 已被 is-a.dev 官方依服务条款第 4 条第 16 项（`Any website that is orientated to courses`，任何面向课程的网站）**下架**，域名已释放。**不要再向 is-a.dev 申请。** 同时 **GitHub Pages 已关闭**（根 `CNAME` 文件也已从 `release` / `main` 两分支删除），因此 `succedd.github.io/workbuddy_it-interview/` 入口已不存在。
+- **历史记录（已不成立，仅供追溯）**：本站曾托管于 GitHub Pages，以 `it-interview.is-a.dev` 为自定义域名（`CNAME` 指向 `succedd.github.io`），内容经 Fastly 边缘节点分发、题库带 `Cache-Control: max-age=600`。该方案已整体弃用。
 
 ### 部署 Cloudflare Worker（可选·访问统计）
 - 仓库 `cloudflare/` 目录含 `worker.js`（统计后端）+ `wrangler.toml`（配置模板，KV id 待填）+ **[`部署指南.md`](cloudflare/部署指南.md)**。
@@ -179,10 +177,9 @@
 ```
 .
 ├── index.html              # 入口页（百度统计、资源引用、加载动效）
-├── CNAME                   # 自定义域名 it-interview.is-a.dev
 ├── data/
 │   ├── seed.js             # 种子数据：分类树、岗位、岗位技能、示例题
-│   └── published.json      # 云端题库快照（GitHub Pages 分发）
+│   └── published.json      # 云端题库快照（Cloudflare Pages 分发，源文件在 GitHub）
 ├── js/
 │   ├── app.js              # 路由、顶部栏、侧边栏、全部页面渲染
 │   ├── auth.js             # 管理员密码哈希与登录态
@@ -203,8 +200,9 @@
 │   ├── intake-plan.md      # 取材来源白名单 + 21 域轮转表（驱动定期自动化）
 │   └── batches/            # 各批次题目 JSON（YYYY-MM-DD-a.json）
 └── cloudflare/
-    ├── worker.js           # 访问统计 Cloudflare Worker
-    └── wrangler.toml       # Wrangler 配置示例
+    ├── worker.js           # 后端 Worker（访问统计 / 账号登录 / 云同步 / 数据回读）
+    ├── wrangler.toml       # Wrangler 配置示例
+    └── pages/              # Pages 反爬守卫（_worker.js）与部署说明
 ```
 
 ## 快速开始
@@ -247,7 +245,7 @@ node tools/gen-published.js
 **不需要。**
 
 - 管理员密码是**本地功能**，只控制当前浏览器能否进入管理后台。
-- 普通访客打开网站后，只要第一次拉取到云端 `data/published.json`，就能直接浏览 200+ 道题、搜索、刷题、收藏。
+- 普通访客打开网站后，只要第一次拉取到云端 `data/published.json`，就能直接浏览全部题目（1000+ 道）、搜索、刷题、收藏。
 - 每个浏览器都有自己独立的管理员密码（以及收藏、历史等个人数据），互不影响。
 - 只有当你想"编辑题库并发布到 GitHub"时，才需要配置 GitHub Token（这个 Token 也只存在当前浏览器 localStorage）。
 
@@ -980,8 +978,8 @@ node tools/gen-published.js
 - [Fuse.js](https://fusejs.io/)：模糊搜索
 - [ECharts](https://echarts.apache.org/)：图表
 - [SheetJS](https://sheetjs.com/)：Excel 导入导出
-- GitHub Pages + GitHub Contents API：静态托管与题库发布
-- Cloudflare Workers + KV：可选访问统计后端
+- Cloudflare Pages + GitHub Actions：静态托管与自动部署（推送 `release` 即部署）
+- Cloudflare Workers + D1 / KV：后端（账号登录、云同步、访问统计）
 
 ## 质量抽检记录
 

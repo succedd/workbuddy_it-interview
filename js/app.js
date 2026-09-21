@@ -3106,7 +3106,7 @@
     const name = (qId ? "q" + qId + "-" : "") + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6) + "." + ext;
     const path = "assets/q/" + name;
     await Cloud.putFile(path, dataUrlToBytes(dataUrl), "外置题目图片 " + name);
-    return path;   // 站内相对路径，GitHub Pages 根路径部署下即线上 URL
+    return path;   // 站内相对路径；本站部署在根路径（Cloudflare Pages），相对路径即线上 URL
   }
   function wireImagePaste(sel) {
     const ta = $(sel); if (!ta) return;

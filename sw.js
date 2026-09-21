@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260921b";
+const VERSION = "20260921c";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -83,7 +83,7 @@ self.addEventListener("fetch", (event) => {
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
-        /* cache:"reload" 强制绕过 HTTP 缓存（GitHub Pages HTML 固定 max-age=600），
+        /* cache:"reload" 强制绕过 HTTP 缓存（Cloudflare Pages 的 HTML 同样会被边缘缓存），
            否则 network-first 的 fetch 仍会命中 10 分钟缓存，发版后用户要等 10 分钟才能拿到新版 */
         const net = await fetch(req, { cache: "reload" });
         /* 只缓存首页：否则 /q/<id>.html 等分享页会被写进 "/" 缓存键，污染离线首页 */
