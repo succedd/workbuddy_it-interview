@@ -1,6 +1,6 @@
 {
   "note": "经典题转写任务清单：自动化每次运行先跑 enrich_questions.py --topic-next 取第一个未完成主题，按追问链生成 5-8 题批次（由浅入深、题间 relatedIds 串联），合并成功后用 --topic-done <id> --batch <批号> 标记完成。cat/positions 必须用 published.json 中真实存在的名称。",
-  "updated": "2026-09-17",
+  "updated": "2026-09-21",
   "topics": [
     {
       "id": "T001",
@@ -188,7 +188,8 @@
       ],
       "source": "https://spring.io/projects/spring-boot",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-09-20-a"
     },
     {
       "id": "T015",
@@ -294,7 +295,8 @@
       ],
       "source": "https://www.xiaolincoding.com/",
       "count": 7,
-      "done": false
+      "done": true,
+      "batch": "2026-09-20-b"
     },
     {
       "id": "T023",
@@ -307,7 +309,8 @@
       ],
       "source": "https://redis.io/docs/latest/",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-09-21-c"
     },
     {
       "id": "T024",
@@ -526,7 +529,8 @@
       ],
       "source": "https://prometheus.io/docs/",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-09-20-c"
     },
     {
       "id": "T040",
@@ -593,7 +597,8 @@
       ],
       "source": "https://github.com/Snailclimb/JavaGuide",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-09-21-a"
     },
     {
       "id": "T045",
@@ -682,7 +687,8 @@
       ],
       "source": "https://zh-hans.react.dev/learn",
       "count": 7,
-      "done": false
+      "done": true,
+      "batch": "2026-09-21-b"
     },
     {
       "id": "T052",
