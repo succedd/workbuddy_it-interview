@@ -103,7 +103,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`fd0d1be`（Zone 传输层加固：HSTS + 强制 HTTPS + 安全响应头）｜缓存版本：`20260922a`｜更新时间：2026-09-22 08:30 (+08)**
+**最新 release commit：`ec680ed`（zone 级防护结论校准：实测确认无遗留待办）｜缓存版本：`20260922a`（本轮纯注释/文档，不升）｜更新时间：2026-09-22 09:05 (+08)**
+
+- **✅【已完成·2026-09-22 · 收尾】zone 级防护「无遗留待办」实测定论（commit `ec680ed`，父 `dfdc13e`）**：
+  - **用户要求**：「这一项得你动手，想办法搞定」= 不依赖用户去面板点开关，也要把 zone 级防护落实。**结论：不需要任何面板操作，也不需要为它改 token。**
+  - **方法（关键：不用任何 API 权限，纯客户端探测）**：① `min_tls_version` —— 用 Python `ssl`（`ALL:@SECLEVEL=0` + `minimum_version=maximum_version=目标版本`）逐版本尝试握手。**服务端**回 `tlsv1 alert protocol version` ⇒ 已禁用 TLS1.0/1.1。⚠️ **别用 `openssl s_client -tls1` 的失败当依据** —— 它报的是本机 `no protocols available`（客户端限制），据此会得出**假结论**。② `opportunistic_encryption` —— 80 端口发 h2c 前置知识（`PRI * HTTP/2.0`）与 `Upgrade: h2c` 两种方式，**都不升级、直接 301**。
+  - **六项逐条定论**：HTTP→HTTPS ✅ 301 已生效；HSTS ✅ 已由 `_worker.js` 响应头生效；最低 TLS ≥1.2 ✅ 已是现状；TLS1.3 ✅ 已开（`tls=TLSv1.3`、`kex=X25519MLKEM768`）；机会加密 ⚪ 影响已被 301 覆盖（且站内 0 处 `http://` 子资源 ⇒ 自动 HTTPS 重写也无需开）；Security Level=High / Bot Fight Mode ⛔ 不建议开（误伤国内访客与 Baiduspider）。
+  - **权限现状（供将来参考）**：本机 wrangler OAuth = `user:read/offline_access/account:read/workers:{write,kv,routes,scripts}/d1:write/pages:write/zone:read`（**无 zone settings**）；仓库 Secret `CLOUDFLARE_API_TOKEN`（Actions 里唯一一条，2026-09-21 建立）权限组实际只有 **`Account.Cloudflare Pages`** ⇒ 读 zone settings 同样 **9109**。要启用休眠流水线，须给它补 `Zone → Zone Settings → Edit`（Zone Resources: Include → Specific zone → `itinterview.com.cn`）；**改权限不会改变 token 值**，别点 Roll/Regenerate（会换值、弄挂 CI 部署）。
+  - **本机凭据清单**：`~/.workbuddy/secrets/` 只有 `gh-workflow.token`（GitHub，scope `repo, workflow`）；**本机不存在任何 Cloudflare API Token 文件**；截图里那个「Cloudflare Agent Token - 2026-08-27」（All zones、23+ 权限）**值未留存**、无法使用，且其 `Last used = Aug 27` 说明它不是 CI 在用那个。
+  - **流水线只监听 `cf-zone-setup` 分支**（已核对：最近 3 次 release 推送只触发 `Deploy to Cloudflare Pages`，全 success）⇒ 休眠流水线**不会**给日常发版添红叉。
+  - 临时分支 `cf-zone-setup`（`3608eee`）本轮已从远端删除；将来要用，从 release 当前 tip 重新 push 同名分支即可触发。
 
 - **✅【已完成·2026-09-22 上午】Zone 传输层加固（缓存版本 `20260921c` → `20260922a`）**：
   - **背景**：上一轮遗留的唯一待办是「Cloudflare Zone 级防护需用户去面板手动开」。用户要求「这项得你动手，想办法搞定」。
