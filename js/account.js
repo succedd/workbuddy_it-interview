@@ -225,14 +225,16 @@
   }
 
   /* ---------------- 注册 / 登录 / 退出 ---------------- */
-  A.register = async (email, password, nick) => {
-    const j = await call("POST", "/auth/register", { email, password, nick });
+  /* turnstileToken：人机验证令牌（可空）。后端未配 TURNSTILE_SECRET 时这个字段
+     会被整段忽略，因此传空也不影响。 */
+  A.register = async (email, password, nick, turnstileToken) => {
+    const j = await call("POST", "/auth/register", { email, password, nick, turnstileToken: turnstileToken || "" });
     _saveSession(j);
     await syncUp();       // 注册即把本机已有数据带上云端
     return j.user;
   };
-  A.login = async (email, password) => {
-    const j = await call("POST", "/auth/login", { email, password });
+  A.login = async (email, password, turnstileToken) => {
+    const j = await call("POST", "/auth/login", { email, password, turnstileToken: turnstileToken || "" });
     _saveSession(j);
     await mergeFromCloud();   // 登录后拉取该用户云端数据并合并进本机
     return j.user;
@@ -468,6 +470,7 @@
           <label class="field"><span>邮箱</span><input id="acc-email" type="email" placeholder="you@example.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" /></label>
           <label class="field"><span>密码（至少 8 位）</span><input id="acc-pass" type="password" placeholder="••••••••" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" /></label>
           <label class="field" id="nick-row" style="display:none"><span>昵称（可选）</span><input id="acc-nick" type="text" /></label>
+          <div id="acc-ts" style="margin:12px 0"></div>
           <button class="btn btn-primary full" id="acc-go" style="margin-top:8px">注 册</button>
           <div id="acc-out" style="margin-top:12px;color:#DC2626;font-size:13px"></div>
           <p class="muted" style="font-size:12px;margin-top:14px">帐号仅用于云同步你的学习数据；邮箱不对外展示。</p>
@@ -510,19 +513,32 @@
 
     let mode = "reg";
     const nickRow = $("#nick-row"), goBtn = $("#acc-go"), out = $("#acc-out");
+    /* 人机验证（开关式）：未配置 sitekey 时 mount 直接返回 null，界面无任何变化 */
+    const tsBox = $("#acc-ts");
+    if (window.TS && TS.enabled()) TS.mount(tsBox);
     $("#tab-login").onclick = () => { mode = "login"; nickRow.style.display = "none"; goBtn.textContent = "登 录"; };
     $("#tab-reg").onclick   = () => { mode = "reg";   nickRow.style.display = "";     goBtn.textContent = "注 册"; };
     goBtn.onclick = async () => {
       const email = $("#acc-email").value.trim(), pass = $("#acc-pass").value.trim(), nick = ($("#acc-nick") && $("#acc-nick").value.trim()) || "";
       if (!email || !pass) { out.textContent = "请填写邮箱和密码"; return; }
-      goBtn.disabled = true; out.style.color = "#64748B"; out.textContent = mode === "reg" ? "注册中…" : "登录中…";
+      goBtn.disabled = true; out.style.color = "#64748B";
+      /* 先过人机验证再发请求：token 一次性且有 300 秒有效期，所以放在点击时取 */
+      let tk = "";
+      if (window.TS && TS.enabled()) {
+        out.textContent = "正在进行人机验证…";
+        tk = await TS.token(tsBox);
+        if (!tk) { goBtn.disabled = false; out.style.color = "#DC2626"; out.textContent = TS.statusText(); return; }
+      }
+      out.textContent = mode === "reg" ? "注册中…" : "登录中…";
       try {
-        if (mode === "reg") await A.register(email, pass, nick);
-        else await A.login(email, pass);
+        if (mode === "reg") await A.register(email, pass, nick, tk);
+        else await A.login(email, pass, tk);
         U.toast("欢迎，" + email, "success");
         renderTopbar(); route();
       } catch (e) {
         out.style.color = "#DC2626"; out.textContent = e.message;
+        /* 令牌已被这次请求消耗掉，必须复位才能重新挑战，否则再点一次必报「已使用」 */
+        if (window.TS && TS.enabled()) TS.reset(tsBox);
       } finally { goBtn.disabled = false; }
     };
   };

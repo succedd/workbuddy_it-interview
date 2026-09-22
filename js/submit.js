@@ -289,6 +289,7 @@ function aiReportHtml(ai, row) {
         <label class="field"><span>来源备注（可选）</span>
           <input id="s-note" maxlength="200" placeholder="如：2024 某厂三面真题" />
           <div class="field-hint">写出处有助于审核员判断可信度；不填也能提交。</div></label>
+        <div id="s-ts" style="margin:10px 0"></div>
         <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn btn-primary" id="s-go">${U.icon("sparkles")} 提交并接受 AI 质检</button>
           <a class="btn" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
@@ -395,8 +396,15 @@ function aiReportHtml(ai, row) {
       if (st === 401) { A.logout(); refreshNav(); }
     }
 
+    /* 人机验证（开关式）：未配置 sitekey 时 mount 返回 null，界面无任何变化。
+       用「提交时才执行」模式 —— 投稿表单可能写十几分钟，若挂载时就换 token，
+       点提交时早超过 Turnstile 的 300 秒有效期，会变成看不懂的「验证未通过」。 */
+    const tsBox = $("#s-ts");
+    if (window.TS && TS.enabled()) TS.mount(tsBox);
+
     $("#s-go").onclick = async function () {
       const btn = $("#s-go"), old = btn.innerHTML;
+      let turnstileToken = "";
       const title = $("#s-title").value.trim();
       const body = $("#s-body").value.trim();
       const catPath = $("#s-cat").value.trim();
@@ -407,6 +415,12 @@ function aiReportHtml(ai, row) {
       if (catPath && !catId) { U.toast("技术分类请从下拉候选里点选一个，或先清空", "warn"); $("#s-cat").focus(); return; }
 
       btn.disabled = true;
+      /* 先过人机验证再发请求：令牌一次性且有 300 秒有效期，必须在点击时取 */
+      if (window.TS && TS.enabled()) {
+        btn.innerHTML = U.icon("refresh") + " 正在进行人机验证…";
+        turnstileToken = await TS.token(tsBox);
+        if (!turnstileToken) { btn.disabled = false; btn.innerHTML = old; U.toast(TS.statusText(), "warn"); return; }
+      }
       btn.innerHTML = U.icon("refresh") + " AI 质检中（约 5–15 秒），请勿关闭页面…";
       const out = $("#s-result");
       out.innerHTML = '<div class="card" style="margin-top:16px"><div class="muted">正在提交：AI 正在检查这条内容是否属于本站技术体系、以及质量是否达标…</div></div>';
@@ -424,6 +438,7 @@ function aiReportHtml(ai, row) {
           categoryName: catPath,
           sourceNote: $("#s-note").value.trim(),
           dupCandidates: dupCandidates(title),
+          turnstileToken: turnstileToken,
         });
         renderResult(r);
         if (!r.banned) {
@@ -436,6 +451,8 @@ function aiReportHtml(ai, row) {
       } finally {
         btn.disabled = false;
         btn.innerHTML = old;
+        /* 令牌已被这次请求消耗，必须复位才能重新挑战，否则再投一次必报「已使用」 */
+        if (window.TS && TS.enabled()) TS.reset(tsBox);
       }
     };
   };

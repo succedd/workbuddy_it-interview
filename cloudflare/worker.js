@@ -219,8 +219,11 @@ async function verifyTurnstile(env, request, body) {
   const fd = new FormData();
   fd.append("secret", secret);
   fd.append("response", token);
-  const ip = request.headers.get("cf-connecting-ip");
-  if (ip) fd.append("remoteip", ip);
+  /* 刻意**不**传 remoteip。国内访客走的是 Netlify 中转桥，而桥会把
+     cf-connecting-ip / x-forwarded-for 全部剥掉（见 netlify/functions/proxy.js
+     的 HOP_HEADERS），Worker 看到的 cf-connecting-ip 是 Netlify 出口 IP 而不是
+     访客本人的 —— 把错的 IP 报给 siteverify 只会制造随机失败。
+     remoteip 是可选参数，不传不影响校验强度。 */
 
   let out = null;
   try {
