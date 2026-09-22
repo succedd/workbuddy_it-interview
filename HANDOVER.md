@@ -68,7 +68,7 @@
   - `GET /me/submissions`（我的投稿 + 剩余违规机会）
   - `GET /admin/submissions?status=open|done|nonit`（open=待审+审核中，排除 AI 判非 IT 的；done=已通过+已打回；**nonit 仅 admin**）
   - `POST /admin/submissions/:id/claim`（抢单，乐观锁 `meta.changes` 判定，被抢返回 409）
-  - `POST /admin/submissions/:id/review`（`release`/`reject`/`approve`/`edit`；**禁止自审**）
+  - `POST /admin/submissions/:id/review`（`release`/`reject`/`approve`/`edit`；**禁止自审**，唯一例外：`role=admin` 可审自己的投稿 —— 全站可能只有唯一 admin，否则其投稿永久卡在待审核队列）
   - `GET|POST /admin/groups`、`DELETE /admin/groups/:id`、`POST /admin/groups/:id/members`
   - `POST /admin/users/:id/role`（只在 `user` ⇄ `expert` 之间切，**造不出新 admin**）
 - **权限模型（三层，别混）**：① `Auth.isAdmin()` = 本地密码门禁，只管题目编辑端；② `requireServerAdmin()` = D1 `role==='admin'`，管帐号管理 / 专家群组；③ `requireRole(db, req, ["admin","expert"])` = 审核队列（admin 看全部、expert 只看本组 + 未分配的）。**`requireAdmin()` 是 5 行的权限收口点，故意没让它接受 expert**，否则专家会顺带拿到帐号管理。
@@ -103,7 +103,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`ec680ed`（zone 级防护结论校准：实测确认无遗留待办）｜缓存版本：`20260922a`（本轮纯注释/文档，不升）｜更新时间：2026-09-22 09:05 (+08)**
+**最新 release commit：`458d682`（父）→ 本次提交「管理员可自审自己的投稿」｜缓存版本：`20260922b`｜更新时间：2026-09-22 20:20 (+08)**
+
+- **✅【已完成·2026-09-22 晚】放开「管理员可自审自己的投稿」（缓存版本 `20260922a` → `20260922b`）**：
+  - **用户反馈**：「我自己投的稿无法操作嘛」—— 审核队列里自己投的 #4（`mysql为什么用B+树`）操作列只有灰字「自己的投稿」，点不了。
+  - **根因（前后端各一处硬拦）**：① 前端 `js/submit.js` 列表渲染 `s.user_id === myId` ⇒ 直接渲染灰字、不给按钮；审核面板同样只显示「这是你自己提交的题目，不能自审」；② 后端 `cloudflare/worker.js#handleReview` 有 `if (row.user_id === u.id) return 403 "不能审核自己提交的题目"`。设计初衷 = 防专家自审开后门。
+  - **踩到的设计漏洞**：生产 D1 实测全站只有 2 个 `role=admin` —— `admin@iti.local`（**status=0 已禁用**，占位号）与 `2416217174@qq.com`（id=3，即站长本人）；**`role=expert` 用户 0 个**，`group_members` 全空（`expert_groups` 只有「后端组」「前端组」两个空组）⇒ 站长的投稿**全世界无人可审、自己也审不了，永久卡死**在待审队列。
+  - **改法（最小面）**：后端把自审拦截收窄为 `if (row.user_id === u.id && u.role !== "admin")` ⇒ 仅 `admin` 放行自审，**`expert` 仍严格禁自审**（审核链语义不变；admin 本就能在「题目管理」里直接入库，放行自审不是新增权力）。前端 `js/submit.js` 列表与审核面板都改为 `selfBlocked = self && !isAdmin / !A.isServerAdmin()`：管理员看到正常操作按钮 + `自己 · 可自审` 标记，专家仍是灰字「自己的投稿」。
+  - **未做（用户跳过方案选择，留作后续）**：投稿人「撤回自己的投稿」按钮（新增接口 + 状态位）—— 保留给以后按需加。
+  - `handleClaim` 本就没有自审拦截（只在 `handleReview` 拦），故本次无需改抢单逻辑。
 
 - **✅【已完成·2026-09-22 · 收尾】zone 级防护「无遗留待办」实测定论（commit `ec680ed`，父 `dfdc13e`）**：
   - **用户要求**：「这一项得你动手，想办法搞定」= 不依赖用户去面板点开关，也要把 zone 级防护落实。**结论：不需要任何面板操作，也不需要为它改 token。**

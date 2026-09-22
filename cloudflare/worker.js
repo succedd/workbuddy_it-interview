@@ -1067,8 +1067,13 @@ async function handleReview(env, request, rowId, origin) {
   if (!row) return jsonResp({ error: "投稿不存在" }, origin, 404);
   if (!(await canReviewRow(db, u, row))) return jsonResp({ error: "这条投稿不属于你负责的范围" }, origin, 403);
 
-  /* ⚠️ 禁止自审：否则专家可以给自己的投稿开后门，整条审核链形同虚设 */
-  if (row.user_id === u.id) return jsonResp({ error: "不能审核自己提交的题目" }, origin, 403);
+  /* ⚠️ 禁止自审：否则专家可以给自己的投稿开后门，整条审核链形同虚设。
+     例外（2026-09-22）：服务器管理员（role=admin）可自审自己的投稿 ——
+     全站可能只有唯一一个 admin，其投稿否则永久卡在待审核队列、无人可审。
+     admin 本来就能在「题目管理」里直接入库，放行自审不是新增权力；
+     专家（role=expert）仍然严格禁自审，审核链不受影响。 */
+  if (row.user_id === u.id && u.role !== "admin")
+    return jsonResp({ error: "不能审核自己提交的题目" }, origin, 403);
 
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }

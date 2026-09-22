@@ -555,9 +555,12 @@ function aiReportHtml(ai, row) {
             "</tr>";
           }
           const self = s.user_id === myId;
+          /* 管理员可自审自己的投稿（否则唯一 admin 的投稿会永久卡在队列里）；
+             专家仍然禁自审，避免给自己的投稿开后门。 */
+          const selfBlocked = self && !isAdmin;
           let act;
           if (S._status === "done") act = '<span class="muted" style="font-size:12px">' + (s.review_by ? "人工处理" : "AI 自动退回") + "</span>";
-          else if (self) act = '<span class="muted" style="font-size:12px">自己的投稿</span>';
+          else if (selfBlocked) act = '<span class="muted" style="font-size:12px">自己的投稿</span>';
           else if (s.review_status === "reviewing" && s.locked_by !== myId) act = '<span class="muted" style="font-size:12px">他人审核中</span>';
           else act = '<button class="btn btn-sm' + (s.ai_verdict === "pass" ? " btn-primary" : "") + '" data-act="claim" data-id="' + s.id + '">' + (s.review_status === "reviewing" ? "继续审核" : "开始审核") + "</button>";
           return "<tr>" +
@@ -565,7 +568,7 @@ function aiReportHtml(ai, row) {
             '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
               '<div class="muted" style="font-size:12px">' + esc(s.category_id || "未选分类") + " · " + esc(s.difficulty || "—") + " · " + esc(s.type || "—") +
               (s.groupName ? ' · 分组：' + esc(s.groupName) : "") + "</div></td>" +
-            '<td class="muted" style="font-size:12px">' + esc(authorName(s)) + (self ? ' <span class="tag tag-outline">自己</span>' : "") + "</td>" +
+            '<td class="muted" style="font-size:12px">' + esc(authorName(s)) + (self ? ' <span class="tag tag-outline">' + (selfBlocked ? "自己" : "自己 · 可自审") + "</span>" : "") + "</td>" +
             "<td>" + vTag(s.ai_verdict) + (s.ai_score ? ' <span class="muted" style="font-size:12px">' + s.ai_score + "</span>" : "") + "</td>" +
             "<td>" + rTag(s.review_status) + (s.review_note ? '<div class="muted" style="font-size:12px">' + esc(String(s.review_note).slice(0, 40)) + "</div>" : "") + "</td>" +
             '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(S._status === "done" ? s.review_at : s.created_at) + "</td>" +
@@ -623,6 +626,7 @@ function aiReportHtml(ai, row) {
       const pick = function (k, fallback) { return (edited[k] != null && edited[k] !== "") ? edited[k] : (fallback == null ? "" : fallback); };
       const myId = (A.getUser() || {}).id;
       const self = row.user_id === myId;
+      const selfBlocked = self && !A.isServerAdmin();   /* 管理员可自审；专家禁自审 */
       const diffs = ["初级", "中级", "高级", "专家"];
       const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
       const curCat = pick("categoryId", row.category_id);
@@ -659,9 +663,10 @@ function aiReportHtml(ai, row) {
             <input id="rv-note" maxlength="300" value="${esc(row.review_note || "")}" placeholder="可选。打回时会被要求填写理由。" /></label>
 
           <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:6px">
-            ${self
+            ${selfBlocked
               ? '<span class="tag tag-warning">这是你自己提交的题目，不能自审</span>'
-              : '<button class="btn btn-primary" id="rv-pass">' + U.icon("check") + " 通过（可以入库）</button>" +
+              : (self ? '<span class="tag tag-ai">自己的投稿 · 管理员可自审</span>' : "") +
+                '<button class="btn btn-primary" id="rv-pass">' + U.icon("check") + " 通过（可以入库）</button>" +
                 '<button class="btn" id="rv-edit">' + U.icon("edit") + " 只保存改动</button>" +
                 '<button class="btn btn-danger" id="rv-reject">' + U.icon("x") + " 打回</button>"}
             <button class="btn" id="rv-release">${U.icon("refresh")} 释放认领</button>

@@ -253,6 +253,15 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-22 · fix: 管理员可自审自己的投稿 —— 修掉「唯一管理员投稿永久卡死」（缓存版本 `20260922a → 20260922b`）
+
+- **用户反馈**：「我自己投的稿无法操作嘛」—— 审核队列里自己投的 #4（`mysql为什么用B+树`）操作列只有灰字「自己的投稿」，没有任何按钮。
+- **根因（前后端各一处硬拦）**：① 前端 `js/submit.js` 列表渲染处 `s.user_id === myId` ⇒ 直接渲染灰字、不给按钮；审核面板同样只显示「这是你自己提交的题目，不能自审」。② 后端 `cloudflare/worker.js#handleReview` 有 `if (row.user_id === u.id) return 403 "不能审核自己提交的题目"`。设计初衷 = 防专家自审开后门，这个初衷是对的。
+- **但它踩到一个设计漏洞**：生产 D1 实测全站只有 2 个 `role=admin` —— `admin@iti.local`（**status=0 已禁用**，占位号）和 `2416217174@qq.com`（站长本人）；`role=expert` 用户 **0 个**，`group_members` 全空。⇒ 站长的投稿**无人可审、自己也审不了，永久卡在待审队列**。
+- **改法（最小面，不动审核链语义）**：后端把自审拦截收窄为 `if (row.user_id === u.id && u.role !== "admin")` ⇒ **只有 `admin` 放行自审，`expert` 仍然严格禁自审**。理由是 admin 本来就能在「题目管理」里直接入库，放行自审不是新增权力；而 expert 自审会让整条审核链形同虚设。前端 `js/submit.js` 列表与审核面板都改为 `selfBlocked = self && !isAdmin`：管理员看到正常按钮 + `自己 · 可自审` 标签，专家仍是灰字「自己的投稿」。
+- **同步文档**：`HANDOVER.md`（第 6 节 + 接口说明）、站内《使用指南》`js/guide.js`（「投稿与审核」分区新增「不能审自己的投稿」一条，含管理员例外说明）。
+- **未做**：投稿人「撤回自己的投稿」按钮（需新增接口 + 状态位），留作以后按需加。
+
 ### 2026-09-20 · ops: 域名切换 PR 已提交 + Cloudflare 自定义域已登记（前端未改，缓存版本仍 `20260920c`）
 
 - **is-a.dev PR #53221** 已提交：`domains/it-interview.json` 的 `CNAME` 由 `succedd.github.io` 改为 `it-interview-889.pages.dev`（仅 +1/−1 行，等维护者合并，通常 1–3 天）。→ https://github.com/is-a-dev/register/pull/53221
