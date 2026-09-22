@@ -46,6 +46,7 @@
     reviewing: { cls: "tag-ai",      txt: "审核中" },
     approved:  { cls: "tag-success", txt: "已通过" },
     rejected:  { cls: "tag-danger",  txt: "已打回" },
+    withdrawn: { cls: "tag-outline", txt: "已撤回" },
   };
   const ACCENT = { pass: "#16A34A", reject_quality: "#D97706", reject_duplicate: "#D97706", reject_non_it: "#DC2626", error: "#64748B" };
 
@@ -445,6 +446,7 @@ function aiReportHtml(ai, row) {
     document.title = "我的投稿 · IT面试题库";
     if (!requireLogin()) return;
     const A = acc();
+    S._mine = [];
 
     setMain(crumb("我的投稿") + `
       <div class="section-head"><h2>我的投稿</h2></div>
@@ -455,9 +457,10 @@ function aiReportHtml(ai, row) {
         <a class="btn btn-primary" href="#/submit">${U.icon("plus")} 投稿新题</a>
       </div>
       <div class="card" style="padding:0"><table class="data">
-        <thead><tr><th style="width:140px">提交时间</th><th>标题</th><th style="width:150px">AI 质检</th><th style="width:110px">审核状态</th><th style="width:240px">审核意见 / 入库编号</th></tr></thead>
-        <tbody id="my-tb"><tr><td colspan="5">加载中…</td></tr></tbody></table></div>
-      <div class="note" style="margin-top:10px">审核通过只代表「内容可用」，还需要管理员在题目管理里把它加入题库才会正式上线。</div>`);
+        <thead><tr><th style="width:140px">提交时间</th><th>标题</th><th style="width:150px">AI 质检</th><th style="width:110px">审核状态</th><th style="width:240px">审核意见 / 入库编号</th><th style="width:90px">操作</th></tr></thead>
+        <tbody id="my-tb"><tr><td colspan="6">加载中…</td></tr></tbody></table></div>
+      <div class="note" style="margin-top:10px">审核通过只代表「内容可用」，还需要管理员在题目管理里把它加入题库才会正式上线。<br>
+        待审核的投稿可以自己<b>撤回</b>；一旦有审核者开始处理（状态变成「审核中」）就撤不回了。撤回后当日投稿次数不退还。</div>`);
 
     function load() {
       const tb = $("#my-tb");
@@ -470,7 +473,9 @@ function aiReportHtml(ai, row) {
           (left > 0 ? '　<span class="tag tag-success">还有 ' + left + " 次机会</span>"
                     : '　<span class="tag tag-danger">已用尽，再投非 IT 内容将被永久禁用</span>');
         const rows = r.submissions || [];
+        S._mine = rows;
         tb.innerHTML = rows.length ? rows.map(function (s) {
+          const canWithdraw = s.reviewStatus === "pending";
           return "<tr>" +
             '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(s.at) + "</td>" +
             '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
@@ -481,15 +486,42 @@ function aiReportHtml(ai, row) {
               esc(s.reviewNote || "") +
               (s.bankId ? '<div style="margin-top:2px">已入库题目 #' + esc(s.bankId) + "</div>" : "") +
               (!s.reviewNote && !s.bankId ? "—" : "") + "</td>" +
+            '<td>' + (canWithdraw
+              ? '<button class="btn btn-sm" data-withdraw="' + s.id + '">撤回</button>'
+              : '<span class="muted" style="font-size:12px">—</span>') + "</td>" +
           "</tr>";
-        }).join("") : '<tr><td colspan="5">还没有投稿记录。<a href="#/submit">去投第一题</a></td></tr>';
+        }).join("") : '<tr><td colspan="6">还没有投稿记录。<a href="#/submit">去投第一题</a></td></tr>';
+
+        $$("#my-tb button[data-withdraw]").forEach(function (b) {
+          b.onclick = function () { withdraw(parseInt(b.dataset.withdraw, 10), b); };
+        });
       }).catch(function (e) {
-        tb.innerHTML = '<tr><td colspan="5"><span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
+        tb.innerHTML = '<tr><td colspan="6"><span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
           ' <button class="btn btn-sm" id="my-retry" style="margin-left:8px">重试</button></td></tr>';
         const b = $("#my-retry");
         if (b) b.onclick = load;
       });
     }
+
+    async function withdraw(id, btn) {
+      const row = (S._mine || []).filter(function (x) { return x.id === id; })[0];
+      const t = (row && row.title) || ("投稿 #" + id);
+      if (!(await U.confirm("确认撤回《" + t + "》？撤回后它会从审核队列里消失，投稿内容不再保留在待审列表里（当日投稿次数不退）。", { okText: "确认撤回" }))) return;
+      const old = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "撤回中…";
+      try {
+        await A.withdrawSubmission(id);
+        U.toast("已撤回", "success");
+        load();
+      } catch (e) {
+        U.toast((e && e.message) || "撤回失败", "error");
+        btn.disabled = false;
+        btn.innerHTML = old;
+        if (e && (e.status === 400 || e.status === 409)) load();   // 状态已变：刷新看真实状态
+      }
+    }
+
     $("#my-refresh").onclick = load;
     load();
   };

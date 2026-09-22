@@ -413,6 +413,8 @@
   /* 投稿：服务端会做「每日限额 → IP 限流 → 本地预筛 → AI 质检」，返回 ai 结论与剩余机会 */
   A.submitQuestion = (p) => call("POST", "/submit", p);
   A.mySubmissions = () => call("GET", "/me/submissions");
+  /* 撤回自己的投稿（只能撤 pending 的；已被人认领/已审完会抛 400，抢单竞态抛 409） */
+  A.withdrawSubmission = (id) => call("POST", "/submissions/" + id + "/withdraw", {});
   /* status: open（待审+审核中）/ done（已通过+已打回）/ nonit（非 IT 记录，仅 admin） */
   A.adminListSubmissions = (status) => call("GET", "/admin/submissions?status=" + encodeURIComponent(status || "open"));
   /* 抢单：乐观锁认领，被别人抢了会抛 409（错误信息里带对方昵称） */

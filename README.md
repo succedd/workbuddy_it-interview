@@ -253,14 +253,51 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
-### 2026-09-22 · fix: 管理员可自审自己的投稿 —— 修掉「唯一管理员投稿永久卡死」（缓存版本 `20260922a → 20260922b`）
+### 2026-09-22 · 域名切换收尾 + 审核规则修补（缓存版本 `20260921c → 20260922a → 20260922b → 20260922c`）
+
+#### fix: 新增「撤回我的投稿」（`20260922b → 20260922c`）
+
+- **动机**：上一轮放开「管理员可自审」只解决 admin 自己投稿卡死；普通用户/专家投稿人发现投错、投重时，仍只能等审核者处理。补一个**投稿人自助撤回**的口子。
+- **后端**：新增 `POST /submissions/:id/withdraw` → `handleWithdrawSubmission`。规则：① 必须登录；② 不是自己的投稿 → **403「只能撤回自己的投稿」**；③ 只在 `review_status='pending'` 且 `locked_by=0` 时可撤 —— 已被认领返回 **400「已经有审核者在处理这条投稿了，不能撤回」**，已通过/已打回返回 **400「这条已经审完，不能撤回」**（翻案属于审核动作，不给投稿人自己改结论）；④ 幂等，已是 `withdrawn` 直接返回成功。
+- **软删除而非 DELETE**：写 `review_status='withdrawn'`，行保留。**关键好处 = 零 SQL 改动** —— 审核队列 `open` 只取 `IN ('pending','reviewing')`、`done` 只取 `IN ('approved','rejected')`，撤回后自动从队列消失，不用碰任何列表查询；「我的投稿」照常返回并显示「已撤回」。
+- **并发安全**：UPDATE 带 `AND user_id=? AND review_status='pending' AND locked_by=0` 条件 + 判 `meta.changes`（与审核抢单同一套乐观锁），撤回与认领同时发生必有一方失败，失败方回 **409「这条投稿状态刚变了，请刷新后再试」**；`logReview(...,'withdraw','')` 留痕。
+- **前端**：`js/account.js` 加 `A.withdrawSubmission(id)`；`js/submit.js` 的 `REVIEW` 表加 `withdrawn: 已撤回`，「我的投稿」表加第 6 列「操作」——仅 `pending` 行渲染「撤回」按钮，点击走二次确认（明确提示「当日投稿次数不退还」），400/409 时自动刷新显示真实状态。
+- **未做（有意）**：撤回后**不退还当日投稿次数** —— 该计数按 `created_at` 统计，退还需额外状态位与配额口径改动；已在界面与《使用指南》里写明。
+
+#### fix: 管理员可自审自己的投稿 —— 修掉「唯一管理员投稿永久卡死」（`20260922a → 20260922b`）
 
 - **用户反馈**：「我自己投的稿无法操作嘛」—— 审核队列里自己投的 #4（`mysql为什么用B+树`）操作列只有灰字「自己的投稿」，没有任何按钮。
 - **根因（前后端各一处硬拦）**：① 前端 `js/submit.js` 列表渲染处 `s.user_id === myId` ⇒ 直接渲染灰字、不给按钮；审核面板同样只显示「这是你自己提交的题目，不能自审」。② 后端 `cloudflare/worker.js#handleReview` 有 `if (row.user_id === u.id) return 403 "不能审核自己提交的题目"`。设计初衷 = 防专家自审开后门，这个初衷是对的。
 - **但它踩到一个设计漏洞**：生产 D1 实测全站只有 2 个 `role=admin` —— `admin@iti.local`（**status=0 已禁用**，占位号）和 `2416217174@qq.com`（站长本人）；`role=expert` 用户 **0 个**，`group_members` 全空。⇒ 站长的投稿**无人可审、自己也审不了，永久卡在待审队列**。
 - **改法（最小面，不动审核链语义）**：后端把自审拦截收窄为 `if (row.user_id === u.id && u.role !== "admin")` ⇒ **只有 `admin` 放行自审，`expert` 仍然严格禁自审**。理由是 admin 本来就能在「题目管理」里直接入库，放行自审不是新增权力；而 expert 自审会让整条审核链形同虚设。前端 `js/submit.js` 列表与审核面板都改为 `selfBlocked = self && !isAdmin`：管理员看到正常按钮 + `自己 · 可自审` 标签，专家仍是灰字「自己的投稿」。
-- **同步文档**：`HANDOVER.md`（第 6 节 + 接口说明）、站内《使用指南》`js/guide.js`（「投稿与审核」分区新增「不能审自己的投稿」一条，含管理员例外说明）。
-- **未做**：投稿人「撤回自己的投稿」按钮（需新增接口 + 状态位），留作以后按需加。
+- **验证**：用 D1 直插临时会话做免密探针（调 `review` 传非法 action，自审拦截发生在解析 action 之前 ⇒ **不写库**即可读出拦截与否）——管理员审自己的投稿 **400（已放行）**、临时专家审自己的投稿 **403（仍禁自审）**、管理员审他人 **400**；探针数据全部清理，残留 0。
+
+#### feat(security): Zone 传输层加固 —— HSTS + 强制 HTTPS + 安全响应头（`20260921c → 20260922a`）
+
+- **背景**：域名迁移后遗留唯一待办「Cloudflare Zone 级防护需去面板手动开」。用户要求「这项得你动手，想办法搞定」。
+- **权限硬边界**：本机 wrangler OAuth 只有 `zone:read`；仓库 Secret `CLOUDFLARE_API_TOKEN`（凭据本身有效）也只挂了 `Account.Cloudflare Pages` —— 两条通道读/写 zone settings 都是 **9109**。⇒ 改走「**能靠响应头等效实现的一律下沉到应用层**」。
+- **`cloudflare/pages/_worker.js` 新增第四道闸门**：`http → https 301`（本地 dev / `[::1]` 除外）+ `Strict-Transport-Security: max-age=15552000; includeSubDomains`（刻意不开 preload）+ `nosniff` + `frame-ancestors 'self'` + `SAMEORIGIN` + `Referrer-Policy`。统一走 `harden()` 包装 —— **必须新建 Response**（`env.ASSETS.fetch()` 与 `Response.redirect()` 返回对象的 headers guard 是 `immutable`）；**304 时 body 必须传 null**，否则 `new Response(res.body, res)` 抛 TypeError（顺手修掉的既有隐患）。
+- **刻意不开两项（有实测副作用）**：`security_level=High`（国内访客大量走代理/共享出口 IP，会频繁人机验证）、Bot Fight Mode（**实测挡 Baiduspider**，而本站百度流量是主力，且 `_worker.js` 已有精准 UA+ASN 白名单）。
+- **「无遗留待办」实测定论（commit `ec680ed`）**：最低 TLS 已是 1.2+（用 Python `ssl` 逐版本握手，服务端回 `tlsv1 alert protocol version`；⚠️ 别用 `openssl s_client -tls1` 的失败当依据，那报的是本机限制，会得出**假结论**）；TLS1.3 已开；机会加密影响已被 301 覆盖且站内 0 处 `http://` 子资源。
+- **验证**：部署 run `35671364583` success；线上 HSTS + 4 个安全头齐全、`http→https` 301、备用域同样带 HSTS；`tools/pages-guard-test.mjs` **44/44**（较此前 41 条新增 3 条）；`accept-switch.py` 10/10；`regress-check.py` 零回归。
+
+#### ops: 迁移遗留审计 + 文档校准（`20260921b → 20260921c`，无功能改动）
+
+- **审计范围**：域名 + 托管方式变更后的全部引用 —— PWA manifest、Service Worker 缓存、CSP、重定向配置、环境变量覆盖项、**服务端回读路径**、工具脚本、文档指引。
+- **结论：代码侧没有失效项**。其中最高危的静默失效点是 `worker.js#getCategorySnapshot` 从 `SITE_ORIGIN + /data/published.json` 拉分类树（**失败会被 try/catch 吞掉**，表现为分类快照恒空、AI 质检失去上下文）——实测 Worker 未被设过 `SITE_ORIGIN` 覆盖项，代码常量生效，回读 200 / 2,167,247 字节 / 276 个分类。
+- **真正过时的是 README**：「题库快照通过 GitHub Pages 分发」「CDN 经 Fastly」等 7 处 + 技术栈 2 行 → 全部改为 **Cloudflare Pages + GitHub Actions**；「部署与自定义域名」章节整段重写；旧 GitHub Pages 段落降级为「历史记录（已不成立）」。
+- **刻意保留不动**：`## 更新日志` 等历史章节（日志性质）；`js/docs/*.js` 里的 `*.github.io` 是外部技术文档链接；`js/account.js` 与 `netlify/functions/proxy.js` 里的 Netlify 是**仍在运行**的国内直连反代桥。
+
+### 2026-09-21 · 站点切换到自购域名 `https://itinterview.com.cn`（缓存版本 `20260920c → 20260921a → 20260921b`）
+
+- **起因（重大事故）**：`it-interview.is-a.dev` 被 is-a.dev 官方**零预警下架** —— 维护者先 APPROVE 了 CNAME 迁移 PR #53221（只核了 JSON 格式、没看站点），打开站点后判 `The website's content violates the terms of service` 并关掉该 PR，3 分钟后自开并合并 PR **#53294「taking down it-interview.is-a.dev」**，`domains/it-interview.json` 被整文件删除。**违规条款定位 = is-a.dev ToS 第 4 条禁止清单第 16 项「Any website that is orientated to courses」（任何面向课程的网站）**，原文写明 `Violation of this section may result in immediate termination without notice.` ⛔ **结论：不要再向 is-a.dev 及任何同类免费子域申请域名来放这个站。**
+- **抢救与切换**：先全量迁到备用预览域 `https://it-interview-889.pages.dev`（缓存版本 `20260920c → 20260921a`），随后自购 **`itinterview.com.cn` @ 腾讯云首年 ¥33 / 续费 ¥38** 并完成全量切换（`20260921a → 20260921b`）。域名选型依据：`itinterview.com` 被 HugeDomains 挂售 $3,995、`it-interview.com` 被 Afternic 一口价 $31,976、`itinterview.cn` 由个人持有要等到 2026-11-07 才可能到期。
+- **Cloudflare 侧（全部 active）**：zone `48961f3585fdc652af950bd2163c0382` status=active；NS `joyce/kyle.ns.cloudflare.com`；DNS 两条 CNAME `@` 与 `www` → `it-interview-889.pages.dev`（Proxied）；Pages 自定义域 root + www 均 active。
+- **后端**：`cloudflare/worker.js`（已 `wrangler deploy`）CORS 白名单 = `itinterview.com.cn` + `www` + 旧的 `pages.dev`（兼容历史标签页），`SITE_ORIGIN = "https://itinterview.com.cn"`；实测新域/www/pages.dev 均发放 CORS、`evil.example.com` **不发放**。
+- **站内域名全量替换**：新增 `tools/set-site-origin.mjs`（幂等，`KNOWN_OLD_HOSTS` 长的在前避免子串互扰），实际替换 **1236 文件 / 10884 处**，复跑 0 处；残留 17 处经逐一核查全在「文档历史叙述 + 脚本注释」，刻意保留。顺手修掉 `tools/verify-publish.py`、`tools/merge-dup-questions.py` 里仍指向**已下架域名**的 `SITE` 常量。
+- **OG 封面图重渲染（像素级）**：图里的域名是**烤进像素**的，脚本改源文件不够，必须用无头 Chrome 重出 `assets/og-cover.png` 并比对线上 sha256。
+- **换域名必查清单（本次踩全）**：① 前端硬编码 → ② 静态/SEO 文件（sitemap/canonical/robots）→ ③ `worker.js` CORS 白名单 → ④ **服务端回读路径 `SITE_ORIGIN`** → ⑤ **OG 图（像素级）** → ⑥ **Worker 环境变量覆盖项**（`SITE_ORIGIN`/`ALLOWED_ORIGIN` 若被设错且失败被 try/catch 吞掉，会静默失效）。后三处之外的故障都是静默的。
+- **验收**：部署 run `35612690196` success；`tools/accept-switch.py`（本次新增的 10 项换域名验收脚本）**10/10 通过**；`tools/regress-check.py` **旧功能零回归**；线上 OG 图 sha256 与本地一致。切换期间不断站（`pages.dev` 全程可用）。
 
 ### 2026-09-20 · ops: 域名切换 PR 已提交 + Cloudflare 自定义域已登记（前端未改，缓存版本仍 `20260920c`）
 

@@ -66,6 +66,7 @@
 - **投稿相关接口**（全部在 `worker.js` 尾部「用户投稿 + 专家群组审核」段）：
   - `POST /submit`（登录 → 每帐号每日 5 条 → IP 限流 → 本地预筛 → DeepSeek 质检 → 入库待审 → 非 IT 计次/封号）
   - `GET /me/submissions`（我的投稿 + 剩余违规机会）
+  - `POST /submissions/:id/withdraw`（投稿人撤回自己的待审投稿；仅 `pending` 且 `locked_by=0` 可撤，软删除为 `review_status='withdrawn'`，因此审核队列 `open` 自动排除它）
   - `GET /admin/submissions?status=open|done|nonit`（open=待审+审核中，排除 AI 判非 IT 的；done=已通过+已打回；**nonit 仅 admin**）
   - `POST /admin/submissions/:id/claim`（抢单，乐观锁 `meta.changes` 判定，被抢返回 409）
   - `POST /admin/submissions/:id/review`（`release`/`reject`/`approve`/`edit`；**禁止自审**，唯一例外：`role=admin` 可审自己的投稿 —— 全站可能只有唯一 admin，否则其投稿永久卡在待审核队列）
@@ -103,7 +104,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`458d682`（父）→ 本次提交「管理员可自审自己的投稿」｜缓存版本：`20260922b`｜更新时间：2026-09-22 20:20 (+08)**
+**最新 release commit：`041d381`（父）→ 本次提交「撤回我的投稿」｜缓存版本：`20260922c`｜更新时间：2026-09-22 20:45 (+08)**
+
+- **✅【已完成·2026-09-22 晚】新增「撤回我的投稿」（缓存版本 `20260922b` → `20260922c`）**：
+  - **动机**：上一轮放开「管理员可自审」只解决了 admin 自己投稿卡死；非管理员/专家投稿人若发现投错、投重，仍只能等审核者处理。补一个**投稿人自助撤回**的口子。
+  - **后端**：新增 `POST /submissions/:id/withdraw` → `handleWithdrawSubmission`。规则：① 必须登录；② `row.user_id !== u.id` → **403「只能撤回自己的投稿」**（不能撤别人的）；③ 只在 `review_status = 'pending'` 且 `locked_by = 0` 时可撤 —— 已被人认领（`reviewing`）返回 **400「已经有审核者在处理这条投稿了，不能撤回」**，已通过/已打回返回 **400「这条已经审完，不能撤回」**（翻案属于审核动作，不给投稿人自己改结论）；④ 幂等：已是 `withdrawn` 直接返回 `{ok:true, already:true}`。
+  - **软删除，不是 DELETE**：写 `review_status='withdrawn'` + `review_at`，行保留。**关键好处 = 零 SQL 改动**：审核队列 `open` 只取 `IN ('pending','reviewing')`、`done` 只取 `IN ('approved','rejected')`，所以撤回后自动从队列消失，不用碰任何列表查询；「我的投稿」`/me/submissions` 照常返回，前端显示「已撤回」。
+  - **并发安全**：UPDATE 带 `AND user_id = ? AND review_status = 'pending' AND locked_by = 0` 条件 + 判 `meta.changes`（与审核抢单同一套乐观锁）⇒ 撤回与认领同时发生时必有一方失败，失败方回 **409「这条投稿状态刚变了，请刷新后再试」**。`logReview(..., 'withdraw', '')` 留痕。
+  - **前端**：`js/account.js` 加 `A.withdrawSubmission(id)`；`js/submit.js` 的 `REVIEW` 表加 `withdrawn: 已撤回`，「我的投稿」表加第 6 列「操作」——仅 `pending` 行渲染「撤回」按钮（其余显示 `—`），点击走 `U.confirm` 二次确认（提示「当日投稿次数不退还」）；400/409 时自动 `load()` 刷新看真实状态。`S._mine` 缓存当前列表供确认框取标题。
+  - **未做**（有意）：撤回后**不退还当日投稿次数** —— 该计数按 `created_at` 统计，退还需额外状态位与配额口径改动；已在 UI 与指南里明确说明。
 
 - **✅【已完成·2026-09-22 晚】放开「管理员可自审自己的投稿」（缓存版本 `20260922a` → `20260922b`）**：
   - **用户反馈**：「我自己投的稿无法操作嘛」—— 审核队列里自己投的 #4（`mysql为什么用B+树`）操作列只有灰字「自己的投稿」，点不了。

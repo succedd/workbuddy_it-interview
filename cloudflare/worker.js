@@ -947,6 +947,33 @@ async function handleMySubmissions(env, request, origin) {
   }, origin);
 }
 
+/* 撤回自己的投稿（2026-09-22）：投稿人自己把还挂在待审队列里的条目收回。
+   只允许 pending —— 一旦被人认领（reviewing）就动它，等于抢别人的进度；
+   已通过/已打回同样不能让投稿人自己翻案（那属于审核动作）。
+   软删除：写入 review_status='withdrawn'，行保留。审核队列的 open 只取
+   pending/reviewing，所以撤回后自动从队列消失，无需改任何列表 SQL；
+   「我的投稿」照样看得到，显示「已撤回」。 */
+async function handleWithdrawSubmission(env, request, rowId, origin) {
+  const db = env.USERS;
+  const u = await sessionUser(db, request);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
+  const row = await db.prepare("SELECT id, user_id, review_status, locked_by FROM submissions WHERE id = ?").bind(rowId).first();
+  if (!row) return jsonResp({ error: "投稿不存在" }, origin, 404);
+  if (row.user_id !== u.id) return jsonResp({ error: "只能撤回自己的投稿" }, origin, 403);
+  if (row.review_status === "withdrawn") return jsonResp({ ok: true, already: true }, origin);
+  if (row.review_status !== "pending" || row.locked_by)
+    return jsonResp({ error: row.review_status === "reviewing" ? "已经有审核者在处理这条投稿了，不能撤回" : "这条已经审完，不能撤回" }, origin, 400);
+
+  const r = await db.prepare(
+    "UPDATE submissions SET review_status = 'withdrawn', review_at = ?, locked_by = 0, locked_at = 0 " +
+    "WHERE id = ? AND user_id = ? AND review_status = 'pending' AND locked_by = 0")
+    .bind(Date.now(), rowId, u.id).run();
+  /* 条件写 + meta.changes：与审核抢单同一套乐观锁写法，避免「撤回」和「认领」同时发生 */
+  if (!r.meta || !r.meta.changes) return jsonResp({ error: "这条投稿状态刚变了，请刷新后再试" }, origin, 409);
+  await logReview(db, rowId, u.id, "withdraw", "");
+  return jsonResp({ ok: true }, origin);
+}
+
 /* ---------- 审核（admin + expert） ---------- */
 
 async function handleAdminSubmissions(env, request, origin) {
@@ -1256,6 +1283,8 @@ export default {
         await ensureSubmitTables(db);      // 建表自愈（内部已 try/catch，失败不影响上面任何接口）
         if (p === "/submit" && request.method === "POST") return await handleSubmit(env, request, corsOrigin);
         if (p === "/me/submissions" && request.method === "GET") return await handleMySubmissions(env, request, corsOrigin);
+        if ((m = /^\/submissions\/(\d+)\/withdraw$/.exec(p)) && request.method === "POST")
+          return await handleWithdrawSubmission(env, request, parseInt(m[1]), corsOrigin);
         if (p === "/admin/submissions" && request.method === "GET") return await handleAdminSubmissions(env, request, corsOrigin);
         if ((m = /^\/admin\/submissions\/(\d+)\/claim$/.exec(p)) && request.method === "POST")
           return await handleClaim(env, request, parseInt(m[1]), corsOrigin);
