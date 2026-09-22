@@ -94,7 +94,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`888a583`（迁移遗留说明清理）｜缓存版本：`20260921c`（本轮无前端改动，故不升）｜更新时间：2026-09-22 08:10 (+08)**
+**最新 release commit：`fd0d1be`（Zone 传输层加固：HSTS + 强制 HTTPS + 安全响应头）｜缓存版本：`20260922a`｜更新时间：2026-09-22 08:30 (+08)**
+
+- **✅【已完成·2026-09-22 上午】Zone 传输层加固（缓存版本 `20260921c` → `20260922a`）**：
+  - **背景**：上一轮遗留的唯一待办是「Cloudflare Zone 级防护需用户去面板手动开」。用户要求「这项得你动手，想办法搞定」。
+  - **权限硬边界（两条通道实测都堵）**：① 本机 wrangler OAuth scope 只有 `zone:read`（zone settings 读/写均报 **9109**）；② 仓库 Secret `CLOUDFLARE_API_TOKEN` **凭据本身有效**（`/user/tokens/verify` 通过）但**同样缺 Zone Settings 权限**（在 CI 里实测 9109）。⇒ 于是改走「**能靠响应头等效实现的一律下沉到应用层**」，不依赖任何面板操作（浏览器视角与面板开关产物一致）。
+  - **`cloudflare/pages/_worker.js` 新增第四道闸门**：`http → https 301`（本地 dev / `[::1]` 除外，否则重定向死循环）+ `Strict-Transport-Security: max-age=15552000; includeSubDomains`（刻意不开 preload）+ `nosniff` + `frame-ancestors 'self'` + `SAMEORIGIN` + `Referrer-Policy`。统一走 `harden()` 包装 —— **必须新建 Response**，因为 `env.ASSETS.fetch()` 与 `Response.redirect()` 返回对象的 headers guard 是 `immutable`，直接 `set` 会失败。
+  - **顺手修掉一个既有隐患**：`ASSETS` 返回 **304**（协商缓存命中）时 `new Response(res.body, res)` 会抛 TypeError ⇒ 改为 `NULL_BODY_STATUS` 判空 body。
+  - **刻意不开的两项（有实测副作用，别照抄「全面加固」教程）**：`security_level=High`（国内访客大量走代理/共享出口 IP，威胁评分偏高 ⇒ 频繁人机验证甚至 403，伤真实用户）、`bot_management`（**实测会误伤 Baiduspider / YandexBot**；本站百度流量是主力，且 `_worker.js` 已有精准 UA+ASN 白名单，叠加收益为负）。
+  - **zone 侧仍缺、且只能靠权限的 2 项**：`min_tls_version=1.2`、`opportunistic_encryption=off`（「随机加密」对百度爬虫不友好 —— 但其风险已被 Always Use HTTPS 的 301 覆盖大半）。**脚本与流水线已备好、幂等可重跑**：`tools/ci/zone-security.py` + `.github/workflows/zone-security.yml`（push 到 `cf-zone-setup` 分支即触发，用 Secret 当**凭据代理**执行并逐项复查 PASS/FAIL）。拿到权限后只需重推该分支。
+  - **验证（部署 run `35671364583` success，版本 `20260922a`）**：线上实测 `strict-transport-security: max-age=15552000; includeSubDomains` + 4 个安全头齐全；`http://` **301 → https**；**备用域 `pages.dev` 同样带 HSTS**；`pages-guard-test.mjs` **41 → 44 条、44/44 通过**（新增「安全头齐全」「http→301 生效」「304 不抛错」）；`accept-switch.py` **10/10**；`regress-check.py` **旧功能零回归**。
+  - commit `fd0d1be8`（父 `5d6b53d9`，快进推送）。
 
 - **✅【已完成·2026-09-22 上午】迁移遗留审计与清理（**无功能改动**，缓存版本保持 `20260921c`）**：
   - **背景**：用户问「因为迁移，该修改的全部调整修改了吧，怕会失效有些」→ 对「域名 + 托管方式」变更后的**全部引用**做了一次系统审计（PWA manifest / Service Worker 缓存 / CSP / 重定向配置 / 环境变量覆盖项 / 服务端回读路径 / 工具脚本 / 文档操作指引）。
@@ -116,7 +126,7 @@
   - **顺手增强**：`tools/set-site-origin.mjs` 的 `KNOWN_OLD_HOSTS` 补入 `itinterview.com.cn` / `www.itinterview.com.cn` ⇒ **下次换域名时能连历史几代残留一并清理**；`api-endpoints.json` 注释去掉已放弃的 eu.org 方案，`updated` → 2026-09-22。
   - **部署结果**：Worker 重新用注释同步 deploy ⇒ Version **`9921c460-aa43-4059-a221-f8559697c498`**（KV + D1 双绑定正常）。Actions `888a583` **success**。
   - **验证**：`build-pages.mjs` 1287 文件 / 内部文件未泄漏；`pages-guard-test.mjs` **41/41 `PAGES_GUARD_OK`**；`accept-switch.py` **10/10**；`regress-check.py` **旧功能零回归**；CORS 三域发放 + `evil.example.com` 不发放。
-  - ⚠️ **本轮未开 Cloudflare Zone 级防护** —— 本机 OAuth token 只有 `zone:read`（对 zone settings 返回 **9109 Unauthorized**），**需要用户去 Cloudflare 后台手动开**。建议顺序：Security Level = High → Bot Fight Mode 开 → （可选）HSTS。
+  - ⚠️ **本轮未开 Cloudflare Zone 级防护** —— 本机 OAuth token 只有 `zone:read`（对 zone settings 返回 **9109 Unauthorized**），仓库 Secret 那个 token 同样缺权限。**后续进展见上方「Zone 传输层加固」条**：HSTS 与强制 HTTPS 已用响应头在应用层等效实现（无需任何权限）；`Security Level=High` 与 `Bot Fight Mode` 经评估**不建议开**（会误伤国内访客与百度蜘蛛）。
 
 - **✅【已完成·2026-09-22 上午】Cloudflare 迁移后的文案校准（缓存版本 `20260921b` → `20260921c`）**：
   - **背景**：用户问「迁到 Cloudflare 后，页脚（使用指南 · 关于本站 · GitHub · 数据存于本机浏览器）这类文案是不是要改」。
