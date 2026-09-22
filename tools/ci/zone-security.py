@@ -6,12 +6,30 @@ Cloudflare Zone 安全基线（幂等，可反复执行）
 把 itinterview.com.cn 的「传输层安全」一次性调到推荐值，并在改完后用 API 复查、
 逐项打印 PASS/FAIL（有 FAIL 就 exit 1，便于 CI 标红）。
 
-为什么需要它：
+为什么需要它（⚠️ 截至 2026-09-22：本脚本仍是「休眠」状态，一次都没在 CI 里跑通过）：
   站点从 GitHub Pages 迁到 Cloudflare Pages 后，域名 zone 就在本账号下
   （zone id 48961f3585fdc652af950bd2163c0382），终于可以叠加 zone 级防护。
-  但本机 wrangler 的 OAuth 只有 zone:read —— 读设置报 9109、写设置更不行。
-  于是走 CI：用仓库 Secret `CLOUDFLARE_API_TOKEN` 当「凭据代理」执行，
-  本机全程不需要持有高权限 token。
+  但两条通道都缺权限：本机 wrangler 的 OAuth 只有 zone:read —— 读设置报 9109、
+  写设置更不行；仓库 Secret `CLOUDFLARE_API_TOKEN` 虽然凭据本身有效
+  （/user/tokens/verify 通过），但权限组实际只有 `Account.Cloudflare Pages`，
+  在 CI 里读 zone settings 同样报 9109。
+  ⇒ 要跑通本脚本，必须先在 Dashboard 给该 token 加一条
+    「Zone → Zone Settings → Edit」（Zone Resources: Include → Specific zone
+    → itinterview.com.cn），再 push 到 cf-zone-setup 分支触发
+    .github/workflows/zone-security.yml。
+
+【要不要为它去改 token？2026-09-22 实测结论：不值得 —— 多数项已经是现状】
+  · min_tls_version：**已满足**。Python ssl 用 `ALL:@SECLEVEL=0` 逐版本尝试
+      TLS1.0/1.1，服务端回 `tlsv1 alert protocol version`（注意这是**服务端**拒绝
+      的告警；openssl CLI 报的 `no protocols available` 是本机限制、不构成证据）
+      ⇒ 边缘最低 TLS 已是 1.2+。别拿 openssl CLI 的失败当依据，会得出假结论。
+  · tls_1_3：**已开**（/cdn-cgi/trace 实测 tls=TLSv1.3、kex=X25519MLKEM768）。
+  · always_use_https / HSTS：**效果已在应用层达成**，见 cloudflare/pages/_worker.js
+      第四道闸门（301 + Strict-Transport-Security 响应头）。浏览器视角与面板开关
+      产物一致，唯一差别是面板开关能顺带提交 HSTS preload —— 而本站刻意不用 preload。
+  · opportunistic_encryption：80 端口 h2c（前置知识与 Upgrade 两种方式）实测都不
+      升级、直接 301；站内 0 处 http:// 子资源 ⇒「自动 HTTPS 重写」也无需开启。
+  ⇒ 真正剩下的只有「关掉随机加密」这一条（且其影响已被 301 覆盖）。
 
 开什么（零风险、纯收益）：
   always_use_https         on     http 请求一律 301 到 https，防协议降级

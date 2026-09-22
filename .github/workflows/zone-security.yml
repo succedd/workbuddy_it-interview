@@ -1,9 +1,18 @@
 # it-interview · Cloudflare Zone 安全基线
 # ============================================================
 # 为什么在 CI 里跑、而不是本机跑：
-#   本机 wrangler 的 OAuth 只有 zone:read（读 zone settings 报 9109，写更不行），
-#   而仓库 Secret `CLOUDFLARE_API_TOKEN` 具备 zone 设置权限。让 CI 拿着它执行，
-#   等于把「凭据」和「执行」都留在受控环境里，本机永远不用持有高权限 token。
+#   本机 wrangler 的 OAuth 只有 zone:read（读 zone settings 报 9109，写更不行）。
+#   本意是让 CI 拿着仓库 Secret `CLOUDFLARE_API_TOKEN` 当「凭据代理」执行，
+#   本机永远不用持有高权限 token —— 但 2026-09-22 实测该 Secret **同样缺
+#   Zone Settings 权限**（它实际只有 `Account.Cloudflare Pages`），CI 里也报 9109。
+#   ⇒ 本流水线目前是「休眠」状态，一次都没跑成功过。**要让它生效，先给该 token
+#     补上「Zone → Zone Settings → Edit」（Zone Resources: Include → Specific zone
+#     → itinterview.com.cn），再 push 到 cf-zone-setup 分支。**
+#
+# 【要不要为它动 token？实测结论：不值得】见 tools/ci/zone-security.py 文件头：
+#   最低 TLS 已达成（服务端主动拒绝 TLS1.0/1.1）、TLS1.3 已开、强制 HTTPS 与 HSTS
+#   已在应用层（_worker.js）生效、机会加密的实际影响已被 301 覆盖。
+#   只有「想留档」或「想彻底关掉机会加密」时才有必要补这条权限。
 #
 # 【触发方式】
 #   把本文件推到名为 cf-zone-setup 的分支即自动执行一次（幂等，重推重跑）。

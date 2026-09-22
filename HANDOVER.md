@@ -36,7 +36,16 @@
 - 域名 **`https://itinterview.com.cn`**（自购域名，2026-09-21 上线；`www.itinterview.com.cn` 同域也已 active）；备用预览域 `https://it-interview-889.pages.dev`（CORS 白名单仍保留，旧链接不失效）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
 - **反爬托管层（2026-09-21 已全部落地）**：站点前端已从 GitHub Pages **迁至 Cloudflare Pages**（直传项目 `it-interview`），并用高级模式 `_worker.js` 在边缘拦截采集。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（白名单组装 `dist/`，`tools/`、`cloudflare/`、`HANDOVER.md` 等内部文件不进发布产物）；回归测试 `tools/pages-guard-test.mjs`（41 条，**CI 里必跑，不过则中止部署**）；部署与验证清单 `cloudflare/pages/README.md`。**⚠️ 历史提示：`is-a-dev/register` PR #53221 已被维护者关闭（未合并），域名 `it-interview.is-a.dev` 已下架释放 —— 勿再引用、勿再申请。**
 - ✅ **2026-09-21 新增能力（取代旧注释里「用不了 WAF」的说法）**：`itinterview.com.cn` 的 zone 就在本账号下（id `48961f3585fdc652af950bd2163c0382`，status active），**因此现在可以启用 Zone 级防护** —— Security Level、Bot Fight Mode、WAF 自定义规则（免费版 5 条）、Rate Limiting、HSTS、Always Use HTTPS。这些在 is-a.dev 时代都做不到（域名 DNS 归属 is-a.dev 项目、不在本账号）。
-  - 现状实测（2026-09-22）：HTTP → **301 到 HTTPS** ✅ 已生效；**未开 HSTS**（无 `Strict-Transport-Security` 头）；响应头已有 `x-content-type-options: nosniff` 与 `referrer-policy: strict-origin-when-cross-origin`（Pages 默认）。若要进一步压采集，去 Cloudflare 后台开 Bot Fight Mode + Security Level「High」。
+  - ⚠️ **但「能配」不等于「该配」，且这两条通道的 API 权限至今没拿到（2026-09-22 实测复核）**：本机 wrangler OAuth 只有 `zone:read`，仓库 Secret `CLOUDFLARE_API_TOKEN` 同样缺 Zone Settings 权限（两者读 zone settings 均报 **9109**；该 token 的权限组实际只有 `Account.Cloudflare Pages`）⇒ **面板级开关目前无人能动**。不过**传输层该有的效果已经全部在应用层达成**，`_worker.js` 即第四道闸门（详见第 6 节）：
+    | 项 | 状态 | 实测依据 |
+    |---|---|---|
+    | HTTP → HTTPS | ✅ 已生效 | `http://itinterview.com.cn/` 返回 301 |
+    | HSTS | ✅ 已生效 | 响应头 `strict-transport-security: max-age=15552000; includeSubDomains`（走 `_worker.js`，浏览器视角与面板开关产物一致） |
+    | 最低 TLS ≥ 1.2 | ✅ 已达成 | 服务端对 TLS1.0 / TLS1.1 回 `tlsv1 alert protocol version` —— 是**服务端**拒绝（非本机 OpenSSL 限制）⇒ 不必再调 `min_tls_version` |
+    | TLS 1.3 | ✅ 已开 | `/cdn-cgi/trace` 实测 `tls=TLSv1.3`、`kex=X25519MLKEM768` |
+    | 机会加密（随机加密） | ⚪ 影响已被覆盖 | 80 端口 h2c（前置知识与 Upgrade 两种方式）实测都不升级、直接 301；站内 **0 处** `http://` 子资源 ⇒「自动 HTTPS 重写」也不需要 |
+    | Security Level=High / Bot Fight Mode | ⛔ 不建议开 | 会误伤国内访客与 Baiduspider（理由见第 6 节），且 `_worker.js` 的 UA+ASN 白名单更精准 |
+  - **结论：zone 级防护无遗留待办，不需要任何面板操作，也不需要为此去改 token。** `/tools/ci/zone-security.py` + `.github/workflows/zone-security.yml` 作为**休眠流水线**保留（幂等、可重跑），**仅当**将来给该 token 补上 `Zone → Zone Settings → Edit` 后，才需要重推 `cf-zone-setup` 分支执行。
 
 ## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
 
@@ -102,7 +111,7 @@
   - **`cloudflare/pages/_worker.js` 新增第四道闸门**：`http → https 301`（本地 dev / `[::1]` 除外，否则重定向死循环）+ `Strict-Transport-Security: max-age=15552000; includeSubDomains`（刻意不开 preload）+ `nosniff` + `frame-ancestors 'self'` + `SAMEORIGIN` + `Referrer-Policy`。统一走 `harden()` 包装 —— **必须新建 Response**，因为 `env.ASSETS.fetch()` 与 `Response.redirect()` 返回对象的 headers guard 是 `immutable`，直接 `set` 会失败。
   - **顺手修掉一个既有隐患**：`ASSETS` 返回 **304**（协商缓存命中）时 `new Response(res.body, res)` 会抛 TypeError ⇒ 改为 `NULL_BODY_STATUS` 判空 body。
   - **刻意不开的两项（有实测副作用，别照抄「全面加固」教程）**：`security_level=High`（国内访客大量走代理/共享出口 IP，威胁评分偏高 ⇒ 频繁人机验证甚至 403，伤真实用户）、`bot_management`（**实测会误伤 Baiduspider / YandexBot**；本站百度流量是主力，且 `_worker.js` 已有精准 UA+ASN 白名单，叠加收益为负）。
-  - **zone 侧仍缺、且只能靠权限的 2 项**：`min_tls_version=1.2`、`opportunistic_encryption=off`（「随机加密」对百度爬虫不友好 —— 但其风险已被 Always Use HTTPS 的 301 覆盖大半）。**脚本与流水线已备好、幂等可重跑**：`tools/ci/zone-security.py` + `.github/workflows/zone-security.yml`（push 到 `cf-zone-setup` 分支即触发，用 Secret 当**凭据代理**执行并逐项复查 PASS/FAIL）。拿到权限后只需重推该分支。
+  - **zone 侧原以为「仍缺 2 项」，2026-09-22 深查后确认：无遗留待办**。① `min_tls_version=1.2` —— **已经就是现状**：改用 Python `ssl` 分别尝试 TLS1.0 / TLS1.1 握手（`ALL:@SECLEVEL=0` 解除本机限制、只放开单一版本），服务端回 **`tlsv1 alert protocol version`** —— 这是**服务端**拒绝的告警，与 `openssl` CLI 那种本机 `no protocols available`（客户端限制、测不出结论）有本质区别 ⇒ 边缘最低 TLS 已是 1.2+，**无需再调**。② `opportunistic_encryption=off`（随机加密）—— 用 h2c「前置知识」与 `Upgrade: h2c` 两种方式在 80 端口实测，**都不升级、直接返回 301** ⇒ 实际影响已被强制 HTTPS 覆盖；另实测站内 **0 处** `http://` 子资源引用 ⇒「自动 HTTPS 重写」同样无需开启。**脚本与流水线作为休眠资产保留**：`tools/ci/zone-security.py` + `.github/workflows/zone-security.yml`（push 到 `cf-zone-setup` 分支即触发、幂等可重跑）—— 但**必须先给 token 补上 `Zone → Zone Settings → Edit` 才会生效**（仓库 Secret 那个 token 实测只有 `Account.Cloudflare Pages`，CI 里同样报 9109）。**即：没有权限也基本没有损失，不必为此去改 token。**
   - **验证（部署 run `35671364583` success，版本 `20260922a`）**：线上实测 `strict-transport-security: max-age=15552000; includeSubDomains` + 4 个安全头齐全；`http://` **301 → https**；**备用域 `pages.dev` 同样带 HSTS**；`pages-guard-test.mjs` **41 → 44 条、44/44 通过**（新增「安全头齐全」「http→301 生效」「304 不抛错」）；`accept-switch.py` **10/10**；`regress-check.py` **旧功能零回归**。
   - commit `fd0d1be8`（父 `5d6b53d9`，快进推送）。
 
