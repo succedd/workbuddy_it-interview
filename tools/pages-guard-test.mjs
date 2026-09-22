@@ -158,8 +158,65 @@ for (const [name, opts, wantStatus, wantReason] of CASES) {
   }
 }
 
+// 额外：传输层加固 —— 第四道闸门（2026-09-22）
+{
+  const res = await worker.fetch(makeRequest("/q/1.html", { ua: CHROME }), env);
+  const hsts = res.headers.get("strict-transport-security") || "";
+  const checks = [
+    ["strict-transport-security", hsts.includes("max-age=15552000") && hsts.includes("includeSubDomains")],
+    ["x-content-type-options", res.headers.get("x-content-type-options") === "nosniff"],
+    ["content-security-policy", (res.headers.get("content-security-policy") || "").includes("frame-ancestors 'self'")],
+    ["referrer-policy", (res.headers.get("referrer-policy") || "").length > 0]
+  ];
+  const bad = checks.filter(([, ok]) => !ok).map(([n]) => n);
+  if (!bad.length) {
+    pass += 1;
+    console.log("  ok   安全头 · HSTS(180d,includeSubDomains) + nosniff + frame-ancestors + referrer-policy");
+  } else {
+    fails.push("安全响应头缺失：" + bad.join(", "));
+    console.log("  FAIL 安全头 · 缺 " + bad.join(", "));
+  }
+}
+
+// 额外：http 必须 301 到 https（pages.dev 备用域与将来新增的域靠这层兜底）
+{
+  const h = new Map([["user-agent", CHROME]]);
+  const req = {
+    url: "http://itinterview.com.cn/q/1.html",
+    headers: { get: (k) => (h.has(String(k).toLowerCase()) ? h.get(String(k).toLowerCase()) : null) },
+    cf: undefined
+  };
+  const res = await worker.fetch(req, env);
+  const loc = res.headers.get("location") || "";
+  if (res.status === 301 && loc.startsWith("https://")) {
+    pass += 1;
+    console.log(`  ok   http → 301 ${loc}`);
+  } else {
+    fails.push(`http 请求未 301 到 https：${res.status} ${loc}`);
+    console.log(`  FAIL http → ${res.status} ${loc}`);
+  }
+}
+
+// 额外：ASSETS 返回 304（协商缓存命中）时不得抛错
+{
+  const env304 = { ASSETS: { fetch: async () => new Response(null, { status: 304 }) } };
+  try {
+    const res = await worker.fetch(makeRequest("/index.html", { ua: CHROME }), env304);
+    if (res.status === 304) {
+      pass += 1;
+      console.log("  ok   304 协商缓存命中不抛错");
+    } else {
+      fails.push("304 用例状态异常：" + res.status);
+      console.log("  FAIL 304 用例 → " + res.status);
+    }
+  } catch (e) {
+    fails.push("304 响应抛错：" + e.message);
+    console.log("  FAIL 304 抛错：" + e.message);
+  }
+}
+
 console.log("");
-console.log(`PAGES_GUARD_TEST: ${pass}/${CASES.length + 1} 通过`);
+console.log(`PAGES_GUARD_TEST: ${pass}/${CASES.length + 4} 通过`);
 if (fails.length) {
   console.log("失败明细：");
   for (const f of fails) console.log("  - " + f);

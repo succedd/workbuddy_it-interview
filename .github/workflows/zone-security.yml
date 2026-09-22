@@ -1,0 +1,45 @@
+# it-interview · Cloudflare Zone 安全基线
+# ============================================================
+# 为什么在 CI 里跑、而不是本机跑：
+#   本机 wrangler 的 OAuth 只有 zone:read（读 zone settings 报 9109，写更不行），
+#   而仓库 Secret `CLOUDFLARE_API_TOKEN` 具备 zone 设置权限。让 CI 拿着它执行，
+#   等于把「凭据」和「执行」都留在受控环境里，本机永远不用持有高权限 token。
+#
+# 【触发方式】
+#   把本文件推到名为 cf-zone-setup 的分支即自动执行一次（幂等，重推重跑）。
+#   也可以推到默认分支后用 workflow_dispatch 手动触发。
+#
+# 【它做什么】
+#   1) 只读打印当前 zone 设置（含安全级别与 Bot Fight Mode 现状，便于留档）
+#   2) 应用传输层安全基线：Always Use HTTPS / 最低 TLS 1.2 / TLS 1.3
+#                          / 关闭「随机加密」（否则百度爬虫抓取失败）
+#                          / HSTS（180 天 + includeSubDomains，不开 preload）
+#   3) 复查逐项打 PASS/FAIL，有 FAIL 即 exit 1
+#
+# 【刻意不做的两件事】Security Level=High、Bot Fight Mode —— 理由写在
+#   tools/ci/zone-security.py 的文件头，核心是会误伤国内真实访客与百度爬虫。
+# ============================================================
+
+name: CF Zone Security Baseline
+
+on:
+  push:
+    branches: [cf-zone-setup]
+  workflow_dispatch:
+
+jobs:
+  zone-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zone settings — before
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python3 tools/ci/zone-security.py
+
+      - name: Apply transport security baseline
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python3 tools/ci/zone-security.py --apply

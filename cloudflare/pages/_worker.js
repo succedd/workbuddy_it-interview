@@ -27,6 +27,20 @@
 //   建议：Cloudflare 后台开 Bot Fight Mode + Security Level=High，
 //   把这里从「应用层」升级为「网络层」防护。
 //   要再进一步只能改产品形态：把答案从分享页/静态 JSON 里挪到需要登录的接口。
+//
+// 第四道闸门（2026-09-22 加）：传输层与响应头加固
+//   · http → https 301（兜底）
+//   · HSTS：max-age=15552000(180d) + includeSubDomains，刻意不开 preload
+//   · nosniff / frame-ancestors 'self' / Referrer-Policy
+//   为什么放这里而不是全靠 zone 面板：
+//     本机 wrangler OAuth 只有 zone:read；仓库 Secret 那个 CLOUDFLARE_API_TOKEN
+//     在 CI 里实测也缺 Zone Settings 权限（报 9109）——两条通道都改不了 zone 设置。
+//     所以凡「能靠响应头等效实现」的一律在应用层落地，不依赖任何面板操作；
+//     浏览器视角这些头与面板开关的产物完全一样。
+//     还没做、也做不了的两件（须 zone 权限，脚本已备在 tools/ci/zone-security.py）：
+//     最低 TLS 版本、关闭「随机加密」(opportunistic_encryption，它会让百度爬虫抓取失败)。
+//   刻意不开的两项：Security Level=High（误伤走代理的国内访客）、
+//     Bot Fight Mode（实测挡 Baiduspider，本站百度流量是主力）。理由同见该脚本。
 
 const BOT_RE = new RegExp(
   [
@@ -254,14 +268,58 @@ function notFound() {
   });
 }
 
+// ── 第四道闸门：安全响应头 ──────────────────────────────────────────
+// zone 面板只给了 HSTS 一个开关，其余几个头根本没有入口，只能在应用层补。
+// 全部「只加不改」：已存在的同名头一律不动，避免覆盖 Pages / CF 自己的取值。
+const SECURITY_HEADERS = {
+  "strict-transport-security": "max-age=15552000; includeSubDomains",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "x-frame-options": "SAMEORIGIN",
+  "content-security-policy": "frame-ancestors 'self'"
+};
+
+// 这些状态码按规范不能带 body；构造新 Response 时若传了 body 会抛 TypeError
+const NULL_BODY_STATUS = new Set([101, 204, 205, 304]);
+
+/**
+ * 复制一份响应并补齐安全头。
+ * 必须「新建 Response」而不能直接改原响应：env.ASSETS.fetch() 与
+ * Response.redirect() 返回对象的 headers guard 是 immutable，直接 set 会失败。
+ * 顺带修掉一个既有隐患：304 命中协商缓存时 ASSETS 的 body 为 null，
+ * 原先 `new Response(res.body, res)` 会抛 TypeError。
+ */
+function harden(res) {
+  const out = new Response(NULL_BODY_STATUS.has(res.status) ? null : res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers: res.headers
+  });
+  for (const name in SECURITY_HEADERS) {
+    if (!out.headers.has(name)) out.headers.set(name, SECURITY_HEADERS[name]);
+  }
+  return out;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
     const ua = request.headers.get("user-agent") || "";
 
+    // ⓪ 协议兜底：主域已由 zone 的 Always Use HTTPS 覆盖，这一层照顾
+    //    pages.dev 备用域与将来新增的域。本地 dev 必须排除，否则重定向死循环。
+    const host = url.hostname;
+    const isLocal = host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+    if (url.protocol === "http:" && !isLocal) {
+      url.protocol = "https:";
+      return harden(
+        new Response(null, { status: 301, headers: { location: url.toString() } })
+      );
+    }
+
     // ① 仓库内部文件一律不出面
-    if (INTERNAL_RE.test(path)) return notFound();
+    if (INTERNAL_RE.test(path)) return harden(notFound());
 
     const isData = path === "/data" || path.indexOf("/data/") === 0;
 
@@ -271,7 +329,7 @@ export default {
     //    注意微信 / 微博 / QQ 的链接预览抓取器都不在 BOT_RE 里，所以分享卡片不受影响。
     const cls = classifyUa(ua, request.cf);
     if (cls.reason) {
-      return isData ? jsonDeny(cls.reason, path) : denyHtml(cls.reason);
+      return harden(isData ? jsonDeny(cls.reason, path) : denyHtml(cls.reason));
     }
 
     // ③ 题库数据：UA 过关还不算完，必须再带「浏览器信号」
@@ -280,7 +338,7 @@ export default {
       // 搜索引擎白名单在这里**不生效**：这份 JSON 只有本站 App 自己会取，
       // 搜索引擎没有任何理由读原始数据集（robots.txt 同样写着 Disallow: /data/）。
       // 不加这一条，「伪造/借用搜索引擎 UA」就等于绕过了整层 UA 过滤。
-      if (cls.search) return jsonDeny("search-bot-on-data", path);
+      if (cls.search) return harden(jsonDeny("search-bot-on-data", path));
 
       const secFetchSite = request.headers.get("sec-fetch-site") || "";
       const referer = request.headers.get("referer") || "";
@@ -291,7 +349,7 @@ export default {
         secFetchSite === "same-site" ||
         sameOriginReferer;
 
-      if (!browserSignal) return jsonDeny("missing-browser-signal", path);
+      if (!browserSignal) return harden(jsonDeny("missing-browser-signal", path));
     }
 
     // ④ /q/* 分享页不需要单独判断：搜索引擎已在 ② 放行（SEO 不受影响），
@@ -299,10 +357,10 @@ export default {
     const res = await env.ASSETS.fetch(request);
 
     if (isData) {
-      const out = new Response(res.body, res);
+      const out = harden(res);
       out.headers.set("x-robots-tag", "noindex, nofollow");
       return out;
     }
-    return res;
+    return harden(res);
   }
 };
