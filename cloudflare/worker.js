@@ -201,6 +201,41 @@ async function requireAdmin(db, request) {
   return u;
 }
 
+/* ---------- 人机验证（Turnstile，开关式可选） ----------
+   设计成「开关式」：未配置 env.TURNSTILE_SECRET 时整段跳过，行为与旧版一模一样，
+   所以代码可以先上线，等 widget 密钥就绪再开。启用后覆盖三个写入口：
+   /auth/register、/auth/login、/submit。
+   注意 /visit、/view 这两个高频统计接口**刻意不校验**，否则会打断正常浏览。
+   ⚠️ Turnstile 必须服务端校验（siteverify），前端校验等于没校验。 */
+const TURNSTILE_VERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+async function verifyTurnstile(env, request, body) {
+  const secret = env.TURNSTILE_SECRET;
+  if (!secret) return { ok: true, skipped: true };          /* 未配置 => 不启用 */
+
+  const token = String((body && (body.turnstileToken || body.cfTurnstileResponse)) || "").trim();
+  if (!token) return { ok: false, error: "请先完成人机验证" };
+
+  const fd = new FormData();
+  fd.append("secret", secret);
+  fd.append("response", token);
+  const ip = request.headers.get("cf-connecting-ip");
+  if (ip) fd.append("remoteip", ip);
+
+  let out = null;
+  try {
+    const r = await fetch(TURNSTILE_VERIFY, { method: "POST", body: fd });
+    out = await r.json();
+  } catch (_) { out = null; }
+
+  /* 校验服务不可达时**放行**（fail open）并打降级标记：宁可有极小概率漏放机器人，
+     也不能因为 Cloudflare 侧抖动把全站登录/投稿一起打死。
+     若想改成「宁可挡住也不放过」，把下面两行的 ok 改成 false 即可。 */
+  if (!out) return { ok: true, degraded: true };
+  if (out.success) return { ok: true };
+  return { ok: false, error: "人机验证未通过，请刷新页面重试" };
+}
+
 /* ---------- 注册 / 登录 / 会话 ---------- */
 
 async function handleRegister(env, request, origin) {
@@ -210,6 +245,9 @@ async function handleRegister(env, request, origin) {
 
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const tsr = await verifyTurnstile(env, request, body);
+  if (!tsr.ok) return jsonResp({ error: tsr.error, turnstileFailed: true }, origin, 403);
+
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "").trim();
   const nick = String(body.nick || "").trim().slice(0, 40);
@@ -257,6 +295,9 @@ async function handleLogin(env, request, origin) {
 
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const tsr = await verifyTurnstile(env, request, body);
+  if (!tsr.ok) return jsonResp({ error: tsr.error, turnstileFailed: true }, origin, 403);
+
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "").trim();
   const u = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
@@ -819,6 +860,9 @@ async function handleSubmit(env, request, origin) {
 
   let body;
   try { body = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+
+  const tsr = await verifyTurnstile(env, request, body);
+  if (!tsr.ok) return jsonResp({ error: tsr.error, turnstileFailed: true }, origin, 403);
 
   const clip = (v, n) => String(v == null ? "" : v).slice(0, n);
   const sub = {
