@@ -138,7 +138,7 @@
     if (TS.status === "failed") {
       return "人机验证组件加载失败（多为网络拦截 challenges.cloudflare.com）。请刷新页面重试，或换个网络。";
     }
-    return "人机验证未通过，请再点一次提交重试。";
+    return "人机验证未通过。若上方刚刚出现过确认框，请先点掉它，再点一次提交。";
   };
 
   window.TS = TS;

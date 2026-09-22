@@ -104,19 +104,29 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`da6ac98`（Turnstile 后端开关 + Cloudflare 用量巡检脚本）｜缓存版本：`20260922c`（本轮无前端改动，不升版）｜更新时间：2026-09-22 21:55 (+08)**
+**最新 release commit：`267fef1`（Turnstile 前端挂载层）｜缓存版本：`20260922d`｜更新时间：2026-09-22 22:05 (+08)**
 
-- **【已完成·2026-09-22 晚】Turnstile 后端校验（开关式，代码已上线但**尚未启用**）+ 用量巡检脚本**：
-  - **Turnstile**：`cloudflare/worker.js` 新增 `verifyTurnstile()`，覆盖 `/auth/register`、`/auth/login`、`/submit` 三个写入口。
-    **开关式设计**：未配置 `env.TURNSTILE_SECRET` 时函数直接返回 `{ ok:true, skipped:true }`，行为与旧版**完全一致** —— 所以代码可以先上线、后启用。已实测：未配置时登录回 401「邮箱或密码不正确」、注册回 400「邮箱格式不正确」、`/stats` 正常 200。
-    `/visit`、`/view` 两个高频统计接口**刻意不校验**（否则打断正常浏览）。校验服务不可达时 **fail open + degraded**（宁可有极小概率漏放机器人，也不能让 CF 侧抖动打死全站登录/投稿）；要反过来改注释处两行的 `ok` 即可。
-    `siteverify` 必须在**服务端**调；等待外部响应**不计 CPU 时间**，对免费 10ms/次 上限无影响。
+- **【已完成·2026-09-22 晚】Cloudflare Turnstile 已**全量启用**（前端挂载层 + 后端校验，缓存版本 `20260922c` → `20260922d`）**：
+  - **开关式（关键设计）**：前后端都做成了「未配置就整段跳过」。后端 `verifyTurnstile()` 在无 `env.TURNSTILE_SECRET` 时返回 `{ok:true,skipped:true}`；前端 `js/turnstile.js` 在无 sitekey 时 `TS.enabled()` 为 false、`TS.mount()` 直接返回 null。⇒ 任一环节缺失都不会影响登录/投稿，也因此可以「先发版、后开开关」。
+  - **覆盖范围**：`/auth/register`、`/auth/login`、`/submit` 三个**写入口**。`/visit`、`/view` 两个高频统计接口**刻意不校验**（否则打断正常浏览）。
+  - **前端**：新增 `js/turnstile.js`（`window.TS`），挂载点 = 账号页登录/注册表单 `#acc-ts`、投稿页表单 `#s-ts`；token 以 `turnstileToken` 字段随请求体传给后端。
+  - **为什么用 `execution:"execute"` 而不是挂载即取 token**：投稿表单可能写十几分钟，若挂载时就换取，提交时早超过 Turnstile 令牌的 **300 秒**有效期，用户会看到「人机验证未通过」这种看不懂也无从自救的报错。⇒ 统一改为**点提交时才 `turnstile.execute()`**。另外 `appearance:"interaction-only"`：正常情况组件完全隐形，风控认为可疑时才浮出确认框。
+  - **令牌一次性**：提交后（含服务端判失败）必须 `TS.reset()` 重新挑战，否则再点一次必报 `timeout-or-duplicate`。已在 account.js / submit.js 的失败分支与 finally 里处理。
+  - ⚠️ **刻意不传 `remoteip`**：国内访客走 Netlify 中转桥，而桥会把 `cf-connecting-ip` / `x-forwarded-for` 全部剥掉（`netlify/functions/proxy.js` 的 `HOP_HEADERS`）——Worker 看到的 `cf-connecting-ip` 是**桥的出口 IP**而不是访客本人的，报给 siteverify 只会制造随机失败。`remoteip` 是可选参数，不传不影响校验强度。
+  - **启用后实测（2026-09-22 22:00，走国内 Netlify 桥）**：登录不带 token → `403 请先完成人机验证`；登录/注册带假 token → `403 人机验证未通过`（⇒ 证明 Worker 真的调通了 siteverify；若调不通会 fail open 变成 401 密码错误，可据此区分）；`/submit` 无会话 → `401 请先登录后再投稿`（校验顺序在登录之后）；`/stats` 仍 200 未受影响。
+  - **浏览器端实测（CDP 驱动真实 Chrome 打开线上 `#/account`）**：`TS.status=ready`、sitekey 正确、`window.turnstile` 已加载、widget 成功创建（`cf-chl-widget-*`）；真实点击提交后出现「正在进行人机验证…」并在超时后给出人话提示，**无 JS 报错**。
+  - **sitekey 与 secret 的位置**：sitekey（公开值）写死在 `js/turnstile.js`，可用 `api-endpoints.json` 里的 `turnstileSiteKey` 远程覆盖（best-effort，读不到就退回内置常量）；**secret 只存在于 Worker 环境变量 `TURNSTILE_SECRET`**，绝不出现在前端。已核实线上 `js/turnstile.js` 不含 secret。
+  - **依赖**：需放行 `challenges.cloudflare.com`（script + iframe）。实测本机国内直连**可达**；CSP 目前只有 `frame-ancestors 'self'`，不拦 script-src，无需改。若将来加严格 CSP，必须把该域加进 `script-src` 与 `frame-src`。
+  - **排障**：提示「人机验证组件加载失败」= 浏览器拉不到 `challenges.cloudflare.com`（网络拦截），刷新或换网络即可，表单内容不丢。
+  - ⚠️ Turnstile API（`/accounts/{id}/challenges/widgets`）**不接受 wrangler 的 OAuth 令牌**（实测稳定回 `10000 Authentication error`，尽管 `whoami` 的 scope 里有 `challenge-widgets.write`），必须走面板或另建带 Turnstile 权限的 API Token。⇒ **换 widget / 改域名白名单时无法用现有令牌自动化。**
+  - 配置值（本机留存，不入库）：sitekey `0x4AAAAAAE__jtzqP599LSsj`；secret 已通过 `wrangler secret put TURNSTILE_SECRET` 写入 Worker（值不记录在仓库里）。
+
+- **【已完成·2026-09-22 晚】Turnstile 后端校验 + 用量巡检脚本**（原记录，缓存版本 `20260922c`）：
+  - **Turnstile 后端**：`cloudflare/worker.js` 的 `verifyTurnstile()`，开关式；校验服务不可达时 **fail open + degraded**（宁可有极小概率漏放机器人，也不能让 CF 侧抖动打死全站登录/投稿）；要反过来改注释处两行的 `ok` 即可。`siteverify` 必须在**服务端**调；等待外部响应**不计 CPU 时间**，对免费 10ms/次 上限无影响。
   - **用量巡检** `tools/cf-quota-check.py`：GraphQL 查 `workersInvocationsAdaptive`（独立 Worker 每日请求/错误）+ zone 级 `httpRequestsAdaptiveGroups`（整站真实请求量，按 host/端口分组）；阈值告警 = 单日 ≥5 万 / errors>0 / 非标准端口请求 ≥200。
     ⚠️ 该 dataset **不含 Pages 项目的 Functions**，`_worker.js` 的调用数查不到，只能看 Dashboard → Workers & Pages → it-interview → Metrics。
     踩坑：`filter.date_geq/date_leq` 必须 `YYYY-MM-DD`（写 ISO datetime 报 `date format should be '2006-01-02'`）。
   - **实测基线（2026-09-22，可作后续对照）**：Pages Metrics 24h ≈ **8.3k** 请求（zone 级实测 24h 约 7.8k，吻合）、Errors 全 0、Median CPU Time p99.9 = **4.0ms**（上限 10ms）⇒ 配额余量约 12 倍，**不必为配额改 `_worker.js` 高级模式架构**；日请求破 5 万时再评估。
-  - **待办（启用 Turnstile，还差三步）**：① Dashboard → Turnstile → Add widget（域名填 `itinterview.com.cn` / `www.itinterview.com.cn` / `it-interview-889.pages.dev`）拿 **Site Key + Secret Key**；② `wrangler secret put TURNSTILE_SECRET`；③ **前端挂载代码尚未写** —— 需在登录/注册/投稿表单挂 Turnstile widget 并把 token 以 `turnstileToken` 字段传给后端，改完发版。
-    ⚠️ Turnstile API（`/accounts/{id}/challenges/widgets`）**不接受 wrangler 的 OAuth 令牌**（实测稳定回 `10000 Authentication error`），必须走面板或另建带 Turnstile 权限的 API Token。
 
 - **【待办·2026-09-22 记录】WAF 自定义规则挡非标准端口**：zone 实测 24h 内有约 **568 次非标准端口请求**（`:8443` / `:2087` / `:2083` / `:2096` / `:8080` 等 cPanel/代理端口），属端口扫描。免费计划有 5 条 WAF 自定义规则额度，可用其中一条挡掉非 443/80 的请求。
 

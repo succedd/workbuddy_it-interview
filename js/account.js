@@ -525,7 +525,7 @@
       /* 先过人机验证再发请求：token 一次性且有 300 秒有效期，所以放在点击时取 */
       let tk = "";
       if (window.TS && TS.enabled()) {
-        out.textContent = "正在进行人机验证…";
+        out.textContent = "正在进行人机验证…（若页面上出现确认框，点一下即可）";
         tk = await TS.token(tsBox);
         if (!tk) { goBtn.disabled = false; out.style.color = "#DC2626"; out.textContent = TS.statusText(); return; }
       }
