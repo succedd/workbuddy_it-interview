@@ -104,7 +104,21 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`041d381`（父）→ 本次提交「撤回我的投稿」｜缓存版本：`20260922c`｜更新时间：2026-09-22 20:45 (+08)**
+**最新 release commit：`da6ac98`（Turnstile 后端开关 + Cloudflare 用量巡检脚本）｜缓存版本：`20260922c`（本轮无前端改动，不升版）｜更新时间：2026-09-22 21:55 (+08)**
+
+- **【已完成·2026-09-22 晚】Turnstile 后端校验（开关式，代码已上线但**尚未启用**）+ 用量巡检脚本**：
+  - **Turnstile**：`cloudflare/worker.js` 新增 `verifyTurnstile()`，覆盖 `/auth/register`、`/auth/login`、`/submit` 三个写入口。
+    **开关式设计**：未配置 `env.TURNSTILE_SECRET` 时函数直接返回 `{ ok:true, skipped:true }`，行为与旧版**完全一致** —— 所以代码可以先上线、后启用。已实测：未配置时登录回 401「邮箱或密码不正确」、注册回 400「邮箱格式不正确」、`/stats` 正常 200。
+    `/visit`、`/view` 两个高频统计接口**刻意不校验**（否则打断正常浏览）。校验服务不可达时 **fail open + degraded**（宁可有极小概率漏放机器人，也不能让 CF 侧抖动打死全站登录/投稿）；要反过来改注释处两行的 `ok` 即可。
+    `siteverify` 必须在**服务端**调；等待外部响应**不计 CPU 时间**，对免费 10ms/次 上限无影响。
+  - **用量巡检** `tools/cf-quota-check.py`：GraphQL 查 `workersInvocationsAdaptive`（独立 Worker 每日请求/错误）+ zone 级 `httpRequestsAdaptiveGroups`（整站真实请求量，按 host/端口分组）；阈值告警 = 单日 ≥5 万 / errors>0 / 非标准端口请求 ≥200。
+    ⚠️ 该 dataset **不含 Pages 项目的 Functions**，`_worker.js` 的调用数查不到，只能看 Dashboard → Workers & Pages → it-interview → Metrics。
+    踩坑：`filter.date_geq/date_leq` 必须 `YYYY-MM-DD`（写 ISO datetime 报 `date format should be '2006-01-02'`）。
+  - **实测基线（2026-09-22，可作后续对照）**：Pages Metrics 24h ≈ **8.3k** 请求（zone 级实测 24h 约 7.8k，吻合）、Errors 全 0、Median CPU Time p99.9 = **4.0ms**（上限 10ms）⇒ 配额余量约 12 倍，**不必为配额改 `_worker.js` 高级模式架构**；日请求破 5 万时再评估。
+  - **待办（启用 Turnstile，还差三步）**：① Dashboard → Turnstile → Add widget（域名填 `itinterview.com.cn` / `www.itinterview.com.cn` / `it-interview-889.pages.dev`）拿 **Site Key + Secret Key**；② `wrangler secret put TURNSTILE_SECRET`；③ **前端挂载代码尚未写** —— 需在登录/注册/投稿表单挂 Turnstile widget 并把 token 以 `turnstileToken` 字段传给后端，改完发版。
+    ⚠️ Turnstile API（`/accounts/{id}/challenges/widgets`）**不接受 wrangler 的 OAuth 令牌**（实测稳定回 `10000 Authentication error`），必须走面板或另建带 Turnstile 权限的 API Token。
+
+- **【待办·2026-09-22 记录】WAF 自定义规则挡非标准端口**：zone 实测 24h 内有约 **568 次非标准端口请求**（`:8443` / `:2087` / `:2083` / `:2096` / `:8080` 等 cPanel/代理端口），属端口扫描。免费计划有 5 条 WAF 自定义规则额度，可用其中一条挡掉非 443/80 的请求。
 
 - **✅【已完成·2026-09-22 晚】新增「撤回我的投稿」（缓存版本 `20260922b` → `20260922c`）**：
   - **动机**：上一轮放开「管理员可自审」只解决了 admin 自己投稿卡死；非管理员/专家投稿人若发现投错、投重，仍只能等审核者处理。补一个**投稿人自助撤回**的口子。

@@ -253,6 +253,15 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-22 · ops: Turnstile 后端校验（开关式，待配密钥启用）+ Cloudflare 用量巡检脚本（缓存版本不变，仍 `20260922c`）
+
+- **Turnstile 后端**：`cloudflare/worker.js` 新增 `verifyTurnstile()`，覆盖 `/auth/register`、`/auth/login`、`/submit` 三个写入口。**开关式设计**：未配置 `env.TURNSTILE_SECRET` 时直接返回 `skipped`，行为与旧版**完全一致** ⇒ **代码已上线但尚未启用**。`/visit`、`/view` 两个高频统计接口**刻意不校验**（否则打断正常浏览）；校验服务不可达时 **fail open**（宁可有极小概率漏放机器人，也不能让 Cloudflare 侧抖动打死全站登录/投稿）。`siteverify` 必须在服务端调；等待外部响应不计 CPU 时间，对免费 10ms/次 上限无影响。
+- **启用还差三步**：① 面板建 Turnstile widget（域名 `itinterview.com.cn` / `www` / `it-interview-889.pages.dev`）拿 **Site Key + Secret Key**；② `wrangler secret put TURNSTILE_SECRET`；③ 前端挂载 widget 并把 token 以 `turnstileToken` 字段传给后端 —— **前端挂载代码尚未写**。
+  ⚠️ Turnstile 的 widget API（`/accounts/{id}/challenges/widgets`）**不接受 wrangler 的 OAuth 令牌**（实测稳定回 `10000 Authentication error`），必须走面板，或另建一个带 Turnstile 权限的 API Token。
+- **用量巡检** `tools/cf-quota-check.py`：GraphQL 查独立 Worker 的每日请求/错误（`workersInvocationsAdaptive`）+ zone 级整站真实请求量、按 host/端口分组（`httpRequestsAdaptiveGroups`）；阈值告警 = 单日 ≥5 万 / errors>0 / 非标准端口请求 ≥200。**已知限制**：该 dataset 不含 Pages 项目的 Functions，`_worker.js` 的调用数查不到，只能看 Dashboard Metrics。
+- **实测基线（可作后续对照）**：Pages Metrics 24h ≈ **8.3k** 请求（zone 级实测 24h 约 7.8k，两者吻合）、**Errors 全 0**（含 Exceeded CPU / Memory 均为 0）、Median CPU Time p99.9 = **4.0ms**（上限 10ms）⇒ 配额余量约 12 倍，**不必为配额改 `_worker.js` 高级模式架构**，日请求破 5 万时再评估。
+- **运维提示**：zone 24h 内实测约 **568 次非标准端口请求**（`:8443` / `:2087` / `:2083` / `:2096` / `:8080` 等 cPanel/代理端口），属端口扫描。免费计划有 5 条 WAF 自定义规则额度，可用其中一条挡掉非 443/80 的请求。
+
 ### 2026-09-22 · 域名切换收尾 + 审核规则修补（缓存版本 `20260921c → 20260922a → 20260922b → 20260922c`）
 
 #### fix: 新增「撤回我的投稿」（`20260922b → 20260922c`）
