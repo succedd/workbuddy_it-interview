@@ -255,7 +255,7 @@
         <!-- 这 4 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
              完全重复，而顶栏在手机上根本放不下（实测 390px 溢出 172px，导致主题键被裁、
              「登录」「管理员」被挤出屏外）。保留主题键与帐号入口。 -->
-        <a class="icon-btn desktop-only" href="#/category" title="技术体系">${U.icon("layers")}</a>
+        <a class="icon-btn desktop-only" href="#/category" title="技术分类（浏览全部技术分类树）">${U.icon("layers")}</a>
         <a class="icon-btn desktop-only" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
         <a class="icon-btn desktop-only" href="#/mock" title="模拟面试">${U.icon("play")}</a>
         <a class="icon-btn desktop-only" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
@@ -407,7 +407,6 @@
       ${navSec("nav", "", `
         ${navItem("#/", "home", "首页", p0 === "home")}
         ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
-        ${navItem("#/category", "layers", "技术体系", p0 === "category")}
         ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
         ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
         ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
@@ -430,7 +429,13 @@
         <a class="side-nav-item mobile-only" id="side-admin-login" href="#">${U.icon("shield")}<span>管理员登录</span></a>`;
     }
 
-    html += navSec("cats", "", `<div id="side-tree">${renderTree(0, r)}</div>`);
+    /* 「技术分类」分区（2026-09-23）：原先「导航」区里还有一个「技术体系」项指向 #/category，
+       但这个分区本身渲染的就是同一棵 category 树（navSectionOf 把 category 路由归给 cats 分区），
+       ⇒ 侧栏里同一批分类数据出现了两个入口，纯重复。已删除导航区那一项，并在树下补一行
+       「查看全部 →」承担原「技术体系」页的跳转角色（树只列前两层，完整页有右侧题目列表）。 */
+    const catAllActive = (p0 === "category" && !(r.q && r.q.cat)) ? " active" : "";
+    html += navSec("cats", "", `<div id="side-tree">${renderTree(0, r)}</div>`
+      + `<a class="side-nav-item${catAllActive}" href="#/category" id="side-cat-all">${U.icon("layers")}<span>查看全部技术分类</span></a>`);
     if (Auth.isAdmin()) {
       html += navSec("admin", "", `
         ${navItem("#/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
@@ -1127,7 +1132,7 @@
       ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
       ${weekHtml}
 
-      <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
+      <div class="section-head"><h2>技术分类</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>
 
       <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部 →</a></div>
@@ -1178,7 +1183,7 @@
   }
 
   async function pageCategory(q) {
-    document.title = "技术体系 · IT面试题库";
+    document.title = "技术分类 · IT面试题库";
     const catId = q.cat ? parseInt(q.cat) : null;
     const tree = Services.categoryTree();
     const childrenOfId = id => Services.childrenOf(id);
@@ -1341,7 +1346,7 @@
     }
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术体系</span></div>
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术分类</span></div>
       <div class="layout" style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start">
         <aside class="card" style="position:sticky;top:80px;max-height:80vh;overflow:auto">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
@@ -4522,7 +4527,7 @@
       footEl.innerHTML = `
         <div class="f-grid">
           ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/weak"], ["收藏夹", "#/favorites"]])}
-          ${col("体系", [["技术体系", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
+          ${col("体系", [["技术分类", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
           ${col("我的", [["学习周报", "#/report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
           ${col("关于", [["关于本站", "#/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
         </div>
