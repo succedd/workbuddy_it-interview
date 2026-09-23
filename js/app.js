@@ -270,9 +270,9 @@
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
-        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account">${U.icon("user")} 登录</a>`}
+        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account" title="登录 / 注册帐号">${U.icon("user")} 登录</a>`}
         ${adminHtml}
-        ${`<span class="vis-chip" title="本机统计（仅记录当前浏览器的访问次数，非全站 PV）">${U.icon("eye")}<span class="vic">今日 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计 <b id="vis-total" class="vis-num">–</b></span></span>`}
+        ${`<span class="vis-chip" title="本机统计：本浏览器累计打开题库的次数（非全站 PV，不跨设备）">${U.icon("eye")}<span class="vic">本机访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计 <b id="vis-total" class="vis-num">–</b></span></span>`}
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
@@ -585,16 +585,30 @@
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
-    const tags = (q.tags || []).filter(t => t != null && String(t).trim()).slice(0, 4).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
-    const pos = (q.positionNames || []).slice(0, 3).map(p => `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(p)}'">${U.esc(p)}</span>`).join("");
+    /* 卡片 chip 精简（2026-09-23）：只保留「难度 + 主分类 + 1 个主标签」，岗位折叠成「+N 岗位」。
+       原因：原先每卡最多 3 岗位 + 4 标签，一屏十几张卡全是彩色小胶囊，视觉噪音大、扫读困难。
+       完整标签与岗位在题目详情页展示。
+       注意：主标签若与分类名相同（如分类「Redis」+ 标签「Redis」）必须去重，否则同一词出现两次。 */
+    const tagList = (q.tags || []).filter(t => t != null && String(t).trim());
+    const catName = q.catName || "";
+    const mainTag = tagList.find(t => t !== catName);
+    const restTags = tagList.filter(t => t !== mainTag);
+    const posList = (q.positionNames || []).filter(Boolean);
+    const posFold = posList.length === 1
+      ? `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(posList[0])}'">${U.esc(posList[0])}</span>`
+      : (posList.length > 1
+        ? `<span class="tag tag-outline tag-fold" title="${U.esc(posList.join(" / "))}">+${posList.length} 岗位</span>`
+        : "");
     return `<a class="card card-hover q-card" href="#/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
       <div class="q-excerpt">${hl((q.body || "").replace(/[#*`>]/g, "").slice(0, 100), "body")}</div>
       <div class="q-meta">
         <span class="tag ${diffCls}">${q.difficulty}</span>
         <span class="tag">${U.esc(q.type)}</span>
-        ${q.catName ? `<span class="tag tag-primary">${U.esc(q.catName)}</span>` : ""}
-        ${pos}${tags}
+        ${catName ? `<span class="tag tag-primary">${U.esc(catName)}</span>` : ""}
+        ${posFold}
+        ${mainTag ? `<span class="tag">${U.esc(mainTag)}</span>` : ""}
+        ${restTags.length ? `<span class="tag tag-more" title="${U.esc(restTags.join(" / "))}">+${restTags.length}</span>` : ""}
       </div>
       <div class="q-foot">
         ${(q.views || 0) > 0 ? `<span>${U.icon("eye")} ${q.views}</span>` : ""}
@@ -1869,13 +1883,29 @@
           <button data-s="aiScore" class="${sortBy === "aiScore" ? "active" : ""}">AI评分</button>
         </div>
       </div>
+      <div class="diff-quick" id="diff-quick">
+        <button data-d="" class="${!filters.difficulty.length ? "active" : ""}">全部难度</button>
+        ${diffs.map(d => `<button data-d="${U.esc(d)}" class="${filters.difficulty.length === 1 && filters.difficulty[0] === d ? "active" : ""}">${U.esc(d)}</button>`).join("")}
+      </div>
       <div class="grid grid-cols-2" id="q-grid"></div>
       <div class="pager" id="q-pager"></div>
     `);
     const reSort = (s) => { Object.keys({ updated: 1, views: 1, favorites: 1, aiScore: 1 }).forEach(k => {}); };
     $("#q-search").addEventListener("input", U.debounce(e => { filters.q = e.target.value.trim(); apply(); }, 300));
     attachHistory($("#q-search"), t => { $("#q-search").value = t; filters.q = t; apply(); });
-    $("#f-diff").onchange = e => { filters.difficulty = e.target.value ? [e.target.value] : []; apply(); };
+    /* 难度快捷条（2026-09-23）：刷题时按难度筛比排序更常用，给一排按钮一键切换；
+       与 #f-diff 下拉框双向同步（改一处两处都变，避免出现「显示难度=中等但下拉是困难」的矛盾态）。 */
+    const syncDiffQuick = () => {
+      const bar = $("#diff-quick"); if (!bar) return;
+      const cur = filters.difficulty.length === 1 ? filters.difficulty[0] : "";
+      bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", (b.dataset.d || "") === cur));
+      const sel = $("#f-diff"); if (sel) sel.value = cur;
+    };
+    const dq = $("#diff-quick");
+    if (dq) dq.querySelectorAll("button").forEach(b => {
+      b.onclick = () => { filters.difficulty = b.dataset.d ? [b.dataset.d] : []; syncDiffQuick(); apply(); };
+    });
+    $("#f-diff").onchange = e => { filters.difficulty = e.target.value ? [e.target.value] : []; syncDiffQuick(); apply(); };
     $("#f-type").onchange = e => { filters.type = e.target.value ? [e.target.value] : []; apply(); };
     if (filters.source.length) { const f = $("#f-source"); if (f) f.value = filters.source[0]; }   // 同步来源下拉框（?source= 跳转时）
     $("#f-source").onchange = e => { filters.source = e.target.value ? [e.target.value] : []; apply(); };
@@ -1939,8 +1969,8 @@
           <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
           <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
       </div>
-      <div class="note-card" id="note-card">
-        <div class="note-head"><b>✍️ 我的批注</b><span class="muted" id="note-saved"></span></div>
+      <div class="note-card${myNote && myNote.text ? "" : " is-empty"}" id="note-card">
+        <div class="note-head"><b>✍️ 我的批注</b><span class="muted" id="note-saved"></span><span class="note-toggle-hint">点击展开</span></div>
         <textarea id="note-input" placeholder="写下你自己的想法、踩过的坑、面试时打算怎么讲…（只存在这台设备，随加密备份一起走，不会公开）"></textarea>
         <div class="pill-row" style="margin-top:8px">
           <button class="btn btn-primary btn-sm" id="note-save">保存批注</button>
@@ -1962,6 +1992,15 @@
       const noteEl = $("#note-input");
       if (noteEl) {
         const savedEl = $("#note-saved");
+        /* 未填写批注时卡片收成一行虚线占位（.is-empty 由 CSS 折叠），点击展开，
+           避免空批注大框紧跟操作区、比答案还抢眼。有内容或聚焦后自动展开。 */
+        const noteCard = $("#note-card");
+        const expandNote = () => { if (noteCard) noteCard.classList.remove("is-empty"); };
+        if (noteCard) {
+          noteCard.addEventListener("click", (e) => {
+            if (noteCard.classList.contains("is-empty")) { expandNote(); noteEl.focus(); }
+          });
+        }
         const paintSaved = (t) => { if (savedEl) savedEl.textContent = t ? "已保存 · " + U.fmtDate(t) : "尚未填写"; };
         const syncQuote = (txt) => {
           const box = $("#answer-box");
@@ -1972,11 +2011,15 @@
         };
         noteEl.value = myNote ? myNote.text : "";
         paintSaved(myNote ? myNote.updatedAt : 0);
+        /* 已有批注则默认展开；输入时也确保展开 */
+        if (myNote && myNote.text) expandNote();
+        noteEl.addEventListener("focus", expandNote);
         $("#note-save").onclick = async () => {
           try {
             const r = await DB.noteSet(q.id, noteEl.value);
             paintSaved(r ? r.updatedAt : 0);
             syncQuote(r ? r.text : "");
+            if (r && r.text) expandNote();
             U.toast(r ? "批注已保存（仅本机可见）" : "批注已清空", "success");
           } catch (e) { console.warn("note save error", e); U.toast("批注保存失败", "error"); }
         };
@@ -4470,11 +4513,26 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
     window.addEventListener("hashchange", closeDrawer);
     renderTopbar();
-    /* 页脚：使用指南入口 + 仓库链接（首次填充，之后静态） */
+    /* 页脚：栏目链接矩阵 + 说明（首次填充，之后静态）。2026-09-23 扩版：原先只有一行小字，
+       对 SEO 与信任感都偏弱，补上主要栏目入口与站点说明。 */
     const footEl = document.getElementById("footer");
     if (footEl && !footEl.dataset.filled) {
       footEl.dataset.filled = "1";
-      footEl.innerHTML = `<a href="#/help">${U.icon("fileText")} 使用指南</a><span class="sep">·</span><a href="#/about">${U.icon("info")} 关于本站</a><span class="sep">·</span><a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">GitHub</a><span class="sep">·</span><span>数据存于本机浏览器 · 登录后云端同步</span>`;
+      const col = (title, links) => `<div class="f-col"><div class="f-col-title">${title}</div>${links.map(([t, h]) => `<a href="${h}">${t}</a>`).join("")}</div>`;
+      footEl.innerHTML = `
+        <div class="f-grid">
+          ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/weak"], ["收藏夹", "#/favorites"]])}
+          ${col("体系", [["技术体系", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
+          ${col("我的", [["学习周报", "#/report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
+          ${col("关于", [["关于本站", "#/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
+        </div>
+        <div class="f-bottom">
+          <span>IT 面试题库 · 覆盖技术体系与岗位体系的高频面试题</span>
+          <span class="sep">·</span>
+          <span>数据存于本机浏览器，登录后云端同步</span>
+          <span class="sep">·</span>
+          <a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">开源仓库</a>
+        </div>`;
     }
     /* 待复习数预载（供侧边栏角标） */
     Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});

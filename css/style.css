@@ -287,8 +287,8 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 
 /* ============ Cards ============ */
 .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
-.card-hover { transition: transform .15s ease, box-shadow .15s ease; }
-.card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.card-hover { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg, var(--shadow-md)); border-color: var(--border-strong, var(--border)); }
 
 /* ============ Tags / chips ============ */
 .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--bg-subtle); color: var(--text-secondary); border: 1px solid transparent; }
@@ -335,6 +335,12 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .q-card .q-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
 .q-card .q-excerpt { color: var(--text-secondary); font-size: 13px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .q-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+/* 折叠 chip（2026-09-23）：卡片上的「+2 岗位」「+3」等收纳态，悬停显示完整内容（title 属性） */
+.q-meta .tag-fold, .q-meta .tag-more {
+  background: transparent; border: 1px dashed var(--border-strong, var(--border));
+  color: var(--text-muted); cursor: help;
+}
+.q-meta .tag-fold:hover, .q-meta .tag-more:hover { color: var(--c-primary); border-color: var(--c-primary); }
 .q-foot { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-muted); }
 .q-foot .ic { width: 14px; height: 14px; vertical-align: -2px; }
 
@@ -381,6 +387,17 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .toolbar .seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .toolbar .seg button { border: none; background: transparent; padding: 7px 12px; font-size: 13px; color: var(--text-secondary); }
 .toolbar .seg button.active { background: var(--c-primary); color: #fff; }
+/* 难度快捷筛选条（2026-09-23）：一排胶囊按钮，刷题时一键切难度 */
+.diff-quick { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+.diff-quick button {
+  border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  padding: 5px 14px; border-radius: 999px; cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.diff-quick button:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.diff-quick button.active { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+@media (max-width: 640px) { .diff-quick { gap: 6px; } .diff-quick button { padding: 5px 11px; font-size: 12px; } }
 .spacer { flex: 1; }
 .select-mini { height: 34px; padding: 0 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13px; }
 
@@ -436,6 +453,9 @@ body.modal-open { overflow: hidden; scrollbar-gutter: stable; }
 
 /* ============ Question detail ============ */
 .qd-head { }
+/* 阅读宽度约束（2026-09-23）：正文/答案限宽 720px 居中，避免桌面端一行 60+ 字读起来累。
+   面包屑、标题、标签行仍满宽（在外层 .qd-head / .breadcrumb 上）。 */
+.qd-body, .qd-answer { max-width: 720px; margin-left: auto; margin-right: auto; }
 .qd-body { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-top: 14px; }
 .qd-answer { background: var(--c-primary-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-top: 14px; }
 .md { line-height: 1.75; word-break: break-word; }
@@ -628,10 +648,25 @@ html[data-theme="dark"] .wk-trend.bad { background: rgba(245,158,11,.16); color:
 .wk-bars .bar-fill.today { background: var(--c-primary); opacity: 1; }
 
 /* ============ 页脚 ============ */
-#footer { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 10px; padding: 18px 16px; font-size: 12.5px; color: var(--text-muted); border-top: 1px solid var(--border); }
+#footer { display: block; padding: 26px 16px 20px; font-size: 12.5px; color: var(--text-muted); border-top: 1px solid var(--border); }
 #footer a { color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 #footer a:hover { color: var(--c-primary); }
 #footer .sep { opacity: .5; }
+/* 页脚栏目矩阵（2026-09-23） */
+#footer .f-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px 24px; max-width: 1180px; margin: 0 auto 18px; text-align: left;
+}
+#footer .f-col { display: flex; flex-direction: column; gap: 8px; }
+#footer .f-col-title { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: .04em; margin-bottom: 2px; }
+#footer .f-col a { font-size: 12.5px; }
+#footer .f-bottom {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 8px 10px; padding-top: 14px; border-top: 1px solid var(--border); max-width: 1180px; margin: 0 auto;
+}
+@media (max-width: 720px) {
+  #footer .f-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+}
 
 /* ============ Admin dropdown menu ============ */
 .dropdown-wrap { position: relative; }
@@ -1244,8 +1279,17 @@ body.pan-fs-lock { overflow: hidden; }
   border-radius: 0 var(--radius) var(--radius) 0;
 }
 .note-card .note-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.note-card .note-toggle-hint { display: none; margin-left: auto; font-size: 12px; color: var(--c-primary); font-weight: 600; }
 .note-card textarea { min-height: 68px; font-size: 13px; background: var(--bg-elevated); }
 .note-card .note-tip { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+/* 未填写批注时收成一行虚线占位（2026-09-23）：空批注大框原先紧跟操作区、比答案还抢眼。
+   点击整卡或聚焦输入框即展开（JS 移除 .is-empty）。 */
+.note-card.is-empty { padding: 10px 14px; background: transparent; border: 1px dashed var(--border-strong, var(--border)); cursor: pointer; }
+.note-card.is-empty .note-head { margin-bottom: 0; }
+.note-card.is-empty .note-toggle-hint { display: inline; }
+.note-card.is-empty textarea,
+.note-card.is-empty .pill-row,
+.note-card.is-empty .note-tip { display: none; }
 /* 复习/回看时先看到的「我自己的话」 */
 .note-quote {
   margin: 0 0 12px; padding: 10px 12px;
