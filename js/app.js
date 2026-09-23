@@ -6,7 +6,6 @@
   const App = {};
   const $ = U.qs, $$ = U.qsa;
   let main, sidebar, topbar;
-  let curCatOpen = {};      // 侧边树展开状态
   let charts = [];
 
   /* ============================ 主题 ============================ */
@@ -255,7 +254,7 @@
         <!-- 这 4 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
              完全重复，而顶栏在手机上根本放不下（实测 390px 溢出 172px，导致主题键被裁、
              「登录」「管理员」被挤出屏外）。保留主题键与帐号入口。 -->
-        <a class="icon-btn desktop-only" href="#/category" title="技术分类（浏览全部技术分类树）">${U.icon("layers")}</a>
+        <a class="icon-btn desktop-only" href="#/category" title="技术体系">${U.icon("layers")}</a>
         <a class="icon-btn desktop-only" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
         <a class="icon-btn desktop-only" href="#/mock" title="模拟面试">${U.icon("play")}</a>
         <a class="icon-btn desktop-only" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
@@ -319,7 +318,6 @@
   const NAV_SECS = {
     submit: { label: "投稿", def: false },
     nav:    { label: "导航", def: false },
-    cats:   { label: "技术分类", def: false },
     admin:  { label: "管理", def: true },
     review: { label: "审核", def: true },
     site:   { label: "站点", def: true },
@@ -344,7 +342,8 @@
     const p0 = r.parts[0] || "home", p1 = r.parts[1] || "";
     if (p0 === "submit") return "submit";
     if (p0 === "me" && p1 === "submissions") return "submit";
-    if (p0 === "category") return "cats";
+    /* 「技术体系」项现位于「导航」区（2026-09-23 晚起，原 cats 分区已整体移除），
+       故 category 路由归 nav 分区，进入该页时导航区会保持展开。 */
     if (p0 === "admin") {
       if (p1 === "submissions") return "review";
       if (p1 === "inbox" || p1 === "users" || p1 === "groups") return "site";
@@ -408,6 +407,7 @@
         ${navItem("#/", "home", "首页", p0 === "home")}
         ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
         ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
+        ${navItem("#/category", "layers", "技术体系", p0 === "category")}
         ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
         ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
         ${navItem("#/random", "dice", "随机一题", p0 === "random")}
@@ -418,8 +418,9 @@
         ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
         ${navItem("#/about", "info", "关于本站", p0 === "about")}`)}`;
 
-    /* 移动端专属：「管理员登录」入口。**必须插在「技术分类」之前** —— 分类树很长，
-       放最后会被埋到抽屉最底部，手机上得翻过十几个导航项 + 整棵分类树才看得到。
+    /* 移动端专属：「管理员登录」入口。原先的理由是「必须插在技术分类之前」（分类树很长，
+       放最后会被埋到抽屉底部）；2026-09-23 晚侧栏分类树已整体移除，这个约束随之消失，
+       位置保持现状（紧跟导航区之后），手机上仍是一眼可见的落点。
        顶栏那个「管理员」按钮在 ≤720px 被隐藏（顶栏放不下），这里是它的替代路径。
        只在**未登录管理员**时渲染：已登录时下方本来就有完整的「管理」分区，
        再放一个会出现两个同名「管理」标题。
@@ -429,13 +430,13 @@
         <a class="side-nav-item mobile-only" id="side-admin-login" href="#">${U.icon("shield")}<span>管理员登录</span></a>`;
     }
 
-    /* 「技术分类」分区（2026-09-23）：原先「导航」区里还有一个「技术体系」项指向 #/category，
-       但这个分区本身渲染的就是同一棵 category 树（navSectionOf 把 category 路由归给 cats 分区），
-       ⇒ 侧栏里同一批分类数据出现了两个入口，纯重复。已删除导航区那一项，并在树下补一行
-       「查看全部 →」承担原「技术体系」页的跳转角色（树只列前两层，完整页有右侧题目列表）。 */
-    const catAllActive = (p0 === "category" && !(r.q && r.q.cat)) ? " active" : "";
-    html += navSec("cats", "", `<div id="side-tree">${renderTree(0, r)}</div>`
-      + `<a class="side-nav-item${catAllActive}" href="#/category" id="side-cat-all">${U.icon("layers")}<span>查看全部技术分类</span></a>`);
+    /* 「技术分类」分区（侧栏那棵大树）已于 2026-09-23 晚按用户要求**整体移除**：
+       用户反馈「技术分类与技术体系重复」，且明确「岗位体系下来就是技术体系，
+       按之前的还原，只是把技术分类删掉」。
+       ⇒ 导航区保留「技术体系」项（指向 #/category，含完整分类页与右侧题目列表），
+       侧栏不再单独渲染分类树，避免同一批数据两个入口。
+       连带清理：NAV_SECS.cats、category 的 navSectionOf 映射、侧栏 renderTree()、
+       curCatOpen 状态、「查看全部技术分类」入口 —— 均已一并删除，不留死代码。 */
     if (Auth.isAdmin()) {
       html += navSec("admin", "", `
         ${navItem("#/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
@@ -488,16 +489,9 @@
        先关抽屉再弹登录框，避免登录框叠在抽屉上。 */
     const sal = $("#side-admin-login");
     if (sal) sal.onclick = (e) => { e.preventDefault(); closeDrawer(); openAdminLogin(); };
-    $$("#side-tree .tree-row").forEach(row => {
-      row.onclick = (e) => {
-        if (e.target.closest(".twist")) {
-          const id = row.dataset.id; curCatOpen[id] = !curCatOpen[id];
-          renderSidebar(parseHash()); return;
-        }
-        App.go("/category?cat=" + row.dataset.id);
-        closeDrawer();
-      };
-    });
+    /* 注：侧栏分类树（#side-tree）已于 2026-09-23 晚整体移除，原先在此绑定 tree-row 点击/展开的
+       代码一并删除。分类浏览统一走「技术体系」页（#/category），该页内部有自己的分类树
+       （#page-tree，交互逻辑在同文件下方，未受影响）。 */
   }
 
   /* ============================ 底部 tab 栏（移动端） ============================
@@ -568,23 +562,8 @@
     }, { passive: true });
   }
 
-  function renderTree(parentId, r) {
-    const kids = Services.childrenOf(parentId);
-    if (!kids.length) return "";
-    return kids.map(c => {
-      const open = curCatOpen[c.id];
-      const active = (r.q && r.q.cat && String(r.q.cat) === String(c.id));
-      const grand = Services.childrenOf(c.id);
-      return `<div class="tree-node">
-        <div class="tree-row ${open ? "open" : ""} ${active ? "active" : ""}" data-id="${c.id}">
-          ${grand.length ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
-          <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span>
-          <span class="tree-count">${Services.catCounts[c.id] || 0}</span>
-        </div>
-        ${open ? `<div class="tree-children">${renderTree(c.id, r)}</div>` : ""}
-      </div>`;
-    }).join("");
-  }
+  /* renderTree（原侧栏分类树渲染器）已于 2026-09-23 晚随「技术分类」分区一并删除。
+     分类树现在只在「技术体系」页内渲染（见同文件 pageCategory 里的局部 renderTree）。 */
 
   /* ============================ 通用组件 ============================ */
   function qCard(q, matches) {
@@ -1132,7 +1111,7 @@
       ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
       ${weekHtml}
 
-      <div class="section-head"><h2>技术分类</h2><a class="more" href="#/category">查看全部 →</a></div>
+      <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto">${catCards}</div>
 
       <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部 →</a></div>
@@ -1183,7 +1162,7 @@
   }
 
   async function pageCategory(q) {
-    document.title = "技术分类 · IT面试题库";
+    document.title = "技术体系 · IT面试题库";
     const catId = q.cat ? parseInt(q.cat) : null;
     const tree = Services.categoryTree();
     const childrenOfId = id => Services.childrenOf(id);
@@ -1346,7 +1325,7 @@
     }
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术分类</span></div>
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术体系</span></div>
       <div class="layout" style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start">
         <aside class="card" style="position:sticky;top:80px;max-height:80vh;overflow:auto">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
@@ -4527,7 +4506,7 @@
       footEl.innerHTML = `
         <div class="f-grid">
           ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/weak"], ["收藏夹", "#/favorites"]])}
-          ${col("体系", [["技术分类", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
+          ${col("体系", [["技术体系", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
           ${col("我的", [["学习周报", "#/report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
           ${col("关于", [["关于本站", "#/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
         </div>
