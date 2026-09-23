@@ -104,7 +104,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`267fef1`（Turnstile 前端挂载层）｜缓存版本：`20260922d`｜更新时间：2026-09-22 22:05 (+08)**
+**最新 release commit：`40211ac`（首页首屏瘦身 P0 三项）｜缓存版本：`20260923a`｜更新时间：2026-09-23 19:30 (+08)**
+**上一条 release commit：`c187c80`（Turnstile 启用后文档刷新 + 验证失败提示更可操作，`20260922d` → `20260922e`）｜更新时间：2026-09-22 22:11 (+08)**
+
+- **【已完成·2026-09-23 早】首页/卡片 UI 瘦身 P0 三项（纯前端，无数据结构改动）**：
+  - **背景**：布局走查结论——首页「每日一句 220px 大卡 + 紫色大标题 hero」双 hero 叠放，桌面首屏一题不可见；移动端 hero 标题折成「模拟面/试」；卡片与详情页满屏「浏览 0 · 收藏 0 · AI评分 0」。
+  - **改动（5 文件）**：`js/app.js`（daily-quote-mount 挪到 hero 之后；qCard 与详情页 meta 的 views/favorites/aiScore 为 0 时不渲染）；`css/style.css`（hero padding 40/28→26/20、h1 34→28px + `text-wrap:balance` + `word-break:keep-all`；daily-quote 改 slim strip：`__inner` 横排 flex、名言 2 行 line-clamp、按钮内联右侧，移动端换行）；`css/responsive.css`（hero h1 26→22px）；`index.html`/`sw.js` 版本号统一 `20260923a`。
+  - **验证**：本地起 127.0.0.1 静态服务 + agent-browser 截图走查桌面/手机（iPhone 14 模拟）首页、题目列表、题目详情——首屏可见统计环、标题一行放下、0 值全隐藏。线上 curl（需浏览器 UA，反爬守卫拦裸 curl 属正常）：`PAGE_VER=20260923a`、sw.js VERSION 同步、app.js 16 处关键功能 marker 齐全、分享页 `/q/982` 200。
+  - **注意**：`data/published.json` 对 curl 返 403 是反爬守卫设计行为，浏览器内正常，勿当回归误判。
+  - **合并记录**：本次推送时远端已被另一路流程推到 `c187c80`（Turnstile 文档刷新 + account.js/turnstile.js 提示文案改可操作），已用 `rebase --onto` 把 UI 改动移植到新 tip 之上，两处 turnstile 相关改动**未丢失**。
 
 - **【已完成·2026-09-22 晚】Cloudflare Turnstile 已**全量启用**（前端挂载层 + 后端校验，缓存版本 `20260922c` → `20260922d`）**：
   - **开关式（关键设计）**：前后端都做成了「未配置就整段跳过」。后端 `verifyTurnstile()` 在无 `env.TURNSTILE_SECRET` 时返回 `{ok:true,skipped:true}`；前端 `js/turnstile.js` 在无 sitekey 时 `TS.enabled()` 为 false、`TS.mount()` 直接返回 null。⇒ 任一环节缺失都不会影响登录/投稿，也因此可以「先发版、后开开关」。
