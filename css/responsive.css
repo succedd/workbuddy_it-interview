@@ -4,10 +4,22 @@
   .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .editor-split { grid-template-columns: 1fr; }
+  /* 顶栏文字入口在平板宽度会挤爆搜索框：收紧间距与内边距（20260923f） */
+  .topbar-actions { gap: 2px; }
+  .topbar-actions .top-link { padding: 0 7px; font-size: 12px; }
 }
 
 /* 桌面端与平板：抽屉遮罩一律不参与布局（移动端的显示规则见下方媒体查询） */
 .drawer-mask { display: none; }
+
+/* 窄桌面 / 平板横屏（721–1024px）：顶栏文字入口放不下 —— 实测 900px 会撑出横向滚动条
+   （顶栏 5 个文字入口 + 搜索框 + 主题键 + 登录 + 管理员 + 访问计数 总宽 ≈ 1100px）。
+   这段宽度统一收起文字入口、放出抽屉按钮，改由抽屉导航抵达（20260923f）。 */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .topbar-actions .top-link { display: none; }
+  .menu-toggle { display: grid !important; }
+  .topbar-search { max-width: 340px; }
+}
 
 /* Mobile */
 @media (max-width: 720px) {

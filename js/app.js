@@ -251,20 +251,20 @@
         <input id="global-search" type="text" placeholder="搜索题目、技术、岗位、标签…" />
       </div>
       <div class="topbar-actions">
-        <!-- 这 4 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
+        <!-- 文字入口（原为纯图标，用户反馈「图标都不知道干嘛的」—— 20260923f 改为文字）。
+             这 5 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
              完全重复，而顶栏在手机上根本放不下（实测 390px 溢出 172px，导致主题键被裁、
              「登录」「管理员」被挤出屏外）。保留主题键与帐号入口。 -->
-        <a class="icon-btn desktop-only" href="#/category" title="技术体系">${U.icon("layers")}</a>
-        <a class="icon-btn desktop-only" href="#/position" title="岗位体系">${U.icon("briefcase")}</a>
-        <a class="icon-btn desktop-only" href="#/mock" title="模拟面试">${U.icon("play")}</a>
-        <a class="icon-btn desktop-only" href="#/favorites" title="收藏夹">${U.icon("bookmark")}</a>
-        <!-- 投稿 / 审核（20260919f）：审核入口只给有审核角色的帐号（角标=待审条数） -->
-        <a class="icon-btn desktop-only" href="#/submit" title="投稿面试题">${U.icon("plus")}</a>
+        <a class="top-link desktop-only" href="#/category" title="按技术方向分层的知识体系">技术体系</a>
+        <a class="top-link desktop-only" href="#/position" title="按求职岗位组织的题库">岗位体系</a>
+        <a class="top-link desktop-only" href="#/mock" title="限时模拟真实面试流程">模拟面试</a>
+        <a class="top-link desktop-only" href="#/favorites" title="你收藏的题目">收藏夹</a>
+        <a class="top-link desktop-only" href="#/submit" title="投稿你的面试题，审核通过后收录">投稿</a>
         ${(window.Account && Account.isReviewer())
-          ? `<a class="icon-btn desktop-only" href="#/admin/submissions" title="投稿审核（待审 ${App.reviewPending || 0} 条，角标见左侧「投稿审核」）">${U.icon("check")}</a>`
+          ? `<a class="top-link desktop-only" href="#/admin/submissions" title="审核用户投稿的题目（待审 ${App.reviewPending || 0} 条）">审核${App.reviewPending ? `<span class="badge-dot">${App.reviewPending}</span>` : ""}</a>`
           : ""}
         ${(window.Account && Account.isServerAdmin())
-          ? `<a class="icon-btn desktop-only" href="#/admin/inbox" title="待入库（审核通过待收录 ${App.inboxPending || 0} 条，角标见左侧「待入库」）">${U.icon("download")}</a>`
+          ? `<a class="top-link desktop-only" href="#/admin/inbox" title="审核通过、待收录入库的题目（${App.inboxPending || 0} 条）">待入库${App.inboxPending ? `<span class="badge-dot">${App.inboxPending}</span>` : ""}</a>`
           : ""}
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
