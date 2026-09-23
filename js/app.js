@@ -2882,9 +2882,9 @@
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">访问统计</h2></div>
-          ${Stats.baiduId()
-            ? `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">访客地域分布、来源分析、趋势报表</p><a class="btn btn-primary" href="https://tongji.baidu.com" target="_blank" rel="noopener">查看百度统计后台 →</a></div>`
-            : `<div style="text-align:center;padding:24px 16px"><div class="muted" style="margin-bottom:12px">配置「百度统计」后可查看访客地域分布、来源分析、趋势报表</div><a class="btn" href="#/admin/settings">前往配置 →</a></div>`}
+          ${Stats.cfEnabled()
+            ? `<div class="muted" style="margin-bottom:8px">已接入云端统计（Cloudflare Worker），下方为访客地域分布。</div>`
+            : `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">配置云端统计接口后可查看访客地域分布与浏览量</p><a class="btn" href="#/admin/settings">前往配置 →</a></div>`}
           ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"></div>` : ""}
         </div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
@@ -3920,14 +3920,6 @@
         </div>
         <div id="ai-test-out" class="muted" style="margin-top:8px"></div></div>
 
-      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("barChart")} 百度统计</h2>
-        <p class="secondary">配置百度统计 Tracking ID 后，网站自动上报页面浏览与题目浏览数据。详细的地域分布、来源分析、趋势报表请在 <a href="https://tongji.baidu.com" target="_blank" rel="noopener">tongji.baidu.com</a> 查看。</p>
-        <label class="field"><span>Tracking ID</span><input id="baidu-tid" value="${U.esc(Stats.baiduId())}" placeholder="格式如 a1b2c3d4e5f6g7h8（百度统计后台获取）" /></label>
-        <div class="pill-row">
-          <button class="btn btn-primary" id="baidu-save">${U.icon("check")} 保存并生效</button>
-        </div>
-        <div id="baidu-out" class="muted" style="margin-top:8px"></div></div>
-
       <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("upload")} 云端共享题库（发布）</h2>
         <p class="secondary">所有访客共享同一份题库：配置发布 Token 后，点「发布题库」将当前本机题库推送到 GitHub，约 1-2 分钟后所有访客自动看到最新版。仅持有仓库写权限的 Token 才能发布，访客为只读。</p>
         <div class="note ai">Token 请使用 GitHub Fine-grained Token，仅授权本仓库的 Contents 读写权限，保存在当前浏览器本地，请勿在公共设备使用。创建步骤见仓库 README 或询问管理员。</div>
@@ -4020,7 +4012,6 @@
       try { const r = await API.testConnection(); out.innerHTML = `<span class="tag tag-success">连接成功</span> 响应 ${Date.now() - t0}ms`; }
       catch (e) { out.innerHTML = `<span class="tag tag-danger">失败</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">接口未开启 CORS 跨域，纯静态无法绕过，请用支持 CORS 的接口或本地代理。</div>` : ""); }
     };
-    $("#baidu-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("baidu_tid", $("#baidu-tid").value.trim()); } U.toast("百度统计已保存，刷新页面后生效", "success"); };
     /* 云端共享题库 */
     const pubTokenInput = $("#pub-token"); let pubTokenTouched = false;
     pubTokenInput.addEventListener("input", () => pubTokenTouched = true);
@@ -4300,28 +4291,10 @@
     return { start, set, finish, ready };
   })();
 
-  /* ============================ 访客统计（本地计数 + 百度统计 + 可选 Cloudflare Worker） ============================ */
+  /* ============================ 访客统计（本地计数 + 可选 Cloudflare Worker） ============================
+     站内统计两条通道：本地计数（localStorage，用于打卡/热力图）与 Cloudflare Worker（全局访问与题目浏览计数）。
+     注：百度统计已于 2026-09-23 按用户要求整体移除（含 index.html 里的 hm.js 上报脚本与后台配置入口）。 */
   const Stats = (() => {
-    /* --- 百度统计 --- */
-    const DEFAULT_TID = "856d2b08330e4b9f225cf101d6f14103";   /* 与 index.html 的 hm.js ID 保持一致，避免双账号重复上报 */
-    const baiduId = () => (typeof localStorage !== "undefined" ? (localStorage.getItem("baidu_tid") || DEFAULT_TID) : DEFAULT_TID);
-    function trackBaidu(url) {
-      if (baiduId() && typeof _hmt !== "undefined" && _hmt) {
-        try { _hmt.push(["_trackPageview", url]); } catch (e) {}
-      }
-    }
-    function loadBaiduScript() {
-      const tid = baiduId(); if (!tid) return;
-      if (tid === DEFAULT_TID && typeof _hmt !== "undefined" && _hmt.length >= 0) return;
-      window._hmt = window._hmt || [];
-      (function () {
-        var hm = document.createElement("script");
-        hm.async = true;
-        hm.src = "https://hm.baidu.com/hm.js?" + tid;
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();
-    }
     /* --- 本地计数（localStorage） --- */
     function readLocal() {
       try { return JSON.parse(localStorage.getItem("local_stats") || '{"total":0,"daily":{},"views":{}}'); }
@@ -4336,7 +4309,6 @@
       d.total = (d.total || 0) + 1;
       d.daily[today] = (d.daily[today] || 0) + 1;
       writeLocal(d);
-      trackBaidu(location.hash || "/");
       cfPost("/visit");   /* 上报全局访问到 Cloudflare Worker（fire-and-forget） */
     }
     function recordView(id) {
@@ -4347,7 +4319,6 @@
       d.daily[today] = (d.daily[today] || 0) + 1;   /* 看题也算当日活跃，保证打卡/热力图完整 */
       d.views[k] = (d.views[k] || 0) + 1;
       writeLocal(d);
-      trackBaidu("/question/" + id);
       cfPost("/view", { id });   /* 上报题目浏览到 Cloudflare Worker（fire-and-forget） */
     }
     function getLocalStats() {
@@ -4406,7 +4377,7 @@
       } catch (e) { return cfCache; }
     }
     function enabled() { return true; }
-    return { enabled, recordVisit, recordView, getLocalStats, baiduId, loadBaiduScript, cfEnabled, cfApi, cfPost, cfGetStats };
+    return { enabled, recordVisit, recordView, getLocalStats, cfEnabled, cfApi, cfPost, cfGetStats };
   })();
 
   const COUNTRY_NAMES = { CN: "中国", HK: "中国香港", TW: "中国台湾", MO: "中国澳门", US: "美国", JP: "日本", KR: "韩国", SG: "新加坡", GB: "英国", DE: "德国", FR: "法国", IN: "印度", CA: "加拿大", AU: "澳大利亚", RU: "俄罗斯", BR: "巴西", NL: "荷兰", ES: "西班牙", IT: "意大利", TH: "泰国", MY: "马来西亚", VN: "越南", ID: "印度尼西亚", PH: "菲律宾", NZ: "新西兰", SE: "瑞典", CH: "瑞士", AE: "阿联酋", ZA: "南非", XX: "未知地区" };
@@ -4480,7 +4451,6 @@
 
   async function init() {
     applyTheme();
-    Stats.loadBaiduScript();
     if (!window.indexedDB) {
       document.body.innerHTML = `<div class="empty" style="padding:80px"><div class="em-ic">${U.icon("alert")}</div><h3>当前浏览器不支持 IndexedDB</h3><p>请使用 Chrome / Firefox / Edge 等现代浏览器。</p></div>`;
       return;

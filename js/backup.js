@@ -19,7 +19,7 @@
   /* 需要备份的 localStorage 键（云端发布 + AI + 统计 + 主题） */
   const LS_KEYS = [
     "gh_publish_token", "gh_publish_repo", "gh_publish_branch", "gh_autopublish",
-    "baidu_tid", "stats_api", "stats_key",
+    "stats_api", "stats_key",
     "it_hub_theme",
     "it_hub_ai_key", "it_hub_ai_base", "it_hub_ai_model", "it_hub_ai_store",
     "it_hub_ai_timeout", "it_hub_ai_temp", "it_hub_ai_max"
