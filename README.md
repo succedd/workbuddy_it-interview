@@ -253,6 +253,25 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-23 · chore: 整体移除百度统计（缓存版本 `20260923d → 20260923e`）
+
+- **背景**：用户要求「百度后台统计去掉」。百度统计属于第三方上报（`hm.baidu.com`），移除后站点数据更可控，也不再向第三方暴露访客浏览路径。
+- **删除清单**：
+  - `index.html` 删除 `<head>` 里的 hm.js 上报脚本块（ID `856d2b08330e4b9f225cf101d6f14103`）；
+  - `js/app.js` 的 `Stats` 模块删除 `DEFAULT_TID` / `baiduId()` / `trackBaidu()` / `loadBaiduScript()`，删除 `recordVisit()`、`recordView()` 内的上报调用与 `init()` 里的脚本加载，导出精简；**后台「设置」页的「百度统计」配置卡片整体删除**；**后台「数据」页「访问统计」卡片**改为按 `cfEnabled` 分支展示（原「查看百度统计后台 →」外链一并去掉）；
+  - `js/backup.js` 备份键列表移除已废弃的 `baidu_tid`；
+  - `sw.js` 的 `VERSION` 与 `index.html` 全部 `?v=`（34 处）统一升到 `20260923e`。
+- **保留（未受影响）**：① 本地计数（`localStorage`）——支撑打卡 / 热力图 / 「本机浏览最多题目 Top」；② Cloudflare Worker 云端统计——全局访问量与题目浏览量、访客地域分布。
+- ⚠️ **刻意保留**：`cloudflare/pages/_worker.js` 白名单里的 `Baiduspider` / `baidu` 是**爬虫 UA 白名单**（本站百度搜索流量是主力，Bot Fight Mode 会误杀），与百度统计无关，不要删。
+- **验证**：`node --check` 三个 JS 全过；线上以浏览器 UA 取 `index.html` 得 `style.css?v=20260923e` 且 `hm.baidu.com` 命中 0；线上 `js/app.js?v=20260923e` 内 `Stats.baiduId` / `trackBaidu` / `loadBaiduScript` / `#baidu-save` 均 0 命中。
+
+### 2026-09-23 · fix(nav): 侧栏还原（恢复「技术体系」项、整体删除「技术分类」分区，缓存版本 `20260923c → 20260923d`）
+
+- **用户诉求原话**：「岗位体系下来就是技术体系，还是按之前的还原，只是把关于本站下面的技术分类删掉」。
+- **最终侧栏顺序**：投稿 → 首页 / 技术教程 / 岗位体系 / **技术体系**（指向 `#/category`）/ 刷题计划 / 模拟面试 / 随机一题 / 刷题练习 / 收藏夹 / 浏览历史 / 错题重练 / 使用指南 / 关于本站。
+- **连带死代码清理**（容易漏）：`NAV_SECS.cats` 定义、`navSectionOf()` 里 `p0 === "category" → "cats"` 的映射（**必须改**，否则进技术体系页侧栏不展开也无高亮）、侧栏 `renderTree()` 函数、`curCatOpen` 状态、`#side-tree` 的事件绑定。
+- **未受影响**：技术体系页自身的分类树 `#page-tree`（276 个节点）与 `#/category?cat=N` 路由全部正常。
+
 ### 2026-09-22 · security: Cloudflare Turnstile 人机验证全量启用（前端挂载层，缓存版本 `20260922c → 20260922d`）
 
 - **覆盖范围**：`/auth/register`、`/auth/login`、`/submit` 三个**写入口**。`/visit`、`/view` 两个高频统计接口**刻意不校验**（否则打断正常浏览）。目的是抬高批量注册 / 机器人刷稿的成本，顺带护住 D1 每日写入额度与 AI 质检开销。
