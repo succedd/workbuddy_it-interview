@@ -597,9 +597,9 @@
         ${pos}${tags}
       </div>
       <div class="q-foot">
-        <span>${U.icon("eye")} ${(q.views || 0)}</span>
-        <span>${U.icon("bookmark")} ${(q.favorites || 0)}</span>
-        <span>${U.icon("star")} ${q.aiScore || 0}</span>
+        ${(q.views || 0) > 0 ? `<span>${U.icon("eye")} ${q.views}</span>` : ""}
+        ${(q.favorites || 0) > 0 ? `<span>${U.icon("bookmark")} ${q.favorites}</span>` : ""}
+        ${(q.aiScore || 0) > 0 ? `<span>${U.icon("star")} ${q.aiScore}</span>` : ""}
         <span class="muted">${U.fmtDate(q.updatedAt)}</span>
       </div>
     </a>`;
@@ -1062,8 +1062,6 @@
       }
     } catch (e) {}
     setMain(`
-      <div id="daily-quote-mount"></div>
-
       <section class="hero">
         <h1>IT 面试题库 · 刷题 / 模拟面试</h1>
         <p>覆盖完整技术体系与岗位体系的高频面试题库：在线刷题、错题间隔复习、模拟面试与学习周报，支持云端同步与离线使用。</p>
@@ -1076,7 +1074,10 @@
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
 
-      <section class="stat-grid" style="margin-top:28px">
+      <!-- 每日一句：细横条形态（20260923a 由大卡改为 hero 下方的 slim strip，首屏让给真实内容） -->
+      <div id="daily-quote-mount"></div>
+
+      <section class="stat-grid" style="margin-top:20px">
         <a class="stat stat-ring" href="#/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -1925,7 +1926,7 @@
           ${q.years ? `<span class="tag tag-outline">${U.esc(q.years)}</span>` : ""}
           ${posTags}${techTags}
         </div>
-        <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)} · 浏览 ${q.views} · 收藏 ${q.favorites} · 来源 ${U.esc(q.source)} · AI评分 ${q.aiScore}</div>
+        <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)}${(q.views || 0) > 0 ? ` · 浏览 ${q.views}` : ""}${(q.favorites || 0) > 0 ? ` · 收藏 ${q.favorites}` : ""} · 来源 ${U.esc(q.source)}${(q.aiScore || 0) > 0 ? ` · AI评分 ${q.aiScore}` : ""}</div>
       </div>
       <div class="qd-body md">${U.md(q.body)}</div>
       <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
