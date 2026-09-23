@@ -926,7 +926,7 @@
         weakIsWeek: weekTop.length > 0,
         slogan: wkSlogan
       };
-      weekHtml = `<div class="card" style="padding:16px 18px;margin-top:20px">
+      weekHtml = `<div class="card" id="week-report" style="padding:16px 18px;margin-top:20px">
         <div style="display:flex;align-items:center;margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px">学习周报</b>
           <span class="muted" style="font-size:12px">${rangeLabel}</span><span class="spacer"></span><button id="wk-history-btn" class="btn btn-sm">历史</button><button id="wk-share-btn" class="btn btn-sm">📸 分享周报</button></div>
         <div id="wk-history" style="display:none"></div>
@@ -1141,6 +1141,35 @@
     };
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
+    /* 深链滚到首页某区块（如页脚「学习周报」→ #/?to=week-report）。
+       只认白名单内的 id，避免任意 id 被构造成跳转；滚完把 to 从 hash 里摘掉，
+       免得用户手动返回时又被滚一次。 */
+    scrollToSection(HOME_SCROLL_TARGETS);
+  }
+
+  /* 首页可深链锚点白名单（2026-09-23：修复页脚「学习周报」指向不存在的 #/report） */
+  const HOME_SCROLL_TARGETS = ["week-report"];
+  /* 把视口滚到指定区块，并同步修正 hash（只改 query，不动 path）。
+     只应在**页面内容渲染完之后**调用。 */
+  function scrollToSection(whitelist) {
+    const r = parseHash();
+    const to = r.q && r.q.to;
+    if (!to || whitelist.indexOf(to) < 0) return;
+    /* 摘掉 to：用 replace 避免产生额外历史记录 */
+    const rest = Object.keys(r.q).filter(k => k !== "to" && r.q[k] !== undefined)
+      .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(r.q[k])).join("&");
+    const clean = "#" + (r.path || "/") + (rest ? "?" + rest : "");
+    try { history.replaceState(null, "", clean); } catch (e) {}
+    /* 等一帧再滚，确保周报卡（依赖 IndexedDB 统计）已挂进 DOM */
+    requestAnimationFrame(() => {
+      const el = document.getElementById(to);
+      if (!el) return;
+      const tb = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar-h"), 10) || 60;
+      try { window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - tb - 12, behavior: "smooth" }); } catch (e) { el.scrollIntoView(); }
+      /* 短暂高亮，帮用户定位到刚跳过来的区块 */
+      el.classList.add("flash-target");
+      setTimeout(() => el.classList.remove("flash-target"), 1600);
+    });
   }
 
   /* ============================ 题库全景图 ============================ */
@@ -4475,9 +4504,9 @@
       const col = (title, links) => `<div class="f-col"><div class="f-col-title">${title}</div>${links.map(([t, h]) => `<a href="${h}">${t}</a>`).join("")}</div>`;
       footEl.innerHTML = `
         <div class="f-grid">
-          ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/weak"], ["收藏夹", "#/favorites"]])}
+          ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/review"], ["收藏夹", "#/favorites"]])}
           ${col("体系", [["技术体系", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
-          ${col("我的", [["学习周报", "#/report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
+          ${col("我的", [["学习周报", "#/?to=week-report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
           ${col("关于", [["关于本站", "#/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
         </div>
         <div class="f-bottom">

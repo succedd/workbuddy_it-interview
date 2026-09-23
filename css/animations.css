@@ -10,6 +10,15 @@
 /* Card hover */
 .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
 
+/* 深链定位高亮（页脚「学习周报」跳首页周报卡时，帮用户认出刚跳到的区块，2026-09-23）
+   只用 outline，不碰 layout，避免与卡片自身的 margin/阴影打架 */
+.flash-target { animation: flash-target 1.6s ease both; }
+@keyframes flash-target {
+  0%   { outline: 2px solid var(--c-primary); outline-offset: 4px; }
+  70%  { outline: 2px solid var(--c-primary); outline-offset: 4px; }
+  100% { outline: 2px solid transparent; outline-offset: 4px; }
+}
+
 /* Button press */
 .btn:active { transform: scale(.96); }
 
