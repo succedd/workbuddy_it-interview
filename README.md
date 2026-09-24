@@ -253,6 +253,19 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-09-24 · security(anti-scrape): 加第五道闸门「端口闸门」，关掉 5 个备用 HTTPS 端口的重复暴露（缓存版本 `20260924c` 不变）
+
+- **背景**：查 Cloudflare 配额时，`tools/cf-quota-check.py` 顺带报出「窗口内 343 次非标准端口请求（2087/2053/8443 各 76、443 显式 478），疑似端口扫描」。实测后确认这不是纯噪音。
+- **实测暴露面**：Cloudflare 默认在 HTTPS `443/2053/2083/2087/2096/8443` 与 HTTP `80/8080/8880/2052/2082/2086/2095` 上都代理本站流量。
+  - **HTTP 侧无问题**：全部 301 到 `https://itinterview.com.cn/`（zone 的 Always Use HTTPS）。
+  - **HTTPS 侧是问题**：5 个备用端口**全部返回 HTTP 200，且内容与主域逐字节相同**（六个端口首页 sha256 均为 `e4ffb2e3…`）⇒ 同一份内容在 **6 个端口**重复对外暴露。这些端口**缓存关闭**，请求必然穿透，且每发都真实消耗一次 Pages 静态请求 + Worker 调用。
+- **修法**：`cloudflare/pages/_worker.js` fetch 开头新增**第五道闸门** —— 只放行 `80 / 443`，其余一律 `404` + `x-deny-reason: nonstandard-port`。端口以 `Host` 头为准、`url.port` 兜底（URL 规范会规范化掉默认端口）；本地 dev（`localhost/*.1/[::1]`）豁免。返回 **404 而非 403**，沿用「内部文件不出面」的思路，不向扫描器确认服务存在。
+- **回归测试**：`tools/pages-guard-test.mjs` **41 → 51 条**（新增 6 条端口用例），**51/51 全绿**（CI 必跑，不过则中止部署）。
+- **改动文件**：`cloudflare/pages/_worker.js`、`tools/pages-guard-test.mjs`、`cloudflare/pages/README.md`、本文件、`HANDOVER.md`。
+- **无需 bump 缓存**：本次没有任何静态资源变化，`?v=` 与 `sw.js VERSION` 保持 `20260924c`。
+- **可选补强（需权限，未做）**：Zone 级 WAF 自定义规则 `not (cf.edge.server_port in {80 443})` → `Block`，挡在 Worker 之前、连 Worker 调用都不消耗。现有令牌无 `Zone WAF` 权限（本机 OAuth 读 `/rulesets` 报 `10000`、读 zone settings 报 `9109`），只能手工在面板加；步骤与官方依据见 `cloudflare/pages/README.md`。
+- ⚠️ **顺带更正过时文档**：`cloudflare/pages/README.md` 里「关于自定义域名 `it-interview.is-a.dev`」整节已过期（该域 2026-09-21 已下架释放），已重写为 `itinterview.com.cn` 与 Zone 级防护的现状（zone 在本账号下、可配 Zone 级防护，但令牌无对应权限、只能手工点）。
+
 ### 2026-09-24 · style(ux): 布局与体验整改 19 项 + 横向溢出归零（缓存版本 `20260923h → 20260924c`）
 
 - **背景**：用户拿线上站问「布局还有哪些地方需要调整，体验更好」。线上开了反爬（裸 curl 与自动化浏览器都被 403），改用**本地同版本代码副本**在真实 Chromium 里逐页走查：桌面 1440×900 + 移动 390×844 两个视口、26 张取证截图，按 P0/P1/P2 分层列出 19 条。用户回「全部做」后逐项落地。

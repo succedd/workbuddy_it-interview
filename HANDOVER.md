@@ -34,7 +34,7 @@
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
 - 静态分享页：`tools/gen-share-pages.js` 生成 1228 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA；滚动近文末滑入「连刷同类题」引导条，可关闭）——**新增题目后需重跑一次**（脚本已同步桌面副本）
 - 域名 **`https://itinterview.com.cn`**（自购域名，2026-09-21 上线；`www.itinterview.com.cn` 同域也已 active）；备用预览域 `https://it-interview-889.pages.dev`（CORS 白名单仍保留，旧链接不失效）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
-- **反爬托管层（2026-09-21 已全部落地）**：站点前端已从 GitHub Pages **迁至 Cloudflare Pages**（直传项目 `it-interview`），并用高级模式 `_worker.js` 在边缘拦截采集。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（白名单组装 `dist/`，`tools/`、`cloudflare/`、`HANDOVER.md` 等内部文件不进发布产物）；回归测试 `tools/pages-guard-test.mjs`（41 条，**CI 里必跑，不过则中止部署**）；部署与验证清单 `cloudflare/pages/README.md`。**⚠️ 历史提示：`is-a-dev/register` PR #53221 已被维护者关闭（未合并），域名 `it-interview.is-a.dev` 已下架释放 —— 勿再引用、勿再申请。**
+- **反爬托管层（2026-09-21 已全部落地）**：站点前端已从 GitHub Pages **迁至 Cloudflare Pages**（直传项目 `it-interview`），并用高级模式 `_worker.js` 在边缘拦截采集。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（白名单组装 `dist/`，`tools/`、`cloudflare/`、`HANDOVER.md` 等内部文件不进发布产物）；回归测试 `tools/pages-guard-test.mjs`（51 条，**CI 里必跑，不过则中止部署**）；部署与验证清单 `cloudflare/pages/README.md`。守卫共**五道闸门**：①仓库内部文件 404 ②UA 识别 ③`/data/*` 浏览器信号 ④传输层与响应头加固 ⑤端口闸门（仅放行 80/443）。**⚠️ 历史提示：`is-a-dev/register` PR #53221 已被维护者关闭（未合并），域名 `it-interview.is-a.dev` 已下架释放 —— 勿再引用、勿再申请。**
 - ✅ **2026-09-21 新增能力（取代旧注释里「用不了 WAF」的说法）**：`itinterview.com.cn` 的 zone 就在本账号下（id `48961f3585fdc652af950bd2163c0382`，status active），**因此现在可以启用 Zone 级防护** —— Security Level、Bot Fight Mode、WAF 自定义规则（免费版 5 条）、Rate Limiting、HSTS、Always Use HTTPS。这些在 is-a.dev 时代都做不到（域名 DNS 归属 is-a.dev 项目、不在本账号）。
   - ⚠️ **但「能配」不等于「该配」，且这两条通道的 API 权限至今没拿到（2026-09-22 实测复核）**：本机 wrangler OAuth 只有 `zone:read`，仓库 Secret `CLOUDFLARE_API_TOKEN` 同样缺 Zone Settings 权限（两者读 zone settings 均报 **9109**；该 token 的权限组实际只有 `Account.Cloudflare Pages`）⇒ **面板级开关目前无人能动**。不过**传输层该有的效果已经全部在应用层达成**，`_worker.js` 即第四道闸门（详见第 6 节）：
     | 项 | 状态 | 实测依据 |
@@ -45,7 +45,8 @@
     | TLS 1.3 | ✅ 已开 | `/cdn-cgi/trace` 实测 `tls=TLSv1.3`、`kex=X25519MLKEM768` |
     | 机会加密（随机加密） | ⚪ 影响已被覆盖 | 80 端口 h2c（前置知识与 Upgrade 两种方式）实测都不升级、直接 301；站内 **0 处** `http://` 子资源 ⇒「自动 HTTPS 重写」也不需要 |
     | Security Level=High / Bot Fight Mode | ⛔ 不建议开 | 会误伤国内访客与 Baiduspider（理由见第 6 节），且 `_worker.js` 的 UA+ASN 白名单更精准 |
-  - **结论：zone 级防护无遗留待办，不需要任何面板操作，也不需要为此去改 token。** `/tools/ci/zone-security.py` + `.github/workflows/zone-security.yml` 作为**休眠流水线**保留（幂等、可重跑），**仅当**将来给该 token 补上 `Zone → Zone Settings → Edit` 后，才需要重推 `cf-zone-setup` 分支执行。
+    | 非 80/443 端口 | ✅ 已生效（应用层） | 2026-09-24 加**第五道闸门**：`https://<域>:2053 / 2083 / 2087 / 2096 / 8443` 实测原先**全部 200 且与主域逐字节相同**（sha256 一致），现已一律 404 `nonstandard-port`；HTTP 侧（8080/8880/2052/2082/2086/2095）由 zone 的 Always Use HTTPS 统一 301 到主域，无问题 |
+  - **结论：应用层已无遗留待办。** 唯一可选的**手工补强**一条：Zone 级 WAF 自定义规则 `not (cf.edge.server_port in {80 443})` → `Block`（挡在 Worker 之前，连 Worker 调用都不消耗）—— 需 `Zone WAF → Edit` 权限，现有令牌没有（实测读 rulesets 报 `10000`），将来拿到后可手工在面板加，步骤见 `cloudflare/pages/README.md`。`/tools/ci/zone-security.py` + `.github/workflows/zone-security.yml` 作为**休眠流水线**保留（幂等、可重跑），**仅当**将来给该 token 补上 `Zone → Zone Settings → Edit` 后，才需要重推 `cf-zone-setup` 分支执行。
 
 ## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
 
@@ -104,11 +105,21 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`6fc6f12`（布局与体验整改 19 项）｜缓存版本：`20260924c`｜更新时间：2026-09-24 19:35 (+08)**
+**最新（⚠️ 本地待发布：已改代码+文档，尚未 commit / 未 push release）：反爬第五道闸门「端口闸门」｜缓存版本 `20260924c` 不变｜更新时间：2026-09-24 20:20 (+08)**
+**最新 release commit：`9c7a409`（布局体验整改的文档刷新，代码为 `6fc6f12`）｜缓存版本：`20260924c`｜更新时间：2026-09-24 19:45 (+08)**
+**上一条 release commit：`6fc6f12`（布局与体验整改 19 项）｜缓存版本：`20260924c`｜更新时间：2026-09-24 19:35 (+08)**
 **上一条 release commit：`e73cd3d`（修复页脚两个死链）｜缓存版本：`20260923h`｜更新时间：2026-09-23 22:15 (+08)**
 **上上条 release commit：`0cf4456`（顶栏文字入口的文档刷新，代码为 `54d012c`，`20260923g`）｜更新时间：2026-09-23 21:45 (+08)**
 **上上上条 release commit：`2d9321b`（百度统计移除的文档刷新，代码为 `f4f5ecd`，`20260923e`）｜更新时间：2026-09-23 21:10 (+08)**
 
+- **【已完成·待发布 2026-09-24】反爬加第五道闸门「端口闸门」（`_worker.js`，⚠️ 尚未 commit / 未 push）**：
+  - **起因**：用户问 Cloudflare 存储配额，`tools/cf-quota-check.py` 顺带报出「窗口内 343 次非标准端口请求（2087/2053/8443 各 76、443 显式 478），疑似端口扫描」。用户同意处理。
+  - **实测暴露面（2026-09-24，浏览器 UA + curl）**：Cloudflare 默认在 **HTTPS `443/2053/2083/2087/2096/8443`** 与 **HTTP `80/8080/8880/2052/2082/2086/2095`** 上都代理本站流量。**HTTP 侧全部 301 到 `https://itinterview.com.cn/`（zone 的 Always Use HTTPS，无问题）**；**HTTPS 侧 5 个备用端口全部返回 HTTP 200，且内容与主域逐字节相同**（六个端口首页 sha256 均为 `e4ffb2e3…`，`style.css?v=20260924c`）⇒ 同一份内容在 **6 个端口**重复对外暴露；这些端口**缓存是关闭的**，请求必然穿透，且每发都消耗一次 Pages 静态请求 + Worker 调用。这正是配额巡检告警的来源。
+  - **修法**：`cloudflare/pages/_worker.js` fetch 开头新增**第五道闸门**（在原有 ⓪ 协议兜底之前）：只放行 `80 / 443`，其余一律 `404` + `x-deny-reason: nonstandard-port`。端口**以 `Host` 头为准**（客户端实际发来的），`url.port` 兜底 —— URL 规范会把默认端口规范化掉（https 下 `url.port === ""`），只看后者会漏判。本地 dev（`localhost/127.0.0.1/[::1]`，`wrangler pages dev` 随机端口）**豁免**，否则本地开发全挂。返回 **404 而非 403**：沿用 ①「内部文件不出面」的思路，对扫描器表现为「这个端口上没有网站」，不确认服务存在。
+  - **回归测试**：`tools/pages-guard-test.mjs` 由 **41 → 51 条**（新增 6 条端口用例：8443/2087 非标准端口 404、2053 上的 `/q/*.html` 404、`Host` 显式 `:443` 放行、裸 Host 放行、`http :80` 仍 301、本地 dev 端口豁免）；`makeRequest()` 增加 `opts.origin` 以构造带端口的 URL。**51/51 全绿。**
+  - **可选补强（需权限，未做）**：Zone 级 WAF 自定义规则 `not (cf.edge.server_port in {80 443})` → `Block`，可挡在 Worker 之前、连 Worker 调用都不消耗。现有令牌**无 `Zone WAF` 权限**（本机 OAuth 读 `/rulesets` 报 `10000 Authentication error`、读 zone settings 报 `9109`），只能手工在面板加，步骤已写进 `cloudflare/pages/README.md`。
+  - **注意**：本次只改 `_worker.js` + `tools/` + `.md`，**没有任何静态资源变化 ⇒ 不需要 bump `?v=` / `sw.js VERSION`**（缓存版本仍为 `20260924c`）。
+  - **发布后必验**：`https://<域>:8443/`、`:2087/`、`:2096/`、`:2053/`、`:2083/` 用浏览器 UA 请求应为 **404 `nonstandard-port`**；主域 `https://itinterview.com.cn/` 仍 **200**；`node tools/pages-guard-test.mjs` 51/51；`python tools/accept-switch.py` 10/10；`python tools/regress-check.py` 零回归。
 - **【已完成·2026-09-24】布局与体验整改 19 项（`20260923h` → `20260924c`，`6fc6f12`，✅ 已推送 release 并部署上线）**：
   - **起因**：用户拿线上站 `https://itinterview.com.cn` 问「布局还有哪些地方要调整」。线上开了反爬（裸 curl 与自动化浏览器均被 403），故用**本地同版本代码副本**（`C:/Users/Life/WorkBuddy/2026-09-23-07-53-45/iti`）在真实 Chromium（agent-browser）里逐页走查：桌面 1440×900 + 移动 390×844 两个视口，26 张取证截图，产出《布局体验评审报告》（含 P0×3 / P1×7 / P2×9）。用户回「全部做」。
   - **P0（必修，均已复测通过）**：
