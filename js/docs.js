@@ -31,11 +31,15 @@
 .dt-item.done{color:var(--c-success)}
 .dt-item .dt-ck{flex:none;margin-right:4px}
 .docs-dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px;margin-top:14px}
+/* 卡片改 flex 列 + 等高（2026-09-24 评审 P2-17）：描述文字行数不同会让同排卡片高矮不齐，
+   进度条位置也跟着飘。现在描述统一截断 3 行、进度条用 margin-top:auto 压到底、卡片吃满行高。 */
 .docs-dir-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:16px;
-  text-decoration:none;color:inherit;transition:box-shadow .15s,transform .15s;display:block}
+  text-decoration:none;color:inherit;transition:box-shadow .15s,transform .15s;display:flex;flex-direction:column;height:100%}
 .docs-dir-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .docs-dir-card h3{margin:0 0 6px;font-size:16px}
-.docs-dir-card p{margin:0;font-size:13px;color:var(--text-secondary);line-height:1.6}
+.docs-dir-card p{margin:0;font-size:13px;color:var(--text-secondary);line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.docs-dir-card .docs-bar{margin-top:auto}
 .docs-bar{height:6px;border-radius:999px;background:var(--bg-subtle);overflow:hidden;margin-top:10px}
 .docs-bar>i{display:block;height:100%;background:var(--c-primary);border-radius:999px;transition:width .3s}
 .lv-card{margin-top:14px}
@@ -149,10 +153,12 @@
             <div class="doc-meta" style="margin-top:10px">
               <span class="tag">${d.levels.length} 个级别</span>
               <span class="tag">${st.total} 章</span>
-              <span class="tag">${chs.length} 篇已上线</span>
+              <!-- 「N 篇已上线」只在尚未全部上线时才有信息量（2026-09-24 评审 P2-17）：
+                   全部上线时它会和「N 章」完全同值，同一张卡上写两遍同一个数字。 -->
+              ${chs.length < st.total ? `<span class="tag">${chs.length} 篇已上线</span>` : ""}
             </div>
             <div class="docs-bar"><i style="width:${pct}%"></i></div>
-            <div class="muted" style="font-size:12px;margin-top:6px">学习进度 ${st.done}/${st.total}（${pct}%）</div>
+            <div class="muted" style="font-size:12px;margin-top:6px">学习进度 ${st.done}/${st.total}${pct ? `（${pct}%）` : ""}</div>
           </a>`;
         }).join("")}
       </div>

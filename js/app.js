@@ -242,7 +242,7 @@
            <div class="sep"></div>
            <a href="#" id="admin-logout">${U.icon("x")} 退出管理</a>
          </div></div>`
-      : `<button class="btn btn-ghost btn-sm desktop-only" id="admin-login-btn">${U.icon("user")} 管理员</button>`;
+      : `<button class="btn btn-ghost btn-icon desktop-only" id="admin-login-btn" title="管理员登录" aria-label="管理员登录">${U.icon("shield")}</button>`;
     topbar.innerHTML = `
       <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="打开菜单">${U.icon("menu")}</button>
       <a class="brand" href="#/"><span class="logo">I</span> IT面试题库</a>
@@ -266,18 +266,27 @@
         ${(window.Account && Account.isServerAdmin())
           ? `<a class="top-link desktop-only" href="#/admin/inbox" title="审核通过、待收录入库的题目（${App.inboxPending || 0} 条）">待入库${App.inboxPending ? `<span class="badge-dot">${App.inboxPending}</span>` : ""}</a>`
           : ""}
+        <!-- 移动端常驻搜索入口（2026-09-24 评审 P1-4）：顶栏搜索框在 ≤720px 被隐藏、
+            抽屉里的搜索要点开汉堡才够得着 —— 在题库页或详情页想换一道题，只能先回首页。
+            这个放大镜是移动端唯一的「一步即搜」入口，点击弹出搜索浮层。 -->
+        <button class="icon-btn mobile-only" id="top-search-btn" aria-label="搜索题目" title="搜索题目">${U.icon("search")}</button>
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
         ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account" title="登录 / 注册帐号">${U.icon("user")} 登录</a>`}
         ${adminHtml}
-        ${`<span class="vis-chip" title="本机统计：本浏览器累计打开题库的次数（非全站 PV，不跨设备）">${U.icon("eye")}<span class="vic">本机访问 <b id="vis-today" class="vis-num">–</b></span><span class="vic">累计 <b id="vis-total" class="vis-num">–</b></span></span>`}
+        <!-- 顶栏的「本机访问 N | 累计 N」已移除（2026-09-24 评审 P2-11）：
+             它是内部埋点口径的自家数字（非全站 PV），挂在每一次页面浏览的右上角既占位又要解释，
+             且移动端本来就是隐藏的 —— 说明它对判断「这个站值不值得用」没有帮助。
+             同数据移到「关于本站」页，需要时再看（refreshVisitorStats 仍会更新那里的两个节点）。 -->
       </div>`;
     const gs = $("#global-search");
     gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
     attachHistory(gs, t => { shPush(t); App.go("/questions?q=" + encodeURIComponent(t)); });
     $("#theme-btn").onclick = cycleTheme;
     $("#menu-toggle").onclick = () => toggleDrawer();
+    const tsb = $("#top-search-btn");
+    if (tsb) tsb.onclick = openSearchSheet;
     syncDrawerA11y();
     updateNetChip();
     if (Auth.isAdmin()) {
@@ -289,6 +298,32 @@
       $("#admin-login-btn").onclick = openAdminLogin;
     }
     refreshVisitorStats();
+  }
+
+  /* ============================ 移动端搜索浮层（2026-09-24 评审 P1-4） ============================
+   * 顶栏在 ≤720px 放不下搜索框（实测 390px 加回去会溢出 172px），原先只好把搜索移进抽屉。
+   * 结果是「在题库/详情页想搜下一道题」必须先点汉堡或回首页 —— 折损最频繁的动作之一。
+   * 这里用浮层承载：一个输入框 + 热门词，回车直达题目列表，复用 attachHistory 的最近搜索。
+   * ⚠️ 输入框的直接父元素必须是 .drawer-search（position:relative）—— attachHistory 把
+   *    .search-dd 下拉 append 到 input.parentNode 并按它定位，换成别的容器下拉会飘。 */
+  function openSearchSheet() {
+    const m = U.modal({ title: "搜索题目", footer: false });
+    m.body.innerHTML = `
+      <div class="drawer-search" style="display:block">
+        <span class="icon">${U.icon("search")}</span>
+        <input id="sheet-search" type="text" placeholder="搜索题目、技术、岗位、标签…" autocomplete="off" enterkeyhint="search" aria-label="搜索题目" />
+      </div>
+      <div class="sheet-hot-title">热门搜索</div>
+      <div class="hot-tags" style="justify-content:flex-start;margin-top:10px">
+        ${HOT_TERMS.map(t => `<button type="button" class="tag" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}
+      </div>`;
+    const input = m.body.querySelector("#sheet-search");
+    const go = (t) => { if (!t) return; shPush(t); m.close(); App.go("/questions?q=" + encodeURIComponent(t)); };
+    input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(input.value.trim()); } });
+    attachHistory(input, go);
+    m.body.querySelectorAll("[data-sug]").forEach(b => { b.onclick = () => go(b.dataset.sug); });
+    /* 自动聚焦：手机上会同时弹起键盘，省掉一次点击。延迟一点等弹窗进场动画结束 */
+    setTimeout(() => { try { input.focus(); } catch (_) {} }, 80);
   }
 
   /* 离线提示：断网时顶栏常驻「离线」徽章（PWA 离线可用，但需告知数据是本地缓存） */
@@ -511,11 +546,13 @@
       item("#/questions", "layers", "题库", p0 === "questions") +
       item("#/practice", "refresh", "刷题", p0 === "practice") +
       item("#/review", "alert", "错题", p0 === "review", due) +
-      item("#/favorites", "bookmark", "收藏", p0 === "favorites") +
-      /* 投稿（20260919f）：移动端顶栏那排快捷图标被隐藏，抽屉里也埋在下方，
-         这里补一个拇指区入口。.tab-item 是 flex:1 1 0，加到 6 个不会挤压溢出。
-         20260919h：再加 .tab-cta 实心圆底，免得它跟其它 5 个线性图标一起被忽略。 */
-      item("#/submit", "plus", "投稿", p0 === "submit", 0, "tab-cta");
+      item("#/favorites", "bookmark", "收藏", p0 === "favorites");
+    /* 2026-09-24 去掉第 6 项「投稿」及其 .tab-cta 实心圆底：
+       ① 6 项在 375px 屏上每项只剩 63px，首尾相接没有呼吸感（实测 x=0/63/125/188/250/313）；
+       ② 「投稿」是低频动作（写完一道题才用一次），做成带脉冲的蓝色圆钮后视觉重心远超
+          5 个正文 tab，还盖住了右下角内容 —— 拇指区最贵的位置给了最低频的操作。
+       投稿入口仍然可达，且都不需要额外点击：抽屉第一落点（.nav-cta，见 renderSidebar）、
+       顶栏文字入口（桌面）、首页与「我的」页的入口卡片。 */
   }
 
   /* ============================ 移动端手势：左右滑动切题 ============================
@@ -566,6 +603,24 @@
      分类树现在只在「技术体系」页内渲染（见同文件 pageCategory 里的局部 renderTree）。 */
 
   /* ============================ 通用组件 ============================ */
+  /* 来源标签：把数据里的 source 字段翻成人话再上界面。
+     ⚠️ 不要直接把 q.source 打到用户面前 —— 实测详情页 meta 行会渲染出「来源: seed」，
+     seed / principles 都是建库期的内部标记，用户看不懂是什么意思（2026-09-24 评审 P2-11）。
+     管理后台的表格仍显示原始值（那里需要看真实字段）。 */
+  const SRC_LABEL = {
+    seed: "题库内置",
+    principles: "第一性原理",
+    manual: "官方整理",
+    ai: "AI 生成",
+    import: "批量导入",
+    submission: "用户投稿",
+  };
+  function srcLabel(s) {
+    const v = String(s == null ? "" : s).trim();
+    if (!v) return "";
+    if (/^https?:\/\//i.test(v)) return "外部来源";
+    return SRC_LABEL[v] || "其他来源";
+  }
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
@@ -927,8 +982,9 @@
         slogan: wkSlogan
       };
       weekHtml = `<div class="card" id="week-report" style="padding:16px 18px;margin-top:20px">
-        <div style="display:flex;align-items:center;margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px">学习周报</b>
-          <span class="muted" style="font-size:12px">${rangeLabel}</span><span class="spacer"></span><button id="wk-history-btn" class="btn btn-sm">历史</button><button id="wk-share-btn" class="btn btn-sm">📸 分享周报</button></div>
+        <div class="wk-head" style="margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px;white-space:nowrap">学习周报</b>
+          <span class="muted" style="font-size:12px;white-space:nowrap">${rangeLabel}</span><span class="spacer"></span>
+          <span class="wk-actions"><button id="wk-history-btn" class="btn btn-sm">历史</button><button id="wk-share-btn" class="btn btn-sm">📸 分享周报</button></span></div>
         <div id="wk-history" style="display:none"></div>
         ${allZero
           ? `<div style="text-align:center;padding:6px 0 2px"><div style="font-size:15px">本周还没开始，随时可以出发 💪</div><div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="#/random">随机来一题 →</a> <a class="btn btn-sm" href="#/practice">进入刷题</a></div></div>`
@@ -1106,24 +1162,26 @@
         </a>
       </section>
 
+      <!-- 本机存储 / 登录同步的提示（2026-09-24 评审 P1-8）：原先挂在整页最末（移动端约第 11 屏），
+           而它解释的是「为什么换台设备就没有记录」这个一定会被问到的问题 —— 移到学习数据区开头。 -->
+      <div class="note" style="margin-top:20px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
+
       ${dueBannerHtml}
       ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
       ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
       ${weekHtml}
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
-      <div class="grid grid-cols-auto">${catCards}</div>
+      <div class="grid grid-cols-auto home-cats">${catCards}</div>
 
       <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部 →</a></div>
-      <div class="grid grid-cols-2">${stageCards}</div>
+      <div class="grid grid-cols-2 home-stages">${stageCards}</div>
 
       <div class="section-head"><h2>最新题目</h2><a class="more" href="#/questions?sort=updated">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(recent)}</div>
 
       <div class="section-head"><h2>精选题目（AI 评分最高）</h2><a class="more" href="#/questions?sort=aiScore">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(best)}</div>
-
-      <div class="note" style="margin-top:24px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
     `, () => {
       if (App._wkInit) App._wkInit();
       if (window.DailyQuote) window.DailyQuote.mount(document.getElementById("daily-quote-mount"));
@@ -1355,8 +1413,8 @@
 
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术体系</span></div>
-      <div class="layout" style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start">
-        <aside class="card" style="position:sticky;top:80px;max-height:80vh;overflow:auto">
+      <div class="layout cat-layout">
+        <aside class="card tree-panel">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
           <div id="page-tree">${treeHtml(tree)}</div>
         </aside>
@@ -1429,8 +1487,12 @@
           <div class="muted" style="font-size:12px;margin-top:4px">${catLink}</div>
           <div class="q-meta" style="margin-top:10px">
             <span class="tag">${qn} 题</span>
-            <span class="tag tag-outline">${skillN} 技术栈</span>
-            <span class="tag ${demand === "高" ? "tag-success" : demand === "低" ? "tag-warning" : ""}">热度 ${U.esc(demand)}</span>
+            <!-- 「0 技术栈」与「热度 中」都藏起来（2026-09-24 评审 P2-15）：
+                 此前 142 张卡片上的「热度 中」结论完全一致 —— 一水儿相同的标签等于没有标签，
+                 反而让整页显得信息稀薄；「0 技术栈」更会让人以为站内是空的。
+                 现在只在真正有差异时展示：技术栈为 0 不显示，热度只在「高 / 低」时出现。 -->
+            ${skillN ? `<span class="tag tag-outline">${skillN} 技术栈</span>` : ""}
+            ${demand === "高" ? `<span class="tag tag-success">需求旺盛</span>` : demand === "低" ? `<span class="tag tag-warning">需求较少</span>` : ""}
           </div>
         </a>`;
       }).join("")}</div>`;
@@ -1801,6 +1863,17 @@
       } catch (_) {}
     };
 
+    /* 已选条件计数：显示在移动端「筛选」按钮的角标上。
+       移动端筛选面板默认折叠，没有这个数字就看不出「当前是否带着筛选条件」，
+       容易让人以为题库少了内容（桌面端按钮本身隐藏，调用无副作用）。 */
+    const updateFilterBadge = () => {
+      const n = (filters.difficulty.length ? 1 : 0) + (filters.type.length ? 1 : 0)
+        + (filters.source.length ? 1 : 0) + (filters.status.length ? 1 : 0);
+      const b = $("#filter-badge");
+      if (!b) return;
+      b.textContent = n;
+      b.style.display = n ? "" : "none";
+    };
     const apply = (resetPage) => {
       let arr = Search.filter(base, filters);
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
@@ -1808,6 +1881,7 @@
       arr = Search.sort(arr, sortBy);
       if (resetPage !== false) page = 1;   /* 筛选 / 搜索 / 来源一变就回第一页，否则停在越界页会渲染出空白列表 */
       renderGrid(arr);
+      updateFilterBadge();
     };
     const renderGrid = (arr) => {
       const grid = $("#q-grid");
@@ -1881,13 +1955,15 @@
 
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>题目列表</span>${q.cat ? `<span class="sep">/</span><span>${U.esc(Services.catName(parseInt(q.cat)))}</span>` : ""}${q.pos ? `<span class="sep">/</span><span>${U.esc(decodeURIComponent(q.pos))}</span>` : ""}</div>
-      <h1 style="margin-bottom:6px">题目列表 <span class="muted" id="q-count" style="font-size:16px"></span></h1>
-      <div class="toolbar">
-        <input id="q-search" class="full" style="max-width:280px" placeholder="关键词筛选…" value="${U.esc(q.q || "")}" />
-        <select id="f-diff" class="select-mini"><option value="">难度</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select>
-        <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
-        <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option><option value="submission">用户投稿</option></select>
-        ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
+      <h1 style="margin-bottom:10px">题目列表 <span class="muted" id="q-count" style="font-size:16px"></span></h1>
+      <!-- 排序段控从 .toolbar 里提出来，与「筛选」按钮合成一行（2026-09-24 评审 P1-6）：
+           原先桌面端筛选区纵向堆 4 行、移动端占掉近半屏，题目要到 470px 之后才出现。
+           现在桌面端筛选收成一行（.select-mini 不再被全局 select{width:100%} 拉满），
+           移动端整个 .toolbar 默认折叠，由「筛选」按钮展开。 -->
+      <div class="list-tools">
+        <button type="button" class="btn btn-sm filter-toggle" id="filter-toggle" aria-expanded="false" aria-controls="q-toolbar">
+          ${U.icon("filter")} 筛选<span class="ft-badge" id="filter-badge" style="display:none"></span>
+        </button>
         <span class="spacer"></span>
         <div class="seg" id="sort-seg">
           <button data-s="updated" class="${sortBy === "updated" ? "active" : ""}">最新</button>
@@ -1895,6 +1971,13 @@
           <button data-s="favorites" class="${sortBy === "favorites" ? "active" : ""}">收藏</button>
           <button data-s="aiScore" class="${sortBy === "aiScore" ? "active" : ""}">AI评分</button>
         </div>
+      </div>
+      <div class="toolbar collapsible" id="q-toolbar">
+        <input id="q-search" class="full" style="max-width:280px" placeholder="关键词筛选…" value="${U.esc(q.q || "")}" />
+        <select id="f-diff" class="select-mini"><option value="">难度</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select>
+        <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
+        <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option><option value="submission">用户投稿</option></select>
+        ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
       </div>
       <div class="diff-quick" id="diff-quick">
         <button data-d="" class="${!filters.difficulty.length ? "active" : ""}">全部难度</button>
@@ -1904,6 +1987,15 @@
       <div class="pager" id="q-pager"></div>
     `);
     const reSort = (s) => { Object.keys({ updated: 1, views: 1, favorites: 1, aiScore: 1 }).forEach(k => {}); };
+    /* 移动端筛选面板开合（桌面端按钮由 CSS 隐藏、面板常开）。
+       刻意不在「选完即收」—— 用户常要连调两三个条件，自动收起反而更烦。 */
+    const ftBtn = $("#filter-toggle");
+    if (ftBtn) ftBtn.onclick = () => {
+      const opened = ftBtn.getAttribute("aria-expanded") === "true";
+      ftBtn.setAttribute("aria-expanded", opened ? "false" : "true");
+      const bar = $("#q-toolbar");
+      if (bar) bar.classList.toggle("open", !opened);
+    };
     $("#q-search").addEventListener("input", U.debounce(e => { filters.q = e.target.value.trim(); apply(); }, 300));
     attachHistory($("#q-search"), t => { $("#q-search").value = t; filters.q = t; apply(); });
     /* 难度快捷条（2026-09-23）：刷题时按难度筛比排序更常用，给一排按钮一键切换；
@@ -1958,8 +2050,17 @@
     const noteQuote = (myNote && myNote.text)
       ? `<div class="note-quote"><span class="nq-tag">✍️ 我的批注</span>${U.esc(myNote.text)}</div>`
       : "";
+    /* 翻页行（2026-09-24 评审 P1-9）：原先只有页面最底部一组，刷题时最高频的「下一题」
+       要滚过四张相关推荐卡才够得着。现在同一结构出现两次 —— 答案区下方（主链路）+ 页面最底。
+       只有第一组带 id：键盘 ←/→ 与移动端滑动手势仍按 getElementById("prev-btn") 找它；
+       两组统一用 .js-prev / .js-next 类绑定，避免页面里出现重复 id。 */
+    const pagerHtml = (withId) => `
+      <div class="qd-pager" style="margin-top:16px">
+        <button class="btn js-prev"${withId ? ' id="prev-btn"' : ""}>← 上一题</button>
+        <button class="btn js-next"${withId ? ' id="next-btn"' : ""}>下一题 →</button>
+      </div>`;
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span>${pathHtml}<span class="sep">/</span><span>题目</span></div>
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span>${pathHtml}<span class="sep">/</span><span>#${q.id}</span></div>
       <div class="qd-head">
         <h1>${U.esc(q.title)}</h1>
         <div class="q-meta" style="margin:10px 0">
@@ -1969,18 +2070,21 @@
           ${q.years ? `<span class="tag tag-outline">${U.esc(q.years)}</span>` : ""}
           ${posTags}${techTags}
         </div>
-        <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)}${(q.views || 0) > 0 ? ` · 浏览 ${q.views}` : ""}${(q.favorites || 0) > 0 ? ` · 收藏 ${q.favorites}` : ""} · 来源 ${U.esc(q.source)}${(q.aiScore || 0) > 0 ? ` · AI评分 ${q.aiScore}` : ""}</div>
+        <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)}${(q.views || 0) > 0 ? ` · 浏览 ${q.views}` : ""}${(q.favorites || 0) > 0 ? ` · 收藏 ${q.favorites}` : ""}${srcLabel(q.source) ? ` · 来源 ${U.esc(srcLabel(q.source))}` : ""}${(q.aiScore || 0) > 0 ? ` · 质量分 ${q.aiScore}` : ""}</div>
       </div>
       <div class="qd-body md">${U.md(q.body)}</div>
-      <div style="margin-top:14px"><button class="btn btn-primary" id="show-answer">${U.icon("eye")} 查看答案</button>
-        <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
-        <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
-        <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
-        <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
-        ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
-        ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
-          <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
-          <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
+      <div class="q-actions">
+        <button class="btn btn-primary btn-lg q-actions-main" id="show-answer">${U.icon("eye")} 查看答案</button>
+        <div class="q-actions-sub">
+          <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
+          <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
+          <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
+          <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
+          ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
+          ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
+            <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
+            <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
+        </div>
       </div>
       <div class="note-card${myNote && myNote.text ? "" : " is-empty"}" id="note-card">
         <div class="note-head"><b>✍️ 我的批注</b><span class="muted" id="note-saved"></span><span class="note-toggle-hint">点击展开</span></div>
@@ -1992,12 +2096,10 @@
         <div class="note-tip">仅自己可见 · 不随题库发布上传</div>
       </div>
       <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${U.md(q.answer)}</div>
+      ${pagerHtml(true)}
       <div class="section-head"><h2>相关推荐</h2></div>
       <div class="grid grid-cols-2">${related.map(x => qCard(x)).join("")}</div>
-      <div class="pill-row" style="margin-top:16px">
-        <button class="btn" id="prev-btn">← 上一题</button>
-        <button class="btn" id="next-btn">下一题 →</button>
-      </div>
+      ${pagerHtml(false)}
     `, () => { U.highlightAll(main); });
     $("#show-answer").onclick = () => { const b = $("#answer-box"); b.style.display = b.style.display === "none" ? "block" : "none"; U.highlightAll(b); };
     /* 我的批注：纯本地保存（IndexedDB），保存后同步回显到答案顶部 */
@@ -2194,9 +2296,16 @@
     const siblings = Services.questions.filter(x => x.categoryId === q.categoryId).sort((a, b) => a.id - b.id);
     const sibIdx = siblings.findIndex(x => x.id === q.id);
     if (sibIdx >= 0 && siblings.length > 1) {
-      $("#next-btn").onclick = () => App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id);
-      $("#prev-btn").onclick = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
-    } else { $("#prev-btn").style.display = "none"; $("#next-btn").style.display = "none"; }
+      /* 消费方是**两组**翻页（答案区下方 + 页面最底），所以按类遍历绑定，
+         不能再用 $("#next-btn").onclick —— 那样只有第一组生效。 */
+      const goNext = () => App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id);
+      const goPrev = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
+      $$(".qd-pager .js-next").forEach(b => { b.onclick = goNext; });
+      $$(".qd-pager .js-prev").forEach(b => { b.onclick = goPrev; });
+    } else {
+      /* 该题没有同分类邻居：两组翻页一起藏（原来只处理了带 id 的那一组） */
+      $$(".qd-pager").forEach(el => { el.style.display = "none"; });
+    }
     /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应）
        ⚠️ 但**提示文案只在「有指针 + 能悬浮」的设备上给**（用户 2026-09-19 反馈「手机端出现
        空格键/展开收起答案，移动端没必要出现」）：手机上没有实体键盘，字样纯属噪音；更要紧的是
@@ -2266,7 +2375,15 @@
       <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 会了拉长间隔 / 还不会 5 分钟后重来</span></div>
       ${due.length
         ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
-        : `<div class="note" style="margin-top:14px">🎉 当前没有到期的复习任务。在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，就会进入这里按记忆曲线排期。</div>`}
+        : `<div class="empty">
+             <div class="em-ic">${U.icon("check")}</div>
+             <div class="em-title">当前没有到期的复习任务</div>
+             <div class="em-desc">在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，题目就会进入这里并按艾宾浩斯记忆曲线排期：答「会了」拉长间隔，答「还不会」5 分钟后再来一次。</div>
+             <div class="empty-cta">
+               <a class="btn btn-primary" href="#/practice?scope=weak">${U.icon("refresh")} 练薄弱题</a>
+               <a class="btn" href="#/questions">${U.icon("layers")} 去题库标记</a>
+             </div>
+           </div>`}
       ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
       ${due.length && U.canHover() ? `<div class="muted kbd-hint" style="font-size:12px;margin-top:14px">快捷键：回车 确认「会了」· Esc 关闭弹窗</div>` : ""}
     `);
@@ -2495,7 +2612,11 @@
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题练习</span></div>
       <h1>刷题练习</h1>
       <p class="secondary">共 ${pool.length} 道可用题目。选择模式开始。</p>
-      <div class="card" style="max-width:560px">
+      <!-- 两栏布局（2026-09-24 评审 P1-5）：原先表单卡固定 560px 靠左，右栏约 600px 全空，
+           整页看着像「没做完」。右侧补上真实可用的入口卡片，把空白变成有价值的信息。 -->
+      <div class="page-form">
+      <div class="page-form-main">
+      <div class="card">
         <label class="field"><span>刷题模式</span>
           <select id="pm" class="full">
             <option value="random" ${mode === "random" ? "selected" : ""}>随机刷题</option>
@@ -2528,6 +2649,29 @@
         <label class="field"><span>难度筛选（可选）</span>
           <select id="pd" class="full"><option value="">全部</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select></label>
         <button class="btn btn-primary btn-lg full" id="start-p">${U.icon("play")} 开始刷题</button>
+      </div>
+      </div>
+      <aside class="page-form-side">
+        <div class="card">
+          <div class="pf-card-head"><h2>薄弱题本</h2><span class="tag ${weakN ? "tag-warning" : ""}">${weakN} 题</span></div>
+          <p class="pf-card-desc">${weakN
+            ? "标记为「不熟悉 / 不会」的题目，会按艾宾浩斯记忆曲线安排复习。"
+            : "还没标记过题目。在题目详情点「不太会」，这里就会攒下你的薄弱点。"}</p>
+          <div class="pf-card-actions">
+            ${weakN ? `<button type="button" class="btn btn-sm" id="side-weak">${U.icon("alert")} 练薄弱题</button>` : ""}
+            <a class="btn btn-sm" href="#/review">${U.icon("clock")} 错题重练</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="pf-card-head"><h2>换个方式练</h2></div>
+          <div class="pf-card-actions">
+            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机一题</a>
+            <a class="btn btn-sm" href="#/mock">${U.icon("play")} 模拟面试</a>
+            <a class="btn btn-sm" href="#/roadmap">${U.icon("map")} 刷题计划</a>
+            <a class="btn btn-sm" href="#/history">${U.icon("history")} 浏览历史</a>
+          </div>
+        </div>
+      </aside>
       </div>`);
 
     /* 范围切换 */
@@ -2568,6 +2712,8 @@
     $("#pd").onchange = e => App.go(scopeUrl(scope));
     $("#pm").onchange = e => App.go(scopeUrl(scope));
     $("#start-p").onclick = () => start($("#pm").value);
+    const sideWeak = $("#side-weak");
+    if (sideWeak) sideWeak.onclick = () => App.go(scopeUrl("weak"));
   }
 
   function runPractice(list) {
@@ -2638,7 +2784,11 @@
     const posId = url.searchParams.get("pos");
     setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>模拟面试</span></div>
       <h1>模拟面试</h1><p class="secondary">选择目标岗位与年限，系统按技术栈权重随机抽取题目，隐藏答案计时作答。</p>
-      <div class="card" style="max-width:560px">
+      <!-- 两栏布局（2026-09-24 评审 P1-5）：表单原先固定 560px 靠左、右栏约 600px 全空。
+           右侧放「面试流程说明」与热身入口，都是这张表单真正缺少的上下文。 -->
+      <div class="page-form">
+      <div class="page-form-main">
+      <div class="card">
         <label class="field"><span>目标岗位</span>
           <input id="m-pos-input" class="full" list="${datalistId}" placeholder="输入岗位名或关键词搜索…" autocomplete="off">
           <datalist id="${datalistId}">${allPos.map(p => `<option value="${U.esc(p.name)}" data-id="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</datalist>
@@ -2647,7 +2797,27 @@
         </label>
         <label class="field"><span>工作年限</span><select id="m-year" class="full">${years.map(y => `<option>${y}</option>`).join("")}</select></label>
         <label class="field"><span>题目数量</span><select id="m-num" class="full"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></label>
-        <button class="btn btn-ai btn-lg full" id="m-start">${U.icon("play")} 开始模拟面试</button>
+        <button class="btn btn-primary btn-lg full" id="m-start">${U.icon("play")} 开始模拟面试</button>
+      </div>
+      </div>
+      <aside class="page-form-side">
+        <div class="card">
+          <div class="pf-card-head"><h2>这场面试怎么进行</h2></div>
+          <ol class="pf-steps">
+            <li>按目标岗位的技术栈权重抽题，题量可选 5 / 10 / 15 / 20。</li>
+            <li>逐题作答并计时，界面不直接显示答案，需要时再展开对照。</li>
+            <li>每题标记「掌握 / 不熟悉 / 不会」，结束后生成面试报告：用时、掌握度、技术覆盖、需加强的题目。登录后可存到云端并和历次对比。</li>
+          </ol>
+        </div>
+        <div class="card">
+          <div class="pf-card-head"><h2>先热身再来</h2></div>
+          <div class="pf-card-actions">
+            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机一题</a>
+            <a class="btn btn-sm" href="#/practice">${U.icon("refresh")} 刷题练习</a>
+            <a class="btn btn-sm" href="#/roadmap">${U.icon("map")} 刷题计划</a>
+          </div>
+        </div>
+      </aside>
       </div>`);
     /* 岗位输入：匹配 datalist 选项时把 hidden input 设成 id */
     const posInput = $("#m-pos-input");
@@ -4699,6 +4869,12 @@
             <span class="about-fit-item">${U.icon("star")} 即将毕业的应届生</span>
             <span class="about-fit-item">${U.icon("sparkles")} 想转岗进阶的 IT 人</span>
           </div>
+          <!-- 本机访问统计（2026-09-24 评审 P2-11）：原先挂在顶栏、每次浏览都在右上角，
+               但它是「这台设备打开过几次」的自家口径，不是全站 PV —— 放到关于页才解释得清楚。 -->
+          <p class="about-prose" style="font-size:12.5px;margin-top:14px;color:var(--text-muted)">
+            你在本机的访问：今日 <b id="vis-today" class="vis-num">–</b> 次 · 累计 <b id="vis-total" class="vis-num">–</b> 次
+            <span class="muted">（只记录这台设备上的打开次数，不跨设备，也不是全站访问量）</span>
+          </p>
         </section>
 
         <section class="about-card">
@@ -4752,6 +4928,9 @@
         <div class="about-slogan"><span>阅己，方能越己。</span></div>
       </div>`;
     setMain(html);
+    /* 本机访问统计的节点在本页（2026-09-24 评审 P2-11：从顶栏搬来），进页面时刷新一次；
+       否则只在 init 时算过一次、这里会一直显示占位符「–」。 */
+    refreshVisitorStats();
   }
 
   /* 轻量刷新导航（20260919f）：顶栏/侧栏里带「待审条数」角标或角色标签，

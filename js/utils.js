@@ -52,7 +52,9 @@
     bookOpen: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg>`,
     link: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>`,
     /* 岗位路线图（地图/路径） */
-    map: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M9 3 3 5.4v15.8L9 19l6 2.2 6-2.2V3.2L15 5.4z"/><path d="M9 3v16M15 5.4v15.8"/></svg>`
+    map: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M9 3 3 5.4v15.8L9 19l6 2.2 6-2.2V3.2L15 5.4z"/><path d="M9 3v16M15 5.4v15.8"/></svg>`,
+    /* 筛选（漏斗，2026-09-24 题目列表移动端折叠筛选按钮） */
+    filter: `<svg class="ic" viewBox="0 0 24 24" ${P}><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>`
   };
   U.icon = function (name) { return U.ICONS[name] || ""; };
 

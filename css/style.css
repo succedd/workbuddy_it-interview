@@ -237,29 +237,30 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
    外扩 6.1px / 10px，安全；这一条由冒烟脚本的阶段 G 实测把关，改倍数后务必重跑）。
    ⚠️ 内发光只能用 inset（向内画）：外发光会画到盒子外面，同样会撑出横向滚动条。
    ⚠️ 不要给 background 加动画：动画的优先级高于普通声明，会把 :hover 的底色彻底盖掉。 */
+/* 2026-09-24 改静态：原先 .nav-cta 挂着 navCtaPulse + navCtaGlow + navCtaRing 三条无限动画
+   （整块缩放 + 底色闪烁 + 扩散光环），而它是侧栏第一项、在所有页面都可见 ——
+   用户视角就是「一边看题一边有东西一直在跳」，注意力被长期占用。
+   现在只留静态的主色底 + 描边（靠颜色本身突出），hover 时描边加深。
+   需要「一次引起注意」时给元素挂 .pulse（下面保留），而不是默认常驻。 */
 .side-nav-item.nav-cta {
   position: relative;
   background: var(--c-primary-50); color: var(--c-primary); font-weight: 600;
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22);
-  transform-origin: 50% 50%;
-  /* 两条动画各管一半、互不冲突：一条动 transform（一大一小），一条动 inset 阴影（闪）。
-     只用 inset（向内）的阴影是有意的 —— 外发光会画到盒子外面，又会把侧栏撑出横向滚动条。 */
-  animation: navCtaPulse 2.6s cubic-bezier(.4, 0, .2, 1) infinite,
-             navCtaGlow 2.6s ease-in-out infinite;
-  will-change: transform;
 }
-/* 扩散描边：挂在伪元素上单独动，避免与整块的 transform 互相干扰（两个元素各自一格动画更稳） */
+/* 扩散描边容器（静态态隐藏，只有 .pulse 或需要时才动） */
 .side-nav-item.nav-cta::after {
   content: ""; position: absolute; inset: 0; border-radius: inherit;
   border: 2px solid var(--c-primary); opacity: 0; pointer-events: none;
-  animation: navCtaRing 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
-.side-nav-item.nav-cta:hover { background: rgba(37, 99, 235, .18); color: var(--c-primary-600); }
-/* 已经站在「投稿」页时不必再催 → 三种动画一起停 */
-.side-nav-item.nav-cta.active { background: var(--c-primary); color: #fff; animation: none; box-shadow: none; }
-.side-nav-item.nav-cta.active::after { animation: none; opacity: 0; }
-.side-nav-item.nav-cta.active .ic { animation: none; }
-.side-nav-item.nav-cta .ic { color: currentColor; transform-origin: 50% 50%; animation: ctaBeat 2.6s ease-in-out infinite; }
+.side-nav-item.nav-cta:hover { background: rgba(37, 99, 235, .18); color: var(--c-primary-600); box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .48); }
+/* 已经站在「投稿」页时是选中态，不再额外强调 */
+.side-nav-item.nav-cta.active { background: var(--c-primary); color: #fff; box-shadow: none; }
+.side-nav-item.nav-cta .ic { color: currentColor; }
+/* 可选强调态：给「新功能首见 / 有待处理事项」这类一次性引导用。
+   注意它的三条动画都需要留在侧栏内边距里（见上方倍率说明），别调大倍数。 */
+.side-nav-item.nav-cta.pulse { animation: navCtaPulse 2.6s cubic-bezier(.4, 0, .2, 1) infinite, navCtaGlow 2.6s ease-in-out infinite; will-change: transform; transform-origin: 50% 50%; }
+.side-nav-item.nav-cta.pulse::after { animation: navCtaRing 2.6s cubic-bezier(.4, 0, .2, 1) infinite; }
+.side-nav-item.nav-cta.pulse .ic { animation: ctaBeat 2.6s ease-in-out infinite; transform-origin: 50% 50%; }
 /* 投稿分区标题的主色强调已并入 .nav-sec-toggle.nav-cta-title（见上方分区折叠块） */
 @keyframes navCtaPulse {
   0%, 100% { transform: scale(1); }
@@ -294,10 +295,10 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 }
 /* 尊重「减少动画」偏好：全部停掉，只留静态的主色底与描边（信息不丢，只是不闪） */
 @media (prefers-reduced-motion: reduce) {
-  .side-nav-item.nav-cta,
-  .side-nav-item.nav-cta .ic,
-  .side-nav-item.nav-cta::after { animation: none; }
-  .side-nav-item.nav-cta::after { opacity: 0; }
+  .side-nav-item.nav-cta.pulse,
+  .side-nav-item.nav-cta.pulse .ic,
+  .side-nav-item.nav-cta.pulse::after { animation: none; }
+  .side-nav-item.nav-cta.pulse::after { opacity: 0; }
 }
 
 /* ============ Cards ============ */
@@ -346,7 +347,12 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .input-with-action .trail { position: absolute; right: 6px; top: 5px; }
 
 /* ============ Question card ============ */
-.q-card { display: block; text-decoration: none; color: inherit; cursor: pointer; }
+/* 等高卡片（2026-09-24）：.grid-cols-2 本身是标准 grid（同一行轨道等高），但卡片原来是
+   display:block、底部 .q-foot 跟着内容走 —— 于是「chips 占 2 行」的卡与「占 1 行」的卡
+   在视觉上底部参差，读起来像瀑布流、视线要在左右列之间跳。
+   改成 flex 列 + height:100%（吃满 grid 轨道的 stretch 高度），q-foot 用 margin-top:auto 压到底，
+   同一行卡片的底部信息行就对齐了。 */
+.q-card { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; cursor: pointer; }
 .q-card .q-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
 .q-card .q-excerpt { color: var(--text-secondary); font-size: 13px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .q-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -358,6 +364,11 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .q-meta .tag-fold:hover, .q-meta .tag-more:hover { color: var(--c-primary); border-color: var(--c-primary); }
 .q-foot { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-muted); }
 .q-foot .ic { width: 14px; height: 14px; vertical-align: -2px; }
+/* 卡片内的 meta 行固定占两行高度（chips 多寡不再影响卡片高度）——
+   与 .q-card 的 flex 列配合，保证同一行卡片等高、底部信息对齐。
+   用 min-height 而不是 height：管理员视角多出「状态」chip 时仍能自然增高，不会被裁掉。 */
+.q-card .q-meta { min-height: 46px; align-content: flex-start; }
+.q-card .q-foot { margin-top: auto; padding-top: 12px; }
 
 /* ============ Grids ============ */
 /* 1fr 默认等于 minmax(auto, 1fr)，auto 最小值 = min-content；长标题/nowrap 文本会撑破轨道，
@@ -414,7 +425,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .diff-quick button.active { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
 @media (max-width: 640px) { .diff-quick { gap: 6px; } .diff-quick button { padding: 5px 11px; font-size: 12px; } }
 .spacer { flex: 1; }
-.select-mini { height: 34px; padding: 0 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13px; }
+/* ⚠️ width:auto 是必须的：全局 `select { width:100% }`（见上方 Forms 段）会给每个 select
+   100% 宽度，而 .toolbar 是 flex 容器 —— 于是「难度/题型/来源」三个下拉各自独占一整行，
+   筛选区在 1440px 下被撑到 4 行、占满首屏（2026-09-24 实测）。这里按内容宽度收起。 */
+.select-mini { width: auto; height: 34px; padding: 0 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13px; }
 
 /* ============ Breadcrumb ============ */
 .breadcrumb { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -1524,3 +1538,106 @@ body.pan-fs-lock { overflow: hidden; }
   .about-contact { gap: 18px; }
   .about-qr { margin: 0 auto; }
 }
+
+/* =========================================================================
+ * 2026-09-24 布局与体验整改（对应《布局体验评审报告》P0/P1/P2）
+ * 移动端专属规则统一放在 responsive.css 的 <=720px 断点里，这里只写两端通用部分。
+ * ========================================================================= */
+
+/* ---------- P0-2 题目详情页操作区 ----------
+   原先「查看答案 + 收藏 + 不太会 + 分享 + 报错」挤在一个裸 div 里，靠 inline 间距排布，
+   移动端实测 7 个按钮全部只有 36px 高（低于 44px 触控标准）。
+   现在分成「主按钮独占一行 + 次要动作收进 .q-actions-sub 容器」，
+   由 responsive.css 给移动端定尺寸，桌面端维持一行紧凑观感。 */
+.q-actions { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.q-actions-main { display: inline-flex; align-items: center; gap: 6px; }
+.q-actions-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.q-actions-sub .tag { margin: 0; }
+
+/* ---------- P1-9 详情页翻页 ----------
+   原先「上一题 / 下一题」只在整页最底（相关推荐之下），刷题时最高频的动作要滚过 4 张推荐卡。
+   现在同一个 .qd-pager 结构出现两次（答案区下方 + 页面底部），由 JS 用类选择器统一绑定。 */
+.qd-pager { display: flex; flex-wrap: wrap; gap: 8px; }
+.qd-pager .btn { min-width: 104px; justify-content: center; }
+
+/* ---------- P1-6 题目列表筛选区 ----------
+   .toolbar 在移动端可折叠（.filter-toggle 触发），桌面端按钮隐藏、面板常开。
+   .list-tools 承载「筛选按钮 + 排序段控」这一行，桌面端把排序从 toolbar 里提出来，
+   少占一行、也让首屏更早看到题目。 */
+.list-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.list-tools .seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.list-tools .seg button { border: none; background: transparent; padding: 7px 12px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+.list-tools .seg button.active { background: var(--c-primary); color: #fff; }
+.filter-toggle { display: none; align-items: center; gap: 6px; }
+.filter-toggle .ft-badge {
+  min-width: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--c-primary); color: #fff; font-size: 11px; font-weight: 700;
+  line-height: 18px; text-align: center; font-style: normal;
+}
+.filter-toggle[aria-expanded="true"] { background: var(--c-primary-50); color: var(--c-primary); border-color: var(--c-primary); }
+
+/* ---------- P1-5 表单型页面（刷题练习 / 模拟面试） ----------
+   原先表单卡固定 420~520px 靠左，右侧 2/3 全空，整页像没做完。
+   改为「表单 + 侧栏卡片」两栏：窄屏自动堆叠。 */
+.page-form { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+@media (max-width: 980px) { .page-form { grid-template-columns: minmax(0, 1fr); } }
+/* 原先左列写死 max-width:560px —— 在 1440px 视口下左列实宽 793px，卡片只吃 560px，
+   表单与右侧信息卡之间空出 253px「洞」。改为一律填满所在列，左列与右卡之间只有 gap。
+   （窄屏由上面 980px 断点收成单列，无需再单独放开。） */
+.page-form-main { max-width: none; }
+.page-form-side { display: flex; flex-direction: column; gap: 14px; }
+
+/* ---------- P2-13 空状态引导 ----------
+   原空态只有一行灰字，整屏留白且没有下一步。补 CTA 与图标的排版样式。 */
+.empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty .em-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.empty .em-desc { font-size: 13px; line-height: 1.8; max-width: 460px; margin: 0 auto; }
+.empty .empty-cta { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
+
+/* ---------- P2-18 学习周报卡片标题 ----------
+   标题原本要与日期、两个按钮共处一行，窄屏放不下 →「学习周报」被折成竖排的两个字。
+   改为允许换行：按钮组整体挪到下一行右对齐，标题保持一行。 */
+.wk-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.wk-head b { white-space: nowrap; }
+.wk-actions { display: flex; gap: 6px; }
+@media (max-width: 560px) { .wk-actions { flex: 1 1 100%; justify-content: flex-end; } }
+
+/* ---------- P1-10 技术体系页：单滚动条 ---------- */
+.cat-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; align-items: start; }
+/* 左树不再自己滚：原先 <aside> 上挂着 sticky + max-height:80vh + overflow:auto，
+   与右侧题目区形成同屏两个滚动条（用户不知道该滚哪个），而且树底部被硬截成半行。
+   改成 sticky 跟随页面滚动 —— 全页只保留一个滚动条，树也不会被截断。
+   树默认收起时高约 764px、在 900px 视口内完全可见；这里补一条限高兜底：
+   万一用户把节点全部展开、树高超过一屏，底部仍能通过自身滚动抵达（此时才会
+   出现第二条滚动条，属于「内容确实超屏」的必要滚动，不是原先那种无意义的双条）。 */
+.tree-panel {
+  position: sticky; top: calc(var(--topbar-h) + 16px);
+  max-height: calc(100vh - var(--topbar-h) - 32px);
+  overflow-y: auto; overflow-x: hidden;
+}
+@media (max-width: 980px) {
+  .cat-layout { grid-template-columns: minmax(0, 1fr); }
+  .tree-panel { position: static; }
+}
+
+/* ---------- P2-11 本机访问统计（从顶栏搬到「关于本站」） ---------- */
+/* 原规则写成 `.vis-chip .vis-num` / `.vis-chip .vis-flash`，只在顶栏那个 chip 里生效；
+   关于页没有 .vis-chip 容器，这里补一组通用规则，复用同一个 vis-flash 关键帧。 */
+.vis-num { display: inline-block; padding: 0 3px; border-radius: 4px; }
+.vis-flash { animation: vis-flash .6s ease; }
+
+/* ---------- P1-5 表单页右侧信息卡 ---------- */
+.pf-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.pf-card-head h2 { font-size: 15px; font-weight: 700; margin: 0; }
+.pf-card-desc { font-size: 13px; line-height: 1.75; color: var(--text-secondary); margin: 0 0 12px; }
+.pf-card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.pf-card-actions .btn { text-decoration: none; }
+.pf-steps { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.85; color: var(--text-secondary); }
+.pf-steps li { margin-bottom: 6px; }
+.pf-steps li:last-child { margin-bottom: 0; }
+
+/* ---------- P1-4 移动端搜索浮层 ---------- */
+.sheet-hot-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-top: 18px; }
+/* 浮层里的搜索框沿用抽屉样式，但抽屉那条 .drawer-search{display:none} 是给侧栏用的，
+   这里靠 inline display:block 打开；补上 input 高度以免桌面端过矮 */
+.modal-body .drawer-search input { height: 44px; }

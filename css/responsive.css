@@ -63,6 +63,18 @@
   [data-tooltip]::after { display: none !important; }
 }
 
+/* 窄视口一律隐藏 data-tooltip 浮层 —— 补「粗指针」判据的漏网之鱼。
+   原规则只在 `(hover: none)/(pointer: coarse)`（真触屏）下隐藏；但**窄窗口**
+   （桌面浏览器拖到很窄、或用鼠标的设备模拟手机尺寸）指针仍是 fine，浮层照样渲染。
+   而浮层是 `position:absolute; white-space:nowrap` 的长文本、且以元素中心左右撑开，
+   一旦靠近窄屏右缘就会把页面撑宽。实测 390px 下首页统计卡那 4 个提示把
+   documentElement.scrollWidth 顶到 471（=375+96），整页可横向拖动。
+   教训：用「元素 rect.right > clientWidth」扫溢出**抓不到伪元素**，必须同时看
+   `documentElement.scrollWidth`，否则会误判「横向溢出为 0」。 */
+@media (max-width: 720px) {
+  [data-tooltip]::after { display: none !important; }
+}
+
 .menu-toggle { display: none; }
 @media (min-width: 721px) { .menu-toggle { display: none; } }
 
@@ -70,7 +82,12 @@
 /* 底部：home 条不遮内容（移动端主内容与底部弹窗） */
 @media (max-width: 720px) {
   /* 底部 tab 栏固定占 52px（安全区另算）：主内容、Toast、新版本胶囊都必须让开，否则被压住 */
-  .main { padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px)); }
+  /* 2026-09-24：tab 栏高度提成变量 —— 原先 .main 的 102px 是「52 + 50」硬编码，
+     而 #footer 在 .layout 之外、只有 20px padding-bottom，于是页脚被 tab 栏压住 53px
+     （实测 footer bottom 829 > tabbar top 776，「开源仓库」整条点不到）。
+     统一用 --tabbar-h 表达，改高度只需动这一处。 */
+  :root { --tabbar-h: 54px; }
+  .main { padding-bottom: calc(var(--tabbar-h) + 48px + env(safe-area-inset-bottom, 0px)); }
   .modal { padding-bottom: env(safe-area-inset-bottom, 0px); }
   body.drawer-open .sidebar { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
   .toast-root { top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); }
@@ -154,4 +171,73 @@ html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); bo
   #topbar .brand { min-height: 44px; }
   .btn-sm { height: 36px; }
   .hot-tags .tag { padding: 6px 12px; font-size: 13px; }
+}
+
+/* =========================================================================
+ * 2026-09-24 布局与体验整改 —— 移动端规则
+ * （对应《布局体验评审报告》P0-1/2/3、P1-5/6/9、P2-13/16/18/19）
+ * 统一集中在这里而不是散进上面几个 720px 块，方便整体审查与回滚。
+ * ========================================================================= */
+@media (max-width: 720px) {
+
+  /* ---------- P0-1 页脚让开底部 tab 栏 ----------
+     实测：footer 底边 y=829 > tab 栏顶边 y=776（压住 53px），页脚末行「开源仓库」
+     整条落在覆盖区内、程序判定不可点。与 .main 用同一常量补齐。 */
+  #footer { padding-bottom: calc(20px + var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+
+  /* ---------- P2-16 面包屑收紧 ----------
+     移动端纵向空间宝贵（原占约 40px），缩小字号与下边距，但保留导航能力
+     （详情页的分类路径仍可点回分类页）。 */
+  .breadcrumb { font-size: 12px; margin-bottom: 8px; gap: 4px; line-height: 1.5; }
+
+  /* ---------- P0-2 详情页操作按钮 ----------
+     实测 7 个按钮全部 36px 高（低于 44px 的 Apple HIG）。
+     「查看答案」提为主按钮、撑满整行并加高到 48px；四个次要动作两列等宽、最小 44px。 */
+  .q-actions { align-items: stretch; }
+  .q-actions-main { width: 100%; height: 48px; justify-content: center; font-size: 15px; font-weight: 600; }
+  .q-actions-sub { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .q-actions-sub .btn, .q-actions-sub .btn.btn-sm { height: auto; min-height: 44px; justify-content: center; padding: 0 10px; }
+  .q-actions-sub .tag { grid-column: 1 / -1; justify-content: center; padding: 8px 12px; }
+
+  /* ---------- P1-9 翻页按钮同样进触控标准 ---------- */
+  .qd-pager .btn { flex: 1 1 0; min-width: 0; height: auto; min-height: 44px; }
+
+  /* ---------- P1-6 筛选区默认折叠 ----------
+     原先 4 个筛选控件纵排占约 250px，题目要到 470px 之后才出现；
+     折叠后首屏只剩「筛选按钮 + 排序段控」，题目提前约 220px。
+     ⚠️ 只作用于题目列表的 .toolbar.collapsible，不动其它页面里的 .toolbar。 */
+  .filter-toggle { display: inline-flex; }
+  .toolbar.collapsible { display: none; }
+  .toolbar.collapsible.open { display: flex; }
+  .list-tools { gap: 8px; margin-bottom: 10px; }
+  .list-tools .seg { margin-left: auto; }
+  .list-tools .seg button { padding: 7px 10px; font-size: 12.5px; }
+
+  /* ---------- P1-5 表单页（刷题练习 / 模拟面试）单列堆叠 ---------- */
+  .page-form { gap: 14px; }
+  .page-form-side .card { padding: 14px 16px; }
+
+  /* ---------- P2-19 Hero 关键词 chips 收成两行 ---------- */
+  .hot-tags { gap: 6px; margin-top: 12px; }
+  .hot-tags .tag { padding: 5px 11px; font-size: 12.5px; }
+
+  /* ---------- P2-18 学习周报标题不再被挤成竖排 ---------- */
+  .wk-head { gap: 6px; }
+
+  /* ---------- P2-13 空状态 ---------- */
+  .empty { padding: 44px 18px; }
+  .empty .empty-cta .btn { height: auto; min-height: 44px; }
+
+  /* ---------- P1-8 首页瘦身 ----------
+     移动端首页原本长达 10171px（约 12 屏）：技术体系 21 张卡纵向排开约 4200px，
+     下面还叠着岗位体系十几个时代分组 —— 真正有内容的「最新题目／精选题目」被推到第 10 屏。
+     这里移动端只留前 6 个分类 / 前 4 个时代（section 标题旁的「查看全部 →」仍指向完整页）。 */
+  .home-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .home-cats > *:nth-child(n+7) { display: none; }
+  .home-stages > *:nth-child(n+5) { display: none; }
+
+  /* ---------- P2-19 Hero 关键词 chips 只留两行 ----------
+     12 个词在 390px 下排成 3 行约 150px，把搜索框和下方内容往下推。
+     保留前 8 个高频道，其余交给搜索。 */
+  .hot-tags .tag:nth-child(n+9) { display: none; }
 }
