@@ -263,6 +263,7 @@ node tools/gen-published.js
 - **回归测试**：`tools/pages-guard-test.mjs` **41 → 51 条**（新增 6 条端口用例），**51/51 全绿**（CI 必跑，不过则中止部署）。
 - **改动文件**：`cloudflare/pages/_worker.js`、`tools/pages-guard-test.mjs`、`cloudflare/pages/README.md`、本文件、`HANDOVER.md`。
 - **无需 bump 缓存**：本次没有任何静态资源变化，`?v=` 与 `sw.js VERSION` 保持 `20260924c`。
+- **✅ 已上线（2026-09-24 20:26）**：`28ba0d7`（代码）+ `0ce3188`（文档），Actions run `35999050984` success（27s）。线上实测 5 个备用端口 `:8443/:2087/:2096/:2053/:2083` **全部 404 + `nonstandard-port`**（此前均 200 返回整站），主域仍 200；`accept-switch.py` 10/10、`regress-check.py` 零回归。
 - **可选补强（需权限，未做）**：Zone 级 WAF 自定义规则 `not (cf.edge.server_port in {80 443})` → `Block`，挡在 Worker 之前、连 Worker 调用都不消耗。现有令牌无 `Zone WAF` 权限（本机 OAuth 读 `/rulesets` 报 `10000`、读 zone settings 报 `9109`），只能手工在面板加；步骤与官方依据见 `cloudflare/pages/README.md`。
 - ⚠️ **顺带更正过时文档**：`cloudflare/pages/README.md` 里「关于自定义域名 `it-interview.is-a.dev`」整节已过期（该域 2026-09-21 已下架释放），已重写为 `itinterview.com.cn` 与 Zone 级防护的现状（zone 在本账号下、可配 Zone 级防护，但令牌无对应权限、只能手工点）。
 
