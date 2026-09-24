@@ -36,7 +36,8 @@ function makeRequest(p, opts = {}) {
     h.set(k.toLowerCase(), v);
   }
   return {
-    url: ORIGIN + p,
+    // opts.origin 用于端口闸门用例（要构造带端口的 URL，如 https://host:8443）
+    url: (opts.origin || ORIGIN) + p,
     headers: { get: (k) => (h.has(String(k).toLowerCase()) ? h.get(String(k).toLowerCase()) : null) },
     cf: opts.cf
   };
@@ -116,7 +117,21 @@ const CASES = [
   ["internal · HANDOVER.md", { p: "/HANDOVER.md", ua: CHROME }, 404],
   ["internal · README.md", { p: "/README.md", ua: CHROME }, 404],
   ["internal · netlify.toml", { p: "/netlify.toml", ua: CHROME }, 404],
-  ["internal · .git 探测", { p: "/.git/config", ua: CHROME }, 404]
+  ["internal · .git 探测", { p: "/.git/config", ua: CHROME }, 404],
+
+  // ---- 端口闸门（第五道闸门，2026-09-24）：只放行 80 / 443 ----
+  // Cloudflare 的备用 HTTPS 端口同样能把整站页面吐出来（实测 2053/2087/8443
+  // 均 200 且内容与主域一致），等于多端口重复暴露 + 白送扫描器 200。
+  ["port · 8443 备用 HTTPS 端口", { p: "/", ua: CHROME, origin: "https://itinterview.com.cn:8443", headers: { host: "itinterview.com.cn:8443" } }, 404, "nonstandard-port"],
+  ["port · 2087 备用 HTTPS 端口", { p: "/", ua: CHROME, origin: "https://itinterview.com.cn:2087", headers: { host: "itinterview.com.cn:2087" } }, 404, "nonstandard-port"],
+  ["port · 2053 备用 HTTPS 端口上的分享页", { p: "/q/1.html", ua: CHROME, origin: "https://itinterview.com.cn:2053", headers: { host: "itinterview.com.cn:2053" } }, 404, "nonstandard-port"],
+  // 显式写默认端口不能误伤（部分客户端会发 Host: host:443 / :80）
+  ["port · Host 显式 :443 应放行", { p: "/", ua: CHROME, origin: "https://itinterview.com.cn", headers: { host: "itinterview.com.cn:443" } }, 200],
+  ["port · 无端口的裸 Host 应放行", { p: "/", ua: CHROME, origin: "https://itinterview.com.cn", headers: { host: "itinterview.com.cn" } }, 200],
+  // :80 仍须走原有的 http → https 301，不能被端口闸门提前判 404
+  ["port · http 显式 :80 仍 301 到 https", { p: "/", ua: CHROME, origin: "http://itinterview.com.cn", headers: { host: "itinterview.com.cn:80" } }, 301],
+  // 本地 dev（wrangler pages dev 随机端口）必须豁免，否则本地开发全挂
+  ["port · 本地 dev 任意端口豁免", { p: "/", ua: CHROME, origin: "http://localhost:8788", headers: { host: "localhost:8788" } }, 200]
 ];
 
 let pass = 0;

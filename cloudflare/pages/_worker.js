@@ -41,6 +41,15 @@
 //     最低 TLS 版本、关闭「随机加密」(opportunistic_encryption，它会让百度爬虫抓取失败)。
 //   刻意不开的两项：Security Level=High（误伤走代理的国内访客）、
 //     Bot Fight Mode（实测挡 Baiduspider，本站百度流量是主力）。理由同见该脚本。
+//
+// 第五道闸门（2026-09-24 加）：端口闸门
+//   只放行 80 / 443。Cloudflare 除 443 外还支持 2053 / 2087 / 2096 / 8443
+//   等备用 HTTPS 端口，实测这几个端口能取到与本域**完全一致**的完整页面
+//   （HTTP 200 + 同一份 index.html）⇒ 同一份内容在多个端口重复对外暴露，
+//   端口扫描器每一发都拿到 200，且每发都真实消耗一次 Pages 静态请求 +
+//   本 Worker 调用（用量巡检 tools/cf-quota-check.py 的告警即由此而来）。
+//   等价的一条 Zone 级 WAF 自定义规则可挡在 Worker 之前（见 README），
+//   但令牌无 Zone WAF 权限，故在应用层等效落地。
 
 const BOT_RE = new RegExp(
   [
@@ -311,6 +320,21 @@ export default {
     //    pages.dev 备用域与将来新增的域。本地 dev 必须排除，否则重定向死循环。
     const host = url.hostname;
     const isLocal = host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+
+    // ⓪.5 端口闸门（第五道闸门）：只放行 80 / 443。
+    //    端口以 Host 头为准（客户端实际发来的），url.port 作兜底 —— URL 规范会把
+    //    443/80 这类默认端口规范化掉（https 下 url.port === ""），只看后者会漏判。
+    //    返回 404 而非 403：沿用 ①「仓库内部文件不出面」的思路，对扫描器表现为
+    //    「这个端口上没有网站」，不确认服务存在，比 403 少招致后续探测。
+    const hostHeader = request.headers.get("host") || "";
+    const hostPort = (hostHeader.match(/:(\d+)$/) || [])[1] || "";
+    const port = hostPort || url.port || (url.protocol === "https:" ? "443" : "80");
+    if (!isLocal && port !== "443" && port !== "80") {
+      const resPort = harden(notFound());
+      resPort.headers.set("x-deny-reason", "nonstandard-port");
+      return resPort;
+    }
+
     if (url.protocol === "http:" && !isLocal) {
       url.protocol = "https:";
       return harden(
