@@ -72,34 +72,55 @@ export HTTPS_PROXY=http://127.0.0.1:7897
 - 2026-09-21 起正式域名为自购的 **`itinterview.com.cn`**，zone 就在本账号下
   （id `48961f3585fdc652af950bd2163c0382`，status active）⇒
   **技术上可以用 Zone 级防护**：Security Level / Bot Fight Mode / WAF 自定义规则
-  （免费版 5 条）/ Rate Limiting / HSTS。
-- ⚠️ 但**令牌权限至今没拿到**（2026-09-24 实测复核）：本机 wrangler OAuth 只有
+  / Rate Limiting / HSTS。
+- ⚠️ **但套餐是免费版**（2026-09-24 实测：`GET /zones?name=itinterview.com.cn` →
+  `plan.legacy_id = "free"`、`plan.name = "Free Website"`、`is_subscribed = false`）。
+  **不少能力有套餐门槛，不能默认「能开」** —— 典型反例就是下面的端口拦截
+  （官方归在「paid plans」）。动手前先把套餐和字段可用性查清。
+- ⚠️ **令牌权限至今没拿到**（2026-09-24 实测复核）：本机 wrangler OAuth 只有
   `zone:read`（读 zone 信息 200；读 rulesets 报 `10000 Authentication error`；
   读 zone settings 报 `9109`），仓库 Secret `CLOUDFLARE_API_TOKEN` 同样只挂了
   `Account.Cloudflare Pages` ⇒ **面板级配置目前无法自动化，只能手工点**。
 - 因此凡是「能在应用层等效实现」的一律写进 `_worker.js`，不依赖面板操作。
 
-### 待手工执行：禁掉非 80/443 端口（第五道闸门的 Zone 级版本）
+### Zone 级版本：查证后判定「不适用本 zone」，维持现状不做
 
-应用层已经在 `_worker.js` 落地了端口闸门（见下节）。Zone 级那条规则更彻底 ——
-它挡在 Worker 之前，连 Worker 调用都不消耗，将来拿到 `Zone WAF → Edit` 权限后可补上：
+应用层已经在 `_worker.js` 落地了端口闸门（见下节）。Zone 级那条规则本可更彻底 ——
+挡在 Worker 之前，连 Worker 调用都不消耗。**但 2026-09-24 查证后结论是：不要做。** 三条理由：
 
-> Dashboard → 站点 `itinterview.com.cn` → **Security → WAF → Custom rules** →
-> Create rule
->
-> - **Name**：`Block non-standard ports`
-> - **Expression**（用表达式编辑器）：
->   ```
->   not (cf.edge.server_port in {80 443})
->   ```
-> - **Action**：`Block`
+1. **套餐不支持**。本 zone 是**免费版**（`GET /zones?name=itinterview.com.cn` →
+   `plan.legacy_id: "free"`, `is_subscribed: false`）。官方
+   <https://developers.cloudflare.com/fundamentals/reference/network-ports/>
+   的「How to block traffic on additional ports」一节写的是
+   **"Block traffic on ports other than 80 and 443 in Cloudflare paid plans"**，
+   渠道是 Cloudflare Managed Ruleset 的 `Anomaly:Port - Non Standard Port (not 80 or 443)`
+   （默认关闭）—— 都是付费能力。免费版自定义规则的**字段集是受限的**，
+   社区 MVP 明确讲 `cf.edge.server_port` 属付费字段。
+2. **☠️ 免费版填了会「静默空转」**。这个表达式在免费版**能保存、不报错**，
+   但规则不生效 —— 比直接报错危险得多，会让人以为已经防护住了。
+   **所以别信「保存成功」= 生效**，唯一可靠的判据是从**外部**实测：
+   非标准端口回 **Cloudflare `403`** 才是真生效；若仍回应用层那个
+   **`404 nonstandard-port`**，说明规则空转，应把它删掉。
+3. **收益是零头**。这一层省的只是「Worker 调用次数」。实测 2026-09-22~24
+   共 11182 次请求，其中非标端口 **381 次（≈190/天）** ⇒ 加它顶多省下
+   10 万/天 Worker 额度里的 **0.19%**。而真正的成本已经被应用层闸门吃掉了
+   （不再吐整站页面、不再产生静态请求 / 缓存穿透）。
 
-- 官方依据：<https://developers.cloudflare.com/waf/custom-rules/use-cases/require-specific-http-ports/>
-  （字段 `cf.edge.server_port`，`Block` 动作；对应旧的 WAF 托管规则 ID 100015）。
-- 需权限：**Zone → WAF → Edit**。免费版含 5 条自定义规则，够用。
-- ⚠️ 别把应用层那道撤掉：令牌没有 Zone WAF 权限之前，`_worker.js` 是唯一生效的闸门。
+另：现有令牌本来也**无 `Zone WAF` 权限**（读 `/zones/<id>/rulesets` 报 `10000`、
+读 zone settings 报 `9109`），自动化不了。
 
-**为什么值得关掉**：Cloudflare 默认在 HTTP 端口 `80 / 8080 / 8880 / 2052 / 2082 /
+⇒ **结论：不做，只保留 `_worker.js` 里那道闸门。** 若哪天确有 edge 层需求：
+`cf.edge.server_port` 在所有套餐的 **Single Redirect（Redirect Rules）** 字段集里是有的，
+但语义是 301/303 跳回标准端口，比 404「软」，且多占一条规则位，通常也不划算。
+
+> 以下是**原计划的规则原文**，仅作留档，勿照做：
+> Dashboard → 站点 `itinterview.com.cn` → **Security → WAF → Custom rules** → Create rule
+> → **Name** `Block non-standard ports` → 点 **`Edit expression`**（可视化构造器里没这个字段，
+> 官方该用例原话就是 "Use the expression editor"）→ 表达式
+> `not (cf.edge.server_port in {80 443})` → **Action** `Block`。
+> 官方依据：<https://developers.cloudflare.com/waf/custom-rules/use-cases/require-specific-http-ports/>
+
+**为什么值得关掉（应用层已关）**：Cloudflare 默认在 HTTP 端口 `80 / 8080 / 8880 / 2052 / 2082 /
 2086 / 2095` 与 HTTPS 端口 `443 / 2053 / 2083 / 2087 / 2096 / 8443` 上都代理流量。
 其中 **HTTP 侧会 301 到主域（无问题）**，但 **HTTPS 侧 5 个备用端口会直接把整站
 页面吐出来** —— 2026-09-24 实测 `2053 / 2083 / 2087 / 2096 / 8443` 全部返回
@@ -144,5 +165,7 @@ AI 训练抓取），但挡不住「会改请求头 + 肯租代理池」的定�
 
 想再进一步只有两条路：
 
-1. 拿到 `Zone WAF → Edit` 权限，把上面那条自定义规则补上（挡在 Worker 之前）；
+1. 把 zone 升到**付费套餐**后启用 Cloudflare Managed Ruleset 的
+   `Anomaly:Port - Non Standard Port (not 80 or 443)`（免费版做不了，见上节）。
+   纯静态站为这一条升套餐不划算；
 2. 改产品形态：把答案从静态 JSON / 分享页挪到需要登录的接口后面。
