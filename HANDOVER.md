@@ -104,12 +104,12 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新（⚠️ 本地待发布：已改代码+文档，尚未 commit / 未 push release）：缓存版本 `20260923h → 20260924c`｜更新时间：2026-09-24 19:05 (+08)**
-**最新 release commit：`e73cd3d`（修复页脚两个死链）｜缓存版本：`20260923h`｜更新时间：2026-09-23 22:15 (+08)**
-**上一条 release commit：`0cf4456`（顶栏文字入口的文档刷新，代码为 `54d012c`，`20260923g`）｜更新时间：2026-09-23 21:45 (+08)**
-**上上条 release commit：`2d9321b`（百度统计移除的文档刷新，代码为 `f4f5ecd`，`20260923e`）｜更新时间：2026-09-23 21:10 (+08)**
+**最新 release commit：`6fc6f12`（布局与体验整改 19 项）｜缓存版本：`20260924c`｜更新时间：2026-09-24 19:35 (+08)**
+**上一条 release commit：`e73cd3d`（修复页脚两个死链）｜缓存版本：`20260923h`｜更新时间：2026-09-23 22:15 (+08)**
+**上上条 release commit：`0cf4456`（顶栏文字入口的文档刷新，代码为 `54d012c`，`20260923g`）｜更新时间：2026-09-23 21:45 (+08)**
+**上上上条 release commit：`2d9321b`（百度统计移除的文档刷新，代码为 `f4f5ecd`，`20260923e`）｜更新时间：2026-09-23 21:10 (+08)**
 
-- **【已完成·2026-09-24】布局与体验整改 19 项（`20260923h` → `20260924c`，⚠️ 尚未推送）**：
+- **【已完成·2026-09-24】布局与体验整改 19 项（`20260923h` → `20260924c`，`6fc6f12`，✅ 已推送 release 并部署上线）**：
   - **起因**：用户拿线上站 `https://itinterview.com.cn` 问「布局还有哪些地方要调整」。线上开了反爬（裸 curl 与自动化浏览器均被 403），故用**本地同版本代码副本**（`C:/Users/Life/WorkBuddy/2026-09-23-07-53-45/iti`）在真实 Chromium（agent-browser）里逐页走查：桌面 1440×900 + 移动 390×844 两个视口，26 张取证截图，产出《布局体验评审报告》（含 P0×3 / P1×7 / P2×9）。用户回「全部做」。
   - **P0（必修，均已复测通过）**：
     - **P0-1 移动端页脚被底部 tab 栏压住** —— 原 `#footer` 只有 20px `padding-bottom`，实测 footer 底边 y=829 > tab 栏顶边 y=776。修法：新增 CSS 变量 `--tabbar-h: 54px`，`#footer` 的 `padding-bottom` 改为 `calc(20px + var(--tabbar-h) + env(safe-area-inset-bottom))`，与 `.main` 共用同一常量。复测：页脚末行「开源仓库」底边 **755 < tab 顶边 781**，全部链接 `covered:false`。
@@ -120,7 +120,9 @@
   - **【追加·同一轮】移动端横向溢出真凶：`[data-tooltip]` 浮层**（`20260924a → 20260924c`）—— 复审 `documentElement.scrollWidth` 时发现首页在 390px 下 scrollWidth=**471**（=375+96），但按「元素 rect.right > clientWidth」扫却**一个都抓不到**。二分定位到 `.stat-grid`（首页 4 个统计卡），真凶是它们挂的 `[data-tooltip]::after`（`position:absolute` + `white-space:nowrap` 长文本，以元素中心左右撑开，靠右缘即撑宽页面）。原 CSS 只在 `(hover:none)/(pointer:coarse)` 隐藏，**窄窗口 / 鼠标设备模拟手机尺寸时指针仍是 fine，浮层照样渲染**。修法：在 `css/responsive.css` 追加 `@media (max-width:720px) { [data-tooltip]::after { display:none !important; } }`。复测 12 个移动路由 + 桌面首页 **全部 `scrollWidth == clientWidth`**。
   - ⚠️ **方法论更正（写进这里以免重犯）**：判断横向溢出**不能只看元素 rect.right**（伪元素 / `::after` 抓不到），**必须同时读 `documentElement.scrollWidth`**。本轮首轮体检因此漏判了这条、误报「横向溢出为 0」。
   - **改动文件（5 个）**：`css/style.css`、`css/responsive.css`、`js/app.js`、`js/utils.js`（新增 `search` 图标）、`js/docs.js`、`js/guide.js`（使用指南同步）；`index.html`（36 处 `?v=`）+ `sw.js`（`VERSION`）升到 `20260924c`。
-  - **验证**：`node --check` 三个 JS 全过；清缓存（新 `?v=`）后重测 —— 移动端 12 路由 + 桌面横向溢出 **全为 0**；详情页按钮最小 44px；tab 栏 5 项；首页 8.2 屏；筛选区首题 239px；树面板无内滚动条；12 路由均无 404、无控制台报错。
+  - **本地验证**：`node --check` 三个 JS 全过；清缓存（新 `?v=`）后重测 —— 移动端 13 路由 + 桌面横向溢出 **全为 0**；详情页按钮最小 44px；tab 栏 5 项；首页 8.2 屏；筛选区首题 239px；树面板无内滚动条；13 路由均无 404、无控制台报错。
+  - **✅ 发布与线上验收（2026-09-24 19:35）**：commit `6fc6f12421c32bd62fa8f7cb6369778b54929b15`；推送前已核对远端 tip = 本地 `f2933a6`（**fast-forward 安全**），用**字面量 SHA push**（`git push origin 6fc6f12...:refs/heads/release`）→ `f2933a6..6fc6f12`。Actions run **`35993328639` success（22s）**，6 个步骤全绿（含 `Anti-scrape guard regression`）。线上验收 **`tools/accept-switch.py` 10/10**（首页 v=20260924c、sw.js VERSION=20260924c 一致、sitemap 1196 处新域 0 处旧、题库同源 200 version=7 questions=1191、GPTBot 403 + HANDOVER/build-pages 404、旧域名零残留）、**`tools/regress-check.py` 旧功能零回归**（13 个 JS 模块 + 15 组关键词全命中 + 5 项资源 200）。**产物一致性**：用浏览器 UA + `--compressed` 拉线上 `css/style.css`、`css/responsive.css`、`js/app.js`、`js/utils.js`、`js/docs.js`、`js/guide.js`、`sw.js`、`index.html` 逐字节比对 —— **全部与本地一致（仅 CRLF/LF 行尾差异，`tr -d '\r'` 后 `cmp` 完全相同）**，即线上运行的就是本地验证过的那份代码。
+  - ⚠️ **线上无法用自动化浏览器目视**：反爬守卫会对 agent-browser 返回 **`403 · 禁止采集`**（本轮实测确认，属**预期行为**、非故障）。故线上验收一律**以「逐字节产物比对 + accept-switch + regress-check」三件套为准**，不要试图用自动化浏览器截图线上站。
   - ⚠️ **本轮踩坑（重要）**：**改完 CSS/JS 不 bump `?v=`，浏览器会命中旧缓存**——中途一度误判「树面板样式没生效」，实为 `style.css?v=20260923h` 命中旧文件；**升版本号后立刻正常**。所以**任何样式改动的验证前提是先 bump 版本号或清 SW/caches**，否则测的是旧代码。
   - **P1-5 收尾（`20260924c`）**：给表单页补了右侧信息卡后复测发现左列仍有洞——`.page-form-main` 写死 `max-width:560px`，而左列实宽 793px，中间空 253px。改为 `max-width:none` 让表单填满左列，实测 `.page-form` 1133 = 793 + 20(gap) + 320，无空洞；窄屏 980px 断点仍收成单列。
 

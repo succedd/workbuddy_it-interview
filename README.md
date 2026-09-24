@@ -268,7 +268,10 @@ node tools/gen-published.js
 
 - **改动文件**：`css/style.css`、`css/responsive.css`、`js/app.js`、`js/utils.js`、`js/docs.js`、`js/guide.js`、`index.html`、`sw.js`（版本 `20260924c`）。
 - **追加修复 · 移动端横向溢出真凶是 tooltip 浮层**：复审 `documentElement.scrollWidth` 时发现首页在 390px 下为 **471（375+96）**，而按「元素 rect.right > clientWidth」扫描却抓不到任何元素。二分定位到首页 `.stat-grid` 上的 `[data-tooltip]::after`（绝对定位 + `nowrap` 长文本，以元素中心左右撑开）。原规则只在触屏（`pointer:coarse`）隐藏，窄窗口/鼠标模拟手机尺寸时仍会渲染并撑宽页面。已在窄视口下统一隐藏。
-- **验证**：`node --check` 全过；清缓存后移动端 **12 个路由 + 桌面首页均 `scrollWidth == clientWidth`**（横向溢出真正归零），各页无 404、无控制台报错。
+- **验证**：`node --check` 全过；清缓存后移动端 **13 个路由 + 桌面首页均 `scrollWidth == clientWidth`**（横向溢出真正归零），各页无 404、无控制台报错。
+- **发布**：commit `6fc6f12`（推送前已核对远端 tip 一致、fast-forward 安全；用字面量 SHA push 到 `release`）→ Actions run `35993328639` **success（22s，含反爬守卫回归）**。
+- **线上验收**：`tools/accept-switch.py` **10/10**（首页与 sw.js 版本均为 `20260924c`、sitemap 1196 处新域 0 处旧、题库同源 200 `version=7 questions=1191`、GPTBot 403 + 敏感文件 404）；`tools/regress-check.py` **旧功能零回归**；**线上 8 个产物文件（CSS/JS/HTML/sw）逐字节与本地一致**（仅 CRLF/LF 行尾差异），即线上跑的就是本地验证过的那份代码。
+- ⚠️ **线上无法自动化目视**：反爬守卫对 agent-browser 返回 `403 · 禁止采集`（预期行为）。线上验收以「逐字节产物比对 + accept-switch + regress-check」三件套为准。
 - ⚠️ **两个坑位提醒**：① 样式改动**必须先 bump `?v=`**，否则浏览器命中旧缓存、验证的是旧代码；② 判断横向溢出**不能只看元素 rect.right**（伪元素抓不到），**必须同时读 `documentElement.scrollWidth`**。
 
 ### 2026-09-23 · fix(nav): 修复页脚两个死链（缓存版本 `20260923g → 20260923h`）
