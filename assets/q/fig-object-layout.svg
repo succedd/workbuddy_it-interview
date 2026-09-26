@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460">
+  <rect width="680" height="460" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-ob1" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">Java 对象内存布局（64 位，开启压缩指针）</text>
+
+  <!-- 字节布局条 -->
+  <rect x="40" y="60" width="160" height="52" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="120" y="82" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Mark Word</text>
+  <text x="120" y="102" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">8B</text>
+
+  <rect x="200" y="60" width="100" height="52" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="250" y="82" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Klass Word</text>
+  <text x="250" y="102" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">4B（压缩）</text>
+
+  <rect x="300" y="60" width="200" height="52" rx="0" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="400" y="82" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">实例数据 Instance Data</text>
+  <text x="400" y="102" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">各字段实际内容，N 字节</text>
+
+  <rect x="500" y="60" width="120" height="52" rx="0" fill="#fef9f0" stroke="#d97706" stroke-width="1.5"/>
+  <text x="560" y="82" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">对齐填充 Padding</text>
+  <text x="560" y="102" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">补齐到 8 的倍数</text>
+
+  <text x="40" y="136" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">对象头共 12B（压缩指针开启时常见）；关闭压缩（堆 &gt; 32GB 或 -XX:-UseCompressedOops）时 Klass Word 为 8B，对象头 16B。</text>
+
+  <!-- Mark Word 位段 -->
+  <text x="40" y="172" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">Mark Word 位段（64 位，无锁态示例）</text>
+
+  <rect x="40" y="188" width="130" height="44" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="105" y="208" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#1f2937">unused: 25</text>
+  <text x="105" y="224" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">bit 63-39</text>
+
+  <rect x="170" y="188" width="160" height="44" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="250" y="208" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#1f2937">identity_hashcode: 31</text>
+  <text x="250" y="224" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">bit 38-8</text>
+
+  <rect x="330" y="188" width="30" height="44" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="345" y="208" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" font-weight="bold" fill="#1f2937">1</text>
+  <text x="345" y="224" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">bit7</text>
+
+  <rect x="360" y="188" width="110" height="44" rx="0" fill="#fef9f0" stroke="#d97706" stroke-width="1.2"/>
+  <text x="415" y="208" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#1f2937">分代年龄: 4</text>
+  <text x="415" y="224" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">bit 6-3</text>
+
+  <rect x="470" y="188" width="100" height="44" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="520" y="208" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#1f2937">锁标志: 2</text>
+  <text x="520" y="224" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">bit 1-0</text>
+
+  <rect x="570" y="188" width="70" height="44" rx="0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="605" y="208" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" font-weight="bold" fill="#1f2937">偏向位</text>
+  <text x="605" y="224" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">旧版</text>
+
+  <!-- 底部要点 -->
+  <rect x="40" y="256" width="290" height="150" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="56" y="280" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">对象头（Header）</text>
+  <text x="56" y="304" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">Mark Word：哈希码、GC 分代年龄、</text>
+  <text x="56" y="324" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">锁状态标志（随锁升级复用位段）</text>
+  <text x="56" y="348" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">Klass Word：指向类元数据的类型指针</text>
+  <text x="56" y="372" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">数组对象额外存数组长度（4B）</text>
+  <text x="56" y="396" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">偏向锁 JDK 15 起默认禁用并已移除</text>
+
+  <rect x="360" y="256" width="290" height="150" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="376" y="280" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#059669">实例数据与对齐填充</text>
+  <text x="376" y="304" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">实例数据：程序定义的各字段内容</text>
+  <text x="376" y="328" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">对齐填充：无含义，仅占位补齐</text>
+  <text x="376" y="352" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">默认 8 字节对齐，可由</text>
+  <text x="376" y="372" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">-XX:ObjectAlignmentInBytes 调整</text>
+  <text x="376" y="396" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">例：12B 头 + 1 个 int = 16B，无填充</text>
+</svg>
