@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？ · IT面试题库">
   <meta property="og:description" content="要点： 诞生动机：Objective-C 的动态消息机制灵活但错误发现晚（nil 消息静默失败、指针错误运行时才崩）、语法冗长、内存管理心智负担大。苹果需要一门安全、现代、快的语言重写开发体验。 安全三件套：① 可选类型（Optional）强制显式处理 nil，?/!/guard let 让空值路径一目了然；② …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/986.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/986.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？ · IT面试题库">
   <meta name="twitter:description" content="要点： 诞生动机：Objective-C 的动态消息机制灵活但错误发现晚（nil 消息静默失败、指针错误运行时才崩）、语法冗长、内存管理心智负担大。苹果需要一门安全、现代、快的语言重写开发体验。 安全三件套：① 可选类型（Optional）强制显式处理 nil，?/!/guard let 让空值路径一目了然；② …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/986.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？","text":"考察点：Swift 诞生动机、安全性与表达力、与 OC 互操作。","answerCount":1,"datePublished":"2026-09-10T07:22:46.833Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 诞生动机：Objective-C 的动态消息机制灵活但错误发现晚（nil 消息静默失败、指针错误运行时才崩）、语法冗长、内存管理心智负担大。苹果需要一门安全、现代、快的语言重写开发体验。 安全三件套：① 可选类型（Optional）强制显式处理 nil，?/!/guard let 让空值路径一目了然；② 自动引用计数（ARC）编译期插入retain/release，无需手动管理也无需 GC 停顿；③ 强类型+值类型优先（struct/enum 拷贝语义），减少共享可变状态。 表达力：协议扩展（面向协议编程）、泛型、模式匹配、闭包语法，替代 OC 的 block/category 组合。 性能：LLVM 编译为原生机器码，无消息转发开销（可比 OC 快数倍，接近 C++）。 互操作：与 OC 同一运行时（可混编、无缝调用存量框架），这是迁移渐进的基础。2019 年 SwiftUI+Combine 全面 Swift 化后已成 iOS 开发绝对主流。","url":"https://it-interview.is-a.dev/#/question/986"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/986.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？","text":"考察点：Swift 诞生动机、安全性与表达力、与 OC 互操作。","answerCount":1,"datePublished":"2026-09-10T07:22:46.833Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 诞生动机：Objective-C 的动态消息机制灵活但错误发现晚（nil 消息静默失败、指针错误运行时才崩）、语法冗长、内存管理心智负担大。苹果需要一门安全、现代、快的语言重写开发体验。 安全三件套：① 可选类型（Optional）强制显式处理 nil，?/!/guard let 让空值路径一目了然；② 自动引用计数（ARC）编译期插入retain/release，无需手动管理也无需 GC 停顿；③ 强类型+值类型优先（struct/enum 拷贝语义），减少共享可变状态。 表达力：协议扩展（面向协议编程）、泛型、模式匹配、闭包语法，替代 OC 的 block/category 组合。 性能：LLVM 编译为原生机器码，无消息转发开销（可比 OC 快数倍，接近 C++）。 互操作：与 OC 同一运行时（可混编、无缝调用存量框架），这是迁移渐进的基础。2019 年 SwiftUI+Combine 全面 Swift 化后已成 iOS 开发绝对主流。","url":"https://itinterview.com.cn/#/question/986"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,9 +69,9 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？</h1>
-    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Swift</span><span class="chip tag">iOS</span><span class="chip tag">ARC</span><span class="chip tag">可选类型</span><span class="chip tag">ObjectiveC</span></div>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Swift</span><span class="chip tag">iOS</span><span class="chip tag">ARC</span><span class="chip tag">可选类型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Swift 诞生动机、安全性与表达力、与 OC 互操作。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
 <ul>
@@ -81,12 +81,12 @@
 <li><strong>性能</strong>：LLVM 编译为原生机器码，无消息转发开销（可比 OC 快数倍，接近 C++）。</li>
 <li><strong>互操作</strong>：与 OC 同一运行时（可混编、无缝调用存量框架），这是迁移渐进的基础。2019 年 SwiftUI+Combine 全面 Swift 化后已成 iOS 开发绝对主流。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/986">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/986">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=219&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=219&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
