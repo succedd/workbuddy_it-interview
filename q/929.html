@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>HashMap 的底层实现原理？JDK 1.8 做了哪些改动？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Java</span><span class="chip tag">HashMap</span><span class="chip tag">集合</span><span class="chip tag">源码</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip">硬件工程师</span><span class="chip tag">Java</span><span class="chip tag">HashMap</span><span class="chip tag">集合</span><span class="chip tag">源码</span></div>
     <div class="card"><h2>题目</h2><p>请说明 HashMap 的数组+链表+红黑树结构、put 流程、扩容机制，以及 JDK 1.8 相比 1.7 的变化。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>底层结构</strong>（JDK 1.8）：数组（Node[] table，容量恒为 2 的幂）+ 链表 + <strong>红黑树</strong>。哈希冲突的元素挂成链表（用 <code>(n-1) &amp; hash</code> 定位桶，n 为容量，等效取模但更快）。</p>
 <p><strong>put 流程</strong>：计算 hash → 定位桶 → 空桶直接放 → 是红黑树按树插入 → 是链表尾插（1.7 是头插，并发扩容会成环死循环，1.8 改尾插）→ 链表长度 ≥8 且数组容量 ≥64 时<strong>树化</strong>（否则先扩容）→ size 超过 <code>容量×0.75</code>（负载因子）触发扩容翻倍，元素重新分布。</p>
