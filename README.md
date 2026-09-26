@@ -158,6 +158,7 @@
 | 2026-09-26 | 2026-09-26-a | 服务治理追问链：熔断→限流→降级→Sentinel 实战（经典主题 T045） | +6 |
 | 2026-09-26 | 2026-09-26-b | 前端性能追问链：加载指标→资源优化→渲染优化→监控（经典主题 T052） | +6 |
 | 2026-09-26 | 2026-09-26-c | MyBatis 追问链：执行流程→缓存→动态 SQL→插件（经典主题 T015） | +6 |
+| 2026-09-26 | 2026-09-26-d | 高频面试题集中补充四方向：① 消息队列（Kafka/RocketMQ/RabbitMQ：投递语义/推拉模式/KRaft/CommitLog/刷盘复制/延时与顺序消息/Quorum 队列）② 大模型与 AI 应用（Token 与成本/采样参数/GraphRAG/知识库更新链路/Query Rewrite/MCP/Agent Loop/多智能体选型/记忆分层/上下文工程/HNSW·IVFFLAT/LoRA 参数化记忆/Agent 评测）③ 分布式·微服务·数据访问层（Saga 设计与编排协同对比/Seata AT 全局锁/接口幂等/重试风暴/优雅停机/API 网关边界/分库分表与分片键/跨库 JOIN 分页/主从延迟写后读/批量插入/多数据源/全分片广播）④ 前端 CSS·HTML·浏览器（居中方案/优先级/position/Grid/z-index 层叠上下文/响应式单位与 clamp/transform 动画/语义化/defer·async·loading·srcset/事件委托/CORS 方案对比/XSS·CSRF/GC 与内存泄漏/Service Worker/并发控制/深浅拷贝），来源 JavaGuide·MDN·Kafka/RocketMQ/RabbitMQ/Seata/Spring 官方文档 | +62 |
 
 ## 部署与自定义域名
 
