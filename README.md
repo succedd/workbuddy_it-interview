@@ -161,6 +161,7 @@
 | 2026-09-26 | 2026-09-26-d | 高频面试题集中补充四方向：① 消息队列（Kafka/RocketMQ/RabbitMQ：投递语义/推拉模式/KRaft/CommitLog/刷盘复制/延时与顺序消息/Quorum 队列）② 大模型与 AI 应用（Token 与成本/采样参数/GraphRAG/知识库更新链路/Query Rewrite/MCP/Agent Loop/多智能体选型/记忆分层/上下文工程/HNSW·IVFFLAT/LoRA 参数化记忆/Agent 评测）③ 分布式·微服务·数据访问层（Saga 设计与编排协同对比/Seata AT 全局锁/接口幂等/重试风暴/优雅停机/API 网关边界/分库分表与分片键/跨库 JOIN 分页/主从延迟写后读/批量插入/多数据源/全分片广播）④ 前端 CSS·HTML·浏览器（居中方案/优先级/position/Grid/z-index 层叠上下文/响应式单位与 clamp/transform 动画/语义化/defer·async·loading·srcset/事件委托/CORS 方案对比/XSS·CSRF/GC 与内存泄漏/Service Worker/并发控制/深浅拷贝），来源 JavaGuide·MDN·Kafka/RocketMQ/RabbitMQ/Seata/Spring 官方文档 | +62 |
 | 2026-09-26 | 2026-09-26-e | 高频题+SVG图解批次：网络 6（TCP 三种重传/SYN Flood 与 syncookies/Nagle 与延迟确认/Keepalive 与半打开连接/BIO·NIO·AIO/CDN 加速原理）＋Java 与 JVM 6（ThreadLocal 与内存泄漏/虚拟线程 Pinning/三色标记与写屏障/JIT 分层编译与逃逸分析/堆外直接内存/对象内存布局）＋MySQL 与 Redis 6（Buffer Pool 改进版 LRU/Change Buffer/连接池原理/Reactor 文件事件模型/Cluster gossip 与故障转移/内存碎片 activedefrag）＋前端 6（Web Worker/WebSocket 握手与 SSE/SameSite/前端错误监控/ESM 循环依赖/合成层与层爆炸），**每题答案内嵌 1 张 SVG 配图**（assets/q/，绝对路径引用，图与文互补），来源 JavaGuide·小林coding·MDN·阿里云 CDN 官方文档 | +24 |
 | 2026-09-26 | 2026-09-26-f | 高频面试题集中补充（4 路并行子代理抓取）：计算机网络 6（三次/四次握手/可靠传输/DNS 解析/OSI 与 TCP/IP 模型）+ 操作系统 4（IPC/虚拟内存/select·poll·epoll）+ MySQL 6（B+树索引/回表与覆盖索引/隔离级别与幻读/MVCC/三大日志/慢查询与 EXPLAIN）+ Redis 4（RDB·AOF/穿透·击穿·雪崩/双写一致性/过期与淘汰）+ Java·JVM·并发·Spring 10 + 算法·前端·设计模式 7，来源 JavaGuide·小林coding·CS-Notes·MDN；经三道质检闸门实际入库 37 题（2 题被拦：1 重复 + 1 结构不达标） | +37 |
+| 2026-09-26 | 2026-09-26-g | 计算机组成原理系统性扩充（审计发现该分类仅 4 题且偏薄，是用户反馈「内容不匹配」观感的根因）：3 路并行子代理从王道/唐朔飞/CSAPP/408 抓取，覆盖①数据的表示与运算（原反补移码/IEEE754/补码加减/溢出判断/进位链/移位）②存储系统（SRAM·DRAM/字位扩展/Cache 平均访问时间+写策略/虚拟存储 TLB/RAID）③指令系统+CPU+总线+IO（七种寻址/CISC·RISC/硬布线vs微程序/流水线冒险/总线仲裁/四种 I/O·中断·DMA）。去重后入库 16 题（剔除与现有 482/484 重复的 Cache 映射与 RAID 题），计算机组成原理 4→20 题，来源 王道计组·CSAPP·南大讲义·GeeksforGeeks·知乎 | +16 |
 
 ## 部署与自定义域名
 
@@ -258,6 +259,14 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
+
+### 2026-09-26 · feat(题库扩充): 计算机组成原理系统性补强 16 题（审计驱动，纯数据变更，缓存版本 `20260926a` 不变）
+
+- **背景**：用户反馈「计算机组成原理里面的内容不匹配」。全库审计后发现该分类仅 4 题（Cache 映射/流水线冒险/RAID/指令周期），覆盖极薄、且 RAID 偏存储，造成「货不对板」观感；理论课分支（编译/离散/数据结构/算法/计网/OS）其余分类经逐题核对均正确无错配。
+- **措施**：3 路并行子代理从王道《计算机组成原理》/唐朔飞/CSAPP/408 统考大纲抓取高质量题，按 syllabus 分三块（表示与运算 / 存储系统 / 指令·CPU·总线·IO）覆盖 16 题，每题带权威 `source`。
+- **去重**：主动剔除与现有 482（Cache 映射）、484（RAID）重复的 2 题，保留定量补充视角的 Cache 平均访问时间题，避免冗余。
+- **实际入库 16 题**（题库 1332→1348，version 13→14），计算机组成原理 **4→20 题**；16 个分享页 `q/1370~1385.html` 已重生成并推送 release+main（16/16）。纯数据/资产变更，无 js/css 改动，无需 Ctrl+F5。
+- **附带审计结论**：发现数据结构(65/165、68/168)与操作系统原理(365/924、370/926、779/927/1340)内部存在近重复题，属质量债，建议后续用 `tools/merge-dup-questions.py` 归并（非本次范围）。
 
 ### 2026-09-26 · feat(题库扩充): 高频面试题集中补充 37 题（纯数据变更，缓存版本 `20260926a` 不变）
 
