@@ -1,6 +1,6 @@
 {
   "note": "经典题转写任务清单：自动化每次运行先跑 enrich_questions.py --topic-next 取第一个未完成主题，按追问链生成 5-8 题批次（由浅入深、题间 relatedIds 串联），合并成功后用 --topic-done <id> --batch <批号> 标记完成。cat/positions 必须用 published.json 中真实存在的名称。",
-  "updated": "2026-09-21",
+  "updated": "2026-09-26",
   "topics": [
     {
       "id": "T001",
@@ -201,7 +201,8 @@
       ],
       "source": "https://mybatis.org/mybatis-3/zh/",
       "count": 5,
-      "done": false
+      "done": true,
+      "batch": "2026-09-26-c"
     },
     {
       "id": "T016",
@@ -610,7 +611,8 @@
       ],
       "source": "https://github.com/alibaba/Sentinel/wiki",
       "count": 5,
-      "done": false
+      "done": true,
+      "batch": "2026-09-26-a"
     },
     {
       "id": "T046",
@@ -700,7 +702,8 @@
       ],
       "source": "https://web.dev/learn/performance",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-09-26-b"
     },
     {
       "id": "T053",
