@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 500">
+  <defs>
+    <marker id="arw-em" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+  <rect width="680" height="500" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#2563eb">前端错误监控：采集 → 上报 → 还原 → 告警</text>
+
+    <rect x="24" y="56" width="150" height="64" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="99" y="78" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">JS 同步异常</text>
+    <text x="99" y="95" text-anchor="middle" font-size="11" fill="#2563eb">window.onerror</text>
+    <text x="99" y="110" text-anchor="middle" font-size="10" fill="#6b7280">仅同步错误触发</text>
+
+    <rect x="182" y="56" width="150" height="64" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="257" y="78" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">Promise 拒绝</text>
+    <text x="257" y="95" text-anchor="middle" font-size="11" fill="#2563eb">unhandledrejection</text>
+    <text x="257" y="110" text-anchor="middle" font-size="10" fill="#6b7280">含 async 内 throw</text>
+
+    <rect x="340" y="56" width="150" height="64" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="415" y="78" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">资源加载失败</text>
+    <text x="415" y="95" text-anchor="middle" font-size="11" fill="#2563eb">error·捕获阶段监听</text>
+    <text x="415" y="110" text-anchor="middle" font-size="10" fill="#6b7280">资源错误不冒泡</text>
+
+    <rect x="498" y="56" width="150" height="64" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="573" y="78" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">接口失败</text>
+    <text x="573" y="95" text-anchor="middle" font-size="11" fill="#2563eb">封装 fetch / XHR</text>
+    <text x="573" y="110" text-anchor="middle" font-size="10" fill="#6b7280">统一拦截</text>
+
+    <line x1="99" y1="120" x2="99" y2="152" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+    <line x1="257" y1="120" x2="257" y2="152" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+    <line x1="415" y1="120" x2="415" y2="152" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+    <line x1="573" y1="120" x2="573" y2="152" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+
+    <rect x="24" y="156" width="632" height="40" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="340" y="181" text-anchor="middle" font-size="11" fill="#1f2937">采集器：统一错误结构（类型 / 堆栈 / 行列号）· 去重聚合 · 附带 UA、版本、路由与用户行为路径</text>
+
+    <line x1="340" y1="196" x2="340" y2="224" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+
+    <rect x="24" y="228" width="632" height="40" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="340" y="253" text-anchor="middle" font-size="11" fill="#1f2937">上报：sendBeacon / img 打点 · 采样与限流 · 脱敏（剔除敏感字段与用户隐私）</text>
+
+    <line x1="340" y1="268" x2="340" y2="296" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+
+    <rect x="24" y="300" width="632" height="52" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="340" y="320" text-anchor="middle" font-size="11" fill="#1f2937">SourceMap 还原：构建时将 .map 上传私有符号服务，线上仅保留压缩代码</text>
+    <text x="340" y="340" text-anchor="middle" font-size="11" fill="#1f2937">上报的压缩行列号 + 版本号 → 反解出源码文件、行号与上下文片段</text>
+
+    <line x1="340" y1="352" x2="340" y2="378" stroke="#9ca3af" marker-end="url(#arw-em)"/>
+
+    <rect x="24" y="382" width="632" height="40" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="340" y="407" text-anchor="middle" font-size="11" fill="#1f2937">聚合分析：错误率趋势 / 影响用户数 / 版本对比 → 超阈值告警（IM / 邮件）</text>
+
+    <rect x="24" y="434" width="632" height="48" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="340" y="453" text-anchor="middle" font-size="11" fill="#dc2626">跨域脚本报错只有「Script error.」：script 标签加 crossorigin + 服务端返回 CORS 头，</text>
+    <text x="340" y="471" text-anchor="middle" font-size="11" fill="#dc2626">才能拿到完整 message 与堆栈；Vue/React 全局钩子（errorHandler / ErrorBoundary）作补充兜底</text>
+  </g>
+</svg>
