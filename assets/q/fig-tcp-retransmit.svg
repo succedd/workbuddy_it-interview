@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 560">
+  <rect width="680" height="560" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-rtx1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-rtx1r" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+    </marker>
+  </defs>
+  <text x="16" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">TCP 三种重传机制对比:触发条件与解决的问题</text>
+
+  <!-- 栏框 -->
+  <rect x="10" y="46" width="212" height="466" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+  <rect x="234" y="46" width="212" height="466" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+  <rect x="458" y="46" width="212" height="466" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+
+  <!-- 栏1 超时重传 RTO -->
+  <text x="116" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">超时重传(RTO)</text>
+  <text x="45" y="98" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">发送方</text>
+  <text x="187" y="98" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">接收方</text>
+  <line x1="45" y1="106" x2="45" y2="330" stroke="#9ca3af" stroke-width="1.5"/>
+  <line x1="187" y1="106" x2="187" y2="330" stroke="#9ca3af" stroke-width="1.5"/>
+
+  <line x1="45" y1="128" x2="187" y2="128" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-rtx1r)"/>
+  <text x="116" y="122" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">Data seq=100(丢失)</text>
+  <text x="116" y="146" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#dc2626">✕</text>
+
+  <rect x="56" y="158" width="120" height="26" rx="6" fill="#fef2f2"/>
+  <text x="116" y="175" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">超过 RTO 仍未收 ACK</text>
+
+  <line x1="45" y1="206" x2="187" y2="206" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rtx1)"/>
+  <text x="116" y="200" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">重传 Data seq=100</text>
+
+  <line x1="187" y1="238" x2="45" y2="238" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-rtx1r)"/>
+  <text x="116" y="232" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">ACK 101</text>
+
+  <rect x="22" y="266" width="188" height="44" rx="6" fill="#fef2f2"/>
+  <text x="116" y="284" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">问题:只能等超时,恢复慢</text>
+  <text x="116" y="300" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">RTO 过大 → 延迟高</text>
+
+  <text x="116" y="336" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">兜底机制:RTO ≈ SRTT + 抖动余量</text>
+  <text x="116" y="352" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">超时后指数退避(Karn 算法)</text>
+
+  <!-- 栏2 快速重传 -->
+  <text x="340" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">快速重传(3 个冗余 ACK)</text>
+  <text x="269" y="98" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">发送方</text>
+  <text x="411" y="98" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">接收方</text>
+  <line x1="269" y1="106" x2="269" y2="330" stroke="#9ca3af" stroke-width="1.5"/>
+  <line x1="411" y1="106" x2="411" y2="330" stroke="#9ca3af" stroke-width="1.5"/>
+
+  <line x1="269" y1="124" x2="411" y2="124" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-rtx1r)"/>
+  <text x="340" y="118" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">Data 100(丢失)</text>
+
+  <line x1="269" y1="148" x2="411" y2="148" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rtx1)"/>
+  <text x="340" y="142" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Data 200</text>
+
+  <line x1="269" y1="170" x2="411" y2="170" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rtx1)"/>
+  <text x="340" y="164" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Data 300</text>
+
+  <line x1="411" y1="190" x2="269" y2="190" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arw-rtx1r)"/>
+  <text x="340" y="185" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#b45309">DupACK ×3(都是 ACK=100)</text>
+
+  <line x1="269" y1="216" x2="411" y2="216" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rtx1)"/>
+  <text x="340" y="210" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">不等超时,立刻重传 100</text>
+
+  <rect x="246" y="238" width="188" height="44" rx="6" fill="#f0fdf4"/>
+  <text x="340" y="256" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">解决:不等 RTO,更快发现丢包</text>
+  <text x="340" y="272" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">3 个冗余 ACK 防误判乱序</text>
+
+  <text x="340" y="308" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">局限:只能定位最早的缺口,</text>
+  <text x="340" y="324" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">多段丢包时不知道哪些已到达</text>
+
+  <!-- 栏3 SACK -->
+  <text x="564" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">SACK 选择确认</text>
+  <text x="493" y="98" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">发送方</text>
+  <text x="635" y="98" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">接收方</text>
+  <line x1="493" y1="106" x2="493" y2="330" stroke="#9ca3af" stroke-width="1.5"/>
+  <line x1="635" y1="106" x2="635" y2="330" stroke="#9ca3af" stroke-width="1.5"/>
+
+  <line x1="493" y1="124" x2="635" y2="124" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-rtx1r)"/>
+  <text x="564" y="118" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">Data 100(丢失)</text>
+
+  <line x1="493" y1="146" x2="635" y2="146" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rtx1)"/>
+  <text x="564" y="140" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Data 200、300、400</text>
+
+  <line x1="635" y1="174" x2="493" y2="174" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arw-rtx1r)"/>
+  <text x="564" y="168" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#b45309">ACK=100 + SACK 200-400</text>
+
+  <line x1="493" y1="204" x2="635" y2="204" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rtx1)"/>
+  <text x="564" y="198" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">只重传缺失的 100</text>
+
+  <rect x="470" y="226" width="188" height="44" rx="6" fill="#f0fdf4"/>
+  <text x="564" y="244" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">解决:精确告知已收区间,</text>
+  <text x="564" y="260" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">只重传真正缺失的部分</text>
+
+  <text x="564" y="296" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">需三次握手时 SACK-Permitted</text>
+  <text x="564" y="312" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">协商;最多携带 4 个 block</text>
+
+  <!-- 底部总结条 -->
+  <rect x="10" y="490" width="660" height="30" rx="6" fill="#eff6ff"/>
+  <text x="340" y="510" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">总结:RTO 兜底等待,快速重传靠冗余 ACK 提前触发,SACK 补足累积确认的信息盲区(D-SACK 可识别误重传)</text>
+</svg>
