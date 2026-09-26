@@ -159,6 +159,7 @@
 | 2026-09-26 | 2026-09-26-b | 前端性能追问链：加载指标→资源优化→渲染优化→监控（经典主题 T052） | +6 |
 | 2026-09-26 | 2026-09-26-c | MyBatis 追问链：执行流程→缓存→动态 SQL→插件（经典主题 T015） | +6 |
 | 2026-09-26 | 2026-09-26-d | 高频面试题集中补充四方向：① 消息队列（Kafka/RocketMQ/RabbitMQ：投递语义/推拉模式/KRaft/CommitLog/刷盘复制/延时与顺序消息/Quorum 队列）② 大模型与 AI 应用（Token 与成本/采样参数/GraphRAG/知识库更新链路/Query Rewrite/MCP/Agent Loop/多智能体选型/记忆分层/上下文工程/HNSW·IVFFLAT/LoRA 参数化记忆/Agent 评测）③ 分布式·微服务·数据访问层（Saga 设计与编排协同对比/Seata AT 全局锁/接口幂等/重试风暴/优雅停机/API 网关边界/分库分表与分片键/跨库 JOIN 分页/主从延迟写后读/批量插入/多数据源/全分片广播）④ 前端 CSS·HTML·浏览器（居中方案/优先级/position/Grid/z-index 层叠上下文/响应式单位与 clamp/transform 动画/语义化/defer·async·loading·srcset/事件委托/CORS 方案对比/XSS·CSRF/GC 与内存泄漏/Service Worker/并发控制/深浅拷贝），来源 JavaGuide·MDN·Kafka/RocketMQ/RabbitMQ/Seata/Spring 官方文档 | +62 |
+| 2026-09-26 | 2026-09-26-e | 高频题+SVG图解批次：网络 6（TCP 三种重传/SYN Flood 与 syncookies/Nagle 与延迟确认/Keepalive 与半打开连接/BIO·NIO·AIO/CDN 加速原理）＋Java 与 JVM 6（ThreadLocal 与内存泄漏/虚拟线程 Pinning/三色标记与写屏障/JIT 分层编译与逃逸分析/堆外直接内存/对象内存布局）＋MySQL 与 Redis 6（Buffer Pool 改进版 LRU/Change Buffer/连接池原理/Reactor 文件事件模型/Cluster gossip 与故障转移/内存碎片 activedefrag）＋前端 6（Web Worker/WebSocket 握手与 SSE/SameSite/前端错误监控/ESM 循环依赖/合成层与层爆炸），**每题答案内嵌 1 张 SVG 配图**（assets/q/，绝对路径引用，图与文互补），来源 JavaGuide·小林coding·MDN·阿里云 CDN 官方文档 | +24 |
 
 ## 部署与自定义域名
 
