@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 430">
+  <defs>
+    <marker id="arw-bp1" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arw-bp1g" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+    </marker>
+    <marker id="arw-bp1r" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect width="680" height="430" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="28" y="32" font-size="14" font-weight="bold" fill="#2563eb">InnoDB Buffer Pool：改进版 LRU（young / old 分区）</text>
+
+    <!-- 新页入口 -->
+    <rect x="430" y="52" width="180" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="520" y="74" font-size="12" fill="#1f2937" text-anchor="middle">磁盘新页（含预读页）</text>
+
+    <!-- LRU 容器 -->
+    <rect x="40" y="150" width="600" height="92" rx="8" fill="#eff6ff" stroke="#9ca3af"/>
+    <rect x="40" y="150" width="375" height="92" rx="8" fill="none" stroke="#059669" stroke-dasharray="4 3"/>
+    <text x="227" y="168" font-size="12" font-weight="bold" fill="#059669" text-anchor="middle">young 区（约 5/8，热点数据）</text>
+    <text x="527" y="168" font-size="12" font-weight="bold" fill="#6b7280" text-anchor="middle">old 区（约 3/8）</text>
+
+    <!-- young 页 -->
+    <rect x="55" y="182" width="72" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="91" y="206" font-size="12" fill="#1f2937" text-anchor="middle">热页 A</text>
+    <rect x="137" y="182" width="72" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="173" y="206" font-size="12" fill="#1f2937" text-anchor="middle">热页 B</text>
+    <rect x="219" y="182" width="72" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="255" y="206" font-size="12" fill="#1f2937" text-anchor="middle">热页 C</text>
+    <rect x="301" y="182" width="72" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="337" y="206" font-size="12" fill="#1f2937" text-anchor="middle">热页 D</text>
+
+    <!-- old 页 -->
+    <rect x="432" y="182" width="56" height="40" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="460" y="206" font-size="12" fill="#1f2937" text-anchor="middle">页 5</text>
+    <rect x="498" y="182" width="56" height="40" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="526" y="206" font-size="12" fill="#1f2937" text-anchor="middle">页 6</text>
+    <rect x="564" y="182" width="56" height="40" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="592" y="206" font-size="12" fill="#1f2937" text-anchor="middle">页 7</text>
+
+    <text x="42" y="146" font-size="11" fill="#6b7280">MRU（头部）</text>
+    <text x="638" y="146" font-size="11" fill="#6b7280" text-anchor="end">LRU（尾部）</text>
+
+    <!-- ① 插入 midpoint -->
+    <line x1="520" y1="88" x2="480" y2="146" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-bp1)"/>
+    <text x="560" y="112" font-size="11" fill="#2563eb">① 新页插入 old 区头部</text>
+    <text x="560" y="127" font-size="11" fill="#2563eb">（midpoint insertion）</text>
+
+    <!-- ② 晋升 -->
+    <path d="M 460 224 L 460 268 L 128 268 L 128 230" fill="none" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-bp1g)"/>
+    <text x="300" y="262" font-size="11" fill="#059669" text-anchor="middle">② 停留超过 1 秒后再次被访问 → 晋升 young 区头部</text>
+
+    <!-- ③ 淘汰 -->
+    <line x1="592" y1="224" x2="592" y2="300" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-bp1r)"/>
+    <rect x="470" y="304" width="200" height="44" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="570" y="322" font-size="12" fill="#dc2626" text-anchor="middle">③ 只被访问一次的扫描页</text>
+    <text x="570" y="340" font-size="12" fill="#dc2626" text-anchor="middle">在 old 区尾部直接淘汰</text>
+
+    <!-- 说明框 -->
+    <rect x="40" y="304" width="380" height="96" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
+    <text x="56" y="326" font-size="11" fill="#1f2937">innodb_old_blocks_pct = 37：young : old 约 63 : 37（约 5:3）</text>
+    <text x="56" y="346" font-size="11" fill="#1f2937">innodb_old_blocks_time = 1000ms：old 区停留满 1 秒</text>
+    <text x="56" y="366" font-size="11" fill="#1f2937">且被再次访问，才有资格进入 young 区</text>
+    <text x="56" y="386" font-size="11" fill="#6b7280">young 区前 1/4 被访问不移动到头部，减少链表抖动</text>
+
+    <text x="40" y="420" font-size="11" fill="#6b7280">全表扫描的页只能滞留 old 区并快速淘汰，热数据不会被冲掉（解决 Buffer Pool 污染）</text>
+  </g>
+</svg>
