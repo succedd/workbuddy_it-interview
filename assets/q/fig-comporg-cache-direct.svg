@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 335" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<text x="340" y="26" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">直接映射 Cache：主存地址字段划分</text>
+<rect x="60" y="60" width="385.0" height="46" fill="#cfe2ff" stroke="#1a73e8" stroke-width="1.4"/>
+<text x="252" y="82" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">标记 Tag</text>
+<text x="252" y="100" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">22 位</text>
+<rect x="445" y="60" width="105.0" height="46" fill="#d7f0e0" stroke="#0f9d58" stroke-width="1.4"/>
+<text x="497" y="82" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">行索引 Index</text>
+<text x="497" y="100" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">6 位</text>
+<rect x="550" y="60" width="70.0" height="46" fill="#fde7c4" stroke="#f4b400" stroke-width="1.4"/>
+<text x="585" y="82" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">块内偏移 Offset</text>
+<text x="585" y="100" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">4 位</text>
+<text x="340" y="132" font-size="12" fill="#5f6368" text-anchor="middle" font-weight="normal">32 位主存地址 = Tag(22) + Index(6) + Offset(4)</text>
+<rect x="60" y="130" width="560" height="150" rx="8" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="72" y="154" font-size="12" fill="#1a73e8" text-anchor="start" font-weight="bold">例子：Cache 64 行、块大小 16B、主存按字节编址</text>
+<text x="72" y="178" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">块内偏移 Offset = log2(16) = 4 位（块内 0~15 字节）</text>
+<text x="72" y="196" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">行索引 Index = log2(64) = 6 位（共 64 行，一一对应）</text>
+<text x="72" y="214" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">标记 Tag = 32 − 6 − 4 = 22 位</text>
+<text x="72" y="232" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">主存地址 0x1234 = 0001 0010 0011 0100₂：</text>
+<text x="72" y="250" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">  Offset = 低 4 位 = 0100₂ = 4；Index = 次低 6 位 = 110011₂ = 51；Tag = 高 22 位 = 0x48</text>
+<text x="72" y="268" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">命中判断：第 51 行 的 Tag 字段 == 0x48 且有效位=1 才命中。</text>
+<text x="340" y="310" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">直接映射：每主存块固定落到唯一一行，电路最简单，但易冲突（抖动）。</text>
+</svg>

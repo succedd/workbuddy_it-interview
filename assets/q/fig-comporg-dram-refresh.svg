@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 375" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<text x="340" y="26" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">DRAM 刷新方式对比</text>
+<line x1="60" y1="200" x2="620" y2="200" stroke="#5f6368" stroke-width="1"/>
+<text x="20" y="205" font-size="11" fill="#5f6368" text-anchor="start" font-weight="normal">时间→</text>
+<rect x="60" y="160" width="120" height="30" rx="6" fill="#fce8e6" stroke="#db4437" stroke-width="1.5"/>
+<text x="120" y="178.1" font-size="13" fill="#202124" text-anchor="middle">集中式刷新</text>
+<text x="120" y="150" font-size="10" fill="#db4437" text-anchor="middle" font-weight="normal">死区</text>
+<text x="260" y="180" font-size="11" fill="#0f9d58" text-anchor="start" font-weight="normal">分散式：每周期插一个刷新（无死区但慢）</text>
+<rect x="360" y="160" width="180" height="30" rx="6" fill="#e6f4ea" stroke="#0f9d58" stroke-width="1.5"/>
+<text x="450" y="170.1" font-size="13" fill="#202124" text-anchor="middle">异步式刷新</text>
+<text x="450" y="186.1" font-size="13" fill="#202124" text-anchor="middle">(常用)</text>
+<text x="450" y="150" font-size="10" fill="#0f9d58" text-anchor="middle" font-weight="normal">利用 CPU 不访存时</text>
+<rect x="60" y="240" width="560" height="80" rx="8" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="72" y="262" font-size="12" fill="#1a73e8" text-anchor="start" font-weight="bold">定量：刷新周期 64ms（标准），行数 N 则相邻刷新间隔 = 64ms/N</text>
+<text x="72" y="288" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">例 N=4096 行：间隔≈15.6μs；每行刷新占 1 个周期，总线占用≈ 1/4096 ≈ 0.024%（可忽略）</text>
+<text x="340" y="355" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">SRAM 用双稳态锁存无需刷新；DRAM 用电容存电荷，会漏电必须定期回写（刷新）。</text>
+</svg>

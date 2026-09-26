@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 355" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<text x="340" y="26" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">IEEE 754 单精度编码（示例：−6.625）</text>
+<rect x="60" y="60" width="17.5" height="46" fill="#fde7c4" stroke="#f4b400" stroke-width="1.4"/>
+<text x="68" y="82" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">S 1</text>
+<text x="68" y="100" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">1位</text>
+<rect x="77" y="60" width="140.0" height="46" fill="#cfe2ff" stroke="#1a73e8" stroke-width="1.4"/>
+<text x="147" y="82" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">阶码 E 8</text>
+<text x="147" y="100" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">8位</text>
+<rect x="217" y="60" width="402.5" height="46" fill="#d7f0e0" stroke="#0f9d58" stroke-width="1.4"/>
+<text x="418" y="82" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">尾数 M 23</text>
+<text x="418" y="100" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">23位</text>
+<rect x="60" y="130" width="560" height="170" rx="8" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="72" y="154" font-size="12" fill="#1a73e8" text-anchor="start" font-weight="bold">−6.625 的编码步骤</text>
+<text x="72" y="178" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">① 符号 S = 1（负数）</text>
+<text x="72" y="197" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">② 6.625 = 110.101₂ = 1.10101₂ × 2²  → 规格化尾数 1.10101，隐含整数位 1</text>
+<text x="72" y="216" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">③ 阶码 E = 真值 2 + 偏移 127 = 129 = 1000 0001₂</text>
+<text x="72" y="235" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">④ 尾数 M = 小数部分 .10101 左补 0 至 23 位 = 1010 1000 0000 0000 0000 000</text>
+<text x="72" y="254" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">⑤ 完整 32 位：1 | 10000001 | 10101000000000000000000</text>
+<text x="72" y="273" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">机器零：E=0 且 M=0；非规数 E=0 M≠0；无穷大 E=全1 M=0；NaN E=全1 M≠0。</text>
+<text x="340" y="330" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">双精度：S1 / E11(偏移1023) / M52，范围与精度更大。</text>
+</svg>

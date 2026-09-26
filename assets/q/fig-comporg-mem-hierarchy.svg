@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<polygon points="10,70 390,70 361,125 38,125" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/>
+<text x="200" y="102" font-size="13" fill="#202124" text-anchor="middle" font-weight="bold">寄存器</text>
+<polygon points="38,125 361,125 333,180 66,180" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/>
+<text x="200" y="157" font-size="13" fill="#202124" text-anchor="middle" font-weight="bold">L1 Cache</text>
+<polygon points="66,180 333,180 305,235 95,235" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/>
+<text x="200" y="212" font-size="13" fill="#202124" text-anchor="middle" font-weight="bold">L2 Cache</text>
+<polygon points="95,235 305,235 276,290 123,290" fill="#f1f3f4" stroke="#1a73e8" stroke-width="1.2"/>
+<text x="200" y="267" font-size="13" fill="#202124" text-anchor="middle" font-weight="bold">L3 Cache</text>
+<polygon points="123,290 276,290 248,345 151,345" fill="#e6f4ea" stroke="#1a73e8" stroke-width="1.2"/>
+<text x="200" y="322" font-size="13" fill="#202124" text-anchor="middle" font-weight="bold">主存 DRAM</text>
+<polygon points="151,345 248,345 220,400 180,400" fill="#f1f3f4" stroke="#1a73e8" stroke-width="1.2"/>
+<text x="200" y="377" font-size="13" fill="#202124" text-anchor="middle" font-weight="bold">辅存 SSD/HDD</text>
+<line x1="430" y1="380" x2="430" y2="80" stroke="#0f9d58" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="500" y="90" font-size="13" fill="#0f9d58" text-anchor="middle" font-weight="bold">容量 ↑</text>
+<line x1="560" y1="80" x2="560" y2="380" stroke="#db4437" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="630" y="95" font-size="12" fill="#db4437" text-anchor="middle" font-weight="bold">速度 ↑  成本/位 ↓</text>
+<rect x="420" y="150" width="250" height="126" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="480" y="166" font-size="12" fill="#5f6368" text-anchor="middle" font-weight="normal">层级</text>
+<text x="570" y="166" font-size="12" fill="#5f6368" text-anchor="middle" font-weight="normal">典型容量</text>
+<text x="640" y="166" font-size="12" fill="#5f6368" text-anchor="middle" font-weight="normal">访问时间</text>
+<line x1="420" y1="174" x2="670" y2="174" stroke="#5f6368" stroke-width="0"/>
+<text x="480" y="194" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">寄存器</text>
+<text x="570" y="194" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">&lt;1KB</text>
+<text x="640" y="194" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">~0.1ns</text>
+<line x1="420" y1="208" x2="670" y2="208" stroke="#5f6368" stroke-width="0"/>
+<text x="480" y="228" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">L1 Cache</text>
+<text x="570" y="228" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">32~256KB</text>
+<text x="640" y="228" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">~1ns</text>
+<line x1="420" y1="242" x2="670" y2="242" stroke="#5f6368" stroke-width="0"/>
+<text x="480" y="262" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">L2 Cache</text>
+<text x="570" y="262" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">256KB~8MB</text>
+<text x="640" y="262" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">~4ns</text>
+<line x1="420" y1="276" x2="670" y2="276" stroke="#5f6368" stroke-width="0"/>
+<text x="480" y="296" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">L3 Cache</text>
+<text x="570" y="296" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">8~32MB</text>
+<text x="640" y="296" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">~10ns</text>
+<line x1="420" y1="310" x2="670" y2="310" stroke="#5f6368" stroke-width="0"/>
+<text x="480" y="330" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">主存 DRAM</text>
+<text x="570" y="330" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">8~32GB</text>
+<text x="640" y="330" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">~60ns</text>
+<line x1="420" y1="344" x2="670" y2="344" stroke="#5f6368" stroke-width="0"/>
+<text x="480" y="364" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">辅存 SSD/HDD</text>
+<text x="570" y="364" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">512GB~几TB</text>
+<text x="640" y="364" font-size="12" fill="#202124" text-anchor="middle" font-weight="normal">~5ms</text>
+<text x="340" y="425" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">金字塔越往上：越快、越小、越贵；越低：越慢、越大、越便宜。CPU 只直接访问顶层，下层按块预取。</text>
+</svg>
