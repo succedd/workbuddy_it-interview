@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 500">
+  <rect width="680" height="500" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-jit1" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-jit1b" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">JIT 分层编译与逃逸分析优化</text>
+
+  <!-- 左：分层编译 -->
+  <rect x="40" y="52" width="290" height="30" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="185" y="72" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#2563eb">分层编译（Tiered Compilation）</text>
+
+  <rect x="60" y="96" width="110" height="46" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="115" y="115" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">L0 解释器</text>
+  <text x="115" y="133" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">解释执行字节码</text>
+
+  <line x1="170" y1="119" x2="216" y2="119" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-jit1b)"/>
+  <text x="178" y="110" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">热点</text>
+
+  <rect x="220" y="96" width="110" height="46" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="275" y="115" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">L3：C1</text>
+  <text x="275" y="133" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">快速编译+完整探针</text>
+
+  <line x1="275" y1="142" x2="165" y2="196" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-jit1b)"/>
+  <text x="200" y="176" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">调用/回边计数超阈值</text>
+
+  <rect x="60" y="200" width="110" height="46" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="115" y="219" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">L4：C2</text>
+  <text x="115" y="237" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">深度优化机器码</text>
+
+  <rect x="220" y="200" width="110" height="46" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="275" y="219" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">L2：C1</text>
+  <text x="275" y="237" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">带部分计数（过渡层）</text>
+
+  <rect x="140" y="270" width="130" height="46" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="205" y="289" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">L1：C1</text>
+  <text x="205" y="307" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">无探针（C2 忙时退路）</text>
+
+  <line x1="115" y1="246" x2="115" y2="360" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-jit1)"/>
+  <text x="122" y="356" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">方法内联：小方法直接复制进调用方，是内联后其余优化的基础</text>
+
+  <rect x="40" y="330" width="290" height="90" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="56" y="354" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#2563eb">热点探测</text>
+  <text x="56" y="376" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">方法调用计数器 + 回边计数器（阈值可调</text>
+  <text x="56" y="394" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">-XX:CompileThreshold，分层下按频率采样）</text>
+  <text x="56" y="412" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">触发后提交后台编译，边解释边编译</text>
+
+  <!-- 右：逃逸分析 -->
+  <rect x="360" y="52" width="290" height="30" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="505" y="72" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#2563eb">逃逸分析（Escape Analysis）</text>
+
+  <rect x="380" y="96" width="250" height="52" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="505" y="116" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">前提：对象不逃逸出方法/线程</text>
+  <text x="505" y="136" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">C2 分析对象作用域后决定优化方式</text>
+
+  <line x1="505" y1="148" x2="505" y2="168" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-jit1)"/>
+
+  <rect x="380" y="172" width="250" height="52" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="505" y="192" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">标量替换（主要方式）</text>
+  <text x="505" y="212" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">对象拆成基本类型标量放寄存器/栈</text>
+
+  <rect x="380" y="236" width="250" height="52" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="505" y="256" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">锁消除</text>
+  <text x="505" y="276" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">局部对象的同步原语直接删掉</text>
+
+  <rect x="380" y="300" width="250" height="52" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="505" y="320" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">栈上分配</text>
+  <text x="505" y="340" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">概念上存在；HotSpot 以标量替换实现</text>
+
+  <rect x="370" y="380" width="280" height="90" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
+  <text x="385" y="404" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#dc2626">面试提醒</text>
+  <text x="385" y="426" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">"HotSpot 真的把对象放到栈上"是常见误区；</text>
+  <text x="385" y="444" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">逃逸分析依赖全局分析，成本高，结果不稳定，</text>
+  <text x="385" y="462" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">代码实现层面仍以标量替换为主。</text>
+</svg>
