@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>场景题：同一订单的「创建→支付→发货→完成」状态变更必须严格按顺序被下游处理，用 RocketMQ 如何保证顺序？消息组（MessageGroup）怎么用？ · IT面试题库</title>
+  <meta name="description" content="前提：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足生产顺序性与消费顺序性。 生产顺序性的两个条件 1. 单一生产者：消息生产的顺序性仅支持单一生产者，多个生产者并发写同一队列无法判定先后。 2. 串行发送：生产者用多线程并行发送时，不同线程产生的消息无法判定先后顺序——同一订单…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="场景题：同一订单的「创建→支付→发货→完成」状态变更必须严格按顺序被下游处理，用 RocketMQ 如何保证顺序？消息组（MessageGroup）怎么用？ · IT面试题库">
+  <meta property="og:description" content="前提：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足生产顺序性与消费顺序性。 生产顺序性的两个条件 1. 单一生产者：消息生产的顺序性仅支持单一生产者，多个生产者并发写同一队列无法判定先后。 2. 串行发送：生产者用多线程并行发送时，不同线程产生的消息无法判定先后顺序——同一订单…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1259.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="场景题：同一订单的「创建→支付→发货→完成」状态变更必须严格按顺序被下游处理，用 RocketMQ 如何保证顺序？消息组（MessageGroup）怎么用？ · IT面试题库">
+  <meta name="twitter:description" content="前提：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足生产顺序性与消费顺序性。 生产顺序性的两个条件 1. 单一生产者：消息生产的顺序性仅支持单一生产者，多个生产者并发写同一队列无法判定先后。 2. 串行发送：生产者用多线程并行发送时，不同线程产生的消息无法判定先后顺序——同一订单…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1259.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：同一订单的「创建→支付→发货→完成」状态变更必须严格按顺序被下游处理，用 RocketMQ 如何保证顺序？消息组（MessageGroup）怎么用？","text":"考察点：RocketMQ 顺序消息的生产顺序性与消费顺序性、消息组划分。","answerCount":1,"datePublished":"2026-09-26T02:31:20.745Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"前提：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足生产顺序性与消费顺序性。 生产顺序性的两个条件 1. 单一生产者：消息生产的顺序性仅支持单一生产者，多个生产者并发写同一队列无法判定先后。 2. 串行发送：生产者用多线程并行发送时，不同线程产生的消息无法判定先后顺序——同一订单的消息必须串行发出。 满足后，设置了同一消息组（MessageGroup）的消息会按发送顺序存储在同一队列中。 5.x 的标准做法：设置消息组 发送顺序消息时为每条消息设置归属消息组，通常直接用业务主键，例如订单 ID：.setMessageGroup(\"fifoGroup001\")。 相同消息组的多条消息之间遵循先进先出；不同消息组、无消息组的消息之间不涉及顺序性。这样可以在满足局部顺序的前提下提高并行度与吞吐。 4.x 的等价做法是继承 MessageQueueSelector 自定义队列选择，用 Hash 取模把同一订单打到同一队列：Math.floorMod(Long.hashCode(orderId), mqs.size())。 限制：顺序消息只能用在 MessageType 为 FIFO 的主题；5.x 还必须把消费者组配置为顺序投递，否则仍可能按并发方式投递。 消费顺序性 PushConsumer 保证按存储顺序一条一条投递；SimpleConsumer 可能一次拉多条，顺序需业务方自行保证。 关键约束：顺序消费失败重试时，为保障顺序后续消息不能被消费，必须等前一条处理完——一条消息卡住就会阻塞整个队列，所以消息组要尽可能打散（订单 ID、用户 ID 作为消息组，不同用户之间无需顺序）。 重要边界：顺序 ≠ 业务结果一定正确 重试超过最大次数后消息会被跳过，跳过之后后续消息继续消费，顺序链条就断了。 因此强顺序业务不能只依赖 MQ 投递顺序，还要在业务表里加状态机、版本号或唯一约束兜底：即使消息乱序到达，也能通过状态校验拒绝非法的状态流转。","url":"https://itinterview.com.cn/#/question/1259"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>场景题：同一订单的「创建→支付→发货→完成」状态变更必须严格按顺序被下游处理，用 RocketMQ 如何保证顺序？消息组（MessageGroup）怎么用？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">RocketMQ</span><span class="chip tag">顺序消息</span><span class="chip tag">消息组</span><span class="chip tag">FIFO</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：RocketMQ 顺序消息的生产顺序性与消费顺序性、消息组划分。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>前提</strong>：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足<strong>生产顺序性</strong>与<strong>消费顺序性</strong>。</p>
+<p><strong>生产顺序性的两个条件</strong></p>
+<ol>
+<li><strong>单一生产者</strong>：消息生产的顺序性仅支持单一生产者，多个生产者并发写同一队列无法判定先后。</li>
+<li><strong>串行发送</strong>：生产者用多线程并行发送时，不同线程产生的消息无法判定先后顺序——同一订单的消息必须串行发出。</li>
+</ol>
+<p>满足后，设置了同一<strong>消息组（MessageGroup）</strong>的消息会按发送顺序存储在同一队列中。</p>
+<p><strong>5.x 的标准做法：设置消息组</strong></p>
+<ul>
+<li>发送顺序消息时为每条消息设置归属消息组，通常直接用业务主键，例如订单 ID：<code>.setMessageGroup(&quot;fifoGroup001&quot;)</code>。</li>
+<li><strong>相同消息组</strong>的多条消息之间遵循先进先出；<strong>不同消息组、无消息组的消息之间不涉及顺序性</strong>。这样可以在满足局部顺序的前提下提高并行度与吞吐。</li>
+<li><strong>4.x 的等价做法</strong>是继承 <code>MessageQueueSelector</code> 自定义队列选择，用 Hash 取模把同一订单打到同一队列：<code>Math.floorMod(Long.hashCode(orderId), mqs.size())</code>。</li>
+<li>限制：顺序消息只能用在 MessageType 为 <strong>FIFO</strong> 的主题；5.x 还必须把消费者组配置为<strong>顺序投递</strong>，否则仍可能按并发方式投递。</li>
+</ul>
+<p><strong>消费顺序性</strong></p>
+<ul>
+<li><strong>PushConsumer</strong> 保证按存储顺序一条一条投递；<strong>SimpleConsumer</strong> 可能一次拉多条，顺序需业务方自行保证。</li>
+<li>关键约束：顺序消费失败重试时，为保障顺序<strong>后续消息不能被消费</strong>，必须等前一条处理完——一条消息卡住就会阻塞整个队列，所以消息组要尽可能打散（订单 ID、用户 ID 作为消息组，不同用户之间无需顺序）。</li>
+</ul>
+<p><strong>重要边界：顺序 ≠ 业务结果一定正确</strong></p>
+<ul>
+<li>重试超过最大次数后消息会被<strong>跳过</strong>，跳过之后后续消息继续消费，顺序链条就断了。</li>
+<li>因此强顺序业务不能只依赖 MQ 投递顺序，还要在业务表里加<strong>状态机、版本号或唯一约束</strong>兜底：即使消息乱序到达，也能通过状态校验拒绝非法的状态流转。</li>
+</ul></div>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1259">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=129&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
