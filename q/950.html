@@ -71,7 +71,7 @@
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>React Hooks 的原理与使用规则是什么？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip">全栈开发工程师</span><span class="chip tag">React</span><span class="chip tag">Hooks</span><span class="chip tag">前端</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip">全栈开发工程师</span><span class="chip">数字电路工程师</span><span class="chip tag">React</span><span class="chip tag">Hooks</span><span class="chip tag">前端</span></div>
     <div class="card"><h2>题目</h2><p>请解释 Hooks 基于链表的状态存储机制，说明两条使用规则的原因，以及闭包陷阱与 useEffect 依赖问题。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>实现原理</strong>：函数组件每次渲染就是一次<strong>函数调用</strong>。Hooks 的状态不存在组件实例上，而是挂在 React 内部该组件的<strong>单向链表</strong>上——每次渲染按<strong>调用顺序</strong>逐一取出 hook（useState 返回对应槽位的 state，setter 触发重渲染重新执行函数）。这就是为什么 Hooks 必须<strong>每次渲染以完全相同的顺序调用</strong>。</p>
 <p><strong>两条铁律的由来</strong>：</p>
