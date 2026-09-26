@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 500">
+  <rect width="680" height="500" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-th1" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-th1r" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/>
+    </marker>
+    <marker id="arw-th1g" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">ThreadLocal 内存结构与泄漏路径</text>
+
+  <!-- 左列引用链 -->
+  <rect x="40" y="60" width="160" height="56" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="120" y="83" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Thread 对象</text>
+  <text x="120" y="102" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">成员 threadLocals</text>
+
+  <line x1="120" y1="116" x2="120" y2="146" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-th1)"/>
+
+  <rect x="40" y="150" width="160" height="56" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="120" y="173" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">ThreadLocalMap</text>
+  <text x="120" y="192" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Entry[] table（无链表）</text>
+
+  <line x1="120" y1="206" x2="120" y2="236" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-th1)"/>
+
+  <!-- Entry 结构 -->
+  <rect x="40" y="240" width="160" height="96" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="120" y="262" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Entry</text>
+  <rect x="56" y="272" width="128" height="24" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="120" y="288" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">key：弱引用</text>
+  <rect x="56" y="302" width="128" height="24" rx="6" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="120" y="318" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">value：强引用</text>
+
+  <!-- 右上：ThreadLocal 与 GC -->
+  <rect x="430" y="70" width="200" height="56" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="530" y="93" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">ThreadLocal 实例</text>
+  <text x="530" y="112" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">代码中持有的强引用</text>
+
+  <line x1="430" y1="100" x2="266" y2="282" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arw-th1)"/>
+  <text x="310" y="170" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">WeakReference 指向 Entry.key</text>
+
+  <rect x="430" y="160" width="200" height="56" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="530" y="183" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#dc2626">GC 后：key = null</text>
+  <text x="530" y="202" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">无强引用则 ThreadLocal 被回收</text>
+
+  <line x1="530" y1="126" x2="530" y2="156" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-th1)"/>
+
+  <text x="430" y="250" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Entry 仍强引用 value，</text>
+  <text x="430" y="268" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">成为 key=null 的过期槽位</text>
+
+  <!-- 底部：泄漏 vs 清理 -->
+  <line x1="120" y1="336" x2="150" y2="366" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-th1r)"/>
+
+  <rect x="40" y="370" width="285" height="110" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="55" y="392" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#dc2626">内存泄漏路径</text>
+  <text x="55" y="414" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Thread → Map → Entry → value 强引用链仍在</text>
+  <text x="55" y="432" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">key=null 的 value 无法被 GC 回收</text>
+  <text x="55" y="450" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">线程池线程长期存活，泄漏不断累积</text>
+  <text x="55" y="468" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">set/get/rehash 途中会顺带触发部分清理</text>
+
+  <line x1="500" y1="216" x2="500" y2="366" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-th1g)"/>
+
+  <rect x="355" y="370" width="285" height="110" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="370" y="392" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#059669">remove() 与自动清理</text>
+  <text x="370" y="414" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">remove()：删除 Entry 并置 value=null</text>
+  <text x="370" y="432" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">探测式清理 expungeStaleEntry：顺链清除</text>
+  <text x="370" y="450" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">启发式清理 cleanSomeSlots：抽样扫描</text>
+  <text x="370" y="468" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">最佳实践：用完必调 remove()</text>
+</svg>
