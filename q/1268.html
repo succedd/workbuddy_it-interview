@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。 · IT面试题库</title>
+  <meta name="description" content="要点：更新要同时满足五个目标——动态性（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、准确性（召回内容与当前文档一致）、一致性（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、可回滚、可观测。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。 · IT面试题库">
+  <meta property="og:description" content="要点：更新要同时满足五个目标——动态性（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、准确性（召回内容与当前文档一致）、一致性（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、可回滚、可观测。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1268.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。 · IT面试题库">
+  <meta name="twitter:description" content="要点：更新要同时满足五个目标——动态性（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、准确性（召回内容与当前文档一致）、一致性（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、可回滚、可观测。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1268.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。","text":"考察点：RAG 系统上线后的数据与索引一致性治理能力，包括增量同步、重建时机和灰度回滚。","answerCount":1,"datePublished":"2026-09-26T02:31:47.382Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：更新要同时满足五个目标——动态性（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、准确性（召回内容与当前文档一致）、一致性（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、可回滚、可观测。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。 第一件事：Embedding 模型必须保持一致 索引时和查询时必须用同一个 Embedding 模型。不同模型的向量空间不通用：维度不同通常无法放进同一索引，维度相同但模型不同则相似度分数不可比，排序基础已经被破坏。最容易忽视的两个场景是模型升级（3-small 切 3-large，历史数据必须重新编码）和本地模型与 API 模型混用（测试用 sentence-transformers、生产用 OpenAI API，上线后召回率腰斩）。做法是把 embedding_model、embedding_model_version、embedding_dimension 写进元数据，查询时校验，不匹配就拒绝或降级并告警。 第二件事：元数据是增量更新和回滚的前提 每个 Chunk 至少应带上：doc_id、chunk_id、content_hash、version_id、chunk_strategy/size/overlap、source_id、section_path、tenant_id、acl、embedding_*、is_deleted。其中： content_hash 是增量更新的核心，它是文档正文或 Chunk 内容的哈希，不是文件哈希；入库时计算并与已有记录对比，一致就跳过 Embedding，不一致才重新编码（生产推荐 SHA-256）。 切分策略也要版本化，chunk_strategy 变化的影响不比 Embedding 模型小，应触发重建或灰度。 is_deleted 是软删除标记，给审计、误删恢复和跨系统一致性留缓冲；查询默认只保留 is_deleted = false。 tenant_id 和 acl 是多租户与权限基础，所有会进入模型上下文的内容必须先通过授权检查。 第三件事：同步链路与变更检测 链路为：源系统 → 变更检测 → 消息队列 → 解析/切分/哈希 → 去重 → Embedding → 元数据库 + 向量库 + 全文索引 → 监控告警。变更检测有事件驱动、CDC（监听 binlog）和定时轮询三种。生产里更稳的是事件驱动 + 轮询兜底，再用幂等 Key、乱序处理和死信队列保证可靠。 第四件事：增量更新 vs 全量重建 | 维度 | 增量更新 | 全量重建 | | --- | --- | --- | | 触发条件 | 文档变更事件 | 定时任务或手动触发 | | 覆盖范围 | 仅变化的文档 | 整个知识库 | | 计算成本 | 低 | 高 | | 更新延迟 | 低，可近实时 | 高，可能需要数小时 | | 适用场景 | 日常变更、高频更新 | 模型升级、策略调整、故障恢复 | | 主要风险 | 变更漏检导致数据陈旧 | 占用额外算力；切换不完整时影响服务 | 全量重建通常用于：Embedding 模型升级（硬需求）、Chunk 策略调整、数据结构变更、严重故障恢复、定期健康维护（部分向量库高频删除后会留下 tombstone 和碎片）。 第五件事：灰度切换与回滚 用索引别名避免中断：查询服务只访问别名 prod_index（指向 index_v1）→ 后台构建并验证 index_v2 → 别名切到 index_v2 → 保留旧索引约 7 天用于回滚 → 确认后删除。Embedding 升级按“新索引重建 → 新旧并行对比召回率与答案质量 → 切流 → 保留旧索引 → 删除”执行，不要原地改。 六个高频坑：只插入新向量不删除旧向量；Embedding 模型混用；Chunk 策略变了但历史数据不重建；文档删除后仍被召回；权限元数据不同步；变更检测漏检。","url":"https://itinterview.com.cn/#/question/1268"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">RAG工程师</span><span class="chip">平台工程师</span><span class="chip tag">知识库更新</span><span class="chip tag">增量索引</span><span class="chip tag">Embedding一致性</span><span class="chip tag">灰度切换</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：RAG 系统上线后的数据与索引一致性治理能力，包括增量同步、重建时机和灰度回滚。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：更新要同时满足五个目标——<strong>动态性</strong>（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、<strong>准确性</strong>（召回内容与当前文档一致）、<strong>一致性</strong>（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、<strong>可回滚</strong>、<strong>可观测</strong>。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。</p>
+<p><strong>第一件事：Embedding 模型必须保持一致</strong></p>
+<p>索引时和查询时必须用同一个 Embedding 模型。不同模型的向量空间不通用：维度不同通常无法放进同一索引，维度相同但模型不同则相似度分数不可比，排序基础已经被破坏。最容易忽视的两个场景是<strong>模型升级</strong>（3-small 切 3-large，历史数据必须重新编码）和<strong>本地模型与 API 模型混用</strong>（测试用 sentence-transformers、生产用 OpenAI API，上线后召回率腰斩）。做法是把 <code>embedding_model</code>、<code>embedding_model_version</code>、<code>embedding_dimension</code> 写进元数据，查询时校验，不匹配就拒绝或降级并告警。</p>
+<p><strong>第二件事：元数据是增量更新和回滚的前提</strong></p>
+<p>每个 Chunk 至少应带上：<code>doc_id</code>、<code>chunk_id</code>、<code>content_hash</code>、<code>version_id</code>、<code>chunk_strategy/size/overlap</code>、<code>source_id</code>、<code>section_path</code>、<code>tenant_id</code>、<code>acl</code>、<code>embedding_*</code>、<code>is_deleted</code>。其中：</p>
+<ul>
+<li><code>content_hash</code> 是增量更新的核心，它是<strong>文档正文或 Chunk 内容的哈希</strong>，不是文件哈希；入库时计算并与已有记录对比，一致就跳过 Embedding，不一致才重新编码（生产推荐 SHA-256）。</li>
+<li>切分策略也要版本化，<code>chunk_strategy</code> 变化的影响不比 Embedding 模型小，应触发重建或灰度。</li>
+<li><code>is_deleted</code> 是软删除标记，给审计、误删恢复和跨系统一致性留缓冲；查询默认只保留 <code>is_deleted = false</code>。</li>
+<li><code>tenant_id</code> 和 <code>acl</code> 是多租户与权限基础，所有会进入模型上下文的内容必须先通过授权检查。</li>
+</ul>
+<p><strong>第三件事：同步链路与变更检测</strong></p>
+<p>链路为：源系统 → 变更检测 → 消息队列 → 解析/切分/哈希 → 去重 → Embedding → 元数据库 + 向量库 + 全文索引 → 监控告警。变更检测有事件驱动、CDC（监听 binlog）和定时轮询三种。<strong>生产里更稳的是事件驱动 + 轮询兜底</strong>，再用幂等 Key、乱序处理和死信队列保证可靠。</p>
+<p><strong>第四件事：增量更新 vs 全量重建</strong></p>
+<p>| 维度 | 增量更新 | 全量重建 |</p>
+<p>| --- | --- | --- |</p>
+<p>| 触发条件 | 文档变更事件 | 定时任务或手动触发 |</p>
+<p>| 覆盖范围 | 仅变化的文档 | 整个知识库 |</p>
+<p>| 计算成本 | 低 | 高 |</p>
+<p>| 更新延迟 | 低，可近实时 | 高，可能需要数小时 |</p>
+<p>| 适用场景 | 日常变更、高频更新 | 模型升级、策略调整、故障恢复 |</p>
+<p>| 主要风险 | 变更漏检导致数据陈旧 | 占用额外算力；切换不完整时影响服务 |</p>
+<p>全量重建通常用于：Embedding 模型升级（硬需求）、Chunk 策略调整、数据结构变更、严重故障恢复、定期健康维护（部分向量库高频删除后会留下 tombstone 和碎片）。</p>
+<p><strong>第五件事：灰度切换与回滚</strong></p>
+<p>用索引别名避免中断：查询服务只访问别名 <code>prod_index</code>（指向 <code>index_v1</code>）→ 后台构建并验证 <code>index_v2</code> → 别名切到 <code>index_v2</code> → 保留旧索引约 7 天用于回滚 → 确认后删除。Embedding 升级按“新索引重建 → 新旧并行对比召回率与答案质量 → 切流 → 保留旧索引 → 删除”执行，不要原地改。</p>
+<p><strong>六个高频坑</strong>：只插入新向量不删除旧向量；Embedding 模型混用；Chunk 策略变了但历史数据不重建；文档删除后仍被召回；权限元数据不同步；变更检测漏检。</p></div>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1268">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=193&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
