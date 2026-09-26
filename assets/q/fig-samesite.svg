@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460">
+  <rect width="680" height="460" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#2563eb">Cookie 的 SameSite：跨站请求是否携带</text>
+    <text x="24" y="50" font-size="11" fill="#6b7280">同站（schemeful site）= 注册域名（eTLD+1）与 scheme 相同；跨站请求来自不同站点</text>
+
+    <rect x="24" y="66" width="272" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <rect x="296" y="66" width="120" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <rect x="416" y="66" width="120" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <rect x="536" y="66" width="120" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <text x="160" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">请求场景</text>
+    <text x="356" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">Strict</text>
+    <text x="476" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">Lax</text>
+    <text x="596" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">None</text>
+
+    <rect x="24" y="94" width="272" height="48" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="296" y="94" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <rect x="416" y="94" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <rect x="536" y="94" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <text x="40" y="123" font-size="12" fill="#1f2937">A 站内操作：点击、表单、XHR</text>
+    <text x="356" y="123" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+    <text x="476" y="123" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+    <text x="596" y="123" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+
+    <rect x="24" y="142" width="272" height="48" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="296" y="142" width="120" height="48" fill="#fef2f2" stroke="#9ca3af"/>
+    <rect x="416" y="142" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <rect x="536" y="142" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <text x="40" y="171" font-size="12" fill="#1f2937">B 站点击链接跳转到 A（顶级 GET）</text>
+    <text x="356" y="171" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">不携带</text>
+    <text x="476" y="171" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+    <text x="596" y="171" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+
+    <rect x="24" y="190" width="272" height="48" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="296" y="190" width="120" height="48" fill="#fef2f2" stroke="#9ca3af"/>
+    <rect x="416" y="190" width="120" height="48" fill="#fef2f2" stroke="#9ca3af"/>
+    <rect x="536" y="190" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <text x="40" y="219" font-size="12" fill="#1f2937">B 站 POST 表单提交到 A（CSRF）</text>
+    <text x="356" y="219" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">不携带</text>
+    <text x="476" y="219" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">不携带</text>
+    <text x="596" y="219" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+
+    <rect x="24" y="238" width="272" height="48" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="296" y="238" width="120" height="48" fill="#fef2f2" stroke="#9ca3af"/>
+    <rect x="416" y="238" width="120" height="48" fill="#fef2f2" stroke="#9ca3af"/>
+    <rect x="536" y="238" width="120" height="48" fill="#f0fdf4" stroke="#9ca3af"/>
+    <text x="40" y="267" font-size="12" fill="#1f2937">B 站用 img / iframe 嵌入 A 资源</text>
+    <text x="356" y="267" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">不携带</text>
+    <text x="476" y="267" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">不携带</text>
+    <text x="596" y="267" text-anchor="middle" font-size="12" font-weight="bold" fill="#059669">携带</text>
+
+    <rect x="24" y="302" width="632" height="40" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="44" y="327" font-size="11" fill="#1f2937">Lax 是 Chrome 等浏览器的默认值（未指定时按 Lax 处理）：顶级导航 GET 仍带 Cookie，日常浏览不受影响</text>
+
+    <rect x="24" y="350" width="632" height="40" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="44" y="375" font-size="11" fill="#1f2937">SameSite=None 必须同时设置 Secure（仅 HTTPS 发送），否则被浏览器拒绝——第三方 Cookie 迁移的关键改造点</text>
+
+    <rect x="24" y="398" width="632" height="44" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="44" y="416" font-size="11" fill="#1f2937">与 CSRF 的关系：Lax 已能拦截「跨站 POST 表单自动携带 Cookie」，是第一道防线；</text>
+    <text x="44" y="432" font-size="11" fill="#1f2937">但顶级 GET 导航与同站子域仍可能被利用，敏感操作仍需 CSRF Token + 校验 Origin/Referer</text>
+  </g>
+</svg>
