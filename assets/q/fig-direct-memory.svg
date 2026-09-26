@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 500">
+  <rect width="680" height="500" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-dm1" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-dm1g" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#059669"/>
+    </marker>
+    <marker id="arw-dm1r" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">堆外直接内存（DirectByteBuffer）结构与回收链路</text>
+
+  <!-- Java 堆侧 -->
+  <rect x="40" y="60" width="260" height="180" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="170" y="82" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#2563eb">Java 堆（受 -Xmx 管控）</text>
+
+  <rect x="60" y="100" width="220" height="52" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="170" y="120" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">DirectByteBuffer 对象</text>
+  <text x="170" y="140" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">仅存 address 等字段，约 32-48B</text>
+
+  <rect x="60" y="164" width="220" height="52" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+  <text x="170" y="184" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Cleaner（虚引用）</text>
+  <text x="170" y="204" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">关联堆外内存，不可达时入队</text>
+
+  <!-- 本地内存侧 -->
+  <rect x="420" y="60" width="220" height="120" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="530" y="82" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#dc2626">本地内存（堆外）</text>
+  <rect x="440" y="96" width="180" height="64" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="1.2"/>
+  <text x="530" y="118" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Direct Buffer 数据块</text>
+  <text x="530" y="136" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Unsafe.allocateMemory 分配</text>
+  <text x="530" y="152" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">可达 MB 级，OS 直接 I/O</text>
+
+  <line x1="280" y1="122" x2="436" y2="122" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-dm1)"/>
+  <text x="322" y="112" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">address 指向</text>
+
+  <text x="40" y="270" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">堆内 32KB 引用（1000 个 DirectByteBuffer 对象）背后可能挂着几百 MB 堆外内存——堆快照看起来很"干净"，本机内存却已耗尽。</text>
+
+  <!-- 回收链路 -->
+  <rect x="40" y="292" width="290" height="120" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="56" y="316" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#059669">正常回收链路</text>
+  <text x="56" y="340" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">1. Buffer 对象不可达 → 虚引用入 ReferenceQueue</text>
+  <text x="56" y="360" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">2. Cleaner.clean() → Unsafe.freeMemory(address)</text>
+  <text x="56" y="380" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">3. 堆外内存归还操作系统</text>
+  <text x="56" y="402" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">依赖 GC 触发，时机不可控；可手动 freeMemory</text>
+
+  <!-- OOM 链路 -->
+  <rect x="360" y="292" width="290" height="120" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="376" y="316" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#dc2626">OOM 与排查</text>
+  <text x="376" y="340" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">超 -XX:MaxDirectMemorySize 上限时：</text>
+  <text x="376" y="360" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#dc2626">OutOfMemoryError: Direct buffer memory</text>
+  <text x="376" y="382" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">排查：NMT / pmap / JFR DirectBufferStatistics</text>
+  <text x="376" y="402" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">也受本机总内存与进程地址空间限制</text>
+
+  <line x1="205" y1="216" x2="205" y2="288" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-dm1g)"/>
+  <text x="212" y="260" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">GC 不可达</text>
+  <line x1="500" y1="180" x2="500" y2="288" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-dm1r)"/>
+  <text x="507" y="260" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">只增不减</text>
+</svg>
