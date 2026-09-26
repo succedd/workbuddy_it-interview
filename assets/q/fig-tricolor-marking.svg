@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 540">
+  <rect width="680" height="540" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-tc1" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-tc1r" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">三色标记法与漏标：写屏障如何补救</text>
+
+  <!-- 三色节点图 -->
+  <rect x="40" y="60" width="120" height="40" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="100" y="85" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">GC Roots</text>
+
+  <line x1="160" y1="80" x2="216" y2="80" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-tc1)"/>
+
+  <rect x="220" y="60" width="90" height="40" rx="8" fill="#1f2937"/>
+  <text x="265" y="85" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#ffffff">黑 A</text>
+
+  <line x1="310" y1="80" x2="366" y2="80" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-tc1)"/>
+
+  <rect x="370" y="60" width="90" height="40" rx="8" fill="#6b7280"/>
+  <text x="415" y="85" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#ffffff">灰 B</text>
+
+  <line x1="460" y1="80" x2="516" y2="80" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-tc1)"/>
+
+  <rect x="520" y="60" width="90" height="40" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+  <text x="565" y="85" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">白 C</text>
+
+  <!-- 图例 -->
+  <text x="40" y="130" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">黑 = 自身与引用均已扫描　灰 = 自身已扫描、引用未扫完　白 = 尚未访问（扫描结束仍白则回收）</text>
+
+  <!-- 漏标场景 -->
+  <rect x="40" y="150" width="600" height="130" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="56" y="174" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#dc2626">并发漏标场景（两个条件同时成立才会漏）</text>
+  <text x="56" y="198" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">1. 赋值器插入一条或多条 黑 → 白 的新引用（黑 A 新增对白 C 的引用）</text>
+  <text x="56" y="220" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">2. 赋值器删除全部 灰 → 白 的直接或间接引用（灰 B 到白 C 的引用断开）</text>
+  <text x="56" y="244" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#dc2626">结果：标记阶段结束时白 C 仍是白色，被当作垃圾误回收 → 存活对象消失</text>
+  <line x1="265" y1="100" x2="440" y2="150" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arw-tc1r)"/>
+  <text x="300" y="132" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">黑 A 新增引用白 C</text>
+
+  <!-- 两种写屏障 -->
+  <rect x="40" y="300" width="290" height="150" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="56" y="324" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#059669">增量更新（CMS 采用）</text>
+  <text x="56" y="348" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">破坏条件 1：关注新增引用</text>
+  <text x="56" y="370" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">写屏障记录黑对白的赋值</text>
+  <text x="56" y="392" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">重新标记阶段把黑改为灰重扫</text>
+  <text x="56" y="414" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">以当前实际引用关系为准</text>
+  <text x="56" y="436" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">标记范围偏大，重新标记耗时长</text>
+
+  <rect x="350" y="300" width="290" height="150" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="366" y="324" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#059669">原始快照 SATB（G1 采用）</text>
+  <text x="366" y="348" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">破坏条件 2：关注删除引用</text>
+  <text x="366" y="370" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">写屏障记录被删除的旧引用</text>
+  <text x="366" y="392" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">被删的白对象按开始时快照保留</text>
+  <text x="366" y="414" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">认为并发期内消失即视为已死</text>
+  <text x="366" y="436" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">可能产生浮动垃圾，但重新标记更快</text>
+
+  <text x="40" y="490" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">共同点：都把并发标记的正确性交给读写屏障，在赋值器写引用的瞬间记录线索，STW 重新标记阶段统一补偿。</text>
+  <text x="40" y="510" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">ZGC / Shenandoah 走染色指针或读屏障路线，进一步压短暂停时间。</text>
+</svg>
