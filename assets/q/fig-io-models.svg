@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 560">
+  <rect width="680" height="560" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-io1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-io2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+    </marker>
+    <marker id="arw-io3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <text x="16" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">BIO → NIO → AIO:三种 IO 模型的演进与阻塞点变化</text>
+
+  <!-- BIO 栏 -->
+  <rect x="10" y="46" width="212" height="466" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+  <text x="116" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">BIO 同步阻塞</text>
+
+  <rect x="30" y="86" width="172" height="30" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="116" y="106" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">客户端连接 ×3</text>
+
+  <line x1="116" y1="116" x2="60" y2="146" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-io1)"/>
+  <line x1="116" y1="116" x2="116" y2="146" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-io1)"/>
+  <line x1="116" y1="116" x2="172" y2="146" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-io1)"/>
+
+  <rect x="26" y="150" width="54" height="42" rx="6" fill="#ffffff" stroke="#dc2626"/>
+  <text x="53" y="167" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">线程 1</text>
+  <text x="53" y="183" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#dc2626">read 阻塞</text>
+  <rect x="89" y="150" width="54" height="42" rx="6" fill="#ffffff" stroke="#dc2626"/>
+  <text x="116" y="167" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">线程 2</text>
+  <text x="116" y="183" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#dc2626">read 阻塞</text>
+  <rect x="152" y="150" width="54" height="42" rx="6" fill="#ffffff" stroke="#dc2626"/>
+  <text x="179" y="167" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">线程 3</text>
+  <text x="179" y="183" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#dc2626">read 阻塞</text>
+
+  <rect x="26" y="208" width="180" height="56" rx="6" fill="#fef2f2"/>
+  <text x="116" y="228" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#dc2626">阻塞点:每个连接一个线程,</text>
+  <text x="116" y="246" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">read 一直阻塞到内核把数据</text>
+  <text x="116" y="260" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">拷贝到用户空间才返回</text>
+
+  <text x="116" y="292" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">连接数少时简单可靠;</text>
+  <text x="116" y="308" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">十万级连接时线程开销无法承受</text>
+
+  <!-- NIO 栏 -->
+  <rect x="234" y="46" width="212" height="466" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+  <text x="340" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">NIO 多路复用</text>
+
+  <rect x="254" y="86" width="172" height="30" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="340" y="106" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">客户端连接 ×3</text>
+
+  <line x1="340" y1="116" x2="284" y2="146" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-io1)"/>
+  <line x1="340" y1="116" x2="340" y2="146" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-io1)"/>
+  <line x1="340" y1="116" x2="396" y2="146" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arw-io1)"/>
+
+  <rect x="256" y="150" width="52" height="30" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="282" y="170" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Channel</text>
+  <rect x="314" y="150" width="52" height="30" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="340" y="170" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Channel</text>
+  <rect x="372" y="150" width="52" height="30" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="398" y="170" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">Channel</text>
+
+  <line x1="340" y1="184" x2="340" y2="210" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-io2)"/>
+  <text x="404" y="204" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#059669">注册就绪事件</text>
+
+  <rect x="262" y="214" width="156" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+  <text x="340" y="232" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">Selector(单线程)</text>
+  <text x="340" y="248" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#059669">select 轮询:谁就绪服务谁</text>
+
+  <line x1="340" y1="254" x2="340" y2="278" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-io2)"/>
+  <rect x="268" y="282" width="144" height="28" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="340" y="301" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">就绪后才读入 Buffer</text>
+
+  <rect x="250" y="330" width="180" height="56" rx="6" fill="#f0fdf4"/>
+  <text x="340" y="350" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#059669">阻塞点:仅 select 与数据拷贝</text>
+  <text x="340" y="368" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">一线程管多连接,大量减少</text>
+  <text x="340" y="384" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">无效系统调用与线程切换</text>
+
+  <text x="340" y="412" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">三大组件:Channel 传输通道、</text>
+  <text x="340" y="428" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Buffer 缓冲区、Selector 多路复用器</text>
+
+  <!-- AIO 栏 -->
+  <rect x="458" y="46" width="212" height="466" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+  <text x="564" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">AIO 异步</text>
+
+  <rect x="478" y="86" width="172" height="30" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="564" y="106" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">客户端连接 ×3</text>
+
+  <rect x="486" y="134" width="156" height="44" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="564" y="152" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">发起 read 后立即返回,</text>
+  <text x="564" y="168" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">线程继续做别的事</text>
+
+  <line x1="564" y1="182" x2="564" y2="210" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-io1)"/>
+  <text x="578" y="200" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#6b7280">内核完成等待+拷贝</text>
+
+  <rect x="490" y="214" width="148" height="44" rx="6" fill="#f0fdf4" stroke="#059669"/>
+  <text x="564" y="232" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">完成后回调</text>
+  <text x="564" y="250" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#059669">CompletionHandler / Future</text>
+
+  <rect x="474" y="274" width="180" height="56" rx="6" fill="#f0fdf4"/>
+  <text x="564" y="294" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="#059669">阻塞点:无</text>
+  <text x="564" y="312" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">等待数据与拷贝全程由内核完成,</text>
+  <text x="564" y="328" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">真正的异步 IO</text>
+
+  <text x="564" y="356" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Java 7 NIO.2 引入;</text>
+  <text x="564" y="372" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Linux 实现不成熟,应用少,</text>
+  <text x="564" y="388" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">Netty 曾尝试后放弃</text>
+
+  <!-- 底部总结 -->
+  <rect x="10" y="490" width="660" height="30" rx="6" fill="#eff6ff"/>
+  <text x="340" y="510" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">演进主线:把「等待数据就绪」的时间从业务线程中逐步剥离 —— BIO 全程阻塞 → NIO 事件驱动 → AIO 全程异步</text>
+</svg>
