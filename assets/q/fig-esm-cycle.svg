@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 510">
+  <defs>
+    <marker id="arw-ec" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+  <rect width="680" height="510" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#2563eb">ES Module 循环依赖：三阶段执行顺序</text>
+
+    <rect x="24" y="66" width="110" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="79" y="89" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">main.mjs</text>
+    <line x1="134" y1="84" x2="172" y2="84" stroke="#9ca3af" marker-end="url(#arw-ec)"/>
+    <rect x="176" y="66" width="110" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="231" y="89" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">a.mjs</text>
+    <line x1="286" y1="84" x2="324" y2="84" stroke="#9ca3af" marker-end="url(#arw-ec)"/>
+    <rect x="328" y="66" width="110" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="383" y="89" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">b.mjs</text>
+    <path d="M 383,62 C 383,42 231,42 231,60" fill="none" stroke="#9ca3af" stroke-dasharray="6 4" marker-end="url(#arw-ec)"/>
+    <text x="307" y="50" text-anchor="middle" font-size="11" fill="#6b7280">循环 import</text>
+    <text x="470" y="80" font-size="11" fill="#6b7280">求值顺序：main → a → b</text>
+    <text x="470" y="96" font-size="11" fill="#6b7280">（深度优先后序遍历）</text>
+
+    <rect x="24" y="126" width="632" height="48" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="44" y="146" font-size="12" font-weight="bold" fill="#2563eb">① 构造 Construction</text>
+    <text x="44" y="164" font-size="11" fill="#1f2937">下载并解析 a / b 全部文件、建立模块依赖图（此阶段不执行任何代码）</text>
+
+    <rect x="24" y="186" width="632" height="64" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="44" y="206" font-size="12" font-weight="bold" fill="#2563eb">② 实例化 Instantiation</text>
+    <text x="44" y="224" font-size="11" fill="#1f2937">深度优先后序遍历：先为 b 的导出分配内存，再把 a 的 import 接到同一内存位置</text>
+    <text x="44" y="240" font-size="11" fill="#1f2937">export / import 指向同一内存（live binding）；函数声明在此阶段完成初始化</text>
+
+    <rect x="24" y="262" width="632" height="112" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="44" y="282" font-size="12" font-weight="bold" fill="#2563eb">③ 求值 Evaluation（执行顺序：main → a → b，b 先完成）</text>
+    <text x="44" y="302" font-size="11" fill="#059669">b 先求值：b 中访问 a 的导出——函数声明已初始化，可直接调用（可用）</text>
+    <text x="44" y="320" font-size="11" fill="#dc2626">b 中访问 a 的 let/const：a 尚未求值完成，绑定处于 TDZ → ReferenceError（报错）</text>
+    <text x="44" y="338" font-size="11" fill="#059669">b 求值完成 → a 继续求值 → a 的绑定填充后，b 通过 live binding 看到最终值</text>
+    <text x="44" y="360" font-size="11" fill="#6b7280">经验：循环依赖中把「可提升的函数声明」作为导出最安全，避免顶层立即访问对方变量</text>
+
+    <rect x="24" y="388" width="632" height="100" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="44" y="410" font-size="12" font-weight="bold" fill="#dc2626">与 CommonJS 的差异（踩坑点）</text>
+    <text x="44" y="430" font-size="11" fill="#1f2937">CJS 同步加载：执行到 require 才加载求值；b 中 require('./a') 拿到的是 a 当时已填充的 exports 浅拷贝</text>
+    <text x="44" y="448" font-size="11" fill="#1f2937">a 未执行到的属性是 undefined，且之后 a 更新该值，b 中也看不到（值拷贝，非 live binding）</text>
+    <text x="44" y="466" font-size="11" fill="#1f2937">ESM 靠「先实例化后求值 + 绑定共享」让循环依赖最终可见正确值；CJS 容易拿到半成品对象</text>
+  </g>
+</svg>
