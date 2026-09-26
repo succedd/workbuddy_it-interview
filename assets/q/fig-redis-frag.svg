@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440">
+  <defs>
+    <marker id="arw-fr" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+  </defs>
+  <rect width="680" height="440" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="28" y="32" font-size="14" font-weight="bold" fill="#2563eb">Redis 内存碎片与 activedefrag 主动整理</text>
+
+    <!-- 指标带 -->
+    <rect x="36" y="52" width="608" height="76" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="52" y="76" font-size="12" fill="#1f2937">INFO memory 中监控：mem_fragmentation_ratio = used_memory_rss / used_memory</text>
+    <text x="52" y="98" font-size="11" fill="#059669">约 1.0 ~ 1.5：健康区间</text>
+    <text x="52" y="118" font-size="11" fill="#dc2626">大于 1.5：碎片偏高需整理；小于 1：可能被换出到 Swap，更要警惕</text>
+
+    <!-- 左：碎片化 -->
+    <text x="180" y="164" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">碎片化：空闲块夹在已用块之间</text>
+    <rect x="52" y="180" width="256" height="120" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
+    <!-- used cells -->
+    <rect x="72" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="112" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="152" y="200" width="32" height="32" rx="4" fill="#fef2f2" stroke="#dc2626" stroke-dasharray="3 2"/>
+    <rect x="192" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="232" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="72" y="244" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="112" y="244" width="32" height="32" rx="4" fill="#fef2f2" stroke="#dc2626" stroke-dasharray="3 2"/>
+    <rect x="152" y="244" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="192" y="244" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="232" y="244" width="32" height="32" rx="4" fill="#fef2f2" stroke="#dc2626" stroke-dasharray="3 2"/>
+    <text x="180" y="326" font-size="11" fill="#6b7280" text-anchor="middle">蓝块：已用　红虚线块：分配器无法再利用的空隙</text>
+
+    <line x1="330" y1="240" x2="410" y2="240" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-fr)"/>
+    <text x="370" y="228" font-size="11" fill="#2563eb" text-anchor="middle">activedefrag</text>
+
+    <!-- 右：整理后 -->
+    <text x="500" y="164" font-size="12" font-weight="bold" fill="#059669" text-anchor="middle">整理后：数据紧凑，归还连续空间</text>
+    <rect x="412" y="180" width="256" height="120" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
+    <rect x="432" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="472" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="512" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="552" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="592" y="200" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="432" y="244" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="472" y="244" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="512" y="244" width="32" height="32" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="552" y="244" width="72" height="32" rx="4" fill="#f0fdf4" stroke="#059669"/>
+    <text x="588" y="265" font-size="11" fill="#059669" text-anchor="middle">空闲</text>
+    <text x="500" y="326" font-size="11" fill="#6b7280" text-anchor="middle">拷贝数据到新位置并更新引用，释放页归还操作系统</text>
+
+    <!-- 底部配置带 -->
+    <rect x="36" y="348" width="608" height="76" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
+    <text x="52" y="370" font-size="11" fill="#1f2937">开启（Redis 4.0+， jemalloc）：config set activedefrag yes</text>
+    <text x="52" y="390" font-size="11" fill="#1f2937">触发阈值：active-defrag-ignore-bytes 500mb（碎片量）、active-defrag-threshold-lower 50（碎片率 1.5）</text>
+    <text x="52" y="410" font-size="11" fill="#6b7280">CPU 限流：active-defrag-cycle-min 20 / cycle-max 50（占用 CPU 时间百分比），避免影响主线程</text>
+  </g>
+</svg>
