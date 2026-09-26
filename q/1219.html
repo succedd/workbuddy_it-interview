@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="React 18 的 Fiber 架构与并发渲染（Concurrent Rendering）解决了什么问题？可中断渲染、优先级调度是如何实现的？ · IT面试题库">
   <meta property="og:description" content="要点： 解决的核心问题：旧版 Stack Reconciler 是同步递归遍历虚拟 DOM，一旦开始就无法打断，组件树很大时主线程被长时间占用，导致输入卡顿、动画掉帧。Fiber 把渲染拆成可中断、可恢复的小任务单元，让 React 在浏览器空闲时分段工作，并在高优先级任务（如用户输入）到来时暂停低优先级渲染。 …">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1219.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1219.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="React 18 的 Fiber 架构与并发渲染（Concurrent Rendering）解决了什么问题？可中断渲染、优先级调度是如何实现的？ · IT面试题库">
   <meta name="twitter:description" content="要点： 解决的核心问题：旧版 Stack Reconciler 是同步递归遍历虚拟 DOM，一旦开始就无法打断，组件树很大时主线程被长时间占用，导致输入卡顿、动画掉帧。Fiber 把渲染拆成可中断、可恢复的小任务单元，让 React 在浏览器空闲时分段工作，并在高优先级任务（如用户输入）到来时暂停低优先级渲染。 …">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1219.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React 18 的 Fiber 架构与并发渲染（Concurrent Rendering）解决了什么问题？可中断渲染、优先级调度是如何实现的？","text":"追问链第 4 问：从虚拟 DOM 的协调进一步到 Fiber——React 的渲染引擎重构。","answerCount":1,"datePublished":"2026-09-21T02:22:10.693Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决的核心问题：旧版 Stack Reconciler 是同步递归遍历虚拟 DOM，一旦开始就无法打断，组件树很大时主线程被长时间占用，导致输入卡顿、动画掉帧。Fiber 把渲染拆成可中断、可恢复的小任务单元，让 React 在浏览器空闲时分段工作，并在高优先级任务（如用户输入）到来时暂停低优先级渲染。 Fiber 是什么：React 16 引入的新协调引擎，把组件树重构为一串「Fiber 节点」链表。每个 Fiber 记录组件类型、状态、副作用与指向父子/兄弟的指针，使遍历可增量进行、随时挂起与恢复。 并发特性（React 18）：通过 startTransition、useDeferredValue、useTransition 标记「非紧急更新」，React 用优先级调度区分紧急（点击、输入）与可延后（大列表筛选）更新；Suspense 配合并发特性实现「等待数据时展示兜底而不阻塞整页」。 代价与权衡：并发带来更强响应性，但要求组件写成「可中断安全」——避免在渲染中做副作用、保证纯渲染；useTransition 包裹的更新可能被丢弃重算，需理解其语义。","url":"https://it-interview.is-a.dev/#/question/1219"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1219.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React 18 的 Fiber 架构与并发渲染（Concurrent Rendering）解决了什么问题？可中断渲染、优先级调度是如何实现的？","text":"追问链第 4 问：从虚拟 DOM 的协调进一步到 Fiber——React 的渲染引擎重构。","answerCount":1,"datePublished":"2026-09-21T02:22:10.693Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决的核心问题：旧版 Stack Reconciler 是同步递归遍历虚拟 DOM，一旦开始就无法打断，组件树很大时主线程被长时间占用，导致输入卡顿、动画掉帧。Fiber 把渲染拆成可中断、可恢复的小任务单元，让 React 在浏览器空闲时分段工作，并在高优先级任务（如用户输入）到来时暂停低优先级渲染。 Fiber 是什么：React 16 引入的新协调引擎，把组件树重构为一串「Fiber 节点」链表。每个 Fiber 记录组件类型、状态、副作用与指向父子/兄弟的指针，使遍历可增量进行、随时挂起与恢复。 并发特性（React 18）：通过 startTransition、useDeferredValue、useTransition 标记「非紧急更新」，React 用优先级调度区分紧急（点击、输入）与可延后（大列表筛选）更新；Suspense 配合并发特性实现「等待数据时展示兜底而不阻塞整页」。 代价与权衡：并发带来更强响应性，但要求组件写成「可中断安全」——避免在渲染中做副作用、保证纯渲染；useTransition 包裹的更新可能被丢弃重算，需理解其语义。","url":"https://itinterview.com.cn/#/question/1219"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>React 18 的 Fiber 架构与并发渲染（Concurrent Rendering）解决了什么问题？可中断渲染、优先级调度是如何实现的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">Fiber</span><span class="chip tag">并发渲染</span><span class="chip tag">优先级调度</span><span class="chip tag">Suspense</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 4 问：从虚拟 DOM 的协调进一步到 Fiber——React 的渲染引擎重构。</p></div>
@@ -80,12 +80,12 @@
 <li><strong>并发特性（React 18）</strong>：通过 <code>startTransition</code>、<code>useDeferredValue</code>、<code>useTransition</code> 标记「非紧急更新」，React 用<strong>优先级调度</strong>区分紧急（点击、输入）与可延后（大列表筛选）更新；<code>Suspense</code> 配合并发特性实现「等待数据时展示兜底而不阻塞整页」。</li>
 <li><strong>代价与权衡</strong>：并发带来更强响应性，但要求组件写成「可中断安全」——避免在渲染中做副作用、保证纯渲染；<code>useTransition</code> 包裹的更新可能被丢弃重算，需理解其语义。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1219">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1219">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
