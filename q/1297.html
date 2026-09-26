@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库</title>
+  <meta name="description" content="根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库">
+  <meta property="og:description" content="根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1297.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库">
+  <meta name="twitter:description" content="根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1297.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。","text":"考察点：层叠上下文（stacking context）这一最容易踩坑的渲染规则。","answerCount":1,"datePublished":"2026-09-26T02:32:40.186Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序 4.6 ； position:absolute/relative 且 z-index≠auto； position:fixed / sticky（总是创建）； flex / grid 容器的子项且 z-index≠auto； opacity \u003c 1、mix-blend-mode≠normal； transform / filter / backdrop-filter / perspective / clip-path / mask 非 none； isolation:isolate、will-change 指定了会创建层叠上下文的属性、contain:layout|paint。 排查步骤： 1. 在 DevTools 的 Layers / 3D 视图确认两者是否处于同一层叠上下文；沿祖先链向上找最近的创建层叠上下文的祖先。 2. 检查弹窗祖先链上是否有 transform、opacity、filter、will-change，或某个 position + z-index 的祖先把它「困」在低层级里。 3. 看计算样式确认 z-index 是否真的生效——static 元素上的 z-index 完全无效。 修复： 把弹窗挂到 body 下（React Portal / document.body.appendChild），彻底脱离有问题的祖先上下文； 或调整共同祖先的层叠层级（给它加 z-index 或换顺序）； 去掉祖先上不必要的 transform / opacity； 组件库统一用 z-index 分层变量（如 1000–5000），杜绝到处写 9999。 一句话：z-index 的比较单位是「层叠上下文」，不是全局数字。","url":"https://itinterview.com.cn/#/question/1297"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">CSS</span><span class="chip tag">z-index</span><span class="chip tag">层叠上下文</span><span class="chip tag">弹窗</span><span class="chip tag">渲染</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：层叠上下文（stacking context）这一最容易踩坑的渲染规则。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>根因</strong>：<code>z-index</code> 只在<strong>同一个层叠上下文</strong>内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 <code>z-index:6</code> 会被 <code>z-index:5</code> 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序 4.6 &lt; 5）。</p>
+<p><strong>谁会创建层叠上下文</strong>（MDN 列举）：</p>
+<ul>
+<li>根元素 <code>&lt;html&gt;</code>；</li>
+<li><code>position:absolute/relative</code> 且 <code>z-index≠auto</code>；</li>
+<li><code>position:fixed</code> / <code>sticky</code>（总是创建）；</li>
+<li>flex / grid 容器的子项且 <code>z-index≠auto</code>；</li>
+<li><code>opacity &lt; 1</code>、<code>mix-blend-mode≠normal</code>；</li>
+<li><code>transform / filter / backdrop-filter / perspective / clip-path / mask</code> 非 <code>none</code>；</li>
+<li><code>isolation:isolate</code>、<code>will-change</code> 指定了会创建层叠上下文的属性、<code>contain:layout|paint</code>。</li>
+</ul>
+<p><strong>排查步骤</strong>：</p>
+<ol>
+<li>在 DevTools 的 Layers / 3D 视图确认两者是否处于同一层叠上下文；沿祖先链向上找<strong>最近的</strong>创建层叠上下文的祖先。</li>
+<li>检查弹窗祖先链上是否有 <code>transform</code>、<code>opacity</code>、<code>filter</code>、<code>will-change</code>，或某个 <code>position + z-index</code> 的祖先把它「困」在低层级里。</li>
+<li>看计算样式确认 <code>z-index</code> 是否真的生效——<code>static</code> 元素上的 <code>z-index</code> 完全无效。</li>
+</ol>
+<p><strong>修复</strong>：</p>
+<ul>
+<li>把弹窗<strong>挂到 body 下</strong>（React Portal / <code>document.body.appendChild</code>），彻底脱离有问题的祖先上下文；</li>
+<li>或调整<strong>共同祖先</strong>的层叠层级（给它加 z-index 或换顺序）；</li>
+<li>去掉祖先上不必要的 <code>transform</code> / <code>opacity</code>；</li>
+<li>组件库统一用 <code>z-index</code> 分层变量（如 1000–5000），杜绝到处写 9999。</li>
+</ul>
+<p><strong>一句话</strong>：<code>z-index</code> 的比较单位是「层叠上下文」，不是全局数字。</p></div>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1297">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=58&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
