@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？ · IT面试题库</title>
+  <meta name="description" content="先讲清楚连接池的工作原理 连接池在应用与数据库之间维护一批长连接：应用线程通过 getConnection() 从池中借出连接，用完调用 close() 并不是真关闭，而是归还回池。池内部维护三部分：空闲连接队列（可立即借出）、借出连接集合（正在使用）、等待队列（拿不到连接的线程排队，最多等 connection…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？ · IT面试题库">
+  <meta property="og:description" content="先讲清楚连接池的工作原理 连接池在应用与数据库之间维护一批长连接：应用线程通过 getConnection() 从池中借出连接，用完调用 close() 并不是真关闭，而是归还回池。池内部维护三部分：空闲连接队列（可立即借出）、借出连接集合（正在使用）、等待队列（拿不到连接的线程排队，最多等 connection…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1323.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？ · IT面试题库">
+  <meta name="twitter:description" content="先讲清楚连接池的工作原理 连接池在应用与数据库之间维护一批长连接：应用线程通过 getConnection() 从池中借出连接，用完调用 close() 并不是真关闭，而是归还回池。池内部维护三部分：空闲连接队列（可立即借出）、借出连接集合（正在使用）、等待队列（拿不到连接的线程排队，最多等 connection…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1323.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？","text":"考察点：对连接池借还模型、核心参数与常见故障（池耗尽、连接泄漏、慢 SQL 占用）的综合排查能力。","answerCount":1,"datePublished":"2026-09-26T03:32:32.284Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先讲清楚连接池的工作原理 连接池在应用与数据库之间维护一批长连接：应用线程通过 getConnection() 从池中借出连接，用完调用 close() 并不是真关闭，而是归还回池。池内部维护三部分：空闲连接队列（可立即借出）、借出连接集合（正在使用）、等待队列（拿不到连接的线程排队，最多等 connectionTimeout，HikariCP 默认 30000ms）。报错里的 30000ms 正是排队超时——说明池里的连接全部被占用了。 排查步骤 1. 确认是否连接泄漏：把 leakDetectionThreshold 设为 2000（最低 2 秒，默认 0 表示关闭），借出超过阈值未归还的连接会打印「apparent connection leak」并带获取时的调用栈，据此定位到「借了不还」的代码，常见于忘记在 finally 中 close、异常路径漏归还。 2. 检查慢 SQL 与长事务：连接被占住不一定是泄漏，也可能是慢查询、大批量导出、未提交的事务把借出时间拉长。去数据库侧查 information_schema.innodb_trx 与慢日志，对齐超时时间点。 3. 评估池容量与流量：maximumPoolSize 默认只有 10，突发并发下可能确实不够；但也不要盲目调大——官方给出参考公式「连接数 ≈ CPU 核数 × 2 + 有效磁盘数」，池过大会加剧上下文切换和数据库端争用，实测反而更慢。 4. 核对池形态：HikariCP 建议保持固定大小池（不设 minimumIdle，默认等于 maximumPoolSize），频繁扩缩会带来建连开销；同时检查 maxLifetime（默认 30 分钟）要短于数据库侧连接上限，避免用到被服务端掐断的连接。 答题要点：先解释报错对应的机制（等待队列 + connectionTimeout 超时），再按泄漏 → 慢 SQL → 容量 → 配置的顺序排查，最后点出「池不是越大越好」。","url":"https://itinterview.com.cn/#/question/1323"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景排查题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">连接池</span><span class="chip tag">HikariCP</span><span class="chip tag">连接泄漏</span><span class="chip tag">数据库调优</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：对连接池借还模型、核心参数与常见故障（池耗尽、连接泄漏、慢 SQL 占用）的综合排查能力。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>先讲清楚连接池的工作原理</strong></p>
+<p><img src="/assets/q/fig-conn-pool.svg" alt="图：应用线程从连接池借出/归还连接，池维护空闲队列、借出集合与等待队列" loading="lazy"></p>
+<p>连接池在应用与数据库之间维护一批长连接：应用线程通过 <code>getConnection()</code> 从池中<strong>借出</strong>连接，用完调用 <code>close()</code> 并不是真关闭，而是<strong>归还</strong>回池。池内部维护三部分：空闲连接队列（可立即借出）、借出连接集合（正在使用）、等待队列（拿不到连接的线程排队，最多等 <code>connectionTimeout</code>，HikariCP 默认 30000ms）。报错里的 30000ms 正是排队超时——说明<strong>池里的连接全部被占用了</strong>。</p>
+<p><strong>排查步骤</strong></p>
+<ol>
+<li><strong>确认是否连接泄漏</strong>：把 <code>leakDetectionThreshold</code> 设为 2000（最低 2 秒，默认 0 表示关闭），借出超过阈值未归还的连接会打印「apparent connection leak」并带获取时的调用栈，据此定位到「借了不还」的代码，常见于忘记在 finally 中 close、异常路径漏归还。</li>
+<li><strong>检查慢 SQL 与长事务</strong>：连接被占住不一定是泄漏，也可能是慢查询、大批量导出、未提交的事务把借出时间拉长。去数据库侧查 <code>information_schema.innodb_trx</code> 与慢日志，对齐超时时间点。</li>
+<li><strong>评估池容量与流量</strong>：<code>maximumPoolSize</code> 默认只有 10，突发并发下可能确实不够；但也不要盲目调大——官方给出参考公式「连接数 ≈ CPU 核数 × 2 + 有效磁盘数」，池过大会加剧上下文切换和数据库端争用，实测反而更慢。</li>
+<li><strong>核对池形态</strong>：HikariCP 建议保持固定大小池（不设 <code>minimumIdle</code>，默认等于 <code>maximumPoolSize</code>），频繁扩缩会带来建连开销；同时检查 <code>maxLifetime</code>（默认 30 分钟）要短于数据库侧连接上限，避免用到被服务端掐断的连接。</li>
+</ol>
+<p><strong>答题要点</strong>：先解释报错对应的机制（等待队列 + connectionTimeout 超时），再按泄漏 → 慢 SQL → 容量 → 配置的顺序排查，最后点出「池不是越大越好」。</p></div>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1323">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=41&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
