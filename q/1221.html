@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="React 状态管理方案繁多（Context、Redux、Zustand、Jotai、Redux Toolkit），各自的适用场景与权衡是什么？如何选？ · IT面试题库">
   <meta property="og:description" content="要点： 分层视角：① 组件局部状态——useState/useReducer，仅自己用，最简单优先；② 跨组件共享但低频——React Context，避免逐层透传 props，但 Context 值变化会让所有消费组件重渲染，不适合高频更新；③ 全局/复杂状态——引入状态库。 主流方案权衡：① Redux To…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1221.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1221.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="React 状态管理方案繁多（Context、Redux、Zustand、Jotai、Redux Toolkit），各自的适用场景与权衡是什么？如何选？ · IT面试题库">
   <meta name="twitter:description" content="要点： 分层视角：① 组件局部状态——useState/useReducer，仅自己用，最简单优先；② 跨组件共享但低频——React Context，避免逐层透传 props，但 Context 值变化会让所有消费组件重渲染，不适合高频更新；③ 全局/复杂状态——引入状态库。 主流方案权衡：① Redux To…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1221.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React 状态管理方案繁多（Context、Redux、Zustand、Jotai、Redux Toolkit），各自的适用场景与权衡是什么？如何选？","text":"追问链第 6 问：状态管理的本质是把状态放在哪里、怎么更新、谁该订阅。","answerCount":1,"datePublished":"2026-09-21T02:22:11.503Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 分层视角：① 组件局部状态——useState/useReducer，仅自己用，最简单优先；② 跨组件共享但低频——React Context，避免逐层透传 props，但 Context 值变化会让所有消费组件重渲染，不适合高频更新；③ 全局/复杂状态——引入状态库。 主流方案权衡：① Redux Toolkit（RTK）——强约束、可预测、DevTools 时间旅行、适合大型团队与复杂业务流，但样板代码多、概念重；② Zustand——极简、基于 selector 精准订阅、无 Provider 嵌套、心智负担小，中小到中大型都适用；③ Jotai——原子化（atom）状态，自动按原子粒度订阅、组合灵活，适合细粒度派生状态；④ Context——仅适合主题、登录用户等低频全局值。 选型建议：小项目/局部优先用内置 Hooks；需要服务端数据缓存优先 React Query/SWR（它们管的是「服务端状态」而非 UI 状态）；客户端全局复杂状态用 Zustand 或 RTK；追求原子粒度用 Jotai。关键是区分服务端状态与客户端状态，别把接口数据塞进 Redux。","url":"https://it-interview.is-a.dev/#/question/1221"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1221.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React 状态管理方案繁多（Context、Redux、Zustand、Jotai、Redux Toolkit），各自的适用场景与权衡是什么？如何选？","text":"追问链第 6 问：状态管理的本质是把状态放在哪里、怎么更新、谁该订阅。","answerCount":1,"datePublished":"2026-09-21T02:22:11.503Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 分层视角：① 组件局部状态——useState/useReducer，仅自己用，最简单优先；② 跨组件共享但低频——React Context，避免逐层透传 props，但 Context 值变化会让所有消费组件重渲染，不适合高频更新；③ 全局/复杂状态——引入状态库。 主流方案权衡：① Redux Toolkit（RTK）——强约束、可预测、DevTools 时间旅行、适合大型团队与复杂业务流，但样板代码多、概念重；② Zustand——极简、基于 selector 精准订阅、无 Provider 嵌套、心智负担小，中小到中大型都适用；③ Jotai——原子化（atom）状态，自动按原子粒度订阅、组合灵活，适合细粒度派生状态；④ Context——仅适合主题、登录用户等低频全局值。 选型建议：小项目/局部优先用内置 Hooks；需要服务端数据缓存优先 React Query/SWR（它们管的是「服务端状态」而非 UI 状态）；客户端全局复杂状态用 Zustand 或 RTK；追求原子粒度用 Jotai。关键是区分服务端状态与客户端状态，别把接口数据塞进 Redux。","url":"https://itinterview.com.cn/#/question/1221"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>React 状态管理方案繁多（Context、Redux、Zustand、Jotai、Redux Toolkit），各自的适用场景与权衡是什么？如何选？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">状态管理</span><span class="chip tag">Redux</span><span class="chip tag">Zustand</span><span class="chip tag">Jotai</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 6 问：状态管理的本质是把状态放在哪里、怎么更新、谁该订阅。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>主流方案权衡</strong>：① <strong>Redux Toolkit（RTK）</strong>——强约束、可预测、DevTools 时间旅行、适合大型团队与复杂业务流，但样板代码多、概念重；② <strong>Zustand</strong>——极简、基于 selector 精准订阅、无 Provider 嵌套、心智负担小，中小到中大型都适用；③ <strong>Jotai</strong>——原子化（atom）状态，自动按原子粒度订阅、组合灵活，适合细粒度派生状态；④ <strong>Context</strong>——仅适合主题、登录用户等低频全局值。</li>
 <li><strong>选型建议</strong>：小项目/局部优先用内置 Hooks；需要服务端数据缓存优先 React Query/SWR（它们管的是「服务端状态」而非 UI 状态）；客户端全局复杂状态用 Zustand 或 RTK；追求原子粒度用 Jotai。关键是<strong>区分服务端状态与客户端状态</strong>，别把接口数据塞进 Redux。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1221">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1221">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
