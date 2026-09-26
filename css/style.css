@@ -1121,7 +1121,7 @@ body.pan-fs-lock { overflow: hidden; }
   @page { margin: 1.5cm; size: A4; }
 }
 
-/* ============ 每日一句横幅（实时在线·自带暗色叠层，与明暗主题解耦） ============ */
+/* ============ 每日一句横幅（实时在线·底色由 daily-quote.js 按日轮换注入，此处渐变仅为 JS 失效兜底） ============ */
 .daily-quote {
   position: relative;
   margin-top: 16px;
@@ -1156,13 +1156,13 @@ body.pan-fs-lock { overflow: hidden; }
   position: absolute; inset: 0;
   background:
     linear-gradient(180deg, rgba(8,12,20,.30) 0%, rgba(8,12,20,.62) 100%),
-    radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.18), transparent 55%);
+    radial-gradient(120% 120% at 12% 10%, var(--dq-accent, rgba(56,189,248,.18)), transparent 55%);
   transition: background .55s ease;
 }
 .daily-quote.is-hover .daily-quote__overlay {
   background:
     linear-gradient(180deg, rgba(8,12,20,.22) 0%, rgba(8,12,20,.50) 100%),
-    radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.22), transparent 55%);
+    radial-gradient(120% 120% at 12% 10%, var(--dq-accent, rgba(56,189,248,.22)), transparent 55%);
 }
 .daily-quote__inner { position: relative; z-index: 2; max-width: none; width: 100%; display: flex; align-items: center; gap: 14px; }
 .daily-quote__label {

@@ -38,6 +38,18 @@
     var start = new Date(d.getFullYear(), 0, 0);
     return Math.floor((d - start) / 86400000);
   }
+  // 每日配色：按「年内第几天」轮换横幅底色与点缀色（当天稳定，隔天自动换新；全部为深色系保证白字可读）
+  var PALETTES = [
+    { name: "靛蓝",   c1: "#1e3a8a", c2: "#3730a3", accent: "rgba(129,140,248,.22)" },
+    { name: "松石绿", c1: "#064e3b", c2: "#047857", accent: "rgba(52,211,153,.20)" },
+    { name: "紫罗兰", c1: "#4c1d95", c2: "#6d28d9", accent: "rgba(196,181,253,.22)" },
+    { name: "玫瑰红", c1: "#831843", c2: "#9f1239", accent: "rgba(251,113,133,.20)" },
+    { name: "青碧",   c1: "#134e4a", c2: "#0f766e", accent: "rgba(45,212,191,.20)" },
+    { name: "暖橙",   c1: "#7c2d12", c2: "#9a3412", accent: "rgba(251,146,60,.20)" },
+    { name: "深海蓝", c1: "#0c4a6e", c2: "#0369a1", accent: "rgba(56,189,248,.22)" },
+    { name: "石墨灰", c1: "#1e293b", c2: "#334155", accent: "rgba(148,163,184,.20)" }
+  ];
+  function dayPalette() { return PALETTES[dayOfYear() % PALETTES.length]; }
   function kwFor(t) { return KW[t] || "nature,sky"; }
   function imgUrl(kw, lock) { return "https://loremflickr.com/1600/900/" + kw + "?lock=" + lock; }
 
@@ -83,6 +95,14 @@
     var d = new Date();
     var dateLabel = (d.getMonth() + 1) + "月" + d.getDate() + "日";
     document.getElementById("dq-date").textContent = dateLabel;
+
+    // 每日配色：横幅底色渐变 + 点缀色（覆盖 CSS 默认深色，隔天自动换）
+    var pal = dayPalette();
+    var box = el.querySelector(".daily-quote");
+    if (box) {
+      box.style.background = "linear-gradient(135deg, " + pal.c1 + ", " + pal.c2 + ")";
+      box.style.setProperty("--dq-accent", pal.accent);
+    }
 
     var bg = el.querySelector(".daily-quote__bg");
     var textEl = document.getElementById("dq-text");
@@ -139,7 +159,6 @@
     });
 
     // —— 鼠标放到名言上 → 背景图缓缓放大、提亮；移开恢复 ——
-    var box = el.querySelector(".daily-quote");
     var inner = el.querySelector(".daily-quote__inner");
     if (box && inner) {
       inner.addEventListener("mouseenter", function () { box.classList.add("is-hover"); });
@@ -159,6 +178,7 @@
     text = (text || "").replace(/^[“"「]|[”"」]$/g, "");
     author = (author || "").replace(/^——\s*/, "");
     var W = 1200, H = 630;
+    var pal = dayPalette(); // 分享卡底色跟随当日配色
     var cv = document.createElement("canvas");
     cv.width = W; cv.height = H;
     var ctx = cv.getContext("2d");
@@ -172,8 +192,8 @@
     var draw = function () {
       // 1) 底色（图片缺失/跨域污染时兜底）
       var gradBG = ctx.createLinearGradient(0, 0, W, H);
-      gradBG.addColorStop(0, "#0b1220");
-      gradBG.addColorStop(1, "#1e293b");
+      gradBG.addColorStop(0, pal.c1);
+      gradBG.addColorStop(1, pal.c2);
       ctx.fillStyle = gradBG; ctx.fillRect(0, 0, W, H);
 
       // 2) 背景图（已 crossOrigin，未污染即可绘制）
@@ -192,10 +212,10 @@
       baseOv.addColorStop(1, "rgba(8,12,20,.85)");
       ctx.fillStyle = baseOv; ctx.fillRect(0, 0, W, H);
 
-      // 4) 顶部柔和蓝色光晕（提升层次感）
+      // 4) 顶部柔和光晕（跟随当日点缀色，提升层次感）
       var glow = ctx.createRadialGradient(180, 0, 0, 180, 0, 720);
-      glow.addColorStop(0, "rgba(96,165,250,.22)");
-      glow.addColorStop(1, "rgba(96,165,250,0)");
+      glow.addColorStop(0, pal.accent);
+      glow.addColorStop(1, "transparent");
       ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
       // 5) 大号装饰性引号（右上角半透明 ❝）

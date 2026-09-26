@@ -105,7 +105,9 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`80f5004`（自动扩充题库：1295 题——高频题+SVG图解批次）｜缓存版本 `20260924c` 不变｜更新时间：2026-09-26 11:40 (+08)**
+**最新 release commit：待推送后回填（每日一句背景色按天轮换）｜缓存版本 `20260926a`｜更新时间：2026-09-26（+08）**
+**本次内容：每日一句横幅底色 + 点缀色按「年内第几天」在 8 套深色配色（靛蓝/松石绿/紫罗兰/玫瑰红/青碧/暖橙/深海蓝/石墨灰）间轮换，当天稳定、隔天换新；分享卡片图同色。改动 `js/daily-quote.js` / `css/style.css` / `js/guide.js` / `index.html` / `sw.js`。**
+**上一条 release commit：`80f5004`（自动扩充题库：1295 题——高频题+SVG图解批次）｜缓存版本 `20260924c` 不变｜更新时间：2026-09-26 11:40 (+08)**
 **本条内容（2026-09-26-e 批次，WorkBuddy 会话执行）：高频面试题+SVG 图解 24 题——网络 6（TCP 重传/SYN Flood/Nagle/Keepalive/BIO·NIO·AIO/CDN）、Java 与 JVM 6（ThreadLocal/虚拟线程 Pinning/三色标记/JIT 与逃逸分析/堆外内存/对象布局）、MySQL 与 Redis 6（Buffer Pool LRU/Change Buffer/连接池/Reactor/gossip/内存碎片）、前端 6（Web Worker/WebSocket 与 SSE/SameSite/错误监控/ESM 循环依赖/合成层）。题库 1271→1295，24 张 SVG 配图已入库 `assets/q/fig-*.svg`（release+main），答案用**绝对路径** `/assets/q/...` 引用。**顺手修复**：`gen-share-pages.js` 图片相对路径 bug（/q/ 子路径下 404），q/228、q/233 及 27 个过期分享页已修正并推送（commit `fix:` 系列）。纯数据/资产变更，无 js/css 改动，无需 Ctrl+F5。**
 **上一条 release commit：`23b7543`（自动扩充题库：1271 题——高频面试题集中补充 62 题）｜缓存版本 `20260924c` 不变｜更新时间：2026-09-26 10:50 (+08)**
 **上条内容（2026-09-26-d 批次）：消息队列 16 / 大模型与 AI 16 / 分布式与微服务 14 / 前端 CSS·HTML·浏览器 16，题库 1209→1271（version 11），分享页 62 个已同步。**
