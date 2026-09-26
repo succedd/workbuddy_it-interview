@@ -8,15 +8,15 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？ · IT面试题库">
   <meta property="og:description" content="要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEff…">
-  <meta property="og:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <meta property="og:url" content="https://it-interview.is-a.dev/q/1218.html">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1218.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEff…">
-  <meta name="twitter:image" content="https://it-interview.is-a.dev/assets/og-cover.png">
-  <link rel="canonical" href="https://it-interview.is-a.dev/q/1218.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","text":"追问链第 3 问：Hooks 用错依赖是常见的线上事故源。","answerCount":1,"datePublished":"2026-09-21T02:22:10.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEffect(fn,[obj]) 而 obj 是内联字面量），引用变化会让 effect 无限重跑；③ 用 React DevTools 看 props/state 变化来源，确认是哪个状态在驱动循环。 常见根因：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。 修复手段：① 用 useMemo/useCallback 稳定依赖引用，或只把基本类型字段放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 []（仅挂载一次）；④ 请求用 AbortController 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 eslint-plugin-react-hooks 的 exhaustive-deps 规则强制校验依赖完整性。","url":"https://it-interview.is-a.dev/#/question/1218"}}}</script>
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1218.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","text":"追问链第 3 问：Hooks 用错依赖是常见的线上事故源。","answerCount":1,"datePublished":"2026-09-21T02:22:10.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEffect(fn,[obj]) 而 obj 是内联字面量），引用变化会让 effect 无限重跑；③ 用 React DevTools 看 props/state 变化来源，确认是哪个状态在驱动循环。 常见根因：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。 修复手段：① 用 useMemo/useCallback 稳定依赖引用，或只把基本类型字段放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 []（仅挂载一次）；④ 请求用 AbortController 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 eslint-plugin-react-hooks 的 exhaustive-deps 规则强制校验依赖完整性。","url":"https://itinterview.com.cn/#/question/1218"}}}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="brand" href="https://it-interview.is-a.dev/"><span class="logo">I</span> IT 面试题库</a>
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">useEffect</span><span class="chip tag">依赖数组</span><span class="chip tag">死循环</span><span class="chip tag">AbortController</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 3 问：Hooks 用错依赖是常见的线上事故源。</p></div>
@@ -79,12 +79,12 @@
 <li><strong>常见根因</strong>：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。</li>
 <li><strong>修复手段</strong>：① 用 <code>useMemo/useCallback</code> 稳定依赖引用，或只把<strong>基本类型字段</strong>放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 <code>[]</code>（仅挂载一次）；④ 请求用 <code>AbortController</code> 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 <code>eslint-plugin-react-hooks</code> 的 <code>exhaustive-deps</code> 规则强制校验依赖完整性。</li>
 </ul></div>
-    <a class="cta" href="https://it-interview.is-a.dev/#/question/1218">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1218">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://it-interview.is-a.dev/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
