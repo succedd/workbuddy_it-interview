@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470">
+  <defs>
+    <marker id="arw-gp" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arw-gpr" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect width="680" height="470" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="28" y="32" font-size="14" font-weight="bold" fill="#2563eb">Redis Cluster：Gossip 协议与故障转移</text>
+
+    <!-- 左：gossip 网状传播 -->
+    <text x="160" y="62" font-size="12" font-weight="bold" fill="#2563eb" text-anchor="middle">Gossip：去中心化互相「传八卦」</text>
+    <line x1="110" y1="120" x2="200" y2="100" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="110" y1="120" x2="90" y2="200" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="110" y1="120" x2="220" y2="180" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="200" y1="100" x2="220" y2="180" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="200" y1="100" x2="270" y2="220" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="90" y1="200" x2="220" y2="180" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="90" y1="200" x2="160" y2="260" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="220" y1="180" x2="160" y2="260" stroke="#9ca3af" stroke-width="1.2"/>
+    <line x1="270" y1="220" x2="160" y2="260" stroke="#9ca3af" stroke-width="1.2"/>
+
+    <rect x="84" y="102" width="52" height="34" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="110" y="124" font-size="12" fill="#1f2937" text-anchor="middle">M1</text>
+    <rect x="174" y="82" width="52" height="34" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="200" y="104" font-size="12" fill="#1f2937" text-anchor="middle">M2</text>
+    <rect x="64" y="182" width="52" height="34" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="90" y="204" font-size="12" fill="#1f2937" text-anchor="middle">M3</text>
+    <rect x="194" y="162" width="52" height="34" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="220" y="184" font-size="12" fill="#1f2937" text-anchor="middle">R1</text>
+    <rect x="244" y="202" width="52" height="34" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="270" y="224" font-size="12" fill="#1f2937" text-anchor="middle">M4</text>
+    <rect x="134" y="242" width="52" height="34" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="160" y="264" font-size="12" fill="#1f2937" text-anchor="middle">R2</text>
+
+    <text x="160" y="308" font-size="11" fill="#1f2937" text-anchor="middle">每秒随机选节点互发 PING / PONG，</text>
+    <text x="160" y="326" font-size="11" fill="#1f2937" text-anchor="middle">消息携带各自已知的集群状态；</text>
+    <text x="160" y="344" font-size="11" fill="#1f2937" text-anchor="middle">meet：拉新节点入群；fail：广播节点下线</text>
+    <text x="160" y="368" font-size="11" fill="#6b7280" text-anchor="middle">集群总线端口 = 业务端口 + 10000（如 16379）</text>
+    <text x="160" y="392" font-size="11" fill="#6b7280" text-anchor="middle">消息量随节点数平方级增长，官方建议主节点不超过 1000</text>
+
+    <rect x="28" y="410" width="264" height="40" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
+    <text x="160" y="428" font-size="11" fill="#1f2937" text-anchor="middle">只有「持有槽的主节点」才有投票权</text>
+    <text x="160" y="444" font-size="11" fill="#6b7280" text-anchor="middle">从节点默认只做热备，不提供读服务</text>
+
+    <!-- 右：故障转移流程 -->
+    <text x="486" y="62" font-size="12" font-weight="bold" fill="#2563eb" text-anchor="middle">节点挂了：两阶段下线与选举</text>
+
+    <rect x="360" y="76" width="252" height="40" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="486" y="93" font-size="11" fill="#1f2937" text-anchor="middle">PING 超时未收到 PONG</text>
+    <text x="486" y="109" font-size="11" fill="#6b7280" text-anchor="middle">cluster-node-timeout，默认 15 秒</text>
+    <line x1="486" y1="116" x2="486" y2="132" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-gp)"/>
+
+    <rect x="360" y="134" width="252" height="40" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="486" y="151" font-size="11" fill="#dc2626" text-anchor="middle">主观下线 PFail：单个节点自己的怀疑</text>
+    <text x="486" y="167" font-size="11" fill="#6b7280" text-anchor="middle">可能是网络抖动，随 Gossip 扩散</text>
+    <line x1="486" y1="174" x2="486" y2="190" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-gp)"/>
+
+    <rect x="360" y="192" width="252" height="40" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="486" y="209" font-size="11" fill="#1f2937" text-anchor="middle">半数以上持有槽的主节点都标记 PFail</text>
+    <text x="486" y="225" font-size="11" fill="#6b7280" text-anchor="middle">防止误判：多节点共识</text>
+    <line x1="486" y1="232" x2="486" y2="248" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-gpr)"/>
+
+    <rect x="360" y="250" width="252" height="40" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="486" y="267" font-size="11" fill="#dc2626" text-anchor="middle">客观下线 Fail：广播 fail 消息</text>
+    <text x="486" y="283" font-size="11" fill="#6b7280" text-anchor="middle">全集群统一状态，启动故障转移</text>
+    <line x1="486" y1="290" x2="486" y2="306" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-gp)"/>
+
+    <rect x="360" y="308" width="252" height="40" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="486" y="325" font-size="11" fill="#1f2937" text-anchor="middle">其从节点按数据新旧排队发起选举</text>
+    <text x="486" y="341" font-size="11" fill="#6b7280" text-anchor="middle">越新越先拉票，降低数据丢失风险</text>
+    <line x1="486" y1="348" x2="486" y2="364" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-gp)"/>
+
+    <rect x="360" y="366" width="252" height="46" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="486" y="385" font-size="11" fill="#059669" text-anchor="middle">拿到半数以上主节点选票 → 晋升新主</text>
+    <text x="486" y="403" font-size="11" fill="#6b7280" text-anchor="middle">Gossip 广播接管槽，MOVED 纠正客户端</text>
+
+    <text x="486" y="440" font-size="11" fill="#6b7280" text-anchor="middle">主从复制是异步的，故障转移可能丢最近写入</text>
+  </g>
+</svg>
