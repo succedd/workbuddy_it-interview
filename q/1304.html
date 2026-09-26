@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端安全：XSS 分哪几类、各自怎么防？CSRF 的攻击前提是什么，防御为什么要「组合拳」？请说清两者「谁的问题、在哪一层解决」。 · IT面试题库</title>
+  <meta name="description" content="一、XSS（跨站脚本） 定义：攻击者向页面注入恶意客户端代码，由受害者浏览器执行，从而绕过访问控制、冒充用户。MDN 指出其成因是「不可信数据进入应用」或「动态内容未经验证就输出给用户」。分三类： 存储型：恶意脚本被永久存到服务器（评论、昵称等），其他用户加载页面即中招，危害最大； 反射型：诱导点击带 paylo…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="前端安全：XSS 分哪几类、各自怎么防？CSRF 的攻击前提是什么，防御为什么要「组合拳」？请说清两者「谁的问题、在哪一层解决」。 · IT面试题库">
+  <meta property="og:description" content="一、XSS（跨站脚本） 定义：攻击者向页面注入恶意客户端代码，由受害者浏览器执行，从而绕过访问控制、冒充用户。MDN 指出其成因是「不可信数据进入应用」或「动态内容未经验证就输出给用户」。分三类： 存储型：恶意脚本被永久存到服务器（评论、昵称等），其他用户加载页面即中招，危害最大； 反射型：诱导点击带 paylo…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1304.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="前端安全：XSS 分哪几类、各自怎么防？CSRF 的攻击前提是什么，防御为什么要「组合拳」？请说清两者「谁的问题、在哪一层解决」。 · IT面试题库">
+  <meta name="twitter:description" content="一、XSS（跨站脚本） 定义：攻击者向页面注入恶意客户端代码，由受害者浏览器执行，从而绕过访问控制、冒充用户。MDN 指出其成因是「不可信数据进入应用」或「动态内容未经验证就输出给用户」。分三类： 存储型：恶意脚本被永久存到服务器（评论、昵称等），其他用户加载页面即中招，危害最大； 反射型：诱导点击带 paylo…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1304.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端安全：XSS 分哪几类、各自怎么防？CSRF 的攻击前提是什么，防御为什么要「组合拳」？请说清两者「谁的问题、在哪一层解决」。","text":"考察点：XSS 与 CSRF 的成因差异及分层防御意识。","answerCount":1,"datePublished":"2026-09-26T02:32:56.192Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、XSS（跨站脚本） 定义：攻击者向页面注入恶意客户端代码，由受害者浏览器执行，从而绕过访问控制、冒充用户。MDN 指出其成因是「不可信数据进入应用」或「动态内容未经验证就输出给用户」。分三类： 存储型：恶意脚本被永久存到服务器（评论、昵称等），其他用户加载页面即中招，危害最大； 反射型：诱导点击带 payload 的链接或提交特制表单，服务器把脚本回显在响应里（错误页、搜索结果）； DOM 型：不经过服务端，是前端代码把不可信数据写入 DOM 环境（innerHTML、eval、location 等）所致。 XSS 防御（按层划分）： 1. 输出编码/转义：按上下文（HTML、属性、URL、JS）分别转义；前端禁止用 innerHTML 拼接用户输入，优先 textContent； 2. 输入校验与白名单：富文本用成熟 sanitizer（如 DOMPurify）过滤标签与属性； 3. CSP（内容安全策略）：用 Content-Security-Policy 限制脚本来源、禁内联脚本，配合 nonce、子资源 integrity；MDN 在会话劫持一节也推荐用严格 CSP 限制数据泄露途径； 4. Cookie 加 HttpOnly：让脚本读不到会话 Cookie，降低 XSS 的收益。 二、CSRF（跨站请求伪造） 定义：攻击者诱导受害者浏览器在已登录、且不知情的情况下向后端发请求，例如 ，或用隐藏表单 + 脚本自动提交。 攻击前提（缺一不可）：浏览器自动携带目标站点 Cookie，且服务端仅凭 Cookie 判断身份、无额外校验。 防御组合（MDN 给出）： 1. GET 保持幂等：改变数据的操作一律用 POST 等非 GET 方法，POST 端点不接受查询串参数； 2. CSRF Token：服务端下发与会话绑定、攻击者无法预测的随机令牌，随表单/请求头提交并比对，登录时重新生成； 3. SameSite：会话 Cookie 设 SameSite=Strict/Lax，跨站请求不携带，服务端视其为未认证； 4. Token + SameSite 一起部署，以覆盖子域等 SameSite 帮不上忙的场景。 一句话区别：XSS 是「脚本被注入并在你的源里执行」，靠输出编码 + CSP + HttpOnly；CSRF 是「浏览器替你带了 Cookie 发请求」，靠 Token + SameSite + 幂等方法。两者常被组合：攻击者可用 XSS 载荷发起 CSRF。","url":"https://itinterview.com.cn/#/question/1304"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>前端安全：XSS 分哪几类、各自怎么防？CSRF 的攻击前提是什么，防御为什么要「组合拳」？请说清两者「谁的问题、在哪一层解决」。</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">前端架构师</span><span class="chip tag">安全</span><span class="chip tag">XSS</span><span class="chip tag">CSRF</span><span class="chip tag">CSP</span><span class="chip tag">SameSite</span></div>
+    <div class="card"><h2>题目</h2><p>考察点：XSS 与 CSRF 的成因差异及分层防御意识。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>一、XSS（跨站脚本）</strong></p>
+<p>定义：攻击者向页面注入恶意客户端代码，由受害者浏览器执行，从而绕过访问控制、冒充用户。MDN 指出其成因是「不可信数据进入应用」或「动态内容未经验证就输出给用户」。分三类：</p>
+<ul>
+<li><strong>存储型</strong>：恶意脚本被<strong>永久存到服务器</strong>（评论、昵称等），其他用户加载页面即中招，危害最大；</li>
+<li><strong>反射型</strong>：诱导点击带 payload 的链接或提交特制表单，服务器把脚本<strong>回显</strong>在响应里（错误页、搜索结果）；</li>
+<li><strong>DOM 型</strong>：<strong>不经过服务端</strong>，是前端代码把不可信数据写入 DOM 环境（<code>innerHTML</code>、<code>eval</code>、<code>location</code> 等）所致。</li>
+</ul>
+<p><strong>XSS 防御（按层划分）</strong>：</p>
+<ol>
+<li><strong>输出编码/转义</strong>：按上下文（HTML、属性、URL、JS）分别转义；前端<strong>禁止用 <code>innerHTML</code> 拼接用户输入</strong>，优先 <code>textContent</code>；</li>
+<li><strong>输入校验与白名单</strong>：富文本用成熟 sanitizer（如 DOMPurify）过滤标签与属性；</li>
+<li><strong>CSP（内容安全策略）</strong>：用 <code>Content-Security-Policy</code> 限制脚本来源、禁内联脚本，配合 <code>nonce</code>、子资源 <code>integrity</code>；MDN 在会话劫持一节也推荐用严格 CSP 限制数据泄露途径；</li>
+<li><strong>Cookie 加 <code>HttpOnly</code></strong>：让脚本读不到会话 Cookie，降低 XSS 的收益。</li>
+</ol>
+<p><strong>二、CSRF（跨站请求伪造）</strong></p>
+<p>定义：攻击者诱导受害者浏览器在<strong>已登录、且不知情</strong>的情况下向后端发请求，例如 <code>&lt;img src=&#39;https://bank.example.com/withdraw?account=bob&amp;amount=1000000&#39;&gt;</code>，或用隐藏表单 + 脚本自动提交。</p>
+<p><strong>攻击前提</strong>（缺一不可）：浏览器<strong>自动携带目标站点 Cookie</strong>，且服务端<strong>仅凭 Cookie 判断身份</strong>、无额外校验。</p>
+<p><strong>防御组合（MDN 给出）</strong>：</p>
+<ol>
+<li><strong>GET 保持幂等</strong>：改变数据的操作一律用 POST 等非 GET 方法，POST 端点不接受查询串参数；</li>
+<li><strong>CSRF Token</strong>：服务端下发与会话绑定、攻击者无法预测的随机令牌，随表单/请求头提交并比对，登录时重新生成；</li>
+<li><strong><code>SameSite</code></strong>：会话 Cookie 设 <code>SameSite=Strict/Lax</code>，跨站请求不携带，服务端视其为未认证；</li>
+<li><strong>Token + SameSite 一起部署</strong>，以覆盖子域等 <code>SameSite</code> 帮不上忙的场景。</li>
+</ol>
+<p><strong>一句话区别</strong>：XSS 是「脚本被注入并在你的源里执行」，靠输出编码 + CSP + HttpOnly；CSRF 是「浏览器替你带了 Cookie 发请求」，靠 Token + SameSite + 幂等方法。两者常被组合：攻击者可用 XSS 载荷发起 CSRF。</p></div>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1304">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=56&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
