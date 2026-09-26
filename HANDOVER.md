@@ -10,7 +10,7 @@
   - ⚠️ 旧路径 `C:/Users/Life/WorkBuddy/2026-08-24-14-31-52/workbuddy_it-interview` **已不是 git 仓库**（别再用）；`C:/Users/Life/Desktop/iti-dedup2` 分支/暂存区/`.git` 全部异常且 `js/cloud.js` 落后于线上，**仅可当历史资料，禁止用于发布**。
 - **推送凭据已就绪**：Windows 凭据管理器里存在 GitHub Token（`git credential fill` 可取出，长度 40 的经典 PAT），`git push` 无需额外配置。
 - **分支模型（部署安全铁律，2026-08-31 修正）：**
-  - ⚠️ **实测修正（2026-09-20 用 GitHub API 复核）：GitHub Pages 发布源是 `release`**（`GET /repos/succedd/workbuddy_it-interview/pages` 返回 `source.branch="release"`、`cname=it-interview.is-a.dev`、`status=built`）。08-31 曾记作 `main`（当时两分支版本号有差）。**结论不变：发版必须 main 与 release 都推**（站点发布时会同时推两分支），线上验收以 `release` 为准。
+  - ⚠️ **2026-09-21 更正：GitHub Pages 已彻底关闭**（`DELETE /repos/succedd/workbuddy_it-interview/pages` → **204**，复核 GET → 404），仓库根 `CNAME` 也已从 `release`/`main` 两分支删除。**线上正式入口 = `https://itinterview.com.cn`（自购域名）**，由 Cloudflare Pages（直传项目 `it-interview`）承载，推 `release` 即触发 `.github/workflows/deploy-pages.yml` 自动部署。⚠️ **`main` 不再需要同步推送**（GitHub Pages 已非发布源，main 仅作默认分支保留）；线上验收一律以 `release` 为准。
   - `release` = 开发基线分支（每日扩充流水线的合并基线读它），所有提交推它
   - 推 release **必须 fast-forward**：push 前 `git ls-remote origin release` 核对线上 tip；若历史分叉，禁止 force push，必须把新代码移植到线上基线之上再推
   - main 若与本地分叉（浏览器端备份/发布经 GitHub API 直推 main 会产生本地没有的提交），**优先 `git merge origin/main` 吸收后再推**，不要盲目 force
@@ -23,8 +23,8 @@
 - `index.html` 所有资源带 `?v=20260829h` 缓存戳（约 21 处）——**改动任何 js/css 后必须整体 bump**：
   `sed -i 's/v=20260829旧/v=20260829新/g' index.html`（字母递增 u→v→w…）
 - `sw.js` 第 8 行 `const VERSION = "..."` 必须与 index.html 同步 bump（SW 缓存靠它失效）
-- 部署 = `git push origin HEAD:release`，GitHub Pages 约 1 分钟生效
-- 验证：`curl https://it-interview.is-a.dev/?nocache=<ts>` 确认新版本号命中
+- 部署 = `git push origin <40位字面量SHA>:refs/heads/release` → GitHub Actions **`Deploy to Cloudflare Pages`** 自动执行（白名单组装 dist → 反爬守卫 41 条回归 → wrangler 直传），约 1–2 分钟生效。⚠️ **禁止用变量做 refspec**（`$VAR:refs/heads/x` 变量取空会删除远端分支）
+- 验证：`curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" "https://itinterview.com.cn/?nocache=<ts>"` 确认新版本号命中。⚠️ **裸 curl 会被反爬守卫 403**，必须带浏览器 UA；最省事的做法是直接跑 `python tools/accept-switch.py`（10 项验收）
 
 ## 3. 技术栈与结构
 
@@ -32,9 +32,21 @@
 - **第三方库已本地化 vendor/**（dexie/marked/purify/highlight/fuse + hljs 主题 css 进 SW 壳缓存；echarts/xlsx 大库按需加载 `U.loadScript`）——新增库要同步 sw.js 的 APP_SHELL；vendor 库无版本参数，缓存失效靠 SW VERSION 整体 bump
 - 行尾是 CRLF：node 脚本批量改文件需归一化 `\r\n`，否则 diff 爆炸；优先用逐处编辑工具
 - 数据源：`data/published.json`（发布数据，结构 `{questions:[...]}`）
-- 静态分享页：`tools/gen-share-pages.js` 生成 264 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA；滚动近文末滑入「连刷同类题」引导条，可关闭）——**新增题目后需重跑一次**（脚本已同步桌面副本）
-- 域名 `it-interview.is-a.dev`（is-a.dev 子域名，CNAME 已配）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
-- **反爬托管层（2026-09-20 新增）**：站点前端正从 GitHub Pages 迁往 **Cloudflare Pages**。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（组装 `dist/`，内部文件不进发布目录）；回归测试 `tools/pages-guard-test.mjs`（41 条）；部署与验证清单 `cloudflare/pages/README.md`。**⚠️ 域名切换已启动**：`is-a-dev/register` PR #53221 已提交并已通过机器人模板校验（等维护者合并，1–3 天）；Cloudflare 侧已用 API 把 `it-interview.is-a.dev` 加为本项目自定义域（`status=initializing`，等 CNAME 生效后自动验证）。**在 PR 合并前，线上仍由 GitHub Pages 提供服务**（CNAME 仍指 `succedd.github.io`）。
+- 静态分享页：`tools/gen-share-pages.js` 生成 1228 个 `q/<id>.html`（内容型落地页：per-question OG + 题目/答案全文 + QAPage JSON-LD；**不自动跳转**，CTA 手动进 SPA；滚动近文末滑入「连刷同类题」引导条，可关闭）——**新增题目后需重跑一次**（脚本已同步桌面副本）
+- 域名 **`https://itinterview.com.cn`**（自购域名，2026-09-21 上线；`www.itinterview.com.cn` 同域也已 active）；备用预览域 `https://it-interview-889.pages.dev`（CORS 白名单仍保留，旧链接不失效）；百度统计 ID `856d2b08330e4b9f225cf101d6f14103`
+- **反爬托管层（2026-09-21 已全部落地）**：站点前端已从 GitHub Pages **迁至 Cloudflare Pages**（直传项目 `it-interview`），并用高级模式 `_worker.js` 在边缘拦截采集。守卫代码 `cloudflare/pages/_worker.js`；构建脚本 `tools/build-pages.mjs`（白名单组装 `dist/`，`tools/`、`cloudflare/`、`HANDOVER.md` 等内部文件不进发布产物）；回归测试 `tools/pages-guard-test.mjs`（51 条，**CI 里必跑，不过则中止部署**）；部署与验证清单 `cloudflare/pages/README.md`。守卫共**五道闸门**：①仓库内部文件 404 ②UA 识别 ③`/data/*` 浏览器信号 ④传输层与响应头加固 ⑤端口闸门（仅放行 80/443）。**⚠️ 历史提示：`is-a-dev/register` PR #53221 已被维护者关闭（未合并），域名 `it-interview.is-a.dev` 已下架释放 —— 勿再引用、勿再申请。**
+- ✅ **2026-09-21 新增能力（取代旧注释里「用不了 WAF」的说法）**：`itinterview.com.cn` 的 zone 就在本账号下（id `48961f3585fdc652af950bd2163c0382`，status active），**因此现在可以启用 Zone 级防护** —— Security Level、Bot Fight Mode、WAF 自定义规则（免费版 5 条）、Rate Limiting、HSTS、Always Use HTTPS。这些在 is-a.dev 时代都做不到（域名 DNS 归属 is-a.dev 项目、不在本账号）。
+  - ⚠️ **但「能配」不等于「该配」，且这两条通道的 API 权限至今没拿到（2026-09-22 实测复核）**：本机 wrangler OAuth 只有 `zone:read`，仓库 Secret `CLOUDFLARE_API_TOKEN` 同样缺 Zone Settings 权限（两者读 zone settings 均报 **9109**；该 token 的权限组实际只有 `Account.Cloudflare Pages`）⇒ **面板级开关目前无人能动**。不过**传输层该有的效果已经全部在应用层达成**，`_worker.js` 即第四道闸门（详见第 6 节）：
+    | 项 | 状态 | 实测依据 |
+    |---|---|---|
+    | HTTP → HTTPS | ✅ 已生效 | `http://itinterview.com.cn/` 返回 301 |
+    | HSTS | ✅ 已生效 | 响应头 `strict-transport-security: max-age=15552000; includeSubDomains`（走 `_worker.js`，浏览器视角与面板开关产物一致） |
+    | 最低 TLS ≥ 1.2 | ✅ 已达成 | 服务端对 TLS1.0 / TLS1.1 回 `tlsv1 alert protocol version` —— 是**服务端**拒绝（非本机 OpenSSL 限制）⇒ 不必再调 `min_tls_version` |
+    | TLS 1.3 | ✅ 已开 | `/cdn-cgi/trace` 实测 `tls=TLSv1.3`、`kex=X25519MLKEM768` |
+    | 机会加密（随机加密） | ⚪ 影响已被覆盖 | 80 端口 h2c（前置知识与 Upgrade 两种方式）实测都不升级、直接 301；站内 **0 处** `http://` 子资源 ⇒「自动 HTTPS 重写」也不需要 |
+    | Security Level=High / Bot Fight Mode | ⛔ 不建议开 | 会误伤国内访客与 Baiduspider（理由见第 6 节），且 `_worker.js` 的 UA+ASN 白名单更精准 |
+    | 非 80/443 端口 | ✅ 已生效（应用层） | 2026-09-24 加**第五道闸门**：`https://<域>:2053 / 2083 / 2087 / 2096 / 8443` 实测原先**全部 200 且与主域逐字节相同**（sha256 一致），现已一律 404 `nonstandard-port`；HTTP 侧（8080/8880/2052/2082/2086/2095）由 zone 的 Always Use HTTPS 统一 301 到主域，无问题 |
+  - **结论：应用层已无遗留待办。** 唯一可选的**手工补强**一条：Zone 级 WAF 自定义规则 `not (cf.edge.server_port in {80 443})` → `Block`（挡在 Worker 之前，连 Worker 调用都不消耗）—— 需 `Zone WAF → Edit` 权限，现有令牌没有（实测读 rulesets 报 `10000`），将来拿到后可手工在面板加，步骤见 `cloudflare/pages/README.md`。`/tools/ci/zone-security.py` + `.github/workflows/zone-security.yml` 作为**休眠流水线**保留（幂等、可重跑），**仅当**将来给该 token 补上 `Zone → Zone Settings → Edit` 后，才需要重推 `cf-zone-setup` 分支执行。
 
 ## 3.5 后端开发（Cloudflare Worker + D1）⚠️ 本机 zcode 需要读这节
 
@@ -55,9 +67,10 @@
 - **投稿相关接口**（全部在 `worker.js` 尾部「用户投稿 + 专家群组审核」段）：
   - `POST /submit`（登录 → 每帐号每日 5 条 → IP 限流 → 本地预筛 → DeepSeek 质检 → 入库待审 → 非 IT 计次/封号）
   - `GET /me/submissions`（我的投稿 + 剩余违规机会）
+  - `POST /submissions/:id/withdraw`（投稿人撤回自己的待审投稿；仅 `pending` 且 `locked_by=0` 可撤，软删除为 `review_status='withdrawn'`，因此审核队列 `open` 自动排除它）
   - `GET /admin/submissions?status=open|done|nonit`（open=待审+审核中，排除 AI 判非 IT 的；done=已通过+已打回；**nonit 仅 admin**）
   - `POST /admin/submissions/:id/claim`（抢单，乐观锁 `meta.changes` 判定，被抢返回 409）
-  - `POST /admin/submissions/:id/review`（`release`/`reject`/`approve`/`edit`；**禁止自审**）
+  - `POST /admin/submissions/:id/review`（`release`/`reject`/`approve`/`edit`；**禁止自审**，唯一例外：`role=admin` 可审自己的投稿 —— 全站可能只有唯一 admin，否则其投稿永久卡在待审核队列）
   - `GET|POST /admin/groups`、`DELETE /admin/groups/:id`、`POST /admin/groups/:id/members`
   - `POST /admin/users/:id/role`（只在 `user` ⇄ `expert` 之间切，**造不出新 admin**）
 - **权限模型（三层，别混）**：① `Auth.isAdmin()` = 本地密码门禁，只管题目编辑端；② `requireServerAdmin()` = D1 `role==='admin'`，管帐号管理 / 专家群组；③ `requireRole(db, req, ["admin","expert"])` = 审核队列（admin 看全部、expert 只看本组 + 未分配的）。**`requireAdmin()` 是 5 行的权限收口点，故意没让它接受 expert**，否则专家会顺带拿到帐号管理。
@@ -92,6 +105,239 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`23b7543`（自动扩充题库：1271 题——高频面试题集中补充 62 题）｜缓存版本 `20260924c` 不变｜更新时间：2026-09-26 10:50 (+08)**
+**本条内容（2026-09-26-d 批次，WorkBuddy 会话执行）：高频面试题集中补充 62 题——① 消息队列 16（Kafka 5/RocketMQ 5/RabbitMQ 3/MQ 通用 3）② 大模型与 AI 应用 16（LLM原理 2/大模型 2/RAG 3/AI Agent 4/Prompt 2/向量数据库 1/微调 1/评估 1）③ 分布式与微服务 14（分布式事务 2/分布式理论 2/微服务 2/服务治理 1/网关 1/分库分表等数据库调优 4/MyBatis 2）④ 前端 16（CSS 7/HTML 2/前端基础 3/浏览器 2/JS 2）。题库 1209→1271（version 11），全部带真实 source（JavaGuide / MDN / Kafka·RocketMQ·RabbitMQ·Seata·Spring·MyBatis 官方文档），已通过脚本查重与语义相似度查重（<0.72）。62 个 q/*.html 分享页已生成并推送 release+main。**仅数据与文档变更，无 js/css/index.html/sw.js 改动，缓存版本不变，用户无需 Ctrl+F5**；前端编辑端会由 absorbRemote 自动补入云端新题，无需手动操作。**
+**上一条 release commit：`0ce3188`（反爬第五道闸门「端口闸门」的文档刷新，代码为 `28ba0d7`）｜缓存版本 `20260924c` 不变｜更新时间：2026-09-24 20:30 (+08)**
+**上一条 release commit：`28ba0d7`（反爬加第五道闸门「端口闸门」，只放行 80/443）｜缓存版本：`20260924c` 不变｜更新时间：2026-09-24 20:26 (+08)**
+**上一条 release commit：`9c7a409`（布局体验整改的文档刷新，代码为 `6fc6f12`）｜缓存版本：`20260924c`｜更新时间：2026-09-24 19:45 (+08)**
+**上上条 release commit：`6fc6f12`（布局与体验整改 19 项）｜缓存版本：`20260924c`｜更新时间：2026-09-24 19:35 (+08)**
+**上一条 release commit：`e73cd3d`（修复页脚两个死链）｜缓存版本：`20260923h`｜更新时间：2026-09-23 22:15 (+08)**
+**上上条 release commit：`0cf4456`（顶栏文字入口的文档刷新，代码为 `54d012c`，`20260923g`）｜更新时间：2026-09-23 21:45 (+08)**
+**上上上条 release commit：`2d9321b`（百度统计移除的文档刷新，代码为 `f4f5ecd`，`20260923e`）｜更新时间：2026-09-23 21:10 (+08)**
+
+- **【已完成·2026-09-24】反爬加第五道闸门「端口闸门」（`_worker.js` + `tools/`，`28ba0d7`，✅ 已推送 release 并部署上线）**：
+  - **起因**：用户问 Cloudflare 存储配额，`tools/cf-quota-check.py` 顺带报出「窗口内 343 次非标准端口请求（2087/2053/8443 各 76、443 显式 478），疑似端口扫描」。用户同意处理。
+  - **实测暴露面（2026-09-24，浏览器 UA + curl）**：Cloudflare 默认在 **HTTPS `443/2053/2083/2087/2096/8443`** 与 **HTTP `80/8080/8880/2052/2082/2086/2095`** 上都代理本站流量。**HTTP 侧全部 301 到 `https://itinterview.com.cn/`（zone 的 Always Use HTTPS，无问题）**；**HTTPS 侧 5 个备用端口全部返回 HTTP 200，且内容与主域逐字节相同**（六个端口首页 sha256 均为 `e4ffb2e3…`，`style.css?v=20260924c`）⇒ 同一份内容在 **6 个端口**重复对外暴露；这些端口**缓存是关闭的**，请求必然穿透，且每发都消耗一次 Pages 静态请求 + Worker 调用。这正是配额巡检告警的来源。
+  - **修法**：`cloudflare/pages/_worker.js` fetch 开头新增**第五道闸门**（在原有 ⓪ 协议兜底之前）：只放行 `80 / 443`，其余一律 `404` + `x-deny-reason: nonstandard-port`。端口**以 `Host` 头为准**（客户端实际发来的），`url.port` 兜底 —— URL 规范会把默认端口规范化掉（https 下 `url.port === ""`），只看后者会漏判。本地 dev（`localhost/127.0.0.1/[::1]`，`wrangler pages dev` 随机端口）**豁免**，否则本地开发全挂。返回 **404 而非 403**：沿用 ①「内部文件不出面」的思路，对扫描器表现为「这个端口上没有网站」，不确认服务存在。
+  - **回归测试**：`tools/pages-guard-test.mjs` 由 **41 → 51 条**（新增 6 条端口用例：8443/2087 非标准端口 404、2053 上的 `/q/*.html` 404、`Host` 显式 `:443` 放行、裸 Host 放行、`http :80` 仍 301、本地 dev 端口豁免）；`makeRequest()` 增加 `opts.origin` 以构造带端口的 URL。**51/51 全绿。**
+  - **可选补强：不建议做（2026-09-24 20:45 查证后更正）**。原设想是加 Zone 级 WAF 自定义规则 `not (cf.edge.server_port in {80 443})` → `Block`，挡在 Worker 之前、连 Worker 调用都不消耗。**查证结论：本 zone 是免费版（`GET /zones?name=itinterview.com.cn` → `plan.legacy_id: free`），而官方 `fundamentals/reference/network-ports` 把「拦截 80/443 以外的端口」明确写在「in Cloudflare paid plans」名下**（渠道是 Cloudflare Managed Ruleset 的 `Anomaly:Port - Non Standard Port (not 80 or 443)`，默认关闭）；免费版自定义规则字段集受限，社区 MVP 明确讲 `cf.edge.server_port` 属付费字段。**☠️ 最坑的是：免费版填了这个表达式也能保存、不报错，但规则不生效（静默空转）** —— 比报错危险。**收益也极小**：实测 2026-09-22~24 共 11182 请求、非标端口 381 次（≈190/天），加它顶多省下 10 万/天 Worker 额度里的 **0.19%**。⇒ **维持现状（只留应用层那道闸门）**。另：现有令牌也**无 `Zone WAF` 权限**（读 `/rulesets` 报 `10000`、读 zone settings 报 `9109`），本来也自动化不了。若哪天非要 edge 层：`cf.edge.server_port` 在所有套餐的 **Single Redirect（Redirect Rules）** 字段集里有，但语义是 301/303 跳回标准端口、比 404 软，通常不划算。**若坚持要试，验证真伪的唯一方法是从外部实测：非标端口回 Cloudflare `403` 才是真生效，仍回 `404 nonstandard-port` 就是空转，应删除。**
+  - **注意**：本次只改 `_worker.js` + `tools/` + `.md`，**没有任何静态资源变化 ⇒ 不需要 bump `?v=` / `sw.js VERSION`**（缓存版本仍为 `20260924c`）。
+  - **✅ 发布与线上验收（2026-09-24 20:26）**：commit `28ba0d7`（代码）+ `0ce3188`（文档）；推送前已核对远端 tip = 本地 HEAD 祖先 `9c7a409`（**fast-forward 安全**），用**字面量 SHA push**（`git push origin 0ce31889...:refs/heads/release`）→ `9c7a409..0ce3188`。Actions run **`35999050984` success（27s）**，含 `Anti-scrape guard regression` 步骤（CI 侧 51 条守卫用例全绿）。线上实测：**`https://itinterview.com.cn:{8443,2087,2096,2053,2083}/` 五个备用端口全部 `HTTP 404` + `x-deny-reason: nonstandard-port`**（此前均为 200 + 整站页面）、`:8443/q/1.html` 分享页同样 404；**主域 `https://itinterview.com.cn/` 仍 `HTTP 200`、无 `x-deny-reason`**；`tools/accept-switch.py` **10/10**（首页 v=20260924c、sw.js VERSION 一致、sitemap 1196 新域 0 旧域、同源题库 200 version=7 questions=1191、GPTBot 403 + HANDOVER/build-pages 404、www 子域 200）、`tools/regress-check.py` **旧功能零回归**（13 个 JS 模块 + 15 组关键词 + 5 项资源 + 题库完整性全过）。
+- **【已完成·2026-09-24】布局与体验整改 19 项（`20260923h` → `20260924c`，`6fc6f12`，✅ 已推送 release 并部署上线）**：
+  - **起因**：用户拿线上站 `https://itinterview.com.cn` 问「布局还有哪些地方要调整」。线上开了反爬（裸 curl 与自动化浏览器均被 403），故用**本地同版本代码副本**（`C:/Users/Life/WorkBuddy/2026-09-23-07-53-45/iti`）在真实 Chromium（agent-browser）里逐页走查：桌面 1440×900 + 移动 390×844 两个视口，26 张取证截图，产出《布局体验评审报告》（含 P0×3 / P1×7 / P2×9）。用户回「全部做」。
+  - **P0（必修，均已复测通过）**：
+    - **P0-1 移动端页脚被底部 tab 栏压住** —— 原 `#footer` 只有 20px `padding-bottom`，实测 footer 底边 y=829 > tab 栏顶边 y=776。修法：新增 CSS 变量 `--tabbar-h: 54px`，`#footer` 的 `padding-bottom` 改为 `calc(20px + var(--tabbar-h) + env(safe-area-inset-bottom))`，与 `.main` 共用同一常量。复测：页脚末行「开源仓库」底边 **755 < tab 顶边 781**，全部链接 `covered:false`。
+    - **P0-2 详情页 7 个操作按钮仅 36px 高** —— 「查看答案」提为主按钮、撑满整行 48px；收藏/不太会/分享/报错改为**两列等宽 44px**。复测按钮高度 `[48,44,44,44,44,44,44,44,44]`，最小值 44。
+    - **P0-3 底部 tab 栏 6 项密排 + 投稿 FAB 抢焦点** —— 去掉第 6 项「投稿」与 `.tab-cta` 实心圆底，恢复 5 项「首页/题库/刷题/错题/收藏」。复测 tabItems=5、无 `.tab-cta`。（站内使用指南第 77 行原本就写的 5 项，此改后**文案与实现终于一致**。）
+  - **P1（7 项，均已复测）**：① 移动端顶栏补**常驻搜索入口**（放大镜 `.icon-btn`，44px，点了直接展开搜索，不必先拉抽屉）；② 刷题练习/模拟面试表单页桌面端改**双列**（`793px + 320px`，原先左表单 420px、右侧 2/3 全空）；③ 题库筛选区移动端**默认折叠**成一颗「筛选」按钮（首题 top 从约 470px 提前到 **239px**）、桌面筛选下拉宽度从「拉满整行 880px」修成**内容宽 68px**（根因：`.select-mini` 缺 `flex: 0 0 auto`，被 flex 拉伸）；④ 题库/相关推荐卡片**同行等高**（grid 行内 stretch）；⑤ **移动端首页瘦身**：技术体系只留前 6 卡、岗位体系只留前 4 组（`nth-child` 隐藏，section 旁「查看全部 →」仍指向完整页），页长从 **10171px(≈12 屏) → 约 6900px(≈8.2 屏)**；⑥ 详情页「上一题/下一题」在动作区**就近补一组**（另有底部一组，共 2 组：读题时和读完相关推荐后各一次）；⑦ 技术体系页左树改 `sticky`、**全页单滚动条**（复测全页滚动容器仅 document 一个；为避免「展开全部节点」时树底不可达，补了 `max-height: calc(100vh - var(--topbar-h) - 32px)` + `overflow-y:auto` 兜底，默认收起态树高 762 < 808，**不产生内滚动条**）。
+  - **P2（9 项）**：内部字段脱敏（详情页「来源: seed」→「来源 题目内置」、`q.source` 不再直出内部枚举）；顶栏移除常驻「本机访问/累计」计数（迁到「关于本站」页，顶栏只剩导航文字 + 主题 + 登录）；访客不再看到「管理员」按钮（`desktop-only` + 仅在已登录管理员时渲染）；模拟面试按钮紫色 → 品牌蓝 `rgb(37,99,235)`；错题重练空状态补引导 CTA（「练薄弱题 / 去题库标记」，不再是整屏留白一行灰字）；侧栏「投稿题目」**去掉常驻呼吸动画**（复测 `animationName:none`）；技术教程卡片「N 个级别 / N 篇已上线」文案精简；岗位卡片「热度 中」不再一水儿铺满（只在「高/低」时显示）、「0 技术栈/0 技术线」不再显示；面包屑末级「题目」→ 题号 `#1`；学习周报标题窄屏允许换行；hero 关键词 chips 移动端只留前 8 个。
+  - **【追加·同一轮】移动端横向溢出真凶：`[data-tooltip]` 浮层**（`20260924a → 20260924c`）—— 复审 `documentElement.scrollWidth` 时发现首页在 390px 下 scrollWidth=**471**（=375+96），但按「元素 rect.right > clientWidth」扫却**一个都抓不到**。二分定位到 `.stat-grid`（首页 4 个统计卡），真凶是它们挂的 `[data-tooltip]::after`（`position:absolute` + `white-space:nowrap` 长文本，以元素中心左右撑开，靠右缘即撑宽页面）。原 CSS 只在 `(hover:none)/(pointer:coarse)` 隐藏，**窄窗口 / 鼠标设备模拟手机尺寸时指针仍是 fine，浮层照样渲染**。修法：在 `css/responsive.css` 追加 `@media (max-width:720px) { [data-tooltip]::after { display:none !important; } }`。复测 12 个移动路由 + 桌面首页 **全部 `scrollWidth == clientWidth`**。
+  - ⚠️ **方法论更正（写进这里以免重犯）**：判断横向溢出**不能只看元素 rect.right**（伪元素 / `::after` 抓不到），**必须同时读 `documentElement.scrollWidth`**。本轮首轮体检因此漏判了这条、误报「横向溢出为 0」。
+  - **改动文件（5 个）**：`css/style.css`、`css/responsive.css`、`js/app.js`、`js/utils.js`（新增 `search` 图标）、`js/docs.js`、`js/guide.js`（使用指南同步）；`index.html`（36 处 `?v=`）+ `sw.js`（`VERSION`）升到 `20260924c`。
+  - **本地验证**：`node --check` 三个 JS 全过；清缓存（新 `?v=`）后重测 —— 移动端 13 路由 + 桌面横向溢出 **全为 0**；详情页按钮最小 44px；tab 栏 5 项；首页 8.2 屏；筛选区首题 239px；树面板无内滚动条；13 路由均无 404、无控制台报错。
+  - **✅ 发布与线上验收（2026-09-24 19:35）**：commit `6fc6f12421c32bd62fa8f7cb6369778b54929b15`；推送前已核对远端 tip = 本地 `f2933a6`（**fast-forward 安全**），用**字面量 SHA push**（`git push origin 6fc6f12...:refs/heads/release`）→ `f2933a6..6fc6f12`。Actions run **`35993328639` success（22s）**，6 个步骤全绿（含 `Anti-scrape guard regression`）。线上验收 **`tools/accept-switch.py` 10/10**（首页 v=20260924c、sw.js VERSION=20260924c 一致、sitemap 1196 处新域 0 处旧、题库同源 200 version=7 questions=1191、GPTBot 403 + HANDOVER/build-pages 404、旧域名零残留）、**`tools/regress-check.py` 旧功能零回归**（13 个 JS 模块 + 15 组关键词全命中 + 5 项资源 200）。**产物一致性**：用浏览器 UA + `--compressed` 拉线上 `css/style.css`、`css/responsive.css`、`js/app.js`、`js/utils.js`、`js/docs.js`、`js/guide.js`、`sw.js`、`index.html` 逐字节比对 —— **全部与本地一致（仅 CRLF/LF 行尾差异，`tr -d '\r'` 后 `cmp` 完全相同）**，即线上运行的就是本地验证过的那份代码。
+  - ⚠️ **线上无法用自动化浏览器目视**：反爬守卫会对 agent-browser 返回 **`403 · 禁止采集`**（本轮实测确认，属**预期行为**、非故障）。故线上验收一律**以「逐字节产物比对 + accept-switch + regress-check」三件套为准**，不要试图用自动化浏览器截图线上站。
+  - ⚠️ **本轮踩坑（重要）**：**改完 CSS/JS 不 bump `?v=`，浏览器会命中旧缓存**——中途一度误判「树面板样式没生效」，实为 `style.css?v=20260923h` 命中旧文件；**升版本号后立刻正常**。所以**任何样式改动的验证前提是先 bump 版本号或清 SW/caches**，否则测的是旧代码。
+  - **P1-5 收尾（`20260924c`）**：给表单页补了右侧信息卡后复测发现左列仍有洞——`.page-form-main` 写死 `max-width:560px`，而左列实宽 793px，中间空 253px。改为 `max-width:none` 让表单填满左列，实测 `.page-form` 1133 = 793 + 20(gap) + 320，无空洞；窄屏 980px 断点仍收成单列。
+
+- **【已完成·2026-09-23 晚·第五轮】修复页脚两个死链（`20260923g` → `20260923h`，`e73cd3d`）**：
+  - **用户反馈**：点页脚「学习周报」报 404 ——「访问的地址 `#/report` 不存在或已被移动」。
+  - **根因**：**两个**链接都写错了，**均为上一轮（页脚四栏扩版）引入的**：
+    - 「学习周报」→ `#/report` ❌ **路由表里根本没有 `report`**。真相是**学习周报不是独立页面**，而是**首页的一个区块**（`pageHome` 里由 `weekHtml` 渲染的那张卡）。
+    - 「错题重练」→ `#/weak` ❌ 实际路由是 **`review`**（侧栏第 417 行用的就是 `#/review`）。
+  - **修法**：
+    - 给周报卡加 `id="week-report"`，页脚链接改为 **`#/?to=week-report`**；
+    - 新增 **`scrollToSection(whitelist)`** + **`HOME_SCROLL_TARGETS = ["week-report"]`** 白名单机制：`pageHome` 渲染完之后按 `?to=` 定位并 **smooth 滚到该区块**，同时给元素挂 **`.flash-target`**（`css/animations.css`，**只用 outline 不碰 layout**，且被全局 `prefers-reduced-motion` 守卫覆盖）做 1.6s 高亮，帮用户认出刚跳到的位置；
+    - 滚完用 **`history.replaceState` 把 `to` 从 hash 里摘掉**（`#/?to=week-report` → `#/`），避免用户点返回时被重复滚动；
+    - 白名单是**刻意设计**：不这样的话任意 `?to=<id>` 都能被构造成跳转。
+    - 错题重练改为 `#/review`。
+  - **顺带做了全站链接体检**（可复用）：把 `js/*.js` 里所有 `href="#/..."` 与 `App.go("/...")` 的**一级路由**提取出来，与 `app.js` 的 `case` 路由表做 `comm` 比对 —— 除上述两个外**无其他死链**（`admin` 会单独报出，但它走**独立 `if` 分支**不是 `case`，属正常）。
+  - **验证**：本地 `127.0.0.1:8908` + agent-browser —— `#/?to=week-report` 打开后 **`scrollY=880`**、周报卡滚到视口顶部、hash **自动清理为 `#/`**、`#week-report` 存在、flash class 按时加/移除；`#/review` 打开后 `title` =「错题重练 · IT面试题库」、页面**无**「不存在或已被移动」文案。线上 `app.js?v=20260923h`：新链接各就位、`#/weak` **0 命中**、`scrollToSection` ×2、`id="week-report"` ×1；`animations.css` 有 `flash-target`。
+
+- **【已完成·2026-09-23 晚·第四轮】顶栏图标改文字入口（`20260923e` → `20260923g`，`54d012c`）**：
+  - **用户原话**：「最上面的图标不要，用文字，图标都不知道干嘛的」。
+  - **改动**：顶栏 **7 个纯图标入口**（技术体系 / 岗位体系 / 模拟面试 / 收藏夹 / 投稿 / 审核 / 待入库）全部改为 `.top-link` **文字链接**（新增样式在 `css/style.css`）。`title` 换成大白话（如「按技术方向分层的知识体系」而非「技术体系」）。
+  - **附带改进**：「审核」「待入库」的待办数量原先**只藏在 tooltip 里**，现在改为**可见的红色角标** `.badge-dot`（有数量才渲染）。
+  - **⚠️ 关键坑：文字比图标宽得多，直接把顶栏撑爆**。实测 **900px 宽度出现横向滚动条**（顶栏 5 个文字入口 + 搜索框 + 主题键 + 登录 + 管理员 + 访问计数 ≈ 1100px）。解法：**新增 `721–1024px` 断点**，这段宽度收起 `.top-link`、放出汉堡菜单（`.menu-toggle`）、搜索框限宽 340px，改由抽屉导航抵达；`≤980px` 再收紧间距与内边距。
+  - **最终断点行为**：`>1024px` 顶栏显示全部文字入口；`721–1024px` 顶栏只留汉堡+搜索+主题键+登录+管理员+计数；`≤720px` 同前（`.desktop-only` 隐藏，与底部 tab 栏重复的入口全部移除）。
+  - **验证**：本地 `127.0.0.1:8908` + agent-browser 实测 —— 1400px 顶栏文字为「技术体系/岗位体系/模拟面试/收藏夹/投稿/登录/管理员/本机访问/累计」，无溢出；900px 无横向滚动条、汉堡菜单在、搜索框保留。线上 `js/app.js?v=20260923g` 有 7 个 `top-link`、0 个残留图标入口；`style.css` 有 `top-link` 样式；`responsive.css` 有 1024px 断点。
+  - ⚠️ **agent-browser 使用要点（本轮踩坑）**：① 浏览器跨命令持久，但命令**单次运行超时会被 SIGTERM**，需把「open + sleep + 截图/取文本」串成**一条命令**执行；② `set viewport` 后**必须重新 open/reload** 才生效，且 `reload` 会跳到 `about:blank`（要用 `open <url>` 重开）；③ 本地服务在沙箱里要用 `--noproxy '*'` 访问，否则代理返回 502。
+  - **版本号跳号说明**：`e → g`（跳过了 `f`）—— 开发中先在 `f` 上做了文字入口，随后补 1024px 断点时一并升到 `g`，`f` 未单独上线，故线上不存在 `f` 版本。
+
+- **【已完成·2026-09-23 晚·第三轮】整体移除百度统计（`20260923d` → `20260923e`，`f4f5ecd`）**：
+  - **用户原话**：「百度后台统计去掉」。
+  - **删除清单（4 文件）**：
+    - `index.html`：删除 `<head>` 里的 **hm.js 上报脚本块**（百度统计 ID `856d2b08330e4b9f225cf101d6f14103`），原位留说明性注释；全部 `?v=` 版本号 `20260923d` → `20260923e`（34 处）。
+    - `js/app.js`：① `Stats` 模块删除 `DEFAULT_TID` / `baiduId()` / `trackBaidu()` / `loadBaiduScript()`；② `recordVisit()` 与 `recordView()` 里各删一行 `trackBaidu(...)` 上报调用；③ `init()` 删除 `Stats.loadBaiduScript()`；④ `Stats` 导出精简（去掉 `baiduId` / `loadBaiduScript`）；⑤ **后台「设置」页删除整张「百度统计」配置卡片**（`#baidu-tid` / `#baidu-save` / `#baidu-out`）及 `$("#baidu-save").onclick` 处理器；⑥ **后台「数据」页「访问统计」卡片**由「有无 `baiduId`」改为「有无 `cfEnabled`」分支——已接入云端统计时显示说明文字 + 地域分布图，未接入时引导去配置云端接口（原「查看百度统计后台 →」外链一并删除）。
+    - `js/backup.js`：`LS_KEYS` 备份键列表移除已废弃的 `"baidu_tid"`。
+    - `sw.js`：`VERSION` → `20260923e`。
+  - **刻意保留**：① 本地计数（`localStorage`，支撑打卡/热力图/本机 Top）；② Cloudflare Worker 云端统计（全局访问 + 题目浏览计数），两条通道均未受影响。③ `cloudflare/pages/_worker.js` 里白名单中的 `Baiduspider` / `baidu` —— 那是**爬虫 UA 白名单**（本站百度搜索流量是主力，Bot Fight Mode 会误杀），与百度统计无关，**不要删**。
+  - **验证**：`node --check` 三个 JS 全过；全库 `grep` 确认无任何 `Stats.baiduId` / `trackBaidu` / `loadBaiduScript` / `#baidu-save` 等活代码引用（仅剩说明性注释）；线上 `index.html`（浏览器 UA）`style.css?v=20260923e`、`hm.baidu.com` 命中 0；线上 `js/app.js?v=20260923e`（329473 字节）grep 百度相关标识符 0 命中。
+  - ⚠️ **本次推送踩的坑**：`git push` 连续 5 次报 `CONNECT tunnel failed, response 502`——**沙箱代理（`127.0.0.1:54139`）隧道不通 GitHub**。解法：`git -c http.proxy= -c https.proxy= push origin HEAD:refs/heads/release`（**显式清空代理**直连），一次成功（`f14879b..f4f5ecd`）。GitHub API（`api.github.com`）经代理可达（200），可作远端 SHA 的独立核对通道。
+  - ⚠️ **线上裸 curl 返回 403「禁止采集」是反爬守卫的设计行为**，必须带浏览器 UA + `Accept` 头才能取到 HTML，勿当回归误判。
+
+- **【已完成·2026-09-23 晚·第二轮】侧栏结构按用户要求还原（`20260923c` → `20260923d`）**：
+  - **用户原话**：「岗位体系下来就是技术体系，还是按之前的还原，只是把关于本站下面的技术分类删掉」。
+  - **与上一轮（`e953978`）的区别**：上一轮我采取的是「删导航项、留侧栏树」；用户实际要的是**反过来的**——**保留导航区「技术体系」项**（位置在「岗位体系」下面），**整体删掉侧栏那棵「技术分类」大树**。⇒ 最终侧栏：投稿 → 首页 / 技术教程 / 岗位体系 / **技术体系** / 刷题计划 / 模拟面试 / 随机一题 / 刷题练习 / 收藏夹 / 浏览历史 / 错题重练 / 使用指南 / 关于本站。
+  - **文案**：全部恢复为「技术体系」（面包屑、`document.title`、首页板块标题、页脚链接、顶栏 title）。注意**后台管理、导入表头、岗位计划里的「技术分类」是泛指概念，不要改**。
+  - **连带死代码清理（本轮关键，容易漏）**：① `NAV_SECS.cats` 定义；② **`navSectionOf()` 里的 `p0 === "category" → "cats"` 映射**——这个必须改，否则进入技术体系页时侧栏导航区不会自动展开、且无高亮项（改为归 `nav` 分区）；③ 侧栏 `renderTree()` 函数（唯一调用点已消失）；④ `curCatOpen` 状态变量；⑤ `#side-tree` 的 tree-row 事件绑定；⑥ 「管理员登录」注释里已失效的「必须插在技术分类之前」理由。
+  - **未受影响**：技术体系页自身的分类树 `#page-tree`（实测 276 个节点）与路由 `/category?cat=N` 全部正常。
+  - **验证**：新浏览器会话读取侧栏项文本，顺序与预期逐字符一致；`#/category` 面包屑=「首页 / 技术体系」、`title`=「技术体系 · IT面试题库」、`#page-tree` 节点 276。
+
+- **【已完成·2026-09-23 晚】侧栏导航去重：删掉重复的「技术体系」入口（纯前端）**：
+  - **问题**（用户反馈「技术分类与技术体系是一样的，重复了」）：侧栏里同一批分类数据有**两个入口**——「导航」区的「技术体系」指向 `#/category`，而「技术分类」分区本身渲染的就是同一棵 `category` 树。代码层面早有证据：`navSectionOf()` 里 `if (p0 === "category") return "cats"` —— category 路由本来就归属 cats 分区，两者本是一回事。
+  - **改动**：① 删除导航区的 `navItem("#/category", "layers", "技术体系")`；② 在「技术分类」分区树下补一行 `#side-cat-all`「查看全部技术分类 →」，承担原页面的跳转角色，带 active 态（**仅在无 `?cat=` 时高亮**，否则会和展开的子分类抢高亮）；③ 页面文案统一「技术体系」→「技术分类」：面包屑、`document.title`、首页板块标题、页脚链接、顶栏图标 title。
+  - **刻意不动**：「覆盖完整技术体系与岗位体系」等**泛称**、practice 页「技术体系 / 岗位体系」的练习范围维度（与岗位体系对称）、`aiprompts.js` 里的提示词。这些是通用术语，不是页面名。
+  - **可达性**：`#/category` 路由完整保留，分类树节点点击仍走 `App.go("/category?cat=" + id)`（`js/app.js` 第 492 行），功能未受影响。
+  - **验证**：本地 `#/category` 面包屑=「首页 / 技术分类」、`title`=「技术分类 · IT面试题库」；侧栏项列表确认「技术体系」已消失、「查看全部技术分类」出现且 `href="#/category"` 正确。
+  - ⚠️ **验证时踩的坑**：改完 JS 后侧栏**仍显示旧项**，一度以为是改动没落盘。实际是**浏览器会话级缓存**——`grep` 源文件为 0 处、`curl` 服务返回也为 0 处，说明文件和服务都对。**换新浏览器会话（或清 SW + caches）才能看到最新 JS**。
+
+- **【已完成·2026-09-23 晚】P1/P2 体验优化六项（纯前端，无数据结构改动）**：
+  - **P1-4 卡片 chip 精简**：只保留「难度 + 题型 + 主分类 + 1 个主标签」，岗位折叠成「+N 岗位」、多余标签折叠成「+N」，完整内容 hover 可见（title）。**主标签与分类名相同必须去重**（否则出现「Redis·Redis」），已用 `tagList.find(t => t !== catName)` 处理。
+  - **P1-5 详情页阅读宽度**：`.qd-body` / `.qd-answer` 限宽 `max-width: 720px` 居中，面包屑/标题/标签行仍满宽。解决桌面端长答案一行 60+ 字的阅读疲劳。
+  - **P1-5b 我的批注降噪**：未填写时收成一行虚线占位（`.note-card.is-empty`，显示「点击展开」），点击整卡或聚焦输入框展开（JS 移除 class）；已有批注默认展开。
+  - **P1-6 顶栏语义**：「今日/累计」易被误读为刷题数 → 改为「本机访问 N / 累计 N」，tooltip 补「非全站 PV，不跨设备」；登录按钮补 title。
+  - **P2-8 难度快捷筛选条**：列表页新增一排胶囊按钮（全部/初级/中级/高级/专家）。**与 `#f-diff` 下拉框双向同步**（`syncDiffQuick()`），避免「快捷条显示中等但下拉是困难」的矛盾态。
+  - **P2-9 页脚扩版**：由单行小字改为四栏链接矩阵（刷题/体系/我的/关于）+ 站点说明，移动端 `≤720px` 两列自适应。
+  - **P2-10 卡片 hover 增强**：阴影 `shadow-md` → `shadow-lg`，hover 时边框色加深。
+  - **改动文件**：`js/app.js`、`css/style.css`、`index.html`、`sw.js`（版本号 `20260923a` → `20260923b`）。
+  - **验证**：本地 127.0.0.1:8901 + agent-browser 截图（桌面 1264px / 移动 390px）验证列表页 chip 精简生效、难度条可点、详情页正文收窄、批注折叠与点击展开、页脚四栏。线上回归：`PAGE_VER=20260923b`、sw.js 同步、新 CSS 五类 marker 齐全（diff-quick/tag-fold/is-empty/f-grid/max-width:720px）、旧功能 daily-quote-mount/hero-search/show-answer/review-banner/vis-today 全在、分享页 200。
+  - **注意**：`grep logUserVisit` 之类自造词查不到属正常，真实函数名是 `recordVisit`/`refreshVisitorStats`；核对功能请以仓库实际代码为准，勿用臆测的名字下结论。
+
+- **【已完成·2026-09-23 早】首页/卡片 UI 瘦身 P0 三项（纯前端，无数据结构改动）**：
+  - **背景**：布局走查结论——首页「每日一句 220px 大卡 + 紫色大标题 hero」双 hero 叠放，桌面首屏一题不可见；移动端 hero 标题折成「模拟面/试」；卡片与详情页满屏「浏览 0 · 收藏 0 · AI评分 0」。
+  - **改动（5 文件）**：`js/app.js`（daily-quote-mount 挪到 hero 之后；qCard 与详情页 meta 的 views/favorites/aiScore 为 0 时不渲染）；`css/style.css`（hero padding 40/28→26/20、h1 34→28px + `text-wrap:balance` + `word-break:keep-all`；daily-quote 改 slim strip：`__inner` 横排 flex、名言 2 行 line-clamp、按钮内联右侧，移动端换行）；`css/responsive.css`（hero h1 26→22px）；`index.html`/`sw.js` 版本号统一 `20260923a`。
+  - **验证**：本地起 127.0.0.1 静态服务 + agent-browser 截图走查桌面/手机（iPhone 14 模拟）首页、题目列表、题目详情——首屏可见统计环、标题一行放下、0 值全隐藏。线上 curl（需浏览器 UA，反爬守卫拦裸 curl 属正常）：`PAGE_VER=20260923a`、sw.js VERSION 同步、app.js 16 处关键功能 marker 齐全、分享页 `/q/982` 200。
+  - **注意**：`data/published.json` 对 curl 返 403 是反爬守卫设计行为，浏览器内正常，勿当回归误判。
+  - **合并记录**：本次推送时远端已被另一路流程推到 `c187c80`（Turnstile 文档刷新 + account.js/turnstile.js 提示文案改可操作），已用 `rebase --onto` 把 UI 改动移植到新 tip 之上，两处 turnstile 相关改动**未丢失**。
+
+- **【已完成·2026-09-22 晚】Cloudflare Turnstile 已**全量启用**（前端挂载层 + 后端校验，缓存版本 `20260922c` → `20260922d`）**：
+  - **开关式（关键设计）**：前后端都做成了「未配置就整段跳过」。后端 `verifyTurnstile()` 在无 `env.TURNSTILE_SECRET` 时返回 `{ok:true,skipped:true}`；前端 `js/turnstile.js` 在无 sitekey 时 `TS.enabled()` 为 false、`TS.mount()` 直接返回 null。⇒ 任一环节缺失都不会影响登录/投稿，也因此可以「先发版、后开开关」。
+  - **覆盖范围**：`/auth/register`、`/auth/login`、`/submit` 三个**写入口**。`/visit`、`/view` 两个高频统计接口**刻意不校验**（否则打断正常浏览）。
+  - **前端**：新增 `js/turnstile.js`（`window.TS`），挂载点 = 账号页登录/注册表单 `#acc-ts`、投稿页表单 `#s-ts`；token 以 `turnstileToken` 字段随请求体传给后端。
+  - **为什么用 `execution:"execute"` 而不是挂载即取 token**：投稿表单可能写十几分钟，若挂载时就换取，提交时早超过 Turnstile 令牌的 **300 秒**有效期，用户会看到「人机验证未通过」这种看不懂也无从自救的报错。⇒ 统一改为**点提交时才 `turnstile.execute()`**。另外 `appearance:"interaction-only"`：正常情况组件完全隐形，风控认为可疑时才浮出确认框。
+  - **令牌一次性**：提交后（含服务端判失败）必须 `TS.reset()` 重新挑战，否则再点一次必报 `timeout-or-duplicate`。已在 account.js / submit.js 的失败分支与 finally 里处理。
+  - ⚠️ **刻意不传 `remoteip`**：国内访客走 Netlify 中转桥，而桥会把 `cf-connecting-ip` / `x-forwarded-for` 全部剥掉（`netlify/functions/proxy.js` 的 `HOP_HEADERS`）——Worker 看到的 `cf-connecting-ip` 是**桥的出口 IP**而不是访客本人的，报给 siteverify 只会制造随机失败。`remoteip` 是可选参数，不传不影响校验强度。
+  - **启用后实测（2026-09-22 22:00，走国内 Netlify 桥）**：登录不带 token → `403 请先完成人机验证`；登录/注册带假 token → `403 人机验证未通过`（⇒ 证明 Worker 真的调通了 siteverify；若调不通会 fail open 变成 401 密码错误，可据此区分）；`/submit` 无会话 → `401 请先登录后再投稿`（校验顺序在登录之后）；`/stats` 仍 200 未受影响。
+  - **浏览器端实测（CDP 驱动真实 Chrome 打开线上 `#/account`）**：`TS.status=ready`、sitekey 正确、`window.turnstile` 已加载、widget 成功创建（`cf-chl-widget-*`）；真实点击提交后出现「正在进行人机验证…」并在超时后给出人话提示，**无 JS 报错**。
+  - **sitekey 与 secret 的位置**：sitekey（公开值）写死在 `js/turnstile.js`，可用 `api-endpoints.json` 里的 `turnstileSiteKey` 远程覆盖（best-effort，读不到就退回内置常量）；**secret 只存在于 Worker 环境变量 `TURNSTILE_SECRET`**，绝不出现在前端。已核实线上 `js/turnstile.js` 不含 secret。
+  - **依赖**：需放行 `challenges.cloudflare.com`（script + iframe）。实测本机国内直连**可达**；CSP 目前只有 `frame-ancestors 'self'`，不拦 script-src，无需改。若将来加严格 CSP，必须把该域加进 `script-src` 与 `frame-src`。
+  - **排障**：提示「人机验证组件加载失败」= 浏览器拉不到 `challenges.cloudflare.com`（网络拦截），刷新或换网络即可，表单内容不丢。
+  - ⚠️ Turnstile API（`/accounts/{id}/challenges/widgets`）**不接受 wrangler 的 OAuth 令牌**（实测稳定回 `10000 Authentication error`，尽管 `whoami` 的 scope 里有 `challenge-widgets.write`），必须走面板或另建带 Turnstile 权限的 API Token。⇒ **换 widget / 改域名白名单时无法用现有令牌自动化。**
+  - 配置值（本机留存，不入库）：sitekey `0x4AAAAAAE__jtzqP599LSsj`；secret 已通过 `wrangler secret put TURNSTILE_SECRET` 写入 Worker（值不记录在仓库里）。
+
+- **【已完成·2026-09-22 晚】Turnstile 后端校验 + 用量巡检脚本**（原记录，缓存版本 `20260922c`）：
+  - **Turnstile 后端**：`cloudflare/worker.js` 的 `verifyTurnstile()`，开关式；校验服务不可达时 **fail open + degraded**（宁可有极小概率漏放机器人，也不能让 CF 侧抖动打死全站登录/投稿）；要反过来改注释处两行的 `ok` 即可。`siteverify` 必须在**服务端**调；等待外部响应**不计 CPU 时间**，对免费 10ms/次 上限无影响。
+  - **用量巡检** `tools/cf-quota-check.py`：GraphQL 查 `workersInvocationsAdaptive`（独立 Worker 每日请求/错误）+ zone 级 `httpRequestsAdaptiveGroups`（整站真实请求量，按 host/端口分组）；阈值告警 = 单日 ≥5 万 / errors>0 / 非标准端口请求 ≥200。
+    ⚠️ 该 dataset **不含 Pages 项目的 Functions**，`_worker.js` 的调用数查不到，只能看 Dashboard → Workers & Pages → it-interview → Metrics。
+    踩坑：`filter.date_geq/date_leq` 必须 `YYYY-MM-DD`（写 ISO datetime 报 `date format should be '2006-01-02'`）。
+  - **实测基线（2026-09-22，可作后续对照）**：Pages Metrics 24h ≈ **8.3k** 请求（zone 级实测 24h 约 7.8k，吻合）、Errors 全 0、Median CPU Time p99.9 = **4.0ms**（上限 10ms）⇒ 配额余量约 12 倍，**不必为配额改 `_worker.js` 高级模式架构**；日请求破 5 万时再评估。
+
+- **【待办·2026-09-22 记录】WAF 自定义规则挡非标准端口**：zone 实测 24h 内有约 **568 次非标准端口请求**（`:8443` / `:2087` / `:2083` / `:2096` / `:8080` 等 cPanel/代理端口），属端口扫描。免费计划有 5 条 WAF 自定义规则额度，可用其中一条挡掉非 443/80 的请求。
+
+- **✅【已完成·2026-09-22 晚】新增「撤回我的投稿」（缓存版本 `20260922b` → `20260922c`）**：
+  - **动机**：上一轮放开「管理员可自审」只解决了 admin 自己投稿卡死；非管理员/专家投稿人若发现投错、投重，仍只能等审核者处理。补一个**投稿人自助撤回**的口子。
+  - **后端**：新增 `POST /submissions/:id/withdraw` → `handleWithdrawSubmission`。规则：① 必须登录；② `row.user_id !== u.id` → **403「只能撤回自己的投稿」**（不能撤别人的）；③ 只在 `review_status = 'pending'` 且 `locked_by = 0` 时可撤 —— 已被人认领（`reviewing`）返回 **400「已经有审核者在处理这条投稿了，不能撤回」**，已通过/已打回返回 **400「这条已经审完，不能撤回」**（翻案属于审核动作，不给投稿人自己改结论）；④ 幂等：已是 `withdrawn` 直接返回 `{ok:true, already:true}`。
+  - **软删除，不是 DELETE**：写 `review_status='withdrawn'` + `review_at`，行保留。**关键好处 = 零 SQL 改动**：审核队列 `open` 只取 `IN ('pending','reviewing')`、`done` 只取 `IN ('approved','rejected')`，所以撤回后自动从队列消失，不用碰任何列表查询；「我的投稿」`/me/submissions` 照常返回，前端显示「已撤回」。
+  - **并发安全**：UPDATE 带 `AND user_id = ? AND review_status = 'pending' AND locked_by = 0` 条件 + 判 `meta.changes`（与审核抢单同一套乐观锁）⇒ 撤回与认领同时发生时必有一方失败，失败方回 **409「这条投稿状态刚变了，请刷新后再试」**。`logReview(..., 'withdraw', '')` 留痕。
+  - **前端**：`js/account.js` 加 `A.withdrawSubmission(id)`；`js/submit.js` 的 `REVIEW` 表加 `withdrawn: 已撤回`，「我的投稿」表加第 6 列「操作」——仅 `pending` 行渲染「撤回」按钮（其余显示 `—`），点击走 `U.confirm` 二次确认（提示「当日投稿次数不退还」）；400/409 时自动 `load()` 刷新看真实状态。`S._mine` 缓存当前列表供确认框取标题。
+  - **未做**（有意）：撤回后**不退还当日投稿次数** —— 该计数按 `created_at` 统计，退还需额外状态位与配额口径改动；已在 UI 与指南里明确说明。
+
+- **✅【已完成·2026-09-22 晚】放开「管理员可自审自己的投稿」（缓存版本 `20260922a` → `20260922b`）**：
+  - **用户反馈**：「我自己投的稿无法操作嘛」—— 审核队列里自己投的 #4（`mysql为什么用B+树`）操作列只有灰字「自己的投稿」，点不了。
+  - **根因（前后端各一处硬拦）**：① 前端 `js/submit.js` 列表渲染 `s.user_id === myId` ⇒ 直接渲染灰字、不给按钮；审核面板同样只显示「这是你自己提交的题目，不能自审」；② 后端 `cloudflare/worker.js#handleReview` 有 `if (row.user_id === u.id) return 403 "不能审核自己提交的题目"`。设计初衷 = 防专家自审开后门。
+  - **踩到的设计漏洞**：生产 D1 实测全站只有 2 个 `role=admin` —— `admin@iti.local`（**status=0 已禁用**，占位号）与 `2416217174@qq.com`（id=3，即站长本人）；**`role=expert` 用户 0 个**，`group_members` 全空（`expert_groups` 只有「后端组」「前端组」两个空组）⇒ 站长的投稿**全世界无人可审、自己也审不了，永久卡死**在待审队列。
+  - **改法（最小面）**：后端把自审拦截收窄为 `if (row.user_id === u.id && u.role !== "admin")` ⇒ 仅 `admin` 放行自审，**`expert` 仍严格禁自审**（审核链语义不变；admin 本就能在「题目管理」里直接入库，放行自审不是新增权力）。前端 `js/submit.js` 列表与审核面板都改为 `selfBlocked = self && !isAdmin / !A.isServerAdmin()`：管理员看到正常操作按钮 + `自己 · 可自审` 标记，专家仍是灰字「自己的投稿」。
+  - **未做（用户跳过方案选择，留作后续）**：投稿人「撤回自己的投稿」按钮（新增接口 + 状态位）—— 保留给以后按需加。
+  - `handleClaim` 本就没有自审拦截（只在 `handleReview` 拦），故本次无需改抢单逻辑。
+
+- **✅【已完成·2026-09-22 · 收尾】zone 级防护「无遗留待办」实测定论（commit `ec680ed`，父 `dfdc13e`）**：
+  - **用户要求**：「这一项得你动手，想办法搞定」= 不依赖用户去面板点开关，也要把 zone 级防护落实。**结论：不需要任何面板操作，也不需要为它改 token。**
+  - **方法（关键：不用任何 API 权限，纯客户端探测）**：① `min_tls_version` —— 用 Python `ssl`（`ALL:@SECLEVEL=0` + `minimum_version=maximum_version=目标版本`）逐版本尝试握手。**服务端**回 `tlsv1 alert protocol version` ⇒ 已禁用 TLS1.0/1.1。⚠️ **别用 `openssl s_client -tls1` 的失败当依据** —— 它报的是本机 `no protocols available`（客户端限制），据此会得出**假结论**。② `opportunistic_encryption` —— 80 端口发 h2c 前置知识（`PRI * HTTP/2.0`）与 `Upgrade: h2c` 两种方式，**都不升级、直接 301**。
+  - **六项逐条定论**：HTTP→HTTPS ✅ 301 已生效；HSTS ✅ 已由 `_worker.js` 响应头生效；最低 TLS ≥1.2 ✅ 已是现状；TLS1.3 ✅ 已开（`tls=TLSv1.3`、`kex=X25519MLKEM768`）；机会加密 ⚪ 影响已被 301 覆盖（且站内 0 处 `http://` 子资源 ⇒ 自动 HTTPS 重写也无需开）；Security Level=High / Bot Fight Mode ⛔ 不建议开（误伤国内访客与 Baiduspider）。
+  - **权限现状（供将来参考）**：本机 wrangler OAuth = `user:read/offline_access/account:read/workers:{write,kv,routes,scripts}/d1:write/pages:write/zone:read`（**无 zone settings**）；仓库 Secret `CLOUDFLARE_API_TOKEN`（Actions 里唯一一条，2026-09-21 建立）权限组实际只有 **`Account.Cloudflare Pages`** ⇒ 读 zone settings 同样 **9109**。要启用休眠流水线，须给它补 `Zone → Zone Settings → Edit`（Zone Resources: Include → Specific zone → `itinterview.com.cn`）；**改权限不会改变 token 值**，别点 Roll/Regenerate（会换值、弄挂 CI 部署）。
+  - **本机凭据清单**：`~/.workbuddy/secrets/` 只有 `gh-workflow.token`（GitHub，scope `repo, workflow`）；**本机不存在任何 Cloudflare API Token 文件**；截图里那个「Cloudflare Agent Token - 2026-08-27」（All zones、23+ 权限）**值未留存**、无法使用，且其 `Last used = Aug 27` 说明它不是 CI 在用那个。
+  - **流水线只监听 `cf-zone-setup` 分支**（已核对：最近 3 次 release 推送只触发 `Deploy to Cloudflare Pages`，全 success）⇒ 休眠流水线**不会**给日常发版添红叉。
+  - 临时分支 `cf-zone-setup`（`3608eee`）本轮已从远端删除；将来要用，从 release 当前 tip 重新 push 同名分支即可触发。
+
+- **✅【已完成·2026-09-22 上午】Zone 传输层加固（缓存版本 `20260921c` → `20260922a`）**：
+  - **背景**：上一轮遗留的唯一待办是「Cloudflare Zone 级防护需用户去面板手动开」。用户要求「这项得你动手，想办法搞定」。
+  - **权限硬边界（两条通道实测都堵）**：① 本机 wrangler OAuth scope 只有 `zone:read`（zone settings 读/写均报 **9109**）；② 仓库 Secret `CLOUDFLARE_API_TOKEN` **凭据本身有效**（`/user/tokens/verify` 通过）但**同样缺 Zone Settings 权限**（在 CI 里实测 9109）。⇒ 于是改走「**能靠响应头等效实现的一律下沉到应用层**」，不依赖任何面板操作（浏览器视角与面板开关产物一致）。
+  - **`cloudflare/pages/_worker.js` 新增第四道闸门**：`http → https 301`（本地 dev / `[::1]` 除外，否则重定向死循环）+ `Strict-Transport-Security: max-age=15552000; includeSubDomains`（刻意不开 preload）+ `nosniff` + `frame-ancestors 'self'` + `SAMEORIGIN` + `Referrer-Policy`。统一走 `harden()` 包装 —— **必须新建 Response**，因为 `env.ASSETS.fetch()` 与 `Response.redirect()` 返回对象的 headers guard 是 `immutable`，直接 `set` 会失败。
+  - **顺手修掉一个既有隐患**：`ASSETS` 返回 **304**（协商缓存命中）时 `new Response(res.body, res)` 会抛 TypeError ⇒ 改为 `NULL_BODY_STATUS` 判空 body。
+  - **刻意不开的两项（有实测副作用，别照抄「全面加固」教程）**：`security_level=High`（国内访客大量走代理/共享出口 IP，威胁评分偏高 ⇒ 频繁人机验证甚至 403，伤真实用户）、`bot_management`（**实测会误伤 Baiduspider / YandexBot**；本站百度流量是主力，且 `_worker.js` 已有精准 UA+ASN 白名单，叠加收益为负）。
+  - **zone 侧原以为「仍缺 2 项」，2026-09-22 深查后确认：无遗留待办**。① `min_tls_version=1.2` —— **已经就是现状**：改用 Python `ssl` 分别尝试 TLS1.0 / TLS1.1 握手（`ALL:@SECLEVEL=0` 解除本机限制、只放开单一版本），服务端回 **`tlsv1 alert protocol version`** —— 这是**服务端**拒绝的告警，与 `openssl` CLI 那种本机 `no protocols available`（客户端限制、测不出结论）有本质区别 ⇒ 边缘最低 TLS 已是 1.2+，**无需再调**。② `opportunistic_encryption=off`（随机加密）—— 用 h2c「前置知识」与 `Upgrade: h2c` 两种方式在 80 端口实测，**都不升级、直接返回 301** ⇒ 实际影响已被强制 HTTPS 覆盖；另实测站内 **0 处** `http://` 子资源引用 ⇒「自动 HTTPS 重写」同样无需开启。**脚本与流水线作为休眠资产保留**：`tools/ci/zone-security.py` + `.github/workflows/zone-security.yml`（push 到 `cf-zone-setup` 分支即触发、幂等可重跑）—— 但**必须先给 token 补上 `Zone → Zone Settings → Edit` 才会生效**（仓库 Secret 那个 token 实测只有 `Account.Cloudflare Pages`，CI 里同样报 9109）。**即：没有权限也基本没有损失，不必为此去改 token。**
+  - **验证（部署 run `35671364583` success，版本 `20260922a`）**：线上实测 `strict-transport-security: max-age=15552000; includeSubDomains` + 4 个安全头齐全；`http://` **301 → https**；**备用域 `pages.dev` 同样带 HSTS**；`pages-guard-test.mjs` **41 → 44 条、44/44 通过**（新增「安全头齐全」「http→301 生效」「304 不抛错」）；`accept-switch.py` **10/10**；`regress-check.py` **旧功能零回归**。
+  - commit `fd0d1be8`（父 `5d6b53d9`，快进推送）。
+
+- **✅【已完成·2026-09-22 上午】迁移遗留审计与清理（**无功能改动**，缓存版本保持 `20260921c`）**：
+  - **背景**：用户问「因为迁移，该修改的全部调整修改了吧，怕会失效有些」→ 对「域名 + 托管方式」变更后的**全部引用**做了一次系统审计（PWA manifest / Service Worker 缓存 / CSP / 重定向配置 / 环境变量覆盖项 / 服务端回读路径 / 工具脚本 / 文档操作指引）。
+  - **审计结论：代码侧没有失效项** —— 以下几项全部实测通过：
+    - `manifest.json` 用相对路径（`start_url: "/"`、`scope: "/"`）⇒ 自动跟随域名 ✅
+    - `sw.js` 的 `APP_SHELL` 全是相对路径，且 `/data/tech-maps.json` 的预缓存有 try/catch 兜底 ✅
+    - `tools/pages-guard-test.mjs` 的 `ORIGIN` 已随域名更新 ✅
+    - **🔴 服务端回读通路（最高危的静默失效点）实测正常** —— `worker.js#getCategorySnapshot` 从 `SITE_ORIGIN + /data/published.json` 拉分类树，**失败会被 try/catch 吞掉**（表现为分类快照恒空串、AI 投稿质检拿不到技术体系上下文）。实测：线上 Worker **没有被设过** `env.SITE_ORIGIN` 覆盖（绑定仅 `ADMIN_EMAIL` / `DEEPSEEK_API_KEY` / `STATS` / `USERS`），代码常量 `https://itinterview.com.cn` 生效，回读结果 **200 / 2,167,247 字节 / 276 个分类** ✅
+    - 后端通路：Netlify 桥 `/stats` → **200**、CORS 预检正确；`workers.dev` 直连 **000**（国内 DNS 污染，属预期 —— 桥正是为此存在）✅
+    - `api-endpoints.json` / `data/tech-maps.json` / `manifest.json` / `sw.js` / `sitemap.xml` 带浏览器 UA 均 **200** ✅
+  - **但查到 7 处会误导后续维护者（含 AI 工具）的内容，已全部修正**：
+    1. `cloudflare/部署指南.md` **与代码直接矛盾**：写着「CORS 已配置为 `*`」，实际 `resolveCorsOrigin()` 是**白名单制**（只对三域回 ACAO）⇒ 已改为准确描述并标红「换域名必须同步此表，否则登录/云同步静默失败」
+    2. 同文件 **缺 D1 步骤**：全文只写 KV。照它重建 Worker 会漏掉 `USERS` 绑定 ⇒ **登录 / 注册 / 云同步全废**。已补 D1 创建 + `schema.sql` 导入 + `wrangler.toml` 双绑定示例
+    3. 同文件接口表只有 3 条，实际 **18 条**（含 `auth/*`、`me/*`、`submit`、`admin/*`）⇒ 已补全；并新增「环境变量」节，点名 `SITE_ORIGIN` / `ALLOWED_ORIGIN` 两个「**设错就静默失效**」的覆盖项（当前线上均未设置，走代码常量 = 安全）
+    4. `cloudflare/worker.js` 的 CORS 注释仍写「当前唯一入口是 pages.dev」⇒ 更正为 `itinterview.com.cn`
+    5. `cloudflare/pages/_worker.js` 注释**低估了自身能力**：称「本站域名 DNS 不在本账号，所以用不了 Cloudflare WAF / Bot Fight Mode」。**实际上 `itinterview.com.cn` 的 zone 就在本账号（status active）⇒ 现在可以叠加 Zone 级防护**。已更新注释并给出建议（开 Bot Fight Mode + Security Level=High，把「应用层」升级为「网络层」）。另修正分享页数量 1209 → **1228**
+    6. `HANDOVER.md` 第 1–3 节的操作指引**全部指向死域名 / 已关闭服务**：GitHub Pages 发布源那节、「部署 = push，GitHub Pages 约 1 分钟生效」、验证用 `curl is-a.dev`、域名栏、反爬托管层「迁移进行中 + PR #53221 待合并」⇒ 全部更正为当前事实（Cloudflare Pages + Actions + com.cn）；分享页数量 264 → **1228**
+    7. `tools/build-pages.mjs` 注释「否则误伤 GitHub Pages」⇒ GitHub Pages 已关闭
+  - **顺手增强**：`tools/set-site-origin.mjs` 的 `KNOWN_OLD_HOSTS` 补入 `itinterview.com.cn` / `www.itinterview.com.cn` ⇒ **下次换域名时能连历史几代残留一并清理**；`api-endpoints.json` 注释去掉已放弃的 eu.org 方案，`updated` → 2026-09-22。
+  - **部署结果**：Worker 重新用注释同步 deploy ⇒ Version **`9921c460-aa43-4059-a221-f8559697c498`**（KV + D1 双绑定正常）。Actions `888a583` **success**。
+  - **验证**：`build-pages.mjs` 1287 文件 / 内部文件未泄漏；`pages-guard-test.mjs` **41/41 `PAGES_GUARD_OK`**；`accept-switch.py` **10/10**；`regress-check.py` **旧功能零回归**；CORS 三域发放 + `evil.example.com` 不发放。
+  - ⚠️ **本轮未开 Cloudflare Zone 级防护** —— 本机 OAuth token 只有 `zone:read`（对 zone settings 返回 **9109 Unauthorized**），仓库 Secret 那个 token 同样缺权限。**后续进展见上方「Zone 传输层加固」条**：HSTS 与强制 HTTPS 已用响应头在应用层等效实现（无需任何权限）；`Security Level=High` 与 `Bot Fight Mode` 经评估**不建议开**（会误伤国内访客与百度蜘蛛）。
+
+- **✅【已完成·2026-09-22 上午】Cloudflare 迁移后的文案校准（缓存版本 `20260921b` → `20260921c`）**：
+  - **背景**：用户问「迁到 Cloudflare 后，页脚（使用指南 · 关于本站 · GitHub · 数据存于本机浏览器）这类文案是不是要改」。
+  - **结论：面向用户的文案全部准确，无需改动** —— ① 页脚「数据存于本机浏览器 · 登录后云端同步」讲的是真实数据流（题库与个人学习数据存在浏览器 IndexedDB，登录后才同步云端），**不是遗留描述**；② 使用指南 `js/guide.js` 的「数据在哪」「进度存在哪」「离线能用吗」逐条核对均成立；③ 关于本站的站点链接用 `location.origin` 动态渲染，**自动跟随域名**；④ 「发布题库」相关文案写的是 GitHub（配置 `github_pat_` Token 推 `data/published.json`）—— 与 `js/cloud.js#putFile` 的 GitHub Contents API 实现一致，**是准确的，不要改**。
+  - **真正过时的是 README.md**（7 处 + 技术栈 2 行）：「题库快照通过 GitHub Pages 分发」「托管于 GitHub Pages（main 分支）」「CDN 经 Fastly」等 → 已全部改为 **Cloudflare Pages + GitHub Actions**；「部署与自定义域名」章节整段重写（部署链路 / 正式入口 / 备用预览域 / 反爬守卫），旧 GitHub Pages 段落降级为「历史记录（已不成立，仅供追溯）」；项目结构去掉已删除的 `CNAME` 行；「重要说明」里题量 200+ → 1000+。
+  - **代码注释 3 处**：`js/app.js`（「GitHub Pages 根路径部署下即线上 URL」）、`js/cloud.js`（「随 GitHub Pages 一起发布」）、`sw.js`（「GitHub Pages HTML 固定 max-age=600」）。
+  - **刻意保留、不要去动**：`README.md` 的 `## 更新日志` 与「反爬迁移」等**历史章节**（记录当时决策与状态，日志性质）；`js/docs/*.js` 里的 `*.github.io` 是技术文档外部链接（Argo Rollouts / esbuild / WICG）；`js/account.js` 与 `netlify/functions/proxy.js` 里的 Netlify 是**仍在运行**的国内直连反代桥。
+  - commit `afdbbad95c8569e8a0de13b52d5e1239ae5e73c5`（父 `8caf4866`，快进推送）。
+  - **⚠️ 环境变化（2026-09-22 实测）**：本机代理 `127.0.0.1:7897` **已失效**（7890/7897/10808/10809/1080/8080 端口全关），但 **GitHub 直连可用** —— `git ls-remote` 与 `git push` 不带任何代理即成功。**后续联网操作先试直连**，不要再默认套 7897。
+
+
+- **✅【已完成·2026-09-21 晚】自购域名 `itinterview.com.cn` 全量切换 —— 站点自此有了自己的、可控的正式入口**：
+  - **域名选型结论**：`.com` 主域 `itinterview.com` 被 HugeDomains 挂售 **$3,995**（NS = `nsg1/2.namebrightdns.com`）；`it-interview.com` 被 Afternic 挂售，页面内嵌 JSON `"buyNow":31976000000` ⇒ **一口价 $31,976**（微美元 ÷1e6）；`itinterview.cn` 由个人「龙茂飞」持有（到期 2026-11-07，非挂售但等不到）。⇒ 最终选 **`itinterview.com.cn` @ 腾讯云：首年 ¥33 / 续费 ¥38**（用户已购买，实名审核通过）。
+  - **Cloudflare 侧（全部 active）**：zone id = `48961f3585fdc652af950bd2163c0382`，status = **active**；NS = `joyce.ns.cloudflare.com` / `kyle.ns.cloudflare.com`（公共 DNS 实测已委派）；DNS 记录 2 条 CNAME `@` 与 `www` → `it-interview-889.pages.dev`（Proxied 橙云）；**Pages 自定义域 `itinterview.com.cn` 与 `www.itinterview.com.cn` 均为 `active`**。
+  - **`cloudflare/worker.js`（已 `wrangler deploy`，Version ID `4e9d4123-7702-4fbf-af2e-3e4926d2671f`）**：CORS 白名单 = `https://itinterview.com.cn,https://www.itinterview.com.cn,https://it-interview-889.pages.dev`；`SITE_ORIGIN = "https://itinterview.com.cn"`。**实测双向通过**：新域名 ✅ / www ✅ / 旧 pages.dev ✅（兼容历史标签页）/ `evil.example.com` **无 ACAO** ✅。
+  - **站内域名全量替换**：`tools/set-site-origin.mjs` 的 `KNOWN_OLD_HOSTS` 扩为 `["it-interview-889.pages.dev", "it-interview.is-a.dev"]`（长的在前避免子串互扰）；实际替换 **1236 文件 / 10884 处**，幂等复跑 **0 处**。**残留 17 处经逐一核查全部落在「文档历史叙述 + 脚本注释」**（HANDOVER/README/cloudflare 文档/部署指南/workflow 注释/`set-site-origin.mjs` 自身的 KNOWN_OLD_HOSTS 与用法示例）——**刻意保留，属预期**。
+  - **顺手修掉的两个陈旧硬编码**：`tools/verify-publish.py` 与 `tools/merge-dup-questions.py` 的 `SITE` 常量仍指向**已下架**的 `it-interview.is-a.dev`（会让后续维护脚本把失效 URL 当权威）⇒ 均改为 `https://itinterview.com.cn`；`README.md` 顶部徽章、`cloudflare/部署指南.md` 第 6 节「打开站点」链接同步更新。
+  - **OG 封面图已重渲染（像素级）**：源 `assets/og-cover-src.html` 域名虽由脚本改好，但**图里的域名是烤进像素的**，用无头 Chrome 重出 `assets/og-cover.png`（166193 B，sha256 `443bcbc2c0ae8c45ff8ec2243035e146e8d34686ee263bca4959966f3bfdf03e`）并**已肉眼复核图中两处均为 `itinterview.com.cn`**。
+  - **缓存版本 `20260921a` → `20260921b`**（`index.html` 35 处 + `sw.js` 1 处，共 2 文件 36 处），确保回归用户能拿到新版。
+  - **验收实测（2026-09-21 22:40，部署 run 35612690196 success）**：`tools/accept-switch.py` **10/10 通过**（首页 200 v=20260921b、sw 版本一致、sitemap 1196 处新域名 0 处旧、robots 指向新域、分享页 canonical 正确、题库裸取 403 同源 200 version=7 questions=1191、GPTBot/裸 curl 403 + HANDOVER/build-pages 404、旧域名零残留、www 200）；`tools/regress-check.py` **旧功能零回归**（13 个 JS 模块全加载 + 15 组关键功能关键词全命中 + 5 项资源全 200）；线上 OG 图 sha256 = `443bcbc2...` 与本地一致；CORS 预检新域/www/pages.dev 均发放、`evil.example.com` 不发放。
+  - **新增验收脚本 `tools/accept-switch.py`**（10 项全自动）。另有 `tools/regress-check.py` 做「旧功能零回归」核对。**换域名后建议两个都跑。**
+  - **切换期间不断站**：`https://it-interview-889.pages.dev` 全程可用（CORS 白名单仍保留它，`SITE_ORIGIN` 已切新域名）。**旧域名 is-a.dev 已死，勿再引用。**
+
+- **【本地环境】`C://Users//Life//Desktop//iti-pages` 的 git 元数据已失效（不是代码问题，站点与远端不受影响）**：该目录是 `C://Users//Life//Desktop//iti-dedup2` 的 **linked worktree**（其 `.git` 是一个 66 字节的文件 → `gitdir: C:/Users/Life/Desktop/iti-dedup2/.git/worktrees/iti-pages`）。现已确认 **`iti-dedup2/.git/worktrees/` 整个目录不存在**，⇒ 在 `iti-pages` 里执行任何 git 命令都会报 `fatal: not a git repository: (NULL)`。
+  - **影响范围**：仅影响「在 iti-pages 本地目录里做 git 操作」。**线上站点、Actions 自动部署、远端 `release`/`main` 全部正常**（部署链路走 GitHub Actions，不依赖本机目录）。该目录里的文件仍是**旧基线 + 域名替换**的副本，**切勿在此目录 commit/push**，否则会把题库与分享页回退到旧版本。
+  - **恢复方式（任选）**：① 在 `iti-dedup2` 里 `git worktree prune` 后 `git worktree add <新路径> release` 重新挂一个工作区；② 直接把 `iti-pages` 改名留档，重新 `git clone` 一份（推荐，最干净）。
+
+- **🔴【重大事故 + 本轮修复】`it-interview.is-a.dev` 已被 is-a.dev 官方下架 → 站点全量迁到 `https://it-interview-889.pages.dev` 并把域名引用全部修好（缓存版本 `20260920c` → **`20260921a`**；前端功能零删减；新增 `tools/set-site-origin.mjs` 一键换域名工具）**：
+  - **下架事实（2026-09-21 UTC，全程零预警）**：维护者 notamitgamer 先 **APPROVE** 了 CNAME 迁移 PR #53221（`03:07:26`，此时只核了 JSON 格式、未看站点）→ 打开站点后留言 `wait. the website is odd.`（`03:15:56`）→ 判 `The website's content violates the terms of service`（`03:18:21`）并**关掉该 PR（未合并）** → 3 分钟后自开并合并 PR **#53294「taking down it-interview.is-a.dev」**（`03:21:55`），`domains/it-interview.json` 被**整文件删除**。
+  - **违规条款定位**：is-a.dev ToS 第 4 条禁止清单**第 16 项 = `Any website that is orientated to courses`（任何面向课程的网站）** —— IT 面试题库/刷题站正命中。同条原文写明 `Violation of this section may result in immediate termination without notice.`。**⛔ 结论：不要再向 is-a.dev（及任何同类免费子域）申请域名来放这个站。**
+  - **下架后的连带故障（本轮已全部修复）**：
+    ① `it-interview.is-a.dev` → **302 到 `https://is-a.dev/available?d=it-interview`**（记录已释放，他人可抢注）；
+    ② `succedd.github.io/workbuddy_it-interview/` → **301 跳到那条死链**（仓库根 `CNAME` 文件与 Pages 的 `cname` 仍指着旧域名，把 GitHub Pages 入口一起拖废）；
+    ③ **后端 CORS 白名单硬编码旧域名** ⇒ 从新域名发起的**登录 / 注册 / 云同步 / 统计请求全部拿不到 `Access-Control-Allow-Origin`，被浏览器拦掉**（站点能打开、功能却是坏的；本轮用 OPTIONS 预检实测确认）；
+    ④ **Worker 回读 `/data/published.json` 会被自家反爬守卫 403**（裸 fetch 无 UA、无浏览器信号）⇒ AI 投稿质检的分类快照恒为空串、且因 try/catch 而**静默失败**。
+  - **本轮修复清单（实测通过）**：
+    ① **`cloudflare/worker.js`**：CORS 白名单改为 `https://it-interview-889.pages.dev` 优先（旧域名保留仅为兼容历史标签页）；`SITE_ORIGIN` 指向新站；抓取 `published.json` 时补齐浏览器 UA + `Sec-Fetch-Site: same-origin` + 同源 `Referer` 以穿过自家守卫。**已 `wrangler deploy` 上线，Version ID `62de923e-6c9b-4081-a836-a6fc3d1bcd76`**；实测：新域名拿到 ACAO、旧域名仍放行、陌生域名不发放。
+    ② **前端 6 处硬编码域名改为运行时推导**：`js/sharecard.js`（分享卡水印 ×2 + **二维码内容**，后者原本生成的是死链）、`js/daily-quote.js`（每日一句水印）、`js/app.js`（关于页站点链接 + 公众号二维码图链接）⇒ **以后再换域名无需改代码**。
+    ③ **静态与生成文件域名替换：1217 个文件 / 10610 处**（`index.html` 的 canonical+og、`404.html`、`sitemap.xml` **1196 处**、`robots.txt`、`assets/og-cover-src.html`、`tools/gen-share-pages.js`、`tools/pages-guard-test.mjs`、`netlify/public/index.html`，以及 `q/*.html` **全部 1228 页**）。
+    ④ **新增 `tools/set-site-origin.mjs`**：`node tools/set-site-origin.mjs <新域名> --apply` 一条命令完成上述替换（默认 dry-run、幂等、**只动功能性引用、刻意不碰文档里的历史叙述**）。⇒ **下次换域名只需跑这一条 + 重新发版。**
+    ⑤ 缓存版本 `20260920c` → **`20260921a`**（`index.html` 35 处 + `sw.js` 的 `VERSION`）。
+  - **⚠️ 本轮教训（下次换域名必查）**：前端 `location.origin` 是自适应的，但 **CORS 白名单**与**服务端回读自身数据**这两处不在前端可见范围里，且故障是**静默的**（页面照常打开、请求无报错提示）。换域名的检查清单应为：前端硬编码 → 静态/SEO 文件 → **CORS 白名单** → **服务端回读路径** → 分享卡与二维码。
+  - **✅ 本轮第 3 次行为（止血，已完成）**：① **GitHub Pages 已关闭** —— `DELETE /repos/succedd/workbuddy_it-interview/pages` 返回 **204**，复核 `GET .../pages` 为 **404**；② 仓库根 `CNAME` **已从 `release` 与 `main` 两个分支删除**（两分支复核均 404）。⇒ 同时消除了「`*.github.io` 入口永久 301 到死域名」与「旧域名被他人抢注后访客被导向他人站点」两个隐患；**站点自此为单入口：`https://it-interview-889.pages.dev`。**（注：关闭后立即实测 `succedd.github.io/workbuddy_it-interview/` 仍返回 301，属 Fastly 边缘缓存延迟，配置侧已无残留。）
+  - **仍未完成（按优先级）**：
+    **P0**：对外自定义域方案待定（候选：直接用 `it-interview-889.pages.dev` / `eu.org` 免费域名 / 自购域名）。**代码侧已无硬编码障碍** —— 定了之后只需：跑一次 `node tools/set-site-origin.mjs <新域名> --apply` → 同步 `cloudflare/worker.js` 的 **CORS 白名单**与 **`SITE_ORIGIN`** 两处常量（并重新 `wrangler deploy`）→ 升 `index.html`/`sw.js` 版本号 → 发版。
+    **P1（✅ 本轮已完成）**：`assets/og-cover.png` 上印的旧域名**已重新生成并上线**（commit `e6acb1c`）—— 用无头 Chrome 按 `assets/og-cover-src.html` 以 **1200×630 / DPR 1** 重渲染（布局与旧图逐像素级同构），实测线上 `/assets/og-cover.png` 的 sha256 与本地新图完全一致（`0f36e26b55c4cf06…`，167517 字节）。
+    **P2（✅ 已自愈）**：`succedd.github.io/workbuddy_it-interview/` 现返回 **404**（Fastly 边缘缓存已过期），配置侧确认无残留。
 - **【ops】自动部署恢复：AI 误删 `release` 已修复 + AI 现可自行写 workflow（纯运维，前端代码未改，缓存版本仍 `20260920c`；**release = `69313e62789fea5781c5cbe33c73d7ec964480d8`**，main = `fb751a882c241489facd02c44463a16d53caee2a`（本轮期间由另一工具推的质量抽检文档提交））**：
   - **⚠️ 事故复盘（AI 自查，教训已写进 skill）**：上一轮 AI 用 git 底层对象造提交时，把一个「留在远端、本地并不存在」的 SHA 取进变量，变量为空 → `git push origin $C_REL:refs/heads/release` 退化成 `git push origin :refs/heads/release`（**删除远端分支的合法写法**），GitHub 安静执行。而 `release` 正是 **GitHub Pages 的构建源**（`GET /repos/{o}/{r}/pages` → `source.branch=release`）。**影响**：`release` 上的 workflow 提交（`6515c752`）随之消失、`.github/workflows/deploy-pages.yml` 从树里没了 ⇒ 自动部署断链；**站点本身未受影响**（Pages 继续服务上一次构建产物，线上全程 200，题库/反爬/PR/自定义域均无恙）。
   - **恢复**：`POST /repos/succedd/workbuddy_it-interview/git/refs {"ref":"refs/heads/release","sha":"ec5b609…"}` 重建分支（**注意：该接口只有在该 commit 的树里没有 `.github/workflows/*` 时才返回 201**；含 workflow 文件时返回 404），随后补回文档提交 `14a0642`。**三条 API 补救路径（建 ref → PATCH ref → POST merges）在缺 `workflow` scope 时全被拦，别试**。
