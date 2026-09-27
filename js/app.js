@@ -2080,6 +2080,7 @@
           <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
           <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
           <button class="btn" id="variant-btn" title="AI 生成同考点变式题，检验你是否真正掌握（不是背答案）">${U.icon("sparkles")} AI 变式</button>
+          <button class="btn" id="grade-btn" title="写下你的回答，AI 面试官按评分表打分并给改进版">✍️ AI 改卷</button>
           <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
           ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
           ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
@@ -2097,6 +2098,7 @@
         <div class="note-tip">仅自己可见 · 不随题库发布上传</div>
       </div>
       <div id="variant-box" style="display:none"></div>
+      <div id="grade-box" style="display:none"></div>
       <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${U.md(q.answer)}</div>
       ${pagerHtml(true)}
       <div class="section-head"><h2>相关推荐</h2></div>
@@ -2211,6 +2213,76 @@
           })();
         },
       });
+    }
+
+    /* ================= AI 改卷（20260927g） =================
+       写下自己的回答 → 服务端 DeepSeek 以面试官视角按
+       正确性/完整性/表达打分 → 分数+总评+缺失点+改进版。
+       作答与评分只存本机 localStorage，不入题库。 */
+    const gBox = $("#grade-box");
+    const G_HIST_KEY = "grade_hist_v1";
+    const gHistGet = (id) => { try { return JSON.parse(localStorage.getItem(G_HIST_KEY) || "{}")[id] || null; } catch (e) { return null; } };
+    const gHistSet = (id, rec) => { try { const all = JSON.parse(localStorage.getItem(G_HIST_KEY) || "{}"); all[id] = rec; localStorage.setItem(G_HIST_KEY, JSON.stringify(all)); } catch (e) {} };
+    const gVerdictTag = v => v === "优秀" ? '<span class="tag tag-success">优秀</span>'
+      : v === "合格" ? '<span class="tag tag-warning">合格</span>'
+      : '<span class="tag" style="color:#dc2626;border-color:#dc2626">不合格</span>';
+    $("#grade-btn").onclick = () => {
+      if (gBox.style.display === "block") { gBox.style.display = "none"; return; }
+      gBox.style.display = "block";
+      if (!gBox.dataset.loaded) openGradePanel();
+    };
+    function openGradePanel() {
+      gBox.dataset.loaded = "1";
+      const hist = gHistGet(q.id);
+      const histLine = hist ? `<span class="muted" style="font-size:12px">上次：${hist.score} 分 · ${gVerdictTag(hist.verdict)} · ${new Date(hist.at).toLocaleDateString()}</span>` : "";
+      gBox.innerHTML = `<div class="card" style="margin-top:12px">
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:15px">✍️ AI 改卷</h2>${histLine}</div>
+        <div class="muted" style="font-size:12px;margin-bottom:8px">不看标准答案，用自己的话写下回答（面试口述就写提纲+关键词），AI 面试官从<b>正确性 / 完整性 / 表达</b>三维度打分，指出缺失点并给改进版。每天 20 次。</div>
+        <textarea id="grade-input" rows="6" placeholder="在这里作答…（10 字以上）" style="width:100%;box-sizing:border-box;border:1px solid var(--c-border,#e2e8f0);border-radius:8px;padding:10px;font:inherit;resize:vertical">${hist && hist.my ? U.esc(hist.my) : ""}</textarea>
+        <div class="pill-row" style="margin-top:8px">
+          <button class="btn btn-primary btn-sm" id="grade-go">交卷评分</button>
+          <span class="muted" style="font-size:12px">评分只存本机 · 需登录</span>
+        </div>
+        <div id="grade-res"></div>
+      </div>`;
+      $("#grade-go").onclick = async () => {
+        const btn = $("#grade-go"), res = $("#grade-res");
+        const my = $("#grade-input").value.trim();
+        if (my.length < 10) { U.toast("再写多一点（至少 10 个字），太短评不出东西", "warn"); return; }
+        btn.disabled = true; btn.textContent = "AI 评卷中…（约 10~30 秒）";
+        res.innerHTML = "";
+        try {
+          const j = await Account.call("POST", "/ai/grade", { id: q.id, title: q.title, answer: q.answer, catName: q.catName, my });
+          if (!j || typeof j.score !== "number") {
+            res.innerHTML = `<div class="muted" style="padding:8px 0">${U.esc((j && j.error) || "评分结果异常，请重试")}</div>`;
+            btn.disabled = false; btn.textContent = "交卷评分"; return;
+          }
+          renderGradeResult(res, j);
+          gHistSet(q.id, { at: Date.now(), my, score: j.score, verdict: j.verdict });
+          btn.disabled = false; btn.textContent = "改一改，重新交卷";
+        } catch (e) {
+          btn.disabled = false; btn.textContent = "交卷评分";
+          if (e && e.status === 401) res.innerHTML = `<div style="padding:10px 0;line-height:2">AI 改卷为<b>登录用户免费功能</b>。<br><a class="btn btn-primary" href="#/account">登录 / 注册后使用 →</a></div>`;
+          else res.innerHTML = `<div class="muted" style="padding:8px 0">${U.esc((e && e.message) || "评分失败，请稍后重试")}</div>`;
+        }
+      };
+    }
+    function renderGradeResult(res, j) {
+      const dim = (name, v) => `<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span class="muted" style="font-size:12px;width:48px">${name}</span><div style="flex:1;height:8px;background:var(--c-border,#e2e8f0);border-radius:4px;overflow:hidden"><div style="width:${Math.max(0, Math.min(100, v))}%;height:100%;background:${v >= 80 ? "var(--c-ok,#16a34a)" : v >= 60 ? "#f59e0b" : "#ef4444"}"></div></div><span style="font-size:12px;width:32px;text-align:right">${v}</span></div>`;
+      const d = j.dims || {};
+      res.innerHTML = `<div style="border-top:1px dashed var(--c-border,#e2e8f0);margin-top:12px;padding-top:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <b style="font-size:30px">${j.score}<span class="muted" style="font-size:14px"> / 100</span></b>
+          ${gVerdictTag(j.verdict)}
+          ${j.cached ? '<span class="muted" style="font-size:12px">（同一回答已评过，直接复用结果）</span>' : ""}
+        </div>
+        <div style="margin-top:8px">${dim("正确性", d.correct || 0)}${dim("完整性", d.complete || 0)}${dim("表达", d.clarity || 0)}</div>
+        ${j.comment ? `<div style="margin-top:10px;line-height:1.8">${U.esc(j.comment)}</div>` : ""}
+        ${j.missing && j.missing.length ? `<div style="margin-top:10px"><b style="font-size:13px">缺失 / 加分点</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.8">${j.missing.map(m => `<li>${U.esc(m)}</li>`).join("")}</ul></div>` : ""}
+        ${j.improved ? `<div style="margin-top:10px"><b style="font-size:13px">参考改进版</b><div class="md" style="margin-top:6px">${U.md(j.improved)}</div></div>` : ""}
+        <div class="muted" style="font-size:12px;margin-top:8px">评语仅代表 AI 视角，以标准答案为准 · 改完可以再交一次看分数变化</div>
+      </div>`;
+      U.highlightAll(res);
     }
 
     /* 分享弹窗：生成题目卡片预览，支持「分享/保存图片」与「复制链接」 */
