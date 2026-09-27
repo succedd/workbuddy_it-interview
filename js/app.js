@@ -2183,34 +2183,6 @@
        本机逐题自评：「没答上」自动把原题加入错题重练（艾宾浩斯）。
        变式与作答记录只存本机 localStorage，不入正式题库。 */
     const vBox = $("#variant-box");
-    const V_CACHE_KEY = "variant_cache_v1", V_STAT_KEY = "variant_stats_v1";
-    const V_CACHE_TTL = 7 * 86400e3;   // 本机缓存 7 天，过期重新请求（服务端 KV 仍是同一份，秒回）
-    const vStatsGet = (id) => {
-      try { const s = JSON.parse(localStorage.getItem(V_STAT_KEY) || "{}")[id]; return s || { ok: 0, bad: 0 }; }
-      catch (e) { return { ok: 0, bad: 0 }; }
-    };
-    const vStatsAdd = (id, ok) => {
-      try {
-        const all = JSON.parse(localStorage.getItem(V_STAT_KEY) || "{}");
-        const s = all[id] || { ok: 0, bad: 0 };
-        ok ? s.ok++ : s.bad++; s.at = Date.now();
-        all[id] = s;
-        localStorage.setItem(V_STAT_KEY, JSON.stringify(all));
-      } catch (e) {}
-    };
-    const vCacheGet = (id) => {
-      try {
-        const c = JSON.parse(localStorage.getItem(V_CACHE_KEY) || "{}")[id];
-        return (c && Array.isArray(c.variants) && c.variants.length && Date.now() - c.at < V_CACHE_TTL) ? c : null;
-      } catch (e) { return null; }
-    };
-    const vCacheSet = (id, variants) => {
-      try {
-        const all = JSON.parse(localStorage.getItem(V_CACHE_KEY) || "{}");
-        all[id] = { at: Date.now(), variants };
-        localStorage.setItem(V_CACHE_KEY, JSON.stringify(all));
-      } catch (e) {}
-    };
     $("#variant-btn").onclick = () => {
       if (vBox.style.display === "block") { vBox.style.display = "none"; return; }
       vBox.style.display = "block";
@@ -2224,77 +2196,20 @@
         <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:15px">${U.icon("sparkles")} AI 变式训练</h2>${statLine}</div>
         <div id="v-body"><div class="muted" style="padding:16px 0;text-align:center">正在加载变式题…（首次生成约 10~30 秒，结果全站共享，生成过的题秒开）</div></div>
       </div>`;
-      const vBody = vBox.querySelector("#v-body");
-      const loginHint = () => {
-        vBody.innerHTML = `<div style="padding:14px 0;line-height:2">AI 变式训练为<b>登录用户免费功能</b>（防滥用限额，每天可生成 20 题）。<br>
-          <a class="btn btn-primary" href="#/account" style="margin-top:6px">登录 / 注册后使用 →</a></div>`;
-      };
-      const retryHint = (msg) => {
-        vBody.innerHTML = `<div class="muted" style="padding:12px 0">${U.esc(msg || "加载失败，请稍后重试")}<div style="margin-top:10px"><button class="btn btn-sm" id="v-retry">重试</button></div></div>`;
-        const r = vBody.querySelector("#v-retry");
-        if (r) r.onclick = () => { vBox.dataset.loaded = ""; openVariantPanel(); };
-      };
-      if (!(window.Account && Account.isLoggedIn())) { loginHint(); return; }
-      const cached = vCacheGet(q.id);
-      if (cached) { renderVariants(vBody, cached.variants); return; }
-      (async () => {
-        try {
-          const j = await Account.call("POST", "/ai/variant", {
-            id: q.id, title: q.title, answer: q.answer, catName: q.catName, tags: q.tags || [],
-          });
-          if (!j || !Array.isArray(j.variants) || !j.variants.length) { retryHint((j && j.error) || "未生成出有效变式"); return; }
-          vCacheSet(q.id, j.variants);
-          renderVariants(vBody, j.variants);
-        } catch (e) {
-          if (e && e.status === 401) loginHint();
-          else retryHint(e && e.message);
-        }
-      })();
-    }
-    function renderVariants(vBody, list) {
-      vBody.innerHTML = list.map((v, i) => `
-        <div class="v-item" style="border:1px solid var(--c-border,#e2e8f0);border-radius:10px;padding:12px 14px;margin-top:10px">
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <span class="tag tag-primary">变式 ${i + 1}</span>
-            ${v.focus ? `<span class="tag tag-outline">${U.esc(v.focus)}</span>` : ""}
-          </div>
-          <div style="margin:8px 0;font-weight:600;line-height:1.7">${U.esc(v.title)}</div>
-          <div class="pill-row">
-            <button class="btn btn-sm v-show">${U.icon("eye")} 看参考答案</button>
-            <button class="btn btn-sm btn-primary v-ok">${U.icon("check")} 答上了</button>
-            <button class="btn btn-sm v-bad">${U.icon("alert")} 没答上</button>
-          </div>
-          <div class="v-answer md" style="display:none;margin-top:8px;border-top:1px dashed var(--c-border,#e2e8f0);padding-top:8px">${U.md(v.answer)}</div>
-        </div>`).join("")
-        + `<div class="muted" style="font-size:12px;margin-top:8px">先自己答再看答案 · 自评只存本机 · 「没答上」会把原题加入错题重练</div>`;
-      const items = vBody.querySelectorAll(".v-item");
-      list.forEach((v, i) => {
-        const item = items[i];
-        if (!item) return;
-        const showBtn = item.querySelector(".v-show"), ansBox = item.querySelector(".v-answer");
-        showBtn.onclick = () => {
-          ansBox.style.display = ansBox.style.display === "none" ? "block" : "none";
-          U.highlightAll(ansBox);
-        };
-        const okBtn = item.querySelector(".v-ok"), badBtn = item.querySelector(".v-bad");
-        const done = (good) => {
-          okBtn.disabled = true; badBtn.disabled = true;
-          item.querySelector(".pill-row").insertAdjacentHTML("afterbegin",
-            good ? '<span class="tag tag-success">✓ 这题算是真会了</span>' : '<span class="tag tag-warning">已记入错题重练</span>');
-          vStatsAdd(q.id, good);
-        };
-        okBtn.onclick = () => done(true);
-        badBtn.onclick = async () => {
-          await Services.addWeak(q.id, "unknown");
-          App.reviewDue = (App.reviewDue || 0) + 1;
-          renderSidebar(parseHash());
-          const info = await Services.weakInfo(q.id);
-          if (info && !$("#weak-status")) {
-            $("#variant-btn").insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status" title="该题已进入错题重练，按记忆曲线第 ${info.box + 1}/8 阶段循环">📅 复习中</span>`);
-          }
-          done(false);
-          U.toast("原题已加入错题重练，到期会提醒复习", "warn");
-        };
+      openVariantChallenge(vBox.querySelector("#v-body"), q, {
+        onAssess(good) {
+          if (good) return;
+          (async () => {
+            await Services.addWeak(q.id, "unknown");
+            App.reviewDue = (App.reviewDue || 0) + 1;
+            renderSidebar(parseHash());
+            const info = await Services.weakInfo(q.id);
+            if (info && !$("#weak-status")) {
+              $("#variant-btn").insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status" title="该题已进入错题重练，按记忆曲线第 ${info.box + 1}/8 阶段循环">📅 复习中</span>`);
+            }
+            U.toast("原题已加入错题重练，到期会提醒复习", "warn");
+          })();
+        },
       });
     }
 
@@ -2460,6 +2375,110 @@
     });
   }
 
+  /* ==================== AI 变式共享层（详情页训练 + 复习闯关共用，20260927f） ====================
+     本机缓存/统计与 /ai/variant 请求收敛到这里，两个入口复用同一份代码与同一份缓存。 */
+  const V_CACHE_KEY = "variant_cache_v1", V_STAT_KEY = "variant_stats_v1";
+  const V_CACHE_TTL = 7 * 86400e3;   // 本机缓存 7 天，过期重新请求（服务端 KV 仍是同一份，秒回）
+  function vStatsGet(id) {
+    try { const s = JSON.parse(localStorage.getItem(V_STAT_KEY) || "{}")[id]; return s || { ok: 0, bad: 0 }; }
+    catch (e) { return { ok: 0, bad: 0 }; }
+  }
+  function vStatsAdd(id, ok) {
+    try {
+      const all = JSON.parse(localStorage.getItem(V_STAT_KEY) || "{}");
+      const s = all[id] || { ok: 0, bad: 0 };
+      ok ? s.ok++ : s.bad++; s.at = Date.now();
+      all[id] = s;
+      localStorage.setItem(V_STAT_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+  function vCacheGet(id) {
+    try {
+      const c = JSON.parse(localStorage.getItem(V_CACHE_KEY) || "{}")[id];
+      return (c && Array.isArray(c.variants) && c.variants.length && Date.now() - c.at < V_CACHE_TTL) ? c : null;
+    } catch (e) { return null; }
+  }
+  function vCacheSet(id, variants) {
+    try {
+      const all = JSON.parse(localStorage.getItem(V_CACHE_KEY) || "{}");
+      all[id] = { at: Date.now(), variants };
+      localStorage.setItem(V_CACHE_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+  /* 打开变式面板：登录检查 → 取本机缓存 → 调 /ai/variant → 渲染。
+     opts.onAssess(good) 逐题自评回调；opts.tagFor(good) 自定义结果标签；
+     opts.footer 自定义底部说明；opts.onReady(total) 渲染完成（闯关计总数）；
+     opts.loginAlt 未登录/失败时的兜底提示。 */
+  function openVariantChallenge(vBody, q, opts = {}) {
+    const loginHint = () => {
+      vBody.innerHTML = `<div style="padding:14px 0;line-height:2">AI 变式为<b>登录用户免费功能</b>（防滥用限额，每天可生成 20 题）。<br>
+        <a class="btn btn-primary" href="#/account" style="margin-top:6px">登录 / 注册后使用 →</a>${opts.loginAlt || ""}</div>`;
+    };
+    const retryHint = (msg) => {
+      vBody.innerHTML = `<div class="muted" style="padding:12px 0">${U.esc(msg || "加载失败，请稍后重试")}<div style="margin-top:10px"><button class="btn btn-sm" id="v-retry">重试</button></div>${opts.loginAlt || ""}</div>`;
+      const r = vBody.querySelector("#v-retry");
+      if (r) r.onclick = () => start();
+    };
+    const start = () => {
+      if (!(window.Account && Account.isLoggedIn())) { loginHint(); return; }
+      const cached = vCacheGet(q.id);
+      if (cached) { renderVariantItems(vBody, q, cached.variants, opts); return; }
+      vBody.innerHTML = `<div class="muted" style="padding:16px 0;text-align:center">${opts.loadingMsg || "正在加载变式题…（首次生成约 10~30 秒，结果全站共享，生成过的题秒开）"}</div>`;
+      (async () => {
+        try {
+          const j = await Account.call("POST", "/ai/variant", {
+            id: q.id, title: q.title, answer: q.answer, catName: q.catName, tags: q.tags || [],
+          });
+          if (!j || !Array.isArray(j.variants) || !j.variants.length) { retryHint((j && j.error) || "未生成出有效变式"); return; }
+          vCacheSet(q.id, j.variants);
+          renderVariantItems(vBody, q, j.variants, opts);
+        } catch (e) {
+          if (e && e.status === 401) loginHint();
+          else retryHint(e && e.message);
+        }
+      })();
+    };
+    start();
+  }
+  function renderVariantItems(vBody, q, list, opts = {}) {
+    vBody.innerHTML = list.map((v, i) => `
+      <div class="v-item" style="border:1px solid var(--c-border,#e2e8f0);border-radius:10px;padding:12px 14px;margin-top:10px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span class="tag tag-primary">变式 ${i + 1}</span>
+          ${v.focus ? `<span class="tag tag-outline">${U.esc(v.focus)}</span>` : ""}
+        </div>
+        <div style="margin:8px 0;font-weight:600;line-height:1.7">${U.esc(v.title)}</div>
+        <div class="pill-row">
+          <button class="btn btn-sm v-show">${U.icon("eye")} 看参考答案</button>
+          <button class="btn btn-sm btn-primary v-ok">${U.icon("check")} 答上了</button>
+          <button class="btn btn-sm v-bad">${U.icon("alert")} 没答上</button>
+        </div>
+        <div class="v-answer md" style="display:none;margin-top:8px;border-top:1px dashed var(--c-border,#e2e8f0);padding-top:8px">${U.md(v.answer)}</div>
+      </div>`).join("")
+      + (opts.footer || `<div class="muted" style="font-size:12px;margin-top:8px">先自己答再看答案 · 自评只存本机 · 「没答上」会把原题加入错题重练</div>`);
+    if (opts.onReady) opts.onReady(list.length);
+    const items = vBody.querySelectorAll(".v-item");
+    list.forEach((v, i) => {
+      const item = items[i];
+      if (!item) return;
+      const showBtn = item.querySelector(".v-show"), ansBox = item.querySelector(".v-answer");
+      showBtn.onclick = () => {
+        ansBox.style.display = ansBox.style.display === "none" ? "block" : "none";
+        U.highlightAll(ansBox);
+      };
+      const okBtn = item.querySelector(".v-ok"), badBtn = item.querySelector(".v-bad");
+      const done = (good) => {
+        okBtn.disabled = true; badBtn.disabled = true;
+        item.querySelector(".pill-row").insertAdjacentHTML("afterbegin",
+          opts.tagFor ? opts.tagFor(good) : (good ? '<span class="tag tag-success">✓ 这题算是真会了</span>' : '<span class="tag tag-warning">已记入错题重练</span>'));
+        vStatsAdd(q.id, good);
+        if (opts.onAssess) opts.onAssess(good, item);
+      };
+      okBtn.onclick = () => done(true);
+      badBtn.onclick = () => done(false);
+    });
+  }
+
   /* ============================ 错题重练（艾宾浩斯记忆曲线） ============================ */
   async function pageReview() {
     document.title = "错题重练 · IT面试题库";
@@ -2488,14 +2507,15 @@
         ${noteLine(q.id)}
         <div class="pill-row" style="margin-top:10px">
           ${isDue ? `<button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
-          <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>` : ""}
+          <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>
+          <button class="btn btn-sm" data-act="challenge" title="AI 出 3 道同考点变式，先答再看，全对自动顺延记忆间隔">⚡ AI 闯关</button>` : ""}
           <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出</button>
         </div>
       </div>`;
     };
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
-      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 会了拉长间隔 / 还不会 5 分钟后重来</span></div>
+      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 点「⚡ AI 闯关」先答变式题验证真掌握，或直接自评</span></div>
       ${due.length
         ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
         : `<div class="empty">
@@ -2510,10 +2530,59 @@
       ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
       ${due.length && U.canHover() ? `<div class="muted kbd-hint" style="font-size:12px;margin-top:14px">快捷键：回车 确认「会了」· Esc 关闭弹窗</div>` : ""}
     `);
+    const wByQid = new Map([...due, ...upcoming].map(w => [w._q.id, w]));
     $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
-      const qid = parseInt(b.closest(".rv-card").dataset.qid);
+      const card = b.closest(".rv-card");
+      const qid = parseInt(card.dataset.qid);
       const act = b.dataset.act;
       if (act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
+      else if (act === "challenge") {
+        const w = wByQid.get(qid);
+        if (!w) { U.toast("数据未就绪，请刷新页面重试", "warn"); return; }
+        let panel = card.querySelector(".vc-panel");
+        if (panel) { panel.style.display = panel.style.display === "none" ? "block" : "none"; return; }
+        panel = document.createElement("div");
+        panel.className = "vc-panel";
+        panel.innerHTML = `<div class="card" style="margin-top:10px">
+          <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:15px">${U.icon("sparkles")} 复习闯关 · AI 变式</h2><span class="muted" id="vc-prog"></span></div>
+          <div class="vc-body"><div class="muted" style="padding:12px 0;text-align:center">正在加载变式题…</div></div>
+        </div>`;
+        card.appendChild(panel);
+        const prog = panel.querySelector("#vc-prog");
+        let graded = false, okN = 0, badN = 0, total = 0;
+        openVariantChallenge(panel.querySelector(".vc-body"), w._q, {
+          loginAlt: `<div class="muted" style="margin-top:8px;font-size:12px">暂时不想登录？直接用上方「会了 / 还不会」自评也可以</div>`,
+          loadingMsg: "正在加载变式题…（首次生成约 10~30 秒，生成过的题秒开）",
+          tagFor: good => good ? '<span class="tag tag-success">✓ 答上了</span>' : '<span class="tag tag-warning">❌ 未通过</span>',
+          footer: `<div class="muted" style="font-size:12px;margin-top:8px">全部答上 = 闯关成功，记忆间隔自动顺延；任意一题没答上 = 本关未通过，间隔重置 5 分钟后重来</div>`,
+          onReady(n) { total = n; prog.textContent = "已答 0/" + n; },
+          onAssess(good) {
+            if (graded) return;
+            good ? okN++ : badN++;
+            prog.textContent = "已答 " + (okN + badN) + "/" + total;
+            if (badN > 0) {
+              graded = true;
+              Services.weakGrade(qid, false).then(() => U.toast("本关未通过：记忆间隔已重置，5 分钟后重试", "warn"));
+            } else if (total && okN === total) {
+              graded = true;
+              Services.weakGrade(qid, true).then(async () => {
+                U.toast("🎉 闯关成功！下次复习时间已顺延", "success");
+                App.reviewDue = Math.max(0, (App.reviewDue || 0) - 1);
+                renderSidebar(parseHash());
+                try {
+                  const info = await Services.weakInfo(qid);
+                  const st = card.querySelector(".tag");
+                  if (st) {
+                    st.classList.remove("tag-warning");
+                    st.textContent = "✅ 已顺延" + (info ? " · " + Services.EBBS_LABEL[Math.min(info.box || 0, Services.EBBS_LABEL.length - 1)] + "后" : "");
+                  }
+                } catch (e) {}
+              });
+            }
+          },
+        });
+        return;
+      }
       else {
         await Services.weakGrade(qid, act === "ok");
         U.toast(act === "ok" ? "👍 已掌握，下次复习时间已顺延" : "好的，5 分钟后再次提醒", act === "ok" ? "success" : "warn");
