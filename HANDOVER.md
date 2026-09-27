@@ -106,13 +106,27 @@
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
 **最新 release commit：`7f58dd5`（feat: AI 改卷上线——详情页写下回答，AI 面试官三维度评分点评）｜缓存版本 `20260927g`｜更新时间：2026-09-27 19:20 (+08)**
+**本次内容（2026-09-27-d 批次，WorkBuddy 会话执行）：上线「AI 改卷」——详情页写下回答，AI 面试官三维度评分点评（P0 创新项第 4 项），前端 + Worker 两层。**
+- **功能**：题目详情页新增「✍️ AI 改卷」卡片：不看标准答案写下自己的回答（≥10 字）→ 交卷 → AI 按**正确性 / 完整性 / 表达**打 0–100 分 + 总评（优秀 / 合格 / 不合格）+ 缺失 / 加分点清单 + 可背诵的参考改进版；可反复改稿重交看分数变化。作答与最近一次评分只存本机（`grade_hist_v1`），不入题库。
+- **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/grade`。KV 缓存 `grade:v1:<qid>:<djb2(去空白回答)>` 7 天（同一回答重评免费、不耗限额）；限额每用户每日 20 次 / 每 IP 每小时 30 次（先读后计，AI 失败不扣）；`temperature 0.3`（评分要稳定，远低于变式的 0.8）、`thinking disabled`、`json_object`、max_tokens 2048；`<data>`（题目素材）+ `<answer>`（用户回答）双重注入防护；响应字段校验收敛（分数夹逼、verdict 枚举归位、missing ≤6 条）。改动：`handleAiGrade()` / `genGrade()` / `djb2Hex()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
+- **前端（`js/app.js`）**：详情页 q-actions 加「✍️ AI 改卷」按钮 + `#grade-box` 面板（textarea 作答 → 评分面板：大分数 + 三维度色条 + 缺失点列表 + 改进版 md 渲染）；401 引导登录、失败保留输入可重试。
+- **部署与验证**：前端 20260927f→g；Worker 重新 `wrangler deploy`（版本 `660629d0`）。线上：未登录 401 `needLogin` 正确，旧端点 `/ai/variant` `/stats` 完好。
+- **文档同步**：README「主要功能」加「AI 面试官三件套」条目；`#/help` 使用指南（`js/guide.js`）加「AI 变式训练 / AI 改卷」条目并扩写「错题重练页」，更新日期戳 2026-09-27（`20260927h`）。
+
+**上一条 release commit：`36b1093`（feat: 复习闯关化——错题重练接入 AI 变式，全对才顺延记忆间隔）｜缓存版本 `20260927f`｜更新时间：2026-09-27 19:05 (+08)**
+**本次内容（2026-09-27-c 批次，WorkBuddy 会话执行）：复习闯关化（P0 创新项第 3 项），纯前端改动、后端零改动。**
+- **功能**：错题重练页每张**到期**卡片新增「⚡ AI 闯关」→ 展开该题 3 道 AI 变式（与详情页共用同一份 KV 缓存，生成过的题秒开）→ 先答再自评。**判定规则：全部答上 = 闯关成功，`weakGrade(true)` 顺延记忆间隔；任一没答上 = fail-fast `weakGrade(false)` 重置间隔 5 分钟后重来**（`graded` 锁只判一次）。进度显示「已答 x/3」，成功后卡片状态改「✅ 已顺延」并刷新侧栏待复习角标。未登录 / 生成失败给兜底提示，可退回「会了 / 还不会」自评。
+- **重构**：详情页变式训练抽为共享层 `openVariantChallenge(vBody, q, opts)` / `renderVariantItems()`（opts：`onAssess` / `tagFor` / `footer` / `onReady` / `loginAlt` / `loadingMsg`），详情页与复习页共用 `variant_cache_v1` 与服务端 KV。
+- **部署**：前端 20260927e→f。
+
+**上一条 release commit：`2939e9c`（feat: AI 变式训练上线——错题变式生成 + 本机自评联动错题重练）｜缓存版本 `20260927e`｜更新时间：2026-09-27 18:35 (+08)**
 **本次内容（2026-09-27-b 批次，WorkBuddy 会话执行）：上线「AI 变式训练」（P0 创新项第 2 项：错题变式），前端 + Worker 两层。**
 - **功能**：题目详情页新增「✨ AI 变式」按钮 → 服务端把原题内容发给 DeepSeek（`deepseek-flash`，temperature 0.8、thinking disabled、response_format json_object、max_tokens 4096）生成 **3 道同考点变式题**（题干 + 参考答案 + 考察点，问法/场景/条件必变，防同义改写）；用户逐题「先答再看答案」自评：「没答上」自动把**原题**加入错题重练（艾宾浩斯）。变式与自评只存本机 localStorage，不入正式题库（入库仍走投稿审核链路）。
 - **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/variant`（登录用户，任何角色）。**KV 全局缓存** `var:v1:<qid>`（同一道题全站只生成一次，180 天过期；命中零成本、不消耗限额、不要求重复登录计费）；限额走 KV 软计数：**每用户每日 20 次真实生成 / 每 IP 每小时 30 次**，先读后计（AI 失败不消耗次数）；prompt 带 `<data>` 注入防护（与投稿质检同款）；响应经校验收敛（题长 ≥6、答案 ≥30 字、去重、与原题不同、最多 3 道）。改动：`handleAiVariant()` / `genVariants()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
 - **前端（`js/app.js` + `js/account.js`）**：`account.js` 导出 `A.call`（统一带 token + 多入口回退请求通道）；详情页 q-actions 加按钮、note-card 与答案区之间加 `#variant-box` 面板；本机缓存 `variant_cache_v1`（7 天 TTL）+ 自评统计 `variant_stats_v1`；未登录显示引导，失败可重试。
 - **成本模型**：每题全站只生成一次（KV 缓存）→ AI 成本 ≈ 题库规模 × 单次生成（deepseek-flash 约 0.01 元级），与用户量无关；用户侧每题无限复练免费。
 - **部署**：前端走正常发版（20260927d→e）；**Worker 需 `wrangler deploy --config cloudflare/wrangler.toml` 单独部署**（2026-09-27 已执行）。
-- **后续规划（未实现）**：① 错题重练页复习弹出时直接出变式（复习闯关化）；② AI 改卷（用户自由作答 → 评分反馈）；③ 学习周报 AI 点评。
+- **后续规划（未实现）**：学习周报 AI 点评（复习闯关化与 AI 改卷已分别于 c / d 批次完成）。
 
 **上一条 release commit：`183113a`（fix: 访客地域分布空白——超时跟随入口 + 多入口回退 + 加载/失败状态可视化）｜缓存版本 `20260927d`｜更新时间：2026-09-27 16:15 (+08)**
 **本次内容（2026-09-27-a 批次，WorkBuddy 会话执行）：修复管理后台「访问统计」卡片里访客地域分布整块空白的问题。**
