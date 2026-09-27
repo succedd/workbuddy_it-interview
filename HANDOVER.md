@@ -105,7 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`183113a`（fix: 访客地域分布空白——超时跟随入口 + 多入口回退 + 加载/失败状态可视化）｜缓存版本 `20260927d`｜更新时间：2026-09-27 16:15 (+08)**
+**最新 release commit：`2939e9c`（feat: AI 变式训练上线——错题变式生成 + 本机自评联动错题重练）｜缓存版本 `20260927e`｜更新时间：2026-09-27 18:35 (+08)**
+**本次内容（2026-09-27-b 批次，WorkBuddy 会话执行）：上线「AI 变式训练」（P0 创新项第 2 项：错题变式），前端 + Worker 两层。**
+- **功能**：题目详情页新增「✨ AI 变式」按钮 → 服务端把原题内容发给 DeepSeek（`deepseek-flash`，temperature 0.8、thinking disabled、response_format json_object、max_tokens 4096）生成 **3 道同考点变式题**（题干 + 参考答案 + 考察点，问法/场景/条件必变，防同义改写）；用户逐题「先答再看答案」自评：「没答上」自动把**原题**加入错题重练（艾宾浩斯）。变式与自评只存本机 localStorage，不入正式题库（入库仍走投稿审核链路）。
+- **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/variant`（登录用户，任何角色）。**KV 全局缓存** `var:v1:<qid>`（同一道题全站只生成一次，180 天过期；命中零成本、不消耗限额、不要求重复登录计费）；限额走 KV 软计数：**每用户每日 20 次真实生成 / 每 IP 每小时 30 次**，先读后计（AI 失败不消耗次数）；prompt 带 `<data>` 注入防护（与投稿质检同款）；响应经校验收敛（题长 ≥6、答案 ≥30 字、去重、与原题不同、最多 3 道）。改动：`handleAiVariant()` / `genVariants()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
+- **前端（`js/app.js` + `js/account.js`）**：`account.js` 导出 `A.call`（统一带 token + 多入口回退请求通道）；详情页 q-actions 加按钮、note-card 与答案区之间加 `#variant-box` 面板；本机缓存 `variant_cache_v1`（7 天 TTL）+ 自评统计 `variant_stats_v1`；未登录显示引导，失败可重试。
+- **成本模型**：每题全站只生成一次（KV 缓存）→ AI 成本 ≈ 题库规模 × 单次生成（deepseek-flash 约 0.01 元级），与用户量无关；用户侧每题无限复练免费。
+- **部署**：前端走正常发版（20260927d→e）；**Worker 需 `wrangler deploy --config cloudflare/wrangler.toml` 单独部署**（2026-09-27 已执行）。
+- **后续规划（未实现）**：① 错题重练页复习弹出时直接出变式（复习闯关化）；② AI 改卷（用户自由作答 → 评分反馈）；③ 学习周报 AI 点评。
+
+**上一条 release commit：`183113a`（fix: 访客地域分布空白——超时跟随入口 + 多入口回退 + 加载/失败状态可视化）｜缓存版本 `20260927d`｜更新时间：2026-09-27 16:15 (+08)**
 **本次内容（2026-09-27-a 批次，WorkBuddy 会话执行）：修复管理后台「访问统计」卡片里访客地域分布整块空白的问题。**
 - **现象**：卡片文案「已接入云端统计（Cloudflare Worker），下方为访客地域分布。」正常显示，但下方 `#c-geo` 区域一片空白——无图表、无「暂无访客数据」、无任何报错。
 - **排查结论（后端无罪）**：实测 Netlify 桥 `https://iti-api.netlify.app/stats` → 200，CORS 正确回显 `https://itinterview.com.cn`，`byCountry` 有真实数据（total 764：US 740 / SG 11 / TW 3 / ES·NL·CO 各 1）。问题全在前端。
