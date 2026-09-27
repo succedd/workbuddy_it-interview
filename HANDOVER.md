@@ -105,7 +105,7 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`2939e9c`（feat: AI 变式训练上线——错题变式生成 + 本机自评联动错题重练）｜缓存版本 `20260927e`｜更新时间：2026-09-27 18:35 (+08)**
+**最新 release commit：`fe0609f`（feat: 复习闯关化——错题重练接入 AI 变式，全对才顺延记忆间隔）｜缓存版本 `20260927f`｜更新时间：2026-09-27 19:05 (+08)**
 **本次内容（2026-09-27-b 批次，WorkBuddy 会话执行）：上线「AI 变式训练」（P0 创新项第 2 项：错题变式），前端 + Worker 两层。**
 - **功能**：题目详情页新增「✨ AI 变式」按钮 → 服务端把原题内容发给 DeepSeek（`deepseek-flash`，temperature 0.8、thinking disabled、response_format json_object、max_tokens 4096）生成 **3 道同考点变式题**（题干 + 参考答案 + 考察点，问法/场景/条件必变，防同义改写）；用户逐题「先答再看答案」自评：「没答上」自动把**原题**加入错题重练（艾宾浩斯）。变式与自评只存本机 localStorage，不入正式题库（入库仍走投稿审核链路）。
 - **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/variant`（登录用户，任何角色）。**KV 全局缓存** `var:v1:<qid>`（同一道题全站只生成一次，180 天过期；命中零成本、不消耗限额、不要求重复登录计费）；限额走 KV 软计数：**每用户每日 20 次真实生成 / 每 IP 每小时 30 次**，先读后计（AI 失败不消耗次数）；prompt 带 `<data>` 注入防护（与投稿质检同款）；响应经校验收敛（题长 ≥6、答案 ≥30 字、去重、与原题不同、最多 3 道）。改动：`handleAiVariant()` / `genVariants()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
