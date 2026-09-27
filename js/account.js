@@ -148,6 +148,9 @@
   };
   const apiBase = () => (A.endpoints()[0] || API_DEFAULT);
   A.apiBase = apiBase;
+  /* 暴露统一请求通道（带 token / 多入口回退 / 统一错误），供 app.js 的
+     AI 变式训练等登录态功能复用（20260927e）。 */
+  A.call = call;
 
   A.getUser = () => { try { return JSON.parse(ls(LS.user) || "null"); } catch (e) { return null; } };
   A.getToken = () => ls(LS.token) || "";
