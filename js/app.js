@@ -3084,7 +3084,7 @@
           ${Stats.cfEnabled()
             ? `<div class="muted" style="margin-bottom:8px">已接入云端统计（Cloudflare Worker），下方为访客地域分布。</div>`
             : `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">配置云端统计接口后可查看访客地域分布与浏览量</p><a class="btn" href="#/admin/settings">前往配置 →</a></div>`}
-          ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"></div>` : ""}
+          ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"><div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div></div>` : ""}
         </div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
       </div>
@@ -3105,19 +3105,36 @@
         mk("#c2", "pie", Object.entries(s.byDiff), "难度");
         mk("#c3", "bar", Object.entries(s.byType), "题型");
         mk("#c4", "pie", Object.entries(s.byAiBand), "AI评分");
-        /* 可选 Cloudflare Worker 地域分布 */
+        /* 可选 Cloudflare Worker 地域分布（20260927d：加载/失败状态可视化，失败可重试。
+           旧版失败时静默吞掉 → 该区域永远空白，看起来像「没显示」。 */
         if (Stats.cfEnabled()) {
-          Stats.cfGetStats(true).then(st => {
+          const drawGeo = (st) => {
             const geo = (st && st.byCountry) || {};
             const geoArr = Object.entries(geo).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
             const geoBox = document.getElementById("c-geo");
-            if (geoBox) {
-              if (geoArr.length) { geoBox.classList.add("chart-fade"); const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
-              else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
-            }
-          }).catch(() => {});
+            if (!geoBox) return;
+            if (geoArr.length) { geoBox.classList.add("chart-fade"); const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
+            else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
+          };
+          const geoFail = () => {
+            const geoBox = document.getElementById("c-geo");
+            if (!geoBox) return;
+            geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:32px 0">云端访客数据加载失败（网络或接口暂时不可用）<br><a href="javascript:void(0)" id="geo-retry">重试</a>　<a href="#/admin/settings">检查接口设置 →</a></div>';
+            const r = document.getElementById("geo-retry");
+            if (r) r.onclick = loadGeo;
+          };
+          const loadGeo = () => {
+            const geoBox = document.getElementById("c-geo");
+            if (geoBox && !geoBox.dataset.ready) geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div>';
+            Stats.cfGetStats(true).then(st => { if (st) { const b = document.getElementById("c-geo"); if (b) b.dataset.ready = "1"; drawGeo(st); } else geoFail(); }).catch(geoFail);
+          };
+          loadGeo();
         }
-      }).catch(() => {});
+      }).catch(() => {
+        /* echarts 加载失败时，地域分布卡片也不能留在「加载中」假状态 */
+        const geoBox = document.getElementById("c-geo");
+        if (geoBox && !geoBox.dataset.ready) geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">图表组件加载失败，请检查网络后刷新重试</div>';
+      });
     });
   }
 
@@ -4550,6 +4567,13 @@
       const t = setTimeout(() => ctrl.abort(), ms);
       return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
     }
+    /* 超时跟随入口（20260927d）：Netlify 桥冷启动实测 13s+，给 20s；
+       其余入口（workers.dev 直连等）给 10s。
+       旧的统一 3s 超时会把冷启动中的桥误判为失败 → 静默 catch →
+       管理后台「访客地域分布」整块空白无任何提示。 */
+    function cfTimeout(base) {
+      return /netlify\.app/i.test(base || "") ? 20000 : 10000;
+    }
     async function cfPost(path, params) {
       const b = cfApi().replace(/\/+$/, ""); if (!b) return null;
       try {
@@ -4557,23 +4581,34 @@
         const k = localStorage.getItem("stats_key") || "";
         if (k) u.searchParams.set("k", k);
         if (params) for (const kk in params) u.searchParams.set(kk, String(params[kk]));
-        const r = await fetchWithTimeout(u.toString(), { method: "POST", mode: "cors" });
+        const r = await fetchWithTimeout(u.toString(), { method: "POST", mode: "cors" }, cfTimeout(b));
         return await r.json().catch(() => null);
       } catch (e) { return null; }
     }
     let cfCache = null, cfCacheAt = 0;
+    /* 成功返回聚合 JSON；失败（网络/超时/CORS/密钥不符）返回 null（无缓存可回退时）。
+       调用方以 null 判定「加载失败」，与「连接成功但暂无数据」区分开。
+       20260927d：多入口回退 —— 首选入口失败时自动尝试帐号系统的其余候选
+       （api-endpoints.json 的桥 / workers.dev 等），读路径不再绑死单点。 */
     async function cfGetStats(force) {
-      const b = cfApi().replace(/\/+$/, ""); if (!b) return null;
+      const bases = [];
+      const push = (u) => { const s = String(u || "").trim().replace(/\/+$/, ""); if (s && bases.indexOf(s) < 0) bases.push(s); };
+      push(cfApi());
+      try { if (window.Account && window.Account.endpoints) window.Account.endpoints().forEach(push); } catch (e) {}
+      if (!bases.length) return null;
       if (!force && cfCache && Date.now() - cfCacheAt < 60000) return cfCache;
-      try {
-        const u = new URL(b + "/stats");
-        const k = localStorage.getItem("stats_key") || "";
-        if (k) u.searchParams.set("k", k);
-        const r = await fetchWithTimeout(u.toString(), { mode: "cors" });
-        const j = await r.json();
-        cfCache = j; cfCacheAt = Date.now();
-        return j;
-      } catch (e) { return cfCache; }
+      for (const b of bases) {
+        try {
+          const u = new URL(b + "/stats");
+          const k = localStorage.getItem("stats_key") || "";
+          if (k) u.searchParams.set("k", k);
+          const r = await fetchWithTimeout(u.toString(), { mode: "cors" }, cfTimeout(b));
+          const j = await r.json();
+          cfCache = j; cfCacheAt = Date.now();
+          return j;
+        } catch (e) { /* 换下一个入口 */ }
+      }
+      return cfCache;
     }
     function enabled() { return true; }
     return { enabled, recordVisit, recordView, getLocalStats, cfEnabled, cfApi, cfPost, cfGetStats };
