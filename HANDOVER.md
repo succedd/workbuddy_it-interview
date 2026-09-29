@@ -105,7 +105,14 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`7f58dd5`（feat: AI 改卷上线——详情页写下回答，AI 面试官三维度评分点评）｜缓存版本 `20260927g`｜更新时间：2026-09-27 19:20 (+08)**
+**最新 release commit：`42252df`（feat: 优质补缺批次 2026-09-29-a——13 题 / 11 分类）｜缓存版本 `20260929a`｜更新时间：2026-09-29 21:50 (+08)**
+**本次内容（2026-09-29-a 批次，WorkBuddy 会话执行）：题库优质补缺——按全库审计补 11 个薄弱/空缺分类，1358→1371 题。**
+- **新增 13 题（id 1399~1411）**：SSRF 分层防御与云元数据（Web安全）；JWT 结构与注销难题、OIDC 单点登录（API设计）；Raft 领导人选举、Basic/Multi-Paxos 两阶段（一致性算法）；QPS/TPS/RT/并发 利特尔法则 + 峰值容量估算（性能测试·计算题）；BERT vs GPT（AI）；推荐四级漏斗（推荐系统）；Spark Shuffle 演进与调优（Spark）；GitHub Actions 概念与 CI 流水线设计；LoRA 低秩微调显存账本（模型微调）；KV Cache 8K 上下文显存估算（LLM原理·计算题）；技术方案分歧 STAR 答法（冲突处理）。
+- **流程**：走 `tools/enrich_questions.py` 流水线（来源 URL 可达性闸门 + 归一化/模糊去重 + 质量校验），批次文件 `tools/batches/2026-09-29-a.json` 留档（目录已 gitignore 不入库）；OWASP 旧 SSRF 链接 404 被闸门拦截后换官方 Cheat Sheet 链接。
+- **配套**：sitemap.xml 增补 13 条；13 个分享页 `q/1399~1411.html`；另同步重生成 8 个旧分享页（660/906/907/1128/1129/1130/1131/1133，此前答案更新后未重生成）；README「自动扩充记录」表加 2026-09-29-a 行。
+- **缓存版本**：20260927h→20260929a（index.html 36 处 + sw.js VERSION）；纯数据+静态页变更，无 js 逻辑改动；编辑端 `absorbRemote` 打开页面自动吸收新题，无需手动操作。
+
+**上一条 release commit：`7f58dd5`（feat: AI 改卷上线——详情页写下回答，AI 面试官三维度评分点评）｜缓存版本 `20260927g`｜更新时间：2026-09-27 19:20 (+08)**
 **本次内容（2026-09-27-d 批次，WorkBuddy 会话执行）：上线「AI 改卷」——详情页写下回答，AI 面试官三维度评分点评（P0 创新项第 4 项），前端 + Worker 两层。**
 - **功能**：题目详情页新增「✍️ AI 改卷」卡片：不看标准答案写下自己的回答（≥10 字）→ 交卷 → AI 按**正确性 / 完整性 / 表达**打 0–100 分 + 总评（优秀 / 合格 / 不合格）+ 缺失 / 加分点清单 + 可背诵的参考改进版；可反复改稿重交看分数变化。作答与最近一次评分只存本机（`grade_hist_v1`），不入题库。
 - **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/grade`。KV 缓存 `grade:v1:<qid>:<djb2(去空白回答)>` 7 天（同一回答重评免费、不耗限额）；限额每用户每日 20 次 / 每 IP 每小时 30 次（先读后计，AI 失败不扣）；`temperature 0.3`（评分要稳定，远低于变式的 0.8）、`thinking disabled`、`json_object`、max_tokens 2048；`<data>`（题目素材）+ `<answer>`（用户回答）双重注入防护；响应字段校验收敛（分数夹逼、verdict 枚举归位、missing ≤6 条）。改动：`handleAiGrade()` / `genGrade()` / `djb2Hex()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
