@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoRA 微调的原理是什么？低秩旁路为什么能省下绝大部分显存？与全参微调、P-Tuning 如何选型？ · IT面试题库</title>
+  <meta name="description" content="结论 LoRA（Low-Rank Adaptation）：冻结原模型全部权重，在目标层（通常是注意力的线性投影 W）旁挂两个低秩矩阵 A(d×r) 与 B(r×d)，前向变为 h = Wx + (B·A)x，秩 r 通常取 4~64，远小于 d（4096 级）。只训练 A、B，可训练参数量下降 3~4 个数量级。…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="LoRA 微调的原理是什么？低秩旁路为什么能省下绝大部分显存？与全参微调、P-Tuning 如何选型？ · IT面试题库">
+  <meta property="og:description" content="结论 LoRA（Low-Rank Adaptation）：冻结原模型全部权重，在目标层（通常是注意力的线性投影 W）旁挂两个低秩矩阵 A(d×r) 与 B(r×d)，前向变为 h = Wx + (B·A)x，秩 r 通常取 4~64，远小于 d（4096 级）。只训练 A、B，可训练参数量下降 3~4 个数量级。…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1409.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LoRA 微调的原理是什么？低秩旁路为什么能省下绝大部分显存？与全参微调、P-Tuning 如何选型？ · IT面试题库">
+  <meta name="twitter:description" content="结论 LoRA（Low-Rank Adaptation）：冻结原模型全部权重，在目标层（通常是注意力的线性投影 W）旁挂两个低秩矩阵 A(d×r) 与 B(r×d)，前向变为 h = Wx + (B·A)x，秩 r 通常取 4~64，远小于 d（4096 级）。只训练 A、B，可训练参数量下降 3~4 个数量级。…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1409.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LoRA 微调的原理是什么？低秩旁路为什么能省下绝大部分显存？与全参微调、P-Tuning 如何选型？","text":"考察 LoRA 低秩分解原理、显存账本与选型。","answerCount":1,"datePublished":"2026-09-29T13:31:02.972Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 LoRA（Low-Rank Adaptation）：冻结原模型全部权重，在目标层（通常是注意力的线性投影 W）旁挂两个低秩矩阵 A(d×r) 与 B(r×d)，前向变为 h = Wx + (B·A)x，秩 r 通常取 4~64，远小于 d（4096 级）。只训练 A、B，可训练参数量下降 3~4 个数量级。 显存账本：省在哪 微调显存大头不是权重，而是梯度和 Adam 优化器状态（每个可训练参数两份 fp32 动量）： 全参微调 7B：权重(fp16 14G) + 梯度(14G) + 优化器状态(56G) ≈ 84G 起； LoRA：只优化约 20~40M 参数（r=8 时单层 q_proj 从 16.7M 可训参数降到 2×4096×8≈65K），梯度+优化器状态缩到 MB 级，总显存常压到 20G 内，QLoRA（4-bit 底座 + LoRA）单卡 24G 可调 13B； 推理部署：B·A 可合并回 W，零额外时延；多任务时一个底座挂多个 LoRA 权重按请求热切换。 关键实践 r 越大容量越大、过拟合风险越高；缩放 α/r 常设 2r；目标模块从 q_proj/v_proj 起步，不够再扩到全部线性层； 「低秩有效」的依据：原论文实证微调带来的权重更新矩阵本就近似低秩； 学习率比全参微调大一个量级（1e-4 级），数据量小时早停防过拟合。 选型 | 方案 | 显存 | 效果上限 | 适用 | |---|---|---|---| | 全参微调 | 最高 | 最高 | 领域大改、数据充足、卡管够 | | LoRA/QLoRA | 低 | 多数场景接近全参 | 快速适配、多 adapter 热插拔 | | P-Tuning/前缀 | 最低 | 简单任务够用 | 分类/抽取类轻任务 | 追问点：LoRA 改变的是「权重」而 Prompt 类方法改的是「激活」，前者能力上限更高；CPT（继续预训练）场景 LoRA 相对弱，通常加大 r 或混合全参。","url":"https://itinterview.com.cn/#/question/1409"}}}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .cta:active { background:#1d4ed8; }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>LoRA 微调的原理是什么？低秩旁路为什么能省下绝大部分显存？与全参微调、P-Tuning 如何选型？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip">MLOps工程师</span><span class="chip tag">LoRA</span><span class="chip tag">微调</span><span class="chip tag">低秩</span><span class="chip tag">显存优化</span></div>
+    <div class="card"><h2>题目</h2><p>考察 LoRA 低秩分解原理、显存账本与选型。</p></div>
+    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+<p>LoRA（Low-Rank Adaptation）：<strong>冻结原模型全部权重</strong>，在目标层（通常是注意力的线性投影 W）旁挂两个低秩矩阵 A(d×r) 与 B(r×d)，前向变为 h = Wx + (B·A)x，秩 r 通常取 4~64，远小于 d（4096 级）。只训练 A、B，可训练参数量下降 3~4 个数量级。</p>
+<h3>显存账本：省在哪</h3>
+<p>微调显存大头不是权重，而是<strong>梯度和 Adam 优化器状态（每个可训练参数两份 fp32 动量）</strong>：</p>
+<ul>
+<li>全参微调 7B：权重(fp16 14G) + 梯度(14G) + 优化器状态(56G) ≈ 84G 起；</li>
+<li>LoRA：只优化约 <strong>20~40M</strong> 参数（r=8 时单层 q_proj 从 16.7M 可训参数降到 2×4096×8≈65K），梯度+优化器状态缩到 MB 级，总显存常压到 20G 内，QLoRA（4-bit 底座 + LoRA）单卡 24G 可调 13B；</li>
+<li>推理部署：B·A 可<strong>合并回 W</strong>，零额外时延；多任务时一个底座挂多个 LoRA 权重按请求热切换。</li>
+</ul>
+<h3>关键实践</h3>
+<ul>
+<li>r 越大容量越大、过拟合风险越高；缩放 α/r 常设 2r；目标模块从 q_proj/v_proj 起步，不够再扩到全部线性层；</li>
+<li>「低秩有效」的依据：原论文实证微调带来的权重更新矩阵本就近似低秩；</li>
+<li>学习率比全参微调大一个量级（1e-4 级），数据量小时早停防过拟合。</li>
+</ul>
+<h3>选型</h3>
+<p>| 方案 | 显存 | 效果上限 | 适用 |</p>
+<p>|---|---|---|---|</p>
+<p>| 全参微调 | 最高 | 最高 | 领域大改、数据充足、卡管够 |</p>
+<p>| LoRA/QLoRA | 低 | 多数场景接近全参 | 快速适配、多 adapter 热插拔 |</p>
+<p>| P-Tuning/前缀 | 最低 | 简单任务够用 | 分类/抽取类轻任务 |</p>
+<blockquote>追问点：LoRA 改变的是「权重」而 Prompt 类方法改的是「激活」，前者能力上限更高；CPT（继续预训练）场景 LoRA 相对弱，通常加大 r 或混合全参。</blockquote></div>
+    <a class="cta" href="https://itinterview.com.cn/#/question/1409">在线刷题 · 收藏与错题重练 →</a>
+    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=196&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
