@@ -173,6 +173,7 @@
 | 2026-10-01 | 2026-10-01-a | MongoDB/NoSQL 追问链：与关系型对比→文档模型→索引→适用场景（经典主题 T068，数据库域） | +7 |
 | 2026-10-01 | 2026-10-01-b | CSS 追问链：盒模型→BFC→定位→Flex/Grid 布局（经典主题 T067，前端域） | +7 |
 | 2026-10-01 | 2026-10-01-c | Java 基础高频：==与equals→String→异常体系→接口与抽象类（经典主题 T016，Java 后端域） | +7 |
+| 2026-10-01 | 2026-10-01-d | 优质补缺批次：14 个单题分类各加深 1 道高频面试题——PHP（PHP-FPM 进程模型与 pm 三模式选型）、Oracle（SQL 变慢排查与 SQL Plan Baseline）、Cassandra（W+R>N 一致性公式及其漏洞）、HBase（RowKey 防热点四策略与盐析代价）、Flink（Watermark 乱序与两阶段提交 Exactly-Once）、Hive（数据倾斜五手段与内外部表）、Terraform（state 与 State Locking）、Ansible（幂等性来源与 roles 结构）、AWS（IAM Role vs AK/SK、显式拒绝优先）、Selenium（隐式/显式等待反模式）、Playwright（自动等待与 Trace Viewer）、WebRTC（信令/ICE/STUN/TURN 全流程）、Solidity（重入攻击与 CEI 模式）、软技能（期望薪资区间报价法），题库 1392→1406 题 | +14 |
 
 ## 部署与自定义域名
 

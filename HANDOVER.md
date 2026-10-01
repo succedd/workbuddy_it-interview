@@ -20,8 +20,8 @@
 
 ## 2. 版本缓存机制（改代码必做）
 
-- `index.html` 所有资源带 `?v=20260829h` 缓存戳（约 21 处）——**改动任何 js/css 后必须整体 bump**：
-  `sed -i 's/v=20260829旧/v=20260829新/g' index.html`（字母递增 u→v→w…）
+- `index.html` 所有资源带 `?v=20261001a` 缓存戳（34 处）——**改动任何 js/css 后必须整体 bump**：
+  `sed -i 's/v=20261001a/v=20261001b/g' index.html`（字母递增 a→b→c…）
 - `sw.js` 第 8 行 `const VERSION = "..."` 必须与 index.html 同步 bump（SW 缓存靠它失效）
 - 部署 = `git push origin <40位字面量SHA>:refs/heads/release` → GitHub Actions **`Deploy to Cloudflare Pages`** 自动执行（白名单组装 dist → 反爬守卫 41 条回归 → wrangler 直传），约 1–2 分钟生效。⚠️ **禁止用变量做 refspec**（`$VAR:refs/heads/x` 变量取空会删除远端分支）
 - 验证：`curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" "https://itinterview.com.cn/?nocache=<ts>"` 确认新版本号命中。⚠️ **裸 curl 会被反爬守卫 403**，必须带浏览器 UA；最省事的做法是直接跑 `python tools/accept-switch.py`（10 项验收）
@@ -105,12 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`42252df`（feat: 优质补缺批次 2026-09-29-a——13 题 / 11 分类）｜缓存版本 `20260929a`｜更新时间：2026-09-29 21:50 (+08)**
-**本次内容（2026-09-29-a 批次，WorkBuddy 会话执行）：题库优质补缺——按全库审计补 11 个薄弱/空缺分类，1358→1371 题。**
-- **新增 13 题（id 1399~1411）**：SSRF 分层防御与云元数据（Web安全）；JWT 结构与注销难题、OIDC 单点登录（API设计）；Raft 领导人选举、Basic/Multi-Paxos 两阶段（一致性算法）；QPS/TPS/RT/并发 利特尔法则 + 峰值容量估算（性能测试·计算题）；BERT vs GPT（AI）；推荐四级漏斗（推荐系统）；Spark Shuffle 演进与调优（Spark）；GitHub Actions 概念与 CI 流水线设计；LoRA 低秩微调显存账本（模型微调）；KV Cache 8K 上下文显存估算（LLM原理·计算题）；技术方案分歧 STAR 答法（冲突处理）。
-- **流程**：走 `tools/enrich_questions.py` 流水线（来源 URL 可达性闸门 + 归一化/模糊去重 + 质量校验），批次文件 `tools/batches/2026-09-29-a.json` 留档（目录已 gitignore 不入库）；OWASP 旧 SSRF 链接 404 被闸门拦截后换官方 Cheat Sheet 链接。
-- **配套**：sitemap.xml 增补 13 条；13 个分享页 `q/1399~1411.html`；另同步重生成 8 个旧分享页（660/906/907/1128/1129/1130/1131/1133，此前答案更新后未重生成）；README「自动扩充记录」表加 2026-09-29-a 行。
-- **缓存版本**：20260927h→20260929a（index.html 36 处 + sw.js VERSION）；纯数据+静态页变更，无 js 逻辑改动；编辑端 `absorbRemote` 打开页面自动吸收新题，无需手动操作。
+**最新 release commit：（本次提交后回填，见下一条 docs commit）｜缓存版本 `20261001a`｜更新时间：2026-10-01 12:45 (+08)**
+**本次内容（2026-10-01-d 批次，WorkBuddy 会话执行）：题库优质补缺——14 个单题分类各加深 1 道，1392→1406 题。**
+- **新增 14 题（id 1433~1446）**：PHP-FPM 进程模型与 pm 三模式选型（PHP）；Oracle SQL 变慢排查与 SQL Plan Baseline（Oracle）；W+R>N 一致性公式及其四大漏洞（Cassandra）；RowKey 防热点四策略与盐析代价（HBase）；Watermark 乱序处理与两阶段提交 Exactly-Once（Flink）；数据倾斜五手段+内外部表（Hive）；Terraform state/漂移/State Locking（Terraform）；Playbook 幂等性来源与 roles 结构（Ansible）；IAM Role vs AK/SK 与显式拒绝优先（AWS）；隐式/显式等待反模式（Selenium）；自动等待与 Trace Viewer、与 Selenium 架构差异（Playwright）；信令/ICE/STUN/TURN 建连全流程（WebRTC）；重入攻击与 CEI/mutex（智能合约Solidity）；期望薪资区间报价法（薪资谈判）。
+- **流程**：走 `tools/enrich_questions.py` 流水线（来源 URL 可达性闸门 + 归一化/模糊去重 + 质量校验），批次文件 `tools/batches/2026-10-01-a.json`（编号 2026-10-01-d，目录已 gitignore 不入库）；Oracle 首选链接 404 被闸门拦截后换 `managing-sql-plan-baselines.html`。
+- **⚠️ 撞号教训**：本批次首次合入时（本地 commit 1353f06，题 id 1426~1429…）与远端定时自动扩充撞号——远端同日已把 1426~1432 分给 T068/T067/T016 追问链。已放弃 rebase（README/published.json/分享页三方冲突），改为以远端 tip `7f2b8d5` 为基座重跑流水线，新题改拿 **1433~1446**。**结论：与定时自动扩充同日操作时，先 `git ls-remote` + fetch 到最新再跑流水线，勿在旧基线上生成题目。**
+- **配套**：sitemap.xml 增补 14 条（新题分享页 `q/1433~1446.html`）；README「自动扩充记录」表加 2026-10-01-d 行。
+- **缓存版本**：20260929a→20261001a（index.html 34 处 + sw.js VERSION）；纯数据+静态页变更，无 js 逻辑改动；编辑端 `absorbRemote` 打开页面自动吸收新题，无需手动操作。
+- **回归**：smoke-test 26/26 通过；data-audit 无新增问题（遗留：缺 body 10 题、瘦分类 140 个、孤儿分享页 40 个均为历史存量）。
+
+**上一条 release commit：`7f2b8d5`（chore: 标记经典主题 T068/T067/T016 完成 + 自动扩充 1392 题）｜缓存版本 `20260929a`｜更新时间：2026-10-01（定时自动化）**
 
 **上一条 release commit：`7f58dd5`（feat: AI 改卷上线——详情页写下回答，AI 面试官三维度评分点评）｜缓存版本 `20260927g`｜更新时间：2026-09-27 19:20 (+08)**
 **本次内容（2026-09-27-d 批次，WorkBuddy 会话执行）：上线「AI 改卷」——详情页写下回答，AI 面试官三维度评分点评（P0 创新项第 4 项），前端 + Worker 两层。**
