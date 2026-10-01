@@ -1,0 +1,242 @@
+/* ============================================================
+   节日背景（css/festival.css）
+   由 js/festival.js 按当天日期在 <html> 上设置 data-festival="key"。
+   纯 CSS 渐变，零图片资源，不影响加载与离线。
+   每个节日都有 light（默认）与 dark（html[data-theme="dark"]）两套，
+   透明度刻意压低，保证题库正文可读性优先。
+   关闭方式：localStorage.setItem('iti_festival','off') 后刷新。
+   ============================================================ */
+
+html[data-festival] body {
+  background-attachment: fixed;
+}
+
+/* ---- 元旦（01-01~01-03）：青蓝 + 金，辞旧迎新 ---- */
+html[data-festival="newyear"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(37,99,235,.12), transparent 62%),
+    radial-gradient(720px 380px at -8% 24%, rgba(245,158,11,.10), transparent 58%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="newyear"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(59,130,246,.20), transparent 62%),
+    radial-gradient(720px 380px at -8% 24%, rgba(245,158,11,.12), transparent 58%),
+    var(--bg);
+}
+
+/* ---- 春节（除夕~初六）：红 + 金 ---- */
+html[data-festival="spring"] body {
+  background:
+    radial-gradient(920px 480px at 90% -10%, rgba(220,38,38,.13), transparent 60%),
+    radial-gradient(700px 380px at -10% 30%, rgba(217,119,6,.11), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="spring"] body {
+  background:
+    radial-gradient(920px 480px at 90% -10%, rgba(239,68,68,.22), transparent 60%),
+    radial-gradient(700px 380px at -10% 30%, rgba(245,158,11,.14), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 元宵：暖红 + 粉，花灯 ---- */
+html[data-festival="lantern"] body {
+  background:
+    radial-gradient(880px 440px at 50% -14%, rgba(244,63,94,.11), transparent 62%),
+    radial-gradient(760px 400px at 90% 30%, rgba(251,146,60,.10), transparent 58%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="lantern"] body {
+  background:
+    radial-gradient(880px 440px at 50% -14%, rgba(244,63,94,.20), transparent 62%),
+    radial-gradient(760px 400px at 90% 30%, rgba(251,146,60,.13), transparent 58%),
+    var(--bg);
+}
+
+/* ---- 清明（04-04~04-06）：青绿，踏青 ---- */
+html[data-festival="qingming"] body {
+  background:
+    radial-gradient(900px 460px at 85% -8%, rgba(16,185,129,.10), transparent 60%),
+    radial-gradient(700px 380px at -10% 26%, rgba(132,204,22,.08), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="qingming"] body {
+  background:
+    radial-gradient(900px 460px at 85% -8%, rgba(16,185,129,.16), transparent 60%),
+    radial-gradient(700px 380px at -10% 26%, rgba(132,204,22,.10), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 劳动节（05-01~05-05）：橙，活力 ---- */
+html[data-festival="labor"] body {
+  background:
+    radial-gradient(900px 460px at 88% -10%, rgba(249,115,22,.12), transparent 60%),
+    radial-gradient(700px 380px at -8% 26%, rgba(234,88,12,.09), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="labor"] body {
+  background:
+    radial-gradient(900px 460px at 88% -10%, rgba(249,115,22,.18), transparent 60%),
+    radial-gradient(700px 380px at -8% 26%, rgba(234,88,12,.11), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 儿童节（06-01）：多彩糖果 ---- */
+html[data-festival="children"] body {
+  background:
+    radial-gradient(760px 400px at 12% -10%, rgba(59,130,246,.10), transparent 58%),
+    radial-gradient(760px 400px at 90% -8%, rgba(236,72,153,.09), transparent 58%),
+    radial-gradient(700px 380px at 50% 110%, rgba(250,204,21,.10), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="children"] body {
+  background:
+    radial-gradient(760px 400px at 12% -10%, rgba(59,130,246,.16), transparent 58%),
+    radial-gradient(760px 400px at 90% -8%, rgba(236,72,153,.14), transparent 58%),
+    radial-gradient(700px 380px at 50% 110%, rgba(250,204,21,.12), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 端午：竹青 ---- */
+html[data-festival="dragonboat"] body {
+  background:
+    radial-gradient(900px 460px at 86% -8%, rgba(5,150,105,.11), transparent 60%),
+    radial-gradient(700px 380px at -10% 28%, rgba(34,197,94,.08), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="dragonboat"] body {
+  background:
+    radial-gradient(900px 460px at 86% -8%, rgba(16,185,129,.17), transparent 60%),
+    radial-gradient(700px 380px at -10% 28%, rgba(34,197,94,.11), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 七夕：粉紫 ---- */
+html[data-festival="qixi"] body {
+  background:
+    radial-gradient(880px 440px at 88% -10%, rgba(236,72,153,.11), transparent 60%),
+    radial-gradient(720px 380px at -8% 26%, rgba(139,92,246,.10), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="qixi"] body {
+  background:
+    radial-gradient(880px 440px at 88% -10%, rgba(236,72,153,.18), transparent 60%),
+    radial-gradient(720px 380px at -8% 26%, rgba(139,92,246,.15), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 中秋：蓝夜 + 金月 ---- */
+html[data-festival="midautumn"] body {
+  background:
+    radial-gradient(920px 480px at 88% -10%, rgba(30,58,138,.12), transparent 62%),
+    radial-gradient(560px 320px at 78% 4%, rgba(245,158,11,.12), transparent 55%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="midautumn"] body {
+  background:
+    radial-gradient(920px 480px at 88% -10%, rgba(59,130,246,.20), transparent 62%),
+    radial-gradient(560px 320px at 78% 4%, rgba(245,158,11,.16), transparent 55%),
+    var(--bg);
+}
+
+/* ---- 重阳：金黄 ---- */
+html[data-festival="double9"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(202,138,4,.12), transparent 58%),
+    radial-gradient(700px 380px at -8% 28%, rgba(217,119,6,.09), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="double9"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(245,158,11,.18), transparent 58%),
+    radial-gradient(700px 380px at -8% 28%, rgba(217,119,6,.12), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 国庆（10-01~10-07）：红 ---- */
+html[data-festival="national"] body {
+  background:
+    radial-gradient(940px 480px at 90% -10%, rgba(220,38,38,.12), transparent 60%),
+    radial-gradient(720px 380px at -10% 28%, rgba(185,28,28,.09), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="national"] body {
+  background:
+    radial-gradient(940px 480px at 90% -10%, rgba(239,68,68,.20), transparent 60%),
+    radial-gradient(720px 380px at -10% 28%, rgba(185,28,28,.13), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 程序员节（10-24，1024）：终端绿 ---- */
+html[data-festival="programmers"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(22,163,74,.10), transparent 60%),
+    radial-gradient(700px 380px at -8% 26%, rgba(34,197,94,.08), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="programmers"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(34,197,94,.16), transparent 60%),
+    radial-gradient(700px 380px at -8% 26%, rgba(22,163,74,.12), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 教师节（09-10）：暖黄，感谢师恩 ---- */
+html[data-festival="teachers"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(245,158,11,.11), transparent 58%),
+    radial-gradient(700px 380px at -8% 26%, rgba(251,191,36,.09), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="teachers"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(245,158,11,.17), transparent 58%),
+    radial-gradient(700px 380px at -8% 26%, rgba(251,191,36,.12), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 圣诞（12-24~12-25）：松绿 + 红 ---- */
+html[data-festival="christmas"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(21,128,61,.10), transparent 60%),
+    radial-gradient(700px 380px at -8% 28%, rgba(220,38,38,.09), transparent 56%),
+    var(--bg);
+}
+html[data-theme="dark"][data-festival="christmas"] body {
+  background:
+    radial-gradient(900px 460px at 88% -8%, rgba(34,197,94,.16), transparent 60%),
+    radial-gradient(700px 380px at -8% 28%, rgba(239,68,68,.14), transparent 56%),
+    var(--bg);
+}
+
+/* ---- 节日角标（左下角小胶囊，可点击关闭；右上角已有 SW 更新胶囊） ---- */
+#festival-badge {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--bg-elevated, #fff);
+  color: var(--text-secondary, #475569);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(15,23,42,.06));
+  opacity: .92;
+  transition: opacity .15s ease, transform .15s ease;
+  user-select: none;
+}
+#festival-badge:hover { opacity: 1; transform: translateY(-1px); }
+#festival-badge .f-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex: none;
+}
+@media (max-width: 640px) {
+  #festival-badge { left: 12px; bottom: 12px; padding: 6px 11px; font-size: 11px; }
+}

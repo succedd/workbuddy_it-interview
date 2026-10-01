@@ -20,8 +20,8 @@
 
 ## 2. 版本缓存机制（改代码必做）
 
-- `index.html` 所有资源带 `?v=20261001a` 缓存戳（34 处）——**改动任何 js/css 后必须整体 bump**：
-  `sed -i 's/v=20261001a/v=20261001b/g' index.html`（字母递增 a→b→c…）
+- `index.html` 所有资源带 `?v=20261001b` 缓存戳（36 处）——**改动任何 js/css 后必须整体 bump**：
+  `sed -i 's/v=20261001b/v=20261001c/g' index.html`（字母递增 a→b→c…）
 - `sw.js` 第 8 行 `const VERSION = "..."` 必须与 index.html 同步 bump（SW 缓存靠它失效）
 - 部署 = `git push origin <40位字面量SHA>:refs/heads/release` → GitHub Actions **`Deploy to Cloudflare Pages`** 自动执行（白名单组装 dist → 反爬守卫 41 条回归 → wrangler 直传），约 1–2 分钟生效。⚠️ **禁止用变量做 refspec**（`$VAR:refs/heads/x` 变量取空会删除远端分支）
 - 验证：`curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" "https://itinterview.com.cn/?nocache=<ts>"` 确认新版本号命中。⚠️ **裸 curl 会被反爬守卫 403**，必须带浏览器 UA；最省事的做法是直接跑 `python tools/accept-switch.py`（10 项验收）
@@ -105,7 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`6ee4121`（feat: 优质补缺批次 2026-10-01-e——防重复专项 14 题 / 14 分类）｜缓存版本 `20261001a`（纯数据变更未 bump）｜更新时间：2026-10-01 14:00 (+08)**
+**最新 release commit：（本次提交后回填）｜缓存版本 `20261001b`｜更新时间：2026-10-01 15:10 (+08)**
+**本次内容（feat: 节日背景自动切换，WorkBuddy 会话执行）：14 个节日按日期自动换背景配色。**
+- **实现**：`js/festival.js`（无依赖，按当天日期在 `<html>` 上设 `data-festival="key"`）+ `css/festival.css`（每个节日的 light/dark 两套渐变，纯 CSS 零图片）；左下角新增可关闭的节日角标 `#festival-badge`（右上角是 SW 更新胶囊，位置不冲突）。
+- **节日表**：春节/元宵/端午/七夕/中秋/重阳（农历→公历日期表，覆盖 2026–2028，表外年份自动跳过）+ 元旦/清明/劳动节/儿童节/教师节/国庆/程序员节(1024)/圣诞（每年固定 MM-DD）；数组顺序即优先级，2028 中秋(10-03)撞国庆时优先中秋。
+- **开关**：左下角角标点击关闭（localStorage `iti_festival=off` 持久保存）；管理员「系统设置 → 外观主题」新增「节日背景」开启/关闭分段按钮（`App.getFestivalOff/setFestivalOff`，js/app.js）。
+- **缓存版本**：20261001a → **20261001b**（index.html 36 处 + sw.js VERSION）；新增 `css/festival.css`、`js/festival.js` 已加入 sw.js APP_SHELL 预缓存。
+- **测试**：27 个日期用例全过（含除夕/区间边界/2028 中秋撞国庆优先级/关闭开关）；smoke-test 26/26 通过；`node --check` 两文件语法通过。
+
+**上一条 release commit：`6ee4121`（feat: 优质补缺批次 2026-10-01-e——防重复专项 14 题 / 14 分类）｜缓存版本 `20261001a`（纯数据变更未 bump）｜更新时间：2026-10-01 14:00 (+08)**
 **本次内容（2026-10-01-e 批次，WorkBuddy 会话执行）：题库优质补缺（防重复专项）——14 个单题分类各加深 1 道，1406→1420 题。**
 - **新增 14 题（id 1447~1460）**：Unity 协程执行模型与 yield 时机（Unity开发）；VBO/VAO/EBO 与 DrawCall 合批（OpenGL）；Z-Buffer/透明排序/Early-Z（图形学基础）；设备树与 compatible 匹配（嵌入式Linux）；优先级反转与继承、互斥量 vs 二值信号量（RTOS）；遗嘱/保留消息/Clean Session 组合做在线状态管理（MQTT）；转码管线与 CRF/preset 取舍（FFmpeg）；端到端延迟账本与秒开/卡顿优化（直播技术架构）；参数化/关联/思考时间的真实性设计（JMeter）；对称 vs 非对称、TLS 混合加密与前向保密（密码学基础）；IOC vs IOA 与 SOC 落地运营（威胁情报）；小文件三层危害与治理（HDFS）；Hudi/Iceberg/Delta 表格式对比（数据湖）；数据/概念漂移区分与再训练触发（MLOps）。
 - **防重复三道关（用户明确要求）**：① 选题前逐分类核对现有题干（如 Unity 已有 GameObject/生命周期 → 本批讲协程；密码学已有密码存储加盐 → 本批讲混合加密与前向保密；威胁情报已有分类概念 → 本批讲 IOC/IOA 运营）；② 入库前对全库 1420 题标题跑 difflib 相似度复核，本批最高 0.55、同分类最高 0.38，远低于 0.85 拦截线；③ 流水线自带归一化 + 模糊去重再过一遍，0 拦截。

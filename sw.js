@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261001a";
+const VERSION = "20261001b";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -18,7 +18,7 @@ const APP_SHELL = [
   "/", "/index.html",
   "/css/variables.css?v=" + VERSION, "/css/style.css?v=" + VERSION,
   "/css/animations.css?v=" + VERSION, "/css/responsive.css?v=" + VERSION,
-  "/css/loader.css?v=" + VERSION, "/data/tech-maps.json",
+  "/css/loader.css?v=" + VERSION, "/css/festival.css?v=" + VERSION, "/data/tech-maps.json",
   /* 第三方库已本地化（vendor/），必须随壳缓存，否则离线时 Dexie/Marked 等加载失败整站不可用；
      echarts / xlsx 大库按需加载，由 fetch 运行时缓存补收，不进壳 */
   "/vendor/dexie.min.js", "/vendor/purify.min.js", "/vendor/marked.min.js",
@@ -35,7 +35,7 @@ const APP_SHELL = [
   "/js/docs/security.js?v=" + VERSION, "/js/docs/devops.js?v=" + VERSION,
   "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
   "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
-  "/js/submit.js?v=" + VERSION,
+  "/js/submit.js?v=" + VERSION, "/js/festival.js?v=" + VERSION,
   "/data/seed.js?v=" + VERSION
 ];
 

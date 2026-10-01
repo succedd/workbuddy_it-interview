@@ -34,6 +34,17 @@
     renderTopbar();
   }
 
+  /* ============================ 节日背景开关 ============================ */
+  /* 存储 key 与 js/festival.js 的 LS_KEY 保持一致；off=用户关闭 */
+  App.getFestivalOff = () => { try { return localStorage.getItem("iti_festival") === "off"; } catch (e) { return false; } };
+  App.setFestivalOff = function (off) {
+    try {
+      if (off) localStorage.setItem("iti_festival", "off");
+      else localStorage.removeItem("iti_festival");
+    } catch (e) {}
+    if (window.FestivalBG) window.FestivalBG.apply();
+  };
+
   /* ============================ 路由 ============================ */
   function parseHash() {
     const h = location.hash.replace(/^#/, "") || "/";
@@ -4378,6 +4389,11 @@
           <button data-t="light" class="${theme === "light" ? "active" : ""}">${U.icon("sun")} 亮色</button>
           <button data-t="dark" class="${theme === "dark" ? "active" : ""}">${U.icon("moon")} 暗色</button>
           <button data-t="system" class="${theme === "system" ? "active" : ""}">${U.icon("monitor")} 跟随系统</button>
+        </div>
+        <div style="margin-top:12px" class="secondary">节日背景（春节/中秋/国庆等按日期自动切换）</div>
+        <div class="seg" id="festival-seg">
+          <button data-f="on" class="${!App.getFestivalOff() ? "active" : ""}">${U.icon("check")} 开启</button>
+          <button data-f="off" class="${App.getFestivalOff() ? "active" : ""}">${U.icon("x")} 关闭</button>
         </div></div>
 
       <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("sparkles")} AI 设置（DeepSeek Harness）</h2>
@@ -4474,6 +4490,7 @@
         <button class="btn" id="restore-seed">${U.icon("refresh")} 恢复初始示例数据（追加）</button>
         <span class="muted" style="margin-left:10px">题目总数：${Services.questions.length}</span></div>`);
     $$("#theme-seg button").forEach(b => b.onclick = () => { App.setTheme(b.dataset.t); $$("#theme-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active"); });
+    $$("#festival-seg button").forEach(b => b.onclick = () => { App.setFestivalOff(b.dataset.f === "off"); $$("#festival-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active"); });
     const keyInput = $("#ai-key"); let keyTouched = false;
     keyInput.addEventListener("input", () => keyTouched = true);
     $("#ai-show").onclick = () => { keyInput.type = keyInput.type === "password" ? "text" : "password"; };
