@@ -105,7 +105,7 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：（本次提交后回填，见下一条 docs commit）｜缓存版本 `20261001a`｜更新时间：2026-10-01 12:45 (+08)**
+**最新 release commit：`28dae5c`（feat: 优质补缺批次 2026-10-01-d——14 题 / 14 分类）｜缓存版本 `20261001a`｜更新时间：2026-10-01 12:50 (+08)**
 **本次内容（2026-10-01-d 批次，WorkBuddy 会话执行）：题库优质补缺——14 个单题分类各加深 1 道，1392→1406 题。**
 - **新增 14 题（id 1433~1446）**：PHP-FPM 进程模型与 pm 三模式选型（PHP）；Oracle SQL 变慢排查与 SQL Plan Baseline（Oracle）；W+R>N 一致性公式及其四大漏洞（Cassandra）；RowKey 防热点四策略与盐析代价（HBase）；Watermark 乱序处理与两阶段提交 Exactly-Once（Flink）；数据倾斜五手段+内外部表（Hive）；Terraform state/漂移/State Locking（Terraform）；Playbook 幂等性来源与 roles 结构（Ansible）；IAM Role vs AK/SK 与显式拒绝优先（AWS）；隐式/显式等待反模式（Selenium）；自动等待与 Trace Viewer、与 Selenium 架构差异（Playwright）；信令/ICE/STUN/TURN 建连全流程（WebRTC）；重入攻击与 CEI/mutex（智能合约Solidity）；期望薪资区间报价法（薪资谈判）。
 - **流程**：走 `tools/enrich_questions.py` 流水线（来源 URL 可达性闸门 + 归一化/模糊去重 + 质量校验），批次文件 `tools/batches/2026-10-01-a.json`（编号 2026-10-01-d，目录已 gitignore 不入库）；Oracle 首选链接 404 被闸门拦截后换 `managing-sql-plan-baselines.html`。
@@ -114,7 +114,7 @@
 - **缓存版本**：20260929a→20261001a（index.html 34 处 + sw.js VERSION）；纯数据+静态页变更，无 js 逻辑改动；编辑端 `absorbRemote` 打开页面自动吸收新题，无需手动操作。
 - **回归**：smoke-test 26/26 通过；data-audit 无新增问题（遗留：缺 body 10 题、瘦分类 140 个、孤儿分享页 40 个均为历史存量）。
 
-**上一条 release commit：`7f2b8d5`（chore: 标记经典主题 T068/T067/T016 完成 + 自动扩充 1392 题）｜缓存版本 `20260929a`｜更新时间：2026-10-01（定时自动化）**
+**上一条 release commit：`42252df`（feat: 优质补缺批次 2026-09-29-a——13 题 / 11 分类）｜缓存版本 `20260929a`｜更新时间：2026-09-29 21:50 (+08)**
 
 **上一条 release commit：`7f58dd5`（feat: AI 改卷上线——详情页写下回答，AI 面试官三维度评分点评）｜缓存版本 `20260927g`｜更新时间：2026-09-27 19:20 (+08)**
 **本次内容（2026-09-27-d 批次，WorkBuddy 会话执行）：上线「AI 改卷」——详情页写下回答，AI 面试官三维度评分点评（P0 创新项第 4 项），前端 + Worker 两层。**
