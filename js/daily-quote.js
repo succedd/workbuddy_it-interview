@@ -3,6 +3,8 @@
  *  - 名言：Hitokoto (https://v1.hitokoto.cn)  CORS:*
  *  - 配图：LoremFlickr (https://loremflickr.com) 按名言类型关键词实时取图，CORS:* 可 canvas 合成
  *  - 每天不同：按「年内第几天」做 lock 保证当天稳定；按日期 localStorage 缓存保证当天不跳动
+ *  - 节日联动（v20261001e）：当天有节日且用户未关闭节日背景时，横幅换节日专属
+ *    深色配色 + 节日文案胶囊，分享卡同步；无节日/已关闭则保持每日轮换配色
  * ============================================================ */
 (function () {
   "use strict";
@@ -50,6 +52,28 @@
     { name: "石墨灰", c1: "#1e293b", c2: "#334155", accent: "rgba(148,163,184,.20)" }
   ];
   function dayPalette() { return PALETTES[dayOfYear() % PALETTES.length]; }
+
+  /* ---- 节日联动（v20261001e）----
+   * 当天有节日且用户未关闭节日背景时，横幅改用节日专属深色配色与文案；
+   * 无节日/已关闭则走上面的每日轮换配色。键与 js/festival.js 的 key 一一对应。 */
+  var FEST_PAL = {
+    newyear:     { c1: "#1e3a8a", c2: "#1d4ed8", accent: "rgba(147,197,253,.25)", wish: "新年快乐 · 万事顺遂" },
+    spring:      { c1: "#7f1d1d", c2: "#b91c1c", accent: "rgba(252,165,165,.25)", wish: "新春快乐 · 万事如意" },
+    lantern:     { c1: "#831843", c2: "#be123c", accent: "rgba(253,164,175,.25)", wish: "元宵快乐 · 团团圆圆" },
+    qingming:    { c1: "#14532d", c2: "#15803d", accent: "rgba(134,239,172,.22)", wish: "清明 · 慎终追远" },
+    labor:       { c1: "#7c2d12", c2: "#c2410c", accent: "rgba(253,186,116,.25)", wish: "劳动节快乐 · 致敬奋斗者" },
+    children:    { c1: "#9d174d", c2: "#db2777", accent: "rgba(249,168,212,.25)", wish: "儿童节快乐 · 保持好奇" },
+    dragonboat:  { c1: "#14532d", c2: "#047857", accent: "rgba(110,231,183,.22)", wish: "端午安康" },
+    qixi:        { c1: "#831843", c2: "#a21caf", accent: "rgba(240,171,252,.25)", wish: "七夕快乐" },
+    midautumn:   { c1: "#1e3a8a", c2: "#b45309", accent: "rgba(252,211,77,.25)", wish: "中秋快乐 · 人月两团圆" },
+    double9:     { c1: "#713f12", c2: "#a16207", accent: "rgba(253,224,71,.22)", wish: "重阳 · 登高望远" },
+    national:    { c1: "#7f1d1d", c2: "#b91c1c", accent: "rgba(252,165,165,.25)", wish: "国庆节快乐" },
+    programmers: { c1: "#14532d", c2: "#16a34a", accent: "rgba(134,239,172,.22)", wish: "1024 · 节日快乐" },
+    teachers:    { c1: "#713f12", c2: "#b45309", accent: "rgba(252,211,77,.25)", wish: "教师节快乐 · 感恩师长" },
+    christmas:   { c1: "#166534", c2: "#15803d", accent: "rgba(252,165,165,.30)", wish: "圣诞快乐 · 平安喜乐" }
+  };
+  /* 当前生效的配色与节日（composeShare 合成分享卡时读取，与横幅保持一致） */
+  var CUR = { pal: null, festName: "", wish: "" };
   function kwFor(t) { return KW[t] || "nature,sky"; }
   function imgUrl(kw, lock) { return "https://loremflickr.com/1600/900/" + kw + "?lock=" + lock; }
 
@@ -96,12 +120,33 @@
     var dateLabel = (d.getMonth() + 1) + "月" + d.getDate() + "日";
     document.getElementById("dq-date").textContent = dateLabel;
 
-    // 每日配色：横幅底色渐变 + 点缀色（覆盖 CSS 默认深色，隔天自动换）
-    var pal = dayPalette();
+    // 节日联动：data-festival 属性在（=用户未关闭节日背景且今天有节日）时换装，否则走每日轮换配色
+    var fest = null;
+    try {
+      if (window.FestivalBG && document.documentElement.hasAttribute("data-festival")) fest = FestivalBG.today();
+    } catch (e) {}
+    var fpal = fest && FEST_PAL[fest.key] ? FEST_PAL[fest.key] : null;
+    var pal = fpal || dayPalette();
+    CUR.pal = pal;
+    CUR.festName = fpal ? fest.name : "";
+    CUR.wish = fpal ? fpal.wish : "";
+
+    // 每日配色：横幅底色渐变 + 点缀色（覆盖 CSS 默认深色，隔天自动换；节日当天用节日配色）
     var box = el.querySelector(".daily-quote");
     if (box) {
       box.style.background = "linear-gradient(135deg, " + pal.c1 + ", " + pal.c2 + ")";
       box.style.setProperty("--dq-accent", pal.accent);
+    }
+
+    // 节日文案：标签换 🎉 并追加节日胶囊（无节日不动，保持原样）
+    var labelPill = el.querySelector(".daily-quote__label");
+    if (fpal && labelPill) {
+      labelPill.innerHTML = "🎉 每日一句 · <span id=\"dq-date\"></span>";
+      document.getElementById("dq-date").textContent = dateLabel;
+      var festPill = document.createElement("span");
+      festPill.className = "daily-quote__label daily-quote__fest";
+      festPill.textContent = fpal.wish;
+      labelPill.parentNode.insertBefore(festPill, labelPill.nextSibling);
     }
 
     var bg = el.querySelector(".daily-quote__bg");
@@ -178,7 +223,8 @@
     text = (text || "").replace(/^[“"「]|[”"」]$/g, "");
     author = (author || "").replace(/^——\s*/, "");
     var W = 1200, H = 630;
-    var pal = dayPalette(); // 分享卡底色跟随当日配色
+    var pal = CUR.pal || dayPalette(); // 分享卡底色跟随横幅当前配色（节日当天同节日色）
+    var festName = CUR.festName;
     var cv = document.createElement("canvas");
     cv.width = W; cv.height = H;
     var ctx = cv.getContext("2d");
@@ -226,8 +272,8 @@
       ctx.fillText("❝", W - 230, 290);
       ctx.restore();
 
-      // 6) 顶部品牌徽章（圆角胶囊 + 细边框）
-      drawBadge(ctx, 60, 56, "💡  IT 面试题库 · 每日一句", {
+      // 6) 顶部品牌徽章（圆角胶囊 + 细边框；节日当天带节日名）
+      drawBadge(ctx, 60, 56, (festName ? "🎉 " + festName + " · " : "💡  ") + "IT 面试题库 · 每日一句", {
         fill: "rgba(255,255,255,.10)",
         stroke: "rgba(255,255,255,.28)",
         text: "rgba(255,255,255,.95)",
@@ -272,7 +318,7 @@
       ctx.fillStyle = "rgba(255,255,255,.70)";
       ctx.font = FONT_FOOTER;
       ctx.textAlign = "left";
-      ctx.fillText("每日一句", 60, footY);
+      ctx.fillText(festName ? "每日一句 · " + festName : "每日一句", 60, footY);
 
       var d = new Date();
       var dateStr = (d.getMonth() + 1) + "月" + d.getDate() + "日 · " + d.getFullYear();
