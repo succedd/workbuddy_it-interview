@@ -74,6 +74,72 @@
   };
   /* 当前生效的配色与节日（composeShare 合成分享卡时读取，与横幅保持一致） */
   var CUR = { pal: null, festName: "", wish: "" };
+
+  /* ---- 节日主题文案池（v20261001f）：有节日时名言直接换成节日文案，按天稳定取一条、
+   * 「换一条」在池内随机换；无节日仍走 Hitokoto。键与 js/festival.js 的 key 一一对应。 ---- */
+  var FEST_QUOTES = {
+    newyear: [
+      { text: "新岁序开，同赴山海。愿你眼里有光，心中有梦，脚下有路。", author: "元旦寄语" },
+      { text: "新年快乐！愿所有的好运，都在新的一年里如约而至。", author: "元旦寄语" },
+      { text: "一元复始，万象更新；愿新年代码无 bug，来年更胜今年。", author: "元旦寄语" }
+    ],
+    spring: [
+      { text: "爆竹声中一岁除，春风送暖入屠苏。新春快乐，阖家幸福！", author: "春节寄语" },
+      { text: "愿新的一年：所求皆如愿，所行化坦途，多喜乐，长安宁。", author: "春节寄语" },
+      { text: "辞旧迎新，山河锦绣；愿君岁岁平安，年年有为。", author: "春节寄语" }
+    ],
+    lantern: [
+      { text: "火树银花合，星桥铁锁开。元宵快乐，团团圆圆！", author: "元宵寄语" },
+      { text: "一碗汤圆，盛满团圆；愿你所念之人，皆在身边。", author: "元宵寄语" }
+    ],
+    qingming: [
+      { text: "清明时节雨纷纷，路上行人欲断魂。慎终追远，珍惜眼前人。", author: "清明寄语" },
+      { text: "气清景明，万物生长。愿你不负春光，砥砺前行。", author: "清明寄语" }
+    ],
+    labor: [
+      { text: "人世间的一切幸福，都需要靠辛勤的劳动来创造。劳动节快乐！", author: "劳动节寄语" },
+      { text: "致敬每一双创造美好的手——劳动最光荣！", author: "劳动节寄语" }
+    ],
+    children: [
+      { text: "愿你出走半生，归来仍是少年。儿童节快乐！", author: "儿童节寄语" },
+      { text: "永远保持好奇，永远热泪盈眶——这是最好的童年礼物。", author: "儿童节寄语" }
+    ],
+    dragonboat: [
+      { text: "粽叶飘香，龙舟竞渡。端午安康，诸事顺遂！", author: "端午寄语" },
+      { text: "路漫漫其修远兮，吾将上下而求索。端午安康！", author: "端午寄语" }
+    ],
+    qixi: [
+      { text: "两情若是久长时，又岂在朝朝暮暮。七夕快乐！", author: "七夕寄语" },
+      { text: "愿有岁月可回首，且以深情共白头。七夕快乐！", author: "七夕寄语" }
+    ],
+    midautumn: [
+      { text: "但愿人长久，千里共婵娟。中秋快乐，阖家团圆！", author: "中秋寄语" },
+      { text: "海上生明月，天涯共此时。愿人月两团圆。", author: "中秋寄语" }
+    ],
+    double9: [
+      { text: "岁岁重阳，今又重阳。愿长辈福寿安康，笑口常开。", author: "重阳寄语" },
+      { text: "登高望远，秋光正好。重阳安康！", author: "重阳寄语" }
+    ],
+    national: [
+      { text: "山河远阔，国泰民安；愿以寸心寄华夏，且将岁月赠山河。", author: "国庆献礼" },
+      { text: "家有山河锦绣，国有岁月芳华。祝祖国生日快乐，愿你假期愉快！", author: "国庆献礼" },
+      { text: "以青春之名，书写清澈挚爱；以心中红星，献礼盛世中华。", author: "国庆献礼" },
+      { text: "你所站立的地方，正是你的中国；你怎么样，中国便怎么样。", author: "国庆献礼" }
+    ],
+    programmers: [
+      { text: "代码改变世界，而你正在其中。1024 程序员节快乐！", author: "1024 寄语" },
+      { text: "愿你的生活如代码般简洁，如算法般高效。1024 节日快乐！", author: "1024 寄语" },
+      { text: "愿你 commit 全绿，永无 996。程序员节快乐！", author: "1024 寄语" }
+    ],
+    teachers: [
+      { text: "师者，所以传道受业解惑也。教师节快乐，感恩每一位引路人！", author: "教师节寄语" },
+      { text: "三尺讲台系国运，一支粉笔写春秋。老师，您辛苦了！", author: "教师节寄语" }
+    ],
+    christmas: [
+      { text: "铃儿响叮当，愿望挂枝头。圣诞快乐，愿你所盼皆成真。", author: "圣诞寄语" },
+      { text: "愿你的代码 merry，屏幕 bright。圣诞快乐，平安喜乐！", author: "圣诞寄语" }
+    ]
+  };
   function kwFor(t) { return KW[t] || "nature,sky"; }
   function imgUrl(kw, lock) { return "https://loremflickr.com/1600/900/" + kw + "?lock=" + lock; }
 
@@ -126,6 +192,7 @@
       if (window.FestivalBG && document.documentElement.hasAttribute("data-festival")) fest = FestivalBG.today();
     } catch (e) {}
     var fpal = fest && FEST_PAL[fest.key] ? FEST_PAL[fest.key] : null;
+    var festPool = fest && FEST_QUOTES[fest.key] ? FEST_QUOTES[fest.key] : [];
     var pal = fpal || dayPalette();
     CUR.pal = pal;
     CUR.festName = fpal ? fest.name : "";
@@ -149,6 +216,20 @@
       labelPill.parentNode.insertBefore(festPill, labelPill.nextSibling);
     }
 
+    // 节日风背景：整幅横幅改为节日风格（金色星点 + 节日色光晕，不加载随机图），见 css .daily-quote.is-fest
+    if (fpal && box) {
+      box.classList.add("is-fest");
+      var STAR_POS = [[6,18],[14,72],[24,35],[38,80],[52,15],[66,68],[78,28],[88,75],[94,20],[46,55]];
+      var stars = document.createElement("div");
+      stars.className = "daily-quote__stars";
+      var html = "";
+      for (var si = 0; si < STAR_POS.length; si++) {
+        html += '<span style="left:' + STAR_POS[si][0] + '%;top:' + STAR_POS[si][1] + '%;animation-delay:' + (si * 0.37).toFixed(2) + 's">' + (si % 3 === 0 ? "★" : "✦") + "</span>";
+      }
+      stars.innerHTML = html;
+      box.insertBefore(stars, box.querySelector(".daily-quote__inner"));
+    }
+
     var bg = el.querySelector(".daily-quote__bg");
     var textEl = document.getElementById("dq-text");
     var authorEl = document.getElementById("dq-author");
@@ -158,6 +239,7 @@
       textEl.classList.remove("loading");
       textEl.textContent = "“" + q.text + "”";
       authorEl.innerHTML = "—— <b>" + (q.author || "佚名") + "</b>";
+      if (CUR.festName) { bg.classList.remove("show"); return; } // 节日模式：不加载随机图，保持节日风格底
       var lock = opts.fresh ? Math.floor(Math.random() * 100000) : dayOfYear();
       var url = imgUrl(kwFor(q.type), lock);
       bg.classList.remove("show");
@@ -168,6 +250,11 @@
     }
 
     function load(useCache) {
+      // 节日模式：直接上节日文案池（按年内天取一条，当天稳定），不走 Hitokoto 与缓存
+      if (festPool.length) {
+        paint(festPool[dayOfYear() % festPool.length]);
+        return;
+      }
       if (useCache) {
         var c = getCache();
         if (c && c.date === todayStr() && c.text) {
@@ -191,6 +278,11 @@
       textEl.classList.add("loading");
       textEl.innerHTML = '<span class="daily-quote__spinner"></span> 换一条中…';
       authorEl.textContent = "";
+      // 节日模式：在节日文案池内随机换
+      if (festPool.length) {
+        paint(festPool[Math.floor(Math.random() * festPool.length)]);
+        return;
+      }
       fetchQuote().then(function (q) {
         paint(q, { fresh: true });
       }).catch(function () {
@@ -263,6 +355,19 @@
       glow.addColorStop(0, pal.accent);
       glow.addColorStop(1, "transparent");
       ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+      // 4.5) 节日模式：金色星点点缀，与横幅节日风背景呼应
+      if (festName) {
+        ctx.save();
+        ctx.font = "300 34px 'PingFang SC','Georgia',serif";
+        ctx.fillStyle = "rgba(253,230,138,.95)";
+        var starPos = [[180, 140], [1050, 110], [980, 500], [240, 500], [620, 92], [1120, 300], [92, 300]];
+        for (var i = 0; i < starPos.length; i++) {
+          ctx.globalAlpha = 0.45 + 0.45 * Math.abs(Math.sin(i * 1.7));
+          ctx.fillText(i % 3 === 0 ? "★" : "✦", starPos[i][0], starPos[i][1]);
+        }
+        ctx.restore();
+      }
 
       // 5) 大号装饰性引号（右上角半透明 ❝）
       ctx.save();

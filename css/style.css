@@ -1176,6 +1176,29 @@ body.pan-fs-lock { overflow: hidden; }
 }
 /* 节日联动：第二个胶囊（节日文案），底色稍亮以示区分 */
 .daily-quote__fest { color: #fff; background: rgba(255,255,255,.22); letter-spacing: .08em; }
+/* 节日联动 v20261001f：整幅节日风背景——不加载随机图，金色星点 + 节日色光晕 */
+.daily-quote.is-fest .daily-quote__bg { display: none; }
+.daily-quote.is-fest .daily-quote__overlay {
+  background:
+    radial-gradient(70% 110% at 88% 8%, var(--dq-accent, rgba(252,211,77,.25)), transparent 62%),
+    radial-gradient(50% 80% at 4% 96%, var(--dq-accent, rgba(252,211,77,.18)), transparent 58%),
+    linear-gradient(180deg, rgba(8,12,20,.14) 0%, rgba(8,12,20,.52) 100%);
+}
+.daily-quote__stars {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; overflow: hidden;
+}
+.daily-quote__stars span {
+  position: absolute;
+  color: rgba(253,230,138,.9);
+  font-size: 14px;
+  text-shadow: 0 0 10px rgba(253,224,71,.85);
+  animation: dqStarTwinkle 2.8s ease-in-out infinite;
+}
+@keyframes dqStarTwinkle {
+  0%, 100% { opacity: .30; transform: scale(.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
 .daily-quote__text {
   margin: 0;
   flex: 1 1 auto; min-width: 0;
