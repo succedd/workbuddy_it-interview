@@ -1,6 +1,6 @@
 {
   "note": "经典题转写任务清单：自动化每次运行先跑 enrich_questions.py --topic-next 取第一个未完成主题，按追问链生成 5-8 题批次（由浅入深、题间 relatedIds 串联），合并成功后用 --topic-done <id> --batch <批号> 标记完成。cat/positions 必须用 published.json 中真实存在的名称。",
-  "updated": "2026-09-26",
+  "updated": "2026-10-01",
   "topics": [
     {
       "id": "T001",
@@ -214,7 +214,8 @@
       ],
       "source": "https://github.com/CyC2018/CS-Notes",
       "count": 8,
-      "done": false
+      "done": true,
+      "batch": "2026-10-01-c"
     },
     {
       "id": "T017",
@@ -908,7 +909,8 @@
       ],
       "source": "https://developer.mozilla.org/zh-CN/",
       "count": 6,
-      "done": false
+      "done": true,
+      "batch": "2026-10-01-b"
     },
     {
       "id": "T068",
@@ -921,7 +923,8 @@
       ],
       "source": "https://www.mongodb.com/docs/",
       "count": 5,
-      "done": false
+      "done": true,
+      "batch": "2026-10-01-a"
     },
     {
       "id": "T069",
