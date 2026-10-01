@@ -1271,11 +1271,14 @@
       return qs;
     };
     const treeHtml = (nodes) => nodes.map(c => {
-      const kids = childrenOfId(c.id);
+      /* fix 20261001g：此前递归用 childrenOfId(c.id)（原始分类对象，无 count 字段），
+         导致子分类计数全部渲染成 undefined；统一改用 categoryTree 节点自带的 children（含 count），
+         并对渲染加 || 0 兜底。 */
+      const kids = c.children || childrenOfId(c.id);
       const open = catId === c.id || (catId != null && Services.descendantIds(catId).indexOf(c.id) >= 0);
       return `<div class="tree-node"><div class="tree-row ${open ? "open" : ""} ${catId === c.id ? "active" : ""}" data-id="${c.id}">
         ${kids.length ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
-        <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count}</span></div>
+        <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count || 0}</span></div>
         ${kids.length ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${treeHtml(kids)}</div>` : ""}</div>`;
     }).join("");
 
