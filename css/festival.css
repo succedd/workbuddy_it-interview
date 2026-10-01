@@ -3,62 +3,79 @@
    由 js/festival.js 按当天日期在 <html> 上设置 data-festival="key"。
    纯 CSS 渐变，零图片资源，不影响加载与离线。
 
-   v20261001c 可见性强化（此前 0.10~0.13 alpha 的 body 渐变被不透明
-   topbar 与白色卡片遮蔽，肉眼几乎不可见）：
+   v20261001d 透底修复（此前 body 渐变被不透明 sidebar/topbar/card 三块
+   表面盖住约 95% 可视区，肉眼几乎不可见）：
    ① 每个节日定义 --f-c1/--f-c2（半透明染色）与 --f-solid（主色）；
    ② #topbar 两端染色 + 顶部 3px 节日色条（inset shadow，不动布局）；
-   ③ body 渐变浓度翻倍、中心移到 topbar 之下的可视区。
-   明暗主题各有变量取值；正文卡片保持白底，可读性优先。
+   ③ 渐变浓度再提档、扩为三层大半径覆盖；
+   ④ 节日模式下 sidebar/topbar/card 改 84%~86% 半透明底色，背景透出。
+   明暗主题各有变量取值；弹窗保持不透明白底，可读性优先。
    关闭方式：localStorage.setItem('iti_festival','off') 或点左下角角标。
    ============================================================ */
 
-/* ---- 各节日调色板（明）---- */
-html[data-festival="newyear"]     { --f-c1: rgba(37,99,235,.18);  --f-c2: rgba(245,158,11,.14); --f-solid: #2563eb; }
-html[data-festival="spring"]      { --f-c1: rgba(220,38,38,.20);  --f-c2: rgba(217,119,6,.16);  --f-solid: #dc2626; }
-html[data-festival="lantern"]     { --f-c1: rgba(244,63,94,.18);  --f-c2: rgba(251,146,60,.15); --f-solid: #f43f5e; }
-html[data-festival="qingming"]    { --f-c1: rgba(16,185,129,.16); --f-c2: rgba(132,204,22,.13); --f-solid: #10b981; }
-html[data-festival="labor"]       { --f-c1: rgba(249,115,22,.18); --f-c2: rgba(234,88,12,.14);  --f-solid: #f97316; }
-html[data-festival="children"]    { --f-c1: rgba(59,130,246,.15); --f-c2: rgba(236,72,153,.15); --f-solid: #ec4899; }
-html[data-festival="dragonboat"]  { --f-c1: rgba(5,150,105,.17);  --f-c2: rgba(34,197,94,.13);  --f-solid: #059669; }
-html[data-festival="qixi"]        { --f-c1: rgba(236,72,153,.17); --f-c2: rgba(139,92,246,.15); --f-solid: #ec4899; }
-html[data-festival="midautumn"]   { --f-c1: rgba(30,58,138,.18);  --f-c2: rgba(245,158,11,.16); --f-solid: #d97706; }
-html[data-festival="double9"]     { --f-c1: rgba(202,138,4,.17);  --f-c2: rgba(217,119,6,.13);  --f-solid: #ca8a04; }
-html[data-festival="national"]    { --f-c1: rgba(220,38,38,.20);  --f-c2: rgba(185,28,28,.15);  --f-solid: #dc2626; }
-html[data-festival="programmers"] { --f-c1: rgba(22,163,74,.16);  --f-c2: rgba(34,197,94,.13);  --f-solid: #16a34a; }
-html[data-festival="teachers"]    { --f-c1: rgba(245,158,11,.17); --f-c2: rgba(251,191,36,.14); --f-solid: #f59e0b; }
-html[data-festival="christmas"]   { --f-c1: rgba(21,128,61,.16);  --f-c2: rgba(220,38,38,.14);  --f-solid: #15803d; }
+/* ---- 各节日调色板（明；v20261001d 浓度再提档）---- */
+html[data-festival="newyear"]     { --f-c1: rgba(37,99,235,.30);  --f-c2: rgba(245,158,11,.24); --f-solid: #2563eb; }
+html[data-festival="spring"]      { --f-c1: rgba(220,38,38,.34);  --f-c2: rgba(217,119,6,.27);  --f-solid: #dc2626; }
+html[data-festival="lantern"]     { --f-c1: rgba(244,63,94,.30);  --f-c2: rgba(251,146,60,.25); --f-solid: #f43f5e; }
+html[data-festival="qingming"]    { --f-c1: rgba(16,185,129,.27); --f-c2: rgba(132,204,22,.22); --f-solid: #10b981; }
+html[data-festival="labor"]       { --f-c1: rgba(249,115,22,.30); --f-c2: rgba(234,88,12,.24);  --f-solid: #f97316; }
+html[data-festival="children"]    { --f-c1: rgba(59,130,246,.26); --f-c2: rgba(236,72,153,.26); --f-solid: #ec4899; }
+html[data-festival="dragonboat"]  { --f-c1: rgba(5,150,105,.29);  --f-c2: rgba(34,197,94,.22);  --f-solid: #059669; }
+html[data-festival="qixi"]        { --f-c1: rgba(236,72,153,.29); --f-c2: rgba(139,92,246,.26); --f-solid: #ec4899; }
+html[data-festival="midautumn"]   { --f-c1: rgba(30,58,138,.30);  --f-c2: rgba(245,158,11,.27); --f-solid: #d97706; }
+html[data-festival="double9"]     { --f-c1: rgba(202,138,4,.29);  --f-c2: rgba(217,119,6,.22);  --f-solid: #ca8a04; }
+html[data-festival="national"]    { --f-c1: rgba(220,38,38,.34);  --f-c2: rgba(185,28,28,.26);  --f-solid: #dc2626; }
+html[data-festival="programmers"] { --f-c1: rgba(22,163,74,.27);  --f-c2: rgba(34,197,94,.22);  --f-solid: #16a34a; }
+html[data-festival="teachers"]    { --f-c1: rgba(245,158,11,.29); --f-c2: rgba(251,191,36,.24); --f-solid: #f59e0b; }
+html[data-festival="christmas"]   { --f-c1: rgba(21,128,61,.27);  --f-c2: rgba(220,38,38,.24);  --f-solid: #15803d; }
 
-/* ---- 各节日调色板（暗）---- */
-html[data-theme="dark"][data-festival="newyear"]     { --f-c1: rgba(59,130,246,.30); --f-c2: rgba(245,158,11,.20); }
-html[data-theme="dark"][data-festival="spring"]      { --f-c1: rgba(239,68,68,.32);  --f-c2: rgba(245,158,11,.22); }
-html[data-theme="dark"][data-festival="lantern"]     { --f-c1: rgba(244,63,94,.30);  --f-c2: rgba(251,146,60,.20); }
-html[data-theme="dark"][data-festival="qingming"]    { --f-c1: rgba(16,185,129,.26); --f-c2: rgba(132,204,22,.18); }
-html[data-theme="dark"][data-festival="labor"]       { --f-c1: rgba(249,115,22,.28); --f-c2: rgba(234,88,12,.20); }
-html[data-theme="dark"][data-festival="children"]    { --f-c1: rgba(59,130,246,.24); --f-c2: rgba(236,72,153,.22); }
-html[data-theme="dark"][data-festival="dragonboat"]  { --f-c1: rgba(16,185,129,.26); --f-c2: rgba(34,197,94,.18); }
-html[data-theme="dark"][data-festival="qixi"]        { --f-c1: rgba(236,72,153,.26); --f-c2: rgba(139,92,246,.22); }
-html[data-theme="dark"][data-festival="midautumn"]   { --f-c1: rgba(59,130,246,.30); --f-c2: rgba(245,158,11,.24); }
-html[data-theme="dark"][data-festival="double9"]     { --f-c1: rgba(245,158,11,.26); --f-c2: rgba(217,119,6,.18); }
-html[data-theme="dark"][data-festival="national"]    { --f-c1: rgba(239,68,68,.32);  --f-c2: rgba(185,28,28,.22); }
-html[data-theme="dark"][data-festival="programmers"] { --f-c1: rgba(34,197,94,.24);  --f-c2: rgba(22,163,74,.18); }
-html[data-theme="dark"][data-festival="teachers"]    { --f-c1: rgba(245,158,11,.26); --f-c2: rgba(251,191,36,.18); }
-html[data-theme="dark"][data-festival="christmas"]   { --f-c1: rgba(34,197,94,.24);  --f-c2: rgba(239,68,68,.22); }
+/* ---- 各节日调色板（暗；v20261001d 同步提档）---- */
+html[data-theme="dark"][data-festival="newyear"]     { --f-c1: rgba(59,130,246,.40); --f-c2: rgba(245,158,11,.30); }
+html[data-theme="dark"][data-festival="spring"]      { --f-c1: rgba(239,68,68,.42);  --f-c2: rgba(245,158,11,.32); }
+html[data-theme="dark"][data-festival="lantern"]     { --f-c1: rgba(244,63,94,.40);  --f-c2: rgba(251,146,60,.30); }
+html[data-theme="dark"][data-festival="qingming"]    { --f-c1: rgba(16,185,129,.36); --f-c2: rgba(132,204,22,.28); }
+html[data-theme="dark"][data-festival="labor"]       { --f-c1: rgba(249,115,22,.38); --f-c2: rgba(234,88,12,.30); }
+html[data-theme="dark"][data-festival="children"]    { --f-c1: rgba(59,130,246,.34); --f-c2: rgba(236,72,153,.32); }
+html[data-theme="dark"][data-festival="dragonboat"]  { --f-c1: rgba(16,185,129,.36); --f-c2: rgba(34,197,94,.28); }
+html[data-theme="dark"][data-festival="qixi"]        { --f-c1: rgba(236,72,153,.36); --f-c2: rgba(139,92,246,.32); }
+html[data-theme="dark"][data-festival="midautumn"]   { --f-c1: rgba(59,130,246,.40); --f-c2: rgba(245,158,11,.34); }
+html[data-theme="dark"][data-festival="double9"]     { --f-c1: rgba(245,158,11,.36); --f-c2: rgba(217,119,6,.28); }
+html[data-theme="dark"][data-festival="national"]    { --f-c1: rgba(239,68,68,.42);  --f-c2: rgba(185,28,28,.32); }
+html[data-theme="dark"][data-festival="programmers"] { --f-c1: rgba(34,197,94,.34);  --f-c2: rgba(22,163,74,.28); }
+html[data-theme="dark"][data-festival="teachers"]    { --f-c1: rgba(245,158,11,.36); --f-c2: rgba(251,191,36,.28); }
+html[data-theme="dark"][data-festival="christmas"]   { --f-c1: rgba(34,197,94,.34);  --f-c2: rgba(239,68,68,.32); }
 
-/* ---- body 背景：渐变中心落在 topbar 之下的可视区（88% 12% / -6% 55%）---- */
+/* ---- body 背景：v20261001d 三层大半径渐变，覆盖三块不透明表面之外的缝隙也够醒目 ---- */
 html[data-festival] body {
   background:
-    radial-gradient(1100px 540px at 88% 12%, var(--f-c1), transparent 62%),
-    radial-gradient(900px 480px at -6% 55%, var(--f-c2), transparent 58%),
+    radial-gradient(1400px 680px at 85% 10%, var(--f-c1), transparent 64%),
+    radial-gradient(1100px 600px at -8% 52%, var(--f-c2), transparent 60%),
+    radial-gradient(900px 520px at 100% 94%, var(--f-c2), transparent 58%),
     var(--bg);
   background-attachment: fixed;
 }
 
-/* ---- topbar：两端节日染色 + 顶部 3px 色条（最直观的信号）---- */
+/* ---- v20261001d 关键修复：让节日渐变能透出来 ----
+   根因：侧栏 .sidebar（纯白）、顶栏 #topbar、主区 .card（纯白）三块
+   不透明表面盖住约 95% 可视区，body 渐变只在缝隙里露出。
+   节日模式下把这些大表面改为半透明底色，背景从底下透出；
+   84%~86% 不透明度保证正文可读性不受影响。弹窗保持纯白不透。 */
+html[data-festival] .card,
+html[data-festival] .sidebar { background-color: rgba(255,255,255,.84); }
+html[data-theme="dark"][data-festival] .card,
+html[data-theme="dark"][data-festival] .sidebar { background-color: rgba(30,41,59,.86); }
+
+/* ---- topbar：两端节日染色 + 顶部 3px 色条（最直观的信号）；底色同步改半透明 ---- */
 html[data-festival] #topbar {
   background:
     linear-gradient(90deg, var(--f-c1), transparent 32%, transparent 68%, var(--f-c2)),
-    var(--bg-elevated);
+    rgba(255,255,255,.84);
   box-shadow: inset 0 3px 0 0 var(--f-solid), var(--shadow-sm);
+}
+html[data-theme="dark"][data-festival] #topbar {
+  background:
+    linear-gradient(90deg, var(--f-c1), transparent 32%, transparent 68%, var(--f-c2)),
+    rgba(30,41,59,.86);
 }
 
 /* ---- 节日角标（左下角小胶囊，可点击关闭；右上角已有 SW 更新胶囊）---- */
