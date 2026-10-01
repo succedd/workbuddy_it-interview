@@ -105,7 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`97a45c1`（feat: 每日一句整幅节日风——代码 64279eb + docs 97a45c1，已推送并线上验收通过）｜缓存版本 `20261001f`｜更新时间：2026-10-01 17:20 (+08)**
+**最新 release commit：`c9bb589`（fix: 技术体系页子分类计数 undefined，docs 随后回填）｜缓存版本 `20261001g`｜更新时间：2026-10-01 20:45 (+08)**
+**本次内容（fix: 分类树子级计数 undefined，WorkBuddy 会话执行）：用户反馈手机端「技术体系」页展开「通用面试能力与软技能」后 7 个子分类计数全部显示 undefined。**
+- **根因**：pageCategory 的 `treeHtml` **首次调用**用 `Services.categoryTree()` 的节点（有 `count`），**递归子级**却用 `childrenOfId(c.id)` = `Services.childrenOf()` 返回的**原始分类对象（没有 count 字段）**→ 所有非顶层分类计数渲染成 `undefined`。实测 276 个计数节点中 255 个（= 全部子级）undefined、21 个顶层正常，与截图完全吻合。该 bug 自 8/21 初版即存在，仅展开有子分类的节点可见。
+- **修复**：递归改用 categoryTree 节点自带的 `children`（含 count）`const kids = c.children || childrenOfId(c.id)`，渲染处加 `|| 0` 兜底；本地验证 276 节点 0 undefined，子分类计数正确（自我介绍 8 / 职业规划 8 / 冲突 2 / 团队协作 2 / 方案表达 2 / 薪资 2 / HR 10，合计+直属题=39 ✓）。首页/题库页冒烟通过。
+- **缓存版本**：20261001f → **20261001g**（index.html 36 处 + sw.js VERSION）。
+- **改动文件**：js/app.js（pageCategory treeHtml）、index.html、sw.js。
+- **⚠️ 注意**：main 分支（iti-dedup2 工作副本）与 release 历史不相关（merge-base 为空），发版必须基于 `git ls-remote origin release` 的真实 tip 建 fix 分支 FF 推送，勿直接 merge main。
+
+**上一条 release commit：`97a45c1`（feat: 每日一句整幅节日风——代码 64279eb + docs 97a45c1，已推送并线上验收通过）｜缓存版本 `20261001f`｜更新时间：2026-10-01 17:20 (+08)**
 **本次内容（feat: 每日一句整幅节日风格化，WorkBuddy 会话执行）：用户反馈 e 版只换配色不够——「整幅背景国庆风、文案写成国庆文案」。**
 - **文案池 `FEST_QUOTES`**（js/daily-quote.js）：14 节日各配 2~4 条主题文案（国庆为爱国寄语、程序员节为 1024 梗、春节/中秋等为古诗词风寄语）；有节日时名言直接取自文案池（按年内天稳定取一条、当天不跳动），**Hitokoto 随机名言与 localStorage 缓存全部停用**；「换一条」在池内随机换；无节日完全走原 Hitokoto 流程。
 - **整幅节日风背景**：横幅加 `.is-fest` 类——`.daily-quote__bg` 随机图 `display:none`，改用 CSS 节日底（FEST_PAL 深色渐变 + --dq-accent 双光晕 + `.daily-quote__stars` 10 颗金星 ★/✦ 交错闪烁动画 `dqStarTwinkle`）；分享卡 canvas 同步加金星点缀（step 4.5）。
