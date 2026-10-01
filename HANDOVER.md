@@ -105,7 +105,7 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：（本次提交后回填）｜缓存版本 `20261001a`（纯数据变更未 bump）｜更新时间：2026-10-01 13:45 (+08)**
+**最新 release commit：`6ee4121`（feat: 优质补缺批次 2026-10-01-e——防重复专项 14 题 / 14 分类）｜缓存版本 `20261001a`（纯数据变更未 bump）｜更新时间：2026-10-01 14:00 (+08)**
 **本次内容（2026-10-01-e 批次，WorkBuddy 会话执行）：题库优质补缺（防重复专项）——14 个单题分类各加深 1 道，1406→1420 题。**
 - **新增 14 题（id 1447~1460）**：Unity 协程执行模型与 yield 时机（Unity开发）；VBO/VAO/EBO 与 DrawCall 合批（OpenGL）；Z-Buffer/透明排序/Early-Z（图形学基础）；设备树与 compatible 匹配（嵌入式Linux）；优先级反转与继承、互斥量 vs 二值信号量（RTOS）；遗嘱/保留消息/Clean Session 组合做在线状态管理（MQTT）；转码管线与 CRF/preset 取舍（FFmpeg）；端到端延迟账本与秒开/卡顿优化（直播技术架构）；参数化/关联/思考时间的真实性设计（JMeter）；对称 vs 非对称、TLS 混合加密与前向保密（密码学基础）；IOC vs IOA 与 SOC 落地运营（威胁情报）；小文件三层危害与治理（HDFS）；Hudi/Iceberg/Delta 表格式对比（数据湖）；数据/概念漂移区分与再训练触发（MLOps）。
 - **防重复三道关（用户明确要求）**：① 选题前逐分类核对现有题干（如 Unity 已有 GameObject/生命周期 → 本批讲协程；密码学已有密码存储加盐 → 本批讲混合加密与前向保密；威胁情报已有分类概念 → 本批讲 IOC/IOA 运营）；② 入库前对全库 1420 题标题跑 difflib 相似度复核，本批最高 0.55、同分类最高 0.38，远低于 0.85 拦截线；③ 流水线自带归一化 + 模糊去重再过一遍，0 拦截。
@@ -114,7 +114,7 @@
 - **缓存版本**：纯数据+静态页变更、无 js/css 改动，`20261001a` 不变（与 2026-09-26 批次先例一致）；编辑端 `absorbRemote` 自动吸收。
 - **回归**：smoke-test 26/26 通过。
 
-**上一条 release commit：`28dae5c`（feat: 优质补缺批次 2026-10-01-d——14 题 / 14 分类）｜缓存版本 `20261001a`｜更新时间：2026-10-01 12:50 (+08)**
+**上上条 release commit：`28dae5c`（feat: 优质补缺批次 2026-10-01-d——14 题 / 14 分类）｜缓存版本 `20261001a`｜更新时间：2026-10-01 12:50 (+08)**
 **本次内容（2026-10-01-d 批次，WorkBuddy 会话执行）：题库优质补缺——14 个单题分类各加深 1 道，1392→1406 题。**
 - **新增 14 题（id 1433~1446）**：PHP-FPM 进程模型与 pm 三模式选型（PHP）；Oracle SQL 变慢排查与 SQL Plan Baseline（Oracle）；W+R>N 一致性公式及其四大漏洞（Cassandra）；RowKey 防热点四策略与盐析代价（HBase）；Watermark 乱序处理与两阶段提交 Exactly-Once（Flink）；数据倾斜五手段+内外部表（Hive）；Terraform state/漂移/State Locking（Terraform）；Playbook 幂等性来源与 roles 结构（Ansible）；IAM Role vs AK/SK 与显式拒绝优先（AWS）；隐式/显式等待反模式（Selenium）；自动等待与 Trace Viewer、与 Selenium 架构差异（Playwright）；信令/ICE/STUN/TURN 建连全流程（WebRTC）；重入攻击与 CEI/mutex（智能合约Solidity）；期望薪资区间报价法（薪资谈判）。
 - **流程**：走 `tools/enrich_questions.py` 流水线（来源 URL 可达性闸门 + 归一化/模糊去重 + 质量校验），批次文件 `tools/batches/2026-10-01-a.json`（编号 2026-10-01-d，目录已 gitignore 不入库）；Oracle 首选链接 404 被闸门拦截后换 `managing-sql-plan-baselines.html`。
