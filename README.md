@@ -176,6 +176,9 @@
 | 2026-10-01 | 2026-10-01-c | Java 基础高频：==与equals→String→异常体系→接口与抽象类（经典主题 T016，Java 后端域） | +7 |
 | 2026-10-01 | 2026-10-01-d | 优质补缺批次：14 个单题分类各加深 1 道高频面试题——PHP（PHP-FPM 进程模型与 pm 三模式选型）、Oracle（SQL 变慢排查与 SQL Plan Baseline）、Cassandra（W+R>N 一致性公式及其漏洞）、HBase（RowKey 防热点四策略与盐析代价）、Flink（Watermark 乱序与两阶段提交 Exactly-Once）、Hive（数据倾斜五手段与内外部表）、Terraform（state 与 State Locking）、Ansible（幂等性来源与 roles 结构）、AWS（IAM Role vs AK/SK、显式拒绝优先）、Selenium（隐式/显式等待反模式）、Playwright（自动等待与 Trace Viewer）、WebRTC（信令/ICE/STUN/TURN 全流程）、Solidity（重入攻击与 CEI 模式）、软技能（期望薪资区间报价法），题库 1392→1406 题 | +14 |
 | 2026-10-01 | 2026-10-01-e | 优质补缺批次（防重复专项：逐分类核对现有题干，全部刻意错开已有主题，入库前再跑全库 difflib 相似度复核，最高 0.55 远低于 0.85 拦截线）：Unity（协程执行模型与 yield 时机）、OpenGL（VBO/VAO/EBO 与 DrawCall 合批）、图形学基础（Z-Buffer/透明排序/Early-Z）、嵌入式Linux（设备树与 compatible 匹配）、RTOS（优先级反转与继承、互斥量 vs 二值信号量）、MQTT（遗嘱/保留消息/Clean Session 组合做在线状态管理）、FFmpeg（转码管线与 CRF/preset 取舍）、直播技术架构（端到端延迟账本与秒开/卡顿优化）、JMeter（参数化/关联/思考时间的真实性设计）、密码学基础（对称 vs 非对称、TLS 混合加密与前向保密）、威胁情报（IOC vs IOA 与 SOC 落地运营）、HDFS（小文件三层危害与治理）、数据湖（Hudi/Iceberg/Delta 表格式对比）、MLOps（数据/概念漂移区分与再训练触发），题库 1406→1420 题 | +14 |
+| 2026-10-02 | 2026-10-02-a | 分库分表追问链（经典主题 T069，数据库域：何时分→垂直/水平→分片键→分布式ID→倾斜治理→跨片查询→分布式事务）——经典主题全部完成 70/70 | +7 |
+| 2026-10-02 | 2026-10-02-b | Web 安全攻防追问链（信息安全域：OWASP Top10→XSS→CSRF→SQL注入→文件上传→综合安全层） | +7 |
+| 2026-10-02 | 2026-10-02-c | 大数据生态追问链（大数据与数据工程域：为何用大数据→HDFS→MapReduce→Hive分层→Spark vs Flink→实时数仓 Exactly-Once） | +7 |
 
 ## 部署与自定义域名
 
