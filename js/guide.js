@@ -15,8 +15,20 @@ async function pageHelp() {
     ["account", "👤 账号与数据"], ["share", "📤 分享"], ["submit", "📥 投稿与审核"], ["admin", "🛠️ 管理员"],
     ["faq", "❓ 常见问题"],
   ];
-  const sec = (id, title, body) => `<div class="card" id="help-${id}" style="margin-top:14px"><h2 style="font-size:16px;margin-bottom:10px">${title}</h2>${body}</div>`;
-  const li = (t, d) => `<div style="display:flex;gap:8px;padding:5px 0;line-height:1.65"><span style="flex:none">•</span><span><b>${t}</b>${d ? `<span class="muted"> —— ${d}</span>` : ""}</span></div>`;
+  const sec = (id, title, body) => `<div class="card g-sec" id="help-${id}" style="margin-top:14px"><h2 style="font-size:16px;margin-bottom:10px">${title}</h2>${body}</div>`;
+  const NB = `<span style="flex:none;margin-left:6px;font-size:10px;line-height:1;padding:2px 6px;border-radius:99px;background:#fee2e2;color:#dc2626;font-weight:700;letter-spacing:.03em" title="20261005a 新增功能">NEW</span>`;
+  const li = (t, d, isNew) => `<div class="g-li" style="display:flex;gap:8px;padding:5px 0;line-height:1.65"><span style="flex:none">•</span><span><b>${t}</b>${isNew ? NB : ""}${d ? `<span class="muted"> —— ${d}</span>` : ""}</span></div>`;
+  /* —— 动图演示（20261005b）：纯 CSS 逐步高亮动画，零图片资源、离线可用 —— */
+  const demo = (caption, steps, period) => {
+    const n = steps.length, cls = n <= 3 ? "g-dstep3" : "g-dstep5";
+    const pills = steps.map((s, i) =>
+      `<span class="g-dstep ${cls}" style="animation-delay:${(i * period / n).toFixed(2)}s">${i + 1}. ${U.esc(s)}</span>`).join("");
+    return `<div style="margin:10px 0 4px;padding:12px 12px 10px;border:1px dashed var(--border,#cbd5e1);border-radius:10px;background:var(--bg,#f8fafc)">
+      <div style="font-size:11px;font-weight:600;color:var(--muted,#64748b);letter-spacing:.06em;margin-bottom:8px">▶ 动图演示 · ${U.esc(caption)}（自动循环播放）</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${pills}</div>
+      <div style="height:3px;border-radius:99px;background:var(--border,#e2e8f0);margin-top:10px;overflow:hidden"><div class="g-dbar" style="--gperiod:${period}s"></div></div>
+    </div>`;
+  };
   /* 教程方向数与篇数从 window.DOCS 实时计算：以后增删章节不必再手改这段文案 */
   const docsCover = (() => {
     const dirs = ((window.DOCS || {}).dirs || []).filter(Boolean);
@@ -28,10 +40,43 @@ async function pageHelp() {
     return `已上线 ${dirs.length} 个技术方向、共 ${total} 篇成套教程：${parts}；每个方向按 ${lvCount} 个级别（初级 → 中级 → 高级）组织，从第一章连续读到最后一章就是一条完整成长路线`;
   })();
   setMain(`
+    <style>
+      /* 指南内搜索：无匹配行隐藏，区块内全部无匹配时整块隐藏 */
+      .g-li.g-hide { display: none !important; }
+      .g-sec.g-hide { display: none !important; }
+      /* 动图演示：步骤胶囊按周期轮流点亮。注意 @keyframes 选择器不能用 var()，
+         故按步骤数预置两套静态关键帧（5 步 / 3 步），时长与错峰由内联动画属性控制 */
+      .g-dstep { display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;border:1px solid var(--border,#cbd5e1);
+        background:var(--bg-elevated,#fff);font-size:12px;font-weight:600;color:var(--muted,#64748b); }
+      .g-dstep5 { animation: gStep5 var(--gperiod,12s) infinite; }
+      .g-dstep3 { animation: gStep3 var(--gperiod,12s) infinite; }
+      @keyframes gStep5 {
+        0% { color:#fff; background:#2563eb; border-color:#2563eb; box-shadow:0 2px 8px rgba(37,99,235,.35); transform:translateY(-1px); }
+        20% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+        100% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+      }
+      @keyframes gStep3 {
+        0% { color:#fff; background:#10b981; border-color:#10b981; box-shadow:0 2px 8px rgba(16,185,129,.35); transform:translateY(-1px); }
+        33.3% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+        100% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+      }
+      .g-dbar { width:0; background:linear-gradient(90deg,#2563eb,#10b981); animation: gBarRun var(--gperiod,12s) linear infinite; }
+      @keyframes gBarRun { from { width:0 } to { width:100% } }
+      @media (prefers-reduced-motion: reduce) { .g-dstep, .g-dbar { animation: none } .g-dbar { width:100% } }
+      /* 指南反馈 */
+      .g-fb button { cursor:pointer; border:1px solid var(--border,#cbd5e1); background:var(--bg-elevated,#fff);
+        border-radius:99px; padding:4px 14px; font-size:13px; }
+      .g-fb button:hover { border-color:#2563eb; color:#2563eb; }
+    </style>
     <div class="hero" style="padding:28px 16px 20px">
       <h1 style="font-size:22px">📖 使用指南</h1>
       <p>5 分钟了解全部功能。数据存于本机浏览器，登录后云端同步，支持离线使用。</p>
       <div class="hot-tags">${toc.map(([id, label]) => `<span class="tag" style="cursor:pointer" data-go="help-${id}">${label}</span>`).join("")}</div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;max-width:420px">
+        <input id="g-search" type="search" placeholder="🔍 在指南内搜索（如：复习、导出、密码）"
+          style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border,#cbd5e1);background:var(--bg-elevated,#fff);color:var(--text,#0f172a);font-size:13px;outline:none" />
+      </div>
+      <div id="g-search-hint" class="muted" style="font-size:12px;margin-top:6px;display:none"></div>
     </div>
     ${sec("quick", "🚀 快速上手", `
       ${li("打开就能用", "无需注册登录，首次打开自动加载题库，直接刷题")}
@@ -42,13 +87,13 @@ async function pageHelp() {
       ${li("侧栏分区可折叠", "左侧栏的每个分区标题（投稿 / 导航 / 管理 / 审核 / 站点）都能点击收起或展开；管理、审核、站点默认收起，点标题即可展开，你的选择会自动记住。当前所在页面的分区会被自动展开，不会把自己藏丢")}
     `)}
     ${sec("find", "🔍 找题与浏览", `
-      ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词，边输入还会实时弹出最多 8 条联想建议（带所属分类，点选直达）。手机上顶栏也保留一个放大镜入口，点它直接展开搜索，不必先拉出侧栏")}
+      ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词，边输入还会实时弹出最多 8 条联想建议（带所属分类，点选直达）。手机上顶栏也保留一个放大镜入口，点它直接展开搜索，不必先拉出侧栏", true)}
       ${li("技术体系", "276 个分类的树状目录，逐层展开找题；点开任一分类有「技术全景图」：顶部「架构图 / 分支树」两个按钮可来回切换视图——架构图：重点域配有人工分层架构图，节点与分支树末级均可点击直达分类，薄弱分类橙色标记；分支树：该分类及全部子分类的题量分布树，点节点直达题目列表")}
       ${li("第一性原理必读", "每个技术域的题目列表最前面有一组置顶必读题：这门技术为什么诞生、核心思想是什么、边界在哪——先懂根子再刷细节")}
       ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
       ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序。手机上筛选条件默认收起成一颗「筛选」按钮，点开才展开，让题目更早出现在首屏")}
-      ${li("「考到过」标记", "题目详情页有「🎯 考到过」按钮：这场面试真考到这道题就点一下，帮后来的同学判断重点；同一台设备对同一题只计一次，点完按钮变绿显示累计人次")}
-      ${li("长尾分类", "技术体系树里题量极少（不足 3 题）的细分分类不再单独占行，题目并入父分类列表；父分类展开处会有一行「🔒 另有 N 个小分类」提示")}
+      ${li("「考到过」标记", "题目详情页有「🎯 考到过」按钮：这场面试真考到这道题就点一下，帮后来的同学判断重点；同一台设备对同一题只计一次，点完按钮变绿显示累计人次", true)}
+      ${li("长尾分类", "技术体系树里题量极少（不足 3 题）的细分分类不再单独占行，题目并入父分类列表；父分类展开处会有一行「🔒 另有 N 个小分类」提示", true)}
     `)}
     ${sec("panorama", "🌐 题库全景图", `
       ${li("首页数字可点", "首页的「技术分类 / 题目总数 / 覆盖岗位 / AI 生成题」四个统计数字都能点，分别跳转到对应全景视图")}
@@ -92,11 +137,13 @@ async function pageHelp() {
       ${li("怎么进错题本", "刷题或模拟面试中点「不太会 / 不会」，或在题目详情页点「不太会」按钮")}
       ${li("复习节奏", "系统按记忆曲线安排：5 分钟 → 30 分钟 → 12 小时 → 1 天 → 2 天 → 4 天 → 7 天 → 15 天，到期自动提醒")}
       ${li("错题重练页", "「📌 待复习」放到期题，「🕒 已排程」看未来安排；答对点「会了」顺延间隔，答错重新来；点「⚡ AI 闯关」先答 3 道 AI 变式——全对才顺延间隔，任一没答上间隔重置 5 分钟后重来，检验是真会了还是只是眼熟")}
-      ${li("复习打卡", "错题重练页顶部有「今日复习进度」条（今天已完成 / 当日任务量），每答一次「会了」（含 AI 闯关成功）记 1 格；右侧 🔥 连续复习 N 天帮你保持节奏，中断一天清零")}
+      ${demo("AI 闯关验证真掌握", ["原题自测", "答 AI 变式 ×3", "全对 → 间隔顺延 / 没答上 → 5 分钟后再来"], 12)}
+      ${li("复习打卡", "错题重练页顶部有「今日复习进度」条（今天已完成 / 当日任务量），每答一次「会了」（含 AI 闯关成功）记 1 格；右侧 🔥 连续复习 N 天帮你保持节奏，中断一天清零", true)}
       ${li("浏览历史", "按今天 / 昨天 / 本周分组，支持单条删除、关键词搜索；「看过 N 次」多的题往往就是没吃透的题；顶部「重刷历史」一键把看过的题再刷一遍")}
       ${li("状态角标", "历史卡片上的 📅 复习中 = 已在错题本，★ = 已收藏，帮你区分看懂的和没看懂的")}
     `)}
     ${sec("mock", "🎙️ 模拟面试", `
+      ${demo("模拟面试完整流程", ["选岗位 + 年限", "系统抽题提问", "自评 掌握/不熟悉/不会", "逐题推进", "生成报告 + 存云端"], 15)}
       ${li("流程", "选岗位 + 工作年限 → 系统抽题逐题提问 → 每题自评「掌握 / 不熟悉 / 不会」→ 生成报告")}
       ${li("报告内容", "掌握率、用时、技术覆盖度；登录后自动存云端，并可看历次成绩趋势对比")}
       ${li("与错题本联动", "标「不熟悉 / 不会」的题自动进错题本，按记忆曲线安排复习")}
@@ -152,13 +199,63 @@ async function pageHelp() {
       ${li("手机端登录总提示「邮箱或密码错误」？", "先别反复重打：见上方「👤 账号与数据」末尾的一分钟判断法——另一台设备「能登」可能只是旧凭证在撑，用无痕窗口即可分清是「密码本身对不上」还是「输入被改了」")}
       ${li("提示「需要管理员权限」？", "说明当前的登录状态已失效（例如密码被重置、账号被禁用，或换了设备）。重新登录一次即可；若反复出现请联系管理员")}
       ${li("题目答案有误？", "欢迎反馈给管理员纠错，题库会持续迭代")}
+      ${li("首页题目总数怎么一直在涨？", "题库由自动化流水线持续补题（每周对薄弱分类扩充并全库质检），总数增长属正常；你本地题库会在打开网站时自动同步，无需任何操作")}
+      ${li("「考到过」点错了能撤销吗？", "目前不能撤销；同一台设备对同一题只计一次，误点一次对整体参考价值影响极小，可以忽略")}
     `)}
+    <div class="g-fb" id="g-feedback" style="margin-top:22px;text-align:center"></div>
     <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-10-05 · 更详细的开发文档见 GitHub 仓库 README</div>
   `);
   $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
     const el = document.getElementById(t.dataset.go);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   });
+  /* —— 指南内搜索（20261005b）：过滤条目行，区块内全部隐藏时整块收起 —— */
+  const norm = s => String(s || "").toLowerCase().replace(/[\s\p{P}\p{S}_]+/gu, "");
+  const gInput = $("#g-search"), gHint = $("#g-search-hint");
+  if (gInput) {
+    let tmr = null;
+    gInput.addEventListener("input", () => {
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        const q = norm(gInput.value);
+        const secs = $$("#main .g-sec");
+        if (!q) {
+          secs.forEach(s => { s.classList.remove("g-hide"); s.querySelectorAll(".g-li").forEach(r => r.classList.remove("g-hide")); });
+          gHint.style.display = "none";
+          return;
+        }
+        let hits = 0;
+        secs.forEach(s => {
+          let inSec = 0;
+          s.querySelectorAll(".g-li").forEach(r => {
+            const ok = norm(r.textContent).indexOf(q) >= 0;
+            r.classList.toggle("g-hide", !ok);
+            if (ok) inSec++;
+          });
+          s.classList.toggle("g-hide", inSec === 0);
+          hits += inSec;
+        });
+        gHint.textContent = hits ? `共 ${hits} 条匹配` : "没有匹配的条目，换个词试试（支持标题和正文）";
+        gHint.style.display = "block";
+      }, 140);
+    });
+  }
+  /* —— 「这篇有帮助吗」（20261005b）：localStorage 记一次，避免重复打扰 —— */
+  const fbBox = $("#g-feedback");
+  if (fbBox) {
+    let saved = null;
+    try { saved = localStorage.getItem("guide_fb"); } catch (e) {}
+    if (saved === "up" || saved === "down") {
+      fbBox.innerHTML = `<span class="muted" style="font-size:13px">${saved === "up" ? "🎉 谢谢反馈！祝面试顺利" : "🙏 收到，我们会持续改进指南"}</span>`;
+    } else {
+      fbBox.innerHTML = `<span style="font-size:13px;margin-right:10px">这篇指南有帮助吗？</span>
+        <button data-fb="up" style="margin-right:8px">👍 有帮助</button><button data-fb="down">🙋 没找到想要的</button>`;
+      fbBox.querySelectorAll("button").forEach(b => b.onclick = () => {
+        try { localStorage.setItem("guide_fb", b.dataset.fb); } catch (e) {}
+        fbBox.innerHTML = `<span class="muted" style="font-size:13px">${b.dataset.fb === "up" ? "🎉 谢谢反馈！祝面试顺利" : "🙏 收到，我们会持续改进指南"}</span>`;
+      });
+    }
+  }
 }
 
 /* ============================ 刷题练习 ============================ */
