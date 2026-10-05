@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261001g";
+const VERSION = "20261005a";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -36,6 +36,7 @@ const APP_SHELL = [
   "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
   "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
   "/js/submit.js?v=" + VERSION, "/js/festival.js?v=" + VERSION,
+  "/offline.html",
   "/data/seed.js?v=" + VERSION
 ];
 
@@ -95,7 +96,9 @@ self.addEventListener("fetch", (event) => {
         }
         return net;
       } catch (_) {
-        return (await caches.match("/index.html")) || (await caches.match("/")) || Response.error();
+        /* 离线兜底链（20261005a）：SPA 首页 → 兜底 offline 页，不再直接 Response.error() 白屏 */
+        return (await caches.match("/index.html")) || (await caches.match("/"))
+          || (await caches.match("/offline.html")) || Response.error();
       }
     })());
     return;
@@ -108,6 +111,29 @@ self.addEventListener("fetch", (event) => {
     event.respondWith((async () => {
       try { return await fetch(req, { cache: 'reload' }); }
       catch (_) { return (await caches.match(req)) || Response.error(); }
+    })());
+    return;
+  }
+
+  /* 题库数据文件：必须 network-first（20261005a）。
+     此前 published.json 走同源默认的 cache-first——SW 运行时缓存一旦写入，
+     访客每次打开都会命中旧快照，「自动同步最新题库」实际失效，只有发版
+     （SW VERSION 变更清缓存）才能看到新数据。version.json（~120B 版本指纹）
+     同样必须每次回源，否则瘦身的「指纹没变就跳过全量下载」会一直误判。 */
+  if (url.pathname === "/data/version.json" || url.pathname === "/data/published.json") {
+    event.respondWith((async () => {
+      try {
+        const net = await fetch(req, { cache: "reload" });
+        if (net && net.ok && url.pathname === "/data/published.json") {
+          /* 只为离线兜底缓存最近一份好快照；version.json 永不缓存 */
+          const cache = await caches.open(CACHE);
+          cache.put(req, net.clone()).catch(() => {});
+        }
+        return net;
+      } catch (_) {
+        /* 离线：version.json 失败让上层走全量兜底；published.json 回退最近缓存 */
+        return (await caches.match(req)) || Response.error();
+      }
     })());
     return;
   }
