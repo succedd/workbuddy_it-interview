@@ -698,20 +698,12 @@
       if (dd) { dd.remove(); dd = null; }
       if (activeDd && activeDd.input === input) activeDd = null;
     };
-    const open = () => {
+    const show = (html) => {
       if (activeDd && activeDd.input !== input) activeDd.close();   // 别的输入留下的下拉先收掉
       close();
-      const hist = shGet();
       dd = document.createElement("div");
       dd.className = "search-dd";
-      let h;
-      if (hist.length) {
-        h = `<div class="sd-head"><span>最近搜索</span><button type="button" class="sd-clear">清空</button></div>`
-          + hist.map(x => `<div class="sd-item" data-q="${U.esc(x.q)}"><span class="sd-ic">${U.icon("history")}</span><span class="sd-q">${U.esc(x.q)}</span><button type="button" class="sd-del" data-del="${U.esc(x.q)}" title="删除这条">×</button></div>`).join("");
-      } else {
-        h = `<div class="sd-head"><span>热门搜索</span></div><div class="sd-hot">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-q="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>`;
-      }
-      dd.innerHTML = h;
+      dd.innerHTML = html;
       input.parentNode.appendChild(dd);
       activeDd = { input, close };
       dd.addEventListener("click", (e) => {
@@ -722,8 +714,46 @@
         if (it && it.dataset.q != null) { input.value = it.dataset.q; close(); onGo(it.dataset.q); }
       });
     };
+    const open = () => {
+      const hist = shGet();
+      let h;
+      if (hist.length) {
+        h = `<div class="sd-head"><span>最近搜索</span><button type="button" class="sd-clear">清空</button></div>`
+          + hist.map(x => `<div class="sd-item" data-q="${U.esc(x.q)}"><span class="sd-ic">${U.icon("history")}</span><span class="sd-q">${U.esc(x.q)}</span><button type="button" class="sd-del" data-del="${U.esc(x.q)}" title="删除这条">×</button></div>`).join("");
+      } else {
+        h = `<div class="sd-head"><span>热门搜索</span></div><div class="sd-hot">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-q="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>`;
+      }
+      show(h);
+    };
+    /* 实时题目联想（20261005a）：输入时用 Fuse 索引取标题最相近的 8 题，点击直达详情。
+       联想源是整库 Fuse 索引（Services.reload 时构建，含 title/tags/body/answer 权重），
+       140ms 防抖避免每键触发；空结果时收起下拉不打扰 */
+    const suggest = (term) => {
+      let rows = "";
+      try {
+        if (Services.fuse) {
+          const res = Services.fuse.search(term);
+          const seen = new Set();
+          for (const r of res) {
+            const q = Services.questions.find(x => x.id === r.item.ref);
+            if (!q || seen.has(q.title)) continue;
+            seen.add(q.title);
+            rows += `<div class="sd-item" data-q="${U.esc(q.title)}"><span class="sd-ic">${U.icon("search")}</span><span class="sd-q">${U.esc(q.title)}</span><span class="sd-cat muted">${U.esc(q.catName || "")}</span></div>`;
+            if (seen.size >= 8) break;
+          }
+        }
+      } catch (e) {}
+      if (!rows) { close(); return; }
+      show(`<div class="sd-head"><span>题目联想 · 回车看全部结果</span></div>` + rows);
+    };
     input.addEventListener("focus", open);
-    input.addEventListener("input", close);
+    let sgTimer = 0;
+    input.addEventListener("input", () => {
+      clearTimeout(sgTimer);
+      const v = input.value.trim();
+      if (!v) { open(); return; }
+      sgTimer = setTimeout(() => { if (input.value.trim() === v) suggest(v); }, 140);
+    });
     input.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
     if (!ddDocBound) {
       ddDocBound = true;
@@ -1270,16 +1300,27 @@
       qs = Search.sort(qs, "updated");
       return qs;
     };
-    const treeHtml = (nodes) => nodes.map(c => {
+    const treeHtml = (nodes, isRoot) => nodes.map(c => {
       /* fix 20261001g：此前递归用 childrenOfId(c.id)（原始分类对象，无 count 字段），
          导致子分类计数全部渲染成 undefined；统一改用 categoryTree 节点自带的 children（含 count），
          并对渲染加 || 0 兜底。 */
-      const kids = c.children || childrenOfId(c.id);
+      const kidsAll = c.children || childrenOfId(c.id);
+      /* 长尾治理（20261005a）：题量 <3 的叶子分类不再单独占行（题库 276 个分类里
+         203 个不足 5 题，树被撑得又长又空）。它们的题目本就通过 descendantIds
+         并入了当前分类的题目列表，隐藏节点只影响树的观感、不动任何数据。
+         规则：① 有子级的节点（域级）始终保留；② 顶层一级域不隐藏；③ 被隐藏的
+         小分类在父节点展开处汇总一行提示。 */
+      const SMALL = 3;
+      const kidsKept = isRoot ? kidsAll : kidsAll.filter(k => (k.children && k.children.length) || (k.count || 0) >= SMALL);
+      const kidsHidden = isRoot ? [] : kidsAll.filter(k => kidsKept.indexOf(k) < 0);
+      const hiddenN = kidsHidden.length;
+      const hiddenQ = kidsHidden.reduce((s, k) => s + (k.count || 0), 0);
       const open = catId === c.id || (catId != null && Services.descendantIds(catId).indexOf(c.id) >= 0);
+      const hasKids = (kidsKept.length || hiddenN) > 0;
       return `<div class="tree-node"><div class="tree-row ${open ? "open" : ""} ${catId === c.id ? "active" : ""}" data-id="${c.id}">
-        ${kids.length ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
+        ${hasKids ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
         <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count || 0}</span></div>
-        ${kids.length ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${treeHtml(kids)}</div>` : ""}</div>`;
+        ${hasKids ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${kidsKept.length ? treeHtml(kidsKept) : ""}${hiddenN ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">🔒 另有 ${hiddenN} 个小分类（${hiddenQ} 题）未单列，题目已并入本分类列表</div>` : ""}</div>` : ""}</div>`;
     }).join("");
 
     let selected = catId != null ? Services.getCategory(catId) : null;
@@ -1430,7 +1471,7 @@
       <div class="layout cat-layout">
         <aside class="card tree-panel">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
-          <div id="page-tree">${treeHtml(tree)}</div>
+          <div id="page-tree">${treeHtml(tree, true)}</div>
         </aside>
         <div>
           <div class="section-head" style="margin-top:0"><h2>${selected ? U.esc(selected.name) : "全部题目"}</h2>
@@ -2093,6 +2134,7 @@
           <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
           <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
           <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
+          <button class="btn" id="hit-btn" title="这家公司/面试里真的问到了这道题？点一下帮后来的兄弟主攻高频"></button>
           <button class="btn" id="variant-btn" title="AI 生成同考点变式题，检验你是否真正掌握（不是背答案）">${U.icon("sparkles")} AI 变式</button>
           <button class="btn" id="grade-btn" title="写下你的回答，AI 面试官按评分表打分并给改进版">✍️ AI 改卷</button>
           <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
@@ -2185,6 +2227,37 @@
     };
     /* 分享：弹窗预览精美卡片图 → 可直接分享到微信；同时提供复制链接（用户主动取消分享时不降级） */
     $("#share-btn").onclick = () => openShareDialog(q);
+    /* 「考到过」轻互动（20261005a）：匿名标记这道题在真实面试中被问到过。
+       计数存 Cloudflare Worker KV（hit:<id>），每台浏览器每题只记一次（localStorage 去重）。
+       拉取失败静默降级为「只显示按钮不显示人数」，绝不影响页面主流程 */
+    {
+      const hitBtn = $("#hit-btn");
+      const hitKey = "iti_hit_" + q.id;
+      let hitMarked = false;
+      try { hitMarked = localStorage.getItem(hitKey) === "1"; } catch (e) {}
+      const renderHit = (n, marked) => {
+        hitBtn.innerHTML = (marked ? "🎯 已标记考到过" : "🎯 考到过") + (n ? " · " + n + " 人" : "");
+        hitBtn.classList.toggle("btn-hit-marked", marked);
+      };
+      renderHit(0, hitMarked);
+      try {
+        const base = (typeof Stats !== "undefined" && Stats.cfApi) ? (Stats.cfApi() || "").replace(/\/+$/, "") : "";
+        if (base) {
+          fetch(base + "/interviewed?id=" + q.id, { mode: "cors" })
+            .then(r => r.json())
+            .then(j => { if (j && typeof j.hits === "number") renderHit(j.hits, hitMarked); })
+            .catch(() => {});
+        }
+      } catch (e) {}
+      hitBtn.onclick = async () => {
+        if (hitMarked) { U.toast("这台设备已经标记过这道题啦，感谢反馈", "info"); return; }
+        try { localStorage.setItem(hitKey, "1"); } catch (e) {}
+        hitMarked = true;
+        const j = typeof Stats !== "undefined" && Stats.cfPost ? await Stats.cfPost("/interviewed", { id: q.id }) : null;
+        renderHit((j && j.hits) || 1, true);
+        U.toast("已标记「考到过」，感谢反馈 🙏", "success");
+      };
+    }
     /* 纠错反馈：跳转 GitHub Issue（预填题号与标题），题目库的信任命门 */
     $("#report-btn").onclick = () => {
       const u = "https://github.com/succedd/workbuddy_it-interview/issues/new?title=" + encodeURIComponent("[纠错] 题目 #" + q.id + " " + (q.title || ""))
@@ -2566,11 +2639,51 @@
   }
 
   /* ============================ 错题重练（艾宾浩斯记忆曲线） ============================ */
+  /* —— 复习打卡（20261005a）：每次点「会了」（含 AI 闯关成功）记 1 次今日复习完成，
+     连续打卡天数由 review_days 日期表推导。localStorage 存储即可——打卡是轻量激励，
+     不值得为它加一张 IndexedDB 表；换设备丢失也不影响复习调度本身。 —— */
+  function reviewStats() {
+    let days = [];
+    try { days = JSON.parse(localStorage.getItem("review_days") || "[]"); } catch (e) {}
+    const has = new Set(days);
+    let streak = 0;
+    const d = new Date();
+    if (!has.has(dateKey(d))) d.setDate(d.getDate() - 1);
+    while (has.has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    let done = 0;
+    try { done = parseInt(localStorage.getItem("review_done_" + dateKey())) || 0; } catch (e) {}
+    return { streak, done };
+  }
+  function markReviewDone() {
+    const today = dateKey();
+    try {
+      const n = (parseInt(localStorage.getItem("review_done_" + today)) || 0) + 1;
+      localStorage.setItem("review_done_" + today, String(n));
+      let days = [];
+      try { days = JSON.parse(localStorage.getItem("review_days") || "[]"); } catch (e) {}
+      if (days.indexOf(today) < 0) { days.push(today); if (days.length > 400) days = days.slice(-400); localStorage.setItem("review_days", JSON.stringify(days)); }
+    } catch (e) {}
+    return reviewStats();
+  }
+
   async function pageReview() {
     document.title = "错题重练 · IT面试题库";
     const { due, upcoming } = await Services.weakList();
     App.reviewDue = due.length;
     renderSidebar(parseHash());
+    /* 复习打卡头部（20261005a）：今日进度条 + 连续天数。目标值取进入页面时的到期数，
+       完成数跨渲染持久（localStorage），「还不会」不计数、下次到期再算 */
+    const dueTotal = Math.max(due.length, reviewStats().done);
+    const rv0 = reviewStats();
+    const rvPct = Math.min(100, Math.round((rv0.done / Math.max(1, dueTotal)) * 100));
+    const rvHeader = (due.length || rv0.done) ? `<div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+      <div style="font-size:22px">📆</div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-weight:600;font-size:14px">今日复习进度 <span id="rv-done" style="color:var(--primary,#2563EB)">${rv0.done}</span> / ${dueTotal}${due.length ? "" : " · 今日任务已清空 🎉"}</div>
+        <div style="height:6px;background:var(--border,#e2e8f0);border-radius:99px;margin-top:6px;overflow:hidden"><div id="rv-bar" style="height:100%;width:${rvPct}%;background:linear-gradient(90deg,#10b981,#3b82f6);border-radius:99px;transition:width .4s"></div></div>
+      </div>
+      <span id="rv-streak" class="tag ${rv0.streak >= 3 ? "tag-warning" : ""}" title="每天完成至少 1 次复习即打卡，中断清零">🔥 连续复习 ${rv0.streak} 天</span>
+    </div>` : "";
     /* 一次性取出全部批注建索引（避免每张卡片各查一次库） */
     let noteByQ = new Map();
     try { noteByQ = new Map((await DB.notesAll()).map(n => [n.questionId, n])); } catch (e) {}
@@ -2602,6 +2715,7 @@
     setMain(`
       <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
       <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 点「⚡ AI 闯关」先答变式题验证真掌握，或直接自评</span></div>
+      ${rvHeader}
       ${due.length
         ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
         : `<div class="empty">
@@ -2654,6 +2768,11 @@
               Services.weakGrade(qid, true).then(async () => {
                 U.toast("🎉 闯关成功！下次复习时间已顺延", "success");
                 App.reviewDue = Math.max(0, (App.reviewDue || 0) - 1);
+                /* 复习打卡：闯关成功等同「会了」（20261005a） */
+                const st = markReviewDone();
+                const rd = document.getElementById("rv-done"); if (rd) rd.textContent = st.done;
+                const rb = document.getElementById("rv-bar"); if (rb) rb.style.width = Math.min(100, Math.round((st.done / Math.max(1, dueTotal)) * 100)) + "%";
+                const rs = document.getElementById("rv-streak"); if (rs) { rs.textContent = "🔥 连续复习 " + st.streak + " 天"; if (st.streak >= 3) rs.classList.add("tag-warning"); }
                 renderSidebar(parseHash());
                 try {
                   const info = await Services.weakInfo(qid);
@@ -2671,6 +2790,7 @@
       }
       else {
         await Services.weakGrade(qid, act === "ok");
+        if (act === "ok") markReviewDone();   /* 复习打卡（20261005a）：pageReview 重渲染会自动刷新进度 */
         U.toast(act === "ok" ? "👍 已掌握，下次复习时间已顺延" : "好的，5 分钟后再次提醒", act === "ok" ? "success" : "warn");
       }
       pageReview();
