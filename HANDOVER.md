@@ -20,8 +20,8 @@
 
 ## 2. 版本缓存机制（改代码必做）
 
-- `index.html` 所有资源带 `?v=20260829h` 缓存戳（约 21 处）——**改动任何 js/css 后必须整体 bump**：
-  `sed -i 's/v=20260829旧/v=20260829新/g' index.html`（字母递增 u→v→w…）
+- `index.html` 所有资源带 `?v=20261001b` 缓存戳（36 处）——**改动任何 js/css 后必须整体 bump**：
+  `sed -i 's/v=20261001b/v=20261001c/g' index.html`（字母递增 a→b→c…）
 - `sw.js` 第 8 行 `const VERSION = "..."` 必须与 index.html 同步 bump（SW 缓存靠它失效）
 - 部署 = `git push origin <40位字面量SHA>:refs/heads/release` → GitHub Actions **`Deploy to Cloudflare Pages`** 自动执行（白名单组装 dist → 反爬守卫 41 条回归 → wrangler 直传），约 1–2 分钟生效。⚠️ **禁止用变量做 refspec**（`$VAR:refs/heads/x` 变量取空会删除远端分支）
 - 验证：`curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" "https://itinterview.com.cn/?nocache=<ts>"` 确认新版本号命中。⚠️ **裸 curl 会被反爬守卫 403**，必须带浏览器 UA；最省事的做法是直接跑 `python tools/accept-switch.py`（10 项验收）
@@ -105,10 +105,121 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`2d0eca6`（近重复题归并：1345 题 / v15——3 对真重复合并 + 修复 11 题 relatedIds 悬空引用，纯数据+跳转分享页）｜缓存版本 `20260926a` 不变｜更新时间：2026-09-26 傍晚 (+08)**
+**最新 release commit：`（本次推送后回填）`（feat: 题库补充批次 2026-10-05-a——18 个薄弱分类 57 题）｜缓存版本不变（纯数据变更）｜更新时间：2026-10-05 09:10 (+08)**
+**本次内容（feat: 题库补充 2026-10-05-a，WorkBuddy 会话执行）：用户要求「再补充题目」，走 enrich 流水线补 57 题，1441→1498 题。**
+- **覆盖 18 个分类**：Vue2×4 / Angular×3 / 前端工程化×3 / Webpack×3 / Vite×3 / Flutter×3 / Android开发×4 / iOS开发×4 / 渗透测试×4 / 应急响应×3 / 密码学基础×4 / PyTorch×4 / LangChain×3 / 向量数据库×3 / Helm×2 / Terraform×2 / 数仓建模理论×3 / 接口测试×2。
+- **来源与质检**：每题挂官方文档 / OWASP Cheat Sheets / NIST SP 800-61 等权威 URL（404 会被闸门拒）；流水线归一化 + difflib 模糊去重（0.85 拦截线）——1 题（Flutter 三棵树）因题库已有近似被拦，符合预期。
+- **新题 id 1482~1538**；分享页 q/1482~1538.html 与 sitemap.xml（+57 条）同步补齐；README「自动扩充记录」表 + 更新日志已加行。
+- **缓存版本不变**：纯 data/静态页变更，无 js/css 改动（沿用 2026-10-01 批次先例）；编辑端 `absorbRemote` 自动吸收，用户刷新即可见。
+- **过程备注**：本机 `.git/refs` 目录再次丢失（mkdir 恢复）；github.com:443 与 7897 代理间歇不通，本次改走 GitHub Contents API（api.github.com 直连）推送；raw.githubusercontent 有 CDN 缓存，验收勿以其为准。
+
+**上一条 release commit：`c9bb589`（fix: 技术体系页子分类计数 undefined，docs 随后回填）｜缓存版本 `20261001g`｜更新时间：2026-10-01 20:45 (+08)**
+**本次内容（fix: 分类树子级计数 undefined，WorkBuddy 会话执行）：用户反馈手机端「技术体系」页展开「通用面试能力与软技能」后 7 个子分类计数全部显示 undefined。**
+- **根因**：pageCategory 的 `treeHtml` **首次调用**用 `Services.categoryTree()` 的节点（有 `count`），**递归子级**却用 `childrenOfId(c.id)` = `Services.childrenOf()` 返回的**原始分类对象（没有 count 字段）**→ 所有非顶层分类计数渲染成 `undefined`。实测 276 个计数节点中 255 个（= 全部子级）undefined、21 个顶层正常，与截图完全吻合。该 bug 自 8/21 初版即存在，仅展开有子分类的节点可见。
+- **修复**：递归改用 categoryTree 节点自带的 `children`（含 count）`const kids = c.children || childrenOfId(c.id)`，渲染处加 `|| 0` 兜底；本地验证 276 节点 0 undefined，子分类计数正确（自我介绍 8 / 职业规划 8 / 冲突 2 / 团队协作 2 / 方案表达 2 / 薪资 2 / HR 10，合计+直属题=39 ✓）。首页/题库页冒烟通过。
+- **缓存版本**：20261001f → **20261001g**（index.html 36 处 + sw.js VERSION）。
+- **改动文件**：js/app.js（pageCategory treeHtml）、index.html、sw.js。
+- **⚠️ 注意**：main 分支（iti-dedup2 工作副本）与 release 历史不相关（merge-base 为空），发版必须基于 `git ls-remote origin release` 的真实 tip 建 fix 分支 FF 推送，勿直接 merge main。
+
+**上一条 release commit：`97a45c1`（feat: 每日一句整幅节日风——代码 64279eb + docs 97a45c1，已推送并线上验收通过）｜缓存版本 `20261001f`｜更新时间：2026-10-01 17:20 (+08)**
+**本次内容（feat: 每日一句整幅节日风格化，WorkBuddy 会话执行）：用户反馈 e 版只换配色不够——「整幅背景国庆风、文案写成国庆文案」。**
+- **文案池 `FEST_QUOTES`**（js/daily-quote.js）：14 节日各配 2~4 条主题文案（国庆为爱国寄语、程序员节为 1024 梗、春节/中秋等为古诗词风寄语）；有节日时名言直接取自文案池（按年内天稳定取一条、当天不跳动），**Hitokoto 随机名言与 localStorage 缓存全部停用**；「换一条」在池内随机换；无节日完全走原 Hitokoto 流程。
+- **整幅节日风背景**：横幅加 `.is-fest` 类——`.daily-quote__bg` 随机图 `display:none`，改用 CSS 节日底（FEST_PAL 深色渐变 + --dq-accent 双光晕 + `.daily-quote__stars` 10 颗金星 ★/✦ 交错闪烁动画 `dqStarTwinkle`）；分享卡 canvas 同步加金星点缀（step 4.5）。
+- **验证**：本地 Playwright 三态实测——① 国庆模式：is-fest ✓ / 10 星 / 文案「以青春之名…」国庆献礼 / 随机图未加载 ✓；② 换一条：池内切到「家有山河锦绣…」✓；③ 移除属性重挂载：is-fest 摘除、星星清零、恢复 Hitokoto ✓。`node --check` 通过。
+- **缓存版本**：20261001e → **20261001f**（index.html 36 处 + sw.js）。
+- **改动文件**：js/daily-quote.js（FEST_QUOTES 池 + is-fest/星星挂载 + paint/load/shuffle 分流 + 分享卡金星）、css/style.css（.is-fest 光晕/隐藏随机图/星星动画）、index.html、sw.js。
+
+**上一条 release commit：`58c930b`（feat: 每日一句节日联动 e 版——代码 1d0e151 + docs cc3e8c7 + 回填 58c930b，已验收）｜缓存版本 `20261001e`｜更新时间：2026-10-01 17:05 (+08)**
+**本次内容（feat: 每日一句 × 节日背景联动，WorkBuddy 会话执行）：用户要求「每日一句按节日更换背景与文案，无节日保持原样」。**
+- **联动逻辑**：`js/daily-quote.js` 挂载时检查 `data-festival` 属性（在 = 今天有节日且用户未关闭节日背景）→ 命中 `FEST_PAL[fest.key]`（14 节日各配一套**深色**横幅配色保证白字可读，键与 festival.js 一致）；属性不在（无节日/用户已关）→ 走原有「年内第几天」8 色轮换，**完全不受影响**。
+- **文案**：标签 💡→🎉，其后追加节日胶囊 `.daily-quote__fest`（如「国庆节快乐」「端午安康」「1024 · 节日快乐」）；分享卡（composeShare）读取 `CUR` 状态，徽章带节日名、页脚同步，与横幅视觉一致。
+- **验证**：本地 Playwright 实测——节日模式（国庆）：🎉 标签+红胶囊+深红渐变 ✓；移除属性重挂载：胶囊消失、恢复紫罗兰轮换配色 ✓；`node --check` 三文件通过。
+- **缓存版本**：20261001d → **20261001e**（index.html 36 处 + sw.js）。
+- **改动文件**：js/daily-quote.js（FEST_PAL 表 + 联动 + CUR 状态）、css/style.css（.daily-quote__fest 胶囊样式）、index.html、sw.js。
+
+**上一条 release commit：`e463da4`（fix: 节日背景透底修复——代码 a54189e + docs e463da4，已推送并线上验收通过）｜缓存版本 `20261001d`｜更新时间：2026-10-01 16:55 (+08)**
+**本次内容（fix: 节日背景二次可见性修复，WorkBuddy 会话执行）：用户仍反馈「背景图看不到，被遮挡」。**
+- **根因（v20261001c 没修干净）**：c 版只加了 topbar 染色和 body 渐变浓度，但页面约 95% 可视区仍被三块**完全不透明**的表面盖住——左侧栏 `.sidebar`（纯白 --bg-elevated）、顶栏 `#topbar`、主区铺满的 `.card`（纯白）。body 渐变只在卡片缝隙露出几个像素，肉眼等于看不见。
+- **修复（20261001d）**：① 节日模式下 `.sidebar` / `.card` / `#topbar` 底色改 **84%~86% 半透明**（light `rgba(255,255,255,.84)`、dark `rgba(30,41,59,.86)`），背景渐变从底下透出，弹窗仍保持不透明保证可读性；② 全部 14 节日 light/dark 调色板浓度再提一档（light 约 ×1.7、dark 约 +0.10 alpha）；③ body 渐变扩为三层大半径（1400/1100/900px）覆盖右上/左中/右下。
+- **验证**：本地静态服务器 + Playwright 实截图确认 light/dark 两主题下国庆红渐变均清晰可见、正文可读性正常；`node --check` 语法通过。
+- **缓存版本**：20261001c → **20261001d**（index.html 36 处 + sw.js VERSION）。
+- **⚠️ 通用教训（升级 c 版结论）**：页面级氛围效果不能只写在 body 上，还要排查**所有大块不透明表面**（sidebar/topbar/card/容器），要么把效果写到表面层、要么把表面改半透明。
+
+**上一条 release commit：`c658f83`（fix: 节日背景可见性强化——topbar 染色+色条）｜缓存版本 `20261001c`｜更新时间：2026-10-01 16:05 (+08)**
+**本次内容（feat: 节日背景自动切换，WorkBuddy 会话执行）：14 个节日按日期自动换背景配色。**
+- **实现**：`js/festival.js`（无依赖，按当天日期在 `<html>` 上设 `data-festival="key"`）+ `css/festival.css`（每个节日的 light/dark 两套渐变，纯 CSS 零图片）；左下角新增可关闭的节日角标 `#festival-badge`（右上角是 SW 更新胶囊，位置不冲突）。
+- **节日表**：春节/元宵/端午/七夕/中秋/重阳（农历→公历日期表，覆盖 2026–2028，表外年份自动跳过）+ 元旦/清明/劳动节/儿童节/教师节/国庆/程序员节(1024)/圣诞（每年固定 MM-DD）；数组顺序即优先级，2028 中秋(10-03)撞国庆时优先中秋。
+- **开关**：左下角角标点击关闭（localStorage `iti_festival=off` 持久保存）；管理员「系统设置 → 外观主题」新增「节日背景」开启/关闭分段按钮（`App.getFestivalOff/setFestivalOff`，js/app.js）。
+- **缓存版本**：20261001a → **20261001b**（首发）→ **20261001c**（可见性强化，c658f83）；`css/festival.css`、`js/festival.js` 已加入 sw.js APP_SHELL 预缓存。
+- **⚠️ 可见性教训（20261001c）**：首版仅做 body 低透明度渐变（0.10~0.13 alpha），被不透明 topbar（--bg-elevated）与白色 .card 铺满遮挡，用户实测「看不到」。强化方案：① #topbar 两端染色（linear-gradient 叠加在 --bg-elevated 上）+ inset 0 3px 节日色条；② 渐变浓度翻倍、中心移到 topbar 之下可视区（88% 12% / -6% 55%）；③ 全部变量化（--f-c1/--f-c2/--f-solid），明暗各 14 组。**做页面级氛围效果时必须检查不透明容器层级，不能只写在 body 上。**
+- **测试**：27 个日期用例全过（含除夕/区间边界/2028 中秋撞国庆优先级/关闭开关）；smoke-test 26/26 通过；`node --check` 两文件语法通过。
+
+**上一条 release commit：`6ee4121`（feat: 优质补缺批次 2026-10-01-e——防重复专项 14 题 / 14 分类）｜缓存版本 `20261001a`（纯数据变更未 bump）｜更新时间：2026-10-01 14:00 (+08)**
+**本次内容（2026-10-01-e 批次，WorkBuddy 会话执行）：题库优质补缺（防重复专项）——14 个单题分类各加深 1 道，1406→1420 题。**
+- **新增 14 题（id 1447~1460）**：Unity 协程执行模型与 yield 时机（Unity开发）；VBO/VAO/EBO 与 DrawCall 合批（OpenGL）；Z-Buffer/透明排序/Early-Z（图形学基础）；设备树与 compatible 匹配（嵌入式Linux）；优先级反转与继承、互斥量 vs 二值信号量（RTOS）；遗嘱/保留消息/Clean Session 组合做在线状态管理（MQTT）；转码管线与 CRF/preset 取舍（FFmpeg）；端到端延迟账本与秒开/卡顿优化（直播技术架构）；参数化/关联/思考时间的真实性设计（JMeter）；对称 vs 非对称、TLS 混合加密与前向保密（密码学基础）；IOC vs IOA 与 SOC 落地运营（威胁情报）；小文件三层危害与治理（HDFS）；Hudi/Iceberg/Delta 表格式对比（数据湖）；数据/概念漂移区分与再训练触发（MLOps）。
+- **防重复三道关（用户明确要求）**：① 选题前逐分类核对现有题干（如 Unity 已有 GameObject/生命周期 → 本批讲协程；密码学已有密码存储加盐 → 本批讲混合加密与前向保密；威胁情报已有分类概念 → 本批讲 IOC/IOA 运营）；② 入库前对全库 1420 题标题跑 difflib 相似度复核，本批最高 0.55、同分类最高 0.38，远低于 0.85 拦截线；③ 流水线自带归一化 + 模糊去重再过一遍，0 拦截。
+- **流程**：`tools/enrich_questions.py` 流水线，批次文件 `tools/batches/2026-10-01-e.json`（gitignore 不入库）；MQTT 首选 HiveMQ 博客 404 被闸门拦截后换 OASIS MQTT 5.0 官方规范。
+- **配套**：sitemap.xml 增补 14 条；分享页 `q/1447~1460.html`；README「自动扩充记录」表加 2026-10-01-e 行。
+- **缓存版本**：纯数据+静态页变更、无 js/css 改动，`20261001a` 不变（与 2026-09-26 批次先例一致）；编辑端 `absorbRemote` 自动吸收。
+- **回归**：smoke-test 26/26 通过。
+
+**上上条 release commit：`28dae5c`（feat: 优质补缺批次 2026-10-01-d——14 题 / 14 分类）｜缓存版本 `20261001a`｜更新时间：2026-10-01 12:50 (+08)**
+**本次内容（2026-10-01-d 批次，WorkBuddy 会话执行）：题库优质补缺——14 个单题分类各加深 1 道，1392→1406 题。**
+- **新增 14 题（id 1433~1446）**：PHP-FPM 进程模型与 pm 三模式选型（PHP）；Oracle SQL 变慢排查与 SQL Plan Baseline（Oracle）；W+R>N 一致性公式及其四大漏洞（Cassandra）；RowKey 防热点四策略与盐析代价（HBase）；Watermark 乱序处理与两阶段提交 Exactly-Once（Flink）；数据倾斜五手段+内外部表（Hive）；Terraform state/漂移/State Locking（Terraform）；Playbook 幂等性来源与 roles 结构（Ansible）；IAM Role vs AK/SK 与显式拒绝优先（AWS）；隐式/显式等待反模式（Selenium）；自动等待与 Trace Viewer、与 Selenium 架构差异（Playwright）；信令/ICE/STUN/TURN 建连全流程（WebRTC）；重入攻击与 CEI/mutex（智能合约Solidity）；期望薪资区间报价法（薪资谈判）。
+- **流程**：走 `tools/enrich_questions.py` 流水线（来源 URL 可达性闸门 + 归一化/模糊去重 + 质量校验），批次文件 `tools/batches/2026-10-01-a.json`（编号 2026-10-01-d，目录已 gitignore 不入库）；Oracle 首选链接 404 被闸门拦截后换 `managing-sql-plan-baselines.html`。
+- **⚠️ 撞号教训**：本批次首次合入时（本地 commit 1353f06，题 id 1426~1429…）与远端定时自动扩充撞号——远端同日已把 1426~1432 分给 T068/T067/T016 追问链。已放弃 rebase（README/published.json/分享页三方冲突），改为以远端 tip `7f2b8d5` 为基座重跑流水线，新题改拿 **1433~1446**。**结论：与定时自动扩充同日操作时，先 `git ls-remote` + fetch 到最新再跑流水线，勿在旧基线上生成题目。**
+- **配套**：sitemap.xml 增补 14 条（新题分享页 `q/1433~1446.html`）；README「自动扩充记录」表加 2026-10-01-d 行。
+- **缓存版本**：20260929a→20261001a（index.html 34 处 + sw.js VERSION）；纯数据+静态页变更，无 js 逻辑改动；编辑端 `absorbRemote` 打开页面自动吸收新题，无需手动操作。
+- **回归**：smoke-test 26/26 通过；data-audit 无新增问题（遗留：缺 body 10 题、瘦分类 140 个、孤儿分享页 40 个均为历史存量）。
+
+**上一条 release commit：`42252df`（feat: 优质补缺批次 2026-09-29-a——13 题 / 11 分类）｜缓存版本 `20260929a`｜更新时间：2026-09-29 21:50 (+08)**
+
+**上一条 release commit：`7f58dd5`（feat: AI 改卷上线——详情页写下回答，AI 面试官三维度评分点评）｜缓存版本 `20260927g`｜更新时间：2026-09-27 19:20 (+08)**
+**本次内容（2026-09-27-d 批次，WorkBuddy 会话执行）：上线「AI 改卷」——详情页写下回答，AI 面试官三维度评分点评（P0 创新项第 4 项），前端 + Worker 两层。**
+- **功能**：题目详情页新增「✍️ AI 改卷」卡片：不看标准答案写下自己的回答（≥10 字）→ 交卷 → AI 按**正确性 / 完整性 / 表达**打 0–100 分 + 总评（优秀 / 合格 / 不合格）+ 缺失 / 加分点清单 + 可背诵的参考改进版；可反复改稿重交看分数变化。作答与最近一次评分只存本机（`grade_hist_v1`），不入题库。
+- **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/grade`。KV 缓存 `grade:v1:<qid>:<djb2(去空白回答)>` 7 天（同一回答重评免费、不耗限额）；限额每用户每日 20 次 / 每 IP 每小时 30 次（先读后计，AI 失败不扣）；`temperature 0.3`（评分要稳定，远低于变式的 0.8）、`thinking disabled`、`json_object`、max_tokens 2048；`<data>`（题目素材）+ `<answer>`（用户回答）双重注入防护；响应字段校验收敛（分数夹逼、verdict 枚举归位、missing ≤6 条）。改动：`handleAiGrade()` / `genGrade()` / `djb2Hex()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
+- **前端（`js/app.js`）**：详情页 q-actions 加「✍️ AI 改卷」按钮 + `#grade-box` 面板（textarea 作答 → 评分面板：大分数 + 三维度色条 + 缺失点列表 + 改进版 md 渲染）；401 引导登录、失败保留输入可重试。
+- **部署与验证**：前端 20260927f→g；Worker 重新 `wrangler deploy`（版本 `660629d0`）。线上：未登录 401 `needLogin` 正确，旧端点 `/ai/variant` `/stats` 完好。
+- **文档同步**：README「主要功能」加「AI 面试官三件套」条目；`#/help` 使用指南（`js/guide.js`）加「AI 变式训练 / AI 改卷」条目并扩写「错题重练页」，更新日期戳 2026-09-27（`20260927h`）。
+
+**上一条 release commit：`36b1093`（feat: 复习闯关化——错题重练接入 AI 变式，全对才顺延记忆间隔）｜缓存版本 `20260927f`｜更新时间：2026-09-27 19:05 (+08)**
+**本次内容（2026-09-27-c 批次，WorkBuddy 会话执行）：复习闯关化（P0 创新项第 3 项），纯前端改动、后端零改动。**
+- **功能**：错题重练页每张**到期**卡片新增「⚡ AI 闯关」→ 展开该题 3 道 AI 变式（与详情页共用同一份 KV 缓存，生成过的题秒开）→ 先答再自评。**判定规则：全部答上 = 闯关成功，`weakGrade(true)` 顺延记忆间隔；任一没答上 = fail-fast `weakGrade(false)` 重置间隔 5 分钟后重来**（`graded` 锁只判一次）。进度显示「已答 x/3」，成功后卡片状态改「✅ 已顺延」并刷新侧栏待复习角标。未登录 / 生成失败给兜底提示，可退回「会了 / 还不会」自评。
+- **重构**：详情页变式训练抽为共享层 `openVariantChallenge(vBody, q, opts)` / `renderVariantItems()`（opts：`onAssess` / `tagFor` / `footer` / `onReady` / `loginAlt` / `loadingMsg`），详情页与复习页共用 `variant_cache_v1` 与服务端 KV。
+- **部署**：前端 20260927e→f。
+
+**上一条 release commit：`2939e9c`（feat: AI 变式训练上线——错题变式生成 + 本机自评联动错题重练）｜缓存版本 `20260927e`｜更新时间：2026-09-27 18:35 (+08)**
+**本次内容（2026-09-27-b 批次，WorkBuddy 会话执行）：上线「AI 变式训练」（P0 创新项第 2 项：错题变式），前端 + Worker 两层。**
+- **功能**：题目详情页新增「✨ AI 变式」按钮 → 服务端把原题内容发给 DeepSeek（`deepseek-flash`，temperature 0.8、thinking disabled、response_format json_object、max_tokens 4096）生成 **3 道同考点变式题**（题干 + 参考答案 + 考察点，问法/场景/条件必变，防同义改写）；用户逐题「先答再看答案」自评：「没答上」自动把**原题**加入错题重练（艾宾浩斯）。变式与自评只存本机 localStorage，不入正式题库（入库仍走投稿审核链路）。
+- **Worker（`cloudflare/worker.js`）**：新路由 `POST /ai/variant`（登录用户，任何角色）。**KV 全局缓存** `var:v1:<qid>`（同一道题全站只生成一次，180 天过期；命中零成本、不消耗限额、不要求重复登录计费）；限额走 KV 软计数：**每用户每日 20 次真实生成 / 每 IP 每小时 30 次**，先读后计（AI 失败不消耗次数）；prompt 带 `<data>` 注入防护（与投稿质检同款）；响应经校验收敛（题长 ≥6、答案 ≥30 字、去重、与原题不同、最多 3 道）。改动：`handleAiVariant()` / `genVariants()` / 常量段，复用 `sessionUser / jsonResp / clientIp / resolveAiModel / AI_URL / AI_TIMEOUT_MS`。
+- **前端（`js/app.js` + `js/account.js`）**：`account.js` 导出 `A.call`（统一带 token + 多入口回退请求通道）；详情页 q-actions 加按钮、note-card 与答案区之间加 `#variant-box` 面板；本机缓存 `variant_cache_v1`（7 天 TTL）+ 自评统计 `variant_stats_v1`；未登录显示引导，失败可重试。
+- **成本模型**：每题全站只生成一次（KV 缓存）→ AI 成本 ≈ 题库规模 × 单次生成（deepseek-flash 约 0.01 元级），与用户量无关；用户侧每题无限复练免费。
+- **部署**：前端走正常发版（20260927d→e）；**Worker 需 `wrangler deploy --config cloudflare/wrangler.toml` 单独部署**（2026-09-27 已执行）。
+- **后续规划（未实现）**：学习周报 AI 点评（复习闯关化与 AI 改卷已分别于 c / d 批次完成）。
+
+**上一条 release commit：`183113a`（fix: 访客地域分布空白——超时跟随入口 + 多入口回退 + 加载/失败状态可视化）｜缓存版本 `20260927d`｜更新时间：2026-09-27 16:15 (+08)**
+**本次内容（2026-09-27-a 批次，WorkBuddy 会话执行）：修复管理后台「访问统计」卡片里访客地域分布整块空白的问题。**
+- **现象**：卡片文案「已接入云端统计（Cloudflare Worker），下方为访客地域分布。」正常显示，但下方 `#c-geo` 区域一片空白——无图表、无「暂无访客数据」、无任何报错。
+- **排查结论（后端无罪）**：实测 Netlify 桥 `https://iti-api.netlify.app/stats` → 200，CORS 正确回显 `https://itinterview.com.cn`，`byCountry` 有真实数据（total 764：US 740 / SG 11 / TW 3 / ES·NL·CO 各 1）。问题全在前端。
+- **根因（三处叠加，均在 `js/app.js` Stats 模块与管理面板渲染）**：
+  1. **超时太短**：`fetchWithTimeout` 统一 3s，而 Netlify 桥冷启动实测 13s+（account.js 探测早已给它 20s 预算，但管理面板这条读路径没跟上）→ 冷启动必被 abort；
+  2. **失败静默**：`cfGetStats` 失败返回 null → 渲染层把 null 与「连接成功但无数据」混在一起显示「暂无访客数据」？不——旧渲染把 fetch 异常 `.catch(() => {})` 整个吞掉，`#c-geo` 停留空白；入口解析一旦记住被墙的 workers.dev（DNS 投毒，无代理必失败）就必然走到这条静默路径；
+  3. **单点入口**：读路径只试 `cfApi()` 一个地址，主入口挂了没有回退。
+- **修法（`js/app.js`，缓存版本 20260926c→d）**：
+  1. 新增 `cfTimeout(base)`：netlify 桥 20s、其余入口 10s，`cfPost`/`cfGetStats` 均生效；
+  2. `cfGetStats` **多入口回退**：首选失败自动试 `Account.endpoints()` 其余候选（api-endpoints.json 的桥 → workers.dev），读路径不再绑死单点；失败仍返回 null（有缓存回退缓存），语义上 null = 加载失败；
+  3. `#c-geo` **三态可视化**：渲染即显示「正在加载访客数据…」→ 成功画饼图 / 数据为空显示「暂无访客数据」/ 失败显示「云端访客数据加载失败」+ **重试按钮** + 「检查接口设置」链接；echarts 本身加载失败也不再留「加载中」假状态。
+- **用户侧提示**：若之前在「系统设置 → Cloudflare Worker」手填过 workers.dev 地址（localStorage.stats_api），它优先级最高、自动探测不覆盖——多入口回退已能兜住读路径，但建议清掉手填值或改填 `https://iti-api.netlify.app`。浏览器若开着坏掉的系统代理（本会话实测 127.0.0.1 代理 502），netlify/workers.dev 都会失败——那是本机网络问题，页面现在会明确报错而不是空白。
+- **纯前端修复，后端 Worker/D1/数据零改动。**
+
+**上一条 release commit：`7ad0ea5`（计算机组成原理·带图/定量专题 13 题：1345→1358 题 / v17，comporg 20→33 题）｜缓存版本 `20260926c`｜更新时间：2026-09-26 夜里 (+08)**
+**本次内容（2026-09-26-j 批次，WorkBuddy 会话执行）：计算机组成原理补强 13 道带图/定量题（均含自绘 SVG + 算例）：存储器层次金字塔、单周期 CPU 数据通路、流水线时空图与吞吐率/加速比/效率、直接映射与组相联 Cache 地址划分、Booth 乘法、IEEE754 单精度编码、海明码、磁盘 CHS-LBA 容量、交叉编址带宽、DRAM 刷新、中断 vs DMA、补码模运算圆环。comporg 20→33 题；题库 1345→1358（v16→v17）。13 张配图 assets/q/fig-comporg-*.svg，答案用绝对路径引用；13 个分享页 q/1386~1398.html；sitemap 增补 13 条。缓存版本 20260926b→c（index.html 36 处 ?v= + PAGE_VER + SWV、sw.js 同步）。纯数据/资产变更，用户刷新后由 SW 胶囊提示更新。**
+**上一条 release commit：`4ffd970`（分类重归类：1345 题 / v16——5 道浏览器题从网络基础→浏览器原理，无新增题、纯分类+缓存版本变更）｜缓存版本 `20260926b`｜更新时间：2026-09-26 傍晚 (+08)**
+**本次内容（2026-09-26-i 批次，WorkBuddy 会话执行）：分类重归类。审计发现「网络基础」(catId 49) 混入 5 道浏览器专属题——① 浏览器多进程架构(1128) ② CSS/JS 渲染阻塞(1129) ③ DevTools 白屏诊断(1130) ④ 浏览器缓存单选(1131) ⑤ Service Worker 离线(1133)——移至「浏览器原理」(catId 60)。网络基础保留纯网络题（URL 总览/ARP/DNS·TCP·TLS·CDN 排查/HTTP2·3 弱网优化/CDN 加速）。published.json version 15→16，缓存版本 20260926a→b（index.html 36 处 ?v= + PAGE_VER + SWV、sw.js 同步），README 自动扩充表加 i 行。题库题数不变（1345）。无 js/css 逻辑改动，但版本号升了 → 用户刷新后会通过 SW 胶囊提示更新。**
+**上上条 release commit：`2d0eca6`（近重复题归并：1345 题 / v15——3 对真重复合并 + 修复 11 题 relatedIds 悬空引用，纯数据+跳转分享页）｜缓存版本 `20260926a` 不变｜更新时间：2026-09-26 傍晚 (+08)**
 **本次内容（2026-09-26-h 批次，WorkBuddy 会话执行）：近重复题归并。全库扫描 34 个候选对，仅 3 对为真重复（答案相似、同一题被多批次重写进库）：① JVM 运行时数据区 1357→保留 660（990字详版）；② Redis 持久化 1348→保留 906（用 answerFrom 把更全的含混合持久化答案升级进 906，避免改保留方破坏历史重定向）；③ 缓存穿透/击穿/雪崩 1349→保留 907（升级为带对比表版）。其余 31 对为同分类不同题误报，未删。另修复历史遗留 11 题 relatedIds 悬空引用（指向已删的 259/823）。题库 1348→1345（v14→v15），40 个跳转分享页（含新增 1348/1349/1357）+ sitemap 剔除 3 条已推送。纯数据变更，无 js/css 改动，无需 Ctrl+F5。**
 
-**上一条 release commit：`94fec3e`（feat: 每日一句背景色按天轮换——8 套深色配色，分享卡同色）｜缓存版本 `20260926a`｜更新时间：2026-09-26 下午 (+08)**
+**上上上条 release commit：`94fec3e`（feat: 每日一句背景色按天轮换——8 套深色配色，分享卡同色）｜缓存版本 `20260926a`｜更新时间：2026-09-26 下午 (+08)**
 **本次内容：每日一句横幅底色 + 点缀色按「年内第几天」在 8 套深色配色（靛蓝/松石绿/紫罗兰/玫瑰红/青碧/暖橙/深海蓝/石墨灰）间轮换，当天稳定、隔天换新；分享卡片图同色。改动 `js/daily-quote.js` / `css/style.css` / `js/guide.js` / `index.html` / `sw.js`。**
 **上一条 release commit：`80f5004`（自动扩充题库：1295 题——高频题+SVG图解批次）｜缓存版本 `20260924c` 不变｜更新时间：2026-09-26 11:40 (+08)**
 **本条内容（2026-09-26-e 批次，WorkBuddy 会话执行）：高频面试题+SVG 图解 24 题——网络 6（TCP 重传/SYN Flood/Nagle/Keepalive/BIO·NIO·AIO/CDN）、Java 与 JVM 6（ThreadLocal/虚拟线程 Pinning/三色标记/JIT 与逃逸分析/堆外内存/对象布局）、MySQL 与 Redis 6（Buffer Pool LRU/Change Buffer/连接池/Reactor/gossip/内存碎片）、前端 6（Web Worker/WebSocket 与 SSE/SameSite/错误监控/ESM 循环依赖/合成层）。题库 1271→1295，24 张 SVG 配图已入库 `assets/q/fig-*.svg`（release+main），答案用**绝对路径** `/assets/q/...` 引用。**顺手修复**：`gen-share-pages.js` 图片相对路径 bug（/q/ 子路径下 404），q/228、q/233 及 27 个过期分享页已修正并推送（commit `fix:` 系列）。纯数据/资产变更，无 js/css 改动，无需 Ctrl+F5。**
