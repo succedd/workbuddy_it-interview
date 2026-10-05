@@ -139,6 +139,21 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 }
 .icon-btn:hover { background: var(--bg-hover); color: var(--text); }
 
+/* 顶栏文字入口（替代纯图标，图标语义不明 —— 20260923f） */
+.top-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 32px; padding: 0 10px; border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--text-secondary); text-decoration: none;
+  white-space: nowrap;
+}
+.top-link:hover { background: var(--bg-hover); color: var(--text); }
+.top-link.is-active { color: var(--color-primary); background: var(--color-primary-soft, var(--bg-hover)); font-weight: 500; }
+.top-link .badge-dot {
+  min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
+  background: var(--color-danger, #E24B4A); color: #fff;
+  font-size: 11px; line-height: 16px; text-align: center; font-weight: 500;
+}
+
 /* ============ Layout ============ */
 .layout { display: flex; min-height: calc(100vh - var(--topbar-h)); align-items: stretch; }
 .sidebar {
@@ -222,29 +237,30 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
    外扩 6.1px / 10px，安全；这一条由冒烟脚本的阶段 G 实测把关，改倍数后务必重跑）。
    ⚠️ 内发光只能用 inset（向内画）：外发光会画到盒子外面，同样会撑出横向滚动条。
    ⚠️ 不要给 background 加动画：动画的优先级高于普通声明，会把 :hover 的底色彻底盖掉。 */
+/* 2026-09-24 改静态：原先 .nav-cta 挂着 navCtaPulse + navCtaGlow + navCtaRing 三条无限动画
+   （整块缩放 + 底色闪烁 + 扩散光环），而它是侧栏第一项、在所有页面都可见 ——
+   用户视角就是「一边看题一边有东西一直在跳」，注意力被长期占用。
+   现在只留静态的主色底 + 描边（靠颜色本身突出），hover 时描边加深。
+   需要「一次引起注意」时给元素挂 .pulse（下面保留），而不是默认常驻。 */
 .side-nav-item.nav-cta {
   position: relative;
   background: var(--c-primary-50); color: var(--c-primary); font-weight: 600;
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .22);
-  transform-origin: 50% 50%;
-  /* 两条动画各管一半、互不冲突：一条动 transform（一大一小），一条动 inset 阴影（闪）。
-     只用 inset（向内）的阴影是有意的 —— 外发光会画到盒子外面，又会把侧栏撑出横向滚动条。 */
-  animation: navCtaPulse 2.6s cubic-bezier(.4, 0, .2, 1) infinite,
-             navCtaGlow 2.6s ease-in-out infinite;
-  will-change: transform;
 }
-/* 扩散描边：挂在伪元素上单独动，避免与整块的 transform 互相干扰（两个元素各自一格动画更稳） */
+/* 扩散描边容器（静态态隐藏，只有 .pulse 或需要时才动） */
 .side-nav-item.nav-cta::after {
   content: ""; position: absolute; inset: 0; border-radius: inherit;
   border: 2px solid var(--c-primary); opacity: 0; pointer-events: none;
-  animation: navCtaRing 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
-.side-nav-item.nav-cta:hover { background: rgba(37, 99, 235, .18); color: var(--c-primary-600); }
-/* 已经站在「投稿」页时不必再催 → 三种动画一起停 */
-.side-nav-item.nav-cta.active { background: var(--c-primary); color: #fff; animation: none; box-shadow: none; }
-.side-nav-item.nav-cta.active::after { animation: none; opacity: 0; }
-.side-nav-item.nav-cta.active .ic { animation: none; }
-.side-nav-item.nav-cta .ic { color: currentColor; transform-origin: 50% 50%; animation: ctaBeat 2.6s ease-in-out infinite; }
+.side-nav-item.nav-cta:hover { background: rgba(37, 99, 235, .18); color: var(--c-primary-600); box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .48); }
+/* 已经站在「投稿」页时是选中态，不再额外强调 */
+.side-nav-item.nav-cta.active { background: var(--c-primary); color: #fff; box-shadow: none; }
+.side-nav-item.nav-cta .ic { color: currentColor; }
+/* 可选强调态：给「新功能首见 / 有待处理事项」这类一次性引导用。
+   注意它的三条动画都需要留在侧栏内边距里（见上方倍率说明），别调大倍数。 */
+.side-nav-item.nav-cta.pulse { animation: navCtaPulse 2.6s cubic-bezier(.4, 0, .2, 1) infinite, navCtaGlow 2.6s ease-in-out infinite; will-change: transform; transform-origin: 50% 50%; }
+.side-nav-item.nav-cta.pulse::after { animation: navCtaRing 2.6s cubic-bezier(.4, 0, .2, 1) infinite; }
+.side-nav-item.nav-cta.pulse .ic { animation: ctaBeat 2.6s ease-in-out infinite; transform-origin: 50% 50%; }
 /* 投稿分区标题的主色强调已并入 .nav-sec-toggle.nav-cta-title（见上方分区折叠块） */
 @keyframes navCtaPulse {
   0%, 100% { transform: scale(1); }
@@ -279,16 +295,16 @@ svg.ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
 }
 /* 尊重「减少动画」偏好：全部停掉，只留静态的主色底与描边（信息不丢，只是不闪） */
 @media (prefers-reduced-motion: reduce) {
-  .side-nav-item.nav-cta,
-  .side-nav-item.nav-cta .ic,
-  .side-nav-item.nav-cta::after { animation: none; }
-  .side-nav-item.nav-cta::after { opacity: 0; }
+  .side-nav-item.nav-cta.pulse,
+  .side-nav-item.nav-cta.pulse .ic,
+  .side-nav-item.nav-cta.pulse::after { animation: none; }
+  .side-nav-item.nav-cta.pulse::after { opacity: 0; }
 }
 
 /* ============ Cards ============ */
 .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
-.card-hover { transition: transform .15s ease, box-shadow .15s ease; }
-.card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.card-hover { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg, var(--shadow-md)); border-color: var(--border-strong, var(--border)); }
 
 /* ============ Tags / chips ============ */
 .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--bg-subtle); color: var(--text-secondary); border: 1px solid transparent; }
@@ -331,12 +347,28 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .input-with-action .trail { position: absolute; right: 6px; top: 5px; }
 
 /* ============ Question card ============ */
-.q-card { display: block; text-decoration: none; color: inherit; cursor: pointer; }
+/* 等高卡片（2026-09-24）：.grid-cols-2 本身是标准 grid（同一行轨道等高），但卡片原来是
+   display:block、底部 .q-foot 跟着内容走 —— 于是「chips 占 2 行」的卡与「占 1 行」的卡
+   在视觉上底部参差，读起来像瀑布流、视线要在左右列之间跳。
+   改成 flex 列 + height:100%（吃满 grid 轨道的 stretch 高度），q-foot 用 margin-top:auto 压到底，
+   同一行卡片的底部信息行就对齐了。 */
+.q-card { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; cursor: pointer; }
 .q-card .q-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
 .q-card .q-excerpt { color: var(--text-secondary); font-size: 13px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .q-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+/* 折叠 chip（2026-09-23）：卡片上的「+2 岗位」「+3」等收纳态，悬停显示完整内容（title 属性） */
+.q-meta .tag-fold, .q-meta .tag-more {
+  background: transparent; border: 1px dashed var(--border-strong, var(--border));
+  color: var(--text-muted); cursor: help;
+}
+.q-meta .tag-fold:hover, .q-meta .tag-more:hover { color: var(--c-primary); border-color: var(--c-primary); }
 .q-foot { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-muted); }
 .q-foot .ic { width: 14px; height: 14px; vertical-align: -2px; }
+/* 卡片内的 meta 行固定占两行高度（chips 多寡不再影响卡片高度）——
+   与 .q-card 的 flex 列配合，保证同一行卡片等高、底部信息对齐。
+   用 min-height 而不是 height：管理员视角多出「状态」chip 时仍能自然增高，不会被裁掉。 */
+.q-card .q-meta { min-height: 46px; align-content: flex-start; }
+.q-card .q-foot { margin-top: auto; padding-top: 12px; }
 
 /* ============ Grids ============ */
 /* 1fr 默认等于 minmax(auto, 1fr)，auto 最小值 = min-content；长标题/nowrap 文本会撑破轨道，
@@ -355,12 +387,12 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .daily-list > a { min-width: 0; }
 
 /* ============ Hero ============ */
-.hero { text-align: center; padding: 40px 16px 28px; background: linear-gradient(135deg, rgba(37,99,235,.06), rgba(124,58,237,.06)); border-radius: var(--radius-lg); border: 1px solid var(--border); }
-.hero h1 { font-size: 34px; font-weight: 800; letter-spacing: -.5px; background: linear-gradient(120deg, var(--c-primary), var(--c-ai)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin: 10px auto 22px; }
+.hero { text-align: center; padding: 26px 16px 20px; background: linear-gradient(135deg, rgba(37,99,235,.06), rgba(124,58,237,.06)); border-radius: var(--radius-lg); border: 1px solid var(--border); }
+.hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -.5px; background: linear-gradient(120deg, var(--c-primary), var(--c-ai)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-wrap: balance; word-break: keep-all; }
+.hero p { color: var(--text-secondary); font-size: 14px; max-width: 640px; margin: 8px auto 16px; }
 .hero-search { display: flex; max-width: 560px; margin: 0 auto; gap: 8px; }
-.hero-search input { height: 48px; border-radius: 999px; font-size: 15px; }
-.hot-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
+.hero-search input { height: 44px; border-radius: 999px; font-size: 15px; }
+.hot-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
 .hot-tags .tag { cursor: pointer; }
 .hot-tags .tag:hover { border-color: var(--c-primary); color: var(--c-primary); }
 
@@ -381,8 +413,22 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 .toolbar .seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .toolbar .seg button { border: none; background: transparent; padding: 7px 12px; font-size: 13px; color: var(--text-secondary); }
 .toolbar .seg button.active { background: var(--c-primary); color: #fff; }
+/* 难度快捷筛选条（2026-09-23）：一排胶囊按钮，刷题时一键切难度 */
+.diff-quick { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+.diff-quick button {
+  border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  padding: 5px 14px; border-radius: 999px; cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.diff-quick button:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.diff-quick button.active { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+@media (max-width: 640px) { .diff-quick { gap: 6px; } .diff-quick button { padding: 5px 11px; font-size: 12px; } }
 .spacer { flex: 1; }
-.select-mini { height: 34px; padding: 0 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13px; }
+/* ⚠️ width:auto 是必须的：全局 `select { width:100% }`（见上方 Forms 段）会给每个 select
+   100% 宽度，而 .toolbar 是 flex 容器 —— 于是「难度/题型/来源」三个下拉各自独占一整行，
+   筛选区在 1440px 下被撑到 4 行、占满首屏（2026-09-24 实测）。这里按内容宽度收起。 */
+.select-mini { width: auto; height: 34px; padding: 0 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13px; }
 
 /* ============ Breadcrumb ============ */
 .breadcrumb { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -436,6 +482,9 @@ body.modal-open { overflow: hidden; scrollbar-gutter: stable; }
 
 /* ============ Question detail ============ */
 .qd-head { }
+/* 阅读宽度约束（2026-09-23）：正文/答案限宽 720px 居中，避免桌面端一行 60+ 字读起来累。
+   面包屑、标题、标签行仍满宽（在外层 .qd-head / .breadcrumb 上）。 */
+.qd-body, .qd-answer { max-width: 720px; margin-left: auto; margin-right: auto; }
 .qd-body { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-top: 14px; }
 .qd-answer { background: var(--c-primary-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-top: 14px; }
 .md { line-height: 1.75; word-break: break-word; }
@@ -628,10 +677,25 @@ html[data-theme="dark"] .wk-trend.bad { background: rgba(245,158,11,.16); color:
 .wk-bars .bar-fill.today { background: var(--c-primary); opacity: 1; }
 
 /* ============ 页脚 ============ */
-#footer { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 10px; padding: 18px 16px; font-size: 12.5px; color: var(--text-muted); border-top: 1px solid var(--border); }
+#footer { display: block; padding: 26px 16px 20px; font-size: 12.5px; color: var(--text-muted); border-top: 1px solid var(--border); }
 #footer a { color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 #footer a:hover { color: var(--c-primary); }
 #footer .sep { opacity: .5; }
+/* 页脚栏目矩阵（2026-09-23） */
+#footer .f-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px 24px; max-width: 1180px; margin: 0 auto 18px; text-align: left;
+}
+#footer .f-col { display: flex; flex-direction: column; gap: 8px; }
+#footer .f-col-title { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: .04em; margin-bottom: 2px; }
+#footer .f-col a { font-size: 12.5px; }
+#footer .f-bottom {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 8px 10px; padding-top: 14px; border-top: 1px solid var(--border); max-width: 1180px; margin: 0 auto;
+}
+@media (max-width: 720px) {
+  #footer .f-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+}
 
 /* ============ Admin dropdown menu ============ */
 .dropdown-wrap { position: relative; }
@@ -1057,17 +1121,17 @@ body.pan-fs-lock { overflow: hidden; }
   @page { margin: 1.5cm; size: A4; }
 }
 
-/* ============ 每日一句横幅（实时在线·自带暗色叠层，与明暗主题解耦） ============ */
+/* ============ 每日一句横幅（实时在线·底色由 daily-quote.js 按日轮换注入，此处渐变仅为 JS 失效兜底） ============ */
 .daily-quote {
   position: relative;
-  margin-top: 8px;
+  margin-top: 16px;
   border-radius: var(--radius, 14px);
   overflow: hidden;
-  min-height: 220px;
+  min-height: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 30px 34px;
+  flex-direction: row;
+  align-items: center;
+  padding: 14px 22px;
   color: #fff;
   background: linear-gradient(135deg, #1e293b, #334155);
   box-shadow: var(--shadow-sm, 0 2px 10px rgba(0,0,0,.08));
@@ -1092,17 +1156,17 @@ body.pan-fs-lock { overflow: hidden; }
   position: absolute; inset: 0;
   background:
     linear-gradient(180deg, rgba(8,12,20,.30) 0%, rgba(8,12,20,.62) 100%),
-    radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.18), transparent 55%);
+    radial-gradient(120% 120% at 12% 10%, var(--dq-accent, rgba(56,189,248,.18)), transparent 55%);
   transition: background .55s ease;
 }
 .daily-quote.is-hover .daily-quote__overlay {
   background:
     linear-gradient(180deg, rgba(8,12,20,.22) 0%, rgba(8,12,20,.50) 100%),
-    radial-gradient(120% 120% at 12% 10%, rgba(56,189,248,.22), transparent 55%);
+    radial-gradient(120% 120% at 12% 10%, var(--dq-accent, rgba(56,189,248,.22)), transparent 55%);
 }
-.daily-quote__inner { position: relative; z-index: 2; max-width: 920px; }
+.daily-quote__inner { position: relative; z-index: 2; max-width: none; width: 100%; display: flex; align-items: center; gap: 14px; }
 .daily-quote__label {
-  display: inline-flex; align-items: center; gap: 7px;
+  display: inline-flex; align-items: center; gap: 7px; flex: none;
   font-size: 12px; letter-spacing: .14em; font-weight: 600;
   color: rgba(255,255,255,.82);
   background: rgba(255,255,255,.14);
@@ -1110,20 +1174,48 @@ body.pan-fs-lock { overflow: hidden; }
   padding: 4px 11px; border-radius: 999px;
   backdrop-filter: blur(4px);
 }
+/* 节日联动：第二个胶囊（节日文案），底色稍亮以示区分 */
+.daily-quote__fest { color: #fff; background: rgba(255,255,255,.22); letter-spacing: .08em; }
+/* 节日联动 v20261001f：整幅节日风背景——不加载随机图，金色星点 + 节日色光晕 */
+.daily-quote.is-fest .daily-quote__bg { display: none; }
+.daily-quote.is-fest .daily-quote__overlay {
+  background:
+    radial-gradient(70% 110% at 88% 8%, var(--dq-accent, rgba(252,211,77,.25)), transparent 62%),
+    radial-gradient(50% 80% at 4% 96%, var(--dq-accent, rgba(252,211,77,.18)), transparent 58%),
+    linear-gradient(180deg, rgba(8,12,20,.14) 0%, rgba(8,12,20,.52) 100%);
+}
+.daily-quote__stars {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; overflow: hidden;
+}
+.daily-quote__stars span {
+  position: absolute;
+  color: rgba(253,230,138,.9);
+  font-size: 14px;
+  text-shadow: 0 0 10px rgba(253,224,71,.85);
+  animation: dqStarTwinkle 2.8s ease-in-out infinite;
+}
+@keyframes dqStarTwinkle {
+  0%, 100% { opacity: .30; transform: scale(.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
 .daily-quote__text {
-  margin: 14px 0 10px;
-  font-size: clamp(20px, 3.4vw, 30px);
+  margin: 0;
+  flex: 1 1 auto; min-width: 0;
+  font-size: clamp(15px, 2vw, 19px);
   line-height: 1.45; font-weight: 600;
   text-shadow: 0 2px 14px rgba(0,0,0,.45);
   word-break: break-word;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .daily-quote__text.loading { opacity: .65; }
 .daily-quote__author {
-  font-size: 15px; color: rgba(255,255,255,.9); font-style: italic;
+  flex: none; white-space: nowrap;
+  font-size: 13px; color: rgba(255,255,255,.9); font-style: italic;
   text-shadow: 0 1px 8px rgba(0,0,0,.4);
 }
 .daily-quote__author b { font-style: normal; font-weight: 600; }
-.daily-quote__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.daily-quote__actions { display: flex; flex-wrap: nowrap; gap: 8px; margin-top: 0; flex: none; }
 .daily-quote__actions .dq-btn {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 13px; font-weight: 600;
@@ -1149,7 +1241,11 @@ body.pan-fs-lock { overflow: hidden; }
   .daily-quote__overlay { transition: none; }
 }
 @media (max-width: 640px) {
-  .daily-quote { padding: 22px 18px; min-height: 180px; }
+  .daily-quote { padding: 12px 14px; }
+  .daily-quote__inner { flex-wrap: wrap; row-gap: 8px; column-gap: 10px; }
+  .daily-quote__text { flex: 1 1 100%; order: 2; }
+  .daily-quote__author { order: 3; }
+  .daily-quote__actions { order: 4; margin-left: auto; }
   .daily-quote__actions .dq-btn { padding: 6px 11px; font-size: 12px; }
 }
 
@@ -1237,8 +1333,17 @@ body.pan-fs-lock { overflow: hidden; }
   border-radius: 0 var(--radius) var(--radius) 0;
 }
 .note-card .note-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.note-card .note-toggle-hint { display: none; margin-left: auto; font-size: 12px; color: var(--c-primary); font-weight: 600; }
 .note-card textarea { min-height: 68px; font-size: 13px; background: var(--bg-elevated); }
 .note-card .note-tip { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+/* 未填写批注时收成一行虚线占位（2026-09-23）：空批注大框原先紧跟操作区、比答案还抢眼。
+   点击整卡或聚焦输入框即展开（JS 移除 .is-empty）。 */
+.note-card.is-empty { padding: 10px 14px; background: transparent; border: 1px dashed var(--border-strong, var(--border)); cursor: pointer; }
+.note-card.is-empty .note-head { margin-bottom: 0; }
+.note-card.is-empty .note-toggle-hint { display: inline; }
+.note-card.is-empty textarea,
+.note-card.is-empty .pill-row,
+.note-card.is-empty .note-tip { display: none; }
 /* 复习/回看时先看到的「我自己的话」 */
 .note-quote {
   margin: 0 0 12px; padding: 10px 12px;
@@ -1458,3 +1563,112 @@ body.pan-fs-lock { overflow: hidden; }
   .about-contact { gap: 18px; }
   .about-qr { margin: 0 auto; }
 }
+
+/* =========================================================================
+ * 2026-09-24 布局与体验整改（对应《布局体验评审报告》P0/P1/P2）
+ * 移动端专属规则统一放在 responsive.css 的 <=720px 断点里，这里只写两端通用部分。
+ * ========================================================================= */
+
+/* ---------- P0-2 题目详情页操作区 ----------
+   原先「查看答案 + 收藏 + 不太会 + 分享 + 报错」挤在一个裸 div 里，靠 inline 间距排布，
+   移动端实测 7 个按钮全部只有 36px 高（低于 44px 触控标准）。
+   现在分成「主按钮独占一行 + 次要动作收进 .q-actions-sub 容器」，
+   由 responsive.css 给移动端定尺寸，桌面端维持一行紧凑观感。 */
+.q-actions { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.q-actions-main { display: inline-flex; align-items: center; gap: 6px; }
+.q-actions-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.q-actions-sub .tag { margin: 0; }
+
+/* ---------- P1-9 详情页翻页 ----------
+   原先「上一题 / 下一题」只在整页最底（相关推荐之下），刷题时最高频的动作要滚过 4 张推荐卡。
+   现在同一个 .qd-pager 结构出现两次（答案区下方 + 页面底部），由 JS 用类选择器统一绑定。 */
+.qd-pager { display: flex; flex-wrap: wrap; gap: 8px; }
+.qd-pager .btn { min-width: 104px; justify-content: center; }
+
+/* ---------- P1-6 题目列表筛选区 ----------
+   .toolbar 在移动端可折叠（.filter-toggle 触发），桌面端按钮隐藏、面板常开。
+   .list-tools 承载「筛选按钮 + 排序段控」这一行，桌面端把排序从 toolbar 里提出来，
+   少占一行、也让首屏更早看到题目。 */
+.list-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.list-tools .seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.list-tools .seg button { border: none; background: transparent; padding: 7px 12px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+.list-tools .seg button.active { background: var(--c-primary); color: #fff; }
+.filter-toggle { display: none; align-items: center; gap: 6px; }
+.filter-toggle .ft-badge {
+  min-width: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--c-primary); color: #fff; font-size: 11px; font-weight: 700;
+  line-height: 18px; text-align: center; font-style: normal;
+}
+.filter-toggle[aria-expanded="true"] { background: var(--c-primary-50); color: var(--c-primary); border-color: var(--c-primary); }
+
+/* ---------- P1-5 表单型页面（刷题练习 / 模拟面试） ----------
+   原先表单卡固定 420~520px 靠左，右侧 2/3 全空，整页像没做完。
+   改为「表单 + 侧栏卡片」两栏：窄屏自动堆叠。 */
+.page-form { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+@media (max-width: 980px) { .page-form { grid-template-columns: minmax(0, 1fr); } }
+/* 原先左列写死 max-width:560px —— 在 1440px 视口下左列实宽 793px，卡片只吃 560px，
+   表单与右侧信息卡之间空出 253px「洞」。改为一律填满所在列，左列与右卡之间只有 gap。
+   （窄屏由上面 980px 断点收成单列，无需再单独放开。） */
+.page-form-main { max-width: none; }
+.page-form-side { display: flex; flex-direction: column; gap: 14px; }
+
+/* ---------- P2-13 空状态引导 ----------
+   原空态只有一行灰字，整屏留白且没有下一步。补 CTA 与图标的排版样式。 */
+.empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty .em-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.empty .em-desc { font-size: 13px; line-height: 1.8; max-width: 460px; margin: 0 auto; }
+.empty .empty-cta { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
+
+/* ---------- P2-18 学习周报卡片标题 ----------
+   标题原本要与日期、两个按钮共处一行，窄屏放不下 →「学习周报」被折成竖排的两个字。
+   改为允许换行：按钮组整体挪到下一行右对齐，标题保持一行。 */
+.wk-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.wk-head b { white-space: nowrap; }
+.wk-actions { display: flex; gap: 6px; }
+@media (max-width: 560px) { .wk-actions { flex: 1 1 100%; justify-content: flex-end; } }
+
+/* ---------- P1-10 技术体系页：单滚动条 ---------- */
+.cat-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; align-items: start; }
+/* 左树不再自己滚：原先 <aside> 上挂着 sticky + max-height:80vh + overflow:auto，
+   与右侧题目区形成同屏两个滚动条（用户不知道该滚哪个），而且树底部被硬截成半行。
+   改成 sticky 跟随页面滚动 —— 全页只保留一个滚动条，树也不会被截断。
+   树默认收起时高约 764px、在 900px 视口内完全可见；这里补一条限高兜底：
+   万一用户把节点全部展开、树高超过一屏，底部仍能通过自身滚动抵达（此时才会
+   出现第二条滚动条，属于「内容确实超屏」的必要滚动，不是原先那种无意义的双条）。 */
+.tree-panel {
+  position: sticky; top: calc(var(--topbar-h) + 16px);
+  max-height: calc(100vh - var(--topbar-h) - 32px);
+  overflow-y: auto; overflow-x: hidden;
+}
+@media (max-width: 980px) {
+  .cat-layout { grid-template-columns: minmax(0, 1fr); }
+  .tree-panel { position: static; }
+}
+
+/* ---------- P2-11 本机访问统计（从顶栏搬到「关于本站」） ---------- */
+/* 原规则写成 `.vis-chip .vis-num` / `.vis-chip .vis-flash`，只在顶栏那个 chip 里生效；
+   关于页没有 .vis-chip 容器，这里补一组通用规则，复用同一个 vis-flash 关键帧。 */
+.vis-num { display: inline-block; padding: 0 3px; border-radius: 4px; }
+.vis-flash { animation: vis-flash .6s ease; }
+
+/* ---------- P1-5 表单页右侧信息卡 ---------- */
+.pf-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.pf-card-head h2 { font-size: 15px; font-weight: 700; margin: 0; }
+.pf-card-desc { font-size: 13px; line-height: 1.75; color: var(--text-secondary); margin: 0 0 12px; }
+.pf-card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.pf-card-actions .btn { text-decoration: none; }
+.pf-steps { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.85; color: var(--text-secondary); }
+.pf-steps li { margin-bottom: 6px; }
+.pf-steps li:last-child { margin-bottom: 0; }
+
+/* ---------- P1-4 移动端搜索浮层 ---------- */
+.sheet-hot-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-top: 18px; }
+/* 浮层里的搜索框沿用抽屉样式，但抽屉那条 .drawer-search{display:none} 是给侧栏用的，
+   这里靠 inline display:block 打开；补上 input 高度以免桌面端过矮 */
+.modal-body .drawer-search input { height: 44px; }
+
+/* —— 搜索联想：条目右侧的分类小字（20261005a） —— */
+.sd-item .sd-cat { margin-left: auto; flex-shrink: 0; font-size: 11px; padding-left: 8px; white-space: nowrap; opacity: .75; }
+
+/* —— 「考到过」已标记态（20261005a） —— */
+.btn-hit-marked { color: #059669; border-color: rgba(16, 185, 129, .45); }
