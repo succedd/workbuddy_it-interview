@@ -1666,3 +1666,9 @@ body.pan-fs-lock { overflow: hidden; }
 /* 浮层里的搜索框沿用抽屉样式，但抽屉那条 .drawer-search{display:none} 是给侧栏用的，
    这里靠 inline display:block 打开；补上 input 高度以免桌面端过矮 */
 .modal-body .drawer-search input { height: 44px; }
+
+/* —— 搜索联想：条目右侧的分类小字（20261005a） —— */
+.sd-item .sd-cat { margin-left: auto; flex-shrink: 0; font-size: 11px; padding-left: 8px; white-space: nowrap; opacity: .75; }
+
+/* —— 「考到过」已标记态（20261005a） —— */
+.btn-hit-marked { color: #059669; border-color: rgba(16, 185, 129, .45); }
