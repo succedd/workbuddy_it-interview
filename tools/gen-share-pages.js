@@ -126,13 +126,36 @@ function jsonLd(q) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
-function page(q) {
+/* 面包屑结构化数据（20261005a）：首页 → 父分类链 → 本题，SEO 站点结构信号 */
+function breadcrumbLd(q, ctx) {
+  const trail = [{ name: "首页", url: `${SITE}/` }];
+  (ctx.catPathOf(q.categoryId) || []).forEach(c => {
+    trail.push({ name: c.name, url: `${SITE}/#/category?cat=${c.id}` });
+  });
+  trail.push({ name: String(q.title || ""), url: `${SITE}/q/${q.id}.html` });
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.slice(0, 6).map((t, i) => ({
+      "@type": "ListItem", position: i + 1, name: t.name, item: t.url,
+    })),
+  };
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+function page(q, ctx) {
   const title = esc(`${q.title} · IT面试题库`);
   const desc = esc(excerpt(q));
   const qUrl = `${SITE}/q/${q.id}.html`;
   const hashUrl = `${SITE}/#/question/${q.id}`;
   const bodyHtml = q.body ? mdToHtml(q.body) : "";
   const answerHtml = q.answer ? mdToHtml(q.answer) : "";
+  /* 同分类高频题内链（20261005a）：按浏览量取同分类其它 4 题，站内互链强化 SEO 抓取，
+     也给读完本题的用户「接着看什么」的路径 */
+  const related = ((ctx && ctx.relatedOf) ? ctx.relatedOf(q) : []);
+  const relatedHtml = related.length ? `<div class="card"><h2>同分类 · 高频题</h2><ul class="rel">${
+    related.map(x => `<li><a href="${SITE}/q/${x.id}.html">${esc(x.title)}</a><span class="rel-n">${(x.views || 0)} 次浏览</span></li>`).join("")
+  }</ul></div>` : "";
   /* 读完引导条：有分类的题连刷同类（含子分类），无分类的退回题目页 */
   const catId = parseInt(q.categoryId, 10);
   const guideUrl = catId ? `${SITE}/#/practice?scope=cat&cat=${catId}&mode=random` : hashUrl;
@@ -158,6 +181,7 @@ function page(q) {
   <meta name="twitter:image" content="${OG_IMAGE}">
   <link rel="canonical" href="${qUrl}">
   <script type="application/ld+json">${jsonLd(q)}</script>
+  <script type="application/ld+json">${breadcrumbLd(q, ctx)}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -177,6 +201,18 @@ function page(q) {
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
     .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
     .cta:active { background:#1d4ed8; }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
@@ -258,10 +294,30 @@ async function main() {
   if (!questions.length) throw new Error("published.json 中没有 questions 字段或为空");
 
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
+  /* 内链上下文（20261005a）：分类路径链 + 每分类按浏览量排序的题目表 */
+  const catById = new Map((data.categories || []).map(c => [parseInt(c.id, 10), c]));
+  const catPathOf = (id) => {
+    const chain = [];
+    let cur = catById.get(parseInt(id, 10));
+    while (cur) { chain.unshift(cur); cur = catById.get(parseInt(cur.parentId, 10)) || null; }
+    return chain;
+  };
+  const byCat = new Map();
+  for (const q of questions) {
+    if (!q.categoryId) continue;
+    const k = parseInt(q.categoryId, 10);
+    if (!byCat.has(k)) byCat.set(k, []);
+    byCat.get(k).push(q);
+  }
+  for (const list of byCat.values()) list.sort((a, b) => (b.views || 0) - (a.views || 0));
+  const ctx = {
+    catPathOf,
+    relatedOf: (q) => (byCat.get(parseInt(q.categoryId, 10)) || []).filter(x => x.id !== q.id).slice(0, 4),
+  };
   let written = 0;
   for (const q of questions) {
     if (!q.id || !q.title) continue;
-    fs.writeFileSync(path.join(OUT_DIR, `${q.id}.html`), page(q), "utf8");
+    fs.writeFileSync(path.join(OUT_DIR, `${q.id}.html`), page(q, ctx), "utf8");
     written++;
   }
   console.log(`已生成 ${written} 个分享页：${path.relative(process.cwd(), OUT_DIR)}/<id>.html`);
