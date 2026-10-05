@@ -105,7 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`c9bb589`（fix: 技术体系页子分类计数 undefined，docs 随后回填）｜缓存版本 `20261001g`｜更新时间：2026-10-01 20:45 (+08)**
+**最新 release commit：`（本次推送后回填）`（feat: 题库补充批次 2026-10-05-a——18 个薄弱分类 57 题）｜缓存版本不变（纯数据变更）｜更新时间：2026-10-05 09:10 (+08)**
+**本次内容（feat: 题库补充 2026-10-05-a，WorkBuddy 会话执行）：用户要求「再补充题目」，走 enrich 流水线补 57 题，1441→1498 题。**
+- **覆盖 18 个分类**：Vue2×4 / Angular×3 / 前端工程化×3 / Webpack×3 / Vite×3 / Flutter×3 / Android开发×4 / iOS开发×4 / 渗透测试×4 / 应急响应×3 / 密码学基础×4 / PyTorch×4 / LangChain×3 / 向量数据库×3 / Helm×2 / Terraform×2 / 数仓建模理论×3 / 接口测试×2。
+- **来源与质检**：每题挂官方文档 / OWASP Cheat Sheets / NIST SP 800-61 等权威 URL（404 会被闸门拒）；流水线归一化 + difflib 模糊去重（0.85 拦截线）——1 题（Flutter 三棵树）因题库已有近似被拦，符合预期。
+- **新题 id 1482~1538**；分享页 q/1482~1538.html 与 sitemap.xml（+57 条）同步补齐；README「自动扩充记录」表 + 更新日志已加行。
+- **缓存版本不变**：纯 data/静态页变更，无 js/css 改动（沿用 2026-10-01 批次先例）；编辑端 `absorbRemote` 自动吸收，用户刷新即可见。
+- **过程备注**：本机 `.git/refs` 目录再次丢失（mkdir 恢复）；github.com:443 与 7897 代理间歇不通，本次改走 GitHub Contents API（api.github.com 直连）推送；raw.githubusercontent 有 CDN 缓存，验收勿以其为准。
+
+**上一条 release commit：`c9bb589`（fix: 技术体系页子分类计数 undefined，docs 随后回填）｜缓存版本 `20261001g`｜更新时间：2026-10-01 20:45 (+08)**
 **本次内容（fix: 分类树子级计数 undefined，WorkBuddy 会话执行）：用户反馈手机端「技术体系」页展开「通用面试能力与软技能」后 7 个子分类计数全部显示 undefined。**
 - **根因**：pageCategory 的 `treeHtml` **首次调用**用 `Services.categoryTree()` 的节点（有 `count`），**递归子级**却用 `childrenOfId(c.id)` = `Services.childrenOf()` 返回的**原始分类对象（没有 count 字段）**→ 所有非顶层分类计数渲染成 `undefined`。实测 276 个计数节点中 255 个（= 全部子级）undefined、21 个顶层正常，与截图完全吻合。该 bug 自 8/21 初版即存在，仅展开有子分类的节点可见。
 - **修复**：递归改用 categoryTree 节点自带的 `children`（含 count）`const kids = c.children || childrenOfId(c.id)`，渲染处加 `|| 0` 兜底；本地验证 276 节点 0 undefined，子分类计数正确（自我介绍 8 / 职业规划 8 / 冲突 2 / 团队协作 2 / 方案表达 2 / 薪资 2 / HR 10，合计+直属题=39 ✓）。首页/题库页冒烟通过。
