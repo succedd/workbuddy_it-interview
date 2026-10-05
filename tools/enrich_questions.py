@@ -557,9 +557,22 @@ def push_all(data, branches):
     content = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     msg = "自动扩充题库：%d 题（%s）" % (len(data["questions"]),
                                     time.strftime("%Y-%m-%d", time.localtime()))
+    # ~120B 版本指纹（20261005a 数据瘦身）：与快照同发布，前端据此跳过 2.8MB 全量下载；
+    # 失败不阻断主流程——指纹缺失时前端自动回退全量拉取
+    meta = json.dumps({
+        "version": data.get("version", 1),
+        "publishedAt": data.get("publishedAt", 0),
+        "count": len(data.get("questions", [])),
+        "rmCount": len(data.get("removedQuestions") or {}),
+    }, ensure_ascii=False, separators=(",", ":"))
     for b in branches:
         st = github_put("data/published.json", content, b, msg)
         log("  ✓ 已推送至 %s 分支 (HTTP %s)" % (b, st))
+        try:
+            github_put("data/version.json", meta, msg, b)
+            log("  ✓ version.json → %s" % b)
+        except Exception as e:
+            log("  ! version.json 推送失败（前端回退全量拉取）：%s" % e)
 
 
 def regen_and_push_share_pages(new_ids, branches):
