@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>离线模式 · IT面试题库</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; color: #334155; margin: 0; background: #f8fafc; line-height: 1.75; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .box { max-width: 460px; width: 100%; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px 30px; text-align: center; box-shadow: 0 10px 40px rgba(15, 23, 42, .08); }
+    .ic { font-size: 44px; }
+    h1 { font-size: 20px; color: #0f172a; margin: 12px 0 6px; }
+    p { margin: 0 0 20px; font-size: 14px; color: #64748b; }
+    .btn { display: inline-block; background: #2563EB; color: #fff; text-decoration: none; font-weight: 600; border: none; border-radius: 10px; padding: 11px 22px; font-size: 14px; cursor: pointer; margin: 0 5px 8px; }
+    .btn:active { background: #1d4ed8; }
+    .btn.ghost { background: #eef2f7; color: #334155; }
+    .hint { font-size: 12px; color: #94a3b8; margin-top: 16px; }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background: #0b1220; color: #cbd5e1; }
+      .box { background: #111a2c; border-color: #1e293b; }
+      h1 { color: #f1f5f9; }
+      p { color: #94a3b8; }
+      .btn.ghost { background: #1e293b; color: #cbd5e1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="ic">📡</div>
+    <h1>当前处于离线模式</h1>
+    <p>网络连接不可用，且该页面尚未缓存。<br>恢复网络后点下方按钮重试；已缓存的题库内容不受影响。</p>
+    <button class="btn" onclick="location.reload()">重新加载</button>
+    <a class="btn ghost" href="/">回首页</a>
+    <div class="hint">IT面试题库 · itinterview.com.cn</div>
+  </div>
+</body>
+</html>
