@@ -1,6 +1,6 @@
 /* =========================================================================
  *  cloud.js  —  云端共享题库：同步（访客端拉取）+ 发布（编辑端推送 GitHub）
- *  架构：data/published.json 是云端主库快照，随 GitHub Pages 一起发布；
+ *  架构：data/published.json 是云端主库快照，随 Cloudflare Pages 一起发布（源文件在 GitHub）；
  *        访客每次打开自动拉取最新版；配置了发布 Token 的浏览器视为编辑端
  *        （本地为主，不自动覆盖），编辑后自动/手动把本地题库推送到 GitHub。
  *
@@ -177,6 +177,33 @@
     return null;
   };
 
+  /* ---------- 版本指纹（20261005a 数据瘦身） ----------
+   * data/version.json 是 ~120B 的轻量指纹 {version, publishedAt, count, rmCount}，
+   * 与 published.json 同步发布（编辑端 _publishInner 与扩充流水线都会写）。
+   * 启动同步 / 增量吸收 / 发布守卫先取它：指纹没变 → 跳过 2.8MB 全量下载；
+   * 指纹缺失或解析失败 → 回退全量拉取（完全兼容旧快照，不会因缺指纹而失灵）。
+   * 判定用「严格相等」而非 <=：万一某次 version.json 发布失败停留在旧值，
+   * 本地较新时会走全量拉取自愈，绝不会因 stale 指纹漏更新。 */
+  C.META_PATH = "data/version.json";
+  C.fetchMeta = async function () {
+    try {
+      const r = await fetchT(C.META_PATH + "?v=" + Date.now(), { cache: "no-store" }, 6000);
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (j && Number.isInteger(j.publishedAt) && j.publishedAt >= 0 && Number.isInteger(j.count)) return j;
+      return null;
+    } catch (e) { return null; }
+  };
+  /* 由快照对象构造指纹文本（发布侧复用，保证两端字段一致） */
+  C.metaOf = function (data) {
+    return JSON.stringify({
+      version: data.version || 1,
+      publishedAt: data.publishedAt || 0,
+      count: (data.questions || []).length,
+      rmCount: (data.removedQuestions && typeof data.removedQuestions === "object") ? Object.keys(data.removedQuestions).length : 0
+    });
+  };
+
   /* ---------- 重复题清理（2026-09-10） ----------
      云端把同一道题的重复收录合并掉了（published.json 顶层 removedQuestions = {旧题号: 保留题号}）。
      只删云端不够：本机若还留着，编辑端下次自动发布会把它整包推回（题数没变少，发布守卫不会拦）；
@@ -256,6 +283,17 @@
        返回 pending，由设置页/提示引导手动同步 */
   C.syncIfNeeded = async function (justSeeded) {
     if (C.isEditor()) return { skipped: true, reason: "editor" };
+    /* 数据瘦身（20261005a）：指纹与本地一致时直接跳过，不下载 2.8MB 全量快照。
+       仅在「曾同步过」时可用此捷径；首次访客仍走全量流程 */
+    try {
+      const local0 = await DB.getSetting("cloudSyncedAt");
+      if (local0 != null) {
+        const meta0 = await C.fetchMeta();
+        if (meta0 && (meta0.publishedAt || 0) === (local0 || 0)) {
+          return { skipped: true, reason: "upToDate", light: true };
+        }
+      }
+    } catch (e) { /* 指纹判定失败不阻断，走原全量流程 */ }
     const data = await C.fetchRemote();
     if (!data) {
       const st = C._lastFetch || {};
@@ -324,19 +362,27 @@
    */
   C.absorbRemote = async function (force) {
     const db = DB.db;
-    const remote = await C.fetchRemote(false, { attempts: 2, timeout: 15000 });
-    if (!remote || !Array.isArray(remote.questions)) return { added: 0, reason: "noCloud" };
     /* NORM_VER：norm 规则变更（v2 改 Unicode 感知）后对老本地库强制重放一次吸收，
        修复旧版把中文标题剥空导致漏吸收的题 */
     const NORM_VER = 2;
     let run = !!force;
     try { if ((await DB.getSetting("absorbNormVer")) !== NORM_VER) run = true; } catch (_) {}
     const last = await DB.getSetting("absorbedRemoteAt") || 0;
+    let rmApplied = 0;
+    try { rmApplied = (await DB.getSetting("removedApplied")) || 0; } catch (_) {}
+    /* 数据瘦身（20261005a）：指纹（publishedAt + rmCount 双字段严格相等）没变时，
+       编辑端启动不再下载 2.8MB 全量快照。任一条件不确定 → 回退全量拉取走原逻辑 */
+    if (!run && last > 0) {
+      const meta0 = await C.fetchMeta();
+      if (meta0 && (meta0.publishedAt || 0) === last && (meta0.rmCount || 0) === rmApplied) {
+        return { added: 0, reason: "upToDate", light: true };
+      }
+    }
+    const remote = await C.fetchRemote(false, { attempts: 2, timeout: 15000 });
+    if (!remote || !Array.isArray(remote.questions)) return { added: 0, reason: "noCloud" };
     /* 重复题清理标记：云端 removedQuestions 条数与本机已应用的不一致时，即使快照时间戳没变也要跑一次 */
     const remoteRmCount = (remote.removedQuestions && typeof remote.removedQuestions === "object")
       ? Object.keys(remote.removedQuestions).length : 0;
-    let rmApplied = 0;
-    try { rmApplied = (await DB.getSetting("removedApplied")) || 0; } catch (_) {}
     if (!run && remoteRmCount !== rmApplied) run = true;
     if (!run && (remote.publishedAt || 0) <= last) return { added: 0, reason: "upToDate" };
 
@@ -516,6 +562,17 @@
   C.forceOnce = function () { C._forceOnce = true; };
   C.guardAgainstShrink = async function (localCount) {
     if (C._forceOnce) { C._forceOnce = false; return null; }
+    /* 数据瘦身（20261005a）：优先用指纹里的 count 比对，省一次 2.8MB 全量拉取；
+       指纹不可用时回退全量快照（旧版行为） */
+    const meta = await C.fetchMeta();
+    if (meta && Number.isInteger(meta.count)) {
+      if (meta.count > localCount) {
+        return "本机 " + localCount + " 题 < 云端 " + meta.count + " 题（少 " + (meta.count - localCount) +
+          " 题），已拒绝发布——直接用本机覆盖会把云端这些题删掉。" +
+          "请先点「从云端拉取到本机」；确属删题场景，请先拉取，再在本机删除后发布。";
+      }
+      return null;
+    }
     let remote = null;
     try { remote = await C.fetchRemote(true, { attempts: FETCH_TRIES_QUICK, timeout: FETCH_MS }); } catch (e) {}
     if (!remote || !Array.isArray(remote.questions)) return null;   // 云端不可达时不阻断本地发布
@@ -584,6 +641,10 @@
     const branches = [...new Set(["release", "main", C.branch()])];
     for (const br of branches) {
       await C.putFile(FILE_PATH, JSON.stringify(data), msg, br);
+      /* 同步发布 ~120B 版本指纹（20261005a 数据瘦身）：访客/编辑端启动据此跳过全量下载。
+         失败不阻断发布主流程——指纹缺失时读取端自动回退全量拉取 */
+      try { await C.putFile(C.META_PATH, C.metaOf(data), msg, br); }
+      catch (e) { console.warn("version.json 发布失败（下次发布会重试）:", e); }
     }
     await DB.setSetting("cloudSyncedAt", data.publishedAt);
     /* 不再在此显式调 Backup.publishBackup：cloudSyncedAt 落库会经 settings 表
