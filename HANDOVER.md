@@ -105,7 +105,7 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：待回填（本次走 GitHub Contents API 推送，下表为待推批次）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:30 (+08)**
+**最新 release commit：`a7504f137`（feat: 20261005a 体验增强批次——15 文件 × release/main 双写 Contents API，30/30 成功）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:45 (+08)**
 **本次内容（feat: 九项体验增强，WorkBuddy 会话执行）：用户确认「全做」9 项改进建议（P0×3 / P1×3 / P2×3）。**
 - **P0-1 数据加载瘦身**：新增 `data/version.json` 指纹（~120B：version/publishedAt/count/rmCount）；`cloud.js` 新增 `fetchMeta()/metaOf()`，`syncIfNeeded` 指纹未变直接 skip（访客端）、`absorbRemote` publishedAt+rmCount 双字段严格相等才轻量跳过（编辑端，失败自动回退全量拉取，绝不丢数据）；`_publishInner`/`enrich_questions.py` 发布时同步推送 version.json。**顺带修掉 SW 隐患**：published.json 原为 cache-first（两次发版之间访客可能永远拿到旧题库），改 network-first + 离线回退。
 - **P0-2 搜索实时联想**：`attachHistory` 重写，输入 140ms 防抖后用 Fuse.js 索引弹 ≤8 条建议（标题去重、带所属分类标签 `.sd-cat`），清空恢复历史/热词。
@@ -119,6 +119,7 @@
 - **缓存版本**：20261001g → **20261005a**（index.html 36 处 + sw.js VERSION；数据文件 network-first 不再依赖发版刷新）。
 - **使用指南**：guide.js 增补搜索联想 / 复习打卡 / 考到过 / 长尾折叠条目，「文档最近更新」→ 2026-10-05。
 - **⚠️ 待补推（git 通道恢复后）**：q/1498 分享页 + sitemap.xml 本地新格式版本尚未上远端（Contents API 推 1498 文件不现实；本次远端 tip `78b5e33c8` 已含自动扩充 +21 题的 README 记录，published.json 远端 1519 题 = version 4 / publishedAt 1791167469479，本地工作区已同步该版本并据其生成 version.json）。
+- **⚠️ 待观察（Pages 部署收敛）**：`offline.html` 与 `docs/quality-report.md` 在仓库远端已存在（Contents API 200），但 curl 线上仍 404（同批次 js/css/sw 均已上线）；本次 30+ commit 连推可能触发 Pages 构建排队。影响面：仅「离线且 index 未缓存」极端场景（SW 回退链有 Response.error 兜底，不会崩）；下次会话先 curl `https://itinterview.com.cn/offline.html` 确认，若仍 404 检查 Cloudflare Pages 项目 build 设置是否过滤文件。
 - **过程备注**：github.com:443 与 7897 代理持续不通，全部推送走 Contents API（api.github.com 直连 + `git credential fill` token）；agent-browser 守护进程反复掉线（标签页每 20~60s 被 reset 成 about:blank），验证改用「open 后单次 eval 内完成全部断言」模式成功。
 
 **上一条 release commit：`1a2ef34a6`（自动扩充题库：1498 题——57 个新题 data + 57 分享页 + sitemap/README/HANDOVER，docs 至 `172e19e89`）｜缓存版本不变（纯数据变更）｜更新时间：2026-10-05 09:10 (+08)**
