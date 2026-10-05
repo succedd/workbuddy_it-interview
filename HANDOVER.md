@@ -105,7 +105,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`a7504f137`（feat: 20261005a 体验增强批次——15 文件 × release/main 双写 Contents API，30/30 成功）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:45 (+08)**
+**最新 release commit：待回填（feat: 20261005b 指南升级批次——guide.js + index.html + sw.js）｜缓存版本 `20261005a → 20261005b`｜更新时间：2026-10-05 13:05 (+08)**
+**本次内容（feat: 使用指南升级——NEW 徽章 + 指南内搜索 + 动图演示 + 有帮助反馈，WorkBuddy 会话执行）：用户确认 P0/P1/P2 全做。**
+- **NEW 徽章**：`li()` 支持第三参 `isNew`，四个 20261005a 新功能条目（搜索联想 / 考到过 / 长尾分类 / 复习打卡）带红色 NEW 胶囊（title 标注版本号，方便后续统一清理）。
+- **指南内搜索**：hero 区新增搜索框，140ms 防抖过滤全部 `.g-li` 条目（归一化匹配标题+正文），区块内条目全隐藏时整块收起，顶部提示「共 N 条匹配 / 没有匹配」；清空即恢复。
+- **动图演示**：新增 `demo()` 助手——纯 CSS 逐步高亮动画（零图片、离线可用、`prefers-reduced-motion` 自动禁用）：模拟面试 5 步流程（15s 循环）+ AI 闯关 3 步验证（12s 循环），底部进度条同步。注意实现细节：`@keyframes` 选择器不能用 var()，故预置 gStep5/gStep3 两套静态关键帧，错峰用内联 `animation-delay`。
+- **「这篇有帮助吗」反馈**：指南页底部 👍/🙋 两键，结果写 localStorage `guide_fb`，点击后永久致谢态（同设备不再打扰）。
+- **FAQ 补充**：新增「题目总数为什么一直涨」「考到过点错能否撤销」两条。
+- **缓存版本**：20261005a → **20261005b**（index.html 36 处 + sw.js VERSION）。
+- **改动文件**：js/guide.js、index.html、sw.js。**本地验证**：单次 eval 全断言通过（NEW=4、demo 步骤 5+3、搜索「考到过」→ 共 2 条匹配且只显示 find/faq 区块、清空恢复、反馈点击后致谢态）。
+
+**上一条 release commit：`a7504f137`（feat: 20261005a 体验增强批次——15 文件 × release/main 双写 Contents API，30/30 成功）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:45 (+08)**
 **本次内容（feat: 九项体验增强，WorkBuddy 会话执行）：用户确认「全做」9 项改进建议（P0×3 / P1×3 / P2×3）。**
 - **P0-1 数据加载瘦身**：新增 `data/version.json` 指纹（~120B：version/publishedAt/count/rmCount）；`cloud.js` 新增 `fetchMeta()/metaOf()`，`syncIfNeeded` 指纹未变直接 skip（访客端）、`absorbRemote` publishedAt+rmCount 双字段严格相等才轻量跳过（编辑端，失败自动回退全量拉取，绝不丢数据）；`_publishInner`/`enrich_questions.py` 发布时同步推送 version.json。**顺带修掉 SW 隐患**：published.json 原为 cache-first（两次发版之间访客可能永远拿到旧题库），改 network-first + 离线回退。
 - **P0-2 搜索实时联想**：`attachHistory` 重写，输入 140ms 防抖后用 Fuse.js 索引弹 ≤8 条建议（标题去重、带所属分类标签 `.sd-cat`），清空恢复历史/热词。
