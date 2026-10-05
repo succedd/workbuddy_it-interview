@@ -84,6 +84,47 @@ async function handleView(env, request, origin) {
   });
 }
 
+/* ==================== 「考到过」匿名标记（20261005a） ====================
+   访客在题目详情页一键标记「这家面试真的考了这道题」，计数走 KV（hit:<id>）。
+   防刷：前端每台浏览器每题只记一次（localStorage）+ 可选 STATS_KEY；
+   匿名轻互动场景不值得上 D1 去重，足够可信。 */
+async function handleInterviewed(env, request, origin) {
+  const url = new URL(request.url);
+  let id = url.searchParams.get("id");
+  if (!id) {
+    try { const b = await request.json(); id = b && b.id; } catch (_) {}
+  }
+  if (!id) return new Response("missing id", { status: 400, headers: corsHeadersFor(origin) });
+  const n = await inc(env, "hit:" + id);
+  return new Response(JSON.stringify({ ok: true, hits: n }), {
+    headers: { "content-type": "application/json", ...corsHeadersFor(origin) },
+  });
+}
+
+/* 单题查询：GET /interviewed?id=123 → { id, hits } */
+async function handleInterviewedGet(env, url, origin) {
+  const id = url.searchParams.get("id");
+  if (!id) return new Response("missing id", { status: 400, headers: corsHeadersFor(origin) });
+  const n = parseInt((await env.STATS.get("hit:" + id)) || "0", 10) || 0;
+  return new Response(JSON.stringify({ ok: true, id, hits: n }), {
+    headers: { "content-type": "application/json", ...corsHeadersFor(origin) },
+  });
+}
+
+/* 高频榜：GET /interviewed/top?limit=50 → { top: [{id, hits}] }，供 admin/后续推荐用 */
+async function handleInterviewedTop(env, url, origin) {
+  const limit = Math.min(200, Math.max(1, parseInt(url.searchParams.get("limit")) || 50));
+  const list = await env.STATS.list({ prefix: "hit:" });
+  const rows = [];
+  for (const k of list.keys) {
+    rows.push({ id: k.name.slice(4), hits: parseInt((await env.STATS.get(k.name)) || "0", 10) || 0 });
+  }
+  rows.sort((a, b) => b.hits - a.hits);
+  return new Response(JSON.stringify({ ok: true, top: rows.slice(0, limit) }), {
+    headers: { "content-type": "application/json", ...corsHeadersFor(origin) },
+  });
+}
+
 async function handleStats(env, origin) {
   const total = parseInt((await env.STATS.get("total")) || "0", 10) || 0;
   const today = parseInt((await env.STATS.get("daily:" + dayKey())) || "0", 10) || 0;
@@ -1635,6 +1676,10 @@ export default {
       if (!authOk(env, request)) return new Response("forbidden", { status: 403, headers: corsHeadersFor(corsOrigin) });
       if (p === "/visit" && request.method === "POST") return await handleVisit(env, request, corsOrigin);
       if (p === "/view" && request.method === "POST") return await handleView(env, request, corsOrigin);
+      /* 「考到过」标记（20261005a）：POST 标记 / GET 单题查询 / GET 高频榜 */
+      if (p === "/interviewed/top" && request.method === "GET") return await handleInterviewedTop(env, url, corsOrigin);
+      if (p === "/interviewed" && request.method === "POST") return await handleInterviewed(env, request, corsOrigin);
+      if (p === "/interviewed" && request.method === "GET") return await handleInterviewedGet(env, url, corsOrigin);
       if (p === "/stats" && request.method === "GET") return await handleStats(env, corsOrigin);
 
       /* ---- 用户系统（D1）---- */
