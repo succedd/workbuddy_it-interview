@@ -105,7 +105,7 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：待回填（本次走 GitHub Contents API 推送，下表为待推批次）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:30 (+08)**
+**最新 release commit：`a7504f137`（feat: 20261005a 体验增强批次——15 文件 × release/main 双写 Contents API，30/30 成功）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:45 (+08)**
 **本次内容（feat: 九项体验增强，WorkBuddy 会话执行）：用户确认「全做」9 项改进建议（P0×3 / P1×3 / P2×3）。**
 - **P0-1 数据加载瘦身**：新增 `data/version.json` 指纹（~120B：version/publishedAt/count/rmCount）；`cloud.js` 新增 `fetchMeta()/metaOf()`，`syncIfNeeded` 指纹未变直接 skip（访客端）、`absorbRemote` publishedAt+rmCount 双字段严格相等才轻量跳过（编辑端，失败自动回退全量拉取，绝不丢数据）；`_publishInner`/`enrich_questions.py` 发布时同步推送 version.json。**顺带修掉 SW 隐患**：published.json 原为 cache-first（两次发版之间访客可能永远拿到旧题库），改 network-first + 离线回退。
 - **P0-2 搜索实时联想**：`attachHistory` 重写，输入 140ms 防抖后用 Fuse.js 索引弹 ≤8 条建议（标题去重、带所属分类标签 `.sd-cat`），清空恢复历史/热词。
