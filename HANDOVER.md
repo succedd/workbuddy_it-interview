@@ -105,7 +105,23 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：`1a2ef34a6`（自动扩充题库：1498 题——57 个新题 data + 57 分享页 + sitemap/README/HANDOVER，docs 至 `172e19e89`）｜缓存版本不变（纯数据变更）｜更新时间：2026-10-05 09:10 (+08)**
+**最新 release commit：待回填（本次走 GitHub Contents API 推送，下表为待推批次）｜缓存版本 `20261001g → 20261005a`｜更新时间：2026-10-05 11:30 (+08)**
+**本次内容（feat: 九项体验增强，WorkBuddy 会话执行）：用户确认「全做」9 项改进建议（P0×3 / P1×3 / P2×3）。**
+- **P0-1 数据加载瘦身**：新增 `data/version.json` 指纹（~120B：version/publishedAt/count/rmCount）；`cloud.js` 新增 `fetchMeta()/metaOf()`，`syncIfNeeded` 指纹未变直接 skip（访客端）、`absorbRemote` publishedAt+rmCount 双字段严格相等才轻量跳过（编辑端，失败自动回退全量拉取，绝不丢数据）；`_publishInner`/`enrich_questions.py` 发布时同步推送 version.json。**顺带修掉 SW 隐患**：published.json 原为 cache-first（两次发版之间访客可能永远拿到旧题库），改 network-first + 离线回退。
+- **P0-2 搜索实时联想**：`attachHistory` 重写，输入 140ms 防抖后用 Fuse.js 索引弹 ≤8 条建议（标题去重、带所属分类标签 `.sd-cat`），清空恢复历史/热词。
+- **P0-3 复习打卡强化**：`reviewStats()/markReviewDone()`（localStorage：`review_done_<date>` 计数 + `review_days` 连续表）；错题重练页顶部「今日复习进度 X/Y」渐变进度条 + 🔥 连续复习 N 天；「会了」与 AI 闯关成功均计一格（实时 DOM 更新）。
+- **P1-4 长尾分类折叠**：`treeHtml` 非 root 节点隐藏子级中题量 <3 的叶子，题目并入父分类列表，父级展开处显示「🔒 另有 N 个小分类（M 题）未单列」；当前 1519 题数据暂无触发场景（2026-10-05 补缺后所有子分类 ≥3 题），逻辑就位待未来触发。
+- **P1-5 质量周检自动化**：新增 `tools/quality-report.py`（精确/近重标题 ≥0.85 同分类、positionIds/Names 一致性、categoryId 合法性、答案长度硬伤 vs 疑似、代码占比、来源白名单），追加式写 `docs/quality-report.md` 保留 12 周；已建定时任务每周一 10:00 运行。首检：硬伤 0 / 疑似 12。
+- **P1-6 「考到过」标记**：详情页「🎯 考到过」按钮 → Worker KV 计数（`cloudflare/worker.js` 新增 POST/GET `/interviewed` + GET `/interviewed/top`，已 wrangler@4 部署 Version `5f9d2fce`，经 `iti-api.netlify.app` 桥验证通过）；localStorage 按题去重，标记后按钮变绿 `.btn-hit-marked`。
+- **P2-7 app.js 拆分评估（结论：暂不拆）**：5383 行/374KB 单 IIFE，dateKey/attachHistory/reviewStats 等闭包工具被多页面共享，机械拆分需引入模块系统并冒 36 处 script 顺序 + SW 清单 + 闭包断裂风险，且无 E2E 保护；维持单文件，待 >8000 行或引入构建工具时再拆。guide.js 的拆分先例已验证可行路径。
+- **P2-8 分享页 SEO**：`gen-share-pages.js` 新增 BreadcrumbList JSON-LD（面包屑 ≤6 级）+「同分类 · 高频题」内链区（views Top4）；1498 页 + sitemap（1503 条）本地已重生成。
+- **P2-9 PWA 离线兜底**：新增 `offline.html`（light/dark 自适应，重试/回首页），纳入 SW APP_SHELL 与 navigate 回退链 `index.html → / → offline.html`。
+- **缓存版本**：20261001g → **20261005a**（index.html 36 处 + sw.js VERSION；数据文件 network-first 不再依赖发版刷新）。
+- **使用指南**：guide.js 增补搜索联想 / 复习打卡 / 考到过 / 长尾折叠条目，「文档最近更新」→ 2026-10-05。
+- **⚠️ 待补推（git 通道恢复后）**：q/1498 分享页 + sitemap.xml 本地新格式版本尚未上远端（Contents API 推 1498 文件不现实；本次远端 tip `78b5e33c8` 已含自动扩充 +21 题的 README 记录，published.json 远端 1519 题 = version 4 / publishedAt 1791167469479，本地工作区已同步该版本并据其生成 version.json）。
+- **过程备注**：github.com:443 与 7897 代理持续不通，全部推送走 Contents API（api.github.com 直连 + `git credential fill` token）；agent-browser 守护进程反复掉线（标签页每 20~60s 被 reset 成 about:blank），验证改用「open 后单次 eval 内完成全部断言」模式成功。
+
+**上一条 release commit：`1a2ef34a6`（自动扩充题库：1498 题——57 个新题 data + 57 分享页 + sitemap/README/HANDOVER，docs 至 `172e19e89`）｜缓存版本不变（纯数据变更）｜更新时间：2026-10-05 09:10 (+08)**
 **本次内容（feat: 题库补充 2026-10-05-a，WorkBuddy 会话执行）：用户要求「再补充题目」，走 enrich 流水线补 57 题，1441→1498 题。**
 - **覆盖 18 个分类**：Vue2×4 / Angular×3 / 前端工程化×3 / Webpack×3 / Vite×3 / Flutter×3 / Android开发×4 / iOS开发×4 / 渗透测试×4 / 应急响应×3 / 密码学基础×4 / PyTorch×4 / LangChain×3 / 向量数据库×3 / Helm×2 / Terraform×2 / 数仓建模理论×3 / 接口测试×2。
 - **来源与质检**：每题挂官方文档 / OWASP Cheat Sheets / NIST SP 800-61 等权威 URL（404 会被闸门拒）；流水线归一化 + difflib 模糊去重（0.85 拦截线）——1 题（Flutter 三棵树）因题库已有近似被拦，符合预期。
