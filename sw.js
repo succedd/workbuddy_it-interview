@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20260920c";
+const VERSION = "20261005a";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -18,13 +18,13 @@ const APP_SHELL = [
   "/", "/index.html",
   "/css/variables.css?v=" + VERSION, "/css/style.css?v=" + VERSION,
   "/css/animations.css?v=" + VERSION, "/css/responsive.css?v=" + VERSION,
-  "/css/loader.css?v=" + VERSION, "/data/tech-maps.json",
+  "/css/loader.css?v=" + VERSION, "/css/festival.css?v=" + VERSION, "/data/tech-maps.json",
   /* 第三方库已本地化（vendor/），必须随壳缓存，否则离线时 Dexie/Marked 等加载失败整站不可用；
      echarts / xlsx 大库按需加载，由 fetch 运行时缓存补收，不进壳 */
   "/vendor/dexie.min.js", "/vendor/purify.min.js", "/vendor/marked.min.js",
   "/vendor/highlight.min.js", "/vendor/fuse.min.js",
   "/vendor/github.min.css", "/vendor/github-dark.min.css",
-  "/js/guide.js?v=" + VERSION, "/js/utils.js?v=" + VERSION, "/js/db.js?v=" + VERSION, "/js/auth.js?v=" + VERSION,
+  "/js/guide.js?v=" + VERSION, "/js/utils.js?v=" + VERSION, "/js/turnstile.js?v=" + VERSION, "/js/db.js?v=" + VERSION, "/js/auth.js?v=" + VERSION,
   /* daily-quote.js 一直挂在 index.html 上，却漏在预缓存清单里 —— 首次离线启动会缺这个脚本 */
   "/js/daily-quote.js?v=" + VERSION,
   "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
@@ -35,7 +35,8 @@ const APP_SHELL = [
   "/js/docs/security.js?v=" + VERSION, "/js/docs/devops.js?v=" + VERSION,
   "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
   "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
-  "/js/submit.js?v=" + VERSION,
+  "/js/submit.js?v=" + VERSION, "/js/festival.js?v=" + VERSION,
+  "/offline.html",
   "/data/seed.js?v=" + VERSION
 ];
 
@@ -83,7 +84,7 @@ self.addEventListener("fetch", (event) => {
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
-        /* cache:"reload" 强制绕过 HTTP 缓存（GitHub Pages HTML 固定 max-age=600），
+        /* cache:"reload" 强制绕过 HTTP 缓存（Cloudflare Pages 的 HTML 同样会被边缘缓存），
            否则 network-first 的 fetch 仍会命中 10 分钟缓存，发版后用户要等 10 分钟才能拿到新版 */
         const net = await fetch(req, { cache: "reload" });
         /* 只缓存首页：否则 /q/<id>.html 等分享页会被写进 "/" 缓存键，污染离线首页 */
@@ -95,7 +96,9 @@ self.addEventListener("fetch", (event) => {
         }
         return net;
       } catch (_) {
-        return (await caches.match("/index.html")) || (await caches.match("/")) || Response.error();
+        /* 离线兜底链（20261005a）：SPA 首页 → 兜底 offline 页，不再直接 Response.error() 白屏 */
+        return (await caches.match("/index.html")) || (await caches.match("/"))
+          || (await caches.match("/offline.html")) || Response.error();
       }
     })());
     return;
@@ -108,6 +111,29 @@ self.addEventListener("fetch", (event) => {
     event.respondWith((async () => {
       try { return await fetch(req, { cache: 'reload' }); }
       catch (_) { return (await caches.match(req)) || Response.error(); }
+    })());
+    return;
+  }
+
+  /* 题库数据文件：必须 network-first（20261005a）。
+     此前 published.json 走同源默认的 cache-first——SW 运行时缓存一旦写入，
+     访客每次打开都会命中旧快照，「自动同步最新题库」实际失效，只有发版
+     （SW VERSION 变更清缓存）才能看到新数据。version.json（~120B 版本指纹）
+     同样必须每次回源，否则瘦身的「指纹没变就跳过全量下载」会一直误判。 */
+  if (url.pathname === "/data/version.json" || url.pathname === "/data/published.json") {
+    event.respondWith((async () => {
+      try {
+        const net = await fetch(req, { cache: "reload" });
+        if (net && net.ok && url.pathname === "/data/published.json") {
+          /* 只为离线兜底缓存最近一份好快照；version.json 永不缓存 */
+          const cache = await caches.open(CACHE);
+          cache.put(req, net.clone()).catch(() => {});
+        }
+        return net;
+      } catch (_) {
+        /* 离线：version.json 失败让上层走全量兜底；published.json 回退最近缓存 */
+        return (await caches.match(req)) || Response.error();
+      }
     })());
     return;
   }
