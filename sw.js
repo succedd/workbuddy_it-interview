@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261006d";
+const VERSION = "20261006f";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -29,10 +29,10 @@ const APP_SHELL = [
   "/js/daily-quote.js?v=" + VERSION,
   "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
   "/js/services.js?v=" + VERSION, "/js/roadmap.js?v=" + VERSION,
-  "/js/docs-data.js?v=" + VERSION, "/js/docs.js?v=" + VERSION,
-  "/js/docs/java.js?v=" + VERSION, "/js/docs/network.js?v=" + VERSION,
-  "/js/docs/dba.js?v=" + VERSION, "/js/docs/frontend.js?v=" + VERSION,
-  "/js/docs/security.js?v=" + VERSION, "/js/docs/devops.js?v=" + VERSION,
+  /* js/docs-data.js 与 docs/*.js 都交给运行时缓存（见下方 cache-first 分支）：
+   docs-data.js 依赖那 6 个方向文件先挂上 window，两者必须一起取，
+   任何一方缺席window.DOCS.dirs 就是空的，预缓存其中一个没有意义。 */
+  "/js/docs-loader.js?v=" + VERSION, "/js/docs.js?v=" + VERSION,
   "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
   "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
   "/js/submit.js?v=" + VERSION, "/js/festival.js?v=" + VERSION,
@@ -155,6 +155,28 @@ self.addEventListener("fetch", (event) => {
      首次安装变慢、且用户未必会点开题目。走运行时缓存即可——
      第一次打开题目时才拉，之后长期复用。 */
   if (url.pathname.startsWith("/data/shards/")) {
+    event.respondWith((async () => {
+      const cached = await caches.match(req);
+      if (cached) return cached;
+      try {
+        const net = await fetch(req);
+        if (net && net.ok) {
+          const cache = await caches.open(CACHE);
+          cache.put(req, net.clone()).catch(() => {});
+        }
+        return net;
+      } catch (_) {
+        return Response.error();
+      }
+    })());
+    return;
+  }
+
+  /* 文档方向数据（2026-10-06）：从 APP_SHELL 移到运行时缓存。
+   这 7 个文件合计约 547KB gzip，占首屏总量一半以上，改由 js/docs-loader.js
+   在空闲时预热 / 点进教程页时按需加载。走 cache-first：
+   进过一次技术教程页后即长期缓存，离线照常可看。 */
+  if (url.pathname === "/js/docs-data.js" || url.pathname.indexOf("/js/docs/") === 0) {
     event.respondWith((async () => {
       const cached = await caches.match(req);
       if (cached) return cached;

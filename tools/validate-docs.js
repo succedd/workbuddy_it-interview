@@ -17,7 +17,9 @@ const fs = require("fs");
 const ROOT = path.join(__dirname, "..");
 const base = path.join(ROOT, "js", "docs");
 
-// 加载顺序与 index.html 一致：方向文件在前，docs-data.js 在后
+// 加载顺序与 js/docs-loader.js 的 FILES 数组一致：方向文件在前，docs-data.js 在后
+// （2026-10-06 起这批文件不再写在 index.html 里，改由 docs-loader 按需加载，
+//   但装配顺序要求不变，所以这里是校验该顺序的正确性所在）
 const order = ["java", "network", "dba", "frontend", "security", "devops"];
 for (const id of order) require(path.join(base, id + ".js"));
 require(path.join(ROOT, "js", "docs-data.js"));
