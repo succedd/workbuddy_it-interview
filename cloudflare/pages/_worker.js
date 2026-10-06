@@ -310,33 +310,36 @@ function harden(res) {
   return out;
 }
 
-// ⓪.8 数据文件缓存策略（2026-10-06 性能修复，实测迭代三轮）
-//   背景：/data/published.json 的 cf-cache-status 恒为 DYNAMIC，
-//   每个访客请求都真的回源计算，TTFB 稳定在 1.1～6 秒，国内体感就是「打开很慢」。
+// ⓪.8 数据文件缓存策略（2026-10-06，三轮实测迭代）
+//   ⚠️ 先读这段，能省下重复试错——**这个方向最终没走通，别再在这里耗时间**。
 //
-//   ⚠️ 实测踩坑全过程（读这段能省下重复试错）：
-//   第 1 版：`public, max-age=300, s-maxage=3600`
-//     → 头带上了，cf-cache-status 仍 DYNAMIC。Pages 官方文档写明默认是
-//       `public, max-age=0, must-revalidate`，且 s-maxage 是给真正的共享缓存用的，
-//       Pages 有自己的实现、不认它。
-//   第 2 版：`public, max-age=3600, must-revalidate`
-//     → 头正确（线上可见），但 **cf-cache-status 仍 DYNAMIC**，连续 5 次无一进边缘。
-//     同时测到对照组 css 是 MISS → REVALIDATED → REVALIDATED，
-//     说明边缘缓存在工作，只是走 ETag 协商重验证（304 快返）而非直接 HIT；
-//     而 `must-revalidate` 正是「每次都去问一遍」的那一位。
-//   第 3 版（当前）：去掉 must-revalidate，只留 max-age=3600，
-//     让边缘在 TTL 内直接 HIT、完全不回源。
+//   背景：/data/published.json 的 cf-cache-status 恒为 DYNAMIC。
+//   第 1 版 `public, max-age=300, s-maxage=3600` → 仍 DYNAMIC（Pages 不认 s-maxage）
+//   第 2 版 `public, max-age=3600, must-revalidate` → 头正确但仍 DYNAMIC ×5
+//   第 3 版（当前）去掉 must-revalidate 只留 max-age=3600 → 仍 DYNAMIC ×6
+//   三版的响应头都正确下发到线上了，cf-cache-status 却始终没变。
 //
-//   语义设计（与 sw.js 的 network-first、cloud.js 的 version.json 指纹严格配套）：
-//   · 带 ?v= 的资源（index.html 引用的一切壳资源）→ no-cache。
-//     版本号变了就是新文件，旧 URL 不该被缓存，这是发版能生效的前提。
-//   · 不带 ?v= 的 /data/*.json（published / version / manifest / shards / tech-maps）
-//     → 边缘缓存 1 小时。内容变更频率是「一天几次」量级，1 小时 TTL 的陈旧代价
-//     可以接受，换来的是绝大多数访客在 TTL 内直接命中边缘。
-//     ⚠️ 代价要说清楚：刚发版后的老访客，最多可能滞后 1 小时才看到云端新题。
-//     但两类关键场景不受影响：① 编辑端改的题走 IndexedDB 本地库，不经云端拉取；
-//     ② 手动「从云端拉取到本机」带 ?v=<timestamp> 强制 no-cache，也不受影响。
+//   对照组给出的真原因：
+//     · css/style.css（**未经本Worker 改写**）→ MISS → REVALIDATED，**能进边缘**
+//     · /data/*.json（**经本 Worker 处理**）→ 恒 DYNAMIC
+//   即：**Cloudflare Pages「高级模式」下，Worker 处理过的响应不落 Cloudflare 边缘缓存。**
+//   这是产品层面的行为，不是 Cache-Control 写法问题。
+//
+//   那为什么还留着这段？因为 `sw.js` 那半边是真修复（见下），且这段让缓存意图显式化，
+//   将来若把数据请求改走 Cloudflare Worker，这里就能直接生效。
+//
+//   ✅ 真正有效的修复在 sw.js：`cache: "reload"` → `cache: "no-cache"`。
+//      reload = 绕过一切缓存、一定回源（连Cloudflare 边缘缓存一起击穿）；
+//      no-cache = 必须校验但允许用缓存响应（走 304 快返），发版仍立刻生效。
+//
+//   语义（与 sw.js 的 network-first、cloud.js 的 version.json 指纹配套）：
+//   · 带 ?v= 的资源→ no-cache。版本号变了就是新文件，旧 URL 不该被缓存，这是发版生效的前提。
+//   · 不带 ?v= 的 /data/*.json → max-age=3600。若将来边缘缓存能生效，
+//     内容变更频率是「一天几次」，1 小时 TTL 的陈旧代价可接受。
 //   · 不设 stale-while-revalidate：避免「刚发版的老访客拿到旧题库」这种比慢更糟的体验。
+//
+//   ⚠️ 真正让首屏变快的是分片（首屏 780KB → 123KB br，-84%），
+//      不是这个缓存头。见 docs/性能诊断-20261006.md。
 function applyDataCache(res, path, url) {
   const hasVersion = url.searchParams.has("v");
   const versioned = hasVersion || path === "/data/seed.js";
