@@ -216,12 +216,25 @@
     }
   };
 
-  /* 按题号取出该题：先看分片缓存，miss 则拉整片。取不到返回 null。 */
+  /* 按题号取出该题：先看分片缓存，miss 则拉整片。取不到返回 null。
+     分片号来源有三个层次（可靠性递减）：
+       ① 调用方直接给的 meta._sh
+       ② 本次会话缓存的 manifest 索引（C._manifestById）
+       ③ 持久化在 settings 里的 shardMap —— **刷新页面后靠它**。
+     ③ 是必需的：metaOnly 首访写入本机的题目不带 _sh（那是内部字段，不该进题库数据），
+     若只靠内存索引，用户一刷新就再也定位不到答案所在的分片，永远补不回来。 */
   C.ensureQuestionBody = async function (qid, optMeta) {
     const id = Number(qid);
     if (!id) return null;
+    let shard = null;
     const meta = optMeta || (C._manifestById && C._manifestById[id]);
-    const shard = meta && meta._sh;
+    if (meta && meta._sh) shard = meta._sh;
+    if (!shard) {
+      try {
+        if (!C._shardMap) C._shardMap = (await DB.getSetting("shardMap")) || {};
+        shard = C._shardMap[id];
+      } catch (_) { /* 取不到就返回 null，调用方按「没答案」渲染 */ }
+    }
     if (!shard) return null;
     const arr = await C.fetchShard(shard);
     if (!arr) return null;
@@ -244,14 +257,52 @@
       m = await r.json();
     } catch (e) { return null; }
     if (!m || m.schema !== "manifest-v1" || !Array.isArray(m.questions)) return null;
-    /* 题数必须与指纹一致：manifest 与 published.json 是同一份数据的两种切法，
-       若两者不同步（例如只发了其中一个），拼出来的快照就是残缺的。
-       这道校验比 publishedAt 更严——同一次发布里两者一定同时变。 */
-    try {
-      const meta0 = await C.fetchMeta();
-      if (meta0 && Number.isInteger(meta0.count) && meta0.count !== m.questions.length) return null;
-    } catch (_) { /* 指纹拿不到不阻断，下面还有分片数校验兜底 */ }
+    /* ⚠️ 这里曾经用 version.json 的 count 做硬校验（题数必须严格相等），
+       结果是**分片功能线上从未生效过**：线上 version.json 报 1519 题、
+       而题库实际 1540 题（两个发布流程各写各的，天然会漂移），
+       校验永远失败 → 每次都静默回退整包 published.json（2.9MB）。
+       教训：不要用「另一个可独立变化的文件」去校验本文件的正确性。
+
+       现在改为校验 manifest 与分片的**自洽性**（见下面拉完分片后的题数比对）——
+       manifest 与 shards 由 tools/split-published.py 一次产出，它们之间必须一致，
+       这个约束才是真正有意义的。外部指纹只用于「要不要重新下载」的判断，
+       不该拿来决定「这份数据能不能用」。 */
     if (!Array.isArray(m.shards) || !m.shards.length) return null;
+    C._shardNames = m.shards.slice();      /* 记下来，供后台补齐答案时用 */
+
+    /* ---- metaOnly：首访专用，只拿元数据不拿答案 ----
+       为什么首访要这样：实测首访若把 manifest + 全部 6 片都拉下来要 3.4MB 原文，
+       比整包 published.json(1.64MB) **还多**（分片的价值在回访者的「指纹没变就跳过」，
+       对首访反而是负优化）。而首屏真正需要的只是「有哪些题、标题/分类/难度」——
+       列表、筛选、统计全靠元数据就能渲染。
+       所以首访只拉 manifest（br 约 123KB），答案改成：
+         · 打开某道题时按片懒加载（C.ensureQuestionBody，已有）
+         · 首屏渲染完成后在后台静默补齐（C.hydrateAnswers）
+       这样首访传输量从 3.4MB 降到约 0.9MB 原文（br 约 123KB）。 */
+    if (o.metaOnly) {
+      C._manifestById = {};
+      for (const q of m.questions) C._manifestById[Number(q.id)] = q;
+      const metaQuestions = m.questions.map(meta => {
+        const c = Object.assign({}, meta);
+        delete c._sh;
+        /* answer 留空：由懒加载 / 后台补齐填上。绝不能留 undefined，
+           否则下游 `(q.answer || "")` 之外的原地拼接会产出 "undefined"。 */
+        if (c.answer == null) c.answer = "";
+        if (c.body == null) c.body = "";
+        return c;
+      });
+      return {
+        version: m.version,
+        publishedAt: m.publishedAt,
+        categories: m.categories || [],
+        positions: m.positions || [],
+        positionSkills: m.positionSkills || [],
+        questions: metaQuestions,
+        removedQuestions: m.removedQuestions || {},
+        _fromManifest: true,
+        _metaOnly: true
+      };
+    }
 
     /* 并发拉全部答案分片。6 片各约 137KB br，并发比串行快得多。 */
     const names = Array.isArray(m.shards) ? m.shards : [];
@@ -265,6 +316,17 @@
        宁可多下一次 780KB，也不能出现这种静默降质。 */
     const missShards = names.filter((n, i) => !got[i]);
     if (names.length && missShards.length) return null;
+
+    /* 自洽校验：所有分片的题目数之和必须等于 manifest 声明的题数。
+       两者由同一次 split-published.py 产出，对不上就说明 manifest 与 shards
+       不是同一批（例如只重发了其中一个），此时拼出来的快照会缺题 —— 弃用。 */
+    let shardTotal = 0;
+    for (const g of got) shardTotal += g ? g.length : 0;
+    if (shardTotal !== m.questions.length) {
+      console.warn("[cloud] manifest 与分片题数不一致，回退整包：manifest=" +
+        m.questions.length + " shards=" + shardTotal);
+      return null;
+    }
 
     /* 以 manifest 元数据为骨架，叠加分片里的 answer/body 字段。
        合并策略：manifest 打底（保证 id/title/categoryId 等一定在），
@@ -314,6 +376,67 @@
       C._manifestMiss = (C._manifestMiss || 0) + 1;
     }
     return C.fetchRemote(noCache, opts);
+  };
+
+  /* ---------- 后台补齐答案（2026-10-06 首访优化配套） ----------
+   * 首访只拉了 manifest（元数据），答案为空。等首屏渲染完之后，在后台把 6 个分片
+   * 依次拉回来写进本机表，让后续的详情页/搜索/离线都有完整内容。
+   *
+   * 安全约束（重要）：
+   *  ① 只在「刚刚 metaOnly 写入过」的情况下调用一次，由 _needHydrate 标记控制。
+   *     这样它面对的必然是刚写入的干净元数据，不会覆盖用户自己的改动。
+   *  ② 用 update 而不是 bulkPut：只动 answer/body，绝不触碰用户可能改过的
+   *     其他字段（remark 本机批注、views/favorites 等计数）。
+   *  ③ 单片失败不影响其余片，也不重试（弱网下重试只会更慢）；失败的片留给
+   *     详情页懒加载兜底（C.ensureQuestionBody 会现场去取）。
+   *  ④ 全程静默：不弹 toast。用户没点任何东西，不该被打扰。 */
+  C._needHydrate = false;
+  C.hydrateAnswers = async function () {
+    if (!C._needHydrate) return { hydrated: 0, reason: "notNeeded" };
+    const names = C._shardNames || [];
+    if (!names.length) { C._needHydrate = false; return { hydrated: 0, reason: "noShards" }; }
+    const db = DB.db;
+    let updated = 0, failed = 0;
+    for (const name of names) {
+      const arr = await C.fetchShard(name);
+      if (!arr || !arr.length) { failed++; continue; }
+      try {
+        /* ⚠️ 这里必须「先读本机记录 → 合并 answer/body → bulkPut」，不能逐条 update。
+           初版写成 `for (q of arr) await db.questions.update(q.id, {...})`，
+           1540 条就是 1540 次索引查找+写入，实测把主线程压死（首屏内容就绪从
+           8.6s 恶化到 13.7s，长任务 19→45 个）——后台任务抢占了前台渲染。
+           现在改成一次 bulkGet + 一次 bulkPut：
+             · 保留本机其余字段（用户批注 remark、views/favorites 计数等）不被覆盖；
+             · 一个事务写完整片，主线程占用降到可忽略。 */
+        const ids = arr.map(q => Number(q.id)).filter(Boolean);
+        const locals = await db.questions.bulkGet(ids);
+        const localMap = new Map();
+        for (const rec of locals) if (rec) localMap.set(Number(rec.id), rec);
+        const merged = arr.map(q => {
+          const id = Number(q.id);
+          const local = localMap.get(id);
+          if (!local) return q;                       /* 本机没有就整条写入 */
+          return Object.assign({}, local, {           /* 有则只覆盖答案正文两字段 */
+            answer: q.answer == null ? "" : q.answer,
+            body: q.body == null ? "" : q.body
+          });
+        });
+        await db.questions.bulkPut(merged);
+        updated += merged.length;
+      } catch (e) {
+        failed++;
+        console.warn("[cloud] 分片补齐失败:", name, e && e.message);
+      }
+      /* 让出一帧再做下一片，避免长时间占住主线程影响用户操作 */
+      await new Promise(r => setTimeout(r, 0));
+    }
+    C._needHydrate = false;
+    if (updated) {
+      try { await Services.reload(); } catch (_) {}
+      try { if (C._emit) C._emit(); } catch (_) {}
+    }
+    C._lastHydrate = { updated, failed, at: Date.now() };
+    return { hydrated: updated, failed };
   };
 
   /* ---------- 版本指纹（20261005a 数据瘦身） ----------
@@ -433,7 +556,9 @@
         }
       }
     } catch (e) { /* 指纹判定失败不阻断，走原全量流程 */ }
-    const data = await C.fetchSnapshot();
+    /* 首访（justSeeded）走 metaOnly：只拿题目元数据，答案交给懒加载 + 后台补齐。
+       非首访（指纹变了的老访客）仍取完整数据——他们本机已有答案，缺一块反而不好。 */
+    const data = await C.fetchSnapshot(false, justSeeded ? { metaOnly: true } : undefined);
     if (!data) {
       const st = C._lastFetch || {};
       /* 区分「云端没有快照」与「网络失败」：后者意味着访客可能只拿到本机种子库，
@@ -452,10 +577,28 @@
          确实存在用户自己的数据时才走 pending，让用户手动确认 */
       if (!(await C.looksUnseeded())) return { pending: true, count: (data.questions || []).length };
       await C.applyRemote(data);
-      return { applied: true, count: (data.questions || []).length, recovered: true };
+      if (data._metaOnly) await C._markMetaOnly();   /* 答案待后台补齐 */
+      return { applied: true, count: (data.questions || []).length, recovered: true, metaOnly: !!data._metaOnly };
     }
     await C.applyRemote(data);
-    return { applied: true, count: (data.questions || []).length };
+    if (data._metaOnly) await C._markMetaOnly();     /* 答案待后台补齐 */
+    return { applied: true, count: (data.questions || []).length, metaOnly: !!data._metaOnly };
+  };
+
+  /* metaOnly 写入后要做的两件事：标记待补齐 + 持久化「题号→分片」映射。
+     映射必须落盘，否则刷新页面后懒加载找不到分片（详见 ensureQuestionBody 注释）。 */
+  C._markMetaOnly = async function () {
+    C._needHydrate = true;
+    try {
+      const map = {};
+      for (const q of (C._manifestById ? Object.values(C._manifestById) : [])) {
+        if (q && q._sh) map[q.id] = q._sh;
+      }
+      if (Object.keys(map).length) {
+        await DB.setSetting("shardMap", map);
+        C._shardMap = map;
+      }
+    } catch (e) { console.warn("[cloud] shardMap 持久化失败（详情页懒加载将退回后台补齐结果）", e && e.message); }
   };
 
   /* 手动立即同步（设置页按钮）：强制采用云端版本，覆盖本地题库 */

@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261006f";
+const VERSION = "20261006g";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -37,6 +37,12 @@ const APP_SHELL = [
   "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
   "/js/submit.js?v=" + VERSION, "/js/festival.js?v=" + VERSION,
   "/offline.html",
+  /* data/seed.js 保留在预缓存清单里（2026-10-06 的取舍）：
+     它已从 index.html 摘出、改成「走 seed 兜底时才动态加载」，所以**不在首屏关键路径上**；
+     但 SW 安装发生在首屏渲染完之后，预缓存它不拖慢首屏。
+     而如果这里也去掉，就会出现「联网访问过一次 → 之后离线打开 → 云端探测失败 →
+     想走 seed 兜底却发现本地没这份文件」的死角，离线首访直接空库。
+     两害相权，保留。 */
   "/data/seed.js?v=" + VERSION
 ];
 

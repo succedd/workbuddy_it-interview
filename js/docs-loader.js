@@ -32,18 +32,37 @@
 (function () {
   "use strict";
 
-  var VERSION = "20261006d";
+  /* 版本号不能硬编码：本文件在 index.html 的内联脚本之前执行，
+     那时 window.PAGE_VER 还没被赋值；而一旦写死一个字面量，
+     下次发版 bump-version.py 只改 index.html/sw.js，这里就会一直请求旧 URL
+     （发版后表现为「教程页数据没更新」或 404）。
+     所以在真正发起加载时才取版本：优先用页面注入的 PAGE_VER，
+     取不到就退到本文件被引入时带的 ?v=（URL 里那串）。 */
+  var SELF_VER = (function () {
+    try {
+      var me = document.currentScript || document.querySelector('script[src*="docs-loader.js"]');
+      if (me) {
+        var m = String(me.src || "").match(/[?&]v=([^&]+)/);
+        if (m) return m[1];
+      }
+    } catch (_) {}
+    return "";
+  })();
+  var FILE_PATHS = [
+    "js/docs/java.js",
+    "js/docs/network.js",
+    "js/docs/dba.js",
+    "js/docs/frontend.js",
+    "js/docs/security.js",
+    "js/docs/devops.js",
+    "js/docs-data.js"
+  ];
+  function fileUrls() {
+    var v = window.PAGE_VER || SELF_VER;
+    return FILE_PATHS.map(function (p) { return p + (v ? "?v=" + v : ""); });
+  }
   /* 顺序必须与 index.html 原先一致：各方向数据先挂 window，
      docs-data.js 再读它们组装 window.DOCS。 */
-  var FILES = [
-    "js/docs/java.js?v=" + VERSION,
-    "js/docs/network.js?v=" + VERSION,
-    "js/docs/dba.js?v=" + VERSION,
-    "js/docs/frontend.js?v=" + VERSION,
-    "js/docs/security.js?v=" + VERSION,
-    "js/docs/devops.js?v=" + VERSION,
-    "js/docs-data.js?v=" + VERSION
-  ];
 
   var loading = null;      /* 同一个 Promise 并发复用，避免重复请求 */
   var done = false;
@@ -93,8 +112,9 @@
     }
     loading = (async function () {
       var allOk = true;
-      for (var i = 0; i < FILES.length; i++) {
-        if (!(await loadScript(FILES[i]))) allOk = false;
+      var files = fileUrls();      /* 到这一刻才取版本号，确保拿到页面注入的 PAGE_VER */
+      for (var i = 0; i < files.length; i++) {
+        if (!(await loadScript(files[i]))) allOk = false;
       }
       var ready = !!(window.DOCS && Array.isArray(window.DOCS.dirs) &&
                      window.DOCS.dirs.filter(Boolean).length);

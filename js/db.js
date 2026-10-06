@@ -83,7 +83,16 @@
   };
   DB.isInitialized = async function () { return !!(await DB.getSetting("initialized")); };
 
-  /* ---------- 写入初始数据 ---------- */
+  /* ---------- 写入初始数据 ----------
+     性能说明（2026-10-06 移动端优化）：
+     原实现每写一条就 `await db.xxx.add()`，也就是**每条记录一个 IndexedDB 事务**。
+     实测首次访问时这段要 3.8 秒（脚本 1.13s 全部就绪，下一个网络请求 4.93s 才出现，
+     中间全是这段的等待）——而移动端 IO 更慢，是首屏「一直转圈」的主因。
+     现改为「收集成数组 + bulkAdd 一次性写入」：
+       · 分类/岗位/技能/题目各自一个事务，而不是几百个；
+       · 用 bulkAdd 的 allKeys 选项拿回自增主键，语义与原逐条 add 完全一致
+         （nameToCat 深层覆盖、nameToPos 只记首个同名 都保持不变）。
+     这样既没有改变写入结果的顺序（数组顺序即原循环顺序），也没有改变任何映射。 */
   DB.seed = async function (onProgress) {
     if (await DB.isInitialized()) return false;
     const S = window.SEED;
@@ -91,23 +100,27 @@
     const nameToPos = new Map();   // 岗位名 -> id
     const now = Date.now();
 
-    // 1) 分类树
+    /* 1) 分类树：按「同层一次性 bulkAdd」写，再递归下一层。
+       必须先拿到本层所有 id 才能建子层，所以分层批量而不是全树一把写。 */
     const seedCat = async (nodes, parentId, depth) => {
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i];
-        const id = await db.categories.add({
-          parentId: parentId || 0,
-          name: n.name,
-          icon: n.icon || "📁",
-          era: n.era || "",
-          description: "",
-          sort: i,
-          depth: depth,
-          status: "active"
-        });
-        nameToCat.set(n.name, id);
-        if (n.children) await seedCat(n.children, id, depth + 1);
-      }
+      if (!nodes || !nodes.length) return;
+      const recs = nodes.map((n, i) => ({
+        parentId: parentId || 0,
+        name: n.name,
+        icon: n.icon || "📁",
+        era: n.era || "",
+        description: "",
+        sort: i,
+        depth: depth,
+        status: "active"
+      }));
+      const keys = await db.categories.bulkAdd(recs, { allKeys: true });
+      const nextLayer = [];
+      nodes.forEach((n, i) => {
+        nameToCat.set(n.name, keys[i]);
+        if (n.children) nextLayer.push([n.children, keys[i], depth + 1]);
+      });
+      for (const job of nextLayer) await seedCat(job[0], job[1], job[2]);
     };
     if (onProgress) onProgress("写入技术分类…");
     await seedCat(S.categoryTree, 0, 0);
@@ -126,26 +139,33 @@
     S.positionStages.forEach(st => walkPos(st.children, st.stage, st.tag, ""));
     if (onProgress) onProgress("写入岗位体系…");
     const seenPosKeys = new Set();
+    const posRecs = [];
     for (const p of flatPos) {
       const key = (p.name || "") + "|" + (p.direction || "");
       if (seenPosKeys.has(key)) continue; // 同名且同方向只写入一次
       seenPosKeys.add(key);
-      const id = await db.positions.add({
+      posRecs.push({
         name: p.name, stage: p.stage, tag: p.tag, category: p.category,
         direction: p.direction || "", description: p.description, demand: p.demand, sort: 0, status: "active"
       });
-      if (!nameToPos.has(p.name)) nameToPos.set(p.name, id); // 首条同名岗位供技术栈关联使用
+    }
+    if (posRecs.length) {
+      const posKeys = await db.positions.bulkAdd(posRecs, { allKeys: true });
+      posRecs.forEach((p, i) => {
+        if (!nameToPos.has(p.name)) nameToPos.set(p.name, posKeys[i]); // 首条同名岗位供技术栈关联使用
+      });
     }
 
-    // 3) 岗位技术栈
+    // 3) 岗位技术栈（一次收集后批量写）
     if (onProgress) onProgress("写入岗位技术栈…");
+    const skillRecs = [];
     for (const posName in S.positionSkills) {
       const pid = nameToPos.get(posName);
       if (pid == null) continue;
       const grp = S.positionSkills[posName];
-      const addSkills = async (list, required) => {
+      const collect = (list, required) => {
         for (const s of (list || [])) {
-          await db.positionSkills.add({
+          skillRecs.push({
             positionId: pid,
             categoryId: nameToCat.get(s.tech) || null,
             techName: s.tech,
@@ -155,22 +175,22 @@
           });
         }
       };
-      await addSkills(grp.required, true);
-      await addSkills(grp.bonus, false);
+      collect(grp.required, true);
+      collect(grp.bonus, false);
     }
+    if (skillRecs.length) await db.positionSkills.bulkAdd(skillRecs);
 
-    // 4) 示例题目
+    // 4) 示例题目（一次收集后批量写）
     const resolveCat = (path) => {
       if (!path) return null;
       for (const name of path) { if (nameToCat.has(name)) return nameToCat.get(name); }
       for (const name of path.slice().reverse()) { if (nameToCat.has(name)) return nameToCat.get(name); }
       return null;
     };
-    let cnt = 0;
     const total = S.questions.length;
-    for (const q of S.questions) {
+    const qRecs = S.questions.map(q => {
       const posIds = (q.positionNames || []).map(n => nameToPos.get(n)).filter(x => x != null);
-      await db.questions.add({
+      return {
         categoryId: resolveCat(q.catPath),
         title: q.title,
         body: q.body,
@@ -190,10 +210,11 @@
         remark: "",
         createdAt: now,
         updatedAt: now
-      });
-      cnt++;
-      if (onProgress && cnt % 20 === 0) onProgress("写入题目 " + cnt + "/" + total);
-    }
+      };
+    });
+    if (onProgress) onProgress("写入题目 0/" + total);
+    if (qRecs.length) await db.questions.bulkAdd(qRecs);
+    if (onProgress) onProgress("写入题目 " + total + "/" + total);
 
     await DB.setSetting("initialized", true);
     await DB.setSetting("seedAt", now);
@@ -271,19 +292,42 @@
       walk(window.SEED.categoryTree);
     }
     const allPositions = await db.positions.toArray();
+
+    /* 短路（2026-10-06 移动端优化）：本函数只为清理「名字与分类同名的空岗位」。
+       第一步只对着岗位表和分类名集合筛候选——若一个候选都没有（正常情况就是没有），
+       就不必再读 questions / positionSkills 这两张大表。
+       实测 1540 题时 `db.questions.toArray()` 是启动链里最重的一次全表读，
+       而本函数在**每次启动**都会跑、且刻意没有一次性开关。
+       逻辑等价：岗位名不与任何分类同名时，下面的循环一个都不会命中，结果必然是 0。 */
+    if (!allPositions.some(p => catNameSet.has(p.name))) return 0;
+
     const allQuestions = await db.questions.toArray();
     const allSkills = await db.positionSkills.toArray();
+
+    /* 性能（2026-10-06 移动端优化）：原实现对每个岗位都做
+       `allQuestions.some(q => q.positionNames.includes(p.name) || ...)`，
+       即 O(岗位数 × 题数)。1540 题 / 142 岗位时约 22 万次数组比较，
+       且这段在**每次启动**都跑（本函数刻意没有一次性开关）。
+       改为先各扫一遍建立索引，判定降到 O(1) 查表。语义完全等价：
+       原来问的是「是否存在某题引用了该岗位名/id」，现在问的是同一件事。 */
+    const qPosNames = new Set();
+    const qPosIds = new Set();
+    for (const q of allQuestions) {
+      for (const n of (q.positionNames || [])) qPosNames.add(n);
+      for (const i of (q.positionIds || [])) qPosIds.add(i);
+    }
+    const skillPosIds = new Set();
+    for (const s of allSkills) skillPosIds.add(s.positionId);
+    const catNameById = new Map();
+    for (const c of cats) catNameById.set(c.id, c.name);
+
     let removed = 0;
     for (const p of allPositions) {
       if (!catNameSet.has(p.name)) continue;                 // 名字不与分类冲突
-      if (p.categoryId && cats.some(c => c.id === p.categoryId && c.name !== p.name)) continue; // 已关联到其它分类
-      const hasQ = allQuestions.some(q =>
-        (q.positionNames || []).indexOf(p.name) >= 0 ||
-        (q.positionIds || []).indexOf(p.id) >= 0
-      );
+      if (p.categoryId && catNameById.has(p.categoryId) && catNameById.get(p.categoryId) !== p.name) continue; // 已关联到其它分类
+      const hasQ = qPosNames.has(p.name) || qPosIds.has(p.id);
       if (hasQ) continue;
-      const hasSkill = allSkills.some(s => s.positionId === p.id);
-      if (hasSkill) continue;
+      if (skillPosIds.has(p.id)) continue;
       await db.positions.delete(p.id);
       removed++;
     }

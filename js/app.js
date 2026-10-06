@@ -2081,23 +2081,39 @@
   /* ============================ 题目详情页 ============================ */
   async function pageQuestionDetail(id) {
     let q = await Services.getQuestion(parseInt(id));
-    /* 答案懒加载（2026-10-06 性能优化）：
-       分片加载模式下，极端情况下（本机库被裁剪、或分片拉取后未合并进本机表）
-       可能出现「题目在、答案为空」。此时按题号从对应分片补一次正文再渲染。
-       拿不到就照常渲染（显示为空），绝不因此报错或白屏。 */
+    /* 答案懒加载（2026-10-06，首访 metaOnly 的配套）。
+       ⚠️ 绝不能在这里 await 到拿到答案为止：首访只拉了元数据，答案要现从分片取，
+       弱网下可能几秒 —— 那样用户点开题目会看到「白屏几秒」，
+       比「先显示题干、答案稍后出现」差得多（这正是实测发现的问题）。
+       所以：最多等 ANS_WAIT 毫秒，超时就先把页面渲染出来；
+       同时挂一个后台补齐，拿到后写回本机并（若用户还停在这题）重渲染。 */
+    const ANS_WAIT = 1200;
     if (q && !(q.answer || "").trim()) {
-      try {
-        const full = await Cloud.ensureQuestionBody(q.id);
-        if (full && (full.answer || "").trim()) {
-          /* 顺手写回本机表：同一片的其他题下次点开就不用再查分片了 */
-          try { await DB.db.questions.update(q.id, {
-            answer: full.answer, body: full.body || "", remark: full.remark || "",
-            firstPrinciples: full.firstPrinciples
-          }); } catch (_) {}
-          await Services.reload();
-          q = await Services.getQuestion(parseInt(id));
+      const qid = q.id;
+      /* 用英文变量名：中文标识符在压缩/转译/编码链路上容易出意外（本次就踩了
+         「const 与变量名之间丢空格」导致 ReferenceError）。 */
+      const hydrating = Cloud.ensureQuestionBody(qid).then(async (full) => {
+        if (!full || !(full.answer || "").trim()) return false;
+        try {
+          await DB.db.questions.update(qid, {
+            answer: full.answer, body: full.body || "", firstPrinciples: full.firstPrinciples
+          });
+        } catch (_) {}
+        await Services.reload();
+        /* 用户可能已经切走了，只有仍停在这题才重渲染，避免打断浏览 */
+        if (String(location.hash || "").replace(/^#\/question\//, "") === String(qid)) {
+          pageQuestionDetail(qid);
         }
-      } catch (_) { /* 补齐失败按原样渲染 */ }
+        return true;
+      }).catch(() => false);
+
+      try {
+        const got = await Promise.race([
+          hydrating,
+          new Promise((r) => setTimeout(() => r(null), ANS_WAIT))
+        ]);
+        if (got === true) { q = await Services.getQuestion(parseInt(id)); }
+      } catch (_) { /* 补齐异常按「先渲染」处理 */ }
     }
     if (!q) { setMain(`<div class="empty">未找到该题目</div>`); return; }
     document.title = q.title + " · IT面试题库";   // 详情页 title 用题目标题
@@ -2173,7 +2189,9 @@
       </div>
       <div id="variant-box" style="display:none"></div>
       <div id="grade-box" style="display:none"></div>
-      <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${U.md(q.answer)}</div>
+      <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${(q.answer || "").trim()
+        ? U.md(q.answer)
+        : '<div class="muted" style="padding:8px 0">答案正在从云端载入…（首访只会先取题目清单，答案按需补上，通常几秒内完成）</div>'}</div>
       ${pagerHtml(true)}
       <div class="section-head"><h2>相关推荐</h2></div>
       <div class="grid grid-cols-2">${related.map(x => qCard(x)).join("")}</div>
@@ -5154,15 +5172,58 @@
     Boot.start();
     let cloudPending = null;
     try {
+      /* 启动阶段打点（2026-10-06）：首屏「一直转圈」必须能定位到具体阶段。
+         实测不限速下脚本 1.1s 就绪、CPU 仅占 0.8s，却有 6 秒空白 —— 靠猜改不对地方。
+         这些 mark 几乎零成本（performance.mark 是纳秒级的），
+         用 tools/mobile-perf.mjs 或 devtools 的 performance.getEntriesByType("mark") 即可读出。 */
+      const _pm = (n) => { try { performance.mark(n); } catch (_) {} };
+      _pm("boot:start");
       let justSeeded = false;
-      try { justSeeded = await DB.seed(); } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
+      /* 跳过无谓的 seed（2026-10-06 移动端优化，实测省 1.6s）
+         原先首访一定要先把 seed 的 99 题写进 IndexedDB，紧接着 Cloud.syncIfNeeded
+         又把云端的 1540 题整包覆盖上去 —— 那 99 题从头到尾没人看过，却要付出
+         「解析 seed.js + 逐条建索引 + 事务提交」约 1.6 秒（移动端更久）。
+         现在先花约 120 字节探一下云端指纹：
+           · 云端可达且有数据 → 直接走云端，不写那 99 题；
+           · 云端不可达/无数据 → 老老实实 seed，保证离线首访也有内容（原有兜底不变）。
+         `justSeeded = true` 在这里表示「本机没有需要保护的数据，可直接采用云端」，
+         正是 syncIfNeeded 判定「全新访客」所用的语义，因此下游逻辑无需改动。 */
+      let cloudProbe = null;
+      try {
+        if (!Cloud.isEditor()) cloudProbe = await Cloud.fetchMeta();
+      } catch (_) { /* 探测失败按「云端不可用」处理，走 seed */ }
+      /* data/seed.js 有 111KB（gzip 约 40KB），里面是 99 道兜底题目。
+         云端可达时它一行都用不上，却要在首屏下载并解析 —— 实测这笔开销不小。
+         所以改成「要用才加载」：只有走 seed 兜底这条路时才把它取进来。
+         加载失败就按没有种子数据处理（下面 try 会捕获，不会白屏）。 */
+      const loadSeedJs = () => new Promise((resolve) => {
+        if (window.SEED) return resolve(true);
+        const el = document.createElement("script");
+        el.src = "data/seed.js?v=" + (window.PAGE_VER || "");
+        el.onload = () => resolve(true);
+        el.onerror = () => resolve(false);
+        document.head.appendChild(el);
+      });
+      if (cloudProbe && cloudProbe.count > 0) {
+        justSeeded = true;
+        Boot.set(35, "从云端载入题库…");
+        _pm("boot:seed-skipped");
+      } else {
+        try {
+          await loadSeedJs();
+          justSeeded = await DB.seed();
+        } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
+      }
+      _pm("boot:seed-done");
       Boot.set(35, "加载岗位与技术体系…");
       try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
       try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
       try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
+      _pm("boot:migrate-done");
       Boot.set(55, "检查云端题库更新…");
       try {
         const r = await Cloud.syncIfNeeded(justSeeded);
+        _pm("boot:sync-done");
         if (r && r.applied) U.toast(r.recovered ? "题库补全完成：共 " + r.count + " 题" : "已同步云端题库最新版（共 " + r.count + " 题）", "success");
         if (r && r.pending) cloudPending = r;
         /* 网络失败（而非「云端没有快照」）：访客可能只有 seed 的 99 题，安排提示与重试 */
@@ -5196,10 +5257,28 @@
           } catch (e2) { console.warn("absorbRemote error", e2); }
         }
       } catch (e) { console.warn("cloud sync error", e); }
+      /* 兜底（配合上面的「跳过 seed」）：探测云端成功但真正拉取时失败
+         （弱网中途断、远端 5xx 等），本机就会是一张空库 —— 那比「慢」更糟。
+         这里检查题库是否真的落到了本机，为空就补跑 seed，保证任何情况下
+         首访都有内容可看。isInitialized 只在真的 seed 过之后才为 true。 */
+      if (justSeeded) {
+        try {
+          const n = await DB.db.questions.count();
+          if (n === 0) {
+            console.warn("云端题库未落到本机，回退 seed 兜底");
+            await loadSeedJs();          /* 兜底路径同样要先把种子数据取进来 */
+            await DB.seed();
+            _pm("boot:seed-fallback");
+          }
+        } catch (_) {}
+      }
       Boot.set(60, "迁移与预置数据…");
       try { const n = await Services.repairHistoryIds(); if (n > 0) console.log("已修复", n, "条字符串 id 的浏览历史记录"); } catch (_) {}
+      _pm("boot:repair-done");
       await Services.reload();
+      _pm("boot:reload-done");
       App.dailyList = await buildDailyList();   /* 今日清单（含可选的温故知新混入），供首页与打卡判定共用 */
+      _pm("boot:daily-done");
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
@@ -5215,7 +5294,21 @@
         renderTopbar(); route();
       });
       if (!location.hash) location.hash = "/";
+      _pm("boot:route-start");
       route();
+      _pm("boot:route-called");
+      /* 首访是「只拉了元数据」的：等首屏渲染完之后，再在后台把答案补齐。
+         必须放在 route() 之后 —— 放到前面就会和首屏抢带宽/主线程，反倒更慢。
+         用 requestIdleCallback 让它在真正空闲时才开始；不支持则退 2s。
+         全程静默（不弹 toast），失败的片由详情页懒加载兜底。 */
+      if (Cloud._needHydrate) {
+        const _hydrate = () => { try { Cloud.hydrateAnswers(); } catch (_) {} };
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(_hydrate, { timeout: 4000 });
+        } else {
+          setTimeout(_hydrate, 2000);
+        }
+      }
       if (cloudPending) U.toast("检测到云端共享题库（" + cloudPending.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
       Stats.recordVisit();
       refreshVisitorStats();
