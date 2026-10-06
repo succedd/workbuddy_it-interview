@@ -310,34 +310,32 @@ function harden(res) {
   return out;
 }
 
-// ⓪.8 数据文件缓存策略（2026-10-06 性能修复）
-//   背景：实测 /data/published.json 的 cf-cache-status 恒为 DYNAMIC ——
-//   Pages 高级模式下 ASSETS 的默认缓存指令对「Worker 改写过的响应」不生效，
-//   于是每一个访客请求都真的回源计算，TTFB 稳定在 1.1～6 秒（本次实测 6 次采样
-//   全部落在 1.1s / 1.2s / 2.5s / 2.9s / 3.6s / 30s 超时），国内体感就是「打开很慢」。
+// ⓪.8 数据文件缓存策略（2026-10-06 性能修复，实测迭代三轮）
+//   背景：/data/published.json 的 cf-cache-status 恒为 DYNAMIC，
+//   每个访客请求都真的回源计算，TTFB 稳定在 1.1～6 秒，国内体感就是「打开很慢」。
 //
-//   ⚠️ 实测踩坑（第一版写法无效，务必读这段）：
-//   最初下发的是 `public, max-age=300, s-maxage=3600`（教科书式的共享缓存写法），
-//   线上响应头确实带上了它，但 **cf-cache-status 仍然是 DYNAMIC**，连续 4 次请求
-//   一次都没进边缘。对照组给了答案：
-//     · css/style.css  → Cache-Control: public, max-age=14400, must-revalidate
-//                        → cf-cache-status: MISS（下次即 HIT，边缘缓存正常）
-//     · q/* 分享页→ Cache-Control: public, max-age=0, must-revalidate
-//                        → cf-cache-status: DYNAMIC
-//   差别只在 **max-age 的数值**：Cloudflare Pages 只认max-age，
-//   `max-age=0` 等于「立即过期」→ DYNAMIC；`max-age=14400` → 进边缘。
-//   s-maxage 在 Pages 上不生效（那是给真正的共享缓存/CDN 用的，Pages 有自己的实现）。
-//   所以下面刻意与 Pages 自己的写法对齐：给数据文件一个真实存在的 max-age。
+//   ⚠️ 实测踩坑全过程（读这段能省下重复试错）：
+//   第 1 版：`public, max-age=300, s-maxage=3600`
+//     → 头带上了，cf-cache-status 仍 DYNAMIC。Pages 官方文档写明默认是
+//       `public, max-age=0, must-revalidate`，且 s-maxage 是给真正的共享缓存用的，
+//       Pages 有自己的实现、不认它。
+//   第 2 版：`public, max-age=3600, must-revalidate`
+//     → 头正确（线上可见），但 **cf-cache-status 仍 DYNAMIC**，连续 5 次无一进边缘。
+//     同时测到对照组 css 是 MISS → REVALIDATED → REVALIDATED，
+//     说明边缘缓存在工作，只是走 ETag 协商重验证（304 快返）而非直接 HIT；
+//     而 `must-revalidate` 正是「每次都去问一遍」的那一位。
+//   第 3 版（当前）：去掉 must-revalidate，只留 max-age=3600，
+//     让边缘在 TTL 内直接 HIT、完全不回源。
 //
 //   语义设计（与 sw.js 的 network-first、cloud.js 的 version.json 指纹严格配套）：
-//   · 带 ?v= 的资源（index.html 引用的一切壳资源）→ 不缓存。
-//     版本号变了就是新文件，旧URL 不该被缓存，这是发版能生效的前提。
-//   · 不带 ?v= 的 /data/*.json（published / version / manifest / tech-maps）→
-//     边缘缓存 1 小时（max-age=3600）。内容变更频率是「一天几次」量级，
-//     1 小时 TTL 的陈旧代价可以接受，换来的是绝大多数访客直接命中边缘。
-//     ⚠️ 编辑端发布后若要立刻生效：?v= 版本走的是另一条规则，不会被这份缓存挡住；
-//     另一条应急通道是 cloud.js 的 version.json 指纹——它同样 1 小时边缘 TTL，
-//     极端情况下刚发版的老访客最多滞后 1 小时看到新题，可接受。
+//   · 带 ?v= 的资源（index.html 引用的一切壳资源）→ no-cache。
+//     版本号变了就是新文件，旧 URL 不该被缓存，这是发版能生效的前提。
+//   · 不带 ?v= 的 /data/*.json（published / version / manifest / shards / tech-maps）
+//     → 边缘缓存 1 小时。内容变更频率是「一天几次」量级，1 小时 TTL 的陈旧代价
+//     可以接受，换来的是绝大多数访客在 TTL 内直接命中边缘。
+//     ⚠️ 代价要说清楚：刚发版后的老访客，最多可能滞后 1 小时才看到云端新题。
+//     但两类关键场景不受影响：① 编辑端改的题走 IndexedDB 本地库，不经云端拉取；
+//     ② 手动「从云端拉取到本机」带 ?v=<timestamp> 强制 no-cache，也不受影响。
 //   · 不设 stale-while-revalidate：避免「刚发版的老访客拿到旧题库」这种比慢更糟的体验。
 function applyDataCache(res, path, url) {
   const hasVersion = url.searchParams.has("v");
@@ -348,7 +346,7 @@ function applyDataCache(res, path, url) {
   }
   // 不带 ?v= 的 /data/*.json（含 data/shards/*.json）→
 //   对齐 Pages 自己的 max-age 写法，让它真正进边缘缓存
-  res.headers.set("cache-control", "public, max-age=3600, must-revalidate");
+  res.headers.set("cache-control", "public, max-age=3600");
   return res;
 }
 
