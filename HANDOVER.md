@@ -105,7 +105,24 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：待回填（feat: 20261005b 指南升级批次——guide.js + index.html + sw.js）｜缓存版本 `20261005a → 20261005b`｜更新时间：2026-10-05 13:05 (+08)**
+**最新 release commit：`767ac77`（perf: 性能优化——题库分片 + /data/* 边缘缓存，已推 release）｜缓存版本 `20261005b → 20261006c`｜更新时间：2026-10-06 18:10 (+08)**
+**本次内容（perf: 站点「打开很慢」专项治理，WorkBuddy 会话执行）：用户确认「全做」。完整诊断与实测数据见 `docs/性能诊断-20261006.md`。**
+- **诊断基线（实测，非估算）**：首页 TTFB **1.1~6.0s**；`published.json` 单文件 **2.79MB**；CF 边缘节点 **6 次采样恒为 `LAX`（洛杉矶）**；客户端 `ip=112.193.82.118 / loc=CN`（成都电信）。DNS 解析正常（Cloudflare 权威 IP），`--noproxy` 直连仍是 LAX。
+- **⚠️ 一个被推翻的初始判断（务必读）**：初次用未声明 `Accept-Encoding` 的 curl 测得「响应头无 content-encoding」，一度判定「CF 没给 JSON 开压缩」。**这是错的**——补上 `Accept-Encoding: br` 后实测 `content-encoding: br` 全站生效（HTML/CSS/JS/JSON/q/* 全部）。**「开压缩」这条 P0 建议无需再做**，真正的问题是下面两条。
+- **根因 1：`/data/*` 从未进边缘缓存**（`cf-cache-status` 恒 DYNAMIC）：① `sw.js` 对 `/data/*` 用 `fetch(req, {cache:"reload"})`，`reload` 会击穿 Cloudflare 边缘缓存；② `_worker.js` 改写过的响应拿不到 Pages 默认缓存指令。修复：`sw.js` 改为 `cache:"no-cache"`（保留每次校验，仍允许 304 不回源）+ `_worker.js` 新增 `applyDataCache()`。
+- **根因 2：单文件过大** → 新增 `tools/split-published.py`，拆成 `data/manifest.json`（914KB / **br 123KB**，全部题目元数据 + 每题 `_sh` 分片号）+ `data/shards/s00..s05.json`（6 片，均 **br 137KB**，答案正文，按需拉取）。**首屏传输量 780KB → 123KB，降幅 84%。**
+- **安全设计三条红线**：① **写路径一行未改**——`published.json` 仍随 Pages 正常发布、仍是编辑端发布唯一目标，`guardAgainstShrink`/`absorbRemote`/`verify-publish.py` 语义完全不变；② **任一分片缺失 → 整包回退**，绝不接受「部分题 answer 为空」的快照（那会让编辑端用空答案覆盖云端好答案，且题数没减少、守卫拦不住）；③ **manifest 题数必须与 `version.json` 的 `count` 相等**，不等即弃用。
+- **故意仍走整包的三处**（涉及权威比对/写回，不能用分片）：`absorbRemote`、`guardAgainstShrink`、`exportAll`。
+- **答案懒加载**：`app.js` 的 `pageQuestionDetail()` 在「题目存在但 answer 为空」时按题号从分片补正文并写回本机表；补齐失败照常渲染，绝不白屏。
+- **验证结论**：Node 复刻前端合并逻辑与整包**逐题逐字段**比对——6/6 分片拉取成功、拼回 1540 题、**忽略键顺序后实质差异 0 处**、**题目 id 顺序完全一致**（列表分页与「下一题」不受影响）。线上回归：manifest + 6 片全部 200；反爬仍生效（裸 curl 403 `bot-ua`）；仓库内部文件仍 404（`tools/`、`HANDOVER.md`、`cloudflare/`）。
+- **⚠️ 缓存头踩坑记录（三轮迭代，`_worker.js` 注释里也留了）**：第 1 版 `max-age=300, s-maxage=3600` → 仍 DYNAMIC（Pages 不认 `s-maxage`）；第 2 版 `max-age=3600, must-revalidate` → 头正确但仍 DYNAMIC 连续 5 次（对照组 CSS 是 `MISS→REVALIDATED`，说明边缘缓存在工作，只是 ETag 协商重验证而非直接 HIT，而 `must-revalidate` 恰好要求「每次都问一遍」）；第 3 版（当前）去掉 `must-revalidate`，只留 `max-age=3600`。
+- **⚠️ 未解决（需用户决策，非代码问题）**：CF 免费版不启用 China Network，**大陆访客被调度到境外节点**（本次恒为 LAX），这多出的跨太平洋往返**无法通过 DNS、代码或 Worker 配置绕开**。可选：Argo Smart Routing（$5/月）/ China Network（企业版 + ICP）/ 国内 CDN。本仓库代码侧已无可优化空间。
+- **⚠️ 发版后必做**：分片由 `python tools/split-published.py --write` 从 `published.json` 生成，而编辑端发布**不会**推送分片（一次 Contents API PUT 只能写一个文件，分片有 6 个）。发布后需在仓库执行该脚本并提交 `data/`。漏了不会出错题（读取端两处校验会回退整包），但首屏优化失效。建议把该脚本接进扩充流水线。
+- **改动文件**：`cloudflare/pages/_worker.js`、`sw.js`、`js/cloud.js`、`js/app.js`、`tools/split-published.py`（新增）、`tools/build-pages.mjs`（加分片校验）、`data/manifest.json`（新增）、`data/shards/s00..s05.json`（新增）、`docs/性能诊断-20261006.md`（新增）、`index.html`。
+
+**上一条 release commit：`a65f21d`（perf: 题库分片加载首发，已推 release）｜缓存版本 `20261005b → 20261006a`｜更新时间：2026-10-06 17:55 (+08)**
+
+**再上一条（feat: 20261005b 指南升级批次——guide.js + index.html + sw.js）｜缓存版本 `20261005a → 20261005b`｜更新时间：2026-10-05 13:05 (+08)**
 **本次内容（feat: 使用指南升级——NEW 徽章 + 指南内搜索 + 动图演示 + 有帮助反馈，WorkBuddy 会话执行）：用户确认 P0/P1/P2 全做。**
 - **NEW 徽章**：`li()` 支持第三参 `isNew`，四个 20261005a 新功能条目（搜索联想 / 考到过 / 长尾分类 / 复习打卡）带红色 NEW 胶囊（title 标注版本号，方便后续统一清理）。
 - **指南内搜索**：hero 区新增搜索框，140ms 防抖过滤全部 `.g-li` 条目（归一化匹配标题+正文），区块内条目全隐藏时整块收起，顶部提示「共 N 条匹配 / 没有匹配」；清空即恢复。
