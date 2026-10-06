@@ -316,22 +316,29 @@ function harden(res) {
 //   于是每一个访客请求都真的回源计算，TTFB 稳定在 1.1～6 秒（本次实测 6 次采样
 //   全部落在 1.1s / 1.2s / 2.5s / 2.9s / 3.6s / 30s 超时），国内体感就是「打开很慢」。
 //
-//   为什么这里必须显式下发，而不是靠 zone 面板的 Cache Rules：
-//   缓存键要按「是否带版本号」区分，而面板规则写不了这么细的匹配；
-//   更重要的是 cache: "reload"（sw.js 对 /data/* 强制回源）会连带绕过浏览器缓存，
-//   边缘缓存才是唯一能兜住「每次都回源」的那一层。
+//   ⚠️ 实测踩坑（第一版写法无效，务必读这段）：
+//   最初下发的是 `public, max-age=300, s-maxage=3600`（教科书式的共享缓存写法），
+//   线上响应头确实带上了它，但 **cf-cache-status 仍然是 DYNAMIC**，连续 4 次请求
+//   一次都没进边缘。对照组给了答案：
+//     · css/style.css  → Cache-Control: public, max-age=14400, must-revalidate
+//                        → cf-cache-status: MISS（下次即 HIT，边缘缓存正常）
+//     · q/* 分享页→ Cache-Control: public, max-age=0, must-revalidate
+//                        → cf-cache-status: DYNAMIC
+//   差别只在 **max-age 的数值**：Cloudflare Pages 只认max-age，
+//   `max-age=0` 等于「立即过期」→ DYNAMIC；`max-age=14400` → 进边缘。
+//   s-maxage 在 Pages 上不生效（那是给真正的共享缓存/CDN 用的，Pages 有自己的实现）。
+//   所以下面刻意与 Pages 自己的写法对齐：给数据文件一个真实存在的 max-age。
 //
 //   语义设计（与 sw.js 的 network-first、cloud.js 的 version.json 指纹严格配套）：
-//   · 带 ?v= 的资源（index.html 引用的一切壳资源）→ 不可缓存。
-//     版本号变了就是新文件，旧 URL 不该被缓存，这是发版能生效的前提。
-//   · 不带 ?v= 的 /data/*.json（published / version / tech-maps）→
-//     边缘缓存 1 小时、浏览器缓存 5 分钟。内容变更频率是「一天几次」量级，
-//     1 小时边缘 TTL 的陈旧代价可以接受，换来的是绝大多数访客直接命中边缘。
-//     ⚠️ 编辑端发布后若要立刻生效：?v= 版本走的是另一条规则，不会被这份缓存挡住。
-//   · ETag 由 Pages/ASSETS 提供，这里不覆盖；也不设 stale-while-revalidate，
-//     避免「刚发版的老访客拿到旧题库」这种比慢更糟的体验。
-const DATA_FILE_RE = /^\/data\/[A-Za-z0-9._-]+\.json$/;
-
+//   · 带 ?v= 的资源（index.html 引用的一切壳资源）→ 不缓存。
+//     版本号变了就是新文件，旧URL 不该被缓存，这是发版能生效的前提。
+//   · 不带 ?v= 的 /data/*.json（published / version / manifest / tech-maps）→
+//     边缘缓存 1 小时（max-age=3600）。内容变更频率是「一天几次」量级，
+//     1 小时 TTL 的陈旧代价可以接受，换来的是绝大多数访客直接命中边缘。
+//     ⚠️ 编辑端发布后若要立刻生效：?v= 版本走的是另一条规则，不会被这份缓存挡住；
+//     另一条应急通道是 cloud.js 的 version.json 指纹——它同样 1 小时边缘 TTL，
+//     极端情况下刚发版的老访客最多滞后 1 小时看到新题，可接受。
+//   · 不设 stale-while-revalidate：避免「刚发版的老访客拿到旧题库」这种比慢更糟的体验。
 function applyDataCache(res, path, url) {
   const hasVersion = url.searchParams.has("v");
   const versioned = hasVersion || path === "/data/seed.js";
@@ -339,8 +346,9 @@ function applyDataCache(res, path, url) {
     res.headers.set("cache-control", "no-cache");
     return res;
   }
-  // 不带版本号的数据文件：边缘 1 小时 + 浏览器 5 分钟
-  res.headers.set("cache-control", "public, max-age=300, s-maxage=3600");
+  // 不带 ?v= 的 /data/*.json（含 data/shards/*.json）→
+//   对齐 Pages 自己的 max-age 写法，让它真正进边缘缓存
+  res.headers.set("cache-control", "public, max-age=3600, must-revalidate");
   return res;
 }
 
