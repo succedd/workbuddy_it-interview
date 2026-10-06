@@ -206,7 +206,24 @@ def build(raw: str, data: dict, write: bool):
                      encoding="utf-8", newline="") as f:
             f.write(text)
 
-    print("[OK] 已写入 data/manifest.json 与 data/shards/（%d 片）" % len(s_texts))
+    # ---- 同步生成 version.json（2026-10-06 追加）----
+    # 为什么必须由这个脚本写：version.json 是 published.json 的指纹，两者必须同源。
+    # 之前它们由不同流程各写各的，于是线上出现「version.json 说 1519 题、
+    # manifest 是 1540 题」的漂移，导致读取端的一致性校验反复失败。
+    # 这里与 split 用同一份数据、同一时刻生成，从根上避免漂移。
+    # 字段与顺序必须和 cloud.js 的 C.metaOf 完全一致，否则两端指纹对不上。
+    version_obj = OrderedDict([
+        ("version", data.get("version", 1)),
+        ("publishedAt", data.get("publishedAt", 0)),
+        ("count", len(questions)),
+        ("rmCount", len(data.get("removedQuestions") or {})),
+    ])
+    version_path = os.path.join(ROOT, "data", "version.json")
+    with io.open(version_path, "w", encoding="utf-8", newline="") as f:
+        f.write(json.dumps(version_obj, ensure_ascii=False, separators=(",", ":")))
+
+    print("[OK] 已写入 data/manifest.json、data/shards/（%d 片）与 data/version.json" % len(s_texts))
+    print("     version.json = %s" % json.dumps(version_obj, ensure_ascii=False, separators=(",", ":")))
 
 
 def main():
