@@ -135,7 +135,29 @@ for (const d of ROOT_DIRS) {
 copyFile(WORKER_SRC, WORKER_DEST);
 files += 1;
 
-// ---------- 5) 自检：内部文件绝不能进 dist ----------
+// ---------- 5) 校验分片产物（2026-10-06性能优化） ----------
+// data/manifest.json 与 data/shards/ 是分片加载的运行时依赖：
+// 缺了不会崩（cloud.js 自动回退整包 published.json），但首屏优化直接失效。
+// 所以这里显式提示，避免「以为上线了其实没生效」。
+const manifestPath = path.join(DIST, "data", "manifest.json");
+const shardDir = path.join(DIST, "data", "shards");
+if (!fs.existsSync(manifestPath) || !fs.existsSync(shardDir)) {
+  console.warn("[WARN] 分片产物缺失：data/manifest.json 或 data/shards/ 不在 dist/");
+  console.warn("[WARN] 前端会自动回退整包 published.json（功能正常，但首屏慢）。");
+  console.warn("[WARN] 修复：python tools/split-published.py --write");
+} else {
+  const shards = fs.readdirSync(shardDir).filter((n) => n.endsWith(".json"));
+  const mSize = fs.statSync(manifestPath).size;
+  console.log(
+    "[OK] 分片产物就位：manifest.json " +
+      (mSize / 1024).toFixed(0) +
+      " KB + " +
+      shards.length +
+      " 个分片（首屏不再整包下载）"
+  );
+}
+
+// ---------- 6) 自检：内部文件绝不能进 dist ----------
 const FORBIDDEN = ["tools", "cloudflare", "netlify", "HANDOVER.md", "README.md", "netlify.toml", ".git"];
 const leaked = FORBIDDEN.filter((n) => fs.existsSync(path.join(DIST, n)));
 if (leaked.length) fail("dist/ 里出现内部文件：" + leaked.join(", "));

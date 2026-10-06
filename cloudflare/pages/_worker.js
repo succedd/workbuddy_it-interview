@@ -310,6 +310,40 @@ function harden(res) {
   return out;
 }
 
+// ⓪.8 数据文件缓存策略（2026-10-06 性能修复）
+//   背景：实测 /data/published.json 的 cf-cache-status 恒为 DYNAMIC ——
+//   Pages 高级模式下 ASSETS 的默认缓存指令对「Worker 改写过的响应」不生效，
+//   于是每一个访客请求都真的回源计算，TTFB 稳定在 1.1～6 秒（本次实测 6 次采样
+//   全部落在 1.1s / 1.2s / 2.5s / 2.9s / 3.6s / 30s 超时），国内体感就是「打开很慢」。
+//
+//   为什么这里必须显式下发，而不是靠 zone 面板的 Cache Rules：
+//   缓存键要按「是否带版本号」区分，而面板规则写不了这么细的匹配；
+//   更重要的是 cache: "reload"（sw.js 对 /data/* 强制回源）会连带绕过浏览器缓存，
+//   边缘缓存才是唯一能兜住「每次都回源」的那一层。
+//
+//   语义设计（与 sw.js 的 network-first、cloud.js 的 version.json 指纹严格配套）：
+//   · 带 ?v= 的资源（index.html 引用的一切壳资源）→ 不可缓存。
+//     版本号变了就是新文件，旧 URL 不该被缓存，这是发版能生效的前提。
+//   · 不带 ?v= 的 /data/*.json（published / version / tech-maps）→
+//     边缘缓存 1 小时、浏览器缓存 5 分钟。内容变更频率是「一天几次」量级，
+//     1 小时边缘 TTL 的陈旧代价可以接受，换来的是绝大多数访客直接命中边缘。
+//     ⚠️ 编辑端发布后若要立刻生效：?v= 版本走的是另一条规则，不会被这份缓存挡住。
+//   · ETag 由 Pages/ASSETS 提供，这里不覆盖；也不设 stale-while-revalidate，
+//     避免「刚发版的老访客拿到旧题库」这种比慢更糟的体验。
+const DATA_FILE_RE = /^\/data\/[A-Za-z0-9._-]+\.json$/;
+
+function applyDataCache(res, path, url) {
+  const hasVersion = url.searchParams.has("v");
+  const versioned = hasVersion || path === "/data/seed.js";
+  if (versioned) {
+    res.headers.set("cache-control", "no-cache");
+    return res;
+  }
+  // 不带版本号的数据文件：边缘 1 小时 + 浏览器 5 分钟
+  res.headers.set("cache-control", "public, max-age=300, s-maxage=3600");
+  return res;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -383,7 +417,7 @@ export default {
     if (isData) {
       const out = harden(res);
       out.headers.set("x-robots-tag", "noindex, nofollow");
-      return out;
+      return applyDataCache(out, path, url);
     }
     return harden(res);
   }

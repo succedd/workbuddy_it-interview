@@ -177,10 +177,149 @@
     return null;
   };
 
+  /* ---------- 分片加载（2026-10-06 性能优化） ----------
+   * 背景：published.json 单文件约 2.9MB（brotl 后约 780KB），访客首屏必须整包拉完。
+   * 实测国内访问 CF 全部命中 LAX 机房，TTFB 1.1~6s，弱网下常常拉不完 → 白屏。
+   *
+   * 方案（只动读路径，写路径一行不改）：
+   *   data/manifest.json  —— 全部题目的**元数据**（无answer/body）+ 每题的 _sh 分片号
+   *   data/shards/sNN.json —— 答案正文，按 categoryId 分桶、6 片、每片约 137KB br
+   * 首屏只拉 manifest（约 123KB br，降 84%），答案在**打开题目时**按需补齐。
+   *
+   * 三条必须守住的安全线：
+   *  ① manifest 缺失 / 版本不符 / 拉取失败 → 静默回退 C.fetchRemote() 整包，功能不降级；
+   *  ② published.json **继续正常发布、继续是权威**，编辑端发布、发布守卫、
+   *     absorbRemote、verify-publish.py 的语义完全不变；
+   *  ③ 分片只影响「本机题目表怎么被填满」，不改变 publishedAt 指纹语义，
+   *     所以 version.json 的「指纹没变就跳过」逻辑依旧成立。 */
+  const MANIFEST_PATH = "data/manifest.json";
+  const SHARD_PATH = "data/shards/";
+  const SHARD_TIMEOUT = 12000;
+  C._shardCache = {};        /* 分片名 -> questions数组（内存，供同片多题复用） */
+  C._shardFailed = {};       /* 分片名 -> true，本次会话内不再重试（避免反复超时拖慢） */
+
+  /* 取一片答案正文。失败返回 null，调用方负责降级。 */
+  C.fetchShard = async function (name) {
+    if (!name) return null;
+    if (C._shardCache[name]) return C._shardCache[name];
+    if (C._shardFailed[name]) return null;
+    try {
+      const r = await fetchT(SHARD_PATH + name + ".json", { cache: "no-cache" }, SHARD_TIMEOUT);
+      if (!r.ok) { C._shardFailed[name] = true; return null; }
+      const j = await r.json();
+      if (!j || !Array.isArray(j.questions)) { C._shardFailed[name] = true; return null; }
+      C._shardCache[name] = j.questions;
+      return j.questions;
+    } catch (e) {
+      C._shardFailed[name] = true;
+      return null;
+    }
+  };
+
+  /* 按题号取出该题：先看分片缓存，miss 则拉整片。取不到返回 null。 */
+  C.ensureQuestionBody = async function (qid, optMeta) {
+    const id = Number(qid);
+    if (!id) return null;
+    const meta = optMeta || (C._manifestById && C._manifestById[id]);
+    const shard = meta && meta._sh;
+    if (!shard) return null;
+    const arr = await C.fetchShard(shard);
+    if (!arr) return null;
+    for (let i = 0; i < arr.length; i++) {
+      if (Number(arr[i].id) === id) return arr[i];
+    }
+    return null;
+  };
+
+  /* 用 manifest + 分片组装出一个「与 fetchRemote 同构」的快照对象。
+     这样 applyRemote / absorbRemote 等下游函数一行都不用改。 */
+  C.fetchManifestSnapshot = async function (noCache, opt) {
+    const o = opt || {};
+    const mb = o.manifestBytes || 20000;   /* manifest 约 123KB br，给足 20s */
+    const url = MANIFEST_PATH + (noCache ? "?v=" + Date.now() : "");
+    let m;
+    try {
+      const r = await fetchT(url, noCache ? { cache: "no-store" } : undefined, mb);
+      if (!r.ok) return null;
+      m = await r.json();
+    } catch (e) { return null; }
+    if (!m || m.schema !== "manifest-v1" || !Array.isArray(m.questions)) return null;
+    /* 题数必须与指纹一致：manifest 与 published.json 是同一份数据的两种切法，
+       若两者不同步（例如只发了其中一个），拼出来的快照就是残缺的。
+       这道校验比 publishedAt 更严——同一次发布里两者一定同时变。 */
+    try {
+      const meta0 = await C.fetchMeta();
+      if (meta0 && Number.isInteger(meta0.count) && meta0.count !== m.questions.length) return null;
+    } catch (_) { /* 指纹拿不到不阻断，下面还有分片数校验兜底 */ }
+    if (!Array.isArray(m.shards) || !m.shards.length) return null;
+
+    /* 并发拉全部答案分片。6 片各约 137KB br，并发比串行快得多。 */
+    const names = Array.isArray(m.shards) ? m.shards : [];
+    const got = await Promise.all(names.map(n => C.fetchShard(n).catch(() => null)));
+
+    /* ⚠️ 严格的一票否决：只要有**任何一片**没拉下来，整个 manifest 快照直接作废，
+       回退整包 published.json。
+       为什么不能「部分接受」——applyRemote 是整包替换本机题库，编辑端还会把它
+       推回云端。若带着「部分题目 answer 为空」的快照做替换，等于用空答案覆盖了
+       云端的好答案，而且题数没减少，guardAgainstShrink 拦不住。
+       宁可多下一次 780KB，也不能出现这种静默降质。 */
+    const missShards = names.filter((n, i) => !got[i]);
+    if (names.length && missShards.length) return null;
+
+    /* 以 manifest 元数据为骨架，叠加分片里的 answer/body 字段。
+       合并策略：manifest 打底（保证 id/title/categoryId 等一定在），
+       分片里同id 的对象用它的 answer/body/firstPrinciples 覆盖。 */
+    const byId = {};
+    names.forEach((n, i) => {
+      const arr = got[i];
+      if (!arr) return;
+      for (const q of arr) byId[Number(q.id)] = q;
+    });
+    const questions = m.questions.map(meta => {
+      const body = byId[Number(meta.id)];
+      if (!body) return null;               /* 理论到不了这里（一票否决已拦），留作兜底 */
+      const merged = Object.assign({}, meta, body);
+      delete merged._sh;
+      /* 分片里的 remark 是本机批注，不该从云端来（历史行为就是不带 remark 的） */
+      if (merged.remark == null) delete merged.remark;
+      return merged;
+    }).filter(Boolean);
+
+    C._manifestById = {};
+    for (const q of m.questions) C._manifestById[Number(q.id)] = q;
+
+    return {
+      version: m.version,
+      publishedAt: m.publishedAt,
+      categories: m.categories || [],
+      positions: m.positions || [],
+      positionSkills: m.positionSkills || [],
+      questions: questions,
+      removedQuestions: m.removedQuestions || {},
+      _fromManifest: true,
+      _missShards: missShards
+    };
+  };
+
+  /* fetchRemote 的分片版：优先走 manifest，失败自动回退整包。
+     这是所有读路径的唯一入口。 */
+  C.fetchSnapshot = async function (noCache, opts) {
+    if (!(opts && opts.forceFull)) {
+      const snap = await C.fetchManifestSnapshot(noCache, opts);
+      if (snap) {
+        C._lastFetch = { ok: true, reason: "", attempts: 1, at: Date.now(), count: snap.questions.length, viaManifest: true };
+        return snap;
+      }
+      /* manifest 不可用 → 落到整包，绝不因此让访客停在种子库 */
+      C._manifestMiss = (C._manifestMiss || 0) + 1;
+    }
+    return C.fetchRemote(noCache, opts);
+  };
+
   /* ---------- 版本指纹（20261005a 数据瘦身） ----------
    * data/version.json 是 ~120B 的轻量指纹 {version, publishedAt, count, rmCount}，
    * 与 published.json 同步发布（编辑端 _publishInner 与扩充流水线都会写）。
-   * 启动同步 / 增量吸收 / 发布守卫先取它：指纹没变 → 跳过 2.8MB 全量下载；
+   * 启动同步 / 增量吸收 / 发布守卫先取它：指纹没变 → 跳过全量下载；
    * 指纹缺失或解析失败 → 回退全量拉取（完全兼容旧快照，不会因缺指纹而失灵）。
    * 判定用「严格相等」而非 <=：万一某次 version.json 发布失败停留在旧值，
    * 本地较新时会走全量拉取自愈，绝不会因 stale 指纹漏更新。 */
@@ -294,7 +433,7 @@
         }
       }
     } catch (e) { /* 指纹判定失败不阻断，走原全量流程 */ }
-    const data = await C.fetchRemote();
+    const data = await C.fetchSnapshot();
     if (!data) {
       const st = C._lastFetch || {};
       /* 区分「云端没有快照」与「网络失败」：后者意味着访客可能只拿到本机种子库，
@@ -321,7 +460,7 @@
 
   /* 手动立即同步（设置页按钮）：强制采用云端版本，覆盖本地题库 */
   C.syncNow = async function () {
-    const data = await C.fetchRemote(true);
+    const data = await C.fetchSnapshot(true);
     if (!data) throw new Error("云端题库不存在或无法访问（" + ((C._lastFetch || {}).reason || "未知原因") + "）");
     await C.applyRemote(data);
     return data;
@@ -346,7 +485,7 @@
 
   C.recoverIncompleteSync = async function () {
     if (!(await C.looksUnseeded())) return { skipped: true, reason: "notSeedOnly" };
-    const data = await C.fetchRemote(true);
+    const data = await C.fetchSnapshot(true);
     if (!data) return { failed: true, detail: (C._lastFetch || {}).reason || "" };
     await C.applyRemote(data);
     return { applied: true, count: (data.questions || []).length };
@@ -646,6 +785,15 @@
       try { await C.putFile(C.META_PATH, C.metaOf(data), msg, br); }
       catch (e) { console.warn("version.json 发布失败（下次发布会重试）:", e); }
     }
+    /* ⚠️ 2026-10-06新增：data/manifest.json 与 data/shards/*.json 是首屏优化的运行时依赖，
+       它们由仓库侧 `python tools/split-published.py --write` 从 published.json 生成，
+       **不会**被这里推送（一次 Contents API PUT 只能写一个文件，分片有6 个）。
+       所以本机题库一旦发布，仓库里的分片就落后了。
+       好在读取端有两道兜底：manifest 题数与 version.json 的 count 不一致即弃用 manifest，
+       任一分片缺失也直接回退整包 —— 表现为「功能正常但首屏慢」，不会出错题。
+       要恢复优化效果，在仓库执行：
+         python tools/split-published.py --write && git add -A data/ && git commit -m "同步题库分片"
+       详见 docs/性能诊断-20261006.md。 */
     await DB.setSetting("cloudSyncedAt", data.publishedAt);
     /* 不再在此显式调 Backup.publishBackup：cloudSyncedAt 落库会经 settings 表
        钩子让备份引擎 12 秒后自动接手，显式调用等于同一次改动备份两遍 */

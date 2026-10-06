@@ -2080,7 +2080,25 @@
 
   /* ============================ 题目详情页 ============================ */
   async function pageQuestionDetail(id) {
-    const q = await Services.getQuestion(parseInt(id));
+    let q = await Services.getQuestion(parseInt(id));
+    /* 答案懒加载（2026-10-06 性能优化）：
+       分片加载模式下，极端情况下（本机库被裁剪、或分片拉取后未合并进本机表）
+       可能出现「题目在、答案为空」。此时按题号从对应分片补一次正文再渲染。
+       拿不到就照常渲染（显示为空），绝不因此报错或白屏。 */
+    if (q && !(q.answer || "").trim()) {
+      try {
+        const full = await Cloud.ensureQuestionBody(q.id);
+        if (full && (full.answer || "").trim()) {
+          /* 顺手写回本机表：同一片的其他题下次点开就不用再查分片了 */
+          try { await DB.db.questions.update(q.id, {
+            answer: full.answer, body: full.body || "", remark: full.remark || "",
+            firstPrinciples: full.firstPrinciples
+          }); } catch (_) {}
+          await Services.reload();
+          q = await Services.getQuestion(parseInt(id));
+        }
+      } catch (_) { /* 补齐失败按原样渲染 */ }
+    }
     if (!q) { setMain(`<div class="empty">未找到该题目</div>`); return; }
     document.title = q.title + " · IT面试题库";   // 详情页 title 用题目标题
     await Services.incViews(q.id); await Services.reload();

@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261005b";
+const VERSION = "20261006a";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -115,17 +115,29 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  /* 题库数据文件：必须 network-first（20261005a）。
-     此前 published.json 走同源默认的 cache-first——SW 运行时缓存一旦写入，
-     访客每次打开都会命中旧快照，「自动同步最新题库」实际失效，只有发版
-     （SW VERSION 变更清缓存）才能看到新数据。version.json（~120B 版本指纹）
-     同样必须每次回源，否则瘦身的「指纹没变就跳过全量下载」会一直误判。 */
-  if (url.pathname === "/data/version.json" || url.pathname === "/data/published.json") {
+  /* 题库数据文件：network-first（2026-10-06 改用「边缘友好」写法）。
+   ⚠️ 这里曾长期写着 fetch(req, { cache: "reload" }) —— reload 会同时击穿
+   **浏览器缓存与 Cloudflare 边缘缓存**，导致 /data/published.json 的
+   cf-cache-status 恒为 DYNAMIC：每一个访客请求都真的回源计算，
+   实测 TTFB 1.1～6 秒（国内还全部命中 LAX 洛杉矶机房），首屏极慢。
+
+   改成"普通的no-cache 语义"后：
+     · no-cache = 每次都校验（发版能生效），但**允许边缘用缓存响应**（校验走 304，不回源）；
+     · 指纹没变 → 上层cloud.js 直接跳过全量下载，本来就不该发这个请求；
+     · 指纹变了/缺失 → 发一次 no-cache 请求，边缘命中则 304、miss 才回源。
+   配合 _worker.js 给 /data/*.json（不带 ?v= 的）下发的 s-maxage，热门访客几乎不再回源。 */
+  const isDataJson = url.pathname === "/data/version.json" ||
+    url.pathname === "/data/published.json" ||
+    url.pathname === "/data/manifest.json" ||
+    url.pathname.startsWith("/data/shards/");
+  if (isDataJson) {
     event.respondWith((async () => {
       try {
-        const net = await fetch(req, { cache: "reload" });
+        /* cache: "no-cache" 而非 "reload"：前者仍会走协商缓存（304），
+           后者才是硬性绕过所有缓存、强制回源。 */
+        const net = await fetch(req, { cache: "no-cache" });
+        /* 只为离线兜底缓存最近一份好快照；version.json 永不缓存 */
         if (net && net.ok && url.pathname === "/data/published.json") {
-          /* 只为离线兜底缓存最近一份好快照；version.json 永不缓存 */
           const cache = await caches.open(CACHE);
           cache.put(req, net.clone()).catch(() => {});
         }
@@ -133,6 +145,28 @@ self.addEventListener("fetch", (event) => {
       } catch (_) {
         /* 离线：version.json 失败让上层走全量兜底；published.json 回退最近缓存 */
         return (await caches.match(req)) || Response.error();
+      }
+    })());
+    return;
+  }
+
+  /* 分片答案：cache-first + 运行时补缓存（与下面的同源静态资源同策略）。
+     刻意不进 APP_SHELL 预缓存：6 片合计约 800KB br，塞进「安装即预缓存」会让
+     首次安装变慢、且用户未必会点开题目。走运行时缓存即可——
+     第一次打开题目时才拉，之后长期复用。 */
+  if (url.pathname.startsWith("/data/shards/")) {
+    event.respondWith((async () => {
+      const cached = await caches.match(req);
+      if (cached) return cached;
+      try {
+        const net = await fetch(req);
+        if (net && net.ok) {
+          const cache = await caches.open(CACHE);
+          cache.put(req, net.clone()).catch(() => {});
+        }
+        return net;
+      } catch (_) {
+        return Response.error();
       }
     })());
     return;
