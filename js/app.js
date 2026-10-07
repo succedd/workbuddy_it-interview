@@ -3,6 +3,14 @@
  * ========================================================================= */
 (function () {
   "use strict";
+  /* 重复执行防护（2026-10-07）：
+     脚本改由 index.html 的内联加载器动态加载，并且带「超时 → 重试」——
+     因为实测 Cloudflare 到中国大陆的链路上约有一半请求会卡死到超时。
+     重试的代价是：卡住的那次请求可能在超时后才姗姗返回并执行，
+     若不做防护就会把整个 app 初始化跑两遍（重复绑事件、重复发请求）。
+     这里用一个全局标记挡住第二次执行。 */
+  if (window.__ITI_APP_BOOTED__) return;
+  window.__ITI_APP_BOOTED__ = true;
   const App = {};
   const $ = U.qs, $$ = U.qsa;
   let main, sidebar, topbar;
