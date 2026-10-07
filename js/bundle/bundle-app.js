@@ -5850,7 +5850,12 @@
       const ov = el("boot-loader");
       const skip = el("boot-skip"); if (skip) skip.style.opacity = "1";
       const elapsed = Date.now() - started;
-      const MIN = 3200; // 最短展示时长，确保动效能看完
+      /* 2026-10-07（用户拍板）：开场动画从强制 3.2s 缩到 0.8s。
+         原值 MIN=3200 的理由是「确保动效能看完」，但它是「加载慢」体感里
+         固定的一段——网络再快它也在。0.8s 够看清开场一瞬（雨滴+职业名），
+         数据就绪后立即进入正题；数据未就绪时动画仍会继续（finish 由 init
+         完成时调用，wait 只补足到 MIN，不会提前露馅）。 */
+      const MIN = 800;
       const wait = Math.max(0, MIN - elapsed);
       target = Math.min(target, 92); // 加载期间进度停在 ~92%，结束瞬间补满，避免早早钉在 100%
       let revealed = false;
