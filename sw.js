@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261007b";
+const VERSION = "20261007c";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -19,23 +19,19 @@ const APP_SHELL = [
   "/css/variables.css?v=" + VERSION, "/css/style.css?v=" + VERSION,
   "/css/animations.css?v=" + VERSION, "/css/responsive.css?v=" + VERSION,
   "/css/loader.css?v=" + VERSION, "/css/festival.css?v=" + VERSION, "/data/tech-maps.json",
-  /* 第三方库已本地化（vendor/），必须随壳缓存，否则离线时 Dexie/Marked 等加载失败整站不可用；
-     echarts / xlsx 大库按需加载，由 fetch 运行时缓存补收，不进壳 */
-  "/vendor/dexie.min.js", "/vendor/purify.min.js", "/vendor/marked.min.js",
-  "/vendor/highlight.min.js", "/vendor/fuse.min.js",
+  /* 27 个源文件已合并为 4 个 bundle（tools/bundle-js.py 生成），
+     预缓存清单同步换成这 4 个 —— 否则会去缓存一批 index.html 根本不再引用的文件，
+     既浪费安装期带宽，又让离线清单名不副实。
+     bundle-extra 虽然由加载器延迟加载，但也要缓存：离线时点进教程/指南同样要用。 */
+  "/js/bundle/bundle-vendor.js?v=" + VERSION,
+  "/js/bundle/bundle-core.js?v=" + VERSION,
+  "/js/bundle/bundle-app.js?v=" + VERSION,
+  "/js/bundle/bundle-extra.js?v=" + VERSION,
+  /* vendor 的两个代码高亮主题 CSS 仍单独使用（不在 bundle 里） */
   "/vendor/github.min.css", "/vendor/github-dark.min.css",
-  "/js/guide.js?v=" + VERSION, "/js/utils.js?v=" + VERSION, "/js/turnstile.js?v=" + VERSION, "/js/db.js?v=" + VERSION, "/js/auth.js?v=" + VERSION,
-  /* daily-quote.js 一直挂在 index.html 上，却漏在预缓存清单里 —— 首次离线启动会缺这个脚本 */
-  "/js/daily-quote.js?v=" + VERSION,
-  "/js/search.js?v=" + VERSION, "/js/aiprompts.js?v=" + VERSION, "/js/api.js?v=" + VERSION,
-  "/js/services.js?v=" + VERSION, "/js/roadmap.js?v=" + VERSION,
-  /* js/docs-data.js 与 docs/*.js 都交给运行时缓存（见下方 cache-first 分支）：
-   docs-data.js 依赖那 6 个方向文件先挂上 window，两者必须一起取，
-   任何一方缺席window.DOCS.dirs 就是空的，预缓存其中一个没有意义。 */
-  "/js/docs-loader.js?v=" + VERSION, "/js/docs.js?v=" + VERSION,
-  "/js/cloud.js?v=" + VERSION, "/js/backup.js?v=" + VERSION,
-  "/js/importexport.js?v=" + VERSION, "/js/panorama.js?v=" + VERSION, "/js/sharecard.js?v=" + VERSION, "/js/app.js?v=" + VERSION, "/js/account.js?v=" + VERSION,
-  "/js/submit.js?v=" + VERSION, "/js/festival.js?v=" + VERSION,
+  /* js/docs/*.js 与 docs-data.js 交给运行时缓存（见下方分支）：
+     它们是按需加载的教程正文，合计约 547KB gzip，不进壳。
+     js/docs-loader.js 已并入 bundle-app，此处无需单列。 */
   "/offline.html",
   /* data/seed.js 保留在预缓存清单里（2026-10-06 的取舍）：
      它已从 index.html 摘出、改成「走 seed 兜底时才动态加载」，所以**不在首屏关键路径上**；

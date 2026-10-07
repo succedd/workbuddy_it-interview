@@ -1,0 +1,8428 @@
+/* =========================================================================
+ *  js/bundle/bundle-app.js  —— **自动生成，请勿直接编辑**
+ * =========================================================================
+ *  由 tools/bundle-js.py 按依赖顺序拼接以下 6 个文件（应用主体：路由 / 页面 / 账号 / 投稿）：
+ *    · js/daily-quote.js
+ *    · js/roadmap.js
+ *    · js/docs-loader.js
+ *    · js/app.js
+ *    · js/account.js
+ *    · js/submit.js
+
+ *
+ *  为什么合并：实测 Cloudflare 到中国大陆链路约一半请求会卡死，请求数直接决定
+ *  首屏能否加载成功（27 个文件全成功概率约 2.7%，4 个约 88%，详见脚本注释）。
+ *
+ *  ⚠️ 修改上述任一源文件后，必须重跑：python tools/bundle-js.py --write
+ * ========================================================================= */
+
+;/* ===== >> js/daily-quote.js ===== */
+/* ============================================================
+ * 每日一句 · 实时在线模块（无本地内置数据）
+ *  - 名言：Hitokoto (https://v1.hitokoto.cn)  CORS:*
+ *  - 配图：LoremFlickr (https://loremflickr.com) 按名言类型关键词实时取图，CORS:* 可 canvas 合成
+ *  - 每天不同：按「年内第几天」做 lock 保证当天稳定；按日期 localStorage 缓存保证当天不跳动
+ *  - 节日联动（v20261001e）：当天有节日且用户未关闭节日背景时，横幅换节日专属
+ *    深色配色 + 节日文案胶囊，分享卡同步；无节日/已关闭则保持每日轮换配色
+ * ============================================================ */
+(function () {
+  "use strict";
+
+  var CACHE_KEY = "dq_cache_v2";
+  // Hitokoto 类型 -> 配图关键词（中文意境匹配）
+  var KW = {
+    i: "chinese,ink",        // 诗词
+    k: "mountain,abstract",  // 哲学
+    d: "library,books",      // 文学
+    a: "anime,sky",          // 动画
+    b: "comic,color",        // 漫画
+    c: "game,neon",          // 游戏
+    f: "code,screen",        // 网络
+    g: "nature,cloud",       // 其他
+    h: "film,cinema",        // 影视
+    j: "music,night",        // 网易云
+    l: "light,fun"           // 抖机灵
+  };
+  // 兜底名言（接口全挂时仍可展示，不含任何本地图）
+  var FALLBACK = [
+    { text: "我们所爱之物，昭示着我们究竟是谁。", author: "托马斯·阿奎纳" },
+    { text: "知者不惑，仁者不忧，勇者不惧。", author: "《论语》" },
+    { text: "技术应当服务于人，而非相反。", author: "佚名" }
+  ];
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+  function dayOfYear() {
+    var d = new Date();
+    var start = new Date(d.getFullYear(), 0, 0);
+    return Math.floor((d - start) / 86400000);
+  }
+  // 每日配色：按「年内第几天」轮换横幅底色与点缀色（当天稳定，隔天自动换新；全部为深色系保证白字可读）
+  var PALETTES = [
+    { name: "靛蓝",   c1: "#1e3a8a", c2: "#3730a3", accent: "rgba(129,140,248,.22)" },
+    { name: "松石绿", c1: "#064e3b", c2: "#047857", accent: "rgba(52,211,153,.20)" },
+    { name: "紫罗兰", c1: "#4c1d95", c2: "#6d28d9", accent: "rgba(196,181,253,.22)" },
+    { name: "玫瑰红", c1: "#831843", c2: "#9f1239", accent: "rgba(251,113,133,.20)" },
+    { name: "青碧",   c1: "#134e4a", c2: "#0f766e", accent: "rgba(45,212,191,.20)" },
+    { name: "暖橙",   c1: "#7c2d12", c2: "#9a3412", accent: "rgba(251,146,60,.20)" },
+    { name: "深海蓝", c1: "#0c4a6e", c2: "#0369a1", accent: "rgba(56,189,248,.22)" },
+    { name: "石墨灰", c1: "#1e293b", c2: "#334155", accent: "rgba(148,163,184,.20)" }
+  ];
+  function dayPalette() { return PALETTES[dayOfYear() % PALETTES.length]; }
+
+  /* ---- 节日联动（v20261001e）----
+   * 当天有节日且用户未关闭节日背景时，横幅改用节日专属深色配色与文案；
+   * 无节日/已关闭则走上面的每日轮换配色。键与 js/festival.js 的 key 一一对应。 */
+  var FEST_PAL = {
+    newyear:     { c1: "#1e3a8a", c2: "#1d4ed8", accent: "rgba(147,197,253,.25)", wish: "新年快乐 · 万事顺遂" },
+    spring:      { c1: "#7f1d1d", c2: "#b91c1c", accent: "rgba(252,165,165,.25)", wish: "新春快乐 · 万事如意" },
+    lantern:     { c1: "#831843", c2: "#be123c", accent: "rgba(253,164,175,.25)", wish: "元宵快乐 · 团团圆圆" },
+    qingming:    { c1: "#14532d", c2: "#15803d", accent: "rgba(134,239,172,.22)", wish: "清明 · 慎终追远" },
+    labor:       { c1: "#7c2d12", c2: "#c2410c", accent: "rgba(253,186,116,.25)", wish: "劳动节快乐 · 致敬奋斗者" },
+    children:    { c1: "#9d174d", c2: "#db2777", accent: "rgba(249,168,212,.25)", wish: "儿童节快乐 · 保持好奇" },
+    dragonboat:  { c1: "#14532d", c2: "#047857", accent: "rgba(110,231,183,.22)", wish: "端午安康" },
+    qixi:        { c1: "#831843", c2: "#a21caf", accent: "rgba(240,171,252,.25)", wish: "七夕快乐" },
+    midautumn:   { c1: "#1e3a8a", c2: "#b45309", accent: "rgba(252,211,77,.25)", wish: "中秋快乐 · 人月两团圆" },
+    double9:     { c1: "#713f12", c2: "#a16207", accent: "rgba(253,224,71,.22)", wish: "重阳 · 登高望远" },
+    national:    { c1: "#7f1d1d", c2: "#b91c1c", accent: "rgba(252,165,165,.25)", wish: "国庆节快乐" },
+    programmers: { c1: "#14532d", c2: "#16a34a", accent: "rgba(134,239,172,.22)", wish: "1024 · 节日快乐" },
+    teachers:    { c1: "#713f12", c2: "#b45309", accent: "rgba(252,211,77,.25)", wish: "教师节快乐 · 感恩师长" },
+    christmas:   { c1: "#166534", c2: "#15803d", accent: "rgba(252,165,165,.30)", wish: "圣诞快乐 · 平安喜乐" }
+  };
+  /* 当前生效的配色与节日（composeShare 合成分享卡时读取，与横幅保持一致） */
+  var CUR = { pal: null, festName: "", wish: "" };
+
+  /* ---- 节日主题文案池（v20261001f）：有节日时名言直接换成节日文案，按天稳定取一条、
+   * 「换一条」在池内随机换；无节日仍走 Hitokoto。键与 js/festival.js 的 key 一一对应。 ---- */
+  var FEST_QUOTES = {
+    newyear: [
+      { text: "新岁序开，同赴山海。愿你眼里有光，心中有梦，脚下有路。", author: "元旦寄语" },
+      { text: "新年快乐！愿所有的好运，都在新的一年里如约而至。", author: "元旦寄语" },
+      { text: "一元复始，万象更新；愿新年代码无 bug，来年更胜今年。", author: "元旦寄语" }
+    ],
+    spring: [
+      { text: "爆竹声中一岁除，春风送暖入屠苏。新春快乐，阖家幸福！", author: "春节寄语" },
+      { text: "愿新的一年：所求皆如愿，所行化坦途，多喜乐，长安宁。", author: "春节寄语" },
+      { text: "辞旧迎新，山河锦绣；愿君岁岁平安，年年有为。", author: "春节寄语" }
+    ],
+    lantern: [
+      { text: "火树银花合，星桥铁锁开。元宵快乐，团团圆圆！", author: "元宵寄语" },
+      { text: "一碗汤圆，盛满团圆；愿你所念之人，皆在身边。", author: "元宵寄语" }
+    ],
+    qingming: [
+      { text: "清明时节雨纷纷，路上行人欲断魂。慎终追远，珍惜眼前人。", author: "清明寄语" },
+      { text: "气清景明，万物生长。愿你不负春光，砥砺前行。", author: "清明寄语" }
+    ],
+    labor: [
+      { text: "人世间的一切幸福，都需要靠辛勤的劳动来创造。劳动节快乐！", author: "劳动节寄语" },
+      { text: "致敬每一双创造美好的手——劳动最光荣！", author: "劳动节寄语" }
+    ],
+    children: [
+      { text: "愿你出走半生，归来仍是少年。儿童节快乐！", author: "儿童节寄语" },
+      { text: "永远保持好奇，永远热泪盈眶——这是最好的童年礼物。", author: "儿童节寄语" }
+    ],
+    dragonboat: [
+      { text: "粽叶飘香，龙舟竞渡。端午安康，诸事顺遂！", author: "端午寄语" },
+      { text: "路漫漫其修远兮，吾将上下而求索。端午安康！", author: "端午寄语" }
+    ],
+    qixi: [
+      { text: "两情若是久长时，又岂在朝朝暮暮。七夕快乐！", author: "七夕寄语" },
+      { text: "愿有岁月可回首，且以深情共白头。七夕快乐！", author: "七夕寄语" }
+    ],
+    midautumn: [
+      { text: "但愿人长久，千里共婵娟。中秋快乐，阖家团圆！", author: "中秋寄语" },
+      { text: "海上生明月，天涯共此时。愿人月两团圆。", author: "中秋寄语" }
+    ],
+    double9: [
+      { text: "岁岁重阳，今又重阳。愿长辈福寿安康，笑口常开。", author: "重阳寄语" },
+      { text: "登高望远，秋光正好。重阳安康！", author: "重阳寄语" }
+    ],
+    national: [
+      { text: "山河远阔，国泰民安；愿以寸心寄华夏，且将岁月赠山河。", author: "国庆献礼" },
+      { text: "家有山河锦绣，国有岁月芳华。祝祖国生日快乐，愿你假期愉快！", author: "国庆献礼" },
+      { text: "以青春之名，书写清澈挚爱；以心中红星，献礼盛世中华。", author: "国庆献礼" },
+      { text: "你所站立的地方，正是你的中国；你怎么样，中国便怎么样。", author: "国庆献礼" }
+    ],
+    programmers: [
+      { text: "代码改变世界，而你正在其中。1024 程序员节快乐！", author: "1024 寄语" },
+      { text: "愿你的生活如代码般简洁，如算法般高效。1024 节日快乐！", author: "1024 寄语" },
+      { text: "愿你 commit 全绿，永无 996。程序员节快乐！", author: "1024 寄语" }
+    ],
+    teachers: [
+      { text: "师者，所以传道受业解惑也。教师节快乐，感恩每一位引路人！", author: "教师节寄语" },
+      { text: "三尺讲台系国运，一支粉笔写春秋。老师，您辛苦了！", author: "教师节寄语" }
+    ],
+    christmas: [
+      { text: "铃儿响叮当，愿望挂枝头。圣诞快乐，愿你所盼皆成真。", author: "圣诞寄语" },
+      { text: "愿你的代码 merry，屏幕 bright。圣诞快乐，平安喜乐！", author: "圣诞寄语" }
+    ]
+  };
+  function kwFor(t) { return KW[t] || "nature,sky"; }
+  function imgUrl(kw, lock) { return "https://loremflickr.com/1600/900/" + kw + "?lock=" + lock; }
+
+  function fetchQuote() {
+    var url = "https://v1.hitokoto.cn/?encode=json&c=i&c=k&c=d&c=a&c=b&c=c&c=f&c=g&c=h&c=j&c=l";
+    return fetch(url, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("hitokoto " + r.status);
+      return r.json();
+    }).then(function (j) {
+      return {
+        text: j.hitokoto || "",
+        author: j.from_who || j.from || "佚名",
+        type: j.type || "g",
+        id: j.id || ""
+      };
+    });
+  }
+
+  function getCache() {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "null"); } catch (e) { return null; }
+  }
+  function setCache(o) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  function mount(el) {
+    if (!el) return;
+    el.innerHTML =
+      '<div class="daily-quote">' +
+        '<img class="daily-quote__bg" alt="">' +
+        '<div class="daily-quote__overlay"></div>' +
+        '<div class="daily-quote__inner">' +
+          '<span class="daily-quote__label">💡 每日一句 · <span id="dq-date"></span></span>' +
+          '<div class="daily-quote__text" id="dq-text"><span class="daily-quote__spinner"></span> 正在为你准备今天的灵感…</div>' +
+          '<div class="daily-quote__author" id="dq-author"></div>' +
+          '<div class="daily-quote__actions">' +
+            '<span class="dq-btn" id="dq-shuffle">🎲 换一条</span>' +
+            '<span class="dq-btn" id="dq-share">🖼️ 分享图片</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    var d = new Date();
+    var dateLabel = (d.getMonth() + 1) + "月" + d.getDate() + "日";
+    document.getElementById("dq-date").textContent = dateLabel;
+
+    // 节日联动：data-festival 属性在（=用户未关闭节日背景且今天有节日）时换装，否则走每日轮换配色
+    var fest = null;
+    try {
+      if (window.FestivalBG && document.documentElement.hasAttribute("data-festival")) fest = FestivalBG.today();
+    } catch (e) {}
+    var fpal = fest && FEST_PAL[fest.key] ? FEST_PAL[fest.key] : null;
+    var festPool = fest && FEST_QUOTES[fest.key] ? FEST_QUOTES[fest.key] : [];
+    var pal = fpal || dayPalette();
+    CUR.pal = pal;
+    CUR.festName = fpal ? fest.name : "";
+    CUR.wish = fpal ? fpal.wish : "";
+
+    // 每日配色：横幅底色渐变 + 点缀色（覆盖 CSS 默认深色，隔天自动换；节日当天用节日配色）
+    var box = el.querySelector(".daily-quote");
+    if (box) {
+      box.style.background = "linear-gradient(135deg, " + pal.c1 + ", " + pal.c2 + ")";
+      box.style.setProperty("--dq-accent", pal.accent);
+    }
+
+    // 节日文案：标签换 🎉 并追加节日胶囊（无节日不动，保持原样）
+    var labelPill = el.querySelector(".daily-quote__label");
+    if (fpal && labelPill) {
+      labelPill.innerHTML = "🎉 每日一句 · <span id=\"dq-date\"></span>";
+      document.getElementById("dq-date").textContent = dateLabel;
+      var festPill = document.createElement("span");
+      festPill.className = "daily-quote__label daily-quote__fest";
+      festPill.textContent = fpal.wish;
+      labelPill.parentNode.insertBefore(festPill, labelPill.nextSibling);
+    }
+
+    // 节日风背景：整幅横幅改为节日风格（金色星点 + 节日色光晕，不加载随机图），见 css .daily-quote.is-fest
+    if (fpal && box) {
+      box.classList.add("is-fest");
+      var STAR_POS = [[6,18],[14,72],[24,35],[38,80],[52,15],[66,68],[78,28],[88,75],[94,20],[46,55]];
+      var stars = document.createElement("div");
+      stars.className = "daily-quote__stars";
+      var html = "";
+      for (var si = 0; si < STAR_POS.length; si++) {
+        html += '<span style="left:' + STAR_POS[si][0] + '%;top:' + STAR_POS[si][1] + '%;animation-delay:' + (si * 0.37).toFixed(2) + 's">' + (si % 3 === 0 ? "★" : "✦") + "</span>";
+      }
+      stars.innerHTML = html;
+      box.insertBefore(stars, box.querySelector(".daily-quote__inner"));
+    }
+
+    var bg = el.querySelector(".daily-quote__bg");
+    var textEl = document.getElementById("dq-text");
+    var authorEl = document.getElementById("dq-author");
+
+    function paint(q, opts) {
+      opts = opts || {};
+      textEl.classList.remove("loading");
+      textEl.textContent = "“" + q.text + "”";
+      authorEl.innerHTML = "—— <b>" + (q.author || "佚名") + "</b>";
+      if (CUR.festName) { bg.classList.remove("show"); return; } // 节日模式：不加载随机图，保持节日风格底
+      var lock = opts.fresh ? Math.floor(Math.random() * 100000) : dayOfYear();
+      var url = imgUrl(kwFor(q.type), lock);
+      bg.classList.remove("show");
+      bg.crossOrigin = "anonymous";
+      bg.onload = function () { bg.classList.add("show"); };
+      bg.onerror = function () { bg.classList.remove("show"); }; // 图挂了就保留渐变底
+      bg.src = url;
+    }
+
+    function load(useCache) {
+      // 节日模式：直接上节日文案池（按年内天取一条，当天稳定），不走 Hitokoto 与缓存
+      if (festPool.length) {
+        paint(festPool[dayOfYear() % festPool.length]);
+        return;
+      }
+      if (useCache) {
+        var c = getCache();
+        if (c && c.date === todayStr() && c.text) {
+          paint(c);
+          return;
+        }
+      }
+      fetchQuote().then(function (q) {
+        q.date = todayStr();
+        setCache(q);
+        paint(q);
+      }).catch(function () {
+        var f = FALLBACK[dayOfYear() % FALLBACK.length];
+        textEl.classList.remove("loading");
+        textEl.textContent = "“" + f.text + "”";
+        authorEl.innerHTML = "—— <b>" + f.author + "</b> <span style='opacity:.6;font-size:12px'>(离线兜底)</span>";
+      });
+    }
+
+    document.getElementById("dq-shuffle").addEventListener("click", function () {
+      textEl.classList.add("loading");
+      textEl.innerHTML = '<span class="daily-quote__spinner"></span> 换一条中…';
+      authorEl.textContent = "";
+      // 节日模式：在节日文案池内随机换
+      if (festPool.length) {
+        paint(festPool[Math.floor(Math.random() * festPool.length)]);
+        return;
+      }
+      fetchQuote().then(function (q) {
+        paint(q, { fresh: true });
+      }).catch(function () {
+        textEl.classList.remove("loading");
+        textEl.textContent = "😅 暂时没取到，换个网络再试？";
+      });
+    });
+
+    document.getElementById("dq-share").addEventListener("click", function () {
+      composeShare(bg, textEl.textContent, authorEl.textContent);
+    });
+
+    // —— 鼠标放到名言上 → 背景图缓缓放大、提亮；移开恢复 ——
+    var inner = el.querySelector(".daily-quote__inner");
+    if (box && inner) {
+      inner.addEventListener("mouseenter", function () { box.classList.add("is-hover"); });
+      inner.addEventListener("mouseleave", function () { box.classList.remove("is-hover"); });
+      // 触屏设备：点击切换（touchstart 后立即生效，click 时移除）
+      inner.addEventListener("touchstart", function () { box.classList.add("is-hover"); }, { passive: true });
+      inner.addEventListener("touchend", function () {
+        setTimeout(function () { box.classList.remove("is-hover"); }, 1200);
+      }, { passive: true });
+    }
+
+    load(true);
+  }
+
+  /* —— 分享：背景图 + 名言合成 1200x630 社交卡，下载 + 尝试复制 —— */
+  function composeShare(bgImg, text, author) {
+    text = (text || "").replace(/^[“"「]|[”"」]$/g, "");
+    author = (author || "").replace(/^——\s*/, "");
+    var W = 1200, H = 630;
+    var pal = CUR.pal || dayPalette(); // 分享卡底色跟随横幅当前配色（节日当天同节日色）
+    var festName = CUR.festName;
+    var cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d");
+
+    var FONT_QUOTE = "600 54px 'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Source Han Sans SC',serif";
+    var FONT_AUTHOR = "italic 300 32px 'PingFang SC','Microsoft YaHei',serif";
+    var FONT_META = "500 22px 'PingFang SC','Microsoft YaHei',sans-serif";
+    var FONT_BADGE = "600 18px 'PingFang SC','Microsoft YaHei',sans-serif";
+    var FONT_FOOTER = "500 22px 'PingFang SC','Microsoft YaHei',sans-serif";
+
+    var draw = function () {
+      // 1) 底色（图片缺失/跨域污染时兜底）
+      var gradBG = ctx.createLinearGradient(0, 0, W, H);
+      gradBG.addColorStop(0, pal.c1);
+      gradBG.addColorStop(1, pal.c2);
+      ctx.fillStyle = gradBG; ctx.fillRect(0, 0, W, H);
+
+      // 2) 背景图（已 crossOrigin，未污染即可绘制）
+      try {
+        if (bgImg && bgImg.complete && bgImg.naturalWidth) {
+          var r = Math.max(W / bgImg.naturalWidth, H / bgImg.naturalHeight);
+          var dw = bgImg.naturalWidth * r, dh = bgImg.naturalHeight * r;
+          ctx.drawImage(bgImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+        }
+      } catch (e) { /* tainted: 忽略，用底色 */ }
+
+      // 3) 多层暗色叠层（增加深度与文字可读性）
+      var baseOv = ctx.createLinearGradient(0, 0, 0, H);
+      baseOv.addColorStop(0, "rgba(8,12,20,.30)");
+      baseOv.addColorStop(0.55, "rgba(8,12,20,.55)");
+      baseOv.addColorStop(1, "rgba(8,12,20,.85)");
+      ctx.fillStyle = baseOv; ctx.fillRect(0, 0, W, H);
+
+      // 4) 顶部柔和光晕（跟随当日点缀色，提升层次感）
+      var glow = ctx.createRadialGradient(180, 0, 0, 180, 0, 720);
+      glow.addColorStop(0, pal.accent);
+      glow.addColorStop(1, "transparent");
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+      // 4.5) 节日模式：金色星点点缀，与横幅节日风背景呼应
+      if (festName) {
+        ctx.save();
+        ctx.font = "300 34px 'PingFang SC','Georgia',serif";
+        ctx.fillStyle = "rgba(253,230,138,.95)";
+        var starPos = [[180, 140], [1050, 110], [980, 500], [240, 500], [620, 92], [1120, 300], [92, 300]];
+        for (var i = 0; i < starPos.length; i++) {
+          ctx.globalAlpha = 0.45 + 0.45 * Math.abs(Math.sin(i * 1.7));
+          ctx.fillText(i % 3 === 0 ? "★" : "✦", starPos[i][0], starPos[i][1]);
+        }
+        ctx.restore();
+      }
+
+      // 5) 大号装饰性引号（右上角半透明 ❝）
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.10)";
+      ctx.font = "300 320px 'PingFang SC','Georgia','Times New Roman',serif";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText("❝", W - 230, 290);
+      ctx.restore();
+
+      // 6) 顶部品牌徽章（圆角胶囊 + 细边框；节日当天带节日名）
+      drawBadge(ctx, 60, 56, (festName ? "🎉 " + festName + " · " : "💡  ") + "IT 面试题库 · 每日一句", {
+        fill: "rgba(255,255,255,.10)",
+        stroke: "rgba(255,255,255,.28)",
+        text: "rgba(255,255,255,.95)",
+        font: FONT_BADGE
+      });
+
+      // 7) 名言正文（智能换行，垂直居中偏上）
+      var maxLines = 4;
+      var lineHeight = 78;
+      var paddingX = 100;
+      var maxW = W - paddingX * 2;
+      var fullText = "「" + text + "」";
+      ctx.font = FONT_QUOTE;
+      var lines = smartWrap(ctx, fullText, maxW, maxLines);
+
+      var quoteBlockH = lines.length * lineHeight;
+      var quoteStartY = (H - quoteBlockH) / 2 + 10; // 略偏上，让作者与底部留白更平衡
+
+      // 名言投影增强可读性
+      ctx.shadowColor = "rgba(0,0,0,.55)";
+      ctx.shadowBlur = 24; ctx.shadowOffsetY = 4;
+      ctx.fillStyle = "#ffffff";
+      lines.forEach(function (ln, i) {
+        ctx.fillText(ln, paddingX, quoteStartY + i * lineHeight);
+      });
+      ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+      // 8) 作者分隔线 + 作者名
+      var authorY = quoteStartY + quoteBlockH + 28;
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      ctx.fillRect(paddingX, authorY, 60, 3);
+      ctx.fillStyle = "rgba(255,255,255,.92)";
+      ctx.font = FONT_AUTHOR;
+      ctx.fillText("—— " + author, paddingX, authorY + 42);
+
+      // 9) 底部分隔线
+      var footY = H - 56;
+      ctx.fillStyle = "rgba(255,255,255,.12)";
+      ctx.fillRect(60, footY - 28, W - 120, 1);
+
+      // 10) 页脚：左品牌名 / 右日期 + 域名
+      ctx.fillStyle = "rgba(255,255,255,.70)";
+      ctx.font = FONT_FOOTER;
+      ctx.textAlign = "left";
+      ctx.fillText(festName ? "每日一句 · " + festName : "每日一句", 60, footY);
+
+      var d = new Date();
+      var dateStr = (d.getMonth() + 1) + "月" + d.getDate() + "日 · " + d.getFullYear();
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      ctx.font = "500 20px 'PingFang SC','Microsoft YaHei',sans-serif";
+      ctx.fillText(dateStr + "   ·   " + location.host, W - 60, footY);
+      ctx.textAlign = "left";
+
+      // 11) 导出 PNG + 下载 + 尝试复制
+      cv.toBlob(function (blob) {
+        if (!blob) { alert("当前图片跨域，无法合成，可长按横幅截图分享"); return; }
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = "daily-quote-" + d.getFullYear() + (d.getMonth()+1 < 10 ? "0"+(d.getMonth()+1) : (d.getMonth()+1)) + (d.getDate() < 10 ? "0"+d.getDate() : d.getDate()) + ".png";
+        document.body.appendChild(a); a.click(); a.remove();
+        try {
+          if (navigator.clipboard && window.ClipboardItem) {
+            navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
+              .then(function () { if (window.U && U.toast) U.toast("已复制到剪贴板并下载", "success"); })
+              .catch(function () {});
+          }
+        } catch (e) {}
+        setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      }, "image/png");
+    };
+
+    if (bgImg && !bgImg.complete) { bgImg.onload = draw; bgImg.onerror = draw; }
+    else draw();
+  }
+
+  function drawBadge(ctx, x, y, text, st) {
+    ctx.save();
+    ctx.font = st.font;
+    var tw = ctx.measureText(text).width;
+    var padX = 22, padY = 12;
+    var fs = parseInt((st.font.match(/(\d+)px/) || ["0", "18"])[1], 10) || 18;
+    var w = tw + padX * 2, h = fs + padY * 2 - 6;
+    var r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fillStyle = st.fill;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = st.stroke;
+    ctx.stroke();
+    ctx.fillStyle = st.text;
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x + padX, y + h / 2 + 1);
+    ctx.restore();
+  }
+
+  /* 智能换行：优先在中文标点处断行，控制在 maxLines 行内 */
+  function smartWrap(ctx, text, maxW, maxLines) {
+    var chars = text.split("");
+    var lines = [], cur = "";
+    var PUNCT = /[，。！？；：、,!?;:.\s]/;
+    for (var i = 0; i < chars.length; i++) {
+      var ch = chars[i];
+      var test = cur + ch;
+      if (ctx.measureText(test).width > maxW && cur) {
+        // 在当前行最近 8 个字符内找最佳断点（标点优先）
+        var bestIdx = -1;
+        var from = Math.max(0, cur.length - 8);
+        for (var j = cur.length - 1; j >= from; j--) {
+          if (PUNCT.test(cur[j])) { bestIdx = j; break; }
+        }
+        if (bestIdx >= from) {
+          lines.push(cur.substring(0, bestIdx + 1));
+          cur = cur.substring(bestIdx + 1) + ch;
+        } else {
+          lines.push(cur); cur = ch;
+        }
+      } else {
+        cur = test;
+      }
+    }
+    if (cur) lines.push(cur);
+    // 限制最大行数；超长截断加省略号
+    if (lines.length > maxLines) {
+      lines = lines.slice(0, maxLines);
+      var last = lines[maxLines - 1];
+      while (last.length && ctx.measureText(last + "…").width > maxW) last = last.slice(0, -1);
+      lines[maxLines - 1] = last + "…";
+    }
+    return lines;
+  }
+
+  window.DailyQuote = { mount: mount };
+})();
+
+;/* ===== << js/daily-quote.js ===== */
+
+;/* ===== >> js/roadmap.js ===== */
+/* =========================================================================
+ *  roadmap.js  —  岗位刷题计划
+ *  把某个岗位已关联的题目，按「技术分类」聚合成 4–8 周的学习计划。
+ *  本模块只做纯计算与进度存取，不操作 DOM；页面渲染在 app.js 的
+ *  pageRoadmap / pageRoadmapDetail，周计划练习复用现有 pagePractice。
+ * ========================================================================= */
+(function () {
+  "use strict";
+  const R = {};
+
+  /* ---------- 进度存储 ----------
+     存在 settings 表（随个人加密备份 / 账号云同步，换设备不丢）。
+     结构是**扁平集合** { "<questionId>": <markedAt> }：
+     同一道题可能同时属于多个岗位，扁平集合天然对所有路线图生效，
+     不需要按岗位分别记进度，也不会因为岗位被删而留下孤儿数据。 */
+  const KEY = "roadmapMastered";
+  let cache = null;          // 内存缓存，避免每次渲染都读 IndexedDB
+  let writeTimer = null;
+  const buildCache = new Map();   // posId -> 路线图对象（勾选后由 invalidateBuild 清空）
+
+  R.load = async function () {
+    if (cache) return cache;
+    let raw = null;
+    try { raw = await DB.getSetting(KEY); } catch (e) { raw = null; }
+    cache = (raw && typeof raw === "object" && !Array.isArray(raw)) ? raw : {};
+    return cache;
+  };
+  R.ready = function () { return cache !== null; };
+  /* 合并写入：连续勾选时只落盘一次，避免大批量点击打爆 IndexedDB */
+  function persist() {
+    if (writeTimer) clearTimeout(writeTimer);
+    writeTimer = setTimeout(function () {
+      writeTimer = null;
+      try { DB.setSetting(KEY, cache); } catch (e) {}
+    }, 250);
+  }
+  R.isMastered = function (qid) { return !!(cache && cache[qid]); };
+  /* 勾选会改变构建结果里的 mastered 汇总值，必须让构建缓存失效，
+     否则从详情页返回列表页时进度条还停在旧数字 */
+  function invalidateBuild() { buildCache.clear(); }
+  R.setMastered = function (qid, on) {
+    if (!cache) cache = {};
+    if (on) cache[qid] = Date.now(); else delete cache[qid];
+    persist();
+    invalidateBuild();
+  };
+  R.toggle = function (qid) { R.setMastered(qid, !R.isMastered(qid)); return R.isMastered(qid); };
+  /* 刷题页标记「已掌握」时同步记入路线图进度（题目未在任何路线图里也无害） */
+  R.markMastered = async function (qid) {
+    await R.load();
+    if (!cache[qid]) { cache[qid] = Date.now(); persist(); invalidateBuild(); }
+  };
+  R.masteredCount = function (ids) {
+    const c = cache || {};
+    let n = 0;
+    for (let i = 0; i < ids.length; i++) if (c[ids[i]]) n++;
+    return n;
+  };
+  R.clearAll = async function () {
+    cache = {};
+    try { await DB.setSetting(KEY, cache); } catch (e) {}
+    invalidateBuild();
+  };
+
+  /* ---------- 周计划生成 ---------- */
+  const MIN_WEEKS = 4, MAX_WEEKS = 8;
+  const PER_WEEK = 28;                                  // 每周目标题量（每题 ≈ 6 分钟 → 约 3 小时/周）
+  const MINUTE_PER_Q = 6;                               // 单题预估耗时（分钟），含读题 + 理解答案
+  const DIFF_W = { "初级": 1, "中级": 2, "高级": 3, "专家": 4 };
+
+  R.invalidate = function () { buildCache.clear(); };
+
+  /* 返回 { pos, total, mastered, minutes, weeks: [...] }；参数非法或无题时 weeks 为空数组 */
+  R.build = function (pos) {
+    const empty = { pos: pos || null, total: 0, mastered: 0, minutes: 0, weeks: [] };
+    if (!pos || pos.id == null || typeof Services === "undefined") return empty;
+    const cached = buildCache.get(pos.id);
+    if (cached) return cached;
+
+    const S = Services;
+    const qs = S.questions.filter(function (q) { return q.status === "published" && S.matchPosition(q, pos); });
+    if (!qs.length) return empty;
+
+    /* ① 按分类分组 */
+    const groups = new Map();
+    qs.forEach(function (q) {
+      const key = q.categoryId != null ? q.categoryId : 0;
+      if (!groups.has(key)) {
+        groups.set(key, {
+          catId: q.categoryId != null ? q.categoryId : null,
+          name: q.categoryId != null ? (S.catName(q.categoryId) || "未分类") : "综合练习",
+          path: q.categoryId != null ? S.categoryPath(q.categoryId).join(" / ") : "岗位综合",
+          questions: []
+        });
+      }
+      groups.get(key).questions.push(q);
+    });
+    const list = Array.from(groups.values());
+    list.forEach(function (g) {
+      const sum = g.questions.reduce(function (s, q) { return s + (DIFF_W[q.difficulty] || 2); }, 0);
+      g.avgDiff = sum / g.questions.length;
+      /* 组内由浅入深，同难度按热度（浏览 + 收藏）降序 */
+      g.questions.sort(function (a, b) {
+        return (DIFF_W[a.difficulty] || 2) - (DIFF_W[b.difficulty] || 2) ||
+          ((b.views || 0) + (b.favorites || 0)) - ((a.views || 0) + (a.favorites || 0));
+      });
+    });
+
+    /* ② 周数：按总量估算后夹在 4–8 周（题少也要有结构感，题多也不能长到劝退） */
+    const n = Math.max(MIN_WEEKS, Math.min(MAX_WEEKS, Math.round(qs.length / PER_WEEK)));
+    const cap = Math.ceil(qs.length / n);
+
+    /* ③ 超大分类先切片，否则「后端开发」这类岗位会被一个巨型分类（如 Spring）
+          一次性吃掉好几周，其余分类全挤到最后 */
+    const chunks = [];
+    list.forEach(function (g) {
+      if (g.questions.length <= cap * 1.6) { chunks.push(g); return; }
+      const rest = g.questions.slice();
+      let part = 0;
+      while (rest.length) {
+        part++;
+        chunks.push({
+          catId: g.catId,
+          name: g.name + (part > 1 ? "（续 " + part + "）" : ""),
+          path: g.path,
+          avgDiff: g.avgDiff,
+          questions: rest.splice(0, cap)
+        });
+      }
+    });
+
+    /* ④ 贪心装箱：按「简单优先」顺序，把每块放进当前题量最少的那一周。
+          既保证整体由浅入深，又让每周题量尽量拉平 */
+    chunks.sort(function (a, b) { return a.avgDiff - b.avgDiff || b.questions.length - a.questions.length; });
+    const weeks = [];
+    for (let i = 0; i < n; i++) weeks.push({ topics: [], questions: [] });
+    chunks.forEach(function (g) {
+      let best = 0;
+      for (let i = 1; i < weeks.length; i++) if (weeks[i].questions.length < weeks[best].questions.length) best = i;
+      weeks[best].topics.push({ catId: g.catId, name: g.name, path: g.path, count: g.questions.length });
+      Array.prototype.push.apply(weeks[best].questions, g.questions);
+    });
+
+    /* ⑤ 由浅入深排序，编号 1..N（空周丢弃） */
+    const kept = weeks.filter(function (w) { return w.questions.length > 0; });
+    kept.forEach(function (w) {
+      const ids = w.questions.map(function (q) { return q.id; });
+      const sum = w.questions.reduce(function (s, q) { return s + (DIFF_W[q.difficulty] || 2); }, 0);
+      w.avgDiff = sum / w.questions.length;
+      w.count = w.questions.length;
+      w.minutes = w.count * MINUTE_PER_Q;
+      w.daily = Math.max(1, Math.ceil(w.count / 7));     // 按一周 7 天分摊的每日题量
+      w.mastered = R.masteredCount(ids);
+      w.ids = ids;
+      const dist = { "初级": 0, "中级": 0, "高级": 0, "专家": 0 };
+      w.questions.forEach(function (q) { if (dist[q.difficulty] != null) dist[q.difficulty]++; });
+      w.diffDist = dist;
+      /* 标题只表达「这一周的主导方向」：主分类过半就直接用它，占三分之一以上标「为主」，
+         再碎就叫综合强化。刻意不做「A + B」并列 —— 装箱是按题量分配的，
+         两个分类被拼在一起往往是凑数的结果（如「Java + 常见HR面试题」），读起来莫名其妙。
+         具体包含哪些分类，交给你下面那排分类标签表达。 */
+      const sorted = w.topics.slice().sort(function (a, b) { return b.count - a.count; });
+      if (!sorted.length) w.title = "综合强化";
+      else if (sorted[0].count >= w.count * 0.6) w.title = sorted[0].name;
+      else if (sorted[0].count >= w.count * 0.35) w.title = sorted[0].name + " 为主";
+      else w.title = "综合强化";
+    });
+    kept.sort(function (a, b) { return a.avgDiff - b.avgDiff; });
+    kept.forEach(function (w, i) { w.n = i + 1; });
+
+    const out = {
+      pos: pos,
+      total: qs.length,
+      minutes: qs.length * MINUTE_PER_Q,
+      mastered: R.masteredCount(qs.map(function (q) { return q.id; })),
+      weeks: kept
+    };
+    buildCache.set(pos.id, out);
+    return out;
+  };
+
+  /* 供 pagePractice 用：某岗位第 N 周的题目 id 列表 */
+  R.weekQuestionIds = function (posId, weekNo) {
+    const pos = (typeof Services !== "undefined") ? Services.getPosition(parseInt(posId)) : null;
+    if (!pos) return [];
+    const r = R.build(pos);
+    const w = r.weeks[parseInt(weekNo) - 1];
+    return w ? w.ids.slice() : [];
+  };
+
+  /* 某一周在整条路线里的位置（用于「继续学习」定位下一周） */
+  R.nextWeek = function (roadmap) {
+    if (!roadmap || !roadmap.weeks.length) return 1;
+    for (let i = 0; i < roadmap.weeks.length; i++) {
+      const w = roadmap.weeks[i];
+      /* 边缘情况：勾选状态变化后 w.mastered 可能过期，这里实时算一次 */
+      if (R.masteredCount(w.ids) < w.count) return w.n;
+    }
+    return roadmap.weeks.length;
+  };
+
+  window.Roadmap = R;
+})();
+
+;/* ===== << js/roadmap.js ===== */
+
+;/* ===== >> js/docs-loader.js ===== */
+/* =========================================================================
+ *  js/docs-loader.js —— 技术教程文档数据「按需加载」（2026-10-06 性能优化）
+ * =========================================================================
+ * 背景
+ * ----
+ * 实测首页要等46 个资源、合计约 981 KB(gzip) 才算「加载完」，而TTFB 因为
+ * Cloudflare 免费版把大陆访客调度到境外节点（实测 colo 恒为 LAX），
+ * 本就在 1.0~6.5 秒浮动。每个资源都要各自付一次这段延迟。
+ *
+ *   其中 js/docs/*.js + js/docs-data.js 合计约 **547 KB(gzip)** ——占了首屏的
+ *   一半以上，可它们只在用户点进「学 › 技术教程」时才真正被用到。
+ *   （`js/docs.js` 的侧栏与统计确实要读这些数据，但那是**用户点进去之后**的事，
+ *首屏根本不需要。）
+ *
+ *   于是把它们从 index.html 的阻塞 script 里摘出来，改成：
+ *   ① 首屏只留一个 ~1 KB 的 loader；
+ *   ② loader 在「空闲时」静默预热（requestIdleCallback，回退 setTimeout），
+ *      所以正常情况下用户点进文档页时数据已经在内存里，体感零变化；
+ *   ③ 用户真的点了但还没预热完 → 走await 同一个Promise，不会重复请求；
+ *   ④ 任何失败都只是「文档页显示为空」，绝不影响首页与其它功能。
+ *
+ * 为什么不用 <script defer>
+ * ------------------------
+ * defer 仍然会在首屏解析阶段下载并执行这些文件（只是不阻塞 HTML 解析），
+ * 下载本身的开销一分不少。而这里要的是「首屏根本不发起这7 个请求」。
+ *
+ * 离线
+ * ----
+ * 这 7 个文件仍在 Service Worker 的 APP_SHELL 预缓存清单里，
+ * 离线时照常可用（见 sw.js 的注释）。
+ * ========================================================================= */
+(function () {
+  "use strict";
+
+  /* 版本号不能硬编码：本文件在 index.html 的内联脚本之前执行，
+     那时 window.PAGE_VER 还没被赋值；而一旦写死一个字面量，
+     下次发版 bump-version.py 只改 index.html/sw.js，这里就会一直请求旧 URL
+     （发版后表现为「教程页数据没更新」或 404）。
+     所以在真正发起加载时才取版本：优先用页面注入的 PAGE_VER，
+     取不到就退到本文件被引入时带的 ?v=（URL 里那串）。 */
+  var SELF_VER = (function () {
+    try {
+      var me = document.currentScript || document.querySelector('script[src*="docs-loader.js"]');
+      if (me) {
+        var m = String(me.src || "").match(/[?&]v=([^&]+)/);
+        if (m) return m[1];
+      }
+    } catch (_) {}
+    return "";
+  })();
+  var FILE_PATHS = [
+    "js/docs/java.js",
+    "js/docs/network.js",
+    "js/docs/dba.js",
+    "js/docs/frontend.js",
+    "js/docs/security.js",
+    "js/docs/devops.js",
+    "js/docs-data.js"
+  ];
+  function fileUrls() {
+    var v = window.PAGE_VER || SELF_VER;
+    return FILE_PATHS.map(function (p) { return p + (v ? "?v=" + v : ""); });
+  }
+  /* 顺序必须与 index.html 原先一致：各方向数据先挂 window，
+     docs-data.js 再读它们组装 window.DOCS。 */
+
+  var loading = null;      /* 同一个 Promise 并发复用，避免重复请求 */
+  var done = false;
+
+  /* 单文件加载超时（秒）。
+     ⚠️ 为什么必须要有：onload / onerror 都不触发的情况真实存在——
+     网络挂起、连接被重置、Service Worker 卡住等。此时若只等两个事件，
+     `await load()` 会永远挂起，用户点进技术教程页就一直停在空页面（连
+     「加载失败可重试」的提示都出不来，比直接报错还糟）。
+     超时后按「该文件失败」处理，继续下一个，最终由 ensureDocs 给出重试入口。 */
+  var FILE_TIMEOUT = 8;
+
+  function loadScript(src) {
+    return new Promise(function (resolve) {
+      var settled = false;
+      var s = document.createElement("script");
+      function finish(ok) {
+        if (settled) return;        /* 防止 onload 与超时竞态导致重复 resolve */
+        settled = true;
+        clearTimeout(timer);
+        resolve(ok);
+      }
+      var timer = setTimeout(function () { finish(false); }, FILE_TIMEOUT * 1000);
+      s.src = src;
+      s.async = false;      /* 保持执行顺序：后一个依赖前一个挂的全局变量 */
+      s.onload = function () { finish(true); };
+      /* 失败也 resolve —— 让后续文件继续尝试，最终由调用方判断 DOCS 是否就绪。
+         单个方向文件挂掉不该让整个技术教程页变成白屏。 */
+      s.onerror = function () { finish(false); };
+      document.head.appendChild(s);
+    });
+  }
+
+  /* 失败后的静默期：这一次全挂（或挂了几秒）之后，别再自动预热了。
+     没有这个闸门时，弱网用户每次进首页都会在空闲回调里重试 7 个文件 ×8秒，
+     既耗流量又抢带宽，反而让首页更慢（越慢越失败，越失败越重试）。
+     静默期内用户**手动点进**教程页仍会真重试（走 load(true)）。*/
+  var RETRY_COOLDOWN = 60000;   /* 1 分钟 */
+  var lastFailAt = 0;
+
+  function load(force) {
+    if (done) return Promise.resolve(true);
+    if (loading) return loading;
+    if (!force && lastFailAt && (Date.now() - lastFailAt) < RETRY_COOLDOWN) {
+      /* 刚失败过且非用户主动触发：直接放弃预热，把资源留给首屏其它内容 */
+      return Promise.resolve(false);
+    }
+    loading = (async function () {
+      var allOk = true;
+      var files = fileUrls();      /* 到这一刻才取版本号，确保拿到页面注入的 PAGE_VER */
+      for (var i = 0; i < files.length; i++) {
+        if (!(await loadScript(files[i]))) allOk = false;
+      }
+      var ready = !!(window.DOCS && Array.isArray(window.DOCS.dirs) &&
+                     window.DOCS.dirs.filter(Boolean).length);
+      if (ready) {
+        done = true;
+        lastFailAt = 0;
+        /* 数据到位后主动广播：docs.js 若已在等这个信号会立刻渲染 */
+        try {
+          document.dispatchEvent(new CustomEvent("docs:ready"));
+        } catch (_) { /* 老浏览器无 CustomEvent，忽略即可 */ }
+      } else {
+        lastFailAt = Date.now();
+      }
+      loading = null;
+      return ready;
+    })();
+    return loading;
+  }
+
+  /* 供 docs.js 主动调用：确保数据已就绪。
+     force=true 表示这是用户点击触发的，必须真重试（无视上面的静默期）。 */
+  window.DocsLoader = {
+    load: function () { return load(true); },
+    warmup: function () { return load(false); },
+    isReady: function () { return !!(window.DOCS && Array.isArray(window.DOCS.dirs)); }
+  };
+
+  /* 首屏空闲时静默预热。用 requestIdleCallback 是因为此刻主线程空闲，
+     下载与解析不与首屏渲染抢带宽；不支持时退回 setTimeout(…, 1200)。 */
+  function warmup() {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(function (idle) {
+        if (idle && idle.timeRemaining && idle.timeRemaining < 8) {
+          setTimeout(warmup, 1500);      /* 剩余时间太少，留到下一轮 */
+          return;
+        }
+        load(false);                     /* 非强制：失败后进入静默期，不反复重试 */
+      }, { timeout: 3000 });
+    } else {
+      setTimeout(function () { load(false); }, 1200);
+    }
+  }
+
+  if (document.readyState === "complete") warmup();
+  else window.addEventListener("load", warmup);
+})();
+;/* ===== << js/docs-loader.js ===== */
+
+;/* ===== >> js/app.js ===== */
+/* =========================================================================
+ *  app.js  —  路由 / 顶部栏 / 侧边栏 / 主题 / 全部页面
+ * ========================================================================= */
+(function () {
+  "use strict";
+  /* 重复执行防护（2026-10-07）：
+     脚本改由 index.html 的内联加载器动态加载，并且带「超时 → 重试」——
+     因为实测 Cloudflare 到中国大陆的链路上约有一半请求会卡死到超时。
+     重试的代价是：卡住的那次请求可能在超时后才姗姗返回并执行，
+     若不做防护就会把整个 app 初始化跑两遍（重复绑事件、重复发请求）。
+     这里用一个全局标记挡住第二次执行。 */
+  if (window.__ITI_APP_BOOTED__) return;
+  window.__ITI_APP_BOOTED__ = true;
+  const App = {};
+  const $ = U.qs, $$ = U.qsa;
+  let main, sidebar, topbar;
+  let charts = [];
+
+  /* ============================ 主题 ============================ */
+  const THEME_KEY = "it_hub_theme";
+  /* 默认浅色（20260910a）：手机系统深色模式会让整站跟随变暗、刷题体验差，
+     首次访问不再跟随系统，改为固定浅色；用户仍可在顶栏/设置手动切深色或跟随系统 */
+  App.getTheme = () => { try { return localStorage.getItem(THEME_KEY) || "light"; } catch (e) { return "light"; } };
+  App.setTheme = function (mode) {
+    try { localStorage.setItem(THEME_KEY, mode); } catch (e) {}
+    applyTheme();
+  };
+  function applyTheme() {
+    const mode = App.getTheme();
+    let eff = mode;
+    if (mode === "system") eff = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", eff);
+    const light = document.getElementById("hljs-light");
+    const dark = document.getElementById("hljs-dark");
+    if (light) light.disabled = (eff === "dark");
+    if (dark) dark.disabled = (eff !== "dark");
+  }
+  function cycleTheme() {
+    const order = ["light", "dark", "system"];
+    const i = order.indexOf(App.getTheme());
+    App.setTheme(order[(i + 1) % order.length]);
+    renderTopbar();
+  }
+
+  /* ============================ 节日背景开关 ============================ */
+  /* 存储 key 与 js/festival.js 的 LS_KEY 保持一致；off=用户关闭 */
+  App.getFestivalOff = () => { try { return localStorage.getItem("iti_festival") === "off"; } catch (e) { return false; } };
+  App.setFestivalOff = function (off) {
+    try {
+      if (off) localStorage.setItem("iti_festival", "off");
+      else localStorage.removeItem("iti_festival");
+    } catch (e) {}
+    if (window.FestivalBG) window.FestivalBG.apply();
+  };
+
+  /* ============================ 路由 ============================ */
+  function parseHash() {
+    const h = location.hash.replace(/^#/, "") || "/";
+    const [path, qs] = h.split("?");
+    const q = {};
+    if (qs) qs.split("&").forEach(p => { const [k, v] = p.split("="); q[decodeURIComponent(k)] = decodeURIComponent(v || ""); });
+    const parts = path.split("/").filter(Boolean);
+    return { path, parts, q };
+  }
+
+  App.go = function (hash) { location.hash = hash; };
+
+  App.requireAdmin = function () {
+    if (Auth.isAdmin()) return true;
+    main.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("shield")}</div>
+      <h3>需要管理员权限</h3><p>该功能仅管理员可用，请先登录管理员模式。</p>
+      <button class="btn btn-primary" id="to-login">${U.icon("user")} 管理员登录</button></div>`;
+    $("#to-login").onclick = openAdminLogin;
+    return false;
+  };
+
+  /* 服务端管理员守卫（20260913f）：帐号管理页专用，按登录用户的 D1 role 判定，
+     与本地密码门禁（Auth.isAdmin）解耦——本地密码只管题目编辑端。 */
+  App.requireServerAdmin = function () {
+    if (window.Account && Account.isServerAdmin()) return true;
+    main.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("shield")}</div>
+      <h3>需要管理员权限</h3><p>请使用管理员帐号在「帐号」页登录后访问。</p>
+      <button class="btn btn-primary" id="to-acc">${U.icon("user")} 前往登录</button></div>`;
+    $("#to-acc").onclick = () => App.go("/account");
+    return false;
+  };
+
+  /* 审核守卫（20260919f）：投稿审核队列专用，admin 与 expert 都能进。
+     与 requireServerAdmin 分开的原因：专家能审核，但**绝不能进帐号管理/群组管理**，
+     两处入口用两道不同的守卫，避免将来有人图省事把 users 页也放开给 expert。 */
+  App.requireReviewer = function () {
+    if (window.Account && Account.isReviewer()) return true;
+    const logged = window.Account && Account.isLoggedIn();
+    main.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("shield")}</div>
+      <h3>需要审核权限</h3><p>${logged ? "当前帐号没有审核权限。请联系管理员把你的角色设为「专家」。" : "请先登录有审核权限的帐号（管理员或专家）。"}</p>
+      <button class="btn btn-primary" id="to-acc2">${U.icon("user")} ${logged ? "切换到其它帐号" : "前往登录"}</button></div>`;
+    if (logged) {
+      $("#to-acc2").onclick = () => { Account.logout(); renderTopbar(); App.go("/account"); };
+    } else {
+      $("#to-acc2").onclick = () => App.go("/account");
+    }
+    return false;
+  };
+
+  /* 启动时 /auth/me 刷新完本地用户缓存后由 account.js 回调：重渲染导航，
+     若正停在帐号管理页则重跑路由（提权/禁用立即生效，无需手动刷新）。 */
+  App.onAccountRefreshed = function () {
+    try {
+      renderTopbar();
+      renderSidebar(parseHash());
+      const r = parseHash();
+      /* 这些页的可见性/内容都取决于服务端角色，提权或降级后需要重跑一次路由 */
+      if (r.parts[0] === "admin" && ["users", "submissions", "groups", "inbox"].indexOf(r.parts[1]) >= 0) route();
+    } catch (e) {}
+  };
+
+  function clearCharts() { charts.forEach(c => { try { c.dispose(); } catch (e) {} }); charts = []; }
+  App.registerChart = function (chart) { charts.push(chart); };
+
+  /* 页面级键盘快捷键：每次路由切换自动清理，避免监听器泄漏 */
+  let pageKeyHandler = null;
+  function setPageKeys(handler) {
+    if (pageKeyHandler) document.removeEventListener("keydown", pageKeyHandler);
+    pageKeyHandler = handler || null;
+    if (handler) document.addEventListener("keydown", handler);
+  }
+  function typingInField(e) {
+    const t = e.target;
+    return !!(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable));
+  }
+
+  async function route() {
+    clearCharts();
+    setPageKeys(null);
+    const r = parseHash();
+    renderSidebar(r);
+    bindSwipeNav();          // 手势监听挂在 #main 上，幂等绑定（路由切换只需确保已挂）
+    /* 动态 document.title：浏览器标签/历史/收藏可区分页面（404 与详情页会再覆盖） */
+    document.title = "IT面试题库管理系统";
+    if (r.parts[0] === "admin") {
+      const sub = r.parts[1] || "dashboard";
+      /* 帐号管理（20260913f）：唯一走服务端角色鉴权的管理页，先于本地密码门禁处理 */
+      if (sub === "users") {
+        if (!App.requireServerAdmin()) return;
+        return Account.renderAdminPage();
+      }
+      /* 投稿审核（20260919f）：admin + expert 都能进，服务端按 role 裁剪可见范围；
+         expert 可选「未分配」的投稿，避免没人管的分组把投稿卡死。 */
+      if (sub === "submissions") {
+        if (!App.requireReviewer()) return;
+        return window.Submit ? Submit.renderReview() : page404(r.parts.join("/"));
+      }
+      /* 专家群组管理：仅 admin（分组等于分配权限，不能让专家自己扩权） */
+      if (sub === "groups") {
+        if (!App.requireServerAdmin()) return;
+        return window.Submit ? Submit.renderGroups() : page404(r.parts.join("/"));
+      }
+      /* 待入库（20260919h）：审核通过 → 收进本机题库。也仅 admin ——
+         写 bank_id 等于走上发布链路，专家不该碰（与群组管理同理）。 */
+      if (sub === "inbox") {
+        if (!App.requireServerAdmin()) return;
+        return window.Submit ? Submit.renderInbox() : page404(r.parts.join("/"));
+      }
+      if (!App.requireAdmin()) return;
+      if (sub === "dashboard") return pageAdminDashboard();
+      if (sub === "questions") return pageAdminQuestions();
+      if (sub === "question") return pageAdminQuestionEdit(r.parts[2]);
+      if (sub === "categories") return pageAdminCategories();
+      if (sub === "positions") return pageAdminPositions();
+      if (sub === "ai") return pageAdminAI();
+      if (sub === "import") return pageAdminImport();
+      if (sub === "backup") return pageAdminBackup();
+      if (sub === "settings") return pageAdminSettings();
+      return pageAdminDashboard();
+    }
+    switch (r.parts[0]) {
+      case undefined: case "": case "home": document.title = "首页 · IT面试题库"; return pageHome();
+      case "category": return pageCategory(r.q);
+      case "position": return r.parts[1] ? pagePositionDetail(r.parts[1]) : pagePositions();
+      /* 岗位刷题计划：把岗位题目串成 4–8 周计划（map = 刷题计划入口） */
+      case "roadmap": return r.parts[1] ? pageRoadmapDetail(r.parts[1]) : pageRoadmap();
+      /* 「学」版块：技术教程（方向 × 初级/中级/高级），
+         #/docs | #/docs/<dir> | #/docs/<dir>/<level>/<chapter> */
+      case "docs":
+        if (!r.parts[1]) return window.pageDocs();
+        if (r.parts[2] && r.parts[3]) return window.pageDocsChapter(r.parts[1], r.parts[2], r.parts[3]);
+        return window.pageDocsDir(r.parts[1]);
+      case "questions": return pageQuestions(r.q);
+      case "question": return pageQuestionDetail(r.parts[1]);
+      case "favorites": return pageFavorites();
+      case "history": return pageHistory();
+      case "help": return pageHelp();
+      case "about": return pageAbout();
+      case "practice": return pagePractice(r.q);
+      case "review": return pageReview();
+      case "random": {
+        const pool = Services.questions.filter(x => x.status === "published");
+        return pool.length ? App.go("/question/" + pool[Math.floor(Math.random() * pool.length)].id) : pageHome();
+      }
+      case "mock": return pageMock();
+      case "panorama": return pagePanorama(r.q);
+      /* 投稿（20260919f）：必须登录，未登录由页面自己给登录引导（不硬跳转，免得丢草稿意图） */
+      case "submit": return window.Submit ? Submit.renderSubmitPage() : page404(r.parts.join("/"));
+      case "me": return (r.parts[1] === "submissions" && window.Submit) ? Submit.renderMine() : page404(r.parts.join("/"));
+      case "account": return window.Account ? Account.renderLoginPage() : pageHome();
+      default: return page404(r.parts.join("/"));
+    }
+  }
+
+  /* ============================ 404 页 ============================ */
+  function page404(path) {
+    document.title = "页面不存在 · IT面试题库";
+    setMain(`<div class="empty" style="padding:60px 0">
+      <div style="font-size:56px;font-weight:700;color:var(--c-primary);opacity:.25">404</div>
+      <h2>页面不存在</h2>
+      <p class="secondary">访问的地址 <code>${U.esc("#/" + (path || ""))}</code> 不存在或已被移动。</p>
+      <div class="pill-row" style="justify-content:center;margin-top:16px">
+        <a class="btn btn-primary" href="#/">${U.icon("home")} 返回首页</a>
+        <a class="btn" href="#/questions">${U.icon("layers")} 浏览题目</a>
+      </div></div>`);
+  }
+
+  /* ============================ 顶部栏 ============================ */
+  /* ============================ 移动端抽屉（≤720px） ============================
+   * 打开态统一由 body.drawer-open 表达（CSS 负责侧栏位移与遮罩显隐）。
+   * 关键：抽屉里**任何一次站内跳转**都必须自动收起 —— 否则用户点完菜单，侧栏还杵在那儿，
+   * 得再点一次顶栏三条横线才关得掉（用户 2026-09-19 反馈）。 */
+  function drawerOpen() { return document.body.classList.contains("drawer-open"); }
+  function syncDrawerA11y() {
+    const b = document.getElementById("menu-toggle");
+    if (b) b.setAttribute("aria-expanded", drawerOpen() ? "true" : "false");
+  }
+  function closeDrawer() {
+    if (!drawerOpen()) return;
+    document.body.classList.remove("drawer-open");
+    syncDrawerA11y();
+  }
+  function toggleDrawer() {
+    document.body.classList.toggle("drawer-open");
+    syncDrawerA11y();
+  }
+
+  function renderTopbar() {
+    const theme = App.getTheme();
+    const themeIcon = theme === "dark" ? "sun" : theme === "system" ? "monitor" : "moon";
+    const themeLabel = theme === "dark" ? "暗色" : theme === "system" ? "跟随系统" : "亮色";
+    /* 管理入口在 ≤720px 也隐藏（顶栏放不下），改由抽屉里的「管理后台 / 管理员登录」承载，
+       见 renderSidebar —— 功能不丢，只是换了个承载容器。 */
+    const adminHtml = Auth.isAdmin()
+      ? `<div class="dropdown-wrap desktop-only"><button class="btn btn-ghost btn-sm" id="admin-btn">${U.icon("shield")} 管理</button>
+         <div class="dropdown" id="admin-menu" style="display:none">
+           <a href="#/admin/dashboard">${U.icon("barChart")} 仪表盘</a>
+           <a href="#/admin/questions">${U.icon("fileText")} 题目管理</a>
+           <a href="#/admin/categories">${U.icon("layers")} 分类管理</a>
+           <a href="#/admin/positions">${U.icon("briefcase")} 岗位管理</a>
+           <a href="#/admin/ai">${U.icon("sparkles")} AI 出题</a>
+           <a href="#/admin/import">${U.icon("upload")} 批量导入</a>
+           <a href="#/admin/backup">${U.icon("database")} 备份恢复</a>
+           ${(window.Account && Account.isServerAdmin()) ? `<a href="#/admin/users">${U.icon("users")||U.icon("user")} 帐号管理</a>` : ""}
+           <a href="#/admin/settings">${U.icon("settings")||U.icon("user")} 系统设置</a>
+           <div class="sep"></div>
+           <a href="#" id="admin-logout">${U.icon("x")} 退出管理</a>
+         </div></div>`
+      : `<button class="btn btn-ghost btn-icon desktop-only" id="admin-login-btn" title="管理员登录" aria-label="管理员登录">${U.icon("shield")}</button>`;
+    topbar.innerHTML = `
+      <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="打开菜单">${U.icon("menu")}</button>
+      <a class="brand" href="#/"><span class="logo">I</span> IT面试题库</a>
+      <div class="topbar-search">
+        <span class="icon">${U.icon("search")}</span>
+        <input id="global-search" type="text" placeholder="搜索题目、技术、岗位、标签…" />
+      </div>
+      <div class="topbar-actions">
+        <!-- 文字入口（原为纯图标，用户反馈「图标都不知道干嘛的」—— 20260923f 改为文字）。
+             这 5 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
+             完全重复，而顶栏在手机上根本放不下（实测 390px 溢出 172px，导致主题键被裁、
+             「登录」「管理员」被挤出屏外）。保留主题键与帐号入口。 -->
+        <a class="top-link desktop-only" href="#/category" title="按技术方向分层的知识体系">技术体系</a>
+        <a class="top-link desktop-only" href="#/position" title="按求职岗位组织的题库">岗位体系</a>
+        <a class="top-link desktop-only" href="#/mock" title="限时模拟真实面试流程">模拟面试</a>
+        <a class="top-link desktop-only" href="#/favorites" title="你收藏的题目">收藏夹</a>
+        <a class="top-link desktop-only" href="#/submit" title="投稿你的面试题，审核通过后收录">投稿</a>
+        ${(window.Account && Account.isReviewer())
+          ? `<a class="top-link desktop-only" href="#/admin/submissions" title="审核用户投稿的题目（待审 ${App.reviewPending || 0} 条）">审核${App.reviewPending ? `<span class="badge-dot">${App.reviewPending}</span>` : ""}</a>`
+          : ""}
+        ${(window.Account && Account.isServerAdmin())
+          ? `<a class="top-link desktop-only" href="#/admin/inbox" title="审核通过、待收录入库的题目（${App.inboxPending || 0} 条）">待入库${App.inboxPending ? `<span class="badge-dot">${App.inboxPending}</span>` : ""}</a>`
+          : ""}
+        <!-- 移动端常驻搜索入口（2026-09-24 评审 P1-4）：顶栏搜索框在 ≤720px 被隐藏、
+            抽屉里的搜索要点开汉堡才够得着 —— 在题库页或详情页想换一道题，只能先回首页。
+            这个放大镜是移动端唯一的「一步即搜」入口，点击弹出搜索浮层。 -->
+        <button class="icon-btn mobile-only" id="top-search-btn" aria-label="搜索题目" title="搜索题目">${U.icon("search")}</button>
+        <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
+        ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
+        <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
+        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account" title="登录 / 注册帐号">${U.icon("user")} 登录</a>`}
+        ${adminHtml}
+        <!-- 顶栏的「本机访问 N | 累计 N」已移除（2026-09-24 评审 P2-11）：
+             它是内部埋点口径的自家数字（非全站 PV），挂在每一次页面浏览的右上角既占位又要解释，
+             且移动端本来就是隐藏的 —— 说明它对判断「这个站值不值得用」没有帮助。
+             同数据移到「关于本站」页，需要时再看（refreshVisitorStats 仍会更新那里的两个节点）。 -->
+      </div>`;
+    const gs = $("#global-search");
+    gs.addEventListener("keydown", e => { if (e.key === "Enter" && gs.value.trim()) { shPush(gs.value.trim()); App.go("/questions?q=" + encodeURIComponent(gs.value.trim())); } });
+    attachHistory(gs, t => { shPush(t); App.go("/questions?q=" + encodeURIComponent(t)); });
+    $("#theme-btn").onclick = cycleTheme;
+    $("#menu-toggle").onclick = () => toggleDrawer();
+    const tsb = $("#top-search-btn");
+    if (tsb) tsb.onclick = openSearchSheet;
+    syncDrawerA11y();
+    updateNetChip();
+    if (Auth.isAdmin()) {
+      const ab = $("#admin-btn"); const menu = $("#admin-menu");
+      ab.onclick = (e) => { e.stopPropagation(); menu.style.display = menu.style.display === "none" ? "block" : "none"; };
+      document.addEventListener("click", () => { menu.style.display = "none"; });
+      $("#admin-logout").onclick = (e) => { e.preventDefault(); Auth.logout(); U.toast("已退出管理员模式", "info"); renderTopbar(); renderSidebar(parseHash()); };
+    } else {
+      $("#admin-login-btn").onclick = openAdminLogin;
+    }
+    refreshVisitorStats();
+  }
+
+  /* ============================ 移动端搜索浮层（2026-09-24 评审 P1-4） ============================
+   * 顶栏在 ≤720px 放不下搜索框（实测 390px 加回去会溢出 172px），原先只好把搜索移进抽屉。
+   * 结果是「在题库/详情页想搜下一道题」必须先点汉堡或回首页 —— 折损最频繁的动作之一。
+   * 这里用浮层承载：一个输入框 + 热门词，回车直达题目列表，复用 attachHistory 的最近搜索。
+   * ⚠️ 输入框的直接父元素必须是 .drawer-search（position:relative）—— attachHistory 把
+   *    .search-dd 下拉 append 到 input.parentNode 并按它定位，换成别的容器下拉会飘。 */
+  function openSearchSheet() {
+    const m = U.modal({ title: "搜索题目", footer: false });
+    m.body.innerHTML = `
+      <div class="drawer-search" style="display:block">
+        <span class="icon">${U.icon("search")}</span>
+        <input id="sheet-search" type="text" placeholder="搜索题目、技术、岗位、标签…" autocomplete="off" enterkeyhint="search" aria-label="搜索题目" />
+      </div>
+      <div class="sheet-hot-title">热门搜索</div>
+      <div class="hot-tags" style="justify-content:flex-start;margin-top:10px">
+        ${HOT_TERMS.map(t => `<button type="button" class="tag" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}
+      </div>`;
+    const input = m.body.querySelector("#sheet-search");
+    const go = (t) => { if (!t) return; shPush(t); m.close(); App.go("/questions?q=" + encodeURIComponent(t)); };
+    input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(input.value.trim()); } });
+    attachHistory(input, go);
+    m.body.querySelectorAll("[data-sug]").forEach(b => { b.onclick = () => go(b.dataset.sug); });
+    /* 自动聚焦：手机上会同时弹起键盘，省掉一次点击。延迟一点等弹窗进场动画结束 */
+    setTimeout(() => { try { input.focus(); } catch (_) {} }, 80);
+  }
+
+  /* 离线提示：断网时顶栏常驻「离线」徽章（PWA 离线可用，但需告知数据是本地缓存） */
+  function updateNetChip() {
+    const el = document.getElementById("net-chip");
+    if (el) el.style.display = navigator.onLine ? "none" : "";
+  }
+  window.addEventListener("online", updateNetChip);
+  window.addEventListener("offline", updateNetChip);
+
+  /* ============================ 侧边栏 ============================ */
+  /* ---- 侧栏分区折叠（20260919j）----
+     背景：用户反馈「侧栏分类能不能折叠，比如管理模块，全部展开很乱」。侧栏在管理员视角下
+     是 投稿2 + 导航13 + 技术分类(整棵树) + 管理4 + 审核1 + 站点3，确实又长又杂。
+     设计取舍：
+       · **投稿 / 导航 / 技术分类 默认展开** —— 它们是核心入口，藏起来会让人找不到站；
+       · **管理 / 审核 / 站点 默认折叠** —— 后台类分区，正是「乱」的来源（访客根本看不到它
+         们，只有自己的帐号会看到）。
+       · 但**当前所在页面若属于某个折叠分区，会自动把它打开** —— 否则会出现
+         「我明明在仪表盘，侧栏里却看不到仪表盘」，这是折叠式导航最容易踩的坑。
+       · 自动展开只发生在「路由**切进**该分区」这一下：之后用户手动收起就不会被再次强开
+         （否则点了收起又被弹回来，像个 bug）。离开该分区再回来才会重新自动展开。
+       · 用户的手动选择存 localStorage，跨会话记住；localStorage 不可用（隐私模式）时
+         静默退化成「每次都用默认值」，不影响渲染。
+     ⚠️ 键名一律用英文 slug，**不要用中文标签当键** —— 以后改文案就会把用户的折叠状态丢掉。 */
+  const LS_NAVCOLLAPSE = "iti_nav_collapsed_v1";
+  const NAV_SECS = {
+    submit: { label: "投稿", def: false },
+    nav:    { label: "导航", def: false },
+    admin:  { label: "管理", def: true },
+    review: { label: "审核", def: true },
+    site:   { label: "站点", def: true },
+  };
+  let _navCollapsed = null;      // { slug: bool }，惰性装载
+  const _navAutoOpen = {};       // 因「路由切进该分区」而临时展开
+  let _navSecLast = null;        // 上一次渲染时路由所属的分区
+
+  function loadNavCollapsed() {
+    if (_navCollapsed) return _navCollapsed;
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(LS_NAVCOLLAPSE) || "{}") || {}; } catch (_) { saved = {}; }
+    _navCollapsed = {};
+    Object.keys(NAV_SECS).forEach(k => { _navCollapsed[k] = Object.prototype.hasOwnProperty.call(saved, k) ? !!saved[k] : NAV_SECS[k].def; });
+    return _navCollapsed;
+  }
+  function saveNavCollapsed() {
+    try { localStorage.setItem(LS_NAVCOLLAPSE, JSON.stringify(_navCollapsed || {})); } catch (_) { /* 隐私模式：忽略 */ }
+  }
+  /** 当前路由属于哪个分区（用于「所在分区自动展开」）。返回的键必须是 NAV_SECS 里的 slug。 */
+  function navSectionOf(r) {
+    const p0 = r.parts[0] || "home", p1 = r.parts[1] || "";
+    if (p0 === "submit") return "submit";
+    if (p0 === "me" && p1 === "submissions") return "submit";
+    /* 「技术体系」项现位于「导航」区（2026-09-23 晚起，原 cats 分区已整体移除），
+       故 category 路由归 nav 分区，进入该页时导航区会保持展开。 */
+    if (p0 === "admin") {
+      if (p1 === "submissions") return "review";
+      if (p1 === "inbox" || p1 === "users" || p1 === "groups") return "site";
+      return "admin";
+    }
+    return "nav";
+  }
+  /** 路由切进某分区时把它标记为「自动展开」；同一分区内多次渲染不重复触发。 */
+  function navSyncAutoOpen(r) {
+    const cur = navSectionOf(r);
+    if (cur !== _navSecLast) {
+      _navSecLast = cur;
+      Object.keys(_navAutoOpen).forEach(k => { delete _navAutoOpen[k]; });
+      _navAutoOpen[cur] = true;
+    }
+    return cur;
+  }
+  function navIsOpen(key, r) {
+    if (_navAutoOpen[key]) return true;
+    return !loadNavCollapsed()[key];
+  }
+  /** 渲染一个可折叠分区：标题是 <button>（键盘可用 + aria-expanded），内容包在 .nav-section-body。
+      折叠用 CSS 的 display:none（见 style.css），**不用 height 动画** —— 后者在侧栏这种
+      overflow:auto 的容器里容易出滚动条抖动，而且分区内容高度差异极大。 */
+  function navSec(key, extraCls, inner) {
+    const st = NAV_SECS[key];
+    if (!st) return inner;
+    const open = navIsOpen(key, _navSecCtx);
+    return `<div class="nav-section${open ? "" : " collapsed"}" data-sec="${key}">`
+      + `<button type="button" class="nav-section-title nav-sec-toggle${extraCls ? " " + extraCls : ""}"`
+      + ` data-sec="${key}" aria-expanded="${open ? "true" : "false"}" aria-controls="navsec-${key}">`
+      + `<span class="nav-sec-label">${st.label}</span>`
+      + `<span class="nav-sec-chev" aria-hidden="true">${U.icon("chevronDown")}</span></button>`
+      + `<div class="nav-section-body" id="navsec-${key}">${inner}</div></div>`;
+  }
+  let _navSecCtx = { parts: [] };   // navSec 渲染时用的「当前路由」，由 renderSidebar 赋值
+
+  function renderSidebar(r) {
+    const navItem = (href, icon, label, active, badge, extraCls) =>
+      `<a class="side-nav-item ${active ? "active" : ""}${badge ? " has-due" : ""}${extraCls ? " " + extraCls : ""}" href="${href}">${U.icon(icon)}<span>${label}</span>${badge ? `<span class="due-badge">${badge}</span>` : ""}</a>`;
+    const p0 = r.parts[0] || "home";
+    /* 抽屉内搜索框（仅 ≤720px 显示，桌面端由 CSS 隐藏）：顶栏搜索在移动端被隐藏，
+       这里补上唯一的搜索入口。`.drawer-search` 必须是 input 的**直接父元素**，
+       否则 attachHistory 挂进去的 .search-dd 下拉会失去定位参照。 */
+    _navSecCtx = r;
+    navSyncAutoOpen(r);
+    let html = `
+      <div class="drawer-search">
+        <span class="icon">${U.icon("search")}</span>
+        <input id="drawer-search" type="text" placeholder="搜索题目、技术、岗位、标签…" autocomplete="off" enterkeyhint="search" aria-label="搜索" />
+      </div>
+      <!-- 投稿入口（20260919f 新增，20260919h 提到顶部）：侧栏有二十多项、且它在「导航」13 项
+           之后、要往下滚才看得到 —— 光换颜色不够，直接提到搜索框下面当第一落点，
+           配 .nav-cta（主色底 + 呼吸描边）一眼就能看到。
+           「我的投稿」只在登录后出现：未登录时它必然是空的，摆着只占位置。
+           20260919j：整块改成可折叠分区（默认展开）。 -->
+      ${navSec("submit", "nav-cta-title", `
+        ${navItem("#/submit", "plus", "投稿题目", p0 === "submit", 0, "nav-cta")}
+        ${(window.Account && Account.isLoggedIn()) ? navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions") : ""}`)}
+      ${navSec("nav", "", `
+        ${navItem("#/", "home", "首页", p0 === "home")}
+        ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
+        ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
+        ${navItem("#/category", "layers", "技术体系", p0 === "category")}
+        ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
+        ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
+        ${navItem("#/random", "dice", "随机一题", p0 === "random")}
+        ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
+        ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
+        ${navItem("#/history", "history", "浏览历史", p0 === "history")}
+        ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
+        ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
+        ${navItem("#/about", "info", "关于本站", p0 === "about")}`)}`;
+
+    /* 移动端专属：「管理员登录」入口。原先的理由是「必须插在技术分类之前」（分类树很长，
+       放最后会被埋到抽屉底部）；2026-09-23 晚侧栏分类树已整体移除，这个约束随之消失，
+       位置保持现状（紧跟导航区之后），手机上仍是一眼可见的落点。
+       顶栏那个「管理员」按钮在 ≤720px 被隐藏（顶栏放不下），这里是它的替代路径。
+       只在**未登录管理员**时渲染：已登录时下方本来就有完整的「管理」分区，
+       再放一个会出现两个同名「管理」标题。
+       ⚠️ 这一块**故意不做折叠**（只有一个链接，折起来反而把人挡在门外），保持普通标题。 */
+    if (!Auth.isAdmin()) {
+      html += `<div class="nav-section-title mobile-only">管理</div>
+        <a class="side-nav-item mobile-only" id="side-admin-login" href="#">${U.icon("shield")}<span>管理员登录</span></a>`;
+    }
+
+    /* 「技术分类」分区（侧栏那棵大树）已于 2026-09-23 晚按用户要求**整体移除**：
+       用户反馈「技术分类与技术体系重复」，且明确「岗位体系下来就是技术体系，
+       按之前的还原，只是把技术分类删掉」。
+       ⇒ 导航区保留「技术体系」项（指向 #/category，含完整分类页与右侧题目列表），
+       侧栏不再单独渲染分类树，避免同一批数据两个入口。
+       连带清理：NAV_SECS.cats、category 的 navSectionOf 映射、侧栏 renderTree()、
+       curCatOpen 状态、「查看全部技术分类」入口 —— 均已一并删除，不留死代码。 */
+    if (Auth.isAdmin()) {
+      html += navSec("admin", "", `
+        ${navItem("#/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
+        ${navItem("#/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
+        ${navItem("#/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
+        ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`);
+    }
+    /* 审核队列（20260919f）：admin + expert 都能进（服务端按 role 裁剪可见范围）。
+       角标 = 待审条数，由 Submit.refreshPending() 异步拉取后回写 App.reviewPending。 */
+    if (window.Account && Account.isReviewer()) {
+      html += navSec("review", "", `
+        ${navItem("#/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`);
+    }
+    /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁；
+       待入库（20260919h）同理 —— 它是「审核 → 入库」的收尾步骤，只给管理员。 */
+    if (window.Account && Account.isServerAdmin()) {
+      html += navSec("site", "", `
+        ${navItem("#/admin/inbox", "download", "待入库", p0 === "admin" && r.parts[1] === "inbox", App.inboxPending || 0)}
+        ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
+        ${navItem("#/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`);
+    }
+    sidebar.innerHTML = html;
+    renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）
+    /* 分区折叠：点击分区标题收起/展开。**按 aria-expanded 推断当前状态**（它才是真实渲染结果），
+       不重新算一遍 —— 免得「自动展开」与「用户偏好」两套逻辑在这里打架。
+       用户手动操作后清掉 _navAutoOpen：这样连点两次是「收起 → 展开」，不会被路由强开弹回。 */
+    $$("#sidebar .nav-sec-toggle").forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const k = btn.dataset.sec;
+        if (!NAV_SECS[k]) return;
+        const opened = btn.getAttribute("aria-expanded") === "true";
+        delete _navAutoOpen[k];
+        const st = loadNavCollapsed();
+        st[k] = opened;                       // 本来是展开的 → 收起
+        saveNavCollapsed();
+        renderSidebar(parseHash());
+      };
+    });
+    /* 抽屉内搜索：与顶栏搜索共用同一份「最近搜索」历史（SH_KEY），行为一致；
+       显式 closeDrawer()，因为搜同一个词时 hash 不变、不会触发 hashchange 兜底。 */
+    const ds = $("#drawer-search");
+    if (ds) {
+      const goSearch = (t) => { if (!t) return; shPush(t); closeDrawer(); App.go("/questions?q=" + encodeURIComponent(t)); };
+      ds.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); goSearch(ds.value.trim()); } });
+      attachHistory(ds, goSearch);
+    }
+    /* 抽屉里的「管理员登录」（仅移动端可见）：与顶栏按钮同一个出口 openAdminLogin，
+       先关抽屉再弹登录框，避免登录框叠在抽屉上。 */
+    const sal = $("#side-admin-login");
+    if (sal) sal.onclick = (e) => { e.preventDefault(); closeDrawer(); openAdminLogin(); };
+    /* 注：侧栏分类树（#side-tree）已于 2026-09-23 晚整体移除，原先在此绑定 tree-row 点击/展开的
+       代码一并删除。分类浏览统一走「技术体系」页（#/category），该页内部有自己的分类树
+       （#page-tree，交互逻辑在同文件下方，未受影响）。 */
+  }
+
+  /* ============================ 底部 tab 栏（移动端） ============================
+   * 仅 <=720px 由 CSS 显示，桌面端零影响。复用侧边栏同一份「待复习」计数
+   * （App.reviewDue），并由 renderSidebar 统一触发刷新，角标始终与侧栏一致。 */
+  function renderTabbar(r) {
+    const el = document.getElementById("tabbar");
+    if (!el) return;
+    const p0 = (r && r.parts[0]) || "home";
+    const due = App.reviewDue || 0;
+    const item = (href, icon, label, active, badge, extraCls) =>
+      `<a class="tab-item${active ? " active" : ""}${extraCls ? " " + extraCls : ""}" href="${href}"${active ? ' aria-current="page"' : ""}>` +
+      `${U.icon(icon)}<span>${label}</span>` +
+      `${badge ? `<i class="tab-badge">${badge > 99 ? "99+" : badge}</i>` : ""}</a>`;
+    el.innerHTML =
+      item("#/", "home", "首页", p0 === "home") +
+      item("#/questions", "layers", "题库", p0 === "questions") +
+      item("#/practice", "refresh", "刷题", p0 === "practice") +
+      item("#/review", "alert", "错题", p0 === "review", due) +
+      item("#/favorites", "bookmark", "收藏", p0 === "favorites");
+    /* 2026-09-24 去掉第 6 项「投稿」及其 .tab-cta 实心圆底：
+       ① 6 项在 375px 屏上每项只剩 63px，首尾相接没有呼吸感（实测 x=0/63/125/188/250/313）；
+       ② 「投稿」是低频动作（写完一道题才用一次），做成带脉冲的蓝色圆钮后视觉重心远超
+          5 个正文 tab，还盖住了右下角内容 —— 拇指区最贵的位置给了最低频的操作。
+       投稿入口仍然可达，且都不需要额外点击：抽屉第一落点（.nav-cta，见 renderSidebar）、
+       顶栏文字入口（桌面）、首页与「我的」页的入口卡片。 */
+  }
+
+  /* ============================ 移动端手势：左右滑动切题 ============================
+   * 刻意不重新实现导航：滑动直接点击页面上已有的「上一题 / 下一题」按钮，
+   * 与键盘快捷键走同一个出口 —— 顺序、同分类循环、练习进度与完成判定全部与手动点击一致。
+   * 仅在题目详情页与刷题练习页生效（模拟面试最后一题是「提交面试」，绝不能被误滑触发）。 */
+  const SWIPE_MIN_DX = 60;   // 水平最小位移（px）
+  const SWIPE_EDGE = 28;     // 屏幕左右边缘内不响应（避开系统侧滑返回手势）
+  function bindSwipeNav() {
+    const el = document.getElementById("main");
+    if (!el || el.dataset.swipeBound === "1") return;   // 幂等：内容替换无需重绑
+    el.dataset.swipeBound = "1";
+    let sx = 0, sy = 0, active = false;
+    el.addEventListener("touchstart", e => {
+      active = false;
+      if (e.touches.length !== 1) return;
+      const t = e.target;
+      if (t && t.closest && t.closest("input,textarea,select,[contenteditable],.modal,.md pre,.hljs,.swipe-off")) return;
+      const x = e.touches[0].clientX;
+      if (x < SWIPE_EDGE || x > window.innerWidth - SWIPE_EDGE) return;
+      sx = x; sy = e.touches[0].clientY; active = true;
+    }, { passive: true });
+    el.addEventListener("touchmove", e => {
+      if (!active || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+      /* 纵向意图明显时立刻放手，把滚动完全交还给浏览器 */
+      if (Math.abs(dy) > 18 && Math.abs(dy) > Math.abs(dx) * 1.2) active = false;
+    }, { passive: true });
+    el.addEventListener("touchend", e => {
+      if (!active) return;
+      active = false;
+      const cur = (location.hash || "").replace(/^#\/?/, "").split("?")[0].split("/")[0];
+      if (cur !== "question" && cur !== "practice") return;
+      if (document.querySelector("#modal-root .modal-mask, #modal-root .modal")) return;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) < SWIPE_MIN_DX || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+      /* 右滑 = 上一题，左滑 = 下一题（与翻页直觉一致） */
+      const btn = dx > 0
+        ? (document.getElementById("prev-btn") || document.getElementById("prev"))
+        : (document.getElementById("next-btn") || document.getElementById("next"));
+      if (btn && btn.offsetParent !== null) btn.click();
+    }, { passive: true });
+  }
+
+  /* renderTree（原侧栏分类树渲染器）已于 2026-09-23 晚随「技术分类」分区一并删除。
+     分类树现在只在「技术体系」页内渲染（见同文件 pageCategory 里的局部 renderTree）。 */
+
+  /* ============================ 通用组件 ============================ */
+  /* 来源标签：把数据里的 source 字段翻成人话再上界面。
+     ⚠️ 不要直接把 q.source 打到用户面前 —— 实测详情页 meta 行会渲染出「来源: seed」，
+     seed / principles 都是建库期的内部标记，用户看不懂是什么意思（2026-09-24 评审 P2-11）。
+     管理后台的表格仍显示原始值（那里需要看真实字段）。 */
+  const SRC_LABEL = {
+    seed: "题库内置",
+    principles: "第一性原理",
+    manual: "官方整理",
+    ai: "AI 生成",
+    import: "批量导入",
+    submission: "用户投稿",
+  };
+  function srcLabel(s) {
+    const v = String(s == null ? "" : s).trim();
+    if (!v) return "";
+    if (/^https?:\/\//i.test(v)) return "外部来源";
+    return SRC_LABEL[v] || "其他来源";
+  }
+  function qCard(q, matches) {
+    const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
+    const diffCls = "diff-" + q.difficulty;
+    /* 卡片 chip 精简（2026-09-23）：只保留「难度 + 主分类 + 1 个主标签」，岗位折叠成「+N 岗位」。
+       原因：原先每卡最多 3 岗位 + 4 标签，一屏十几张卡全是彩色小胶囊，视觉噪音大、扫读困难。
+       完整标签与岗位在题目详情页展示。
+       注意：主标签若与分类名相同（如分类「Redis」+ 标签「Redis」）必须去重，否则同一词出现两次。 */
+    const tagList = (q.tags || []).filter(t => t != null && String(t).trim());
+    const catName = q.catName || "";
+    const mainTag = tagList.find(t => t !== catName);
+    const restTags = tagList.filter(t => t !== mainTag);
+    const posList = (q.positionNames || []).filter(Boolean);
+    const posFold = posList.length === 1
+      ? `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(posList[0])}'">${U.esc(posList[0])}</span>`
+      : (posList.length > 1
+        ? `<span class="tag tag-outline tag-fold" title="${U.esc(posList.join(" / "))}">+${posList.length} 岗位</span>`
+        : "");
+    return `<a class="card card-hover q-card" href="#/question/${q.id}">
+      <div class="q-title">${hl(q.title, "title")}</div>
+      <div class="q-excerpt">${hl((q.body || "").replace(/[#*`>]/g, "").slice(0, 100), "body")}</div>
+      <div class="q-meta">
+        <span class="tag ${diffCls}">${q.difficulty}</span>
+        <span class="tag">${U.esc(q.type)}</span>
+        ${catName ? `<span class="tag tag-primary">${U.esc(catName)}</span>` : ""}
+        ${posFold}
+        ${mainTag ? `<span class="tag">${U.esc(mainTag)}</span>` : ""}
+        ${restTags.length ? `<span class="tag tag-more" title="${U.esc(restTags.join(" / "))}">+${restTags.length}</span>` : ""}
+      </div>
+      <div class="q-foot">
+        ${(q.views || 0) > 0 ? `<span>${U.icon("eye")} ${q.views}</span>` : ""}
+        ${(q.favorites || 0) > 0 ? `<span>${U.icon("bookmark")} ${q.favorites}</span>` : ""}
+        ${(q.aiScore || 0) > 0 ? `<span>${U.icon("star")} ${q.aiScore}</span>` : ""}
+        <span class="muted">${U.fmtDate(q.updatedAt)}</span>
+      </div>
+    </a>`;
+  }
+
+  function setMain(html, after) {
+    /* 满宽逃生舱：HTML 开头放 <!-- wide --> 可加 .container-wide（max-width:100%）脱离 1180px 限宽。
+       注意：全站目前统一使用 1180px 居中宽度（含「技术教程」全模块），此项保留备用，暂无页面使用。 */
+    const wide = typeof html === "string" && html.indexOf("<!-- wide -->") >= 0;
+    main.innerHTML = `<div class="container page-enter${wide ? " container-wide" : ""}">${html}</div>`;
+    window.scrollTo(0, 0);
+    if (after) after();
+    U.highlightAll(main);
+  }
+  window.setMain = setMain;   // 暴露给拆分出去的模块（js/guide.js）复用
+
+  /* ============================ 首页 ============================ */
+  /* ============================ 今日5题 & 学习打卡 & 最近搜索 ============================ */
+  const SH_KEY = "search_history";
+  const HOT_TERMS = ["Redis", "MySQL 索引", "消息队列", "JVM", "TCP 三次握手", "分布式事务", "操作系统", "算法"];
+  function shGet() { try { return JSON.parse(localStorage.getItem(SH_KEY) || "[]"); } catch (e) { return []; } }
+  function shPush(q) { if (!q) return; const arr = shGet().filter(x => x.q !== q); arr.unshift({ q, t: Date.now() }); localStorage.setItem(SH_KEY, JSON.stringify(arr.slice(0, 10))); }
+  /* 全局同一时刻只允许存在一个搜索下拉；document 层「点外面关闭」只装一次（单例委托）。
+     ⚠️ 原先每个 attachHistory 内部各自 document.addEventListener，而 attachHistory 的调用点
+     （首页 hero-search、题目列表 q-search、顶栏、抽屉）都在**每次路由渲染时重跑** ——
+     监听器会随浏览不断累积。改成单例后彻底消除。 */
+  let activeDd = null, ddDocBound = false;
+  function attachHistory(input, onGo) {
+    if (!input) return;
+    let dd = null;
+    const close = () => {
+      if (dd) { dd.remove(); dd = null; }
+      if (activeDd && activeDd.input === input) activeDd = null;
+    };
+    const show = (html) => {
+      if (activeDd && activeDd.input !== input) activeDd.close();   // 别的输入留下的下拉先收掉
+      close();
+      dd = document.createElement("div");
+      dd.className = "search-dd";
+      dd.innerHTML = html;
+      input.parentNode.appendChild(dd);
+      activeDd = { input, close };
+      dd.addEventListener("click", (e) => {
+        const del = e.target.closest(".sd-del");
+        if (del) { e.stopPropagation(); localStorage.setItem(SH_KEY, JSON.stringify(shGet().filter(x => x.q !== del.dataset.del))); open(); return; }
+        if (e.target.closest(".sd-clear")) { localStorage.removeItem(SH_KEY); open(); return; }
+        const it = e.target.closest("[data-q]");
+        if (it && it.dataset.q != null) { input.value = it.dataset.q; close(); onGo(it.dataset.q); }
+      });
+    };
+    const open = () => {
+      const hist = shGet();
+      let h;
+      if (hist.length) {
+        h = `<div class="sd-head"><span>最近搜索</span><button type="button" class="sd-clear">清空</button></div>`
+          + hist.map(x => `<div class="sd-item" data-q="${U.esc(x.q)}"><span class="sd-ic">${U.icon("history")}</span><span class="sd-q">${U.esc(x.q)}</span><button type="button" class="sd-del" data-del="${U.esc(x.q)}" title="删除这条">×</button></div>`).join("");
+      } else {
+        h = `<div class="sd-head"><span>热门搜索</span></div><div class="sd-hot">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-q="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>`;
+      }
+      show(h);
+    };
+    /* 实时题目联想（20261005a）：输入时用 Fuse 索引取标题最相近的 8 题，点击直达详情。
+       联想源是整库 Fuse 索引（Services.reload 时构建，含 title/tags/body/answer 权重），
+       140ms 防抖避免每键触发；空结果时收起下拉不打扰 */
+    const suggest = (term) => {
+      let rows = "";
+      try {
+        if (Services.fuse) {
+          const res = Services.fuse.search(term);
+          const seen = new Set();
+          for (const r of res) {
+            const q = Services.questions.find(x => x.id === r.item.ref);
+            if (!q || seen.has(q.title)) continue;
+            seen.add(q.title);
+            rows += `<div class="sd-item" data-q="${U.esc(q.title)}"><span class="sd-ic">${U.icon("search")}</span><span class="sd-q">${U.esc(q.title)}</span><span class="sd-cat muted">${U.esc(q.catName || "")}</span></div>`;
+            if (seen.size >= 8) break;
+          }
+        }
+      } catch (e) {}
+      if (!rows) { close(); return; }
+      show(`<div class="sd-head"><span>题目联想 · 回车看全部结果</span></div>` + rows);
+    };
+    input.addEventListener("focus", open);
+    let sgTimer = 0;
+    input.addEventListener("input", () => {
+      clearTimeout(sgTimer);
+      const v = input.value.trim();
+      if (!v) { open(); return; }
+      sgTimer = setTimeout(() => { if (input.value.trim() === v) suggest(v); }, 140);
+    });
+    input.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    if (!ddDocBound) {
+      ddDocBound = true;
+      document.addEventListener("click", (e) => {
+        if (!activeDd) return;
+        if (e.target.closest(".search-dd") || e.target === activeDd.input) return;
+        activeDd.close();
+      });
+    }
+  }
+
+  function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  /* 今日5题：以日期字符串为种子的确定性抽样——当天固定，次日自动更换 */
+  function todayFive() {
+    const pool = Services.questions.filter(q => q.status === "published").map(q => q.id);
+    const dk = dateKey();
+    let h = 2166136261;
+    for (let i = 0; i < dk.length; i++) { h ^= dk.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const rnd = mulberry32(h >>> 0);
+    const arr = pool.slice();
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+    return arr.slice(0, Math.min(5, arr.length));
+  }
+  /* 温故知新：3-30 天前浏览过、未进错题本、今日未打卡的题，混入今日清单前 2 位
+     （设置开关 review_stale，默认关；候选按「最久未看优先」，同日内稳定） */
+  async function buildDailyList() {
+    const base = todayFive();
+    try {
+      if (localStorage.getItem("review_stale") === "1" && DB.db) {
+        const [rows, weakRows, done] = await Promise.all([
+          DB.db.histories.toArray(), DB.db.weakBank.toArray(), dailyDoneGet()
+        ]);
+        const weakIds = new Set(weakRows.map(w => w.questionId));
+        const doneSet = new Set(done);
+        const now = Date.now();
+        const stale = rows
+          .filter(h => typeof h.questionId === "number" && now - h.createdAt >= 3 * 864e5 && now - h.createdAt <= 30 * 864e5
+            && !weakIds.has(h.questionId) && !doneSet.has(h.questionId))
+          .sort((a, b) => a.createdAt - b.createdAt || a.questionId - b.questionId)
+          .map(h => Services.questions.find(q => q.id === h.questionId && q.status === "published"))
+          .filter(Boolean)
+          .map(q => q.id)
+          .filter(id => base.indexOf(id) < 0);
+        return stale.slice(0, 2).concat(base);
+      }
+    } catch (e) {}
+    return base;
+  }
+  /* —— 今日5题完成记录：IndexedDB dailyDone 表（随个人数据云同步，换设备不丢） ——
+   * 兼容：首次运行时把旧版 localStorage 的当日记录迁移进 IDB。 */
+  async function dailyDoneGet(day) {
+    day = day || dateKey();
+    try {
+      const rows = await DB.db.dailyDone.where("day").equals(day).toArray();
+      if (rows.length) return rows[0].ids || [];
+      /* 迁移：旧数据在 localStorage daily_done_<day>，只迁今天这一天（历史记录无从补齐） */
+      let legacy = [];
+      try { legacy = JSON.parse(localStorage.getItem("daily_done_" + day) || "[]"); } catch (e) {}
+      if (legacy.length) await DB.db.dailyDone.add({ day, ids: legacy, updatedAt: Date.now() });
+      return legacy;
+    } catch (e) { return []; }
+  }
+  async function dailyDoneAdd(id) {
+    try {
+      const day = dateKey();
+      const rows = await DB.db.dailyDone.where("day").equals(day).toArray();
+      const row = rows[0];
+      const ids = (row && row.ids) || [];
+      if (ids.indexOf(id) < 0) {
+        ids.push(id);
+        if (row) await DB.db.dailyDone.update(row.id, { ids, updatedAt: Date.now() });
+        else await DB.db.dailyDone.add({ day, ids, updatedAt: Date.now() });
+      }
+    } catch (e) {}
+  }
+  async function markDailyDone(id) {
+    const five = (App.dailyList && App.dailyList.length) ? App.dailyList : todayFive();
+    if (five.indexOf(Number(id)) < 0 && five.indexOf(id) < 0) return false;
+    const v = Number(id);
+    await dailyDoneAdd(v);
+    return true;
+  }
+  /* 打卡：基于本地统计的每日访问记录推导连续天数与热力图 */
+  function streakInfo() {
+    const st = Stats.getLocalStats(); const daily = st.daily || {};
+    const total = Object.keys(daily).length;
+    const has = k => !!daily[k];
+    let streak = 0;
+    const d = new Date();
+    if (!has(dateKey(d))) d.setDate(d.getDate() - 1);
+    while (has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    const cells = [];
+    const c = new Date(); c.setDate(c.getDate() - 34);
+    for (let i = 0; i < 35; i++) { const k = dateKey(c); cells.push({ k, n: daily[k] || 0 }); c.setDate(c.getDate() + 1); }
+    return { streak, total, cells };
+  }
+
+  async function pageHome() {
+    const stats = await Services.stats();
+    const tree = Services.categoryTree();
+    const posByStage = Services.positionsByStage();
+    const hotTags = ["Java", "MySQL", "Redis", "Spring Boot", "Vue3", "React", "Docker", "Kubernetes", "TCP", "算法", "Python", "AI大模型"];
+    const recent = stats.recent.slice(0, 6);
+    const best = Services.questions.slice().sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)).slice(0, 6);
+    const catCards = tree.map(c => {
+      const empty = !c.count;
+      return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
+        ${empty ? `<span class="soon-chip">即将上线</span>` : ""}
+        <div style="font-size:24px">${U.esc(c.icon || "📁")}</div>
+        <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
+        <div class="muted" style="font-size:12px">${empty ? "题目录入中" : c.count + " 题 · " + (c.era || "")}</div>
+      </a>`;
+    }).join("");
+    const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
+        <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
+    const qlist = arr => arr.map(q => qCard(q)).join("");
+    /* —— 今日5题 & 学习打卡 & 继续上次 —— */
+    const five = (App.dailyList && App.dailyList.length) ? App.dailyList : todayFive(); const doneSet = await dailyDoneGet();
+    const fiveLeft = five.filter(id => doneSet.indexOf(id) < 0);
+    const qById = id => Services.questions.find(x => x.id === id);
+    let fiveHtml = "";
+    if (five.length) {
+      const rows = five.map(id => {
+        const q = qById(id); if (!q) return "";
+        const ok = doneSet.indexOf(id) >= 0;
+        return `<a href="#/question/${id}" style="text-decoration:none;display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--border)">
+          <span>${ok ? "✅" : "⬜"}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`;
+      }).join("");
+      fiveHtml = `<div class="card" style="padding:16px 18px">
+        <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🎯</span><b style="margin-left:8px">今日 5 题</b>
+          <span class="tag ${fiveLeft.length ? "tag-primary" : "tag-success"}" style="margin-left:auto">${doneSet.filter(id => five.indexOf(id) >= 0).length}/${five.length}</span></div>
+        <div class="daily-list">${rows}</div>
+        ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="#/question/${fiveLeft[0]}">开始刷题 →</a>`
+                          : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
+        <label style="margin-top:10px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
+      </div>`;
+    }
+    const sk = streakInfo();
+    const heatHtml = sk.cells.map(c => `<span class="heat-cell h${c.n === 0 ? 0 : c.n <= 2 ? 1 : c.n <= 4 ? 2 : c.n <= 8 ? 3 : 4}" title="${c.k} · ${c.n} 次"></span>`).join("");
+    const streakHtml = `<div class="card" style="padding:16px 18px">
+      <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🔥</span><b style="margin-left:8px">学习打卡</b>
+        <span class="muted" style="margin-left:auto;font-size:12px">累计 ${sk.total} 天</span></div>
+      <div style="font-size:26px;font-weight:700;color:#f59e0b">连续 ${sk.streak} 天</div>
+      <div class="heat-grid" style="margin-top:10px">${heatHtml}</div>
+      <div class="muted" style="font-size:11px;margin-top:6px">最近 35 天 · 打开即打卡</div>
+    </div>`;
+    let resumeHtml = "";
+    try {
+      const lq = JSON.parse(localStorage.getItem("last_question") || "null");
+      if (lq && lq.id && lq.title && Services.questions.some(x => x.id === lq.id)) {
+        resumeHtml = `<a class="card card-hover" href="#/question/${lq.id}" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px 18px">
+          <span style="font-size:22px">📖</span>
+          <span style="flex:1;min-width:0"><b>继续上次</b><span class="muted" style="margin-left:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:70%;vertical-align:bottom">${U.esc(lq.title)}</span></span>
+          <span class="tag tag-primary">继续 →</span></a>`;
+      }
+    } catch (e) {}
+    /* —— 学习周报：口径修正（真实可解释）+ 环比上周 + 一周柱状图 + 行动入口 ——
+       口径说明：
+       - 刷题数 = 本周浏览的不同题数（浏览历史按题去重，createdAt=最后一次浏览时间）
+       - 完成5题天数 = dailyDone 记录天数（做完当日 5 题才算，与打卡卡的「打开即打卡」不同口径）
+       - 新增薄弱 = 本周新进错题本的题数；薄弱分类 Top 优先本周，无则回退累计并标注 */
+    let weekHtml = "";
+    try {
+      const db = DB.db;
+      const now = new Date();
+      const dow = (now.getDay() + 6) % 7;   // 0=周一
+      const day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).setHours(0, 0, 0, 0);
+      const ws = day0 - dow * 864e5;             // 本周一 0 点
+      const wPrev = ws - 7 * 864e5;              // 上周一 0 点
+      const we = day0 + 864e5;                   // 本周区间终点（明天 0 点）
+      const mmdd = t => { const d = new Date(t); return String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+      const [hisAll, weakAll, dailyRows] = await Promise.all([db.histories.toArray(), db.weakBank.toArray(), db.dailyDone.toArray()]);
+
+      const weekViewsRows = hisAll.filter(h => (h.createdAt || 0) >= ws && (h.createdAt || 0) < we);
+      const prevViewsRows = hisAll.filter(h => (h.createdAt || 0) >= wPrev && (h.createdAt || 0) < ws);
+      const weekQs = new Set(weekViewsRows.map(h => h.questionId)).size;
+      const prevQs = new Set(prevViewsRows.map(h => h.questionId)).size;
+      const weekWeakNew = weakAll.filter(w => (w.createdAt || 0) >= ws && (w.createdAt || 0) < we).length;
+      const prevWeakNew = weakAll.filter(w => (w.createdAt || 0) >= wPrev && (w.createdAt || 0) < ws).length;
+      const weekDays = new Set(dailyRows.filter(r => Date.parse(r.day + "T00:00:00") >= ws && Date.parse(r.day + "T00:00:00") < we).map(r => r.day)).size;
+      const prevDays = new Set(dailyRows.filter(r => { const t = Date.parse(r.day + "T00:00:00"); return t >= wPrev && t < ws; }).map(r => r.day)).size;
+
+      /* 环比徽章：goodWhenDown 用于「新增薄弱」这类越少越好的指标 */
+      const trendBadge = (cur, prev, goodWhenDown) => {
+        if (!prev) return cur > 0 ? '<span class="wk-trend good">新增</span>' : "";
+        const pct = Math.round((cur - prev) / prev * 100);
+        if (pct === 0) return '<span class="wk-trend flat">持平</span>';
+        const up = pct > 0;
+        const good = goodWhenDown ? !up : up;
+        return `<span class="wk-trend ${good ? "good" : "bad"}">${up ? "↑" : "↓"} ${Math.abs(pct)}%</span>`;
+      };
+
+      /* 一周迷你柱状图：每天刷题数（不同题，按最后浏览时间计） */
+      const dayNames = ["一", "二", "三", "四", "五", "六", "日"];
+      const perDay = Array.from({ length: 7 }, (_, i) => {
+        const a = ws + i * 864e5, b = a + 864e5;
+        return { i, n: i <= dow ? hisAll.filter(h => (h.createdAt || 0) >= a && (h.createdAt || 0) < b).length : -1, future: i > dow };
+      });
+      const maxN = Math.max(1, ...perDay.map(d => d.n));
+      const bars = perDay.map(d => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${d.future ? "" : d.n}</span>
+        <div class="bar-track">${d.future ? "" : `<div class="bar-fill${d.i === dow ? " today" : ""}" style="height:${Math.max(6, Math.round((d.n || 0) / maxN * 100))}%" title="${d.n} 题"></div>`}</div>
+        <span class="muted" style="font-size:11px">${d.future ? "" : (d.i === dow ? "今" : dayNames[d.i])}</span>
+      </div>`).join("");
+
+      /* 薄弱分类：优先本周新增，无则回退累计；标签可点击跳分类刷题 */
+      const weakCatsWeek = {}, weakCatsAll = {};
+      for (const w of weakAll) {
+        const q = Services.questions.find(x => x.id === w.questionId);
+        if (!q || q.categoryId == null) continue;
+        weakCatsAll[q.categoryId] = (weakCatsAll[q.categoryId] || 0) + 1;
+        if ((w.createdAt || 0) >= ws) weakCatsWeek[q.categoryId] = (weakCatsWeek[q.categoryId] || 0) + 1;
+      }
+      const catTag = ([cid, n]) => { const c = Services.catMap.get(parseInt(cid)) || Services.catMap.get(cid); const name = c ? c.name : ("#" + cid); return `<a class="tag tag-outline" href="#/questions?cat=${cid}">${U.esc(name)} <b>${n}</b></a>`; };
+      const weekTop = Object.entries(weakCatsWeek).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const allTop = Object.entries(weakCatsAll).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const catLine = weekTop.length
+        ? '<span class="muted" style="font-size:12px">本周新增薄弱：</span>' + weekTop.map(catTag).join(" ")
+        : (allTop.length ? '<span class="muted" style="font-size:12px">本周无新增 · 累计薄弱：</span>' + allTop.map(catTag).join(" ")
+                         : '<span class="muted">暂无，保持住！</span>');
+
+      /* 本周标记不会的题：默认折叠进明细，避免撑长卡片 */
+      const weekWeakQs = weakAll.filter(w => (w.createdAt || 0) >= ws && (w.createdAt || 0) < we)
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 5)
+        .map(w => Services.questions.find(x => x.id === w.questionId)).filter(Boolean);
+      const weakDetails = weekWeakQs.length
+        ? `<details class="wk-sec">
+            <summary><b>本周标记不会的题</b> <span class="muted" style="font-size:12px">（${weekWeakNew} 道）</span></summary>
+            <div style="margin-top:4px">${weekWeakQs.map(q => `<a href="#/question/${q.id}" style="text-decoration:none;display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border)"><span>❌</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`).join("")}
+            <a href="#/review" class="muted" style="font-size:12px;display:inline-block;margin-top:6px">全部都在错题重练 →</a></div>
+          </details>`
+        : "";
+
+      const allZero = weekQs === 0 && weekDays === 0 && weekWeakNew === 0;
+      const rangeLabel = `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`;
+
+      /* 近 8 周每周刷题数（不同题，与周报口径一致） */
+      const weeks8 = Array.from({ length: 8 }, (_, i) => {
+        const a2 = ws - (7 - i) * 7 * 864e5, b2 = a2 + 7 * 864e5;
+        const n = new Set(hisAll.filter(h => (h.createdAt || 0) >= a2 && (h.createdAt || 0) < b2).map(h => h.questionId)).size;
+        return { a: a2, n, cur: i === 7 };
+      });
+      const maxW = Math.max(1, ...weeks8.map(w => w.n));
+      const weekBars = weeks8.map(w => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span class="muted" style="font-size:10px;line-height:12px;height:12px">${w.n}</span>
+        <div class="bar-track"><div class="bar-fill${w.cur ? " today" : ""}" style="height:${Math.max(6, Math.round((w.n || 0) / maxW * 100))}%" title="${mmdd(w.a)} 那一周：${w.n} 题"></div></div>
+        <span class="muted" style="font-size:11px">${w.cur ? "本周" : mmdd(w.a)}</span>
+      </div>`).join("");
+      /* 周报归档：每周一条存 localStorage（保留最近 26 周），卡片「历史」可查 */
+      const wkKey = String(ws);
+      try {
+        const store = JSON.parse(localStorage.getItem("iti_weekly_log") || "[]");
+        if (!store.some(x => x.ws === wkKey) && !allZero) {
+          store.unshift({ ws: wkKey, range: rangeLabel, total: weekQs, days: weekDays, weakNew: weekWeakNew });
+          localStorage.setItem("iti_weekly_log", JSON.stringify(store.slice(0, 26)));
+        }
+      } catch (e) {}
+      /* 周报分享图数据 + 激励语 */
+      const wkSlogan = weekDays >= 5 ? "打卡王者 · 节奏无敌" : weekQs >= 15 ? "稳稳的输入，量变到质变" : weekQs > 0 ? "开始了，就赢过昨天的自己" : "随时可以出发";
+      App._weekStats = {
+        range: `本周 ${mmdd(ws)} ~ ${mmdd(day0)}`,
+        total: weekQs, days: weekDays, weakNew: weekWeakNew,
+        daily: perDay.map(d => ({ n: d.future ? 0 : Math.max(0, d.n || 0), label: d.future ? "" : (d.i === dow ? "今" : dayNames[d.i]) })),
+        weakTop: (weekTop.length ? weekTop : allTop).slice(0, 3).map(([cid, n]) => { const c = Services.catMap.get(parseInt(cid)); return { name: c ? c.name : "#" + cid, n }; }),
+        weakIsWeek: weekTop.length > 0,
+        slogan: wkSlogan
+      };
+      weekHtml = `<div class="card" id="week-report" style="padding:16px 18px;margin-top:20px">
+        <div class="wk-head" style="margin-bottom:12px"><span style="font-size:20px">📊</span><b style="margin-left:8px;white-space:nowrap">学习周报</b>
+          <span class="muted" style="font-size:12px;white-space:nowrap">${rangeLabel}</span><span class="spacer"></span>
+          <span class="wk-actions"><button id="wk-history-btn" class="btn btn-sm">历史</button><button id="wk-share-btn" class="btn btn-sm">📸 分享周报</button></span></div>
+        <div id="wk-history" style="display:none"></div>
+        ${allZero
+          ? `<div style="text-align:center;padding:6px 0 2px"><div style="font-size:15px">本周还没开始，随时可以出发 💪</div><div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="#/random">随机来一题 →</a> <a class="btn btn-sm" href="#/practice">进入刷题</a></div></div>`
+          : `<div class="wk-stats">
+              <div class="wk-stat"><div class="wk-num" style="color:var(--c-primary)">${weekQs}${trendBadge(weekQs, prevQs, false)}</div><div class="wk-label">刷题数 · 不同题</div></div>
+              <div class="wk-stat"><div class="wk-num" style="color:var(--c-warning)">${weekDays}${trendBadge(weekDays, prevDays, false)}</div><div class="wk-label">完成5题天数</div></div>
+              <div class="wk-stat"><div class="wk-num" style="color:var(--c-danger)">${weekWeakNew}${trendBadge(weekWeakNew, prevWeakNew, true)}</div><div class="wk-label">新增薄弱</div></div>
+            </div>
+            <div class="wk-sec">
+              <div class="muted" style="font-size:11px;margin-bottom:6px">每天刷了几题（柱子上方数字 = 当天题数）</div>
+              <div class="wk-bars">${bars}</div>
+            </div>
+            <div class="wk-sec">
+              <div class="muted" style="font-size:11px;margin-bottom:6px">近 8 周对比（柱子上方数字 = 该周刷的不同题数 · 深色为本周）</div>
+              <div class="wk-bars">${weekBars}</div>
+            </div>
+            <div class="wk-sec" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">${catLine}</div>
+            ${weakDetails}`}
+      </div>`;
+
+      /* —— 周报分享图弹窗（复用卡片生成思路） —— */
+      function openWeekShareDialog(st) {
+        const m = U.modal({ title: "分享我的学习周报", closable: true });
+        m.body.innerHTML = `<div id="wk-share-preview" class="muted" style="text-align:center;padding:30px 0">正在生成周报图…</div>`
+          + `<div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机：长按图片发给朋友；电脑：点「复制图片」后到微信聊天框 Ctrl+V 粘贴</div>`;
+        const btnCopy = document.createElement("button");
+        btnCopy.className = "btn"; btnCopy.textContent = "复制图片"; btnCopy.disabled = true;
+        const btnSave = document.createElement("button");
+        btnSave.className = "btn"; btnSave.textContent = "保存图片"; btnSave.disabled = true;
+        const isWxMobile = /MicroMessenger/i.test(navigator.userAgent) && /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
+        if (isWxMobile) { btnSave.style.display = "none"; btnCopy.style.display = "none"; }
+        m.foot.appendChild(btnSave);
+        m.foot.appendChild(btnCopy);
+        (async () => {
+          try {
+            const { canvas } = await window.WeekCard.render(st);
+            const box = m.body.querySelector("#wk-share-preview");
+            if (!box) return;
+            box.innerHTML = "";
+            const img = document.createElement("img");
+            img.src = canvas.toDataURL("image/png");
+            img.alt = "学习周报分享图";
+            img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
+            box.appendChild(img);
+            const file = await window.WeekCard.toFile(canvas, "学习周报-" + String(st.range || "").replace(/[^\d-~]/g, "") + ".png");
+            if (isWxMobile) {
+              const hint = document.createElement("div");
+              hint.className = "muted"; hint.style.cssText = "font-size:13px;margin-top:6px;text-align:center";
+              hint.textContent = "👆 点击图片放大后，长按选择「发送给朋友」分享到微信";
+              box.appendChild(hint);
+              img.style.cursor = "zoom-in";
+              img.onclick = () => {
+                const ov = document.createElement("div");
+                ov.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px;cursor:zoom-out";
+                const big = document.createElement("img"); big.src = img.src; big.style.cssText = "max-width:94vw;max-height:82vh;border-radius:12px";
+                const tip = document.createElement("div"); tip.style.cssText = "color:#e2e8f0;font-size:14px;margin-top:12px;text-align:center";
+                tip.innerHTML = "长按图片 → <b>发送给朋友</b> 或 <b>保存图片</b><br><span style=\"font-size:12px;opacity:.75\">点击任意处关闭</span>";
+                ov.appendChild(big); ov.appendChild(tip);
+                ov.onclick = () => ov.remove();
+                document.body.appendChild(ov);
+              };
+            } else { btnCopy.disabled = false; }
+            btnSave.disabled = false;
+            btnCopy.onclick = async () => {
+              try {
+                await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]);
+                U.toast("周报图已复制，到微信聊天框 Ctrl+V 粘贴即可发送", "success");
+              } catch (e) { U.toast("复制图片被浏览器拦截，请改用「保存图片」后发送", "error"); }
+            };
+            btnSave.onclick = () => {
+              const a = document.createElement("a");
+              a.href = URL.createObjectURL(file); a.download = file.name;
+              document.body.appendChild(a); a.click(); a.remove();
+              setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+              U.toast("周报图已保存", "success");
+            };
+          } catch (e) {
+            const box = m.body.querySelector("#wk-share-preview");
+            if (box) box.innerHTML = `<div class="muted">周报图生成失败，请稍后再试。</div>`;
+          }
+        })();
+      }
+
+      /* —— 渲染后执行：8 周热力图 + 周目标彩带 —— */
+      App._wkInit = () => {
+        const wsb = $("#wk-share-btn");
+        const whb = $("#wk-history-btn");
+        if (whb) whb.onclick = () => {
+          const panel = $("#wk-history");
+          if (!panel) return;
+          if (panel.style.display !== "none") { panel.style.display = "none"; return; }
+          let rows = [];
+          try { rows = JSON.parse(localStorage.getItem("iti_weekly_log") || "[]"); } catch (e) {}
+          panel.innerHTML = rows.length
+            ? `<div class="wk-sec"><div class="muted" style="font-size:11px;margin-bottom:4px">历史周报（近 26 周，存于本机）</div>${rows.map(x => `<div style="display:flex;gap:10px;font-size:13px;padding:4px 0;border-bottom:1px dashed var(--border)"><span style="min-width:118px">${U.esc(x.range)}</span><span>刷题 <b>${x.total}</b></span><span>打卡 <b>${x.days}</b> 天</span><span>新增薄弱 <b>${x.weakNew}</b></span></div>`).join("")}</div>`
+            : `<div class="muted" style="font-size:12px;padding:4px 0">还没有历史周报——从本周开始积累吧。</div>`;
+          panel.style.display = "block";
+        };
+        if (wsb) wsb.onclick = () => openWeekShareDialog(App._weekStats);
+        if (allZero) return;
+
+        if ((weekDays >= 5 || weekQs >= 15) && !/MicroMessenger/i.test(navigator.userAgent)) {
+          const key = "iti_confetti_" + rangeLabel;
+          let fire = true;
+          try { if (sessionStorage.getItem(key) === "1") fire = false; } catch (e) {}
+          if (fire) {
+            try { sessionStorage.setItem(key, "1"); } catch (e) {}
+            U.loadScript("confetti", U.CONFETTI_URL).then(() => {
+              if (!window.confetti) return;
+              window.confetti({ particleCount: 150, spread: 78, origin: { y: 0.65 }, colors: ["#2563EB", "#38BDF8", "#F59E0B", "#10B981"] });
+              setTimeout(() => { try { window.confetti({ particleCount: 90, spread: 100, origin: { y: 0.6 }, colors: ["#2563EB", "#F59E0B", "#EC4899"] }); } catch (e) {} }, 350);
+            }).catch(() => {});
+          }
+        }
+      };
+    } catch (e) { weekHtml = ""; }
+    /* —— 到期复习横幅：有到期题时在首页最顶部醒目提醒（比侧边栏小圆点显眼得多） —— */
+    let dueBannerHtml = "";
+    try {
+      const wl = await Services.weakList();
+      const dn = (wl.due || []).length;
+      App.reviewDue = dn;
+      if (dn > 0) {
+        dueBannerHtml = `<a class="review-banner" href="#/review" style="margin-top:20px">
+          <span class="rb-count">${dn}</span>
+          <span class="rb-txt"><b>今天有 ${dn} 道题到复习时间了</b>
+            <div class="rb-sub">趁还记得赶紧巩固，错过这次复习间隔会拉得更长</div></span>
+          <span class="rb-cta">立即复习 →</span></a>`;
+      }
+    } catch (e) {}
+    setMain(`
+      <section class="hero">
+        <h1>IT 面试题库 · 刷题 / 模拟面试</h1>
+        <p>覆盖完整技术体系与岗位体系的高频面试题库：在线刷题、错题间隔复习、模拟面试与学习周报，支持云端同步与离线使用。</p>
+        <div class="hero-search">
+          <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
+          <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
+          <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
+          <a class="btn btn-lg" href="#/docs">${U.icon("bookOpen")} 技术教程</a>
+        </div>
+        <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
+      </section>
+
+      <!-- 每日一句：细横条形态（20260923a 由大卡改为 hero 下方的 slim strip，首屏让给真实内容） -->
+      <div id="daily-quote-mount"></div>
+
+      <section class="stat-grid" style="margin-top:20px">
+        <a class="stat stat-ring" href="#/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-blue" stroke-dasharray="${Math.min(tree.length,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div>
+        </a>
+        <a class="stat stat-ring" href="#/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-green" stroke-dasharray="${Math.min(stats.total,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div>
+        </a>
+        <a class="stat stat-ring" href="#/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-purple" stroke-dasharray="${Math.min(stats.positions,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div>
+        </a>
+        <a class="stat stat-ring ai" href="#/panorama?view=ai" data-tooltip="点击查看 AI 生成题清单，共 ${stats.ai} 道，含来源构成条形图">
+          <svg class="ring-svg" viewBox="0 0 36 36">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="ring-fg ring-fg-ai" stroke-dasharray="${Math.min(stats.ai,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div>
+        </a>
+      </section>
+
+      <!-- 本机存储 / 登录同步的提示（2026-09-24 评审 P1-8）：原先挂在整页最末（移动端约第 11 屏），
+           而它解释的是「为什么换台设备就没有记录」这个一定会被问到的问题 —— 移到学习数据区开头。 -->
+      <div class="note" style="margin-top:20px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
+
+      ${dueBannerHtml}
+      ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
+      ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
+      ${weekHtml}
+
+      <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
+      <div class="grid grid-cols-auto home-cats">${catCards}</div>
+
+      <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部 →</a></div>
+      <div class="grid grid-cols-2 home-stages">${stageCards}</div>
+
+      <div class="section-head"><h2>最新题目</h2><a class="more" href="#/questions?sort=updated">更多 →</a></div>
+      <div class="grid grid-cols-2">${qlist(recent)}</div>
+
+      <div class="section-head"><h2>精选题目（AI 评分最高）</h2><a class="more" href="#/questions?sort=aiScore">更多 →</a></div>
+      <div class="grid grid-cols-2">${qlist(best)}</div>
+    `, () => {
+      if (App._wkInit) App._wkInit();
+      if (window.DailyQuote) window.DailyQuote.mount(document.getElementById("daily-quote-mount"));
+    });
+    const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); } };
+    $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
+    $("#hero-go").onclick = () => heroGo();
+    attachHistory($("#hero-search"), heroGo);
+    const staleToggle = $("#stale-toggle");
+    if (staleToggle) staleToggle.onchange = async () => {
+      try { localStorage.setItem("review_stale", staleToggle.checked ? "1" : "0"); } catch (e) {}
+      App.dailyList = await buildDailyList();
+      U.toast(staleToggle.checked ? "已开启温故知新：3 天前看过的题会混入今日清单" : "已关闭温故知新", "info");
+      pageHome();
+    };
+    $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
+    $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
+    /* 深链滚到首页某区块（如页脚「学习周报」→ #/?to=week-report）。
+       只认白名单内的 id，避免任意 id 被构造成跳转；滚完把 to 从 hash 里摘掉，
+       免得用户手动返回时又被滚一次。 */
+    scrollToSection(HOME_SCROLL_TARGETS);
+  }
+
+  /* 首页可深链锚点白名单（2026-09-23：修复页脚「学习周报」指向不存在的 #/report） */
+  const HOME_SCROLL_TARGETS = ["week-report"];
+  /* 把视口滚到指定区块，并同步修正 hash（只改 query，不动 path）。
+     只应在**页面内容渲染完之后**调用。 */
+  function scrollToSection(whitelist) {
+    const r = parseHash();
+    const to = r.q && r.q.to;
+    if (!to || whitelist.indexOf(to) < 0) return;
+    /* 摘掉 to：用 replace 避免产生额外历史记录 */
+    const rest = Object.keys(r.q).filter(k => k !== "to" && r.q[k] !== undefined)
+      .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(r.q[k])).join("&");
+    const clean = "#" + (r.path || "/") + (rest ? "?" + rest : "");
+    try { history.replaceState(null, "", clean); } catch (e) {}
+    /* 等一帧再滚，确保周报卡（依赖 IndexedDB 统计）已挂进 DOM */
+    requestAnimationFrame(() => {
+      const el = document.getElementById(to);
+      if (!el) return;
+      const tb = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar-h"), 10) || 60;
+      try { window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - tb - 12, behavior: "smooth" }); } catch (e) { el.scrollIntoView(); }
+      /* 短暂高亮，帮用户定位到刚跳过来的区块 */
+      el.classList.add("flash-target");
+      setTimeout(() => el.classList.remove("flash-target"), 1600);
+    });
+  }
+
+  /* ============================ 题库全景图 ============================ */
+  function pagePanorama(q) {
+    const view = (q && q.view) ? q.view : "all";
+    document.title = "题库全景 · IT面试题库";
+    if (!window.Panorama) { return App.go("/"); }
+    setMain(Panorama.html(view), () => Panorama.afterRender(view));
+  }
+
+  /* ============================ 技术体系页 ============================ */
+  let _catMapChart = null;
+  window.addEventListener("resize", () => { if (_catMapChart) _catMapChart.resize(); });
+  /* 人工精选的域级架构图（data/tech-maps.json），整个会话只拉一次 */
+  let _techMapsP = null, _techMapsCache = null;
+  function loadTechMaps() {
+    if (!_techMapsP) _techMapsP = fetch("data/tech-maps.json").then(r => r.ok ? r.json() : null).catch(() => null);
+    return _techMapsP;
+  }
+
+  async function pageCategory(q) {
+    document.title = "技术体系 · IT面试题库";
+    const catId = q.cat ? parseInt(q.cat) : null;
+    const tree = Services.categoryTree();
+    const childrenOfId = id => Services.childrenOf(id);
+    const listHtml = async (id) => {
+      const ids = [id].concat(Services.descendantIds(id));
+      let qs = Services.questions.filter(x => ids.indexOf(x.categoryId) >= 0);
+      qs = Search.sort(qs, "updated");
+      return qs;
+    };
+    const treeHtml = (nodes, isRoot) => nodes.map(c => {
+      /* fix 20261001g：此前递归用 childrenOfId(c.id)（原始分类对象，无 count 字段），
+         导致子分类计数全部渲染成 undefined；统一改用 categoryTree 节点自带的 children（含 count），
+         并对渲染加 || 0 兜底。 */
+      const kidsAll = c.children || childrenOfId(c.id);
+      /* 长尾治理（20261005a）：题量 <3 的叶子分类不再单独占行（题库 276 个分类里
+         203 个不足 5 题，树被撑得又长又空）。它们的题目本就通过 descendantIds
+         并入了当前分类的题目列表，隐藏节点只影响树的观感、不动任何数据。
+         规则：① 有子级的节点（域级）始终保留；② 顶层一级域不隐藏；③ 被隐藏的
+         小分类在父节点展开处汇总一行提示。 */
+      const SMALL = 3;
+      const kidsKept = isRoot ? kidsAll : kidsAll.filter(k => (k.children && k.children.length) || (k.count || 0) >= SMALL);
+      const kidsHidden = isRoot ? [] : kidsAll.filter(k => kidsKept.indexOf(k) < 0);
+      const hiddenN = kidsHidden.length;
+      const hiddenQ = kidsHidden.reduce((s, k) => s + (k.count || 0), 0);
+      const open = catId === c.id || (catId != null && Services.descendantIds(catId).indexOf(c.id) >= 0);
+      const hasKids = (kidsKept.length || hiddenN) > 0;
+      return `<div class="tree-node"><div class="tree-row ${open ? "open" : ""} ${catId === c.id ? "active" : ""}" data-id="${c.id}">
+        ${hasKids ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
+        <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count || 0}</span></div>
+        ${hasKids ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${kidsKept.length ? treeHtml(kidsKept) : ""}${hiddenN ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">🔒 另有 ${hiddenN} 个小分类（${hiddenQ} 题）未单列，题目已并入本分类列表</div>` : ""}</div>` : ""}</div>`;
+    }).join("");
+
+    let selected = catId != null ? Services.getCategory(catId) : null;
+    let qs = catId != null ? await listHtml(catId) : Services.questions.slice();
+    if (!catId) qs = Search.sort(qs, "updated");
+
+    const renderList = (arr) => {
+      const grid = $("#cat-list-grid");
+      if (!arr.length) { grid.innerHTML = `<div class="empty">${U.icon("fileText")}<p>该分类下暂无题目</p></div>`; return; }
+      /* 第一性原理必读题强制置顶（标记：tags 含「第一性原理」） */
+      const isFp = q => (q.tags || []).indexOf("第一性原理") >= 0;
+      const fp = arr.filter(isFp), rest = arr.filter(q => !isFp(q));
+      const fpHtml = fp.length ? `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 4px">
+            <span class="tag" style="background:linear-gradient(135deg,#1E40AF,#6D28D9);color:#fff;border:none;font-weight:700">🧬 第一性原理 · 必读</span>
+            <span class="muted" style="font-size:12px">先明白这门技术因何而生、解决了什么、边界在哪，再看下面的细节题</span>
+          </div>` + fp.map(q => qCard(q)).join("") : "";
+      const restHtml = rest.length ? rest.slice(0, 40).map(q => qCard(q)).join("") : "";
+      grid.innerHTML = fpHtml + restHtml;
+    };
+
+    /* 技术全景图：有「架构图 | 分支树」双标签——人工精选的域级架构图优先，
+       分支树为自动生成的以当前分类为根的 ECharts 树（子技术 + 题量 + 薄弱标记） */
+    function initCatMap() {
+      const box = $("#catmap-box");
+      if (!box) return;
+      const toggle = $("#catmap-toggle");
+      if (toggle) toggle.onclick = () => {
+        const open = box.style.display !== "none";
+        box.style.display = open ? "none" : "flex";
+        toggle.textContent = open ? "展开" : "收起";
+        if (!open && _catMapChart) _catMapChart.resize();
+      };
+      Services.getWeakQuestions().then(wq => {
+        const weakMap = new Map();
+        (wq || []).forEach(w => { if (w.categoryId) weakMap.set(w.categoryId, (weakMap.get(w.categoryId) || 0) + 1); });
+        return weakMap;
+      }).catch(() => new Map()).then(weakMap => {
+        const dark = App.getTheme() === "dark";
+        const findNode = (nodes, id) => { for (const n of nodes) { if (n.id === id) return n; if (n.children && n.children.length) { const r = findNode(n.children, id); if (r) return r; } } return null; };
+        const renderTree = () => {
+          box.style.height = "min(58vh,480px)";
+          box.style.overflowY = "hidden";
+          const host = $("#catmap-body") || box;
+          host.style.height = "100%";
+          host.innerHTML = `<div style="width:100%;height:100%"></div>`;
+          U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+            const holder = host.firstElementChild;
+            if (!holder || !window.echarts) return;
+            const toData = (node, hlId) => ({
+              id: node.id,
+              name: node.name + " · " + (node.count || 0) + "题",
+              count: node.count || 0,
+              weak: weakMap.get(node.id) || 0,
+              itemStyle: { color: (weakMap.get(node.id) || 0) > 0 ? "#F59E0B" : (node.id === hlId ? "#1D4ED8" : (node.count ? "#3B82F6" : "#CBD5E1")) },
+              label: { color: dark ? "#e2e8f0" : "#334155", fontWeight: node.id === hlId ? 700 : 400 },
+              children: (node.children || []).map(c => toData(c, hlId))
+            });
+            let data, depth = 2;
+            const selfNode = findNode(tree, catId);
+            if (selfNode && selfNode.children && selfNode.children.length) {
+              data = toData(selfNode, catId);
+              data.name = selected.name + " · " + qs.length + "题";   // 根节点显示含子分类的总题数
+            } else {
+              /* 叶子分类：展示它在同级技术中的位置 */
+              const pNode = selected.parentId ? findNode(tree, selected.parentId) : null;
+              data = pNode ? toData(pNode, catId) : { name: "技术体系 · " + qs.length + "题", count: qs.length, weak: 0, itemStyle: { color: "#1D4ED8" }, label: { color: dark ? "#e2e8f0" : "#334155" }, children: tree.map(c => toData(c, catId)) };
+              depth = 1;
+            }
+            if (_catMapChart) { try { _catMapChart.dispose(); } catch (e) {} }
+            _catMapChart = echarts.init(holder);
+            _catMapChart.setOption({
+              tooltip: { trigger: "item", triggerOn: "mousemove", formatter: p => (p.data && p.data.count != null) ? U.esc(String(p.name).replace(/ · \d+题$/, "")) + "：" + p.data.count + " 题" + (p.data.weak ? " · 薄弱 " + p.data.weak + " 题" : "") : "" },
+              series: [{
+                type: "tree", data: [data], orient: "LR", roam: true,
+                left: "1%", right: "22%", top: "2%", bottom: "2%",
+                initialTreeDepth: depth, expandAndCollapse: true, animationDuration: 300,
+                symbol: "circle", symbolSize: 12,
+                lineStyle: { color: dark ? "#334155" : "#BFDBFE", width: 1.3, curveness: 0.5 },
+                label: { position: "left", verticalAlign: "middle", align: "right", fontSize: 12, distance: 5 },
+                leaves: { label: { position: "right", verticalAlign: "middle", align: "left", distance: 5 } },
+                emphasis: { focus: "descendant" }
+              }]
+            });
+            /* 点击末级节点直达对应分类；上层节点保留展开/收起 */
+            _catMapChart.on("click", params => {
+              const d = params.data;
+              if (d && d.id && (!d.children || !d.children.length)) App.go("/category?cat=" + d.id);
+            });
+          }).catch(() => {});
+        };
+        const renderTechMap = (key) => {
+          const map = _techMapsCache && _techMapsCache[String(key)];
+          if (!map || !map.layers || !map.layers.length) { renderTree(); return; }
+          box.style.height = "auto";
+          box.style.overflowY = "visible";
+          const PAL = [["rgba(37,99,235,.07)", "#2563EB"], ["rgba(16,185,129,.08)", "#059669"], ["rgba(139,92,246,.08)", "#7C3AED"], ["rgba(245,158,11,.09)", "#D97706"], ["rgba(236,72,153,.07)", "#DB2777"], ["rgba(6,182,212,.08)", "#0891B2"]];
+          const resolveCat = (name) => {
+            if (!name) return 0;
+            const sub = new Set([Number(key)].concat(Services.descendantIds(Number(key))));
+            const hit = Services.categories.find(c => c.name === name && sub.has(c.id)) || Services.categories.find(c => c.name === name);
+            return hit ? hit.id : 0;
+          };
+          const host = $("#catmap-body") || box;
+          host.innerHTML = map.layers.map((L, i) => {
+            const pal = PAL[i % PAL.length];
+            const chips = (L.items || []).map(it => {
+              const cid = resolveCat(it);
+              if (!cid) return `<span class="tm-chip">${U.esc(it)}</span>`;
+              const cnt = Services.catCounts[cid] || 0;
+              const wk = weakMap.get(cid) || 0;
+              return `<span class="tm-chip link${wk ? " has-weak" : ""}" data-cat="${cid}" title="查看「${U.esc(it)}」分类题目">${U.esc(it)}<i>${cnt}题</i>${wk ? `<i class="tm-weak">薄弱${wk}</i>` : ""}</span>`;
+            }).join("");
+            return `<div class="tm-layer" style="background:${pal[0]};border-left-color:${pal[1]}"><div class="tm-name" style="color:${pal[1]}">${U.esc(L.name || "")}</div><div class="tm-items">${chips}</div></div>${i < map.layers.length - 1 ? '<div class="tm-arrow">▼</div>' : ""}`;
+          }).join("") + (map.note ? `<p class="muted" style="font-size:12px;margin:12px 0 0">${U.esc(map.note)}</p>` : "");
+          host.querySelectorAll(".tm-chip.link").forEach(ch => { ch.onclick = () => App.go("/category?cat=" + ch.dataset.cat); });
+        };
+        loadTechMaps().then(maps => {
+          /* tech-maps.json 结构为 {version,updatedAt,maps:{id:...}}（旧版 id 平铺在根上，两种都兼容） */
+          _techMapsCache = (maps && maps.maps) ? maps.maps : (maps || {});
+          /* 从当前分类向上找最近的有人工架构图的域（叶子分类也能看到所属域的全景） */
+          let mapKey = null, p = catId, guard = 0;
+          while (p && guard++ < 10) { if (_techMapsCache[String(p)]) { mapKey = String(p); break; } const c = Services.getCategory(p); p = c ? (c.parentId || 0) : 0; }
+          const wireSeg = (active) => {
+            $$("#catmap-seg button").forEach(b => {
+              b.classList.toggle("active", b.dataset.t === active);
+              b.onclick = () => {
+                if (b.classList.contains("active")) return;
+                frame(b.dataset.t);
+                if (b.dataset.t === "map") { if (_catMapChart) { try { _catMapChart.dispose(); } catch (e) {} _catMapChart = null; } renderTechMap(mapKey); }
+                else renderTree();
+              };
+            });
+          };
+          const frame = (active) => {
+            box.style.display = "flex";
+            box.style.flexDirection = "column";
+            box.innerHTML = `<div class="seg" id="catmap-seg" style="margin-bottom:10px;flex-shrink:0"><button data-t="map"${active === "map" ? ' class="active"' : ""}>架构图</button><button data-t="tree"${active === "tree" ? ' class="active"' : ""}>分支树</button></div><div id="catmap-body" style="flex:1;min-height:0;position:relative"></div>`;
+            wireSeg(active);
+          };
+          if (mapKey) { frame("map"); renderTechMap(mapKey); }
+          else renderTree();
+        });
+      });
+    }
+
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术体系</span></div>
+      <div class="layout cat-layout">
+        <aside class="card tree-panel">
+          <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
+          <div id="page-tree">${treeHtml(tree, true)}</div>
+        </aside>
+        <div>
+          <div class="section-head" style="margin-top:0"><h2>${selected ? U.esc(selected.name) : "全部题目"}</h2>
+            <span class="muted">${qs.length} 题</span></div>
+          ${selected ? `
+          <div class="card" id="catmap-card" style="margin:0 0 16px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div class="nav-section-title" style="padding-left:0;margin:0">🗺️ 技术全景图</div>
+              <span class="muted" style="font-size:12px">架构图/分支树：点击末级节点直达分类 · <span style="color:#F59E0B">橙</span>=有薄弱题（来自错题本）</span>
+              <span class="spacer"></span>
+              <button id="catmap-toggle" class="btn btn-sm btn-secondary">收起</button>
+            </div>
+            <div id="catmap-box" class="chart-fade" style="height:min(58vh,480px);margin-top:8px"></div>
+          </div>` : ""}
+          <div class="toolbar">
+            <div class="seg" id="sort-seg">
+              <button data-s="updated" class="active">最新</button>
+              <button data-s="views">最热</button>
+              <button data-s="favorites">收藏最多</button>
+              <button data-s="aiScore">AI评分</button>
+            </div>
+            <span class="spacer"></span>
+            ${Auth.isAdmin() ? `<a class="btn btn-ai btn-sm" href="#/admin/question/new?cat=${catId || ""}">${U.icon("plus")} 新增题目</a>` : ""}
+          </div>
+          <div class="grid grid-cols-2" id="cat-list-grid"></div>
+        </div>
+      </div>
+    `, selected ? () => initCatMap() : null);
+    renderList(qs);
+    $$("#page-tree .tree-row").forEach(row => {
+      row.onclick = (e) => {
+        const id = parseInt(row.dataset.id);
+        if (e.target.closest(".twist")) { row.classList.toggle("open"); const ch = row.parentElement.querySelector(".tree-children"); if (ch) ch.style.display = ch.style.display === "none" ? "block" : "none"; return; }
+        App.go("/category?cat=" + id);
+      };
+    });
+    $$("#sort-seg button").forEach(b => b.onclick = () => {
+      $$("#sort-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active");
+      renderList(Search.sort(qs, b.dataset.s));
+    });
+  }
+
+  /* ============================ 岗位体系页 ============================ */
+  async function pagePositions() {
+    document.title = "岗位体系 · IT面试题库";
+    const byStage = Services.positionsByStage();
+    const hiddenIds = new Set(Services.positions.filter(p => Services.isHiddenPosition(p)).map(p => p.id));
+    const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
+    const hasFake = fakeIds.size > 0;
+    const html = byStage.map(s => {
+      // 按名字去重：同名岗位只显示第一个（防止 seed 重复写入或树节点重名）
+      const seen = new Set();
+      const uniq = s.list.filter(p => {
+        if (hiddenIds.has(p.id)) return false;        // 隐藏与分类同名的岗位（它是分类，不是岗位）
+        if (seen.has(Services.posKey(p))) return false;
+        seen.add(Services.posKey(p));
+        return true;
+      });
+      if (!uniq.length) return "";
+      return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag tag-ai">${U.esc(s.list[0] ? s.list[0].tag : "")}</span></div>
+      <div class="grid grid-cols-auto">${uniq.map(p => {
+        const qn = Services.questionCountForPosition(p);
+        const skillN = Services.skillsOf(p.id).length;
+        const demand = p.demand || "中";
+        const catLink = p.categoryId ? `<a href="#/category?cat=${p.categoryId}">${U.esc(p.category || "")}</a>` : U.esc(p.category || "");
+        return `<a class="card card-hover" href="#/position/${p.id}" style="text-decoration:none">
+          <div style="font-weight:700">${U.esc(Services.posFullName(p))}</div>
+          <div class="muted" style="font-size:12px;margin-top:4px">${catLink}</div>
+          <div class="q-meta" style="margin-top:10px">
+            <span class="tag">${qn} 题</span>
+            <!-- 「0 技术栈」与「热度 中」都藏起来（2026-09-24 评审 P2-15）：
+                 此前 142 张卡片上的「热度 中」结论完全一致 —— 一水儿相同的标签等于没有标签，
+                 反而让整页显得信息稀薄；「0 技术栈」更会让人以为站内是空的。
+                 现在只在真正有差异时展示：技术栈为 0 不显示，热度只在「高 / 低」时出现。 -->
+            ${skillN ? `<span class="tag tag-outline">${skillN} 技术栈</span>` : ""}
+            ${demand === "高" ? `<span class="tag tag-success">需求旺盛</span>` : demand === "低" ? `<span class="tag tag-warning">需求较少</span>` : ""}
+          </div>
+        </a>`;
+      }).join("")}</div>`;
+    }).join("");
+    const cleanBtn = hasFake ? `<button id="clean-fake-pos" class="btn btn-secondary" style="margin-left:auto">清理 ${fakeIds.size} 条无效岗位</button>` : "";
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>岗位体系</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><h1 style="margin:0">岗位体系</h1>${cleanBtn}</div>
+      <p class="secondary">按 IT 行业岗位出现的先后顺序组织，点击岗位查看必考/加分技术栈与题目。</p>${html}`);
+    if (hasFake) {
+      $("#clean-fake-pos").onclick = async () => {
+        const n = await DB.migrateRemoveFakePositions();
+        await Services.reload();
+        U.toast("已清理 " + n + " 条无效岗位", "success");
+        pagePositions();
+      };
+    }
+  }
+
+  /* ============================ 岗位详情页 ============================ */
+  async function pagePositionDetail(id) {
+    const p = Services.getPosition(parseInt(id));
+    if (!p) { setMain(`<div class="empty">未找到该岗位</div>`); return; }
+    const skills = Services.skillsOf(p.id);
+    const required = skills.filter(s => s.required);
+    const bonus = skills.filter(s => !s.required);
+    const qn = Services.questionCountForPosition(p);
+    // 难度分布
+    const posQs = Services.questions.filter(q => Services.matchPosition(q, p));
+    const dist = { "初级": 0, "中级": 0, "高级": 0, "专家": 0 };
+    posQs.forEach(q => { if (dist[q.difficulty] != null) dist[q.difficulty]++; });
+    const skillCard = (s) => {
+      const onClick = s.categoryId != null ? `onclick="location.hash='/category?cat=${s.categoryId}'"` : `onclick="location.hash='/questions?q=${encodeURIComponent(s.techName)}'"`;
+      return `<div class="skill-card ${s.required ? "" : "bonus"}" style="cursor:pointer" ${onClick}>
+        <div class="sk-name">${U.esc(s.techName)} ${s.required ? "" : '<span class="tag tag-ai" style="font-size:10px">加分</span>'}</div>
+        <div class="sk-depth">掌握深度：${U.esc(s.depth)}</div>
+        <div>${U.stars(s.stars)}</div>
+        <div class="muted" style="font-size:12px;margin-top:4px">题库相关题：${Services.questions.filter(q => (q.tags || []).indexOf(s.techName) >= 0 || (q.catName === s.techName)).length}</div>
+      </div>`;
+    };
+    const hot = posQs.slice().sort((a, b) => (b.views || 0) + (b.favorites || 0) - (a.views || 0) - (a.favorites || 0)).slice(0, 6);
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/position">岗位体系</a><span class="sep">/</span><span>${U.esc(Services.posFullName(p))}</span></div>
+      <h1>${U.esc(Services.posFullName(p))} <span class="tag tag-ai">${U.esc(p.stage)}</span></h1>
+      <p class="secondary">${U.esc(p.description || (p.category ? "隶属「" + p.category + "」方向" : "该岗位共关联 " + qn + " 道题目"))}</p>
+      <div class="grid grid-cols-2" style="margin:16px 0">
+        <div class="card"><div class="stat"><div class="num">${qn}</div><div class="label">岗位题目数</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num">${skills.length}</div><div class="label">技术栈数量</div></div></div>
+      </div>
+      <div class="section-head"><h2>必考技术栈</h2></div>
+      <div class="grid grid-cols-3">${required.length ? required.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>
+      <div class="section-head"><h2>加分技术栈</h2></div>
+      <div class="grid grid-cols-3">${bonus.length ? bonus.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>
+      <div class="section-head"><h2>题目难度分布</h2></div>
+      <div class="card"><div id="pos-chart" style="height:260px"></div></div>
+      <div class="section-head"><h2>热门题目</h2></div>
+      <div class="grid grid-cols-2">${hot.length ? hot.map(q => qCard(q)).join("") : '<div class="muted">暂无题目</div>'}</div>
+      <div class="pill-row" style="margin-top:20px">
+        <a class="btn btn-primary" href="#/mock?pos=${p.id}">${U.icon("play")} 一键模拟面试</a>
+        <a class="btn" href="#/questions?posid=${p.id}">${U.esc("按技术分类刷题")}</a>
+        <a class="btn" href="#/questions?posid=${p.id}">查看全部题目</a>
+      </div>
+    `, () => {
+      /* echarts 大库按需加载（加载失败静默，图表区留白不影响页面） */
+      U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+        const posBox = $("#pos-chart");
+        posBox.classList.add("chart-fade");
+        const chart = echarts.init(posBox);
+        charts.push(chart);
+        chart.setOption({
+          tooltip: { trigger: "item" },
+          series: [{ type: "pie", radius: ["40%", "70%"], data: Object.keys(dist).map(k => ({ name: k, value: dist[k], itemStyle: { color: { "初级": "#10B981", "中级": "#3B82F6", "高级": "#F59E0B", "专家": "#EF4444" }[k] } })), label: { color: App.getTheme() === "dark" ? "#e2e8f0" : "#0f172a" } }]
+        });
+      }).catch(() => {});
+    });
+  }
+
+  /* ============================ 岗位刷题计划 ============================ */
+  /* 把岗位已关联的题目按技术分类聚合成 4–8 周计划（计算逻辑在 js/roadmap.js）。
+     题量太少的岗位不在此页列出 —— 点进去只有一两周反而像页面坏了。 */
+  const RM_MIN_Q = 20;
+  function rmHours(min) {
+    if (!min) return "0 分钟";
+    if (min < 60) return min + " 分钟";
+    const h = min / 60;
+    return (h >= 10 ? Math.round(h) : Math.round(h * 10) / 10) + " 小时";
+  }
+  /* 完成度：按题量算百分比，但只要动过手就至少显示 1% ——
+     279 道题里做完 1 道四舍五入是 0%，进度条毫无变化会让人以为没生效 */
+  function rmPct(done, total) {
+    if (!total) return 0;
+    return done > 0 ? Math.max(1, Math.round(done / total * 100)) : 0;
+  }
+  /* 可生成路线图的岗位（去重、隐藏岗位过滤、题量门槛） */
+  function rmPosStages() {
+    const seen = new Set();
+    const out = [];
+    Services.positionsByStage().forEach(s => {
+      const list = [];
+      s.list.forEach(p => {
+        if (Services.isHiddenPosition(p)) return;
+        const key = Services.posKey(p);
+        if (seen.has(key)) return;
+        seen.add(key);
+        if (Services.questionCountForPosition(p) < RM_MIN_Q) return;
+        list.push(p);
+      });
+      out.push({ stage: s.stage, list: list });
+    });
+    return out.filter(s => s.list.length);
+  }
+  /* 路线图里单题的勾选行（点标题进详情，点圆圈切换掌握） */
+  function rmRowHtml(q) {
+    const done = Roadmap.isMastered(q.id);
+    return `<div class="rm-row${done ? " done" : ""}" data-q="${q.id}">
+      <button type="button" class="rm-check${done ? " on" : ""}" data-act="chk" aria-pressed="${done}" aria-label="标记为已掌握">${U.icon("check")}</button>
+      <a class="rm-title" href="#/question/${q.id}">${U.esc(q.title)}</a>
+      <span class="tag diff-${U.esc(q.difficulty || "")}">${U.esc(q.difficulty || "")}</span>
+    </div>`;
+  }
+
+  async function pageRoadmap() {
+    document.title = "刷题计划 · IT面试题库";
+    await Roadmap.load();
+    const stages = rmPosStages();
+    if (!stages.length) {
+      setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div>
+        <h3>暂无可用刷题计划</h3><p class="secondary">岗位题量达到 ${RM_MIN_Q} 道后即可生成 4–8 周学习计划。</p>
+        <a class="btn btn-primary" href="#/position">${U.icon("briefcase")} 去岗位体系看看</a></div>`);
+      return;
+    }
+    let posN = 0, doneAll = 0, totAll = 0, startedN = 0;
+    const body = stages.map(s => {
+      const cards = s.list.map(p => {
+        const rm = Roadmap.build(p);
+        const pct = rmPct(rm.mastered, rm.total);
+        posN++; doneAll += rm.mastered; totAll += rm.total;
+        if (rm.mastered > 0) startedN++;
+        return `<a class="card card-hover" href="#/roadmap/${p.id}" style="text-decoration:none">
+          <div style="font-weight:700">${U.esc(Services.posFullName(p))}</div>
+          <div class="muted" style="font-size:12px;margin-top:4px">${rm.weeks.length} 周 · ${rm.total} 题 · 约 ${rmHours(rm.minutes)}</div>
+          <div class="progress" style="margin-top:10px"><span style="width:${pct}%"></span></div>
+          <div class="progress-text">已掌握 ${rm.mastered}/${rm.total} · ${pct}%</div>
+        </a>`;
+      }).join("");
+      return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag">${s.list.length} 个岗位</span></div>
+        <div class="grid grid-cols-3">${cards}</div>`;
+    }).join("");
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题计划</span></div>
+      <h1>岗位刷题计划</h1>
+      <p class="secondary">把每个岗位的题目按技术分类拆成 4–8 周的计划，每天只需几道题就能跟上进度。
+        在「刷题练习」里点「已掌握」会自动记入计划，也可以直接在下面打勾。</p>
+      <div class="grid grid-cols-3" style="margin:16px 0">
+        <div class="card"><div class="stat"><div class="num">${posN}</div><div class="label">可规划岗位</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num">${startedN}</div><div class="label">已开始的计划</div></div></div>
+        <div class="card"><div class="stat"><div class="num">${rmPct(doneAll, totAll)}%</div><div class="label">总掌握度（${doneAll}/${totAll}）</div></div></div>
+      </div>
+      ${body}
+      <p class="muted" style="margin-top:24px">题量不足 ${RM_MIN_Q} 道的岗位暂不生成计划，可直接在
+        <a href="#/position">岗位体系</a>中浏览其技术栈与题目。</p>`);
+  }
+
+  async function pageRoadmapDetail(id) {
+    const p = Services.getPosition(parseInt(id));
+    if (!p) {
+      setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>未找到该岗位</h3>
+        <a class="btn btn-primary" href="#/roadmap">返回计划</a></div>`);
+      return;
+    }
+    await Roadmap.load();
+    const rm = Roadmap.build(p);
+    const name = Services.posFullName(p);
+    document.title = name + " 刷题计划 · IT面试题库";
+
+    if (!rm.weeks.length) {
+      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+        <div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>该岗位题目不足</h3>
+        <p class="secondary">至少需要 ${RM_MIN_Q} 道题才能生成周计划，当前 ${rm.total} 道。</p>
+        <a class="btn btn-primary" href="#/questions?posid=${p.id}">${U.icon("layers")} 查看现有题目</a></div>`);
+      return;
+    }
+
+    const curWeek = Roadmap.nextWeek(rm);
+    const weekHtml = (w) => {
+      /* 主题多的时候只展示前 8 个，其余折叠成计数，避免标签堆成一整屏 */
+      const shown = w.topics.slice().sort((a, b) => b.count - a.count);
+      const topics = shown.slice(0, 8).map(t => `<span class="tag tag-outline">${U.esc(t.name)} · ${t.count}</span>`).join("") +
+        (shown.length > 8 ? `<span class="tag">其余 ${shown.length - 8} 个技术点</span>` : "");
+      const done = Roadmap.masteredCount(w.ids);
+      const wpct = rmPct(done, w.count);
+      const dist = ["初级", "中级", "高级", "专家"]
+        .filter(d => w.diffDist[d] > 0)
+        .map(d => `<span class="tag diff-${d}">${d} ${w.diffDist[d]}</span>`).join("");
+      return `<div class="rm-week" data-w="${w.n}">
+        <div class="rm-week-head" role="button" tabindex="0" aria-expanded="false">
+          <div class="rm-week-n">W${w.n}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700">${U.esc(w.title)}</div>
+            <div class="rm-week-meta">${w.count} 题 · ${rmHours(w.minutes)} · 每天约 ${w.daily} 题${w.n === curWeek ? ' · <b style="color:var(--c-primary)">建议从这里继续</b>' : ""}</div>
+            <div class="progress" style="margin-top:8px"><span style="width:${wpct}%"></span></div>
+          </div>
+          <div style="flex:none;text-align:right">
+            <div class="muted rm-week-count" style="font-size:12px">${done}/${w.count}</div>
+            <span class="btn btn-sm">${U.icon("chevronDown")} <span class="rm-toggle-txt">展开</span></span>
+          </div>
+        </div>
+        <div class="rm-week-body">
+          <div class="pill-row" style="margin-bottom:8px">${topics}</div>
+          <div class="pill-row rm-dist-row" style="margin-bottom:10px"><span class="muted" style="font-size:12px;align-self:center">难度分布</span>${dist}</div>
+          <div class="pill-row" style="margin-bottom:4px">
+            <a class="btn btn-primary btn-sm" href="#/practice?scope=roadmap&pos=${p.id}&week=${w.n}&mode=seq">${U.icon("play")} 开始本周练习</a>
+            <button type="button" class="btn btn-sm" data-act="all">${U.icon("check")} 本周全部掌握</button>
+            <button type="button" class="btn btn-sm" data-act="none">${U.icon("refresh")} 取消本周标记</button>
+          </div>
+          <div class="rm-rows"></div>
+        </div>
+      </div>`;
+    };
+
+    const pct = rmPct(rm.mastered, rm.total);
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h1 style="margin:0">${U.esc(name)} 学习路线</h1>
+        <span class="tag tag-ai">${U.esc(p.stage || "")}</span>
+      </div>
+      <p class="secondary">按技术分类由浅入深拆成 ${rm.weeks.length} 周，共 ${rm.total} 道题、约 ${rmHours(rm.minutes)}。
+        勾选表示「已掌握」，进度会自动保存并随账号同步。</p>
+      <div class="grid grid-cols-4" style="margin:16px 0">
+        <div class="card"><div class="stat"><div class="num">${rm.weeks.length}</div><div class="label">学习周数</div></div></div>
+        <div class="card"><div class="stat"><div class="num">${rm.total}</div><div class="label">题目总数</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num" id="rm-done">${rm.mastered}</div><div class="label">已掌握</div></div></div>
+        <div class="card"><div class="stat"><div class="num" id="rm-pct">${pct}%</div><div class="label">完成度</div></div></div>
+      </div>
+      <div class="card" style="margin-bottom:6px">
+        <div class="progress"><span id="rm-bar" style="width:${pct}%"></span></div>
+        <div class="pill-row" style="margin-top:12px">
+          <button type="button" class="btn btn-primary btn-sm" id="rm-continue">${U.icon("play")} 继续学习（第 ${curWeek} 周）</button>
+          <a class="btn btn-sm" href="#/practice?scope=pos&pos=${p.id}&mode=seq">${U.icon("layers")} 全岗位顺序刷题</a>
+          <a class="btn btn-sm" href="#/position/${p.id}">${U.icon("briefcase")} 岗位详情</a>
+          <button type="button" class="btn btn-sm btn-danger" id="rm-reset" style="margin-left:auto">${U.icon("trash")} 重置本岗进度</button>
+        </div>
+      </div>
+      ${rm.weeks.map(weekHtml).join("")}`);
+
+    /* —— 交互：展开/折叠、单题勾选、整周批量 —— */
+    const refreshTotals = () => {
+      const done = Roadmap.masteredCount(rm.weeks.reduce((a, w) => a.concat(w.ids), []));
+      const pc = rmPct(done, rm.total);
+      const el = $("#rm-done"); if (el) el.textContent = done;
+      const ep = $("#rm-pct"); if (ep) ep.textContent = pc + "%";
+      const eb = $("#rm-bar"); if (eb) eb.style.width = pc + "%";
+    };
+
+    $$(".rm-week").forEach(box => {
+      const w = rm.weeks[parseInt(box.dataset.w) - 1];
+      if (!w) return;
+      const head = box.querySelector(".rm-week-head");
+      const rows = box.querySelector(".rm-rows");
+      const toggleTxt = box.querySelector(".rm-toggle-txt");
+      const open = () => {
+        /* 题目行按需渲染：大岗位（200+ 题）一次性铺开会让首屏很卡 */
+        if (rows.dataset.rendered !== "1") { rows.innerHTML = w.questions.map(rmRowHtml).join(""); rows.dataset.rendered = "1"; }
+        box.classList.add("open");
+        head.setAttribute("aria-expanded", "true");
+        if (toggleTxt) toggleTxt.textContent = "收起";
+      };
+      const close = () => {
+        box.classList.remove("open");
+        head.setAttribute("aria-expanded", "false");
+        if (toggleTxt) toggleTxt.textContent = "展开";
+      };
+      const syncWeek = () => {
+        const done = Roadmap.masteredCount(w.ids);
+        const pc = rmPct(done, w.count);
+        const bar = box.querySelector(".rm-week-head .progress > span");
+        if (bar) bar.style.width = pc + "%";
+        const cnt = box.querySelector(".rm-week-count");
+        if (cnt) cnt.textContent = done + "/" + w.count;
+        if (rows.dataset.rendered === "1") rows.innerHTML = w.questions.map(rmRowHtml).join("");
+        refreshTotals();
+      };
+      head.onclick = (e) => { if (e.target.closest("button, a")) return; box.classList.contains("open") ? close() : open(); };
+      head.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); box.classList.contains("open") ? close() : open(); } };
+      rows.onclick = (e) => {
+        const btn = e.target.closest('[data-act="chk"]');
+        if (!btn) return;
+        e.preventDefault();
+        const qid = parseInt(btn.closest(".rm-row").dataset.q);
+        const on = Roadmap.toggle(qid);
+        syncWeek();
+        U.toast(on ? "已标记掌握" : "已取消标记", on ? "success" : "warn");
+      };
+      box.querySelector('.rm-week-body [data-act="all"]').onclick = () => {
+        w.ids.forEach(qid => Roadmap.setMastered(qid, true));
+        syncWeek(); U.toast("本周 " + w.count + " 题已全部标记掌握", "success");
+      };
+      box.querySelector('.rm-week-body [data-act="none"]').onclick = () => {
+        w.ids.forEach(qid => Roadmap.setMastered(qid, false));
+        syncWeek(); U.toast("已取消本周标记", "warn");
+      };
+      /* 进度条宽度写在 HTML 里的内联 style，展开后不会自动刷新，这里补一次 */
+      syncWeek();
+      if (w.n === curWeek) { open(); }
+      else { close(); }
+    });
+
+    $("#rm-continue").onclick = () => { App.go("/practice?scope=roadmap&pos=" + p.id + "&week=" + curWeek + "&mode=seq"); };
+    $("#rm-reset").onclick = async () => {
+      if (!(await U.confirm("确定重置「" + name + "」的掌握标记？进度是按题目记录的，若其它岗位含相同题目，其标记也会一并取消。", { danger: true }))) return;
+      rm.weeks.forEach(w => w.ids.forEach(qid => Roadmap.setMastered(qid, false)));
+      U.toast("已重置本岗进度", "success");
+      pageRoadmapDetail(p.id);
+    };
+  }
+
+  /* ============================ 题目列表页 ============================ */
+  async function pageQuestions(q) {
+    document.title = "题目列表 · IT面试题库";
+    const diffs = ["初级", "中级", "高级", "专家"];
+    const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
+    let base = Services.questions.slice();
+    if (q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); base = base.filter(x => ids.indexOf(x.categoryId) >= 0); }
+    if (q.posid) {
+      const pos = Services.getPosition(parseInt(q.posid));
+      if (pos) base = base.filter(x => Services.matchPosition(x, pos));
+    }
+    if (q.pos) {
+      const posName = decodeURIComponent(q.pos);
+      const pos = Services.positions.find(x => x.name === posName) || { name: posName };
+      base = base.filter(x => Services.matchPosition(x, pos));
+    }
+
+    const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "" };
+    const sortBy = q.sort || "updated";
+    if (q.nocat) base = base.filter(x => x.categoryId == null);   /* 全景图「未归类」节点跳转过来 */
+    /* 来源预筛选（题库全景图来源构成条跳转过来）：?source=ai|manual|import|submission|seed|principles|url|other */
+    if (q.source) {
+      const sv = String(q.source);
+      if (sv === "ai" || sv === "manual" || sv === "import" || sv === "submission") {
+        filters.source = [sv];                                    // 与来源下拉框口径一致
+      } else if (sv === "url") {
+        base = base.filter(x => /^https?:\/\//i.test(x.source || ""));
+      } else if (sv === "other") {
+        base = base.filter(x => { const s = x.source || ""; return !/^https?:\/\//i.test(s) && ["ai", "manual", "import", "submission", "seed", "principles"].indexOf(s) < 0; });
+      } else {
+        base = base.filter(x => (x.source || "") === sv);         // seed / principles 等
+      }
+    }
+
+    /* 分页：每页 20 条。page 支持 ?page= 深链，刷新 / 前进后退不丢页 */
+    const PAGE_SIZE = 20;
+    let page = Math.max(1, parseInt(q.page, 10) || 1);
+    let totalPages = 1;
+
+    /* 路由参数写在 hash 里（#/questions?sort=…&page=…）。改 URL 必须走 hash：
+       直接改 url.search 会写成一个没有 hash 的地址，把整条路由抹掉。 */
+    const syncRouteParams = (patch) => {
+      try {
+        const raw = (location.hash || "#/").slice(1);
+        const qi = raw.indexOf("?");
+        const path = qi < 0 ? raw : raw.slice(0, qi);
+        const sp = new URLSearchParams(qi < 0 ? "" : raw.slice(qi + 1));
+        Object.keys(patch).forEach(k => {
+          const v = patch[k];
+          if (v === null || v === undefined || v === "") sp.delete(k); else sp.set(k, String(v));
+        });
+        const qs = sp.toString();
+        history.replaceState(null, "", "#" + path + (qs ? "?" + qs : ""));
+      } catch (_) {}
+    };
+
+    /* 已选条件计数：显示在移动端「筛选」按钮的角标上。
+       移动端筛选面板默认折叠，没有这个数字就看不出「当前是否带着筛选条件」，
+       容易让人以为题库少了内容（桌面端按钮本身隐藏，调用无副作用）。 */
+    const updateFilterBadge = () => {
+      const n = (filters.difficulty.length ? 1 : 0) + (filters.type.length ? 1 : 0)
+        + (filters.source.length ? 1 : 0) + (filters.status.length ? 1 : 0);
+      const b = $("#filter-badge");
+      if (!b) return;
+      b.textContent = n;
+      b.style.display = n ? "" : "none";
+    };
+    const apply = (resetPage) => {
+      let arr = Search.filter(base, filters);
+      const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
+      if (fuseMap) arr = arr.filter(x => fuseMap.has(x.id));
+      arr = Search.sort(arr, sortBy);
+      if (resetPage !== false) page = 1;   /* 筛选 / 搜索 / 来源一变就回第一页，否则停在越界页会渲染出空白列表 */
+      renderGrid(arr);
+      updateFilterBadge();
+    };
+    const renderGrid = (arr) => {
+      const grid = $("#q-grid");
+      if (!arr.length) {
+        const term = filters.q;
+        const hot = term ? `<div class="sd-hot" style="margin-top:10px;justify-content:flex-start">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>` : "";
+        grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}</div>`;
+        $$("#q-grid [data-sug]").forEach(b => b.onclick = () => { $("#q-search").value = b.dataset.sug; filters.q = b.dataset.sug; apply(); });
+        $("#q-count").textContent = "0";
+        totalPages = 1; const pg0 = $("#q-pager"); if (pg0) pg0.innerHTML = "";   /* 空结果要清掉分页，否则残留上一页的页码 */
+        return;
+      }
+      $("#q-count").textContent = arr.length;
+      totalPages = Math.max(1, Math.ceil(arr.length / PAGE_SIZE));
+      if (page > totalPages) page = totalPages;    /* 数据变少时夹住页码，避免停在空页 */
+      const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
+      grid.innerHTML = arr.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(x => qCard(x, fuseMap ? fuseMap.get(x.id) : null)).join("");
+      renderPager();
+    };
+
+    /* 页码窗口：首末页 + 当前页 ±2，中间断档折成省略号 —— 58 页也只占一行，不再铺成一条长龙 */
+    const pagerWindow = (cur, pages) => {
+      const keep = {};
+      [1, cur - 2, cur - 1, cur, cur + 1, cur + 2, pages].forEach(v => { if (v >= 1 && v <= pages) keep[v] = 1; });
+      const nums = Object.keys(keep).map(Number).sort((a, b) => a - b);
+      const out = [];
+      nums.forEach((v, i) => {
+        if (i && v - nums[i - 1] === 2) out.push(nums[i - 1] + 1);   /* 只差一个数就直接补上，不必出省略号 */
+        else if (i && v - nums[i - 1] > 2) out.push("gap");
+        out.push(v);
+      });
+      return out;
+    };
+
+    const goPage = (p) => {
+      const t = Math.min(Math.max(1, p | 0), totalPages);
+      if (t === page) return;
+      page = t;
+      renderGrid(Search.sort(Search.filter(base, filters), sortBy));
+      const g = $("#q-grid");
+      if (!g) return;
+      const topbar = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar-h"), 10) || 60;
+      try { window.scrollTo({ top: g.getBoundingClientRect().top + window.scrollY - topbar - 12, behavior: "smooth" }); } catch (_) {}
+    };
+
+    const renderPager = () => {
+      const pg = $("#q-pager"); if (!pg) return;
+      if (page < 1) page = 1;                       /* 自身兜底夹取，不依赖调用方 */
+      if (page > totalPages) page = totalPages;
+      syncRouteParams({ page: totalPages > 1 && page > 1 ? page : null });
+      if (totalPages <= 1) { pg.innerHTML = ""; return; }
+      const btn = (label, p, cls, dis) => `<button type="button" class="${cls || ""}" data-p="${p}"${dis ? " disabled" : ""}>${label}</button>`;
+      let h = btn("‹ 上一页", page - 1, "pg-nav", page <= 1);
+      pagerWindow(page, totalPages).forEach(v => {
+        h += (v === "gap") ? `<span class="pg-gap">…</span>` : btn(v, v, v === page ? "active" : "", false);
+      });
+      h += btn("下一页 ›", page + 1, "pg-nav", page >= totalPages);
+      h += `<span class="pg-jump">跳至 <input class="pg-input" type="number" min="1" max="${totalPages}" value="${page}" inputmode="numeric" aria-label="跳转到指定页码" /> / ${totalPages} 页</span>`;
+      pg.innerHTML = h;
+      $$("#q-pager button[data-p]").forEach(b => b.onclick = () => goPage(parseInt(b.dataset.p, 10)));
+      const inp = pg.querySelector(".pg-input");
+      if (inp) {
+        const jump = () => {
+          const v = parseInt(inp.value, 10);
+          if (v >= 1 && v <= totalPages) goPage(v); else inp.value = page;
+        };
+        inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); jump(); } });
+        inp.addEventListener("change", jump);
+      }
+    };
+
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>题目列表</span>${q.cat ? `<span class="sep">/</span><span>${U.esc(Services.catName(parseInt(q.cat)))}</span>` : ""}${q.pos ? `<span class="sep">/</span><span>${U.esc(decodeURIComponent(q.pos))}</span>` : ""}</div>
+      <h1 style="margin-bottom:10px">题目列表 <span class="muted" id="q-count" style="font-size:16px"></span></h1>
+      <!-- 排序段控从 .toolbar 里提出来，与「筛选」按钮合成一行（2026-09-24 评审 P1-6）：
+           原先桌面端筛选区纵向堆 4 行、移动端占掉近半屏，题目要到 470px 之后才出现。
+           现在桌面端筛选收成一行（.select-mini 不再被全局 select{width:100%} 拉满），
+           移动端整个 .toolbar 默认折叠，由「筛选」按钮展开。 -->
+      <div class="list-tools">
+        <button type="button" class="btn btn-sm filter-toggle" id="filter-toggle" aria-expanded="false" aria-controls="q-toolbar">
+          ${U.icon("filter")} 筛选<span class="ft-badge" id="filter-badge" style="display:none"></span>
+        </button>
+        <span class="spacer"></span>
+        <div class="seg" id="sort-seg">
+          <button data-s="updated" class="${sortBy === "updated" ? "active" : ""}">最新</button>
+          <button data-s="views" class="${sortBy === "views" ? "active" : ""}">最热</button>
+          <button data-s="favorites" class="${sortBy === "favorites" ? "active" : ""}">收藏</button>
+          <button data-s="aiScore" class="${sortBy === "aiScore" ? "active" : ""}">AI评分</button>
+        </div>
+      </div>
+      <div class="toolbar collapsible" id="q-toolbar">
+        <input id="q-search" class="full" style="max-width:280px" placeholder="关键词筛选…" value="${U.esc(q.q || "")}" />
+        <select id="f-diff" class="select-mini"><option value="">难度</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select>
+        <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
+        <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option><option value="submission">用户投稿</option></select>
+        ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
+      </div>
+      <div class="diff-quick" id="diff-quick">
+        <button data-d="" class="${!filters.difficulty.length ? "active" : ""}">全部难度</button>
+        ${diffs.map(d => `<button data-d="${U.esc(d)}" class="${filters.difficulty.length === 1 && filters.difficulty[0] === d ? "active" : ""}">${U.esc(d)}</button>`).join("")}
+      </div>
+      <div class="grid grid-cols-2" id="q-grid"></div>
+      <div class="pager" id="q-pager"></div>
+    `);
+    const reSort = (s) => { Object.keys({ updated: 1, views: 1, favorites: 1, aiScore: 1 }).forEach(k => {}); };
+    /* 移动端筛选面板开合（桌面端按钮由 CSS 隐藏、面板常开）。
+       刻意不在「选完即收」—— 用户常要连调两三个条件，自动收起反而更烦。 */
+    const ftBtn = $("#filter-toggle");
+    if (ftBtn) ftBtn.onclick = () => {
+      const opened = ftBtn.getAttribute("aria-expanded") === "true";
+      ftBtn.setAttribute("aria-expanded", opened ? "false" : "true");
+      const bar = $("#q-toolbar");
+      if (bar) bar.classList.toggle("open", !opened);
+    };
+    $("#q-search").addEventListener("input", U.debounce(e => { filters.q = e.target.value.trim(); apply(); }, 300));
+    attachHistory($("#q-search"), t => { $("#q-search").value = t; filters.q = t; apply(); });
+    /* 难度快捷条（2026-09-23）：刷题时按难度筛比排序更常用，给一排按钮一键切换；
+       与 #f-diff 下拉框双向同步（改一处两处都变，避免出现「显示难度=中等但下拉是困难」的矛盾态）。 */
+    const syncDiffQuick = () => {
+      const bar = $("#diff-quick"); if (!bar) return;
+      const cur = filters.difficulty.length === 1 ? filters.difficulty[0] : "";
+      bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", (b.dataset.d || "") === cur));
+      const sel = $("#f-diff"); if (sel) sel.value = cur;
+    };
+    const dq = $("#diff-quick");
+    if (dq) dq.querySelectorAll("button").forEach(b => {
+      b.onclick = () => { filters.difficulty = b.dataset.d ? [b.dataset.d] : []; syncDiffQuick(); apply(); };
+    });
+    $("#f-diff").onchange = e => { filters.difficulty = e.target.value ? [e.target.value] : []; syncDiffQuick(); apply(); };
+    $("#f-type").onchange = e => { filters.type = e.target.value ? [e.target.value] : []; apply(); };
+    if (filters.source.length) { const f = $("#f-source"); if (f) f.value = filters.source[0]; }   // 同步来源下拉框（?source= 跳转时）
+    $("#f-source").onchange = e => { filters.source = e.target.value ? [e.target.value] : []; apply(); };
+    if (Auth.isAdmin()) $("#f-status").onchange = e => { filters.status = e.target.value ? [e.target.value] : []; apply(); };
+    $$("#sort-seg button").forEach(b => b.onclick = () => {
+      $$("#sort-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active");
+      const s = b.dataset.s; syncRouteParams({ sort: s });
+      renderGrid(Search.sort(Search.filter(base, filters), s));
+    });
+    apply(false);   /* 首屏：尊重 ?page= 深链，不重置页码 */
+  }
+
+  /* ============================ 题目详情页 ============================ */
+  async function pageQuestionDetail(id) {
+    let q = await Services.getQuestion(parseInt(id));
+    /* 答案懒加载（2026-10-06，首访 metaOnly 的配套）。
+       ⚠️ 绝不能在这里 await 到拿到答案为止：首访只拉了元数据，答案要现从分片取，
+       弱网下可能几秒 —— 那样用户点开题目会看到「白屏几秒」，
+       比「先显示题干、答案稍后出现」差得多（这正是实测发现的问题）。
+       所以：最多等 ANS_WAIT 毫秒，超时就先把页面渲染出来；
+       同时挂一个后台补齐，拿到后写回本机并（若用户还停在这题）重渲染。 */
+    const ANS_WAIT = 1200;
+    if (q && !(q.answer || "").trim()) {
+      const qid = q.id;
+      /* 用英文变量名：中文标识符在压缩/转译/编码链路上容易出意外（本次就踩了
+         「const 与变量名之间丢空格」导致 ReferenceError）。 */
+      const hydrating = Cloud.ensureQuestionBody(qid).then(async (full) => {
+        if (!full || !(full.answer || "").trim()) return false;
+        try {
+          await DB.db.questions.update(qid, {
+            answer: full.answer, body: full.body || "", firstPrinciples: full.firstPrinciples
+          });
+        } catch (_) {}
+        await Services.reload();
+        /* 用户可能已经切走了，只有仍停在这题才重渲染，避免打断浏览 */
+        if (String(location.hash || "").replace(/^#\/question\//, "") === String(qid)) {
+          pageQuestionDetail(qid);
+        }
+        return true;
+      }).catch(() => false);
+
+      try {
+        const got = await Promise.race([
+          hydrating,
+          new Promise((r) => setTimeout(() => r(null), ANS_WAIT))
+        ]);
+        if (got === true) { q = await Services.getQuestion(parseInt(id)); }
+      } catch (_) { /* 补齐异常按「先渲染」处理 */ }
+    }
+    if (!q) { setMain(`<div class="empty">未找到该题目</div>`); return; }
+    document.title = q.title + " · IT面试题库";   // 详情页 title 用题目标题
+    await Services.incViews(q.id); await Services.reload();
+    await Services.addHistory(q.id);   // 必须用数字 id：路由里的字符串 id 写进 IndexedDB 后类型不匹配，读取永远查不到
+    Stats.recordView(id);
+    markDailyDone(q.id);
+    try { localStorage.setItem("last_question", JSON.stringify({ id: q.id, title: q.title })); } catch (e) {}
+    const fav = await Services.isFavorite(q.id);
+    const weakInfo = await Services.weakInfo(q.id);   // 该题的复习状态（null=不在错题本）
+    const related = (q.relatedIds || []).map(rid => Services.questions.find(x => x.id === rid)).filter(Boolean);
+    if (!related.length) related.push(...Services.questions.filter(x => x.id !== q.id && x.categoryId === q.categoryId).slice(0, 4));
+    const posByName = new Map(); Services.positions.forEach(p => { posByName.set(p.name, p); if (p.direction) posByName.set(Services.posFullName(p), p); });
+    const posTags = (q.positionNames || []).map(n => {
+      const pos = posByName.get(n);
+      return pos ? `<a class="tag tag-outline" href="#/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="#/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
+    }).join("");
+    const techTags = (q.tags || []).filter(t => t != null && String(t).trim()).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
+    const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
+    const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
+    /* 我的批注（只在本机 / 个人加密备份中流转）：复习时先看到「我自己的话」，再往下看标准答案 */
+    const myNote = await DB.noteGet(q.id);
+    const noteQuote = (myNote && myNote.text)
+      ? `<div class="note-quote"><span class="nq-tag">✍️ 我的批注</span>${U.esc(myNote.text)}</div>`
+      : "";
+    /* 翻页行（2026-09-24 评审 P1-9）：原先只有页面最底部一组，刷题时最高频的「下一题」
+       要滚过四张相关推荐卡才够得着。现在同一结构出现两次 —— 答案区下方（主链路）+ 页面最底。
+       只有第一组带 id：键盘 ←/→ 与移动端滑动手势仍按 getElementById("prev-btn") 找它；
+       两组统一用 .js-prev / .js-next 类绑定，避免页面里出现重复 id。 */
+    const pagerHtml = (withId) => `
+      <div class="qd-pager" style="margin-top:16px">
+        <button class="btn js-prev"${withId ? ' id="prev-btn"' : ""}>← 上一题</button>
+        <button class="btn js-next"${withId ? ' id="next-btn"' : ""}>下一题 →</button>
+      </div>`;
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span>${pathHtml}<span class="sep">/</span><span>#${q.id}</span></div>
+      <div class="qd-head">
+        <h1>${U.esc(q.title)}</h1>
+        <div class="q-meta" style="margin:10px 0">
+          <span class="tag diff-${q.difficulty}">${q.difficulty}</span>
+          <span class="tag">${U.esc(q.type)}</span>
+          ${q.catName ? `<span class="tag tag-primary">${U.esc(q.catName)}</span>` : ""}
+          ${q.years ? `<span class="tag tag-outline">${U.esc(q.years)}</span>` : ""}
+          ${posTags}${techTags}
+        </div>
+        <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)}${(q.views || 0) > 0 ? ` · 浏览 ${q.views}` : ""}${(q.favorites || 0) > 0 ? ` · 收藏 ${q.favorites}` : ""}${srcLabel(q.source) ? ` · 来源 ${U.esc(srcLabel(q.source))}` : ""}${(q.aiScore || 0) > 0 ? ` · 质量分 ${q.aiScore}` : ""}</div>
+      </div>
+      <div class="qd-body md">${U.md(q.body)}</div>
+      <div class="q-actions">
+        <button class="btn btn-primary btn-lg q-actions-main" id="show-answer">${U.icon("eye")} 查看答案</button>
+        <div class="q-actions-sub">
+          <button class="btn ${fav ? "btn-danger" : ""}" id="fav-btn">${fav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏"}</button>
+          <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
+          <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
+          <button class="btn" id="hit-btn" title="这家公司/面试里真的问到了这道题？点一下帮后来的兄弟主攻高频"></button>
+          <button class="btn" id="variant-btn" title="AI 生成同考点变式题，检验你是否真正掌握（不是背答案）">${U.icon("sparkles")} AI 变式</button>
+          <button class="btn" id="grade-btn" title="写下你的回答，AI 面试官按评分表打分并给改进版">✍️ AI 改卷</button>
+          <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
+          ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
+          ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
+            <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
+            <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
+        </div>
+      </div>
+      <div class="note-card${myNote && myNote.text ? "" : " is-empty"}" id="note-card">
+        <div class="note-head"><b>✍️ 我的批注</b><span class="muted" id="note-saved"></span><span class="note-toggle-hint">点击展开</span></div>
+        <textarea id="note-input" placeholder="写下你自己的想法、踩过的坑、面试时打算怎么讲…（只存在这台设备，随加密备份一起走，不会公开）"></textarea>
+        <div class="pill-row" style="margin-top:8px">
+          <button class="btn btn-primary btn-sm" id="note-save">保存批注</button>
+          <button class="btn btn-sm" id="note-clear">清空</button>
+        </div>
+        <div class="note-tip">仅自己可见 · 不随题库发布上传</div>
+      </div>
+      <div id="variant-box" style="display:none"></div>
+      <div id="grade-box" style="display:none"></div>
+      <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${(q.answer || "").trim()
+        ? U.md(q.answer)
+        : '<div class="muted" style="padding:8px 0">答案正在从云端载入…（首访只会先取题目清单，答案按需补上，通常几秒内完成）</div>'}</div>
+      ${pagerHtml(true)}
+      <div class="section-head"><h2>相关推荐</h2></div>
+      <div class="grid grid-cols-2">${related.map(x => qCard(x)).join("")}</div>
+      ${pagerHtml(false)}
+    `, () => { U.highlightAll(main); });
+    $("#show-answer").onclick = () => { const b = $("#answer-box"); b.style.display = b.style.display === "none" ? "block" : "none"; U.highlightAll(b); };
+    /* 我的批注：纯本地保存（IndexedDB），保存后同步回显到答案顶部 */
+    try {
+      const noteEl = $("#note-input");
+      if (noteEl) {
+        const savedEl = $("#note-saved");
+        /* 未填写批注时卡片收成一行虚线占位（.is-empty 由 CSS 折叠），点击展开，
+           避免空批注大框紧跟操作区、比答案还抢眼。有内容或聚焦后自动展开。 */
+        const noteCard = $("#note-card");
+        const expandNote = () => { if (noteCard) noteCard.classList.remove("is-empty"); };
+        if (noteCard) {
+          noteCard.addEventListener("click", (e) => {
+            if (noteCard.classList.contains("is-empty")) { expandNote(); noteEl.focus(); }
+          });
+        }
+        const paintSaved = (t) => { if (savedEl) savedEl.textContent = t ? "已保存 · " + U.fmtDate(t) : "尚未填写"; };
+        const syncQuote = (txt) => {
+          const box = $("#answer-box");
+          if (!box) return;
+          const old = box.querySelector(".note-quote");
+          if (old) old.remove();
+          if (txt) box.insertAdjacentHTML("afterbegin", `<div class="note-quote"><span class="nq-tag">✍️ 我的批注</span>${U.esc(txt)}</div>`);
+        };
+        noteEl.value = myNote ? myNote.text : "";
+        paintSaved(myNote ? myNote.updatedAt : 0);
+        /* 已有批注则默认展开；输入时也确保展开 */
+        if (myNote && myNote.text) expandNote();
+        noteEl.addEventListener("focus", expandNote);
+        $("#note-save").onclick = async () => {
+          try {
+            const r = await DB.noteSet(q.id, noteEl.value);
+            paintSaved(r ? r.updatedAt : 0);
+            syncQuote(r ? r.text : "");
+            if (r && r.text) expandNote();
+            U.toast(r ? "批注已保存（仅本机可见）" : "批注已清空", "success");
+          } catch (e) { console.warn("note save error", e); U.toast("批注保存失败", "error"); }
+        };
+        $("#note-clear").onclick = async () => {
+          if (!noteEl.value.trim()) { noteEl.value = ""; paintSaved(0); return; }
+          if (!(await U.confirm("清空这道题的批注？内容不可恢复。", { okText: "清空" }))) return;
+          try {
+            noteEl.value = "";
+            await DB.noteSet(q.id, "");
+            paintSaved(0); syncQuote("");
+            U.toast("批注已清空", "info");
+          } catch (e) { console.warn("note clear error", e); }
+        };
+      }
+    } catch (e) { console.warn("note init error", e); }
+    $("#fav-btn").onclick = async () => {
+      const nowFav = await Services.toggleFavorite(q.id);
+      $("#fav-btn").className = "btn " + (nowFav ? "btn-danger" : "");
+      $("#fav-btn").innerHTML = nowFav ? U.icon("bookmarkFill") + " 取消收藏" : U.icon("bookmark") + " 收藏";
+      U.toast(nowFav ? "已收藏" : "已取消收藏", "success");
+    };
+    $("#weak-btn").onclick = async () => {
+      if (weakInfo) { U.toast("该题已在错题重练（第 " + (weakInfo.box + 1) + "/8 阶段），到「错题重练」页复习即可", "info"); return; }
+      await Services.addWeak(q.id, "unknown");
+      App.reviewDue = (App.reviewDue || 0) + 1;
+      renderSidebar(parseHash());
+      U.toast("已加入错题重练，到期会提醒复习", "warn");
+      const info = await Services.weakInfo(q.id);
+      if (info) { const st = $("#weak-status"); if (!st) { const b = $("#weak-btn"); b.insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status">📅 复习中 · ${Services.EBBS_LABEL[info.box]} 后</span>`); } }
+    };
+    /* 分享：弹窗预览精美卡片图 → 可直接分享到微信；同时提供复制链接（用户主动取消分享时不降级） */
+    $("#share-btn").onclick = () => openShareDialog(q);
+    /* 「考到过」轻互动（20261005a）：匿名标记这道题在真实面试中被问到过。
+       计数存 Cloudflare Worker KV（hit:<id>），每台浏览器每题只记一次（localStorage 去重）。
+       拉取失败静默降级为「只显示按钮不显示人数」，绝不影响页面主流程 */
+    {
+      const hitBtn = $("#hit-btn");
+      const hitKey = "iti_hit_" + q.id;
+      let hitMarked = false;
+      try { hitMarked = localStorage.getItem(hitKey) === "1"; } catch (e) {}
+      const renderHit = (n, marked) => {
+        hitBtn.innerHTML = (marked ? "🎯 已标记考到过" : "🎯 考到过") + (n ? " · " + n + " 人" : "");
+        hitBtn.classList.toggle("btn-hit-marked", marked);
+      };
+      renderHit(0, hitMarked);
+      try {
+        const base = (typeof Stats !== "undefined" && Stats.cfApi) ? (Stats.cfApi() || "").replace(/\/+$/, "") : "";
+        if (base) {
+          fetch(base + "/interviewed?id=" + q.id, { mode: "cors" })
+            .then(r => r.json())
+            .then(j => { if (j && typeof j.hits === "number") renderHit(j.hits, hitMarked); })
+            .catch(() => {});
+        }
+      } catch (e) {}
+      hitBtn.onclick = async () => {
+        if (hitMarked) { U.toast("这台设备已经标记过这道题啦，感谢反馈", "info"); return; }
+        try { localStorage.setItem(hitKey, "1"); } catch (e) {}
+        hitMarked = true;
+        const j = typeof Stats !== "undefined" && Stats.cfPost ? await Stats.cfPost("/interviewed", { id: q.id }) : null;
+        renderHit((j && j.hits) || 1, true);
+        U.toast("已标记「考到过」，感谢反馈 🙏", "success");
+      };
+    }
+    /* 纠错反馈：跳转 GitHub Issue（预填题号与标题），题目库的信任命门 */
+    $("#report-btn").onclick = () => {
+      const u = "https://github.com/succedd/workbuddy_it-interview/issues/new?title=" + encodeURIComponent("[纠错] 题目 #" + q.id + " " + (q.title || ""))
+        + "&body=" + encodeURIComponent("题目链接：" + location.origin + "/#/question/" + q.id + nl + nl + "问题描述（哪里有误 / 建议）：");
+      window.open(u, "_blank");
+      U.toast("已打开纠错表单，描述问题后提交即可", "info");
+    };
+
+    /* ================= AI 变式训练（20260927e） =================
+       把原题内容发给服务端（POST /ai/variant），由 Worker 调 DeepSeek 生成
+       3 道同考点变式题（KV 全局缓存，同一道题全站只生成一次）。
+       本机逐题自评：「没答上」自动把原题加入错题重练（艾宾浩斯）。
+       变式与作答记录只存本机 localStorage，不入正式题库。 */
+    const vBox = $("#variant-box");
+    $("#variant-btn").onclick = () => {
+      if (vBox.style.display === "block") { vBox.style.display = "none"; return; }
+      vBox.style.display = "block";
+      if (!vBox.dataset.loaded) openVariantPanel();
+    };
+    function openVariantPanel() {
+      vBox.dataset.loaded = "1";
+      const stat = vStatsGet(q.id);
+      const statLine = (stat.ok || stat.bad) ? `<span class="muted" style="font-size:12px">已练 ${(stat.ok || 0) + (stat.bad || 0)} 题 · 答上 ${stat.ok || 0}</span>` : "";
+      vBox.innerHTML = `<div class="card" style="margin-top:12px">
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:15px">${U.icon("sparkles")} AI 变式训练</h2>${statLine}</div>
+        <div id="v-body"><div class="muted" style="padding:16px 0;text-align:center">正在加载变式题…（首次生成约 10~30 秒，结果全站共享，生成过的题秒开）</div></div>
+      </div>`;
+      openVariantChallenge(vBox.querySelector("#v-body"), q, {
+        onAssess(good) {
+          if (good) return;
+          (async () => {
+            await Services.addWeak(q.id, "unknown");
+            App.reviewDue = (App.reviewDue || 0) + 1;
+            renderSidebar(parseHash());
+            const info = await Services.weakInfo(q.id);
+            if (info && !$("#weak-status")) {
+              $("#variant-btn").insertAdjacentHTML("afterend", `<span class="tag tag-warning" id="weak-status" title="该题已进入错题重练，按记忆曲线第 ${info.box + 1}/8 阶段循环">📅 复习中</span>`);
+            }
+            U.toast("原题已加入错题重练，到期会提醒复习", "warn");
+          })();
+        },
+      });
+    }
+
+    /* ================= AI 改卷（20260927g） =================
+       写下自己的回答 → 服务端 DeepSeek 以面试官视角按
+       正确性/完整性/表达打分 → 分数+总评+缺失点+改进版。
+       作答与评分只存本机 localStorage，不入题库。 */
+    const gBox = $("#grade-box");
+    const G_HIST_KEY = "grade_hist_v1";
+    const gHistGet = (id) => { try { return JSON.parse(localStorage.getItem(G_HIST_KEY) || "{}")[id] || null; } catch (e) { return null; } };
+    const gHistSet = (id, rec) => { try { const all = JSON.parse(localStorage.getItem(G_HIST_KEY) || "{}"); all[id] = rec; localStorage.setItem(G_HIST_KEY, JSON.stringify(all)); } catch (e) {} };
+    const gVerdictTag = v => v === "优秀" ? '<span class="tag tag-success">优秀</span>'
+      : v === "合格" ? '<span class="tag tag-warning">合格</span>'
+      : '<span class="tag" style="color:#dc2626;border-color:#dc2626">不合格</span>';
+    $("#grade-btn").onclick = () => {
+      if (gBox.style.display === "block") { gBox.style.display = "none"; return; }
+      gBox.style.display = "block";
+      if (!gBox.dataset.loaded) openGradePanel();
+    };
+    function openGradePanel() {
+      gBox.dataset.loaded = "1";
+      const hist = gHistGet(q.id);
+      const histLine = hist ? `<span class="muted" style="font-size:12px">上次：${hist.score} 分 · ${gVerdictTag(hist.verdict)} · ${new Date(hist.at).toLocaleDateString()}</span>` : "";
+      gBox.innerHTML = `<div class="card" style="margin-top:12px">
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:15px">✍️ AI 改卷</h2>${histLine}</div>
+        <div class="muted" style="font-size:12px;margin-bottom:8px">不看标准答案，用自己的话写下回答（面试口述就写提纲+关键词），AI 面试官从<b>正确性 / 完整性 / 表达</b>三维度打分，指出缺失点并给改进版。每天 20 次。</div>
+        <textarea id="grade-input" rows="6" placeholder="在这里作答…（10 字以上）" style="width:100%;box-sizing:border-box;border:1px solid var(--c-border,#e2e8f0);border-radius:8px;padding:10px;font:inherit;resize:vertical">${hist && hist.my ? U.esc(hist.my) : ""}</textarea>
+        <div class="pill-row" style="margin-top:8px">
+          <button class="btn btn-primary btn-sm" id="grade-go">交卷评分</button>
+          <span class="muted" style="font-size:12px">评分只存本机 · 需登录</span>
+        </div>
+        <div id="grade-res"></div>
+      </div>`;
+      $("#grade-go").onclick = async () => {
+        const btn = $("#grade-go"), res = $("#grade-res");
+        const my = $("#grade-input").value.trim();
+        if (my.length < 10) { U.toast("再写多一点（至少 10 个字），太短评不出东西", "warn"); return; }
+        btn.disabled = true; btn.textContent = "AI 评卷中…（约 10~30 秒）";
+        res.innerHTML = "";
+        try {
+          const j = await Account.call("POST", "/ai/grade", { id: q.id, title: q.title, answer: q.answer, catName: q.catName, my });
+          if (!j || typeof j.score !== "number") {
+            res.innerHTML = `<div class="muted" style="padding:8px 0">${U.esc((j && j.error) || "评分结果异常，请重试")}</div>`;
+            btn.disabled = false; btn.textContent = "交卷评分"; return;
+          }
+          renderGradeResult(res, j);
+          gHistSet(q.id, { at: Date.now(), my, score: j.score, verdict: j.verdict });
+          btn.disabled = false; btn.textContent = "改一改，重新交卷";
+        } catch (e) {
+          btn.disabled = false; btn.textContent = "交卷评分";
+          if (e && e.status === 401) res.innerHTML = `<div style="padding:10px 0;line-height:2">AI 改卷为<b>登录用户免费功能</b>。<br><a class="btn btn-primary" href="#/account">登录 / 注册后使用 →</a></div>`;
+          else res.innerHTML = `<div class="muted" style="padding:8px 0">${U.esc((e && e.message) || "评分失败，请稍后重试")}</div>`;
+        }
+      };
+    }
+    function renderGradeResult(res, j) {
+      const dim = (name, v) => `<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span class="muted" style="font-size:12px;width:48px">${name}</span><div style="flex:1;height:8px;background:var(--c-border,#e2e8f0);border-radius:4px;overflow:hidden"><div style="width:${Math.max(0, Math.min(100, v))}%;height:100%;background:${v >= 80 ? "var(--c-ok,#16a34a)" : v >= 60 ? "#f59e0b" : "#ef4444"}"></div></div><span style="font-size:12px;width:32px;text-align:right">${v}</span></div>`;
+      const d = j.dims || {};
+      res.innerHTML = `<div style="border-top:1px dashed var(--c-border,#e2e8f0);margin-top:12px;padding-top:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <b style="font-size:30px">${j.score}<span class="muted" style="font-size:14px"> / 100</span></b>
+          ${gVerdictTag(j.verdict)}
+          ${j.cached ? '<span class="muted" style="font-size:12px">（同一回答已评过，直接复用结果）</span>' : ""}
+        </div>
+        <div style="margin-top:8px">${dim("正确性", d.correct || 0)}${dim("完整性", d.complete || 0)}${dim("表达", d.clarity || 0)}</div>
+        ${j.comment ? `<div style="margin-top:10px;line-height:1.8">${U.esc(j.comment)}</div>` : ""}
+        ${j.missing && j.missing.length ? `<div style="margin-top:10px"><b style="font-size:13px">缺失 / 加分点</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.8">${j.missing.map(m => `<li>${U.esc(m)}</li>`).join("")}</ul></div>` : ""}
+        ${j.improved ? `<div style="margin-top:10px"><b style="font-size:13px">参考改进版</b><div class="md" style="margin-top:6px">${U.md(j.improved)}</div></div>` : ""}
+        <div class="muted" style="font-size:12px;margin-top:8px">评语仅代表 AI 视角，以标准答案为准 · 改完可以再交一次看分数变化</div>
+      </div>`;
+      U.highlightAll(res);
+    }
+
+    /* 分享弹窗：生成题目卡片预览，支持「分享/保存图片」与「复制链接」 */
+    async function openShareDialog(q) {
+      /* 优先分享 /q/<id>.html：含 per-question og:title/description/image，微信会渲染成带缩略图的链接卡片 */
+      const url = location.origin + "/q/" + q.id + ".html";
+      const m = U.modal({ title: "分享这道题", closable: true });
+      m.body.innerHTML = `<div id="sc-preview" class="muted" style="text-align:center;padding:30px 0">正在生成卡片…</div>
+        <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑推荐「复制图片」后到微信聊天框 Ctrl+V 粘贴发送</div>`;
+      const btnShare = document.createElement("button");
+      btnShare.className = "btn btn-primary"; btnShare.textContent = "分享图片"; btnShare.disabled = true;
+      const btnSave = document.createElement("button");
+      btnSave.className = "btn"; btnSave.textContent = "保存图片"; btnSave.disabled = true;
+      const btnCopy = document.createElement("button");
+      btnCopy.className = "btn"; btnCopy.textContent = "复制链接";
+      /* 微信内置浏览器：navigator.share 文件分享不可用、a[download] 也不可靠；
+         正确姿势是长按预览大图 →「发送给朋友/保存图片」，全屏大图点击可关闭 */
+      /* 微信内置浏览器：手机端 navigator.share 文件分享不可用、a[download] 也不可靠，
+         走「点图放大 → 长按发送给朋友」专属路径；电脑微信（WindowsWechat）按普通桌面处理 */
+      const isWx = /MicroMessenger/i.test(navigator.userAgent);
+      const isWxMobile = isWx && /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (isWxMobile) {
+        btnSave.style.display = "none"; btnShare.style.display = "none";
+      }
+      /* 电脑端最顺滑路径：卡片图进剪贴板，微信聊天框 Ctrl+V 直接粘贴发送 */
+      const canClipboardImg = !!(navigator.clipboard && window.ClipboardItem);
+      const btnCopyImg = document.createElement("button");
+      btnCopyImg.className = "btn"; btnCopyImg.textContent = "复制图片"; btnCopyImg.disabled = true;
+      if (!canClipboardImg || isWxMobile) btnCopyImg.style.display = "none";
+      m.foot.appendChild(btnCopy);
+      m.foot.appendChild(btnCopyImg);
+      m.foot.appendChild(btnSave);
+      m.foot.appendChild(btnShare);
+
+      btnCopy.onclick = async () => {
+        const ok = await U.copyText(url);
+        U.toast(ok ? "链接已复制，粘贴即可分享给朋友" : "复制失败，请手动复制地址栏链接", ok ? "success" : "error");
+      };
+
+      btnCopyImg.onclick = async () => {
+        if (!file) return;
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]);
+          U.toast("卡片图已复制，到微信聊天框 Ctrl+V 粘贴即可发送", "success");
+        } catch (e) {
+          U.toast("复制图片被浏览器拦截，请改用「保存图片」后发送", "error");
+        }
+      };
+      let file = null;
+      try {
+        const { canvas } = await window.ShareCard.render(q, url);
+        const box = m.body.querySelector("#sc-preview");
+        box.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = canvas.toDataURL("image/png");
+        img.alt = "题目分享卡片预览";
+        img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
+        box.appendChild(img);
+        file = await window.ShareCard.toFile(canvas, "IT面试题库-" + (q.title || "题目").slice(0, 20) + ".png");
+        if (isWxMobile) {
+          /* 微信环境：点击预览图放大为全屏图（长按即可发送给朋友/保存到相册） */
+          const hint = document.createElement("div");
+          hint.className = "muted"; hint.style.cssText = "font-size:13px;margin-top:6px;text-align:center";
+          hint.textContent = "👆 点击图片放大后，长按选择「发送给朋友」直接分享到微信";
+          box.appendChild(hint);
+          img.style.cursor = "zoom-in";
+          img.onclick = () => {
+            const ov = document.createElement("div");
+            ov.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px;cursor:zoom-out";
+            const big = document.createElement("img");
+            big.src = img.src;
+            big.style.cssText = "max-width:94vw;max-height:82vh;border-radius:12px";
+            const tip = document.createElement("div");
+            tip.style.cssText = "color:#e2e8f0;font-size:14px;margin-top:12px;text-align:center";
+            tip.innerHTML = "长按图片 → <b>发送给朋友</b> 或 <b>保存图片</b><br><span style='font-size:12px;opacity:.75'>点击任意处关闭</span>";
+            ov.appendChild(big); ov.appendChild(tip);
+            ov.onclick = () => ov.remove();
+            document.body.appendChild(ov);
+          };
+        } else {
+          btnSave.disabled = false; btnShare.disabled = false;
+          if (canClipboardImg) btnCopyImg.disabled = false;
+        }
+      } catch (e) {
+        m.body.querySelector("#sc-preview").innerHTML = `<div class="muted">卡片生成失败，可直接复制链接分享。</div>`;
+      }
+
+      btnSave.onclick = () => {
+        if (!file) return;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(file); a.download = file.name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        U.toast("图片已保存", "success");
+      };
+      btnShare.onclick = async () => {
+        if (!file) return;
+        const payload = { files: [file], title: q.title + " · IT面试题库", text: q.title };
+        if (navigator.canShare && navigator.canShare(payload)) {
+          try { await navigator.share(payload); return; }
+          catch (e) {
+            if (e && e.name === "AbortError") return;   // 用户主动取消不算失败
+            /* 系统分享不可用（如电脑上没有微信分享目标）→ 降级为保存，绝不空手而归 */
+            btnSave.click();
+            U.toast("系统分享不可用，已保存卡片图片，可直接发送给微信朋友", "info");
+          }
+        }
+        // 不支持文件分享（多数桌面浏览器）→ 降级为保存
+        btnSave.click();
+      };
+    }
+    if (Auth.isAdmin()) {
+      $("#del-btn").onclick = async () => {
+        if (await U.confirm("确定删除该题？此操作不可逆。", { danger: true, okText: "删除" })) {
+          await Services.deleteQuestion(q.id); U.toast("已删除", "success"); App.go("/questions");
+        }
+      };
+      $("#opt-btn").onclick = () => openOptimizeModal(q);
+    }
+    // 上/下一题（同分类内按 id 顺序循环；与刷题页的顺序行为一致）
+    const siblings = Services.questions.filter(x => x.categoryId === q.categoryId).sort((a, b) => a.id - b.id);
+    const sibIdx = siblings.findIndex(x => x.id === q.id);
+    if (sibIdx >= 0 && siblings.length > 1) {
+      /* 消费方是**两组**翻页（答案区下方 + 页面最底），所以按类遍历绑定，
+         不能再用 $("#next-btn").onclick —— 那样只有第一组生效。 */
+      const goNext = () => App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id);
+      const goPrev = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
+      $$(".qd-pager .js-next").forEach(b => { b.onclick = goNext; });
+      $$(".qd-pager .js-prev").forEach(b => { b.onclick = goPrev; });
+    } else {
+      /* 该题没有同分类邻居：两组翻页一起藏（原来只处理了带 id 的那一组） */
+      $$(".qd-pager").forEach(el => { el.style.display = "none"; });
+    }
+    /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应）
+       ⚠️ 但**提示文案只在「有指针 + 能悬浮」的设备上给**（用户 2026-09-19 反馈「手机端出现
+       空格键/展开收起答案，移动端没必要出现」）：手机上没有实体键盘，字样纯属噪音；更要紧的是
+       触屏的 :hover 会「粘住」→ `[data-tooltip]:hover::after` 那行「空格键：展开/收起答案」
+       会一直挂在「查看答案」按钮上不消失。快捷键本身保留（外接蓝牙键盘的平板仍可用）。 */
+    if (U.canHover()) {
+      const kbHint = document.createElement("span");
+      kbHint.className = "muted kbd-hint";
+      kbHint.style.cssText = "font-size:11px;margin-left:8px";
+      kbHint.id = "kb-hint";
+      kbHint.textContent = "快捷键：Space 翻答案 · S 收藏";
+      /* 必须挂在「上一题 / 下一题」这一行：批注卡片内部也有 .pill-row，
+         泛选 $(".pill-row") 会命中批注卡片里的按钮行（文档顺序靠前） */
+      const kbRow = $("#prev-btn") ? $("#prev-btn").parentElement : $(".pill-row");
+      if (kbRow) kbRow.appendChild(kbHint);
+      /* 用 tooltip 方式展示快捷键（悬浮高亮）；打上 data-tooltip-kbd 供 CSS 兜底隐藏 */
+      setTimeout(() => {
+        const btn = $("#show-answer");
+        if (btn) { U.tooltip(btn, "空格键：展开/收起答案", { dir: "top" }); btn.setAttribute("data-tooltip-kbd", "1"); }
+      }, 100);
+    }
+    setPageKeys(e => {
+      if (typingInField(e)) return;
+      if (document.querySelector("#modal-root .modal-mask") || document.querySelector("#modal-root .modal")) return;
+      if (e.key === "ArrowLeft" && $("#prev-btn").style.display !== "none") { $("#prev-btn").click(); }
+      else if (e.key === "ArrowRight" && $("#next-btn").style.display !== "none") { $("#next-btn").click(); }
+      else if (e.key === " " || e.code === "Space") { e.preventDefault(); $("#show-answer").click(); }
+      else if (e.key === "s" || e.key === "S") { $("#fav-btn").click(); }
+    });
+  }
+
+  /* ==================== AI 变式共享层（详情页训练 + 复习闯关共用，20260927f） ====================
+     本机缓存/统计与 /ai/variant 请求收敛到这里，两个入口复用同一份代码与同一份缓存。 */
+  const V_CACHE_KEY = "variant_cache_v1", V_STAT_KEY = "variant_stats_v1";
+  const V_CACHE_TTL = 7 * 86400e3;   // 本机缓存 7 天，过期重新请求（服务端 KV 仍是同一份，秒回）
+  function vStatsGet(id) {
+    try { const s = JSON.parse(localStorage.getItem(V_STAT_KEY) || "{}")[id]; return s || { ok: 0, bad: 0 }; }
+    catch (e) { return { ok: 0, bad: 0 }; }
+  }
+  function vStatsAdd(id, ok) {
+    try {
+      const all = JSON.parse(localStorage.getItem(V_STAT_KEY) || "{}");
+      const s = all[id] || { ok: 0, bad: 0 };
+      ok ? s.ok++ : s.bad++; s.at = Date.now();
+      all[id] = s;
+      localStorage.setItem(V_STAT_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+  function vCacheGet(id) {
+    try {
+      const c = JSON.parse(localStorage.getItem(V_CACHE_KEY) || "{}")[id];
+      return (c && Array.isArray(c.variants) && c.variants.length && Date.now() - c.at < V_CACHE_TTL) ? c : null;
+    } catch (e) { return null; }
+  }
+  function vCacheSet(id, variants) {
+    try {
+      const all = JSON.parse(localStorage.getItem(V_CACHE_KEY) || "{}");
+      all[id] = { at: Date.now(), variants };
+      localStorage.setItem(V_CACHE_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+  /* 打开变式面板：登录检查 → 取本机缓存 → 调 /ai/variant → 渲染。
+     opts.onAssess(good) 逐题自评回调；opts.tagFor(good) 自定义结果标签；
+     opts.footer 自定义底部说明；opts.onReady(total) 渲染完成（闯关计总数）；
+     opts.loginAlt 未登录/失败时的兜底提示。 */
+  function openVariantChallenge(vBody, q, opts = {}) {
+    const loginHint = () => {
+      vBody.innerHTML = `<div style="padding:14px 0;line-height:2">AI 变式为<b>登录用户免费功能</b>（防滥用限额，每天可生成 20 题）。<br>
+        <a class="btn btn-primary" href="#/account" style="margin-top:6px">登录 / 注册后使用 →</a>${opts.loginAlt || ""}</div>`;
+    };
+    const retryHint = (msg) => {
+      vBody.innerHTML = `<div class="muted" style="padding:12px 0">${U.esc(msg || "加载失败，请稍后重试")}<div style="margin-top:10px"><button class="btn btn-sm" id="v-retry">重试</button></div>${opts.loginAlt || ""}</div>`;
+      const r = vBody.querySelector("#v-retry");
+      if (r) r.onclick = () => start();
+    };
+    const start = () => {
+      if (!(window.Account && Account.isLoggedIn())) { loginHint(); return; }
+      const cached = vCacheGet(q.id);
+      if (cached) { renderVariantItems(vBody, q, cached.variants, opts); return; }
+      vBody.innerHTML = `<div class="muted" style="padding:16px 0;text-align:center">${opts.loadingMsg || "正在加载变式题…（首次生成约 10~30 秒，结果全站共享，生成过的题秒开）"}</div>`;
+      (async () => {
+        try {
+          const j = await Account.call("POST", "/ai/variant", {
+            id: q.id, title: q.title, answer: q.answer, catName: q.catName, tags: q.tags || [],
+          });
+          if (!j || !Array.isArray(j.variants) || !j.variants.length) { retryHint((j && j.error) || "未生成出有效变式"); return; }
+          vCacheSet(q.id, j.variants);
+          renderVariantItems(vBody, q, j.variants, opts);
+        } catch (e) {
+          if (e && e.status === 401) loginHint();
+          else retryHint(e && e.message);
+        }
+      })();
+    };
+    start();
+  }
+  function renderVariantItems(vBody, q, list, opts = {}) {
+    vBody.innerHTML = list.map((v, i) => `
+      <div class="v-item" style="border:1px solid var(--c-border,#e2e8f0);border-radius:10px;padding:12px 14px;margin-top:10px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span class="tag tag-primary">变式 ${i + 1}</span>
+          ${v.focus ? `<span class="tag tag-outline">${U.esc(v.focus)}</span>` : ""}
+        </div>
+        <div style="margin:8px 0;font-weight:600;line-height:1.7">${U.esc(v.title)}</div>
+        <div class="pill-row">
+          <button class="btn btn-sm v-show">${U.icon("eye")} 看参考答案</button>
+          <button class="btn btn-sm btn-primary v-ok">${U.icon("check")} 答上了</button>
+          <button class="btn btn-sm v-bad">${U.icon("alert")} 没答上</button>
+        </div>
+        <div class="v-answer md" style="display:none;margin-top:8px;border-top:1px dashed var(--c-border,#e2e8f0);padding-top:8px">${U.md(v.answer)}</div>
+      </div>`).join("")
+      + (opts.footer || `<div class="muted" style="font-size:12px;margin-top:8px">先自己答再看答案 · 自评只存本机 · 「没答上」会把原题加入错题重练</div>`);
+    if (opts.onReady) opts.onReady(list.length);
+    const items = vBody.querySelectorAll(".v-item");
+    list.forEach((v, i) => {
+      const item = items[i];
+      if (!item) return;
+      const showBtn = item.querySelector(".v-show"), ansBox = item.querySelector(".v-answer");
+      showBtn.onclick = () => {
+        ansBox.style.display = ansBox.style.display === "none" ? "block" : "none";
+        U.highlightAll(ansBox);
+      };
+      const okBtn = item.querySelector(".v-ok"), badBtn = item.querySelector(".v-bad");
+      const done = (good) => {
+        okBtn.disabled = true; badBtn.disabled = true;
+        item.querySelector(".pill-row").insertAdjacentHTML("afterbegin",
+          opts.tagFor ? opts.tagFor(good) : (good ? '<span class="tag tag-success">✓ 这题算是真会了</span>' : '<span class="tag tag-warning">已记入错题重练</span>'));
+        vStatsAdd(q.id, good);
+        if (opts.onAssess) opts.onAssess(good, item);
+      };
+      okBtn.onclick = () => done(true);
+      badBtn.onclick = () => done(false);
+    });
+  }
+
+  /* ============================ 错题重练（艾宾浩斯记忆曲线） ============================ */
+  /* —— 复习打卡（20261005a）：每次点「会了」（含 AI 闯关成功）记 1 次今日复习完成，
+     连续打卡天数由 review_days 日期表推导。localStorage 存储即可——打卡是轻量激励，
+     不值得为它加一张 IndexedDB 表；换设备丢失也不影响复习调度本身。 —— */
+  function reviewStats() {
+    let days = [];
+    try { days = JSON.parse(localStorage.getItem("review_days") || "[]"); } catch (e) {}
+    const has = new Set(days);
+    let streak = 0;
+    const d = new Date();
+    if (!has.has(dateKey(d))) d.setDate(d.getDate() - 1);
+    while (has.has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    let done = 0;
+    try { done = parseInt(localStorage.getItem("review_done_" + dateKey())) || 0; } catch (e) {}
+    return { streak, done };
+  }
+  function markReviewDone() {
+    const today = dateKey();
+    try {
+      const n = (parseInt(localStorage.getItem("review_done_" + today)) || 0) + 1;
+      localStorage.setItem("review_done_" + today, String(n));
+      let days = [];
+      try { days = JSON.parse(localStorage.getItem("review_days") || "[]"); } catch (e) {}
+      if (days.indexOf(today) < 0) { days.push(today); if (days.length > 400) days = days.slice(-400); localStorage.setItem("review_days", JSON.stringify(days)); }
+    } catch (e) {}
+    return reviewStats();
+  }
+
+  async function pageReview() {
+    document.title = "错题重练 · IT面试题库";
+    const { due, upcoming } = await Services.weakList();
+    App.reviewDue = due.length;
+    renderSidebar(parseHash());
+    /* 复习打卡头部（20261005a）：今日进度条 + 连续天数。目标值取进入页面时的到期数，
+       完成数跨渲染持久（localStorage），「还不会」不计数、下次到期再算 */
+    const dueTotal = Math.max(due.length, reviewStats().done);
+    const rv0 = reviewStats();
+    const rvPct = Math.min(100, Math.round((rv0.done / Math.max(1, dueTotal)) * 100));
+    const rvHeader = (due.length || rv0.done) ? `<div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+      <div style="font-size:22px">📆</div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-weight:600;font-size:14px">今日复习进度 <span id="rv-done" style="color:var(--primary,#2563EB)">${rv0.done}</span> / ${dueTotal}${due.length ? "" : " · 今日任务已清空 🎉"}</div>
+        <div style="height:6px;background:var(--border,#e2e8f0);border-radius:99px;margin-top:6px;overflow:hidden"><div id="rv-bar" style="height:100%;width:${rvPct}%;background:linear-gradient(90deg,#10b981,#3b82f6);border-radius:99px;transition:width .4s"></div></div>
+      </div>
+      <span id="rv-streak" class="tag ${rv0.streak >= 3 ? "tag-warning" : ""}" title="每天完成至少 1 次复习即打卡，中断清零">🔥 连续复习 ${rv0.streak} 天</span>
+    </div>` : "";
+    /* 一次性取出全部批注建索引（避免每张卡片各查一次库） */
+    let noteByQ = new Map();
+    try { noteByQ = new Map((await DB.notesAll()).map(n => [n.questionId, n])); } catch (e) {}
+    const noteLine = (qid) => {
+      const n = noteByQ.get(qid);
+      if (!n || !n.text) return "";
+      const txt = n.text.length > 60 ? n.text.slice(0, 60) + "…" : n.text;
+      return `<div class="note-mini">✍️ <b>我的批注</b>：${U.esc(txt)}</div>`;
+    };
+    const ivlLabel = w => Services.EBBS_LABEL[Math.min(w.box || 0, Services.EBBS_LABEL.length - 1)];
+    const fmtTime = ts => { const d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+    const cardOf = (w, isDue) => {
+      const q = w._q;
+      return `<div class="card rv-card" data-qid="${q.id}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
+          <span class="tag ${isDue ? "tag-warning" : ""}">${isDue ? "第 " + ((w.box || 0) + 1) + " 次 · 待复习" : ivlLabel(w) + "后"}</span>
+        </div>
+        <div class="muted" style="font-size:12px;margin-top:4px">${w.marked === "unknown" ? "不会" : "不熟悉"} · 排期 ${fmtTime(w.dueAt)}${w.lastOkAt ? " · 上次会了 " + fmtTime(w.lastOkAt) : ""}</div>
+        ${noteLine(q.id)}
+        <div class="pill-row" style="margin-top:10px">
+          ${isDue ? `<button class="btn btn-success btn-sm" data-act="ok">${U.icon("check")} 会了</button>
+          <button class="btn btn-warning btn-sm" data-act="again">还不会，稍后再来</button>
+          <button class="btn btn-sm" data-act="challenge" title="AI 出 3 道同考点变式，先答再看，全对自动顺延记忆间隔">⚡ AI 闯关</button>` : ""}
+          <button class="btn btn-sm" data-act="del">${U.icon("x")} 移出</button>
+        </div>
+      </div>`;
+    };
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
+      <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 点「⚡ AI 闯关」先答变式题验证真掌握，或直接自评</span></div>
+      ${rvHeader}
+      ${due.length
+        ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
+        : `<div class="empty">
+             <div class="em-ic">${U.icon("check")}</div>
+             <div class="em-title">当前没有到期的复习任务</div>
+             <div class="em-desc">在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，题目就会进入这里并按艾宾浩斯记忆曲线排期：答「会了」拉长间隔，答「还不会」5 分钟后再来一次。</div>
+             <div class="empty-cta">
+               <a class="btn btn-primary" href="#/practice?scope=weak">${U.icon("refresh")} 练薄弱题</a>
+               <a class="btn" href="#/questions">${U.icon("layers")} 去题库标记</a>
+             </div>
+           </div>`}
+      ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
+      ${due.length && U.canHover() ? `<div class="muted kbd-hint" style="font-size:12px;margin-top:14px">快捷键：回车 确认「会了」· Esc 关闭弹窗</div>` : ""}
+    `);
+    const wByQid = new Map([...due, ...upcoming].map(w => [w._q.id, w]));
+    $$("#main .rv-card [data-act]").forEach(b => b.onclick = async () => {
+      const card = b.closest(".rv-card");
+      const qid = parseInt(card.dataset.qid);
+      const act = b.dataset.act;
+      if (act === "del") { await Services.removeWeak(qid); U.toast("已移出错题本", "info"); }
+      else if (act === "challenge") {
+        const w = wByQid.get(qid);
+        if (!w) { U.toast("数据未就绪，请刷新页面重试", "warn"); return; }
+        let panel = card.querySelector(".vc-panel");
+        if (panel) { panel.style.display = panel.style.display === "none" ? "block" : "none"; return; }
+        panel = document.createElement("div");
+        panel.className = "vc-panel";
+        panel.innerHTML = `<div class="card" style="margin-top:10px">
+          <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:15px">${U.icon("sparkles")} 复习闯关 · AI 变式</h2><span class="muted" id="vc-prog"></span></div>
+          <div class="vc-body"><div class="muted" style="padding:12px 0;text-align:center">正在加载变式题…</div></div>
+        </div>`;
+        card.appendChild(panel);
+        const prog = panel.querySelector("#vc-prog");
+        let graded = false, okN = 0, badN = 0, total = 0;
+        openVariantChallenge(panel.querySelector(".vc-body"), w._q, {
+          loginAlt: `<div class="muted" style="margin-top:8px;font-size:12px">暂时不想登录？直接用上方「会了 / 还不会」自评也可以</div>`,
+          loadingMsg: "正在加载变式题…（首次生成约 10~30 秒，生成过的题秒开）",
+          tagFor: good => good ? '<span class="tag tag-success">✓ 答上了</span>' : '<span class="tag tag-warning">❌ 未通过</span>',
+          footer: `<div class="muted" style="font-size:12px;margin-top:8px">全部答上 = 闯关成功，记忆间隔自动顺延；任意一题没答上 = 本关未通过，间隔重置 5 分钟后重来</div>`,
+          onReady(n) { total = n; prog.textContent = "已答 0/" + n; },
+          onAssess(good) {
+            if (graded) return;
+            good ? okN++ : badN++;
+            prog.textContent = "已答 " + (okN + badN) + "/" + total;
+            if (badN > 0) {
+              graded = true;
+              Services.weakGrade(qid, false).then(() => U.toast("本关未通过：记忆间隔已重置，5 分钟后重试", "warn"));
+            } else if (total && okN === total) {
+              graded = true;
+              Services.weakGrade(qid, true).then(async () => {
+                U.toast("🎉 闯关成功！下次复习时间已顺延", "success");
+                App.reviewDue = Math.max(0, (App.reviewDue || 0) - 1);
+                /* 复习打卡：闯关成功等同「会了」（20261005a） */
+                const st = markReviewDone();
+                const rd = document.getElementById("rv-done"); if (rd) rd.textContent = st.done;
+                const rb = document.getElementById("rv-bar"); if (rb) rb.style.width = Math.min(100, Math.round((st.done / Math.max(1, dueTotal)) * 100)) + "%";
+                const rs = document.getElementById("rv-streak"); if (rs) { rs.textContent = "🔥 连续复习 " + st.streak + " 天"; if (st.streak >= 3) rs.classList.add("tag-warning"); }
+                renderSidebar(parseHash());
+                try {
+                  const info = await Services.weakInfo(qid);
+                  const st = card.querySelector(".tag");
+                  if (st) {
+                    st.classList.remove("tag-warning");
+                    st.textContent = "✅ 已顺延" + (info ? " · " + Services.EBBS_LABEL[Math.min(info.box || 0, Services.EBBS_LABEL.length - 1)] + "后" : "");
+                  }
+                } catch (e) {}
+              });
+            }
+          },
+        });
+        return;
+      }
+      else {
+        await Services.weakGrade(qid, act === "ok");
+        if (act === "ok") markReviewDone();   /* 复习打卡（20261005a）：pageReview 重渲染会自动刷新进度 */
+        U.toast(act === "ok" ? "👍 已掌握，下次复习时间已顺延" : "好的，5 分钟后再次提醒", act === "ok" ? "success" : "warn");
+      }
+      pageReview();
+    });
+  }
+
+  /* ============================ 收藏夹 ============================ */
+  async function pageFavorites() {
+    document.title = "收藏夹 · IT面试题库";
+    const favs = await Services.getFavorites();
+    const PAGE = 40; let shown = Math.min(PAGE, favs.length);
+    const renderGrid = () => {
+      $("#fav-grid").innerHTML = favs.length
+        ? favs.slice(0, shown).map(q => qCard(q)).join("") + (shown < favs.length ? `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="fav-more">加载更多（${favs.length - shown}）</button></div>` : "")
+        : '<div class="empty">还没有收藏任何题目</div>';
+      const mb = $("#fav-more");
+      if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, favs.length); renderGrid(); };
+    };
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>收藏夹</span></div>
+      <div class="section-head"><h2>我的收藏（${favs.length}）</h2>
+        <div><button class="btn btn-sm" id="exp-md">${U.icon("download")} 导出MD</button>
+        <button class="btn btn-sm" id="print-fav">${U.icon("layers")} 打印</button>
+        <button class="btn btn-sm btn-danger" id="clear-fav">${U.icon("trash")} 清空</button></div></div>
+      <div class="grid grid-cols-2" id="fav-grid"></div>`);
+    renderGrid();
+    $("#exp-md").onclick = () => exportFavMarkdown(favs);
+    $("#print-fav").onclick = () => window.print();
+    $("#clear-fav").onclick = async () => { if (await U.confirm("确定清空全部收藏？", { danger: true })) { await db.favorites.clear(); await Services.reload(); U.toast("已清空收藏", "success"); pageFavorites(); } };
+  }
+  function exportFavMarkdown(favs) {
+    let md = "# 我的收藏题目\n\n";
+    favs.forEach(q => { md += `## ${q.title}\n\n**难度**：${q.difficulty} **题型**：${q.type}\n\n${q.body}\n\n**答案**\n\n${q.answer}\n\n---\n\n`; });
+    U.download("我的收藏题目.md", md, "text/markdown");
+  }
+
+  /* ============================ 浏览历史 ============================ */
+  async function pageHistory() {
+    document.title = "浏览历史 · IT面试题库";
+    const all = await Services.getHistories();   /* [{q, at, views}] 按浏览时间倒序 */
+    const [weakRows, favRows] = await Promise.all([DB.db.weakBank.toArray(), DB.db.favorites.toArray()]);
+    const weakSet = new Set(weakRows.map(w => w.questionId));
+    const favSet = new Set(favRows.map(f => f.questionId));
+    const PAGE = 40; let shown = Math.min(PAGE, all.length);
+    let term = "";
+
+    const hisCard = ({ q, at, views }) => {
+      const badges = [];
+      if (weakSet.has(q.id)) badges.push('<span class="tag tag-warning">📅 复习中</span>');
+      if (favSet.has(q.id)) badges.push('<span class="tag tag-primary">★ 已收藏</span>');
+      if ((views || 1) > 1) badges.push(`<span class="tag">看过 ${views} 次</span>`);
+      return `<div class="card card-hover" style="position:relative;cursor:pointer" onclick="location.hash='/question/${q.id}'">
+        <button class="icon-btn" data-del="${q.id}" title="删除这条记录" aria-label="删除这条浏览记录" style="position:absolute;top:10px;right:10px;z-index:2">${U.icon("x")}</button>
+        ${qCard(q).replace('href="#/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}
+        <div class="muted" style="font-size:12px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span>浏览于 ${U.fmtDate(at)}</span>${badges.join("")}</div>
+      </div>`;
+    };
+    const groupOf = (at) => {
+      const now = new Date();
+      const day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      if (at >= day0) return "今天";
+      if (at >= day0 - 86400000) return "昨天";
+      if (at >= day0 - 6 * 86400000) return "本周更早";
+      return "更早";
+    };
+    const renderGrid = () => {
+      const t = term.trim().toLowerCase();
+      const view = !t ? all : all.filter(({ q }) => ((q.title || "") + " " + (q.tags || []).join(" ")).toLowerCase().indexOf(t) >= 0);
+      const gCounts = {};
+      view.forEach(item => { const g = groupOf(item.at); gCounts[g] = (gCounts[g] || 0) + 1; });
+      let html = "";
+      if (!view.length) {
+        html = term
+          ? '<div class="empty" style="grid-column:1/-1">没有匹配的浏览记录</div>'
+          : `<div class="empty" style="grid-column:1/-1"><div class="em-ic">${U.icon("history")}</div>暂无浏览记录<div style="margin-top:12px"><a class="btn btn-primary" href="#/questions">去看几道题试试 →</a></div></div>`;
+      } else {
+        let last = null;
+        view.slice(0, shown).forEach(item => {
+          const g = groupOf(item.at);
+          if (g !== last) {
+            html += `<div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:10px">
+              <span class="tag tag-primary" style="font-weight:700;font-size:13px;padding:3px 12px">${g}</span>
+              <span style="flex:1;height:1px;background:var(--border)"></span>
+              <span class="muted" style="font-size:11px;flex:none">${gCounts[g] || 0} 题</span>
+            </div>`;
+            last = g;
+          }
+          html += hisCard(item);
+        });
+        if (shown < view.length) html += `<div class="pill-row" style="grid-column:1/-1;justify-content:center"><button class="btn" id="his-more">加载更多（${view.length - shown}）</button></div>`;
+      }
+      $("#his-grid").innerHTML = html;
+      const mb = $("#his-more");
+      if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, view.length); renderGrid(); };
+      $$("#his-grid [data-del]").forEach(b => b.onclick = async (e) => {
+        e.stopPropagation();
+        await Services.removeHistory(parseInt(b.dataset.del));
+        U.toast("已删除该条记录", "info");
+        pageHistory();
+      });
+    };
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>浏览历史</span></div>
+      <div class="section-head"><h2>浏览历史（${all.length}）</h2>
+        <div style="display:flex;gap:8px">
+          <a class="btn btn-sm btn-primary" href="#/practice?scope=hist" title="把历史题目作为题池开始刷题">${U.icon("play")} 重刷历史</a>
+          <button class="btn btn-sm btn-danger" id="clear-h">${U.icon("trash")} 清空</button></div></div>
+      <input id="his-q" class="full" style="max-width:280px;margin-bottom:12px" placeholder="在历史中搜索标题 / 标签…" />
+      <div class="grid grid-cols-2" id="his-grid"></div>`);
+    $("#his-q").addEventListener("input", U.debounce(e => { term = e.target.value; shown = PAGE; renderGrid(); }, 250));
+    $("#clear-h").onclick = async () => {
+      if (!all.length) return;
+      if (!(await U.confirm("确定清空全部浏览历史？（8 秒内可撤销）", { danger: true }))) return;
+      const backup = await DB.db.histories.toArray();
+      await DB.db.histories.clear();
+      U.toast("已清空浏览历史（8 秒内可撤销）", "info", 8000);
+      const root = document.getElementById("toast-root");
+      if (root && backup.length) {
+        const el = document.createElement("div");
+        el.className = "toast";
+        el.style.borderLeftColor = "var(--c-warning)";
+        el.innerHTML = '<span style="flex:1">误删了？点这撤销</span><button class="btn btn-sm" type="button">撤销清空</button>';
+        el.querySelector("button").onclick = async () => {
+          try { await DB.db.histories.bulkAdd(backup); } catch (e) {}
+          el.remove();
+          U.toast("已恢复 " + backup.length + " 条浏览记录", "success");
+          if (location.hash === "#/history" || location.hash === "") pageHistory();
+        };
+        root.appendChild(el);
+        setTimeout(() => { el.remove(); }, 8000);
+      }
+      pageHistory();
+    };
+    renderGrid();
+  }
+
+  /* ============================ 使用指南 ============================ */
+  /* 使用指南已拆分至 js/guide.js（window.pageHelp 全局可用），模块化第一刀 */
+  async function pagePractice(q) {
+    document.title = "刷题练习 · IT面试题库";
+    const mode = q.mode || "random";
+    const diffs = ["初级", "中级", "高级", "专家"];
+    const scope = q.scope || (q.cat ? "cat" : q.pos ? "pos" : "all");
+    if (scope === "weak" && !q.mode) mode = "seq";   // 薄弱题本默认按「最近标记优先」顺序
+
+    /* 构建分类树 options */
+    const buildCatOpts = (nodes, depth = 0) => nodes.map(c =>
+      `<option value="${c.id}" ${q.cat == c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)} (${c.count || 0})</option>` +
+      buildCatOpts(c.children || [], depth + 1)
+    ).join("");
+    const catOpts = buildCatOpts(Services.categoryTree());
+
+    /* 构建岗位 options（按 stage 分组，排除隐藏/伪岗位，同名去重） */
+    const byStage = Services.positionsByStage();
+    const posSeen = new Set();
+    const posOpts = byStage.map(s => {
+      const uniq = s.list.filter(p => {
+        if (Services.isHiddenPosition(p)) return false;
+        const key = Services.posKey(p);
+        if (posSeen.has(key)) return false;
+        posSeen.add(key);
+        return true;
+      });
+      if (!uniq.length) return "";
+      return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}" ${q.pos == p.id ? "selected" : ""}>${U.esc(Services.posFullName(p))} (${Services.questionCountForPosition(p)})</option>`).join("")}</optgroup>`;
+    }).join("");
+
+    /* 计算题目池 */
+    let pool = [];
+    if (scope === "weak") {
+      pool = await Services.getWeakQuestions();
+    } else if (scope === "hist") {
+      /* 浏览历史作为题池：最近看过的在前，重刷温故 */
+      pool = (await Services.getHistories()).map(h => h.q);
+    } else {
+      pool = Services.published().slice();
+      if (scope === "cat" && q.cat) { const id = parseInt(q.cat); const ids = [id].concat(Services.descendantIds(id)); pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0); }
+      if (scope === "pos" && q.pos) { const pos = Services.getPosition(parseInt(q.pos)); pool = pool.filter(x => Services.matchPosition(x, pos)); }
+      /* 路线图：只刷某一周的题。题集由 js/roadmap.js 计算，与路线图页完全同源，
+         不会出现「路线图说这周 30 题、练习却只有 12 题」的错位 */
+      if (scope === "roadmap" && q.pos) {
+        const ids = window.Roadmap ? Roadmap.weekQuestionIds(q.pos, q.week) : [];
+        const idSet = new Set(ids);
+        pool = pool.filter(x => idSet.has(x.id));
+      }
+    }
+    if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
+
+    const start = (order) => {
+      let list = pool.slice();
+      if (scope === "weak") {
+        // 薄弱题本：保持「最近标记优先」原序（getWeakQuestions 已按 updatedAt 倒序），
+        // 仅随机模式打乱；顺序模式不按分类重排，确保刚标记的题立即可见
+        if (order === "random") list.sort(() => Math.random() - 0.5);
+      } else {
+        if (order === "random") list.sort(() => Math.random() - 0.5);
+        if (order === "seq") list.sort((a, b) => (a.categoryId || 0) - (b.categoryId || 0));
+      }
+      runPractice(list);
+    };
+
+    const scopeUrl = (s) => {
+      const p = new URLSearchParams();
+      p.set("mode", $("#pm").value);
+      if ($("#pd").value) p.set("diff", $("#pd").value);
+      if (s !== "all") p.set("scope", s);
+      if (s === "cat" && $("#pcat").value) p.set("cat", $("#pcat").value);
+      if (s === "pos" && $("#ppos").value) p.set("pos", $("#ppos").value);
+      /* 路线图模式：切难度/模式时要保留岗位与周次，否则会被甩回全部题目 */
+      if (s === "roadmap" && q.pos) { p.set("pos", q.pos); if (q.week) p.set("week", q.week); }
+      return "/practice?" + p.toString();
+    };
+
+    const weakN = Services.weakCount || 0;
+
+    const selectedCatLabel = scope === "cat" && q.cat ? U.esc(Services.catName(parseInt(q.cat))) : "";
+    const selectedPosLabel = scope === "pos" && q.pos ? U.esc(Services.posFullName(Services.getPosition(parseInt(q.pos)))) : "";
+
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题练习</span></div>
+      <h1>刷题练习</h1>
+      <p class="secondary">共 ${pool.length} 道可用题目。选择模式开始。</p>
+      <!-- 两栏布局（2026-09-24 评审 P1-5）：原先表单卡固定 560px 靠左，右栏约 600px 全空，
+           整页看着像「没做完」。右侧补上真实可用的入口卡片，把空白变成有价值的信息。 -->
+      <div class="page-form">
+      <div class="page-form-main">
+      <div class="card">
+        <label class="field"><span>刷题模式</span>
+          <select id="pm" class="full">
+            <option value="random" ${mode === "random" ? "selected" : ""}>随机刷题</option>
+            <option value="seq" ${mode === "seq" ? "selected" : ""}>顺序刷题（按分类）</option>
+          </select></label>
+
+        <div class="field" style="margin-bottom:14px"><span>练习范围</span>
+          <div class="scope-seg" id="psc">
+            <button type="button" class="btn btn-sm ${scope === "all" ? "btn-primary" : "btn-secondary"}" data-scope="all">全部题目</button>
+            <button type="button" class="btn btn-sm ${scope === "cat" ? "btn-primary" : "btn-secondary"}" data-scope="cat">${U.icon("layers")} 技术体系</button>
+            <button type="button" class="btn btn-sm ${scope === "pos" ? "btn-primary" : "btn-secondary"}" data-scope="pos">${U.icon("briefcase")} 岗位体系</button>
+            <button type="button" class="btn btn-sm ${scope === "weak" ? "btn-primary" : "btn-secondary"}" data-scope="weak">${U.icon("alert")} 薄弱题本 (${weakN})</button>
+          </div>
+          ${scope === "weak" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">仅练习标记为「不熟悉」或「不会」的题目。${weakN ? "" : " 当前为空，去全部题目里标记吧。"}</span>${weakN ? `<button class="btn btn-sm btn-danger" id="clear-weak" style="margin-left:auto">清空薄弱题本</button>` : ""}</div>` : ""}
+          ${scope === "roadmap" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">${U.icon("map")} 来自「${selectedPosLabel || "该岗位"}」刷题计划第 ${U.esc(String(q.week || 1))} 周，共 ${pool.length} 题。</span><a class="btn btn-sm" href="#/roadmap/${U.esc(String(q.pos || ""))}" style="margin-left:auto">${U.icon("chevronRight")} 返回计划</a></div>` : ""}
+        </div>
+
+        <div id="cat-panel" class="field ${scope === "cat" ? "" : "hidden"}">
+          <span>选择技术分类 ${selectedCatLabel ? `<span class="tag tag-primary">${selectedCatLabel}</span>` : ""}</span>
+          <input id="pcat-search" class="full" type="search" placeholder="搜索分类名称…" style="margin-bottom:8px">
+          <select id="pcat" class="full" size="6">${catOpts}</select>
+        </div>
+
+        <div id="pos-panel" class="field ${scope === "pos" ? "" : "hidden"}">
+          <span>选择岗位 ${selectedPosLabel ? `<span class="tag tag-primary">${selectedPosLabel}</span>` : ""}</span>
+          <input id="ppos-search" class="full" type="search" placeholder="搜索岗位名称或方向…" style="margin-bottom:8px">
+          <select id="ppos" class="full" size="6">${posOpts}</select>
+        </div>
+
+        <label class="field"><span>难度筛选（可选）</span>
+          <select id="pd" class="full"><option value="">全部</option>${diffs.map(d => `<option ${q.diff === d ? "selected" : ""}>${d}</option>`).join("")}</select></label>
+        <button class="btn btn-primary btn-lg full" id="start-p">${U.icon("play")} 开始刷题</button>
+      </div>
+      </div>
+      <aside class="page-form-side">
+        <div class="card">
+          <div class="pf-card-head"><h2>薄弱题本</h2><span class="tag ${weakN ? "tag-warning" : ""}">${weakN} 题</span></div>
+          <p class="pf-card-desc">${weakN
+            ? "标记为「不熟悉 / 不会」的题目，会按艾宾浩斯记忆曲线安排复习。"
+            : "还没标记过题目。在题目详情点「不太会」，这里就会攒下你的薄弱点。"}</p>
+          <div class="pf-card-actions">
+            ${weakN ? `<button type="button" class="btn btn-sm" id="side-weak">${U.icon("alert")} 练薄弱题</button>` : ""}
+            <a class="btn btn-sm" href="#/review">${U.icon("clock")} 错题重练</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="pf-card-head"><h2>换个方式练</h2></div>
+          <div class="pf-card-actions">
+            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机一题</a>
+            <a class="btn btn-sm" href="#/mock">${U.icon("play")} 模拟面试</a>
+            <a class="btn btn-sm" href="#/roadmap">${U.icon("map")} 刷题计划</a>
+            <a class="btn btn-sm" href="#/history">${U.icon("history")} 浏览历史</a>
+          </div>
+        </div>
+      </aside>
+      </div>`);
+
+    /* 范围切换 */
+    $$("#psc button").forEach(b => b.onclick = () => App.go(scopeUrl(b.dataset.scope)));
+
+    /* 分类/岗位选择后更新 URL */
+    const $cat = $("#pcat"), $pos = $("#ppos");
+    if ($cat) $cat.onchange = () => App.go(scopeUrl("cat"));
+    if ($pos) $pos.onchange = () => App.go(scopeUrl("pos"));
+
+    /* 搜索过滤 select 选项（不影响已选值） */
+    function bindSearch(inputId, selectId) {
+      const input = $(inputId), sel = $(selectId);
+      if (!input || !sel) return;
+      input.oninput = () => {
+        const v = input.value.trim().toLowerCase();
+        Array.from(sel.options).forEach(opt => {
+          if (opt.disabled) return;
+          opt.style.display = !v || opt.textContent.toLowerCase().includes(v) ? "" : "none";
+        });
+        Array.from(sel.getElementsByTagName("optgroup")).forEach(g => {
+          const visible = Array.from(g.querySelectorAll("option")).some(o => o.style.display !== "none");
+          g.style.display = visible ? "" : "none";
+        });
+      };
+    }
+    bindSearch("#pcat-search", "#pcat");
+    bindSearch("#ppos-search", "#ppos");
+
+    const $clearWeak = $("#clear-weak");
+    if ($clearWeak) $clearWeak.onclick = async () => {
+      if (!(await U.confirm("确定清空薄弱题本？所有「不熟悉 / 不会」标记将移除", { danger: true }))) return;
+      await Services.clearWeak();
+      U.toast("已清空薄弱题本", "success");
+      pagePractice({ mode: $("#pm").value, scope: "all" });
+    };
+
+    $("#pd").onchange = e => App.go(scopeUrl(scope));
+    $("#pm").onchange = e => App.go(scopeUrl(scope));
+    $("#start-p").onclick = () => start($("#pm").value);
+    const sideWeak = $("#side-weak");
+    if (sideWeak) sideWeak.onclick = () => App.go(scopeUrl("weak"));
+  }
+
+  function runPractice(list) {
+    if (!list.length) { U.toast("没有可用题目", "warn"); return; }
+    let i = 0, mastered = 0, weak = 0;
+    const show = () => {
+      const q = list[i];
+      const weakTag = q._weakMarked ? `<div class="tag tag-warning" style="margin:0 0 10px">${q._weakMarked === "unknown" ? "不会" : "不熟悉"} · 来自薄弱题本</div>` : "";
+      setMain(`<div class="breadcrumb"><a href="#/practice">刷题练习</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
+        ${weakTag}
+        <div class="card qd-body md">${U.md(q.body)}</div>
+        <div style="margin:12px 0"><button class="btn btn-primary" id="sa">${U.icon("eye")} 显示答案</button></div>
+        <div class="qd-answer md" id="ab" style="display:none">${U.md(q.answer)}</div>
+        <div id="mark" style="display:none;margin-top:12px" class="pill-row">
+          <button class="btn btn-success" data-m="master">${U.icon("check")} 已掌握</button>
+          <button class="btn btn-warning" data-m="familiar">不熟悉</button>
+          <button class="btn btn-danger" data-m="unknown">不会</button>
+        </div>
+        <div class="pill-row" style="margin-top:14px"><button class="btn" id="prev">← 上一题</button><button class="btn btn-primary" id="next">下一题 →</button></div>`);
+      U.highlightAll(main);
+      $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
+      const mark = async (m) => {
+        try {
+          if (m === "master") {
+            mastered++;
+            if (await Services.isWeak(q.id)) { await Services.weakGrade(q.id, true); U.toast("已掌握 · 复习间隔已拉长", "success"); }
+            else U.toast("已标记为掌握", "success");
+            /* 同步记入岗位刷题计划进度（题目不在任何计划里时无副作用） */
+            if (window.Roadmap) { try { await Roadmap.markMastered(q.id); } catch (_) {} }
+          }
+          else { weak++; await Services.addWeak(q.id, m); U.toast("已加入错题重练 · 按记忆曲线安排复习", "warn"); }
+        } catch (e) { console.warn("mark error", e); U.toast("标记失败：" + (e && e.message), "error"); }
+        next();
+      };
+      $$("#mark button").forEach(b => b.onclick = () => mark(b.dataset.m));
+      $("#next").onclick = next; $("#prev").onclick = () => { if (i > 0) { i--; show(); } };
+      function next() { if (i < list.length - 1) { i++; show(); } else { finishPractice(list.length, mastered, weak); } }
+    };
+    show();
+  }
+  function finishPractice(total, mastered, weak) {
+    setMain(`<div class="empty"><div class="em-ic">${U.icon("check")}</div>
+      <h2>刷题完成</h2><p>共 ${total} 题 · 掌握 ${mastered} · 待加强 ${weak}</p>
+      ${weak ? `<p class="muted">${weak} 道已加入薄弱题本，<a href="#/practice">返回练习页</a>选择「薄弱题本」可专练这些题。</p>` : ""}
+      <a class="btn btn-primary" href="#/practice">${U.icon("refresh")} 再来一轮</a></div>`);
+  }
+
+  /* ============================ 模拟面试 ============================ */
+  async function pageMock() {
+    document.title = "模拟面试 · IT面试题库";
+    const byStage = Services.positionsByStage();
+    const seen = new Set(); const allPos = [];
+    for (const s of byStage) {
+      for (const p of s.list) {
+        if (Services.isHiddenPosition(p)) continue;
+        const key = Services.posKey(p);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        allPos.push(p);
+      }
+    }
+    /* 按岗位名排序，便于搜索匹配 */
+    allPos.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    const datalistId = "m-pos-list";
+    const posIdsAttr = allPos.map(p => p.id).join(",");
+    const years = ["校招/实习", "0-1年", "1-3年", "3-5年", "5年以上"];
+    const url = new URL(location.href);
+    const posId = url.searchParams.get("pos");
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>模拟面试</span></div>
+      <h1>模拟面试</h1><p class="secondary">选择目标岗位与年限，系统按技术栈权重随机抽取题目，隐藏答案计时作答。</p>
+      <!-- 两栏布局（2026-09-24 评审 P1-5）：表单原先固定 560px 靠左、右栏约 600px 全空。
+           右侧放「面试流程说明」与热身入口，都是这张表单真正缺少的上下文。 -->
+      <div class="page-form">
+      <div class="page-form-main">
+      <div class="card">
+        <label class="field"><span>目标岗位</span>
+          <input id="m-pos-input" class="full" list="${datalistId}" placeholder="输入岗位名或关键词搜索…" autocomplete="off">
+          <datalist id="${datalistId}">${allPos.map(p => `<option value="${U.esc(p.name)}" data-id="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</datalist>
+          <input type="hidden" id="m-pos" value="">
+          <div id="m-pos-hint" class="muted" style="font-size:12px;margin-top:4px"></div>
+        </label>
+        <label class="field"><span>工作年限</span><select id="m-year" class="full">${years.map(y => `<option>${y}</option>`).join("")}</select></label>
+        <label class="field"><span>题目数量</span><select id="m-num" class="full"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></label>
+        <button class="btn btn-primary btn-lg full" id="m-start">${U.icon("play")} 开始模拟面试</button>
+      </div>
+      </div>
+      <aside class="page-form-side">
+        <div class="card">
+          <div class="pf-card-head"><h2>这场面试怎么进行</h2></div>
+          <ol class="pf-steps">
+            <li>按目标岗位的技术栈权重抽题，题量可选 5 / 10 / 15 / 20。</li>
+            <li>逐题作答并计时，界面不直接显示答案，需要时再展开对照。</li>
+            <li>每题标记「掌握 / 不熟悉 / 不会」，结束后生成面试报告：用时、掌握度、技术覆盖、需加强的题目。登录后可存到云端并和历次对比。</li>
+          </ol>
+        </div>
+        <div class="card">
+          <div class="pf-card-head"><h2>先热身再来</h2></div>
+          <div class="pf-card-actions">
+            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机一题</a>
+            <a class="btn btn-sm" href="#/practice">${U.icon("refresh")} 刷题练习</a>
+            <a class="btn btn-sm" href="#/roadmap">${U.icon("map")} 刷题计划</a>
+          </div>
+        </div>
+      </aside>
+      </div>`);
+    /* 岗位输入：匹配 datalist 选项时把 hidden input 设成 id */
+    const posInput = $("#m-pos-input");
+    const posHidden = $("#m-pos");
+    const posHint = $("#m-pos-hint");
+    const buildOptions = (val) => {
+      const lower = (val || "").toLowerCase();
+      return allPos.filter(p => {
+        const name = Services.posFullName(p);
+        return name.toLowerCase().includes(lower) || p.name.toLowerCase().includes(lower);
+      }).slice(0, 20);
+    };
+    posInput.addEventListener("input", () => {
+      const val = posInput.value.trim();
+      const matches = buildOptions(val);
+      posHint.textContent = matches.length ? `找到 ${matches.length} 个岗位，回车或点击选择` : "";
+      /* 原生 datalist 无法动态过滤，改用自定义下拉 */
+      posInput.setAttribute("list", "");  // 清空内置 datalist，改用自定义
+      let dropdown = document.getElementById("m-pos-dropdown");
+      if (dropdown) dropdown.remove();
+      if (matches.length > 0 && !val) {
+        /* 无输入时显示全部 */
+        renderDropdown(matches);
+      } else if (matches.length > 0) {
+        renderDropdown(matches);
+      }
+    });
+    posInput.addEventListener("blur", () => { setTimeout(() => { const dd = $("#m-pos-dropdown"); if (dd) dd.remove(); }, 150); });
+    posInput.addEventListener("focus", () => { if (!$("#m-pos-dropdown")) renderDropdown(allPos.slice(0, 30)); });
+    /* 回车选中第一个匹配项 */
+    posInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const dd = $("#m-pos-dropdown");
+        const first = dd ? dd.querySelector(".mpos-item") : null;
+        if (first) first.click();
+      }
+    });
+    function renderDropdown(items) {
+      let dd = document.getElementById("m-pos-dropdown");
+      if (!dd) {
+        dd = document.createElement("div");
+        dd.id = "m-pos-dropdown";
+        dd.style.cssText = "position:absolute;z-index:100;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);max-height:240px;overflow-y:auto;width:100%;";
+        posInput.parentElement.style.position = "relative";
+        posInput.parentElement.appendChild(dd);
+      }
+      dd.innerHTML = items.map(p => {
+        const name = Services.posFullName(p);
+        const active = posHidden.value == p.id ? 'style="background:var(--c-primary-50);color:var(--c-primary)"' : "";
+        return `<div class="mpos-item" data-id="${p.id}" ${active}>${U.esc(name)}</div>`;
+      }).join("");
+      dd.querySelectorAll(".mpos-item").forEach(el => {
+        el.onmouseenter = () => dd.querySelectorAll(".mpos-item").forEach(e => e.style.background = "");
+        el.onmouseleave = () => el.style.background = "";
+        el.onclick = () => {
+          posHidden.value = el.dataset.id;
+          posInput.value = allPos.find(p => p.id == el.dataset.id) ? Services.posFullName(allPos.find(p => p.id == el.dataset.id)) : "";
+          posHint.textContent = "";
+          dd.remove();
+        };
+      });
+    }
+    if (posId) {
+      const p = allPos.find(x => x.id == posId);
+      if (p) { posHidden.value = p.id; posInput.value = Services.posFullName(p); }
+    }
+    $("#m-start").onclick = () => {
+      if (!posHidden.value) { U.toast("请先选择一个目标岗位", "warn"); posInput.focus(); return; }
+      startMock(parseInt(posHidden.value), $("#m-year").value, parseInt($("#m-num").value));
+    };
+  }
+
+  async function startMock(posId, years, num) {
+    const pos = Services.getPosition(posId);
+    let pool;
+    if (pos) {
+      const skills = Services.skillsOf(posId);
+      // 按技术栈权重抽取
+      const weighted = [];
+      skills.forEach(s => { const w = s.stars * (s.required ? 2 : 1); for (let k = 0; k < w; k++) weighted.push(s.techName); });
+      const matched = Services.questions.filter(q => Services.matchPosition(q, pos));
+      if (matched.length >= num) pool = matched;
+      else {
+        pool = matched.slice();
+        // 用技术栈补充
+        weighted.forEach(t => { const extra = Services.questions.filter(q => (q.tags || []).indexOf(t) >= 0 && pool.indexOf(q) < 0); pool = pool.concat(extra); });
+        if (pool.length < num) pool = pool.concat(Services.published().filter(q => pool.indexOf(q) < 0));
+      }
+      pool = pool.slice(0, Math.max(num, pool.length));
+      pool.sort(() => Math.random() - 0.5);
+      pool = pool.slice(0, num);
+    } else { pool = Services.published().sort(() => Math.random() - 0.5).slice(0, num); }
+    if (!pool.length) { U.toast("题库题目不足", "warn"); return; }
+    let i = 0, t0 = Date.now(), unknownList = [], mastery = { master: 0, familiar: 0, unknown: 0 }, cov = {};
+    const show = () => {
+      const q = pool[i];
+      (q.tags || []).forEach(t => cov[t] = (cov[t] || 0) + 1);
+      setMain(`<div class="breadcrumb"><a href="#/mock">模拟面试</a><span class="sep">/</span><span>${U.esc(pos ? pos.name : "通用")} · 第 ${i + 1}/${pool.length} 题</span></div>
+        <div class="card"><div class="row" style="justify-content:space-between"><span class="tag diff-${q.difficulty}">${q.difficulty}</span>
+          <span class="muted" id="timer">${U.icon("clock")} 00:00</span></div>
+          <div class="qd-body md" style="margin-top:10px">${U.md(q.body)}</div>
+          <div style="margin-top:12px"><button class="btn btn-primary" id="sa">${U.icon("eye")} 查看答案</button></div>
+          <div class="qd-answer md" id="ab" style="display:none">${U.md(q.answer)}</div>
+          <div id="mark" style="display:none;margin-top:12px" class="pill-row">
+            <button class="btn btn-success" data-m="master">${U.icon("check")} 掌握</button>
+            <button class="btn btn-warning" data-m="familiar">不熟悉</button>
+            <button class="btn btn-danger" data-m="unknown">不会</button>
+          </div>
+          <div class="pill-row" style="margin-top:14px"><button class="btn btn-primary" id="next">${i === pool.length - 1 ? "提交面试" : "下一题 →"}</button></div>
+        </div>`);
+      U.highlightAll(main);
+      const tick = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $("#timer").innerHTML = U.icon("clock") + " " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }, 1000);
+      $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
+      const mk = async (m) => {
+        mastery[m]++;
+        /* 标「不会/不熟悉」的题同步进错题本，纳入艾宾浩斯复习闭环（与练习页行为一致） */
+        if (m === "unknown" || m === "familiar") {
+          try {
+            if (!(await Services.isWeak(q.id))) await Services.addWeak(q.id, m === "unknown" ? "不会" : "不熟悉");
+            else if (m === "unknown") await Services.weakGrade(q.id, false);   // 再次不会：复习间隔重置
+          } catch (_) {}
+        }
+        if (m === "unknown") unknownList.push(q.title);
+        clearInterval(tick); next();
+      };
+      $$("#mark button").forEach(b => b.onclick = () => mk(b.dataset.m));
+      const next = () => { clearInterval(tick); if (i < pool.length - 1) { i++; show(); } else finishMock(pos, years, pool, mastery, unknownList, cov, t0); };
+      $("#next").onclick = next;
+    };
+    show();
+  }
+  async function finishMock(pos, years, pool, mastery, unknownList, cov, t0) {
+    const sec = Math.floor((Date.now() - t0) / 1000);
+    const covKeys = Object.keys(cov);
+    let md = `# 模拟面试报告\n\n- 岗位：${pos ? pos.name : "通用"}\n- 年限：${years}\n- 题目数：${pool.length}\n- 用时：${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}\n- 掌握：${mastery.master} 不熟悉：${mastery.familiar} 不会：${mastery.unknown}\n- 技术覆盖：${covKeys.join("、")}\n\n## 需加强的题目\n${unknownList.length ? unknownList.map(t => "- " + t).join("\n") : "（无）"}\n`;
+    /* 云端保存：登录后写入，失败静默，绝不打断面试结果展示 */
+    let saved = false;
+    try {
+      if (window.Account && Account.isLoggedIn()) {
+        saved = await Account.saveReport({
+          position: pos ? pos.name : "通用", years: String(years || ""),
+          total: pool.length, master: mastery.master, familiar: mastery.familiar,
+          unknown: mastery.unknown, duration: sec, coverage: covKeys.join("、"),
+        });
+      }
+    } catch (e) { saved = false; }
+    /* 历次成绩趋势：拉取云端历史做对比（未登录或接口不可用时静默跳过） */
+    let histHtml = "";
+    try {
+      const all = (window.Account && Account.isLoggedIn()) ? (await Account.getReports()) : [];
+      const pct = r => (r.total ? Math.round(r.master / r.total * 100) : 0);
+      if (all.length > 1) {
+        const rowHtml = r => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
+            <span class="muted" style="font-size:12px;min-width:84px">${U.fmtDate(r.at)}</span>
+            <span style="flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.18);overflow:hidden"><span style="display:block;height:100%;width:${pct(r)}%;background:var(--c-success,#16A34A)"></span></span>
+            <b style="min-width:40px;text-align:right">${pct(r)}%</b>
+            <span class="muted" style="font-size:12px;min-width:70px;text-align:right">${r.master}/${r.total}</span>
+          </div>`;
+        const collapsed = all.length > 6;
+        const rows = all.slice(0, 6).map(rowHtml).join("");
+        const delta = pct(all[0]) - pct(all[all.length - 1]);
+        histHtml = `<div style="max-width:520px;margin:20px auto 0;text-align:left">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <b style="font-size:15px">历次成绩趋势</b>
+            <span class="tag ${delta > 0 ? "tag-success" : delta < 0 ? "tag-danger" : "tag-warning"}">${delta > 0 ? "↑ 提升 " + delta + "%" : delta < 0 ? "↓ 下降 " + Math.abs(delta) + "%" : "持平"}</span>
+          </div>
+          ${rows}
+          ${collapsed ? `<div id="hist-extra" style="display:none">${all.slice(6).map(rowHtml).join("")}</div>` : ""}
+          <div class="muted" style="font-size:12px;margin-top:8px">共 ${all.length} 次记录${saved ? " · 本次已存云端" : ""}${collapsed ? ` · <a href="#" id="hist-more" style="color:var(--c-primary)">查看全部</a>` : ""}</div>
+        </div>`;
+      } else if (saved) {
+        histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>本次成绩已存到云端，再面一次就能看到趋势对比</div>`;
+      } else {
+        /* 未登录：结果页云端功能处原本「隐身」，补引导避免用户困惑；升级为醒目提示条，避免低调灰字被忽略 */
+        histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>登录后可保存成绩到云端，并留存历次趋势对比 · <a href="#/account" style="color:var(--c-primary,#2563EB);font-weight:600">去登录 →</a></div>`;
+      }
+    } catch (e) {}
+    setMain(`<div class="empty" style="text-align:left">
+      <h2>${U.icon("check")} 面试完成</h2>
+      <div class="grid grid-cols-2" style="max-width:520px;margin:16px auto">
+        <div class="card"><div class="num">${pool.length}</div><div class="label">题目</div></div>
+        <div class="card"><div class="num">${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}</div><div class="label">用时</div></div>
+        <div class="card"><div class="num" style="color:var(--c-success)">${mastery.master}</div><div class="label">掌握</div></div>
+        <div class="card"><div class="num" style="color:var(--c-danger)">${mastery.unknown}</div><div class="label">不会</div></div>
+      </div>
+      <p class="secondary">技术方向覆盖：${covKeys.join("、") || "—"}</p>
+      ${histHtml}
+      <div class="pill-row" style="justify-content:center">
+        <button class="btn btn-primary" id="exp">${U.icon("download")} 导出报告(MD)</button>
+        <a class="btn" href="#/mock">${U.icon("refresh")} 再面一次</a>
+      </div></div>`);
+    $("#exp").onclick = () => U.download("模拟面试报告.md", md, "text/markdown");
+    const histMore = $("#hist-more");
+    if (histMore) histMore.onclick = (e) => {
+      e.preventDefault();
+      const ex = $("#hist-extra");
+      const open = ex.style.display === "none";
+      ex.style.display = open ? "block" : "none";
+      histMore.textContent = open ? "收起" : "查看全部";
+    };
+  }
+
+  /* ============================ 管理员：登录 ============================ */
+  async function openAdminLogin() {
+    if (!(await Auth.hasAdmin())) {
+      const m = U.modal({ title: "设置管理员密码", closable: true });
+      m.body.innerHTML = `<div class="note">首次使用，请设置管理员密码。该密码仅用于当前浏览器本地权限隔离，使用浏览器 Crypto API 哈希后保存，不会以明文存储，也非服务端安全认证。</div>
+        <label class="field"><span>管理员密码</span><input type="password" id="pw1" /></label>
+        <label class="field"><span>确认密码</span><input type="password" id="pw2" /></label>`;
+      const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "设置并登录";
+      const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消";
+      m.foot.appendChild(cancel); m.foot.appendChild(ok);
+      const doSetup = async () => {
+        const a = $("#pw1").value, b = $("#pw2").value;
+        if (a.length < 6) { U.toast("密码至少 6 位", "warn"); return; }
+        if (a !== b) { U.toast("两次输入不一致", "error"); return; }
+        await Auth.setup(a); Auth.login(); m.close(); U.toast("管理员已设置并登录", "success"); renderTopbar(); renderSidebar(parseHash());
+      };
+      ok.onclick = doSetup; cancel.onclick = m.close;
+      return;
+    }
+    const m = U.modal({ title: "管理员登录", closable: true });
+    m.body.innerHTML = `<label class="field"><span>管理员密码</span><input type="password" id="pw" /></label>
+      <div class="note">提示：管理员密码仅用于本机权限隔离。忘记密码可在浏览器开发者工具清除 IndexedDB 中 settings 表的 adminHash 后重新设置。</div>`;
+    const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "登录";
+    const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消";
+    m.foot.appendChild(cancel); m.foot.appendChild(ok);
+    const login = async () => {
+      const okv = await Auth.verify($("#pw").value);
+      if (!okv) { U.toast("密码错误", "error"); return; }
+      Auth.login(); m.close(); U.toast("登录成功", "success"); renderTopbar(); renderSidebar(parseHash());
+    };
+    ok.onclick = login; $("#pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  }
+
+  /* ============================ 管理员：仪表盘 ============================ */
+  async function pageAdminDashboard() {
+    const s = await Services.stats();
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>仪表盘</span></div>
+      <h1>管理员仪表盘</h1>
+      <div class="stat-grid">
+        <div class="stat"><div class="num">${s.total}</div><div class="label">题目总数</div></div>
+        <div class="stat"><div class="num" style="color:var(--c-success)">${s.published}</div><div class="label">已发布</div></div>
+        <div class="stat"><div class="num" style="color:var(--c-warning)">${s.draft}</div><div class="label">草稿</div></div>
+        <div class="stat ai"><div class="num">${s.ai}</div><div class="label">AI 生成</div></div>
+      </div>
+      <div class="grid grid-cols-2" style="margin-top:20px">
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">技术体系分布</h2></div><div id="c1" style="height:280px"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">难度分布</h2></div><div id="c2" style="height:280px"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">题型分布</h2></div><div id="c3" style="height:280px"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">AI 评分分布</h2></div><div id="c4" style="height:280px"></div></div>
+      </div>
+      <div class="grid grid-cols-2" style="margin-top:20px">
+        <div class="card"><h2 style="font-size:16px">题目不足的分类（<5题）</h2>${s.insufficient.length ? `<table class="data">${s.insufficient.map(x => `<tr><td>${U.esc(x.name)}</td><td>${x.count}</td></tr>`).join("")}</table>` : '<div class="muted">无</div>'}</div>
+        <div class="card"><h2 style="font-size:16px">空分类</h2>${s.empty.length ? `<div class="pill-row">${s.empty.map(n => `<span class="tag tag-warning">${U.esc(n)}</span>`).join("")}</div>` : '<div class="muted">无</div>'}</div>
+      </div>
+      <div class="grid grid-cols-2" style="margin-top:20px">
+        <div class="card"><h2 style="font-size:16px">最近 AI 生成</h2>${s.aiLogs.length ? `<table class="data">${s.aiLogs.map(l => `<tr><td>${U.esc(l.positionName || "-")}</td><td>${l.genCount || 0}题</td><td class="muted">${U.fmtDate(l.createdAt)}</td></tr>`).join("")}</table>` : '<div class="muted">暂无</div>'}</div>
+        <div class="card"><h2 style="font-size:16px">收藏排行</h2>${s.topFav.length ? `<table class="data">${s.topFav.map(q => `<tr><td><a href="#/question/${q.id}">${U.esc(q.title)}</a></td><td>${q.favorites}</td></tr>`).join("")}</table>` : '<div class="muted">暂无</div>'}</div>
+      </div>
+      <div class="grid grid-cols-2" style="margin-top:20px">
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">访问统计</h2></div>
+          ${Stats.cfEnabled()
+            ? `<div class="muted" style="margin-bottom:8px">已接入云端统计（Cloudflare Worker），下方为访客地域分布。</div>`
+            : `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">配置云端统计接口后可查看访客地域分布与浏览量</p><a class="btn" href="#/admin/settings">前往配置 →</a></div>`}
+          ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"><div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div></div>` : ""}
+        </div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
+      </div>
+    `, () => {
+      const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
+      /* 本地浏览最多题目（不依赖 echarts，同步渲染） */
+      const localStats = Stats.getLocalStats();
+      const tq = localStats.topQuestions || [];
+      const topBox = document.getElementById("c-topq");
+      if (topBox) {
+        if (!tq.length) topBox.innerHTML = '<div class="muted">暂无浏览记录</div>';
+        else topBox.innerHTML = `<table class="data"><thead><tr><th>#</th><th>题目</th><th>浏览</th></tr></thead><tbody>${tq.slice(0, 15).map((x, i) => { const q = Services.questions.find(z => z.id === parseInt(x.id)); return `<tr><td>${i + 1}</td><td>${q ? `<a href="#/question/${q.id}">${U.esc(q.title)}</a>` : "题目#" + U.esc(x.id)}</td><td>${x.views}</td></tr>`; }).join("")}</tbody></table>`;
+      }
+      /* 图表区统一走按需加载的 echarts（失败静默，不影响面板其余内容） */
+      U.loadScript("echarts", U.ECHARTS_URL).then(() => {
+        const mk = (id, type, data, name) => { const box = $(id); box.classList.add("chart-fade"); const c = echarts.init(box); charts.push(c); c.setOption({ tooltip: { trigger: type === "pie" ? "item" : "axis" }, legend: type === "pie" ? { textStyle: { color: axisColor } } : undefined, xAxis: type === "bar" ? { type: "category", data: data.map(d => d[0]), axisLabel: { color: axisColor, rotate: 30 } } : undefined, yAxis: type === "bar" ? { type: "value", axisLabel: { color: axisColor } } : undefined, series: [{ type, data: type === "pie" ? data.map(d => ({ name: d[0], value: d[1] })) : data.map(d => d[1]), name, itemStyle: { color: type === "pie" ? undefined : "#2563EB" }, label: { color: axisColor } }] }); };
+        mk("#c1", "bar", Object.entries(s.byCat).filter(([, v]) => v > 0).slice(0, 12), "题目数");
+        mk("#c2", "pie", Object.entries(s.byDiff), "难度");
+        mk("#c3", "bar", Object.entries(s.byType), "题型");
+        mk("#c4", "pie", Object.entries(s.byAiBand), "AI评分");
+        /* 可选 Cloudflare Worker 地域分布（20260927d：加载/失败状态可视化，失败可重试。
+           旧版失败时静默吞掉 → 该区域永远空白，看起来像「没显示」。 */
+        if (Stats.cfEnabled()) {
+          const drawGeo = (st) => {
+            const geo = (st && st.byCountry) || {};
+            const geoArr = Object.entries(geo).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
+            const geoBox = document.getElementById("c-geo");
+            if (!geoBox) return;
+            if (geoArr.length) { geoBox.classList.add("chart-fade"); const c = echarts.init(geoBox); charts.push(c); c.setOption({ tooltip: { trigger: "item" }, series: [{ type: "pie", radius: ["42%", "70%"], data: geoArr.map(([k, v]) => ({ name: countryName(k), value: v })), label: { color: axisColor } }] }); }
+            else geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">暂无访客数据</div>';
+          };
+          const geoFail = () => {
+            const geoBox = document.getElementById("c-geo");
+            if (!geoBox) return;
+            geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:32px 0">云端访客数据加载失败（网络或接口暂时不可用）<br><a href="javascript:void(0)" id="geo-retry">重试</a>　<a href="#/admin/settings">检查接口设置 →</a></div>';
+            const r = document.getElementById("geo-retry");
+            if (r) r.onclick = loadGeo;
+          };
+          const loadGeo = () => {
+            const geoBox = document.getElementById("c-geo");
+            if (geoBox && !geoBox.dataset.ready) geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div>';
+            Stats.cfGetStats(true).then(st => { if (st) { const b = document.getElementById("c-geo"); if (b) b.dataset.ready = "1"; drawGeo(st); } else geoFail(); }).catch(geoFail);
+          };
+          loadGeo();
+        }
+      }).catch(() => {
+        /* echarts 加载失败时，地域分布卡片也不能留在「加载中」假状态 */
+        const geoBox = document.getElementById("c-geo");
+        if (geoBox && !geoBox.dataset.ready) geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:40px 0">图表组件加载失败，请检查网络后刷新重试</div>';
+      });
+    });
+  }
+
+  /* ============================ 管理员：题目管理 ============================ */
+  async function pageAdminQuestions() {
+    const qs = Services.questions.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>题目管理</span></div>
+      <div class="section-head"><h2>题目管理（${qs.length}）</h2>
+        <div><a class="btn btn-ai" href="#/admin/question/new">${U.icon("plus")} 新增题目</a>
+        <a class="btn" href="#/admin/ai">${U.icon("sparkles")} AI 出题</a></div></div>
+      <div class="toolbar"><input id="f" class="full" style="max-width:300px" placeholder="筛选标题…" /></div>
+      <div class="card" style="padding:0"><table class="data"><thead><tr><th>标题</th><th>分类</th><th>难度</th><th>题型</th><th>状态</th><th>来源</th><th>AI</th><th>操作</th></tr></thead><tbody id="tb"></tbody></table></div>`);
+    const render = (filter) => {
+      const tb = $("#tb");
+      const arr = qs.filter(q => !filter || q.title.indexOf(filter) >= 0).slice(0, 100);
+      tb.innerHTML = arr.map(q => `<tr>
+        <td><a href="#/question/${q.id}">${U.esc(q.title)}</a></td>
+        <td>${U.esc(q.catName || "-")}</td>
+        <td><span class="tag diff-${q.difficulty}">${q.difficulty}</span></td>
+        <td>${U.esc(q.type)}</td>
+        <td><span class="tag ${q.status === "published" ? "tag-success" : q.status === "draft" ? "tag-warning" : "tag-danger"}">${q.status === "published" ? "已发布" : q.status === "draft" ? "草稿" : "下线"}</span></td>
+        <td>${U.esc(q.source)}</td><td>${q.aiScore || 0}</td>
+        <td class="row">
+          <a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")}</a>
+          <button class="btn btn-sm" data-dup="${q.id}">${U.icon("copy")}</button>
+          <button class="btn btn-sm btn-danger" data-del="${q.id}">${U.icon("trash")}</button>
+        </td></tr>`).join("");
+      $$("#tb [data-del]").forEach(b => b.onclick = async () => { if (await U.confirm("删除该题？不可逆。", { danger: true })) { await Services.deleteQuestion(parseInt(b.dataset.del)); await Services.reload(); U.toast("已删除", "success"); render($("#f").value); } });
+      $$("#tb [data-dup]").forEach(b => b.onclick = async () => { const nid = await Services.duplicateQuestion(parseInt(b.dataset.dup)); await Services.reload(); U.toast("已复制为草稿", "success"); App.go("/admin/question/" + nid); });
+    };
+    $("#f").addEventListener("input", U.debounce(e => render(e.target.value.trim()), 300));
+    render("");
+  }
+
+  /* ============================ 标题查重（新增/AI生成入库前提示，不强制拦截） ============================ */
+  function normTitleKey(t) { return String(t || "").replace(/\s+/g, "").replace(/[？?！!，,。．.；;：:、·\-—＿_（）()\[\]【】"]/g, "").toLowerCase(); }
+  function findTitleDups(titles, excludeId) {
+    const lib = new Map();
+    Services.questions.forEach(q => { const k = normTitleKey(q.title); if (!lib.has(k)) lib.set(k, []); lib.get(k).push(q); });
+    const statusText = s => s === "published" ? "已发布" : (s === "draft" ? "草稿" : "已下线");
+    const seen = new Set();
+    const dups = [];
+    titles.forEach(t => {
+      const k = normTitleKey(t);
+      const reasons = [];
+      (lib.get(k) || []).forEach(q => { if (q.id !== excludeId) reasons.push("题库已有 ID " + q.id + "《" + q.title + "》（" + statusText(q.status) + "）"); });
+      if (seen.has(k)) reasons.push("与本批次其它题目重复");
+      seen.add(k);
+      if (reasons.length) dups.push({ title: t, reasons: reasons });
+    });
+    return dups;
+  }
+  async function confirmTitleDups(dups, okText) {
+    if (!dups || !dups.length) return true;
+    const lines = dups.slice(0, 8).map(d => "·《" + d.title + "》" + d.reasons.map(r => " → " + r).join("；"));
+    const more = dups.length > 8 ? "（其余 " + (dups.length - 8) + " 条略）" : "";
+    return U.confirm("发现 " + dups.length + " 个疑似重复标题" + (dups.length > 8 ? "（仅列前 8 条）" : "") + "：", { okText: okText || "仍要保存", note: lines.join("；") + more });
+  }
+
+  /* ============================ 管理员：题目编辑 ============================ */
+  async function pageAdminQuestionEdit(id) {
+    const isNew = !id || id === "new";
+    const q = isNew ? { title: "", body: "", answer: "", difficulty: "中级", type: "简答题", status: "draft", tags: [], positionNames: [], years: "", remark: "", categoryId: null } : await Services.getQuestion(parseInt(id));
+    if (!q) { setMain(`<div class="empty">未找到题目</div>`); return; }
+    const catOpts = (sel) => { const build = (pid, depth) => Services.childrenOf(pid).map(c => `<option value="${c.id}" ${sel === c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)}</option>` + build(c.id, depth + 1)).join(""); return `<option value="">未分类</option>` + build(0, 0); };
+    const flatCats = []; (function walk(nodes, prefix) { nodes.forEach(n => { const path = prefix ? prefix + " / " + n.name : n.name; flatCats.push({ id: n.id, name: n.name, path: path }); if (n.children && n.children.length) walk(n.children, path); }); })(Services.categoryTree(), "");
+    const diffs = ["初级", "中级", "高级", "专家"];
+    const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
+    const allPos = Services.positions;
+    const tagInput = (arr) => `<div class="tag-input" id="tag-box">${arr.map(t => `<span class="chip">${U.esc(t)}<span class="x" data-t="${U.esc(t)}">${U.icon("x")}</span></span>`).join("")}<input id="tag-add" placeholder="输入标签回车添加" /></div>`;
+    const posByName = new Map(); allPos.forEach(p => { posByName.set(p.name, p); if (p.direction) posByName.set(Services.posFullName(p), p); });
+    const posSelIds = (q.positionIds || []).slice();
+    (q.positionNames || []).forEach(n => { const pos = posByName.get(n); if (pos && posSelIds.indexOf(pos.id) < 0) posSelIds.push(pos.id); });
+    const posInput = () => {
+      const byStage = Services.positionsByStage();
+      return byStage.map(s => {
+        const seen = new Set();
+        const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; });
+        if (!uniq.length) return "";
+        return `<div style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">${U.esc(s.stage)}</div><div class="row" style="flex-wrap:wrap;gap:8px">${uniq.map(p => `<label class="chip" style="cursor:pointer;user-select:none"><input type="checkbox" name="f-pos" value="${p.id}" ${posSelIds.indexOf(p.id) >= 0 ? "checked" : ""} style="margin-right:4px">${U.esc(Services.posFullName(p))}</label>`).join("")}</div></div>`;
+      }).join("");
+    };
+
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/questions">题目管理</a><span class="sep">/</span><span>${isNew ? "新增" : "编辑"}</span></div>
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <h1>${isNew ? "新增题目" : "编辑题目"}</h1>
+        <div class="pill-row">
+          <button class="btn" id="save-draft">保存草稿</button>
+          <button class="btn btn-primary" id="save-pub">发布/保存</button>
+          <button class="btn btn-ai" id="ai-opt">${U.icon("sparkles")} AI辅助</button>
+        </div>
+      </div>
+      <label class="field"><span>题目标题</span><input id="f-title" value="${U.esc(q.title)}" /></label>
+      <div id="f-title-dup" class="dup-hint" style="display:none"></div>
+      <div class="grid grid-cols-2" style="gap:16px">
+        <label class="field"><span>技术分类（可搜索）</span>
+          <div class="combo" id="cat-combo">
+            <input id="f-cat-text" class="full" placeholder="输入关键词搜索分类…" autocomplete="off" />
+            <input type="hidden" id="f-cat" value="${q.categoryId != null ? q.categoryId : ""}" />
+            <div class="combo-list" id="cat-list" style="display:none"></div>
+          </div></label>
+        <label class="field"><span>难度</span><select id="f-diff" class="full">${diffs.map(d => `<option ${q.difficulty === d ? "selected" : ""}>${d}</option>`).join("")}</select></label>
+        <label class="field"><span>题型</span><select id="f-type" class="full">${types.map(t => `<option ${q.type === t ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+        <label class="field"><span>工作年限</span><input id="f-years" value="${U.esc(q.years || "")}" placeholder="如 1-3年" /></label>
+        <label class="field"><span>状态</span><select id="f-status" class="full"><option value="draft" ${q.status === "draft" ? "selected" : ""}>草稿</option><option value="published" ${q.status === "published" ? "selected" : ""}>已发布</option><option value="offline" ${q.status === "offline" ? "selected" : ""}>下线</option></select></label>
+        <label class="field"><span>技术标签</span>${tagInput(q.tags || [])}</label>
+      </div>
+      <label class="field"><span>适用岗位</span>${posInput()}</label>
+      <div class="grid grid-cols-2" style="gap:16px">
+        <div class="field"><span>题目正文（Markdown，支持直接粘贴图片）</span><div class="editor-split">
+          <div class="editor-pane"><div class="pane-head"><span>编辑（可直接粘贴图片）</span></div><textarea id="f-body">${U.esc(q.body || "")}</textarea></div>
+          <div class="editor-pane"><div class="pane-head"><span>预览</span></div><div class="preview-pane md" id="prev-body"></div></div>
+        </div></div>
+        <div class="field"><span>参考答案（Markdown，支持直接粘贴图片）</span><div class="editor-split">
+          <div class="editor-pane"><div class="pane-head"><span>编辑（可直接粘贴图片）</span></div><textarea id="f-answer">${U.esc(q.answer || "")}</textarea></div>
+          <div class="editor-pane"><div class="pane-head"><span>预览</span></div><div class="preview-pane md" id="prev-answer"></div></div>
+        </div></div>
+      </div>
+      <label class="field"><span>管理员备注</span><input id="f-remark" value="${U.esc(q.remark || "")}" /></label>
+      <div class="note">每次保存会自动创建版本记录，可在题目详情页恢复历史版本。</div>
+    `, () => {
+      const upd = () => { $("#prev-body").innerHTML = U.md($("#f-body").value); $("#prev-answer").innerHTML = U.md($("#f-answer").value); U.highlightAll($("#prev-answer")); };
+      $("#f-body").addEventListener("input", upd); $("#f-answer").addEventListener("input", upd); upd();
+      wireImagePaste("#f-body"); wireImagePaste("#f-answer");
+      wireTagInput("#tag-box", "#tag-add");
+      wireCombo("#f-cat-text", "#f-cat", "#cat-list", flatCats);
+      /* 实时相似题提示（20260919m）：此前手动新增只有「保存时」的精确标题比对（findTitleDups），
+         输入过程中毫无提醒 —— 等保存弹窗才发现重复，题已经写完了。这里复用投稿页同一套
+         二元组 Dice（Submit.dupMatches，submit.js 提供），停键 250ms 就地提示相似题，
+         **不拦截保存**：拦截仍由 save() 里的 findTitleDups 兜底，两层语义不同（提示 vs 确认）。 */
+      const dupBox = $("#f-title-dup");
+      let dupTimer = null;
+      const checkTitleDup = () => {
+        if (dupTimer) clearTimeout(dupTimer);
+        dupTimer = setTimeout(() => {
+          if (!dupBox) return;
+          const fn = window.Submit && Submit.dupMatches;
+          const t = $("#f-title").value.trim();
+          if (!fn || t.length < 4) { dupBox.style.display = "none"; dupBox.innerHTML = ""; return; }
+          const hits = fn(t, Services.questions || [], 0.6, isNew ? null : q.id).slice(0, 3);
+          if (!hits.length) { dupBox.style.display = "none"; dupBox.innerHTML = ""; return; }
+          dupBox.style.display = "";
+          dupBox.innerHTML = "⚠️ 题库里有 " + hits.length + " 道相似题："
+            + hits.map(h => ` <a href="#/question/${h.id}">《${U.esc(h.title)}》${Math.round(h.d * 100)}%</a>`).join("、")
+            + "（保存前会再拦一次）";
+        }, 250);
+      };
+      $("#f-title").addEventListener("input", checkTitleDup);
+      checkTitleDup();
+    });
+
+    async function save(status) {
+      const tags = $$("#tag-box .chip").map(c => c.dataset.t);
+      const posBoxes = $$("input[name='f-pos']:checked");
+      const posIds = posBoxes.map(cb => parseInt(cb.value));
+      const posNames = posBoxes.map(cb => { const pos = Services.getPosition(parseInt(cb.value)); return pos ? Services.posFullName(pos) : ""; }).filter(Boolean);
+      const data = {
+        title: $("#f-title").value.trim() || "未命名题目",
+        body: $("#f-body").value, answer: $("#f-answer").value,
+        categoryId: $("#f-cat").value ? parseInt($("#f-cat").value) : null,
+        difficulty: $("#f-diff").value, type: $("#f-type").value, years: $("#f-years").value.trim(),
+        status: status, tags: tags, positionIds: posIds, positionNames: posNames, remark: $("#f-remark").value.trim()
+      };
+      const dup = findTitleDups([data.title], isNew ? null : q.id);
+      if (dup.length && !(await confirmTitleDups(dup))) { U.toast("已取消保存，请检查重复题目", "warn"); return; }
+      if (isNew) { const nid = await Services.addQuestion(Object.assign(data, { source: "manual" })); await Services.reload(); U.toast("已保存", "success"); App.go("/admin/question/" + nid); }
+      else { await Services.updateQuestion(q.id, data); await Services.reload(); U.toast("已保存并生成版本", "success"); }
+    }
+    $("#save-draft").onclick = () => save("draft");
+    $("#save-pub").onclick = () => save($("#f-status").value || "published");
+    $("#ai-opt").onclick = () => openOptimizeModal(q, true);
+  }
+  /* ---------- 编辑器粘贴图片：压缩为 JPEG data URL，以 Markdown 图片插入光标处 ---------- */
+  function pasteLoadImage(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("图片文件无法读取")); };
+      img.src = url;
+    });
+  }
+  function pasteCompress(file, maxDim, quality) {
+    return pasteLoadImage(file).then(img => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      return { dataUrl: c.toDataURL("image/jpeg", quality), w: w, h: h };
+    });
+  }
+  function pasteInsert(ta, text) {
+    const s = ta.selectionStart == null ? ta.value.length : ta.selectionStart;
+    const e = ta.selectionEnd == null ? ta.value.length : ta.selectionEnd;
+    ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
+    const pos = s + text.length;
+    ta.selectionStart = ta.selectionEnd = pos;
+    ta.focus();
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  /* ---------- 图片外置助手：data URL → 二进制 → 仓库文件 assets/q/ ---------- */
+  function dataUrlToBytes(dataUrl) {
+    const b64 = dataUrl.split(",")[1] || "";
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+  const IMG_EXT = { "jpeg": "jpg", "jpg": "jpg", "png": "png", "webp": "webp", "gif": "gif", "svg+xml": "svg" };
+  async function uploadImageAsset(dataUrl, qId) {
+    const m = /^data:image\/([a-z+.-]+);/i.exec(dataUrl);
+    const ext = IMG_EXT[(m && m[1] || "jpeg").toLowerCase()] || "jpg";
+    const name = (qId ? "q" + qId + "-" : "") + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6) + "." + ext;
+    const path = "assets/q/" + name;
+    await Cloud.putFile(path, dataUrlToBytes(dataUrl), "外置题目图片 " + name);
+    return path;   // 站内相对路径；本站部署在根路径（Cloudflare Pages），相对路径即线上 URL
+  }
+  function wireImagePaste(sel) {
+    const ta = $(sel); if (!ta) return;
+    ta.addEventListener("paste", e => {
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      let file = null;
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        if (it.kind === "file" && it.type && it.type.indexOf("image/") === 0) { file = it.getAsFile(); if (file) break; }
+      }
+      if (!file) return;  // 纯文本粘贴走默认行为
+      e.preventDefault();
+      pasteCompress(file, 1400, 0.85)
+        .then(r => r.dataUrl.length > 500 * 1024 ? pasteCompress(file, 1000, 0.7) : r)
+        .then(r => {
+          if (r.dataUrl.length > 500 * 1024) { U.toast("图片过大（" + U.fmtSize(r.dataUrl.length) + "），已尝试压缩仍超 500KB，请缩小后再粘贴", "warn"); return null; }
+          return r;
+        })
+        .then(async r => {
+          if (!r) return;
+          /* 编辑端（已配置发布 Token）：图片外置为仓库文件，Markdown 引用 URL，
+             避免快照膨胀且可被浏览器缓存；上传失败或非编辑端回退内嵌 data URL（与旧版一致） */
+          if (Cloud.isEditor()) {
+            try {
+              U.toast("正在上传图片到仓库 assets/q/…", "info");
+              const url = await uploadImageAsset(r.dataUrl);
+              pasteInsert(ta, "\n![粘贴图片](" + url + ")\n");
+              U.toast("已外置插入 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + " → " + url + "）", "success");
+              return;
+            } catch (err) {
+              console.warn("图片外置失败，回退内嵌 data URL", err);
+              U.toast("图片上传失败，已回退内嵌模式：" + (err.message || err), "warn");
+            }
+          }
+          pasteInsert(ta, "\n![粘贴图片](" + r.dataUrl + ")\n");
+          U.toast("已插入图片 " + r.w + "×" + r.h + "（" + U.fmtSize(r.dataUrl.length) + "）", "success");
+        })
+        .catch(err => U.toast("图片处理失败：" + err.message, "error"));
+    });
+  }
+  function wireTagInput(boxSel, inputSel) {
+    const box = $(boxSel); if (!box) return;
+    // 事件委托：无论初始渲染还是动态添加的标签，点击 .x 即可删除对应 chip（覆盖 SVG 命中/穿透问题）
+    box.addEventListener("click", e => {
+      const x = e.target.closest(".x");
+      if (x) { const chip = x.closest(".chip"); if (chip) chip.remove(); }
+    });
+    const input = inputSel ? $(inputSel) : null;
+    if (input) input.addEventListener("keydown", e => {
+      if (e.key === "Enter" && input.value.trim()) {
+        const v = input.value.trim(); e.preventDefault();
+        const chip = document.createElement("span"); chip.className = "chip"; chip.dataset.t = v;
+        chip.innerHTML = U.esc(v) + `<span class="x">${U.icon("x")}</span>`;
+        box.insertBefore(chip, input); input.value = "";
+      }
+    });
+  }
+
+  // 可搜索分类组合框：input 显示路径（父/子/孙），隐藏 input 存 categoryId
+  function wireCombo(inputSel, hiddenSel, listSel, items) {
+    const input = $(inputSel), hidden = $(hiddenSel), list = $(listSel);
+    if (!input || !hidden || !list) return;
+    let picked = hidden.value ? parseInt(hidden.value) : null;
+    const dataOf = (id) => items.find(it => String(it.id) === String(id));
+    function render(q) {
+      q = (q || "").trim().toLowerCase();
+      const filtered = items.filter(it => !q || it.name.toLowerCase().indexOf(q) >= 0 || it.path.toLowerCase().indexOf(q) >= 0);
+      const head = `<div class="combo-item ${picked == null ? "active" : ""}" data-id="">未分类</div>`;
+      const body = filtered.length
+        ? filtered.map(it => `<div class="combo-item ${it.id === picked ? "active" : ""}" data-id="${it.id}">${U.esc(it.path)}</div>`).join("")
+        : `<div class="combo-item muted" style="cursor:default">无匹配分类</div>`;
+      list.innerHTML = head + body;
+      list.querySelectorAll(".combo-item[data-id]").forEach(el => {
+        el.onclick = () => {
+          const id = el.dataset.id;
+          if (id === "") { picked = null; hidden.value = ""; input.value = ""; }
+          else { picked = parseInt(id); hidden.value = id; input.value = el.textContent; }
+          list.style.display = "none";
+        };
+      });
+    }
+    input.addEventListener("focus", () => { render(""); list.style.display = "block"; });
+    input.addEventListener("input", () => { picked = null; render(input.value); list.style.display = "block"; });
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        list.style.display = "none";
+        const it = dataOf(hidden.value);
+        input.value = it ? it.path : "";
+      }, 150);
+    });
+    const init = dataOf(hidden.value);
+    if (init) input.value = init.path;
+  }
+
+  /* AI 优化弹窗（题目详情/编辑通用） */
+  function openOptimizeModal(q, fromEdit) {
+    const actions = [["optimize", "优化题目表述"], ["answer", "补充标准答案"], ["followup", "生成面试追问"], ["similar", "生成相似题"], ["difficulty", "评估难度"], ["check", "检查答案准确性"], ["rubric", "生成评分标准"]];
+    const m = U.modal({ title: "AI 题目优化", wide: true });
+    m.body.innerHTML = `<div class="note ai">${U.icon("sparkles")} 调用 DeepSeek Harness 对题目进行优化。请确保已在「系统设置」填写可用的 API Key。</div>
+      <div class="pill-row" id="acts">${actions.map(a => `<button class="btn btn-ai btn-sm" data-a="${a[0]}">${a[1]}</button>`).join("")}</div>
+      <div class="ai-log" id="opt-log"></div>
+      <div class="ai-stream" id="out" style="margin-top:12px;min-height:120px">选择上方操作开始…</div>`;
+    m.foot.innerHTML = `<button class="btn" id="apply" style="display:none">${U.icon("check")} 应用到编辑区</button>`;
+    let lastResult = null;
+    function normalizeResult(v) {
+      if (Array.isArray(v)) {
+        return v.map((item, i) => {
+          if (typeof item === "string") return (i + 1) + ". " + item;
+          const lines = [];
+          if (item.title) lines.push("**" + (i + 1) + ". " + item.title + "**");
+          if (item.body) lines.push(item.body);
+          if (item.question && !item.body) lines.push(item.question);
+          if (item.answer) lines.push("**参考答案：**\n" + item.answer);
+          return lines.join("\n\n");
+        }).join("\n\n---\n\n");
+      }
+      return String(v);
+    }
+    $$("#acts button", m.body).forEach(b => b.onclick = async () => {
+      if (!API.getKey()) { U.toast("请先到系统设置填写 API Key", "warn"); App.go("/admin/settings"); return; }
+      const out = $("#out"); out.classList.add("cursor-blink"); out.textContent = "生成中…";
+      const olog = makeLog($("#opt-log"));
+      olog("info", "开始执行：" + (b.textContent || b.dataset.a));
+      try {
+        const parsed = await API.optimize(q, b.dataset.a,
+          (delta, full) => { out.textContent = full; out.scrollTop = out.scrollHeight; },
+          (ev, p) => aiEvent(olog, ev, p)
+        );
+        lastResult = parsed && parsed.result ? parsed.result : (parsed && parsed.raw ? parsed.raw : String(parsed));
+        const displayText = normalizeResult(lastResult);
+        out.classList.remove("cursor-blink"); out.innerHTML = U.md(displayText);
+        olog("ok", "优化完成");
+        const apply = $("#apply"); apply.style.display = fromEdit ? "inline-flex" : "none";
+      } catch (e) {
+        out.classList.remove("cursor-blink");
+        olog("err", errMsg(e));
+        out.innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e);
+        if (e.code === "CORS") out.innerHTML += `<div class="note">当前 API 服务不允许浏览器跨域直接调用，纯静态项目无法绕过该限制，请确认接口支持 CORS 或使用本地代理。</div>`;
+      }
+    });
+    const apply = $("#apply"); if (apply) apply.onclick = () => {
+      if (lastResult == null) return;
+      if (b && 0) {}
+      // 仅编辑模式可写回：尝试更新 body/answer 文本域
+      const ta = document.getElementById("f-body"), aa = document.getElementById("f-answer");
+      if (ta && aa) { aa.value = normalizeResult(lastResult); aa.dispatchEvent(new Event("input")); }
+      m.close(); U.toast("已应用到参考答案", "success");
+    };
+  }
+  /* ============================ AI 实时进度日志 ============================ */
+  // 创建一个写入指定容器的日志函数：log(type, msg)，type ∈ info|ok|warn|err|spin
+  function makeLog(el) {
+    const label = { info: "信息", ok: "完成", warn: "警告", err: "错误", spin: "进行" };
+    let autoScroll = true;
+    if (el && el.parentNode) {
+      const bar = document.createElement("div");
+      bar.className = "ai-log-toolbar";
+      bar.innerHTML = `<button type="button" class="log-btn" data-act="copy">${U.icon("copy")} 复制日志</button>
+        <button type="button" class="log-btn active" data-act="auto">${U.icon("arrowDown")} 自动滚动</button>`;
+      el.parentNode.insertBefore(bar, el);
+      const copyBtn = bar.querySelector('[data-act="copy"]');
+      const autoBtn = bar.querySelector('[data-act="auto"]');
+      autoBtn.onclick = () => {
+        autoScroll = !autoScroll;
+        autoBtn.classList.toggle("active", autoScroll);
+        if (autoScroll && el) el.scrollTop = el.scrollHeight;
+      };
+      copyBtn.onclick = () => {
+        const text = Array.prototype.map.call(el.querySelectorAll(".log-line"), l => l.textContent).join("\n");
+        const done = () => { copyBtn.classList.add("copied"); copyBtn.innerHTML = U.icon("check") + " 已复制"; setTimeout(() => { copyBtn.classList.remove("copied"); copyBtn.innerHTML = U.icon("copy") + " 复制日志"; }, 1400); };
+        const fallback = () => { try { const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.top = "-9999px"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done(); } catch (e2) { U.toast("复制失败，请手动选择文本", "error"); } };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+          else fallback();
+        } catch (e) { fallback(); }
+      };
+    }
+    return function log(type, msg) {
+      if (!el) return;
+      const line = document.createElement("div");
+      line.className = "log-line" + (type && type !== "info" ? " " + type : "");
+      const ts = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+      const tsEl = document.createElement("span"); tsEl.className = "log-ts"; tsEl.textContent = ts;
+      const dotEl = document.createElement("span"); dotEl.className = "log-dot";
+      const msgEl = document.createElement("span"); msgEl.className = "log-msg";
+      if (label[type]) msgEl.textContent = "[" + label[type] + "] " + (msg || ""); else msgEl.textContent = msg || "";
+      line.appendChild(tsEl); line.appendChild(dotEl); line.appendChild(msgEl);
+      el.appendChild(line);
+      if (autoScroll) el.scrollTop = el.scrollHeight;
+    };
+  }
+  function errCodeLabel(code) {
+    const m = { NO_KEY: "未配置 API Key", INVALID_KEY: "API Key 无效", TIMEOUT: "请求超时", CORS: "跨域被拒绝", HTTP: "接口返回错误" };
+    return m[code] || code;
+  }
+  function aiEvent(log, ev, p) {
+    if (!log) return;
+    p = p || {};
+    if (ev === "connecting") log("info", "正在连接 DeepSeek Harness API（模型 " + (p.model || "默认") + "）…");
+    else if (ev === "connected") log("ok", "API 连接成功，开始生成");
+    else if (ev === "first") log("info", "已收到首个响应片段，开始流式输出");
+    else if (ev === "tick") log("muted", "仍在生成中… 已耗时 " + (p.elapsed || 0) + " 秒，已接收 " + (p.chars || 0) + " 字符");
+    else if (ev === "done") log("ok", "流式输出完成，共接收 " + (p.chars || 0) + " 字符" + (p.elapsed ? "，耗时 " + p.elapsed + " 秒" : ""));
+    else if (ev === "error") log("err", "请求出错（" + errCodeLabel(p.code) + (p.status ? " " + p.status : "") + "）");
+  }
+  function errMsg(e) { const map = { NO_KEY: "未配置 API Key", INVALID_KEY: "API Key 无效，请检查是否正确填写", TIMEOUT: "请求超时，请检查网络或增大超时时间", CORS: "跨域请求被拒绝（CORS）", HTTP: "接口返回错误 " + (e.status || "") }; return map[e.code] || ("请求失败：" + (e.message || e.code || "")); }
+
+  /* ============================ 管理员：分类管理 ============================ */
+  async function pageAdminCategories() {
+    const tree = Services.categoryTree();
+    const render = () => {
+      const node = (c) => `<div class="tree-node"><div class="tree-row open" data-id="${c.id}">
+        <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count}</span>
+        <span class="row" style="margin-left:auto;gap:4px">
+          <button class="icon-btn" data-add="${c.id}" title="新增子分类">${U.icon("plus")}</button>
+          <button class="icon-btn" data-edit="${c.id}" title="编辑">${U.icon("edit")}</button>
+          <button class="icon-btn" data-del="${c.id}" title="删除">${U.icon("trash")}</button>
+        </span></div>
+        ${c.children.length ? `<div class="tree-children">${c.children.map(node).join("")}</div>` : ""}</div>`;
+      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>分类管理</span></div>
+        <div class="section-head"><h2>技术分类管理</h2><button class="btn btn-primary btn-sm" id="add-root">${U.icon("plus")} 新增一级分类</button></div>
+        <div class="card" id="cat-tree">${tree.map(node).join("")}</div>
+        <div class="note">支持多级分类；删除含题目的分类会先提示题目数量，需先移动或删除题目。AI 补全技术体系请前往「AI 出题 → 检查题库完整度」。</div>`);
+      $("#add-root").onclick = () => editCat(null);
+      $$("#cat-tree [data-add]").forEach(b => b.onclick = e => { e.stopPropagation(); editCat(null, parseInt(b.dataset.add)); });
+      $$("#cat-tree [data-edit]").forEach(b => b.onclick = e => { e.stopPropagation(); editCat(parseInt(b.dataset.edit)); });
+      $$("#cat-tree [data-del]").forEach(b => b.onclick = async e => {
+        e.stopPropagation();
+        const r = await Services.deleteCategory(parseInt(b.dataset.del));
+        if (r && r.error === "hasQuestions") { U.toast(`该分类下还有 ${r.count} 道题目，无法删除`, "error"); return; }
+        await Services.reload(); U.toast("已删除分类", "success"); render(); renderSidebar(parseHash());
+      });
+    };
+    function editCat(id, parentId) {
+      const c = id != null ? Services.getCategory(id) : null;
+      const m = U.modal({ title: c ? "编辑分类" : "新增分类" });
+      m.body.innerHTML = `<label class="field"><span>分类名称</span><input id="cn" value="${c ? U.esc(c.name) : ""}" /></label>
+        <label class="field"><span>图标（emoji）</span><input id="ci" value="${c ? U.esc(c.icon || "📁") : "📁"}" style="max-width:80px" /></label>
+        <label class="field"><span>年代/说明</span><input id="ce" value="${c ? U.esc(c.era || "") : ""}" placeholder="如 1990s-至今" /></label>
+        <label class="field"><span>描述</span><textarea id="cd">${c ? U.esc(c.description || "") : ""}</textarea></label>`;
+      const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "保存";
+      const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消";
+      m.foot.appendChild(cancel); m.foot.appendChild(ok);
+      ok.onclick = async () => {
+        const data = { name: $("#cn").value.trim(), icon: $("#ci").value.trim() || "📁", era: $("#ce").value.trim(), description: $("#cd").value.trim() };
+        if (!data.name) { U.toast("请输入名称", "warn"); return; }
+        if (c) await Services.updateCategory(c.id, data); else await Services.addCategory(parentId != null ? parentId : (id != null ? c.parentId : 0), data);
+        await Services.reload(); m.close(); U.toast("已保存", "success"); render(); renderSidebar(parseHash());
+      };
+      cancel.onclick = m.close;
+    }
+    render();
+  }
+
+  /* ============================ 管理员：岗位管理 ============================ */
+  async function pageAdminPositions() {
+    const byStage = Services.positionsByStage();
+    const hiddenIds = new Set(Services.positions.filter(p => Services.isHiddenPosition(p)).map(p => p.id));
+    const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
+    const totalHidden = hiddenIds.size;
+    const notice = totalHidden > 0 ? `<div style="margin-bottom:12px;padding:8px 12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;color:#0369a1;font-size:13px">已隐藏 ${totalHidden} 条与分类同名的无效岗位（其中 ${fakeIds.size} 条可安全清理），可在「岗位体系」页点击清理。</div>` : "";
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>岗位管理</span></div>
+      <div class="section-head"><h2>岗位管理</h2><button class="btn btn-primary btn-sm" id="add-pos">${U.icon("plus")} 新增岗位</button></div>${notice}
+      <div id="pos-wrap">${byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (hiddenIds.has(p.id)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); if (!uniq.length) return ""; return `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
+        <div class="grid grid-cols-auto">${uniq.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${U.esc(Services.posFullName(p))}</b>
+          <span class="row" style="gap:4px"><button class="icon-btn" data-sk="${p.id}" title="技术栈">${U.icon("star")}</button><button class="icon-btn" data-edit="${p.id}">${U.icon("edit")}</button><button class="icon-btn" data-del="${p.id}">${U.icon("trash")}</button></span></div>
+          <div class="muted" style="font-size:12px">${U.esc(p.category || "")} · 题目 ${Services.questionCountForPosition(p)} · 技术栈 ${Services.skillsOf(p.id).length}</div></div>`).join("")}</div>`;
+    }).join("")}</div>`);
+    $("#add-pos").onclick = () => editPos(null);
+    $$("[data-edit]").forEach(b => b.onclick = () => editPos(parseInt(b.dataset.edit)));
+    $$("[data-del]").forEach(b => b.onclick = async () => { if (await U.confirm("删除该岗位？关联技术栈也会删除。", { danger: true })) { await Services.deletePosition(parseInt(b.dataset.del)); await Services.reload(); U.toast("已删除", "success"); pageAdminPositions(); renderSidebar(parseHash()); } });
+    $$("[data-sk]").forEach(b => b.onclick = () => editSkills(parseInt(b.dataset.sk)));
+    function editPos(id) {
+      const p = id != null ? Services.getPosition(id) : null;
+      const m = U.modal({ title: p ? "编辑岗位" : "新增岗位" });
+      const catOptions = (sel) => { const build = (pid, depth) => Services.childrenOf(pid).map(c => `<option value="${c.id}" ${sel === c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)}</option>` + build(c.id, depth + 1)).join(""); return build(0, 0); };
+      m.body.innerHTML = `<label class="field"><span>岗位名称</span><input id="pn" value="${p ? U.esc(p.name) : ""}" /></label>
+        <label class="field"><span>细分方向</span><input id="pdir" value="${p ? U.esc(p.direction || "") : ""}" placeholder="可选，如 大客户答疑 / 监控运维" /></label>
+        <label class="field"><span>所属阶段</span><input id="ps" value="${p ? U.esc(p.stage) : ""}" placeholder="如 互联网时代" /></label>
+        <label class="field"><span>分类/方向</span><select id="pcat" class="full"><option value="">未选择</option>${catOptions(p && p.categoryId)}</select></label>
+        <label class="field"><span>市场需求热度</span><select id="pdmd" class="full"><option value="高" ${p && p.demand === "高" ? "selected" : ""}>高</option><option value="中" ${p && p.demand !== "高" && p.demand !== "低" ? "selected" : ""}>中</option><option value="低" ${p && p.demand === "低" ? "selected" : ""}>低</option></select></label>
+        <label class="field"><span>描述</span><textarea id="pdesc">${p ? U.esc(p.description || "") : ""}</textarea></label>`;
+      const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "保存";
+      const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消";
+      m.foot.appendChild(cancel); m.foot.appendChild(ok);
+      ok.onclick = async () => {
+        const categoryId = $("#pcat").value ? parseInt($("#pcat").value) : null;
+        const data = { name: $("#pn").value.trim(), direction: $("#pdir").value.trim(), stage: $("#ps").value.trim() || "未分类", categoryId: categoryId, demand: $("#pdmd").value, description: $("#pdesc").value.trim() };
+        if (!data.name) { U.toast("请输入名称", "warn"); return; }
+        const conflictCat = Services.getCategoryByName(data.name);
+        if (conflictCat) {
+          const linkedToItself = data.categoryId === conflictCat.id;
+          if (!linkedToItself || !p) {
+            U.toast(`「${data.name}」是技术分类名称，不能作为岗位名。请改为具体岗位（如「公有云售后技术支持」）`, "warn");
+            return;
+          }
+        }
+        if (p) await Services.updatePosition(p.id, data); else await Services.addPosition(data);
+        await Services.reload(); m.close(); U.toast("已保存", "success"); pageAdminPositions(); renderSidebar(parseHash());
+      };
+      cancel.onclick = m.close;
+    }
+    function editSkills(posId) {
+      const p = Services.getPosition(posId);
+      const skills = Services.skillsOf(posId);
+      const m = U.modal({ title: p.name + " · 技术栈", wide: true });
+      const row = (s) => `<tr data-id="${s.id || ""}"><td><input class="full sk-tech" value="${U.esc(s.techName || "")}" /></td>
+        <td><select class="full sk-req"><option value="1" ${s.required ? "selected" : ""}>必考</option><option value="0" ${!s.required ? "selected" : ""}>加分</option></select></td>
+        <td><select class="full sk-stars">${[1,2,3,4,5].map(n => `<option ${s.stars === n ? "selected" : ""}>${n}</option>`).join("")}</select></td>
+        <td><select class="full sk-depth"><option ${s.depth === "了解" ? "selected" : ""}>了解</option><option ${s.depth === "熟悉" ? "selected" : ""}>熟悉</option><option ${s.depth === "精通" ? "selected" : ""}>精通</option></select></td>
+        <td><button class="icon-btn sk-del">${U.icon("trash")}</button></td></tr>`;
+      m.body.innerHTML = `<div class="note">技术名称尽量与系统分类名一致，便于自动关联题目。</div>
+        <table class="data"><thead><tr><th>技术名称</th><th>类型</th><th>重要度</th><th>掌握深度</th><th></th></tr></thead><tbody id="sk-tb">${skills.map(row).join("")}</tbody></table>
+        <button class="btn btn-sm" id="sk-add">${U.icon("plus")} 添加一行</button>`;
+      const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "保存";
+      const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消";
+      m.foot.appendChild(cancel); m.foot.appendChild(ok);
+      const refresh = () => { $$("#sk-tb tr").forEach(tr => { const del = tr.querySelector(".sk-del"); del.onclick = () => { tr.remove(); }; }); };
+      refresh();
+      $("#sk-add").onclick = () => { const tb = $("#sk-tb"); const tmp = document.createElement("tbody"); tmp.innerHTML = row({ required: true, stars: 3, depth: "了解" }); tb.appendChild(tmp.firstChild); refresh(); };
+      ok.onclick = async () => {
+        const existing = Services.skillsOf(posId); await Promise.all(existing.map(s => DB.db.positionSkills.delete(s.id)));
+        $$("#sk-tb tr").forEach(tr => {
+          const tech = tr.querySelector(".sk-tech").value.trim(); if (!tech) return;
+          DB.db.positionSkills.add({ positionId: posId, categoryId: null, techName: tech, required: tr.querySelector(".sk-req").value === "1", stars: parseInt(tr.querySelector(".sk-stars").value), depth: tr.querySelector(".sk-depth").value });
+        });
+        await Services.reload(); m.close(); U.toast("已保存技术栈", "success"); pageAdminPositions();
+      };
+      cancel.onclick = m.close;
+    }
+  }
+
+  /* ============================ 管理员：AI 出题 ============================ */
+  async function pageAdminAI() {
+    const byStage = Services.positionsByStage();
+    const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</optgroup>`; }).join("");
+    const steps = ["粘贴JD", "AI解析", "配置参数", "生成中", "预览入库"];
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>AI 出题</span></div>
+      <div class="steps" id="steps">${steps.map((s, i) => `<div class="step" data-i="${i}"><span class="dot">${i + 1}</span>${s}</div>`).join("")}</div>
+      <div class="card" id="ai-main"></div>`);
+    function setStep(i) {
+      const steps = $$("#steps .step");
+      const total = steps.length || 1;
+      const prog = total > 1 ? (i / (total - 1)) * 100 : 0;
+      const wrap = $("#steps");
+      if (wrap) wrap.style.setProperty("--step-progress", prog + "%");
+      steps.forEach(s => { const n = parseInt(s.dataset.i); s.classList.toggle("active", n === i); s.classList.toggle("done", n < i); });
+    }
+    const main = $("#ai-main");
+    if (!API.getKey()) {
+      main.innerHTML = `<div class="note ai">${U.icon("sparkles")} 尚未配置 DeepSeek Harness API Key。请先在系统设置填写后使用 AI 功能。</div>
+        <a class="btn btn-primary" href="#/admin/settings">前往系统设置</a>`;
+      return;
+    }
+    // Step 1
+    setStep(0);
+    main.innerHTML = `<h2>方式一：粘贴岗位 JD 生成</h2>
+      <label class="field"><span>岗位名称</span><input id="jd-name" placeholder="如 Java后端工程师" /></label>
+      <label class="field"><span>工作年限</span><select id="jd-year" class="full">${["校招/实习","0-1年","1-3年","3-5年","5年以上"].map(y => `<option>${y}</option>`).join("")}</select></label>
+      <label class="field"><span>岗位 JD 原文</span><textarea id="jd-text" style="min-height:160px" placeholder="粘贴招聘 JD 全文…"></textarea></label>
+      <div class="pill-row"><button class="btn btn-ai" id="jd-parse">${U.icon("sparkles")} 开始 AI 解析</button>
+      <span style="align-self:center">— 或 —</span>
+      <button class="btn" id="by-pos">${U.icon("briefcase")} 按已有岗位生成</button></div>`;
+    $("#jd-parse").onclick = () => doParse($("#jd-name").value.trim(), $("#jd-year").value, $("#jd-text").value.trim());
+    $("#by-pos").onclick = () => {
+      main.innerHTML = `<h2>方式二：按岗位生成</h2><label class="field"><span>选择岗位</span><select id="sel-pos" class="full">${posOpts}</select></label>
+        <label class="field"><span>工作年限</span><select id="sel-year" class="full">${["0-1年","1-3年","3-5年","5年以上"].map(y => `<option>${y}</option>`).join("")}</select></label>
+        <label class="field"><span>生成数量</span><select id="sel-num" class="full"><option>5</option><option selected>10</option><option>20</option><option>30</option></select></label>
+        <button class="btn btn-ai" id="gen-pos">${U.icon("sparkles")} 生成题目</button>`;
+      $("#gen-pos").onclick = () => generateByPos(parseInt($("#sel-pos").value), $("#sel-year").value, parseInt($("#sel-num").value));
+    };
+
+    async function doParse(name, years, jd) {
+      if (!jd) { U.toast("请粘贴岗位 JD", "warn"); return; }
+      setStep(1);
+      main.innerHTML = `<h2>AI 解析中…</h2><div class="ai-log" id="parse-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="parse-out">调用 DeepSeek Harness 解析 JD…</div></details>`;
+      const plog = makeLog($("#parse-log"));
+      plog("info", "开始解析岗位 JD（工作年限：" + years + "）");
+      try {
+        const res = await API.analyzeJD(jd, years,
+          (d, f) => { const o = $("#parse-out"); if (o) { o.textContent = f; o.scrollTop = o.scrollHeight; } },
+          (ev, p) => aiEvent(plog, ev, p)
+        );
+        if (!res || res.raw) throw new Error("解析失败");
+        setStep(2);
+        plog("ok", "JD 解析完成，已提取技术栈与软技能标签");
+        const tagsHtml = (arr, key) => (arr || []).map(t => `<span class="chip" data-k="${key}" data-v="${U.esc(t)}">${U.esc(t)}<span class="x">${U.icon("x")}</span></span>`).join("");
+        main.innerHTML = `<h2>解析结果（可增删标签）</h2>
+          <div class="field"><span>岗位名称</span><input id="p-name" value="${U.esc(res.positionName || name)}" /></div>
+          <div class="field"><span>工作年限</span><input id="p-years" value="${U.esc(res.years || years)}" /></div>
+          <div class="field"><span>必备技术栈</span><div class="tag-input" id="req-box">${tagsHtml(res.required, "req")}</div></div>
+          <div class="field"><span>加分技术栈</span><div class="tag-input" id="bon-box">${tagsHtml(res.bonus, "bon")}</div></div>
+          <div class="field"><span>软技能</span><div class="tag-input" id="soft-box">${tagsHtml(res.soft, "soft")}</div></div>
+          <div class="field"><span>生成总数</span><select id="p-num" class="full"><option>5</option><option selected>10</option><option>20</option><option>30</option><option>自定义</option></select></div>
+          <button class="btn btn-ai" id="gen">${U.icon("sparkles")} 立即生成</button>`;
+        [["#req-box"], ["#bon-box"], ["#soft-box"]].forEach(([sel]) => {
+          const box = $(sel); if (!box) return;
+          box.addEventListener("click", e => { const x = e.target.closest(".x"); if (x) { const c = x.closest(".chip"); if (c) c.remove(); } });
+        });
+        $("#gen").onclick = () => {
+          const pname = $("#p-name").value.trim();
+          const matchedPos = Services.positions.find(p => p.name === pname);
+          const spec = {
+            positionName: pname, positionId: matchedPos ? matchedPos.id : null,
+            years: $("#p-years").value.trim(),
+            count: parseInt($("#p-num").value) || 10,
+            techList: $$("#req-box .chip").map(c => c.dataset.v).concat($$("#bon-box .chip").map(c => c.dataset.v)),
+            answer: true, followup: true
+          };
+          generate(spec, jd);
+        };
+      } catch (e) {
+        plog("err", errMsg(e));
+        $("#parse-out").innerHTML = `<span class="tag tag-danger">解析出错</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">当前 API 服务不允许浏览器跨域直接调用，纯静态项目无法绕过该限制，请确认接口支持 CORS 或使用本地代理。</div>` : "");
+      }
+    }
+
+    async function generateByPos(posId, years, num) {
+      const pos = Services.getPosition(posId);
+      const skills = Services.skillsOf(posId);
+      const techList = skills.map(s => ({ tech: s.techName, n: s.stars }));
+      setStep(3);
+      main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-log" id="gen-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="gen-out"></div></details>`;
+      try {
+        await runGenerate({ positionName: Services.posFullName(pos), positionId: pos.id, years, count: num, techList, answer: true, followup: true }, null);
+      } catch (e) { $("#gen-out").innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e); }
+    }
+
+    async function generate(spec, jd) {
+      setStep(3);
+      main.innerHTML = `<h2>生成中…</h2><div class="progress"><span id="pg" style="width:0%"></span></div><div class="progress-text" id="pg-t">准备中</div><div class="ai-log" id="gen-log"></div><details class="ai-raw"><summary>查看流式原始输出</summary><div class="ai-stream" id="gen-out"></div></details>`;
+      try { await runGenerate(spec, jd); }
+      catch (e) { $("#gen-out").innerHTML = `<span class="tag tag-danger">出错</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">跨域受限：请确认 DeepSeek Harness 接口支持 CORS，或使用本地代理。</div>` : ""); }
+    }
+
+    async function runGenerate(spec, jd) {
+      const log = makeLog($("#gen-log"));
+      log("info", "准备生成：岗位「" + (spec.positionName || "-") + "」，目标 " + (spec.count || 10) + " 题");
+      const out = $("#gen-out");
+      let qCount = 0, cancelled = false;
+      // 取消按钮
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn btn-sm btn-danger";
+      cancelBtn.id = "gen-cancel";
+      cancelBtn.textContent = U.icon("x") + " 取消生成";
+      cancelBtn.style.cssText = "margin-top:8px";
+      const toolbar = out ? out.previousElementSibling : null;
+      if (toolbar && toolbar.classList.contains("ai-log-toolbar")) toolbar.appendChild(cancelBtn);
+      // 已耗时计时器
+      let t0 = Date.now(), elapsedTimer = null;
+      const startElapsed = () => {
+        elapsedTimer = setInterval(() => {
+          if (cancelled) return;
+          const el = Math.round((Date.now() - t0) / 1000);
+          const pt = $("#pg-t"); if (pt) pt.textContent = "流式接收中 " + (out ? out.textContent.length : 0) + " 字符 · 已耗时 " + el + "s";
+        }, 1000);
+      };
+      const stopElapsed = () => { if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; } };
+      let ctrlRef = null;
+      cancelBtn.onclick = () => {
+        cancelled = true;
+        if (ctrlRef) ctrlRef.abort();
+        stopElapsed();
+        log("warn", "用户取消了生成操作");
+        U.toast("已取消生成", "warning");
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = "已取消";
+      };
+      startElapsed();
+      let res;
+      try {
+        res = await API.generate(Object.assign({ jd }, spec),
+          (d, f) => {
+            if (cancelled) return;
+            if (out) { out.textContent = f; out.scrollTop = out.scrollHeight; }
+            const pct = Math.min(95, Math.floor((f.length / Math.max(50, (spec.count || 10) * 120)) * 100));
+            const pg = $("#pg"); if (pg) pg.style.width = pct + "%";
+            const n = (f.match(/标题/g) || []).length;
+            if (n !== qCount) { qCount = n; log("info", "已检测到 " + n + " 个题目…"); }
+          },
+          (ev, p) => { if (!cancelled) aiEvent(log, ev, p); },
+          { onCtrl: c => { ctrlRef = c; } }
+        );
+      } catch (e) {
+        stopElapsed();
+        if (cancelBtn.parentNode) cancelBtn.remove();
+        if (cancelled || (e && e.code === "CANCELLED")) {
+          out.innerHTML = `<span class="tag tag-warning">生成已取消</span><div class="note">已接收部分内容，可复制后手动保存。</div><pre style="white-space:pre-wrap">${U.esc(out ? out.textContent : "")}</pre>`;
+          return;
+        }
+        log("err", errMsg(e));
+        out.innerHTML = `<span class="tag tag-danger">生成失败</span><div class="note">${U.esc(errMsg(e))}</div>`;
+        return;
+      }
+      stopElapsed();
+      if (cancelBtn.parentNode) cancelBtn.remove();
+      const pg = $("#pg"); if (pg) pg.style.width = "100%";
+      log("ok", "正在解析返回内容…");
+      // 尽力提取成功（但可能不完整）
+      if (res && res._extracted && Array.isArray(res.questions) && res.questions.length) {
+        log("ok", "通过尽力提取恢复 " + res.questions.length + " 道题目（原始 JSON 可能被截断）");
+        setStep(4);
+        showResult(res, spec, log);
+        return;
+      }
+      if (!res || res.raw || !Array.isArray(res.questions) || !res.questions.length) {
+        log("warn", "AI 未返回有效题目，已展示原始内容");
+        const dump = res && res.raw ? res.raw : (res ? JSON.stringify(res, null, 2) : "");
+        const head = dump.slice(0, 500);
+        const tail = dump.length > 500 ? " …（共 " + dump.length + " 字符，尾部省略）" : "";
+        out.innerHTML = `<span class="tag tag-warning">AI 未返回有效题目</span>
+          <div class="note">已展示原始内容（前500字符），您可复制后手动编辑保存为题目。如果内容被截断，可尝试减少题目数量后重新生成。</div>
+          <details open><summary style="cursor:pointer;font-weight:600;margin-bottom:6px">查看原始输出 (${dump.length} 字符)</summary><pre style="white-space:pre-wrap;max-height:400px;overflow:auto">${U.esc(head)}${U.esc(tail)}</pre></details>`;
+        return;
+      }
+      log("ok", "解析成功，共 " + ((res.questions || []).length) + " 道题目");
+      setStep(4);
+      showResult(res, spec, log);
+    }
+
+    function showResult(res, spec, log) {
+      const questions = res.questions || [];
+      const missing = res.missingCategories || [];
+      const nameToCat = new Map(); Services.categories.forEach(c => nameToCat.set(c.name, c.id));
+      const resolvePath = (path) => { if (!path || !path.length) return null; for (let i = path.length - 1; i >= 0; i--) if (nameToCat.has(path[i])) return nameToCat.get(path[i]); for (const n of path) if (nameToCat.has(n)) return nameToCat.get(n); return null; };
+      // 初始化每行状态
+      const rows = questions.map((q, i) => {
+        const catId = resolvePath(q.categoryPath);
+        return { q, catId, chosen: catId, selected: true, status: catId != null ? "matched" : "missing" };
+      });
+      const renderRows = () => {
+        main.innerHTML = `<h2>生成结果（${rows.length} 题）</h2>
+          <div class="pill-row" style="margin-bottom:10px">
+            <button class="btn btn-sm" id="sel-all">全选</button>
+            <button class="btn btn-sm" id="sel-inv">反选</button>
+            <button class="btn btn-sm" id="sel-matched">仅已归类</button>
+          </div>
+          <div id="rows">${rows.map((r, i) => `<div class="card" style="margin-bottom:10px">
+            <div class="row" style="justify-content:space-between">
+              <label class="checkbox"><input type="checkbox" data-i="${i}" ${r.selected ? "checked" : ""}/> <b>${U.esc(r.q.title)}</b></label>
+              <span class="tag ${r.status === "matched" ? "tag-success" : "tag-warning"}">${r.status === "matched" ? "已归类" : "待分类"}</span>
+            </div>
+            <div class="muted" style="font-size:12px">难度 ${U.esc(r.q.difficulty || "-")} · 题型 ${U.esc(r.q.type || "-")} · ${U.esc((r.q.tags || []).filter(t => t != null && String(t).trim()).join(","))}</div>
+            <details style="margin-top:6px"><summary style="cursor:pointer">查看内容</summary><div class="qd-body md" style="margin-top:8px">${U.md((r.q.body || "") + "\n\n**答案**\n" + (r.q.answer || ""))}</div></details>
+            ${r.status === "missing" ? `<div class="note">系统未发现匹配分类，请手动选择：<select class="sel-cat" data-i="${i}">${catOptions()}</select></div>` : ""}
+          </div>`).join("")}</div>
+          ${missing.length ? `<div class="note ai"><b>发现缺失技术分类建议：</b>${missing.map(m => `<div>· ${U.esc(m.name)}（父：${U.esc(m.parentPath || "-")}）— ${U.esc(m.reason || "")} <button class="btn btn-sm" data-miss="${U.esc(m.name)}">一键新增</button></div>`).join("")}</div>` : ""}
+          <div class="pill-row" style="margin-top:14px"><button class="btn btn-success btn-lg" id="batch">${U.icon("check")} 批量入库选中题目</button></div>`;
+        U.highlightAll(main);
+        $$("#rows input[type=checkbox]").forEach(c => c.onchange = () => { rows[parseInt(c.dataset.i)].selected = c.checked; });
+        $$(".sel-cat").forEach(s => s.onchange = () => { const i = parseInt(s.dataset.i); rows[i].chosen = s.value ? parseInt(s.value) : null; rows[i].status = s.value ? "matched" : "missing"; });
+        $$("[data-miss]").forEach(b => b.onclick = async () => { await Services.addCategory(0, { name: b.dataset.miss, icon: "🆕" }); await Services.reload(); U.toast("已新增分类", "success"); showResult(res, spec, log); });
+        $("#sel-all").onclick = () => { rows.forEach(r => r.selected = true); renderRows(); };
+        $("#sel-inv").onclick = () => { rows.forEach(r => r.selected = !r.selected); renderRows(); };
+        $("#sel-matched").onclick = () => { rows.forEach(r => r.selected = r.status === "matched"); renderRows(); };
+        $("#batch").onclick = async () => {
+          const sel = rows.filter(r => r.selected);
+          const dups = findTitleDups(sel.map(r => r.q.title), null);
+          if (dups.length && !(await confirmTitleDups(dups, "仍要全部入库"))) { if (log) log("warn", "已取消入库：存在 " + dups.length + " 个疑似重复标题"); return; }
+          let okN = 0;
+          const total = sel.length;
+          if (log) log("info", "开始批量入库，共选中 " + total + " 题");
+          for (const r of rows) {
+            if (!r.selected) continue;
+            const q = r.q;
+            const posNames = spec.positionName ? [spec.positionName] : (res.positionName ? [res.positionName] : (q.tags || []).slice(0, 3));
+            const posIds = spec.positionId ? [spec.positionId] : [];
+            await Services.addQuestion({
+              categoryId: r.chosen, title: q.title, body: q.body, answer: q.answer,
+              difficulty: ["初级", "中级", "高级", "专家"].indexOf(q.difficulty) >= 0 ? q.difficulty : "中级",
+              type: q.type || "简答题", positionNames: posNames, positionIds: posIds,
+              years: q.years || (spec && spec.years) || "", tags: q.tags || [], source: "ai", aiScore: 85, status: "published"
+            });
+            okN++;
+            if (log && (okN % 5 === 0 || okN === total)) log("ok", "已入库 " + okN + " / " + total + " 题");
+          }
+          await Services.reload();
+          await Services.logAI({ positionName: res.positionName, genCount: okN, techStack: (res.techStack || []).join(",") });
+          if (log) log("ok", "全部完成，成功入库 " + okN + " 道题目");
+          U.toast(`成功入库 ${okN} 道题目`, "success");
+          App.go("/admin/questions");
+        };
+      };
+      const catOptions = () => `<option value="">（待分类）</option>` + Services.childrenOf(0).map(c => `<option value="${c.id}">${U.esc(c.name)}</option>`).join("");
+      renderRows();
+    }
+  }
+
+  /* ============================ 管理员：批量导入 ============================ */
+  async function pageAdminImport() {
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>批量导入</span></div>
+      <h1>批量导入题目</h1>
+      <div class="card"><div class="section-head" style="margin:0 0 10px"><h2 style="font-size:16px">步骤一：下载模板</h2></div>
+        <p class="secondary">支持 Excel(xlsx)、CSV、JSON、Markdown 导入。先下载标准模板填写。</p>
+        <div class="pill-row">
+          <button class="btn" id="dl-xlsx">${U.icon("download")} 下载Excel模板</button>
+          <button class="btn" id="dl-md">${U.icon("download")} 下载Markdown示例</button>
+        </div></div>
+      <div class="card" style="margin-top:16px"><div class="section-head" style="margin:0 0 10px"><h2 style="font-size:16px">步骤二：上传文件</h2></div>
+        <div class="dropzone" id="dz">${U.icon("upload")}<div style="margin-top:8px">点击或拖拽文件到此处（xlsx / csv / json / md）</div><input type="file" id="file" accept=".xlsx,.xls,.csv,.json,.md,.txt" style="display:none" /></div>
+        <div id="map-area"></div>
+      </div>`);
+    $("#dl-xlsx").onclick = downloadTemplateXlsx;
+    $("#dl-md").onclick = () => U.download("题目导入示例.md", sampleMd(), "text/markdown");
+    const dz = $("#dz"), fileInput = $("#file");
+    dz.onclick = () => fileInput.click();
+    dz.ondragover = e => { e.preventDefault(); dz.classList.add("drag"); };
+    dz.ondragleave = () => dz.classList.remove("drag");
+    dz.ondrop = e => { e.preventDefault(); dz.classList.remove("drag"); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
+    fileInput.onchange = () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); };
+
+    async function handleFile(file) {
+      try {
+        const parsed = await IE.parseFile(file);
+        let rows = [], headers = [];
+        if (parsed.kind === "excel" || parsed.kind === "csv") { rows = parsed.rows; headers = parsed.headers; }
+        else if (parsed.kind === "json") {
+          const j = parsed.raw; const arr = Array.isArray(j) ? j : (j.questions || []);
+          // 把对象数组转成带表头行
+          const map = { title: "题目标题", body: "题目内容", answer: "参考答案", c1: "一级技术分类", c2: "二级技术分类", c3: "三级技术分类", difficulty: "难度", type: "题型", positions: "适用岗位", years: "工作年限", tags: "技术标签", status: "状态", remark: "管理员备注" };
+          rows = arr.map(o => { const r = {}; for (const k in map) r[map[k]] = Array.isArray(o[k]) ? o[k].join(",") : (o[k] != null ? o[k] : ""); if (o.categoryPath) { r["一级技术分类"] = o.categoryPath[0] || ""; r["二级技术分类"] = o.categoryPath[1] || ""; r["三级技术分类"] = o.categoryPath[2] || ""; } return r; });
+          headers = Object.values(map);
+        } else if (parsed.kind === "md") { rows = parseMd(parsed.raw); headers = ["题目标题", "题目内容", "参考答案", "难度", "题型", "适用岗位", "技术标签"]; }
+        if (!rows.length) { U.toast("未解析到任何数据行", "warn"); return; }
+        const map = IE.autoMap(headers);
+        showMapping(rows, map);
+      } catch (e) { U.toast("解析失败：" + e.message, "error"); }
+    }
+
+    function showMapping(rows, map) {
+      const fields = ["title", "body", "answer", "c1", "c2", "c3", "difficulty", "type", "positions", "years", "tags", "status", "remark"];
+      const labels = { title: "题目标题", body: "题目内容", answer: "参考答案", c1: "一级分类", c2: "二级分类", c3: "三级分类", difficulty: "难度", type: "题型", positions: "适用岗位", years: "工作年限", tags: "技术标签", status: "状态", remark: "备注" };
+      const sel = (f) => `<select class="sel-f" data-f="${f}"><option value="">（不映射）</option>${headers.map(h => `<option ${map[f] === h ? "selected" : ""}>${U.esc(h)}</option>`).join("")}</select>`;
+      const preview = rows.slice(0, 10).map((r, i) => `<tr>${fields.map(f => `<td>${U.esc(String(r[map[f] || ""] || "").slice(0, 40))}</td>`).join("")}</tr>`).join("");
+      const valid = rows.filter(r => IE.buildRecord(r, map).ok).length;
+      const invalid = rows.length - valid;
+      $("#map-area").innerHTML = `<div class="card" style="margin-top:16px"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">步骤三：字段映射与预览</h2></div>
+        <div class="note">有效数据 ${valid} 条 · 格式错误 ${invalid} 条</div>
+        <table class="data"><thead><tr>${fields.map(f => `<th>${labels[f]}<br/>${sel(f)}</th>`).join("")}</tr></thead><tbody>${preview}</tbody></table>
+        <div class="field" style="margin-top:12px"><span>重复题处理</span><select id="dup" class="full"><option value="skip">跳过重复题</option><option value="overwrite">覆盖已有</option><option value="new">导入为新题</option></select></div>
+        <label class="field"><span>默认技术分类（题目未填分类时使用）</span><select id="def-cat" class="full"><option value="">未分类</option>${Services.childrenOf(0).map(c => `<option value="${c.id}">${U.esc(c.name)}</option>`).join("")}</select></label>
+        <button class="btn btn-primary btn-lg" id="do-import">${U.icon("upload")} 执行导入（${rows.length} 行）</button>
+        <div id="import-result"></div></div>`;
+      $$(".sel-f").forEach(s => s.onchange = () => { const f = s.dataset.f; if (s.value) map[f] = s.value; else delete map[f]; });
+      $("#do-import").onclick = async () => {
+        const btn = $("#do-import"); btn.disabled = true; btn.textContent = "导入中…";
+        const res = await IE.importRows(rows, map, { dup: $("#dup").value });
+        await Services.logImport({ fileName: "import", total: rows.length, success: res.success, fail: res.fail });
+        let html = `<div class="note ${res.fail ? "tag-warning" : "tag-success"}" style="margin-top:12px">成功 ${res.success} · 跳过 ${res.skip} · 失败 ${res.fail}</div>`;
+        if (res.errors.length) html += `<details><summary>错误明细（${res.errors.length}）</summary><div class="note">${res.errors.map(e => U.esc(e)).join("<br/>")}</div></details>`;
+        if (res.fail) html += `<button class="btn btn-sm" id="dl-fail">下载失败数据</button>`;
+        $("#import-result").innerHTML = html;
+        U.toast(`导入完成：成功 ${res.success}`, "success");
+        renderSidebar(parseHash());
+        if (res.fail) { const fails = rows.filter((r, i) => !IE.buildRecord(r, map).ok); $("#dl-fail").onclick = () => U.download("导入失败数据.json", JSON.stringify(fails, null, 2), "application/json"); }
+      };
+    }
+  }
+  async function downloadTemplateXlsx() {
+    await U.loadScript("XLSX", U.XLSX_URL).catch(() => {});   /* xlsx 大库按需加载 */
+    const headers = ["题目标题", "题目内容", "参考答案", "一级技术分类", "二级技术分类", "三级技术分类", "难度", "题型", "适用岗位", "工作年限", "技术标签", "状态", "管理员备注"];
+    const ws = XLSX.utils.aoa_to_sheet([headers, ["示例：什么是索引", "请解释数据库索引的作用", "索引用于加速查询…", "数据库与数据存储", "关系型数据库", "MySQL", "初级", "简答题", "Java后端工程师", "0-1年", "MySQL,索引", "published", ""]]);
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "题目");
+    const out = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    U.download("it-interview-import-template.xlsx", new Blob([out]), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  }
+  function sampleMd() {
+    return `# 题目导入示例（Markdown）
+
+## 什么是 Redis 缓存穿透？
+标签: Redis,缓存
+难度: 中级
+题型: 简答题
+
+缓存穿透是指查询不存在的数据…
+
+**答案**
+使用布隆过滤器或缓存空值…
+
+## 简述 TCP 三次握手
+标签: TCP,网络
+难度: 中级
+题型: 简答题
+
+**答案**
+第一次…`;
+  }
+  function parseMd(text) {
+    const blocks = text.split(/^##\s+/m).slice(1);
+    return blocks.map(b => {
+      const lines = b.split("\n"); const title = lines.shift().trim();
+      let body = [], answer = [], tags = [], diff = "中级", type = "简答题";
+      let inAns = false;
+      for (const ln of lines) {
+        if (/^标签\s*[:：]/.test(ln)) tags = ln.split(/[:：]/)[1].split(/[,，、]/).map(s => s.trim()).filter(Boolean);
+        else if (/^难度\s*[:：]/.test(ln)) diff = ln.split(/[:：]/)[1].trim();
+        else if (/^题型\s*[:：]/.test(ln)) type = ln.split(/[:：]/)[1].trim();
+        else if (/^\*\*?答案\*?/.test(ln)) { inAns = true; const t = ln.replace(/^\*\*?答案\*?\s*[:：]?/, "").trim(); if (t) answer.push(t); }
+        else if (inAns) answer.push(ln);
+        else body.push(ln);
+      }
+      return { "题目标题": title, "题目内容": body.join("\n").trim(), "参考答案": answer.join("\n").trim(), "难度": diff, "题型": type, "适用岗位": "", "技术标签": tags.join(","), "工作年限": "", "状态": "published", "管理员备注": "" };
+    }).filter(r => r["题目标题"]);
+  }
+
+  /* ============================ 管理员：备份恢复 ============================ */
+  async function pageAdminBackup() {
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>备份恢复</span></div>
+      <h1>备份与恢复</h1>
+      <div class="grid grid-cols-2">
+        <div class="card"><h2 style="font-size:16px">导出备份</h2>
+          <p class="secondary">导出全部数据（不含 API Key）为 JSON，便于迁移与恢复；也可导出 Excel / Markdown 便于查看编辑。</p>
+          <div class="pill-row">
+            <button class="btn btn-primary" id="bk-json">${U.icon("download")} 全量备份(JSON)</button>
+            <button class="btn" id="bk-xlsx">${U.icon("download")} 导出Excel</button>
+            <button class="btn" id="bk-md">${U.icon("download")} 导出Markdown</button>
+          </div></div>
+        <div class="card"><h2 style="font-size:16px">恢复备份</h2>
+          <p class="secondary">上传此前导出的 JSON 备份文件，支持合并导入或全量覆盖。</p>
+          <div class="dropzone" id="rz-dz">${U.icon("upload")}<div style="margin-top:8px">点击或拖拽备份 JSON 到此处</div><input type="file" id="rz-file" accept=".json" style="display:none" /></div>
+          <div id="rz-area"></div></div>
+      </div>`);
+    $("#bk-json").onclick = async () => { const n = await IE.exportBackup(); U.toast("已备份：" + n, "success"); };
+    $("#bk-xlsx").onclick = () => IE.exportExcel();
+    $("#bk-md").onclick = () => IE.exportMarkdown();
+    const dz = $("#rz-dz"), fi = $("#rz-file");
+    dz.onclick = () => fi.click();
+    dz.ondragover = e => { e.preventDefault(); dz.classList.add("drag"); };
+    dz.ondragleave = () => dz.classList.remove("drag");
+    dz.ondrop = e => { e.preventDefault(); dz.classList.remove("drag"); if (e.dataTransfer.files[0]) handleRestore(e.dataTransfer.files[0]); };
+    fi.onchange = () => { if (fi.files[0]) handleRestore(fi.files[0]); };
+    async function handleRestore(file) {
+      let payload;
+      try { payload = await IE.parseBackup(file); } catch (e) { U.toast(e.message, "error"); return; }
+      const info = `备份时间：${U.fmtDate(payload.exportedAt)} · 分类 ${payload.categories ? payload.categories.length : 0} · 岗位 ${payload.positions ? payload.positions.length : 0} · 题目 ${payload.questions ? payload.questions.length : 0}`;
+      $("#rz-area").innerHTML = `<div class="card" style="margin-top:12px"><div class="note">${U.esc(info)}</div>
+        <label class="field"><span>恢复方式</span><select id="rz-mode" class="full"><option value="merge">合并导入（保留现有，追加备份）</option><option value="overwrite">全量覆盖（清除现有再导入）</option></select></label>
+        <button class="btn btn-primary" id="rz-do">${U.icon("database")} 执行恢复</button></div>`;
+      $("#rz-do").onclick = async () => {
+        const mode = $("#rz-mode").value;
+        if (mode === "overwrite") {
+          const ok = await U.confirm("全量覆盖将清除当前所有数据！系统会先导出一份临时备份供您保存。确认继续？", { danger: true, okText: "确认覆盖", note: "此操作不可逆，建议先手动下载上面的全量备份。" });
+          if (!ok) return;
+          try { await IE.exportBackup(); } catch (e) {}
+        }
+        const btn = $("#rz-do"); btn.disabled = true; btn.textContent = "恢复中…";
+        try { await IE.restore(payload, mode); U.toast("恢复完成", "success"); renderSidebar(parseHash()); App.go("/admin/dashboard"); }
+        catch (e) { U.toast("恢复失败：" + e.message, "error"); btn.disabled = false; btn.textContent = "执行恢复"; }
+      };
+    }
+  }
+
+  /* ============================ 管理员：系统设置 ============================ */
+  async function pageAdminSettings() {
+    const cfg = API.getConfig();
+    const theme = App.getTheme();
+    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>系统设置</span></div>
+      <h1>系统设置</h1>
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">外观主题</h2>
+        <div class="seg" id="theme-seg">
+          <button data-t="light" class="${theme === "light" ? "active" : ""}">${U.icon("sun")} 亮色</button>
+          <button data-t="dark" class="${theme === "dark" ? "active" : ""}">${U.icon("moon")} 暗色</button>
+          <button data-t="system" class="${theme === "system" ? "active" : ""}">${U.icon("monitor")} 跟随系统</button>
+        </div>
+        <div style="margin-top:12px" class="secondary">节日背景（春节/中秋/国庆等按日期自动切换）</div>
+        <div class="seg" id="festival-seg">
+          <button data-f="on" class="${!App.getFestivalOff() ? "active" : ""}">${U.icon("check")} 开启</button>
+          <button data-f="off" class="${App.getFestivalOff() ? "active" : ""}">${U.icon("x")} 关闭</button>
+        </div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("sparkles")} AI 设置（DeepSeek Harness）</h2>
+        <div class="note ai">请使用个人或权限受控的 API Key。本系统为纯静态网页，API Key 保存在您的浏览器本地（sessionStorage 或 localStorage），请勿在公共设备上使用。若接口不支持 CORS，纯静态项目无法绕过，请确认接口支持跨域或使用本地代理。</div>
+        <label class="field"><span>API Key</span>
+          <div class="input-with-action"><input type="password" id="ai-key" value="${API.getKey() ? "************" : ""}" placeholder="粘贴 DeepSeek Harness API Key" />
+          <button class="icon-btn trail" id="ai-show">${U.icon("eye")}</button></div></label>
+        <label class="field"><span>接口地址 BaseURL</span><input id="ai-base" value="${U.esc(cfg.base)}" /></label>
+        <label class="field"><span>模型名称</span><input id="ai-model" value="${U.esc(cfg.model)}" /></label>
+        <div class="grid grid-cols-3">
+          <label class="field"><span>超时(秒)</span><input id="ai-timeout" type="number" value="${cfg.timeout}" /></label>
+          <label class="field"><span>温度</span><input id="ai-temp" type="number" step="0.1" value="${cfg.temp}" /></label>
+          <label class="field"><span>单次最大题数</span><input id="ai-max" type="number" value="${cfg.max}" /></label>
+        </div>
+        <label class="field"><span>API Key 存储方式</span><select id="ai-store" class="full"><option value="local" ${cfg.store === "local" ? "selected" : ""}>本机长期保存(localStorage)</option><option value="session" ${cfg.store === "session" ? "selected" : ""}>仅本次会话(sessionStorage)</option></select></label>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="ai-save">${U.icon("check")} 保存配置</button>
+          <button class="btn" id="ai-test">${U.icon("play")} 测试连接</button>
+          <button class="btn btn-danger" id="ai-clear">${U.icon("trash")} 清除 Key</button>
+        </div>
+        <div id="ai-test-out" class="muted" style="margin-top:8px"></div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("upload")} 云端共享题库（发布）</h2>
+        <p class="secondary">所有访客共享同一份题库：配置发布 Token 后，点「发布题库」将当前本机题库推送到 GitHub，约 1-2 分钟后所有访客自动看到最新版。仅持有仓库写权限的 Token 才能发布，访客为只读。</p>
+        <div class="note ai">Token 请使用 GitHub Fine-grained Token，仅授权本仓库的 Contents 读写权限，保存在当前浏览器本地，请勿在公共设备使用。创建步骤见仓库 README 或询问管理员。</div>
+        <label class="field"><span>发布 Token（GitHub Fine-grained PAT）</span>
+          <div class="input-with-action"><input type="password" id="pub-token" value="${Cloud.token() ? "************" : ""}" placeholder="github_pat_ 开头，仅授权本仓库 Contents 读写" />
+          <button class="icon-btn trail" id="pub-show">${U.icon("eye")}</button></div></label>
+        <div class="grid grid-cols-2">
+          <label class="field"><span>仓库（owner/repo）</span><input id="pub-repo" value="${U.esc(Cloud.repo())}" /></label>
+          <label class="field"><span>分支</span><input id="pub-branch" value="${U.esc(Cloud.branch())}" /></label>
+        </div>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="pub-save">${U.icon("check")} 保存配置</button>
+          <button class="btn" id="pub-publish">${U.icon("upload")} 发布题库到线上</button>
+          <button class="btn" id="pub-sync">${U.icon("refresh")} 从云端拉取到本机</button>
+        </div>
+        <div id="pub-out" class="muted" style="margin-top:8px"></div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("refresh")} 自动发布</h2>
+        <p class="secondary">开启后，题目/分类/岗位的任何增删改（含 AI 出题、批量导入）在停止操作 10 秒后自动推送到 GitHub，无需手动点「发布」。关闭或刷新页面前请留意顶栏状态徽章，确保显示「已同步云端」再离开。</p>
+        <div class="pill-row">
+          <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="auto-pub-toggle" ${Cloud.autoEnabled() ? "checked" : ""} style="width:16px;height:16px" />
+            <span>改动后自动发布到云端</span>
+          </label>
+        </div>
+        <div id="auto-pub-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：需先在上方配置发布 Token 后生效。"}</div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("refresh")} 自动同步</h2>
+        <p class="secondary">开启后，每次启动会自动与云端快照比对：<strong>云端新增的题目自动补入本机</strong>（本机已有内容一律保留）；本机某题答案明显短于云端时，判定为历史降质/截断并<strong>自动恢复完整版</strong>（浏览计数保留）。想手动精简某题答案时，建议先关闭此项。</p>
+        <div class="pill-row">
+          <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="auto-restore-toggle" ${Cloud.autoRestoreEnabled() ? "checked" : ""} style="width:16px;height:16px" />
+            <span>自动补齐云端新题并恢复降质答案</span>
+          </label>
+        </div>
+        <div id="auto-restore-out" class="muted" style="margin-top:8px"></div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("fileText")} 题目图片外置</h2>
+        <p class="secondary">把题目里内嵌的 base64 图片（data URL）迁移为仓库独立文件 <code>assets/q/</code>，Markdown 改为 URL 引用：显著减小 data/published.json 体积，图片可被浏览器缓存。新粘贴的图片在配置发布 Token 后会自动外置，此工具用于迁移<strong>历史存量</strong>图片。迁移可重复执行，已迁移的自动跳过。</p>
+        <div class="pill-row">
+          <button class="btn" id="img-scan">${U.icon("search")} 扫描内嵌图片</button>
+          <button class="btn btn-primary" id="img-migrate" style="display:none">${U.icon("upload")} 一键迁移</button>
+        </div>
+        <div id="img-out" class="muted" style="margin-top:8px">${Cloud.isEditor() ? "" : "提示：迁移需先在上方配置发布 Token。"}</div></div>
+
+      <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">${U.icon("shield")} 本地数据加密云备份 <span id="bk-chip" class="vis-chip bk ok" style="display:none"></span></h2>
+        <p class="secondary">把只存在本机、清缓存即丢的数据——发布 Token、AI 配置与 Key、管理员密码、统计配置、收藏、浏览历史——用密码加密后备份到仓库 <code>data/local-backup.json</code>。仓库是公开的，但文件为 AES-256-GCM 密文，无密码无法解密。清缓存/换设备后，凭<strong>备份密码</strong>即可一键恢复全部配置。<strong>设好密码后完全自动</strong>：题目改动、设置修改、收藏/历史更新都会在 12 秒后自动加密备份，无需手动。顶栏/标题处的徽章显示备份状态。</p>
+        <div class="note ai"><strong>请牢记备份密码</strong>：密码只存在本机，不随备份上传（密文由它解开）。忘记密码 = 备份无法恢复。建议同时把密码记到密码管理器。</div>
+        <label class="field"><span>备份密码（至少 6 位）</span>
+          <div class="input-with-action"><input type="password" id="bk-pass" value="${Backup.hasPassphrase() ? "************" : ""}" placeholder="用于加密本地数据备份" />
+          <button class="icon-btn trail" id="bk-show">${U.icon("eye")}</button></div></label>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="bk-save">${U.icon("check")} 保存备份密码</button>
+          <button class="btn" id="bk-now">${U.icon("upload")} 立即备份到云端</button>
+          <button class="btn" id="bk-restore">${U.icon("refresh")} 从云端恢复到本机</button>
+        </div>
+        <div id="bk-out" class="muted" style="margin-top:8px"></div></div>
+
+      <div class="card"><h2 style="font-size:16px">${U.icon("shield")} Cloudflare Worker（可选·高级）</h2>
+        <p class="secondary">可选：配置 Worker 后端后，仪表盘可显示云端访客地域分布，并提供账号登录 / 云同步。顶栏人数为本地计数，不依赖此接口。Worker 代码见仓库 cloudflare/ 目录。<br><b>提示：</b>Cloudflare 的 workers.dev 域名在国内网络常被拦截（表现为登录时提示「API 暂不可达」）。站点已内置<b>多入口自动择优</b>：每次打开页面会静默挑出当前网络能连通的入口（候选来自同源 <code>api-endpoints.json</code>，改这个文件即可全量切换后端、无需发版，备份入口为国内可直连的中转桥），通常无需手动干预；若仍连不上，可点下方「自动选择可用入口」立即重测。</p>
+        <label class="field"><span>Worker 接口地址</span><input id="stats-api" value="${U.esc(Stats.cfApi())}" placeholder="https://your-worker.xxx.workers.dev" /></label>
+        <label class="field"><span>访问密钥(可选)</span><input id="stats-key" value="${U.esc((typeof localStorage !== "undefined" && localStorage.getItem("stats_key")) || "")}" placeholder="与 Worker 的 STATS_KEY 一致" /></label>
+        <div class="pill-row">
+          <button class="btn" id="stats-save">${U.icon("check")} 保存</button>
+          <button class="btn" id="stats-test">${U.icon("play")} 测试连接</button>
+        <button class="btn" id="stats-autopick">${U.icon("refresh")} 自动选择可用入口</button>
+        </div>
+        <div id="stats-out" class="muted" style="margin-top:8px"></div></div>
+
+      <div class="card"><h2 style="font-size:16px">数据管理</h2>
+        <p class="secondary">首次初始化已写入示例数据。可追加恢复初始示例题目（不会覆盖现有数据）。</p>
+        <button class="btn" id="restore-seed">${U.icon("refresh")} 恢复初始示例数据（追加）</button>
+        <span class="muted" style="margin-left:10px">题目总数：${Services.questions.length}</span></div>`);
+    $$("#theme-seg button").forEach(b => b.onclick = () => { App.setTheme(b.dataset.t); $$("#theme-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active"); });
+    $$("#festival-seg button").forEach(b => b.onclick = () => { App.setFestivalOff(b.dataset.f === "off"); $$("#festival-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active"); });
+    const keyInput = $("#ai-key"); let keyTouched = false;
+    keyInput.addEventListener("input", () => keyTouched = true);
+    $("#ai-show").onclick = () => { keyInput.type = keyInput.type === "password" ? "text" : "password"; };
+    $("#ai-save").onclick = () => {
+      API.saveConfig({ base: $("#ai-base").value.trim() || API.defaults.base, model: $("#ai-model").value.trim() || API.defaults.model, timeout: parseInt($("#ai-timeout").value) || 60, temp: parseFloat($("#ai-temp").value) || 0.7, max: parseInt($("#ai-max").value) || 20, store: $("#ai-store").value });
+      if (keyTouched && keyInput.value && keyInput.value !== "************") API.setKey(keyInput.value.trim());
+      else if (!keyTouched && API.getKey()) { API.setKey(API.getKey()); }
+      U.toast("AI 配置已保存", "success");
+    };
+    $("#ai-clear").onclick = async () => { if (await U.confirm("清除当前 API Key？", { danger: true })) { API.clearKey(); keyInput.value = ""; U.toast("已清除", "success"); } };
+    $("#ai-test").onclick = async () => {
+      const out = $("#ai-test-out"); out.textContent = "测试中…";
+      if (keyTouched && keyInput.value && keyInput.value !== "************") API.setKey(keyInput.value.trim());
+      if (!API.getKey()) { out.innerHTML = `<span class="tag tag-warning">未填写 API Key</span>`; return; }
+      const t0 = Date.now();
+      try { const r = await API.testConnection(); out.innerHTML = `<span class="tag tag-success">连接成功</span> 响应 ${Date.now() - t0}ms`; }
+      catch (e) { out.innerHTML = `<span class="tag tag-danger">失败</span> ` + errMsg(e) + (e.code === "CORS" ? `<div class="note">接口未开启 CORS 跨域，纯静态无法绕过，请用支持 CORS 的接口或本地代理。</div>` : ""); }
+    };
+    /* 云端共享题库 */
+    const pubTokenInput = $("#pub-token"); let pubTokenTouched = false;
+    pubTokenInput.addEventListener("input", () => pubTokenTouched = true);
+    $("#pub-show").onclick = () => { pubTokenInput.type = pubTokenInput.type === "password" ? "text" : "password"; };
+    $("#pub-save").onclick = () => {
+      const tok = pubTokenTouched && pubTokenInput.value && pubTokenInput.value !== "************" ? pubTokenInput.value.trim() : Cloud.token();
+      Cloud.saveConfig(tok, $("#pub-repo").value.trim(), $("#pub-branch").value.trim());
+      U.toast("发布配置已保存", "success");
+    };
+    $("#pub-publish").onclick = async () => {
+      const out = $("#pub-out");
+      if (!Cloud.token()) { out.innerHTML = '<span class="tag tag-warning">请先填写并保存发布 Token</span>'; return; }
+      if (!(await U.confirm("将当前本机题库发布到线上？发布后约 1-2 分钟所有访客可见（以本机数据为准覆盖云端）。", { okText: "发布" }))) return;
+      out.textContent = "正在导出并提交到 GitHub…";
+      try {
+        const r = await Cloud.publish();
+        out.innerHTML = `<span class="tag tag-success">发布成功</span> ${r.count} 题 / ${r.positions} 岗位已上线，约 1-2 分钟后对所有访客生效`;
+        U.toast("题库已发布", "success");
+      } catch (e) {
+        const blocked = e && e.guardBlocked;
+        out.innerHTML = `<span class="tag tag-danger">${blocked ? "已阻止发布" : "发布失败"}</span> ` + U.esc(String(e && e.message || e)) +
+          (blocked
+            ? `<div class="note">正确做法：先点右侧「从云端拉取到本机」，确认题量正常后再删题/发布。</div>`
+            : `<div class="note">请确认 Token 有效（Fine-grained，勾选本仓库 Contents: Read and write）、仓库名与分支正确。</div>`);
+      }
+    };
+    $("#pub-sync").onclick = async () => {
+      const out = $("#pub-out");
+      if (!(await U.confirm("用云端题库覆盖本机题库？本机的题目改动将丢失（收藏与浏览历史保留）。", { danger: true, okText: "覆盖同步" }))) return;
+      out.textContent = "正在拉取云端题库…";
+      try {
+        const d = await Cloud.syncNow();
+        await Services.reload();
+        renderSidebar(parseHash());
+        out.innerHTML = `<span class="tag tag-success">同步成功</span> 云端版本（${(d.questions || []).length} 题）已覆盖本机`;
+        U.toast("已从云端同步题库", "success");
+      } catch (e) {
+        out.innerHTML = `<span class="tag tag-danger">同步失败</span> ` + U.esc(String(e && e.message || e));
+      }
+    };
+    $("#stats-save").onclick = () => { if (typeof localStorage !== "undefined") { localStorage.setItem("stats_api", $("#stats-api").value.trim()); localStorage.setItem("stats_key", $("#stats-key").value.trim()); } U.toast("Worker 接口已保存", "success"); renderTopbar(); };
+    /* 自动发布开关 */
+    $("#auto-pub-toggle").onchange = function () {
+      Cloud.setAutoEnabled(this.checked);
+      $("#auto-pub-out").textContent = this.checked ? "已开启：改动停止 10 秒后自动发布。" : "已关闭：请手动点「发布题库到线上」。";
+      U.toast(this.checked ? "自动发布已开启" : "自动发布已关闭", "success");
+      Cloud._renderChip();
+    };
+    $("#auto-restore-toggle").onchange = function () {
+      Cloud.setAutoRestore(this.checked);
+      $("#auto-restore-out").textContent = this.checked
+        ? "已开启：下次启动即自动补齐云端新题并修复降质答案。"
+        : "已关闭：仅自动补入新题，本机已有答案不再被改动。";
+      U.toast(this.checked ? "自动同步已开启" : "自动同步已关闭（仍会补新题）", "success");
+    };
+    /* ---------- 题目图片外置：扫描 + 迁移 ---------- */
+    const IMG_INLINE_RE = /!\[[^\]]*\]\(data:image\/([a-zA-Z+.-]+);base64,([A-Za-z0-9+/=]+)\)/g;
+    const scanInlineImages = () => {
+      const found = [];
+      Services.questions.forEach(q => {
+        ["body", "answer"].forEach(k => {
+          const text = q[k] || "";
+          IMG_INLINE_RE.lastIndex = 0;
+          let m;
+          while ((m = IMG_INLINE_RE.exec(text))) {
+            found.push({ q, field: k, full: m[0], mime: m[1], b64: m[2], size: Math.round(m[2].length * 0.75) });
+          }
+        });
+      });
+      return found;
+    };
+    $("#img-scan").onclick = () => {
+      const out = $("#img-out"), btn = $("#img-migrate");
+      if (!Cloud.isEditor()) { out.innerHTML = "<span class='tag tag-warning'>尚未配置发布 Token</span> 请先在上方「云端共享题库」配置 Token 再扫描迁移。"; return; }
+      const list = scanInlineImages();
+      if (!list.length) {
+        out.innerHTML = "<span class='tag tag-success'>未发现内嵌 base64 图片</span> 题库很干净。";
+        btn.style.display = "none"; return;
+      }
+      const total = list.reduce((s, x) => s + x.size, 0);
+      out.innerHTML = "发现 <b>" + list.length + "</b> 张内嵌图片（约 " + U.fmtSize(total) + "），将逐张上传到 <code>assets/q/</code> 并替换为 URL 引用。";
+      btn.style.display = "";
+    };
+    $("#img-migrate").onclick = async () => {
+      const out = $("#img-out"), btn = $("#img-migrate");
+      if (!Cloud.isEditor()) { U.toast("请先配置发布 Token", "warn"); return; }
+      if (!(await U.confirm("确认迁移内嵌图片？将逐张上传到仓库 assets/q/ 并更新对应题目，完成后自动发布。", { okText: "开始迁移" }))) return;
+      const list = scanInlineImages();
+      if (!list.length) { out.textContent = "没有需要迁移的图片。"; btn.style.display = "none"; return; }
+      btn.disabled = true;
+      let done = 0;
+      for (const item of list) {
+        out.textContent = "迁移中… " + (done + 1) + "/" + list.length;
+        try {
+          const url = await uploadImageAsset("data:image/" + item.mime + ";base64," + item.b64, item.q.id);
+          const patch = {};
+          patch[item.field] = (item.q[item.field] || "").split(item.full).join("![图片](" + url + ")");
+          await Services.updateQuestion(item.q.id, patch);
+          done++;
+        } catch (e) {
+          console.warn("图片迁移失败", e);
+          out.innerHTML = "<span class='tag tag-danger'>迁移中断</span> 第 " + (done + 1) + " 张失败：" + U.esc(String(e && e.message || e)) +
+            "。已完成 " + done + " 张；稍后可重试，已迁移的会自动跳过。";
+          btn.disabled = false;
+          return;
+        }
+      }
+      btn.disabled = false;
+      const pubTip = Cloud.autoEnabled() ? "稍后自动发布生效" : "请手动点「发布题库到线上」生效";
+      out.innerHTML = "<span class='tag tag-success'>迁移完成</span> 共 " + done + " 张图片外置到 assets/q/，" + pubTip + "。";
+      U.toast("图片外置迁移完成：" + done + " 张", "success");
+    };
+    /* 本地数据加密备份 */
+    const bkPassInput = $("#bk-pass"); let bkPassTouched = false;
+    bkPassInput.addEventListener("input", () => bkPassTouched = true);
+    $("#bk-show").onclick = () => { bkPassInput.type = bkPassInput.type === "password" ? "text" : "password"; };
+    $("#bk-save").onclick = () => {
+      const v = bkPassTouched && bkPassInput.value && bkPassInput.value !== "************" ? bkPassInput.value : (Backup.hasPassphrase() ? Backup.getPassphrase() : "");
+      if (v && v.length < 6) { U.toast("备份密码至少 6 位", "error"); return; }
+      const firstSet = v && !Backup.hasPassphrase();
+      Backup.setPassphrase(v);
+      U.toast(v ? "备份密码已保存：本机数据改动将自动加密备份到云端" : "已清除备份密码", "success");
+      if (firstSet && Cloud.isEditor()) Backup.scheduleBackup();   // 首次设密码立即备一份当前状态
+    };
+    $("#bk-now").onclick = async () => {
+      const out = $("#bk-out");
+      if (!Cloud.token()) { out.innerHTML = '<span class="tag tag-warning">请先在上方配置发布 Token</span>'; return; }
+      if (!Backup.hasPassphrase()) { out.innerHTML = '<span class="tag tag-warning">请先填写并保存备份密码</span>'; return; }
+      out.textContent = "正在加密并上传备份…";
+      try {
+        const r = await Backup.publishBackup();
+        out.innerHTML = `<span class="tag tag-success">备份成功</span> ${new Date(r.savedAt).toLocaleString("zh-CN")} 的本机数据已加密上传`;
+        U.toast("本地数据已加密备份到云端", "success");
+      } catch (e) { out.innerHTML = `<span class="tag tag-danger">备份失败</span> ` + U.esc(String(e && e.message || e)); }
+    };
+    $("#bk-restore").onclick = async () => {
+      const out = $("#bk-out");
+      let pass = Backup.hasPassphrase() ? Backup.getPassphrase() : "";
+      pass = prompt("请输入备份密码（恢复云端加密备份到本机）", pass);
+      if (pass == null || pass === "") return;
+      if (!(await U.confirm("从云端解密备份并覆盖本机配置（Token、AI 配置、管理员密码、收藏、历史）？", { okText: "恢复" }))) return;
+      out.textContent = "正在拉取并解密云端备份…";
+      try {
+        const r = await Backup.restore(pass);
+        Backup.setPassphrase(pass);
+        out.innerHTML = `<span class="tag tag-success">恢复成功</span> ${new Date(r.savedAt).toLocaleString("zh-CN")} 的备份：${r.settings} 项设置 / ${r.favorites} 收藏 / ${r.histories} 历史${r.hasToken ? "（含发布 Token，刷新后本机即恢复为编辑端）" : ""}。<b>3 秒后自动刷新页面…</b>`;
+        U.toast("本地数据已从云端恢复", "success");
+        setTimeout(() => location.reload(), 3000);
+      } catch (e) { out.innerHTML = `<span class="tag tag-danger">恢复失败</span> ` + U.esc(String(e && e.message || e)); }
+    };
+    $("#stats-test").onclick = async () => { const out = $("#stats-out"); if (!Stats.cfApi()) { out.innerHTML = '<span class="tag tag-warning">请先填写接口地址</span>'; return; } out.textContent = "测试中…"; const j = await Stats.cfGetStats(true); out.innerHTML = j ? `<span class="tag tag-success">连接成功</span> 累计 ${j.total || 0} · 今日 ${j.today || 0}` : `<span class="tag tag-danger">连接失败</span>`; };
+    const apBtn = $("#stats-autopick");
+    if (apBtn) apBtn.onclick = async () => {
+      const out = $("#stats-out");
+      if (!window.Account || !Account.probeEndpoints) { out.textContent = "当前版本不支持自动选择"; return; }
+      apBtn.disabled = true; out.textContent = "正在探测可用入口…";
+      try {
+        const res = await Account.probeEndpoints();
+        const hit = res.filter(x => x.ok)[0];
+        out.innerHTML = res.map(x => `<div>${x.ok ? '<span class="tag tag-success">可用</span>' : '<span class="tag tag-danger">不可达</span>'} <code>${U.esc(x.base)}</code> <span class="muted">${x.ms}ms</span></div>`).join("")
+          + (hit ? `<div style="margin-top:6px"><b>已切换到：</b><code>${U.esc(hit.base)}</code></div>` : '<div style="margin-top:6px" class="tag tag-warning">所有入口都不可达，请换网络（Wi-Fi / 代理）后再试</div>');
+        renderTopbar();
+      } catch (e) { out.textContent = "探测失败：" + (e && e.message || e); }
+      apBtn.disabled = false;
+    };
+    $("#restore-seed").onclick = async () => {
+      if (await U.confirm("将初始示例题目追加合并到当前题库（不覆盖现有数据）？", { okText: "追加" })) {
+        const n = await DB.resetSeedAppend(); await Services.reload(); U.toast("已追加 " + n + " 道示例题目", "success"); renderSidebar(parseHash());
+      }
+    };
+  }
+
+  /* ============================ 启动 ============================ */
+  /* ============================ 首次进入加载动效 ============================ */
+  const Boot = (() => {
+    let started = 0, target = 0, raf = 0, rainRaf = 0, finished = false, readyResolve;
+    const ready = new Promise(r => readyResolve = r);
+    const el = id => document.getElementById(id);
+    const NAMES = ["前端工程师","后端工程师","全栈工程师","测试工程师","测试开发工程师","运维工程师","SRE工程师","DevOps工程师","数据分析师","算法工程师","机器学习工程师","深度学习工程师","数据科学家","产品经理","网络安全工程师","渗透测试工程师","大数据开发工程师","云架构师","解决方案架构师","数据库管理员","人工智能工程师","移动端开发","iOS开发","Android开发","游戏开发工程师","嵌入式工程师","区块链工程师","爬虫工程师","推荐算法工程师","搜索算法工程师","音视频开发","性能测试工程师","自动化测试工程师","UI设计师","交互设计师","售前工程师","技术项目经理","视觉算法工程师","鸿蒙开发工程师","Go开发工程师","Java开发工程师","Python开发工程师","C++开发工程师","前端架构师","后端架构师","数据工程师","ETL工程师","BI工程师","运维开发工程师","大模型应用工程师","AIGC工程师"];
+    function start() {
+      const ov = el("boot-loader"); if (!ov) return;
+      /* 回访（本会话已看过开场动画）直接跳过，不再强制等待 3.2s */
+      let seen = false;
+      try { seen = sessionStorage.getItem("iti_boot_seen") === "1"; } catch (_) {}
+      /* 深链进入（分享卡/扫码经 q/<id>.html 跳转 #/question/<id> 等）直接进正题：
+         用户带着明确目的而来，再播 3.2s 开场会形成「题目→动效→又回题目」的绕圈体验；
+         同样按已看过标记，本会话内不再补播 */
+      let deepLink = false;
+      try { deepLink = !!location.hash && location.hash !== "#/" && location.hash !== "#"; } catch (_) {}
+      if (seen || deepLink) {
+        try { sessionStorage.setItem("iti_boot_seen", "1"); } catch (_) {}
+        ov.style.display = "none";
+        finished = true;
+        if (readyResolve) readyResolve();
+        return;
+      }
+      try { sessionStorage.setItem("iti_boot_seen", "1"); } catch (_) {}
+      ov.style.display = "flex"; started = Date.now();
+      try { initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
+      loop();
+    }
+    function initRain() {
+      const c = el("boot-rain"); if (!c) return;
+      const ctx = c.getContext("2d");
+      const resize = () => { c.width = innerWidth; c.height = innerHeight; };
+      resize();
+      const chars = "01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ{}[]<>+=*/;constfunctionreturnimportexportclassasyncawait".split("");
+      const fontSize = 14;
+      let drops = [];
+      const reset = () => { const cols = Math.floor(c.width / fontSize); drops = new Array(cols).fill(1); };
+      reset();
+      const draw = () => {
+        ctx.fillStyle = "rgba(6,10,16,0.10)"; ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillStyle = "#1fae74"; ctx.font = fontSize + "px monospace";
+        for (let i = 0; i < drops.length; i++) {
+          const t = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(t, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i]++;
+        }
+        rainRaf = requestAnimationFrame(draw);
+      };
+      draw();
+      addEventListener("resize", reset);
+    }
+    function initNames() {
+      const box = el("boot-names"); if (!box) return;
+      const N = Math.min(24, Math.max(12, Math.floor(innerWidth / 88)));
+      for (let i = 0; i < N; i++) {
+        const s = document.createElement("span");
+        s.className = "boot-name";
+        s.textContent = NAMES[Math.floor(Math.random() * NAMES.length)];
+        s.style.top = (Math.random() * 100) + "vh";
+        s.style.animationDuration = (13 + Math.random() * 18) + "s";
+        s.style.animationDelay = (-Math.random() * 26) + "s";
+        s.style.fontSize = (12 + Math.random() * 18) + "px";
+        s.style.opacity = (0.16 + Math.random() * 0.30).toFixed(2);
+        box.appendChild(s);
+      }
+    }
+    function set(pct, status) {
+      target = Math.max(target, pct);
+      const s = el("boot-status"); if (s && status) s.textContent = status;
+    }
+    function loop() {
+      const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
+      const cur = parseFloat((fill && fill.dataset.v) || "0");
+      const next = cur + (target - cur) * 0.09;
+      if (fill) { fill.dataset.v = next; fill.style.width = next + "%"; }
+      if (pctEl) pctEl.textContent = Math.round(next) + "%";
+      raf = requestAnimationFrame(loop);
+    }
+    function finish() {
+      if (finished) return; finished = true;
+      const ov = el("boot-loader");
+      const skip = el("boot-skip"); if (skip) skip.style.opacity = "1";
+      const elapsed = Date.now() - started;
+      const MIN = 3200; // 最短展示时长，确保动效能看完
+      const wait = Math.max(0, MIN - elapsed);
+      target = Math.min(target, 92); // 加载期间进度停在 ~92%，结束瞬间补满，避免早早钉在 100%
+      let revealed = false;
+      const reveal = () => {
+        if (revealed) return; revealed = true;
+        target = 100;
+        setTimeout(() => {
+          const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
+          if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
+          const o = el("boot-loader");
+          cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
+          if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 600); }
+          if (readyResolve) readyResolve();
+        }, 520);
+      };
+      setTimeout(reveal, wait);
+      if (ov) ov.addEventListener("click", reveal);
+    }
+    return { start, set, finish, ready };
+  })();
+
+  /* ============================ 访客统计（本地计数 + 可选 Cloudflare Worker） ============================
+     站内统计两条通道：本地计数（localStorage，用于打卡/热力图）与 Cloudflare Worker（全局访问与题目浏览计数）。
+     注：百度统计已于 2026-09-23 按用户要求整体移除（含 index.html 里的 hm.js 上报脚本与后台配置入口）。 */
+  const Stats = (() => {
+    /* --- 本地计数（localStorage） --- */
+    function readLocal() {
+      try { return JSON.parse(localStorage.getItem("local_stats") || '{"total":0,"daily":{},"views":{}}'); }
+      catch (e) { return { total: 0, daily: {}, views: {} }; }
+    }
+    function writeLocal(d) {
+      try { localStorage.setItem("local_stats", JSON.stringify(d)); } catch (e) {}
+    }
+    function recordVisit() {
+      const today = dateKey();   /* 本地日期（原 UTC 会导致早 8 点前记到昨天） */
+      const d = readLocal();
+      d.total = (d.total || 0) + 1;
+      d.daily[today] = (d.daily[today] || 0) + 1;
+      writeLocal(d);
+      cfPost("/visit");   /* 上报全局访问到 Cloudflare Worker（fire-and-forget） */
+    }
+    function recordView(id) {
+      if (id == null) return;
+      const d = readLocal();
+      const k = String(id);
+      const today = dateKey();
+      d.daily[today] = (d.daily[today] || 0) + 1;   /* 看题也算当日活跃，保证打卡/热力图完整 */
+      d.views[k] = (d.views[k] || 0) + 1;
+      writeLocal(d);
+      cfPost("/view", { id });   /* 上报题目浏览到 Cloudflare Worker（fire-and-forget） */
+    }
+    function getLocalStats() {
+      const today = dateKey();
+      const d = readLocal();
+      const views = Object.entries(d.views || {})
+        .map(([id, n]) => ({ id, views: n }))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 20);
+      /* daily 必须返回：streakInfo（学习打卡卡）依赖它推导连续/累计/热力图 */
+      return { total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views, daily: d.daily || {} };
+    }
+    /* --- 可选 Cloudflare Worker（2026-08-27 起已部署，默认启用） ---
+       默认地址指向本站官方 Worker（it-interview-stats.iti-interview.workers.dev）；
+       管理员仍可在系统设置里用自己的地址覆盖（localStorage.stats_api）。 */
+    const DEFAULT_STATS_API = "https://it-interview-stats.iti-interview.workers.dev";
+    /* 与帐号系统共用入口解析（2026-09-08）：手填地址 → 上次探测成功的入口 → 远程配置 → 内置。
+       account.js 尚未加载时退回原逻辑，行为不变。 */
+    const cfApi = () => {
+      if (typeof localStorage !== "undefined") {
+        const manual = localStorage.getItem("stats_api");
+        if (manual) return manual;
+      }
+      try { if (window.Account && window.Account.apiBase) return window.Account.apiBase(); } catch (e) {}
+      return DEFAULT_STATS_API;
+    };
+    function cfEnabled() { return !!cfApi(); }
+    function fetchWithTimeout(url, opts = {}, ms = 3000) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), ms);
+      return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
+    }
+    /* 超时跟随入口（20260927d）：Netlify 桥冷启动实测 13s+，给 20s；
+       其余入口（workers.dev 直连等）给 10s。
+       旧的统一 3s 超时会把冷启动中的桥误判为失败 → 静默 catch →
+       管理后台「访客地域分布」整块空白无任何提示。 */
+    function cfTimeout(base) {
+      return /netlify\.app/i.test(base || "") ? 20000 : 10000;
+    }
+    async function cfPost(path, params) {
+      const b = cfApi().replace(/\/+$/, ""); if (!b) return null;
+      try {
+        const u = new URL(b + path);
+        const k = localStorage.getItem("stats_key") || "";
+        if (k) u.searchParams.set("k", k);
+        if (params) for (const kk in params) u.searchParams.set(kk, String(params[kk]));
+        const r = await fetchWithTimeout(u.toString(), { method: "POST", mode: "cors" }, cfTimeout(b));
+        return await r.json().catch(() => null);
+      } catch (e) { return null; }
+    }
+    let cfCache = null, cfCacheAt = 0;
+    /* 成功返回聚合 JSON；失败（网络/超时/CORS/密钥不符）返回 null（无缓存可回退时）。
+       调用方以 null 判定「加载失败」，与「连接成功但暂无数据」区分开。
+       20260927d：多入口回退 —— 首选入口失败时自动尝试帐号系统的其余候选
+       （api-endpoints.json 的桥 / workers.dev 等），读路径不再绑死单点。 */
+    async function cfGetStats(force) {
+      const bases = [];
+      const push = (u) => { const s = String(u || "").trim().replace(/\/+$/, ""); if (s && bases.indexOf(s) < 0) bases.push(s); };
+      push(cfApi());
+      try { if (window.Account && window.Account.endpoints) window.Account.endpoints().forEach(push); } catch (e) {}
+      if (!bases.length) return null;
+      if (!force && cfCache && Date.now() - cfCacheAt < 60000) return cfCache;
+      for (const b of bases) {
+        try {
+          const u = new URL(b + "/stats");
+          const k = localStorage.getItem("stats_key") || "";
+          if (k) u.searchParams.set("k", k);
+          const r = await fetchWithTimeout(u.toString(), { mode: "cors" }, cfTimeout(b));
+          const j = await r.json();
+          cfCache = j; cfCacheAt = Date.now();
+          return j;
+        } catch (e) { /* 换下一个入口 */ }
+      }
+      return cfCache;
+    }
+    function enabled() { return true; }
+    return { enabled, recordVisit, recordView, getLocalStats, cfEnabled, cfApi, cfPost, cfGetStats };
+  })();
+
+  const COUNTRY_NAMES = { CN: "中国", HK: "中国香港", TW: "中国台湾", MO: "中国澳门", US: "美国", JP: "日本", KR: "韩国", SG: "新加坡", GB: "英国", DE: "德国", FR: "法国", IN: "印度", CA: "加拿大", AU: "澳大利亚", RU: "俄罗斯", BR: "巴西", NL: "荷兰", ES: "西班牙", IT: "意大利", TH: "泰国", MY: "马来西亚", VN: "越南", ID: "印度尼西亚", PH: "菲律宾", NZ: "新西兰", SE: "瑞典", CH: "瑞士", AE: "阿联酋", ZA: "南非", XX: "未知地区" };
+  function countryName(code) { return COUNTRY_NAMES[code] || code; }
+
+  function flashVis(el) { if (!el) return; el.classList.remove("vis-flash"); void el.offsetWidth; el.classList.add("vis-flash"); }
+  async function refreshVisitorStats() {
+    const j = Stats.getLocalStats();
+    const t = document.getElementById("vis-today"); const tot = document.getElementById("vis-total");
+    const tv = (j.todayCount || 0).toLocaleString();
+    const tt = (j.total || 0).toLocaleString();
+    if (t && t.textContent !== tv) { t.textContent = tv; flashVis(t); }
+    if (tot && tot.textContent !== tt) { tot.textContent = tt; flashVis(tot); }
+  }
+
+  /* ---- 弱网首次题库拉取失败的恢复（2026-09-13 P1 修复）----
+     访客首次打开时若 data/published.json（约 1.5MB）拉取失败，本机只剩 seed 的
+     99 道题，界面上却没有任何提示、也不会再自动重试。这里：
+     ① 常驻提示条（带「立即重试」按钮）；② 网络恢复 / 页面重新可见时自动重试；
+     ③ 启动完成后补一次延迟自动重试；④ 补全成功就原位刷新界面（失败回退整页刷新）。 */
+  function armSyncRecovery() {
+    if (App._syncRecoveryArmed) return;
+    App._syncRecoveryArmed = true;
+    let busy = false, done = false;
+    const off = () => {
+      window.removeEventListener("online", onAuto);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+    const finish = async (count) => {
+      done = true; off(); App._syncRecoveryArmed = false;
+      U.toast("已补全题库：共 " + count + " 题", "success", 5000);
+      try {
+        await Services.reload();
+        App.dailyList = await buildDailyList();
+        renderTopbar(); renderSidebar(parseHash()); route();
+      } catch (e) { console.warn("refresh after sync recovery failed", e); location.reload(); }
+    };
+    const attempt = async (fromUser) => {
+      if (busy || done) return;
+      /* 启动流程未结束时不自动重试，避免与 init() 的 reload 竞态（用户手动点击不受限） */
+      if (!fromUser && !App.dailyList) return;
+      busy = true;
+      try {
+        const r = await Cloud.recoverIncompleteSync();
+        if (r && r.applied) await finish(r.count);
+        else if (fromUser) {
+          if (r && r.failed) U.toast("仍无法连接云端题库，请检查网络后重试", "error", 5000);
+          else U.toast("本机题库已完整，无需补全", "info", 4000);
+        }
+      } catch (e) {
+        if (fromUser) U.toast("重试失败：" + ((e && e.message) || e), "error", 5000);
+      } finally { busy = false; }
+    };
+    function onAuto() { attempt(false); }
+    function onVisible() { if (document.visibilityState === "visible") attempt(false); }
+    window.addEventListener("online", onAuto);
+    document.addEventListener("visibilitychange", onVisible);
+    /* 启动完成后 20 秒补一次自动重试（应对「一开始几个请求都慢」的弱网） */
+    setTimeout(() => attempt(false), 20000);
+    /* 提示里的题数必须读 IndexedDB：armSyncRecovery 是在 boot 早期被调用的，
+       此刻 Services.questions 还没装载（boot 后面才 await Services.reload()），
+       用它会在提示里显示「0 题」。异步取真实条数，期间若已恢复成功就不打扰用户。 */
+    (async () => {
+      let n = (Services.questions || []).length;
+      try { if (DB.db && DB.db.questions) n = await DB.db.questions.count(); } catch (_) {}
+      if (done) return;
+      U.toast("题库未完整下载（当前只有本机示例 " + n + " 题），多半是网络较慢。请检查网络后重试", "warn", 0,
+        { action: { label: "立即重试", onClick: () => attempt(true) } });
+    })();
+  }
+
+  async function init() {
+    applyTheme();
+    if (!window.indexedDB) {
+      document.body.innerHTML = `<div class="empty" style="padding:80px"><div class="em-ic">${U.icon("alert")}</div><h3>当前浏览器不支持 IndexedDB</h3><p>请使用 Chrome / Firefox / Edge 等现代浏览器。</p></div>`;
+      return;
+    }
+    main = $("#main"); sidebar = $("#sidebar"); topbar = $("#topbar");
+    /* 移动端抽屉的三条「自助关闭」通道（只绑一次，别跟着 renderTopbar 重复挂监听）：
+       ① 点抽屉里任意站内链接 → 跳走的同时收起抽屉（这是用户反馈的主问题）；
+       ② 点侧栏外的遮罩 → 收起（此前遮罩被写死 hidden，点了没反应）；
+       ③ Esc 键 / 路由变化 → 兜底收起。
+       注意技术分类树的 `展开/收起` 是 div 不是 a，所以不会被①误关，展开时抽屉保持打开。 */
+    sidebar.addEventListener("click", (e) => { if (e.target.closest('a[href^="#/"]')) closeDrawer(); });
+    const dmask = document.getElementById("drawer-mask");
+    if (dmask) dmask.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+    window.addEventListener("hashchange", closeDrawer);
+    renderTopbar();
+    /* 页脚：栏目链接矩阵 + 说明（首次填充，之后静态）。2026-09-23 扩版：原先只有一行小字，
+       对 SEO 与信任感都偏弱，补上主要栏目入口与站点说明。 */
+    const footEl = document.getElementById("footer");
+    if (footEl && !footEl.dataset.filled) {
+      footEl.dataset.filled = "1";
+      const col = (title, links) => `<div class="f-col"><div class="f-col-title">${title}</div>${links.map(([t, h]) => `<a href="${h}">${t}</a>`).join("")}</div>`;
+      footEl.innerHTML = `
+        <div class="f-grid">
+          ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/review"], ["收藏夹", "#/favorites"]])}
+          ${col("体系", [["技术体系", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
+          ${col("我的", [["学习周报", "#/?to=week-report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
+          ${col("关于", [["关于本站", "#/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
+        </div>
+        <div class="f-bottom">
+          <span>IT 面试题库 · 覆盖技术体系与岗位体系的高频面试题</span>
+          <span class="sep">·</span>
+          <span>数据存于本机浏览器，登录后云端同步</span>
+          <span class="sep">·</span>
+          <a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">开源仓库</a>
+        </div>`;
+    }
+    /* 待复习数预载（供侧边栏角标） */
+    Services.weakList().then(r => { App.reviewDue = r.due.length; }).catch(() => {});
+    /* 标签点击即搜（事件委托；首页热词区有独立处理，跳过） */
+    document.getElementById("main").addEventListener("click", (e) => {
+      const tg = e.target.closest(".tag[data-tag]");
+      if (tg && !e.target.closest(".hot-tags")) { e.preventDefault(); e.stopPropagation(); shPush(tg.dataset.tag); App.go("/questions?q=" + encodeURIComponent(tg.dataset.tag)); }
+    });
+    Boot.start();
+    let cloudPending = null;
+    try {
+      /* 启动阶段打点（2026-10-06）：首屏「一直转圈」必须能定位到具体阶段。
+         实测不限速下脚本 1.1s 就绪、CPU 仅占 0.8s，却有 6 秒空白 —— 靠猜改不对地方。
+         这些 mark 几乎零成本（performance.mark 是纳秒级的），
+         用 tools/mobile-perf.mjs 或 devtools 的 performance.getEntriesByType("mark") 即可读出。 */
+      const _pm = (n) => { try { performance.mark(n); } catch (_) {} };
+      _pm("boot:start");
+      let justSeeded = false;
+      /* 跳过无谓的 seed（2026-10-06 移动端优化，实测省 1.6s）
+         原先首访一定要先把 seed 的 99 题写进 IndexedDB，紧接着 Cloud.syncIfNeeded
+         又把云端的 1540 题整包覆盖上去 —— 那 99 题从头到尾没人看过，却要付出
+         「解析 seed.js + 逐条建索引 + 事务提交」约 1.6 秒（移动端更久）。
+         现在先花约 120 字节探一下云端指纹：
+           · 云端可达且有数据 → 直接走云端，不写那 99 题；
+           · 云端不可达/无数据 → 老老实实 seed，保证离线首访也有内容（原有兜底不变）。
+         `justSeeded = true` 在这里表示「本机没有需要保护的数据，可直接采用云端」，
+         正是 syncIfNeeded 判定「全新访客」所用的语义，因此下游逻辑无需改动。 */
+      let cloudProbe = null;
+      try {
+        if (!Cloud.isEditor()) cloudProbe = await Cloud.fetchMeta();
+      } catch (_) { /* 探测失败按「云端不可用」处理，走 seed */ }
+      /* data/seed.js 有 111KB（gzip 约 40KB），里面是 99 道兜底题目。
+         云端可达时它一行都用不上，却要在首屏下载并解析 —— 实测这笔开销不小。
+         所以改成「要用才加载」：只有走 seed 兜底这条路时才把它取进来。
+         加载失败就按没有种子数据处理（下面 try 会捕获，不会白屏）。 */
+      const loadSeedJs = () => new Promise((resolve) => {
+        if (window.SEED) return resolve(true);
+        const el = document.createElement("script");
+        el.src = "data/seed.js?v=" + (window.PAGE_VER || "");
+        el.onload = () => resolve(true);
+        el.onerror = () => resolve(false);
+        document.head.appendChild(el);
+      });
+      if (cloudProbe && cloudProbe.count > 0) {
+        justSeeded = true;
+        Boot.set(35, "从云端载入题库…");
+        _pm("boot:seed-skipped");
+      } else {
+        try {
+          await loadSeedJs();
+          justSeeded = await DB.seed();
+        } catch (e) { console.error("seed error", e); U.toast("初始化数据出错", "error"); }
+      }
+      _pm("boot:seed-done");
+      Boot.set(35, "加载岗位与技术体系…");
+      try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
+      try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
+      try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
+      _pm("boot:migrate-done");
+      Boot.set(55, "检查云端题库更新…");
+      try {
+        const r = await Cloud.syncIfNeeded(justSeeded);
+        _pm("boot:sync-done");
+        if (r && r.applied) U.toast(r.recovered ? "题库补全完成：共 " + r.count + " 题" : "已同步云端题库最新版（共 " + r.count + " 题）", "success");
+        if (r && r.pending) cloudPending = r;
+        /* 网络失败（而非「云端没有快照」）：访客可能只有 seed 的 99 题，安排提示与重试 */
+        if (r && r.failed) { console.warn("cloud sync fetch failed:", r.detail, "attempts=", r.attempts); armSyncRecovery(); }
+        /* 编辑端（配置过 Token）：不做全量同步，但增量吸收云端自动扩充的新题，
+           避免本地题库落后于线上而不自知。失败不影响启动。 */
+        if (r && r.skipped && r.reason === "editor") {
+          try {
+            const a = await Cloud.absorbRemote();
+            /* 自动同步结果：补新题 + 自动修复降质答案分别告知，
+               两个都有值时合并成一条提示，避免弹两下 */
+            if (a && (a.added > 0 || a.restored > 0 || a.posFixed > 0)) {
+              const parts = [];
+              if (a.added > 0) parts.push("补入 " + a.added + " 道新题");
+              if (a.restored > 0) parts.push("恢复 " + a.restored + " 道被降质/截断的答案");
+              if (a.posFixed > 0) parts.push("补齐 " + a.posFixed + " 道题的岗位关联");
+              U.toast("已自动同步云端最新题库：" + parts.join("、") + "（本地已有内容不会被覆盖）", "success", 8000);
+              console.log("absorbRemote: +" + a.added + " new, " + a.restored + " restored, " + a.posFixed + " positions from cloud snapshot");
+            }
+            /* 编辑端落后提示（2026-09-09）：本机比云端少的题「吸收」补不回来时
+               （如云端做过全量恢复），明确告知去设置页拉取，而不是让用户困惑
+               「库里怎么少了这么多题」 */
+            try {
+              const cmp = await Cloud.localVsRemote();
+              if (cmp && cmp.remote && cmp.remote > cmp.local) {
+                U.toast("云端题库 " + cmp.remote + " 题，本机只有 " + cmp.local + " 题（少 " +
+                  (cmp.remote - cmp.local) + " 题）。到「设置 → 发布 → 从云端拉取到本机」同步最新版",
+                  "warn", 12000);
+              }
+            } catch (e3) { console.warn("localVsRemote error", e3); }
+          } catch (e2) { console.warn("absorbRemote error", e2); }
+        }
+      } catch (e) { console.warn("cloud sync error", e); }
+      /* 兜底（配合上面的「跳过 seed」）：探测云端成功但真正拉取时失败
+         （弱网中途断、远端 5xx 等），本机就会是一张空库 —— 那比「慢」更糟。
+         这里检查题库是否真的落到了本机，为空就补跑 seed，保证任何情况下
+         首访都有内容可看。isInitialized 只在真的 seed 过之后才为 true。 */
+      if (justSeeded) {
+        try {
+          const n = await DB.db.questions.count();
+          if (n === 0) {
+            console.warn("云端题库未落到本机，回退 seed 兜底");
+            await loadSeedJs();          /* 兜底路径同样要先把种子数据取进来 */
+            await DB.seed();
+            _pm("boot:seed-fallback");
+          }
+        } catch (_) {}
+      }
+      Boot.set(60, "迁移与预置数据…");
+      try { const n = await Services.repairHistoryIds(); if (n > 0) console.log("已修复", n, "条字符串 id 的浏览历史记录"); } catch (_) {}
+      _pm("boot:repair-done");
+      await Services.reload();
+      _pm("boot:reload-done");
+      App.dailyList = await buildDailyList();   /* 今日清单（含可选的温故知新混入），供首页与打卡判定共用 */
+      _pm("boot:daily-done");
+      Boot.set(85, "渲染界面…");
+      if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
+      window.addEventListener("hashchange", () => { renderTopbar(); route(); });
+      /* hash 路由盲区：点击「目标 hash 与当前 hash 相同」的站内链接（如面试报告页
+         的「再面一次」→ #/mock，报告本就渲染在 #/mock 下）不会触发 hashchange，
+         页面毫无反应；此处补一次与 hashchange 完全一致的重渲染 */
+      document.addEventListener("click", (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const a = e.target.closest && e.target.closest('a[href^="#/"]');
+        if (!a || a.target === "_blank") return;
+        if (a.getAttribute("href") !== location.hash) return;   // hash 有变化，交给原生 hashchange
+        e.preventDefault();
+        renderTopbar(); route();
+      });
+      if (!location.hash) location.hash = "/";
+      _pm("boot:route-start");
+      route();
+      _pm("boot:route-called");
+      /* 首访是「只拉了元数据」的：等首屏渲染完之后，再在后台把答案补齐。
+         必须放在 route() 之后 —— 放到前面就会和首屏抢带宽/主线程，反倒更慢。
+         用 requestIdleCallback 让它在真正空闲时才开始；不支持则退 2s。
+         全程静默（不弹 toast），失败的片由详情页懒加载兜底。 */
+      if (Cloud._needHydrate) {
+        const _hydrate = () => { try { Cloud.hydrateAnswers(); } catch (_) {} };
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(_hydrate, { timeout: 4000 });
+        } else {
+          setTimeout(_hydrate, 2000);
+        }
+      }
+      if (cloudPending) U.toast("检测到云端共享题库（" + cloudPending.count + " 题）。本机已有数据未自动覆盖，如需使用共享题库请到「系统设置 → 云端共享题库」手动同步", "info");
+      Stats.recordVisit();
+      refreshVisitorStats();
+      setInterval(refreshVisitorStats, 60000);
+      try { Cloud.initAuto(); } catch (e) { console.warn("autopub init error", e); }
+      try { Backup.initAuto(); } catch (e) { console.warn("auto backup init error", e); }
+      try { Account.autoSyncIfDue(); } catch (e) { console.warn("account autosync error", e); }   // 登录用户静默云同步个人数据
+      try { startReviewWatcher(); } catch (e) { console.warn("review watcher error", e); }   // 艾宾浩斯到期复习提醒
+    } catch (e) {
+      console.error("init error", e);
+      U.toast("页面初始化出错，请刷新重试", "error");
+    } finally {
+      Boot.finish();
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+
+  /* ============================ 到期复习提醒 ============================
+   * 艾宾浩斯到期题目前只是侧边栏角标数字，用户不点开就不知道该复习了。
+   * 启动 + 每 5 分钟轮询：发现新到期题（相对上次提醒增量）时 toast 提醒，
+   * 并给侧边栏「错题重练」角标加脉冲动画。会话内同题只提醒一次，避免打扰。 */
+  let reviewWatchTimer = null;
+  function startReviewWatcher() {
+    if (reviewWatchTimer) return;
+    const notified = new Set();   // 本会话已提醒过的 questionId
+    let firstRun = true;
+    const check = async () => {
+      try {
+        if (!Services.questions || !Services.questions.length) return;
+        const { due } = await Services.weakList();
+        if (!due.length) { firstRun = false; return; }
+        due.forEach(w => notified.add(w.questionId));   // 启动时已有的一律静默，不打扰打开页面
+        const fresh = firstRun ? [] : due.filter(w => !notified.has(w.questionId));
+        firstRun = false;
+        if (fresh.length) {
+          U.toast("📚 有 " + fresh.length + " 道题到复习时间了，去「错题重练」巩固记忆", "info", 6000);
+          fresh.forEach(w => notified.add(w.questionId));
+        }
+        const item = document.querySelector('.side-nav-item[href="#/review"]');
+        if (item && due.length) item.classList.add("nav-pulse");
+        /* 徽章数字实时更新：用户停留在任意页面时，新到期的题也能反映到侧边栏 */
+        if (App.reviewDue !== due.length) { App.reviewDue = due.length; renderSidebar(parseHash()); }
+      } catch (_) {}
+    };
+    check();
+    reviewWatchTimer = setInterval(check, 5 * 60 * 1000);
+  }
+
+  /* ============================ 关于本站 ============================ */
+  /* 关于本站/站长/联系信息；题数、分类数、岗位数、最近更新时间均从 Services 实时读取，
+     每天 10:00 自动扩充流水线跑完后这些数字会自动更新，无需手动维护。 */
+  function pageAbout() {
+    const qs = (Services.questions || []);
+    const published = qs.filter(q => q.status === "published" || q.status == null);
+    const qCount = published.length;
+    const catCount = (Services.categories || []).length;
+    const posCount = (Services.positions || []).length;
+    const updatedAt = qs.reduce((m, q) => Math.max(m, q.updatedAt || q.createdAt || 0), 0);
+    const updStr = updatedAt ? U.fmtDate(updatedAt).slice(0, 10) : "—";
+
+    const stat = (icon, num, label, accent, sm) => `
+      <div class="about-stat" style="--accent:${accent}">
+        <span class="about-stat-ico">${U.icon(icon)}</span>
+        <div class="about-stat-num${sm ? " about-stat-num-sm" : ""}">${num}</div>
+        <div class="about-stat-label">${label}</div>
+      </div>`;
+    const tile = (icon, title, desc, accent) => `
+      <div class="about-tile" style="--accent:${accent}">
+        <span class="about-tile-ico">${U.icon(icon)}</span>
+        <div class="about-tile-title">${title}</div>
+        <div class="about-tile-desc">${desc}</div>
+      </div>`;
+
+    const html = `
+      <div class="about-page">
+        <div class="about-hero">
+          <span class="about-hero-chip">${U.icon("sparkles")} ABOUT · 关于本站</span>
+          <h1 class="about-hero-title">专注 IT 面试准备<br><span>持续更新的实战题库</span></h1>
+          <p class="about-hero-sub">运维 · 开发 · AI —— 题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
+        </div>
+
+        <div class="about-stats">
+          ${stat("layers", qCount, "题目", "#2563EB")}
+          ${stat("grid", catCount, "技术体系", "#7C3AED")}
+          ${stat("briefcase", posCount, "岗位", "#0EA5A5")}
+          ${stat("clock", updStr, "最近更新", "#F59E0B", true)}
+        </div>
+
+        <section class="about-card">
+          <div class="about-card-head">
+            <span class="about-card-ico" style="--accent:#2563EB">${U.icon("database")}</span>
+            <div>
+              <div class="about-card-title">关于本站</div>
+              <div class="about-card-sub">一份会自己长大的面试题库</div>
+            </div>
+          </div>
+          <p class="about-prose">这里是一份持续更新的 IT 面试题库，覆盖 <b>运维、开发、AI</b> 等方向。题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
+          <div class="about-lead">希望帮你做到三件事：</div>
+          <div class="about-grid3">
+            ${tile("grid", "系统梳理", "按技术体系归类高频考点，告别零散刷题", "#2563EB")}
+            ${tile("search", "快速备战", "按岗位、按分类精准检索，面试前高效突击", "#0EA5A5")}
+            ${tile("barChart", "查漏补缺", "从入门到进阶，清楚自己还差在哪一环", "#F59E0B")}
+          </div>
+          <div class="about-fit">
+            <span class="about-fit-item">${U.icon("briefcase")} 准备跳槽的工程师</span>
+            <span class="about-fit-item">${U.icon("star")} 即将毕业的应届生</span>
+            <span class="about-fit-item">${U.icon("sparkles")} 想转岗进阶的 IT 人</span>
+          </div>
+          <!-- 本机访问统计（2026-09-24 评审 P2-11）：原先挂在顶栏、每次浏览都在右上角，
+               但它是「这台设备打开过几次」的自家口径，不是全站 PV —— 放到关于页才解释得清楚。 -->
+          <p class="about-prose" style="font-size:12.5px;margin-top:14px;color:var(--text-muted)">
+            你在本机的访问：今日 <b id="vis-today" class="vis-num">–</b> 次 · 累计 <b id="vis-total" class="vis-num">–</b> 次
+            <span class="muted">（只记录这台设备上的打开次数，不跨设备，也不是全站访问量）</span>
+          </p>
+        </section>
+
+        <section class="about-card">
+          <div class="about-card-head">
+            <span class="about-card-ico" style="--accent:#7C3AED">${U.icon("user")}</span>
+            <div>
+              <div class="about-card-title">关于站长</div>
+              <div class="about-card-sub">阅己书语 · 主理人</div>
+            </div>
+          </div>
+          <div class="about-me">
+            <div class="about-avatar">阅</div>
+            <div class="about-me-info">
+              <p class="about-prose">我是「<b>阅己书语</b>」公众号主理人，一名 IT 从业者 &amp; 远程工作者，多年深耕 <b>运维、开发与 AI</b> 领域。</p>
+              <div class="about-tags">
+                <span class="about-tag">运维</span><span class="about-tag">开发</span><span class="about-tag">AI</span><span class="about-tag">远程办公</span><span class="about-tag">数字游民</span>
+              </div>
+            </div>
+          </div>
+          <blockquote class="about-quote">${U.icon("sparkles")}<span>健康是基石，学习是阶梯，财富是结果。</span></blockquote>
+          <div class="about-lead">公众号专注分享三件事：</div>
+          <div class="about-grid3">
+            ${tile("shield", "健康", "身体是长期主义的本钱", "#10B981")}
+            ${tile("fileText", "阅读", "持续学习，认知升级", "#2563EB")}
+            ${tile("barChart", "财富", "让能力转化为结果", "#F59E0B")}
+          </div>
+          <p class="about-prose muted">我同样关注 <b>远程办公 / 数字游民</b> 的生活方式，欢迎同路人一起交流。</p>
+        </section>
+
+        <section class="about-card about-card-contact">
+          <div class="about-card-head">
+            <span class="about-card-ico" style="--accent:#0EA5A5">${U.icon("link")}</span>
+            <div>
+              <div class="about-card-title">联系我</div>
+              <div class="about-card-sub">扫码或加微信，聊聊技术与远程生活</div>
+            </div>
+          </div>
+          <div class="about-contact">
+            <div class="about-contact-list">
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("user")} 微信</span><span class="about-contact-v">13750847246</span></div>
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("fileText")} 公众号</span><span class="about-contact-v">阅己书语</span></div>
+              <div class="about-contact-row"><span class="about-contact-k">${U.icon("link")} 站点</span><a href="${location.origin}" target="_blank" rel="noopener">${location.host}</a></div>
+            </div>
+            <a class="about-qr" href="${location.origin}/assets/qrcode-yueji-shuyu.png" target="_blank" rel="noopener" title="点击查看大图">
+              <img src="assets/qrcode-yueji-shuyu.png" alt="阅己书语公众号二维码" loading="lazy" />
+              <span class="about-qr-cap">微信搜一搜 · 阅己书语</span>
+            </a>
+          </div>
+        </section>
+
+        <div class="about-slogan"><span>阅己，方能越己。</span></div>
+      </div>`;
+    setMain(html);
+    /* 本机访问统计的节点在本页（2026-09-24 评审 P2-11：从顶栏搬来），进页面时刷新一次；
+       否则只在 init 时算过一次、这里会一直显示占位符「–」。 */
+    refreshVisitorStats();
+  }
+
+  /* 轻量刷新导航（20260919f）：顶栏/侧栏里带「待审条数」角标或角色标签，
+     这些值在路由之外还会被异步接口改（登录后拉一次待审计数），
+     给兄弟模块一个统一出口，避免它们各自去碰 renderTopbar/renderSidebar。 */
+  function refreshNav() { try { renderTopbar(); renderSidebar(parseHash()); } catch (e) {} }
+
+  /* ---- 暴露给 account.js 等兄弟模块的内部函数（app.js 是 IIFE，默认不外泄） ---- */
+  App._internals = { $, setMain, route, renderTopbar, renderSidebar, refreshNav, refreshVisitorStats };
+  window.App = App;
+})();
+
+;/* ===== << js/app.js ===== */
+
+;/* ===== >> js/account.js ===== */
+/* =========================================================================
+ *  account.js  —  用户帐号系统（前端）
+ *  后端：Cloudflare Worker /auth/*、/me/data（D1）。
+ *  能力：注册/登录/退出；收藏、刷题历史、错题本按用户云同步（换设备不丢）；
+ *        管理员帐号管理（列表/搜索/禁用/重置密码）。
+ * ========================================================================= */
+(function () {
+  "use strict";
+  /* app.js 是 IIFE，setMain/route/renderTopbar 等在其闭包内。
+     通过 App._internals 取用（app.js 末尾挂载）；U/DB/Services 本身就是 window 全局。 */
+  const _i = (window.App && window.App._internals) || {};
+  const $ = _i.$ || U.qs;
+  const setMain = _i.setMain;
+  const route = _i.route || (() => { location.hash = "#/"; });
+  const renderTopbar = _i.renderTopbar;
+
+  const A = {};
+  const LS = { token: "acc_token", user: "acc_user", syncAt: "acc_sync_at" };
+
+  /* ---------------- API 入口解析（2026-09-08 重构） ----------------
+   * 背景：Cloudflare 的 *.workers.dev 域名在中国大陆被 DNS 投毒 + SNI 复位，
+   *       手机（无代理）访问必然失败，表现为「API 暂不可达」。根治办法是给
+   *       Worker 绑自有域名（api.itinterview.eu.org，eu.org 审核通过后生效）。
+   * 设计：入口不再写死单点，改成「候选列表 + 自动择优 + 远程可覆盖」：
+   *   1) 用户在设置里手填的地址（localStorage.stats_api）优先级最高；
+   *   2) 上一次探测成功的入口（localStorage.stats_api_pick）；
+   *   3) 同源远程配置 api-endpoints.json（改入口无需重新发版，可绕过 SW 缓存）；
+   *   4) 内置兜底列表 BUILTIN_ENDPOINTS。
+   * 只有网络层失败（fetch 抛错 / 超时）才换下一个入口；HTTP 4xx/5xx 说明这个
+   * 入口是通的（比如密码错误），不切换，避免把真实错误掩盖成"网络问题"。
+   * ---------------------------------------------------------------- */
+  const BUILTIN_ENDPOINTS = [
+    "https://it-interview-stats.iti-interview.workers.dev"
+  ];
+  const CFG_URL = "api-endpoints.json";
+  const CFG_TTL = 6 * 3600 * 1000;
+  const API_DEFAULT = BUILTIN_ENDPOINTS[0];
+
+  function ls(k, v) {
+    if (v === undefined) return localStorage.getItem(k);
+    v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v);
+  }
+
+  function dedup(list) {
+    const out = [];
+    (list || []).forEach(function (u) {
+      const s = String(u || "").trim().replace(/\/+$/, "");
+      if (s && /^https?:\/\//i.test(s) && out.indexOf(s) < 0) out.push(s);
+    });
+    return out;
+  }
+  /* 远程配置：同源 JSON，形如 {"endpoints":["https://api.example.com", ...]}。
+     读取失败/格式错误一律静默忽略并退回内置列表，绝不影响主流程。 */
+  function readCfg() {
+    try {
+      const raw = localStorage.getItem("stats_api_cfg");
+      if (!raw) return null;
+      const o = JSON.parse(raw);
+      if (!o || !o.at || Date.now() - o.at > CFG_TTL) return null;
+      return dedup(o.endpoints);
+    } catch (e) { return null; }
+  }
+  A.refreshEndpoints = async function () {
+    try {
+      const r = await fetch(CFG_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return null;
+      const o = await r.json();
+      const list = dedup(o && o.endpoints);
+      if (!list.length) return null;
+      try { localStorage.setItem("stats_api_cfg", JSON.stringify({ at: Date.now(), endpoints: list })); } catch (e) {}
+      return list;
+    } catch (e) { return null; }
+  };
+  A.endpoints = function () {
+    const manual = localStorage.getItem("stats_api") || "";
+    const pick = localStorage.getItem("stats_api_pick") || "";
+    return dedup([manual, pick].concat(readCfg() || [], BUILTIN_ENDPOINTS));
+  };
+
+  /* 记录「上次成功入口」并打时间戳（时间戳供启动自动择优判断还新不新鲜）。 */
+  function markPick(base) {
+    ls("stats_api_pick", base);
+    ls("stats_api_pick_at", String(Date.now()));
+  }
+
+  /* 探测候选顺序：手动指定 > 远程配置 > 上次成功 > 内置兜底。
+     注意与 A.endpoints() 不同——这里刻意把「上次成功入口」排在「远程配置」之后。
+     否则本机存的旧入口会一直压住刚发布的新入口（例如新上线的国内中转桥），
+     表现为「明明改了 api-endpoints.json 却还是连不上」。 */
+  function probeList() {
+    const manual = (localStorage.getItem("stats_api") || "").trim();
+    const pick = localStorage.getItem("stats_api_pick") || "";
+    return dedup([manual].concat(readCfg() || [], [pick], BUILTIN_ENDPOINTS));
+  }
+
+  /* 按顺序逐个探测，命中第一个可用即停；只返回结果，不改 pick。
+     ⚠️ 长超时跟着「Netlify 桥」走而不是跟着「第一位」走（20260913g）：
+     Netlify Function 冷启动实测 13s+，若 pick 记住了别的入口（如 workers.dev）排在
+     调用顺序首位，桥落到第二位时只有 6s 预算 → 冷启动必被误判「不可用」。
+     桥在任何位置都给 20s；其余候选保持 6s，好尽快跳到下一个。 */
+  const PROBE_FIRST_MS = 20000, PROBE_MS = 6000;
+  const isBridge = (base) => /netlify\.app/i.test(base || "");
+  const probeLim = (base, i) => (i === 0 || isBridge(base)) ? PROBE_FIRST_MS : PROBE_MS;
+  async function probeEach(eps) {
+    const out = [];
+    for (let i = 0; i < eps.length; i++) {
+      const base = eps[i];
+      const lim = probeLim(base, i);
+      const ctl = ("AbortController" in window) ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, lim) : null;
+      const t0 = Date.now();
+      let ok = false;
+      try {
+        const r = await fetch(base + "/stats", { signal: ctl && ctl.signal });
+        ok = r.status < 500;
+      } catch (e) { ok = false; }
+      if (timer) clearTimeout(timer);
+      out.push({ base: base, ok: ok, ms: Date.now() - t0 });
+      if (ok) break;
+    }
+    return out;
+  }
+
+  /* 逐个探测候选入口，选中第一个可用的记下来（设置页「自动选择可用入口」用）。 */
+  A.probeEndpoints = async function () {
+    const res = await probeEach(probeList());
+    const hit = res.filter(function (x) { return x.ok; })[0];
+    if (hit) markPick(hit.base);
+    return res;
+  };
+
+  /* 启动时的后台自动择优——让「新入口上线后自动命中」成为事实，而不是要求用户手点。
+     - 用户手动填过地址 → 不干预（用户说了算）
+     - 上次成功入口还新鲜（默认 30 分钟内）→ 跳过，避免每开一次页面都发探测请求
+     - 否则按 probeList() 顺序探测，把第一个可用的写成新的 pick
+     全程静默、绝不抛错、绝不阻塞启动（失败也只是维持现状）。 */
+  const PICK_TTL = 30 * 60 * 1000;
+  A.autoProbe = async function (force) {
+    try {
+      if (!force && (localStorage.getItem("stats_api") || "").trim()) return { skipped: "manual" };
+      const at = Number(localStorage.getItem("stats_api_pick_at") || 0);
+      if (!force && at && Date.now() - at < PICK_TTL) return { skipped: "fresh" };
+      const res = await probeEach(probeList());
+      const hit = res.filter(function (x) { return x.ok; })[0];
+      if (hit) { markPick(hit.base); return { picked: hit.base, tested: res.length }; }
+      return { picked: "", tested: res.length };
+    } catch (e) { return { error: (e && e.message) || String(e) }; }
+  };
+  const apiBase = () => (A.endpoints()[0] || API_DEFAULT);
+  A.apiBase = apiBase;
+  /* 暴露统一请求通道（带 token / 多入口回退 / 统一错误），供 app.js 的
+     AI 变式训练等登录态功能复用（20260927e）。 */
+  A.call = call;
+
+  A.getUser = () => { try { return JSON.parse(ls(LS.user) || "null"); } catch (e) { return null; } };
+  A.getToken = () => ls(LS.token) || "";
+  A.isLoggedIn = () => !!(A.getToken() && A.getUser());
+  /* 服务端管理员判定（20260913f）：以登录响应里的 role 为准，
+     与旧 auth.js 的本地密码门禁（Auth.isAdmin，仅题目编辑端使用）彻底解耦。 */
+  A.isServerAdmin = () => { const u = A.getUser(); return !!(u && u.role === "admin" && A.getToken()); };
+
+  /* 启动时静默刷新本地缓存的用户信息（含 role/status）：
+     库内提权/禁用等变更无需重新登录即可在前端生效；token 失效则清空本地会话。 */
+  A.refreshMe = async function () {
+    if (!A.getToken()) return false;
+    try {
+      const j = await call("GET", "/auth/me");
+      ls(LS.user, JSON.stringify(j.user));
+      return true;
+    } catch (e) {
+      if (e && e.status === 401) { A.logout(); }
+      return false;
+    }
+  };
+
+  async function call(method, path, body) {
+    const h = { "Content-Type": "application/json" };
+    if (A.getToken()) h["Authorization"] = "Bearer " + A.getToken();
+    /* 按候选入口顺序尝试：网络层失败才换下一个，最后一个入口再补一次重试（吸收偶发丢包）。
+       长超时（20s）跟「Netlify 桥」走而不是跟「第一位」走（20260913g）：
+       桥的 Lambda 冷启动实测 13s+，若 pick 记住了别的入口排在首位，桥落到第二位
+       只有 8s 预算 → 冷启动被误判「不可达」→「连不上服务器」。桥在任何位置都给 20s，
+       其余候选保持 8s 快速失败。全部失败才报"不可达"。 */
+    const CALL_FIRST_MS = 20000, CALL_MS = 8000;
+    const isBridgeEp = (base) => /netlify\.app/i.test(base || "");
+    const callLim = (base, i) => (i === 0 || isBridgeEp(base)) ? CALL_FIRST_MS : CALL_MS;
+    const once = (base, ms) => {
+      const ctl = ("AbortController" in window) ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => { try { ctl.abort(); } catch (e) {} }, ms || CALL_MS) : null;
+      const p = fetch(base + path, {
+        method, headers: h, body: body ? JSON.stringify(body) : undefined, signal: ctl && ctl.signal,
+      });
+      const clear = () => { if (timer) clearTimeout(timer); };
+      p.then(clear, clear);
+      return p;
+    };
+    const eps = A.endpoints();
+    let r = null, usedEp = null;
+    for (let i = 0; i < eps.length; i++) {
+      const base = eps[i];
+      try {
+        r = await once(base, callLim(base, i));
+        usedEp = base;
+        break;                                   // 拿到响应（含 4xx/5xx）即停止换入口
+      } catch (e1) {
+        if (i < eps.length - 1) { await new Promise(res => setTimeout(res, 300)); continue; }
+        try { r = await once(base, callLim(base, i)); usedEp = base; } catch (e2) { /* 最后入口也失败 */ }
+      }
+    }
+    if (!r) {
+      /* 给维护者留可诊断信息（控制台），但给用户的文案保持简短可读——
+         长串技术解释（workers.dev 被墙、要挂代理…）对普通访客没有帮助，
+         细节放设置页说明，这里只给「下一步该做什么」。 */
+      try {
+        console.warn("[account] 全部 API 入口均不可达。已尝试：", A.endpoints().join("  |  "));
+      } catch (_) {}
+      const ver = (window.PAGE_VER ? "（页面版本 " + window.PAGE_VER + "）" : "");
+      const err = new Error("连不上服务器（API 暂不可达）" + ver + "。已自动尝试全部可用入口，请稍后重试；" +
+        "若持续出现，请先刷新页面（Ctrl+F5）加载最新前端，再试一次；" +
+        "仍不行可到「设置 → Cloudflare Worker」点「自动选择可用入口」。");
+      err.network = true;
+      throw err;
+    }
+    if (usedEp) markPick(usedEp);
+    let j = null; try { j = await r.json(); } catch (_) {}
+    if (!r.ok) { const e = new Error((j && j.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
+    return j;
+  }
+
+  /* ---------------- 注册 / 登录 / 退出 ---------------- */
+  /* turnstileToken：人机验证令牌（可空）。后端未配 TURNSTILE_SECRET 时这个字段
+     会被整段忽略，因此传空也不影响。 */
+  A.register = async (email, password, nick, turnstileToken) => {
+    const j = await call("POST", "/auth/register", { email, password, nick, turnstileToken: turnstileToken || "" });
+    _saveSession(j);
+    await syncUp();       // 注册即把本机已有数据带上云端
+    return j.user;
+  };
+  A.login = async (email, password, turnstileToken) => {
+    const j = await call("POST", "/auth/login", { email, password, turnstileToken: turnstileToken || "" });
+    _saveSession(j);
+    await mergeFromCloud();   // 登录后拉取该用户云端数据并合并进本机
+    return j.user;
+  };
+  A.logout = () => { ls(LS.token, null); ls(LS.user, null); };
+
+  async function _saveSession(j) {
+    ls(LS.token, j.token);
+    ls(LS.user, JSON.stringify(j.user));
+    ls(LS.syncAt, String(Date.now()));
+  }
+
+  /* ---------------- 个人数据同步 ----------------
+   * 本机数据源：Dexie 表 favorites/histories/weakBank。
+   * 上传（syncUp）：整包 PUT，服务端 ON CONFLICT DO NOTHING / MAX 合并，幂等安全。
+   * 下载（mergeFromCloud）：把云端条目与本机条目做并集写入本地。
+   ----------------------------------------------- */
+  async function collectLocal() {
+    const db = DB.db;
+    let dailyRows = [];
+    try { dailyRows = await db.dailyDone.toArray(); } catch (_) { /* 旧版 DB 尚未升级时跳过 */ }
+    const [fav, his, weak] = await Promise.all([
+      db.favorites.toArray(), db.histories.toArray(), db.weakBank.toArray(),
+    ]);
+    const snap = {
+      favorites: fav.map(x => ({ id: x.questionId, at: x.createdAt })),
+      histories: his.map(x => ({ id: x.questionId, views: x.views || 1, at: x.viewedAt || x.createdAt || Date.now() })),
+      weak: weak.map(x => ({ id: x.questionId, at: x.createdAt, box: x.box || 0, dueAt: x.dueAt || null, marked: x.marked || null, lastOkAt: x.lastOkAt || null, updatedAt: x.updatedAt || x.createdAt || Date.now() })),
+      daily: dailyRows.map(r => ({ day: r.day, ids: r.ids || [] })),
+    };
+    A._rememberSnapshot(snap);   // 缓存快照，供关闭页面时 sendBeacon 兜底使用
+    return snap;
+  }
+
+  A.syncUp = syncUp;
+  async function syncUp() {
+    if (!A.isLoggedIn()) return { applied: 0 };
+    const payload = await collectLocal();
+    return call("PUT", "/me/data", payload);
+  }
+
+  /* ---------------- 关闭/隐藏页面时的兜底上传（sendBeacon） ----------------
+   * 场景：用户刷完题直接关标签页/切后台，常规 fetch 可能被浏览器取消，
+   * 导致最后一次学习数据没传上去。sendBeacon 专为这种场景设计，
+   * 失败时降级为 keepalive fetch。token 走查询参数（sendBeacon 无法带自定义 header）。
+   ----------------------------------------------- */
+  let lastLocalSnapshot = null;
+  A._rememberSnapshot = function (snap) { lastLocalSnapshot = snap; };
+
+  A.beaconSync = function () {
+    try {
+      if (!A.isLoggedIn() || !lastLocalSnapshot) return;
+      const payload = JSON.stringify(lastLocalSnapshot);
+      const url = apiBase() + "/me/data?token=" + encodeURIComponent(A.getToken());
+      let ok = false;
+      if (navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: "application/json" });
+        ok = navigator.sendBeacon(url, blob);
+      }
+      if (!ok) {
+        fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch (_) { /* 兜底逻辑，任何异常静默 */ }
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") A.beaconSync();
+  });
+  window.addEventListener("pagehide", () => A.beaconSync());
+
+  /* 模拟面试报告：保存一条到云端（登录后），失败静默，绝不打断面试流程 */
+  A.saveReport = async function (r) {
+    if (!A.isLoggedIn()) return false;
+    try { const res = await call("POST", "/me/reports", r); return !!(res && res.ok); }
+    catch (e) { return false; }
+  };
+
+  /* 拉取历次模拟面试报告（最近 20 次），未登录或接口不可用时返回空数组 */
+  A.getReports = async function () {
+    if (!A.isLoggedIn()) return [];
+    try { const res = await call("GET", "/me/reports"); return (res && res.reports) || []; }
+    catch (e) { return []; }
+  };
+
+  A.mergeFromCloud = mergeFromCloud;
+  async function mergeFromCloud() {
+    if (!A.isLoggedIn()) return;
+    const remote = await call("GET", "/me/data");
+    const db = DB.db;
+    const now = Date.now();
+    await db.transaction("rw", [db.favorites, db.histories, db.weakBank, db.dailyDone], async () => {
+      // favorites
+      const favKeys = new Set((await db.favorites.toArray()).map(x => x.questionId));
+      const newFav = (remote.favorites || []).filter(f => !favKeys.has(f.id))
+        .map(f => ({ questionId: f.id, createdAt: f.at || now }));
+      if (newFav.length) await db.favorites.bulkAdd(newFav);
+      // histories：取较大者
+      const hisMap = new Map((await db.histories.toArray()).map(x => [x.questionId, x]));
+      const newHis = [];
+      for (const h of remote.histories || []) {
+        const cur = hisMap.get(h.id);
+        if (!cur) { newHis.push({ questionId: h.id, views: h.views || 1, viewedAt: h.at || now, createdAt: h.at || now }); }
+        else if ((h.views || 0) > (cur.views || 0)) { cur.views = h.views; cur.viewedAt = Math.max(cur.viewedAt || 0, h.at || 0); await db.histories.put(cur); }
+      }
+      if (newHis.length) await db.histories.bulkAdd(newHis);
+      // weak bank：带全量复习进度（阶段/到期时间/标记），按 updatedAt 新者胜合并
+      const weakMap = new Map((await db.weakBank.toArray()).map(x => [x.questionId, x]));
+      const newWeak = [];
+      for (const w of (remote.weak || [])) {
+        const rUpd = w.updatedAt || w.at || now;
+        const cur = weakMap.get(w.id);
+        if (!cur) {
+          newWeak.push({ questionId: w.id, createdAt: w.at || now, box: w.box || 0, dueAt: w.dueAt || null, marked: w.marked || null, lastOkAt: w.lastOkAt || null, updatedAt: rUpd });
+        } else if (rUpd > (cur.updatedAt || cur.createdAt || 0)) {
+          cur.box = w.box || 0; cur.dueAt = w.dueAt || cur.dueAt; cur.marked = w.marked || cur.marked;
+          cur.lastOkAt = w.lastOkAt || cur.lastOkAt; cur.updatedAt = rUpd;
+          await db.weakBank.put(cur);
+        }
+      }
+      if (newWeak.length) await db.weakBank.bulkAdd(newWeak);
+      // 每日打卡：按天并集，不丢任一设备的记录
+      const dayRe = /^\d{4}-\d{2}-\d{2}$/;
+      const dMap = new Map((await db.dailyDone.toArray()).map(x => [x.day, x]));
+      const newDaily = [];
+      for (const d of (remote.daily || [])) {
+        const day = String(d.day || "");
+        if (!dayRe.test(day)) continue;
+        const ids = new Set([...(dMap.get(day) ? (dMap.get(day).ids || []) : []), ...(Array.isArray(d.ids) ? d.ids : [])]);
+        const arr = Array.from(ids).filter(v => v > 0);
+        if (dMap.has(day)) { const row = dMap.get(day); row.ids = arr; await db.dailyDone.put(row); }
+        else newDaily.push({ day, ids: arr, updatedAt: now });
+      }
+      if (newDaily.length) await db.dailyDone.bulkAdd(newDaily);
+    });
+    /* 云端用户数据可能仍带着「已被合并的重复题号」，重定向到保留题，避免出现指向不存在题目的死记录 */
+    try {
+      const cm = window.Cloud;
+      if (cm && cm.getRemovedMap && cm.applyRemovedQuestions) {
+        await cm.applyRemovedQuestions(await cm.getRemovedMap());
+      }
+    } catch (_) { /* 清理失败不影响同步结果 */ }
+    await Services.reload();
+    ls(LS.syncAt, String(now));
+  }
+
+  /* 自动定期上报：登录状态下每次进入站点静默同步一次（失败不打扰） */
+  A.autoSyncIfDue = async function () {
+    try {
+      if (!A.isLoggedIn()) return;
+      const last = parseInt(ls(LS.syncAt) || "0");
+      if (Date.now() - last < 10 * 60 * 1000) return;   // 10 分钟内不重复
+      await syncUp();
+      ls(LS.syncAt, String(Date.now()));
+    } catch (_) { /* 静默失败 */ }
+  };
+
+  /* ---------------- 管理员接口 ---------------- */
+  A.adminListUsers = (q) => call("GET", "/admin/users" + (q ? "?q=" + encodeURIComponent(q) : ""));
+  A.adminSetStatus = (id, status) => call("POST", "/admin/users/" + id + "/status", { status });
+  A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
+  /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
+  A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
+
+  /* ---------------- 用户投稿 / 审核 / 专家群组（20260919f） ----------------
+   * 后端：Cloudflare Worker + D1（/submit、/me/submissions、/admin/*）。
+   * 权限口径：**真正的门禁全在 Worker**（审核接口按 D1 role 判定：admin 看全部、
+   * expert 只看「自己组 + 未分配」）。前端 isReviewer() 只用来决定入口显不显示，
+   * 用户改前端也拿不到越权数据，所以这里不需要、也不能做安全兜底。
+   * -------------------------------------------------------------------- */
+  /* 可审核 = 服务端角色是 admin 或 expert（与本地密码门禁 Auth.isAdmin 无关） */
+  A.isReviewer = () => { const u = A.getUser(); return !!(u && (u.role === "admin" || u.role === "expert") && A.getToken()); };
+  A.roleLabel = (r) => (r === "admin" ? "管理员" : r === "expert" ? "专家" : "用户");
+
+  /* 投稿：服务端会做「每日限额 → IP 限流 → 本地预筛 → AI 质检」，返回 ai 结论与剩余机会 */
+  A.submitQuestion = (p) => call("POST", "/submit", p);
+  A.mySubmissions = () => call("GET", "/me/submissions");
+  /* 撤回自己的投稿（只能撤 pending 的；已被人认领/已审完会抛 400，抢单竞态抛 409） */
+  A.withdrawSubmission = (id) => call("POST", "/submissions/" + id + "/withdraw", {});
+  /* status: open（待审+审核中）/ done（已通过+已打回）/ nonit（非 IT 记录，仅 admin） */
+  A.adminListSubmissions = (status) => call("GET", "/admin/submissions?status=" + encodeURIComponent(status || "open"));
+  /* 抢单：乐观锁认领，被别人抢了会抛 409（错误信息里带对方昵称） */
+  A.adminClaimSubmission = (id) => call("POST", "/admin/submissions/" + id + "/claim", {});
+  /* action: release（释放认领）/ reject（打回）/ approve（通过）/ edit（只存改动不通过） */
+  A.adminReviewSubmission = (id, payload) => call("POST", "/admin/submissions/" + id + "/review", payload || {});
+  /* 入库回写：把本机题库里的新题号写回投稿记录（bankId 传 "" 即撤销入库）。
+     只有管理员能调；服务端还要求该投稿处于 approved 状态。 */
+  A.adminInbank = (id, bankId) => call("POST", "/admin/submissions/" + id + "/inbank", { bankId: String(bankId == null ? "" : bankId) });
+  A.adminGroups = () => call("GET", "/admin/groups");
+  A.adminGroupCreate = (name, scope, categoryIds) => call("POST", "/admin/groups", { name: name, scope: scope, categoryIds: categoryIds });
+  A.adminGroupDelete = (id) => call("DELETE", "/admin/groups/" + id);
+  A.adminGroupMember = (id, userId, remove) => call("POST", "/admin/groups/" + id + "/members", { userId: userId, remove: !!remove });
+  /* 角色调整：服务端只允许 user ⇄ expert，造不出新 admin */
+  A.adminUserRole = (id, role) => call("POST", "/admin/users/" + id + "/role", { role: role });
+
+  /* ---------------- UI：登录/注册页 ---------------- */
+  A.renderLoginPage = function () {
+    const user = A.getUser();
+    setMain(`
+      <div class="section-head"><h2>${user ? "我的帐号" : "登录 / 注册"}</h2></div>
+      <div class="card" style="max-width:440px;margin:0 auto">
+        ${user ? `
+          <p>当前用户：<b>${U.esc(user.nick || user.email)}</b>${
+            user.role === "admin" ? ' <span class="tag tag-primary">管理员</span>'
+            : user.role === "expert" ? ' <span class="tag tag-ai">专家</span>' : ""}</p>
+          <p class="muted" style="font-size:13px">登录后，你的收藏、刷题历史与错题本会自动云同步——换设备也能接着刷。</p>
+          <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+            <button class="btn btn-primary" id="acc-sync">立即同步</button>
+            <button class="btn" id="acc-pw-toggle">修改密码</button>
+            <button class="btn btn-danger" id="acc-logout">退出登录</button>
+          </div>
+          <div class="pill-row" style="margin-top:14px">
+            <a class="btn btn-sm" href="#/submit">${U.icon("plus")} 投稿面试题</a>
+            <a class="btn btn-sm" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
+            ${A.isReviewer() ? `<a class="btn btn-sm" href="#/admin/submissions">${U.icon("check")} 投稿审核</a>` : ""}
+          </div>
+          <div id="acc-pw-box" style="display:none;margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
+            <label class="field"><span>当前密码</span><input id="acc-pw-old" type="password" placeholder="••••••••" /></label>
+            <label class="field"><span>新密码（8-72 位）</span><input id="acc-pw-new" type="password" placeholder="••••••••" /></label>
+            <label class="field"><span>确认新密码</span><input id="acc-pw-new2" type="password" placeholder="••••••••" /></label>
+            <button class="btn btn-primary" id="acc-pw-go">确认修改</button>
+            <p class="muted" style="font-size:12px;margin-top:8px">修改后其它设备的登录会失效，本机保持登录。</p>
+          </div>
+          <div id="acc-out" class="muted" style="margin-top:12px;font-size:13px"></div>
+        ` : `
+          <div class="tabs" style="margin-bottom:16px">
+            <button class="btn btn-sm" id="tab-login">登录</button>
+            <button class="btn btn-sm btn-primary" id="tab-reg">注册新帐号</button>
+          </div>
+          <label class="field"><span>邮箱</span><input id="acc-email" type="email" placeholder="you@example.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" /></label>
+          <label class="field"><span>密码（至少 8 位）</span><input id="acc-pass" type="password" placeholder="••••••••" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" /></label>
+          <label class="field" id="nick-row" style="display:none"><span>昵称（可选）</span><input id="acc-nick" type="text" /></label>
+          <div id="acc-ts" style="margin:12px 0"></div>
+          <button class="btn btn-primary full" id="acc-go" style="margin-top:8px">注 册</button>
+          <div id="acc-out" style="margin-top:12px;color:#DC2626;font-size:13px"></div>
+          <p class="muted" style="font-size:12px;margin-top:14px">帐号仅用于云同步你的学习数据；邮箱不对外展示。</p>
+        `}
+      </div>`);
+
+    if (user) {
+      $("#acc-sync").onclick = async () => {
+        const out = $("#acc-out"); out.textContent = "正在同步…";
+        try { const r = await syncUp(); out.textContent = "已上传本机数据（应用 " + (r.applied || 0) + " 条变更）";
+              await mergeFromCloud(); Services.reload(); route(); }
+        catch (e) { out.textContent = "同步失败：" + e.message; }
+      };
+      $("#acc-logout").onclick = () => { A.logout(); U.toast("已退出登录", "info"); renderTopbar(); route(); };
+      /* 修改密码（20260914i）：原先只能靠「帐号管理 → 重置密码」，那会删掉自己的会话造成自锁 */
+      $("#acc-pw-toggle").onclick = () => {
+        const box = $("#acc-pw-box");
+        box.style.display = box.style.display === "none" ? "" : "none";
+      };
+      $("#acc-pw-go").onclick = async () => {
+        const out = $("#acc-out");
+        const oldPw = $("#acc-pw-old").value, n1 = $("#acc-pw-new").value, n2 = $("#acc-pw-new2").value;
+        out.style.color = "#DC2626";
+        if (!oldPw || !n1) { out.textContent = "请填写当前密码与新密码"; return; }
+        if (n1 !== n2) { out.textContent = "两次输入的新密码不一致"; return; }
+        if (n1.length < 8) { out.textContent = "新密码至少 8 位"; return; }
+        const btn = $("#acc-pw-go"); btn.disabled = true; out.style.color = "#64748B"; out.textContent = "提交中…";
+        try {
+          await A.changePassword(oldPw, n1);
+          $("#acc-pw-box").style.display = "none";
+          $("#acc-pw-old").value = $("#acc-pw-new").value = $("#acc-pw-new2").value = "";
+          out.style.color = "#16A34A"; out.textContent = "密码已更新，本机保持登录。";
+          U.toast("密码已更新", "success");
+        } catch (e) {
+          out.style.color = "#DC2626"; out.textContent = e.message;
+        } finally { btn.disabled = false; }
+      };
+      return;
+    }
+
+    let mode = "reg";
+    const nickRow = $("#nick-row"), goBtn = $("#acc-go"), out = $("#acc-out");
+    /* 人机验证（开关式）：未配置 sitekey 时 mount 直接返回 null，界面无任何变化 */
+    const tsBox = $("#acc-ts");
+    if (window.TS && TS.enabled()) TS.mount(tsBox);
+    $("#tab-login").onclick = () => { mode = "login"; nickRow.style.display = "none"; goBtn.textContent = "登 录"; };
+    $("#tab-reg").onclick   = () => { mode = "reg";   nickRow.style.display = "";     goBtn.textContent = "注 册"; };
+    goBtn.onclick = async () => {
+      const email = $("#acc-email").value.trim(), pass = $("#acc-pass").value.trim(), nick = ($("#acc-nick") && $("#acc-nick").value.trim()) || "";
+      if (!email || !pass) { out.textContent = "请填写邮箱和密码"; return; }
+      goBtn.disabled = true; out.style.color = "#64748B";
+      /* 先过人机验证再发请求：token 一次性且有 300 秒有效期，所以放在点击时取 */
+      let tk = "";
+      if (window.TS && TS.enabled()) {
+        out.textContent = "正在进行人机验证…（若页面上出现确认框，点一下即可）";
+        tk = await TS.token(tsBox);
+        if (!tk) { goBtn.disabled = false; out.style.color = "#DC2626"; out.textContent = TS.statusText(); return; }
+      }
+      out.textContent = mode === "reg" ? "注册中…" : "登录中…";
+      try {
+        if (mode === "reg") await A.register(email, pass, nick, tk);
+        else await A.login(email, pass, tk);
+        U.toast("欢迎，" + email, "success");
+        renderTopbar(); route();
+      } catch (e) {
+        out.style.color = "#DC2626"; out.textContent = e.message;
+        /* 令牌已被这次请求消耗掉，必须复位才能重新挑战，否则再点一次必报「已使用」 */
+        if (window.TS && TS.enabled()) TS.reset(tsBox);
+      } finally { goBtn.disabled = false; }
+    };
+  };
+
+  /* ---------------- UI：管理员帐号管理页 ---------------- */
+  A.renderAdminPage = function () {
+    const myId = (A.getUser() || {}).id;
+    setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/dashboard">管理</a><span class="sep">/</span><span>帐号管理</span></div>
+      <div class="section-head"><h2>帐号管理</h2></div>
+      <div class="toolbar"><input id="u-q" class="full" style="max-width:280px" placeholder="搜索邮箱或昵称…" />
+        <button class="btn" id="u-refresh">${U.icon("refresh")} 刷新</button></div>
+      <div class="card" style="padding:0"><table class="data">
+        <thead><tr><th>ID</th><th>邮箱</th><th>昵称</th><th>角色</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead>
+        <tbody id="u-tb"><tr><td colspan="7">加载中…</td></tr></tbody></table></div>
+      <div class="note" style="margin-top:10px">禁用会立即踢掉该用户的全部登录会话；重置密码同样使其下线。
+        「专家」拥有投稿审核权限，可在<a href="#/admin/groups">专家群组</a>里按技术分类分配负责范围。</div>`);
+
+    const load = async (q) => {
+      const tb = $("#u-tb");
+      try {
+        const r = await A.adminListUsers(q);
+        tb.innerHTML = (r.users || []).map(u => `
+          <tr>
+            <td>${u.id}</td><td>${U.esc(u.email)}</td><td>${U.esc(u.nick || "-")}</td>
+            <td>${u.role === "admin" ? '<span class="tag tag-primary">管理员</span>'
+                  : u.role === "expert" ? '<span class="tag tag-ai">专家</span>'
+                  : '<span class="muted">普通用户</span>'}</td>
+            <td>${u.status === 1 ? '<span class="tag tag-success">正常</span>' : '<span class="tag tag-danger">禁用</span>'}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            <td>
+              ${u.id === myId
+                ? '<span class="muted" style="font-size:12px">当前登录帐号（改密码请到「帐号」页）</span>'
+                : `${u.role === "admin" ? "" :
+                     `<button class="btn btn-sm" data-act="role" data-id="${u.id}" data-r="${u.role === "expert" ? "user" : "expert"}">${u.role === "expert" ? "取消专家" : "设为专家"}</button>`}
+                   <button class="btn btn-sm" data-act="toggle" data-id="${u.id}" data-s="${u.status}">${u.status === 1 ? "禁用" : "启用"}</button>
+                   <button class="btn btn-sm" data-act="reset" data-id="${u.id}">重置密码</button>`}
+            </td>
+          </tr>`).join("") || '<tr><td colspan="7">暂无用户</td></tr>';
+        tb.querySelectorAll("button[data-act]").forEach(b => {
+          b.onclick = async () => {
+            const id = parseInt(b.dataset.id), act = b.dataset.act;
+            /* 角色调整（20260919f）：设/取消专家。专家可进审核队列，但没有题目编辑端（本地密码）权限。
+               降级为普通用户时服务端会顺手清掉其群组成员关系。 */
+            if (act === "role") {
+              const to = b.dataset.r;
+              const okMsg = to === "expert"
+                ? "设为「专家」？该用户将能进入投稿审核队列（只能审自己群组 + 未分配的投稿），并且不能审核自己提交的题目。"
+                : "取消「专家」？该用户将立即失去审核权限，并从所有专家群组中移除。";
+              if (!(await U.confirm(okMsg, { okText: "确定" }))) return;
+              b.disabled = true;
+              try { await A.adminUserRole(id, to); U.toast(to === "expert" ? "已设为专家" : "已取消专家", "success"); load($("#u-q").value.trim()); }
+              catch (e) { U.toast(e.message, "error"); b.disabled = false; }
+              return;
+            }
+            if (act === "toggle") {
+              const s = b.dataset.s === "1" ? 0 : 1;
+              if (!(await U.confirm(s === 0 ? "禁用该用户？其所有会话将失效。" : "重新启用该用户？", { okText: "确定" }))) return;
+              try { await A.adminSetStatus(id, s); U.toast("已更新", "success"); load($("#u-q").value.trim()); }
+              catch (e) { U.toast(e.message, "error"); }
+            } else {
+              const pw = prompt("为该用户设置新密码（至少 8 位）：");
+              if (!pw) return;
+              try { await A.adminResetPassword(id, pw); U.toast("已重置并强制下线", "success"); }
+              catch (e) { U.alert(e.message); }
+            }
+          };
+        });
+      } catch (e) {
+        /* 403=登录态失效或非管理员（20260914i）：单纯显示「需要管理员权限」会让人以为是权限配错，
+           直接给出「重新登录」入口，并说明可能是会话被重置密码/禁用清掉了。 */
+        if (e && e.status === 403) {
+          tb.innerHTML = `<tr><td colspan="7">
+            <div style="padding:10px 4px">
+              <span class="tag tag-danger">需要管理员权限</span> ${U.esc(e.message || "")}
+              <div class="muted" style="font-size:12px;margin-top:6px">你的登录会话可能已失效（例如该帐号被「重置密码」或「禁用」）。重新登录即可恢复。</div>
+              <div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="u-relogin">${U.icon("user")} 重新登录</button></div>
+            </div></td></tr>`;
+          const lb = tb.querySelector("#u-relogin");
+          if (lb) lb.onclick = () => { A.logout(); App.go("/account"); };
+          return;
+        }
+        tb.innerHTML = `<tr><td colspan="7">
+          <div style="padding:10px 4px">
+            <span class="tag tag-danger">加载失败</span> ${U.esc(e.message || "未知错误")}
+            <div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="u-retry">${U.icon("refresh")} 重试</button></div>
+          </div></td></tr>`;
+        const rb = tb.querySelector("#u-retry");
+        if (rb) rb.onclick = () => { tb.innerHTML = '<tr><td colspan="7">加载中…</td></tr>'; load(q); };
+      }
+    };
+    $("#u-refresh").onclick = () => load("");
+    $("#u-q").addEventListener("keydown", e => { if (e.key === "Enter") load($("#u-q").value.trim()); });
+    load("");
+  };
+
+  /* 启动后异步拉取一次远程入口配置，随后后台自动择优一次（两步都失败也不影响主流程）。
+     必须先刷新远程配置、再自动择优，才能看到最新候选列表——
+     「新入口上线后自动命中」（改 api-endpoints.json 即可全量切换）靠的就是这一步。 */
+  try {
+    A.refreshEndpoints().then(function () { return A.autoProbe(); }).catch(function () {});
+    A.refreshMe().then(function (ok) { if (ok && window.App && App.onAccountRefreshed) App.onAccountRefreshed(); }).catch(function () {});
+  } catch (e) {}
+
+  window.Account = A;
+})();
+
+;/* ===== << js/account.js ===== */
+
+;/* ===== >> js/submit.js ===== */
+/* =========================================================================
+ *  submit.js  —  用户投稿 / AI 质检结果 / 投稿审核（管理员 + 专家）/ 专家群组
+ *  后端：Cloudflare Worker
+ *        POST   /submit                        投稿（登录 → 限额 → 预筛 → AI 质检 → 入库待审）
+ *        GET    /me/submissions                我的投稿 + 剩余违规机会
+ *        GET    /admin/submissions?status=     审核队列（open / done / nonit，nonit 仅 admin）
+ *        POST   /admin/submissions/:id/claim   抢单认领（乐观锁）
+ *        POST   /admin/submissions/:id/review  通过 / 打回 / 存改动 / 释放
+ *        GET|POST /admin/groups, DELETE /admin/groups/:id, POST /admin/groups/:id/members
+ *  设计要点：
+ *   1. AI 质检在**服务端**完成（DeepSeek），前端只负责提交与展示结论；
+ *   2. 「非 IT」与「质量不达标」是两条独立通道 —— 只有前者计违规次数并最终封号，
+ *      AI 判质量只是「参考意见」，质量有疑问的稿子照样进人工队列（人工有最终决定权），
+ *      这样 AI 误杀不会把好题丢掉，AI 的理由也不会悄悄消失；
+ *   3. 审核用「抢单锁 + 乐观并发」：两个人同时点同一条，后到的那位会拿到 409；
+ *   4. 审核者**不能审自己提交的题** —— 前端直接不给按钮，服务端再拦一次。
+ * ========================================================================= */
+(function () {
+  "use strict";
+  /* app.js 是 IIFE，setMain/route/refreshNav 在其闭包内，通过 App._internals 取用 */
+  const _i = (window.App && window.App._internals) || {};
+  const $ = _i.$ || U.qs;
+  const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  const setMain = _i.setMain || window.setMain;
+  const refreshNav = _i.refreshNav || function () {};
+  const acc = function () { return window.Account; };
+
+  const S = {};
+  S.dupCandidates = dupCandidates;   // 20260919m 导出：管理端手动新增的实时提示复用同一套 Dice
+  S.dupMatches = dupMatches;
+  window.Submit = S;
+
+  /* ==================== 共用小件 ==================== */
+
+  /* AI 质检结论 → 标签样式与文案（与 Worker 里的取值一一对应） */
+  const VERDICT = {
+    pass:             { cls: "tag-success", txt: "AI 通过" },
+    reject_quality:   { cls: "tag-warning", txt: "AI 质量存疑" },
+    reject_duplicate: { cls: "tag-warning", txt: "AI 疑似重复" },
+    reject_non_it:    { cls: "tag-danger",  txt: "非 IT 内容" },
+    error:            { cls: "tag-outline", txt: "AI 未判定" },
+    pending:          { cls: "tag-outline", txt: "未质检" },
+  };
+  const REVIEW = {
+    pending:   { cls: "tag-outline", txt: "待审核" },
+    reviewing: { cls: "tag-ai",      txt: "审核中" },
+    approved:  { cls: "tag-success", txt: "已通过" },
+    rejected:  { cls: "tag-danger",  txt: "已打回" },
+    withdrawn: { cls: "tag-outline", txt: "已撤回" },
+  };
+  const ACCENT = { pass: "#16A34A", reject_quality: "#D97706", reject_duplicate: "#D97706", reject_non_it: "#DC2626", error: "#64748B" };
+
+  function esc(s) { return U.esc(s == null ? "" : s); }
+  function vTag(v) { const m = VERDICT[v] || VERDICT.pending; return '<span class="tag ' + m.cls + '">' + m.txt + "</span>"; }
+  function rTag(v) { const m = REVIEW[v] || REVIEW.pending; return '<span class="tag ' + m.cls + '">' + m.txt + "</span>"; }
+  function fmt(ts) { return ts ? U.fmtDate(ts) : "—"; }
+  function num(v) { const n = parseInt(v); return isNaN(n) ? 0 : Math.max(0, Math.min(100, n)); }
+  function bar(v) {
+    const c = v >= 80 ? "#16A34A" : v >= 60 ? "#D97706" : "#DC2626";
+    return '<span style="display:inline-block;flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.22);overflow:hidden;vertical-align:middle">' +
+      '<span style="display:block;height:100%;width:' + v + '%;background:' + c + '"></span></span>';
+  }
+  function authorName(r) { return r.authorNick || r.authorEmail || ("用户 #" + r.user_id); }
+
+  /* 全站技术分类平铺表（供 datalist 搜索用）。缓存一次 —— 分类是静态数据，不用每次重建。
+     ⚠️ 空结果**绝不能缓存**（2026-09-19 实测踩到）：`if (_flat)` 对 `[]` 是真值，所以只要在
+        `Services.reload()` 完成前被调用一次（例如从 hashchange 路由过来、而分类还没装载），
+        就会把空数组永久钉住 —— 之后所有页面都渲染出 0 个分类候选，且看不出任何报错。
+        现在的契约：categories 为空时**照常返回空数组但不写缓存**，下次调用自然重算。 */
+  let _flat = null;
+  function flatCats() {
+    if (_flat && _flat.length) return _flat;
+    const cats = Services.categories || [];
+    if (!cats.length) return [];              // 尚未装载：给空结果，但不污染缓存
+    const built = cats.map(function (c) {
+      const path = Services.categoryPath(c.id);
+      return { id: c.id, name: c.name, path: (path && path.length ? path.join(" / ") : c.name) };
+    }).filter(function (c) { return c.path; });
+    built.sort(function (a, b) { return a.path.localeCompare(b.path, "zh"); });
+    if (!built.length) return [];             // 全是空 path 的退化情况：同样不缓存
+    _flat = built;
+    return _flat;
+  }
+
+/* ---------- AI 报告（只读）—— 审核面板与「待入库」面板共用 ---------- */
+function aiReportHtml(ai, row) {
+  if (!ai || !ai.verdict) return '<div class="note" style="margin-top:12px">这条没有可展示的 AI 报告（AI 当时不可用，或数据已被清理）。</div>';
+  const score = num(ai.qualityScore != null ? ai.qualityScore : ai.score);
+  const dims = (ai.dimensions && typeof ai.dimensions === "object") ? ai.dimensions : {};
+  const DIM_LABEL = { clarity: "表述清晰度", depth: "技术深度", answerAccuracy: "答案准确性", usefulness: "实用性", uniqueness: "独特性" };
+  const dimRows = Object.keys(DIM_LABEL).filter(function (k) { return dims[k] != null; }).map(function (k) {
+    const v = num(dims[k]);
+    return '<div style="display:flex;align-items:center;gap:8px;margin:3px 0">' +
+      '<span class="muted" style="font-size:12px;width:80px;flex:none">' + DIM_LABEL[k] + "</span>" + bar(v) +
+      '<span class="muted" style="font-size:12px;width:30px;text-align:right">' + v + "</span></div>";
+  }).join("");
+  const ul = function (arr) {
+    if (!arr || !arr.length) return "";
+    return '<ul style="margin:4px 0 0;padding-left:20px;font-size:13.5px">' + arr.map(function (x) {
+      return '<li style="margin:2px 0">' + esc(x) + "</li>";
+    }).join("") + "</ul>";
+  };
+  return '<div style="margin-top:14px;padding:12px;border-radius:10px;background:rgba(128,128,128,.08)">' +
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
+      vTag(ai.verdict) +
+      (score ? '<span class="muted" style="font-size:13px">质检分 <b>' + score + "</b> / 100</span>" : "") +
+      (ai.isIT === false ? '<span class="tag tag-danger">AI 认为不属于 IT</span>' : "") +
+      (ai.inScope === false ? '<span class="tag tag-warning">AI 认为不在本站体系内</span>' : "") +
+    "</div>" +
+    (score ? '<div style="display:flex;align-items:center;gap:8px;margin-top:8px">' + bar(score) + "</div>" : "") +
+    (dimRows ? '<div style="margin-top:8px">' + dimRows + "</div>" : "") +
+    ((ai.categoryPath && ai.categoryPath.length) ? '<div class="pill-row" style="margin-top:10px"><span class="muted" style="font-size:13px">建议归入：</span>' + ai.categoryPath.map(function (p) { return '<span class="tag tag-outline">' + esc(p) + "</span>"; }).join("") + "</div>" : "") +
+    ((ai.reasons && ai.reasons.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 判断依据</div>' + ul(ai.reasons) + "</div>" : "") +
+    ((ai.improvements && ai.improvements.length) ? '<div style="margin-top:10px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 改进建议</div>' + ul(ai.improvements) + "</div>" : "") +
+    /* AI 不可用时给出「为什么」，否则运维只能去翻 D1。仅在审核面板可见，不暴露给投稿人。 */
+    ((ai.verdict === "error" && row && row.ai_error)
+      ? '<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(220,130,0,.12);font-size:12.5px;line-height:1.6">' +
+        "<b>AI 未参与质检</b>（本条已照常进入人工队列，不影响投稿人）<br>" +
+        '<span class="muted" style="word-break:break-all">' + esc(String(row.ai_error).slice(0, 300)) + "</span></div>"
+      : "") +
+    ((ai._usage && ai._usage.total)
+      ? '<div class="muted" style="font-size:12px;margin-top:8px">本次质检 token ' + num(ai._usage.total) +
+        "（模型 " + esc(String(ai._usage.model || "?")) + "）</div>"
+      : "") +
+    "</div>";
+}
+  function catIdToPath(id) {
+    if (id == null || id === "") return "";
+    const f = flatCats().filter(function (c) { return String(c.id) === String(id); })[0];
+    return f ? f.path : "";
+  }
+  function catPathToId(path) {
+    const p = String(path || "").trim();
+    if (!p) return "";
+    const f = flatCats().filter(function (c) { return c.path === p; })[0];
+    return f ? String(f.id) : "";
+  }
+  function catDatalist(idAttr) {
+    return '<datalist id="' + idAttr + '">' + flatCats().map(function (c) {
+      return '<option value="' + esc(c.path) + '"></option>';
+    }).join("") + "</datalist>";
+  }
+  /* AI 给的 categoryPath（形如 ["计算机网络与协议","HTTP与HTTPS"]）→ 本地分类 id。
+     ⚠️ 不能直接 join(" / ") 去查表就完事：AI 只看到**前两级**（Worker 喂给它的技术体系
+     只列 depth 0/1），而本地路径可能是三级（"网络 / 协议 / HTTP"）。所以按「由长到短
+     逐级前缀」试，命中即返回；再退化到「末级名字在全站唯一」时才认。两级都匹配不上、
+     或末级重名（如多个方向下都有「基础」）就返回空串 —— 宁可让管理员手选，也不填错。 */
+  function aiCatPathToId(path) {
+    const want = (Array.isArray(path) ? path : []).map(function (x) { return String(x || "").trim(); }).filter(Boolean);
+    if (!want.length) return "";
+    for (let n = want.length; n >= 1; n--) {
+      const id = catPathToId(want.slice(0, n).join(" / "));
+      if (id) return id;
+    }
+    const last = want[want.length - 1];
+    const hits = flatCats().filter(function (c) { return c.name === last; });
+    return hits.length === 1 ? String(hits[0].id) : "";
+  }
+
+  /* ---------- 本地重复候选（投稿前在浏览器里算，不额外花 AI 额度） ----------
+   * 用「二元组 Dice 系数」粗筛标题：1132 道题全量比对约 10ms 级，
+   * 结果随投稿一起送服务端，交给 AI 做最终判定（AI 只做判断，不负责检索）。 */
+  function bigrams(s) { const out = []; for (let i = 0; i < s.length - 1; i++) out.push(s.slice(i, i + 2)); return out; }
+  function dice(a, b) {
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    const A = bigrams(a), B = bigrams(b);
+    if (!A.length || !B.length) return 0;
+    const m = Object.create(null);
+    for (let i = 0; i < A.length; i++) m[A[i]] = (m[A[i]] || 0) + 1;
+    let hit = 0;
+    for (let i = 0; i < B.length; i++) { const c = m[B[i]] || 0; if (c > 0) { m[B[i]] = c - 1; hit++; } }
+    return (2 * hit) / (A.length + B.length);
+  }
+  function normalizeTitle(s) {
+    return String(s || "").toLowerCase()
+      .replace(/[\s,，.。、；;：:？！?!"'“”‘’()（）\[\]【】<>《》/\\|+\-*_~`]/g, "");
+  }
+  /* pool / threshold 可选：「投稿前预筛」只在已发布题里比（给 AI 当线索）；
+     「收录进库」要连草稿一起比 —— 草稿重复同样是重复。 */
+  /* 富版（20260919m）：给「管理员手动新增」的实时提示用 —— 返回 {id,title,d,status}，
+     支持排除当前正在编辑的题（excludeId），且调用方可自带比对池（编辑页传全量题含草稿）。 */
+  function dupMatches(title, pool, threshold, excludeId) {
+    try {
+      const t = normalizeTitle(title);
+      if (t.length < 4) return [];
+      const src = pool || (Services.published ? Services.published() : Services.questions) || [];
+      const lim = threshold == null ? 0.5 : threshold;
+      const scored = [];
+      for (let i = 0; i < src.length; i++) {
+        if (excludeId != null && src[i].id === excludeId) continue;
+        const d = dice(t, normalizeTitle(src[i].title));
+        if (d >= lim) scored.push({ d: d, id: src[i].id, title: String(src[i].title || "").slice(0, 120), status: src[i].status });
+      }
+      scored.sort(function (a, b) { return b.d - a.d; });
+      return scored.slice(0, 6);
+    } catch (e) { return []; }
+  }
+  function dupCandidates(title, pool, threshold) {
+    return dupMatches(title, pool, threshold).map(function (x) { return x.title; });
+  }
+
+  /* ==================== 登录 / 权限 门禁页 ==================== */
+
+  function crumb(tail) {
+    return '<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>' + esc(tail) + "</span></div>";
+  }
+  function gate(icon, title, desc, btnText, onClick) {
+    setMain(crumb(title) + '<div class="empty"><div class="em-ic">' + U.icon(icon) + "</div><h3>" + esc(title) + "</h3><p>" + esc(desc) + "</p>" +
+      '<button class="btn btn-primary" id="gate-btn">' + U.icon("user") + " " + esc(btnText) + "</button></div>");
+    const b = $("#gate-btn");
+    if (b) b.onclick = onClick;
+  }
+  function requireLogin() {
+    if (acc() && acc().isLoggedIn()) return true;
+    gate("user", "投稿前请先登录",
+      "投稿要落到一个具体帐号上：审核结果、违规次数都需要有归属，你也能在「我的投稿」里看到每一条的进度。",
+      "去登录 / 注册", function () { App.go("/account"); });
+    return false;
+  }
+  function requireReviewer() {
+    const A = acc();
+    if (A && A.isReviewer()) return true;
+    const logged = !!(A && A.isLoggedIn());
+    gate("shield", "需要审核权限",
+      logged ? "当前帐号还没有审核权限。请联系管理员把你的角色设为「专家」，并分配负责的技术分类。"
+             : "请先用管理员或专家帐号登录。",
+      logged ? "切换到其它帐号" : "前往登录",
+      function () {
+        if (logged) { A.logout(); refreshNav(); }
+        App.go("/account");
+      });
+    return false;
+  }
+  function requireServerAdmin(desc) {
+    const A = acc();
+    if (A && A.isServerAdmin()) return true;
+    gate("shield", "需要管理员权限",
+      desc || "专家群组管理会直接分配审核范围，仅管理员可用。",
+      "前往登录", function () { App.go("/account"); });
+    return false;
+  }
+
+  /* ==================== ① 投稿页 ==================== */
+
+  S.renderSubmitPage = function () {
+    document.title = "投稿面试题 · IT面试题库";
+    if (!requireLogin()) return;
+    const A = acc();
+    const diffs = ["初级", "中级", "高级", "专家"];
+    const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
+
+    setMain(crumb("投稿题目") + `
+      <div class="section-head"><h2>投稿面试题</h2></div>
+      <div class="note">
+        <b>投稿规则</b>：① 需要登录，每个帐号每天最多 <b>5 条</b>；
+        ② 提交后会先由 AI 质检，再进入人工审核，通过后才会进题库，<b>不会立刻上线</b>；
+        ③ <b>与 IT 技术无关</b>的内容会被退回并计 1 次违规，累计 <b>3 次</b>帐号将被永久禁用；
+        ④ 质量、重复的判读由审核员最终决定，AI 意见仅供参考，<b>不计违规次数</b>。
+      </div>
+      <div class="card">
+        <label class="field"><span>题目标题 *</span>
+          <input id="s-title" maxlength="200" placeholder="如：MySQL 为什么用 B+ 树而不是 B 树？" />
+          <div class="field-hint">一句话说清考什么。标题既是查重依据、也决定审核员的第一眼判断 ——
+            别写「一道 MySQL 题」这种笼统标题，把<b>具体考点</b>写进标题。</div></label>
+        <div class="grid grid-cols-2" style="gap:16px">
+          <label class="field"><span>技术分类（输入关键词后从下拉里选一个）</span>
+            <input id="s-cat" list="s-cat-opts" autocomplete="off" placeholder="输入关键词后点选" />
+            <div class="field-hint">必须从下拉候选里点选，不能自己造分类名。拿不准也没关系，AI 与审核员会帮你归位。</div>
+            ${catDatalist("s-cat-opts")}</label>
+          <label class="field"><span>难度</span>
+            <select id="s-diff" class="full">${diffs.map(function (d) { return "<option" + (d === "中级" ? " selected" : "") + ">" + d + "</option>"; }).join("")}</select>
+            <div class="field-hint">按「大多数候选人答不上来」的程度估。</div></label>
+          <label class="field"><span>题型</span>
+            <select id="s-type" class="full">${types.map(function (t) { return "<option" + (t === "简答题" ? " selected" : "") + ">" + t + "</option>"; }).join("")}</select>
+            <div class="field-hint">面试里最常以哪种形式被问出来就选哪种。</div></label>
+          <label class="field"><span>技术标签（逗号分隔）</span>
+            <input id="s-tags" maxlength="200" placeholder="如：MySQL,索引,B+树" />
+            <div class="field-hint">3～6 个最相关的关键词，方便别人搜到这道题。</div></label>
+        </div>
+        <label class="field"><span>题目正文 *（Markdown）</span>
+          <textarea id="s-body" style="min-height:150px" placeholder="背景、约束、具体问什么"></textarea>
+          <div class="field-hint">把题干写清楚三件事：<b>背景</b>（什么场景下遇到）、<b>约束</b>（数据规模 / 版本 / 硬件限制）、
+            <b>具体问什么</b>（要候选人回答哪一个点）。</div></label>
+        <label class="field"><span>参考答案（Markdown，写得越完整越容易通过）</span>
+          <textarea id="s-answer" style="min-height:190px" placeholder="建议分点作答：是什么 → 为什么"></textarea>
+          <div class="field-hint">分点写，每点讲清「是什么 + 为什么」。<b>追问的深度决定这道题的价值</b>；
+            没把握的地方直接写「待确认」，不要编。</div></label>
+        <label class="field"><span>来源备注（可选）</span>
+          <input id="s-note" maxlength="200" placeholder="如：2024 某厂三面真题" />
+          <div class="field-hint">写出处有助于审核员判断可信度；不填也能提交。</div></label>
+        <div id="s-ts" style="margin:10px 0"></div>
+        <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" id="s-go">${U.icon("sparkles")} 提交并接受 AI 质检</button>
+          <a class="btn" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
+          <span id="s-quota" class="muted" style="font-size:13px"></span>
+        </div>
+      </div>
+      <div id="s-result"></div>`);
+
+    function paintQuota(r) {
+      const el = $("#s-quota");
+      if (!el || !r) return;
+      const left = (r.strikesLeft == null) ? null : r.strikesLeft;
+      const limit = r.limit || 3;
+      if (left == null) { el.innerHTML = ""; return; }
+      el.innerHTML = "非 IT 违规累计 <b>" + (r.strikes || 0) + "</b> / " + limit + " 次" +
+        (left > 0 ? '　<span class="tag tag-success">还有 ' + left + " 次机会</span>"
+                  : '　<span class="tag tag-danger">已用尽</span>');
+    }
+
+    /* 顺带把剩余违规次数拉回来（同一个接口也供「我的投稿」用），失败静默 */
+    A.mySubmissions().then(function (r) { S._quota = r; paintQuota(r); }).catch(function () {});
+
+    function resetForm() {
+      ["#s-title", "#s-body", "#s-answer", "#s-tags", "#s-note", "#s-cat"].forEach(function (s) { const el = $(s); if (el) el.value = ""; });
+      $("#s-result").innerHTML = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      const t = $("#s-title"); if (t) t.focus();
+    }
+
+    function renderResult(r) {
+      const out = $("#s-result");
+      const ai = r.ai || {};
+      const v = ai.verdict || "error";
+      const meta = VERDICT[v] || VERDICT.error;
+      const accent = ACCENT[v] || ACCENT.error;
+      const score = num(ai.score);
+      const reasons = ai.reasons || [], imps = ai.improvements || [], path = ai.categoryPath || [];
+
+      let head = "";
+      if (r.banned) {
+        head = "账号已被永久禁用";
+      } else if (v === "reject_non_it") {
+        head = "这条内容与 IT 技术无关，已退回";
+      } else if (v === "reject_quality") {
+        head = "AI 认为质量偏弱，已转人工复核";
+      } else if (v === "reject_duplicate") {
+        head = "AI 认为可能与已有题目重复，已转人工确认";
+      } else if (v === "error") {
+        head = "已提交，AI 质检暂时不可用";
+      } else {
+        head = "已提交，等待人工审核";
+      }
+
+      const list = function (arr, icon, cls) {
+        if (!arr.length) return "";
+        return '<ul style="margin:6px 0 0;padding-left:20px;font-size:13.5px">' + arr.map(function (x) {
+          return '<li style="margin:2px 0">' + esc(x) + "</li>";
+        }).join("") + "</ul>";
+      };
+
+      out.innerHTML = `
+        <div class="card" style="margin-top:16px;border-left:4px solid ${accent}">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span class="tag ${meta.cls}">${meta.txt}</span>
+            ${score > 0 ? '<span class="muted" style="font-size:13px">质检分 <b style="font-size:15px;color:' + accent + '">' + score + "</b> / 100</span>" : ""}
+            ${r.strikesLeft != null && !r.banned ? '<span class="tag ' + (r.strikesLeft > 0 ? "tag-outline" : "tag-danger") + '">非 IT 违规剩 ' + r.strikesLeft + " 次机会</span>" : ""}
+          </div>
+          <h3 style="margin:10px 0 0">${esc(head)}</h3>
+          <p style="margin:6px 0 0">${esc(r.message || "")}</p>
+          ${score > 0 ? '<div style="display:flex;align-items:center;gap:8px;margin-top:10px">' + bar(score) + "</div>" : ""}
+          ${path.length ? '<div class="pill-row" style="margin-top:12px"><span class="muted" style="font-size:13px">AI 建议归入：</span>' + path.map(function (p) { return '<span class="tag tag-outline">' + esc(p) + "</span>"; }).join("") + "</div>" : ""}
+          ${reasons.length ? '<div style="margin-top:12px"><div style="font-size:13px;font-weight:600;color:var(--muted)">AI 判断依据</div>' + list(reasons) + "</div>" : ""}
+          ${imps.length ? '<div style="margin-top:12px"><div style="font-size:13px;font-weight:600;color:var(--muted)">可以这样改得更好</div>' + list(imps) + "</div>" : ""}
+          <div class="row" style="gap:10px;margin-top:16px;flex-wrap:wrap">
+            ${r.banned
+              ? '<button class="btn btn-danger" id="s-logout">' + U.icon("x") + " 退出登录</button>"
+              : '<button class="btn btn-primary" id="s-again">' + U.icon("plus") + " 再投一题</button>" +
+                '<a class="btn" href="#/me/submissions">' + U.icon("fileText") + " 查看我的投稿</a>"}
+          </div>
+          ${r.banned ? '<div class="note" style="margin-top:12px">同一帐号累计 3 次投稿与 IT 技术无关的内容，账号已被永久禁用。如有异议请联系站点管理员。</div>' : ""}
+        </div>`;
+
+      const again = $("#s-again");
+      if (again) again.onclick = resetForm;
+      const lo = $("#s-logout");
+      if (lo) lo.onclick = function () { A.logout(); refreshNav(); App.go("/"); };
+      if (r.banned) { A.logout(); refreshNav(); }
+      if (r.strikesLeft != null) paintQuota({ strikesLeft: r.strikesLeft, strikes: (S._quota && S._quota.strikes) || 0, limit: (S._quota && S._quota.limit) || 3 });
+    }
+
+    function renderFail(e) {
+      const st = e && e.status;
+      const msg = (e && e.message) || "未知错误";
+      let extra = "";
+      if (st === 429) extra = "投稿限额或频率限制，等一会儿再试。";
+      else if (st === 401) extra = "登录已过期，请重新登录后重试（内容还在，不会丢）。";
+      else if (st === 400) extra = "多半是格式问题（标题太短、正文太短或含推广词），按提示改一下再提交。";
+      else if (e && e.network) extra = "网络不通，稍后重试即可；内容保留在表单里。";
+      $("#s-result").innerHTML = '<div class="card" style="margin-top:16px;border-left:4px solid #DC2626">' +
+        '<div><span class="tag tag-danger">提交失败</span> ' + esc(msg) + "</div>" +
+        (extra ? '<div class="muted" style="font-size:13px;margin-top:8px">' + esc(extra) + "</div>" : "") +
+        (st === 401 ? '<div style="margin-top:10px"><a class="btn btn-sm btn-primary" href="#/account">去登录</a></div>' : "") +
+        "</div>";
+      if (st === 401) { A.logout(); refreshNav(); }
+    }
+
+    /* 人机验证（开关式）：未配置 sitekey 时 mount 返回 null，界面无任何变化。
+       用「提交时才执行」模式 —— 投稿表单可能写十几分钟，若挂载时就换 token，
+       点提交时早超过 Turnstile 的 300 秒有效期，会变成看不懂的「验证未通过」。 */
+    const tsBox = $("#s-ts");
+    if (window.TS && TS.enabled()) TS.mount(tsBox);
+
+    $("#s-go").onclick = async function () {
+      const btn = $("#s-go"), old = btn.innerHTML;
+      let turnstileToken = "";
+      const title = $("#s-title").value.trim();
+      const body = $("#s-body").value.trim();
+      const catPath = $("#s-cat").value.trim();
+      const catId = catPath ? catPathToId(catPath) : "";
+
+      if (title.length < 6) { U.toast("标题太短，至少 6 个字", "warn"); $("#s-title").focus(); return; }
+      if (body.length < 10) { U.toast("题目正文太短，至少 10 个字", "warn"); $("#s-body").focus(); return; }
+      if (catPath && !catId) { U.toast("技术分类请从下拉候选里点选一个，或先清空", "warn"); $("#s-cat").focus(); return; }
+
+      btn.disabled = true;
+      /* 先过人机验证再发请求：令牌一次性且有 300 秒有效期，必须在点击时取 */
+      if (window.TS && TS.enabled()) {
+        btn.innerHTML = U.icon("refresh") + " 正在进行人机验证…";
+        turnstileToken = await TS.token(tsBox);
+        if (!turnstileToken) { btn.disabled = false; btn.innerHTML = old; U.toast(TS.statusText(), "warn"); return; }
+      }
+      btn.innerHTML = U.icon("refresh") + " AI 质检中（约 5–15 秒），请勿关闭页面…";
+      const out = $("#s-result");
+      out.innerHTML = '<div class="card" style="margin-top:16px"><div class="muted">正在提交：AI 正在检查这条内容是否属于本站技术体系、以及质量是否达标…</div></div>';
+      try { out.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (_) {}
+
+      try {
+        const r = await A.submitQuestion({
+          title: title,
+          body: $("#s-body").value,
+          answer: $("#s-answer").value,
+          difficulty: $("#s-diff").value,
+          type: $("#s-type").value,
+          tags: $("#s-tags").value.split(/[,，\s]+/).filter(Boolean).slice(0, 12),
+          categoryId: catId,
+          categoryName: catPath,
+          sourceNote: $("#s-note").value.trim(),
+          dupCandidates: dupCandidates(title),
+          turnstileToken: turnstileToken,
+        });
+        renderResult(r);
+        if (!r.banned) {
+          /* 保留分类/难度/题型（连投同方向的题更省事），清掉正文类内容 */
+          ["#s-title", "#s-body", "#s-answer", "#s-tags", "#s-note"].forEach(function (s) { const el = $(s); if (el) el.value = ""; });
+        }
+        U.toast(r.banned ? "账号已被永久禁用" : "已提交", r.banned ? "error" : "success");
+      } catch (e) {
+        renderFail(e);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = old;
+        /* 令牌已被这次请求消耗，必须复位才能重新挑战，否则再投一次必报「已使用」 */
+        if (window.TS && TS.enabled()) TS.reset(tsBox);
+      }
+    };
+  };
+
+  /* ==================== ② 我的投稿 ==================== */
+
+  S.renderMine = function () {
+    document.title = "我的投稿 · IT面试题库";
+    if (!requireLogin()) return;
+    const A = acc();
+    S._mine = [];
+
+    setMain(crumb("我的投稿") + `
+      <div class="section-head"><h2>我的投稿</h2></div>
+      <div class="toolbar">
+        <span id="my-quota" class="muted" style="font-size:13px">加载中…</span>
+        <span style="flex:1"></span>
+        <button class="btn" id="my-refresh">${U.icon("refresh")} 刷新</button>
+        <a class="btn btn-primary" href="#/submit">${U.icon("plus")} 投稿新题</a>
+      </div>
+      <div class="card" style="padding:0"><table class="data">
+        <thead><tr><th style="width:140px">提交时间</th><th>标题</th><th style="width:150px">AI 质检</th><th style="width:110px">审核状态</th><th style="width:240px">审核意见 / 入库编号</th><th style="width:90px">操作</th></tr></thead>
+        <tbody id="my-tb"><tr><td colspan="6">加载中…</td></tr></tbody></table></div>
+      <div class="note" style="margin-top:10px">审核通过只代表「内容可用」，还需要管理员在题目管理里把它加入题库才会正式上线。<br>
+        待审核的投稿可以自己<b>撤回</b>；一旦有审核者开始处理（状态变成「审核中」）就撤不回了。撤回后当日投稿次数不退还。</div>`);
+
+    function load() {
+      const tb = $("#my-tb");
+      tb.innerHTML = '<tr><td colspan="5">加载中…</td></tr>';
+      A.mySubmissions().then(function (r) {
+        const q = $("#my-quota");
+        const left = r.strikesLeft == null ? 0 : r.strikesLeft;
+        const limit = r.limit || 3;
+        q.innerHTML = "非 IT 违规累计 <b>" + (r.strikes || 0) + "</b> / " + limit + " 次" +
+          (left > 0 ? '　<span class="tag tag-success">还有 ' + left + " 次机会</span>"
+                    : '　<span class="tag tag-danger">已用尽，再投非 IT 内容将被永久禁用</span>');
+        const rows = r.submissions || [];
+        S._mine = rows;
+        tb.innerHTML = rows.length ? rows.map(function (s) {
+          const canWithdraw = s.reviewStatus === "pending";
+          return "<tr>" +
+            '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(s.at) + "</td>" +
+            '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
+              (s.strike ? '<span class="tag tag-danger" style="margin-top:4px;display:inline-block">计 1 次违规</span>' : "") + "</td>" +
+            "<td>" + vTag(s.aiVerdict) + (s.aiScore ? ' <span class="muted" style="font-size:12px">' + s.aiScore + "</span>" : "") + "</td>" +
+            "<td>" + rTag(s.reviewStatus) + "</td>" +
+            '<td class="muted" style="font-size:12px">' +
+              esc(s.reviewNote || "") +
+              (s.bankId ? '<div style="margin-top:2px">已入库题目 #' + esc(s.bankId) + "</div>" : "") +
+              (!s.reviewNote && !s.bankId ? "—" : "") + "</td>" +
+            '<td>' + (canWithdraw
+              ? '<button class="btn btn-sm" data-withdraw="' + s.id + '">撤回</button>'
+              : '<span class="muted" style="font-size:12px">—</span>') + "</td>" +
+          "</tr>";
+        }).join("") : '<tr><td colspan="6">还没有投稿记录。<a href="#/submit">去投第一题</a></td></tr>';
+
+        $$("#my-tb button[data-withdraw]").forEach(function (b) {
+          b.onclick = function () { withdraw(parseInt(b.dataset.withdraw, 10), b); };
+        });
+      }).catch(function (e) {
+        tb.innerHTML = '<tr><td colspan="6"><span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
+          ' <button class="btn btn-sm" id="my-retry" style="margin-left:8px">重试</button></td></tr>';
+        const b = $("#my-retry");
+        if (b) b.onclick = load;
+      });
+    }
+
+    async function withdraw(id, btn) {
+      const row = (S._mine || []).filter(function (x) { return x.id === id; })[0];
+      const t = (row && row.title) || ("投稿 #" + id);
+      if (!(await U.confirm("确认撤回《" + t + "》？撤回后它会从审核队列里消失，投稿内容不再保留在待审列表里（当日投稿次数不退）。", { okText: "确认撤回" }))) return;
+      const old = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "撤回中…";
+      try {
+        await A.withdrawSubmission(id);
+        U.toast("已撤回", "success");
+        load();
+      } catch (e) {
+        U.toast((e && e.message) || "撤回失败", "error");
+        btn.disabled = false;
+        btn.innerHTML = old;
+        if (e && (e.status === 400 || e.status === 409)) load();   // 状态已变：刷新看真实状态
+      }
+    }
+
+    $("#my-refresh").onclick = load;
+    load();
+  };
+
+  /* ==================== ③ 审核队列（管理员 + 专家） ==================== */
+
+  const STATUS_LABEL = { open: "待审核", done: "已处理", nonit: "违规记录" };
+
+  S.renderReview = function () {
+    document.title = "投稿审核 · IT面试题库";
+    if (!requireReviewer()) return;
+    const A = acc();
+    const isAdmin = A.isServerAdmin();
+    S._status = "open";
+    S._rows = [];
+
+    setMain(crumb("投稿审核") + `
+      <div class="section-head"><h2>投稿审核
+        <span class="tag ${isAdmin ? "tag-primary" : "tag-ai"}" style="vertical-align:middle">${isAdmin ? "管理员 · 可审全部" : "专家 · 仅本组 + 未分配"}</span>
+      </h2></div>
+      <div class="tabs" id="rv-tabs">
+        <button class="btn btn-sm btn-primary" data-st="open">待审核</button>
+        <button class="btn btn-sm" data-st="done">已处理</button>
+        ${isAdmin ? '<button class="btn btn-sm" data-st="nonit">违规记录</button>' : ""}
+      </div>
+      <div class="toolbar">
+        <span id="rv-info" class="muted" style="font-size:13px"></span>
+        <span style="flex:1"></span>
+        <button class="btn" id="rv-refresh">${U.icon("refresh")} 刷新</button>
+      </div>
+      <div class="card" style="padding:0"><table class="data"><thead id="rv-head"></thead>
+        <tbody id="rv-tb"><tr><td>加载中…</td></tr></tbody></table></div>
+      <div id="rv-panel"></div>`);
+
+    const HEAD = {
+      open: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:150px'>投稿者</th><th style='width:150px'>AI 质检</th><th style='width:130px'>状态</th><th style='width:130px'>提交时间</th><th style='width:110px'>操作</th></tr>",
+      done: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:150px'>投稿者</th><th style='width:150px'>AI 质检</th><th style='width:110px'>结果</th><th style='width:130px'>处理时间</th><th></th></tr>",
+      nonit: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:220px'>投稿者</th><th style='width:130px'>账号状态</th><th style='width:130px'>提交时间</th></tr>",
+    };
+
+    function load(status) {
+      S._status = status || S._status;
+      $("#rv-head").innerHTML = HEAD[S._status] || HEAD.open;
+      const cols = S._status === "nonit" ? 5 : 7;
+      const tb = $("#rv-tb");
+      tb.innerHTML = '<tr><td colspan="' + cols + '">加载中…</td></tr>';
+      $$("#rv-tabs button").forEach(function (b) {
+        b.className = "btn btn-sm" + (b.dataset.st === S._status ? " btn-primary" : "");
+      });
+      A.adminListSubmissions(S._status).then(function (r) {
+        const rows = r.submissions || [];
+        S._rows = rows;
+        $("#rv-info").textContent = STATUS_LABEL[S._status] + "：" + rows.length + " 条" + (rows.length >= 100 ? "（只显示最近 100 条）" : "");
+        const myId = (A.getUser() || {}).id;
+        tb.innerHTML = rows.length ? rows.map(function (s) {
+          if (S._status === "nonit") {
+            return "<tr>" +
+              "<td>" + s.id + "</td>" +
+              '<td><div style="font-weight:600">' + esc(s.title) + "</div></td>" +
+              '<td class="muted" style="font-size:12px">' + esc(s.authorNick || "") + "<br>" + esc(s.authorEmail || "") + "</td>" +
+              "<td>" + (s.authorStatus === 1 ? '<span class="tag tag-outline">正常</span>' : '<span class="tag tag-danger">已禁用</span>') + "</td>" +
+              '<td class="muted" style="font-size:12px">' + fmt(s.created_at) + "</td>" +
+            "</tr>";
+          }
+          const self = s.user_id === myId;
+          /* 管理员可自审自己的投稿（否则唯一 admin 的投稿会永久卡在队列里）；
+             专家仍然禁自审，避免给自己的投稿开后门。 */
+          const selfBlocked = self && !isAdmin;
+          let act;
+          if (S._status === "done") act = '<span class="muted" style="font-size:12px">' + (s.review_by ? "人工处理" : "AI 自动退回") + "</span>";
+          else if (selfBlocked) act = '<span class="muted" style="font-size:12px">自己的投稿</span>';
+          else if (s.review_status === "reviewing" && s.locked_by !== myId) act = '<span class="muted" style="font-size:12px">他人审核中</span>';
+          else act = '<button class="btn btn-sm' + (s.ai_verdict === "pass" ? " btn-primary" : "") + '" data-act="claim" data-id="' + s.id + '">' + (s.review_status === "reviewing" ? "继续审核" : "开始审核") + "</button>";
+          return "<tr>" +
+            "<td>" + s.id + "</td>" +
+            '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
+              '<div class="muted" style="font-size:12px">' + esc(s.category_id || "未选分类") + " · " + esc(s.difficulty || "—") + " · " + esc(s.type || "—") +
+              (s.groupName ? ' · 分组：' + esc(s.groupName) : "") + "</div></td>" +
+            '<td class="muted" style="font-size:12px">' + esc(authorName(s)) + (self ? ' <span class="tag tag-outline">' + (selfBlocked ? "自己" : "自己 · 可自审") + "</span>" : "") + "</td>" +
+            "<td>" + vTag(s.ai_verdict) + (s.ai_score ? ' <span class="muted" style="font-size:12px">' + s.ai_score + "</span>" : "") + "</td>" +
+            "<td>" + rTag(s.review_status) + (s.review_note ? '<div class="muted" style="font-size:12px">' + esc(String(s.review_note).slice(0, 40)) + "</div>" : "") + "</td>" +
+            '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(S._status === "done" ? s.review_at : s.created_at) + "</td>" +
+            "<td>" + act + "</td>" +
+          "</tr>";
+        }).join("") : '<tr><td colspan="' + cols + '">' + STATUS_LABEL[S._status] + "：暂时没有内容</td></tr>";
+
+        $$("#rv-tb button[data-act='claim']").forEach(function (b) {
+          b.onclick = function () { claim(parseInt(b.dataset.id, 10), b); };
+        });
+        /* 顺手更新侧栏/顶栏的待审角标（省掉一次重复请求） */
+        if (S._status === "open") {
+          const n = rows.filter(function (s) { return s.review_status === "pending"; }).length;
+          if (n !== (window.App.reviewPending || 0)) { window.App.reviewPending = n; refreshNav(); }
+        }
+      }).catch(function (e) {
+        const st = e && e.status;
+        tb.innerHTML = '<tr><td colspan="' + cols + '">' +
+          (st === 403
+            ? '<span class="tag tag-danger">没有审核权限</span> ' + esc((e && e.message) || "") +
+              '<div class="muted" style="font-size:12px;margin-top:6px">你的角色可能是「普通用户」，或登录会话已失效。可以让管理员在「帐号管理」里把角色设为专家。</div>' +
+              '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="rv-relogin">' + U.icon("user") + " 重新登录</button></div>"
+            : '<span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
+              '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="rv-retry">' + U.icon("refresh") + " 重试</button></div>") +
+          "</td></tr>";
+        const rl = $("#rv-relogin");
+        if (rl) rl.onclick = function () { A.logout(); refreshNav(); App.go("/account"); };
+        const rt = $("#rv-retry");
+        if (rt) rt.onclick = function () { load(S._status); };
+      });
+    }
+
+    async function claim(id, btn) {
+      const old = btn ? btn.innerHTML : "";
+      if (btn) { btn.disabled = true; btn.innerHTML = "认领中…"; }
+      try {
+        const r = await A.adminClaimSubmission(id);
+        const row = S._rows.filter(function (x) { return x.id === id; })[0];
+        openPanel(row, r.ai_json);
+        load(S._status);      // 让列表同步显示「审核中」
+      } catch (e) {
+        U.toast((e && e.message) || "认领失败", "error");
+        if (e && e.status === 409) load(S._status);
+        else if (btn) { btn.disabled = false; btn.innerHTML = old; }
+      }
+    }
+
+    /* ---------- 审核面板 ---------- */
+    function openPanel(row, aiJson) {
+      if (!row) { U.toast("找不到这条投稿的数据，请刷新列表", "warn"); return; }
+      let ai = {};
+      try { ai = JSON.parse(aiJson || "{}") || {}; } catch (_) {}
+      let edited = {};
+      try { edited = JSON.parse(row.edited_json || "{}") || {}; } catch (_) {}
+      const pick = function (k, fallback) { return (edited[k] != null && edited[k] !== "") ? edited[k] : (fallback == null ? "" : fallback); };
+      const myId = (A.getUser() || {}).id;
+      const self = row.user_id === myId;
+      const selfBlocked = self && !A.isServerAdmin();   /* 管理员可自审；专家禁自审 */
+      const diffs = ["初级", "中级", "高级", "专家"];
+      const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
+      const curCat = pick("categoryId", row.category_id);
+
+      $("#rv-panel").innerHTML = `
+        <div class="card" style="margin-top:16px;border-left:4px solid ${ACCENT[row.ai_verdict] || "#64748B"}">
+          <div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px">
+            <div>
+              <h3 style="margin:0 0 4px">#${row.id} ${esc(row.title)}</h3>
+              <div class="muted" style="font-size:12px">
+                投稿者：${esc(authorName(row))} · 提交于 ${fmt(row.created_at)}
+                ${row.groupName ? " · 分组：" + esc(row.groupName) : ""}
+                ${row.edited_by_reviewer ? ' · <span class="tag tag-ai">已有审核改动</span>' : ""}
+              </div>
+            </div>
+            <button class="btn btn-sm" id="rv-close">关闭</button>
+          </div>
+          ${aiReportHtml(ai, row)}
+
+          <div class="grid grid-cols-2" style="gap:16px;margin-top:16px">
+            <label class="field"><span>题目标题</span><input id="rv-title" value="${esc(pick("title", row.title))}" /></label>
+            <label class="field"><span>技术分类（从下拉里选）</span>
+              <input id="rv-cat" list="rv-cat-opts" autocomplete="off" value="${esc(catIdToPath(curCat))}" />
+              <input type="hidden" id="rv-cat-id" value="${esc(curCat)}" />
+              ${catDatalist("rv-cat-opts")}</label>
+            <label class="field"><span>难度</span><select id="rv-diff" class="full">${diffs.map(function (d) { const v = pick("difficulty", row.difficulty) || "中级"; return "<option" + (v === d ? " selected" : "") + ">" + d + "</option>"; }).join("")}</select></label>
+            <label class="field"><span>题型</span><select id="rv-type" class="full">${types.map(function (t) { const v = pick("type", row.type) || "简答题"; return "<option" + (v === t ? " selected" : "") + ">" + t + "</option>"; }).join("")}</select></label>
+          </div>
+          <label class="field"><span>题目正文（Markdown，可直接改）</span>
+            <textarea id="rv-body" style="min-height:150px">${esc(pick("body", row.body))}</textarea></label>
+          <label class="field"><span>参考答案（Markdown，可直接改）</span>
+            <textarea id="rv-answer" style="min-height:200px">${esc(pick("answer", row.answer))}</textarea></label>
+          <label class="field"><span>审核意见（会显示给投稿者）</span>
+            <input id="rv-note" maxlength="300" value="${esc(row.review_note || "")}" placeholder="可选。打回时会被要求填写理由。" /></label>
+
+          <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:6px">
+            ${selfBlocked
+              ? '<span class="tag tag-warning">这是你自己提交的题目，不能自审</span>'
+              : (self ? '<span class="tag tag-ai">自己的投稿 · 管理员可自审</span>' : "") +
+                '<button class="btn btn-primary" id="rv-pass">' + U.icon("check") + " 通过（可以入库）</button>" +
+                '<button class="btn" id="rv-edit">' + U.icon("edit") + " 只保存改动</button>" +
+                '<button class="btn btn-danger" id="rv-reject">' + U.icon("x") + " 打回</button>"}
+            <button class="btn" id="rv-release">${U.icon("refresh")} 释放认领</button>
+            <button class="btn" id="rv-preview">${U.icon("eye")} 预览 Markdown</button>
+          </div>
+          <div id="rv-preview-box" class="md" style="display:none;margin-top:14px;padding:14px;border-radius:10px;background:rgba(128,128,128,.08)"></div>
+          <div class="note" style="margin-top:12px">「通过」只是标记内容可用；正式上线还需要管理员在「题目管理」里把它加进题库。</div>
+        </div>`;
+
+      try { $("#rv-panel").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {}
+
+      $("#rv-cat").addEventListener("input", function () {
+        const id = catPathToId(this.value);
+        if (id) $("#rv-cat-id").value = id;
+      });
+      $("#rv-close").onclick = function () { $("#rv-panel").innerHTML = ""; };
+      $("#rv-preview").onclick = function () {
+        const box = $("#rv-preview-box");
+        if (box.style.display === "none") {
+          box.innerHTML = "<h4>题目正文</h4>" + U.md($("#rv-body").value) + "<h4>参考答案</h4>" + U.md($("#rv-answer").value);
+          U.highlightAll(box);
+          box.style.display = "";
+          this.innerHTML = U.icon("eyeOff") + " 收起预览";
+        } else {
+          box.style.display = "none";
+          this.innerHTML = U.icon("eye") + " 预览 Markdown";
+        }
+      };
+
+      function collectEdited() {
+        return {
+          title: $("#rv-title").value.trim(),
+          body: $("#rv-body").value,
+          answer: $("#rv-answer").value,
+          difficulty: $("#rv-diff").value,
+          type: $("#rv-type").value,
+          categoryId: $("#rv-cat-id").value,
+        };
+      }
+      function changed(ed) {
+        return ed.title !== (row.title || "") || ed.body !== (row.body || "") || ed.answer !== (row.answer || "") ||
+          ed.difficulty !== (row.difficulty || "") || ed.type !== (row.type || "") ||
+          String(ed.categoryId || "") !== String(row.category_id || "");
+      }
+
+      let payload = null, ed = null;
+      async function doReview(action) {
+        const note = ($("#rv-note") && $("#rv-note").value.trim()) || "";
+        payload = { action: action, note: note };
+        ed = collectEdited();
+        if (action === "reject") {
+          const reason = await U.prompt("打回理由（会显示给投稿者，写清哪里不足更有帮助）", note || "");
+          if (reason == null) return;
+          payload.note = reason.slice(0, 1000);
+        } else if (action === "edit") {
+          if (!changed(ed)) { U.toast("内容没有变化，不用保存", "warn"); return; }
+          if (ed.title.length < 6) { U.toast("标题至少 6 个字", "warn"); return; }
+          payload.edited = ed;
+        } else if (action === "approve") {
+          if (ed.title.length < 6) { U.toast("标题至少 6 个字，请先补全再通过", "warn"); return; }
+          if (!(await U.confirm("确认通过这条投稿？通过后它就可以被加入题库了。", { okText: "确认通过" }))) return;
+          if (changed(ed)) payload.edited = ed;
+        }
+        const btns = $$("#rv-panel .btn");
+        btns.forEach(function (b) { b.disabled = true; });
+        try {
+          await A.adminReviewSubmission(row.id, payload);
+          U.toast(action === "approve" ? "已通过" : action === "reject" ? "已打回" : action === "edit" ? "改动已保存" : "已释放", "success");
+          $("#rv-panel").innerHTML = "";
+          load(S._status);
+          S.refreshPending();
+        } catch (e) {
+          U.toast((e && e.message) || "操作失败", "error");
+          if (e && (e.status === 409 || e.status === 403)) load(S._status);
+          btns.forEach(function (b) { b.disabled = false; });
+        }
+      }
+      const pass = $("#rv-pass"); if (pass) pass.onclick = function () { doReview("approve"); };
+      const edb = $("#rv-edit"); if (edb) edb.onclick = function () { doReview("edit"); };
+      const rj = $("#rv-reject"); if (rj) rj.onclick = function () { doReview("reject"); };
+      $("#rv-release").onclick = function () { doReview("release"); };
+    }
+
+    $$("#rv-tabs button").forEach(function (b) {
+      b.onclick = function () { $("#rv-panel").innerHTML = ""; load(b.dataset.st); };
+    });
+    $("#rv-refresh").onclick = function () { load(S._status); };
+    load("open");
+  };
+
+  /* ==================== ④ 专家群组（仅管理员） ==================== */
+
+  S.renderGroups = function () {
+    document.title = "专家群组 · IT面试题库";
+    if (!requireServerAdmin()) return;
+    const A = acc();
+    S._groups = { groups: [], members: [] };
+
+    setMain(crumb("专家群组") + `
+      <div class="section-head"><h2>专家群组</h2></div>
+      <div class="note">
+        群组用来把审核任务按技术方向分派：<b>投稿里选的分类命中某组负责的分类，就会派给该组</b>；
+        没有命中任何组的投稿归「未分配」，所有专家都能看到（避免没人管的分组把投稿卡死）。
+        成员只有角色为「专家」时才真的能进审核队列 —— 角色在<a href="#/admin/users">帐号管理</a>里设置。
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">新建群组</h3>
+        <div class="grid grid-cols-2" style="gap:16px">
+          <label class="field"><span>群组名称 *</span><input id="g-name" maxlength="60" placeholder="如：后端组 / 数据库组 / 前端组" /></label>
+          <label class="field"><span>负责范围说明（可空）</span><input id="g-scope" maxlength="200" placeholder="如：Java、Spring、MySQL、Redis 方向" /></label>
+        </div>
+        <label class="field"><span>负责的技术分类（可多选：按住 Ctrl / Cmd 点选，Shift 可连选）</span>
+          <select id="g-cats" multiple size="10" class="full" style="min-height:200px">
+            ${flatCats().map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.path) + "</option>"; }).join("")}
+          </select></label>
+        <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" id="g-create">${U.icon("plus")} 创建群组</button>
+          <span id="g-picked" class="muted" style="font-size:13px">已选 0 个分类</span>
+        </div>
+      </div>
+      <div class="card" style="padding:0"><table class="data">
+        <thead><tr><th style="width:56px">ID</th><th style="width:180px">群组</th><th>负责分类</th><th style="width:280px">成员</th><th style="width:100px">操作</th></tr></thead>
+        <tbody id="g-tb"><tr><td colspan="5">加载中…</td></tr></tbody></table></div>`);
+
+    const sel = $("#g-cats");
+    sel.addEventListener("change", function () {
+      $("#g-picked").textContent = "已选 " + $$("#g-cats option:checked").length + " 个分类";
+    });
+
+    function catNames(ids) {
+      return ids.map(function (id) {
+        const f = flatCats().filter(function (c) { return String(c.id) === String(id); })[0];
+        return f ? f.path : ("#" + id);
+      });
+    }
+
+    function load() {
+      const tb = $("#g-tb");
+      tb.innerHTML = '<tr><td colspan="5">加载中…</td></tr>';
+      A.adminGroups().then(function (r) {
+        S._groups = { groups: r.groups || [], members: r.members || [] };
+        const gs = S._groups.groups;
+        tb.innerHTML = gs.length ? gs.map(function (g) {
+          let ids = [];
+          try { ids = JSON.parse(g.category_ids || "[]"); } catch (_) {}
+          const paths = catNames(ids);
+          const ms = S._groups.members.filter(function (m) { return m.groupId === g.id; });
+          return "<tr>" +
+            "<td>" + g.id + "</td>" +
+            '<td><div style="font-weight:600">' + esc(g.name) + "</div>" +
+              (g.scope ? '<div class="muted" style="font-size:12px">' + esc(g.scope) + "</div>" : "") + "</td>" +
+            '<td>' + (paths.length
+              ? '<div class="pill-row" style="flex-wrap:wrap;gap:4px">' + paths.slice(0, 12).map(function (p) { return '<span class="tag tag-outline">' + esc(p) + "</span>"; }).join("") +
+                (paths.length > 12 ? '<span class="muted" style="font-size:12px">等 ' + paths.length + " 个分类</span>" : "") + "</div>"
+              : '<span class="muted" style="font-size:12px">未指定（该组只审「未分配」的投稿）</span>') + "</td>" +
+            '<td>' + (ms.length
+              ? '<div class="pill-row" style="flex-wrap:wrap;gap:4px">' + ms.map(function (m) {
+                  return '<span class="chip">' + esc(m.nick || m.email) + '<span class="x" data-g="' + g.id + '" data-u="' + m.userId + '" title="移出群组">' + U.icon("x") + "</span></span>";
+                }).join("") + "</div>"
+              : '<span class="muted" style="font-size:12px">暂无成员</span>') +
+              '<div style="margin-top:6px"><button class="btn btn-sm" data-act="member" data-id="' + g.id + '">' + U.icon("plus") + " 管理成员</button></div></td>" +
+            '<td><button class="btn btn-sm btn-danger" data-act="del" data-id="' + g.id + '">删除</button></td>' +
+          "</tr>";
+        }).join("") : '<tr><td colspan="5">还没有群组。不建群组也能审核：所有专家都会看到全部「未分配」的投稿。</td></tr>';
+
+        $$("#g-tb button[data-act='member']").forEach(function (b) {
+          b.onclick = function () { openMembers(parseInt(b.dataset.id, 10)); };
+        });
+        $$("#g-tb button[data-act='del']").forEach(function (b) {
+          b.onclick = async function () {
+            const g = S._groups.groups.filter(function (x) { return x.id === parseInt(b.dataset.id, 10); })[0];
+            if (!g) return;
+            if (!(await U.confirm('删除群组「' + g.name + '」？其成员关系会一并清除（不影响用户本身的专家角色）。', { okText: "删除", danger: true }))) return;
+            try { await A.adminGroupDelete(g.id); U.toast("已删除", "success"); load(); }
+            catch (e) { U.toast((e && e.message) || "删除失败", "error"); }
+          };
+        });
+        $$("#g-tb .chip .x").forEach(function (x) {
+          x.onclick = async function () {
+            try { await A.adminGroupMember(parseInt(x.dataset.g, 10), parseInt(x.dataset.u, 10), true); U.toast("已移出", "success"); load(); }
+            catch (e) { U.toast((e && e.message) || "操作失败", "error"); }
+          };
+        });
+      }).catch(function (e) {
+        tb.innerHTML = '<tr><td colspan="5"><span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
+          ' <button class="btn btn-sm" id="g-retry" style="margin-left:8px">重试</button></td></tr>';
+        const b = $("#g-retry");
+        if (b) b.onclick = load;
+      });
+    }
+
+    /* 成员选择器：搜用户 → 加入 / 移出。复用管理员用户列表接口（仅 admin 可调）。 */
+    function openMembers(groupId) {
+      const g = S._groups.groups.filter(function (x) { return x.id === groupId; })[0];
+      if (!g) return;
+      const m = U.modal({ title: "「" + g.name + "」成员", wide: true });
+      m.body.innerHTML = '<label class="field"><span>搜索用户（邮箱或昵称，留空列出最近 200 个）</span>' +
+        '<input id="mp-q" placeholder="输入关键词后回车" /></label>' +
+        '<div class="row" style="margin:10px 0"><button class="btn btn-primary btn-sm" id="mp-go">搜索</button></div>' +
+        '<div id="mp-list" class="muted" style="font-size:13px">输入关键词开始搜索，或直接点「搜索」列出全部</div>';
+
+      function inGroup(uid) {
+        return S._groups.members.some(function (x) { return x.groupId === groupId && x.userId === uid; });
+      }
+      function render(users) {
+        const box = $("#mp-list");
+        if (!users.length) { box.innerHTML = '<span class="muted">没有匹配的用户</span>'; return; }
+        box.innerHTML = '<table class="data" style="width:100%"><thead><tr><th>ID</th><th>邮箱</th><th>昵称</th><th>角色</th><th style="width:110px">操作</th></tr></thead><tbody>' +
+          users.map(function (u) {
+            const yes = inGroup(u.id);
+            return "<tr><td>" + u.id + "</td><td>" + esc(u.email) + "</td><td>" + esc(u.nick || "-") + "</td>" +
+              "<td>" + (u.role === "admin" ? '<span class="tag tag-primary">管理员</span>' : u.role === "expert" ? '<span class="tag tag-ai">专家</span>' : '<span class="muted">普通用户</span>') + "</td>" +
+              '<td><button class="btn btn-sm' + (yes ? "" : " btn-primary") + '" data-u="' + u.id + '" data-rm="' + (yes ? "1" : "0") + '">' + (yes ? "移出" : "加入") + "</button></td></tr>";
+          }).join("") + "</tbody></table>" +
+          '<div class="muted" style="font-size:12px;margin-top:8px">只有角色为「专家」的成员才会真的进审核队列；普通用户加进来也不会有审核入口。</div>';
+        $$("button[data-u]", box).forEach(function (b) {
+          b.onclick = async function () {
+            b.disabled = true;
+            try {
+              await A.adminGroupMember(groupId, parseInt(b.dataset.u, 10), b.dataset.rm === "1");
+              const r = await A.adminGroups();
+              S._groups = { groups: r.groups || [], members: r.members || [] };
+              U.toast(b.dataset.rm === "1" ? "已移出" : "已加入", "success");
+              render(users);
+              load();
+            } catch (e) { U.toast((e && e.message) || "操作失败", "error"); b.disabled = false; }
+          };
+        });
+      }
+      async function search() {
+        $("#mp-list").innerHTML = "加载中…";
+        try { const r = await A.adminListUsers($("#mp-q").value.trim()); render(r.users || []); }
+        catch (e) { $("#mp-list").innerHTML = '<span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || ""); }
+      }
+      $("#mp-go").onclick = search;
+      $("#mp-q").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); search(); } });
+      search();
+    }
+
+    $("#g-create").onclick = async function () {
+      const btn = $("#g-create"), old = btn.innerHTML;
+      const name = $("#g-name").value.trim();
+      if (!name) { U.toast("请填写群组名称", "warn"); $("#g-name").focus(); return; }
+      const ids = $$("#g-cats option:checked").map(function (o) { return o.value; });
+      btn.disabled = true; btn.innerHTML = "创建中…";
+      try {
+        await A.adminGroupCreate(name, $("#g-scope").value.trim(), ids);
+        U.toast("群组已创建", "success");
+        $("#g-name").value = ""; $("#g-scope").value = "";
+        $$("#g-cats option").forEach(function (o) { o.selected = false; });
+        $("#g-picked").textContent = "已选 0 个分类";
+        load();
+      } catch (e) { U.toast((e && e.message) || "创建失败", "error"); }
+      finally { btn.disabled = false; btn.innerHTML = old; }
+    };
+
+    load();
+  };
+
+  /* ==================== ⑤ 待入库（审核通过 → 收进本机题库） ====================
+   * 这是「审核」与「发布」之间的最后一道人工闸门，也是投稿变成题目的**唯一**出口：
+   *   审核通过（approved）只说明内容可用、可以收，题还没进库；
+   *   收录 = ① 写进本机 IndexedDB（Services.addQuestion）→ ② 把新题号回写服务端（bank_id）。
+   * 两步分开是有意的：① 失败不会动服务端；② 失败也不丢题 —— 这条投稿仍留在「待入库」，
+   * 刷新再点一次即可（本地已有同标题会被收录前的查重拦下，不会重复入库）。
+   * 反向的「撤销入库」把 bank_id 写回空串，条目自动回到「待入库」，用于分类选错或本地误删。
+   */
+  const IB_LABEL = { inbox: "待入库", inbanked: "已入库" };
+
+  S.renderInbox = function () {
+    document.title = "待入库投稿 · IT面试题库";
+    if (!requireServerAdmin("「待入库」是审核与发布之间的最后一道闸门 —— 把审核通过的投稿收进本机题库。这一步只有管理员能操作。")) return;
+    const A = acc();
+    S._ibStatus = "inbox";
+    S._ibRows = [];
+
+    setMain(crumb("待入库") + `
+      <div class="section-head"><h2>待入库
+        <span class="tag tag-primary" style="vertical-align:middle">管理员 · 审核通过待收录</span>
+      </h2></div>
+      <div class="note ai" style="margin-bottom:14px">
+        <b>审核通过 ≠ 已进题库。</b>专家判过的题在这里等你最后确认一次：点「收录」把它写进<b>本机题库</b>，
+        并把题号回写服务端，这条就离开本列表。默认存为<b>草稿</b>，想直接上线就用「收录并发布」。
+      </div>
+      <div class="tabs" id="ib-tabs">
+        <button class="btn btn-sm btn-primary" data-st="inbox">待入库</button>
+        <button class="btn btn-sm" data-st="inbanked">已入库</button>
+      </div>
+      <div class="toolbar">
+        <span id="ib-info" class="muted" style="font-size:13px"></span>
+        <span style="flex:1"></span>
+        <a class="btn" href="#/admin/questions">${U.icon("layers")} 题目管理</a>
+        <button class="btn" id="ib-refresh">${U.icon("refresh")} 刷新</button>
+      </div>
+      <div class="card" style="padding:0"><table class="data"><thead id="ib-head"></thead>
+        <tbody id="ib-tb"><tr><td>加载中…</td></tr></tbody></table></div>
+      <div id="ib-panel"></div>`);
+
+    const HEAD = {
+      inbox: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:150px'>投稿者</th><th style='width:140px'>审核人</th><th style='width:130px'>AI 质检</th><th style='width:130px'>通过时间</th><th style='width:120px'>操作</th></tr>",
+      inbanked: "<tr><th style='width:56px'>编号</th><th>标题</th><th style='width:170px'>本机题库</th><th style='width:140px'>审核人</th><th style='width:130px'>通过时间</th><th style='width:140px'>操作</th></tr>",
+    };
+
+    /* 已入库列表里的「本地题号」是否真的存在于本机题库 —— 本地可能已被删/被清库，
+       那种情况必须显眼提示，否则管理员会以为题还在。 */
+    function localQuestion(bankId) {
+      return (Services.questions || []).filter(function (q) { return String(q.id) === String(bankId); })[0];
+    }
+
+    function rowInbox(s) {
+      let ai = {};
+      try { ai = JSON.parse(s.ai_json || "{}") || {}; } catch (_) {}
+      const cat = catIdToPath(aiCatPathToId(ai.categoryPath)) || catIdToPath(s.category_id);
+      return "<tr>" +
+        "<td>" + s.id + "</td>" +
+        '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
+          '<div class="muted" style="font-size:12px">' + esc(cat || "未选分类") + " · " + esc(s.difficulty || "—") + " · " + esc(s.type || "—") +
+          (s.groupName ? " · 分组：" + esc(s.groupName) : "") + "</div>" +
+          (s.edited_by_reviewer ? '<div style="font-size:12px"><span class="tag tag-ai">审核时改过</span></div>' : "") +
+        "</td>" +
+        '<td class="muted" style="font-size:12px">' + esc(authorName(s)) + "</td>" +
+        '<td class="muted" style="font-size:12px">' + esc(s.reviewerNick || "—") + "</td>" +
+        "<td>" + vTag(s.ai_verdict) + (s.ai_score ? ' <span class="muted" style="font-size:12px">' + s.ai_score + "</span>" : "") + "</td>" +
+        '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(s.review_at) + "</td>" +
+        '<td><button class="btn btn-sm btn-primary" data-act="collect" data-id="' + s.id + '">' + U.icon("plus") + " 收录</button></td>" +
+      "</tr>";
+    }
+
+    function rowInbanked(s) {
+      const bid = String(s.bank_id || "");
+      const local = localQuestion(bid);
+      const canOpen = window.Auth && Auth.isAdmin();          // 题目管理走本地密码门禁
+      let cell;
+      if (!local) {
+        cell = '<span class="tag tag-warning">本机已无此题</span><div class="muted" style="font-size:12px">#' + esc(bid) + "</div>";
+      } else if (canOpen) {
+        cell = '<a class="btn btn-sm" href="#/admin/question/' + esc(bid) + '">#' + esc(bid) + "</a> " +
+          (local.status === "published" ? '<span class="tag tag-success">已发布</span>' : '<span class="tag tag-outline">' + esc(local.status || "draft") + "</span>");
+      } else {
+        cell = "<span>#" + esc(bid) + '</span> <span class="tag tag-outline">' + esc(local.status || "draft") + '</span>' +
+          '<div class="muted" style="font-size:12px">解锁管理密码后可点开</div>';
+      }
+      return "<tr>" +
+        "<td>" + s.id + "</td>" +
+        '<td><div style="font-weight:600">' + esc(s.title) + "</div>" +
+          '<div class="muted" style="font-size:12px">' + esc(catIdToPath(s.category_id) || "未选分类") + " · " + esc(s.difficulty || "—") + "</div></td>" +
+        "<td>" + cell + "</td>" +
+        '<td class="muted" style="font-size:12px">' + esc(s.reviewerNick || "—") + "</td>" +
+        '<td class="muted" style="font-size:12px;white-space:nowrap">' + fmt(s.review_at) + "</td>" +
+        '<td><button class="btn btn-sm" data-act="undo" data-id="' + s.id + '">' + U.icon("refresh") + " 撤销入库</button></td>" +
+      "</tr>";
+    }
+
+    function load(status) {
+      S._ibStatus = status || S._ibStatus;
+      const st = S._ibStatus;
+      $("#ib-head").innerHTML = HEAD[st] || HEAD.inbox;
+      const cols = st === "inbox" ? 7 : 6;
+      const tb = $("#ib-tb");
+      tb.innerHTML = '<tr><td colspan="' + cols + '">加载中…</td></tr>';
+      $$("#ib-tabs button").forEach(function (b) {
+        b.className = "btn btn-sm" + (b.dataset.st === st ? " btn-primary" : "");
+      });
+      A.adminListSubmissions(st).then(function (r) {
+        const rows = r.submissions || [];
+        S._ibRows = rows;
+        $("#ib-info").textContent = IB_LABEL[st] + "：" + rows.length + " 条" + (rows.length >= 100 ? "（只显示最近 100 条）" : "");
+        tb.innerHTML = rows.length
+          ? rows.map(function (s) { return st === "inbox" ? rowInbox(s) : rowInbanked(s); }).join("")
+          : '<tr><td colspan="' + cols + '">' + IB_LABEL[st] + "：暂时没有内容。" +
+            (st === "inbox" ? "所有审核通过的投稿都已收录。" : "还没有收录过任何投稿。") + "</td></tr>";
+        $$("#ib-tb button[data-act='collect']").forEach(function (b) {
+          b.onclick = function () {
+            const id = parseInt(b.dataset.id, 10);
+            openCollector(S._ibRows.filter(function (x) { return x.id === id; })[0]);
+          };
+        });
+        $$("#ib-tb button[data-act='undo']").forEach(function (b) {
+          b.onclick = function () { undo(parseInt(b.dataset.id, 10), b); };
+        });
+        if (st === "inbox") {
+          const n = rows.length;
+          if (n !== (window.App.inboxPending || 0)) { window.App.inboxPending = n; refreshNav(); }
+        }
+      }).catch(function (e) {
+        const code = e && e.status;
+        tb.innerHTML = '<tr><td colspan="' + cols + '">' +
+          (code === 403
+            ? '<span class="tag tag-danger">没有管理员权限</span> ' + esc((e && e.message) || "") +
+              '<div class="muted" style="font-size:12px;margin-top:6px">待入库涉及「发布链路」，只对管理员开放。若你的角色是专家，请走「投稿审核」。</div>'
+            : '<span class="tag tag-danger">加载失败</span> ' + esc((e && e.message) || "") +
+              '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" id="ib-retry">' + U.icon("refresh") + " 重试</button></div>") +
+          "</td></tr>";
+        const rt = $("#ib-retry");
+        if (rt) rt.onclick = function () { load(S._ibStatus); };
+      });
+    }
+
+    /* ---------- 收录面板：把投稿「翻译」成一道本地题目 ---------- */
+    function openCollector(row) {
+      if (!row) { U.toast("找不到这条投稿的数据，请刷新列表", "warn"); return; }
+      let ai = {};
+      try { ai = JSON.parse(row.ai_json || "{}") || {}; } catch (_) {}
+      let edited = {};
+      try { edited = JSON.parse(row.edited_json || "{}") || {}; } catch (_) {}
+      /* 取值优先级：审核员的改动 > 投稿原文。审核员改过的版本才是被通过的那一版。 */
+      const pick = function (k, fallback) { return (edited[k] != null && edited[k] !== "") ? edited[k] : (fallback == null ? "" : fallback); };
+      const aiCatId = aiCatPathToId(ai.categoryPath);
+      const curCat = pick("categoryId", row.category_id) || aiCatId;
+      let tagList = [];
+      try { tagList = JSON.parse(pick("tags", row.tags) || "[]"); } catch (_) { tagList = []; }
+      if (!Array.isArray(tagList)) tagList = String(tagList || "").split(/[,，]/);
+      tagList = tagList.map(function (t) { return String(t || "").trim(); }).filter(Boolean);
+      const diffs = ["初级", "中级", "高级", "专家"];
+      const types = ["单选题", "多选题", "判断题", "填空题", "简答题", "编程题", "场景题", "故障排查题", "系统设计题", "开放讨论题"];
+      const curDiff = pick("difficulty", row.difficulty) || "中级";
+      const curType = pick("type", row.type) || "简答题";
+
+      $("#ib-panel").innerHTML = `
+        <div class="card" style="margin-top:16px;border-left:4px solid ${ACCENT[row.ai_verdict] || "#64748B"}">
+          <div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px">
+            <div>
+              <h3 style="margin:0 0 4px">#${row.id} ${esc(pick("title", row.title))}</h3>
+              <div class="muted" style="font-size:12px">
+                投稿者：${esc(authorName(row))} · 通过于 ${fmt(row.review_at)}
+                ${row.reviewerNick ? " · 审核：" + esc(row.reviewerNick) : ""}
+                ${row.groupName ? " · 分组：" + esc(row.groupName) : ""}
+                ${row.edited_by_reviewer ? ' · <span class="tag tag-ai">审核时改过</span>' : ""}
+              </div>
+            </div>
+            <button class="btn btn-sm" id="ib-close">关闭</button>
+          </div>
+          ${row.review_note ? '<div class="note" style="margin-top:10px">审核意见：' + esc(String(row.review_note).slice(0, 300)) + "</div>" : ""}
+          ${aiReportHtml(ai, row)}
+          ${((ai.categoryPath && ai.categoryPath.length) && !aiCatId)
+            ? '<div class="note" style="margin-top:10px">AI 建议的分类「' + esc(ai.categoryPath.join(" / ")) +
+              '」在本站技术体系里没有完全对应的节点，已置空 —— 请手动从下拉里点选一个。</div>'
+            : ""}
+
+          <div class="grid grid-cols-2" style="gap:16px;margin-top:16px">
+            <label class="field"><span>题目标题</span><input id="ib-title" value="${esc(pick("title", row.title))}" /></label>
+            <label class="field"><span>技术分类（必选，从下拉里点选）</span>
+              <input id="ib-cat" list="ib-cat-opts" autocomplete="off" value="${esc(catIdToPath(curCat))}" />
+              <input type="hidden" id="ib-cat-id" value="${esc(curCat)}" />
+              ${catDatalist("ib-cat-opts")}</label>
+            <label class="field"><span>难度</span><select id="ib-diff" class="full">${diffs.map(function (d) { return "<option" + (d === curDiff ? " selected" : "") + ">" + d + "</option>"; }).join("")}</select></label>
+            <label class="field"><span>题型</span><select id="ib-type" class="full">${types.map(function (t) { return "<option" + (t === curType ? " selected" : "") + ">" + t + "</option>"; }).join("")}</select></label>
+          </div>
+          <label class="field"><span>标签（逗号分隔，可留空）</span>
+            <input id="ib-tags" value="${esc(tagList.join("，"))}" placeholder="如：索引优化，执行计划" /></label>
+          <label class="field"><span>题目正文（Markdown）</span>
+            <textarea id="ib-body" style="min-height:150px">${esc(pick("body", row.body))}</textarea></label>
+          <label class="field"><span>参考答案（Markdown）</span>
+            <textarea id="ib-answer" style="min-height:200px">${esc(pick("answer", row.answer))}</textarea></label>
+
+          <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:6px">
+            <button class="btn btn-primary" id="ib-draft">${U.icon("check")} 收录（存草稿）</button>
+            <button class="btn" id="ib-pub">${U.icon("upload")} 收录并发布</button>
+            <button class="btn" id="ib-preview">${U.icon("eye")} 预览 Markdown</button>
+          </div>
+          <div id="ib-preview-box" class="md" style="display:none;margin-top:14px;padding:14px;border-radius:10px;background:rgba(128,128,128,.08)"></div>
+          <div class="note" style="margin-top:12px">
+            「收录」只写<b>本机题库</b>（这台浏览器），题号会回写服务端以免重复收录；
+            题目来源记为 <code>submission</code>，备注里留了投稿编号、投稿者与审核人。
+            云端发布仍走原有流程，可在「备份恢复」页查看云端状态。
+          </div>
+        </div>`;
+
+      try { $("#ib-panel").scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {}
+
+      $("#ib-cat").addEventListener("input", function () {
+        const id = catPathToId(this.value);
+        if (id) $("#ib-cat-id").value = id;
+      });
+      $("#ib-close").onclick = function () { $("#ib-panel").innerHTML = ""; };
+      $("#ib-preview").onclick = function () {
+        const box = $("#ib-preview-box");
+        if (box.style.display === "none") {
+          box.innerHTML = "<h4>题目正文</h4>" + U.md($("#ib-body").value) + "<h4>参考答案</h4>" + U.md($("#ib-answer").value);
+          U.highlightAll(box);
+          box.style.display = "";
+          this.innerHTML = U.icon("eyeOff") + " 收起预览";
+        } else {
+          box.style.display = "none";
+          this.innerHTML = U.icon("eye") + " 预览 Markdown";
+        }
+      };
+
+      async function doCollect(publish) {
+        const title = $("#ib-title").value.trim();
+        const body = $("#ib-body").value;
+        const catId = $("#ib-cat-id").value;
+        const tags = $("#ib-tags").value.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 12);
+
+        if (title.length < 6) { U.toast("标题至少 6 个字", "warn"); return; }
+        if (!catId) { U.toast("请从下拉候选里点选一个技术分类", "warn"); $("#ib-cat").focus(); return; }
+        if (String(body || "").trim().length < 10) { U.toast("题目正文太短（至少 10 个字）", "warn"); return; }
+
+        /* 收录前的最后一道查重：连草稿一起比 —— 这一步是防「同一篇稿子被收两次」的关键。
+           提示里不放换行（U.confirm 会把文本转义进 <p>，换行不生效）。 */
+        const dups = dupCandidates(title, Services.questions || [], 0.55);
+        if (dups.length) {
+          const names = dups.map(function (t) { return "「" + String(t).slice(0, 30) + "」"; }).join("、");
+          if (!(await U.confirm("本机题库里已有 " + dups.length + " 道标题高度相似的题：" + names + "。仍要收录吗？",
+            { okText: "仍要收录", note: "若确认是同一道题，请关掉本面板，去题目管理里处理已有的那一道。" }))) return;
+        }
+        if (publish && !(await U.confirm("收录后直接发布到题库（所有人可见）？",
+          { okText: "收录并发布", note: "内容已经过人工审核；发布前最好再核对一遍分类与答案。" }))) return;
+
+        const btns = $$("#ib-panel .btn");
+        btns.forEach(function (b) { b.disabled = true; });
+        const first = $("#ib-draft"); if (first) first.innerHTML = "写入本机题库…";
+
+        let newId = null;
+        try {
+          newId = await Services.addQuestion({
+            categoryId: catId ? parseInt(catId, 10) : null,
+            title: title, body: body, answer: $("#ib-answer").value,
+            difficulty: $("#ib-diff").value, type: $("#ib-type").value,
+            tags: tags, years: "",
+            positionIds: [], positionNames: [],
+            source: "submission",
+            aiScore: num(row.ai_score),
+            status: publish ? "published" : "draft",
+            remark: "投稿 #" + row.id + " · 投稿者 " + authorName(row) + (row.reviewerNick ? " · 审核 " + row.reviewerNick : ""),
+          });
+          await Services.reload();
+        } catch (e) {
+          U.toast("写入本机题库失败：" + ((e && e.message) || e), "error");
+          if (first) first.innerHTML = U.icon("check") + " 收录（存草稿）";
+          btns.forEach(function (b) { b.disabled = false; });
+          return;
+        }
+
+        /* 第 ② 步：回写题号。**失败也不回滚本地题** —— 题已经写进去了，删掉才是真丢数据；
+           只提示这条还会留在「待入库」，刷新后别重复点。 */
+        try {
+          await A.adminInbank(row.id, String(newId));
+          U.toast("已收录为题目 #" + newId + (publish ? "（已发布）" : "（草稿）"), "success");
+          $("#ib-panel").innerHTML = "";
+          load(S._ibStatus);
+          S.refreshInboxBadge();
+        } catch (e) {
+          U.toast("题目已写进本机题库（#" + newId + "），但题号回写服务端失败：" + ((e && e.message) || e) +
+            "。这条仍会留在「待入库」，请勿重复收录。", "error", 9000);
+          load(S._ibStatus);
+        }
+      }
+      $("#ib-draft").onclick = function () { doCollect(false); };
+      $("#ib-pub").onclick = function () { doCollect(true); };
+    }
+
+    async function undo(id, btn) {
+      const row = S._ibRows.filter(function (x) { return x.id === id; })[0];
+      if (!row) return;
+      const local = localQuestion(row.bank_id);
+      if (!(await U.confirm("撤销投稿 #" + id + " 的入库记录？", {
+        okText: "撤销入库",
+        note: local
+          ? "本机题目 #" + row.bank_id + " 不会被删除 —— 撤销只是让这条投稿回到「待入库」，方便换个分类重收。要删题请去题目管理。"
+          : "本机题库里已经没有对应题目了，撤销后这条投稿回到「待入库」，可以重新收录。",
+      }))) return;
+      if (btn) btn.disabled = true;
+      try {
+        await A.adminInbank(id, "");
+        U.toast("已撤销入库，该投稿回到「待入库」", "success");
+        load(S._ibStatus);
+        S.refreshInboxBadge();
+      } catch (e) {
+        U.toast((e && e.message) || "撤销失败", "error");
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    $$("#ib-tabs button").forEach(function (b) {
+      b.onclick = function () { $("#ib-panel").innerHTML = ""; load(b.dataset.st); };
+    });
+    $("#ib-refresh").onclick = function () { load(S._ibStatus); };
+    load("inbox");
+  };
+
+  /* ==================== 待审角标 ==================== */
+
+  /* 只有审核角色才真的发请求；条数变化才重渲染导航，避免无谓的 DOM 抖动。 */
+  S.refreshPending = async function () {
+    const A = acc();
+    if (!A || !A.isReviewer()) {
+      if (window.App && App.reviewPending) { App.reviewPending = 0; refreshNav(); }
+      return 0;
+    }
+    try {
+      const r = await A.adminListSubmissions("open");
+      const n = (r.submissions || []).filter(function (s) { return s.review_status === "pending"; }).length;
+      if (n !== (window.App.reviewPending || 0)) { window.App.reviewPending = n; refreshNav(); }
+      return n;
+    } catch (e) { return 0; }
+  };
+
+  /* 侧栏「待入库」角标：只有管理员才真的发请求。与 refreshPending 同构，
+     但**必须分开请求** —— "open" 与 "inbox" 是两个不同的 status，
+     拼在一起会多跑一次全表扫描（列表都是 LIMIT 100 的查询）。 */
+  S.refreshInboxBadge = async function () {
+    const A = acc();
+    if (!A || !A.isServerAdmin()) {
+      if (window.App && App.inboxPending) { App.inboxPending = 0; refreshNav(); }
+      return 0;
+    }
+    try {
+      const r = await A.adminListSubmissions("inbox");
+      const n = (r.submissions || []).length;
+      if (n !== (window.App.inboxPending || 0)) { window.App.inboxPending = n; refreshNav(); }
+      return n;
+    } catch (e) { return 0; }
+  };
+
+  try {
+    /* 启动时先按本地缓存的角色判断（不用等 /auth/me 回来），有 token 就拉一次。
+       两个角标各拉各的：待审（open）给 admin+expert，待入库（inbox）只给 admin —— 各自内部
+       都先判角色再发请求，非管理员不会白跑一次网络。 */
+    if (window.Account && Account.getToken()) { S.refreshPending(); S.refreshInboxBadge(); }
+    /* 登录 / 退出 / 提权 / 降级后 account.js 会回调 App.onAccountRefreshed，这里包一层补刷角标 */
+    if (window.App && typeof App.onAccountRefreshed === "function") {
+      const orig = App.onAccountRefreshed;
+      App.onAccountRefreshed = function () {
+        try { orig.apply(this, arguments); } catch (_) {}
+        try { S.refreshPending(); } catch (_) {}
+        try { S.refreshInboxBadge(); } catch (_) {}
+      };
+    }
+  } catch (e) {}
+})();
+
+;/* ===== << js/submit.js ===== */

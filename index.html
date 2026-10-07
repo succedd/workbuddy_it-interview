@@ -18,7 +18,7 @@
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png" />
   <meta name="theme-color" content="#2563EB" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0F172A" />
-  <link rel="manifest" href="manifest.json?v=20261007b" />
+  <link rel="manifest" href="manifest.json?v=20261007c" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563EB'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='monospace' font-weight='bold'%3EI%3C/text%3E%3C/svg%3E" />
   <!-- iOS 添加到主屏幕图标（apple-touch-icon 不支持 SVG data URI，需真实 PNG） -->
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -26,12 +26,12 @@
   <link id="hljs-light" rel="stylesheet" href="vendor/github.min.css" />
   <link id="hljs-dark" rel="stylesheet" href="vendor/github-dark.min.css" disabled />
   <!-- App styles -->
-  <link rel="stylesheet" href="css/variables.css?v=20261007b" />
-  <link rel="stylesheet" href="css/style.css?v=20261007b" />
-  <link rel="stylesheet" href="css/animations.css?v=20261007b" />
-  <link rel="stylesheet" href="css/responsive.css?v=20261007b" />
-  <link rel="stylesheet" href="css/loader.css?v=20261007b" />
-  <link rel="stylesheet" href="css/festival.css?v=20261007b" />
+  <link rel="stylesheet" href="css/variables.css?v=20261007c" />
+  <link rel="stylesheet" href="css/style.css?v=20261007c" />
+  <link rel="stylesheet" href="css/animations.css?v=20261007c" />
+  <link rel="stylesheet" href="css/responsive.css?v=20261007c" />
+  <link rel="stylesheet" href="css/loader.css?v=20261007c" />
+  <link rel="stylesheet" href="css/festival.css?v=20261007c" />
   <!-- 注：百度统计已于 2026-09-23 按用户要求整体移除（含 hm.js 上报脚本与后台配置入口）。
        站内访问统计仍由「本地计数（localStorage）+ Cloudflare Worker」两条通道提供，未受影响。 -->
 </head>
@@ -93,11 +93,18 @@
   /* 版本号必须在这里自己定义一份：原本它写在下面的 SW 注册脚本里，
      而那个脚本执行得更晚，加载器等不到；何况它还被包在 `if ("serviceWorker" in navigator)`
      里面 —— 浏览器不支持 SW 时根本不会定义。bump-version.py 会连带这里一起替换。 */
-  window.PAGE_VER = window.PAGE_VER || "20261007b";
+  window.PAGE_VER = window.PAGE_VER || "20261007c";
   (function () {
     var V = window.PAGE_VER || "";
-    var SCRIPTS = ["vendor/dexie.min.js", "vendor/purify.min.js", "vendor/marked.min.js", "vendor/fuse.min.js", "js/utils.js", "js/turnstile.js", "js/db.js", "js/auth.js", "js/search.js", "js/aiprompts.js", "js/api.js", "js/services.js", "js/cloud.js", "js/backup.js", "js/daily-quote.js", "js/roadmap.js", "js/docs-loader.js", "js/app.js", "js/account.js", "js/submit.js", "vendor/highlight.min.js", "js/panorama.js", "js/sharecard.js", "js/guide.js", "js/docs.js", "js/festival.js", "js/importexport.js"];
-    var TIMEOUT = 8000, TRIES = 2;
+    /* 27 个源文件已合并为 4 个 bundle（tools/bundle-js.py 生成）。
+       前 3 个走关键路径；extra 那一组全是路由/交互才用到的，等关键路径出齐再拉。 */
+    var CRITICAL = [
+      "js/bundle/bundle-vendor.js",
+      "js/bundle/bundle-core.js",
+      "js/bundle/bundle-app.js"
+    ];
+    var DEFERRED = ["js/bundle/bundle-extra.js"];
+    var TIMEOUT = 8000, TRIES = 4;
     function loadOne(src) {
       var url = src + "?v=" + V;
       return new Promise(function (resolve) {
@@ -129,14 +136,18 @@
        就等于等上一个下载完才发下一个 —— 27 个文件 × 每次往返，首屏会被拖成几十秒。
        这里一次性把 27 个请求都发出去（并行下载），
        靠 el.async = false 保证它们**按插入顺序执行**，依赖顺序不受影响。 */
-    var all = SCRIPTS.map(function (s) { return loadOne(s); });
+    var all = CRITICAL.map(function (s) { return loadOne(s); });
     Promise.all(all).then(function (results) {
       try {
         var failed = [];
-        for (var i = 0; i < results.length; i++) if (!results[i]) failed.push(SCRIPTS[i]);
-        if (failed.length) console.warn("[boot] 以下脚本重试后仍未加载成功:", failed.join(", "));
+        for (var i = 0; i < results.length; i++) if (!results[i]) failed.push(CRITICAL[i]);
+        if (failed.length) console.warn("[boot] 关键脚本重试后仍未加载成功:", failed.join(", "));
         performance.mark("boot:scripts-loaded");
       } catch (e) {}
+      /* 关键路径出齐（或已放弃）之后再拉非首屏那一组。
+         刻意放在这里而不是与之并行：慢窗口下带宽有限，
+         让它抢在前面只会拖慢首屏真正需要的那 3 个。 */
+      DEFERRED.forEach(function (s) { loadOne(s); });
     });
   })();
   </script>
@@ -151,9 +162,9 @@
   </style>
   <script>
     if ("serviceWorker" in navigator) {
-      window.PAGE_VER = "20261007b";   // 本页构建版本：报错文案带上它，远程诊断一眼定位旧标签页
+      window.PAGE_VER = "20261007c";   // 本页构建版本：报错文案带上它，远程诊断一眼定位旧标签页
       window.addEventListener("load", function () {
-        var SWV = "20261007b";
+        var SWV = "20261007c";
         function showUpdatePill(onClick) {
           if (document.getElementById("sw-update-pill")) return;
           var pill = document.createElement("button");
