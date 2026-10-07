@@ -226,23 +226,26 @@ async function main() {
   });
 
   /* 等首屏出现「实质内容」。
-     ⚠️ 这一步比等 load 更贴近用户体感：readyState=complete 时页面可能仍是
-     加载动效 + 空壳（实测限定 network 下 innerText 只有 ~247 字符），
-     用户看到的「慢」其实是「一直转圈不出内容」。
-     判定标准：正文可见文字 > 600 字或出现题目卡片/统计卡。 */
+     ⚠️ 判定必须同时满足两个条件（2026-10-07 修正）：
+     ① #boot-loader 开场动画已结束（done class 或已隐藏）——
+        这个动画首访强制播 3.2s，上面的职业名滚动文字 + 进度文本加起来
+        就有 600+ 字符，曾经把「内容就绪」判定骗成「动画出现」的时间；
+     ② #main 里出现了真实的卡片/链接（不是转圈空壳）。 */
   async function waitForContent(maxMs) {
     const t = Date.now();
     while (Date.now() - t < maxMs) {
       try {
         const r = await cdp.send("Runtime.evaluate", {
           expression: `(() => {
+            const loader = document.getElementById("boot-loader");
+            const loaderDone = !loader || loader.classList.contains("done") || loader.style.display === "none";
             const txt = (document.body.innerText || "").replace(/\\s+/g, "");
-            const cards = document.querySelectorAll(".q-card, .stat, .card, .docs-dir-card, a[href^='#/question/']").length;
-            return JSON.stringify({ len: txt.length, cards: cards, head: txt.slice(0, 120) });
+            const cards = document.querySelectorAll("#main .card, #main a[href^='#/'], #main .docs-dir-card, #main a[href^='#/question/']").length;
+            return JSON.stringify({ loaderDone: loaderDone, len: txt.length, cards: cards, head: txt.slice(0, 120) });
           })()`, returnByValue: true,
         });
         const d = JSON.parse(r.result.value || "{}");
-        if (d.len > 600 || d.cards > 3) return { ms: Date.now() - t, ...d };
+        if (d.loaderDone && d.cards > 5) return { ms: Date.now() - t, ...d };
       } catch (_) {}
       await sleep(300);
     }
@@ -250,7 +253,9 @@ async function main() {
     try {
       const r = await cdp.send("Runtime.evaluate", {
         expression: `(() => { const t=(document.body.innerText||"").replace(/\\s+/g,"");
-          return JSON.stringify({len:t.length,cards:document.querySelectorAll(".q-card,.stat,.card").length,head:t.slice(0,150)}); })()`,
+          const loader=document.getElementById("boot-loader");
+          return JSON.stringify({loaderDone: !loader || loader.classList.contains("done") || loader.style.display==="none",
+            len:t.length,cards:document.querySelectorAll("#main .card,#main a[href^='#/']").length,head:t.slice(0,150)}); })()`,
         returnByValue: true,
       });
       return { ms: -1, ...JSON.parse(r.result.value || "{}") };
