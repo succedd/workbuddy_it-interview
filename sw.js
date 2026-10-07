@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261007a";
+const VERSION = "20261007b";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -142,8 +142,12 @@ self.addEventListener("fetch", (event) => {
         /* cache: "no-cache" 而非 "reload"：前者仍会走协商缓存（304），
            后者才是硬性绕过所有缓存、强制回源。 */
         const net = await fetch(req, { cache: "no-cache" });
-        /* 只为离线兜底缓存最近一份好快照；version.json 永不缓存 */
-        if (net && net.ok && url.pathname === "/data/published.json") {
+        /* 离线兜底：缓存最近一份好数据。
+           version.json 永不缓存 —— 它是「要不要重新下载」的判据，必须实时，
+           一旦被缓存就会一直误判成「没更新」。
+           published / manifest / shards 都缓存：离线时仍能看题库与答案。
+           （2026-10-07 修正：原先只缓存 published.json，导致离线打开题目拿不到分片。） */
+        if (net && net.ok && url.pathname !== "/data/version.json") {
           const cache = await caches.open(CACHE);
           cache.put(req, net.clone()).catch(() => {});
         }
@@ -156,27 +160,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  /* 分片答案：cache-first + 运行时补缓存（与下面的同源静态资源同策略）。
-     刻意不进 APP_SHELL 预缓存：6 片合计约 800KB br，塞进「安装即预缓存」会让
-     首次安装变慢、且用户未必会点开题目。走运行时缓存即可——
-     第一次打开题目时才拉，之后长期复用。 */
-  if (url.pathname.startsWith("/data/shards/")) {
-    event.respondWith((async () => {
-      const cached = await caches.match(req);
-      if (cached) return cached;
-      try {
-        const net = await fetch(req);
-        if (net && net.ok) {
-          const cache = await caches.open(CACHE);
-          cache.put(req, net.clone()).catch(() => {});
-        }
-        return net;
-      } catch (_) {
-        return Response.error();
-      }
-    })());
-    return;
-  }
+  /* ⚠️ 这里原本还有一段「分片 cache-first」的分支，2026-10-07 删掉了：
+     上面 isDataJson 的判定里已经包含 `/data/shards/`（走 network-first），
+     所以那段代码永远执行不到 —— 是死代码。
+     更要紧的是它的存在会误导人以为分片走的是 cache-first：
+     分片 URL **不带版本号**，若真按 cache-first 走，题库更新后用户会一直拿到旧答案。
+     现在分片统一由上面的 network-first 处理（内容始终新鲜），
+     同时在那里做了离线缓存兜底。 */
 
   /* 文档方向数据（2026-10-06）：从 APP_SHELL 移到运行时缓存。
    这 7 个文件合计约 547KB gzip，占首屏总量一半以上，改由 js/docs-loader.js
