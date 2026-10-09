@@ -11,7 +11,7 @@
   const _i = (window.App && window.App._internals) || {};
   const $ = _i.$ || U.qs;
   const setMain = _i.setMain;
-  const route = _i.route || (() => { location.hash = "#/"; });
+  const route = _i.route || (() => { location.href = "/"; });
   const renderTopbar = _i.renderTopbar;
 
   const A = {};
@@ -453,9 +453,9 @@
             <button class="btn btn-danger" id="acc-logout">退出登录</button>
           </div>
           <div class="pill-row" style="margin-top:14px">
-            <a class="btn btn-sm" href="#/submit">${U.icon("plus")} 投稿面试题</a>
-            <a class="btn btn-sm" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
-            ${A.isReviewer() ? `<a class="btn btn-sm" href="#/admin/submissions">${U.icon("check")} 投稿审核</a>` : ""}
+            <a class="btn btn-sm" href="/submit">${U.icon("plus")} 投稿面试题</a>
+            <a class="btn btn-sm" href="/me/submissions">${U.icon("fileText")} 我的投稿</a>
+            ${A.isReviewer() ? `<a class="btn btn-sm" href="/admin/submissions">${U.icon("check")} 投稿审核</a>` : ""}
           </div>
           <div id="acc-pw-box" style="display:none;margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
             <label class="field"><span>当前密码</span><input id="acc-pw-old" type="password" placeholder="••••••••" /></label>
@@ -550,7 +550,7 @@
   A.renderAdminPage = function () {
     const myId = (A.getUser() || {}).id;
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/dashboard">管理</a><span class="sep">/</span><span>帐号管理</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/admin/dashboard">管理</a><span class="sep">/</span><span>帐号管理</span></div>
       <div class="section-head"><h2>帐号管理</h2></div>
       <div class="toolbar"><input id="u-q" class="full" style="max-width:280px" placeholder="搜索邮箱或昵称…" />
         <button class="btn" id="u-refresh">${U.icon("refresh")} 刷新</button></div>
@@ -558,7 +558,7 @@
         <thead><tr><th>ID</th><th>邮箱</th><th>昵称</th><th>角色</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead>
         <tbody id="u-tb"><tr><td colspan="7">加载中…</td></tr></tbody></table></div>
       <div class="note" style="margin-top:10px">禁用会立即踢掉该用户的全部登录会话；重置密码同样使其下线。
-        「专家」拥有投稿审核权限，可在<a href="#/admin/groups">专家群组</a>里按技术分类分配负责范围。</div>`);
+        「专家」拥有投稿审核权限，可在<a href="/admin/groups">专家群组</a>里按技术分类分配负责范围。</div>`);
 
     const load = async (q) => {
       const tb = $("#u-tb");
