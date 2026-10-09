@@ -1784,6 +1784,39 @@
     const hotTags = ["Java", "MySQL", "Redis", "Spring Boot", "Vue3", "React", "Docker", "Kubernetes", "TCP", "算法", "Python", "AI大模型"];
     const recent = stats.recent.slice(0, 6);
     const best = Services.questions.slice().sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)).slice(0, 6);
+    const roleShortcuts = [
+      { label: "Java 后端", exact: "Java后端工程师", keys: ["Java 后端", "Java开发"] },
+      { label: "前端", exact: "前端开发工程师", keys: ["前端"] },
+      { label: "算法", exact: "算法工程师", keys: [] },
+      { label: "运维 / DevOps", exact: "DevOps工程师", keys: ["SRE", "运维"] },
+      { label: "AI / 大模型", exact: "机器学习工程师", keys: ["深度学习", "NLP"] },
+      { label: "测试", exact: "测试工程师", keys: [] }
+    ].map(role => {
+      const pos = Services.positions.find(p => Services.posFullName(p) === role.exact)
+        || Services.positions.find(p => role.keys.some(k => (Services.posFullName(p) || "").indexOf(k) >= 0));
+      if (!pos) return "";
+      return `<a class="home-role" href="#/questions?posid=${pos.id}">
+        <b>${U.esc(role.label)}</b>
+        <span>${Services.questionCountForPosition(pos)} 题 · ${U.esc(Services.posFullName(pos))}</span>
+      </a>`;
+    }).join("");
+    const sampleQ = Services.questions.find(q => /缓存/.test(q.title || "") && (q.answer || q.body)) || best[0] || recent[0];
+    const sampleText = String((sampleQ && (sampleQ.answer || sampleQ.body)) || "")
+      .replace(/[#*`>]/g, "").replace(/\s+/g, " ").slice(0, 260);
+    const sampleHtml = sampleQ ? `<article class="card home-sample">
+      <div class="section-head" style="margin:0">
+        <h2>答案质量示例</h2>
+        <a class="more" href="#/question/${sampleQ.id}">查看完整解析 →</a>
+      </div>
+      <h3>${U.esc(sampleQ.title)}</h3>
+      <div class="q-excerpt">${U.esc(sampleText)}${sampleText.length >= 260 ? "…" : ""}</div>
+      <div class="q-meta">
+        <span class="tag ${"diff-" + sampleQ.difficulty}">${U.esc(sampleQ.difficulty)}</span>
+        <span class="tag">${U.esc(sampleQ.type)}</span>
+        <span class="tag tag-primary">AI 评分 ${sampleQ.aiScore || "--"}</span>
+      </div>
+      <div class="note">结构化参考答案 + 常见追问 + 可练习作答，适合先看一道再决定是否开始。</div>
+    </article>` : "";
     const catCards = tree.map(c => {
       const empty = !c.count;
       return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
@@ -2083,19 +2116,15 @@
     } catch (e) {}
     setMain(`
       <section class="hero">
-        <h1>IT 面试题库 · 刷题 / 模拟面试</h1>
-        <p>覆盖完整技术体系与岗位体系的高频面试题库：在线刷题、错题间隔复习、模拟面试与学习周报，支持云端同步与离线使用。</p>
+        <h1>按岗位刷题，按难度进阶</h1>
+        <p>先选岗位或搜索关键词，直接进入对应题单；支持错题复习、模拟面试与学习周报。</p>
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
           <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
-          <a class="btn btn-lg" href="#/docs">${U.icon("bookOpen")} 技术教程</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
-
-      <!-- 每日一句：细横条形态（20260923a 由大卡改为 hero 下方的 slim strip，首屏让给真实内容） -->
-      <div id="daily-quote-mount"></div>
 
       <section class="stat-grid" style="margin-top:20px">
         <a class="stat stat-ring" href="#/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
@@ -2119,14 +2148,12 @@
           </svg>
           <div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div>
         </a>
-        <a class="stat stat-ring ai" href="#/panorama?view=ai" data-tooltip="点击查看 AI 生成题清单，共 ${stats.ai} 道，含来源构成条形图">
-          <svg class="ring-svg" viewBox="0 0 36 36">
-            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-ai" stroke-dasharray="${Math.min(stats.ai,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          </svg>
-          <div class="num" data-roll="${stats.ai}">0</div><div class="label">AI 生成题</div>
-        </a>
       </section>
+
+      ${roleShortcuts ? `<section class="home-roles">${roleShortcuts}</section>` : ""}
+
+      <!-- 每日一句：保留情绪价值，但不占用搜索后的第一屏决策区。 -->
+      <div id="daily-quote-mount"></div>
 
       <!-- 本机存储 / 登录同步的提示（2026-09-24 评审 P1-8）：原先挂在整页最末（移动端约第 11 屏），
            而它解释的是「为什么换台设备就没有记录」这个一定会被问到的问题 —— 移到学习数据区开头。 -->
@@ -2142,6 +2169,8 @@
 
       <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部 →</a></div>
       <div class="grid grid-cols-2 home-stages">${stageCards}</div>
+
+      ${sampleHtml}
 
       <div class="section-head"><h2>最新题目</h2><a class="more" href="#/questions?sort=updated">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(recent)}</div>

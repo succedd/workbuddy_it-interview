@@ -1,0 +1,79 @@
+.home-roles {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.home-role {
+  display: grid;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  text-decoration: none;
+}
+
+.home-role b {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.home-role span {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-role:hover {
+  border-color: var(--c-primary);
+  background: rgba(37, 99, 235, .06);
+}
+
+.home-sample {
+  margin-top: 20px;
+  padding: 18px;
+}
+
+.home-sample h3 {
+  margin: 12px 0 8px;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.home-sample .q-excerpt {
+  max-width: 780px;
+  line-height: 1.7;
+}
+
+.home-sample .q-meta {
+  margin-top: 12px;
+}
+
+.home-sample .note {
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .home-roles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .home-roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .home-role {
+    padding: 10px 11px;
+  }
+
+  .home-role span {
+    white-space: normal;
+  }
+}

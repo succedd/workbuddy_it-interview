@@ -7,7 +7,7 @@
  *    永远 cache-first 命中损坏脚本（用户表现为「全景图脚本加载失败：echarts」且 Ctrl+F5 无效）
  * 版本号变更即清理旧缓存，保证更新生效。
  */
-const VERSION = "20261007f";
+const VERSION = "20261009a";
 const CACHE = "iti-pwa-v" + VERSION;
 /* 大库期望字节数：与 vendor/ 实际文件一致；命中缓存但长度不符时自动回源重抓 */
 const LARGE_ASSETS = {
@@ -18,7 +18,7 @@ const APP_SHELL = [
   "/", "/index.html",
   "/css/variables.css?v=" + VERSION, "/css/style.css?v=" + VERSION,
   "/css/animations.css?v=" + VERSION, "/css/responsive.css?v=" + VERSION,
-  "/css/loader.css?v=" + VERSION, "/css/festival.css?v=" + VERSION, "/data/tech-maps.json",
+  "/css/loader.css?v=" + VERSION, "/css/festival.css?v=" + VERSION, "/css/home.css?v=" + VERSION, "/data/tech-maps.json",
   /* 27 个源文件已合并为 4 个 bundle（tools/bundle-js.py 生成），
      预缓存清单同步换成这 4 个 —— 否则会去缓存一批 index.html 根本不再引用的文件，
      既浪费安装期带宽，又让离线清单名不副实。
