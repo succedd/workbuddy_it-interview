@@ -56,6 +56,18 @@ async function expectVisible(page, selector, label) {
   }
 }
 
+async function expectNoHorizontalOverflow(page, label) {
+  const widths = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body ? document.body.scrollWidth : 0
+  }));
+  if (Math.max(widths.document, widths.body) > widths.viewport) {
+    throw new Error(label + " has horizontal overflow: " + JSON.stringify(widths));
+  }
+  console.log("  ok   " + label + " no horizontal overflow");
+}
+
 const playwright = await importPlaywright();
 if (!playwright) process.exit(0);
 const server = await startServer();
@@ -64,7 +76,7 @@ let passed = 0;
 
 try {
   browser = await playwright.chromium.launch({ channel: "chrome", headless: true });
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+  const context = await browser.newContext({ viewport: { width: 375, height: 812 }, serviceWorkers: "block" });
   await context.route("**/*", route => {
     const url = new URL(route.request().url());
     if (url.origin === BASE) return route.continue();
@@ -75,6 +87,7 @@ try {
 
   await page.goto(BASE + "/");
   await expectVisible(page, "#hero-search", "home search");
+  await expectNoHorizontalOverflow(page, "home");
   try {
     await page.waitForSelector(".modal-mask", { timeout: 3000 });
     await page.getByRole("button", { name: "暂不设置" }).click();
