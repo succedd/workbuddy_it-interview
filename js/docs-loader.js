@@ -49,13 +49,13 @@
     return "";
   })();
   var FILE_PATHS = [
-    "js/docs/java.js",
-    "js/docs/network.js",
-    "js/docs/dba.js",
-    "js/docs/frontend.js",
-    "js/docs/security.js",
-    "js/docs/devops.js",
-    "js/docs-data.js"
+    "/js/docs/java.js",
+    "/js/docs/network.js",
+    "/js/docs/dba.js",
+    "/js/docs/frontend.js",
+    "/js/docs/security.js",
+    "/js/docs/devops.js",
+    "/js/docs-data.js"
   ];
   function fileUrls() {
     var v = window.PAGE_VER || SELF_VER;
