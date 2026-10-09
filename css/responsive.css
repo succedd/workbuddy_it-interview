@@ -171,6 +171,15 @@ html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); bo
   #topbar .brand { min-height: 44px; }
   .btn-sm { height: 36px; }
   .hot-tags .tag { padding: 6px 12px; font-size: 13px; }
+
+  /* 400px 以下防横向溢出：品牌文字保留在链接里，但视觉只露出方形 logo。
+     溢出来源是「汉堡 + 品牌全名 + 搜索 + 主题 + 登录」，在 375px 约需 396px。 */
+  @media (max-width: 400px) {
+    #topbar { padding: 0 12px; gap: 10px; overflow: hidden; }
+    #topbar .brand { flex: 0 0 32px; width: 32px; overflow: hidden; }
+    .topbar-actions { gap: 4px; min-width: 0; }
+    .topbar-actions .btn-sm { padding: 0 10px; }
+  }
 }
 
 /* =========================================================================
