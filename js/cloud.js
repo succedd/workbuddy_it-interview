@@ -21,6 +21,7 @@
   const DEFAULT_REPO = "succedd/workbuddy_it-interview";
   const DEFAULT_BRANCH = "main";
   const FILE_PATH = "data/published.json";
+  const FILE_URL = "/" + FILE_PATH;
 
   const AUTO_DELAY = 10000;      // 防抖：最后一次改动 10 秒后自动发布
   const RETRY_DELAY = 90000;     // 失败后重试间隔
@@ -147,7 +148,7 @@
     const o = opts || {};
     const attempts = Math.max(1, o.attempts || FETCH_TRIES);
     const timeout = o.timeout || FETCH_MS_FULL;
-    const url = FILE_PATH + (noCache ? "?v=" + Date.now() : "");
+    const url = FILE_URL + (noCache ? "?v=" + Date.now() : "");
     const init = noCache ? { cache: "no-store" } : undefined;
     let reason = "", tries = 0;
     for (let i = 0; i < attempts; i++) {
@@ -192,8 +193,8 @@
    *     absorbRemote、verify-publish.py 的语义完全不变；
    *  ③ 分片只影响「本机题目表怎么被填满」，不改变 publishedAt 指纹语义，
    *     所以 version.json 的「指纹没变就跳过」逻辑依旧成立。 */
-  const MANIFEST_PATH = "data/manifest.json";
-  const SHARD_PATH = "data/shards/";
+  const MANIFEST_PATH = "/data/manifest.json";
+  const SHARD_PATH = "/data/shards/";
   const SHARD_TIMEOUT = 12000;
   C._shardCache = {};        /* 分片名 -> questions数组（内存，供同片多题复用） */
   C._shardFailed = {};       /* 分片名 -> true，本次会话内不再重试（避免反复超时拖慢） */
@@ -447,9 +448,10 @@
    * 判定用「严格相等」而非 <=：万一某次 version.json 发布失败停留在旧值，
    * 本地较新时会走全量拉取自愈，绝不会因 stale 指纹漏更新。 */
   C.META_PATH = "data/version.json";
+  C.META_URL = "/" + C.META_PATH;
   C.fetchMeta = async function () {
     try {
-      const r = await fetchT(C.META_PATH + "?v=" + Date.now(), { cache: "no-store" }, 6000);
+      const r = await fetchT(C.META_URL + "?v=" + Date.now(), { cache: "no-store" }, 6000);
       if (!r.ok) return null;
       const j = await r.json();
       if (j && Number.isInteger(j.publishedAt) && j.publishedAt >= 0 && Number.isInteger(j.count)) return j;
