@@ -15,6 +15,7 @@
 
   const LS_PASS = "backup_passphrase";
   const FILE_PATH = "data/local-backup.json";
+  const FILE_URL = "/" + FILE_PATH;
 
   /* 需要备份的 localStorage 键（云端发布 + AI + 统计 + 主题） */
   const LS_KEYS = [
@@ -119,7 +120,7 @@
 
   /* ---------- 从云端恢复 ---------- */
   B.fetchBackup = async function () {
-    const r = await fetch(FILE_PATH + "?v=" + Date.now(), { cache: "no-store" });
+    const r = await fetch(FILE_URL + "?v=" + Date.now(), { cache: "no-store" });
     if (!r.ok) throw new Error("云端没有备份文件（HTTP " + r.status + "）");
     return await r.json();
   };

@@ -203,7 +203,7 @@ function aiReportHtml(ai, row) {
   /* ==================== 登录 / 权限 门禁页 ==================== */
 
   function crumb(tail) {
-    return '<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>' + esc(tail) + "</span></div>";
+    return '<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>' + esc(tail) + "</span></div>";
   }
   function gate(icon, title, desc, btnText, onClick) {
     setMain(crumb(title) + '<div class="empty"><div class="em-ic">' + U.icon(icon) + "</div><h3>" + esc(title) + "</h3><p>" + esc(desc) + "</p>" +
@@ -292,7 +292,7 @@ function aiReportHtml(ai, row) {
         <div id="s-ts" style="margin:10px 0"></div>
         <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn btn-primary" id="s-go">${U.icon("sparkles")} 提交并接受 AI 质检</button>
-          <a class="btn" href="#/me/submissions">${U.icon("fileText")} 我的投稿</a>
+          <a class="btn" href="/me/submissions">${U.icon("fileText")} 我的投稿</a>
           <span id="s-quota" class="muted" style="font-size:13px"></span>
         </div>
       </div>
@@ -367,7 +367,7 @@ function aiReportHtml(ai, row) {
             ${r.banned
               ? '<button class="btn btn-danger" id="s-logout">' + U.icon("x") + " 退出登录</button>"
               : '<button class="btn btn-primary" id="s-again">' + U.icon("plus") + " 再投一题</button>" +
-                '<a class="btn" href="#/me/submissions">' + U.icon("fileText") + " 查看我的投稿</a>"}
+                '<a class="btn" href="/me/submissions">' + U.icon("fileText") + " 查看我的投稿</a>"}
           </div>
           ${r.banned ? '<div class="note" style="margin-top:12px">同一帐号累计 3 次投稿与 IT 技术无关的内容，账号已被永久禁用。如有异议请联系站点管理员。</div>' : ""}
         </div>`;
@@ -391,7 +391,7 @@ function aiReportHtml(ai, row) {
       $("#s-result").innerHTML = '<div class="card" style="margin-top:16px;border-left:4px solid #DC2626">' +
         '<div><span class="tag tag-danger">提交失败</span> ' + esc(msg) + "</div>" +
         (extra ? '<div class="muted" style="font-size:13px;margin-top:8px">' + esc(extra) + "</div>" : "") +
-        (st === 401 ? '<div style="margin-top:10px"><a class="btn btn-sm btn-primary" href="#/account">去登录</a></div>' : "") +
+        (st === 401 ? '<div style="margin-top:10px"><a class="btn btn-sm btn-primary" href="/account">去登录</a></div>' : "") +
         "</div>";
       if (st === 401) { A.logout(); refreshNav(); }
     }
@@ -471,7 +471,7 @@ function aiReportHtml(ai, row) {
         <span id="my-quota" class="muted" style="font-size:13px">加载中…</span>
         <span style="flex:1"></span>
         <button class="btn" id="my-refresh">${U.icon("refresh")} 刷新</button>
-        <a class="btn btn-primary" href="#/submit">${U.icon("plus")} 投稿新题</a>
+        <a class="btn btn-primary" href="/submit">${U.icon("plus")} 投稿新题</a>
       </div>
       <div class="card" style="padding:0"><table class="data">
         <thead><tr><th style="width:140px">提交时间</th><th>标题</th><th style="width:150px">AI 质检</th><th style="width:110px">审核状态</th><th style="width:240px">审核意见 / 入库编号</th><th style="width:90px">操作</th></tr></thead>
@@ -507,7 +507,7 @@ function aiReportHtml(ai, row) {
               ? '<button class="btn btn-sm" data-withdraw="' + s.id + '">撤回</button>'
               : '<span class="muted" style="font-size:12px">—</span>') + "</td>" +
           "</tr>";
-        }).join("") : '<tr><td colspan="6">还没有投稿记录。<a href="#/submit">去投第一题</a></td></tr>';
+        }).join("") : '<tr><td colspan="6">还没有投稿记录。<a href="/submit">去投第一题</a></td></tr>';
 
         $$("#my-tb button[data-withdraw]").forEach(function (b) {
           b.onclick = function () { withdraw(parseInt(b.dataset.withdraw, 10), b); };
@@ -819,7 +819,7 @@ function aiReportHtml(ai, row) {
       <div class="note">
         群组用来把审核任务按技术方向分派：<b>投稿里选的分类命中某组负责的分类，就会派给该组</b>；
         没有命中任何组的投稿归「未分配」，所有专家都能看到（避免没人管的分组把投稿卡死）。
-        成员只有角色为「专家」时才真的能进审核队列 —— 角色在<a href="#/admin/users">帐号管理</a>里设置。
+        成员只有角色为「专家」时才真的能进审核队列 —— 角色在<a href="/admin/users">帐号管理</a>里设置。
       </div>
       <div class="card">
         <h3 style="margin-top:0">新建群组</h3>
@@ -1007,7 +1007,7 @@ function aiReportHtml(ai, row) {
       <div class="toolbar">
         <span id="ib-info" class="muted" style="font-size:13px"></span>
         <span style="flex:1"></span>
-        <a class="btn" href="#/admin/questions">${U.icon("layers")} 题目管理</a>
+        <a class="btn" href="/admin/questions">${U.icon("layers")} 题目管理</a>
         <button class="btn" id="ib-refresh">${U.icon("refresh")} 刷新</button>
       </div>
       <div class="card" style="padding:0"><table class="data"><thead id="ib-head"></thead>
@@ -1052,7 +1052,7 @@ function aiReportHtml(ai, row) {
       if (!local) {
         cell = '<span class="tag tag-warning">本机已无此题</span><div class="muted" style="font-size:12px">#' + esc(bid) + "</div>";
       } else if (canOpen) {
-        cell = '<a class="btn btn-sm" href="#/admin/question/' + esc(bid) + '">#' + esc(bid) + "</a> " +
+        cell = '<a class="btn btn-sm" href="/admin/question/' + esc(bid) + '">#' + esc(bid) + "</a> " +
           (local.status === "published" ? '<span class="tag tag-success">已发布</span>' : '<span class="tag tag-outline">' + esc(local.status || "draft") + "</span>");
       } else {
         cell = "<span>#" + esc(bid) + '</span> <span class="tag tag-outline">' + esc(local.status || "draft") + '</span>' +

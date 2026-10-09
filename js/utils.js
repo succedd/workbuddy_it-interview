@@ -301,11 +301,11 @@
   /* 全局 CDN 兜底（jsdelivr 同步命中 GitHub，1MB 大库也能稳定加载） */
   const FALLBACKS = {
     echarts: [
-      "vendor/echarts.min.js",
+      "/vendor/echarts.min.js",
       "https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"
     ],
     xlsx: [
-      "vendor/xlsx.full.min.js",
+      "/vendor/xlsx.full.min.js",
       "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
     ]
   };
@@ -345,9 +345,9 @@
     })();
     return _scriptCache[name];
   };
-  U.CONFETTI_URL = "vendor/canvas-confetti.min.js";
-  U.ECHARTS_URL = "vendor/echarts.min.js";
-  U.XLSX_URL = "vendor/xlsx.full.min.js";
+  U.CONFETTI_URL = "/vendor/canvas-confetti.min.js";
+  U.ECHARTS_URL = "/vendor/echarts.min.js";
+  U.XLSX_URL = "/vendor/xlsx.full.min.js";
   /* 暴露给用户/调试：当前累计重试次数，0 表示首次 */
   U.loadRetries = name => _scriptRetries[name] || 0;
   /* 手动作废某个 name 的脚本缓存，让下次 U.loadScript(name) 走网络重抓（含新的 ?_t= 破缓存） */

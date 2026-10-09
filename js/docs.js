@@ -147,7 +147,7 @@
     return `<div class="empty" style="text-align:center;padding:48px 20px">
       <div style="font-size:15px;color:var(--text-secondary)">技术教程内容加载失败</div>
       <div class="muted" style="margin-top:8px;font-size:13px">请检查网络后重试；若已离线，请先打开一次首页让浏览器完成缓存。</div>
-      <a class="btn btn-primary" style="margin-top:16px" href="${retryHref || "#/docs"}">重新加载</a>
+      <a class="btn btn-primary" style="margin-top:16px" href="${retryHref || "/docs"}">重新加载</a>
     </div>`;
   }
 
@@ -172,7 +172,7 @@
           const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
           const chs = flat(d).filter(x => x.ch.body);
           return `
-          <a class="docs-dir-card" href="#/docs/${d.id}">
+          <a class="docs-dir-card" href="/docs/${d.id}">
             <h3>${d.icon || "📄"} ${U.esc(d.name)}${d.skeleton ? ' <span class="tag" style="font-size:11px">建设中</span>' : ""}</h3>
             <p>${U.esc(d.desc || "")}</p>
             <div class="doc-meta" style="margin-top:10px">
@@ -204,7 +204,7 @@
     const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">技术教程</a><span class="sep">/</span><span>${U.esc(dir.name)}</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/docs">技术教程</a><span class="sep">/</span><span>${U.esc(dir.name)}</span></div>
       <div class="hero" style="padding:20px 16px 16px">
         <h1 style="font-size:20px">${dir.icon || "📄"} ${U.esc(dir.name)}</h1>
         <p>${U.esc(dir.desc || "")}</p>
@@ -224,7 +224,7 @@
             ${lv.chapters.map((c, i) => {
               const d = isDone(dir.id, lv.id, c.id);
               return `
-              <a class="lv-item${d ? " done" : ""}" href="#/docs/${dir.id}/${lv.id}/${c.id}">
+              <a class="lv-item${d ? " done" : ""}" href="/docs/${dir.id}/${lv.id}/${c.id}">
                 <span class="lv-no">${d ? "✓" : (i + 1)}</span>
                 <span style="min-width:0;overflow:hidden;text-overflow:ellipsis">${U.esc(c.title)}</span>
                 <span class="lv-meta">${c.body ? (c.minutes ? c.minutes + " 分钟" : "可读") : "待写"}</span>
@@ -261,7 +261,7 @@
           ${l.chapters.map(c => {
             const active = (l.id === lv.id && c.id === ch.id);
             const d = isDone(dir.id, l.id, c.id);
-            return `<a class="dt-item${active ? " active" : ""}${d ? " done" : ""}" href="#/docs/${dir.id}/${l.id}/${c.id}">${d ? "✓ " : ""}${U.esc(c.title)}</a>`;
+            return `<a class="dt-item${active ? " active" : ""}${d ? " done" : ""}" href="/docs/${dir.id}/${l.id}/${c.id}">${d ? "✓ " : ""}${U.esc(c.title)}</a>`;
           }).join("")}
         `).join("")}
       </div>`;
@@ -270,11 +270,11 @@
       ? `<div class="doc-body">${U.md(ch.body)}</div>`
       : `<div class="empty" style="padding:40px 0"><div class="em-ic">✍️</div><h3>内容建设中</h3>
            <p>这一章的目录已规划，正文正在整理。可以先看同级的其它章节，或去「技术体系」里刷这个方向的题。</p>
-           <a class="btn btn-primary" href="#/docs/${dir.id}">返回目录</a></div>`;
+           <a class="btn btn-primary" href="/docs/${dir.id}">返回目录</a></div>`;
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/docs">技术教程</a><span class="sep">/</span>
-        <a href="#/docs/${dir.id}">${U.esc(dir.name)}</a><span class="sep">/</span><span>${U.esc(lv.name)}</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/docs">技术教程</a><span class="sep">/</span>
+        <a href="/docs/${dir.id}">${U.esc(dir.name)}</a><span class="sep">/</span><span>${U.esc(lv.name)}</span></div>
       <div class="docs-wrap">
         ${toc}
         <div class="docs-body">
@@ -291,13 +291,13 @@
             ${bodyHtml}
             <div class="doc-done-bar">
               <button class="btn ${done ? "" : "btn-primary"}" id="doc-done">${done ? "✓ 已学完（点击取消）" : "标记本章已学完"}</button>
-              ${next ? `<a class="btn" href="#/docs/${dir.id}/${next.lv.id}/${next.ch.id}">继续下一章 →</a>` : `<span class="muted" style="font-size:13px">🎉 本方向已读到最后一章</span>`}
+              ${next ? `<a class="btn" href="/docs/${dir.id}/${next.lv.id}/${next.ch.id}">继续下一章 →</a>` : `<span class="muted" style="font-size:13px">🎉 本方向已读到最后一章</span>`}
             </div>
           </div>
           <div class="doc-nav">
-            ${prev ? `<a href="#/docs/${dir.id}/${prev.lv.id}/${prev.ch.id}"><span class="dn-t">← 上一章（${U.esc(prev.lv.name)}）</span>${U.esc(prev.ch.title)}</a>`
+            ${prev ? `<a href="/docs/${dir.id}/${prev.lv.id}/${prev.ch.id}"><span class="dn-t">← 上一章（${U.esc(prev.lv.name)}）</span>${U.esc(prev.ch.title)}</a>`
                    : `<a style="opacity:.5;pointer-events:none"><span class="dn-t">← 上一章</span>已经是第一章</a>`}
-            ${next ? `<a class="next" href="#/docs/${dir.id}/${next.lv.id}/${next.ch.id}"><span class="dn-t">下一章（${U.esc(next.lv.name)}）→</span>${U.esc(next.ch.title)}</a>`
+            ${next ? `<a class="next" href="/docs/${dir.id}/${next.lv.id}/${next.ch.id}"><span class="dn-t">下一章（${U.esc(next.lv.name)}）→</span>${U.esc(next.ch.title)}</a>`
                    : `<a class="next" style="opacity:.5;pointer-events:none"><span class="dn-t">下一章 →</span>已经是最后一章</a>`}
           </div>
           <div class="card" id="doc-qs" style="margin-top:14px${ch.body ? "" : ";display:none"}">
@@ -350,7 +350,7 @@
         return;
       }
       box.innerHTML = hits.map(q => `
-        <a class="q-mini" href="#/question/${q.id}">
+        <a class="q-mini" href="/question/${q.id}">
           <span style="flex:none">📝</span>
           <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span>
           <span class="tag" style="margin-left:auto;flex:none">${U.esc(q.difficulty || "—")}</span>

@@ -225,8 +225,8 @@
       <h2>页面不存在</h2>
       <p class="secondary">访问的地址 <code>${U.esc("#/" + (path || ""))}</code> 不存在或已被移动。</p>
       <div class="pill-row" style="justify-content:center;margin-top:16px">
-        <a class="btn btn-primary" href="#/">${U.icon("home")} 返回首页</a>
-        <a class="btn" href="#/questions">${U.icon("layers")} 浏览题目</a>
+        <a class="btn btn-primary" href="/">${U.icon("home")} 返回首页</a>
+        <a class="btn" href="/questions">${U.icon("layers")} 浏览题目</a>
       </div></div>`);
   }
 
@@ -259,22 +259,22 @@
     const adminHtml = Auth.isAdmin()
       ? `<div class="dropdown-wrap desktop-only"><button class="btn btn-ghost btn-sm" id="admin-btn">${U.icon("shield")} 管理</button>
          <div class="dropdown" id="admin-menu" style="display:none">
-           <a href="#/admin/dashboard">${U.icon("barChart")} 仪表盘</a>
-           <a href="#/admin/questions">${U.icon("fileText")} 题目管理</a>
-           <a href="#/admin/categories">${U.icon("layers")} 分类管理</a>
-           <a href="#/admin/positions">${U.icon("briefcase")} 岗位管理</a>
-           <a href="#/admin/ai">${U.icon("sparkles")} AI 出题</a>
-           <a href="#/admin/import">${U.icon("upload")} 批量导入</a>
-           <a href="#/admin/backup">${U.icon("database")} 备份恢复</a>
-           ${(window.Account && Account.isServerAdmin()) ? `<a href="#/admin/users">${U.icon("users")||U.icon("user")} 帐号管理</a>` : ""}
-           <a href="#/admin/settings">${U.icon("settings")||U.icon("user")} 系统设置</a>
+           <a href="/admin/dashboard">${U.icon("barChart")} 仪表盘</a>
+           <a href="/admin/questions">${U.icon("fileText")} 题目管理</a>
+           <a href="/admin/categories">${U.icon("layers")} 分类管理</a>
+           <a href="/admin/positions">${U.icon("briefcase")} 岗位管理</a>
+           <a href="/admin/ai">${U.icon("sparkles")} AI 出题</a>
+           <a href="/admin/import">${U.icon("upload")} 批量导入</a>
+           <a href="/admin/backup">${U.icon("database")} 备份恢复</a>
+           ${(window.Account && Account.isServerAdmin()) ? `<a href="/admin/users">${U.icon("users")||U.icon("user")} 帐号管理</a>` : ""}
+           <a href="/admin/settings">${U.icon("settings")||U.icon("user")} 系统设置</a>
            <div class="sep"></div>
            <a href="#" id="admin-logout">${U.icon("x")} 退出管理</a>
          </div></div>`
       : `<button class="btn btn-ghost btn-icon desktop-only" id="admin-login-btn" title="管理员登录" aria-label="管理员登录">${U.icon("shield")}</button>`;
     topbar.innerHTML = `
       <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="打开菜单">${U.icon("menu")}</button>
-      <a class="brand" href="#/"><span class="logo">I</span> IT面试题库</a>
+      <a class="brand" href="/"><span class="logo">I</span> IT面试题库</a>
       <div class="topbar-search">
         <span class="icon">${U.icon("search")}</span>
         <input id="global-search" type="text" placeholder="搜索题目、技术、岗位、标签…" />
@@ -284,16 +284,16 @@
              这 5 个入口在 ≤720px 由 .desktop-only 隐藏：它们与底部 tab 栏 / 抽屉里的同名入口
              完全重复，而顶栏在手机上根本放不下（实测 390px 溢出 172px，导致主题键被裁、
              「登录」「管理员」被挤出屏外）。保留主题键与帐号入口。 -->
-        <a class="top-link desktop-only" href="#/category" title="按技术方向分层的知识体系">技术体系</a>
-        <a class="top-link desktop-only" href="#/position" title="按求职岗位组织的题库">岗位体系</a>
-        <a class="top-link desktop-only" href="#/mock" title="限时模拟真实面试流程">模拟面试</a>
-        <a class="top-link desktop-only" href="#/favorites" title="你收藏的题目">收藏夹</a>
-        <a class="top-link desktop-only" href="#/submit" title="投稿你的面试题，审核通过后收录">投稿</a>
+        <a class="top-link desktop-only" href="/category" title="按技术方向分层的知识体系">技术体系</a>
+        <a class="top-link desktop-only" href="/position" title="按求职岗位组织的题库">岗位体系</a>
+        <a class="top-link desktop-only" href="/mock" title="限时模拟真实面试流程">模拟面试</a>
+        <a class="top-link desktop-only" href="/favorites" title="你收藏的题目">收藏夹</a>
+        <a class="top-link desktop-only" href="/submit" title="投稿你的面试题，审核通过后收录">投稿</a>
         ${(window.Account && Account.isReviewer())
-          ? `<a class="top-link desktop-only" href="#/admin/submissions" title="审核用户投稿的题目（待审 ${App.reviewPending || 0} 条）">审核${App.reviewPending ? `<span class="badge-dot">${App.reviewPending}</span>` : ""}</a>`
+          ? `<a class="top-link desktop-only" href="/admin/submissions" title="审核用户投稿的题目（待审 ${App.reviewPending || 0} 条）">审核${App.reviewPending ? `<span class="badge-dot">${App.reviewPending}</span>` : ""}</a>`
           : ""}
         ${(window.Account && Account.isServerAdmin())
-          ? `<a class="top-link desktop-only" href="#/admin/inbox" title="审核通过、待收录入库的题目（${App.inboxPending || 0} 条）">待入库${App.inboxPending ? `<span class="badge-dot">${App.inboxPending}</span>` : ""}</a>`
+          ? `<a class="top-link desktop-only" href="/admin/inbox" title="审核通过、待收录入库的题目（${App.inboxPending || 0} 条）">待入库${App.inboxPending ? `<span class="badge-dot">${App.inboxPending}</span>` : ""}</a>`
           : ""}
         <!-- 移动端常驻搜索入口（2026-09-24 评审 P1-4）：顶栏搜索框在 ≤720px 被隐藏、
             抽屉里的搜索要点开汉堡才够得着 —— 在题库页或详情页想换一道题，只能先回首页。
@@ -302,7 +302,7 @@
         <button class="icon-btn" id="theme-btn" title="${themeLabel}" aria-label="切换主题（当前${themeLabel}）">${U.icon(themeIcon)}</button>
         ${Cloud.isEditor() ? `<span id="autopub-chip" class="vis-chip autopub" style="display:none"></span>` : ""}
         <span id="net-chip" class="vis-chip net-off" style="display:none" title="当前无网络连接，展示的是本地缓存的数据">⚡ 离线 · 本地缓存</span>
-        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="#/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="#/account" title="登录 / 注册帐号">${U.icon("user")} 登录</a>`}
+        ${(window.Account && Account.isLoggedIn()) ? (() => { const u = Account.getUser(); return `<a class="btn btn-ghost btn-sm" href="/account" title="我的帐号（${Account.roleLabel(u.role)}）" style="gap:6px">${U.icon("user")} <span class="acct-name">${U.esc((u.nick || u.email).split("@")[0].slice(0, 10))}</span>${u.role === "admin" ? '<span class="tag tag-primary" style="transform:scale(.85)">管</span>' : u.role === "expert" ? '<span class="tag tag-ai" style="transform:scale(.85)">专</span>' : ""}</a>`; })() : `<a class="btn btn-ghost btn-sm" href="/account" title="登录 / 注册帐号">${U.icon("user")} 登录</a>`}
         ${adminHtml}
         <!-- 顶栏的「本机访问 N | 累计 N」已移除（2026-09-24 评审 P2-11）：
              它是内部埋点口径的自家数字（非全站 PV），挂在每一次页面浏览的右上角既占位又要解释，
@@ -465,22 +465,22 @@
            「我的投稿」只在登录后出现：未登录时它必然是空的，摆着只占位置。
            20260919j：整块改成可折叠分区（默认展开）。 -->
       ${navSec("submit", "nav-cta-title", `
-        ${navItem("#/submit", "plus", "投稿题目", p0 === "submit", 0, "nav-cta")}
-        ${(window.Account && Account.isLoggedIn()) ? navItem("#/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions") : ""}`)}
+        ${navItem("/submit", "plus", "投稿题目", p0 === "submit", 0, "nav-cta")}
+        ${(window.Account && Account.isLoggedIn()) ? navItem("/me/submissions", "fileText", "我的投稿", p0 === "me" && r.parts[1] === "submissions") : ""}`)}
       ${navSec("nav", "", `
-        ${navItem("#/", "home", "首页", p0 === "home")}
-        ${navItem("#/docs", "bookOpen", "技术教程", p0 === "docs")}
-        ${navItem("#/position", "briefcase", "岗位体系", p0 === "position")}
-        ${navItem("#/category", "layers", "技术体系", p0 === "category")}
-        ${navItem("#/roadmap", "map", "刷题计划", p0 === "roadmap")}
-        ${navItem("#/mock", "play", "模拟面试", p0 === "mock")}
-        ${navItem("#/random", "dice", "随机一题", p0 === "random")}
-        ${navItem("#/practice", "refresh", "刷题练习", p0 === "practice")}
-        ${navItem("#/favorites", "bookmark", "收藏夹", p0 === "favorites")}
-        ${navItem("#/history", "history", "浏览历史", p0 === "history")}
-        ${navItem("#/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
-        ${navItem("#/help", "fileText", "使用指南", p0 === "help")}
-        ${navItem("#/about", "info", "关于本站", p0 === "about")}`)}`;
+        ${navItem("/", "home", "首页", p0 === "home")}
+        ${navItem("/docs", "bookOpen", "技术教程", p0 === "docs")}
+        ${navItem("/position", "briefcase", "岗位体系", p0 === "position")}
+        ${navItem("/category", "layers", "技术体系", p0 === "category")}
+        ${navItem("/roadmap", "map", "刷题计划", p0 === "roadmap")}
+        ${navItem("/mock", "play", "模拟面试", p0 === "mock")}
+        ${navItem("/random", "dice", "随机一题", p0 === "random")}
+        ${navItem("/practice", "refresh", "刷题练习", p0 === "practice")}
+        ${navItem("/favorites", "bookmark", "收藏夹", p0 === "favorites")}
+        ${navItem("/history", "history", "浏览历史", p0 === "history")}
+        ${navItem("/review", "alert", "错题重练", p0 === "review", App.reviewDue || 0)}
+        ${navItem("/help", "fileText", "使用指南", p0 === "help")}
+        ${navItem("/about", "info", "关于本站", p0 === "about")}`)}`;
 
     /* 移动端专属：「管理员登录」入口。原先的理由是「必须插在技术分类之前」（分类树很长，
        放最后会被埋到抽屉底部）；2026-09-23 晚侧栏分类树已整体移除，这个约束随之消失，
@@ -503,24 +503,24 @@
        curCatOpen 状态、「查看全部技术分类」入口 —— 均已一并删除，不留死代码。 */
     if (Auth.isAdmin()) {
       html += navSec("admin", "", `
-        ${navItem("#/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
-        ${navItem("#/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
-        ${navItem("#/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
-        ${navItem("#/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`);
+        ${navItem("/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
+        ${navItem("/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
+        ${navItem("/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
+        ${navItem("/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`);
     }
     /* 审核队列（20260919f）：admin + expert 都能进（服务端按 role 裁剪可见范围）。
        角标 = 待审条数，由 Submit.refreshPending() 异步拉取后回写 App.reviewPending。 */
     if (window.Account && Account.isReviewer()) {
       html += navSec("review", "", `
-        ${navItem("#/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`);
+        ${navItem("/admin/submissions", "check", "投稿审核", p0 === "admin" && r.parts[1] === "submissions", App.reviewPending || 0)}`);
     }
     /* 服务端管理员（20260913f）：帐号管理入口不依赖本地密码门禁；
        待入库（20260919h）同理 —— 它是「审核 → 入库」的收尾步骤，只给管理员。 */
     if (window.Account && Account.isServerAdmin()) {
       html += navSec("site", "", `
-        ${navItem("#/admin/inbox", "download", "待入库", p0 === "admin" && r.parts[1] === "inbox", App.inboxPending || 0)}
-        ${navItem("#/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
-        ${navItem("#/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`);
+        ${navItem("/admin/inbox", "download", "待入库", p0 === "admin" && r.parts[1] === "inbox", App.inboxPending || 0)}
+        ${navItem("/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
+        ${navItem("/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`);
     }
     sidebar.innerHTML = html;
     renderTabbar(r);         // 底部 tab 栏与侧栏同源更新（含待复习角标）
@@ -571,11 +571,11 @@
       `${U.icon(icon)}<span>${label}</span>` +
       `${badge ? `<i class="tab-badge">${badge > 99 ? "99+" : badge}</i>` : ""}</a>`;
     el.innerHTML =
-      item("#/", "home", "首页", p0 === "home") +
-      item("#/questions", "layers", "题库", p0 === "questions") +
-      item("#/practice", "refresh", "刷题", p0 === "practice") +
-      item("#/review", "alert", "错题", p0 === "review", due) +
-      item("#/favorites", "bookmark", "收藏", p0 === "favorites");
+      item("/", "home", "首页", p0 === "home") +
+      item("/questions", "layers", "题库", p0 === "questions") +
+      item("/practice", "refresh", "刷题", p0 === "practice") +
+      item("/review", "alert", "错题", p0 === "review", due) +
+      item("/favorites", "bookmark", "收藏", p0 === "favorites");
     /* 2026-09-24 去掉第 6 项「投稿」及其 .tab-cta 实心圆底：
        ① 6 项在 375px 屏上每项只剩 63px，首尾相接没有呼吸感（实测 x=0/63/125/188/250/313）；
        ② 「投稿」是低频动作（写完一道题才用一次），做成带脉冲的蓝色圆钮后视觉重心远超
@@ -663,11 +663,11 @@
     const restTags = tagList.filter(t => t !== mainTag);
     const posList = (q.positionNames || []).filter(Boolean);
     const posFold = posList.length === 1
-      ? `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();location.href='#/questions?pos=${encodeURIComponent(posList[0])}'">${U.esc(posList[0])}</span>`
+      ? `<span class="tag tag-outline" style="cursor:pointer" onclick="event.preventDefault();event.stopPropagation();App.go('/questions?pos=${encodeURIComponent(posList[0])}')">${U.esc(posList[0])}</span>`
       : (posList.length > 1
         ? `<span class="tag tag-outline tag-fold" title="${U.esc(posList.join(" / "))}">+${posList.length} 岗位</span>`
         : "");
-    return `<a class="card card-hover q-card" href="#/question/${q.id}">
+    return `<a class="card card-hover q-card" href="/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
       <div class="q-excerpt">${hl((q.body || "").replace(/[#*`>]/g, "").slice(0, 100), "body")}</div>
       <div class="q-meta">
@@ -785,16 +785,31 @@
 
   function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function getProfile() {
+    try { return JSON.parse(localStorage.getItem("iti_profile") || "{}"); } catch (e) { return {}; }
+  }
+  function saveProfile(p) {
+    try { localStorage.setItem("iti_profile", JSON.stringify(p || {})); } catch (e) {}
+  }
   /* 今日5题：以日期字符串为种子的确定性抽样——当天固定，次日自动更换 */
   function todayFive() {
-    const pool = Services.questions.filter(q => q.status === "published").map(q => q.id);
+    const profile = getProfile();
+    let pool = Services.questions.filter(q => q.status === "published");
+    if (profile.posid) {
+      const pos = Services.getPosition(parseInt(profile.posid));
+      if (pos) pool = pool.filter(q => Services.matchPosition(q, pos));
+    }
+    if (profile.years === "0-1年") pool = pool.filter(q => q.difficulty === "初级" || q.difficulty === "中级");
+    else if (profile.years === "1-3年") pool = pool.filter(q => q.difficulty !== "专家");
+    if (pool.length < 5) pool = Services.questions.filter(q => q.status === "published");
+    pool = pool.map(q => q.id);
     const dk = dateKey();
     let h = 2166136261;
     for (let i = 0; i < dk.length; i++) { h ^= dk.charCodeAt(i); h = Math.imul(h, 16777619); }
     const rnd = mulberry32(h >>> 0);
     const arr = pool.slice();
     for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
-    return arr.slice(0, Math.min(5, arr.length));
+    return arr.slice(0, Math.min(Math.max(parseInt(profile.daily, 10) || 5, 1), 20, arr.length));
   }
   /* 温故知新：3-30 天前浏览过、未进错题本、今日未打卡的题，混入今日清单前 2 位
      （设置开关 review_stale，默认关；候选按「最久未看优先」，同日内稳定） */
@@ -890,7 +905,7 @@
       if (!pos) return "";
       const count = Services.questions.filter(q => (q.positionNames || []).some(n => names.has(n))
         || (q.positionIds || []).some(id => Services.positions.some(p => p.id === id && names.has(Services.posFullName(p))))).length;
-      return `<a class="home-role" href="#/quiz?posid=${pos.id}&n=20">
+      return `<a class="home-role" href="/quiz?posid=${pos.id}&n=20">
         <span class="home-role-icon">${U.icon(role.icon)}</span>
         <b>${U.esc(role.label)}</b>
         <span>${count} 题 · 一键小测</span>
@@ -903,7 +918,7 @@
     const sampleHtml = sampleQ ? `<article class="card home-sample">
       <div class="section-head" style="margin:0">
         <h2>答案质量示例</h2>
-        <a class="more" href="#/question/${sampleQ.id}">查看完整解析 →</a>
+        <a class="more" href="/question/${sampleQ.id}">查看完整解析 →</a>
       </div>
       <h3>${U.esc(sampleQ.title)}</h3>
       <div class="q-excerpt">${U.esc(sampleText)}${sampleText.length >= 260 ? "…" : ""}</div>
@@ -916,7 +931,7 @@
     </article>` : "";
     const catCards = coreSystems.map(c => {
       const empty = !c.count;
-      return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
+      return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="/category?cat=${c.id}" style="text-decoration:none">
         ${empty ? `<span class="soon-chip">即将上线</span>` : ""}
         <div style="font-size:24px">${U.esc(c.icon || "📁")}</div>
         <div style="font-weight:600;margin-top:6px">${U.esc(c.name)}</div>
@@ -933,14 +948,14 @@
       const rows = five.map(id => {
         const q = qById(id); if (!q) return "";
         const ok = doneSet.indexOf(id) >= 0;
-        return `<a href="#/question/${id}" style="text-decoration:none;display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--border)">
+        return `<a href="/question/${id}" style="text-decoration:none;display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--border)">
           <span>${ok ? "✅" : "⬜"}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`;
       }).join("");
       fiveHtml = `<div class="card" style="padding:16px 18px">
         <div style="display:flex;align-items:center;margin-bottom:10px"><span style="font-size:20px">🎯</span><b style="margin-left:8px">今日 5 题</b>
           <span class="tag ${fiveLeft.length ? "tag-primary" : "tag-success"}" style="margin-left:auto">${doneSet.filter(id => five.indexOf(id) >= 0).length}/${five.length}</span></div>
         <div class="daily-list">${rows}</div>
-        ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="#/question/${fiveLeft[0]}">开始刷题 →</a>`
+        ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="/question/${fiveLeft[0]}">开始刷题 →</a>`
                           : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
         <label style="margin-top:10px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
       </div>`;
@@ -958,7 +973,7 @@
     try {
       const lq = JSON.parse(localStorage.getItem("last_question") || "null");
       if (lq && lq.id && lq.title && Services.questions.some(x => x.id === lq.id)) {
-        resumeHtml = `<a class="card card-hover" href="#/question/${lq.id}" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px 18px">
+        resumeHtml = `<a class="card card-hover" href="/question/${lq.id}" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px 18px">
           <span style="font-size:22px">📖</span>
           <span style="flex:1;min-width:0"><b>继续上次</b><span class="muted" style="margin-left:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:70%;vertical-align:bottom">${U.esc(lq.title)}</span></span>
           <span class="tag tag-primary">继续 →</span></a>`;
@@ -1021,7 +1036,7 @@
         weakCatsAll[q.categoryId] = (weakCatsAll[q.categoryId] || 0) + 1;
         if ((w.createdAt || 0) >= ws) weakCatsWeek[q.categoryId] = (weakCatsWeek[q.categoryId] || 0) + 1;
       }
-      const catTag = ([cid, n]) => { const c = Services.catMap.get(parseInt(cid)) || Services.catMap.get(cid); const name = c ? c.name : ("#" + cid); return `<a class="tag tag-outline" href="#/questions?cat=${cid}">${U.esc(name)} <b>${n}</b></a>`; };
+      const catTag = ([cid, n]) => { const c = Services.catMap.get(parseInt(cid)) || Services.catMap.get(cid); const name = c ? c.name : ("#" + cid); return `<a class="tag tag-outline" href="/questions?cat=${cid}">${U.esc(name)} <b>${n}</b></a>`; };
       const weekTop = Object.entries(weakCatsWeek).sort((a, b) => b[1] - a[1]).slice(0, 3);
       const allTop = Object.entries(weakCatsAll).sort((a, b) => b[1] - a[1]).slice(0, 3);
       const catLine = weekTop.length
@@ -1036,8 +1051,8 @@
       const weakDetails = weekWeakQs.length
         ? `<details class="wk-sec">
             <summary><b>本周标记不会的题</b> <span class="muted" style="font-size:12px">（${weekWeakNew} 道）</span></summary>
-            <div style="margin-top:4px">${weekWeakQs.map(q => `<a href="#/question/${q.id}" style="text-decoration:none;display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border)"><span>❌</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`).join("")}
-            <a href="#/review" class="muted" style="font-size:12px;display:inline-block;margin-top:6px">全部都在错题重练 →</a></div>
+            <div style="margin-top:4px">${weekWeakQs.map(q => `<a href="/question/${q.id}" style="text-decoration:none;display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border)"><span>❌</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(q.title)}</span></a>`).join("")}
+            <a href="/review" class="muted" style="font-size:12px;display:inline-block;margin-top:6px">全部都在错题重练 →</a></div>
           </details>`
         : "";
 
@@ -1081,7 +1096,7 @@
           <span class="wk-actions"><button id="wk-history-btn" class="btn btn-sm">历史</button><button id="wk-share-btn" class="btn btn-sm">📸 分享周报</button></span></div>
         <div id="wk-history" style="display:none"></div>
         ${allZero
-          ? `<div style="text-align:center;padding:6px 0 2px"><div style="font-size:15px">本周还没开始，随时可以出发 💪</div><div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="#/random">随机来一题 →</a> <a class="btn btn-sm" href="#/practice">进入刷题</a></div></div>`
+          ? `<div style="text-align:center;padding:6px 0 2px"><div style="font-size:15px">本周还没开始，随时可以出发 💪</div><div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="/random">随机来一题 →</a> <a class="btn btn-sm" href="/practice">进入刷题</a></div></div>`
           : `<div class="wk-stats">
               <div class="wk-stat"><div class="wk-num" style="color:var(--c-primary)">${weekQs}${trendBadge(weekQs, prevQs, false)}</div><div class="wk-label">刷题数 · 不同题</div></div>
               <div class="wk-stat"><div class="wk-num" style="color:var(--c-warning)">${weekDays}${trendBadge(weekDays, prevDays, false)}</div><div class="wk-label">完成5题天数</div></div>
@@ -1195,6 +1210,15 @@
         }
       };
     } catch (e) { weekHtml = ""; }
+    const quizStats = (Stats.getLocalStats() || {}).quizWeek || {};
+    const quizStatsHtml = quizStats.count ? `<div class="card" style="padding:16px 18px">
+      <div class="wk-head"><span style="font-size:20px">🎯</span><b style="margin-left:8px">小测看板</b></div>
+      <div class="wk-stats">
+        <div class="wk-stat"><div class="wk-num" style="color:var(--c-primary)">${quizStats.count}</div><div class="wk-label">本周小测</div></div>
+        <div class="wk-stat"><div class="wk-num" style="color:var(--c-success,var(--c-primary))">${quizStats.score}%</div><div class="wk-label">自评掌握率</div></div>
+        <div class="wk-stat"><div class="wk-num" style="color:var(--c-warning)">${quizStats.avgSec || 0}s</div><div class="wk-label">平均每题耗时</div></div>
+      </div>
+    </div>` : "";
     /* —— 到期复习横幅：有到期题时在首页最顶部醒目提醒（比侧边栏小圆点显眼得多） —— */
     let dueBannerHtml = "";
     try {
@@ -1202,7 +1226,7 @@
       const dn = (wl.due || []).length;
       App.reviewDue = dn;
       if (dn > 0) {
-        dueBannerHtml = `<a class="review-banner" href="#/review" style="margin-top:20px">
+        dueBannerHtml = `<a class="review-banner" href="/review" style="margin-top:20px">
           <span class="rb-count">${dn}</span>
           <span class="rb-txt"><b>今天有 ${dn} 道题到复习时间了</b>
             <div class="rb-sub">趁还记得赶紧巩固，错过这次复习间隔会拉得更长</div></span>
@@ -1216,28 +1240,29 @@
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
-          <a class="btn btn-lg" href="#/mock">${U.icon("play")} 模拟面试</a>
-          <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
+          <a class="btn btn-lg" href="/mock">${U.icon("play")} 模拟面试</a>
+          <a class="btn btn-lg" href="/random">${U.icon("dice")} 随机一题</a>
+          <button class="btn btn-lg" id="profile-btn">${U.icon("user")} 定制计划</button>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
       </section>
 
       <section class="stat-grid" style="margin-top:20px">
-        <a class="stat stat-ring" href="#/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
+        <a class="stat stat-ring" href="/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             <path class="ring-fg ring-fg-blue" stroke-dasharray="${Math.min(tree.length,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div>
         </a>
-        <a class="stat stat-ring" href="#/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
+        <a class="stat stat-ring" href="/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             <path class="ring-fg ring-fg-green" stroke-dasharray="${Math.min(stats.total,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div>
         </a>
-        <a class="stat stat-ring" href="#/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
+        <a class="stat stat-ring" href="/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
           <svg class="ring-svg" viewBox="0 0 36 36">
             <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             <path class="ring-fg ring-fg-purple" stroke-dasharray="${Math.min(stats.positions,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -1260,30 +1285,33 @@
       <section class="home-learning">
         <div class="section-head" style="margin:0 0 10px">
           <h2>学习进度</h2>
-          <a class="more" href="#/?to=week-report">查看周报 →</a>
+          <a class="more" href="/?to=week-report">查看周报 →</a>
         </div>
         ${dueBannerHtml}
         ${resumeHtml ? `<div>${resumeHtml}</div>` : ""}
         ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2">${streakHtml}${fiveHtml}</div>` : ""}
         ${weekHtml}
+        ${quizStatsHtml}
       </section>
 
-      <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
+      <div class="section-head"><h2>技术体系</h2><a class="more" href="/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto home-cats">${catCards}</div>
 
-      <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部岗位 →</a></div>
+      <div class="section-head"><h2>岗位体系</h2><a class="more" href="/position">查看全部岗位 →</a></div>
       <div class="home-pos-links">${roleShortcuts}</div>
 
-      <div class="section-head"><h2>最新题目</h2><a class="more" href="#/questions?sort=updated">更多 →</a></div>
+      <div class="section-head"><h2>最新题目</h2><a class="more" href="/questions?sort=updated">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(recent)}</div>
 
-      <div class="section-head"><h2>精选题目（AI 评分最高）</h2><a class="more" href="#/questions?sort=aiScore">更多 →</a></div>
+      <div class="section-head"><h2>精选题目（AI 评分最高）</h2><a class="more" href="/questions?sort=aiScore">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(best)}</div>
     `, () => {
       if (App._wkInit) App._wkInit();
       if (window.DailyQuote) window.DailyQuote.mount(document.getElementById("daily-quote-mount"));
     });
-    const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); App.go("/questions?q=" + encodeURIComponent(v)); } };
+    maybeOnboarding();
+    $("#profile-btn").onclick = () => maybeOnboarding(true);
+    const heroGo = t => { const v = (t || $("#hero-search").value).trim(); if (v) { shPush(v); Stats.recordAction("home_search", v); App.go("/questions?q=" + encodeURIComponent(v)); } };
     $("#hero-search").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.value.trim()) heroGo(); });
     $("#hero-go").onclick = () => heroGo();
     attachHistory($("#hero-search"), heroGo);
@@ -1295,11 +1323,39 @@
       pageHome();
     };
     $$(".hot-tags .tag").forEach(t => t.onclick = () => App.go("/questions?q=" + encodeURIComponent(t.dataset.tag)));
+    $$(".home-role").forEach(a => a.addEventListener("click", () => Stats.recordAction("role_entry", a.textContent.trim().slice(0, 60))));
     $$("#main .num[data-roll]").forEach(el => U.rollNumber(el, parseInt(el.dataset.roll)));
     /* 深链滚到首页某区块（如页脚「学习周报」→ #/?to=week-report）。
        只认白名单内的 id，避免任意 id 被构造成跳转；滚完把 to 从 hash 里摘掉，
        免得用户手动返回时又被滚一次。 */
     scrollToSection(HOME_SCROLL_TARGETS);
+  }
+
+  function maybeOnboarding(force) {
+    try {
+      if (!force && (localStorage.getItem("iti_profile") || localStorage.getItem("iti_onboard_skip") === "1")) return;
+      const roles = [["42", "Java 后端"], ["37", "前端"], ["100", "算法"], ["86", "运维 / DevOps"], ["101", "AI / 大模型"], ["27", "测试"]];
+      const m = U.modal({ title: "定制你的刷题计划", closable: false });
+      m.body.innerHTML = `
+        <label class="field"><span>目标岗位</span><select id="ob-pos" class="full">${roles.map(r => `<option value="${r[0]}">${r[1]}</option>`).join("")}</select></label>
+        <label class="field"><span>工作年限</span><select id="ob-year" class="full">${["0-1年","1-3年","3-5年","5年以上"].map(y => `<option>${y}</option>`).join("")}</select></label>
+        <label class="field"><span>每日目标</span><select id="ob-daily" class="full">${[5,10,15,20].map(n => `<option value="${n}">${n} 题</option>`).join("")}</select></label>`;
+      const save = document.createElement("button");
+      save.className = "btn btn-primary"; save.textContent = "保存并开始";
+      const skip = document.createElement("button");
+      skip.className = "btn"; skip.textContent = "暂不设置";
+      save.onclick = () => {
+        saveProfile({
+          posid: parseInt(m.body.querySelector("#ob-pos").value, 10),
+          years: m.body.querySelector("#ob-year").value,
+          daily: parseInt(m.body.querySelector("#ob-daily").value, 10),
+          savedAt: Date.now()
+        });
+        m.close(); pageHome();
+      };
+      skip.onclick = () => { localStorage.setItem("iti_onboard_skip", "1"); m.close(); };
+      m.foot.appendChild(save); m.foot.appendChild(skip);
+    } catch (e) {}
   }
 
   /* 首页可深链锚点白名单（2026-09-23：修复页脚「学习周报」指向不存在的 #/report） */
@@ -1313,7 +1369,7 @@
     /* 摘掉 to：用 replace 避免产生额外历史记录 */
     const rest = Object.keys(r.q).filter(k => k !== "to" && r.q[k] !== undefined)
       .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(r.q[k])).join("&");
-    const clean = "#" + (r.path || "/") + (rest ? "?" + rest : "");
+    const clean = (r.path || "/") + (rest ? "?" + rest : "");
     try { history.replaceState(null, "", clean); } catch (e) {}
     /* 等一帧再滚，确保周报卡（依赖 IndexedDB 统计）已挂进 DOM */
     requestAnimationFrame(() => {
@@ -1341,7 +1397,7 @@
   /* 人工精选的域级架构图（data/tech-maps.json），整个会话只拉一次 */
   let _techMapsP = null, _techMapsCache = null;
   function loadTechMaps() {
-    if (!_techMapsP) _techMapsP = fetch("data/tech-maps.json").then(r => r.ok ? r.json() : null).catch(() => null);
+    if (!_techMapsP) _techMapsP = fetch("/data/tech-maps.json").then(r => r.ok ? r.json() : null).catch(() => null);
     return _techMapsP;
   }
 
@@ -1523,7 +1579,7 @@
     }
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>技术体系</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>技术体系</span></div>
       <div class="layout cat-layout">
         <aside class="card tree-panel">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
@@ -1550,7 +1606,7 @@
               <button data-s="aiScore">AI评分</button>
             </div>
             <span class="spacer"></span>
-            ${Auth.isAdmin() ? `<a class="btn btn-ai btn-sm" href="#/admin/question/new?cat=${catId || ""}">${U.icon("plus")} 新增题目</a>` : ""}
+            ${Auth.isAdmin() ? `<a class="btn btn-ai btn-sm" href="/admin/question/new?cat=${catId || ""}">${U.icon("plus")} 新增题目</a>` : ""}
           </div>
           <div class="grid grid-cols-2" id="cat-list-grid"></div>
         </div>
@@ -1592,8 +1648,8 @@
         const qn = Services.questionCountForPosition(p);
         const skillN = Services.skillsOf(p.id).length;
         const demand = p.demand || "中";
-        const catLink = p.categoryId ? `<a href="#/category?cat=${p.categoryId}">${U.esc(p.category || "")}</a>` : U.esc(p.category || "");
-        return `<a class="card card-hover" href="#/position/${p.id}" style="text-decoration:none">
+        const catLink = p.categoryId ? `<a href="/category?cat=${p.categoryId}">${U.esc(p.category || "")}</a>` : U.esc(p.category || "");
+        return `<a class="card card-hover" href="/position/${p.id}" style="text-decoration:none">
           <div style="font-weight:700">${U.esc(Services.posFullName(p))}</div>
           <div class="muted" style="font-size:12px;margin-top:4px">${catLink}</div>
           <div class="q-meta" style="margin-top:10px">
@@ -1609,7 +1665,7 @@
       }).join("")}</div>`;
     }).join("");
     const cleanBtn = hasFake ? `<button id="clean-fake-pos" class="btn btn-secondary" style="margin-left:auto">清理 ${fakeIds.size} 条无效岗位</button>` : "";
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>岗位体系</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>岗位体系</span></div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><h1 style="margin:0">岗位体系</h1>${cleanBtn}</div>
       <p class="secondary">按 IT 行业岗位出现的先后顺序组织，点击岗位查看必考/加分技术栈与题目。</p>${html}`);
     if (hasFake) {
@@ -1635,7 +1691,7 @@
     const dist = { "初级": 0, "中级": 0, "高级": 0, "专家": 0 };
     posQs.forEach(q => { if (dist[q.difficulty] != null) dist[q.difficulty]++; });
     const skillCard = (s) => {
-      const onClick = s.categoryId != null ? `onclick="location.hash='/category?cat=${s.categoryId}'"` : `onclick="location.hash='/questions?q=${encodeURIComponent(s.techName)}'"`;
+      const onClick = s.categoryId != null ? `onclick="App.go('/category?cat=${s.categoryId}')"` : `onclick="App.go('/questions?q=${encodeURIComponent(s.techName)}')"`;
       return `<div class="skill-card ${s.required ? "" : "bonus"}" style="cursor:pointer" ${onClick}>
         <div class="sk-name">${U.esc(s.techName)} ${s.required ? "" : '<span class="tag tag-ai" style="font-size:10px">加分</span>'}</div>
         <div class="sk-depth">掌握深度：${U.esc(s.depth)}</div>
@@ -1645,7 +1701,7 @@
     };
     const hot = posQs.slice().sort((a, b) => (b.views || 0) + (b.favorites || 0) - (a.views || 0) - (a.favorites || 0)).slice(0, 6);
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/position">岗位体系</a><span class="sep">/</span><span>${U.esc(Services.posFullName(p))}</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/position">岗位体系</a><span class="sep">/</span><span>${U.esc(Services.posFullName(p))}</span></div>
       <h1>${U.esc(Services.posFullName(p))} <span class="tag tag-ai">${U.esc(p.stage)}</span></h1>
       <p class="secondary">${U.esc(p.description || (p.category ? "隶属「" + p.category + "」方向" : "该岗位共关联 " + qn + " 道题目"))}</p>
       <div class="grid grid-cols-2" style="margin:16px 0">
@@ -1661,10 +1717,10 @@
       <div class="section-head"><h2>热门题目</h2></div>
       <div class="grid grid-cols-2">${hot.length ? hot.map(q => qCard(q)).join("") : '<div class="muted">暂无题目</div>'}</div>
       <div class="pill-row" style="margin-top:20px">
-        <a class="btn btn-primary" href="#/mock?pos=${p.id}">${U.icon("play")} 一键模拟面试</a>
-        <a class="btn" href="#/quiz?posid=${p.id}&n=20">20 题限时小测</a>
-        <a class="btn" href="#/questions?posid=${p.id}">${U.esc("按技术分类刷题")}</a>
-        <a class="btn" href="#/questions?posid=${p.id}">查看全部题目</a>
+        <a class="btn btn-primary" href="/mock?pos=${p.id}">${U.icon("play")} 一键模拟面试</a>
+        <a class="btn" href="/quiz?posid=${p.id}&n=20">20 题限时小测</a>
+        <a class="btn" href="/questions?posid=${p.id}">${U.esc("按技术分类刷题")}</a>
+        <a class="btn" href="/questions?posid=${p.id}">查看全部题目</a>
       </div>
     `, () => {
       /* echarts 大库按需加载（加载失败静默，图表区留白不影响页面） */
@@ -1720,7 +1776,7 @@
     const done = Roadmap.isMastered(q.id);
     return `<div class="rm-row${done ? " done" : ""}" data-q="${q.id}">
       <button type="button" class="rm-check${done ? " on" : ""}" data-act="chk" aria-pressed="${done}" aria-label="标记为已掌握">${U.icon("check")}</button>
-      <a class="rm-title" href="#/question/${q.id}">${U.esc(q.title)}</a>
+      <a class="rm-title" href="/question/${q.id}">${U.esc(q.title)}</a>
       <span class="tag diff-${U.esc(q.difficulty || "")}">${U.esc(q.difficulty || "")}</span>
     </div>`;
   }
@@ -1732,7 +1788,7 @@
     if (!stages.length) {
       setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div>
         <h3>暂无可用刷题计划</h3><p class="secondary">岗位题量达到 ${RM_MIN_Q} 道后即可生成 4–8 周学习计划。</p>
-        <a class="btn btn-primary" href="#/position">${U.icon("briefcase")} 去岗位体系看看</a></div>`);
+        <a class="btn btn-primary" href="/position">${U.icon("briefcase")} 去岗位体系看看</a></div>`);
       return;
     }
     let posN = 0, doneAll = 0, totAll = 0, startedN = 0;
@@ -1742,7 +1798,7 @@
         const pct = rmPct(rm.mastered, rm.total);
         posN++; doneAll += rm.mastered; totAll += rm.total;
         if (rm.mastered > 0) startedN++;
-        return `<a class="card card-hover" href="#/roadmap/${p.id}" style="text-decoration:none">
+        return `<a class="card card-hover" href="/roadmap/${p.id}" style="text-decoration:none">
           <div style="font-weight:700">${U.esc(Services.posFullName(p))}</div>
           <div class="muted" style="font-size:12px;margin-top:4px">${rm.weeks.length} 周 · ${rm.total} 题 · 约 ${rmHours(rm.minutes)}</div>
           <div class="progress" style="margin-top:10px"><span style="width:${pct}%"></span></div>
@@ -1752,7 +1808,7 @@
       return `<div class="section-head" style="margin-top:24px"><h2>${U.esc(s.stage)}</h2><span class="tag">${s.list.length} 个岗位</span></div>
         <div class="grid grid-cols-3">${cards}</div>`;
     }).join("");
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题计划</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>刷题计划</span></div>
       <h1>岗位刷题计划</h1>
       <p class="secondary">把每个岗位的题目按技术分类拆成 4–8 周的计划，每天只需几道题就能跟上进度。
         在「刷题练习」里点「已掌握」会自动记入计划，也可以直接在下面打勾。</p>
@@ -1763,14 +1819,14 @@
       </div>
       ${body}
       <p class="muted" style="margin-top:24px">题量不足 ${RM_MIN_Q} 道的岗位暂不生成计划，可直接在
-        <a href="#/position">岗位体系</a>中浏览其技术栈与题目。</p>`);
+        <a href="/position">岗位体系</a>中浏览其技术栈与题目。</p>`);
   }
 
   async function pageRoadmapDetail(id) {
     const p = Services.getPosition(parseInt(id));
     if (!p) {
       setMain(`<div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>未找到该岗位</h3>
-        <a class="btn btn-primary" href="#/roadmap">返回计划</a></div>`);
+        <a class="btn btn-primary" href="/roadmap">返回计划</a></div>`);
       return;
     }
     await Roadmap.load();
@@ -1779,10 +1835,10 @@
     document.title = name + " 刷题计划 · IT面试题库";
 
     if (!rm.weeks.length) {
-      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+      setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
         <div class="empty"><div class="em-ic">${U.icon("map")}</div><h3>该岗位题目不足</h3>
         <p class="secondary">至少需要 ${RM_MIN_Q} 道题才能生成周计划，当前 ${rm.total} 道。</p>
-        <a class="btn btn-primary" href="#/questions?posid=${p.id}">${U.icon("layers")} 查看现有题目</a></div>`);
+        <a class="btn btn-primary" href="/questions?posid=${p.id}">${U.icon("layers")} 查看现有题目</a></div>`);
       return;
     }
 
@@ -1814,7 +1870,7 @@
           <div class="pill-row" style="margin-bottom:8px">${topics}</div>
           <div class="pill-row rm-dist-row" style="margin-bottom:10px"><span class="muted" style="font-size:12px;align-self:center">难度分布</span>${dist}</div>
           <div class="pill-row" style="margin-bottom:4px">
-            <a class="btn btn-primary btn-sm" href="#/practice?scope=roadmap&pos=${p.id}&week=${w.n}&mode=seq">${U.icon("play")} 开始本周练习</a>
+            <a class="btn btn-primary btn-sm" href="/practice?scope=roadmap&pos=${p.id}&week=${w.n}&mode=seq">${U.icon("play")} 开始本周练习</a>
             <button type="button" class="btn btn-sm" data-act="all">${U.icon("check")} 本周全部掌握</button>
             <button type="button" class="btn btn-sm" data-act="none">${U.icon("refresh")} 取消本周标记</button>
           </div>
@@ -1824,7 +1880,7 @@
     };
 
     const pct = rmPct(rm.mastered, rm.total);
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/roadmap">刷题计划</a><span class="sep">/</span><span>${U.esc(name)}</span></div>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <h1 style="margin:0">${U.esc(name)} 学习路线</h1>
         <span class="tag tag-ai">${U.esc(p.stage || "")}</span>
@@ -1841,8 +1897,8 @@
         <div class="progress"><span id="rm-bar" style="width:${pct}%"></span></div>
         <div class="pill-row" style="margin-top:12px">
           <button type="button" class="btn btn-primary btn-sm" id="rm-continue">${U.icon("play")} 继续学习（第 ${curWeek} 周）</button>
-          <a class="btn btn-sm" href="#/practice?scope=pos&pos=${p.id}&mode=seq">${U.icon("layers")} 全岗位顺序刷题</a>
-          <a class="btn btn-sm" href="#/position/${p.id}">${U.icon("briefcase")} 岗位详情</a>
+          <a class="btn btn-sm" href="/practice?scope=pos&pos=${p.id}&mode=seq">${U.icon("layers")} 全岗位顺序刷题</a>
+          <a class="btn btn-sm" href="/position/${p.id}">${U.icon("briefcase")} 岗位详情</a>
           <button type="button" class="btn btn-sm btn-danger" id="rm-reset" style="margin-left:auto">${U.icon("trash")} 重置本岗进度</button>
         </div>
       </div>
@@ -2004,6 +2060,7 @@
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
       if (fuseMap) arr = arr.filter(x => fuseMap.has(x.id));
       arr = Search.sort(arr, sortBy);
+      Stats.recordSearch(filters.q, arr.length);
       if (resetPage !== false) page = 1;   /* 筛选 / 搜索 / 来源一变就回第一页，否则停在越界页会渲染出空白列表 */
       renderGrid(arr);
       updateFilterBadge();
@@ -2012,8 +2069,11 @@
       const grid = $("#q-grid");
       if (!arr.length) {
         const term = filters.q;
+        const lower = String(term || "").toLowerCase();
+        const cats = term ? Services.categories.filter(c => (c.name || "").toLowerCase().indexOf(lower) >= 0).slice(0, 3) : [];
+        const catHtml = cats.length ? `<div class="pill-row" style="margin-top:8px">${cats.map(c => `<a class="tag tag-outline" href="/category?cat=${c.id}">${U.esc(c.name)}</a>`).join("")}</div>` : "";
         const hot = term ? `<div class="sd-hot" style="margin-top:10px;justify-content:flex-start">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>` : "";
-        grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}</div>`;
+        grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>${catHtml}${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}</div>`;
         $$("#q-grid [data-sug]").forEach(b => b.onclick = () => { $("#q-search").value = b.dataset.sug; filters.q = b.dataset.sug; apply(); });
         $("#q-count").textContent = "0";
         totalPages = 1; const pg0 = $("#q-pager"); if (pg0) pg0.innerHTML = "";   /* 空结果要清掉分页，否则残留上一页的页码 */
@@ -2079,7 +2139,7 @@
     };
 
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>题目列表</span>${q.cat ? `<span class="sep">/</span><span>${U.esc(Services.catName(parseInt(q.cat)))}</span>` : ""}${q.pos ? `<span class="sep">/</span><span>${U.esc(decodeURIComponent(q.pos))}</span>` : ""}</div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>题目列表</span>${q.cat ? `<span class="sep">/</span><span>${U.esc(Services.catName(parseInt(q.cat)))}</span>` : ""}${q.pos ? `<span class="sep">/</span><span>${U.esc(decodeURIComponent(q.pos))}</span>` : ""}</div>
       <h1 style="margin-bottom:10px">题目列表 <span class="muted" id="q-count" style="font-size:16px"></span></h1>
       <!-- 排序段控从 .toolbar 里提出来，与「筛选」按钮合成一行（2026-09-24 评审 P1-6）：
            原先桌面端筛选区纵向堆 4 行、移动端占掉近半屏，题目要到 470px 之后才出现。
@@ -2182,14 +2242,25 @@
     }
     if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
     if (pool.length < 5) {
-      setMain(`<div class="empty">该范围可用题目不足 5 道，暂不能生成小测。<a class="btn" href="#/practice">去自由刷题</a></div>`);
+      setMain(`<div class="empty">该范围可用题目不足 5 道，暂不能生成小测。<a class="btn" href="/practice">去自由刷题</a></div>`);
       return;
     }
     const total = Math.min(Math.max(parseInt(q.n, 10) || 20, 5), 50, pool.length);
     const minutes = Math.max(1, Math.round(total * 1.5));
+    const stateKey = ["quiz", q.posid || "", q.cat || "", q.diff || "", total].join("|");
+    const loadSaved = () => {
+      try {
+        const s = JSON.parse(localStorage.getItem("iti_quiz_state") || "null");
+        if (s && s.key === stateKey) return s;
+      } catch (e) {}
+      return null;
+    };
+    const saveState = (s) => { try { localStorage.setItem("iti_quiz_state", JSON.stringify(s)); } catch (e) {} };
+    const clearState = () => { try { localStorage.removeItem("iti_quiz_state"); } catch (e) {} };
+    const saved = loadSaved();
 
     const renderIntro = () => setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>限时小测</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>限时小测</span></div>
       <h1>限时小测</h1>
       <div class="card" style="max-width:680px">
         <div class="pill-row" style="margin:0 0 12px">
@@ -2198,65 +2269,111 @@
           <span class="tag">${total} 题入卷</span>
           <span class="tag">${minutes} 分钟</span>
         </div>
-        <p class="secondary">题目随机抽取。每题先作答，再对照参考答案自评「已掌握」或「不会」；结束后给出掌握率和错题清单。</p>
+        <p class="secondary">题目随机抽取。先写下你的答案，再对照参考答案自评「已掌握」或「不会」；结束后错题会自动进入错题重练，学习周报也会记录这轮小测。</p>
         <div class="pill-row">
+          ${saved ? `<button class="btn" id="quiz-resume">继续上次（第 ${saved.i + 1}/${saved.ids.length} 题）</button>` : ""}
           <button class="btn btn-primary" id="quiz-start">${U.icon("play")} 开始小测</button>
-          <a class="btn" href="#/practice">${U.icon("refresh")} 自由刷题</a>
+          <a class="btn" href="/practice">${U.icon("refresh")} 自由刷题</a>
         </div>
-      </div>`, () => { $("#quiz-start").onclick = start; });
+      </div>`, () => {
+        const r = $("#quiz-resume");
+        if (r) r.onclick = () => start(pool.filter(x => saved.ids.indexOf(x.id) >= 0), saved);
+        $("#quiz-start").onclick = () => start();
+      });
 
-    const start = () => {
-      const list = pool.slice().sort(() => Math.random() - .5).slice(0, total);
-      let i = 0, ok = 0, bad = [], timer = null, left = minutes * 60;
+    const start = (resumePool, resume) => {
+      const list = (resume && resume.ids && resume.ids.length)
+        ? resume.ids.map(id => pool.find(x => x.id === id)).filter(Boolean)
+        : pool.slice().sort(() => Math.random() - .5).slice(0, total);
+      let i = (resume && resume.i) || 0, ok = 0, bad = [], timer = null;
+      let left = (resume && resume.left) || minutes * 60;
+      const startedAt = (resume && resume.startedAt) || Date.now();
+      const answers = (resume && resume.answers) || {};
       const fmt = n => String(Math.floor(n / 60)).padStart(2, "0") + ":" + String(n % 60).padStart(2, "0");
       const stopTimer = () => { if (timer) { clearInterval(timer); timer = null; } };
+      const persist = () => saveState({ key: stateKey, ids: list.map(x => x.id), i, left, startedAt, answers });
+      const keywordHint = (it, val) => {
+        const words = (it.tags || []).concat(String(it.title || "").split(/[，。,.\s、：:？?！!]+/)).filter(x => x && x.length > 1);
+        const hit = words.filter(w => String(val || "").indexOf(w) >= 0).length;
+        return hit ? `<span class="tag tag-success">关键词命中 ${hit}</span>` : "";
+      };
       const show = () => {
         const it = list[i];
+        persist();
         setMain(`
-          <div class="breadcrumb"><a href="#/quiz">限时小测</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
+          <div class="breadcrumb"><a href="/quiz">限时小测</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
           <div class="quiz-head">
             <span class="tag tag-primary">剩余 ${fmt(left)}</span>
             <span class="tag">已掌握 ${ok}</span>
             <span class="tag">不会 ${bad.length}</span>
           </div>
           <div class="card qd-body md">${U.md(it.body || it.title)}</div>
-          <div style="margin:12px 0"><button class="btn btn-primary" id="qa">${U.icon("eye")} 显示答案</button></div>
+          <label class="field quiz-answer"><span>你的回答</span><textarea id="qans-input" placeholder="先用自己的话说一遍，再看参考答案">${U.esc(answers[it.id] || "")}</textarea></label>
+          <div style="margin:12px 0"><button class="btn btn-primary" id="qa">${U.icon("eye")} 显示答案</button><span id="kw-hint"></span></div>
           <div class="qd-answer md" id="qans" style="display:none">${U.md(it.answer)}</div>
           <div id="qmark" class="pill-row" style="display:none;margin-top:12px">
             <button class="btn btn-success" data-m="ok">${U.icon("check")} 已掌握</button>
             <button class="btn btn-danger" data-m="bad">不会</button>
           </div>
-          <div class="pill-row" style="margin-top:14px"><button class="btn" id="qprev">上一题</button><button class="btn btn-primary" id="qnext">下一题 →</button></div>`);
+          <div class="quiz-pager pill-row"><button class="btn" id="qprev">上一题</button><button class="btn btn-primary" id="qnext">下一题 →</button></div>`);
         U.highlightAll(main);
+        const input = $("#qans-input");
+        if (input) input.oninput = () => {
+          answers[it.id] = input.value;
+          persist();
+          $("#kw-hint").innerHTML = keywordHint(it, input.value);
+        };
         $("#qa").onclick = () => { $("#qans").style.display = "block"; $("#qmark").style.display = "flex"; U.highlightAll($("#qans")); };
-        $$("#qmark button").forEach(b => b.onclick = () => {
+        $$("#qmark button").forEach(b => b.onclick = async () => {
           if (b.dataset.m === "ok") { ok++; bad = bad.filter(x => x !== it); }
           else if (bad.indexOf(it) < 0) bad.push(it);
-          next();
+          await next();
         });
         $("#qprev").onclick = () => { if (i > 0) { i--; show(); } };
         $("#qnext").onclick = next;
       };
-      const next = () => { if (i < list.length - 1) { i++; show(); } else finish(); };
-      const finish = () => {
+      const next = async () => {
+        if (i < list.length - 1) { i++; show(); }
+        else await finish();
+      };
+      const finish = async () => {
         stopTimer();
+        clearState();
         const score = list.length ? Math.round((list.length - bad.length) / list.length * 100) : 0;
+        const duration = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+        for (const it of list) {
+          try { await Services.addHistory(it.id); } catch (e) {}
+          if (bad.indexOf(it) >= 0) {
+            try { await Services.addWeak(it.id, "unknown"); } catch (e) {}
+          } else {
+            try { if (await Services.isWeak(it.id)) await Services.removeWeak(it.id); } catch (e) {}
+          }
+        }
+        Stats.recordQuiz({ scope: scopeName, total: list.length, ok: list.length - bad.length, bad: bad.length, score, duration });
+        const weakCats = {};
+        bad.forEach(x => { if (x.categoryId != null) weakCats[x.categoryId] = (weakCats[x.categoryId] || 0) + 1; });
+        const weakTop = Object.entries(weakCats).sort((a, b) => b[1] - a[1]).slice(0, 3)
+          .map(([cid, n]) => { const c = Services.catMap.get(parseInt(cid)); return `${c ? c.name : "#" + cid} ${n} 题`; });
         setMain(`
-          <div class="breadcrumb"><a href="#/quiz">限时小测</a><span class="sep">/</span><span>结果</span></div>
+          <div class="breadcrumb"><a href="/quiz">限时小测</a><span class="sep">/</span><span>结果</span></div>
           <h1>掌握率 ${score}%</h1>
           <div class="card">
             <div class="pill-row" style="margin:0 0 12px">
               <span class="tag tag-success">掌握 ${list.length - bad.length}</span>
               <span class="tag tag-danger">不会 ${bad.length}</span>
               <span class="tag">${U.esc(scopeName)}</span>
+              <span class="tag">用时 ${Math.round(duration / 60)} 分钟</span>
+              <span class="tag">平均 ${Math.round(duration / list.length)} 秒/题</span>
             </div>
-            ${bad.length ? `<h2>错题清单</h2><div class="quiz-result">${bad.map(x => `<a href="#/question/${x.id}">${U.esc(x.title)}</a>`).join("")}</div>` : `<p class="secondary">这轮全部标记为已掌握，可以换更高难度继续挑战。</p>`}
-            <div class="pill-row"><button class="btn btn-primary" id="quiz-again">${U.icon("refresh")} 再来一轮</button><a class="btn" href="#/review">去错题重练</a></div>
-          </div>`, () => { $("#quiz-again").onclick = start; });
+            ${weakTop.length ? `<h2>薄弱方向</h2><div class="pill-row">${weakTop.map(x => `<span class="tag tag-warning">${U.esc(x)}</span>`).join("")}</div>` : ""}
+            ${bad.length ? `<h2>错题清单</h2><div class="quiz-result">${bad.map(x => `<a href="/question/${x.id}">${U.esc(x.title)}</a>`).join("")}</div>` : `<p class="secondary">这轮全部标记为已掌握，可以换更高难度继续挑战。</p>`}
+            <div class="pill-row"><button class="btn btn-primary" id="quiz-again">${U.icon("refresh")} 再来一轮</button><a class="btn" href="/review">去错题重练</a></div>
+          </div>`, () => { $("#quiz-again").onclick = () => start(); });
       };
       show();
       timer = setInterval(() => {
         left--;
+        persist();
         const el = document.querySelector(".quiz-head .tag");
         if (el) el.textContent = "剩余 " + fmt(left);
         if (left <= 0) { stopTimer(); U.toast("时间到，小测已结束", "warn"); finish(); }
@@ -2316,11 +2433,11 @@
     const posByName = new Map(); Services.positions.forEach(p => { posByName.set(p.name, p); if (p.direction) posByName.set(Services.posFullName(p), p); });
     const posTags = (q.positionNames || []).map(n => {
       const pos = posByName.get(n);
-      return pos ? `<a class="tag tag-outline" href="#/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="#/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
+      return pos ? `<a class="tag tag-outline" href="/position/${pos.id}">${U.esc(n)}</a>` : `<a class="tag tag-outline" href="/questions?pos=${encodeURIComponent(n)}">${U.esc(n)}</a>`;
     }).join("");
     const techTags = (q.tags || []).filter(t => t != null && String(t).trim()).map(t => `<span class="tag">${U.esc(t)}</span>`).join("");
     const path = (q.catPath && q.catPath.length) ? q.catPath : (q.categoryId != null ? Services.categoryPath(q.categoryId) : []);
-    const pathHtml = path.map((n, i) => `<a href="#/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
+    const pathHtml = path.map((n, i) => `<a href="/category?cat=${i === path.length - 1 ? q.categoryId : ''}">${U.esc(n)}</a>${i < path.length - 1 ? '<span class="sep">/</span>' : ""}`).join("");
     /* 我的批注（只在本机 / 个人加密备份中流转）：复习时先看到「我自己的话」，再往下看标准答案 */
     const myNote = await DB.noteGet(q.id);
     const noteQuote = (myNote && myNote.text)
@@ -2336,7 +2453,7 @@
         <button class="btn js-next"${withId ? ' id="next-btn"' : ""}>下一题 →</button>
       </div>`;
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span>${pathHtml}<span class="sep">/</span><span>#${q.id}</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span>${pathHtml}<span class="sep">/</span><span>#${q.id}</span></div>
       <div class="qd-head">
         <h1>${U.esc(q.title)}</h1>
         <div class="q-meta" style="margin:10px 0">
@@ -2347,6 +2464,11 @@
           ${posTags}${techTags}
         </div>
         <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)}${(q.views || 0) > 0 ? ` · 浏览 ${q.views}` : ""}${(q.favorites || 0) > 0 ? ` · 收藏 ${q.favorites}` : ""}${srcLabel(q.source) ? ` · 来源 ${U.esc(srcLabel(q.source))}` : ""}${(q.aiScore || 0) > 0 ? ` · 质量分 ${q.aiScore}` : ""}</div>
+        <div class="answer-trust">
+          <span>${q.reviewedAt ? `已人工复核 · ${U.fmtDate(q.reviewedAt)}` : `来源：${U.esc(srcLabel(q.source) || "未标注")}`}</span>
+          <span>更新：${U.fmtDate(q.updatedAt)}</span>
+          <span>发现错误可在下方「报错」提交</span>
+        </div>
       </div>
       <div class="qd-body md">${U.md(q.body)}</div>
       <div class="q-actions">
@@ -2360,7 +2482,7 @@
           <button class="btn" id="grade-btn" title="写下你的回答，AI 面试官按评分表打分并给改进版">✍️ AI 改卷</button>
           <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
           ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
-          ${Auth.isAdmin() ? `<a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
+          ${Auth.isAdmin() ? `<a class="btn btn-sm" href="/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
             <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
             <button class="btn btn-sm btn-ai" id="opt-btn">${U.icon("sparkles")} AI优化</button>` : ""}
         </div>
@@ -2484,7 +2606,7 @@
     /* 纠错反馈：跳转 GitHub Issue（预填题号与标题），题目库的信任命门 */
     $("#report-btn").onclick = () => {
       const u = "https://github.com/succedd/workbuddy_it-interview/issues/new?title=" + encodeURIComponent("[纠错] 题目 #" + q.id + " " + (q.title || ""))
-        + "&body=" + encodeURIComponent("题目链接：" + location.origin + "/#/question/" + q.id + nl + nl + "问题描述（哪里有误 / 建议）：");
+        + "&body=" + encodeURIComponent("题目链接：" + location.origin + "/question/" + q.id + nl + nl + "问题描述（哪里有误 / 建议）：");
       window.open(u, "_blank");
       U.toast("已打开纠错表单，描述问题后提交即可", "info");
     };
@@ -2572,7 +2694,7 @@
           btn.disabled = false; btn.textContent = "改一改，重新交卷";
         } catch (e) {
           btn.disabled = false; btn.textContent = "交卷评分";
-          if (e && e.status === 401) res.innerHTML = `<div style="padding:10px 0;line-height:2">AI 改卷为<b>登录用户免费功能</b>。<br><a class="btn btn-primary" href="#/account">登录 / 注册后使用 →</a></div>`;
+          if (e && e.status === 401) res.innerHTML = `<div style="padding:10px 0;line-height:2">AI 改卷为<b>登录用户免费功能</b>。<br><a class="btn btn-primary" href="/account">登录 / 注册后使用 →</a></div>`;
           else res.innerHTML = `<div class="muted" style="padding:8px 0">${U.esc((e && e.message) || "评分失败，请稍后重试")}</div>`;
         }
       };
@@ -2794,7 +2916,7 @@
   function openVariantChallenge(vBody, q, opts = {}) {
     const loginHint = () => {
       vBody.innerHTML = `<div style="padding:14px 0;line-height:2">AI 变式为<b>登录用户免费功能</b>（防滥用限额，每天可生成 20 题）。<br>
-        <a class="btn btn-primary" href="#/account" style="margin-top:6px">登录 / 注册后使用 →</a>${opts.loginAlt || ""}</div>`;
+        <a class="btn btn-primary" href="/account" style="margin-top:6px">登录 / 注册后使用 →</a>${opts.loginAlt || ""}</div>`;
     };
     const retryHint = (msg) => {
       vBody.innerHTML = `<div class="muted" style="padding:12px 0">${U.esc(msg || "加载失败，请稍后重试")}<div style="margin-top:10px"><button class="btn btn-sm" id="v-retry">重试</button></div>${opts.loginAlt || ""}</div>`;
@@ -2922,7 +3044,7 @@
       const q = w._q;
       return `<div class="card rv-card" data-qid="${q.id}">
         <div style="display:flex;align-items:center;gap:10px">
-          <a href="#/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
+          <a href="/question/${q.id}" style="text-decoration:none;flex:1;min-width:0"><b>${U.esc(q.title)}</b></a>
           <span class="tag ${isDue ? "tag-warning" : ""}">${isDue ? "第 " + ((w.box || 0) + 1) + " 次 · 待复习" : ivlLabel(w) + "后"}</span>
         </div>
         <div class="muted" style="font-size:12px;margin-top:4px">${w.marked === "unknown" ? "不会" : "不熟悉"} · 排期 ${fmtTime(w.dueAt)}${w.lastOkAt ? " · 上次会了 " + fmtTime(w.lastOkAt) : ""}</div>
@@ -2936,7 +3058,7 @@
       </div>`;
     };
     setMain(`
-      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>错题重练</span></div>
+      <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>错题重练</span></div>
       <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 点「⚡ AI 闯关」先答变式题验证真掌握，或直接自评</span></div>
       ${rvHeader}
       ${due.length
@@ -2946,8 +3068,8 @@
              <div class="em-title">当前没有到期的复习任务</div>
              <div class="em-desc">在题目详情点「不太会」，或在刷题练习里标「不会 / 不熟悉」，题目就会进入这里并按艾宾浩斯记忆曲线排期：答「会了」拉长间隔，答「还不会」5 分钟后再来一次。</div>
              <div class="empty-cta">
-               <a class="btn btn-primary" href="#/practice?scope=weak">${U.icon("refresh")} 练薄弱题</a>
-               <a class="btn" href="#/questions">${U.icon("layers")} 去题库标记</a>
+               <a class="btn btn-primary" href="/practice?scope=weak">${U.icon("refresh")} 练薄弱题</a>
+               <a class="btn" href="/questions">${U.icon("layers")} 去题库标记</a>
              </div>
            </div>`}
       ${upcoming.length ? `<h3 style="margin:22px 0 10px">🕒 已排程（${upcoming.length}）</h3><div style="display:grid;gap:10px">${upcoming.map(w => cardOf(w, false)).join("")}</div>` : ""}
@@ -3032,7 +3154,7 @@
       const mb = $("#fav-more");
       if (mb) mb.onclick = () => { shown = Math.min(shown + PAGE, favs.length); renderGrid(); };
     };
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>收藏夹</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>收藏夹</span></div>
       <div class="section-head"><h2>我的收藏（${favs.length}）</h2>
         <div><button class="btn btn-sm" id="exp-md">${U.icon("download")} 导出MD</button>
         <button class="btn btn-sm" id="print-fav">${U.icon("layers")} 打印</button>
@@ -3064,9 +3186,9 @@
       if (weakSet.has(q.id)) badges.push('<span class="tag tag-warning">📅 复习中</span>');
       if (favSet.has(q.id)) badges.push('<span class="tag tag-primary">★ 已收藏</span>');
       if ((views || 1) > 1) badges.push(`<span class="tag">看过 ${views} 次</span>`);
-      return `<div class="card card-hover" style="position:relative;cursor:pointer" onclick="location.hash='/question/${q.id}'">
+      return `<div class="card card-hover" style="position:relative;cursor:pointer" onclick="App.go('/question/${q.id}')">
         <button class="icon-btn" data-del="${q.id}" title="删除这条记录" aria-label="删除这条浏览记录" style="position:absolute;top:10px;right:10px;z-index:2">${U.icon("x")}</button>
-        ${qCard(q).replace('href="#/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}
+        ${qCard(q).replace('href="/question/' + q.id + '"', '').replace('class="card card-hover q-card"', 'class="q-card"')}
         <div class="muted" style="font-size:12px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span>浏览于 ${U.fmtDate(at)}</span>${badges.join("")}</div>
       </div>`;
     };
@@ -3087,7 +3209,7 @@
       if (!view.length) {
         html = term
           ? '<div class="empty" style="grid-column:1/-1">没有匹配的浏览记录</div>'
-          : `<div class="empty" style="grid-column:1/-1"><div class="em-ic">${U.icon("history")}</div>暂无浏览记录<div style="margin-top:12px"><a class="btn btn-primary" href="#/questions">去看几道题试试 →</a></div></div>`;
+          : `<div class="empty" style="grid-column:1/-1"><div class="em-ic">${U.icon("history")}</div>暂无浏览记录<div style="margin-top:12px"><a class="btn btn-primary" href="/questions">去看几道题试试 →</a></div></div>`;
       } else {
         let last = null;
         view.slice(0, shown).forEach(item => {
@@ -3114,10 +3236,10 @@
         pageHistory();
       });
     };
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>浏览历史</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>浏览历史</span></div>
       <div class="section-head"><h2>浏览历史（${all.length}）</h2>
         <div style="display:flex;gap:8px">
-          <a class="btn btn-sm btn-primary" href="#/practice?scope=hist" title="把历史题目作为题池开始刷题">${U.icon("play")} 重刷历史</a>
+          <a class="btn btn-sm btn-primary" href="/practice?scope=hist" title="把历史题目作为题池开始刷题">${U.icon("play")} 重刷历史</a>
           <button class="btn btn-sm btn-danger" id="clear-h">${U.icon("trash")} 清空</button></div></div>
       <input id="his-q" class="full" style="max-width:280px;margin-bottom:12px" placeholder="在历史中搜索标题 / 标签…" />
       <div class="grid grid-cols-2" id="his-grid"></div>`);
@@ -3138,7 +3260,7 @@
           try { await DB.db.histories.bulkAdd(backup); } catch (e) {}
           el.remove();
           U.toast("已恢复 " + backup.length + " 条浏览记录", "success");
-          if (location.hash === "#/history" || location.hash === "") pageHistory();
+          if (parseHash().path === "/history" || parseHash().path === "/") pageHistory();
         };
         root.appendChild(el);
         setTimeout(() => { el.remove(); }, 8000);
@@ -3230,7 +3352,7 @@
     const selectedCatLabel = scope === "cat" && q.cat ? U.esc(Services.catName(parseInt(q.cat))) : "";
     const selectedPosLabel = scope === "pos" && q.pos ? U.esc(Services.posFullName(Services.getPosition(parseInt(q.pos)))) : "";
 
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>刷题练习</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>刷题练习</span></div>
       <h1>刷题练习</h1>
       <p class="secondary">共 ${pool.length} 道可用题目。选择模式开始。</p>
       <!-- 两栏布局（2026-09-24 评审 P1-5）：原先表单卡固定 560px 靠左，右栏约 600px 全空，
@@ -3252,7 +3374,7 @@
             <button type="button" class="btn btn-sm ${scope === "weak" ? "btn-primary" : "btn-secondary"}" data-scope="weak">${U.icon("alert")} 薄弱题本 (${weakN})</button>
           </div>
           ${scope === "weak" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">仅练习标记为「不熟悉」或「不会」的题目。${weakN ? "" : " 当前为空，去全部题目里标记吧。"}</span>${weakN ? `<button class="btn btn-sm btn-danger" id="clear-weak" style="margin-left:auto">清空薄弱题本</button>` : ""}</div>` : ""}
-          ${scope === "roadmap" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">${U.icon("map")} 来自「${selectedPosLabel || "该岗位"}」刷题计划第 ${U.esc(String(q.week || 1))} 周，共 ${pool.length} 题。</span><a class="btn btn-sm" href="#/roadmap/${U.esc(String(q.pos || ""))}" style="margin-left:auto">${U.icon("chevronRight")} 返回计划</a></div>` : ""}
+          ${scope === "roadmap" ? `<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">${U.icon("map")} 来自「${selectedPosLabel || "该岗位"}」刷题计划第 ${U.esc(String(q.week || 1))} 周，共 ${pool.length} 题。</span><a class="btn btn-sm" href="/roadmap/${U.esc(String(q.pos || ""))}" style="margin-left:auto">${U.icon("chevronRight")} 返回计划</a></div>` : ""}
         </div>
 
         <div id="cat-panel" class="field ${scope === "cat" ? "" : "hidden"}">
@@ -3280,16 +3402,16 @@
             : "还没标记过题目。在题目详情点「不太会」，这里就会攒下你的薄弱点。"}</p>
           <div class="pf-card-actions">
             ${weakN ? `<button type="button" class="btn btn-sm" id="side-weak">${U.icon("alert")} 练薄弱题</button>` : ""}
-            <a class="btn btn-sm" href="#/review">${U.icon("clock")} 错题重练</a>
+            <a class="btn btn-sm" href="/review">${U.icon("clock")} 错题重练</a>
           </div>
         </div>
         <div class="card">
           <div class="pf-card-head"><h2>换个方式练</h2></div>
           <div class="pf-card-actions">
-            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机一题</a>
-            <a class="btn btn-sm" href="#/mock">${U.icon("play")} 模拟面试</a>
-            <a class="btn btn-sm" href="#/roadmap">${U.icon("map")} 刷题计划</a>
-            <a class="btn btn-sm" href="#/history">${U.icon("history")} 浏览历史</a>
+            <a class="btn btn-sm" href="/random">${U.icon("dice")} 随机一题</a>
+            <a class="btn btn-sm" href="/mock">${U.icon("play")} 模拟面试</a>
+            <a class="btn btn-sm" href="/roadmap">${U.icon("map")} 刷题计划</a>
+            <a class="btn btn-sm" href="/history">${U.icon("history")} 浏览历史</a>
           </div>
         </div>
       </aside>
@@ -3343,7 +3465,7 @@
     const show = () => {
       const q = list[i];
       const weakTag = q._weakMarked ? `<div class="tag tag-warning" style="margin:0 0 10px">${q._weakMarked === "unknown" ? "不会" : "不熟悉"} · 来自薄弱题本</div>` : "";
-      setMain(`<div class="breadcrumb"><a href="#/practice">刷题练习</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
+      setMain(`<div class="breadcrumb"><a href="/practice">刷题练习</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
         ${weakTag}
         <div class="card qd-body md">${U.md(q.body)}</div>
         <div style="margin:12px 0"><button class="btn btn-primary" id="sa">${U.icon("eye")} 显示答案</button></div>
@@ -3378,8 +3500,8 @@
   function finishPractice(total, mastered, weak) {
     setMain(`<div class="empty"><div class="em-ic">${U.icon("check")}</div>
       <h2>刷题完成</h2><p>共 ${total} 题 · 掌握 ${mastered} · 待加强 ${weak}</p>
-      ${weak ? `<p class="muted">${weak} 道已加入薄弱题本，<a href="#/practice">返回练习页</a>选择「薄弱题本」可专练这些题。</p>` : ""}
-      <a class="btn btn-primary" href="#/practice">${U.icon("refresh")} 再来一轮</a></div>`);
+      ${weak ? `<p class="muted">${weak} 道已加入薄弱题本，<a href="/practice">返回练习页</a>选择「薄弱题本」可专练这些题。</p>` : ""}
+      <a class="btn btn-primary" href="/practice">${U.icon("refresh")} 再来一轮</a></div>`);
   }
 
   /* ============================ 模拟面试 ============================ */
@@ -3403,7 +3525,7 @@
     const years = ["校招/实习", "0-1年", "1-3年", "3-5年", "5年以上"];
     const url = new URL(location.href);
     const posId = url.searchParams.get("pos");
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>模拟面试</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>模拟面试</span></div>
       <h1>模拟面试</h1><p class="secondary">选择目标岗位与年限，系统按技术栈权重随机抽取题目，隐藏答案计时作答。</p>
       <!-- 两栏布局（2026-09-24 评审 P1-5）：表单原先固定 560px 靠左、右栏约 600px 全空。
            右侧放「面试流程说明」与热身入口，都是这张表单真正缺少的上下文。 -->
@@ -3433,9 +3555,9 @@
         <div class="card">
           <div class="pf-card-head"><h2>先热身再来</h2></div>
           <div class="pf-card-actions">
-            <a class="btn btn-sm" href="#/random">${U.icon("dice")} 随机一题</a>
-            <a class="btn btn-sm" href="#/practice">${U.icon("refresh")} 刷题练习</a>
-            <a class="btn btn-sm" href="#/roadmap">${U.icon("map")} 刷题计划</a>
+            <a class="btn btn-sm" href="/random">${U.icon("dice")} 随机一题</a>
+            <a class="btn btn-sm" href="/practice">${U.icon("refresh")} 刷题练习</a>
+            <a class="btn btn-sm" href="/roadmap">${U.icon("map")} 刷题计划</a>
           </div>
         </div>
       </aside>
@@ -3537,7 +3659,7 @@
     const show = () => {
       const q = pool[i];
       (q.tags || []).forEach(t => cov[t] = (cov[t] || 0) + 1);
-      setMain(`<div class="breadcrumb"><a href="#/mock">模拟面试</a><span class="sep">/</span><span>${U.esc(pos ? pos.name : "通用")} · 第 ${i + 1}/${pool.length} 题</span></div>
+      setMain(`<div class="breadcrumb"><a href="/mock">模拟面试</a><span class="sep">/</span><span>${U.esc(pos ? pos.name : "通用")} · 第 ${i + 1}/${pool.length} 题</span></div>
         <div class="card"><div class="row" style="justify-content:space-between"><span class="tag diff-${q.difficulty}">${q.difficulty}</span>
           <span class="muted" id="timer">${U.icon("clock")} 00:00</span></div>
           <div class="qd-body md" style="margin-top:10px">${U.md(q.body)}</div>
@@ -3614,7 +3736,7 @@
         histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>本次成绩已存到云端，再面一次就能看到趋势对比</div>`;
       } else {
         /* 未登录：结果页云端功能处原本「隐身」，补引导避免用户困惑；升级为醒目提示条，避免低调灰字被忽略 */
-        histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>登录后可保存成绩到云端，并留存历次趋势对比 · <a href="#/account" style="color:var(--c-primary,#2563EB);font-weight:600">去登录 →</a></div>`;
+        histHtml = `<div style="max-width:520px;margin:16px auto 0;padding:12px 14px;border:1px solid var(--c-primary,#2563EB);background:rgba(37,99,235,.08);border-radius:10px;font-size:14px;line-height:1.6"><b style="color:var(--c-primary,#2563EB)">账户提示 · </b>登录后可保存成绩到云端，并留存历次趋势对比 · <a href="/account" style="color:var(--c-primary,#2563EB);font-weight:600">去登录 →</a></div>`;
       }
     } catch (e) {}
     setMain(`<div class="empty" style="text-align:left">
@@ -3629,7 +3751,7 @@
       ${histHtml}
       <div class="pill-row" style="justify-content:center">
         <button class="btn btn-primary" id="exp">${U.icon("download")} 导出报告(MD)</button>
-        <a class="btn" href="#/mock">${U.icon("refresh")} 再面一次</a>
+        <a class="btn" href="/mock">${U.icon("refresh")} 再面一次</a>
       </div></div>`);
     $("#exp").onclick = () => U.download("模拟面试报告.md", md, "text/markdown");
     const histMore = $("#hist-more");
@@ -3678,7 +3800,7 @@
   /* ============================ 管理员：仪表盘 ============================ */
   async function pageAdminDashboard() {
     const s = await Services.stats();
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>仪表盘</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>仪表盘</span></div>
       <h1>管理员仪表盘</h1>
       <div class="stat-grid">
         <div class="stat"><div class="num">${s.total}</div><div class="label">题目总数</div></div>
@@ -3698,16 +3820,17 @@
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
         <div class="card"><h2 style="font-size:16px">最近 AI 生成</h2>${s.aiLogs.length ? `<table class="data">${s.aiLogs.map(l => `<tr><td>${U.esc(l.positionName || "-")}</td><td>${l.genCount || 0}题</td><td class="muted">${U.fmtDate(l.createdAt)}</td></tr>`).join("")}</table>` : '<div class="muted">暂无</div>'}</div>
-        <div class="card"><h2 style="font-size:16px">收藏排行</h2>${s.topFav.length ? `<table class="data">${s.topFav.map(q => `<tr><td><a href="#/question/${q.id}">${U.esc(q.title)}</a></td><td>${q.favorites}</td></tr>`).join("")}</table>` : '<div class="muted">暂无</div>'}</div>
+        <div class="card"><h2 style="font-size:16px">收藏排行</h2>${s.topFav.length ? `<table class="data">${s.topFav.map(q => `<tr><td><a href="/question/${q.id}">${U.esc(q.title)}</a></td><td>${q.favorites}</td></tr>`).join("")}</table>` : '<div class="muted">暂无</div>'}</div>
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">访问统计</h2></div>
           ${Stats.cfEnabled()
             ? `<div class="muted" style="margin-bottom:8px">已接入云端统计（Cloudflare Worker），下方为访客地域分布。</div>`
-            : `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">配置云端统计接口后可查看访客地域分布与浏览量</p><a class="btn" href="#/admin/settings">前往配置 →</a></div>`}
+            : `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">配置云端统计接口后可查看访客地域分布与浏览量</p><a class="btn" href="/admin/settings">前往配置 →</a></div>`}
           ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"><div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div></div>` : ""}
         </div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">搜索反馈</h2></div><div id="c-searches"></div></div>
       </div>
     `, () => {
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
@@ -3717,7 +3840,14 @@
       const topBox = document.getElementById("c-topq");
       if (topBox) {
         if (!tq.length) topBox.innerHTML = '<div class="muted">暂无浏览记录</div>';
-        else topBox.innerHTML = `<table class="data"><thead><tr><th>#</th><th>题目</th><th>浏览</th></tr></thead><tbody>${tq.slice(0, 15).map((x, i) => { const q = Services.questions.find(z => z.id === parseInt(x.id)); return `<tr><td>${i + 1}</td><td>${q ? `<a href="#/question/${q.id}">${U.esc(q.title)}</a>` : "题目#" + U.esc(x.id)}</td><td>${x.views}</td></tr>`; }).join("")}</tbody></table>`;
+        else topBox.innerHTML = `<table class="data"><thead><tr><th>#</th><th>题目</th><th>浏览</th></tr></thead><tbody>${tq.slice(0, 15).map((x, i) => { const q = Services.questions.find(z => z.id === parseInt(x.id)); return `<tr><td>${i + 1}</td><td>${q ? `<a href="/question/${q.id}">${U.esc(q.title)}</a>` : "题目#" + U.esc(x.id)}</td><td>${x.views}</td></tr>`; }).join("")}</tbody></table>`;
+      }
+      const searchBox = document.getElementById("c-searches");
+      if (searchBox) {
+        const zero = (localStats.searches || []).filter(x => !x.count).slice(0, 15);
+        searchBox.innerHTML = zero.length
+          ? `<div class="muted" style="margin-bottom:8px">零结果关键词（本机最近记录）</div><div class="pill-row">${zero.map(x => `<span class="tag tag-warning">${U.esc(x.term)}</span>`).join("")}</div>`
+          : '<div class="muted">暂无零结果搜索</div>';
       }
       /* 图表区统一走按需加载的 echarts（失败静默，不影响面板其余内容） */
       U.loadScript("echarts", U.ECHARTS_URL).then(() => {
@@ -3740,7 +3870,7 @@
           const geoFail = () => {
             const geoBox = document.getElementById("c-geo");
             if (!geoBox) return;
-            geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:32px 0">云端访客数据加载失败（网络或接口暂时不可用）<br><a href="javascript:void(0)" id="geo-retry">重试</a>　<a href="#/admin/settings">检查接口设置 →</a></div>';
+            geoBox.innerHTML = '<div class="muted" style="text-align:center;padding:32px 0">云端访客数据加载失败（网络或接口暂时不可用）<br><a href="javascript:void(0)" id="geo-retry">重试</a>　<a href="/admin/settings">检查接口设置 →</a></div>';
             const r = document.getElementById("geo-retry");
             if (r) r.onclick = loadGeo;
           };
@@ -3762,24 +3892,24 @@
   /* ============================ 管理员：题目管理 ============================ */
   async function pageAdminQuestions() {
     const qs = Services.questions.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>题目管理</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>题目管理</span></div>
       <div class="section-head"><h2>题目管理（${qs.length}）</h2>
-        <div><a class="btn btn-ai" href="#/admin/question/new">${U.icon("plus")} 新增题目</a>
-        <a class="btn" href="#/admin/ai">${U.icon("sparkles")} AI 出题</a></div></div>
+        <div><a class="btn btn-ai" href="/admin/question/new">${U.icon("plus")} 新增题目</a>
+        <a class="btn" href="/admin/ai">${U.icon("sparkles")} AI 出题</a></div></div>
       <div class="toolbar"><input id="f" class="full" style="max-width:300px" placeholder="筛选标题…" /></div>
       <div class="card" style="padding:0"><table class="data"><thead><tr><th>标题</th><th>分类</th><th>难度</th><th>题型</th><th>状态</th><th>来源</th><th>AI</th><th>操作</th></tr></thead><tbody id="tb"></tbody></table></div>`);
     const render = (filter) => {
       const tb = $("#tb");
       const arr = qs.filter(q => !filter || q.title.indexOf(filter) >= 0).slice(0, 100);
       tb.innerHTML = arr.map(q => `<tr>
-        <td><a href="#/question/${q.id}">${U.esc(q.title)}</a></td>
+        <td><a href="/question/${q.id}">${U.esc(q.title)}</a></td>
         <td>${U.esc(q.catName || "-")}</td>
         <td><span class="tag diff-${q.difficulty}">${q.difficulty}</span></td>
         <td>${U.esc(q.type)}</td>
         <td><span class="tag ${q.status === "published" ? "tag-success" : q.status === "draft" ? "tag-warning" : "tag-danger"}">${q.status === "published" ? "已发布" : q.status === "draft" ? "草稿" : "下线"}</span></td>
         <td>${U.esc(q.source)}</td><td>${q.aiScore || 0}</td>
         <td class="row">
-          <a class="btn btn-sm" href="#/admin/question/${q.id}">${U.icon("edit")}</a>
+          <a class="btn btn-sm" href="/admin/question/${q.id}">${U.icon("edit")}</a>
           <button class="btn btn-sm" data-dup="${q.id}">${U.icon("copy")}</button>
           <button class="btn btn-sm btn-danger" data-del="${q.id}">${U.icon("trash")}</button>
         </td></tr>`).join("");
@@ -3839,7 +3969,7 @@
       }).join("");
     };
 
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><a href="#/admin/questions">题目管理</a><span class="sep">/</span><span>${isNew ? "新增" : "编辑"}</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><a href="/admin/questions">题目管理</a><span class="sep">/</span><span>${isNew ? "新增" : "编辑"}</span></div>
       <div class="row" style="justify-content:space-between;margin-bottom:12px">
         <h1>${isNew ? "新增题目" : "编辑题目"}</h1>
         <div class="pill-row">
@@ -3899,7 +4029,7 @@
           if (!hits.length) { dupBox.style.display = "none"; dupBox.innerHTML = ""; return; }
           dupBox.style.display = "";
           dupBox.innerHTML = "⚠️ 题库里有 " + hits.length + " 道相似题："
-            + hits.map(h => ` <a href="#/question/${h.id}">《${U.esc(h.title)}》${Math.round(h.d * 100)}%</a>`).join("、")
+            + hits.map(h => ` <a href="/question/${h.id}">《${U.esc(h.title)}》${Math.round(h.d * 100)}%</a>`).join("、")
             + "（保存前会再拦一次）";
         }, 250);
       };
@@ -4191,7 +4321,7 @@
           <button class="icon-btn" data-del="${c.id}" title="删除">${U.icon("trash")}</button>
         </span></div>
         ${c.children.length ? `<div class="tree-children">${c.children.map(node).join("")}</div>` : ""}</div>`;
-      setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>分类管理</span></div>
+      setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>分类管理</span></div>
         <div class="section-head"><h2>技术分类管理</h2><button class="btn btn-primary btn-sm" id="add-root">${U.icon("plus")} 新增一级分类</button></div>
         <div class="card" id="cat-tree">${tree.map(node).join("")}</div>
         <div class="note">支持多级分类；删除含题目的分类会先提示题目数量，需先移动或删除题目。AI 补全技术体系请前往「AI 出题 → 检查题库完整度」。</div>`);
@@ -4233,7 +4363,7 @@
     const fakeIds = new Set(Services.positions.filter(p => Services.isFakePosition(p)).map(p => p.id));
     const totalHidden = hiddenIds.size;
     const notice = totalHidden > 0 ? `<div style="margin-bottom:12px;padding:8px 12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;color:#0369a1;font-size:13px">已隐藏 ${totalHidden} 条与分类同名的无效岗位（其中 ${fakeIds.size} 条可安全清理），可在「岗位体系」页点击清理。</div>` : "";
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>岗位管理</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>岗位管理</span></div>
       <div class="section-head"><h2>岗位管理</h2><button class="btn btn-primary btn-sm" id="add-pos">${U.icon("plus")} 新增岗位</button></div>${notice}
       <div id="pos-wrap">${byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (hiddenIds.has(p.id)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); if (!uniq.length) return ""; return `<div class="section-head" style="margin:18px 0 8px"><h2 style="font-size:16px">${U.esc(s.stage)}</h2></div>
         <div class="grid grid-cols-auto">${uniq.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${U.esc(Services.posFullName(p))}</b>
@@ -4309,7 +4439,7 @@
     const byStage = Services.positionsByStage();
     const posOpts = byStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<optgroup label="${U.esc(s.stage)}">${uniq.map(p => `<option value="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</optgroup>`; }).join("");
     const steps = ["粘贴JD", "AI解析", "配置参数", "生成中", "预览入库"];
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>AI 出题</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>AI 出题</span></div>
       <div class="steps" id="steps">${steps.map((s, i) => `<div class="step" data-i="${i}"><span class="dot">${i + 1}</span>${s}</div>`).join("")}</div>
       <div class="card" id="ai-main"></div>`);
     function setStep(i) {
@@ -4323,7 +4453,7 @@
     const main = $("#ai-main");
     if (!API.getKey()) {
       main.innerHTML = `<div class="note ai">${U.icon("sparkles")} 尚未配置 DeepSeek Harness API Key。请先在系统设置填写后使用 AI 功能。</div>
-        <a class="btn btn-primary" href="#/admin/settings">前往系统设置</a>`;
+        <a class="btn btn-primary" href="/admin/settings">前往系统设置</a>`;
       return;
     }
     // Step 1
@@ -4562,7 +4692,7 @@
 
   /* ============================ 管理员：批量导入 ============================ */
   async function pageAdminImport() {
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>批量导入</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>批量导入</span></div>
       <h1>批量导入题目</h1>
       <div class="card"><div class="section-head" style="margin:0 0 10px"><h2 style="font-size:16px">步骤一：下载模板</h2></div>
         <p class="secondary">支持 Excel(xlsx)、CSV、JSON、Markdown 导入。先下载标准模板填写。</p>
@@ -4679,7 +4809,7 @@
 
   /* ============================ 管理员：备份恢复 ============================ */
   async function pageAdminBackup() {
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>备份恢复</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>备份恢复</span></div>
       <h1>备份与恢复</h1>
       <div class="grid grid-cols-2">
         <div class="card"><h2 style="font-size:16px">导出备份</h2>
@@ -4728,7 +4858,7 @@
   async function pageAdminSettings() {
     const cfg = API.getConfig();
     const theme = App.getTheme();
-    setMain(`<div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>系统设置</span></div>
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>系统设置</span></div>
       <h1>系统设置</h1>
       <div class="card" style="margin-bottom:16px"><h2 style="font-size:16px">外观主题</h2>
         <div class="seg" id="theme-seg">
@@ -5043,7 +5173,10 @@
          用户带着明确目的而来，再播 3.2s 开场会形成「题目→动效→又回题目」的绕圈体验；
          同样按已看过标记，本会话内不再补播 */
       let deepLink = false;
-      try { deepLink = !!location.hash && location.hash !== "#/" && location.hash !== "#"; } catch (_) {}
+      try {
+        deepLink = (location.pathname && location.pathname !== "/") ||
+          (!!location.hash && location.hash !== "#/" && location.hash !== "#");
+      } catch (_) {}
       if (seen || deepLink) {
         try { sessionStorage.setItem("iti_boot_seen", "1"); } catch (_) {}
         ov.style.display = "none";
@@ -5169,6 +5302,33 @@
       writeLocal(d);
       cfPost("/view", { id });   /* 上报题目浏览到 Cloudflare Worker（fire-and-forget） */
     }
+    function recordSearch(term, count) {
+      if (!term) return;
+      const d = readLocal();
+      d.searches = d.searches || [];
+      d.searches.unshift({ term: String(term).slice(0, 80), count: count || 0, at: Date.now() });
+      d.searches = d.searches.slice(0, 100);
+      writeLocal(d);
+      cfPost("/event", { type: "search", term: String(term).slice(0, 80), count: count || 0 });
+    }
+    function recordQuiz(r) {
+      if (!r || !r.total) return;
+      const d = readLocal();
+      d.quizzes = d.quizzes || [];
+      d.quizzes.unshift(Object.assign({ at: Date.now() }, r));
+      d.quizzes = d.quizzes.slice(0, 100);
+      writeLocal(d);
+      cfPost("/event", { type: "quiz", scope: r.scope, total: r.total, ok: r.ok, bad: r.bad, score: r.score });
+    }
+    function recordAction(name, detail) {
+      if (!name) return;
+      const d = readLocal();
+      d.events = d.events || [];
+      d.events.unshift({ name: String(name).slice(0, 40), detail: detail == null ? "" : String(detail).slice(0, 120), at: Date.now() });
+      d.events = d.events.slice(0, 200);
+      writeLocal(d);
+      cfPost("/event", { type: String(name), detail: detail == null ? "" : String(detail) });
+    }
     function getLocalStats() {
       const today = dateKey();
       const d = readLocal();
@@ -5177,7 +5337,24 @@
         .sort((a, b) => b.views - a.views)
         .slice(0, 20);
       /* daily 必须返回：streakInfo（学习打卡卡）依赖它推导连续/累计/热力图 */
-      return { total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views, daily: d.daily || {} };
+      const quizzes = (d.quizzes || []).slice(0, 20);
+      const week = Date.now() - 7 * 864e5;
+      const weekQuizzes = quizzes.filter(x => (x.at || 0) >= week);
+      const quizTotal = weekQuizzes.reduce((a, x) => a + (x.total || 0), 0);
+      const quizOk = weekQuizzes.reduce((a, x) => a + (x.ok || 0), 0);
+      const quizDuration = weekQuizzes.reduce((a, x) => a + (x.duration || 0), 0);
+      return {
+        total: d.total || 0, todayCount: d.daily[today] || 0, topQuestions: views, daily: d.daily || {},
+        searches: d.searches || [], events: d.events || [],
+        quizzes,
+        quizWeek: {
+          count: weekQuizzes.length,
+          total: quizTotal,
+          ok: quizOk,
+          score: quizTotal ? Math.round(quizOk / quizTotal * 100) : 0,
+          avgSec: quizTotal ? Math.round(quizDuration / quizTotal) : 0
+        }
+      };
     }
     /* --- 可选 Cloudflare Worker（2026-08-27 起已部署，默认启用） ---
        默认地址指向本站官方 Worker（it-interview-stats.iti-interview.workers.dev）；
@@ -5243,7 +5420,7 @@
       return cfCache;
     }
     function enabled() { return true; }
-    return { enabled, recordVisit, recordView, getLocalStats, cfEnabled, cfApi, cfPost, cfGetStats };
+    return { enabled, recordVisit, recordView, recordSearch, recordQuiz, recordAction, getLocalStats, cfEnabled, cfApi, cfPost, cfGetStats };
   })();
 
   const COUNTRY_NAMES = { CN: "中国", HK: "中国香港", TW: "中国台湾", MO: "中国澳门", US: "美国", JP: "日本", KR: "韩国", SG: "新加坡", GB: "英国", DE: "德国", FR: "法国", IN: "印度", CA: "加拿大", AU: "澳大利亚", RU: "俄罗斯", BR: "巴西", NL: "荷兰", ES: "西班牙", IT: "意大利", TH: "泰国", MY: "马来西亚", VN: "越南", ID: "印度尼西亚", PH: "菲律宾", NZ: "新西兰", SE: "瑞典", CH: "瑞士", AE: "阿联酋", ZA: "南非", XX: "未知地区" };
@@ -5327,7 +5504,7 @@
        ② 点侧栏外的遮罩 → 收起（此前遮罩被写死 hidden，点了没反应）；
        ③ Esc 键 / 路由变化 → 兜底收起。
        注意技术分类树的 `展开/收起` 是 div 不是 a，所以不会被①误关，展开时抽屉保持打开。 */
-    sidebar.addEventListener("click", (e) => { if (e.target.closest('a[href^="#/"]')) closeDrawer(); });
+    sidebar.addEventListener("click", (e) => { if (e.target.closest('a[href^="/"]')) closeDrawer(); });
     const dmask = document.getElementById("drawer-mask");
     if (dmask) dmask.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
@@ -5341,10 +5518,10 @@
       const col = (title, links) => `<div class="f-col"><div class="f-col-title">${title}</div>${links.map(([t, h]) => `<a href="${h}">${t}</a>`).join("")}</div>`;
       footEl.innerHTML = `
         <div class="f-grid">
-          ${col("刷题", [["题目列表", "#/questions"], ["随机一题", "#/random"], ["错题重练", "#/review"], ["收藏夹", "#/favorites"]])}
-          ${col("体系", [["技术体系", "#/category"], ["岗位体系", "#/position"], ["模拟面试", "#/mock"], ["技术教程", "#/docs"]])}
-          ${col("我的", [["学习周报", "#/?to=week-report"], ["我的帐号", "#/account"], ["投稿面试题", "#/submit"], ["使用指南", "#/help"]])}
-          ${col("关于", [["关于本站", "#/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
+          ${col("刷题", [["题目列表", "/questions"], ["随机一题", "/random"], ["错题重练", "/review"], ["收藏夹", "/favorites"]])}
+          ${col("体系", [["技术体系", "/category"], ["岗位体系", "/position"], ["模拟面试", "/mock"], ["技术教程", "/docs"]])}
+          ${col("我的", [["学习周报", "/?to=week-report"], ["我的帐号", "/account"], ["投稿面试题", "/submit"], ["使用指南", "/help"]])}
+          ${col("关于", [["关于本站", "/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
         </div>
         <div class="f-bottom">
           <span>IT 面试题库 · 覆盖技术体系与岗位体系的高频面试题</span>
@@ -5391,7 +5568,7 @@
       const loadSeedJs = () => new Promise((resolve) => {
         if (window.SEED) return resolve(true);
         const el = document.createElement("script");
-        el.src = "data/seed.js?v=" + (window.PAGE_VER || "");
+        el.src = "/data/seed.js?v=" + (window.PAGE_VER || "");
         el.onload = () => resolve(true);
         el.onerror = () => resolve(false);
         document.head.appendChild(el);
@@ -5475,15 +5652,17 @@
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
       window.addEventListener("popstate", () => { renderTopbar(); route(); });
-      /* 站内链接统一走 history 路由：源码保留 #/ 链接兼容旧分享，
-         用户点击时转成 /questions、/question/1 这类干净地址。 */
+      /* 站内链接统一走 history 路由；旧 #/ 链接仍兼容。 */
       document.addEventListener("click", (e) => {
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        const a = e.target.closest && e.target.closest('a[href^="#/"]');
+        const a = e.target.closest && e.target.closest('a[href^="#/"], a[href^="/"]');
         if (!a || a.target === "_blank") return;
         e.preventDefault();
         App.go(a.getAttribute("href"));
       });
+      try {
+        if (location.hash.indexOf("#/") === 0) history.replaceState(null, "", location.hash.slice(1));
+      } catch (e) {}
       _pm("boot:route-start");
       route();
       _pm("boot:route-called");
@@ -5539,7 +5718,7 @@
           U.toast("📚 有 " + fresh.length + " 道题到复习时间了，去「错题重练」巩固记忆", "info", 6000);
           fresh.forEach(w => notified.add(w.questionId));
         }
-        const item = document.querySelector('.side-nav-item[href="#/review"]');
+        const item = document.querySelector('.side-nav-item[href="/review"]');
         if (item && due.length) item.classList.add("nav-pulse");
         /* 徽章数字实时更新：用户停留在任意页面时，新到期的题也能反映到侧边栏 */
         if (App.reviewDue !== due.length) { App.reviewDue = due.length; renderSidebar(parseHash()); }
@@ -5659,7 +5838,7 @@
               <div class="about-contact-row"><span class="about-contact-k">${U.icon("link")} 站点</span><a href="${location.origin}" target="_blank" rel="noopener">${location.host}</a></div>
             </div>
             <a class="about-qr" href="${location.origin}/assets/qrcode-yueji-shuyu.png" target="_blank" rel="noopener" title="点击查看大图">
-              <img src="assets/qrcode-yueji-shuyu.png" alt="阅己书语公众号二维码" loading="lazy" />
+              <img src="/assets/qrcode-yueji-shuyu.png" alt="阅己书语公众号二维码" loading="lazy" />
               <span class="about-qr-cap">微信搜一搜 · 阅己书语</span>
             </a>
           </div>
