@@ -324,11 +324,11 @@
   /* 全局 CDN 兜底（jsdelivr 同步命中 GitHub，1MB 大库也能稳定加载） */
   const FALLBACKS = {
     echarts: [
-      "vendor/echarts.min.js",
+      "/vendor/echarts.min.js",
       "https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"
     ],
     xlsx: [
-      "vendor/xlsx.full.min.js",
+      "/vendor/xlsx.full.min.js",
       "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
     ]
   };
@@ -368,9 +368,9 @@
     })();
     return _scriptCache[name];
   };
-  U.CONFETTI_URL = "vendor/canvas-confetti.min.js";
-  U.ECHARTS_URL = "vendor/echarts.min.js";
-  U.XLSX_URL = "vendor/xlsx.full.min.js";
+  U.CONFETTI_URL = "/vendor/canvas-confetti.min.js";
+  U.ECHARTS_URL = "/vendor/echarts.min.js";
+  U.XLSX_URL = "/vendor/xlsx.full.min.js";
   /* 暴露给用户/调试：当前累计重试次数，0 表示首次 */
   U.loadRetries = name => _scriptRetries[name] || 0;
   /* 手动作废某个 name 的脚本缓存，让下次 U.loadScript(name) 走网络重抓（含新的 ?_t= 破缓存） */
@@ -1129,7 +1129,7 @@
         { name: "alias", weight: 0.18 }
       ],
       includeMatches: true,
-      threshold: 0.35,
+      threshold: 0.45,
       ignoreLocation: true,
       minMatchCharLength: 1
     });
@@ -2115,6 +2115,7 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
   const DEFAULT_REPO = "succedd/workbuddy_it-interview";
   const DEFAULT_BRANCH = "main";
   const FILE_PATH = "data/published.json";
+  const FILE_URL = "/" + FILE_PATH;
 
   const AUTO_DELAY = 10000;      // 防抖：最后一次改动 10 秒后自动发布
   const RETRY_DELAY = 90000;     // 失败后重试间隔
@@ -2241,7 +2242,7 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
     const o = opts || {};
     const attempts = Math.max(1, o.attempts || FETCH_TRIES);
     const timeout = o.timeout || FETCH_MS_FULL;
-    const url = FILE_PATH + (noCache ? "?v=" + Date.now() : "");
+    const url = FILE_URL + (noCache ? "?v=" + Date.now() : "");
     const init = noCache ? { cache: "no-store" } : undefined;
     let reason = "", tries = 0;
     for (let i = 0; i < attempts; i++) {
@@ -2286,8 +2287,8 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
    *     absorbRemote、verify-publish.py 的语义完全不变；
    *  ③ 分片只影响「本机题目表怎么被填满」，不改变 publishedAt 指纹语义，
    *     所以 version.json 的「指纹没变就跳过」逻辑依旧成立。 */
-  const MANIFEST_PATH = "data/manifest.json";
-  const SHARD_PATH = "data/shards/";
+  const MANIFEST_PATH = "/data/manifest.json";
+  const SHARD_PATH = "/data/shards/";
   const SHARD_TIMEOUT = 12000;
   C._shardCache = {};        /* 分片名 -> questions数组（内存，供同片多题复用） */
   C._shardFailed = {};       /* 分片名 -> true，本次会话内不再重试（避免反复超时拖慢） */
@@ -2541,9 +2542,10 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
    * 判定用「严格相等」而非 <=：万一某次 version.json 发布失败停留在旧值，
    * 本地较新时会走全量拉取自愈，绝不会因 stale 指纹漏更新。 */
   C.META_PATH = "data/version.json";
+  C.META_URL = "/" + C.META_PATH;
   C.fetchMeta = async function () {
     try {
-      const r = await fetchT(C.META_PATH + "?v=" + Date.now(), { cache: "no-store" }, 6000);
+      const r = await fetchT(C.META_URL + "?v=" + Date.now(), { cache: "no-store" }, 6000);
       if (!r.ok) return null;
       const j = await r.json();
       if (j && Number.isInteger(j.publishedAt) && j.publishedAt >= 0 && Number.isInteger(j.count)) return j;
@@ -3185,6 +3187,7 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
 
   const LS_PASS = "backup_passphrase";
   const FILE_PATH = "data/local-backup.json";
+  const FILE_URL = "/" + FILE_PATH;
 
   /* 需要备份的 localStorage 键（云端发布 + AI + 统计 + 主题） */
   const LS_KEYS = [
@@ -3289,7 +3292,7 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
 
   /* ---------- 从云端恢复 ---------- */
   B.fetchBackup = async function () {
-    const r = await fetch(FILE_PATH + "?v=" + Date.now(), { cache: "no-store" });
+    const r = await fetch(FILE_URL + "?v=" + Date.now(), { cache: "no-store" });
     if (!r.ok) throw new Error("云端没有备份文件（HTTP " + r.status + "）");
     return await r.json();
   };
