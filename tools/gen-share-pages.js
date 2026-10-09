@@ -119,7 +119,7 @@ function jsonLd(q) {
       acceptedAnswer: q.answer ? {
         "@type": "Answer",
         text: stripMd(q.answer),
-        url: `${SITE}/#/question/${q.id}`,
+        url: `${SITE}/question/${q.id}`,
       } : undefined,
     },
   };
@@ -130,7 +130,7 @@ function jsonLd(q) {
 function breadcrumbLd(q, ctx) {
   const trail = [{ name: "首页", url: `${SITE}/` }];
   (ctx.catPathOf(q.categoryId) || []).forEach(c => {
-    trail.push({ name: c.name, url: `${SITE}/#/category?cat=${c.id}` });
+    trail.push({ name: c.name, url: `${SITE}/category?cat=${c.id}` });
   });
   trail.push({ name: String(q.title || ""), url: `${SITE}/q/${q.id}.html` });
   const data = {
@@ -147,7 +147,7 @@ function page(q, ctx) {
   const title = esc(`${q.title} · IT面试题库`);
   const desc = esc(excerpt(q));
   const qUrl = `${SITE}/q/${q.id}.html`;
-  const hashUrl = `${SITE}/#/question/${q.id}`;
+  const appUrl = `${SITE}/question/${q.id}`;
   const bodyHtml = q.body ? mdToHtml(q.body) : "";
   const answerHtml = q.answer ? mdToHtml(q.answer) : "";
   /* 同分类高频题内链（20261005a）：按浏览量取同分类其它 4 题，站内互链强化 SEO 抓取，
@@ -158,7 +158,7 @@ function page(q, ctx) {
   }</ul></div>` : "";
   /* 读完引导条：有分类的题连刷同类（含子分类），无分类的退回题目页 */
   const catId = parseInt(q.categoryId, 10);
-  const guideUrl = catId ? `${SITE}/#/practice?scope=cat&cat=${catId}&mode=random` : hashUrl;
+  const guideUrl = catId ? `${SITE}/practice?scope=cat&cat=${catId}&mode=random` : appUrl;
   const guideText = catId
     ? "这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好"
     : "这道题看完了？<b>去刷题模式</b>练起来，趁热打铁效果最好";
@@ -251,7 +251,7 @@ function page(q, ctx) {
     <div class="chips">${metaChips(q)}</div>
     ${bodyHtml ? `<div class="card"><h2>题目</h2>${bodyHtml}</div>` : ""}
     ${answerHtml ? `<div class="card"><h2>参考答案</h2>${answerHtml}</div>` : ""}
-    <a class="cta" href="${hashUrl}">在线刷题 · 收藏与错题重练 →</a>
+    <a class="cta" href="${appUrl}">在线刷题 · 收藏与错题重练 →</a>
     <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
   </div>
   <div class="guide" id="guide">
@@ -375,25 +375,40 @@ async function main() {
     return out;
   };
   let cWritten = 0;
+  const categoriesWithPages = new Set();
+  const keepCatPages = new Set();
   for (const c of data.categories || []) {
     const ids = new Set([c.id, ...descendantIds(c.id)]);
     const qs = questions.filter(q => ids.has(parseInt(q.categoryId, 10))).sort((a, b) => (b.views || 0) - (a.views || 0));
-    if (!qs.length) continue;
+    if (qs.length < 3) continue;   // 避免 thin content；小分类由父分类页聚合
+    categoriesWithPages.add(c.id);
+    keepCatPages.add(`${c.id}.html`);
     fs.writeFileSync(path.join(cOut, `${c.id}.html`), collectionPage("category", c.id, c.name, `${c.name}方向的 ${qs.length} 道 IT 面试题，覆盖高频考点、参考答案与错题复习。`, qs, `${SITE}/c/${c.id}.html`, `${SITE}/category?cat=${c.id}`), "utf8");
     cWritten++;
   }
   let pWritten = 0;
   const positionsWithQuestions = new Set();
+  const keepPosPages = new Set();
   for (const p of data.positions || []) {
     const pos = p;
     const fullName = pos.direction ? `${pos.name}·${pos.direction}` : pos.name;
     const qs = questions.filter(q => (q.positionIds || []).includes(pos.id) || (q.positionNames || []).includes(pos.name)).sort((a, b) => (b.views || 0) - (a.views || 0));
     if (!qs.length) continue;
     positionsWithQuestions.add(p.id);
+    keepPosPages.add(`${p.id}.html`);
     fs.writeFileSync(path.join(pOut, `${p.id}.html`), collectionPage("position", p.id, fullName, `${fullName}岗位的 ${qs.length} 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。`, qs, `${SITE}/p/${p.id}.html`, `${SITE}/position/${p.id}`), "utf8");
     pWritten++;
   }
   console.log(`已生成 ${cWritten} 个分类 SEO 页 / ${pWritten} 个岗位 SEO 页`);
+  // 清理题库变化后遗留的旧集合页，避免 sitemap 外出现 thin content 死页。
+  const cleanDir = (dir, keep) => {
+    if (!fs.existsSync(dir)) return;
+    for (const name of fs.readdirSync(dir)) {
+      if (name.endsWith(".html") && !keep.has(name)) fs.rmSync(path.join(dir, name), { force: true });
+    }
+  };
+  cleanDir(cOut, keepCatPages);
+  cleanDir(pOut, keepPosPages);
   /* 同步重生成 sitemap.xml：首页 + 主要路由 + 全部分享页，SEO 不再漏新页 */
   const today = new Date().toISOString().slice(0, 10);
   const sitemapUrls = [
@@ -404,7 +419,7 @@ async function main() {
     { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
     { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
     ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}.html`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
-    ,...(data.categories || []).filter(c => c.id && c.name).map(c => ({ loc: `${SITE}/c/${c.id}.html`, priority: "0.6", freq: "weekly" }))
+    ,...(data.categories || []).filter(c => categoriesWithPages.has(c.id)).map(c => ({ loc: `${SITE}/c/${c.id}.html`, priority: "0.6", freq: "weekly" }))
     ,...(data.positions || []).filter(p => p.id && positionsWithQuestions.has(p.id)).map(p => ({ loc: `${SITE}/p/${p.id}.html`, priority: "0.6", freq: "weekly" }))
   ];
   const NL = "\n";
