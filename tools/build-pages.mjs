@@ -25,6 +25,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -61,6 +62,17 @@ function copyFile(src, dest) {
   fs.copyFileSync(src, dest);
 }
 
+function generateSharePages() {
+  const data = path.join(ROOT, "data", "published.json");
+  if (!fs.existsSync(data)) fail("缺少 data/published.json");
+  const result = spawnSync(process.execPath, [path.join(HERE, "gen-share-pages.js"), data], {
+    cwd: ROOT,
+    stdio: "inherit"
+  });
+  if (result.error) fail("无法启动 gen-share-pages.js：" + result.error.message);
+  if (result.status !== 0) fail("gen-share-pages.js 退出码：" + result.status);
+}
+
 function walk(dir) {
   let n = 0;
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -89,11 +101,14 @@ if (CHECK_ONLY) {
   process.exit(0);
 }
 
-// ---------- 2) 清空并重建 dist ----------
+// ---------- 2) 生成分享/SEO 静态页 ----------
+generateSharePages();
+
+// ---------- 3) 清空并重建 dist ----------
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
 
-// ---------- 3) 白名单拷贝 ----------
+// ---------- 4) 白名单拷贝 ----------
 let files = 0;
 for (const f of ROOT_FILES) {
   copyFile(path.join(ROOT, f), path.join(DIST, f));
@@ -131,11 +146,11 @@ for (const d of ROOT_DIRS) {
   }
 }
 
-// ---------- 4) 放置高级模式 Worker ----------
+// ---------- 5) 放置高级模式 Worker ----------
 copyFile(WORKER_SRC, WORKER_DEST);
 files += 1;
 
-// ---------- 5) 校验分片产物（2026-10-06性能优化） ----------
+// ---------- 6) 校验分片产物（2026-10-06性能优化） ----------
 // data/manifest.json 与 data/shards/ 是分片加载的运行时依赖：
 // 缺了不会崩（cloud.js 自动回退整包 published.json），但首屏优化直接失效。
 // 所以这里显式提示，避免「以为上线了其实没生效」。
@@ -157,7 +172,7 @@ if (!fs.existsSync(manifestPath) || !fs.existsSync(shardDir)) {
   );
 }
 
-// ---------- 6) 自检：内部文件绝不能进 dist ----------
+// ---------- 7) 自检：内部文件绝不能进 dist ----------
 const FORBIDDEN = ["tools", "cloudflare", "netlify", "HANDOVER.md", "README.md", "netlify.toml", ".git"];
 const leaked = FORBIDDEN.filter((n) => fs.existsSync(path.join(DIST, n)));
 if (leaked.length) fail("dist/ 里出现内部文件：" + leaked.join(", "));
