@@ -357,6 +357,18 @@ function applyDataCache(res, path, url) {
   return res;
 }
 
+function applyStaticCache(res, path, url) {
+  if (res.status !== 200) return res;
+  if (url.searchParams.has("v")) {
+    res.headers.set("cache-control", "public, max-age=31536000, immutable");
+    return res;
+  }
+  if (/^\/(q|c|p)\//.test(path)) {
+    res.headers.set("cache-control", "public, max-age=3600");
+  }
+  return res;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -429,6 +441,7 @@ export default {
     if (res.status === 404 && SPA_ROUTE_RE.test(path)) {
       res = await env.ASSETS.fetch(new Request(new URL("/", url), request));
     }
+    res = applyStaticCache(res, path, url);
 
     if (isData) {
       const out = harden(res);
