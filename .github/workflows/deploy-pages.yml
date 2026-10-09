@@ -37,9 +37,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Generate SEO pages and sitemap
-        run: node tools/gen-share-pages.js data/published.json
-
       - name: Build dist (whitelist)
         run: node tools/build-pages.mjs
 
