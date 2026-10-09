@@ -222,16 +222,37 @@
     U._openModals = (U._openModals || 0) + 1;
     document.body.classList.add("modal-open");
     const modalEl = mask.querySelector(".modal");
+    const focusables = () => Array.prototype.filter.call(
+      modalEl.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"),
+      el => !el.disabled && el.offsetParent !== null
+    );
+    const previousFocus = document.activeElement;
+    const focusFirst = () => {
+      const list = focusables();
+      if (list.length) try { list[0].focus(); } catch (e) {}
+    };
+    const trapKey = e => {
+      if (e.key !== "Tab") return;
+      const list = focusables();
+      if (!list.length) return;
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); try { last.focus(); } catch (e2) {} }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); try { first.focus(); } catch (e2) {} }
+    };
     const close = () => {
       mask.remove();
       document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", trapKey);
       U._openModals = Math.max(0, (U._openModals || 1) - 1);
       if (!U._openModals) document.body.classList.remove("modal-open");
+      try { if (previousFocus && previousFocus.focus) previousFocus.focus(); } catch (e) {}
     };
     const onKey = e => { if (e.key === "Escape" && opts.closable !== false) close(); };
     mask.querySelector("[data-close]").onclick = () => { if (opts.closable !== false) close(); };
     mask.addEventListener("click", e => { if (e.target === mask && opts.closable !== false) close(); });
     document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", trapKey);
+    setTimeout(focusFirst, 0);
     return {
       el: modalEl,
       body: modalEl.querySelector(".modal-body"),

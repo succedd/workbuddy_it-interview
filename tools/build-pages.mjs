@@ -73,6 +73,15 @@ function generateSharePages() {
   if (result.status !== 0) fail("gen-share-pages.js 退出码：" + result.status);
 }
 
+function validateQuestionData() {
+  const result = spawnSync(process.execPath, [path.join(HERE, "validate-question-data.mjs")], {
+    cwd: ROOT,
+    stdio: "inherit"
+  });
+  if (result.error) fail("无法启动 validate-question-data.mjs：" + result.error.message);
+  if (result.status !== 0) fail("validate-question-data.mjs 退出码：" + result.status);
+}
+
 function walk(dir) {
   let n = 0;
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -102,6 +111,7 @@ if (CHECK_ONLY) {
 }
 
 // ---------- 2) 生成分享/SEO 静态页 ----------
+validateQuestionData();
 generateSharePages();
 
 // ---------- 3) 清空并重建 dist ----------

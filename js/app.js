@@ -138,6 +138,21 @@
     return !!(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable));
   }
 
+  function deferredPage(label) {
+    App._deferredRoute = true;
+    setMain(`<div class="empty"><div class="em-ic">${U.icon("refresh")}</div><h3>${U.esc(label)}模块加载中</h3><p class="muted">功能模块正在后台下载，完成后会自动打开。</p></div>`);
+  }
+
+  App.deferredReady = function () {
+    if (App._deferredRoute) {
+      App._deferredRoute = false;
+      route();
+    }
+    renderTopbar();
+    renderSidebar(parseHash());
+    try { if (window.Account) Account.autoSyncIfDue(); } catch (e) { console.warn("account autosync error", e); }
+  };
+
   async function route() {
     clearCharts();
     setPageKeys(null);
@@ -150,23 +165,27 @@
       const sub = r.parts[1] || "dashboard";
       /* 帐号管理（20260913f）：唯一走服务端角色鉴权的管理页，先于本地密码门禁处理 */
       if (sub === "users") {
+        if (!window.Account) return deferredPage("帐号管理");
         if (!App.requireServerAdmin()) return;
         return Account.renderAdminPage();
       }
       /* 投稿审核（20260919f）：admin + expert 都能进，服务端按 role 裁剪可见范围；
          expert 可选「未分配」的投稿，避免没人管的分组把投稿卡死。 */
       if (sub === "submissions") {
+        if (!window.Submit) return deferredPage("投稿审核");
         if (!App.requireReviewer()) return;
         return window.Submit ? Submit.renderReview() : page404(r.parts.join("/"));
       }
       /* 专家群组管理：仅 admin（分组等于分配权限，不能让专家自己扩权） */
       if (sub === "groups") {
+        if (!window.Submit) return deferredPage("专家群组");
         if (!App.requireServerAdmin()) return;
         return window.Submit ? Submit.renderGroups() : page404(r.parts.join("/"));
       }
       /* 待入库（20260919h）：审核通过 → 收进本机题库。也仅 admin ——
          写 bank_id 等于走上发布链路，专家不该碰（与群组管理同理）。 */
       if (sub === "inbox") {
+        if (!window.Submit) return deferredPage("待入库");
         if (!App.requireServerAdmin()) return;
         return window.Submit ? Submit.renderInbox() : page404(r.parts.join("/"));
       }
@@ -187,7 +206,7 @@
       case "category": return pageCategory(r.q);
       case "position": return r.parts[1] ? pagePositionDetail(r.parts[1]) : pagePositions();
       /* 岗位刷题计划：把岗位题目串成 4–8 周计划（map = 刷题计划入口） */
-      case "roadmap": return r.parts[1] ? pageRoadmapDetail(r.parts[1]) : pageRoadmap();
+      case "roadmap": return window.Roadmap ? (r.parts[1] ? pageRoadmapDetail(r.parts[1]) : pageRoadmap()) : deferredPage("刷题计划");
       /* 「学」版块：技术教程（方向 × 初级/中级/高级），
          #/docs | #/docs/<dir> | #/docs/<dir>/<level>/<chapter> */
       case "docs":
@@ -210,9 +229,9 @@
       case "mock": return pageMock();
       case "panorama": return pagePanorama(r.q);
       /* 投稿（20260919f）：必须登录，未登录由页面自己给登录引导（不硬跳转，免得丢草稿意图） */
-      case "submit": return window.Submit ? Submit.renderSubmitPage() : page404(r.parts.join("/"));
-      case "me": return (r.parts[1] === "submissions" && window.Submit) ? Submit.renderMine() : page404(r.parts.join("/"));
-      case "account": return window.Account ? Account.renderLoginPage() : pageHome();
+      case "submit": return window.Submit ? Submit.renderSubmitPage() : deferredPage("投稿");
+      case "me": return (r.parts[1] === "submissions" && window.Submit) ? Submit.renderMine() : deferredPage("我的投稿");
+      case "account": return window.Account ? Account.renderLoginPage() : deferredPage("我的帐号");
       default: return page404(r.parts.join("/"));
     }
   }
@@ -2277,8 +2296,8 @@
         </div>
       </div>`, () => {
         const r = $("#quiz-resume");
-        if (r) r.onclick = () => start(pool.filter(x => saved.ids.indexOf(x.id) >= 0), saved);
-        $("#quiz-start").onclick = () => start();
+        if (r) r.onclick = () => { Stats.recordAction("quiz_resume", scopeName); start(pool.filter(x => saved.ids.indexOf(x.id) >= 0), saved); };
+        $("#quiz-start").onclick = () => { Stats.recordAction("quiz_start", scopeName); start(); };
       });
 
     const start = (resumePool, resume) => {
@@ -2300,6 +2319,7 @@
       const show = () => {
         const it = list[i];
         persist();
+        Stats.recordAction("quiz_question", String(it.id));
         setMain(`
           <div class="breadcrumb"><a href="/quiz">限时小测</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
           <div class="quiz-head">
@@ -3029,6 +3049,18 @@
       </div>
       <span id="rv-streak" class="tag ${rv0.streak >= 3 ? "tag-warning" : ""}" title="每天完成至少 1 次复习即打卡，中断清零">🔥 连续复习 ${rv0.streak} 天</span>
     </div>` : "";
+    const scheduleBucket = (offset) => {
+      const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + offset);
+      const next = d.getTime() + 864e5;
+      return [...due, ...upcoming].filter(w => (w.dueAt || 0) >= d.getTime() && (w.dueAt || 0) < next).length;
+    };
+    const scheduleHtml = (due.length || upcoming.length) ? `<div class="card" style="padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <b style="font-size:13px">复习计划</b>
+      <span class="tag tag-warning">今天 ${due.length}</span>
+      <span class="tag">明天 ${scheduleBucket(1)}</span>
+      <span class="tag">后天 ${scheduleBucket(2)}</span>
+      <span class="tag">近 7 天 ${[...due, ...upcoming].filter(w => (w.dueAt || 0) < Date.now() + 7 * 864e5).length}</span>
+    </div>` : "";
     /* 一次性取出全部批注建索引（避免每张卡片各查一次库） */
     let noteByQ = new Map();
     try { noteByQ = new Map((await DB.notesAll()).map(n => [n.questionId, n])); } catch (e) {}
@@ -3061,6 +3093,7 @@
       <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>错题重练</span></div>
       <div class="section-head"><h2>🧠 错题重练</h2><span class="muted">艾宾浩斯记忆曲线 · 点「⚡ AI 闯关」先答变式题验证真掌握，或直接自评</span></div>
       ${rvHeader}
+      ${scheduleHtml}
       ${due.length
         ? `<h3 style="margin:14px 0 10px">📌 待复习（${due.length}）</h3><div style="display:grid;gap:10px">${due.map(w => cardOf(w, true)).join("")}</div>`
         : `<div class="empty">
@@ -3831,6 +3864,15 @@
         </div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">搜索反馈</h2></div><div id="c-searches"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">转化漏斗</h2></div><div id="c-funnel"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">搜索收录监控</h2></div>
+          <div class="pill-row" style="flex-wrap:wrap">
+            <a class="btn btn-sm" href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a>
+            <a class="btn btn-sm" href="https://ziyuan.baidu.com/site" target="_blank" rel="noopener">百度搜索资源平台</a>
+            <a class="btn btn-sm" href="/sitemap.xml" target="_blank" rel="noopener">Sitemap</a>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:8px">收录与点击数据以平台后台为准；每周记录一次覆盖率、点击量与 Top 查询。</div>
+        </div>
       </div>
     `, () => {
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
@@ -3848,6 +3890,24 @@
         searchBox.innerHTML = zero.length
           ? `<div class="muted" style="margin-bottom:8px">零结果关键词（本机最近记录）</div><div class="pill-row">${zero.map(x => `<span class="tag tag-warning">${U.esc(x.term)}</span>`).join("")}</div>`
           : '<div class="muted">暂无零结果搜索</div>';
+      }
+      const funnelBox = document.getElementById("c-funnel");
+      if (funnelBox) {
+        const eventCount = (name) => (localStats.events || []).filter(x => x.name === name).length;
+        const searches = (localStats.searches || []).length;
+        const roleEntries = eventCount("role_entry");
+        const quizStarts = eventCount("quiz_start");
+        const questionViews = eventCount("quiz_question");
+        const quizDone = (localStats.quizzes || []).length;
+        const rows = [
+          ["访问", localStats.total || 0],
+          ["搜索/选岗位", searches + roleEntries],
+          ["开始小测", quizStarts],
+          ["进入答题", questionViews],
+          ["完成小测", quizDone]
+        ];
+        const base = rows[0][1] || 1;
+        funnelBox.innerHTML = rows.map(([name, value], i) => `<div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="width:82px;color:var(--muted);font-size:12px">${name}</span><div style="flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.max(2, Math.round(value / (i ? base : 1) * 100))}%;background:${i === rows.length - 1 ? "#10b981" : "#2563eb"}"></div></div><b style="min-width:38px;text-align:right">${value}</b></div>`).join("");
       }
       /* 图表区统一走按需加载的 echarts（失败静默，不影响面板其余内容） */
       U.loadScript("echarts", U.ECHARTS_URL).then(() => {
@@ -5436,6 +5496,29 @@
     if (tot && tot.textContent !== tt) { tot.textContent = tt; flashVis(tot); }
   }
 
+  function bindMobileKeyboard() {
+    if (App._keyboardBound) return;
+    App._keyboardBound = true;
+    const sync = () => {
+      const vv = window.visualViewport;
+      const inset = vv ? Math.max(0, window.innerHeight - vv.height) : 0;
+      const open = inset > 120;
+      document.body.classList.toggle("keyboard-open", open);
+      document.documentElement.style.setProperty("--keyboard-inset", (open ? Math.min(inset, 280) : 0) + "px");
+    };
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", sync);
+      window.visualViewport.addEventListener("scroll", sync);
+    }
+    document.addEventListener("focusin", e => {
+      if (!e.target.matches("input, textarea, select")) return;
+      sync();
+      setTimeout(() => { try { e.target.scrollIntoView({ block: "center", behavior: "smooth" }); } catch (err) {} }, 250);
+    });
+    document.addEventListener("focusout", () => setTimeout(sync, 120));
+    sync();
+  }
+
   /* ---- 弱网首次题库拉取失败的恢复（2026-09-13 P1 修复）----
      访客首次打开时若 data/published.json（约 1.5MB）拉取失败，本机只剩 seed 的
      99 道题，界面上却没有任何提示、也不会再自动重试。这里：
@@ -5494,6 +5577,7 @@
 
   async function init() {
     applyTheme();
+    bindMobileKeyboard();
     if (!window.indexedDB) {
       document.body.innerHTML = `<div class="empty" style="padding:80px"><div class="em-ic">${U.icon("alert")}</div><h3>当前浏览器不支持 IndexedDB</h3><p>请使用 Chrome / Firefox / Edge 等现代浏览器。</p></div>`;
       return;

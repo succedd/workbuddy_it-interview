@@ -240,4 +240,9 @@ html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); bo
      12 个词在 390px 下排成 3 行约 150px，把搜索框和下方内容往下推。
      保留前 8 个高频道，其余交给搜索。 */
   .hot-tags .tag:nth-child(n+9) { display: none; }
+
+  body.keyboard-open .modal {
+    max-height: calc(100vh - var(--keyboard-inset, 180px) - 32px);
+    overflow: auto;
+  }
 }

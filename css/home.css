@@ -172,6 +172,11 @@
   padding: 10px;
 }
 
+body.keyboard-open .quiz-pager {
+  bottom: calc(10px + var(--keyboard-inset, 180px));
+  max-width: 100%;
+}
+
 .answer-trust {
   display: flex;
   flex-wrap: wrap;

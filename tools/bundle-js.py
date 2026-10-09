@@ -60,17 +60,17 @@ GROUPS = [
         "js/cloud.js",
         "js/backup.js",
     ]),
-    ("app", "应用主体：路由 / 页面 / 账号 / 投稿", [
+    ("app", "应用主体：路由 / 首屏页面", [
         "js/daily-quote.js",
-        "js/roadmap.js",
         "js/docs-loader.js",   # 必须先于 app.js（app.js 启动时用它预热）
         "js/app.js",
-        "js/account.js",
-        "js/submit.js",
     ]),
     # ↓ 非首屏：由加载器在关键路径出齐之后再拉，失败也不影响首屏
     ("extra", "非首屏（路由 / 交互触发时才用）", [
         "vendor/highlight.min.js",
+        "js/roadmap.js",
+        "js/account.js",
+        "js/submit.js",
         "js/panorama.js",
         "js/sharecard.js",
         "js/guide.js",
