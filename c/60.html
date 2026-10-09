@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>浏览器原理面试题 · IT面试题库</title>
+  <meta name="description" content="浏览器原理方向的 21 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/60.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="浏览器原理面试题 · IT面试题库">
+  <meta property="og:description" content="浏览器原理方向的 21 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/60.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"浏览器原理面试题","description":"浏览器原理方向的 21 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/60.html","mainEntity":{"@type":"ItemList","numberOfItems":21,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/1128.html","name":"现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1129.html","name":"为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/23.html","name":"浏览器从输入 URL 到页面展示发生了什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1059.html","name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1060.html","name":"浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1061.html","name":"浏览器的强缓存与协商缓存怎么判断？Cookie、localStorage、sessionStorage、IndexedDB 该怎么选？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1130.html","name":"用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1131.html","name":"【单选题】关于浏览器缓存对“输入 URL 后加载”的影响，下列说法正确的是？\nA. 命中强缓存时浏览器仍会向服务器发一次请求确认资源是否过期；\nB. 协商缓存命中时服务器返回 304，不重新传输响应体；\nC. 同时出现 Cache-Control: max-age 与 Expires 时，Expires 优先级更高；\nD. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified 做校验。"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1133.html","name":"如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1156.html","name":"HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1157.html","name":"改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1158.html","name":"页面首次打开长时间白屏，如何用 DevTools 判断是「JS 阻塞/报错」还是「资源加载慢/网络问题」？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1159.html","name":"前端调用 fetch('https://api.other.com/data') 被浏览器拦截报 CORS 错误，应如何排查并解决？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1160.html","name":"浏览器拿到响应后，什么时候走「本地强缓存 200(from cache)」、什么时候走「协商缓存 304」？Cache-Control 与 ETag 各自管哪一段？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1161.html","name":"Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/1162.html","name":"现代浏览器为什么采用「多进程架构」？它如何提升稳定性与安全性（崩溃隔离、沙箱、站点隔离）？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/1305.html","name":"故障排查：SPA 长期打开后标签页内存持续上涨、最终卡死。请说明 JS 的垃圾回收原理，并给出定位内存泄漏的步骤与常见泄漏源。"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1306.html","name":"Service Worker 是什么？它的生命周期如何运转，又是怎样实现离线可用的？请说明它与浏览器 HTTP 缓存的分工。"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1327.html","name":"Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1332.html","name":"什么情况下元素会被提升为合成层？「层爆炸」为什么会拖垮性能？will-change 到底该怎么用？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>浏览器原理面试题</h1><p>浏览器原理方向的 21 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/1128.html">现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？</a><span>初级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1129.html">为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/23.html">浏览器从输入 URL 到页面展示发生了什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1059.html">浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1060.html">浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1061.html">浏览器的强缓存与协商缓存怎么判断？Cookie、localStorage、sessionStorage、IndexedDB 该怎么选？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1130.html">用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1131.html">【单选题】关于浏览器缓存对“输入 URL 后加载”的影响，下列说法正确的是？
+A. 命中强缓存时浏览器仍会向服务器发一次请求确认资源是否过期；
+B. 协商缓存命中时服务器返回 304，不重新传输响应体；
+C. 同时出现 Cache-Control: max-age 与 Expires 时，Expires 优先级更高；
+D. 响应同时带 ETag 与 Last-Modified 时，浏览器只用 Last-Modified 做校验。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1133.html">如何用 Service Worker 在“输入 URL→页面”链路里实现离线可用与二次访问秒开（预缓存 + 运行时代理）？它与 HTTP 缓存的边界是什么，会带来哪些坑？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1156.html">HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1157.html">改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1158.html">页面首次打开长时间白屏，如何用 DevTools 判断是「JS 阻塞/报错」还是「资源加载慢/网络问题」？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1159.html">前端调用 fetch(&#39;https://api.other.com/data&#39;) 被浏览器拦截报 CORS 错误，应如何排查并解决？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1160.html">浏览器拿到响应后，什么时候走「本地强缓存 200(from cache)」、什么时候走「协商缓存 304」？Cache-Control 与 ETag 各自管哪一段？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1161.html">Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1162.html">现代浏览器为什么采用「多进程架构」？它如何提升稳定性与安全性（崩溃隔离、沙箱、站点隔离）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1305.html">故障排查：SPA 长期打开后标签页内存持续上涨、最终卡死。请说明 JS 的垃圾回收原理，并给出定位内存泄漏的步骤与常见泄漏源。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1306.html">Service Worker 是什么？它的生命周期如何运转，又是怎样实现离线可用的？请说明它与浏览器 HTTP 缓存的分工。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1327.html">Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1332.html">什么情况下元素会被提升为合成层？「层爆炸」为什么会拖垮性能？will-change 到底该怎么用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1366.html">JavaScript 的事件循环如何调度宏任务与微任务？Promise 和 setTimeout 谁先执行？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=60">在线刷浏览器原理题 →</a></div></body>
+</html>

@@ -265,6 +265,43 @@ function page(q, ctx) {
 `;
 }
 
+function collectionPage(kind, id, name, intro, questions, canonical, appUrl) {
+  const items = questions.slice(0, 60).map(q => `
+    <li><a href="${SITE}/q/${q.id}.html">${esc(q.title)}</a><span>${esc(q.difficulty || "")} · ${(q.views || 0)} 次浏览</span></li>`).join("");
+  const jsonLdData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${name}面试题`,
+    description: stripMd(intro).slice(0, 180),
+    url: canonical,
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: questions.length,
+      itemListElement: questions.slice(0, 20).map((q, i) => ({
+        "@type": "ListItem", position: i + 1, url: `${SITE}/q/${q.id}.html`, name: String(q.title || "")
+      }))
+    }
+  };
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(name)}面试题 · IT面试题库</title>
+  <meta name="description" content="${esc(stripMd(intro).slice(0, 155))}">
+  <link rel="canonical" href="${canonical}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${esc(name)}面试题 · IT面试题库">
+  <meta property="og:description" content="${esc(stripMd(intro).slice(0, 155))}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">${JSON.stringify(jsonLdData).replace(/</g, "\\u003c")}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="${SITE}/">IT面试题库</a><h1>${esc(name)}面试题</h1><p>${esc(stripMd(intro).slice(0, 240))}</p><h2>高频题目</h2><ul>${items}</ul><a class="cta" href="${appUrl}">在线刷${esc(name)}题 →</a></div></body>
+</html>`;
+}
+
 function fetchJson(url) {
   return new Promise((resolve, reject) => {
     const lib = url.startsWith("https:") ? https : http;
@@ -321,15 +358,54 @@ async function main() {
     written++;
   }
   console.log(`已生成 ${written} 个分享页：${path.relative(process.cwd(), OUT_DIR)}/<id>.html`);
+
+  const cOut = path.join(__dirname, "..", "c");
+  const pOut = path.join(__dirname, "..", "p");
+  if (!fs.existsSync(cOut)) fs.mkdirSync(cOut, { recursive: true });
+  if (!fs.existsSync(pOut)) fs.mkdirSync(pOut, { recursive: true });
+  const descendantIds = (id) => {
+    const out = [];
+    const stack = [parseInt(id, 10)];
+    while (stack.length) {
+      const cur = stack.pop();
+      (data.categories || []).forEach(c => {
+        if (parseInt(c.parentId, 10) === cur) { out.push(c.id); stack.push(c.id); }
+      });
+    }
+    return out;
+  };
+  let cWritten = 0;
+  for (const c of data.categories || []) {
+    const ids = new Set([c.id, ...descendantIds(c.id)]);
+    const qs = questions.filter(q => ids.has(parseInt(q.categoryId, 10))).sort((a, b) => (b.views || 0) - (a.views || 0));
+    if (!qs.length) continue;
+    fs.writeFileSync(path.join(cOut, `${c.id}.html`), collectionPage("category", c.id, c.name, `${c.name}方向的 ${qs.length} 道 IT 面试题，覆盖高频考点、参考答案与错题复习。`, qs, `${SITE}/c/${c.id}.html`, `${SITE}/category?cat=${c.id}`), "utf8");
+    cWritten++;
+  }
+  let pWritten = 0;
+  const positionsWithQuestions = new Set();
+  for (const p of data.positions || []) {
+    const pos = p;
+    const fullName = pos.direction ? `${pos.name}·${pos.direction}` : pos.name;
+    const qs = questions.filter(q => (q.positionIds || []).includes(pos.id) || (q.positionNames || []).includes(pos.name)).sort((a, b) => (b.views || 0) - (a.views || 0));
+    if (!qs.length) continue;
+    positionsWithQuestions.add(p.id);
+    fs.writeFileSync(path.join(pOut, `${p.id}.html`), collectionPage("position", p.id, fullName, `${fullName}岗位的 ${qs.length} 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。`, qs, `${SITE}/p/${p.id}.html`, `${SITE}/position/${p.id}`), "utf8");
+    pWritten++;
+  }
+  console.log(`已生成 ${cWritten} 个分类 SEO 页 / ${pWritten} 个岗位 SEO 页`);
   /* 同步重生成 sitemap.xml：首页 + 主要路由 + 全部分享页，SEO 不再漏新页 */
   const today = new Date().toISOString().slice(0, 10);
   const sitemapUrls = [
     { loc: `${SITE}/`, priority: "1.0", freq: "daily" },
-    { loc: `${SITE}/#/category`, priority: "0.8", freq: "weekly" },
-    { loc: `${SITE}/#/position`, priority: "0.8", freq: "weekly" },
-    { loc: `${SITE}/#/questions`, priority: "0.8", freq: "daily" },
-    { loc: `${SITE}/#/help`, priority: "0.6", freq: "weekly" },
+    { loc: `${SITE}/category`, priority: "0.8", freq: "weekly" },
+    { loc: `${SITE}/position`, priority: "0.8", freq: "weekly" },
+    { loc: `${SITE}/questions`, priority: "0.8", freq: "daily" },
+    { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
+    { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
     ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}.html`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
+    ,...(data.categories || []).filter(c => c.id && c.name).map(c => ({ loc: `${SITE}/c/${c.id}.html`, priority: "0.6", freq: "weekly" }))
+    ,...(data.positions || []).filter(p => p.id && positionsWithQuestions.has(p.id)).map(p => ({ loc: `${SITE}/p/${p.id}.html`, priority: "0.6", freq: "weekly" }))
   ];
   const NL = "\n";
   const xml = `<?xml version="1.0" encoding="UTF-8"?>${NL}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${NL}` +

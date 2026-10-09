@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MongoDB面试题 · IT面试题库</title>
+  <meta name="description" content="MongoDB方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/34.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MongoDB面试题 · IT面试题库">
+  <meta property="og:description" content="MongoDB方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/34.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"MongoDB面试题","description":"MongoDB方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/34.html","mainEntity":{"@type":"ItemList","numberOfItems":10,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/455.html","name":"为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1006.html","name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1007.html","name":"MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1412.html","name":"MongoDB 与关系型数据库（如 MySQL）相比，下列哪种说法是正确的？\nA. MongoDB 要求建表时定义固定的列结构（Schema）\nB. MongoDB 用 BSON 存储文档，支持日期、二进制、ObjectId 等丰富类型\nC. MongoDB 原生支持跨集合的 JOIN 且默认开启事务\nD. MongoDB 只能通过垂直升级（加内存/CPU）来扩展"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1413.html","name":"什么是 BSON？MongoDB 为什么使用 BSON 而不是纯 JSON 作为底层存储格式？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1414.html","name":"MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1415.html","name":"MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1416.html","name":"一条 MongoDB 查询很慢，explain 显示执行计划是 COLLSCAN（全表扫描）。请描述你的定位与优化步骤，并列举至少三种会导致索引「失效」的写法。"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1417.html","name":"什么情况下 MongoDB 需要引入分片（Sharding）？shard key 的选择有哪些核心原则？如果 shard key 选错（如自增 _id 或低基数字段），会造成什么后果？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1418.html","name":"MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>MongoDB面试题</h1><p>MongoDB方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/455.html">为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1006.html">MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1007.html">MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1412.html">MongoDB 与关系型数据库（如 MySQL）相比，下列哪种说法是正确的？
+A. MongoDB 要求建表时定义固定的列结构（Schema）
+B. MongoDB 用 BSON 存储文档，支持日期、二进制、ObjectId 等丰富类型
+C. MongoDB 原生支持跨集合的 JOIN 且默认开启事务
+D. MongoDB 只能通过垂直升级（加内存/CPU）来扩展</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1413.html">什么是 BSON？MongoDB 为什么使用 BSON 而不是纯 JSON 作为底层存储格式？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1414.html">MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1415.html">MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1416.html">一条 MongoDB 查询很慢，explain 显示执行计划是 COLLSCAN（全表扫描）。请描述你的定位与优化步骤，并列举至少三种会导致索引「失效」的写法。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1417.html">什么情况下 MongoDB 需要引入分片（Sharding）？shard key 的选择有哪些核心原则？如果 shard key 选错（如自增 _id 或低基数字段），会造成什么后果？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1418.html">MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=34">在线刷MongoDB题 →</a></div></body>
+</html>

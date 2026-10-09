@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shell脚本面试题 · IT面试题库</title>
+  <meta name="description" content="Shell脚本方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/45.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Shell脚本面试题 · IT面试题库">
+  <meta property="og:description" content="Shell脚本方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/45.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Shell脚本面试题","description":"Shell脚本方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/45.html","mainEntity":{"@type":"ItemList","numberOfItems":10,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/149.html","name":"Shell脚本变量和条件判断？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/50.html","name":"grep / awk / sed 的常见用法？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/51.html","name":"如何用 crontab 定时执行脚本？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/875.html","name":"Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/876.html","name":"一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/877.html","name":"关于 `$*`、`$@`、`${var:-default}`、`${var:=default}`、`$(cmd)` 与 `` `cmd` ``，下列说法正确的是？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/878.html","name":"用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/879.html","name":"Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/880.html","name":"crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/881.html","name":"为什么运维自动化「不该」什么都用 Shell 写？哪些场景应改用 Python/Go？给出判断标准。"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>Shell脚本面试题</h1><p>Shell脚本方向的 10 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/149.html">Shell脚本变量和条件判断？</a><span>中级 · 164 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/50.html">grep / awk / sed 的常见用法？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/51.html">如何用 crontab 定时执行脚本？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/875.html">Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/876.html">一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/877.html">关于 `$*`、`$@`、`${var:-default}`、`${var:=default}`、`$(cmd)` 与 `` `cmd` ``，下列说法正确的是？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/878.html">用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/879.html">Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/880.html">crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/881.html">为什么运维自动化「不该」什么都用 Shell 写？哪些场景应改用 Python/Go？给出判断标准。</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=45">在线刷Shell脚本题 →</a></div></body>
+</html>

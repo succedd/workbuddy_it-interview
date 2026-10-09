@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数据库设计与调优面试题 · IT面试题库</title>
+  <meta name="description" content="数据库设计与调优方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/41.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="数据库设计与调优面试题 · IT面试题库">
+  <meta property="og:description" content="数据库设计与调优方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/41.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"数据库设计与调优面试题","description":"数据库设计与调优方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/41.html","mainEntity":{"@type":"ItemList","numberOfItems":20,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/459.html","name":"拿到一条慢 SQL，如何用 EXPLAIN ANALYZE 读懂执行计划并定位瓶颈？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/241.html","name":"为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/247.html","name":"数据库事务的四种隔离级别分别解决了哪些并发问题？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/674.html","name":"MySQL 的 count(*)、count(1)、count(列名) 有什么区别？哪个性能最好？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/675.html","name":"为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/676.html","name":"为什么建议把索引列设置为 NOT NULL？允许 NULL 会带来哪些代价？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/677.html","name":"什么是前缀索引？使用前缀索引有什么代价，什么时候该用？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1287.html","name":"分库分表的垂直拆分与水平拆分分别解决什么问题？分片键应该怎么选？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1288.html","name":"【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1289.html","name":"【场景】主从读写分离后，用户刚下单就查不到自己的订单，怎么解决？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1292.html","name":"【故障排查】分库分表后某类查询突然变慢，日志里出现大量「全分片广播」，怎么定位？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1323.html","name":"应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1347.html","name":"MySQL 慢查询如何排查与优化？EXPLAIN 执行计划里哪些字段最关键？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1461.html","name":"什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1462.html","name":"垂直拆分和水平拆分有什么区别？分别适用于什么场景？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/1463.html","name":"订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/1464.html","name":"分库分表后，分布式主键/全局唯一 ID 应该怎么生成？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1465.html","name":"分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1466.html","name":"分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1467.html","name":"分库分表后如何保证跨库事务的一致性？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>数据库设计与调优面试题</h1><p>数据库设计与调优方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/459.html">拿到一条慢 SQL，如何用 EXPLAIN ANALYZE 读懂执行计划并定位瓶颈？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/241.html">为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/247.html">数据库事务的四种隔离级别分别解决了哪些并发问题？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/674.html">MySQL 的 count(*)、count(1)、count(列名) 有什么区别？哪个性能最好？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/675.html">为什么 MySQL 主键推荐使用自增 ID 而不是 UUID？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/676.html">为什么建议把索引列设置为 NOT NULL？允许 NULL 会带来哪些代价？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/677.html">什么是前缀索引？使用前缀索引有什么代价，什么时候该用？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1287.html">分库分表的垂直拆分与水平拆分分别解决什么问题？分片键应该怎么选？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1288.html">【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1289.html">【场景】主从读写分离后，用户刚下单就查不到自己的订单，怎么解决？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1292.html">【故障排查】分库分表后某类查询突然变慢，日志里出现大量「全分片广播」，怎么定位？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1323.html">应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1347.html">MySQL 慢查询如何排查与优化？EXPLAIN 执行计划里哪些字段最关键？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1461.html">什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1462.html">垂直拆分和水平拆分有什么区别？分别适用于什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1463.html">订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1464.html">分库分表后，分布式主键/全局唯一 ID 应该怎么生成？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1465.html">分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1466.html">分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1467.html">分库分表后如何保证跨库事务的一致性？</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=41">在线刷数据库设计与调优题 →</a></div></body>
+</html>

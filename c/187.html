@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>大模型面试题 · IT面试题库</title>
+  <meta name="description" content="大模型方向的 75 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/187.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="大模型面试题 · IT面试题库">
+  <meta property="og:description" content="大模型方向的 75 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/187.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"大模型面试题","description":"大模型方向的 75 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/187.html","mainEntity":{"@type":"ItemList","numberOfItems":75,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/187.html","name":"大语言模型(LLM)的微调方法有哪些？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/184.html","name":"Transformer架构的核心思想是什么？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/186.html","name":"RAG(检索增强生成)的原理是什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/188.html","name":"AI Agent的原理和架构是什么？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/185.html","name":"Prompt Engineering的核心原则是什么？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1460.html","name":"模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/471.html","name":"大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/86.html","name":"什么是 RAG（检索增强生成）？典型流程？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/789.html","name":"MLOps 是什么？相比传统 DevOps 多了哪些环节？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1410.html","name":"大模型推理时的 KV Cache 是什么？为什么上下文越长推理越贵？请估算 7B 模型 8K 上下文的 KV 显存。"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/89.html","name":"向量数据库在 AI 应用中起什么作用？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1265.html","name":"Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/85.html","name":"Transformer 的 Self-Attention 原理是什么？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/87.html","name":"什么是 Prompt Engineering？常用技巧有哪些？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/88.html","name":"模型微调（Fine-tuning）与 RAG 如何选？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/407.html","name":"缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/408.html","name":"计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/409.html","name":"什么是位置编码（Positional Encoding）？为什么 Transformer 必须引入它？正弦位置编码如何工作、有什么特点？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/410.html","name":"Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/411.html","name":"相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>大模型面试题</h1><p>大模型方向的 75 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/187.html">大语言模型(LLM)的微调方法有哪些？</a><span>高级 · 462 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/184.html">Transformer架构的核心思想是什么？</a><span>高级 · 376 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/186.html">RAG(检索增强生成)的原理是什么？</a><span>高级 · 204 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/188.html">AI Agent的原理和架构是什么？</a><span>高级 · 119 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/185.html">Prompt Engineering的核心原则是什么？</a><span>中级 · 13 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1460.html">模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？</a><span>中级 · 4 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/471.html">大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？</a><span>高级 · 3 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/86.html">什么是 RAG（检索增强生成）？典型流程？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/789.html">MLOps 是什么？相比传统 DevOps 多了哪些环节？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1410.html">大模型推理时的 KV Cache 是什么？为什么上下文越长推理越贵？请估算 7B 模型 8K 上下文的 KV 显存。</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/89.html">向量数据库在 AI 应用中起什么作用？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1265.html">Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？</a><span>初级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/85.html">Transformer 的 Self-Attention 原理是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/87.html">什么是 Prompt Engineering？常用技巧有哪些？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/88.html">模型微调（Fine-tuning）与 RAG 如何选？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/407.html">缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/408.html">计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/409.html">什么是位置编码（Positional Encoding）？为什么 Transformer 必须引入它？正弦位置编码如何工作、有什么特点？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/410.html">Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/411.html">相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/412.html">高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/468.html">BERT 的预训练任务（MLM + NSP）是怎么设计的？为什么 MLM 要用 [MASK] 却又引入 15% 的随机替换策略？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/469.html">GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/617.html">为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/618.html">给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/619.html">用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/620.html">RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/621.html">什么是混合检索（稀疏 BM25 + 稠密向量）与重排序（rerank）？它们各自解决什么问题，何时必须上？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/622.html">如何评估一个 RAG 系统的效果？忠实度、答案相关性、上下文召回/精度分别衡量什么？RAGAS 的思路与局限？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/623.html">设计一套生产级 RAG 架构：查询改写、父子文档、缓存、在线评估闭环，如何权衡成本与效果？</a><span>专家 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/783.html">什么是 AI Agent？其与普通 LLM 应用（如纯对话）的核心区别？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/784.html">LangChain 中 Chain、Tool、Memory、Agent 各自扮演什么角色？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/787.html">模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/952.html">什么是 RAG？它的典型架构和流程是怎样的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/953.html">什么是 AI Agent？它与大模型直接对话和 RAG 的区别是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/968.html">如何写出一个结构化的高质量 Prompt？拆解「角色-任务-上下文-格式-约束」五要素，并说明每一部分的作用。</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/969.html">少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/970.html">在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/971.html">思维链（Chain-of-Thought, CoT）是什么？zero-shot CoT 与 few-shot CoT 有什么区别，又适用于哪些任务？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/972.html">用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/973.html">如何设计 system prompt 做角色约束与安全防护（含提示注入 Prompt Injection 防御）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/974.html">以下关于 Prompt Engineering 的说法，哪一项是正确的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1177.html">大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1178.html">GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1179.html">场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1180.html">单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？
+A. KV Cache 大小与上下文长度无关，只和模型层数有关
+B. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项
+C. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈
+D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1181.html">故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1182.html">开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1183.html">场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1263.html">一次大模型 API 调用要经过哪些环节？哪些错误可以重试、哪些必须直接失败？为什么重试必须配幂等 Key？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1264.html">JSON Mode、JSON Schema 和 Structured Outputs 分别在哪一层约束模型输出？为什么说「用了 Structured Outputs 就不用做服务端校验」是误区？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1266.html">Temperature、Top-p、Top-k 分别控制什么？生产环境该怎么设置？为什么 Temperature 设为 0，输出仍然可能不完全一致？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1267.html">GraphRAG 解决什么问题？为什么说 Chunk 是信息孤岛、向量相似度不擅长多跳推理？什么场景下不应该上 GraphRAG？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1268.html">企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1269.html">Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1270.html">MCP（Model Context Protocol）解决什么问题？它和 Function Calling、普通 HTTP API 的区别是什么？Tools、Resources、Prompts 三类原语分别做什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1271.html">Agent Loop 的完整流程是什么？最大迭代轮次通常怎么设？为什么 Agent 跑长任务会「失忆」和跑偏？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1272.html">ReAct、Plan-and-Execute、Reflection、Multi-Agent 分别适合什么场景？做项目时应该怎么选？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1273.html">客服 Agent 上线后用户反馈「上一轮说过的事下一轮就忘」「换个会话就要重新说偏好」「偶尔还引用三年前的老政策」。请从记忆层设计给出排查与改进方案。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1274.html">Prompt Engineering 和 Context Engineering 有什么区别？Context Engineering 具体管哪些东西？为什么「把资料放进窗口」和「模型用好资料」是两回事？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=187">在线刷大模型题 →</a></div></body>
+</html>

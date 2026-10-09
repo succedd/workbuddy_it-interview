@@ -190,6 +190,10 @@ const SEARCH_ORG_RE = new RegExp(
 const INTERNAL_RE =
   /^\/(tools|cloudflare|netlify|functions|\.git|\.github)(\/|$)|^\/(HANDOVER\.md|README\.md|netlify\.toml|package\.json|package-lock\.json|wrangler\.(toml|jsonc|json))$|^\/\./i;
 
+// SPA history 路由：这些路径没有对应静态文件，资源 404 时回退到首页壳。
+const SPA_ROUTE_RE =
+  /^\/(home|category|position|roadmap|docs|questions|question|quiz|favorites|history|help|about|practice|review|mock|panorama|submit|me|account)(\/|$)/i;
+
 function isCrawlerBlocked(ua) {
   if (!ua) return "empty-ua";
   if (AI_EXCLUSION_RE.test(ua)) return "ai-variant-ua";
@@ -421,7 +425,10 @@ export default {
 
     // ④ /q/* 分享页不需要单独判断：搜索引擎已在 ② 放行（SEO 不受影响），
     //    其余爬虫已在 ② 拦掉，人类访客用的普通浏览器 UA 本来就不在 BOT_RE 里。
-    const res = await env.ASSETS.fetch(request);
+    let res = await env.ASSETS.fetch(request);
+    if (res.status === 404 && SPA_ROUTE_RE.test(path)) {
+      res = await env.ASSETS.fetch(new Request(new URL("/", url), request));
+    }
 
     if (isData) {
       const out = harden(res);

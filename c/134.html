@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>分布式锁面试题 · IT面试题库</title>
+  <meta name="description" content="分布式锁方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/134.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="分布式锁面试题 · IT面试题库">
+  <meta property="og:description" content="分布式锁方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/134.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"分布式锁面试题","description":"分布式锁方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/134.html","mainEntity":{"@type":"ItemList","numberOfItems":12,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/894.html","name":"分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/890.html","name":"用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/582.html","name":"如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/583.html","name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/584.html","name":"什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/585.html","name":"Redis 分布式锁与 ZooKeeper / etcd 实现的分布式锁有何区别？如何选型？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/586.html","name":"分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/889.html","name":"为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/891.html","name":"雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/892.html","name":"Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/893.html","name":"设计高并发库存扣减：用 Redisson 锁保证互斥，用号段模式批量取 ID 保证性能。说明如何避免「锁粒度粗导致吞吐瓶颈」。"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/895.html","name":"关于分布式锁选型，下列说法正确的是？\nA. Redis 单实例锁在 master 宕机且未同步时可能丢锁，Redlock 用多实例多数派降低该风险但有争议\nB. ZooKeeper/etcd 基于临时节点+watch，能天然避免「锁未释放」且支持公平排队\nC. 无论哪种锁，释放都必须用 Lua/事务保证「校验归属+删除」原子，否则会误删别人的锁\nD. 以上都正确"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>分布式锁面试题</h1><p>分布式锁方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/894.html">分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/890.html">用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/582.html">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/583.html">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/584.html">什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/585.html">Redis 分布式锁与 ZooKeeper / etcd 实现的分布式锁有何区别？如何选型？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/586.html">分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/889.html">为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/891.html">雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/892.html">Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/893.html">设计高并发库存扣减：用 Redisson 锁保证互斥，用号段模式批量取 ID 保证性能。说明如何避免「锁粒度粗导致吞吐瓶颈」。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/895.html">关于分布式锁选型，下列说法正确的是？
+A. Redis 单实例锁在 master 宕机且未同步时可能丢锁，Redlock 用多实例多数派降低该风险但有争议
+B. ZooKeeper/etcd 基于临时节点+watch，能天然避免「锁未释放」且支持公平排队
+C. 无论哪种锁，释放都必须用 Lua/事务保证「校验归属+删除」原子，否则会误删别人的锁
+D. 以上都正确</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=134">在线刷分布式锁题 →</a></div></body>
+</html>

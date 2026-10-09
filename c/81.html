@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spring面试题 · IT面试题库</title>
+  <meta name="description" content="Spring方向的 22 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/81.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Spring面试题 · IT面试题库">
+  <meta property="og:description" content="Spring方向的 22 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/81.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Spring面试题","description":"Spring方向的 22 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/81.html","mainEntity":{"@type":"ItemList","numberOfItems":22,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/1106.html","name":"【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1105.html","name":"【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/74.html","name":"Spring 的 IOC 与 DI 是什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/75.html","name":"Spring Bean 的作用域与生命周期？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/76.html","name":"Spring 事务传播行为有哪些？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/941.html","name":"Spring IOC 和 AOP 的理解与实现原理？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/942.html","name":"Spring 是如何解决循环依赖的？三级缓存是什么？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/943.html","name":"@Transactional 事务在哪些情况下会失效？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1100.html","name":"BeanFactory 和 ApplicationContext 都能当作 IoC 容器，它们有什么区别？为什么生产项目基本都用 ApplicationContext？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1101.html","name":"【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=\"init2()\"。初始化阶段的执行顺序是：\nA. afterPropertiesSet() → @PostConstruct init1() → init2()\nB. @PostConstruct init1() → afterPropertiesSet() → init2()\nC. init2() → afterPropertiesSet() → @PostConstruct init1()\nD. 三者顺序不确定，取决于 Bean 注册顺序"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1102.html","name":"【场景题】一个 singleton 的 Service 里 @Autowired 注入了一个 prototype 的任务上下文对象，多线程使用时发现所有请求共用同一个实例、状态互相污染。为什么会这样？给出至少两种修复方案并说明取舍。"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1103.html","name":"【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1104.html","name":"Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1114.html","name":"Spring 事务的 7 种传播行为分别是什么，各自语义为何？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1115.html","name":"REQUIRED 与 REQUIRES_NEW 在「外层已开启事务」时行为差异，描述正确的是？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/1116.html","name":"@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/1117.html","name":"哪些常见场景会导致 @Transactional 事务失效？请系统归类。"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1118.html","name":"Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1119.html","name":"声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1120.html","name":"本地 Spring 事务如何与分布式事务衔接，边界在哪里？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>Spring面试题</h1><p>Spring方向的 22 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/1106.html">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1105.html">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/74.html">Spring 的 IOC 与 DI 是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/75.html">Spring Bean 的作用域与生命周期？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/76.html">Spring 事务传播行为有哪些？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/941.html">Spring IOC 和 AOP 的理解与实现原理？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/942.html">Spring 是如何解决循环依赖的？三级缓存是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/943.html">@Transactional 事务在哪些情况下会失效？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1100.html">BeanFactory 和 ApplicationContext 都能当作 IoC 容器，它们有什么区别？为什么生产项目基本都用 ApplicationContext？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1101.html">【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=&quot;init2()&quot;。初始化阶段的执行顺序是：
+A. afterPropertiesSet() → @PostConstruct init1() → init2()
+B. @PostConstruct init1() → afterPropertiesSet() → init2()
+C. init2() → afterPropertiesSet() → @PostConstruct init1()
+D. 三者顺序不确定，取决于 Bean 注册顺序</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1102.html">【场景题】一个 singleton 的 Service 里 @Autowired 注入了一个 prototype 的任务上下文对象，多线程使用时发现所有请求共用同一个实例、状态互相污染。为什么会这样？给出至少两种修复方案并说明取舍。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1103.html">【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1104.html">Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1114.html">Spring 事务的 7 种传播行为分别是什么，各自语义为何？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1115.html">REQUIRED 与 REQUIRES_NEW 在「外层已开启事务」时行为差异，描述正确的是？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1116.html">@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1117.html">哪些常见场景会导致 @Transactional 事务失效？请系统归类。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1118.html">Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1119.html">声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1120.html">本地 Spring 事务如何与分布式事务衔接，边界在哪里？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1360.html">Spring 是如何解决循环依赖的？为什么需要三级缓存，构造器循环依赖为何无法解决？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1361.html">Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=81">在线刷Spring题 →</a></div></body>
+</html>

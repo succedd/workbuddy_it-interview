@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MyBatis面试题 · IT面试题库</title>
+  <meta name="description" content="MyBatis方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/84.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MyBatis面试题 · IT面试题库">
+  <meta property="og:description" content="MyBatis方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/84.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"MyBatis面试题","description":"MyBatis方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/84.html","mainEntity":{"@type":"ItemList","numberOfItems":12,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/79.html","name":"MyBatis 中 #{} 与 ${} 的区别？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1014.html","name":"MyBatis 的一级缓存和二级缓存有什么区别？为什么说二级缓存生产环境要慎用？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1015.html","name":"MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1016.html","name":"MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1241.html","name":"MyBatis 的一次查询是怎么跑起来的？请说清 SqlSessionFactoryBuilder → SqlSessionFactory → SqlSession → Mapper 这条链路，以及 Executor / StatementHandler / ParameterHandler / ResultSetHandler 各自负责什么。"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1242.html","name":"MyBatis 的一级缓存和二级缓存分别是什么？作用域、默认开关、失效时机各是什么？为什么在集群/多实例部署下要谨慎开启二级缓存？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1243.html","name":"MyBatis 动态 SQL 常用标签（if / choose / foreach / trim / where / set）分别解决什么问题？`#{}` 和 `${}` 有什么本质区别？为什么 `${}` 有 SQL 注入风险、什么场景下才该用？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1244.html","name":"项目里遇到 MyBatis「查出来字段全是 null / 部分字段没映射上」「列表查询特别慢（N+1）」「枚举/特殊类型映射报错」三类问题，分别怎么定位与解决？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1245.html","name":"如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1246.html","name":"MyBatis 与 Hibernate / JPA 的核心区别是什么？在 Spring 中整合 MyBatis 时，SqlSession 的生命周期和事务是怎么被 @Transactional 接管的？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1290.html","name":"MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1291.html","name":"【场景】MyBatis 项目要做读写分离或对接多数据源，如何动态切换数据源？有哪些坑？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>MyBatis面试题</h1><p>MyBatis方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/79.html">MyBatis 中 #{} 与 ${} 的区别？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1014.html">MyBatis 的一级缓存和二级缓存有什么区别？为什么说二级缓存生产环境要慎用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1015.html">MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1016.html">MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1241.html">MyBatis 的一次查询是怎么跑起来的？请说清 SqlSessionFactoryBuilder → SqlSessionFactory → SqlSession → Mapper 这条链路，以及 Executor / StatementHandler / ParameterHandler / ResultSetHandler 各自负责什么。</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1242.html">MyBatis 的一级缓存和二级缓存分别是什么？作用域、默认开关、失效时机各是什么？为什么在集群/多实例部署下要谨慎开启二级缓存？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1243.html">MyBatis 动态 SQL 常用标签（if / choose / foreach / trim / where / set）分别解决什么问题？`#{}` 和 `${}` 有什么本质区别？为什么 `${}` 有 SQL 注入风险、什么场景下才该用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1244.html">项目里遇到 MyBatis「查出来字段全是 null / 部分字段没映射上」「列表查询特别慢（N+1）」「枚举/特殊类型映射报错」三类问题，分别怎么定位与解决？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1245.html">如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1246.html">MyBatis 与 Hibernate / JPA 的核心区别是什么？在 Spring 中整合 MyBatis 时，SqlSession 的生命周期和事务是怎么被 @Transactional 接管的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1290.html">MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1291.html">【场景】MyBatis 项目要做读写分离或对接多数据源，如何动态切换数据源？有哪些坑？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=84">在线刷MyBatis题 →</a></div></body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JVM调优面试题 · IT面试题库</title>
+  <meta name="description" content="JVM调优方向的 23 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/85.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="JVM调优面试题 · IT面试题库">
+  <meta property="og:description" content="JVM调优方向的 23 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/85.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"JVM调优面试题","description":"JVM调优方向的 23 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/85.html","mainEntity":{"@type":"ItemList","numberOfItems":23,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/658.html","name":"Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/659.html","name":"什么是双亲委派模型？它解决了什么问题？如何打破双亲委派？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/660.html","name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/661.html","name":"JDK 8 为什么用元空间取代永久代？方法区和永久代是一回事吗？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/662.html","name":"一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/663.html","name":"JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/664.html","name":"哪些对象可以作为 GC Roots？为什么说对象被判定不可达后还有一段「缓刑」期？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/665.html","name":"Minor GC、Major GC、Full GC 有什么区别？分别在什么情况下触发？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/666.html","name":"CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/667.html","name":"分代收集理论的两个假说是什么？为什么新生代用标记-复制、老年代用标记-整理？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/800.html","name":"如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/807.html","name":"JVM 垃圾回收器 G1 的工作原理与适用场景？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/936.html","name":"如何判断对象可以被回收？哪些对象可以作为 GC Roots？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/937.html","name":"强引用、软引用、弱引用、虚引用有什么区别？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/938.html","name":"常见的垃圾回收算法有哪些？各有什么优缺点？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/939.html","name":"G1 垃圾收集器的工作原理与特点是什么？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/940.html","name":"线上服务 CPU 飙高如何排查？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1317.html","name":"三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1318.html","name":"JIT 即时编译是如何工作的？分层编译有哪几个层级？逃逸分析能带来哪些优化？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1319.html","name":"堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>JVM调优面试题</h1><p>JVM调优方向的 23 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/658.html">Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/659.html">什么是双亲委派模型？它解决了什么问题？如何打破双亲委派？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/660.html">JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/661.html">JDK 8 为什么用元空间取代永久代？方法区和永久代是一回事吗？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/662.html">一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/663.html">JVM 如何判断一个对象已经「死亡」？引用计数法为什么没有被 Java 采用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/664.html">哪些对象可以作为 GC Roots？为什么说对象被判定不可达后还有一段「缓刑」期？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/665.html">Minor GC、Major GC、Full GC 有什么区别？分别在什么情况下触发？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/666.html">CMS 与 G1 垃圾收集器的工作流程和适用场景有什么区别？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/667.html">分代收集理论的两个假说是什么？为什么新生代用标记-复制、老年代用标记-整理？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/800.html">如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/807.html">JVM 垃圾回收器 G1 的工作原理与适用场景？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/936.html">如何判断对象可以被回收？哪些对象可以作为 GC Roots？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/937.html">强引用、软引用、弱引用、虚引用有什么区别？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/938.html">常见的垃圾回收算法有哪些？各有什么优缺点？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/939.html">G1 垃圾收集器的工作原理与特点是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/940.html">线上服务 CPU 飙高如何排查？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1317.html">三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？</a><span>高 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1318.html">JIT 即时编译是如何工作的？分层编译有哪几个层级？逃逸分析能带来哪些优化？</a><span>中 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1319.html">堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？</a><span>初 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1320.html">Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？</a><span>初 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1358.html">如何判断对象是否可被回收？分代收集与 G1 收集器的工作原理是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1359.html">类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=85">在线刷JVM调优题 →</a></div></body>
+</html>

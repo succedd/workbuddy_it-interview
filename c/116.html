@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>分布式系统与微服务面试题 · IT面试题库</title>
+  <meta name="description" content="分布式系统与微服务方向的 119 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/116.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="分布式系统与微服务面试题 · IT面试题库">
+  <meta property="og:description" content="分布式系统与微服务方向的 119 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/116.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"分布式系统与微服务面试题","description":"分布式系统与微服务方向的 119 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/116.html","mainEntity":{"@type":"ItemList","numberOfItems":119,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/183.html","name":"Kafka如何实现消息的顺序消费？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/182.html","name":"Kafka中ISR机制是什么？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/475.html","name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/80.html","name":"Kafka 的核心概念有哪些？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/579.html","name":"如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/240.html","name":"CAP 定理是什么？为什么分布式系统通常无法同时满足三者？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/894.html","name":"分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1065.html","name":"服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/81.html","name":"Kafka 如何保证消息不丢失？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/246.html","name":"消息队列在分布式系统中主要解决哪些问题？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/452.html","name":"Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/890.html","name":"用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1066.html","name":"常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1067.html","name":"灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1076.html","name":"Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/82.html","name":"Kafka 消费组重平衡（rebalance）是什么？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/83.html","name":"Kafka 为什么吞吐高、速度快？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/84.html","name":"Kafka 与 RabbitMQ 如何选型？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/245.html","name":"微服务架构相比单体架构有哪些优点和典型挑战？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/249.html","name":"一致性哈希解决了分布式缓存的什么问题？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>分布式系统与微服务面试题</h1><p>分布式系统与微服务方向的 119 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/183.html">Kafka如何实现消息的顺序消费？</a><span>中级 · 486 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/182.html">Kafka中ISR机制是什么？</a><span>高级 · 351 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/475.html">Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</a><span>中级 · 4 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/80.html">Kafka 的核心概念有哪些？</a><span>初级 · 3 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/579.html">如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？</a><span>高级 · 3 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/240.html">CAP 定理是什么？为什么分布式系统通常无法同时满足三者？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/894.html">分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1065.html">服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/81.html">Kafka 如何保证消息不丢失？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/246.html">消息队列在分布式系统中主要解决哪些问题？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/452.html">Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/890.html">用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1066.html">常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1067.html">灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1076.html">Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/82.html">Kafka 消费组重平衡（rebalance）是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/83.html">Kafka 为什么吞吐高、速度快？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/84.html">Kafka 与 RabbitMQ 如何选型？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/245.html">微服务架构相比单体架构有哪些优点和典型挑战？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/249.html">一致性哈希解决了分布式缓存的什么问题？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/301.html">分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/302.html">微服务【本质】微服务拆的是什么？「按业务能力拆」为什么比「按技术层拆」更合理？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/303.html">微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/304.html">微服务【演化】微服务「不是免费的午餐」——它的运维账单有多贵？服务网格、可观测性是在为什么买单？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/383.html">什么是 CAP 定理？一致性 C、可用性 A、分区容错性 P 分别指什么？为什么三者不能同时满足？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/384.html">在分布式系统里 CAP 应如何取舍？CP 系统和 AP 系统分别适合什么业务场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/385.html">什么是 BASE 理论？它和 CAP 是什么关系？最终一致性又是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/386.html">常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/387.html">分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/388.html">Paxos / Raft 这类共识算法解决了什么问题？Raft 是如何保证分布式一致性的（选主 + 日志复制）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/445.html">Seata 的 AT 模式是怎么工作的？它为什么被称为「对业务无侵入」的分布式事务方案？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/446.html">Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/447.html">RocketMQ 的事务消息是如何保证本地事务与消息发送一致的？什么是半事务消息和消息回查？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/448.html">场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/449.html">线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/450.html">Sentinel 的熔断降级有哪些策略？熔断之后是如何从 OPEN 状态恢复的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/451.html">Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/578.html">缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/580.html">Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/581.html">什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/582.html">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/583.html">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/584.html">什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/585.html">Redis 分布式锁与 ZooKeeper / etcd 实现的分布式锁有何区别？如何选型？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/586.html">分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/806.html">Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/810.html">Spring Cloud 常用组件各自解决什么问题？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/812.html">Spring Cloud Alibaba 提供了哪些核心组件（Nacos/Sentinel/Seata）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/814.html">gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/828.html">实战：下单同时要扣减库存，如何设计既不超卖又不阻塞用户请求？请用最终一致方案说明。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/829.html">本地消息表 / RocketMQ 事务消息是如何实现「最终一致」的？半消息与回查起什么作用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/830.html">TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/831.html">为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/832.html">2PC、TCC、本地消息表/事务消息、Saga，分别适合什么场景？选型时看哪些维度？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/835.html">两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/836.html">2PC 协调者崩溃后参与者会卡住，三阶段提交（3PC）是怎么改进的？它真的解决了吗？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/889.html">为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/891.html">雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/892.html">Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/893.html">设计高并发库存扣减：用 Redisson 锁保证互斥，用号段模式批量取 ID 保证性能。说明如何避免「锁粒度粗导致吞吐瓶颈」。</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=116">在线刷分布式系统与微服务题 →</a></div></body>
+</html>

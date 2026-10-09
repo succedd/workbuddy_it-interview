@@ -43,7 +43,7 @@ const ROOT_FILES = [
 ];
 
 // 站点必需：整目录拷贝
-const ROOT_DIRS = ["assets", "css", "data", "js", "q", "vendor"];
+const ROOT_DIRS = ["assets", "css", "data", "js", "q", "c", "p", "vendor"];
 
 // 高级模式 Worker：必须落在 dist 根（Pages 只认部署目录根的 _worker.js）
 const WORKER_SRC = path.join(ROOT, "cloudflare", "pages", "_worker.js");

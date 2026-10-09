@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>模型部署优化面试题 · IT面试题库</title>
+  <meta name="description" content="模型部署优化方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/197.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="模型部署优化面试题 · IT面试题库">
+  <meta property="og:description" content="模型部署优化方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/197.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"模型部署优化面试题","description":"模型部署优化方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/197.html","mainEntity":{"@type":"ItemList","numberOfItems":8,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/787.html","name":"模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1177.html","name":"大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1178.html","name":"GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1179.html","name":"场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1180.html","name":"单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？\nA. KV Cache 大小与上下文长度无关，只和模型层数有关\nB. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项\nC. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈\nD. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1181.html","name":"故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1182.html","name":"开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1183.html","name":"场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>模型部署优化面试题</h1><p>模型部署优化方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/787.html">模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1177.html">大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1178.html">GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1179.html">场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1180.html">单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？
+A. KV Cache 大小与上下文长度无关，只和模型层数有关
+B. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项
+C. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈
+D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1181.html">故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1182.html">开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1183.html">场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=197">在线刷模型部署优化题 →</a></div></body>
+</html>

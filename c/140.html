@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitLab CI/CD面试题 · IT面试题库</title>
+  <meta name="description" content="GitLab CI/CD方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/140.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="GitLab CI/CD面试题 · IT面试题库">
+  <meta property="og:description" content="GitLab CI/CD方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/140.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"GitLab CI/CD面试题","description":"GitLab CI/CD方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/140.html","mainEntity":{"@type":"ItemList","numberOfItems":8,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/1144.html","name":"流水线里单元测试偶发失败（flaky test）卡住合入，如何区分“真 bug”与“不稳定测试”，并给出重试、隔离与 quarantine 的处理策略？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1147.html","name":"数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/727.html","name":"GitLab CI 的 pipeline/stage/job 与 .gitlab-ci.yml 基本结构？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1142.html","name":"CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1143.html","name":"什么是 CI 里的“制品（artifact）”？为什么构建产物要“不可变、一次构建多处部署”？GitLab CI 中 artifacts 与 cache 有什么区别？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1145.html","name":"如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1146.html","name":"流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1148.html","name":"如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>GitLab CI/CD面试题</h1><p>GitLab CI/CD方向的 8 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/1144.html">流水线里单元测试偶发失败（flaky test）卡住合入，如何区分“真 bug”与“不稳定测试”，并给出重试、隔离与 quarantine 的处理策略？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1147.html">数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/727.html">GitLab CI 的 pipeline/stage/job 与 .gitlab-ci.yml 基本结构？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1142.html">CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1143.html">什么是 CI 里的“制品（artifact）”？为什么构建产物要“不可变、一次构建多处部署”？GitLab CI 中 artifacts 与 cache 有什么区别？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1145.html">如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1146.html">流水线构建因依赖下载慢、缓存失效频繁超时，如何定位瓶颈（缓存未命中/网络/并发限制），并设计“依赖缓存 + 私有制品库 + 镜像预热”的提速方案？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1148.html">如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=140">在线刷GitLab CI/CD题 →</a></div></body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SRE站点可靠性工程师面试题 · IT面试题库</title>
+  <meta name="description" content="SRE站点可靠性工程师岗位的 41 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/p/88.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SRE站点可靠性工程师面试题 · IT面试题库">
+  <meta property="og:description" content="SRE站点可靠性工程师岗位的 41 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/p/88.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"SRE站点可靠性工程师面试题","description":"SRE站点可靠性工程师岗位的 41 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。","url":"https://itinterview.com.cn/p/88.html","mainEntity":{"@type":"ItemList","numberOfItems":41,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/1065.html","name":"服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1082.html","name":"怎么用「黄金四指标」搭一套能快速定位问题的服务监控看板？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1404.html","name":"QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1559.html","name":"如何用 Ansible 做配置管理与环境一致性保障？Playbook 的变量优先级与 Jinja2 模板如何避免配置漂移？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/57.html","name":"K8s 的 liveness 与 readiness 探针区别？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/439.html","name":"如何用 Grafana 的模板变量做一套可复用的微服务监控看板，避免「一个服务一份看板」的维护噩梦？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1067.html","name":"灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1081.html","name":"Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1556.html","name":"生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/54.html","name":"Kubernetes 的核心组件有哪些？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/56.html","name":"K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/230.html","name":"收到一条磁盘使用率超过90%的报警，你如何处理？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/305.html","name":"云原生【诞生】为什么会有 Docker？「在我机器上是好的」这个世纪难题的根源是什么？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/306.html","name":"云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/307.html","name":"云原生【本质】CI/CD 为什么诞生？为什么说「回滚能力比发布速度更重要」？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/308.html","name":"云原生【边界】云原生是不是所有团队的答案？它的复杂度账单和「降级使用」的边界在哪？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/438.html","name":"Prometheus 告警频繁误报、值班同学已经麻木，告警风暴时该如何快速定位根因并重设告警规则？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/442.html","name":"Filebeat 到 Logstash 的日志突然大量堆积、Kibana 查不到最新日志，如何定位堵点并治理？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/449.html","name":"线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/728.html","name":"SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>SRE站点可靠性工程师面试题</h1><p>SRE站点可靠性工程师岗位的 41 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/1065.html">服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1082.html">怎么用「黄金四指标」搭一套能快速定位问题的服务监控看板？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1404.html">QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1559.html">如何用 Ansible 做配置管理与环境一致性保障？Playbook 的变量优先级与 Jinja2 模板如何避免配置漂移？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/57.html">K8s 的 liveness 与 readiness 探针区别？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/439.html">如何用 Grafana 的模板变量做一套可复用的微服务监控看板，避免「一个服务一份看板」的维护噩梦？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1067.html">灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1081.html">Grafana 看板大时间范围查询很慢怎么办？Recording Rule 与降采样该怎么用？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1556.html">生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/54.html">Kubernetes 的核心组件有哪些？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/56.html">K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/230.html">收到一条磁盘使用率超过90%的报警，你如何处理？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/305.html">云原生【诞生】为什么会有 Docker？「在我机器上是好的」这个世纪难题的根源是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/306.html">云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/307.html">云原生【本质】CI/CD 为什么诞生？为什么说「回滚能力比发布速度更重要」？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/308.html">云原生【边界】云原生是不是所有团队的答案？它的复杂度账单和「降级使用」的边界在哪？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/438.html">Prometheus 告警频繁误报、值班同学已经麻木，告警风暴时该如何快速定位根因并重设告警规则？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/442.html">Filebeat 到 Logstash 的日志突然大量堆积、Kibana 查不到最新日志，如何定位堵点并治理？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/449.html">线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/728.html">SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/731.html">混沌工程的核心原则（实验假设、注入故障、监控稳态）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1064.html">API 网关的性能瓶颈通常出在哪里？超时与重试该怎么配置才不会放大故障？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1069.html">Nacos 的服务健康检查与心跳续约是怎么做的？服务下线后流量是如何摘除的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1077.html">Prometheus 的四种指标类型分别适合什么？为什么直方图比摘要（Summary）更常用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1078.html">Prometheus 采用拉模型（Pull），那什么时候该用 Pushgateway？为什么说临时任务也不该轻易用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1079.html">PromQL 里 rate、irate、increase 有什么区别？为什么计算 QPS 必须带上时间区间？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1080.html">Grafana 的告警（Unified Alerting）与 Prometheus 的告警规则该怎么分工？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1402.html">Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1403.html">Basic Paxos 的两阶段（Prepare/Promise、Accept/Accepted）是如何达成共识的？Multi-Paxos 又优化了什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1439.html">Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1441.html">AWS 上给应用做权限，为什么要「IAM Role 而不是把 AccessKey 写进配置文件」？IAM Policy 里 Allow 与 Explicit Deny 同时命中时以谁为准？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1530.html">Helm Chart 的目录结构与核心文件有哪些？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1531.html">Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1532.html">Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1533.html">terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1549.html">服务响应变慢时，如何用 Arthas、火焰图与分布式链路追踪定位是 CPU、锁竞争还是慢 SQL 导致的？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1553.html">什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1554.html">ELK（Elasticsearch + Logstash + Kibana）的架构与数据流是怎样的？各组件分别承担什么职责？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1555.html">分布式链路追踪中 Span 上下文如何在服务间传播（如 W3C traceparent/baggage）？高并发下采样率该如何权衡？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1557.html">用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1558.html">落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/position/88">在线刷SRE站点可靠性工程师题 →</a></div></body>
+</html>

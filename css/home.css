@@ -7,12 +7,30 @@
 
 .home-role {
   display: grid;
+  grid-template-columns: auto 1fr;
   gap: 3px;
   padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--bg);
   text-decoration: none;
+}
+
+.home-role-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  grid-row: 1 / span 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--c-primary);
+  background: rgba(37, 99, 235, .08);
+}
+
+.home-role-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .home-role b {
@@ -57,9 +75,27 @@
   margin-top: 12px;
 }
 
+.home-learning {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.home-pos-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
 @media (max-width: 900px) {
   .home-roles {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-pos-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -76,4 +112,47 @@
   .home-role span {
     white-space: normal;
   }
+}
+
+.quiz-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.quiz-result {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 14px;
+}
+
+.quiz-result a {
+  color: var(--c-primary);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.state-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.state-quick button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.state-quick button:hover,
+.state-quick button.active {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
 }

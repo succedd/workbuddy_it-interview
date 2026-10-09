@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kafka面试题 · IT面试题库</title>
+  <meta name="description" content="Kafka方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/127.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kafka面试题 · IT面试题库">
+  <meta property="og:description" content="Kafka方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/127.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Kafka面试题","description":"Kafka方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/127.html","mainEntity":{"@type":"ItemList","numberOfItems":20,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/183.html","name":"Kafka如何实现消息的顺序消费？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/182.html","name":"Kafka中ISR机制是什么？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/475.html","name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/80.html","name":"Kafka 的核心概念有哪些？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/81.html","name":"Kafka 如何保证消息不丢失？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/82.html","name":"Kafka 消费组重平衡（rebalance）是什么？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/83.html","name":"Kafka 为什么吞吐高、速度快？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/84.html","name":"Kafka 与 RabbitMQ 如何选型？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1149.html","name":"Kafka 的 Producer、Broker、Consumer、Topic、Partition 各自是什么？消息是怎样从生产者流转到消费者的？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1150.html","name":"为什么说 Kafka 只保证「单个 Partition 内」有序？同一业务键的消息要怎样才能保证顺序？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1151.html","name":"消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1152.html","name":"Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1153.html","name":"Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1154.html","name":"在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1155.html","name":"关于 Kafka 消费位移（offset）管理，下列说法正确的是？__consumer_offsets 内部 Topic 起什么作用？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/1250.html","name":"故障排查：某个 Kafka Topic 有几条消息一直消费失败，日志里反复出现同一条记录。默认会重试几次？重试耗尽后如何保证消息不被丢掉？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/1251.html","name":"ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1252.html","name":"Kafka 生产者调用 send() 之后就算发送成功了吗？如何用回调、retries、delivery.timeout.ms 处理发送失败？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1253.html","name":"故障排查：线上 Kafka 消费组频繁触发 Rebalance，消费出现明显抖动和重复消费，如何定位原因并减少不必要的重平衡？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1254.html","name":"Kafka 的日志保留（retention）和日志压缩（log compaction）有什么区别？分别在什么场景下使用？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>Kafka面试题</h1><p>Kafka方向的 20 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/183.html">Kafka如何实现消息的顺序消费？</a><span>中级 · 486 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/182.html">Kafka中ISR机制是什么？</a><span>高级 · 351 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/475.html">Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</a><span>中级 · 4 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/80.html">Kafka 的核心概念有哪些？</a><span>初级 · 3 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/81.html">Kafka 如何保证消息不丢失？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/82.html">Kafka 消费组重平衡（rebalance）是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/83.html">Kafka 为什么吞吐高、速度快？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/84.html">Kafka 与 RabbitMQ 如何选型？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1149.html">Kafka 的 Producer、Broker、Consumer、Topic、Partition 各自是什么？消息是怎样从生产者流转到消费者的？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1150.html">为什么说 Kafka 只保证「单个 Partition 内」有序？同一业务键的消息要怎样才能保证顺序？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1151.html">消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1152.html">Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1153.html">Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1154.html">在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1155.html">关于 Kafka 消费位移（offset）管理，下列说法正确的是？__consumer_offsets 内部 Topic 起什么作用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1250.html">故障排查：某个 Kafka Topic 有几条消息一直消费失败，日志里反复出现同一条记录。默认会重试几次？重试耗尽后如何保证消息不被丢掉？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1251.html">ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1252.html">Kafka 生产者调用 send() 之后就算发送成功了吗？如何用回调、retries、delivery.timeout.ms 处理发送失败？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1253.html">故障排查：线上 Kafka 消费组频繁触发 Rebalance，消费出现明显抖动和重复消费，如何定位原因并减少不必要的重平衡？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1254.html">Kafka 的日志保留（retention）和日志压缩（log compaction）有什么区别？分别在什么场景下使用？</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=127">在线刷Kafka题 →</a></div></body>
+</html>

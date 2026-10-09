@@ -1067,6 +1067,46 @@
   "use strict";
   const S = {};
 
+  S.SYNONYMS = {
+    "缓存一致性": "Redis MySQL 分布式缓存 cache",
+    "缓存": "cache Redis",
+    "数据库": "DB MySQL",
+    "消息队列": "MQ Kafka RabbitMQ RocketMQ",
+    "微服务": "Spring Cloud Dubbo",
+    "容器": "Docker Kubernetes K8s",
+    "部署": "DevOps CI CD",
+    "前端": "Vue React 浏览器 Web",
+    "后端": "Java Spring 服务端",
+    "大模型": "LLM AI RAG Agent",
+    "检索增强": "RAG 向量检索",
+    "认证": "JWT OAuth 登录",
+    "并发": "线程 锁 多线程",
+    "事务": "ACID 隔离级别"
+  };
+  S.PINYIN = {
+    "缓存": "huancun",
+    "数据库": "shujuku",
+    "消息队列": "xiaoxiduilie",
+    "微服务": "weifuwu",
+    "容器": "rongqi",
+    "部署": "bushu",
+    "前端": "qianduan",
+    "后端": "houduan",
+    "大模型": "damoxing",
+    "事务": "shiwu",
+    "并发": "bingfa",
+    "线程": "xiancheng",
+    "锁": "suo"
+  };
+
+  S.aliases = function (q) {
+    const hay = [q.title, q.body, q.answer, q.catName, (q.tags || []).join(" "), (q.positionNames || []).join(" ")].join(" ");
+    let out = [];
+    Object.keys(S.SYNONYMS).forEach(k => { if (hay.indexOf(k) >= 0) out.push(k, S.SYNONYMS[k]); });
+    Object.keys(S.PINYIN).forEach(k => { if (hay.indexOf(k) >= 0) out.push(S.PINYIN[k]); });
+    return out.join(" ");
+  };
+
   S.build = function (questions) {
     const docs = questions.map(q => ({
       ref: q.id,
@@ -1075,7 +1115,8 @@
       answer: q.answer || "",
       tags: (q.tags || []).join(" "),
       positions: (q.positionNames || []).join(" "),
-      cat: q.catName || ""
+      cat: q.catName || "",
+      alias: S.aliases(q)
     }));
     return new Fuse(docs, {
       keys: [
@@ -1084,7 +1125,8 @@
         { name: "body", weight: 0.15 },
         { name: "positions", weight: 0.12 },
         { name: "answer", weight: 0.08 },
-        { name: "cat", weight: 0.05 }
+        { name: "cat", weight: 0.05 },
+        { name: "alias", weight: 0.18 }
       ],
       includeMatches: true,
       threshold: 0.35,
@@ -1148,9 +1190,10 @@
       if (f.aiMax != null && (q.aiScore || 0) > f.aiMax) return false;
       if (f.q && f.q.trim()) {
         const t = f.q.toLowerCase();
-        const hay = ((q.title || "") + " " + (q.body || "") + " " + (q.tags || []).join(" ") + " " + (q.positionNames || []).join(" ")).toLowerCase();
+        const hay = ((q.title || "") + " " + (q.body || "") + " " + (q.tags || []).join(" ") + " " + (q.positionNames || []).join(" ") + " " + S.aliases(q)).toLowerCase();
         if (hay.indexOf(t) < 0) return false;
       }
+      if (f.predicates && f.predicates.length && !f.predicates.every(p => p(q))) return false;
       return true;
     });
   };

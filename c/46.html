@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>系统调优面试题 · IT面试题库</title>
+  <meta name="description" content="系统调优方向的 13 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/46.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="系统调优面试题 · IT面试题库">
+  <meta property="og:description" content="系统调优方向的 13 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/46.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"系统调优面试题","description":"系统调优方向的 13 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/46.html","mainEntity":{"@type":"ItemList","numberOfItems":13,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/418.html","name":"高级：给定一个完整的「接口变慢 → CPU 高 → OOM」线上故障，请给出一套标准化的应急排查 SOP（监控告警、保留现场、定位、止血、根因、复盘），并说明每一步的注意点。"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/413.html","name":"线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/414.html","name":"Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/415.html","name":"服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/416.html","name":"CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/417.html","name":"如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/820.html","name":"服务出现 TCP 重传和连接超时，如何用 sar / ss 判断是网络抖动还是本机问题？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/821.html","name":"接到告警：核心服务 P99 延迟突增，给你 10 分钟，如何系统性定位是 CPU、内存、IO 还是网络瓶颈？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/825.html","name":"某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/826.html","name":"free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/827.html","name":"iostat 里 %util 到 100% 就一定是磁盘瓶颈吗？如何区分「磁盘慢」还是「进程猛写」？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/833.html","name":"线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/837.html","name":"top 里的 load average 和 %CPU 怎么读？load 很高但 CPU 空闲说明什么？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>系统调优面试题</h1><p>系统调优方向的 13 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/418.html">高级：给定一个完整的「接口变慢 → CPU 高 → OOM」线上故障，请给出一套标准化的应急排查 SOP（监控告警、保留现场、定位、止血、根因、复盘），并说明每一步的注意点。</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/413.html">线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/414.html">Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/415.html">服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/416.html">CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/417.html">如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/820.html">服务出现 TCP 重传和连接超时，如何用 sar / ss 判断是网络抖动还是本机问题？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/821.html">接到告警：核心服务 P99 延迟突增，给你 10 分钟，如何系统性定位是 CPU、内存、IO 还是网络瓶颈？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/825.html">某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/826.html">free 显示 available 很低，如何判断是会 OOM 还是缓存可回收？内存泄漏 / OOM 怎么定位？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/827.html">iostat 里 %util 到 100% 就一定是磁盘瓶颈吗？如何区分「磁盘慢」还是「进程猛写」？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/833.html">线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/837.html">top 里的 load average 和 %CPU 怎么读？load 很高但 CPU 空闲说明什么？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=46">在线刷系统调优题 →</a></div></body>
+</html>

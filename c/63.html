@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vue3面试题 · IT面试题库</title>
+  <meta name="description" content="Vue3方向的 14 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/63.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Vue3面试题 · IT面试题库">
+  <meta property="og:description" content="Vue3方向的 14 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/63.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Vue3面试题","description":"Vue3方向的 14 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/63.html","mainEntity":{"@type":"ItemList","numberOfItems":14,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/126.html","name":"Vue中响应式数据的原理？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/125.html","name":"Vue 3中Composition API和Options API的区别？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/26.html","name":"Vue3 的响应式原理是什么？与 Vue2 有何不同？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/27.html","name":"Vue 中 key 的作用是什么？为什么列表要用 key？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/29.html","name":"Vue 与 React 的核心差异有哪些？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/30.html","name":"什么是虚拟 DOM？它一定比直接操作 DOM 快吗？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/949.html","name":"Vue3 的响应式原理是什么？为什么用 Proxy 替代 Object.defineProperty？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1170.html","name":"Vue3 为什么用 Proxy 重写了响应式系统？相比 Vue2 的 Object.defineProperty 解决了哪些痛点？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1171.html","name":"Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1172.html","name":"场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 \u003cbutton @click=\"count++\">，点击后视图为什么不更新？怎么改？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1173.html","name":"单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？\nA. reactive 可以直接用于基本类型（数字/字符串）\nB. ref 在模板中使用时必须写 .value\nC. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value\nD. reactive 对象被整体重新赋值仍保持响应式"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1174.html","name":"故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name='x' 后，DevTools 里数据已变但视图不刷新。如何定位并修复？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1175.html","name":"开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1176.html","name":"场景题：用组合式 API 设计一个可复用的 useDebounceSearch composable：输入变化防抖 300ms 发请求，需处理请求竞态（后发先到覆盖结果）、组件卸载时取消、loading 状态。给出实现思路与关键陷阱。"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>Vue3面试题</h1><p>Vue3方向的 14 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/126.html">Vue中响应式数据的原理？</a><span>高级 · 457 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/125.html">Vue 3中Composition API和Options API的区别？</a><span>中级 · 108 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/26.html">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/27.html">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/29.html">Vue 与 React 的核心差异有哪些？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/30.html">什么是虚拟 DOM？它一定比直接操作 DOM 快吗？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/949.html">Vue3 的响应式原理是什么？为什么用 Proxy 替代 Object.defineProperty？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1170.html">Vue3 为什么用 Proxy 重写了响应式系统？相比 Vue2 的 Object.defineProperty 解决了哪些痛点？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1171.html">Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1172.html">场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 &lt;button @click=&quot;count++&quot;&gt;，点击后视图为什么不更新？怎么改？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1173.html">单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？
+A. reactive 可以直接用于基本类型（数字/字符串）
+B. ref 在模板中使用时必须写 .value
+C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
+D. reactive 对象被整体重新赋值仍保持响应式</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1174.html">故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name=&#39;x&#39; 后，DevTools 里数据已变但视图不刷新。如何定位并修复？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1175.html">开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1176.html">场景题：用组合式 API 设计一个可复用的 useDebounceSearch composable：输入变化防抖 300ms 发请求，需处理请求竞态（后发先到覆盖结果）、组件卸载时取消、loading 状态。给出实现思路与关键陷阱。</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=63">在线刷Vue3题 →</a></div></body>
+</html>

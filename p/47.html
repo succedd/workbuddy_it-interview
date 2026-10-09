@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后端架构师面试题 · IT面试题库</title>
+  <meta name="description" content="后端架构师岗位的 128 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/p/47.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="后端架构师面试题 · IT面试题库">
+  <meta property="og:description" content="后端架构师岗位的 128 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/p/47.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"后端架构师面试题","description":"后端架构师岗位的 128 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。","url":"https://itinterview.com.cn/p/47.html","mainEntity":{"@type":"ItemList","numberOfItems":128,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/142.html","name":"Redis过期删除和内存淘汰策略？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/579.html","name":"如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1065.html","name":"服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1106.html","name":"【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/452.html","name":"Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/761.html","name":"什么是零拷贝（zero-copy）？mmap、sendfile、splice 分别是如何减少拷贝的？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/908.html","name":"如何用 Redis 实现分布式锁？有哪些注意事项？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1066.html","name":"常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1067.html","name":"灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1076.html","name":"Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1105.html","name":"【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/61.html","name":"TIME_WAIT 的作用与过多怎么办？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/84.html","name":"Kafka 与 RabbitMQ 如何选型？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/289.html","name":"后端框架【诞生】裸写 Servlet/CGI 时代，每接一个需求都要重复造哪些轮子？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/290.html","name":"后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/291.html","name":"后端框架【本质】RESTful 凭什么成为 API 的事实标准？GraphQL 又是对什么痛点的反叛？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/292.html","name":"后端框架【演化】框架已经这么强了，为什么还会演化出微服务、Serverless？它们分别在逃避什么、又在支付什么？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/301.html","name":"分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/302.html","name":"微服务【本质】微服务拆的是什么？「按业务能力拆」为什么比「按技术层拆」更合理？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/303.html","name":"微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>后端架构师面试题</h1><p>后端架构师岗位的 128 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/142.html">Redis过期删除和内存淘汰策略？</a><span>中级 · 167 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/579.html">如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？</a><span>高级 · 3 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1065.html">服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1106.html">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/452.html">Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/761.html">什么是零拷贝（zero-copy）？mmap、sendfile、splice 分别是如何减少拷贝的？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/908.html">如何用 Redis 实现分布式锁？有哪些注意事项？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1066.html">常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1067.html">灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1076.html">Spring Cloud 与 Service Mesh 是什么关系？为什么有人说 Java 微服务要迁到 Sidecar？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1105.html">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/61.html">TIME_WAIT 的作用与过多怎么办？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/84.html">Kafka 与 RabbitMQ 如何选型？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/289.html">后端框架【诞生】裸写 Servlet/CGI 时代，每接一个需求都要重复造哪些轮子？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/290.html">后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/291.html">后端框架【本质】RESTful 凭什么成为 API 的事实标准？GraphQL 又是对什么痛点的反叛？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/292.html">后端框架【演化】框架已经这么强了，为什么还会演化出微服务、Serverless？它们分别在逃避什么、又在支付什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/301.html">分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/302.html">微服务【本质】微服务拆的是什么？「按业务能力拆」为什么比「按技术层拆」更合理？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/303.html">微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/304.html">微服务【演化】微服务「不是免费的午餐」——它的运维账单有多贵？服务网格、可观测性是在为什么买单？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/445.html">Seata 的 AT 模式是怎么工作的？它为什么被称为「对业务无侵入」的分布式事务方案？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/446.html">Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/450.html">Sentinel 的熔断降级有哪些策略？熔断之后是如何从 OPEN 状态恢复的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/458.html">TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/578.html">缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/580.html">Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/581.html">什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/582.html">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/583.html">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/584.html">什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/585.html">Redis 分布式锁与 ZooKeeper / etcd 实现的分布式锁有何区别？如何选型？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/586.html">分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/638.html">【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/646.html">读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/647.html">【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/649.html">【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/650.html">【系统设计题】为账户表设计高并发余额扣减方案：如何在保证不超扣的前提下尽量减小锁的开销？请对比 SELECT ... FOR UPDATE、乐观锁版本号与原子 UPDATE 三种路线并说明锁的具体行为</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/651.html">【开放讨论】MySQL 默认隔离级别是可重复读，但不少互联网公司线上反而配置为读提交（RC）。你如何看待这种选型？需要承担哪些代价？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/652.html">DNS 解析中的递归查询与迭代查询有什么区别？以解析 www.server.com 为例说明本地 DNS 服务器的角色</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/660.html">JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/799.html">NestJS 的设计理念与传统 Node 框架有何不同？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/800.html">如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/805.html">设计 RESTful API 有哪些核心规范？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/806.html">Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/807.html">JVM 垃圾回收器 G1 的工作原理与适用场景？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/810.html">Spring Cloud 常用组件各自解决什么问题？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/812.html">Spring Cloud Alibaba 提供了哪些核心组件（Nacos/Sentinel/Seata）？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/814.html">gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/902.html">InnoDB 为什么选择 B+ 树作为索引结构？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/904.html">主键自增 ID 和 UUID 作为主键各有什么优缺点？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/905.html">Redis 为什么这么快？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/906.html">Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/907.html">什么是缓存穿透、击穿、雪崩？分别如何解决？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/910.html">如何保证缓存与数据库的数据一致性？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/911.html">Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/918.html">TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/923.html">select、poll、epoll 的区别是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/930.html">ConcurrentHashMap 是如何保证线程安全的？1.7 和 1.8 有什么区别？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/934.html">线程池的核心参数有哪些？工作流程和拒绝策略是什么？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/position/47">在线刷后端架构师题 →</a></div></body>
+</html>

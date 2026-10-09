@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>大数据开发工程师面试题 · IT面试题库</title>
+  <meta name="description" content="大数据开发工程师岗位的 50 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/p/73.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="大数据开发工程师面试题 · IT面试题库">
+  <meta property="og:description" content="大数据开发工程师岗位的 50 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/p/73.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"大数据开发工程师面试题","description":"大数据开发工程师岗位的 50 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。","url":"https://itinterview.com.cn/p/73.html","mainEntity":{"@type":"ItemList","numberOfItems":50,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/475.html","name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1479.html","name":"Hive 与关系型数据库（MySQL）的主要区别是什么？Hive 适合什么场景？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/309.html","name":"大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/1010.html","name":"ClickHouse 为什么分析查询这么快？它的架构与适用边界是什么？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1458.html","name":"HDFS 小文件问题是怎么产生的？为什么它会拖垮 NameNode 和计算层？有哪些治理手段？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1475.html","name":"什么场景需要引入大数据技术栈？它和单机处理本质区别在哪？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1480.html","name":"一个实时指标需求，该用 Spark 还是 Flink？请从批/流模型、时延、状态管理说明选型。"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/72.html","name":"Top K 问题（最大 K 个数）有哪些解法？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/310.html","name":"大数据【本质】MapReduce → Spark → Flink 的演化分别在还什么债？为什么 Spark 能一统批处理？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/311.html","name":"大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/312.html","name":"大数据【边界】「我们公司数据很大」就该上 Hadoop 全家桶吗？大数据架构的成本账单和轻量替代方案有哪些？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/457.html","name":"ClickHouse MergeTree 表的 ORDER BY 该怎么设计？为什么按第二主键列过滤时索引几乎不起作用？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/473.html","name":"Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/474.html","name":"Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/587.html","name":"Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/588.html","name":"Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/589.html","name":"Kafka 如何实现精确一次语义（EOS）？在流式处理中怎样落地？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/590.html","name":"分区数与消费者组的关系是什么？并行度如何设计？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/591.html","name":"Kafka 中消息在什么情况下会丢失或重复？分别如何规避？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/703.html","name":"Hadoop 生态核心组件（HDFS/MapReduce/YARN）各自职责？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>大数据开发工程师面试题</h1><p>大数据开发工程师岗位的 50 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/475.html">Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</a><span>中级 · 4 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1479.html">Hive 与关系型数据库（MySQL）的主要区别是什么？Hive 适合什么场景？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/309.html">大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？</a><span>初级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1010.html">ClickHouse 为什么分析查询这么快？它的架构与适用边界是什么？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1458.html">HDFS 小文件问题是怎么产生的？为什么它会拖垮 NameNode 和计算层？有哪些治理手段？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1475.html">什么场景需要引入大数据技术栈？它和单机处理本质区别在哪？</a><span>初级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1480.html">一个实时指标需求，该用 Spark 还是 Flink？请从批/流模型、时延、状态管理说明选型。</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/72.html">Top K 问题（最大 K 个数）有哪些解法？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/310.html">大数据【本质】MapReduce → Spark → Flink 的演化分别在还什么债？为什么 Spark 能一统批处理？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/311.html">大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/312.html">大数据【边界】「我们公司数据很大」就该上 Hadoop 全家桶吗？大数据架构的成本账单和轻量替代方案有哪些？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/457.html">ClickHouse MergeTree 表的 ORDER BY 该怎么设计？为什么按第二主键列过滤时索引几乎不起作用？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/473.html">Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/474.html">Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/587.html">Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/588.html">Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/589.html">Kafka 如何实现精确一次语义（EOS）？在流式处理中怎样落地？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/590.html">分区数与消费者组的关系是什么？并行度如何设计？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/591.html">Kafka 中消息在什么情况下会丢失或重复？分别如何规避？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/703.html">Hadoop 生态核心组件（HDFS/MapReduce/YARN）各自职责？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/705.html">MapReduce 的 map→shuffle→reduce 过程是怎样的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/706.html">Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/724.html">HBase 的数据模型（行键/列族/版本）与适用场景？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/735.html">Scala 的函数式与面向对象融合特性？与 Spark 的关系？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/992.html">DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/993.html">DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/994.html">DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/995.html">Sqoop 的工作原理是什么？import 时 map 数与 --split-by 怎么影响性能？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/996.html">Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/997.html">Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/998.html">Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/999.html">Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1000.html">日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1254.html">Kafka 的日志保留（retention）和日志压缩（log compaction）有什么区别？分别在什么场景下使用？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1407.html">Spark 的 Shuffle 是怎么工作的？从 Hash Shuffle 到 Sort Shuffle 解决了什么问题？有哪些关键调优手段？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1436.html">HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1437.html">Flink 的 Watermark 是怎么处理乱序数据的？event time 与 processing time 的取舍是什么？TwoPhaseCommitSink 如何实现 Exactly-Once？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1438.html">Hive 里一张分区表 join 时数据倾斜导致个别 reducer 跑几个小时，你有哪些处理手段？内外部表（managed/external）的区别是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1459.html">Hudi、Iceberg、Delta Lake 三大湖表格式各自解决什么？ACID、时间旅行、Schema 演进是怎么实现的？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1476.html">HDFS 的一次文件读写流程是怎样的？NameNode 如何做高可用（HA）与故障切换？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1477.html">MapReduce 为什么慢？它的多次落盘与 Shuffle 网络开销问题，后来被什么方案优化？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1478.html">设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1481.html">设计实时数仓：Kafka + Flink 流式 ETL 写入 OLAP，如何保证 Exactly-Once 与乱序/迟到数据处理？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1574.html">数仓建模中星型模型（Star Schema）与雪花模型（Snowflake）的区别是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1575.html">什么是缓慢变化维（SCD）？常见的处理策略有哪些？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1576.html">数据湖（Data Lake）与数据仓库（Data Warehouse）的核心区别是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1577.html">ClickHouse 为什么查询这么快？核心设计有哪些？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1578.html">实时数仓 Lambda 架构与 Kappa 架构的区别与演进？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1579.html">大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1580.html">数据治理主要包含哪些内容？为什么重要？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/position/73">在线刷大数据开发工程师题 →</a></div></body>
+</html>

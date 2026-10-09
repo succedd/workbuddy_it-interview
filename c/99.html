@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git版本控制面试题 · IT面试题库</title>
+  <meta name="description" content="Git版本控制方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/99.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Git版本控制面试题 · IT面试题库">
+  <meta property="og:description" content="Git版本控制方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/99.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Git版本控制面试题","description":"Git版本控制方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/99.html","mainEntity":{"@type":"ItemList","numberOfItems":12,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/563.html","name":"git rebase 和 git merge 有什么区别？各自适合什么场景？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/564.html","name":"如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/565.html","name":"请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/566.html","name":"合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/567.html","name":"git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/855.html","name":"rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/856.html","name":"场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/860.html","name":"故障排查题：执行 git merge feature 后提示 CONFLICT（content）: Merge conflict in src/api.js。请完整说明：冲突为什么会发生、标准解决流程、以及合并中途想放弃该怎么办。"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/861.html","name":"场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/866.html","name":"Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/868.html","name":"Git 创建分支为什么几乎是零成本的？分支和 HEAD 在 Git 内部到底是什么？这与 SVN 等集中式系统的分支有何本质区别？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/871.html","name":"下列关于 Git 常用操作的说法，正确的是：\nA. git pull 等价于 git fetch + git merge\nB. git reset --hard 可以恢复任意已删除的提交历史，无任何风险\nC. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支\nD. git stash 保存的是工作区和暂存区的改动"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>Git版本控制面试题</h1><p>Git版本控制方向的 12 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/563.html">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/564.html">如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/565.html">请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/566.html">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/567.html">git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/855.html">rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/856.html">场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/860.html">故障排查题：执行 git merge feature 后提示 CONFLICT（content）: Merge conflict in src/api.js。请完整说明：冲突为什么会发生、标准解决流程、以及合并中途想放弃该怎么办。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/861.html">场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/866.html">Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/868.html">Git 创建分支为什么几乎是零成本的？分支和 HEAD 在 Git 内部到底是什么？这与 SVN 等集中式系统的分支有何本质区别？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/871.html">下列关于 Git 常用操作的说法，正确的是：
+A. git pull 等价于 git fetch + git merge
+B. git reset --hard 可以恢复任意已删除的提交历史，无任何风险
+C. git revert 是生成一个反向提交来撤销某次提交，适合已推送的公共分支
+D. git stash 保存的是工作区和暂存区的改动</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=99">在线刷Git版本控制题 →</a></div></body>
+</html>

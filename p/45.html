@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Node.js工程师面试题 · IT面试题库</title>
+  <meta name="description" content="Node.js工程师岗位的 24 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/p/45.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Node.js工程师面试题 · IT面试题库">
+  <meta property="og:description" content="Node.js工程师岗位的 24 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/p/45.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Node.js工程师面试题","description":"Node.js工程师岗位的 24 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。","url":"https://itinterview.com.cn/p/45.html","mainEntity":{"@type":"ItemList","numberOfItems":24,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/19.html","name":"Promise 与 async/await 的区别与联系？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/643.html","name":"ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/644.html","name":"【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/645.html","name":"【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/646.html","name":"读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/719.html","name":"npm 的 package.json 中 dependencies 与 devDependencies 区别？语义化版本 ^ ~ 含义？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/720.html","name":"Yarn 相比 npm 的优势（yarn.lock/workspaces/速度快）？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/799.html","name":"NestJS 的设计理念与传统 Node 框架有何不同？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/801.html","name":"Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/811.html","name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/816.html","name":"Express 中间件（middleware）的执行顺序与 next() 作用是什么？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/1026.html","name":"Express 的错误处理中间件为什么必须是四个参数？在 async 路由里抛错为什么捕获不到？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/1027.html","name":"Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1028.html","name":"为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1029.html","name":"Koa 的 ctx 是怎么实现的？delegates 做了什么？为什么它比 Express 的 req/res 更好用？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/1030.html","name":"如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/1031.html","name":"Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1032.html","name":"NestJS 的模块（Module）、提供者（Provider）与依赖注入容器是如何协作的？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1033.html","name":"NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1034.html","name":"NestJS 的动态模块（forRoot / forRootAsync）解决什么问题？配置与数据库连接该怎么组织？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>Node.js工程师面试题</h1><p>Node.js工程师岗位的 24 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/19.html">Promise 与 async/await 的区别与联系？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/643.html">ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/644.html">【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/645.html">【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/646.html">读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/719.html">npm 的 package.json 中 dependencies 与 devDependencies 区别？语义化版本 ^ ~ 含义？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/720.html">Yarn 相比 npm 的优势（yarn.lock/workspaces/速度快）？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/799.html">NestJS 的设计理念与传统 Node 框架有何不同？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/801.html">Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/811.html">Koa 的洋葱模型中间件与 Express 中间件有何不同？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/816.html">Express 中间件（middleware）的执行顺序与 next() 作用是什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1026.html">Express 的错误处理中间件为什么必须是四个参数？在 async 路由里抛错为什么捕获不到？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1027.html">Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1028.html">为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1029.html">Koa 的 ctx 是怎么实现的？delegates 做了什么？为什么它比 Express 的 req/res 更好用？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1030.html">如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1031.html">Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1032.html">NestJS 的模块（Module）、提供者（Provider）与依赖注入容器是如何协作的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1033.html">NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1034.html">NestJS 的动态模块（forRoot / forRootAsync）解决什么问题？配置与数据库连接该怎么组织？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1035.html">GraphQL 的 N+1 问题是怎么产生的？DataLoader 为什么必须按「批处理 + 请求级缓存」来实现？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1040.html">TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1400.html">JWT 由哪三部分组成？无状态认证的优缺点是什么？JWT「签发后无法作废」的注销难题怎么解决？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1401.html">什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？</a><span>高级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/position/45">在线刷Node.js工程师题 →</a></div></body>
+</html>

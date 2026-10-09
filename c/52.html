@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DNS原理面试题 · IT面试题库</title>
+  <meta name="description" content="DNS原理方向的 9 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/52.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DNS原理面试题 · IT面试题库">
+  <meta property="og:description" content="DNS原理方向的 9 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/52.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"DNS原理面试题","description":"DNS原理方向的 9 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/52.html","mainEntity":{"@type":"ItemList","numberOfItems":9,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/163.html","name":"DNS解析的完整过程？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/652.html","name":"DNS 解析中的递归查询与迭代查询有什么区别？以解析 www.server.com 为例说明本地 DNS 服务器的角色"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/653.html","name":"【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/654.html","name":"【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/655.html","name":"CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/656.html","name":"【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/657.html","name":"【系统设计题】为一个面向全国用户的图片/静态资源站点设计 CDN 加速方案：如何设计缓存策略、回源链路与故障兜底？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/915.html","name":"DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1337.html","name":"在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>DNS原理面试题</h1><p>DNS原理方向的 9 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/163.html">DNS解析的完整过程？</a><span>中级 · 399 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/652.html">DNS 解析中的递归查询与迭代查询有什么区别？以解析 www.server.com 为例说明本地 DNS 服务器的角色</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/653.html">【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/654.html">【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/655.html">CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/656.html">【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/657.html">【系统设计题】为一个面向全国用户的图片/静态资源站点设计 CDN 加速方案：如何设计缓存策略、回源链路与故障兜底？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/915.html">DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1337.html">在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=52">在线刷DNS原理题 →</a></div></body>
+</html>

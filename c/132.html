@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>服务治理面试题 · IT面试题库</title>
+  <meta name="description" content="服务治理方向的 11 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/132.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="服务治理面试题 · IT面试题库">
+  <meta property="og:description" content="服务治理方向的 11 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/132.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"服务治理面试题","description":"服务治理方向的 11 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/132.html","mainEntity":{"@type":"ItemList","numberOfItems":11,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/1065.html","name":"服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/1066.html","name":"常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1067.html","name":"灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/450.html","name":"Sentinel 的熔断降级有哪些策略？熔断之后是如何从 OPEN 状态恢复的？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1229.html","name":"什么是服务熔断（Circuit Breaker）？它与服务限流、服务降级有什么区别？请说明熔断器的三种状态及切换逻辑。"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/1230.html","name":"限流常见算法有哪几种（计数器、滑动窗口、漏桶、令牌桶）？各自原理、优缺点与适用场景是什么？为什么高并发网关常用令牌桶？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/1231.html","name":"某微服务上线后，下游一个接口偶发慢响应（RT 从 50ms 升到 2s），随后上游服务线程池被打满、连锁超时，最终整条调用链路雪崩。请描述你如何用「熔断 + 限流 + 超时」定位并止血。"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/1232.html","name":"设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/1233.html","name":"用 Sentinel 给一个「下单接口」配置 QPS 限流 + 慢调用比例熔断 + 热点参数限流，并说明规则如何持久化到 Nacos，避免应用重启后丢失。"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/1234.html","name":"请用 Java 手写一个简单令牌桶限流器（支持 tryAcquire），并解释关键参数与线程安全做法。"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/1283.html","name":"【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>服务治理面试题</h1><p>服务治理方向的 11 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/1065.html">服务雪崩是怎么发生的？限流、熔断、隔离、降级该怎么配合才有效？</a><span>中级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1066.html">常见的负载均衡策略有哪些？一致性哈希解决了什么问题，又带来什么副作用？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1067.html">灰度发布、蓝绿部署与全链路压测在服务治理中怎么落地？各自的成本和风险是什么？</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/450.html">Sentinel 的熔断降级有哪些策略？熔断之后是如何从 OPEN 状态恢复的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1229.html">什么是服务熔断（Circuit Breaker）？它与服务限流、服务降级有什么区别？请说明熔断器的三种状态及切换逻辑。</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1230.html">限流常见算法有哪几种（计数器、滑动窗口、漏桶、令牌桶）？各自原理、优缺点与适用场景是什么？为什么高并发网关常用令牌桶？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1231.html">某微服务上线后，下游一个接口偶发慢响应（RT 从 50ms 升到 2s），随后上游服务线程池被打满、连锁超时，最终整条调用链路雪崩。请描述你如何用「熔断 + 限流 + 超时」定位并止血。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1232.html">设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1233.html">用 Sentinel 给一个「下单接口」配置 QPS 限流 + 慢调用比例熔断 + 热点参数限流，并说明规则如何持久化到 Nacos，避免应用重启后丢失。</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1234.html">请用 Java 手写一个简单令牌桶限流器（支持 tryAcquire），并解释关键参数与线程安全做法。</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1283.html">【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=132">在线刷服务治理题 →</a></div></body>
+</html>

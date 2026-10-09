@@ -55,15 +55,24 @@
 
   /* ============================ 路由 ============================ */
   function parseHash() {
-    const h = location.hash.replace(/^#/, "") || "/";
-    const [path, qs] = h.split("?");
+    const hash = location.hash || "";
+    const routeSource = hash.indexOf("#/") === 0 ? hash.slice(1) : ((location.pathname || "/") + location.search);
+    const [path, qs] = routeSource.split("?");
     const q = {};
     if (qs) qs.split("&").forEach(p => { const [k, v] = p.split("="); q[decodeURIComponent(k)] = decodeURIComponent(v || ""); });
     const parts = path.split("/").filter(Boolean);
     return { path, parts, q };
   }
 
-  App.go = function (hash) { location.hash = hash; };
+  App.go = function (hash) {
+    const path = String(hash || "/").replace(/^#/, "");
+    try {
+      history.pushState(null, "", path);
+      route();
+    } catch (e) {
+      location.hash = path;
+    }
+  };
 
   App.requireAdmin = function () {
     if (Auth.isAdmin()) return true;
@@ -187,6 +196,7 @@
         return window.pageDocsDir(r.parts[1]);
       case "questions": return pageQuestions(r.q);
       case "question": return pageQuestionDetail(r.parts[1]);
+      case "quiz": return pageQuiz(r.q);
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
       case "help": return pageHelp();
@@ -868,21 +878,25 @@
     const recent = stats.recent.slice(0, 6);
     const best = Services.questions.slice().sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)).slice(0, 6);
     const roleShortcuts = [
-      { label: "Java 后端", exact: "Java后端工程师", keys: ["Java 后端", "Java开发"] },
-      { label: "前端", exact: "前端开发工程师", keys: ["前端"] },
-      { label: "算法", exact: "算法工程师", keys: [] },
-      { label: "运维 / DevOps", exact: "DevOps工程师", keys: ["SRE", "运维"] },
-      { label: "AI / 大模型", exact: "机器学习工程师", keys: ["深度学习", "NLP"] },
-      { label: "测试", exact: "测试工程师", keys: [] }
+      { icon: "database", label: "Java 后端", names: ["Java后端工程师", "Java开发工程师"] },
+      { icon: "monitor", label: "前端", names: ["前端开发工程师"] },
+      { icon: "barChart", label: "算法", names: ["算法工程师"] },
+      { icon: "layers", label: "运维 / DevOps", names: ["DevOps工程师", "SRE站点可靠性工程师", "系统运维工程师"] },
+      { icon: "sparkles", label: "AI / 大模型", names: ["机器学习工程师", "深度学习工程师", "自然语言处理工程师NLP", "计算机视觉工程师CV"] },
+      { icon: "check", label: "测试", names: ["测试工程师", "自动化测试工程师", "测试开发工程师"] }
     ].map(role => {
-      const pos = Services.positions.find(p => Services.posFullName(p) === role.exact)
-        || Services.positions.find(p => role.keys.some(k => (Services.posFullName(p) || "").indexOf(k) >= 0));
+      const names = new Set(role.names);
+      const pos = Services.positions.find(p => names.has(Services.posFullName(p)));
       if (!pos) return "";
-      return `<a class="home-role" href="#/questions?posid=${pos.id}">
+      const count = Services.questions.filter(q => (q.positionNames || []).some(n => names.has(n))
+        || (q.positionIds || []).some(id => Services.positions.some(p => p.id === id && names.has(Services.posFullName(p))))).length;
+      return `<a class="home-role" href="#/quiz?posid=${pos.id}&n=20">
+        <span class="home-role-icon">${U.icon(role.icon)}</span>
         <b>${U.esc(role.label)}</b>
-        <span>${Services.questionCountForPosition(pos)} 题 · ${U.esc(Services.posFullName(pos))}</span>
+        <span>${count} 题 · 一键小测</span>
       </a>`;
     }).join("");
+    const coreSystems = tree.filter(c => c.count).sort((a, b) => b.count - a.count).slice(0, 6);
     const sampleQ = Services.questions.find(q => /缓存/.test(q.title || "") && (q.answer || q.body)) || best[0] || recent[0];
     const sampleText = String((sampleQ && (sampleQ.answer || sampleQ.body)) || "")
       .replace(/[#*`>]/g, "").replace(/\s+/g, " ").slice(0, 260);
@@ -900,7 +914,7 @@
       </div>
       <div class="note">结构化参考答案 + 常见追问 + 可练习作答，适合先看一道再决定是否开始。</div>
     </article>` : "";
-    const catCards = tree.map(c => {
+    const catCards = coreSystems.map(c => {
       const empty = !c.count;
       return `<a class="card card-hover${empty ? " cat-empty" : ""}" href="#/category?cat=${c.id}" style="text-decoration:none">
         ${empty ? `<span class="soon-chip">即将上线</span>` : ""}
@@ -909,8 +923,6 @@
         <div class="muted" style="font-size:12px">${empty ? "题目录入中" : c.count + " 题 · " + (c.era || "")}</div>
       </a>`;
     }).join("");
-    const stageCards = posByStage.map(s => { const seen = new Set(); const uniq = s.list.filter(p => { if (Services.isHiddenPosition(p)) return false; if (seen.has(Services.posKey(p))) return false; seen.add(Services.posKey(p)); return true; }); return `<div class="card"><div class="tag tag-ai" style="margin-bottom:8px">${U.esc(s.stage)}</div>
-        <div class="pill-row">${uniq.slice(0, 8).map(p => `<a class="tag tag-outline" href="#/position/${p.id}" style="text-decoration:none">${U.esc(Services.posFullName(p))}</a>`).join("")}${uniq.length > 8 ? `<span class="muted">+${uniq.length - 8}</span>` : ""}</div></div>`; }).join("");
     const qlist = arr => arr.map(q => qCard(q)).join("");
     /* —— 今日5题 & 学习打卡 & 继续上次 —— */
     const five = (App.dailyList && App.dailyList.length) ? App.dailyList : todayFive(); const doneSet = await dailyDoneGet();
@@ -1204,6 +1216,7 @@
         <div class="hero-search">
           <input id="hero-search" type="text" placeholder="输入关键词，如 Redis 缓存穿透、Spring 事务…" />
           <button class="btn btn-primary btn-lg" id="hero-go">${U.icon("search")} 搜索</button>
+          <a class="btn btn-lg" href="#/mock">${U.icon("play")} 模拟面试</a>
           <a class="btn btn-lg" href="#/random">${U.icon("dice")} 随机一题</a>
         </div>
         <div class="hot-tags">${hotTags.map(t => `<span class="tag" data-tag="${U.esc(t)}">${U.esc(t)}</span>`).join("")}</div>
@@ -1235,6 +1248,8 @@
 
       ${roleShortcuts ? `<section class="home-roles">${roleShortcuts}</section>` : ""}
 
+      ${sampleHtml}
+
       <!-- 每日一句：保留情绪价值，但不占用搜索后的第一屏决策区。 -->
       <div id="daily-quote-mount"></div>
 
@@ -1242,18 +1257,22 @@
            而它解释的是「为什么换台设备就没有记录」这个一定会被问到的问题 —— 移到学习数据区开头。 -->
       <div class="note" style="margin-top:20px">提示：题目与学习记录默认保存在本机浏览器，登录后可云端同步；支持离线使用，安装到主屏幕体验更佳。</div>
 
-      ${dueBannerHtml}
-      ${resumeHtml ? `<div style="margin-top:20px">${resumeHtml}</div>` : ""}
-      ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2" style="margin-top:20px">${streakHtml}${fiveHtml}</div>` : ""}
-      ${weekHtml}
+      <section class="home-learning">
+        <div class="section-head" style="margin:0 0 10px">
+          <h2>学习进度</h2>
+          <a class="more" href="#/?to=week-report">查看周报 →</a>
+        </div>
+        ${dueBannerHtml}
+        ${resumeHtml ? `<div>${resumeHtml}</div>` : ""}
+        ${(fiveHtml || streakHtml) ? `<div class="grid grid-cols-2">${streakHtml}${fiveHtml}</div>` : ""}
+        ${weekHtml}
+      </section>
 
       <div class="section-head"><h2>技术体系</h2><a class="more" href="#/category">查看全部 →</a></div>
       <div class="grid grid-cols-auto home-cats">${catCards}</div>
 
-      <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部 →</a></div>
-      <div class="grid grid-cols-2 home-stages">${stageCards}</div>
-
-      ${sampleHtml}
+      <div class="section-head"><h2>岗位体系</h2><a class="more" href="#/position">查看全部岗位 →</a></div>
+      <div class="home-pos-links">${roleShortcuts}</div>
 
       <div class="section-head"><h2>最新题目</h2><a class="more" href="#/questions?sort=updated">更多 →</a></div>
       <div class="grid grid-cols-2">${qlist(recent)}</div>
@@ -1643,6 +1662,7 @@
       <div class="grid grid-cols-2">${hot.length ? hot.map(q => qCard(q)).join("") : '<div class="muted">暂无题目</div>'}</div>
       <div class="pill-row" style="margin-top:20px">
         <a class="btn btn-primary" href="#/mock?pos=${p.id}">${U.icon("play")} 一键模拟面试</a>
+        <a class="btn" href="#/quiz?posid=${p.id}&n=20">20 题限时小测</a>
         <a class="btn" href="#/questions?posid=${p.id}">${U.esc("按技术分类刷题")}</a>
         <a class="btn" href="#/questions?posid=${p.id}">查看全部题目</a>
       </div>
@@ -1915,8 +1935,21 @@
       const pos = Services.positions.find(x => x.name === posName) || { name: posName };
       base = base.filter(x => Services.matchPosition(x, pos));
     }
+    const stateMode = q.state || "";
+    const statePredicates = [];
+    if (stateMode === "fav") {
+      const ids = new Set((await Services.getFavorites()).map(x => x.id));
+      statePredicates.push(x => ids.has(x.id));
+    } else if (stateMode === "weak") {
+      const ids = new Set((await Services.getWeakQuestions()).map(x => x.id));
+      statePredicates.push(x => ids.has(x.id));
+    } else if (stateMode === "new") {
+      const rows = await DB.db.histories.toArray();
+      const ids = new Set(rows.map(x => x.questionId));
+      statePredicates.push(x => !ids.has(x.id));
+    }
 
-    const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "" };
+    const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "", predicates: statePredicates };
     const sortBy = q.sort || "updated";
     if (q.nocat) base = base.filter(x => x.categoryId == null);   /* 全景图「未归类」节点跳转过来 */
     /* 来源预筛选（题库全景图来源构成条跳转过来）：?source=ai|manual|import|submission|seed|principles|url|other */
@@ -1942,7 +1975,7 @@
        直接改 url.search 会写成一个没有 hash 的地址，把整条路由抹掉。 */
     const syncRouteParams = (patch) => {
       try {
-        const raw = (location.hash || "#/").slice(1);
+        const raw = location.hash.indexOf("#/") === 0 ? location.hash.slice(1) : (location.pathname + location.search);
         const qi = raw.indexOf("?");
         const path = qi < 0 ? raw : raw.slice(0, qi);
         const sp = new URLSearchParams(qi < 0 ? "" : raw.slice(qi + 1));
@@ -1960,7 +1993,7 @@
        容易让人以为题库少了内容（桌面端按钮本身隐藏，调用无副作用）。 */
     const updateFilterBadge = () => {
       const n = (filters.difficulty.length ? 1 : 0) + (filters.type.length ? 1 : 0)
-        + (filters.source.length ? 1 : 0) + (filters.status.length ? 1 : 0);
+        + (filters.source.length ? 1 : 0) + (filters.status.length ? 1 : 0) + (stateMode ? 1 : 0);
       const b = $("#filter-badge");
       if (!b) return;
       b.textContent = n;
@@ -2075,6 +2108,12 @@
         <button data-d="" class="${!filters.difficulty.length ? "active" : ""}">全部难度</button>
         ${diffs.map(d => `<button data-d="${U.esc(d)}" class="${filters.difficulty.length === 1 && filters.difficulty[0] === d ? "active" : ""}">${U.esc(d)}</button>`).join("")}
       </div>
+      <div class="state-quick" id="state-quick">
+        <button data-state="" class="${!stateMode ? "active" : ""}">全部状态</button>
+        <button data-state="new" class="${stateMode === "new" ? "active" : ""}">未做过</button>
+        <button data-state="fav" class="${stateMode === "fav" ? "active" : ""}">已收藏</button>
+        <button data-state="weak" class="${stateMode === "weak" ? "active" : ""}">错题</button>
+      </div>
       <div class="grid grid-cols-2" id="q-grid"></div>
       <div class="pager" id="q-pager"></div>
     `);
@@ -2102,6 +2141,17 @@
     if (dq) dq.querySelectorAll("button").forEach(b => {
       b.onclick = () => { filters.difficulty = b.dataset.d ? [b.dataset.d] : []; syncDiffQuick(); apply(); };
     });
+    const sq = $("#state-quick");
+    if (sq) sq.querySelectorAll("button").forEach(b => {
+      b.onclick = () => {
+        const next = b.dataset.state;
+        const raw = location.hash.indexOf("#/") === 0 ? location.hash.slice(1) : (location.pathname + location.search);
+        const [path, query] = raw.split("?");
+        const p = new URLSearchParams(query || "");
+        if (next) p.set("state", next); else p.delete("state");
+        App.go(path + (p.toString() ? "?" + p.toString() : ""));
+      };
+    });
     $("#f-diff").onchange = e => { filters.difficulty = e.target.value ? [e.target.value] : []; syncDiffQuick(); apply(); };
     $("#f-type").onchange = e => { filters.type = e.target.value ? [e.target.value] : []; apply(); };
     if (filters.source.length) { const f = $("#f-source"); if (f) f.value = filters.source[0]; }   // 同步来源下拉框（?source= 跳转时）
@@ -2113,6 +2163,106 @@
       renderGrid(Search.sort(Search.filter(base, filters), s));
     });
     apply(false);   /* 首屏：尊重 ?page= 深链，不重置页码 */
+  }
+
+  /* ============================ 限时小测 ============================ */
+  async function pageQuiz(q) {
+    document.title = "限时小测 · IT面试题库";
+    let pool = Services.questions.filter(x => x.status === "published");
+    let scopeName = "全库";
+    if (q.posid) {
+      const pos = Services.getPosition(parseInt(q.posid));
+      if (pos) { pool = pool.filter(x => Services.matchPosition(x, pos)); scopeName = Services.posFullName(pos); }
+    }
+    if (q.cat) {
+      const id = parseInt(q.cat);
+      const ids = [id].concat(Services.descendantIds(id));
+      pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0);
+      scopeName = Services.catName(id) || scopeName;
+    }
+    if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
+    if (pool.length < 5) {
+      setMain(`<div class="empty">该范围可用题目不足 5 道，暂不能生成小测。<a class="btn" href="#/practice">去自由刷题</a></div>`);
+      return;
+    }
+    const total = Math.min(Math.max(parseInt(q.n, 10) || 20, 5), 50, pool.length);
+    const minutes = Math.max(1, Math.round(total * 1.5));
+
+    const renderIntro = () => setMain(`
+      <div class="breadcrumb"><a href="#/">首页</a><span class="sep">/</span><span>限时小测</span></div>
+      <h1>限时小测</h1>
+      <div class="card" style="max-width:680px">
+        <div class="pill-row" style="margin:0 0 12px">
+          <span class="tag tag-primary">${U.esc(scopeName)}</span>
+          <span class="tag">${pool.length} 题可用</span>
+          <span class="tag">${total} 题入卷</span>
+          <span class="tag">${minutes} 分钟</span>
+        </div>
+        <p class="secondary">题目随机抽取。每题先作答，再对照参考答案自评「已掌握」或「不会」；结束后给出掌握率和错题清单。</p>
+        <div class="pill-row">
+          <button class="btn btn-primary" id="quiz-start">${U.icon("play")} 开始小测</button>
+          <a class="btn" href="#/practice">${U.icon("refresh")} 自由刷题</a>
+        </div>
+      </div>`, () => { $("#quiz-start").onclick = start; });
+
+    const start = () => {
+      const list = pool.slice().sort(() => Math.random() - .5).slice(0, total);
+      let i = 0, ok = 0, bad = [], timer = null, left = minutes * 60;
+      const fmt = n => String(Math.floor(n / 60)).padStart(2, "0") + ":" + String(n % 60).padStart(2, "0");
+      const stopTimer = () => { if (timer) { clearInterval(timer); timer = null; } };
+      const show = () => {
+        const it = list[i];
+        setMain(`
+          <div class="breadcrumb"><a href="#/quiz">限时小测</a><span class="sep">/</span><span>第 ${i + 1}/${list.length} 题</span></div>
+          <div class="quiz-head">
+            <span class="tag tag-primary">剩余 ${fmt(left)}</span>
+            <span class="tag">已掌握 ${ok}</span>
+            <span class="tag">不会 ${bad.length}</span>
+          </div>
+          <div class="card qd-body md">${U.md(it.body || it.title)}</div>
+          <div style="margin:12px 0"><button class="btn btn-primary" id="qa">${U.icon("eye")} 显示答案</button></div>
+          <div class="qd-answer md" id="qans" style="display:none">${U.md(it.answer)}</div>
+          <div id="qmark" class="pill-row" style="display:none;margin-top:12px">
+            <button class="btn btn-success" data-m="ok">${U.icon("check")} 已掌握</button>
+            <button class="btn btn-danger" data-m="bad">不会</button>
+          </div>
+          <div class="pill-row" style="margin-top:14px"><button class="btn" id="qprev">上一题</button><button class="btn btn-primary" id="qnext">下一题 →</button></div>`);
+        U.highlightAll(main);
+        $("#qa").onclick = () => { $("#qans").style.display = "block"; $("#qmark").style.display = "flex"; U.highlightAll($("#qans")); };
+        $$("#qmark button").forEach(b => b.onclick = () => {
+          if (b.dataset.m === "ok") { ok++; bad = bad.filter(x => x !== it); }
+          else if (bad.indexOf(it) < 0) bad.push(it);
+          next();
+        });
+        $("#qprev").onclick = () => { if (i > 0) { i--; show(); } };
+        $("#qnext").onclick = next;
+      };
+      const next = () => { if (i < list.length - 1) { i++; show(); } else finish(); };
+      const finish = () => {
+        stopTimer();
+        const score = list.length ? Math.round((list.length - bad.length) / list.length * 100) : 0;
+        setMain(`
+          <div class="breadcrumb"><a href="#/quiz">限时小测</a><span class="sep">/</span><span>结果</span></div>
+          <h1>掌握率 ${score}%</h1>
+          <div class="card">
+            <div class="pill-row" style="margin:0 0 12px">
+              <span class="tag tag-success">掌握 ${list.length - bad.length}</span>
+              <span class="tag tag-danger">不会 ${bad.length}</span>
+              <span class="tag">${U.esc(scopeName)}</span>
+            </div>
+            ${bad.length ? `<h2>错题清单</h2><div class="quiz-result">${bad.map(x => `<a href="#/question/${x.id}">${U.esc(x.title)}</a>`).join("")}</div>` : `<p class="secondary">这轮全部标记为已掌握，可以换更高难度继续挑战。</p>`}
+            <div class="pill-row"><button class="btn btn-primary" id="quiz-again">${U.icon("refresh")} 再来一轮</button><a class="btn" href="#/review">去错题重练</a></div>
+          </div>`, () => { $("#quiz-again").onclick = start; });
+      };
+      show();
+      timer = setInterval(() => {
+        left--;
+        const el = document.querySelector(".quiz-head .tag");
+        if (el) el.textContent = "剩余 " + fmt(left);
+        if (left <= 0) { stopTimer(); U.toast("时间到，小测已结束", "warn"); finish(); }
+      }, 1000);
+    };
+    renderIntro();
   }
 
   /* ============================ 题目详情页 ============================ */
@@ -5324,18 +5474,16 @@
       Boot.set(85, "渲染界面…");
       if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (App.getTheme() === "system") applyTheme(); });
       window.addEventListener("hashchange", () => { renderTopbar(); route(); });
-      /* hash 路由盲区：点击「目标 hash 与当前 hash 相同」的站内链接（如面试报告页
-         的「再面一次」→ #/mock，报告本就渲染在 #/mock 下）不会触发 hashchange，
-         页面毫无反应；此处补一次与 hashchange 完全一致的重渲染 */
+      window.addEventListener("popstate", () => { renderTopbar(); route(); });
+      /* 站内链接统一走 history 路由：源码保留 #/ 链接兼容旧分享，
+         用户点击时转成 /questions、/question/1 这类干净地址。 */
       document.addEventListener("click", (e) => {
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         const a = e.target.closest && e.target.closest('a[href^="#/"]');
         if (!a || a.target === "_blank") return;
-        if (a.getAttribute("href") !== location.hash) return;   // hash 有变化，交给原生 hashchange
         e.preventDefault();
-        renderTopbar(); route();
+        App.go(a.getAttribute("href"));
       });
-      if (!location.hash) location.hash = "/";
       _pm("boot:route-start");
       route();
       _pm("boot:route-called");

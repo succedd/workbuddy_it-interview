@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBA数据库管理员面试题 · IT面试题库</title>
+  <meta name="description" content="DBA数据库管理员岗位的 25 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/p/24.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DBA数据库管理员面试题 · IT面试题库">
+  <meta property="og:description" content="DBA数据库管理员岗位的 25 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/p/24.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"DBA数据库管理员面试题","description":"DBA数据库管理员岗位的 25 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。","url":"https://itinterview.com.cn/p/24.html","mainEntity":{"@type":"ItemList","numberOfItems":25,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/133.html","name":"MySQL SQL优化的常用方法？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/142.html","name":"Redis过期删除和内存淘汰策略？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/1013.html","name":"什么场景该把 MySQL 换成 TiDB？迁移时热写入热点问题怎么处理？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/722.html","name":"Oracle 中表空间（Tablespace）与用户/模式的关系？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/1434.html","name":"Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/273.html","name":"数据库【诞生】为什么不直接把数据存成文件，非要有数据库？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/274.html","name":"数据库【本质】关系模型凭什么统治了四十年？SQL「声明式」到底强在哪？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/275.html","name":"数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/276.html","name":"数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/453.html","name":"线上 PostgreSQL 磁盘占用只增不减，日志出现 \"database must be vacuumed within N transactions\" 警告，根因是什么？如何排查与处理？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/524.html","name":"关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/525.html","name":"为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/526.html","name":"数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/527.html","name":"数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/723.html","name":"SQL Server 中聚集索引与非聚集索引的区别？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/900.html","name":"binlog、redo log、undo log 分别是什么？有什么区别？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/903.html","name":"InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1006.html","name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1007.html","name":"MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？"},{"@type":"ListItem","position":20,"url":"https://itinterview.com.cn/q/1321.html","name":"InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>DBA数据库管理员面试题</h1><p>DBA数据库管理员岗位的 25 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/133.html">MySQL SQL优化的常用方法？</a><span>中级 · 263 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/142.html">Redis过期删除和内存淘汰策略？</a><span>中级 · 167 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1013.html">什么场景该把 MySQL 换成 TiDB？迁移时热写入热点问题怎么处理？</a><span>高级 · 2 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/722.html">Oracle 中表空间（Tablespace）与用户/模式的关系？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1434.html">Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。</a><span>高级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/273.html">数据库【诞生】为什么不直接把数据存成文件，非要有数据库？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/274.html">数据库【本质】关系模型凭什么统治了四十年？SQL「声明式」到底强在哪？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/275.html">数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/276.html">数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/453.html">线上 PostgreSQL 磁盘占用只增不减，日志出现 &quot;database must be vacuumed within N transactions&quot; 警告，根因是什么？如何排查与处理？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/524.html">关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/525.html">为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/526.html">数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/527.html">数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/723.html">SQL Server 中聚集索引与非聚集索引的区别？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/900.html">binlog、redo log、undo log 分别是什么？有什么区别？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/903.html">InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1006.html">MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1007.html">MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1321.html">InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1322.html">InnoDB 的 Change Buffer 是如何优化二级索引写入的？merge 在什么时机触发？为什么唯一索引用不了它？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1323.html">应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1325.html">Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1326.html">Redis 的 mem_fragmentation_ratio 多大算健康？内存碎片是怎么产生的，activedefrag 主动碎片整理又是如何工作的？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1347.html">MySQL 慢查询如何排查与优化？EXPLAIN 执行计划里哪些字段最关键？</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/position/24">在线刷DBA数据库管理员题 →</a></div></body>
+</html>

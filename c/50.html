@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCP/IP协议面试题 · IT面试题库</title>
+  <meta name="description" content="TCP/IP协议方向的 19 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <link rel="canonical" href="https://itinterview.com.cn/c/50.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TCP/IP协议面试题 · IT面试题库">
+  <meta property="og:description" content="TCP/IP协议方向的 19 道 IT 面试题，覆盖高频考点、参考答案与错题复习。">
+  <meta property="og:url" content="https://itinterview.com.cn/c/50.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"TCP/IP协议面试题","description":"TCP/IP协议方向的 19 道 IT 面试题，覆盖高频考点、参考答案与错题复习。","url":"https://itinterview.com.cn/c/50.html","mainEntity":{"@type":"ItemList","numberOfItems":19,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://itinterview.com.cn/q/160.html","name":"TCP流量控制和拥塞控制的区别？"},{"@type":"ListItem","position":2,"url":"https://itinterview.com.cn/q/364.html","name":"常听说 TCP 有“粘包/拆包”问题，这是 TCP 协议本身的缺陷吗？应如何从应用层解决？"},{"@type":"ListItem","position":3,"url":"https://itinterview.com.cn/q/60.html","name":"TCP 三次握手与四次挥手的过程？"},{"@type":"ListItem","position":4,"url":"https://itinterview.com.cn/q/61.html","name":"TIME_WAIT 的作用与过多怎么办？"},{"@type":"ListItem","position":5,"url":"https://itinterview.com.cn/q/359.html","name":"TCP 三次握手的过程是怎样的？各阶段客户端/服务端分别处于什么状态？为什么第三次握手可以携带数据而前两次不行？"},{"@type":"ListItem","position":6,"url":"https://itinterview.com.cn/q/360.html","name":"为什么 TCP 一定要三次握手，而不是两次？两次握手会引发什么问题？"},{"@type":"ListItem","position":7,"url":"https://itinterview.com.cn/q/361.html","name":"TCP 四次挥手的过程是什么？为什么需要 TIME_WAIT 状态，并且要等待 2MSL 才关闭？"},{"@type":"ListItem","position":8,"url":"https://itinterview.com.cn/q/362.html","name":"TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？"},{"@type":"ListItem","position":9,"url":"https://itinterview.com.cn/q/363.html","name":"请讲讲 TCP 的拥塞控制：慢启动、拥塞避免、快重传、快恢复分别是怎么工作的？"},{"@type":"ListItem","position":10,"url":"https://itinterview.com.cn/q/916.html","name":"TCP 为什么需要三次握手？两次为什么不行？"},{"@type":"ListItem","position":11,"url":"https://itinterview.com.cn/q/918.html","name":"TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？"},{"@type":"ListItem","position":12,"url":"https://itinterview.com.cn/q/919.html","name":"TCP 和 UDP 有什么区别？分别适用什么场景？"},{"@type":"ListItem","position":13,"url":"https://itinterview.com.cn/q/922.html","name":"什么是 TCP 粘包/拆包？如何解决？"},{"@type":"ListItem","position":14,"url":"https://itinterview.com.cn/q/1309.html","name":"TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？"},{"@type":"ListItem","position":15,"url":"https://itinterview.com.cn/q/1310.html","name":"什么是 SYN Flood 攻击？syncookies 是如何防御的？"},{"@type":"ListItem","position":16,"url":"https://itinterview.com.cn/q/1311.html","name":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？"},{"@type":"ListItem","position":17,"url":"https://itinterview.com.cn/q/1312.html","name":"TCP Keepalive 是如何工作的？「半打开连接」是怎么产生的，如何清理？RST 报文一般出现在哪些场景？"},{"@type":"ListItem","position":18,"url":"https://itinterview.com.cn/q/1333.html","name":"TCP 为什么需要三次握手才能建立连接，又为什么需要四次挥手才能断开？两次握手不行吗？"},{"@type":"ListItem","position":19,"url":"https://itinterview.com.cn/q/1334.html","name":"TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。"}]}}</script>
+  <style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f8fafc;color:#334155;line-height:1.7}.wrap{max-width:760px;margin:0 auto;padding:20px 16px 50px}.brand{color:#2563eb;font-weight:700;text-decoration:none}h1{font-size:24px;color:#0f172a}ul{list-style:none;padding:0}li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #e2e8f0}li a{color:#2563eb;text-decoration:none}li span{color:#94a3b8;font-size:12px;flex:none}.cta{display:block;text-align:center;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;padding:13px;margin-top:24px;font-weight:600}</style>
+</head>
+<body><div class="wrap"><a class="brand" href="https://itinterview.com.cn/">IT面试题库</a><h1>TCP/IP协议面试题</h1><p>TCP/IP协议方向的 19 道 IT 面试题，覆盖高频考点、参考答案与错题复习。</p><h2>高频题目</h2><ul>
+    <li><a href="https://itinterview.com.cn/q/160.html">TCP流量控制和拥塞控制的区别？</a><span>高级 · 206 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/364.html">常听说 TCP 有“粘包/拆包”问题，这是 TCP 协议本身的缺陷吗？应如何从应用层解决？</a><span>中级 · 1 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/60.html">TCP 三次握手与四次挥手的过程？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/61.html">TIME_WAIT 的作用与过多怎么办？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/359.html">TCP 三次握手的过程是怎样的？各阶段客户端/服务端分别处于什么状态？为什么第三次握手可以携带数据而前两次不行？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/360.html">为什么 TCP 一定要三次握手，而不是两次？两次握手会引发什么问题？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/361.html">TCP 四次挥手的过程是什么？为什么需要 TIME_WAIT 状态，并且要等待 2MSL 才关闭？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/362.html">TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/363.html">请讲讲 TCP 的拥塞控制：慢启动、拥塞避免、快重传、快恢复分别是怎么工作的？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/916.html">TCP 为什么需要三次握手？两次为什么不行？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/918.html">TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？</a><span>高级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/919.html">TCP 和 UDP 有什么区别？分别适用什么场景？</a><span>初级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/922.html">什么是 TCP 粘包/拆包？如何解决？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1309.html">TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？</a><span>中 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1310.html">什么是 SYN Flood 攻击？syncookies 是如何防御的？</a><span>中 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1311.html">Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？</a><span>高 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1312.html">TCP Keepalive 是如何工作的？「半打开连接」是怎么产生的，如何清理？RST 报文一般出现在哪些场景？</a><span>初 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1333.html">TCP 为什么需要三次握手才能建立连接，又为什么需要四次挥手才能断开？两次握手不行吗？</a><span>中级 · 0 次浏览</span></li>
+    <li><a href="https://itinterview.com.cn/q/1334.html">TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。</a><span>中级 · 0 次浏览</span></li></ul><a class="cta" href="https://itinterview.com.cn/category?cat=50">在线刷TCP/IP协议题 →</a></div></body>
+</html>
