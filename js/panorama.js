@@ -65,14 +65,14 @@
 
   function tabsHtml(active) {
     return '<div class="panorama-tabs">' + VIEWS.map(v =>
-      '<a class="panorama-tab' + (v.id === active ? " active" : "") + '" href="#/panorama?view=' + v.id + '">' +
+      '<a class="panorama-tab' + (v.id === active ? " active" : "") + '" href="/panorama?view=' + v.id + '">' +
       (U.icon ? U.icon(v.icon) : "") + "<span>" + esc(v.label) + "</span></a>"
     ).join("") + "</div>";
   }
 
   function breadcrumb(view) {
     const v = VIEWS.filter(x => x.id === view)[0] || VIEWS[0];
-    return '<div class="breadcrumb"><a href="#/">' + U.icon("home") + " 首页</a><span>/</span><span>题库全景</span><span>/</span><b>" + esc(v.label) + "</b></div>";
+    return '<div class="breadcrumb"><a href="/">' + U.icon("home") + " 首页</a><span>/</span><span>题库全景</span><span>/</span><b>" + esc(v.label) + "</b></div>";
   }
 
   P_html();
