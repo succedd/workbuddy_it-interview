@@ -67,7 +67,7 @@
         { name: "alias", weight: 0.18 }
       ],
       includeMatches: true,
-      threshold: 0.35,
+      threshold: 0.45,
       ignoreLocation: true,
       minMatchCharLength: 1
     });
