@@ -359,14 +359,20 @@ function applyDataCache(res, path, url) {
 
 function applyStaticCache(res, path, url) {
   if (res.status !== 200) return res;
+  // ASSETS 返回的 headers guard 是 immutable，必须复制后再改。
+  const out = new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers: new Headers(res.headers)
+  });
   if (url.searchParams.has("v")) {
-    res.headers.set("cache-control", "public, max-age=31536000, immutable");
-    return res;
+    out.headers.set("cache-control", "public, max-age=31536000, immutable");
+    return out;
   }
   if (/^\/(q|c|p)\//.test(path)) {
-    res.headers.set("cache-control", "public, max-age=3600");
+    out.headers.set("cache-control", "public, max-age=3600");
   }
-  return res;
+  return out;
 }
 
 export default {
