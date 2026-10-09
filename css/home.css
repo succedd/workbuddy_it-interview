@@ -156,3 +156,47 @@
   border-color: var(--c-primary);
   color: var(--c-primary);
 }
+
+.quiz-answer textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.quiz-pager {
+  position: sticky;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 5;
+  background: var(--bg, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.answer-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.answer-trust span {
+  background: rgba(37, 99, 235, .06);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+@media (max-width: 620px) {
+  .quiz-pager {
+    border-radius: 0 0 10px 10px;
+  }
+
+  .quiz-head {
+    position: sticky;
+    top: var(--topbar-h, 60px);
+    z-index: 5;
+    background: var(--bg, #f8fafc);
+    padding: 6px 0;
+  }
+}
