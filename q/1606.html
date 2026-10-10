@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深度学习推荐模型（如 Wide &amp; Deep、双塔 DSSM）相比传统协同过滤解决了什么问题？双塔模型用于召回时要注意什么？ · IT面试题库</title>
+  <meta name="description" content="要点： 解决什么：传统 CF / 矩阵分解只能利用 ID 共现、难以融入 Side Information、对稀疏高秩交互易过泛化；Wide&amp;Deep 用 Wide 侧记忆（memorization）交叉特征、Deep 侧泛化（generalization）隐向量，兼顾可解释与泛化能力（Google Play 验…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="深度学习推荐模型（如 Wide &amp; Deep、双塔 DSSM）相比传统协同过滤解决了什么问题？双塔模型用于召回时要注意什么？ · IT面试题库">
+  <meta property="og:description" content="要点： 解决什么：传统 CF / 矩阵分解只能利用 ID 共现、难以融入 Side Information、对稀疏高秩交互易过泛化；Wide&amp;Deep 用 Wide 侧记忆（memorization）交叉特征、Deep 侧泛化（generalization）隐向量，兼顾可解释与泛化能力（Google Play 验…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1606.html">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="深度学习推荐模型（如 Wide &amp; Deep、双塔 DSSM）相比传统协同过滤解决了什么问题？双塔模型用于召回时要注意什么？ · IT面试题库">
+  <meta name="twitter:description" content="要点： 解决什么：传统 CF / 矩阵分解只能利用 ID 共现、难以融入 Side Information、对稀疏高秩交互易过泛化；Wide&amp;Deep 用 Wide 侧记忆（memorization）交叉特征、Deep 侧泛化（generalization）隐向量，兼顾可解释与泛化能力（Google Play 验…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1606.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"深度学习推荐模型（如 Wide & Deep、双塔 DSSM）相比传统协同过滤解决了什么问题？双塔模型用于召回时要注意什么？","text":"考察对深度推荐模型动机与双塔召回工程取舍的理解（高级）。","answerCount":1,"datePublished":"2026-10-10T11:53:42.282Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决什么：传统 CF / 矩阵分解只能利用 ID 共现、难以融入 Side Information、对稀疏高秩交互易过泛化；Wide&Deep 用 Wide 侧记忆（memorization）交叉特征、Deep 侧泛化（generalization）隐向量，兼顾可解释与泛化能力（Google Play 验证显著提效）。 双塔（DSSM）结构：用户塔与物品塔分别编码为向量，相似度用内积 / 余弦，用户塔可用历史行为序列、物品塔用内容特征；两塔在最后一层才交互，因此可把物品向量离线预计算建索引（Faiss / ANN），线上只算用户向量做近邻检索——天然适配大规模召回。 召回注意点：① 负样本构造是核心——随机负样本太易，需用「全局随机负 + 曝光未点击（in-batch / 困难负）」混合；② 双塔无法在最后交互前交叉用户-物品特征，表达能力受限，对强交叉信号场景不如精排；③ 线上线下向量一致性、ANN 召回召回率与延迟权衡。","url":"https://itinterview.com.cn/question/1606"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"推荐系统","item":"https://itinterview.com.cn/category?cat=185"},{"@type":"ListItem","position":5,"name":"深度学习推荐模型（如 Wide & Deep、双塔 DSSM）相比传统协同过滤解决了什么问题？双塔模型用于召回时要注意什么？","item":"https://itinterview.com.cn/q/1606.html"}]}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
+    .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    .guide-on .wrap { padding-bottom:120px; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>深度学习推荐模型（如 Wide &amp; Deep、双塔 DSSM）相比传统协同过滤解决了什么问题？双塔模型用于召回时要注意什么？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">推荐系统</span><span class="chip tag">深度学习</span><span class="chip tag">双塔</span><span class="chip tag">Wide&amp;Deep</span></div>
+    <div class="card"><h2>题目</h2><p>考察对深度推荐模型动机与双塔召回工程取舍的理解（高级）。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+<ul>
+<li><strong>解决什么</strong>：传统 CF / 矩阵分解只能利用 ID 共现、难以融入 Side Information、对稀疏高秩交互易<strong>过泛化</strong>；Wide&amp;Deep 用 Wide 侧<strong>记忆（memorization）</strong>交叉特征、Deep 侧<strong>泛化（generalization）</strong>隐向量，兼顾可解释与泛化能力（Google Play 验证显著提效）。</li>
+<li><strong>双塔（DSSM）结构</strong>：用户塔与物品塔分别编码为向量，相似度用内积 / 余弦，用户塔可用历史行为序列、物品塔用内容特征；<strong>两塔在最后一层才交互</strong>，因此可把物品向量离线预计算建索引（Faiss / ANN），线上只算用户向量做近邻检索——天然适配<strong>大规模召回</strong>。</li>
+<li><strong>召回注意点</strong>：① 负样本构造是核心——随机负样本太易，需用<strong>「全局随机负 + 曝光未点击（in-batch / 困难负）」</strong>混合；② 双塔<strong>无法在最后交互前交叉用户-物品特征</strong>，表达能力受限，对强交叉信号场景不如精排；③ 线上线下向量一致性、ANN 召回召回率与延迟权衡。</li>
+</ul></div>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1606">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=185&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
