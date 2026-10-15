@@ -1,0 +1,1009 @@
+{
+  "batch": "2026-10-15-a",
+  "note": "补齐 53 个仅 1 题叶子分类：编程语言、数据库、运维、前端工程化、后端、测试、微服务、FinOps、大数据、AI、安全、移动端、游戏、嵌入式、音视频、Web3、产品与技术管理。",
+  "chain": false,
+  "questions": [
+    {
+      "title": "Dart 的 async/await 与 Future 链式调用有什么区别？为什么 async 函数不会阻塞主 Isolate？",
+      "body": "考察 Dart 异步编程。要求说明事件队列、微任务队列与 Future 的关系。",
+      "answer": "**要点**：\n- **async/await 是语法糖**：`await future` 会让当前函数暂停在逻辑上，但不会阻塞 Isolate；事件循环继续处理 UI 事件和其他任务，结果可用后再恢复执行。\n- **执行顺序**：普通事件进入事件队列，`Future.microtask`/`scheduleMicrotask` 进入微任务队列；每次事件处理后，Dart 先清空微任务，再执行下一个事件。\n- **错误处理**：`await` 可用 `try/catch` 捕获 Future 错误；纯 `.then().catchError()` 容易漏掉链尾错误，推荐组合使用。",
+      "category": "Dart",
+      "positions": [
+        "Flutter开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": [
+        "Dart",
+        "异步",
+        "Future"
+      ],
+      "years": "1-3年",
+      "source": "https://dart.dev/language"
+    },
+    {
+      "title": "Scala 的 case class 和普通 class 有什么区别？为什么模式匹配和不可变建模离不开它？",
+      "body": "考察 case class 的编译器生成能力与不可变数据建模。",
+      "answer": "**要点**：\n- **自动生成成员与方法**：case class 自动生成构造参数的 val 字段、`apply`、`unapply`、`copy`、`equals/hashCode/toString`，普通 class 需要手写。\n- **模式匹配**：`unapply` 让 case class 可直接用于 `match`，可解构字段；`copy` 支持基于旧对象生成修改少量字段的新对象，契合不可变数据流。\n- **实践**：领域模型、消息、DTO 优先用 case class；需要可变状态或继承体系时再评估普通 class。",
+      "category": "Scala",
+      "positions": [
+        "后端开发工程师",
+        "大数据开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Scala",
+        "case class",
+        "模式匹配"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.scala-lang.org/tour/case-classes.html"
+    },
+    {
+      "title": "Ruby 的块、Proc 与 Lambda 有什么区别？",
+      "body": "考察 Ruby 三种闭包的语义差异。",
+      "answer": "**要点**：\n- **块**：方法调用时附着的匿名代码片段，不能直接存变量；`yield` 或 `&block` 执行，常用作迭代器。\n- **Proc**：`proc` 对象，`return` 从包含它的方法返回，参数规则宽松，可存储和传递。\n- **Lambda**：严格检查参数个数，`return` 只退出自身；更像其他语言的函数。Rails 回调里要避免误用 Proc 的方法级 return。",
+      "category": "Ruby",
+      "positions": [
+        "后端开发工程师",
+        "全栈开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Ruby",
+        "Proc",
+        "Lambda"
+      ],
+      "years": "1-3年",
+      "source": "https://www.ruby-lang.org/en/documentation/"
+    },
+    {
+      "title": "SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？",
+      "body": "考察读取执行计划和索引覆盖优化。",
+      "answer": "**要点**：\n- **Clustered Index Scan**：沿聚集索引顺序扫描多行，统计信息不准或谓词选择性差时常见。\n- **Key Lookup**：非聚集索引命中后缺少查询列，回聚集索引补数据；大量 Key Lookup 说明非聚集索引未覆盖。\n- **优化**：把 SELECT/JOIN/ORDER BY 需要的列加入 INCLUDE；避免 SELECT *；确认统计信息更新；必要时调整索引顺序并评估写放大。",
+      "category": "SQL Server",
+      "positions": [
+        "DBA数据库管理员",
+        "数据库工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "SQL Server",
+        "执行计划",
+        "索引"
+      ],
+      "years": "3-5年",
+      "source": "https://learn.microsoft.com/sql/relational-databases/performance/execution-plans"
+    },
+    {
+      "title": "Windows Server 域环境登录很慢，你会按什么顺序排查组策略和域控问题？",
+      "body": "考察 Windows 域登录链路排查。",
+      "answer": "**要点**：\n- **先分清本机/域侧**：确认网络、DNS、域控制器可达；`nltest /dsgetdc:` 检查 DC 定位，事件查看器看 GroupPolicy 与 Netlogon 错误。\n- **组策略侧**：`gpresult /r` 查看实际应用结果；检查慢链路检测、登录脚本、漫游配置文件、文件夹重定向是否超时。\n- **域控侧**：确认 SYSVOL 复制正常，避免多 DC 策略版本不一致；必要时用 `gpotool`、FRS/DFSR 复制日志进一步定位。",
+      "category": "Windows Server",
+      "positions": [
+        "Windows运维工程师",
+        "系统运维工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Windows",
+        "Active Directory",
+        "组策略"
+      ],
+      "years": "3-5年",
+      "source": "https://learn.microsoft.com/windows-server/identity/ad-ds/"
+    },
+    {
+      "title": "Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？",
+      "body": "考察 inode、文件系统保留块、挂载参数和残留句柄。",
+      "answer": "**要点**：\n- **先看是否 inode 耗尽**：`df -h` 有空间但 `df -i` 到 100%，常见于海量小文件；定位大目录后清理或归档。\n- **确认保留块**：文件系统默认给 root 保留少量空间，普通用户接近满时创建失败；`tune2fs -l` 查看 reserved blocks 是否过大。\n- **检查挂载与句柄**：确认没有 `ro` 挂载；`lsof +L1` 找已删除但仍占用空间的进程，重启进程或释放 fd。",
+      "category": "存储与文件系统",
+      "positions": [
+        "Linux运维工程师",
+        "系统运维工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Linux",
+        "inode",
+        "文件系统"
+      ],
+      "years": "3-5年",
+      "source": "https://www.kernel.org/doc/html/latest/filesystems/"
+    },
+    {
+      "title": "Nuxt 项目首屏接口很慢，你会怎么拆分服务端与客户端渲染路径来定位？",
+      "body": "考察 SSR 应用性能定位方法。",
+      "answer": "**要点**：\n- **区分渲染与数据**：看 `asyncData`/`serverMiddleware` 的耗时；接口慢优先做服务端接口聚合、并行请求与缓存，而不是优化组件。\n- **组件级定位**：减少服务端不必要的组件渲染，对非首屏组件用客户端组件，避免在服务端执行浏览器专属代码。\n- **缓存策略**：对稳定页面启用 SSR 缓存或 ISR/SSG；动态内容拆块，让 HTML 与个性化 API 分离。",
+      "category": "Nuxt",
+      "positions": [
+        "前端开发工程师",
+        "全栈开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "Nuxt",
+        "SSR",
+        "性能优化"
+      ],
+      "years": "3-5年",
+      "source": "https://nuxt.com/docs"
+    },
+    {
+      "title": "Babel 编译产物突然变大，你会从哪些配置项开始检查？",
+      "body": "考察前端编译配置与产物治理。",
+      "answer": "**要点**：\n- **preset-env 范围**：检查 `targets` 是否过宽、`useBuiltIns` 与 `core-js` 版本是否匹配，避免注入过多 polyfill。\n- **插件与 source map**：排查插件将压缩产物重新转译；生产环境关闭 source map 或改上传远端 sourcemap。\n- **代码拆分与依赖**：确认 tree-shaking 与 ESM 引入方式，用 bundle analyzer 找重复引入和体积异常包。",
+      "category": "Babel",
+      "positions": [
+        "前端开发工程师",
+        "Web全栈工程师"
+      ],
+      "difficulty": "中级",
+      "type": "故障排查题",
+      "tags": [
+        "Babel",
+        "构建",
+        "体积优化"
+      ],
+      "years": "3-5年",
+      "source": "https://babeljs.io/docs/"
+    },
+    {
+      "title": "ESLint 如何配置 monorepo 里不同包使用不同规则但共享基础规则？",
+      "body": "考察工程化规则组织能力。",
+      "answer": "**要点**：\n- **抽基础规则包**：把通用规则、Parser、插件封装为共享 config 包，各子包通过 `extends` 继承。\n- **差异化配置**：在每个包 `.eslintrc` 中覆盖特有规则，例如 Web 包启用 DOM 规则，Node 包启用 Node 规则，测试包放宽部分断言规则。\n- **CI 强制执行**：统一 root 脚本按 workspace 遍历执行，必要时用 `eslint --ignore-pattern` 排除构建产物，保证主分支零告警。",
+      "category": "ESLint",
+      "positions": [
+        "前端开发工程师",
+        "Web全栈工程师"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "ESLint",
+        "monorepo",
+        "工程化"
+      ],
+      "years": "3-5年",
+      "source": "https://eslint.org/docs/latest/"
+    },
+    {
+      "title": "npm v7 以后 peer dependencies 的安装行为有什么变化？依赖冲突时你会怎么处理？",
+      "body": "考察依赖管理实践。",
+      "answer": "**要点**：\n- **自动安装 peer**：npm 7+ 默认安装 peer dependencies，npm 6 常见的手工补装问题减少，但版本冲突会直接报 `ERESOLVE`。\n- **处理冲突**：优先升级插件和宿主包到兼容版本；确需临时绕过可用 overrides 或安装时指定版本。\n- **验证**：提交 lockfile，在 CI 里用 `npm ci` 保证团队一致；对库项目声明合理 peer 范围，不要把它塞进 dependencies。",
+      "category": "npm",
+      "positions": [
+        "前端开发工程师",
+        "Node.js工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "npm",
+        "peer dependencies",
+        "依赖管理"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.npmjs.com/"
+    },
+    {
+      "title": "Yarn 的 PnP（Plug'n'Play）如何减少依赖安装时间？它和 node_modules 模式的取舍是什么？",
+      "body": "考察包管理与依赖解析机制。",
+      "answer": "**要点**：\n- **机制**：PnP 不生成 node_modules，安装后生成映射表，运行时直接从 zip 包解析依赖，减少大量文件复制。\n- **优点**：安装快、节省磁盘、能检测幽灵依赖。\n- **取舍**：部分依赖 Node 特定路径或未声明依赖的工具会不兼容，需要 fallback 到 node_modules；团队应评估构建链、编辑器插件和部署环境再切换。",
+      "category": "yarn",
+      "positions": [
+        "前端开发工程师",
+        "Node.js工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "Yarn",
+        "PnP",
+        "依赖管理"
+      ],
+      "years": "3-5年",
+      "source": "https://yarnpkg.com/features/pnp"
+    },
+    {
+      "title": "用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？",
+      "body": "考察异步任务异常隔离与结果聚合。",
+      "answer": "**要点**：\n- **return_exceptions**：`asyncio.gather(*tasks, return_exceptions=True)` 让异常作为结果返回，不影响其他任务。\n- **封装与分类**：对每个任务返回 `(ok, value_or_error)`，聚合时分别处理成功与失败，并记录失败上下文。\n- **超时与取消**：必要时用 `wait_for`/`asyncio.timeout` 控制单任务时长，注意清理资源，避免任务泄漏。",
+      "category": "Python后端",
+      "positions": [
+        "Python后端工程师",
+        "Python开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "编程题",
+      "tags": [
+        "Python",
+        "asyncio",
+        "并发"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.python.org/3/library/asyncio.html"
+    },
+    {
+      "title": "Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？",
+      "body": "考察 Node 进程内存诊断。",
+      "answer": "**要点**：\n- **看趋势和阈值**：缓存类增长通常有上限，泄漏呈单调增长；记录 heap、rss 与请求量，压测后观察是否回落。\n- **抓堆快照对比**：连续采集 heap snapshot，找持续增加的 Retainer；结合 `--trace-gc` 与 `process.memoryUsage()` 判断老生代压力。\n- **常见泄漏源**：全局数组未清理、定时器/监听器未解绑、闭包持有大对象、错误日志保存完整请求体。",
+      "category": "Node.js后端",
+      "positions": [
+        "Node.js工程师",
+        "后端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Node.js",
+        "内存泄漏",
+        "性能"
+      ],
+      "years": "3-5年",
+      "source": "https://nodejs.org/en/learn"
+    },
+    {
+      "title": "团队 Code Review 的 checklist 应该覆盖哪些必须项，才能既保证质量又不拖慢交付？",
+      "body": "考察代码评审流程设计。",
+      "answer": "**要点**：\n- **正确性优先**：确认需求匹配、边界条件、错误处理、并发/事务、安全输入校验。\n- **可维护性**：命名、模块边界、重复代码、日志与埋点、测试是否覆盖核心路径。\n- **效率机制**：小 PR、分层审批（架构师看关键设计，同组看实现）、自动检查交给 CI，人只关注机器难判断的问题。",
+      "category": "代码规范",
+      "positions": [
+        "软件开发工程师(通用)",
+        "技术经理"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Code Review",
+        "工程规范"
+      ],
+      "years": "3-5年",
+      "source": "https://google.github.io/styleguide/"
+    },
+    {
+      "title": "Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？",
+      "body": "考察敏捷交付管理。",
+      "answer": "**要点**：\n- **明确边界**：迭代目标一旦确认，非紧急插队需求进入 Backlog 等下个迭代；紧急缺陷由 PO 评估价值并显式替换等价容量。\n- **用数据决策**：统计插队比例，超过阈值时复盘需求预测与缓冲策略。\n- **保护团队节奏**：给每个迭代预留 10%~20% 缓冲，避免计划满负荷导致交付质量下降。",
+      "category": "敏捷开发",
+      "positions": [
+        "技术型项目经理",
+        "技术经理"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "敏捷",
+        "插队",
+        "迭代管理"
+      ],
+      "years": "3-5年",
+      "source": "https://agilemanifesto.org/"
+    },
+    {
+      "title": "事故复盘文档如何写才能让后来者真正避免同类故障？",
+      "body": "考察技术文档写作能力。",
+      "answer": "**要点**：\n- **时间线清晰**：记录发现、响应、恢复、公告各阶段时间与关键操作，方便评估 MTTR 和决策质量。\n- **根因分层**：直接原因、深层原因、流程缺口分开写，避免只归因人为失误。\n- **可执行改进**：每条 Action Item 有负责人、验收标准和截止时间；注明监控/自动化如何防止复发。",
+      "category": "技术文档写作",
+      "positions": [
+        "技术经理",
+        "软件开发工程师(通用)"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "技术文档",
+        "事故复盘"
+      ],
+      "years": "3-5年",
+      "source": "https://developers.google.com/tech-writing"
+    },
+    {
+      "title": "对登录接口做安全测试时，除弱口令外还应验证哪些安全控制？",
+      "body": "考察认证入口的安全测试面。",
+      "answer": "**要点**：\n- **认证与枚举**：验证密码错误和用户不存在返回文案一致，避免账号枚举；登录失败有频控与锁定策略。\n- **传输与会话**：仅 HTTPS，登录成功后重置会话 ID；Cookie 使用 HttpOnly、Secure、SameSite。\n- **注入与凭据保护**：测试 SQL/NoSQL 注入、批量撞库、默认口令；验证密码存储使用 Argon2/bcrypt 等自适应哈希，而不是 MD5/SHA1。",
+      "category": "安全测试基础",
+      "positions": [
+        "渗透测试工程师",
+        "测试开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "安全测试",
+        "登录安全",
+        "OWASP"
+      ],
+      "years": "1-3年",
+      "source": "https://owasp.org/www-project-web-security-testing-guide/"
+    },
+    {
+      "title": "Appium 自动化脚本在真机上偶发元素定位超时，你会如何提升稳定性？",
+      "body": "考察移动端自动化稳定性设计。",
+      "answer": "**要点**：\n- **等待策略**：避免固定 sleep，使用显式等待条件；等待页面状态或关键元素而非动画。\n- **定位策略**：优先使用稳定 accessibility id，避免依赖文本/索引；处理系统弹窗、权限弹窗和键盘遮挡。\n- **执行隔离**：失败时重试并输出截图、日志、uiautomator dump；区分 App 缺陷与脚本不稳定，设备重启后重连设备 farm。",
+      "category": "Appium",
+      "positions": [
+        "自动化测试工程师",
+        "测试开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Appium",
+        "自动化测试",
+        "稳定性"
+      ],
+      "years": "3-5年",
+      "source": "https://appium.io/docs/en/latest/"
+    },
+    {
+      "title": "Nacos 作为注册中心时，服务实例频繁上下线会导致调用抖动，你会怎么治理？",
+      "body": "考察注册中心健康检查与发布治理。",
+      "answer": "**要点**：\n- **检查健康探测**：心跳周期、超时阈值、剔除延迟是否与发布频率匹配；探活接口要轻量、能真实反映业务可用性。\n- **发布策略**：滚动发布、优雅下线、预热后再接收流量，避免实例一注册就全量接压。\n- **调用侧保护**：消费端保留本地缓存和重试隔离，注册中心短暂异常不影响已有调用；对高频上下线实例做告警。",
+      "category": "Spring Cloud Alibaba",
+      "positions": [
+        "Java后端工程师",
+        "后端架构师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Nacos",
+        "注册中心",
+        "服务治理"
+      ],
+      "years": "3-5年",
+      "source": "https://sca.aliyun.com/"
+    },
+    {
+      "title": "Dubbo 调用出现超时但提供方日志正常，你会从哪些层面排查？",
+      "body": "考察 RPC 调用链诊断。",
+      "answer": "**要点**：\n- **分清耗时位置**：提供方业务日志只证明处理快，还需检查网络往返、序列化、负载均衡后的真实目标实例。\n- **网络与线程**：查看提供方 IO/业务线程池是否打满，队列堆积会导致请求已到但未进入业务日志。\n- **参数与治理**：超时阈值过小、单请求数据量过大、消费端超时重试造成放大；必要时用链路追踪定位 span 耗时。",
+      "category": "Dubbo",
+      "positions": [
+        "Java后端工程师",
+        "后端架构师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Dubbo",
+        "超时",
+        "RPC"
+      ],
+      "years": "3-5年",
+      "source": "https://cn.dubbo.apache.org/"
+    },
+    {
+      "title": "如何为多云/多团队环境设计 FinOps 的成本归属模型？",
+      "body": "考察 FinOps 治理实践。",
+      "answer": "**要点**：\n- **标签与账单映射**：建立产品/团队/环境维度标签标准，通过 cloud billing 导出做成本归属；缺失标签视为治理缺陷。\n- **单位成本指标**：把基础设施成本除以业务指标（订单量、QPS、DAU），让业务方理解单位经济性。\n- **机制闭环**：预算告警、异常成本归因、月度复盘；优先优化持续空置资源和存储生命周期，而不是一刀切降配。",
+      "category": "FinOps",
+      "positions": [
+        "云架构师",
+        "DevOps工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "FinOps",
+        "云成本",
+        "治理"
+      ],
+      "years": "3-5年",
+      "source": "https://www.finops.org/"
+    },
+    {
+      "title": "Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？",
+      "body": "考察 Doris 数据建模。",
+      "answer": "**要点**：\n- **Duplicate**：保留明细，适合日志、行为流水、需要任意维度回查的数据。\n- **Aggregate**：按 Key 聚合 Value，适合报表汇总层，用预聚合换查询速度。\n- **Unique**：主键唯一，适合维表或需要更新的业务表；注意写入路径对导入性能的影响。",
+      "category": "Doris",
+      "positions": [
+        "数据仓库工程师",
+        "大数据架构师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Doris",
+        "数据建模",
+        "MPP"
+      ],
+      "years": "3-5年",
+      "source": "https://doris.apache.org/docs/"
+    },
+    {
+      "title": "类别特征取值基数极高时，one-hot 编码为什么失效？有哪些替代方案？",
+      "body": "考察高基数特征工程。",
+      "answer": "**要点**：\n- **问题**：高基数 one-hot 会产生稀疏超大矩阵，树模型分裂收益下降，线性模型训练和推理成本高。\n- **替代方案**：目标编码需要交叉验证防泄漏；哈希编码可控维度；分桶/层级编码利用业务先验；嵌入适合深度模型。\n- **关键**：先做频次分析，低频类别合并为 Other；对 ID 类特征加时间衰减，避免模型学到过期的用户画像。",
+      "category": "特征工程",
+      "positions": [
+        "机器学习工程师",
+        "数据科学家"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "特征工程",
+        "高基数",
+        "编码"
+      ],
+      "years": "3-5年",
+      "source": "https://scikit-learn.org/stable/modules/preprocessing.html"
+    },
+    {
+      "title": "TensorFlow 中 Dataset pipeline 有哪些常见性能陷阱？",
+      "body": "考察数据管道性能优化。",
+      "answer": "**要点**：\n- **CPU/IO 瓶颈**：训练 GPU 利用率低常因数据读取慢，应使用 `tf.data` 的 prefetch、cache、interleave、map 并行。\n- **缓存选择**：小数据可内存缓存，大数据可落盘缓存，但 map 顺序要在 cache 前后明确，避免随机增强失效。\n- **批大小与形状**：静态 shape 可提高吞吐，避免 Python 每步动态逻辑；用 profiling 工具确认数据侧耗时占比。",
+      "category": "TensorFlow",
+      "positions": [
+        "深度学习工程师",
+        "算法工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "TensorFlow",
+        "tf.data",
+        "性能优化"
+      ],
+      "years": "3-5年",
+      "source": "https://www.tensorflow.org/guide/data_performance"
+    },
+    {
+      "title": "构建企业知识库问答时，为什么 RAG 常常比直接微调模型更适合作为首选方案？",
+      "body": "考察 LLM 应用选型。",
+      "answer": "**要点**：\n- **知识可更新**：RAG 检索外置知识，更新文档即可生效；微调更新知识需要重新训练，周期和成本高。\n- **可追溯与权限**：答案可引用原文来源，便于审计；可按文档权限过滤检索结果。\n- **适合边界**：风格、固定话术、专有语言模式适合微调；事实型知识、时效性内容适合 RAG；复杂系统常组合使用。",
+      "category": "AI应用方向",
+      "positions": [
+        "LLM应用开发工程师",
+        "AI应用开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "RAG",
+        "LLM",
+        "企业知识库"
+      ],
+      "years": "1-3年",
+      "source": "https://python.langchain.com/docs/"
+    },
+    {
+      "title": "搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？",
+      "body": "考察搜索系统架构理解。",
+      "answer": "**要点**：\n- **架构动机**：全库精排计算成本高，先由召回从海量文档中拿回高相关候选，再由粗排/精排做精细打分。\n- **排序无法补救**：排序只能在召回集合内重排，漏召回无法恢复；需优化倒排、向量、多路召回和 query 改写。\n- **指标拆分**：分别监控召回率、排序 NDCG，定位问题应先看召回是否包含期望结果。",
+      "category": "搜索系统",
+      "positions": [
+        "搜索算法工程师",
+        "推荐算法工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "搜索",
+        "召回",
+        "排序"
+      ],
+      "years": "3-5年",
+      "source": "https://www.elastic.co/guide/en/elasticsearch/reference/current/search-analyzer.html"
+    },
+    {
+      "title": "红队内网横向移动阶段，如何最小化权限完成关键资产识别？",
+      "body": "考察授权内网渗透方法论。",
+      "answer": "**要点**：\n- **信息收集优先**：从当前主机网络配置、进程、计划任务、共享、LDAP 查询入手，减少高噪声扫描。\n- **权限链理解**：分析本地凭据、会话、服务账号、SPN、组关系，识别可用路径而非无差别提权。\n- **留痕与边界**：记录操作时间、命令与依据；严格在授权范围内行动，使用低频探测，避免影响生产。",
+      "category": "内网渗透",
+      "positions": [
+        "渗透测试工程师",
+        "安全运营工程师SOC"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "内网渗透",
+        "红队",
+        "横向移动"
+      ],
+      "years": "3-5年",
+      "source": "https://attack.mitre.org/"
+    },
+    {
+      "title": "移动 App 逆向分析时，如何判断关键逻辑是在 Java/Kotlin 层还是 Native 层？",
+      "body": "考察逆向分析基础方法。",
+      "answer": "**要点**：\n- **静态定位**：先反编译查看 Java/Kotlin 调用图、字符串和关键类；发现 `JNI`/`native` 方法即进入 so 层。\n- **动态验证**：在关键函数下断点，观察输入输出；hook Java 层无效果时，检查 Native 注册函数和符号。\n- **取证顺序**：优先保存原始包和哈希，避免环境差异；分析仅用于安全测试与兼容性研究，遵守授权。",
+      "category": "逆向工程基础",
+      "positions": [
+        "信息安全工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "逆向",
+        "JNI",
+        "移动安全"
+      ],
+      "years": "3-5年",
+      "source": "https://ghidra-sre.org/"
+    },
+    {
+      "title": "等保 2.0 的等级保护流程包含哪五个主要环节？企业如何避免把等保做成只买设备？",
+      "body": "考察等级保护合规实践。",
+      "answer": "**要点**：\n- **五环节**：定级、备案、建设整改、等级测评、监督检查。\n- **技术管理并重**：安全物理环境、网络、主机、应用、数据及管理制度、人员、建设运维都要覆盖，不只是防火墙或 WAF。\n- **有效落地**：以资产和风险为起点建设控制项，用日志审计、漏洞闭环、应急演练验证有效性，避免“设备到位、流程缺位”。",
+      "category": "等保合规",
+      "positions": [
+        "安全架构师",
+        "信息安全工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "等保2.0",
+        "合规",
+        "风险管理"
+      ],
+      "years": "3-5年",
+      "source": "https://www.tc260.org.cn/"
+    },
+    {
+      "title": "零信任架构落地时，身份、设备、网络和应用四类信号应该怎么组合决策？",
+      "body": "考察零信任访问控制设计。",
+      "answer": "**要点**：\n- **身份是主轴**：强认证、MFA、最小权限身份生命周期，授权随身份变化而更新。\n- **设备与网络不信任**：设备健康度、补丁、合规状态参与决策；位置和网络只是风险信号，不再是信任边界。\n- **应用与数据最小暴露**：按应用粒度做代理访问、持续评估、会话超时和动态降权；决策日志用于事后审计和策略优化。",
+      "category": "零信任架构",
+      "positions": [
+        "安全架构师",
+        "云架构师"
+      ],
+      "difficulty": "高级",
+      "type": "系统设计题",
+      "tags": [
+        "零信任",
+        "访问控制",
+        "安全架构"
+      ],
+      "years": "3-5年",
+      "source": "https://www.nist.gov/publications/zero-trust-architecture"
+    },
+    {
+      "title": "UIKit 页面卡顿掉帧，你会从主线程和渲染链路哪些角度定位？",
+      "body": "考察 iOS 性能优化。",
+      "answer": "**要点**：\n- **主线程阻塞**：用 Instruments Time Scanner 定位 CPU 热点；避免主线程同步 IO、复杂计算、网络等待。\n- **布局与渲染**：Auto Layout 过度约束、离屏渲染、圆角/阴影叠加、超大图片解码都会增加 CPU/GPU 压力。\n- **数据更新**：批量刷新 UITableView/UICollectionView，保持 cell 复用，避免频繁 reload 全量数据。",
+      "category": "UIKit",
+      "positions": [
+        "iOS开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "iOS",
+        "UIKit",
+        "性能优化"
+      ],
+      "years": "3-5年",
+      "source": "https://developer.apple.com/documentation/uikit"
+    },
+    {
+      "title": "SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？",
+      "body": "考察 SwiftUI 核心语义。",
+      "answer": "**要点**：\n- **结构化身份**：视图树位置与显式 `.id` 决定身份；身份变化会让系统视为销毁旧视图并创建新视图。\n- **状态生命周期**：`@State` 绑定到视图身份；在 ForEach 中使用不稳定 ID 会导致状态丢失或异常刷新。\n- **实践**：数据模型使用稳定唯一 ID；列表增删改时保持身份稳定，性能和导航状态才可控。",
+      "category": "SwiftUI",
+      "positions": [
+        "iOS开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "SwiftUI",
+        "视图身份",
+        "状态"
+      ],
+      "years": "3-5年",
+      "source": "https://developer.apple.com/documentation/swiftui"
+    },
+    {
+      "title": "Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？",
+      "body": "考察 ANR 分析。",
+      "answer": "**要点**：\n- **读 ANR trace**：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。\n- **常见原因**：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。\n- **修复与验证**：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/perfetto 验证关键路径耗时。",
+      "category": "Android Java",
+      "positions": [
+        "Android开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "Android",
+        "ANR",
+        "主线程"
+      ],
+      "years": "3-5年",
+      "source": "https://developer.android.com/topic/performance/vitals/anr"
+    },
+    {
+      "title": "ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？",
+      "body": "考察 Jetpack 架构组件。",
+      "answer": "**要点**：\n- **作用域保存**：ViewModel 挂在 ViewModelStore 上，Activity 旋转销毁重建时新实例从同一 Store 获取旧对象。\n- **边界**：仅配置变更中保留；Activity 真正 finish 或进程被杀后会销毁，不能当持久存储。\n- **持久化配合**：需要跨进程恢复时用 SavedStateHandle 或本地存储，避免把大对象长期塞进 ViewModel 造成内存压力。",
+      "category": "Android Jetpack",
+      "positions": [
+        "Android开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Jetpack",
+        "ViewModel",
+        "生命周期"
+      ],
+      "years": "1-3年",
+      "source": "https://developer.android.com/topic/libraries/architecture/viewmodel"
+    },
+    {
+      "title": "Jetpack Compose 的 remember 和 derivedStateOf 各自解决什么问题？什么时候必须用 remember？",
+      "body": "考察 Compose 状态与性能。",
+      "answer": "**要点**：\n- **remember**：在重组之间保留对象，避免每次重组重新创建计算结果或昂贵对象。\n- **derivedStateOf**：把一个/多个 state 转换为派生 state，只有依赖真正变化时读取方才重组；列表滚动位置转按钮可见性是典型例子。\n- **使用原则**：直接参与渲染的稳定状态用 remember；由其他状态计算出的只读状态用 derivedStateOf，避免每帧无效重组。",
+      "category": "Jetpack Compose",
+      "positions": [
+        "Android开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "Compose",
+        "remember",
+        "重组"
+      ],
+      "years": "3-5年",
+      "source": "https://developer.android.com/develop/ui/compose/state"
+    },
+    {
+      "title": "React Native 新架构里 Hermes、JSI、Fabric 和 TurboModules 分别解决什么问题？",
+      "body": "考察 RN 新架构整体理解。",
+      "answer": "**要点**：\n- **Hermes**：为移动端设计的 JS 引擎，提升启动速度、降低内存并优化字节码执行。\n- **JSI**：提供 JS 与 C++ 的同步接口，替代异步 Bridge 的序列化瓶颈。\n- **Fabric/TurboModules**：分别重塑渲染管线和原生模块加载方式，实现同步渲染、懒加载和更好的并发能力。",
+      "category": "React Native",
+      "positions": [
+        "React Native开发工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "React Native",
+        "新架构",
+        "Hermes"
+      ],
+      "years": "3-5年",
+      "source": "https://reactnative.dev/architecture/overview"
+    },
+    {
+      "title": "uni-app 项目要同时发布微信小程序、H5 和 App，工程上如何管理条件编译与平台差异？",
+      "body": "考察跨端工程管理。",
+      "answer": "**要点**：\n- **条件编译**：用 `#ifdef` 隔离平台 API、登录、支付、地图等差异，核心业务逻辑保持单实现。\n- **能力抽象**：把平台调用封装成服务层，页面只调统一接口；差异配置由平台映射注入。\n- **发布治理**：为每个平台定义 CI 任务与环境变量，包名、权限、隐私政策、深链和白名单单独配置。",
+      "category": "uni-app",
+      "positions": [
+        "小程序全栈工程师",
+        "移动端开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "uni-app",
+        "跨端",
+        "条件编译"
+      ],
+      "years": "1-3年",
+      "source": "https://en.uniapp.dcloud.net"
+    },
+    {
+      "title": "Unreal Engine 项目中如何决定一个玩法逻辑用蓝图还是 C++ 实现？",
+      "body": "考察 UE 工程取舍。",
+      "answer": "**要点**：\n- **蓝本适合**：玩法搭建、关卡事件、UI 流程、快速原型验证，可由设计同学迭代。\n- **C++ 适合**：复杂算法、性能热点、网络同步、底层系统扩展，便于测试和复用。\n- **混合原则**：底层用 C++ 暴露参数/事件，上层蓝图编排；版本管理上减少蓝图大规模合并冲突。",
+      "category": "Unreal Engine开发",
+      "positions": [
+        "Unreal Engine开发工程师",
+        "游戏开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Unreal",
+        "蓝图",
+        "C++"
+      ],
+      "years": "3-5年",
+      "source": "https://dev.epicgames.com/documentation"
+    },
+    {
+      "title": "STM32 外设通信偶发丢字节，你会按什么顺序排查硬件、配置和软件？",
+      "body": "考察嵌入式通信排障。",
+      "answer": "**要点**：\n- **物理层**：用示波器/逻辑分析仪看电平、时钟、边沿、干扰和上拉；确认线序、共地、长度和终端匹配。\n- **配置层**：检查波特率/分频误差、采样点、FIFO/DMA 阈值、中断优先级、 overrun 标志。\n- **软件层**：避免在中断里做重活，确认缓冲区临界区保护；增加错误计数与重传策略。",
+      "category": "STM32",
+      "positions": [
+        "嵌入式软件工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "STM32",
+        "串口",
+        "嵌入式"
+      ],
+      "years": "3-5年",
+      "source": "https://www.st.com/"
+    },
+    {
+      "title": "设计 IoT 平台设备接入层时，如何同时满足百万连接、低功耗和弱网恢复？",
+      "body": "考察 IoT 平台架构。",
+      "answer": "**要点**：\n- **协议选择**：海量低功耗设备优先 MQTT/CoAP，支持心跳、QoS 和遗嘱；移动网关可用 TCP/UDP 自定义协议。\n- **接入层设计**：连接状态分片、会话恢复、设备认证和限流；消息入队后异步处理，接入层不做重业务。\n- **弱网恢复**：设备侧本地缓存、幂等上报、退避重连；平台侧去重和乱序容忍。",
+      "category": "IoT平台开发",
+      "positions": [
+        "IoT开发工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "高级",
+      "type": "系统设计题",
+      "tags": [
+        "IoT",
+        "MQTT",
+        "高并发"
+      ],
+      "years": "3-5年",
+      "source": "https://mqtt.org/"
+    },
+    {
+      "title": "实时视频通话如何定位“画面卡顿但声音正常”的问题？",
+      "body": "考察音视频链路诊断。",
+      "answer": "**要点**：\n- **分轨道看链路**：音频正常说明网络和终端基本可用，重点查视频采集、编码、发送码率、解码和渲染。\n- **关键指标**：帧率、丢包、抖动、编码耗时、解码耗时、渲染掉帧；确认是否分辨率/码率过高导致编码或解码积压。\n- **常见处理**：启用自适应码率、关键帧请求、丢帧策略、硬编解码，必要时降分辨率优先保流畅。",
+      "category": "音视频基础编解码",
+      "positions": [
+        "音视频开发工程师",
+        "音视频与流媒体工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "RTC",
+        "视频卡顿",
+        "音视频"
+      ],
+      "years": "3-5年",
+      "source": "https://webrtc.org/"
+    },
+    {
+      "title": "直播推流端正常但观众端 HLS 延迟很高，你会检查哪些链路环节？",
+      "body": "考察流媒体链路优化。",
+      "answer": "**要点**：\n- **协议固有延迟**：HLS 由切片长度与播放列表刷新决定，通常比 RTMP/WebRTC 延迟高；缩短切片和引入 LL-HLS 可降低。\n- **链路环节**：转码/转封装耗时、CDN 缓存策略、切片排队、播放器缓冲区配置都会叠加延迟。\n- **取舍**：低延迟会牺牲稳定性，需按业务选择直播延迟档位；同时监控每段生成时间、分发时间和播放 buffer。",
+      "category": "流媒体协议RTMP和HLS",
+      "positions": [
+        "流媒体架构师",
+        "音视频与流媒体工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "HLS",
+        "RTMP",
+        "直播延迟"
+      ],
+      "years": "3-5年",
+      "source": "https://developer.apple.com/streaming/"
+    },
+    {
+      "title": "开发多人实时音视频 SDK 时，房间服务和媒体转发层分别负责什么？",
+      "body": "考察 SDK 架构设计。",
+      "answer": "**要点**：\n- **房间服务**：鉴权、成员管理、信令、权限、房间生命周期；维护成员与媒体拓扑映射。\n- **媒体层**：SFU 转发/选择性订阅，处理编码协商、丢包恢复、带宽估计和路由调度。\n- **可靠性设计**：服务无状态化 + 信令重连 + 媒体会话恢复；关键指标包括加入成功率、首帧时间、卡顿率。",
+      "category": "音视频SDK开发",
+      "positions": [
+        "音视频开发工程师",
+        "音视频与流媒体工程师"
+      ],
+      "difficulty": "高级",
+      "type": "系统设计题",
+      "tags": [
+        "音视频SDK",
+        "SFU",
+        "信令"
+      ],
+      "years": "3-5年",
+      "source": "https://webrtc.org/"
+    },
+    {
+      "title": "Web3 前端签名登录为什么必须由钱包发起，而不是让用户直接输入私钥？",
+      "body": "考察 Web3 前端安全边界。",
+      "answer": "**要点**：\n- **私钥隔离**：签名由钱包持有私钥并请求用户确认，站点永远拿不到私钥，降低泄露风险。\n- **授权透明**：钱包展示签名内容与目标合约地址，用户可识别钓鱼或异常交易。\n- **实现**：使用 EIP-191/EIP-712 登录签名，后端验证签名与 nonce，一次性登录令牌避免重放。",
+      "category": "Web3开发",
+      "positions": [
+        "Web3开发工程师",
+        "前端开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Web3",
+        "钱包",
+        "签名登录"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.ethers.org/"
+    },
+    {
+      "title": "AMM 自动做市商为什么需要无常损失？它和传统订单簿撮合的本质差异是什么？",
+      "body": "考察 DeFi 原语机制。",
+      "answer": "**要点**：\n- **定价机制**：订单簿靠买卖挂单撮合，AMM 由恒定乘积/加权曲线直接给出价格，流动性提供者自动成为交易对手。\n- **无常损失**：外部价格变化后，LP 按曲线调整持仓，相对持有原始资产产生价值差；波动越大损失越明显。\n- **补偿来源**：交易手续费和激励收益弥补损失，LP 需评估交易量、波动率和协议风险。",
+      "category": "DeFi基础",
+      "positions": [
+        "区块链工程师",
+        "Web3开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "DeFi",
+        "AMM",
+        "无常损失"
+      ],
+      "years": "3-5年",
+      "source": "https://ethereum.org/en/defi/"
+    },
+    {
+      "title": "ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？",
+      "body": "考察 NFT 技术演进。",
+      "answer": "**要点**：\n- **ERC-721**：一合约多唯一 tokenId，资产单位不可分割，所有权映射清晰。\n- **可组合设计**：尝试把 NFT 与 FT 流动性结合，通常引入碎片化、铸造/赎回机制和复杂状态转换。\n- **风险**：合约复杂度增加，需重点审计循环铸造、权限控制、重入和预言机依赖；标准化程度低也带来兼容风险。",
+      "category": "NFT技术",
+      "positions": [
+        "区块链工程师",
+        "智能合约开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "NFT",
+        "ERC-721",
+        "智能合约"
+      ],
+      "years": "3-5年",
+      "source": "https://eips.ethereum.org/EIPS/eip-721"
+    },
+    {
+      "title": "产品经理如何判断一个需求是“真需求”还是用户随口说说？",
+      "body": "考察产品经理必备能力。",
+      "answer": "**要点**：\n- **多源验证**：看是否来自多个独立用户、行为数据是否一致、付费/使用成本是否支持判断。\n- **场景还原**：让用户描述触发场景、当前替代方案和结果受损点；没有场景的需求多是想法。\n- **成本收益**：评估影响面、发生频率和解决后的业务指标变化，优先解决高价值高频问题。",
+      "category": "产品经理必备能力",
+      "positions": [
+        "产品经理"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "产品思维",
+        "需求判断"
+      ],
+      "years": "3-5年",
+      "source": "https://www.pmi.org/"
+    },
+    {
+      "title": "技术方案评审前，需求文档必须补齐哪些信息，才能避免开发各自想象？",
+      "body": "考察需求分析能力。",
+      "answer": "**要点**：\n- **业务目标**：要改善的指标、当前基线、目标值和约束条件，避免只写功能描述。\n- **边界与异常**：角色权限、数据流、状态机、异常处理、兼容性和非功能要求。\n- **验收标准**：用可测量的 Given/When/Then 描述关键路径，附上接口/数据示例和时间要求。",
+      "category": "需求分析与文档",
+      "positions": [
+        "产品经理",
+        "技术型项目经理"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "需求分析",
+        "技术评审",
+        "PRD"
+      ],
+      "years": "1-3年",
+      "source": "https://www.agilealliance.org/glossary/user-story/"
+    },
+    {
+      "title": "可用性测试样本量很小，为什么仍然能发现主要可用性问题？怎么选择任务？",
+      "body": "考察用户研究方法。",
+      "answer": "**要点**：\n- **问题密度递减**：前 5~8 个用户通常覆盖大部分高频可用性问题，继续增加用户的新发现迅速下降。\n- **任务选择**：选关键任务、高价值转化路径和容易出错的边界流程；避免引导性提示。\n- **定性结论**：关注用户心智模型、停顿点、误操作原因，不要把少量样本数据当统计学结果。",
+      "category": "用户研究",
+      "positions": [
+        "产品经理",
+        "UX交互设计师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "用户研究",
+        "可用性测试"
+      ],
+      "years": "1-3年",
+      "source": "https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/"
+    },
+    {
+      "title": "上线后注册转化率下降，你会如何拆解漏斗并判断是新渠道质量问题还是产品问题？",
+      "body": "考察数据分析能力。",
+      "answer": "**要点**：\n- **分层对比**：按渠道、设备、地域、版本拆分漏斗，判断下降集中在某一来源还是全量。\n- **质量信号**：新渠道用户停留、行为完成率、错误率异常而老用户正常，多为渠道质量；全量异常则查版本发布和技术错误。\n- **闭环验证**：做小流量灰度和渠道暂停对比，确认归因后优化落地页、注册步骤或投放策略。",
+      "category": "数据分析基础",
+      "positions": [
+        "产品经理",
+        "商业智能分析师BI"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "数据分析",
+        "漏斗",
+        "归因"
+      ],
+      "years": "3-5年",
+      "source": "https://support.google.com/analytics/answer/9327935"
+    },
+    {
+      "title": "Scrum 团队迭代速率波动很大，Velocity 应该怎么用才不会变成变相压榨？",
+      "body": "考察敏捷管理实践。",
+      "answer": "**要点**：\n- **用途边界**：速率用于团队自身容量预测，不用于跨团队绩效比较或强制加码。\n- **稳定化**：统计多迭代均值与区间，减少故事点粒度差异；处理插队、请假和依赖阻塞的显式扣减。\n- **管理动作**：速率持续下降时看依赖、返工和质量问题，而不是要求团队承诺更多点数。",
+      "category": "敏捷Scrum",
+      "positions": [
+        "产品经理",
+        "技术型项目经理"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "Scrum",
+        "Velocity",
+        "敏捷"
+      ],
+      "years": "3-5年",
+      "source": "https://www.scrum.org/resources/scrum-guide"
+    },
+    {
+      "title": "技术经理如何设计新人 30/60/90 天成长路径，才能既见效又可衡量？",
+      "body": "考察技术管理能力。",
+      "answer": "**要点**：\n- **30 天融入**：完成环境、业务、团队流程认知，交付首个小需求；目标是建立反馈闭环。\n- **60 天独立**：独立负责模块，参与 On-call/Code Review，输出技术文档；考核代码质量与协作反馈。\n- **90 天沉淀**：接一个明确改进项，给出可验证指标；管理者每阶段校准目标，避免只给任务不给评估。",
+      "category": "技术管理能力",
+      "positions": [
+        "技术经理",
+        "技术总监CTO"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "新人培养",
+        "技术管理",
+        "30-60-90"
+      ],
+      "years": "3-5年",
+      "source": "https://leaddev.com/"
+    },
+    {
+      "title": "OKR 写成项目任务清单为什么会失效？怎么写才能反映业务进展？",
+      "body": "考察 OKR 实践。",
+      "answer": "**要点**：\n- **O 定方向**：Objective 描述要改善的业务状态，而不是“完成某项目”。\n- **KR 可度量**：Key Result 用指标变化表达，如“注册转化从 12% 提升到 15%”，任务由行动计划承载。\n- **周期复盘**：每周检查信心指数和阻塞，季度复盘未达成原因；OKR 避免与薪酬强绑定，否则会鼓励低目标。",
+      "category": "OKR与绩效管理",
+      "positions": [
+        "技术经理",
+        "产品经理"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "OKR",
+        "目标管理",
+        "绩效"
+      ],
+      "years": "3-5年",
+      "source": "https://www.okr.com/"
+    }
+  ]
+}

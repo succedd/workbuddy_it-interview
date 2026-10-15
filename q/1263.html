@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点：大模型 API 的响应时间、计费方式和错误类型都与普通业务接口不同，重试和幂等必须一起设计。 一次生产级调用的环节：接入鉴权 → Prompt/上下文组装 → 参数与 Schema 校验 → 限流配额检查 → 调用模型（同步或流式）→ 流式增量转发 → 结构化解析与校验 → 日志、计费与落库。 大模型重试的…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1263.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一次大模型 API 调用要经过哪些环节？哪些错误可以重试、哪些必须直接失败？为什么重试必须配幂等 Key？","text":"考察点：大模型调用链路的工程化能力，尤其是重试边界与幂等设计的取舍。","answerCount":1,"datePublished":"2026-09-26T02:31:31.400Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：大模型 API 的响应时间、计费方式和错误类型都与普通业务接口不同，重试和幂等必须一起设计。 一次生产级调用的环节：接入鉴权 → Prompt/上下文组装 → 参数与 Schema 校验 → 限流配额检查 → 调用模型（同步或流式）→ 流式增量转发 → 结构化解析与校验 → 日志、计费与落库。 大模型重试的两个特殊点 请求贵：失败请求也可能消耗配额，甚至已经消耗了部分 Token。 输出非确定：即使 Prompt 一样，第二次返回也可能和第一次不同。 错误分类与处理 | 错误类型 | 示例 | 是否重试 | 处理方式 | | --- | --- | --- | --- | | 网络瞬断 | 连接重置、DNS 抖动、读超时 | 可以 | 指数退避 + 抖动，限制最大次数 | | 供应商 5xx | 500、502、503、504 | 可以 | 短暂重试，超阈值切换模型或降级 | | 供应商过载 | Anthropic 529、overloaded | 可以 | 慢重试，必要时熔断该供应商 | | 429 限流 | RPM、TPM、RPD、并发超限 | 谨慎 | 优先看 Retry-After 和限流头，排队或降级 | | 流式中断 | 未收到正常结束事件 | 视场景 | 用户可见任务不自动重试，后台任务可幂等重试 | | 400 参数错误 | Schema 不合法、上下文超限 | 不建议 | 修请求，不要重试同一 payload | | 401/403 | API Key 无效、权限不足 | 不建议 | 告警并停用对应 Key | | 安全拒答 | 内容策略拒绝 | 不建议 | 进入业务拒答流程 | | 解析失败 | JSON 不完整、字段类型错误 | 有限重试 | 带失败原因二次修复，最多 1~2 次 | 退避公式与两条硬约束 抖动用来避免所有请求同时重试、把刚恢复的系统再次打进限流。生产里还必须加最大重试次数（通常 2~3 次足够）和总体截止时间（例如用户请求 15 秒 SLA，到点就失败，不要因为重试拖成 1 分钟）。 为什么必须幂等：幂等 Key 通常由业务生成，形如 tenantId:userId:conversationId:messageId:attemptGroup。服务端先查 Key：已成功直接返回历史结果；正在生成则返回同一个流式任务订阅地址；失败且允许重试就创建新 attempt，但仍挂在同一个业务消息下。不做幂等会出两类事故——用户狂点“重新发送”导致后端创建多次模型调用；网关超时自动重试，而第一次其实已经成功落库，第二次又写了一条重复消息甚至重复扣款。 响应重复的处理：把一次用户消息下的多次调用区分为 message_id（用户可见）、attempt_id（系统可见）、provider_request_id（排查用）、stream_sequence（增量片段序号，用于去重补发），落库时只允许一个 attempt 成为 final，其余保留为诊断记录且不参与下一轮上下文，避免污染 Prompt。","url":"https://itinterview.com.cn/#/question/1263"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一次大模型 API 调用要经过哪些环节？哪些错误可以重试、哪些必须直接失败？为什么重试必须配幂等 Key？","text":"考察点：大模型调用链路的工程化能力，尤其是重试边界与幂等设计的取舍。","answerCount":1,"datePublished":"2026-09-26T02:31:31.400Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：大模型 API 的响应时间、计费方式和错误类型都与普通业务接口不同，重试和幂等必须一起设计。 一次生产级调用的环节：接入鉴权 → Prompt/上下文组装 → 参数与 Schema 校验 → 限流配额检查 → 调用模型（同步或流式）→ 流式增量转发 → 结构化解析与校验 → 日志、计费与落库。 大模型重试的两个特殊点 请求贵：失败请求也可能消耗配额，甚至已经消耗了部分 Token。 输出非确定：即使 Prompt 一样，第二次返回也可能和第一次不同。 错误分类与处理 | 错误类型 | 示例 | 是否重试 | 处理方式 | | --- | --- | --- | --- | | 网络瞬断 | 连接重置、DNS 抖动、读超时 | 可以 | 指数退避 + 抖动，限制最大次数 | | 供应商 5xx | 500、502、503、504 | 可以 | 短暂重试，超阈值切换模型或降级 | | 供应商过载 | Anthropic 529、overloaded | 可以 | 慢重试，必要时熔断该供应商 | | 429 限流 | RPM、TPM、RPD、并发超限 | 谨慎 | 优先看 Retry-After 和限流头，排队或降级 | | 流式中断 | 未收到正常结束事件 | 视场景 | 用户可见任务不自动重试，后台任务可幂等重试 | | 400 参数错误 | Schema 不合法、上下文超限 | 不建议 | 修请求，不要重试同一 payload | | 401/403 | API Key 无效、权限不足 | 不建议 | 告警并停用对应 Key | | 安全拒答 | 内容策略拒绝 | 不建议 | 进入业务拒答流程 | | 解析失败 | JSON 不完整、字段类型错误 | 有限重试 | 带失败原因二次修复，最多 1~2 次 | 退避公式与两条硬约束 抖动用来避免所有请求同时重试、把刚恢复的系统再次打进限流。生产里还必须加最大重试次数（通常 2~3 次足够）和总体截止时间（例如用户请求 15 秒 SLA，到点就失败，不要因为重试拖成 1 分钟）。 为什么必须幂等：幂等 Key 通常由业务生成，形如 tenantId:userId:conversationId:messageId:attemptGroup。服务端先查 Key：已成功直接返回历史结果；正在生成则返回同一个流式任务订阅地址；失败且允许重试就创建新 attempt，但仍挂在同一个业务消息下。不做幂等会出两类事故——用户狂点“重新发送”导致后端创建多次模型调用；网关超时自动重试，而第一次其实已经成功落库，第二次又写了一条重复消息甚至重复扣款。 响应重复的处理：把一次用户消息下的多次调用区分为 message_id（用户可见）、attempt_id（系统可见）、provider_request_id（排查用）、stream_sequence（增量片段序号，用于去重补发），落库时只允许一个 attempt 成为 final，其余保留为诊断记录且不参与下一轮上下文，避免污染 Prompt。","url":"https://itinterview.com.cn/question/1263"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"一次大模型 API 调用要经过哪些环节？哪些错误可以重试、哪些必须直接失败？为什么重试必须配幂等 Key？","item":"https://itinterview.com.cn/q/1263.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -97,14 +114,17 @@
 <p>抖动用来避免所有请求同时重试、把刚恢复的系统再次打进限流。生产里还必须加最大重试次数（通常 2~3 次足够）和总体截止时间（例如用户请求 15 秒 SLA，到点就失败，不要因为重试拖成 1 分钟）。</p>
 <p><strong>为什么必须幂等</strong>：幂等 Key 通常由业务生成，形如 <code>tenantId:userId:conversationId:messageId:attemptGroup</code>。服务端先查 Key：已成功直接返回历史结果；正在生成则返回同一个流式任务订阅地址；失败且允许重试就创建新 attempt，但仍挂在同一个业务消息下。不做幂等会出两类事故——用户狂点“重新发送”导致后端创建多次模型调用；网关超时自动重试，而第一次其实已经成功落库，第二次又写了一条重复消息甚至重复扣款。</p>
 <p><strong>响应重复的处理</strong>：把一次用户消息下的多次调用区分为 <code>message_id</code>（用户可见）、<code>attempt_id</code>（系统可见）、<code>provider_request_id</code>（排查用）、<code>stream_sequence</code>（增量片段序号，用于去重补发），落库时只允许一个 attempt 成为 <code>final</code>，其余保留为诊断记录且不参与下一轮上下文，避免污染 Prompt。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1263">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1263">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=187&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=187&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

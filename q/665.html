@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点一：概念划分 HotSpot 把 GC 分为两大类：部分收集（Partial GC） 与 整堆收集（Full GC）。 Minor GC / Young GC：只收集新生代（Eden + Survivor）。 Major GC / Old GC：只收集老年代，目前只有 CMS 有单独收集老年代的行为。 Mix…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/665.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Minor GC、Major GC、Full GC 有什么区别？分别在什么情况下触发？","text":"追问链第三问。考察点：部分收集与整堆收集的划分；新生代 Eden 不足触发 Minor GC；晋升与空间分配担保；System.gc() 只是建议。","answerCount":1,"datePublished":"2026-09-08T13:40:51.674Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：概念划分 HotSpot 把 GC 分为两大类：部分收集（Partial GC） 与 整堆收集（Full GC）。 Minor GC / Young GC：只收集新生代（Eden + Survivor）。 Major GC / Old GC：只收集老年代，目前只有 CMS 有单独收集老年代的行为。 Mixed GC：收集整个新生代 + 部分老年代，只有 G1 有此模式。 Full GC：收集整个 Java 堆和方法区。 注意：业界对 Major GC 的叫法并不统一，很多资料把 Major GC 等同于 Full GC，面试时最好先说明自己按哪套定义回答。 要点二：Minor GC 的触发条件 Eden 区空间不足时触发。新对象优先在 Eden 分配，放不下就发生一次 Minor GC，存活对象复制到 Survivor 并年龄 +1。 特点：非常频繁、速度较快，因为新生代对象大多朝生夕灭，复制成本很低。 会引发 Stop The World，但停顿通常很短。 要点三：对象进入老年代的三条路径 年龄阈值：对象在 Survivor 中每熬过一次 Minor GC 年龄 +1，超过 -XX:MaxTenuringThreshold（默认 15）晋升老年代。 动态年龄判定：Survivor 中同龄对象大小总和超过 Survivor 空间的一半，则年龄大于等于该年龄的对象直接晋升，无需等到阈值。 大对象直接进入：超过 -XX:PretenureSizeThreshold 的大对象（如长数组、大字符串）直接进入老年代，避免 Eden 与两个 Survivor 之间来回复制的高昂开销。 要点四：Full GC 的触发条件 老年代空间不足（晋升对象放不下）； 方法区 / 元空间不足； 空间分配担保失败：Minor GC 前 JVM 检查老年代最大可用连续空间是否大于新生代所有对象总大小（或历次晋升平均大小），不满足则先触发一次 Full GC 腾空间； 调用 System.gc()——只是建议，是否执行由虚拟机决定（可用 -XX:+DisableExplicitGC 禁止）。 特点：Full GC 停顿时间最长，是线上调优要重点消除的对象（通常通过合理设置堆大小、选择合适的收集器让对象尽量在新生代回收掉）。","url":"https://itinterview.com.cn/#/question/665"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Minor GC、Major GC、Full GC 有什么区别？分别在什么情况下触发？","text":"追问链第三问。考察点：部分收集与整堆收集的划分；新生代 Eden 不足触发 Minor GC；晋升与空间分配担保；System.gc() 只是建议。","answerCount":1,"datePublished":"2026-09-08T13:40:51.674Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：概念划分 HotSpot 把 GC 分为两大类：部分收集（Partial GC） 与 整堆收集（Full GC）。 Minor GC / Young GC：只收集新生代（Eden + Survivor）。 Major GC / Old GC：只收集老年代，目前只有 CMS 有单独收集老年代的行为。 Mixed GC：收集整个新生代 + 部分老年代，只有 G1 有此模式。 Full GC：收集整个 Java 堆和方法区。 注意：业界对 Major GC 的叫法并不统一，很多资料把 Major GC 等同于 Full GC，面试时最好先说明自己按哪套定义回答。 要点二：Minor GC 的触发条件 Eden 区空间不足时触发。新对象优先在 Eden 分配，放不下就发生一次 Minor GC，存活对象复制到 Survivor 并年龄 +1。 特点：非常频繁、速度较快，因为新生代对象大多朝生夕灭，复制成本很低。 会引发 Stop The World，但停顿通常很短。 要点三：对象进入老年代的三条路径 年龄阈值：对象在 Survivor 中每熬过一次 Minor GC 年龄 +1，超过 -XX:MaxTenuringThreshold（默认 15）晋升老年代。 动态年龄判定：Survivor 中同龄对象大小总和超过 Survivor 空间的一半，则年龄大于等于该年龄的对象直接晋升，无需等到阈值。 大对象直接进入：超过 -XX:PretenureSizeThreshold 的大对象（如长数组、大字符串）直接进入老年代，避免 Eden 与两个 Survivor 之间来回复制的高昂开销。 要点四：Full GC 的触发条件 老年代空间不足（晋升对象放不下）； 方法区 / 元空间不足； 空间分配担保失败：Minor GC 前 JVM 检查老年代最大可用连续空间是否大于新生代所有对象总大小（或历次晋升平均大小），不满足则先触发一次 Full GC 腾空间； 调用 System.gc()——只是建议，是否执行由虚拟机决定（可用 -XX:+DisableExplicitGC 禁止）。 特点：Full GC 停顿时间最长，是线上调优要重点消除的对象（通常通过合理设置堆大小、选择合适的收集器让对象尽量在新生代回收掉）。","url":"https://itinterview.com.cn/question/665"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"Minor GC、Major GC、Full GC 有什么区别？分别在什么情况下触发？","item":"https://itinterview.com.cn/q/665.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -104,14 +121,17 @@
 <li>调用 <code>System.gc()</code>——只是<strong>建议</strong>，是否执行由虚拟机决定（可用 <code>-XX:+DisableExplicitGC</code> 禁止）。</li>
 <li>特点：Full GC <strong>停顿时间最长</strong>，是线上调优要重点消除的对象（通常通过合理设置堆大小、选择合适的收集器让对象尽量在新生代回收掉）。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/665">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/665">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

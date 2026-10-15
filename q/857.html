@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 d…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/857.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？","text":"考察点：微任务的工程化价值——用 queueMicrotask 平衡同步/异步分支的执行顺序。追问：为什么不直接把同步分支改成 setTimeout(fn, 0)？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 data 未设置」的竞态。 修复方式： 为什么不用 setTimeout(fn, 0)：宏任务会被事件处理、渲染、其他 timeout 插队，延迟不可控且可能晚于调用方注册的其他回调；微任务保证在「当前脚本退出后、任何下一个任务之前」执行，是最小且确定的延迟。 通用原则：任何「同一操作可能同步也可能异步完成」的 API（缓存、本地存储、幂等请求）都应统一到微任务时序，避免调用方写两套处理逻辑。","url":"https://itinterview.com.cn/#/question/857"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？","text":"考察点：微任务的工程化价值——用 queueMicrotask 平衡同步/异步分支的执行顺序。追问：为什么不直接把同步分支改成 setTimeout(fn, 0)？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 data 未设置」的竞态。 修复方式： 为什么不用 setTimeout(fn, 0)：宏任务会被事件处理、渲染、其他 timeout 插队，延迟不可控且可能晚于调用方注册的其他回调；微任务保证在「当前脚本退出后、任何下一个任务之前」执行，是最小且确定的延迟。 通用原则：任何「同一操作可能同步也可能异步完成」的 API（缓存、本地存储、幂等请求）都应统一到微任务时序，避免调用方写两套处理逻辑。","url":"https://itinterview.com.cn/question/857"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？","item":"https://itinterview.com.cn/q/857.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -96,14 +113,17 @@
 <li><strong>为什么不用 setTimeout(fn, 0)</strong>：宏任务会被事件处理、渲染、其他 timeout 插队，延迟不可控且可能晚于调用方注册的其他回调；微任务保证在「当前脚本退出后、任何下一个任务之前」执行，是最小且确定的延迟。</li>
 <li><strong>通用原则</strong>：任何「同一操作可能同步也可能异步完成」的 API（缓存、本地存储、幂等请求）都应统一到微任务时序，避免调用方写两套处理逻辑。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/857">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/857">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=59&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=59&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

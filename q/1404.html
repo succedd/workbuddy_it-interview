@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="结论 三者由利特尔法则（Little&#39;s Law）串起来：并发数 C = QPS × RT（RT 用秒）。QPS/TPS 描述吞吐，RT 描述耗时，并发数描述「同时正在处理中的请求数」——知道任意两个可推第三个，线程池/连接池容量都应按它来配。 换算与算例 并发推算：1000 QPS、平均 RT 50ms → C…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1404.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？","text":"考察利特尔法则与容量估算的定量计算。","answerCount":1,"datePublished":"2026-09-29T13:30:27.283Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 三者由利特尔法则（Little's Law）串起来：并发数 C = QPS × RT（RT 用秒）。QPS/TPS 描述吞吐，RT 描述耗时，并发数描述「同时正在处理中的请求数」——知道任意两个可推第三个，线程池/连接池容量都应按它来配。 换算与算例 并发推算：1000 QPS、平均 RT 50ms → C = 1000 × 0.05 = 50。数据库连接池若只配 10，请求必然在连接池排队，RT 被进一步拉长，恶性循环； TPS vs QPS：一个下单「事务」内部调 3 个接口 → TPS ≈ QPS / 3，接口视角和业务视角别混用； 峰值容量估算（二八原则）：日活 100 万、人均 20 次请求 → 日请求 2000 万；80% 集中在 20% 时间：峰值 QPS ≈ 2000万 × 0.8 ÷ (86400 × 0.2) ≈ 926 QPS。若压测单机 500 QPS，则至少 3 台（926/500，向上取整），再留 30%~50% 冗余应对抖动与发布。 压测曲线语义 轻载区：加压 QPS 线性涨、RT 平稳； 接近系统拐点：排队开始累积，RT 陡增而 QPS 涨不动；过了拐点继续加压，QPS 反而下滑（上下文切换/队列爆炸）； 所以压测目标是找拐点而不是最大吞吐；「RT 涨了但 QPS 还没掉」是线程池硬扛的前兆，应立即扩容或限流。 误区：并发数 ≠ 同时在线用户数。在线用户大多数时间不发请求，真正压系统的是「每秒发起的请求」；用 C = QPS × RT 反推的是处理中并发，不是登录会话数。","url":"https://itinterview.com.cn/#/question/1404"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？","text":"考察利特尔法则与容量估算的定量计算。","answerCount":1,"datePublished":"2026-09-29T13:30:27.283Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 三者由利特尔法则（Little's Law）串起来：并发数 C = QPS × RT（RT 用秒）。QPS/TPS 描述吞吐，RT 描述耗时，并发数描述「同时正在处理中的请求数」——知道任意两个可推第三个，线程池/连接池容量都应按它来配。 换算与算例 并发推算：1000 QPS、平均 RT 50ms → C = 1000 × 0.05 = 50。数据库连接池若只配 10，请求必然在连接池排队，RT 被进一步拉长，恶性循环； TPS vs QPS：一个下单「事务」内部调 3 个接口 → TPS ≈ QPS / 3，接口视角和业务视角别混用； 峰值容量估算（二八原则）：日活 100 万、人均 20 次请求 → 日请求 2000 万；80% 集中在 20% 时间：峰值 QPS ≈ 2000万 × 0.8 ÷ (86400 × 0.2) ≈ 926 QPS。若压测单机 500 QPS，则至少 3 台（926/500，向上取整），再留 30%~50% 冗余应对抖动与发布。 压测曲线语义 轻载区：加压 QPS 线性涨、RT 平稳； 接近系统拐点：排队开始累积，RT 陡增而 QPS 涨不动；过了拐点继续加压，QPS 反而下滑（上下文切换/队列爆炸）； 所以压测目标是找拐点而不是最大吞吐；「RT 涨了但 QPS 还没掉」是线程池硬扛的前兆，应立即扩容或限流。 误区：并发数 ≠ 同时在线用户数。在线用户大多数时间不发请求，真正压系统的是「每秒发起的请求」；用 C = QPS × RT 反推的是处理中并发，不是登录会话数。","url":"https://itinterview.com.cn/question/1404"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"性能测试","item":"https://itinterview.com.cn/category?cat=109"},{"@type":"ListItem","position":4,"name":"QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？","item":"https://itinterview.com.cn/q/1404.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -88,14 +105,17 @@
 <li>所以压测目标是找<strong>拐点</strong>而不是最大吞吐；「RT 涨了但 QPS 还没掉」是线程池硬扛的前兆，应立即扩容或限流。</li>
 </ul>
 <blockquote>误区：并发数 ≠ 同时在线用户数。在线用户大多数时间不发请求，真正压系统的是「每秒发起的请求」；用 C = QPS × RT 反推的是处理中并发，不是登录会话数。</blockquote></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1404">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1404">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=109&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=109&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点一：GC Roots 的常见组成 虚拟机栈（栈帧局部变量表）中引用的对象：如方法里 User u = new User() 的 u，正在执行的方法里的参数、局部变量、临时变量。 本地方法栈中 JNI（native 方法）引用的对象。 方法区中类静态属性引用的对象：如 static User u;。 方法区中常…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/664.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"哪些对象可以作为 GC Roots？为什么说对象被判定不可达后还有一段「缓刑」期？","text":"追问链第二问。考察点：GC Roots 的具体组成；两次标记与 finalize() 的缓刑机制；方法区（类、常量）的回收条件。","answerCount":1,"datePublished":"2026-09-08T13:40:51.544Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：GC Roots 的常见组成 虚拟机栈（栈帧局部变量表）中引用的对象：如方法里 User u = new User() 的 u，正在执行的方法里的参数、局部变量、临时变量。 本地方法栈中 JNI（native 方法）引用的对象。 方法区中类静态属性引用的对象：如 static User u;。 方法区中常量引用的对象：如字符串常量池里的引用、static final 常量。 所有被同步锁 synchronized 持有的对象。 JVM 内部引用：基本数据类型对应的 Class 对象、常驻异常对象（NullPointerException 等）、系统类加载器。 此外，垃圾收集还会根据所选收集器与回收区域临时加入一些对象（如跨代引用时的 Remembered Set 相关对象），因此枚举根节点时必须暂停用户线程（Stop The World）以保证一致性快照。 要点二：为什么不可达不是「立即死亡」 可达性分析判定不可达后，对象进入「缓刑」阶段，真正回收要经过两次标记： 1. 第一次标记：对象不可达，被首次标记并筛选——判断是否有必要执行 finalize()（未重写过，或已被 JVM 调用过一次，都视为「没必要执行」）。 2. 第二次标记：若需要执行 finalize()，对象被放进 F-Queue，由低优先级的 Finalizer 线程去执行。只要对象在 finalize() 中重新与引用链上的任一对象建立关联（例如把 this 赋给某个静态变量），第二次标记时它就会被移出「即将回收」集合，成功自救。 一个对象的 finalize() 最多只会被 JVM 自动调用一次，因此自救机会只有一次；没有自救的，第二次标记后即被回收。 要点三：实践结论 finalize() 运行代价高昂、不确定性大且无法保证调用顺序，官方已明确不推荐使用（JDK 9 起被标记为 deprecated）；释放资源应改用 try-with-resources 或 Cleaner。 方法区的回收条件苛刻：常量需无任何引用；类需同时满足「实例全部回收、加载它的 ClassLoader 已回收、Class 对象无任何引用（含反射）」三个条件才「允许」回收，这也是元空间泄漏难排查的原因。","url":"https://itinterview.com.cn/#/question/664"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"哪些对象可以作为 GC Roots？为什么说对象被判定不可达后还有一段「缓刑」期？","text":"追问链第二问。考察点：GC Roots 的具体组成；两次标记与 finalize() 的缓刑机制；方法区（类、常量）的回收条件。","answerCount":1,"datePublished":"2026-09-08T13:40:51.544Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：GC Roots 的常见组成 虚拟机栈（栈帧局部变量表）中引用的对象：如方法里 User u = new User() 的 u，正在执行的方法里的参数、局部变量、临时变量。 本地方法栈中 JNI（native 方法）引用的对象。 方法区中类静态属性引用的对象：如 static User u;。 方法区中常量引用的对象：如字符串常量池里的引用、static final 常量。 所有被同步锁 synchronized 持有的对象。 JVM 内部引用：基本数据类型对应的 Class 对象、常驻异常对象（NullPointerException 等）、系统类加载器。 此外，垃圾收集还会根据所选收集器与回收区域临时加入一些对象（如跨代引用时的 Remembered Set 相关对象），因此枚举根节点时必须暂停用户线程（Stop The World）以保证一致性快照。 要点二：为什么不可达不是「立即死亡」 可达性分析判定不可达后，对象进入「缓刑」阶段，真正回收要经过两次标记： 1. 第一次标记：对象不可达，被首次标记并筛选——判断是否有必要执行 finalize()（未重写过，或已被 JVM 调用过一次，都视为「没必要执行」）。 2. 第二次标记：若需要执行 finalize()，对象被放进 F-Queue，由低优先级的 Finalizer 线程去执行。只要对象在 finalize() 中重新与引用链上的任一对象建立关联（例如把 this 赋给某个静态变量），第二次标记时它就会被移出「即将回收」集合，成功自救。 一个对象的 finalize() 最多只会被 JVM 自动调用一次，因此自救机会只有一次；没有自救的，第二次标记后即被回收。 要点三：实践结论 finalize() 运行代价高昂、不确定性大且无法保证调用顺序，官方已明确不推荐使用（JDK 9 起被标记为 deprecated）；释放资源应改用 try-with-resources 或 Cleaner。 方法区的回收条件苛刻：常量需无任何引用；类需同时满足「实例全部回收、加载它的 ClassLoader 已回收、Class 对象无任何引用（含反射）」三个条件才「允许」回收，这也是元空间泄漏难排查的原因。","url":"https://itinterview.com.cn/question/664"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"哪些对象可以作为 GC Roots？为什么说对象被判定不可达后还有一段「缓刑」期？","item":"https://itinterview.com.cn/q/664.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -97,14 +114,17 @@
 <li><code>finalize()</code> 运行代价高昂、不确定性大且无法保证调用顺序，<strong>官方已明确不推荐使用</strong>（JDK 9 起被标记为 deprecated）；释放资源应改用 <code>try-with-resources</code> 或 <code>Cleaner</code>。</li>
 <li>方法区的回收条件苛刻：常量需无任何引用；类需同时满足「实例全部回收、加载它的 ClassLoader 已回收、Class 对象无任何引用（含反射）」三个条件才「允许」回收，这也是元空间泄漏难排查的原因。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/664">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/664">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

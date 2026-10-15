@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点：四种范式解决的问题不同，选型看两个维度——执行路径能不能提前确定、任务能不能按专业角色拆。 ReAct（Reasoning + Acting） 模型先推理一步，拿到外部环境反馈，再推理下一步，交替进行。它的价值是让 LLM“走一步看一步”，每一步都根据工具返回结果继续判断，因此能根据证据不断修正方向，比一次…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1272.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ReAct、Plan-and-Execute、Reflection、Multi-Agent 分别适合什么场景？做项目时应该怎么选？","text":"考察点：Agent 核心范式的适用边界，以及避免过度设计的选型判断。","answerCount":1,"datePublished":"2026-09-26T02:32:01.953Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：四种范式解决的问题不同，选型看两个维度——执行路径能不能提前确定、任务能不能按专业角色拆。 ReAct（Reasoning + Acting） 模型先推理一步，拿到外部环境反馈，再推理下一步，交替进行。它的价值是让 LLM“走一步看一步”，每一步都根据工具返回结果继续判断，因此能根据证据不断修正方向，比一次性生成更容易追溯决策依据。落地一般需要五个组件配合：历史上下文（保存推理步骤、执行动作、反馈观察）、实时环境输入（告警、用户反馈）、LLM 推理模块、工具集与技能库、反馈观察机制。代价是多轮调用增加响应延迟、Token 消耗高，效果取决于工具和 Skills 是否可靠，调试也难。 Plan-and-Execute 先由 LLM 生成全局分步计划，再交给执行器逐项完成。步骤较多、依赖关系明确的长任务用这种方式更容易保持全局进度、不易迷路。计划也是它的边界：执行过程中若出现未预料的结果，动态调整和容错能力会弱于边做边判断的 ReAct，行为更接近静态工作流。两种模式可以嵌套——用 CoT 给出全局步骤，每个步骤内部运行 ReAct 子循环，计划提供结构、子循环处理局部不确定性。 Reflection 通过自然语言反馈纠正 Agent 行为，不需要修改模型权重。三种常见实现：Reflexion 在任务失败后把反思结论记录到记忆缓冲区（例如代码调试发现 count 在调用前未初始化，下一轮据此规避）；Self-Refine 让模型在完成回答、代码或文案后审查输出并迭代修改；CRITIC 借助搜索引擎、代码执行器等外部工具验证事实再修正。它通常叠加在 ReAct 或 Plan-and-Execute 上，不单独使用。 Multi-Agent 任务能拆成规划、执行、验收等相对独立职责时使用。Orchestrator-Subagent 模式由编排 Agent 制定全局计划、分发任务，子 Agent 并行或串行执行，再由编排层汇总；需要辩论、评审或相互验证时用 Peer-to-Peer 模式。收益是并行执行、单个子任务失败未必阻断整体；代价是通信、协调和调试成本都会上升，Token 消耗增加，落地还要处理任务契约、共享状态、并行写冲突、Worker 接管和检查点恢复。生产里不能盲目上多 Agent。 选型参考 | 场景特征 | 推荐方向 | 代价 | | --- | --- | --- | | 执行路径可提前确定，节点需要 LLM | AI 工作流（Graph） | 稳定可观测，前期设计成本高 | | 执行路径不确定，需要动态规划 | ReAct | 灵活，Token 消耗高，调试难 | | 任务很长，步骤多但结构清晰 | Plan-and-Execute | 不易迷路，动态调整弱 | | 输出质量要求高，允许多轮迭代 | 叠加 Reflection | 与 ReAct/P&E 配合用，不单独用 | | 任务天然可拆成多个专业角色 | Multi-Agent | 通信和调试成本翻倍 | | 长任务 + 部分子任务不可预测 | Agentic Workflows | 全局 Workflow + 局部 ReAct 嵌套 | 判断标准：能提前写清楚执行路径就用 Workflow，写不出来再上 Agent。很多人觉得任务“路径不确定”，其实是需求没拆清楚——认真拆一遍后往往会发现大部分场景是“LLM 在固定节点里做生成或判断”，这种用 Workflow 更稳也更容易排查。先用最简单的方式跑通，再根据实际失败模式决定升级哪一层。","url":"https://itinterview.com.cn/#/question/1272"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ReAct、Plan-and-Execute、Reflection、Multi-Agent 分别适合什么场景？做项目时应该怎么选？","text":"考察点：Agent 核心范式的适用边界，以及避免过度设计的选型判断。","answerCount":1,"datePublished":"2026-09-26T02:32:01.953Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：四种范式解决的问题不同，选型看两个维度——执行路径能不能提前确定、任务能不能按专业角色拆。 ReAct（Reasoning + Acting） 模型先推理一步，拿到外部环境反馈，再推理下一步，交替进行。它的价值是让 LLM“走一步看一步”，每一步都根据工具返回结果继续判断，因此能根据证据不断修正方向，比一次性生成更容易追溯决策依据。落地一般需要五个组件配合：历史上下文（保存推理步骤、执行动作、反馈观察）、实时环境输入（告警、用户反馈）、LLM 推理模块、工具集与技能库、反馈观察机制。代价是多轮调用增加响应延迟、Token 消耗高，效果取决于工具和 Skills 是否可靠，调试也难。 Plan-and-Execute 先由 LLM 生成全局分步计划，再交给执行器逐项完成。步骤较多、依赖关系明确的长任务用这种方式更容易保持全局进度、不易迷路。计划也是它的边界：执行过程中若出现未预料的结果，动态调整和容错能力会弱于边做边判断的 ReAct，行为更接近静态工作流。两种模式可以嵌套——用 CoT 给出全局步骤，每个步骤内部运行 ReAct 子循环，计划提供结构、子循环处理局部不确定性。 Reflection 通过自然语言反馈纠正 Agent 行为，不需要修改模型权重。三种常见实现：Reflexion 在任务失败后把反思结论记录到记忆缓冲区（例如代码调试发现 count 在调用前未初始化，下一轮据此规避）；Self-Refine 让模型在完成回答、代码或文案后审查输出并迭代修改；CRITIC 借助搜索引擎、代码执行器等外部工具验证事实再修正。它通常叠加在 ReAct 或 Plan-and-Execute 上，不单独使用。 Multi-Agent 任务能拆成规划、执行、验收等相对独立职责时使用。Orchestrator-Subagent 模式由编排 Agent 制定全局计划、分发任务，子 Agent 并行或串行执行，再由编排层汇总；需要辩论、评审或相互验证时用 Peer-to-Peer 模式。收益是并行执行、单个子任务失败未必阻断整体；代价是通信、协调和调试成本都会上升，Token 消耗增加，落地还要处理任务契约、共享状态、并行写冲突、Worker 接管和检查点恢复。生产里不能盲目上多 Agent。 选型参考 | 场景特征 | 推荐方向 | 代价 | | --- | --- | --- | | 执行路径可提前确定，节点需要 LLM | AI 工作流（Graph） | 稳定可观测，前期设计成本高 | | 执行路径不确定，需要动态规划 | ReAct | 灵活，Token 消耗高，调试难 | | 任务很长，步骤多但结构清晰 | Plan-and-Execute | 不易迷路，动态调整弱 | | 输出质量要求高，允许多轮迭代 | 叠加 Reflection | 与 ReAct/P&E 配合用，不单独用 | | 任务天然可拆成多个专业角色 | Multi-Agent | 通信和调试成本翻倍 | | 长任务 + 部分子任务不可预测 | Agentic Workflows | 全局 Workflow + 局部 ReAct 嵌套 | 判断标准：能提前写清楚执行路径就用 Workflow，写不出来再上 Agent。很多人觉得任务“路径不确定”，其实是需求没拆清楚——认真拆一遍后往往会发现大部分场景是“LLM 在固定节点里做生成或判断”，这种用 Workflow 更稳也更容易排查。先用最简单的方式跑通，再根据实际失败模式决定升级哪一层。","url":"https://itinterview.com.cn/question/1272"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"AI Agent","item":"https://itinterview.com.cn/category?cat=194"},{"@type":"ListItem","position":5,"name":"ReAct、Plan-and-Execute、Reflection、Multi-Agent 分别适合什么场景？做项目时应该怎么选？","item":"https://itinterview.com.cn/q/1272.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -92,14 +109,17 @@
 <p>| 任务天然可拆成多个专业角色 | Multi-Agent | 通信和调试成本翻倍 |</p>
 <p>| 长任务 + 部分子任务不可预测 | Agentic Workflows | 全局 Workflow + 局部 ReAct 嵌套 |</p>
 <p><strong>判断标准</strong>：能提前写清楚执行路径就用 Workflow，写不出来再上 Agent。很多人觉得任务“路径不确定”，其实是需求没拆清楚——认真拆一遍后往往会发现大部分场景是“LLM 在固定节点里做生成或判断”，这种用 Workflow 更稳也更容易排查。先用最简单的方式跑通，再根据实际失败模式决定升级哪一层。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1272">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1272">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=194&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=194&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

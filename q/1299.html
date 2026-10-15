@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="关键在渲染瀑布。MDN 把浏览器把属性变化画到屏幕上的过程称为「渲染瀑布」，依次是：Recalculate Style → Layout → Paint → Composition（合成）。整条链路必须在一帧内跑完；追求 60fps 意味着每帧只有 16.7ms 用来执行脚本、重算样式、布局与绘制。 不同属性的代…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1299.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：列表滚动时的入场动画在低端机上卡顿掉帧。为什么把动画从 left/top 改成 transform/opacity 就顺了？请据此给出优化清单。","text":"考察点：把「渲染瀑布」理论落到 CSS 动画优化上的能力。","answerCount":1,"datePublished":"2026-09-26T02:32:45.295Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关键在渲染瀑布。MDN 把浏览器把属性变化画到屏幕上的过程称为「渲染瀑布」，依次是：Recalculate Style → Layout → Paint → Composition（合成）。整条链路必须在一帧内跑完；追求 60fps 意味着每帧只有 16.7ms 用来执行脚本、重算样式、布局与绘制。 不同属性的代价不同（MDN 分类）： 影响几何或位置的属性（left、margin-left、width、font-size…）触发 样式重算 + Layout（重排）+ Paint，最贵； 不影响几何、也不独立成层的属性（color）只需 样式重算 + Paint； 在独立图层中渲染的属性（transform、opacity）连 Paint 都免了，只在 Composition 阶段处理，因此最省。 这就是关键：left/top 每帧都要重新布局与绘制，而 transform/opacity 交给合成器，几乎不占主线程。 优化清单： 1. 位移用 transform:translate()、透明度用 opacity，避免对 left/top/width/height/margin 做动画。 2. 用 will-change:transform（或 translateZ(0)）提前把元素提升为独立图层，但用完即撤，滥用会导致图层与显存暴涨。 3. 用 requestAnimationFrame 驱动 JS 动画，与浏览器帧节奏对齐；避免在滚动/动画回调里读写布局属性，造成强制同步布局。 4. 用 IntersectionObserver 替代 scroll 事件做「进入视口才播动画」，避免高频回调。 5. 用 Performance 面板录制，区分瓶颈是「脚本（主线程长任务）」还是「合成/光栅化」，并关注掉帧与 Long Task。 结论：动画只碰合成器友好的 transform/opacity，把昂贵属性留在静止状态。","url":"https://itinterview.com.cn/#/question/1299"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：列表滚动时的入场动画在低端机上卡顿掉帧。为什么把动画从 left/top 改成 transform/opacity 就顺了？请据此给出优化清单。","text":"考察点：把「渲染瀑布」理论落到 CSS 动画优化上的能力。","answerCount":1,"datePublished":"2026-09-26T02:32:45.295Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关键在渲染瀑布。MDN 把浏览器把属性变化画到屏幕上的过程称为「渲染瀑布」，依次是：Recalculate Style → Layout → Paint → Composition（合成）。整条链路必须在一帧内跑完；追求 60fps 意味着每帧只有 16.7ms 用来执行脚本、重算样式、布局与绘制。 不同属性的代价不同（MDN 分类）： 影响几何或位置的属性（left、margin-left、width、font-size…）触发 样式重算 + Layout（重排）+ Paint，最贵； 不影响几何、也不独立成层的属性（color）只需 样式重算 + Paint； 在独立图层中渲染的属性（transform、opacity）连 Paint 都免了，只在 Composition 阶段处理，因此最省。 这就是关键：left/top 每帧都要重新布局与绘制，而 transform/opacity 交给合成器，几乎不占主线程。 优化清单： 1. 位移用 transform:translate()、透明度用 opacity，避免对 left/top/width/height/margin 做动画。 2. 用 will-change:transform（或 translateZ(0)）提前把元素提升为独立图层，但用完即撤，滥用会导致图层与显存暴涨。 3. 用 requestAnimationFrame 驱动 JS 动画，与浏览器帧节奏对齐；避免在滚动/动画回调里读写布局属性，造成强制同步布局。 4. 用 IntersectionObserver 替代 scroll 事件做「进入视口才播动画」，避免高频回调。 5. 用 Performance 面板录制，区分瓶颈是「脚本（主线程长任务）」还是「合成/光栅化」，并关注掉帧与 Long Task。 结论：动画只碰合成器友好的 transform/opacity，把昂贵属性留在静止状态。","url":"https://itinterview.com.cn/question/1299"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"场景题：列表滚动时的入场动画在低端机上卡顿掉帧。为什么把动画从 left/top 改成 transform/opacity 就顺了？请据此给出优化清单。","item":"https://itinterview.com.cn/q/1299.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -90,14 +107,17 @@
 <li>用 Performance 面板录制，区分瓶颈是「脚本（主线程长任务）」还是「合成/光栅化」，并关注掉帧与 Long Task。</li>
 </ol>
 <p><strong>结论</strong>：动画只碰合成器友好的 <code>transform/opacity</code>，把昂贵属性留在静止状态。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1299">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1299">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=58&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=58&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

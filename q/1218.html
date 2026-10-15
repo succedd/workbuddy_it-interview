@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEff…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1218.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","text":"追问链第 3 问：Hooks 用错依赖是常见的线上事故源。","answerCount":1,"datePublished":"2026-09-21T02:22:10.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEffect(fn,[obj]) 而 obj 是内联字面量），引用变化会让 effect 无限重跑；③ 用 React DevTools 看 props/state 变化来源，确认是哪个状态在驱动循环。 常见根因：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。 修复手段：① 用 useMemo/useCallback 稳定依赖引用，或只把基本类型字段放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 []（仅挂载一次）；④ 请求用 AbortController 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 eslint-plugin-react-hooks 的 exhaustive-deps 规则强制校验依赖完整性。","url":"https://itinterview.com.cn/#/question/1218"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","text":"追问链第 3 问：Hooks 用错依赖是常见的线上事故源。","answerCount":1,"datePublished":"2026-09-21T02:22:10.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEffect(fn,[obj]) 而 obj 是内联字面量），引用变化会让 effect 无限重跑；③ 用 React DevTools 看 props/state 变化来源，确认是哪个状态在驱动循环。 常见根因：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。 修复手段：① 用 useMemo/useCallback 稳定依赖引用，或只把基本类型字段放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 []（仅挂载一次）；④ 请求用 AbortController 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 eslint-plugin-react-hooks 的 exhaustive-deps 规则强制校验依赖完整性。","url":"https://itinterview.com.cn/question/1218"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","item":"https://itinterview.com.cn/q/1218.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -79,14 +96,17 @@
 <li><strong>常见根因</strong>：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。</li>
 <li><strong>修复手段</strong>：① 用 <code>useMemo/useCallback</code> 稳定依赖引用，或只把<strong>基本类型字段</strong>放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 <code>[]</code>（仅挂载一次）；④ 请求用 <code>AbortController</code> 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 <code>eslint-plugin-react-hooks</code> 的 <code>exhaustive-deps</code> 规则强制校验依赖完整性。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1218">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1218">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=64&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=64&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="三个阶段：捕获（capture，由外向内）→ 目标（target）→ 冒泡（bubble，由内向外）。默认的 addEventListener 注册在冒泡阶段。 MDN 的示例很直观：给 button、其父级 div、以及 body 都注册 click 后点击按钮，输出顺序是 BUTTON → DIV → BOD…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1302.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？","text":"考察点：事件捕获/冒泡机制与事件委托的工程价值。","answerCount":1,"datePublished":"2026-09-26T02:32:51.687Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三个阶段：捕获（capture，由外向内）→ 目标（target）→ 冒泡（bubble，由内向外）。默认的 addEventListener 注册在冒泡阶段。 MDN 的示例很直观：给 button、其父级 div、以及 body 都注册 click 后点击按钮，输出顺序是 BUTTON → DIV → BODY，说明事件从最内层被点击的元素「冒泡」而出；若把父级监听器加上 {capture:true}，顺序就反转为 BODY → DIV → BUTTON。现代浏览器同时实现捕获与冒泡，是 W3C 当年调和 Netscape 与 IE 两套模型的产物。 两个关键属性： event.target：实际触发事件的最内层元素； event.currentTarget：当前正在执行处理器的元素（即绑定的那个）。 为什么要能阻止冒泡：MDN 的视频示例里，点击 会同时命中 video 的播放处理器与父 div 的隐藏处理器，表现异常；在 video 处理器中调用 event.stopPropagation() 即可阻止事件继续向外传递。 事件委托（event delegation）：在父容器上只绑一个监听器，利用冒泡统一处理子元素事件，再用 event.target 定位具体元素： 收益： 1. 性能与内存：16 个格子甚至上千个列表项只需 1 个监听器，省去逐个绑定，列表重渲染也无需重新注册； 2. 动态节点天然生效：之后新增或替换的子节点会自动被冒泡事件覆盖； 3. 逻辑集中：统一处理、易于解绑、不易遗漏。 注意：stopPropagation 会破坏委托；focus、blur、mouseenter、mouseleave、load 等不冒泡的事件无法委托，需改用捕获阶段或 focusin/focusout；嵌套子元素时用 closest() 兼容。","url":"https://itinterview.com.cn/#/question/1302"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？","text":"考察点：事件捕获/冒泡机制与事件委托的工程价值。","answerCount":1,"datePublished":"2026-09-26T02:32:51.687Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三个阶段：捕获（capture，由外向内）→ 目标（target）→ 冒泡（bubble，由内向外）。默认的 addEventListener 注册在冒泡阶段。 MDN 的示例很直观：给 button、其父级 div、以及 body 都注册 click 后点击按钮，输出顺序是 BUTTON → DIV → BODY，说明事件从最内层被点击的元素「冒泡」而出；若把父级监听器加上 {capture:true}，顺序就反转为 BODY → DIV → BUTTON。现代浏览器同时实现捕获与冒泡，是 W3C 当年调和 Netscape 与 IE 两套模型的产物。 两个关键属性： event.target：实际触发事件的最内层元素； event.currentTarget：当前正在执行处理器的元素（即绑定的那个）。 为什么要能阻止冒泡：MDN 的视频示例里，点击 会同时命中 video 的播放处理器与父 div 的隐藏处理器，表现异常；在 video 处理器中调用 event.stopPropagation() 即可阻止事件继续向外传递。 事件委托（event delegation）：在父容器上只绑一个监听器，利用冒泡统一处理子元素事件，再用 event.target 定位具体元素： 收益： 1. 性能与内存：16 个格子甚至上千个列表项只需 1 个监听器，省去逐个绑定，列表重渲染也无需重新注册； 2. 动态节点天然生效：之后新增或替换的子节点会自动被冒泡事件覆盖； 3. 逻辑集中：统一处理、易于解绑、不易遗漏。 注意：stopPropagation 会破坏委托；focus、blur、mouseenter、mouseleave、load 等不冒泡的事件无法委托，需改用捕获阶段或 focusin/focusout；嵌套子元素时用 closest() 兼容。","url":"https://itinterview.com.cn/question/1302"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？","item":"https://itinterview.com.cn/q/1302.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -94,14 +111,17 @@
 <li><strong>逻辑集中</strong>：统一处理、易于解绑、不易遗漏。</li>
 </ol>
 <p><strong>注意</strong>：<code>stopPropagation</code> 会破坏委托；<code>focus</code>、<code>blur</code>、<code>mouseenter</code>、<code>mouseleave</code>、<code>load</code> 等<strong>不冒泡</strong>的事件无法委托，需改用捕获阶段或 <code>focusin/focusout</code>；嵌套子元素时用 <code>closest()</code> 兼容。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1302">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1302">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=56&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=56&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

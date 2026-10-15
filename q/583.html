@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/583.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","text":"线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 DEL 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放（Lua 脚本原子校验）： 只有 get 到的 value 等于自己当初设的唯一随机值才删除； 用 Lua 保证“判断+删除”原子，避免判断后、删除前锁过期被别人抢走的中间态。 Redis 8.4+ 可用等价命令 DELEX key IFEQ 。 配套：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。","url":"https://itinterview.com.cn/#/question/583"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","text":"线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 DEL 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放（Lua 脚本原子校验）： 只有 get 到的 value 等于自己当初设的唯一随机值才删除； 用 Lua 保证“判断+删除”原子，避免判断后、删除前锁过期被别人抢走的中间态。 Redis 8.4+ 可用等价命令 DELEX key IFEQ 。 配套：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。","url":"https://itinterview.com.cn/question/583"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","item":"https://itinterview.com.cn/q/583.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -93,14 +110,17 @@ end</code></pre>
 <li>Redis 8.4+ 可用等价命令 <code>DELEX key IFEQ &lt;value&gt;</code>。</li>
 </ul>
 <p><strong>配套</strong>：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/583">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/583">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=134&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=134&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

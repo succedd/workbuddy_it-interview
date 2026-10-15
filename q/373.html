@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点： 按名称：find /path -name &#39;.log&#39;（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/373.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在 Linux 中如何查找文件？find 命令有哪些常用用法？","text":"考察点：find 的多维度匹配（名称/类型/大小/时间/权限）与“查到即执行”（-exec/-delete）；区分 find（实时遍历）与 locate（索引库）的取舍。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:59.666Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 按名称：find /path -name '.log'（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin -60 最近 60 分钟内的；常用作“找最近变更”。 按权限/属主：-perm 644、-user root。 查到即处理：find . -name '.tmp' -delete 直接删；或 find . -name '*.log' -exec gzip {} \\; 对每个结果执行命令（{} 占位、\\; 表示逐条）。 find vs locate：find 实时遍历磁盘、最准但慢；locate 查 prebuilt 索引库、极快但不实时（需 updatedb），适合粗略找已知文件名。","url":"https://itinterview.com.cn/#/question/373"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在 Linux 中如何查找文件？find 命令有哪些常用用法？","text":"考察点：find 的多维度匹配（名称/类型/大小/时间/权限）与“查到即执行”（-exec/-delete）；区分 find（实时遍历）与 locate（索引库）的取舍。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:59.666Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 按名称：find /path -name '.log'（通配符需引号包裹防止 shell 展开）；-iname 忽略大小写。 按类型/大小：-type f 只找文件、-type d 只找目录；-size +100M 找大于 100M 的文件。 按时间：-mtime -7 最近 7 天修改过的，-mmin -60 最近 60 分钟内的；常用作“找最近变更”。 按权限/属主：-perm 644、-user root。 查到即处理：find . -name '.tmp' -delete 直接删；或 find . -name '*.log' -exec gzip {} \\; 对每个结果执行命令（{} 占位、\\; 表示逐条）。 find vs locate：find 实时遍历磁盘、最准但慢；locate 查 prebuilt 索引库、极快但不实时（需 updatedb），适合粗略找已知文件名。","url":"https://itinterview.com.cn/question/373"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"在 Linux 中如何查找文件？find 命令有哪些常用用法？","item":"https://itinterview.com.cn/q/373.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -82,14 +99,17 @@
 <li><strong>查到即处理</strong>：<code>find . -name &#39;<em>.tmp&#39; -delete</code> 直接删；或 <code>find . -name &#39;</em>.log&#39; -exec gzip {} \;</code> 对每个结果执行命令（<code>{}</code> 占位、<code>\;</code> 表示逐条）。</li>
 <li><strong>find vs locate</strong>：find 实时遍历磁盘、最准但慢；locate 查 prebuilt 索引库、极快但不实时（需 <code>updatedb</code>），适合粗略找已知文件名。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/373">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/373">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=43&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=43&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

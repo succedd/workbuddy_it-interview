@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="三大存储组件 CommitLog：消息主体与元数据的存储主体，保存 Producer 写入的完整消息内容，消息长度不固定。所有 Topic 的消息都顺序追加到同一个 CommitLog；单文件默认 1G，文件名 20 位左补零表示起始偏移量（00000000000000000000 表示起始偏移 0，写满后下一个…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1256.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RocketMQ 的 CommitLog、ConsumeQueue、IndexFile 分别存储什么？为什么采用所有队列共用一个 CommitLog 的混合存储结构？","text":"考察点：RocketMQ 存储结构设计与读写性能的权衡。","answerCount":1,"datePublished":"2026-09-26T02:31:20.456Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三大存储组件 CommitLog：消息主体与元数据的存储主体，保存 Producer 写入的完整消息内容，消息长度不固定。所有 Topic 的消息都顺序追加到同一个 CommitLog；单文件默认 1G，文件名 20 位左补零表示起始偏移量（00000000000000000000 表示起始偏移 0，写满后下一个文件为 00000000001073741824）。 ConsumeQueue：某个 Topic 下某个 MessageQueue（逻辑队列）的物理索引文件，目的是提高消费检索效率。每个条目固定 20 字节 = 8 字节 CommitLog 物理偏移量 + 4 字节消息长度 + 8 字节 Tag 的 HashCode；单文件固定 30 万个条目、约 5.72M。 IndexFile：提供按 key 或时间区间查询消息的索引能力。 为什么用混合存储 Kafka 为每个 Partition 分配独立存储文件，而 RocketMQ 让单个 Broker 下所有队列共用一个 CommitLog。原因是：不分 Topic 写入时，有更大几率把多条消息合并成一个批次顺序写，从而提升磁盘写入效率——顺序写是 RocketMQ 高性能的基础。 代价在读取：按 Topic 遍历整个 CommitLog 非常低效。因此引入 ConsumeQueue 作为每个逻辑队列的索引：读取时用「索引序号 × 20 字节」算出索引位置，再按其中的物理偏移量回到 CommitLog 精确定位消息。 要区分两个概念：MessageQueue 是 Topic 下的逻辑队列，ConsumeQueue 是它对应的物理索引文件，二者不能等同。 读取链路与结论 每个队列中还保存了 ConsumeOffset（每个消费者组的消费位置），消费者按它取下一个未消费的消息即可。 结论：CommitLog 负责「写得快」（顺序追加 + 批量），ConsumeQueue 负责「读得准」（定长索引 + 直接寻址），两者分工解决了「一份日志既要写得快、又要能按队列随机读」的矛盾；CommitLog 固定文件大小则与 mmap 内存映射相关，便于映射与滚动。","url":"https://itinterview.com.cn/#/question/1256"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RocketMQ 的 CommitLog、ConsumeQueue、IndexFile 分别存储什么？为什么采用所有队列共用一个 CommitLog 的混合存储结构？","text":"考察点：RocketMQ 存储结构设计与读写性能的权衡。","answerCount":1,"datePublished":"2026-09-26T02:31:20.456Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三大存储组件 CommitLog：消息主体与元数据的存储主体，保存 Producer 写入的完整消息内容，消息长度不固定。所有 Topic 的消息都顺序追加到同一个 CommitLog；单文件默认 1G，文件名 20 位左补零表示起始偏移量（00000000000000000000 表示起始偏移 0，写满后下一个文件为 00000000001073741824）。 ConsumeQueue：某个 Topic 下某个 MessageQueue（逻辑队列）的物理索引文件，目的是提高消费检索效率。每个条目固定 20 字节 = 8 字节 CommitLog 物理偏移量 + 4 字节消息长度 + 8 字节 Tag 的 HashCode；单文件固定 30 万个条目、约 5.72M。 IndexFile：提供按 key 或时间区间查询消息的索引能力。 为什么用混合存储 Kafka 为每个 Partition 分配独立存储文件，而 RocketMQ 让单个 Broker 下所有队列共用一个 CommitLog。原因是：不分 Topic 写入时，有更大几率把多条消息合并成一个批次顺序写，从而提升磁盘写入效率——顺序写是 RocketMQ 高性能的基础。 代价在读取：按 Topic 遍历整个 CommitLog 非常低效。因此引入 ConsumeQueue 作为每个逻辑队列的索引：读取时用「索引序号 × 20 字节」算出索引位置，再按其中的物理偏移量回到 CommitLog 精确定位消息。 要区分两个概念：MessageQueue 是 Topic 下的逻辑队列，ConsumeQueue 是它对应的物理索引文件，二者不能等同。 读取链路与结论 每个队列中还保存了 ConsumeOffset（每个消费者组的消费位置），消费者按它取下一个未消费的消息即可。 结论：CommitLog 负责「写得快」（顺序追加 + 批量），ConsumeQueue 负责「读得准」（定长索引 + 直接寻址），两者分工解决了「一份日志既要写得快、又要能按队列随机读」的矛盾；CommitLog 固定文件大小则与 mmap 内存映射相关，便于映射与滚动。","url":"https://itinterview.com.cn/question/1256"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RocketMQ","item":"https://itinterview.com.cn/category?cat=129"},{"@type":"ListItem","position":5,"name":"RocketMQ 的 CommitLog、ConsumeQueue、IndexFile 分别存储什么？为什么采用所有队列共用一个 CommitLog 的混合存储结构？","item":"https://itinterview.com.cn/q/1256.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -90,14 +107,17 @@
 <li>每个队列中还保存了 <code>ConsumeOffset</code>（每个消费者组的消费位置），消费者按它取下一个未消费的消息即可。</li>
 <li>结论：CommitLog 负责「写得快」（顺序追加 + 批量），ConsumeQueue 负责「读得准」（定长索引 + 直接寻址），两者分工解决了「一份日志既要写得快、又要能按队列随机读」的矛盾；CommitLog 固定文件大小则与 <strong>mmap</strong> 内存映射相关，便于映射与滚动。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1256">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1256">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=129&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=129&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

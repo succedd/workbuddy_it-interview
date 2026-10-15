@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="send() 是异步的，不能默认成功 KafkaProducer.send() 把消息放进缓冲区后立即返回一个 Future，此时消息可能因为网络问题或 Broker 不可用而根本没送达。 两种拿到结果的方式 同步：kafkaTemplate.send(topic, o).get() 阻塞等结果，用 SendRe…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1252.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 生产者调用 send() 之后就算发送成功了吗？如何用回调、retries、delivery.timeout.ms 处理发送失败？","text":"考察点：生产者异步发送语义、重试参数配合与失败兜底。","answerCount":1,"datePublished":"2026-09-26T02:31:19.001Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"send() 是异步的，不能默认成功 KafkaProducer.send() 把消息放进缓冲区后立即返回一个 Future，此时消息可能因为网络问题或 Broker 不可用而根本没送达。 两种拿到结果的方式 同步：kafkaTemplate.send(topic, o).get() 阻塞等结果，用 SendResult.getRecordMetadata() != null 判断成败。实现简单但把异步变同步，吞吐明显下降，只适合关键单条消息。 回调（推荐）：future.addCallback(result -> 记录 topic/partition, ex -> 记录失败原因并告警)。成功记元数据，失败打日志并交给补偿任务或本地消息表兜底。 重试参数怎么配 retries（新版由 delivery.timeout.ms 统一约束）：遇到可重试异常（网络抖动、Leader 切换）时自动重发。默认 3 次偏少，生产上通常调大；但要注意重试可能造成同一分区内消息重复写入。 重试间隔（retry.backoff.ms）必须设置：间隔太小，一次网络波动就把 3 次重试瞬间用完，重试毫无意义；间隔太大又会拉长故障期间的发送延迟。 delivery.timeout.ms：从 send 到最终成功的总超时上限，必须 ≥ linger.ms + request.timeout.ms，超过后回调抛 TimeoutException，交由业务补偿。 linger.ms 与 batch.size：linger 太小批次攒不起来，吞吐上不去；调大则增加延迟，可靠性优先时不要把 linger 设得过大。 结论 可靠性不是靠单个参数：acks=all + min.insync.replicas > 1 保证不丢，retries + 退避保证可恢复，回调 + 告警/本地消息表保证「确实没发出去」的消息能被发现，再叠加幂等生产者避免重试引入重复。只写一句 kafkaTemplate.send(...) 就认为发送成功，是生产事故的常见起点。","url":"https://itinterview.com.cn/#/question/1252"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 生产者调用 send() 之后就算发送成功了吗？如何用回调、retries、delivery.timeout.ms 处理发送失败？","text":"考察点：生产者异步发送语义、重试参数配合与失败兜底。","answerCount":1,"datePublished":"2026-09-26T02:31:19.001Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"send() 是异步的，不能默认成功 KafkaProducer.send() 把消息放进缓冲区后立即返回一个 Future，此时消息可能因为网络问题或 Broker 不可用而根本没送达。 两种拿到结果的方式 同步：kafkaTemplate.send(topic, o).get() 阻塞等结果，用 SendResult.getRecordMetadata() != null 判断成败。实现简单但把异步变同步，吞吐明显下降，只适合关键单条消息。 回调（推荐）：future.addCallback(result -> 记录 topic/partition, ex -> 记录失败原因并告警)。成功记元数据，失败打日志并交给补偿任务或本地消息表兜底。 重试参数怎么配 retries（新版由 delivery.timeout.ms 统一约束）：遇到可重试异常（网络抖动、Leader 切换）时自动重发。默认 3 次偏少，生产上通常调大；但要注意重试可能造成同一分区内消息重复写入。 重试间隔（retry.backoff.ms）必须设置：间隔太小，一次网络波动就把 3 次重试瞬间用完，重试毫无意义；间隔太大又会拉长故障期间的发送延迟。 delivery.timeout.ms：从 send 到最终成功的总超时上限，必须 ≥ linger.ms + request.timeout.ms，超过后回调抛 TimeoutException，交由业务补偿。 linger.ms 与 batch.size：linger 太小批次攒不起来，吞吐上不去；调大则增加延迟，可靠性优先时不要把 linger 设得过大。 结论 可靠性不是靠单个参数：acks=all + min.insync.replicas > 1 保证不丢，retries + 退避保证可恢复，回调 + 告警/本地消息表保证「确实没发出去」的消息能被发现，再叠加幂等生产者避免重试引入重复。只写一句 kafkaTemplate.send(...) 就认为发送成功，是生产事故的常见起点。","url":"https://itinterview.com.cn/question/1252"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 生产者调用 send() 之后就算发送成功了吗？如何用回调、retries、delivery.timeout.ms 处理发送失败？","item":"https://itinterview.com.cn/q/1252.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -89,14 +106,17 @@
 </ul>
 <p><strong>结论</strong></p>
 <p>可靠性不是靠单个参数：<code>acks=all</code> + <code>min.insync.replicas &gt; 1</code> 保证不丢，<code>retries</code> + 退避保证可恢复，回调 + 告警/本地消息表保证「确实没发出去」的消息能被发现，再叠加幂等生产者避免重试引入重复。只写一句 <code>kafkaTemplate.send(...)</code> 就认为发送成功，是生产事故的常见起点。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1252">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1252">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=127&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=127&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/672.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"读写分离架构下，如何解决「刚写入就读不到」的问题？","text":"追问链第五问。考察点：主从延迟导致读己之写失效；强制走主库、写后读主（会话/时间窗）、缓存中转、二次读取四种方案及其取舍。","answerCount":1,"datePublished":"2026-09-08T13:41:00.247Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制走主库（最常用） 对于写后立即读的敏感操作（下单后查订单、改资料后回显、注册后跳转），在代码或中间件层面显式指定走主库。 优点：简单、可靠、绝对一致；缺点：主库压力增大，需要精确识别哪些查询是「敏感的」，否则过度使用会让读写分离失去意义。 实践中常用注解或 Hint（如 ShardingSphere 的 Hint、MyCat 的 /#mycat:db_type=master/）标记。 要点三：方案二 —— 写后读主（会话级/时间窗） 在一次会话内，只要发生过写操作，就把接下来一小段时间（如 1~3 秒，或直到本会话结束）内的读请求都路由到主库。 需要维护「会话最后一次写入时间」，中间件（如 ShardingSphere、ProxySQL）已内建该能力。 比全量走主库精细，但如果延迟超过时间窗仍会失效，需要配合延迟监控动态调整窗口。 要点四：方案三 —— 写缓存兜底 写主库的同时把数据写入 Redis（或本地缓存）并设置一个较短的过期时间；读请求优先读缓存，未命中再读从库。 优点：不增加主库读压力，还能抗热点读；缺点：引入了缓存与数据库的一致性问题，且只适合主键/唯一键明确、结构简单的查询。 要点五：方案四 —— 二次读取与延迟感知 二次读取：从库读不到时，再回主库读一次（只对「刚写入」的场景启用，避免放大主库压力）。 延迟感知路由：中间件实时监控各从库延迟，延迟超过阈值的从库自动摘除，只在健康的从库间分流读请求。 要点六：选型建议 核心交易链路（下单、支付、库存）→ 强制走主库； 用户「自己的数据」类查询 → 写后读主 或 缓存兜底； 列表、报表、搜索等容忍延迟的查询 → 正常走从库，并配合延迟感知路由； 如果业务对一致性要求极高且延迟不可接受，应考虑强一致方案（MGR、分布式数据库）而非在应用层打补丁。","url":"https://itinterview.com.cn/#/question/672"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"读写分离架构下，如何解决「刚写入就读不到」的问题？","text":"追问链第五问。考察点：主从延迟导致读己之写失效；强制走主库、写后读主（会话/时间窗）、缓存中转、二次读取四种方案及其取舍。","answerCount":1,"datePublished":"2026-09-08T13:41:00.247Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：问题根因 读写分离后，写请求走主库、读请求走从库。由于主从复制是异步的，主库刚提交的数据可能还没同步到从库。 用户「提交订单 → 立刻查看订单」时读请求落到从库，就会读不到自己刚写的数据（Read-Your-Writes 一致性被破坏），体验上表现为「明明提交成功了却查不到」。 要点二：方案一 —— 强制走主库（最常用） 对于写后立即读的敏感操作（下单后查订单、改资料后回显、注册后跳转），在代码或中间件层面显式指定走主库。 优点：简单、可靠、绝对一致；缺点：主库压力增大，需要精确识别哪些查询是「敏感的」，否则过度使用会让读写分离失去意义。 实践中常用注解或 Hint（如 ShardingSphere 的 Hint、MyCat 的 /#mycat:db_type=master/）标记。 要点三：方案二 —— 写后读主（会话级/时间窗） 在一次会话内，只要发生过写操作，就把接下来一小段时间（如 1~3 秒，或直到本会话结束）内的读请求都路由到主库。 需要维护「会话最后一次写入时间」，中间件（如 ShardingSphere、ProxySQL）已内建该能力。 比全量走主库精细，但如果延迟超过时间窗仍会失效，需要配合延迟监控动态调整窗口。 要点四：方案三 —— 写缓存兜底 写主库的同时把数据写入 Redis（或本地缓存）并设置一个较短的过期时间；读请求优先读缓存，未命中再读从库。 优点：不增加主库读压力，还能抗热点读；缺点：引入了缓存与数据库的一致性问题，且只适合主键/唯一键明确、结构简单的查询。 要点五：方案四 —— 二次读取与延迟感知 二次读取：从库读不到时，再回主库读一次（只对「刚写入」的场景启用，避免放大主库压力）。 延迟感知路由：中间件实时监控各从库延迟，延迟超过阈值的从库自动摘除，只在健康的从库间分流读请求。 要点六：选型建议 核心交易链路（下单、支付、库存）→ 强制走主库； 用户「自己的数据」类查询 → 写后读主 或 缓存兜底； 列表、报表、搜索等容忍延迟的查询 → 正常走从库，并配合延迟感知路由； 如果业务对一致性要求极高且延迟不可接受，应考虑强一致方案（MGR、分布式数据库）而非在应用层打补丁。","url":"https://itinterview.com.cn/question/672"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"读写分离架构下，如何解决「刚写入就读不到」的问题？","item":"https://itinterview.com.cn/q/672.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -107,14 +124,17 @@
 <li>列表、报表、搜索等容忍延迟的查询 → 正常走从库，并配合延迟感知路由；</li>
 <li>如果业务对一致性要求极高且延迟不可接受，应考虑<strong>强一致方案</strong>（MGR、分布式数据库）而非在应用层打补丁。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/672">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/672">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=28&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=28&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

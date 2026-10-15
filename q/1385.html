@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="一、四种 I/O 控制方式 | 方式 | CPU 参与度 | 适用场景 | 特点 | | --- | --- | --- | --- | | 程序查询（轮询） | 100%（忙等） | 低速/简单设备 | 实现简单，但 CPU 利用率极低 | | 程序中断 | 仅在中断时介入 | 中低速、随机设备（键鼠） | 设…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1385.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"I/O 控制有哪四种方式？中断处理全过程是怎样的？向量中断与中断向量表是什么？DMA 与中断方式有何区别？","text":"考察四种 I/O 方式对比、中断响应与处理的完整流程、向量中断机制，以及 DMA 与中断的本质差异。","answerCount":1,"datePublished":"2026-09-26T08:59:08.333Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、四种 I/O 控制方式 | 方式 | CPU 参与度 | 适用场景 | 特点 | | --- | --- | --- | --- | | 程序查询（轮询） | 100%（忙等） | 低速/简单设备 | 实现简单，但 CPU 利用率极低 | | 程序中断 | 仅在中断时介入 | 中低速、随机设备（键鼠） | 设备主动通知，CPU 可并行做别的事 | | DMA（直接内存访问） | 仅开始/结束介入 | 高速块设备（磁盘、网卡） | 由 DMAC 接管总线，设备↔内存直传 | | 通道（I/O 处理器） | 基本不介入 | 大型机多设备并发 | 专用处理器执行通道程序，进一步解放 CPU | 二、中断处理全过程 1. 关中断：进入不可嵌套区，防止高级别打扰。 2. 保存断点与现场（由中断隐指令完成）：把 PC、PSW、通用寄存器等压栈。 3. 识别中断源：硬件给出中断向量（或查询优先级），确定服务程序入口。 4. 执行中断服务程序（ISR）：保存现场 → 开中断（允许高优先级嵌套）→ 处理设备 → 关中断 → 恢复现场。 5. 开中断并中断返回：恢复断点/PSW，回到原程序被中断处继续执行。 三、向量中断与中断向量表 向量中断是由硬件直接提供「中断向量」（即该中断源对应的 ISR 入口地址或入口偏移）；所有中断向量按编号集中存放在中断向量表中，CPU 根据中断类型号查表即可跳转，速度快、可扩展。 四、DMA 与中断的区别 数据传送由谁完成：中断方式下每次传送都由 CPU 执行（保护/恢复现场、读写）；DMA 由 DMA 控制器硬件直接在设备与主存间传送，CPU 不搬运数据。 CPU 参与与中断次数：中断方式每传一块（甚至一个字节）都可能产生一次中断，CPU 开销大；DMA 仅在整块传输完成后发一次中断。 响应时机：中断在指令周期结束时响应；DMA 请求（DMAC 接管总线）在每个机器周期/总线空闲时即可响应，优先级通常高于中断。 适用：中断适合少量、随机 I/O；DMA 适合大批量、高速块传输（如磁盘读写）。","url":"https://itinterview.com.cn/#/question/1385"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"I/O 控制有哪四种方式？中断处理全过程是怎样的？向量中断与中断向量表是什么？DMA 与中断方式有何区别？","text":"考察四种 I/O 方式对比、中断响应与处理的完整流程、向量中断机制，以及 DMA 与中断的本质差异。","answerCount":1,"datePublished":"2026-09-26T08:59:08.333Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、四种 I/O 控制方式 | 方式 | CPU 参与度 | 适用场景 | 特点 | | --- | --- | --- | --- | | 程序查询（轮询） | 100%（忙等） | 低速/简单设备 | 实现简单，但 CPU 利用率极低 | | 程序中断 | 仅在中断时介入 | 中低速、随机设备（键鼠） | 设备主动通知，CPU 可并行做别的事 | | DMA（直接内存访问） | 仅开始/结束介入 | 高速块设备（磁盘、网卡） | 由 DMAC 接管总线，设备↔内存直传 | | 通道（I/O 处理器） | 基本不介入 | 大型机多设备并发 | 专用处理器执行通道程序，进一步解放 CPU | 二、中断处理全过程 1. 关中断：进入不可嵌套区，防止高级别打扰。 2. 保存断点与现场（由中断隐指令完成）：把 PC、PSW、通用寄存器等压栈。 3. 识别中断源：硬件给出中断向量（或查询优先级），确定服务程序入口。 4. 执行中断服务程序（ISR）：保存现场 → 开中断（允许高优先级嵌套）→ 处理设备 → 关中断 → 恢复现场。 5. 开中断并中断返回：恢复断点/PSW，回到原程序被中断处继续执行。 三、向量中断与中断向量表 向量中断是由硬件直接提供「中断向量」（即该中断源对应的 ISR 入口地址或入口偏移）；所有中断向量按编号集中存放在中断向量表中，CPU 根据中断类型号查表即可跳转，速度快、可扩展。 四、DMA 与中断的区别 数据传送由谁完成：中断方式下每次传送都由 CPU 执行（保护/恢复现场、读写）；DMA 由 DMA 控制器硬件直接在设备与主存间传送，CPU 不搬运数据。 CPU 参与与中断次数：中断方式每传一块（甚至一个字节）都可能产生一次中断，CPU 开销大；DMA 仅在整块传输完成后发一次中断。 响应时机：中断在指令周期结束时响应；DMA 请求（DMAC 接管总线）在每个机器周期/总线空闲时即可响应，优先级通常高于中断。 适用：中断适合少量、随机 I/O；DMA 适合大批量、高速块传输（如磁盘读写）。","url":"https://itinterview.com.cn/question/1385"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"I/O 控制有哪四种方式？中断处理全过程是怎样的？向量中断与中断向量表是什么？DMA 与中断方式有何区别？","item":"https://itinterview.com.cn/q/1385.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -97,14 +114,17 @@
 <li><strong>响应时机</strong>：中断在指令周期结束时响应；DMA 请求（DMAC 接管总线）在每个机器周期/总线空闲时即可响应，优先级通常高于中断。</li>
 <li><strong>适用</strong>：中断适合少量、随机 I/O；DMA 适合大批量、高速块传输（如磁盘读写）。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1385">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1385">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=5&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=5&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

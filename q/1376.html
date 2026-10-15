@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="核心结论：SRAM（静态 RAM）与 DRAM（动态 RAM）都属于易失性存储器（断电数据丢失），但存储原理不同，导致性能与成本两极分化，因此 Cache 选 SRAM、主存选 DRAM。 一、存储原理 SRAM：用 6 个晶体管构成的双稳态触发器保存 1 位，只要持续供电状态就稳定，无需刷新。 DRAM：用 1…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1376.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SRAM 和 DRAM 的主要区别是什么？为什么 CPU 的 Cache 用 SRAM，而主存（内存条）用 DRAM？","text":"考察主存储器介质选型的本质：SRAM 与 DRAM 在存储原理、刷新、速度、集成度、成本、易失性上的差异，以及由此决定的体系结构角色。","answerCount":1,"datePublished":"2026-09-26T08:59:07.583Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心结论：SRAM（静态 RAM）与 DRAM（动态 RAM）都属于易失性存储器（断电数据丢失），但存储原理不同，导致性能与成本两极分化，因此 Cache 选 SRAM、主存选 DRAM。 一、存储原理 SRAM：用 6 个晶体管构成的双稳态触发器保存 1 位，只要持续供电状态就稳定，无需刷新。 DRAM：用 1 个晶体管 + 1 个电容（1T1C）保存 1 位，电容会因漏电流衰减，必须定期刷新（通常 64ms 内按行刷新全部数据）才能保持。 二、关键对比 | 维度 | SRAM | DRAM | | --- | --- | --- | | 单元结构 | 6 晶体管/位 | 1T1C/位 | | 刷新 | 不需要 | 必须定时刷新 | | 访问速度 | 极快（1~10ns） | 较慢（~50ns 量级） | | 集成度 | 低（占面积大） | 高（密度大） | | 成本/功耗 | 高成本、高功耗 | 低成本、相对低功耗 | | 典型用途 | Cache（L1/L2/L3） | 主存（DDR 内存条） | 三、选型原因：Cache 追求极致速度、时序确定、无需刷新开销，故用 SRAM；主存追求大容量、低成本，故用高集成度的 DRAM。口诀：「SRAM 快、密低、耗大、不刷；DRAM 慢、密高、耗小、刷」。","url":"https://itinterview.com.cn/#/question/1376"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SRAM 和 DRAM 的主要区别是什么？为什么 CPU 的 Cache 用 SRAM，而主存（内存条）用 DRAM？","text":"考察主存储器介质选型的本质：SRAM 与 DRAM 在存储原理、刷新、速度、集成度、成本、易失性上的差异，以及由此决定的体系结构角色。","answerCount":1,"datePublished":"2026-09-26T08:59:07.583Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心结论：SRAM（静态 RAM）与 DRAM（动态 RAM）都属于易失性存储器（断电数据丢失），但存储原理不同，导致性能与成本两极分化，因此 Cache 选 SRAM、主存选 DRAM。 一、存储原理 SRAM：用 6 个晶体管构成的双稳态触发器保存 1 位，只要持续供电状态就稳定，无需刷新。 DRAM：用 1 个晶体管 + 1 个电容（1T1C）保存 1 位，电容会因漏电流衰减，必须定期刷新（通常 64ms 内按行刷新全部数据）才能保持。 二、关键对比 | 维度 | SRAM | DRAM | | --- | --- | --- | | 单元结构 | 6 晶体管/位 | 1T1C/位 | | 刷新 | 不需要 | 必须定时刷新 | | 访问速度 | 极快（1~10ns） | 较慢（~50ns 量级） | | 集成度 | 低（占面积大） | 高（密度大） | | 成本/功耗 | 高成本、高功耗 | 低成本、相对低功耗 | | 典型用途 | Cache（L1/L2/L3） | 主存（DDR 内存条） | 三、选型原因：Cache 追求极致速度、时序确定、无需刷新开销，故用 SRAM；主存追求大容量、低成本，故用高集成度的 DRAM。口诀：「SRAM 快、密低、耗大、不刷；DRAM 慢、密高、耗小、刷」。","url":"https://itinterview.com.cn/question/1376"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"SRAM 和 DRAM 的主要区别是什么？为什么 CPU 的 Cache 用 SRAM，而主存（内存条）用 DRAM？","item":"https://itinterview.com.cn/q/1376.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -89,14 +106,17 @@
 <p>| 成本/功耗 | 高成本、高功耗 | 低成本、相对低功耗 |</p>
 <p>| 典型用途 | Cache（L1/L2/L3） | 主存（DDR 内存条） |</p>
 <p><strong>三、选型原因</strong>：Cache 追求极致速度、时序确定、无需刷新开销，故用 SRAM；主存追求大容量、低成本，故用高集成度的 DRAM。口诀：「SRAM 快、密低、耗大、不刷；DRAM 慢、密高、耗小、刷」。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1376">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1376">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=5&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=5&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

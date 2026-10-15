@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="建连全流程 1. 信令（Signaling）：双方交换「连接说明书」——SDP offer/answer（媒体能力：编解码、分辨率、DTLS 指纹）与 ICE 候选（候选地址）。WebRTC 不规定信令协议，WebSocket/HTTP 都行，这一步必须自建或用信令服务； 2. ICE 收集候选：本机候选（局域网…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1444.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WebRTC 两个浏览器之间是如何建立点对点连接的？信令、ICE/STUN/TURN 各自的角色是什么？","text":"考察 WebRTC 连接建立全流程：SDP offer/answer 协商、ICE 候选收集与连通性检查、STUN 打洞与 TURN 中继兜底。","answerCount":1,"datePublished":"2026-10-01T04:21:00.517Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"建连全流程 1. 信令（Signaling）：双方交换「连接说明书」——SDP offer/answer（媒体能力：编解码、分辨率、DTLS 指纹）与 ICE 候选（候选地址）。WebRTC 不规定信令协议，WebSocket/HTTP 都行，这一步必须自建或用信令服务； 2. ICE 收集候选：本机候选（局域网 IP）→ 反射候选（经 STUN 探测到的公网映射地址）→ 中继候选（TURN 服务器分配的地址）； 3. 连通性检查：双方对候选两两配对发 STUN binding 探测，选延迟最低的可用路径； 4. 安全与媒体：DTLS 握手交换密钥 → SRTP 加密传输音视频（WebRTC 强制加密，无明文模式）。 三个角色分工 | 组件 | 作用 | 类比 | |---|---|---| | 信令服务器 | 交换 SDP/候选（只在建连期用） | 「介绍人」 | | STUN | 告诉你「你在公网眼中的地址」（NAT 映射） | 「镜子」 | | TURN | 打洞失败时的中继转发（媒体流经它） | 「传话筒」 | 打洞原理：双方同时向对方公网映射地址发包，在 NAT 上「凿」出会话孔洞（UDP 打洞成功率约 80%+，对称型 NAT 失败）； 失败兜底：对称 NAT / 严格防火墙场景走 TURN，成本是带宽+延迟，因此生产部署要按地区布 TURN 节点并统计 relay 率（relay 率过高说明 NAT 环境差或候选收集有问题）。 加分点 coturn 是事实标准的开源 STUN/TURN 实现； iceServers 里同时配 stun: 与 turn:，弱网/企业防火墙（只放行 443/TCP）要配 turn:...?transport=tcp； 连接建立慢首先查 ICE：pc.getStats() 看 candidate-pair 状态与选路耗时。","url":"https://itinterview.com.cn/#/question/1444"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WebRTC 两个浏览器之间是如何建立点对点连接的？信令、ICE/STUN/TURN 各自的角色是什么？","text":"考察 WebRTC 连接建立全流程：SDP offer/answer 协商、ICE 候选收集与连通性检查、STUN 打洞与 TURN 中继兜底。","answerCount":1,"datePublished":"2026-10-01T04:21:00.517Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"建连全流程 1. 信令（Signaling）：双方交换「连接说明书」——SDP offer/answer（媒体能力：编解码、分辨率、DTLS 指纹）与 ICE 候选（候选地址）。WebRTC 不规定信令协议，WebSocket/HTTP 都行，这一步必须自建或用信令服务； 2. ICE 收集候选：本机候选（局域网 IP）→ 反射候选（经 STUN 探测到的公网映射地址）→ 中继候选（TURN 服务器分配的地址）； 3. 连通性检查：双方对候选两两配对发 STUN binding 探测，选延迟最低的可用路径； 4. 安全与媒体：DTLS 握手交换密钥 → SRTP 加密传输音视频（WebRTC 强制加密，无明文模式）。 三个角色分工 | 组件 | 作用 | 类比 | |---|---|---| | 信令服务器 | 交换 SDP/候选（只在建连期用） | 「介绍人」 | | STUN | 告诉你「你在公网眼中的地址」（NAT 映射） | 「镜子」 | | TURN | 打洞失败时的中继转发（媒体流经它） | 「传话筒」 | 打洞原理：双方同时向对方公网映射地址发包，在 NAT 上「凿」出会话孔洞（UDP 打洞成功率约 80%+，对称型 NAT 失败）； 失败兜底：对称 NAT / 严格防火墙场景走 TURN，成本是带宽+延迟，因此生产部署要按地区布 TURN 节点并统计 relay 率（relay 率过高说明 NAT 环境差或候选收集有问题）。 加分点 coturn 是事实标准的开源 STUN/TURN 实现； iceServers 里同时配 stun: 与 turn:，弱网/企业防火墙（只放行 443/TCP）要配 turn:...?transport=tcp； 连接建立慢首先查 ICE：pc.getStats() 看 candidate-pair 状态与选路耗时。","url":"https://itinterview.com.cn/question/1444"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"WebRTC 两个浏览器之间是如何建立点对点连接的？信令、ICE/STUN/TURN 各自的角色是什么？","item":"https://itinterview.com.cn/q/1444.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -96,14 +113,17 @@
 <li><code>iceServers</code> 里同时配 stun: 与 turn:，弱网/企业防火墙（只放行 443/TCP）要配 <code>turn:...?transport=tcp</code>；</li>
 <li>连接建立慢首先查 ICE：<code>pc.getStats()</code> 看 candidate-pair 状态与选路耗时。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1444">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1444">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=252&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=252&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

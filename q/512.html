@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/512.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？","text":"解释 GMP 三要素、GOMAXPROCS 的含义、工作窃取(Work Stealing)与本地/全局队列，以及为什么需要 P。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：逻辑处理器/调度上下文，持有本地运行队列（容量 256）、mcache 等；数量由 GOMAXPROCS 决定，默认等于 CPU 核数——即同一时刻最多 GOMAXPROCS 个 G 真正并行。 为什么需要 P：把“调度资源”与“执行线程”解耦。若没有 P，系统调用阻塞 M 会冻结整条运行队列；借助 P，被阻塞的 M 可把手里的 P 移交给空闲 M，CPU 不空转。P 的本地队列也减少了全局锁竞争。 取任务顺序（M 调度循环）：① 优先取 P 本地队列（无锁、缓存友好）；② 每 61 次调度检查一次全局队列（避免饥饿）；③ 网络轮询器 netpoll 中已就绪的 G；④ 从其他 P 偷取一半 G（Work Stealing，负载均衡）。 补充：Go 1.14+ 采用基于信号（SIGURG）的异步抢占，防止一个 G 长时间占用 P 导致饥饿。","url":"https://itinterview.com.cn/#/question/512"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？","text":"解释 GMP 三要素、GOMAXPROCS 的含义、工作窃取(Work Stealing)与本地/全局队列，以及为什么需要 P。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"G (Goroutine)：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。 M (Machine)：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。 P (Processor)：逻辑处理器/调度上下文，持有本地运行队列（容量 256）、mcache 等；数量由 GOMAXPROCS 决定，默认等于 CPU 核数——即同一时刻最多 GOMAXPROCS 个 G 真正并行。 为什么需要 P：把“调度资源”与“执行线程”解耦。若没有 P，系统调用阻塞 M 会冻结整条运行队列；借助 P，被阻塞的 M 可把手里的 P 移交给空闲 M，CPU 不空转。P 的本地队列也减少了全局锁竞争。 取任务顺序（M 调度循环）：① 优先取 P 本地队列（无锁、缓存友好）；② 每 61 次调度检查一次全局队列（避免饥饿）；③ 网络轮询器 netpoll 中已就绪的 G；④ 从其他 P 偷取一半 G（Work Stealing，负载均衡）。 补充：Go 1.14+ 采用基于信号（SIGURG）的异步抢占，防止一个 G 长时间占用 P 导致饥饿。","url":"https://itinterview.com.cn/question/512"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Go","item":"https://itinterview.com.cn/category?cat=16"},{"@type":"ListItem","position":4,"name":"请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？","item":"https://itinterview.com.cn/q/512.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -81,14 +98,17 @@
 <li><strong>取任务顺序</strong>（M 调度循环）：① 优先取 P 本地队列（无锁、缓存友好）；② 每 61 次调度检查一次全局队列（避免饥饿）；③ 网络轮询器 netpoll 中已就绪的 G；④ 从其他 P 偷取一半 G（Work Stealing，负载均衡）。</li>
 <li><strong>补充</strong>：Go 1.14+ 采用基于信号（SIGURG）的<strong>异步抢占</strong>，防止一个 G 长时间占用 P 导致饥饿。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/512">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/512">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=16&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=16&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

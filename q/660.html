@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/660.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","text":"追问链第三问。考察点：程序计数器/虚拟机栈/本地方法栈/堆/方法区的划分；线程私有与共享的边界；直接内存不算规范定义的运行时数据区；各区域会抛什么错误。","answerCount":1,"datePublished":"2026-09-08T13:40:44.056Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有的三个区域 程序计数器：当前线程所执行字节码的行号指示器，用于分支、循环、跳转、异常处理和线程切换后恢复执行位置。执行 native 方法时值为 Undefined。它是唯一一个在规范中没有规定任何 OutOfMemoryError 的区域。 Java 虚拟机栈：由栈帧组成，每次方法调用压入一个栈帧，方法结束（正常 return 或抛异常）弹出。栈帧内含局部变量表、操作数栈、动态链接、方法返回地址。 本地方法栈：为 native 方法服务，HotSpot 中已与虚拟机栈合二为一。 要点三：线程共享的两个区域 堆：几乎所有对象实例与数组都在这里分配（JIT 逃逸分析成熟后出现了栈上分配与标量替换的例外）。堆是垃圾收集器管理的主要区域，可进一步划分为新生代（Eden + Survivor0/1）与老年代。 方法区：存储已被加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。JDK 7 及以前用永久代实现，JDK 8 起改用本地内存实现的元空间。 要点四：各区域会抛的错误 程序计数器：规范中没有 OOM。 虚拟机栈/本地方法栈：栈深度超限抛 StackOverflowError（典型是无限递归）；栈可动态扩展但申请不到内存时抛 OutOfMemoryError。 堆：无法分配实例且堆无法再扩展时抛 OutOfMemoryError: Java heap space。 方法区：JDK8 后元空间默认使用本地内存，溢出信息为 OutOfMemoryError: Metaspace。 直接内存：受 -XX:MaxDirectMemorySize 与物理内存限制，溢出时 Heap Dump 文件往往很小而看不出异常。","url":"https://itinterview.com.cn/#/question/660"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","text":"追问链第三问。考察点：程序计数器/虚拟机栈/本地方法栈/堆/方法区的划分；线程私有与共享的边界；直接内存不算规范定义的运行时数据区；各区域会抛什么错误。","answerCount":1,"datePublished":"2026-09-08T13:40:44.056Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有的三个区域 程序计数器：当前线程所执行字节码的行号指示器，用于分支、循环、跳转、异常处理和线程切换后恢复执行位置。执行 native 方法时值为 Undefined。它是唯一一个在规范中没有规定任何 OutOfMemoryError 的区域。 Java 虚拟机栈：由栈帧组成，每次方法调用压入一个栈帧，方法结束（正常 return 或抛异常）弹出。栈帧内含局部变量表、操作数栈、动态链接、方法返回地址。 本地方法栈：为 native 方法服务，HotSpot 中已与虚拟机栈合二为一。 要点三：线程共享的两个区域 堆：几乎所有对象实例与数组都在这里分配（JIT 逃逸分析成熟后出现了栈上分配与标量替换的例外）。堆是垃圾收集器管理的主要区域，可进一步划分为新生代（Eden + Survivor0/1）与老年代。 方法区：存储已被加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。JDK 7 及以前用永久代实现，JDK 8 起改用本地内存实现的元空间。 要点四：各区域会抛的错误 程序计数器：规范中没有 OOM。 虚拟机栈/本地方法栈：栈深度超限抛 StackOverflowError（典型是无限递归）；栈可动态扩展但申请不到内存时抛 OutOfMemoryError。 堆：无法分配实例且堆无法再扩展时抛 OutOfMemoryError: Java heap space。 方法区：JDK8 后元空间默认使用本地内存，溢出信息为 OutOfMemoryError: Metaspace。 直接内存：受 -XX:MaxDirectMemorySize 与物理内存限制，溢出时 Heap Dump 文件往往很小而看不出异常。","url":"https://itinterview.com.cn/question/660"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","item":"https://itinterview.com.cn/q/660.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -98,14 +115,17 @@
 <li>方法区：JDK8 后元空间默认使用本地内存，溢出信息为 <strong>OutOfMemoryError: Metaspace</strong>。</li>
 <li>直接内存：受 <code>-XX:MaxDirectMemorySize</code> 与物理内存限制，溢出时 Heap Dump 文件往往很小而看不出异常。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/660">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/660">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=85&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=85&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

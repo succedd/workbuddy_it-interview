@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/506.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么基类析构函数通常要声明为 virtual（虚析构函数）？","text":"请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆序执行），完整释放整个对象。 规则： 只要类可能被多态使用（通过基类指针/引用管理派生对象），基类析构就应声明为 virtual。 含虚函数的类几乎总应有虚析构。 若类不需作为基类/不被多态删除，则不必加虚析构（避免无谓的 vptr 开销）。 抽象基类（含纯虚函数）同理，且通常 ~Base() = default 或 = 0 并提供定义。","url":"https://itinterview.com.cn/#/question/506"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么基类析构函数通常要声明为 virtual（虚析构函数）？","text":"请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题场景：通过基类指针删除派生类对象时，若基类析构不是虚函数，则发生未定义行为——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。 解决：将基类析构声明为 virtual，使 delete 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆序执行），完整释放整个对象。 规则： 只要类可能被多态使用（通过基类指针/引用管理派生对象），基类析构就应声明为 virtual。 含虚函数的类几乎总应有虚析构。 若类不需作为基类/不被多态删除，则不必加虚析构（避免无谓的 vptr 开销）。 抽象基类（含纯虚函数）同理，且通常 ~Base() = default 或 = 0 并提供定义。","url":"https://itinterview.com.cn/question/506"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"为什么基类析构函数通常要声明为 virtual（虚析构函数）？","item":"https://itinterview.com.cn/q/506.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -85,14 +102,17 @@ delete p; // 若 ~Base() 非虚 → 只调 ~Base()，Derived 部分泄漏！</co
 <li>若类<strong>不需作为基类/不被多态删除</strong>，则不必加虚析构（避免无谓的 vptr 开销）。</li>
 <li>抽象基类（含纯虚函数）同理，且通常 <code>~Base() = default</code> 或 <code>= 0</code> 并提供定义。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/506">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/506">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=11&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=11&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

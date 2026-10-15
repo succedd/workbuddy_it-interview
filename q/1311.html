@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。 Nagle 算法（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1311.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","text":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","answerCount":1,"datePublished":"2026-09-26T03:31:19.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。 Nagle 算法（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② 之前发出的数据已收到 ACK。两个条件都不满足时，数据先囤在发送缓冲区。 延迟确认（接收方机制）的目的：减少纯 ACK 包。纯 ACK 只有 40 字节头部没有数据，很浪费。策略是：有响应数据要发时，ACK 捎带一起发；没有响应数据时，ACK 延迟一段时间再发；等待期间对方的下一个报文到了，就立刻确认。Linux 内核里由 HZ 计算得出：最大延迟 200ms（HZ/5），最短 40ms（HZ/25）。 死等是如何形成的：发送方先发出一个小包；接收方收到了，但自己暂时没有响应数据要发，按延迟确认机制「等对方的下一个包，等到了就捎带 ACK」；而发送方按 Nagle 规则「没收到第一个包的 ACK，后续小包一律不许发」。于是双方互相等待：接收方等发送方的下一个报文，发送方等接收方的 ACK，谁都不动，直到接收方的延迟确认计时器到期（Linux 上典型为 40ms）才回 ACK，发送方随后才能把囤着的数据发出去。整个过程没有任何丢包，纯粹是机制叠加造成的固定延迟。 什么时候该开 TCP_NODELAY： 1. 交互式或低延迟场景应当关闭 Nagle（即设置 TCP_NODELAY）：telnet/ssh、RPC 框架、游戏同步、IM 消息、Redis 客户端等小包高频交互程序； 2. 吞吐优先、大块数据传输的场景可以保留默认：文件传输、日志批量上报等，Nagle 合并小包反而有利； 3. 更好的根治法是在应用层做写合并：把多次小写合并成一次大写再写入 socket，同时保留 TCP_NODELAY，兼顾延迟与效率； 4. 接收端侧可用 TCP_QUICKACK 关闭延迟确认，但它是每收到数据就重置的临时模式，需要配合 recv 循环反复设置，一般不如发送端关 Nagle 直接。 排查特征：抓包看到 ACK 延迟稳定集中在 40ms 或 200ms 附近、数据包长度小于 MSS、无重传标志，基本可以定位为该组合；把两端任一机制关掉后延迟立即消失即可确认。","url":"https://itinterview.com.cn/#/question/1311"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","text":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","answerCount":1,"datePublished":"2026-09-26T03:31:19.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。 Nagle 算法（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② 之前发出的数据已收到 ACK。两个条件都不满足时，数据先囤在发送缓冲区。 延迟确认（接收方机制）的目的：减少纯 ACK 包。纯 ACK 只有 40 字节头部没有数据，很浪费。策略是：有响应数据要发时，ACK 捎带一起发；没有响应数据时，ACK 延迟一段时间再发；等待期间对方的下一个报文到了，就立刻确认。Linux 内核里由 HZ 计算得出：最大延迟 200ms（HZ/5），最短 40ms（HZ/25）。 死等是如何形成的：发送方先发出一个小包；接收方收到了，但自己暂时没有响应数据要发，按延迟确认机制「等对方的下一个包，等到了就捎带 ACK」；而发送方按 Nagle 规则「没收到第一个包的 ACK，后续小包一律不许发」。于是双方互相等待：接收方等发送方的下一个报文，发送方等接收方的 ACK，谁都不动，直到接收方的延迟确认计时器到期（Linux 上典型为 40ms）才回 ACK，发送方随后才能把囤着的数据发出去。整个过程没有任何丢包，纯粹是机制叠加造成的固定延迟。 什么时候该开 TCP_NODELAY： 1. 交互式或低延迟场景应当关闭 Nagle（即设置 TCP_NODELAY）：telnet/ssh、RPC 框架、游戏同步、IM 消息、Redis 客户端等小包高频交互程序； 2. 吞吐优先、大块数据传输的场景可以保留默认：文件传输、日志批量上报等，Nagle 合并小包反而有利； 3. 更好的根治法是在应用层做写合并：把多次小写合并成一次大写再写入 socket，同时保留 TCP_NODELAY，兼顾延迟与效率； 4. 接收端侧可用 TCP_QUICKACK 关闭延迟确认，但它是每收到数据就重置的临时模式，需要配合 recv 循环反复设置，一般不如发送端关 Nagle 直接。 排查特征：抓包看到 ACK 延迟稳定集中在 40ms 或 200ms 附近、数据包长度小于 MSS、无重传标志，基本可以定位为该组合；把两端任一机制关掉后延迟立即消失即可确认。","url":"https://itinterview.com.cn/question/1311"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","item":"https://itinterview.com.cn/q/1311.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -86,14 +103,17 @@
 <li>接收端侧可用 TCP_QUICKACK 关闭延迟确认，但它是每收到数据就重置的临时模式，需要配合 recv 循环反复设置，一般不如发送端关 Nagle 直接。</li>
 </ol>
 <p><strong>排查特征</strong>：抓包看到 ACK 延迟稳定集中在 40ms 或 200ms 附近、数据包长度小于 MSS、无重传标志，基本可以定位为该组合；把两端任一机制关掉后延迟立即消失即可确认。</p></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1311">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1311">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=50&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=50&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点： 主从+哨兵适用场景：数据量单节点内存可承载（通常十几到几十 GB）、需要自动故障转移但不需横向分片的场景。哨兵负责高可用，读写分离靠客户端/Proxy。优点是架构简单、运维心智负担低；缺点是不能突破单机内存上限、写仍是单点。 Redis Cluster 适用场景：数据量超过单节点容量、需要自动分片与横向扩…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1228.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【系统设计】Redis 主从+哨兵 与 Redis Cluster 两种高可用方案该如何选型？Cluster 的槽路由（MOVED/ASK 重定向）、gossip 与槽迁移（resharding）又是如何工作的？","text":"追问链第 6 问（收口）：把主从、哨兵、集群串起来做架构决策。","answerCount":1,"datePublished":"2026-09-21T02:33:12.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 主从+哨兵适用场景：数据量单节点内存可承载（通常十几到几十 GB）、需要自动故障转移但不需横向分片的场景。哨兵负责高可用，读写分离靠客户端/Proxy。优点是架构简单、运维心智负担低；缺点是不能突破单机内存上限、写仍是单点。 Redis Cluster 适用场景：数据量超过单节点容量、需要自动分片与横向扩展的场景。Cluster 把数据按 16384 个槽（slot）分布到多个主节点，每个主可挂从做高可用。优点是无中心、可扩缩容；缺点是客户端需支持 cluster 协议、多 key 事务/Lua 受限（需在同一槽，用 hash tag 约束）、运维更复杂。 Cluster 路由机制：客户端计算 CRC16(key) % 16384 定位槽与对应节点；若请求打到错误节点，返回 MOVED 重定向（槽已迁移到新节点，客户端应更新本地槽映射）；ASK 重定向用于迁移进行中（仅本次请求转发，不更新映射）。节点间用 gossip 协议互相交换集群状态。 resharding（槽迁移）：用 redis-cli --cluster reshard 把槽从源节点迁到目标节点，迁移期间逐 key 用 MIGRATE 原子移动，配合 ASK 保证不中断服务。注意大 key 迁移会阻塞，需分批/避开峰值。 选型权衡总结：中小规模、重可用轻扩展→哨兵；大规模、需分片扩展→Cluster；两者都需配合持久化与监控，且都要防脑裂与保证副本健康。","url":"https://itinterview.com.cn/#/question/1228"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【系统设计】Redis 主从+哨兵 与 Redis Cluster 两种高可用方案该如何选型？Cluster 的槽路由（MOVED/ASK 重定向）、gossip 与槽迁移（resharding）又是如何工作的？","text":"追问链第 6 问（收口）：把主从、哨兵、集群串起来做架构决策。","answerCount":1,"datePublished":"2026-09-21T02:33:12.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 主从+哨兵适用场景：数据量单节点内存可承载（通常十几到几十 GB）、需要自动故障转移但不需横向分片的场景。哨兵负责高可用，读写分离靠客户端/Proxy。优点是架构简单、运维心智负担低；缺点是不能突破单机内存上限、写仍是单点。 Redis Cluster 适用场景：数据量超过单节点容量、需要自动分片与横向扩展的场景。Cluster 把数据按 16384 个槽（slot）分布到多个主节点，每个主可挂从做高可用。优点是无中心、可扩缩容；缺点是客户端需支持 cluster 协议、多 key 事务/Lua 受限（需在同一槽，用 hash tag 约束）、运维更复杂。 Cluster 路由机制：客户端计算 CRC16(key) % 16384 定位槽与对应节点；若请求打到错误节点，返回 MOVED 重定向（槽已迁移到新节点，客户端应更新本地槽映射）；ASK 重定向用于迁移进行中（仅本次请求转发，不更新映射）。节点间用 gossip 协议互相交换集群状态。 resharding（槽迁移）：用 redis-cli --cluster reshard 把槽从源节点迁到目标节点，迁移期间逐 key 用 MIGRATE 原子移动，配合 ASK 保证不中断服务。注意大 key 迁移会阻塞，需分批/避开峰值。 选型权衡总结：中小规模、重可用轻扩展→哨兵；大规模、需分片扩展→Cluster；两者都需配合持久化与监控，且都要防脑裂与保证副本健康。","url":"https://itinterview.com.cn/question/1228"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"【系统设计】Redis 主从+哨兵 与 Redis Cluster 两种高可用方案该如何选型？Cluster 的槽路由（MOVED/ASK 重定向）、gossip 与槽迁移（resharding）又是如何工作的？","item":"https://itinterview.com.cn/q/1228.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -81,14 +98,17 @@
 <li><strong>resharding（槽迁移）</strong>：用 <code>redis-cli --cluster reshard</code> 把槽从源节点迁到目标节点，迁移期间逐 key 用 <code>MIGRATE</code> 原子移动，配合 ASK 保证不中断服务。注意大 key 迁移会阻塞，需分批/避开峰值。</li>
 <li><strong>选型权衡总结</strong>：中小规模、重可用轻扩展→哨兵；大规模、需分片扩展→Cluster；两者都需配合持久化与监控，且都要防脑裂与保证副本健康。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1228">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1228">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=33&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=33&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

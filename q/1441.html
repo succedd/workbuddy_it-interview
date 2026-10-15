@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="为什么用 Role 而不是 AK/SK 1. 临时凭证自动轮换：Role 颁发的是 STS 临时凭证（默认 15 分钟～12 小时，自动过期自动换），AK/SK 是长期凭证——泄露窗口是「永久」的； 2. 无需分发密钥：EC2/ECS/Lambda 上挂 Role 后，SDK 通过实例元数据（169.254.16…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1441.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"AWS 上给应用做权限，为什么要「IAM Role 而不是把 AccessKey 写进配置文件」？IAM Policy 里 Allow 与 Explicit Deny 同时命中时以谁为准？","text":"考察 AWS IAM 权限模型：Role 临时凭证机制、Policy 评估顺序（显式拒绝优先）、最小权限原则落地。","answerCount":1,"datePublished":"2026-10-01T04:20:55.549Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么用 Role 而不是 AK/SK 1. 临时凭证自动轮换：Role 颁发的是 STS 临时凭证（默认 15 分钟～12 小时，自动过期自动换），AK/SK 是长期凭证——泄露窗口是「永久」的； 2. 无需分发密钥：EC2/ECS/Lambda 上挂 Role 后，SDK 通过实例元数据（169.254.169.254）自动取凭证，代码和配置里完全没有密钥； 3. 可审计可撤销：CloudTrail 里能看到 AssumeRole 事件，出事直接摘 Role 即止损；长期 AK 只能换密钥一轮； 4. 跨账号/跨服务授权的标准解法。 Policy 评估顺序（面试必答） 即 Explicit Deny > Allow，且「默认拒绝」是起点。所以排查「有 Allow 却 403」时，要沿信任链逐层查：SCP（组织层）→ 权限边界（permissions boundary）→ 身体策略（identity policy）→ 资源策略（resource policy，如 S3 bucket policy）——任何一层 Deny 或缺 Allow 都会失败。 最小权限落地 从 Access Analyzer 的未使用权限报告开始收敛； 用条件键（aws:SourceIp、aws:PrincipalArn）收紧上下文； 生产环境禁止 Action: \"*\"，用 IAM Access Advisor 按实际调用裁剪。 追问：Role 能否跨账号？——能，信任策略（trust policy）里写对方账号 ARN，对方用 STS AssumeRole 换取临时凭证。","url":"https://itinterview.com.cn/#/question/1441"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"AWS 上给应用做权限，为什么要「IAM Role 而不是把 AccessKey 写进配置文件」？IAM Policy 里 Allow 与 Explicit Deny 同时命中时以谁为准？","text":"考察 AWS IAM 权限模型：Role 临时凭证机制、Policy 评估顺序（显式拒绝优先）、最小权限原则落地。","answerCount":1,"datePublished":"2026-10-01T04:20:55.549Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么用 Role 而不是 AK/SK 1. 临时凭证自动轮换：Role 颁发的是 STS 临时凭证（默认 15 分钟～12 小时，自动过期自动换），AK/SK 是长期凭证——泄露窗口是「永久」的； 2. 无需分发密钥：EC2/ECS/Lambda 上挂 Role 后，SDK 通过实例元数据（169.254.169.254）自动取凭证，代码和配置里完全没有密钥； 3. 可审计可撤销：CloudTrail 里能看到 AssumeRole 事件，出事直接摘 Role 即止损；长期 AK 只能换密钥一轮； 4. 跨账号/跨服务授权的标准解法。 Policy 评估顺序（面试必答） 即 Explicit Deny > Allow，且「默认拒绝」是起点。所以排查「有 Allow 却 403」时，要沿信任链逐层查：SCP（组织层）→ 权限边界（permissions boundary）→ 身体策略（identity policy）→ 资源策略（resource policy，如 S3 bucket policy）——任何一层 Deny 或缺 Allow 都会失败。 最小权限落地 从 Access Analyzer 的未使用权限报告开始收敛； 用条件键（aws:SourceIp、aws:PrincipalArn）收紧上下文； 生产环境禁止 Action: \"*\"，用 IAM Access Advisor 按实际调用裁剪。 追问：Role 能否跨账号？——能，信任策略（trust policy）里写对方账号 ARN，对方用 STS AssumeRole 换取临时凭证。","url":"https://itinterview.com.cn/question/1441"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"AWS","item":"https://itinterview.com.cn/category?cat=149"},{"@type":"ListItem","position":4,"name":"AWS 上给应用做权限，为什么要「IAM Role 而不是把 AccessKey 写进配置文件」？IAM Policy 里 Allow 与 Explicit Deny 同时命中时以谁为准？","item":"https://itinterview.com.cn/q/1441.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -90,14 +107,17 @@
 <li>生产环境禁止 <code>Action: &quot;*&quot;</code>，用 IAM Access Advisor 按实际调用裁剪。</li>
 </ul>
 <blockquote>追问：Role 能否跨账号？——能，信任策略（trust policy）里写对方账号 ARN，对方用 STS AssumeRole 换取临时凭证。</blockquote></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/1441">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/1441">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=149&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=149&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>

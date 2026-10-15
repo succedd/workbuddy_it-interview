@@ -16,7 +16,8 @@
   <meta name="twitter:description" content="要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/984.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","text":"考察点：CPS 变换、Continuation、挂起点、Job 层级与取消传播。协程是 Kotlin 面试必考核心。","answerCount":1,"datePublished":"2026-09-10T07:22:44.103Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——本质是编译器帮你写回调，但代码保持同步形态。 结构化并发：每个协程属于一个 CoroutineScope，父子 Job 形成树：父取消则全部子取消、子异常按策略向父传播、父等待全部子完成才结束——杜绝「孤儿协程」泄漏（回调时代最大的坑）。 调度器：Dispatchers.Main/IO/Default 控制执行线程；withContext 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。 对比：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。","url":"https://itinterview.com.cn/#/question/984"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","text":"考察点：CPS 变换、Continuation、挂起点、Job 层级与取消传播。协程是 Kotlin 面试必考核心。","answerCount":1,"datePublished":"2026-09-10T07:22:44.103Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——本质是编译器帮你写回调，但代码保持同步形态。 结构化并发：每个协程属于一个 CoroutineScope，父子 Job 形成树：父取消则全部子取消、子异常按策略向父传播、父等待全部子完成才结束——杜绝「孤儿协程」泄漏（回调时代最大的坑）。 调度器：Dispatchers.Main/IO/Default 控制执行线程；withContext 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。 对比：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。","url":"https://itinterview.com.cn/question/984"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Kotlin","item":"https://itinterview.com.cn/category?cat=224"},{"@type":"ListItem","position":5,"name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","item":"https://itinterview.com.cn/q/984.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -36,8 +37,24 @@
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
     blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
-    .cta { display:block;text-align:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;margin:22px 0 10px;font-size:15px; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
     .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
     .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
     /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
     .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
@@ -80,14 +97,17 @@
 <li><strong>调度器</strong>：<code>Dispatchers.Main/IO/Default</code> 控制执行线程；<code>withContext</code> 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。</li>
 <li><strong>对比</strong>：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。</li>
 </ul></div>
-    <a class="cta" href="https://itinterview.com.cn/#/question/984">在线刷题 · 收藏与错题重练 →</a>
-    <p class="jumpnote">题目与答案就在本页；想刷题、收藏或进错题本，点上方按钮即可</p>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/984">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/#/practice?scope=cat&cat=224&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=224&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
-  <script>(function(){try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
 </body>
 </html>
