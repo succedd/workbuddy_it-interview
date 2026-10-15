@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？ · IT面试题库</title>
-  <meta name="description" content="要点： 明确边界：迭代目标一旦确认，非紧急插队需求进入 Backlog 等下个迭代；紧急缺陷由 PO 评估价值并显式替换等价容量。 用数据决策：统计插队比例，超过阈值时复盘需求预测与缓冲策略。 保护团队节奏：给每个迭代预留 10%~20% 缓冲，避免计划满负荷导致交付质量下降。">
+  <title>请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库</title>
+  <meta name="description" content="要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerA…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？ · IT面试题库">
-  <meta property="og:description" content="要点： 明确边界：迭代目标一旦确认，非紧急插队需求进入 Backlog 等下个迭代；紧急缺陷由 PO 评估价值并显式替换等价容量。 用数据决策：统计插队比例，超过阈值时复盘需求预测与缓冲策略。 保护团队节奏：给每个迭代预留 10%~20% 缓冲，避免计划满负荷导致交付质量下降。">
+  <meta property="og:title" content="请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库">
+  <meta property="og:description" content="要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerA…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <meta property="og:url" content="https://itinterview.com.cn/q/1616.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 明确边界：迭代目标一旦确认，非紧急插队需求进入 Backlog 等下个迭代；紧急缺陷由 PO 评估价值并显式替换等价容量。 用数据决策：统计插队比例，超过阈值时复盘需求预测与缓冲策略。 保护团队节奏：给每个迭代预留 10%~20% 缓冲，避免计划满负荷导致交付质量下降。">
+  <meta name="twitter:title" content="请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库">
+  <meta name="twitter:description" content="要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerA…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1616.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？","text":"考察敏捷交付管理。","answerCount":1,"datePublished":"2026-10-15T09:04:33.945Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 明确边界：迭代目标一旦确认，非紧急插队需求进入 Backlog 等下个迭代；紧急缺陷由 PO 评估价值并显式替换等价容量。 用数据决策：统计插队比例，超过阈值时复盘需求预测与缓冲策略。 保护团队节奏：给每个迭代预留 10%~20% 缓冲，避免计划满负荷导致交付质量下降。","url":"https://itinterview.com.cn/question/1616"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"敏捷开发","item":"https://itinterview.com.cn/category?cat=102"},{"@type":"ListItem","position":4,"name":"Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？","item":"https://itinterview.com.cn/q/1616.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。","text":"考察核心组件与流程。","answerCount":1,"datePublished":"2026-10-10T11:54:33.832Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerAdapter。 执行：HandlerAdapter 调用目标方法前完成参数解析与数据绑定（将请求参数 / JSON 绑定到方法入参），方法返回 ModelAndView 或 @ResponseBody 数据。 渲染 / 写出：若返回视图，经 ViewResolver 解析视图并渲染；若 @ResponseBody（REST），由 HttpMessageConverter 把对象序列化为 JSON 直接写响应。期间 HandlerExceptionResolver 统一处理异常。 拦截器：HandlerInterceptor 的 preHandle/postHandle/afterCompletion 在对应节点织入（如登录校验、耗时统计）。","url":"https://itinterview.com.cn/question/1616"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。","item":"https://itinterview.com.cn/q/1616.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -87,14 +87,16 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Scrum 迭代中需求不断插队，怎么保证既有目标不被打散？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">技术型项目经理</span><span class="chip">技术经理</span><span class="chip tag">敏捷</span><span class="chip tag">插队</span><span class="chip tag">迭代管理</span></div>
-    <div class="card"><h2>题目</h2><p>考察敏捷交付管理。</p></div>
+    <h1>请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。</h1>
+    <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Spring MVC</span><span class="chip tag">DispatcherServlet</span><span class="chip tag">流程</span></div>
+    <div class="card"><h2>题目</h2><p>考察核心组件与流程。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
 <ul>
-<li><strong>明确边界</strong>：迭代目标一旦确认，非紧急插队需求进入 Backlog 等下个迭代；紧急缺陷由 PO 评估价值并显式替换等价容量。</li>
-<li><strong>用数据决策</strong>：统计插队比例，超过阈值时复盘需求预测与缓冲策略。</li>
-<li><strong>保护团队节奏</strong>：给每个迭代预留 10%~20% 缓冲，避免计划满负荷导致交付质量下降。</li>
+<li><strong>入口</strong>：请求先到 <strong><code>DispatcherServlet</code></strong>（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。</li>
+<li><strong>映射</strong>：<code>DispatcherServlet</code> 通过 <strong><code>HandlerMapping</code></strong> 找到能处理该请求的 <strong><code>Handler</code></strong>（通常是 <code>@Controller</code> 方法），并适配出 <strong><code>HandlerAdapter</code></strong>。</li>
+<li><strong>执行</strong>：<code>HandlerAdapter</code> 调用目标方法前完成<strong>参数解析与数据绑定</strong>（将请求参数 / JSON 绑定到方法入参），方法返回 <strong><code>ModelAndView</code></strong> 或 <code>@ResponseBody</code> 数据。</li>
+<li><strong>渲染 / 写出</strong>：若返回视图，经 <strong><code>ViewResolver</code></strong> 解析视图并渲染；若 <code>@ResponseBody</code>（REST），由 <strong><code>HttpMessageConverter</code></strong> 把对象序列化为 JSON 直接写响应。期间 <strong><code>HandlerExceptionResolver</code></strong> 统一处理异常。</li>
+<li><strong>拦截器</strong>：<code>HandlerInterceptor</code> 的 <code>preHandle/postHandle/afterCompletion</code> 在对应节点织入（如登录校验、耗时统计）。</li>
 </ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1616">练这道题</a>
@@ -104,7 +106,7 @@
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=102&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=83&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

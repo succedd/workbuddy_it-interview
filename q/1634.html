@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？ · IT面试题库</title>
-  <meta name="description" content="要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/p…">
+  <title>用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？ · IT面试题库</title>
+  <meta name="description" content="要点： return_exceptions：asyncio.gather(*tasks, return_exceptions=True) 让异常作为结果返回，不影响其他任务。 封装与分类：对每个任务返回 (ok, value_or_error)，聚合时分别处理成功与失败，并记录失败上下文。 超时与取消：必要时用 …">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？ · IT面试题库">
-  <meta property="og:description" content="要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/p…">
+  <meta property="og:title" content="用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？ · IT面试题库">
+  <meta property="og:description" content="要点： return_exceptions：asyncio.gather(*tasks, return_exceptions=True) 让异常作为结果返回，不影响其他任务。 封装与分类：对每个任务返回 (ok, value_or_error)，聚合时分别处理成功与失败，并记录失败上下文。 超时与取消：必要时用 …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <meta property="og:url" content="https://itinterview.com.cn/q/1634.html">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/p…">
+  <meta name="twitter:title" content="用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？ · IT面试题库">
+  <meta name="twitter:description" content="要点： return_exceptions：asyncio.gather(*tasks, return_exceptions=True) 让异常作为结果返回，不影响其他任务。 封装与分类：对每个任务返回 (ok, value_or_error)，聚合时分别处理成功与失败，并记录失败上下文。 超时与取消：必要时用 …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
   <link rel="canonical" href="https://itinterview.com.cn/q/1634.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？","text":"考察 ANR 分析。","answerCount":1,"datePublished":"2026-10-15T09:04:34.748Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/perfetto 验证关键路径耗时。","url":"https://itinterview.com.cn/question/1634"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android Java","item":"https://itinterview.com.cn/category?cat=225"},{"@type":"ListItem","position":5,"name":"Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？","item":"https://itinterview.com.cn/q/1634.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？","text":"考察异步任务异常隔离与结果聚合。","answerCount":1,"datePublished":"2026-10-15T12:54:41.440Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： return_exceptions：asyncio.gather(*tasks, return_exceptions=True) 让异常作为结果返回，不影响其他任务。 封装与分类：对每个任务返回 (ok, value_or_error)，聚合时分别处理成功与失败，并记录失败上下文。 超时与取消：必要时用 wait_for/asyncio.timeout 控制单任务时长，注意清理资源，避免任务泄漏。","url":"https://itinterview.com.cn/question/1634"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？","item":"https://itinterview.com.cn/q/1634.html"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -87,14 +87,14 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Android开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Android</span><span class="chip tag">ANR</span><span class="chip tag">主线程</span></div>
-    <div class="card"><h2>题目</h2><p>考察 ANR 分析。</p></div>
+    <h1>用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip tag">Python</span><span class="chip tag">asyncio</span><span class="chip tag">并发</span></div>
+    <div class="card"><h2>题目</h2><p>考察异步任务异常隔离与结果聚合。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
 <ul>
-<li><strong>读 ANR trace</strong>：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。</li>
-<li><strong>常见原因</strong>：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。</li>
-<li><strong>修复与验证</strong>：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/perfetto 验证关键路径耗时。</li>
+<li><strong>return_exceptions</strong>：<code>asyncio.gather(*tasks, return_exceptions=True)</code> 让异常作为结果返回，不影响其他任务。</li>
+<li><strong>封装与分类</strong>：对每个任务返回 <code>(ok, value_or_error)</code>，聚合时分别处理成功与失败，并记录失败上下文。</li>
+<li><strong>超时与取消</strong>：必要时用 <code>wait_for</code>/<code>asyncio.timeout</code> 控制单任务时长，注意清理资源，避免任务泄漏。</li>
 </ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1634">练这道题</a>
@@ -104,7 +104,7 @@
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=225&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=86&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
