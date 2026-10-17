@@ -105,6 +105,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`9b819f4`（fix(SEO): 补齐 sitemap 与 c/p 集合页 + 修 version.json 指纹推送参数顺序）｜数据批次 `2026-10-17-d`（+18 题，1656→1674，version 5→6）｜更新时间：2026-10-17 18:55 (+08)**
+**本轮内容（用户「https://itinterview.com.cn/#/，补充题库」，WorkBuddy 会话执行）**
+
+- **题库**：`tools/batches/2026-10-17-d.json` 追问链 18 题，域 = 音视频与流媒体（此前全域仅 12 题、6 个叶子分类各 2 题，是全库最薄域）。每分类补 3 题且角度与现有题全部错开：YUV 4:2:0 与色度抽样 / H.264 编码流程 / CBR 与 VBR 选型 / FFmpeg 滤镜链 / moov 与 faststart / 音画同步排查 / NACK·FEC·GCC / SDP 协商与 codec 优先级 / Simulcast 与 SVC / m3u8 与 EXT-X 标签 / ABR 切档 / LL-HLS·HTTP-FLV·WebRTC 对比 / 音频 3A / QoS·QoE 埋点 / 跨平台 SDK 分层 / CDN 调度排查 / 连麦三路线 / 秒开与 GOP cache。来源全部权威文档（FFmpeg 官方、ITU-T H.264、RFC 8216/4585、W3C WebRTC-SVC、MDN、腾讯云文档），入库前逐一探测 URL 可达并核对页面确覆盖对应内容。**18 题全过质检闸门、0 跳过；纯数据变更，缓存版本未动。**
+- **开工前三查**：远端指纹 1656 题/v5（sha256 前 16 `1aa592a3`）→ 当天 12:36 自动扩充已做「移动端/产品/安全」三链 +21 题 → 本批刻意避开；经典主题 70/70 已完 → 走数据驱动选域（瘦叶子分析）。
+- **fix ①（version.json 指纹停更，10-15 起）**：`tools/enrich_questions.py` 的 `github_put("data/version.json", meta, msg, b)` 把 branch 与 message 传反，指纹每次都 PUT 到不存在的分支名上、静默 404，线上指纹停留 count=1635。影响：前端读取端「严格相等才跳过」的自愈设计保证不漏更新，但所有访客都在白拉 3MB 全量、瘦身优化全程失效。**已修参数顺序 + 补推正确指纹（双分支 version=6/count=1674）。**
+- **fix ②（sitemap 与 c/p 集合页停更）**：扩充流水线只推 `q/<新id>.html`，从不推 `sitemap.xml`、`c/<id>.html`、`p/<id>.html`。线上 sitemap 缺当天自动化的 21 题；19 个 c/ 页从未生成、27 个 c/ 页与 19 个 p/ 页内容陈旧。**已按 gen-share-pages.js 的确定性重生成结果全量补齐（sitemap 纯追加 58 条 loc、0 丢失，q 条目 1674 = 题数），双分支同步。**
+- **⚠️ 待办（下轮人工扩充必做）**：sitemap/c/p 的补齐目前仍是「人工批次附带做」，自动扩充流水线（每天 10:00）仍只推 q/。要么在自动化提示词里加一步（跑 `node tools/gen-share-pages.js` 后把 sitemap + 变更的 c/p 一起推），要么接受人工轮次补齐——**每轮人工扩充后至少核一次 sitemap 的 q 条目数 == 题数**。
+- **核验（全绿）**：release 树 2212→2231 项、48 文件指纹复核通过；线上 published.json 3100942 字节、sha256 前 16 `47d55db8` 与 release 一致、1674 题/version 6/max id 1714、18 题逐题在线上；Actions `Deploy to Cloudflare Pages` 对 9b819f4 success；q/1714、c/250、p/58 分享/集合页线上 200（308 为 Pages 规范化属正常）；线上 sitemap 含 q/1714；双分支 version.json 均为 version=6/count=1674。
+- **本机通道实况（2026-10-17）**：沙箱代理 61525 对 github.com 的 CONNECT 恒 502、无直连出口 → **git clone/push 全线不可用**；`codeload.github.com` tarball 可下载完整分支（本轮工作副本即此法取得）；api.github.com 与 raw.githubusercontent.com 走代理稳定可用。取 token 用 `gh auth token`（gh 在 PATH，40 位 gho_ 可用）。
+
 **最新 release commit：`5207edd`（perf: 27 个 JS 合并为 4 个 bundle，首屏关键请求 27 → 3）｜缓存版本 `20261007b → 20261007c`｜更新时间：2026-10-07 17:45 (+08)**
 **本次内容（承上一轮诊断，用户「可以」后执行）**
 
