@@ -105,7 +105,98 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
-**最新 release commit：待回填（feat: 20261005b 指南升级批次——guide.js + index.html + sw.js）｜缓存版本 `20261005a → 20261005b`｜更新时间：2026-10-05 13:05 (+08)**
+**最新 release commit：`9b819f4`（fix(SEO): 补齐 sitemap 与 c/p 集合页 + 修 version.json 指纹推送参数顺序）｜数据批次 `2026-10-17-d`（+18 题，1656→1674，version 5→6）｜更新时间：2026-10-17 18:55 (+08)**
+**本轮内容（用户「https://itinterview.com.cn/#/，补充题库」，WorkBuddy 会话执行）**
+
+- **题库**：`tools/batches/2026-10-17-d.json` 追问链 18 题，域 = 音视频与流媒体（此前全域仅 12 题、6 个叶子分类各 2 题，是全库最薄域）。每分类补 3 题且角度与现有题全部错开：YUV 4:2:0 与色度抽样 / H.264 编码流程 / CBR 与 VBR 选型 / FFmpeg 滤镜链 / moov 与 faststart / 音画同步排查 / NACK·FEC·GCC / SDP 协商与 codec 优先级 / Simulcast 与 SVC / m3u8 与 EXT-X 标签 / ABR 切档 / LL-HLS·HTTP-FLV·WebRTC 对比 / 音频 3A / QoS·QoE 埋点 / 跨平台 SDK 分层 / CDN 调度排查 / 连麦三路线 / 秒开与 GOP cache。来源全部权威文档（FFmpeg 官方、ITU-T H.264、RFC 8216/4585、W3C WebRTC-SVC、MDN、腾讯云文档），入库前逐一探测 URL 可达并核对页面确覆盖对应内容。**18 题全过质检闸门、0 跳过；纯数据变更，缓存版本未动。**
+- **开工前三查**：远端指纹 1656 题/v5（sha256 前 16 `1aa592a3`）→ 当天 12:36 自动扩充已做「移动端/产品/安全」三链 +21 题 → 本批刻意避开；经典主题 70/70 已完 → 走数据驱动选域（瘦叶子分析）。
+- **fix ①（version.json 指纹停更，10-15 起）**：`tools/enrich_questions.py` 的 `github_put("data/version.json", meta, msg, b)` 把 branch 与 message 传反，指纹每次都 PUT 到不存在的分支名上、静默 404，线上指纹停留 count=1635。影响：前端读取端「严格相等才跳过」的自愈设计保证不漏更新，但所有访客都在白拉 3MB 全量、瘦身优化全程失效。**已修参数顺序 + 补推正确指纹（双分支 version=6/count=1674）。**
+- **fix ②（sitemap 与 c/p 集合页停更）**：扩充流水线只推 `q/<新id>.html`，从不推 `sitemap.xml`、`c/<id>.html`、`p/<id>.html`。线上 sitemap 缺当天自动化的 21 题；19 个 c/ 页从未生成、27 个 c/ 页与 19 个 p/ 页内容陈旧。**已按 gen-share-pages.js 的确定性重生成结果全量补齐（sitemap 纯追加 58 条 loc、0 丢失，q 条目 1674 = 题数），双分支同步。**
+- **⚠️ 待办（下轮人工扩充必做）**：sitemap/c/p 的补齐目前仍是「人工批次附带做」，自动扩充流水线（每天 10:00）仍只推 q/。要么在自动化提示词里加一步（跑 `node tools/gen-share-pages.js` 后把 sitemap + 变更的 c/p 一起推），要么接受人工轮次补齐——**每轮人工扩充后至少核一次 sitemap 的 q 条目数 == 题数**。
+- **核验（全绿）**：release 树 2212→2231 项、48 文件指纹复核通过；线上 published.json 3100942 字节、sha256 前 16 `47d55db8` 与 release 一致、1674 题/version 6/max id 1714、18 题逐题在线上；Actions `Deploy to Cloudflare Pages` 对 9b819f4 success；q/1714、c/250、p/58 分享/集合页线上 200（308 为 Pages 规范化属正常）；线上 sitemap 含 q/1714；双分支 version.json 均为 version=6/count=1674。
+- **本机通道实况（2026-10-17）**：沙箱代理 61525 对 github.com 的 CONNECT 恒 502、无直连出口 → **git clone/push 全线不可用**；`codeload.github.com` tarball 可下载完整分支（本轮工作副本即此法取得）；api.github.com 与 raw.githubusercontent.com 走代理稳定可用。取 token 用 `gh auth token`（gh 在 PATH，40 位 gho_ 可用）。
+
+**最新 release commit：`5207edd`（perf: 27 个 JS 合并为 4 个 bundle，首屏关键请求 27 → 3）｜缓存版本 `20261007b → 20261007c`｜更新时间：2026-10-07 17:45 (+08)**
+**本次内容（承上一轮诊断，用户「可以」后执行）**
+
+**为什么合并是必须的（数学）**：上轮实测 CF 到大陆约 50% 请求会卡死。设单文件失败率 0.5、每文件重试到 5 次尝试（0.5⁵=3.1%）：
+- **27 个文件全部成功 ≈ 0.969²⁷ = 2.7%**（几乎必然缺脚本、页面坏）
+- **3 个文件 ≈ 91%**
+
+**所以「合并」不是优化，是能不能打开的区别。**
+
+- **新增 `tools/bundle-js.py`**（用法同 `split-published.py`：**改完源码必须重跑 `--write`**，否则线上跑的还是旧代码）。4 个 bundle：`bundle-vendor`(175KB) / `bundle-core`(167KB) / `bundle-app`(536KB) / `bundle-extra`(252KB)。
+- **关键路径只 3 个**：`extra`（highlight / panorama / sharecard / guide / docs / festival / importexport）全是路由或交互才用到的，加载器等前三个出齐后再拉，不进首屏关键路径。
+- **重试次数 2 → 4**（配合合并，把首屏全成功概率从 2.7% 拉到约 91%）。
+- **`sw.js` 的 APP_SHELL 同步换成这 4 个**（原来缓存的是 27 个源文件 URL —— 既浪费安装期带宽，又让离线清单名不副实）。
+- **⚠️ 两个必须记住的实现细节**：① **绝不额外包一层 IIFE** —— 项目自己的 `js/*.js` 都是 IIFE 无所谓，但 `vendor/` 下的 dexie / marked / fuse / highlight 是 UMD / 经典库，靠**顶层 var 或 this 挂到 window**，包一层会把 `"use strict"` 作用域与 this 绑定都改掉、直接搞坏库；只做「前置分号 + 边界注释」。② **前置分号是必需的** —— 上一个文件末尾无分号、下一个以 `(` 开头，会被拼成函数调用 `a()(...)` 而报错。
+- **源码文件全部保留**（不被 index.html 引用，也就不被下载），便于维护与重跑 bundle。
+- **验证**：请求总数 50 → 28；健康检查全绿（首页 154 链接 / 详情页答案 77 字 / 教程页 7 方向 / 无报错）；首屏内容就绪 4.85s → **3.94s**；第二次访问 1.30s → **0.35s**；4 个 bundle 均过 `node --check`。
+- **⚠️ 维护约定（重要）**：以后**改任何 `js/*.js` 或 `vendor/*.js` 后，必须重跑 `python tools/bundle-js.py --write` 并提交 `js/bundle/`**，否则线上运行的仍是旧 bundle。可用不带参数运行来做「是否已同步」的检查（不一致会退出码 1）。
+
+**最新 release commit：`08aaca3`（fix: 脚本改动态加载 + 超时重试，对抗 CF 链路 ~50% 请求卡死）｜缓存版本 `20261006g → 20261007a`｜更新时间：2026-10-07 16:20 (+08)**
+**本次内容（承「移动端首次加载慢」继续深挖，WorkBuddy 会话执行）**
+
+**⚠️ 本轮最大的坑：我前几轮的测量全部经过本机代理，数据是假的。**
+环境变量里存在 `HTTPS_PROXY=http://127.0.0.1:59356`，所以 `curl` 默认走代理 → 测出的 `TCP: 0.003s`（连本地当然快）。**必须加 `--noproxy '*'` 才是真实网络**。以后测线上性能一律带这个参数。
+
+- **真因（实测得出）**：绕开代理直连后测到——
+  · TCP 握手稳定 0.3s（成都→LAX 物理延迟，正常）
+  · **TLS 握手 0.63s / 7.6s / 13.3s（递增）**
+  · 同一文件（cdnjs 的 jquery.min.js，87KB）连续 6 次：**3 次 0 B/s 完全超时**，成功的 3 次速度差 6 倍（16 / 17 / 97 KB/s）
+  · 对照：百度 **1.59 MB/s**、GitHub raw **164 KB/s**（本机网络本身没问题）
+  **结论：Cloudflare 到中国大陆链路约 50% 的请求会卡死，且无规律。** 不是「节点远」，是「请求一半概率死掉」。
+- **为什么原写法扛不住**：`<script defer src>` 失败时 ① 浏览器**不自动重试**（页面缺脚本、功能静默坏掉）；② **卡住的 defer 脚本会连 DOMContentLoaded 和 load 都不触发** —— 所以「等 load 再补救」这条路根本不成立；③ 浏览器对 script 的网络超时长达数分钟。27 个脚本只要一个中招，首屏就废。
+- **改法**：index.html 不再写 27 个 `<script defer src>`，改成一个**内联加载器**（内联脚本自身不产生请求，不会被链路干扰）：一次性并行发起全部请求；`el.async = false` 保证**按插入顺序执行**（依赖顺序完全不变）且仍并行下载；每个文件 **8 秒超时 + 2 次重试**（超时后移除元素重拉，重试用 `r=` 绕开坏缓存）；单个失败不阻断其余。**app.js 加重复执行防护 `window.__ITI_APP_BOOTED__`** —— 卡住的请求可能在超时后姗姗返回并执行，不挡会初始化两遍。
+- **踩坑（自己写错的）**：初版把加载写成 `chain = chain.then(loadOne)` 串行等待，等于等一个下完才发下一个（27 × 往返）——必须 `SCRIPTS.map(loadOne)` + `Promise.all` 并行发起。
+- **验证**：功能健康检查（首页/详情页/教程页/无报错）全绿；首屏内容就绪 不限速 **7.45s → 4.85s**（动态加载不必等 HTML 解析完，比 defer 更快）；第二次访问 **1.30s**、题库数据请求 0 个；容错测试（拦截 `vendor/highlight.min.js`）页面仍完全正常、无报错。
+- **⚠️ 仍未解决**：链路的 50% 失败率属于网络层，代码侧只能「重试 + 减少请求数」来对冲。要根治只能换线路（国内 CDN 需备案 / Argo / 企业版 China Network）。**下一步若继续优化，方向是把 27 个 JS 合并成少数几个文件** —— 请求数越少，至少一个失败的概率越低（27 个请求约 100% 会遇到失败，5 个则降到约 97%，配多重试可到 88% 以上）。
+
+**最新 release commit：`6c58f4c`（perf: 移动端首屏优化 + 题库分片数据对齐，已推 release）｜缓存版本 `20261006f → 20261006g`｜更新时间：2026-10-06 20:30 (+08)**
+**本次内容（用户反馈「移动端首次加载有点慢」，WorkBuddy 会话执行）**
+
+**⚠️ 先纠正一个测量事实**：本轮自建了 `tools/mobile-perf.mjs`（真实 Chrome + CDP，模拟 4G 链路 + CPU 四倍降速 + 375×812）。实测发现真正的瓶颈**不是下载**——FCP 3.2s，但**首屏出现实质内容要 23.8s**（不限速也要 11.6s）。再用 `tools/profile-startup.mjs`（V8 采样剖析）看到：11.6s 里 CPU 只占 1.1s、其中 45% 还是 idle，**时间全花在等 I/O**。所以逐阶段打点定位，而不是继续优化下载量。
+
+- **优化 1：28 个脚本全部阻塞解析 → 全量 defer**。脚本在 0.66s 就请求完了（defer 让浏览器预扫描），但 HTML 解析一直被脚本阻塞。加 defer 后 **FCP 8.65s → 3.45s**。安全性已确认：body 内唯一内联脚本是 SW 注册，只监听 load、不依赖外部脚本。
+- **优化 2：首访先 seed 99 题、随即被云端 1519 题整包覆盖 → 直接跳过**。`DB.seed()` 原实现逐条 `await db.xxx.add()`（**每条一个 IndexedDB 事务**），首访耗 3.8s 而写的东西马上被覆盖，无人看过。改动：① 先花约 120 字节探云端指纹，可达就走云端不写 seed，不可达仍走 seed 兜底（离线首访不变）；② `DB.seed()` 全部改「收集数组 + bulkAdd」（语义与逐条 add 完全一致），**1.59s → 0.39s**；③ 兜底：跳过 seed 后若云端真拉取失败，检查题数为 0 就补跑 seed，绝不留空库；④ `data/seed.js`(111KB) 也移出首屏、改为要用才动态加载。
+- **优化 3：首访改为只取元数据（metaOnly），答案懒加载**。上一轮的分片对**回访者**有用（指纹没变就跳过），但**首访要拉 manifest+6 片共 3.4MB，比整包 1.64MB 还多**——实测反而更慢。现在：首访只拉 manifest（br 约 123KB）拿到题目清单即可渲染；答案靠「详情页懒加载 + 首屏渲染后空闲时后台补齐」。**分片号映射必须持久化到 settings（shardMap），否则刷新页面后懒加载找不到分片**。详情页最多等 1.2s，超时先渲染并显示「答案正在载入…」占位。
+- **顺带修掉两个真 bug**：① **分片功能此前从未生效**——我原先拿 version.json 的 count 做硬校验，而线上 version.json 报 1519 题、题库实际 1540 题（两个发布流程各写各的，天然漂移），校验永远失败 → 每次都静默回退整包。改为校验 manifest 与分片的**自洽性**（题数之和必须相等）。**教训：不要用「另一个可独立变化的文件」去判断本文件能不能用。** ② `docs-loader.js` 里硬编码了版本号，而 bump-version.py 只改 index.html/sw.js，会导致它一直请求旧 URL；改为加载时动态取 `PAGE_VER`。
+- **附带**：`migrateRemoveFakePositions` 原是对每个岗位遍历全部题目（1540×142 次比较）、且每次启动都跑 → 改为先建索引 + 无候选直接返回（不再读 questions 大表）；启动链加入 `performance.mark`（`boot:seed-done` / `sync-done` / `route-called` …），以后再遇到「首屏慢」可直接定位到阶段而不必猜。
+- **数据对齐（第二个提交）**：远端站点刚自动发布了 1519 题的题库，而本地 manifest/shards 还是上一批 1540 题的产物。已重跑 `tools/split-published.py --write` 对齐，并**让它同时产出 `data/version.json`**——三者（published / manifest / shards / version.json）从此同源生成，publishedAt 与题数实测完全一致（1519 / 1519 / 1519 / 1519）。
+- **新增工具**：`tools/mobile-perf.mjs`（移动端性能实测 + 首页/详情页/教程页健康检查 + 第二次访问对比；`--block` 可拦截指定脚本以验证「它对首屏是否必需」，健康检查不通过会非零退出、可接 CI）、`tools/profile-startup.mjs`（V8 采样剖析 + 网络时间线）。
+- **验证**：本地健康检查（首页 / 详情页 / 教程页 / 运行时报错）全绿，详情页答案正文正常补出；第二次访问只请求 1 个 `manifest.json`（不再拉整包）。线上 `20261006g` 已确认：`<script defer src>` 34 → 27、`data/seed.js` 不在首屏、`app.js`/`db.js`/`cloud.js`/`docs-loader.js`/`shards/*.json` 全部 200。
+- **⚠️ 测量局限（务必知道）**：本地静态服务是 HTTP/1.1（仅 6 并发），而线上是 HTTP/2，所以本地测出的 FCP 偏悲观（限速下 8.3s，而不限速 1.9s 更接近真实）。**线上无法用无头浏览器复测**——反爬按设计会让 headless 拿不到数据（`tools/mobile-perf.mjs --live` 会显示「25 秒未出现实质内容」，这是预期行为、不是站点故障）。
+- **⚠️ 仍未解决**：TTFB 本身（实测 1.0~6.5s）由跨太平洋延迟主导，CF 免费版不启 China Network，需用户决策 Argo / 企业版 / 国内 CDN。
+
+**最新 release commit：`4072c9e`（perf: 技术教程数据改按需加载，首屏 46→38 资源 / 981KB→438KB，已推 release）｜缓存版本 `20261006d → 20261006f`｜更新时间：2026-10-06 18:50 (+08)**
+**本次内容（perf: 首屏瘦身，WorkBuddy 会话执行）：承接上一条的「全做」，把「延迟付几次」这个真正杠杆解掉。**
+- **关键认知**：TTFB 1.0~6.5s 是**每个请求都要各付一遍**的固定成本。首屏等 46 个资源 = 付 46 次。所以真解不是优化单个请求，而是**减少首屏资源数**。
+- **最大一块**：`js/docs/*.js` 六个方向 + `js/docs-data.js`（**547KB gzip，占首屏一半以上**）只在用户点进「学 › 技术教程」时才用到，原却是 7 个阻塞 `<script>`。
+- **改动**：新增 `js/docs-loader.js`（~1KB，`requestIdleCallback` 空闲预热 + 点击时 `await` 同一Promise 不重复请求）；`index.html` 7 个 script → 1 个；`docs.js` 三个页面加 `ensureDocs()` 守卫（失败给「重试」入口不白屏）；`sw.js` 把这 7 个文件从 `APP_SHELL` 移到运行时 cache-first（**留APP_SHELL 会让 SW 安装时又全量下载 547KB，等于从另一条路花掉**）。
+- **为什么不用 defer**：defer 仍会在首屏解析阶段**下载**这些文件，下载开销一分不少；这里要的是「首屏根本不发起这 7 个请求」。
+- **两处主动加固（端到端测试时发现）**：① 单文件加载超时 8s——`onload`/`onerror` 都不触发时（网络挂起/SW 卡住）`await` 会永远挂起，用户点进教程页就一直空白；② 失败静默期 60s——否则弱网用户每次进首页都重试 7 文件×8 秒，越慢越失败、越失败越慢。
+- **验证**：最小 DOM 桩三场景端到端（首屏发起 script 数 0 / 加载顺序正确 / 全部 error 仍尝试完 7 个 / 全部挂起不 deadlock）全过；`tools/validate-docs.js` 仍 `ASSEMBLE_OK`（7 方向 101 篇）；线上 `20261006f` 确认 `<script src>` 34→28、`js/docs/` 引用=0。
+- **⚠️ 还剩的大头**：`js/app.js` 110KB(gzip) / 5383 行。README 2026-10-05 的 P2-7 已评估拆分（需模块系统 + 冒 36 处 script 顺序与 SW 清单与闭包断裂风险、无 E2E 保护），**当时结论维持现状**。若要继续降首屏只能从这里入手，**但需先建 E2E 测试再动**。
+- **⚠️ TTFB 本身仍未改善**（实测仍 1.0~6.5s）：由跨太平洋延迟主导，`cloudflare.com` 官方站同样是 LAX，证明非本站问题。仍需用户决策 Argo/企业版/国内 CDN。
+
+**最新 release commit：`767ac77`（perf: 性能优化——题库分片 + /data/* 边缘缓存，已推 release）｜缓存版本 `20261005b → 20261006c`｜更新时间：2026-10-06 18:10 (+08)**
+**本次内容（perf: 站点「打开很慢」专项治理，WorkBuddy 会话执行）：用户确认「全做」。完整诊断与实测数据见 `docs/性能诊断-20261006.md`。**
+- **诊断基线（实测，非估算）**：首页 TTFB **1.1~6.0s**；`published.json` 单文件 **2.79MB**；CF 边缘节点 **6 次采样恒为 `LAX`（洛杉矶）**；客户端 `ip=112.193.82.118 / loc=CN`（成都电信）。DNS 解析正常（Cloudflare 权威 IP），`--noproxy` 直连仍是 LAX。
+- **⚠️ 一个被推翻的初始判断（务必读）**：初次用未声明 `Accept-Encoding` 的 curl 测得「响应头无 content-encoding」，一度判定「CF 没给 JSON 开压缩」。**这是错的**——补上 `Accept-Encoding: br` 后实测 `content-encoding: br` 全站生效（HTML/CSS/JS/JSON/q/* 全部）。**「开压缩」这条 P0 建议无需再做**，真正的问题是下面两条。
+- **根因 1：`/data/*` 从未进边缘缓存**（`cf-cache-status` 恒 DYNAMIC）：① `sw.js` 对 `/data/*` 用 `fetch(req, {cache:"reload"})`，`reload` 会击穿 Cloudflare 边缘缓存；② `_worker.js` 改写过的响应拿不到 Pages 默认缓存指令。修复：`sw.js` 改为 `cache:"no-cache"`（保留每次校验，仍允许 304 不回源）+ `_worker.js` 新增 `applyDataCache()`。**⚠️ 但线上三轮实测（每版部署后连续 5~6 次采样）`cf-cache-status` 始终 DYNAMIC —— Pages「高级模式」下 Worker 处理过的响应不进边缘缓存，属产品行为、不是配置问题。** 对照组：未经 Worker 改写的 `css/style.css` 是 `MISS→REVALIDATED`（能进边缘），经Worker 的 `/data/*` 恒 DYNAMIC。**故本次真正生效的优化是分片（传输量 -84%）；首页 TTFB 优化前后均为 1.0~6.5s、未见改善（由跨太平洋延迟主导）。**
+- **根因 2：单文件过大** → 新增 `tools/split-published.py`，拆成 `data/manifest.json`（914KB / **br 123KB**，全部题目元数据 + 每题 `_sh` 分片号）+ `data/shards/s00..s05.json`（6 片，均 **br 137KB**，答案正文，按需拉取）。**首屏传输量 780KB → 123KB，降幅 84%。**
+- **安全设计三条红线**：① **写路径一行未改**——`published.json` 仍随 Pages 正常发布、仍是编辑端发布唯一目标，`guardAgainstShrink`/`absorbRemote`/`verify-publish.py` 语义完全不变；② **任一分片缺失 → 整包回退**，绝不接受「部分题 answer 为空」的快照（那会让编辑端用空答案覆盖云端好答案，且题数没减少、守卫拦不住）；③ **manifest 题数必须与 `version.json` 的 `count` 相等**，不等即弃用。
+- **故意仍走整包的三处**（涉及权威比对/写回，不能用分片）：`absorbRemote`、`guardAgainstShrink`、`exportAll`。
+- **答案懒加载**：`app.js` 的 `pageQuestionDetail()` 在「题目存在但 answer 为空」时按题号从分片补正文并写回本机表；补齐失败照常渲染，绝不白屏。
+- **验证结论**：Node 复刻前端合并逻辑与整包**逐题逐字段**比对——6/6 分片拉取成功、拼回 1540 题、**忽略键顺序后实质差异 0 处**、**题目 id 顺序完全一致**（列表分页与「下一题」不受影响）。线上回归：manifest + 6 片全部 200；反爬仍生效（裸 curl 403 `bot-ua`）；仓库内部文件仍 404（`tools/`、`HANDOVER.md`、`cloudflare/`）。
+- **⚠️ 缓存头踩坑记录（三轮迭代，`_worker.js` 注释里也留了）**：第 1 版 `max-age=300, s-maxage=3600` → 仍 DYNAMIC（Pages 不认 `s-maxage`）；第 2 版 `max-age=3600, must-revalidate` → 头正确但仍 DYNAMIC 连续 5 次（对照组 CSS 是 `MISS→REVALIDATED`，说明边缘缓存在工作，只是 ETag 协商重验证而非直接 HIT，而 `must-revalidate` 恰好要求「每次都问一遍」）；第 3 版（当前）去掉 `must-revalidate`，只留 `max-age=3600`。
+- **⚠️ 未解决（需用户决策，非代码问题）**：CF 免费版不启用 China Network，**大陆访客被调度到境外节点**（本次恒为 LAX），这多出的跨太平洋往返**无法通过 DNS、代码或 Worker 配置绕开**。可选：Argo Smart Routing（$5/月）/ China Network（企业版 + ICP）/ 国内 CDN。本仓库代码侧已无可优化空间。
+- **⚠️ 发版后必做**：分片由 `python tools/split-published.py --write` 从 `published.json` 生成，而编辑端发布**不会**推送分片（一次 Contents API PUT 只能写一个文件，分片有 6 个）。发布后需在仓库执行该脚本并提交 `data/`。漏了不会出错题（读取端两处校验会回退整包），但首屏优化失效。建议把该脚本接进扩充流水线。
+- **改动文件**：`cloudflare/pages/_worker.js`、`sw.js`、`js/cloud.js`、`js/app.js`、`tools/split-published.py`（新增）、`tools/build-pages.mjs`（加分片校验）、`data/manifest.json`（新增）、`data/shards/s00..s05.json`（新增）、`docs/性能诊断-20261006.md`（新增）、`index.html`。
+
+**上一条 release commit：`a65f21d`（perf: 题库分片加载首发，已推 release）｜缓存版本 `20261005b → 20261006a`｜更新时间：2026-10-06 17:55 (+08)**
+
+**再上一条（feat: 20261005b 指南升级批次——guide.js + index.html + sw.js）｜缓存版本 `20261005a → 20261005b`｜更新时间：2026-10-05 13:05 (+08)**
 **本次内容（feat: 使用指南升级——NEW 徽章 + 指南内搜索 + 动图演示 + 有帮助反馈，WorkBuddy 会话执行）：用户确认 P0/P1/P2 全做。**
 - **NEW 徽章**：`li()` 支持第三参 `isNew`，四个 20261005a 新功能条目（搜索联想 / 考到过 / 长尾分类 / 复习打卡）带红色 NEW 胶囊（title 标注版本号，方便后续统一清理）。
 - **指南内搜索**：hero 区新增搜索框，140ms 防抖过滤全部 `.g-li` 条目（归一化匹配标题+正文），区块内条目全隐藏时整块收起，顶部提示「共 N 条匹配 / 没有匹配」；清空即恢复。
