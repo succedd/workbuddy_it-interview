@@ -569,7 +569,7 @@ def push_all(data, branches):
         st = github_put("data/published.json", content, b, msg)
         log("  ✓ 已推送至 %s 分支 (HTTP %s)" % (b, st))
         try:
-            github_put("data/version.json", meta, msg, b)
+            github_put("data/version.json", meta, b, msg)
             log("  ✓ version.json → %s" % b)
         except Exception as e:
             log("  ! version.json 推送失败（前端回退全量拉取）：%s" % e)
