@@ -9,15 +9,15 @@
   <meta property="og:title" content="@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？ · IT面试题库">
   <meta property="og:description" content="@Controller vs @RestController：@Controller 返回视图名（配合视图解析器渲染页面）；@RestController = @Controller + @ResponseBody，方法返回值直接写入 HTTP 响应体（常用于 JSON API）。 @RequestBody：把请…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/802.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/802">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？ · IT面试题库">
   <meta name="twitter:description" content="@Controller vs @RestController：@Controller 返回视图名（配合视图解析器渲染页面）；@RestController = @Controller + @ResponseBody，方法返回值直接写入 HTTP 响应体（常用于 JSON API）。 @RequestBody：把请…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/802.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/802">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？","text":"解释这两个注解的差异，以及请求体/响应体注解的职责。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"@Controller vs @RestController：@Controller 返回视图名（配合视图解析器渲染页面）；@RestController = @Controller + @ResponseBody，方法返回值直接写入 HTTP 响应体（常用于 JSON API）。 @RequestBody：把请求体（如 JSON）反序列化为方法参数对象，用于接收 POST 数据。 @ResponseBody：把返回值序列化为响应体（跳过视图）。@RestController 默认对所有方法生效，@Controller 需按需标注。","url":"https://itinterview.com.cn/question/802"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？","item":"https://itinterview.com.cn/q/802.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？","item":"https://itinterview.com.cn/q/802"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/802">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1620">Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/798">Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1616">请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1617">Spring MVC 如何做参数绑定与数据校验？@RequestParam、@RequestBody、@Valid、全局异常处理分别怎么用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

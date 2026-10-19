@@ -9,15 +9,15 @@
   <meta property="og:title" content="Kafka 的核心概念有哪些？ · IT面试题库">
   <meta property="og:description" content="Broker：Kafka 服务节点，多台组成集群。 Topic：逻辑消息主题，按业务划分。 Partition：Topic 的物理分片，是并行与有序的单位；每条消息在分区内按 offset 有序。 Producer：生产者，按 key 哈希或轮询发到分区。 Consumer：消费者，按 offset 拉取；Con…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/80.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/80">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 的核心概念有哪些？ · IT面试题库">
   <meta name="twitter:description" content="Broker：Kafka 服务节点，多台组成集群。 Topic：逻辑消息主题，按业务划分。 Partition：Topic 的物理分片，是并行与有序的单位；每条消息在分区内按 offset 有序。 Producer：生产者，按 key 哈希或轮询发到分区。 Consumer：消费者，按 offset 拉取；Con…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/80.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/80">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 的核心概念有哪些？","text":"说明 Producer/Consumer/Broker/Topic/Partition/Consumer Group 的作用。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Broker：Kafka 服务节点，多台组成集群。 Topic：逻辑消息主题，按业务划分。 Partition：Topic 的物理分片，是并行与有序的单位；每条消息在分区内按 offset 有序。 Producer：生产者，按 key 哈希或轮询发到分区。 Consumer：消费者，按 offset 拉取；Consumer Group 内一条消息只被一个消费者消费，分区数决定最大并行度（消费者数 ≤ 分区数）。 Offset：消费位移，存于内部 topic（__consumer_offsets）或外部（如外部存储做精确一次）。 Zookeeper/KRaft：早期用 ZK 管元数据，新版本用 KRaft 去 ZK。","url":"https://itinterview.com.cn/question/80"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 的核心概念有哪些？","item":"https://itinterview.com.cn/q/80.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 的核心概念有哪些？","item":"https://itinterview.com.cn/q/80"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/80">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/183">Kafka如何实现消息的顺序消费？</a><span class="rel-n">486 次浏览</span></li><li><a href="https://itinterview.com.cn/q/182">Kafka中ISR机制是什么？</a><span class="rel-n">351 次浏览</span></li><li><a href="https://itinterview.com.cn/q/475">Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</a><span class="rel-n">4 次浏览</span></li><li><a href="https://itinterview.com.cn/q/81">Kafka 如何保证消息不丢失？</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

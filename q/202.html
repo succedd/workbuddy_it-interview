@@ -9,15 +9,15 @@
   <meta property="og:title" content="Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统 · IT面试题库">
   <meta property="og:description" content="前提：在云厂商控制台完成数据盘扩容前创建快照，评估风险并确认数据盘盘符。 操作步骤： 1. 查看当前磁盘和挂载情况：lsblk 和 df -hT。 2. 确认扩容后的容量是否被内核识别：dmesg | tail 或 lsblk 查看磁盘大小。如果没有变化，可能需要刷新 SCSI 设备：echo 1 &gt; /sys/…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/202.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/202">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统 · IT面试题库">
   <meta name="twitter:description" content="前提：在云厂商控制台完成数据盘扩容前创建快照，评估风险并确认数据盘盘符。 操作步骤： 1. 查看当前磁盘和挂载情况：lsblk 和 df -hT。 2. 确认扩容后的容量是否被内核识别：dmesg | tail 或 lsblk 查看磁盘大小。如果没有变化，可能需要刷新 SCSI 设备：echo 1 &gt; /sys/…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/202.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/202">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统","text":"Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"前提：在云厂商控制台完成数据盘扩容前创建快照，评估风险并确认数据盘盘符。 操作步骤： 1. 查看当前磁盘和挂载情况：lsblk 和 df -hT。 2. 确认扩容后的容量是否被内核识别：dmesg | tail 或 lsblk 查看磁盘大小。如果没有变化，可能需要刷新 SCSI 设备：echo 1 > /sys/class/block/vdb/device/rescan。 3. 若磁盘有分区，先扩展分区：growpart /dev/vdb 1（注意 /dev/vdb 和分区号之间空格）。 4. 扩展文件系统： ext4：resize2fs /dev/vdb1（或 /dev/vdb） xfs：xfs_growfs /data（xfs 需要用挂载点，不能直接指定设备） 5. 验证：df -hT /data。 注意事项： 云盘只能扩容不能缩容，尤其是 xfs 不支持缩容； 操作前建议在控制台创建快照并在业务低峰期操作； 若分区表为 MBR 且扩容超过 2TB 需更换为 GPT； 若挂载的是裸盘无分区，直接 resize2fs/xfs_growfs 作用于设备或挂载点。","url":"https://itinterview.com.cn/question/202"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统","item":"https://itinterview.com.cn/q/202.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统","item":"https://itinterview.com.cn/q/202"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/202">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/231">你处理过最复杂的客户故障是什么？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/200">云服务器 CPU 使用率持续 100%，如何定位故障进程并制定处理方案</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/206">客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/223">面试准备清单</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

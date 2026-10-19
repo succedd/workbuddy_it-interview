@@ -9,15 +9,15 @@
   <meta property="og:title" content="常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？ · IT面试题库">
   <meta property="og:description" content="RAID（独立磁盘冗余阵列）通过条带化（striping）与冗余提升性能或可靠性： RAID 0（条带化，无冗余）：数据分块交替写入多盘。 容量=Σ所有盘；读写性能最高；任意一盘坏即全丢，无容错。适合临时/高性能场景。 RAID 1（镜像）：数据完整写入两块盘（镜像）。 容量=单盘（N/2 利用率）；读可并发、写…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/484.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/484">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？ · IT面试题库">
   <meta name="twitter:description" content="RAID（独立磁盘冗余阵列）通过条带化（striping）与冗余提升性能或可靠性： RAID 0（条带化，无冗余）：数据分块交替写入多盘。 容量=Σ所有盘；读写性能最高；任意一盘坏即全丢，无容错。适合临时/高性能场景。 RAID 1（镜像）：数据完整写入两块盘（镜像）。 容量=单盘（N/2 利用率）；读可并发、写…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/484.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/484">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？","text":"请说明 RAID 0/1/5/10 的构成、是否需要校验盘、能容忍几块盘失效，并给出适用场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RAID（独立磁盘冗余阵列）通过条带化（striping）与冗余提升性能或可靠性： RAID 0（条带化，无冗余）：数据分块交替写入多盘。 容量=Σ所有盘；读写性能最高；任意一盘坏即全丢，无容错。适合临时/高性能场景。 RAID 1（镜像）：数据完整写入两块盘（镜像）。 容量=单盘（N/2 利用率）；读可并发、写略慢；允许一块盘失效。适合系统盘/高可靠小数据。 RAID 5（带分布式奇偶校验）：数据和奇偶校验条带分布于各盘，校验信息轮流存放。 容量=N-1 块；读性能高，写因计算校验稍慢；允许任意 1 块盘失效；最少 3 盘。性价比高，最常用。 RAID 6（双重校验）：两块独立校验盘（如 Reed-Solomon）。 允许任意 2 块盘同时失效；最少 4 盘，适合大容量高可靠。 RAID 10（1+0，镜像+条带）：先做镜像再条带。 容量=N/2；性能与可靠性俱佳；每组镜像允许坏 1 块（最多半数且不同组）；成本高。适合数据库等关键业务。 权衡口诀：要性能选 0，要安全选 1，均衡选 5/6，既要性能又要安全选 10。","url":"https://itinterview.com.cn/question/484"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？","item":"https://itinterview.com.cn/q/484.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？","item":"https://itinterview.com.cn/q/484"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/484">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/483">什么是流水线冒险？结构/数据/控制冒险分别如何产生与解决？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

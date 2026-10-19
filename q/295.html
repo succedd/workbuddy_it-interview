@@ -9,15 +9,15 @@
   <meta property="og:title" content="设计模式【边界】「模式泛滥」为什么比「不用模式」更危险？判断该不该用模式的信号是什么？ · IT面试题库">
   <meta property="og:description" content="滥用模式的代价： 1. 间接层爆炸：为了「将来可能扩展」提前铺三层抽象，读者要跳四个文件才看到真正逻辑； 2. 错误的灵活：为不存在的需求预留的扩展点，最终以完全不同的方式被需要，重构时反而成了包袱； 3. 新人成本：模式是团队沟通语言，堆砌模式等于加密代码。 判断信号：变化是否已经发生——同一逻辑出现第二次分支…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/295.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/295">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计模式【边界】「模式泛滥」为什么比「不用模式」更危险？判断该不该用模式的信号是什么？ · IT面试题库">
   <meta name="twitter:description" content="滥用模式的代价： 1. 间接层爆炸：为了「将来可能扩展」提前铺三层抽象，读者要跳四个文件才看到真正逻辑； 2. 错误的灵活：为不存在的需求预留的扩展点，最终以完全不同的方式被需要，重构时反而成了包袱； 3. 新人成本：模式是团队沟通语言，堆砌模式等于加密代码。 判断信号：变化是否已经发生——同一逻辑出现第二次分支…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/295.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/295">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计模式【边界】「模式泛滥」为什么比「不用模式」更危险？判断该不该用模式的信号是什么？","text":"一个只有两种状态的小功能，被套上策略+工厂+单例三层——半年后维护它的人会经历什么？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"滥用模式的代价： 1. 间接层爆炸：为了「将来可能扩展」提前铺三层抽象，读者要跳四个文件才看到真正逻辑； 2. 错误的灵活：为不存在的需求预留的扩展点，最终以完全不同的方式被需要，重构时反而成了包袱； 3. 新人成本：模式是团队沟通语言，堆砌模式等于加密代码。 判断信号：变化是否已经发生——同一逻辑出现第二次分支扩展时才抽象（规则：三次法则）；一次性的简单逻辑直接写。高手不是会用 23 个模式，而是知道当下只该用 1 个还是 0 个。","url":"https://itinterview.com.cn/question/295"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"设计模式【边界】「模式泛滥」为什么比「不用模式」更危险？判断该不该用模式的信号是什么？","item":"https://itinterview.com.cn/q/295.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"设计模式【边界】「模式泛滥」为什么比「不用模式」更危险？判断该不该用模式的信号是什么？","item":"https://itinterview.com.cn/q/295"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/295">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/293">设计模式【诞生】设计模式为什么会出现？它记录的到底是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/294">设计模式【本质】如果只用一句话概括所有设计模式的底层原则，你会选哪句？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/296">软件工程【演化】模式解决「代码怎么写」，那「需求天天变、上线就返工」靠什么解决？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

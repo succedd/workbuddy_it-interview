@@ -9,15 +9,15 @@
   <meta property="og:title" content="MapReduce 的 map→shuffle→reduce 过程是怎样的？ · IT面试题库">
   <meta property="og:description" content="Map：各 split 由 map 任务读入，输出 中间结果。 Shuffle（最核心）：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。 Reduce：对同一 key 的 value 分组后调用 reduce 汇总…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/705.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/705">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MapReduce 的 map→shuffle→reduce 过程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="Map：各 split 由 map 任务读入，输出 中间结果。 Shuffle（最核心）：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。 Reduce：对同一 key 的 value 分组后调用 reduce 汇总…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/705.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/705">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MapReduce 的 map→shuffle→reduce 过程是怎样的？","text":"描述一次 MapReduce 作业的数据流与关键阶段。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Map：各 split 由 map 任务读入，输出 中间结果。 Shuffle（最核心）：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。 Reduce：对同一 key 的 value 分组后调用 reduce 汇总输出。 理解 shuffle 的磁盘/网络开销，是调优（合并、压缩、合理分区数）的关键。","url":"https://itinterview.com.cn/question/705"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"MapReduce","item":"https://itinterview.com.cn/category?cat=158"},{"@type":"ListItem","position":4,"name":"MapReduce 的 map→shuffle→reduce 过程是怎样的？","item":"https://itinterview.com.cn/q/705.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"MapReduce","item":"https://itinterview.com.cn/category?cat=158"},{"@type":"ListItem","position":4,"name":"MapReduce 的 map→shuffle→reduce 过程是怎样的？","item":"https://itinterview.com.cn/q/705"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/705">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1477">MapReduce 为什么慢？它的多次落盘与 Shuffle 网络开销问题，后来被什么方案优化？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="双重 Cookie 校验与 Referer 校验能防 CSRF 吗？有什么局限？ · IT面试题库">
   <meta property="og:description" content="双重提交 Cookie（Double Submit Cookie）： 服务器把随机 token 同时写入 Cookie 和页面（前端 JS 可读到 Cookie）；提交请求时，前端把该值放进自定义请求头/参数；服务端比对“Cookie 里的 token”与“请求体里的 token”是否一致。 为什么能防：第三方站…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/557.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/557">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="双重 Cookie 校验与 Referer 校验能防 CSRF 吗？有什么局限？ · IT面试题库">
   <meta name="twitter:description" content="双重提交 Cookie（Double Submit Cookie）： 服务器把随机 token 同时写入 Cookie 和页面（前端 JS 可读到 Cookie）；提交请求时，前端把该值放进自定义请求头/参数；服务端比对“Cookie 里的 token”与“请求体里的 token”是否一致。 为什么能防：第三方站…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/557.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/557">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"双重 Cookie 校验与 Referer 校验能防 CSRF 吗？有什么局限？","text":"请说明双重提交 Cookie（double-submit cookie）与 Referer 来源校验的原理，并指出它们在安全性与可靠性上的不足。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"双重提交 Cookie（Double Submit Cookie）： 服务器把随机 token 同时写入 Cookie 和页面（前端 JS 可读到 Cookie）；提交请求时，前端把该值放进自定义请求头/参数；服务端比对“Cookie 里的 token”与“请求体里的 token”是否一致。 为什么能防：第三方站点无法读取受害者的 Cookie，也就无法在请求中放入匹配的 token。 局限：依赖前端 JS 可读 Cookie（若 XSS 同域则失效），且需确保 token 命名不被子域覆盖（子域写入同名 Cookie 可污染）。 Referer / Origin 校验： 服务端检查请求头 Referer/Origin 是否来自本站域名，非本站则拒绝。 局限：HTTPS→HTTP 跳转时 Referer 可能不发送；某些浏览器/代理会隐藏；用户可禁用；仅适合作为辅助手段，不能作为唯一防线。 结论：两者可作补充，但首选仍是 CSRF Token + SameSite，并尽量用框架内置防护。","url":"https://itinterview.com.cn/question/557"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"CSRF跨站请求伪造","item":"https://itinterview.com.cn/category?cat=206"},{"@type":"ListItem","position":4,"name":"双重 Cookie 校验与 Referer 校验能防 CSRF 吗？有什么局限？","item":"https://itinterview.com.cn/q/557.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"CSRF跨站请求伪造","item":"https://itinterview.com.cn/category?cat=206"},{"@type":"ListItem","position":4,"name":"双重 Cookie 校验与 Referer 校验能防 CSRF 吗？有什么局限？","item":"https://itinterview.com.cn/q/557"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/557">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/554">什么是 CSRF 跨站请求伪造？攻击成立的前提是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/555">CSRF Token 是如何防御 CSRF 的？前端应如何传递？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/556">Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

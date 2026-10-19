@@ -9,15 +9,15 @@
   <meta property="og:title" content="localStorage、sessionStorage、cookie 的区别？ · IT面试题库">
   <meta property="og:description" content="生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/25.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/25">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="localStorage、sessionStorage、cookie 的区别？ · IT面试题库">
   <meta name="twitter:description" content="生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/25.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/25">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"localStorage、sessionStorage、cookie 的区别？","text":"从生命周期、容量、请求携带、安全性对比。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"生命周期：localStorage 永久（手动清除）；sessionStorage 仅当前标签页会话；cookie 可设过期时间。 容量：localStorage/sessionStorage 约 5MB；cookie 约 4KB。 请求携带：cookie 每次同源请求自动带（有性能/安全风险）；storage 不随请求发送。 安全：cookie 可设 HttpOnly（防 XSS 读取）、Secure、SameSite。 本项目用法：主题/登录态/API Key 用 localStorage 或 sessionStorage；敏感 token 优先 HttpOnly cookie（但静态站只能用 storage）。","url":"https://itinterview.com.cn/question/25"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"localStorage、sessionStorage、cookie 的区别？","item":"https://itinterview.com.cn/q/25.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"localStorage、sessionStorage、cookie 的区别？","item":"https://itinterview.com.cn/q/25"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/25">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/947">什么是闭包？有什么应用场景和问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/389">什么是闭包（closure）？它有哪些典型应用场景，又要注意什么陷阱？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/390">请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/391">JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

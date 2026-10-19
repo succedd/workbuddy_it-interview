@@ -9,15 +9,15 @@
   <meta property="og:title" content="大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？ · IT面试题库">
   <meta property="og:description" content="什么是幻觉 模型生成了与事实不符、或与给定上下文不一致的内容，却以高置信度输出（例如编造引用、错误日期、张冠李戴）。 主要成因 训练数据含噪声/偏见，或知识截止（知识未覆盖最新事实）； 暴露偏差（exposure bias）：自回归逐 token 生成会累积错误； 解码随机性（temperature/top-p）…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/471.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/471">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？ · IT面试题库">
   <meta name="twitter:description" content="什么是幻觉 模型生成了与事实不符、或与给定上下文不一致的内容，却以高置信度输出（例如编造引用、错误日期、张冠李戴）。 主要成因 训练数据含噪声/偏见，或知识截止（知识未覆盖最新事实）； 暴露偏差（exposure bias）：自回归逐 token 生成会累积错误； 解码随机性（temperature/top-p）…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/471.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/471">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？","text":"幻觉是大模型落地最大的可信度风险之一，常作为开放讨论或场景题出现，要求既能讲清成因也能给出工程解法。","answerCount":1,"datePublished":"2026-09-03T01:03:37.041Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"什么是幻觉 模型生成了与事实不符、或与给定上下文不一致的内容，却以高置信度输出（例如编造引用、错误日期、张冠李戴）。 主要成因 训练数据含噪声/偏见，或知识截止（知识未覆盖最新事实）； 暴露偏差（exposure bias）：自回归逐 token 生成会累积错误； 解码随机性（temperature/top-p）放大大概率但错误的续写； 参数记忆与上下文证据冲突时，模型倾向于「编造」以自洽。 工程缓解手段 RAG（检索增强）：先检索权威资料再生成，让答案有出处； 对齐：RLHF / DPO 让模型更「知之为知之」； 引用与校验：要求输出带引用、接事实核查或知识图谱校验； 约束解码 / 工具调用：把确定性查询交给搜索引擎/数据库； 不确定性校准：低置信时主动拒答或提示用户核对。","url":"https://itinterview.com.cn/question/471"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LLM原理","item":"https://itinterview.com.cn/category?cat=191"},{"@type":"ListItem","position":5,"name":"大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？","item":"https://itinterview.com.cn/q/471.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LLM原理","item":"https://itinterview.com.cn/category?cat=191"},{"@type":"ListItem","position":5,"name":"大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？","item":"https://itinterview.com.cn/q/471"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/471">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1410">大模型推理时的 KV Cache 是什么？为什么上下文越长推理越贵？请估算 7B 模型 8K 上下文的 KV 显存。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1265">Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1266">Temperature、Top-p、Top-k 分别控制什么？生产环境该怎么设置？为什么 Temperature 设为 0，输出仍然可能不完全一致？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

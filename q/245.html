@@ -9,15 +9,15 @@
   <meta property="og:title" content="微服务架构相比单体架构有哪些优点和典型挑战？ · IT面试题库">
   <meta property="og:description" content="优点： 独立部署与扩展：单个服务可独立发布、按需扩容，故障隔离更好。 技术异构：不同服务可用最适合的语言/存储。 团队自治：按服务边界划分小团队，迭代更快。 典型挑战： 分布式复杂度：网络延迟、分区、超时、重试导致的一致性与幂等问题。 数据一致性：服务各自持有数据库，跨服务事务需用 Saga / 最终一致，放弃强…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/245.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/245">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="微服务架构相比单体架构有哪些优点和典型挑战？ · IT面试题库">
   <meta name="twitter:description" content="优点： 独立部署与扩展：单个服务可独立发布、按需扩容，故障隔离更好。 技术异构：不同服务可用最适合的语言/存储。 团队自治：按服务边界划分小团队，迭代更快。 典型挑战： 分布式复杂度：网络延迟、分区、超时、重试导致的一致性与幂等问题。 数据一致性：服务各自持有数据库，跨服务事务需用 Saga / 最终一致，放弃强…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/245.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/245">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"微服务架构相比单体架构有哪些优点和典型挑战？","text":"请列举微服务带来的收益，以及它在运维、一致性与运维复杂度上的代价。","answerCount":1,"datePublished":"2026-08-27T01:34:16.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"优点： 独立部署与扩展：单个服务可独立发布、按需扩容，故障隔离更好。 技术异构：不同服务可用最适合的语言/存储。 团队自治：按服务边界划分小团队，迭代更快。 典型挑战： 分布式复杂度：网络延迟、分区、超时、重试导致的一致性与幂等问题。 数据一致性：服务各自持有数据库，跨服务事务需用 Saga / 最终一致，放弃强一致。 运维成本高：服务发现、配置中心、链路追踪、网关、CI/CD 等基础设施必须健全。 测试与排障难：一次请求跨多服务，需分布式追踪（如 OpenTelemetry）。 结论：微服务不是银弹，团队与规模不够时单体+模块化往往更划算。","url":"https://itinterview.com.cn/question/245"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务架构","item":"https://itinterview.com.cn/category?cat=121"},{"@type":"ListItem","position":4,"name":"微服务架构相比单体架构有哪些优点和典型挑战？","item":"https://itinterview.com.cn/q/245.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务架构","item":"https://itinterview.com.cn/category?cat=121"},{"@type":"ListItem","position":4,"name":"微服务架构相比单体架构有哪些优点和典型挑战？","item":"https://itinterview.com.cn/q/245"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/245">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1210">微服务架构下，服务拆分应该按什么维度进行？拆分过细会带来哪些问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1211">服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1212">【场景】某微服务实例进程已崩溃，但注册中心里它的注册信息还在，导致网关仍把流量转发到这个「死节点」，请求大面积报错。这是什么现象？如何从根本上解决？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1213">【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

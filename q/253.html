@@ -9,15 +9,15 @@
   <meta property="og:title" content="iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？ · IT面试题库">
   <meta property="og:description" content="结论 两者都用于并发编程，底层都基于线程池。 GCD（Grand Central Dispatch）：底层 C API，通过 dispatch queue（串行/并发）提交 block，轻量、灵活，适合一次性、简单的异步任务（如后台取数据、避免阻塞主线程）。 OperationQueue：基于 GCD 的 Obj…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/253.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/253">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？ · IT面试题库">
   <meta name="twitter:description" content="结论 两者都用于并发编程，底层都基于线程池。 GCD（Grand Central Dispatch）：底层 C API，通过 dispatch queue（串行/并发）提交 block，轻量、灵活，适合一次性、简单的异步任务（如后台取数据、避免阻塞主线程）。 OperationQueue：基于 GCD 的 Obj…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/253.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/253">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","text":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","answerCount":1,"datePublished":"2026-08-28T06:18:20.579Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 两者都用于并发编程，底层都基于线程池。 GCD（Grand Central Dispatch）：底层 C API，通过 dispatch queue（串行/并发）提交 block，轻量、灵活，适合一次性、简单的异步任务（如后台取数据、避免阻塞主线程）。 OperationQueue：基于 GCD 的 Objective-C 对象封装，额外提供：任务依赖（addDependency）、取消（cancel）、状态查询（isFinished/isExecuting）、最大并发数、KVO 监听。适合需要取消、依赖编排、进度追踪的复杂任务流。 经验法则：简单并发用 GCD；需要任务依赖、取消、优先级与状态管理时用 OperationQueue。","url":"https://itinterview.com.cn/question/253"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","item":"https://itinterview.com.cn/q/253.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","item":"https://itinterview.com.cn/q/253"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/253">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/252">iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1505">ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1506">GCD 的常用 API 与使用场景？sync 与 async、串行与并行的组合有什么风险？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1507">iOS App 的启动流程是怎样的？启动耗时如何优化？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

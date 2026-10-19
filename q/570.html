@@ -9,15 +9,15 @@
   <meta property="og:title" content="为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？ · IT面试题库">
   <meta property="og:description" content="为什么先建测试保护网：重构的定义（Fowler）是“在不改变外部行为的前提下改善内部结构”。测试就是验证“行为不变”的安全网——小步修改后一跑测试，立刻知道是否改坏。没有测试，重构就是盲改，极易引入回归 bug。 落地做法（遗留代码）： 1. 先给要改的函数补 Characterization Test（特征测试…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/570.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/570">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="为什么先建测试保护网：重构的定义（Fowler）是“在不改变外部行为的前提下改善内部结构”。测试就是验证“行为不变”的安全网——小步修改后一跑测试，立刻知道是否改坏。没有测试，重构就是盲改，极易引入回归 bug。 落地做法（遗留代码）： 1. 先给要改的函数补 Characterization Test（特征测试…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/570.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/570">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？","text":"团队要对一段没有单元测试的遗留代码做重构。有人说“先写测试再重构”，为什么？若暂时无法补全测试，有哪些降低风险的做法？","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么先建测试保护网：重构的定义（Fowler）是“在不改变外部行为的前提下改善内部结构”。测试就是验证“行为不变”的安全网——小步修改后一跑测试，立刻知道是否改坏。没有测试，重构就是盲改，极易引入回归 bug。 落地做法（遗留代码）： 1. 先给要改的函数补 Characterization Test（特征测试）：用现有输入跑出实际输出并锁定，作为“当前行为基线”，即使行为不优雅也先保住不破坏。 2. 优先覆盖核心、易错、被多处调用的逻辑。 3. 重构遵循小步快跑：每次只改一点，频繁运行测试。 若实在无法补全测试： 缩小改动范围，尽量用等价、机械的改名/提取，避免顺手“优化”逻辑； 用代码评审 + 手动回归 + 灰度发布兜底； 借助静态分析/类型检查、结对编程降低风险； 借新需求顺带补测试，逐步把保护网织起来。 结论：测试不是重构的附加品，而是前提。没有测试时重构应格外保守。","url":"https://itinterview.com.cn/question/570"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"重构技巧","item":"https://itinterview.com.cn/category?cat=101"},{"@type":"ListItem","position":4,"name":"为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？","item":"https://itinterview.com.cn/q/570.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"重构技巧","item":"https://itinterview.com.cn/category?cat=101"},{"@type":"ListItem","position":4,"name":"为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？","item":"https://itinterview.com.cn/q/570"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/570">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/568">什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/569">什么是“提取方法 / 提取函数（Extract Method/Function）”？请演示如何把一个长函数拆分。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/571">重构时如何权衡“代码可读性/可维护性”与“运行性能”？请结合实例讨论。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/572">一个类承担了过多职责且与其他模块高度耦合，如何用“提取类（Extract Class）”重构？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

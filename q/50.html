@@ -9,15 +9,15 @@
   <meta property="og:title" content="grep / awk / sed 的常见用法？ · IT面试题库">
   <meta property="og:description" content="grep：grep -rn &quot;error&quot; /var/log --include=*.log 递归按关键字查；-v 反选，-i 忽略大小写，-C3 上下文。 awk：awk -F&#39;,&#39; &#39;{sum+=$3} END{print sum}&#39; data.csv 按列求和；awk &#39;$1&gt;100&#39; access.log…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/50.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/50">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="grep / awk / sed 的常见用法？ · IT面试题库">
   <meta name="twitter:description" content="grep：grep -rn &quot;error&quot; /var/log --include=*.log 递归按关键字查；-v 反选，-i 忽略大小写，-C3 上下文。 awk：awk -F&#39;,&#39; &#39;{sum+=$3} END{print sum}&#39; data.csv 按列求和；awk &#39;$1&gt;100&#39; access.log…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/50.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/50">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"grep / awk / sed 的常见用法？","text":"各举一个实用例子。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"grep：grep -rn \"error\" /var/log --include=*.log 递归按关键字查；-v 反选，-i 忽略大小写，-C3 上下文。 awk：awk -F',' '{sum+=$3} END{print sum}' data.csv 按列求和；awk '$1>100' access.log 过滤。 sed：sed -i 's/old/new/g' file 替换；sed -n '10,20p' 取行；流编辑不改源（去掉 -i）。 三者配合管道是日志分析的利器：cat app.log | grep ERROR | awk '{print $5}' | sort | uniq -c | sort -rn。","url":"https://itinterview.com.cn/question/50"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"grep / awk / sed 的常见用法？","item":"https://itinterview.com.cn/q/50.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"grep / awk / sed 的常见用法？","item":"https://itinterview.com.cn/q/50"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/50">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/149">Shell脚本变量和条件判断？</a><span class="rel-n">164 次浏览</span></li><li><a href="https://itinterview.com.cn/q/51">如何用 crontab 定时执行脚本？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/875">Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/876">一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

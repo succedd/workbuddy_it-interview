@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 常见数据类型及使用场景？ · IT面试题库">
   <meta property="og:description" content="String：缓存、计数器（INCR）、分布式锁、限流。 Hash：对象存储（用户信息、购物车）。 List：队列、最新列表、消息流（LPUSH+LRANGE）。 Set：去重、共同关注/点赞、随机抽奖（SRANDMEMBER）。 ZSet（有序集合）：排行榜（ZADD+ZREVRANGE）、延迟队列（score…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/40.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/40">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 常见数据类型及使用场景？ · IT面试题库">
   <meta name="twitter:description" content="String：缓存、计数器（INCR）、分布式锁、限流。 Hash：对象存储（用户信息、购物车）。 List：队列、最新列表、消息流（LPUSH+LRANGE）。 Set：去重、共同关注/点赞、随机抽奖（SRANDMEMBER）。 ZSet（有序集合）：排行榜（ZADD+ZREVRANGE）、延迟队列（score…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/40.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/40">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 常见数据类型及使用场景？","text":"列出 string/hash/list/set/zset 及其典型用途。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"String：缓存、计数器（INCR）、分布式锁、限流。 Hash：对象存储（用户信息、购物车）。 List：队列、最新列表、消息流（LPUSH+LRANGE）。 Set：去重、共同关注/点赞、随机抽奖（SRANDMEMBER）。 ZSet（有序集合）：排行榜（ZADD+ZREVRANGE）、延迟队列（score=执行时间）、范围统计。 还有 Bitmap（签到）、HyperLogLog（UV 估算）、Geo（附近的人）、Stream（消息队列）。 选型核心：是否需要排序、去重、结构化。","url":"https://itinterview.com.cn/question/40"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 常见数据类型及使用场景？","item":"https://itinterview.com.cn/q/40.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 常见数据类型及使用场景？","item":"https://itinterview.com.cn/q/40"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/40">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

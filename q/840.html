@@ -9,15 +9,15 @@
   <meta property="og:title" content="域环境内网渗透中，域控制器、黄金票据与白银票据分别是什么？ · IT面试题库">
   <meta property="og:description" content="域控制器（DC）：存储域内所有账号与策略的服务器，掌握 krbtgt 账户，是域安全的核心。 黄金票据（Golden Ticket）：利用 krbtgt 账户的哈希伪造任意用户的 TGT（票据授予票据），因 krbtgt 密钥长期不变，可在域內长期免认证横行，危害极大。 白银票据（Silver Ticket）：伪…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/840.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/840">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="域环境内网渗透中，域控制器、黄金票据与白银票据分别是什么？ · IT面试题库">
   <meta name="twitter:description" content="域控制器（DC）：存储域内所有账号与策略的服务器，掌握 krbtgt 账户，是域安全的核心。 黄金票据（Golden Ticket）：利用 krbtgt 账户的哈希伪造任意用户的 TGT（票据授予票据），因 krbtgt 密钥长期不变，可在域內长期免认证横行，危害极大。 白银票据（Silver Ticket）：伪…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/840.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/840">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"域环境内网渗透中，域控制器、黄金票据与白银票据分别是什么？","text":"解释 Active Directory 域环境中 DC、Golden Ticket、Silver Ticket 的概念与危害。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"域控制器（DC）：存储域内所有账号与策略的服务器，掌握 krbtgt 账户，是域安全的核心。 黄金票据（Golden Ticket）：利用 krbtgt 账户的哈希伪造任意用户的 TGT（票据授予票据），因 krbtgt 密钥长期不变，可在域內长期免认证横行，危害极大。 白银票据（Silver Ticket）：伪造特定服务（如 CIFS、MSSQL）的 ST（服务票据），只影响单一服务、不留域控日志，更隐蔽。防御靠监控异常登录、定期重置 krbtgt 密码、最小权限委派。","url":"https://itinterview.com.cn/question/840"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"内网渗透","item":"https://itinterview.com.cn/category?cat=210"},{"@type":"ListItem","position":4,"name":"域环境内网渗透中，域控制器、黄金票据与白银票据分别是什么？","item":"https://itinterview.com.cn/q/840.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"内网渗透","item":"https://itinterview.com.cn/category?cat=210"},{"@type":"ListItem","position":4,"name":"域环境内网渗透中，域控制器、黄金票据与白银票据分别是什么？","item":"https://itinterview.com.cn/q/840"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/840">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1649">红队内网横向移动阶段，如何最小化权限完成关键资产识别？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

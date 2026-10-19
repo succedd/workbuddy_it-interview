@@ -9,15 +9,15 @@
   <meta property="og:title" content="数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？ · IT面试题库">
   <meta property="og:description" content="关系型的舒适区是「单机、事务、结构稳定」。三个需求越界后各有出走路线： 1. 海量写与水平扩展：单机写上限 → 分库分表（应用层痛苦）或 NoSQL（放弃强一致与 SQL，换分布式）； 2. 灵活 schema：表结构变更多 → 文档型（MongoDB）用 schema-free 换敏捷； 3. 超高频读写：磁盘…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/275.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/275">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？ · IT面试题库">
   <meta name="twitter:description" content="关系型的舒适区是「单机、事务、结构稳定」。三个需求越界后各有出走路线： 1. 海量写与水平扩展：单机写上限 → 分库分表（应用层痛苦）或 NoSQL（放弃强一致与 SQL，换分布式）； 2. 灵活 schema：表结构变更多 → 文档型（MongoDB）用 schema-free 换敏捷； 3. 超高频读写：磁盘…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/275.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/275">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？","text":"单机 MySQL 明明很稳定。是哪些需求它满足不了，逼出了 Redis、MongoDB，又逼出了 NewSQL？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关系型的舒适区是「单机、事务、结构稳定」。三个需求越界后各有出走路线： 1. 海量写与水平扩展：单机写上限 → 分库分表（应用层痛苦）或 NoSQL（放弃强一致与 SQL，换分布式）； 2. 灵活 schema：表结构变更多 → 文档型（MongoDB）用 schema-free 换敏捷； 3. 超高频读写：磁盘 + 事务开销 → Redis 用内存换速度，用「弱持久/单线程模型」换简单。 NewSQL 则试图把分布式与 SQL 事务重新统一。没有谁替代谁——访问模式决定存储选型，这是存储选型题的总答案。","url":"https://itinterview.com.cn/question/275"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？","item":"https://itinterview.com.cn/q/275.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库【边界】既然关系型这么成熟，为什么还会有 NoSQL / NewSQL？它们各自拿什么换什么？","item":"https://itinterview.com.cn/q/275"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/275">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/273">数据库【诞生】为什么不直接把数据存成文件，非要有数据库？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/274">数据库【本质】关系模型凭什么统治了四十年？SQL「声明式」到底强在哪？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/276">数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

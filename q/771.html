@@ -9,15 +9,15 @@
   <meta property="og:title" content="现有联合索引 (name, age, city)，请分析 `where name=?`、`where age=?`、`where name=? and city=?`、`where city=?` 哪些能命中索引？并说明最左前缀原则。 · IT面试题库">
   <meta property="og:description" content="要点： 联合索引 (name, age, city) 的 B+ 树先按 name 排序，name 相同再按 age，最后按 city。因此最左前缀原则：查询必须从最左列开始连续匹配才能有效利用索引。 命中：where name=?；where name=? and age=?；where name=? and a…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/771.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/771">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="现有联合索引 (name, age, city)，请分析 `where name=?`、`where age=?`、`where name=? and city=?`、`where city=?` 哪些能命中索引？并说明最左前缀原则。 · IT面试题库">
   <meta name="twitter:description" content="要点： 联合索引 (name, age, city) 的 B+ 树先按 name 排序，name 相同再按 age，最后按 city。因此最左前缀原则：查询必须从最左列开始连续匹配才能有效利用索引。 命中：where name=?；where name=? and age=?；where name=? and a…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/771.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/771">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"现有联合索引 (name, age, city)，请分析 `where name=?`、`where age=?`、`where name=? and city=?`、`where city=?` 哪些能命中索引？并说明最左前缀原则。","text":"考察点：联合索引的最左前缀原则、列顺序对命中率的影响、MySQL 8.0 skip-scan 的有限补救。以场景题形式让候选人判断各 SQL 的索引使用情况。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 联合索引 (name, age, city) 的 B+ 树先按 name 排序，name 相同再按 age，最后按 city。因此最左前缀原则：查询必须从最左列开始连续匹配才能有效利用索引。 命中：where name=?；where name=? and age=?；where name=? and age=? and city=? 都能利用索引有序区间。 部分/不命中：where age=?、where city=? 跳过 name 无法定位；where name=? and city=? 中 name 命中，但 age 缺失导致 city 不能走索引有序区间（MySQL 8.0 有 skip-scan 优化可部分补救）。 设计建议：把区分度最高的列放最左；范围查询（>, \u003c, like 'x%'）会让其右侧列失效，应把范围列放最后。","url":"https://itinterview.com.cn/question/771"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"现有联合索引 (name, age, city)，请分析 `where name=?`、`where age=?`、`where name=? and city=?`、`where city=?` 哪些能命中索引？并说明最左前缀原则。","item":"https://itinterview.com.cn/q/771.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"现有联合索引 (name, age, city)，请分析 `where name=?`、`where age=?`、`where name=? and city=?`、`where city=?` 哪些能命中索引？并说明最左前缀原则。","item":"https://itinterview.com.cn/q/771"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/771">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/137">InnoDB和MyISAM存储引擎的区别？</a><span class="rel-n">470 次浏览</span></li><li><a href="https://itinterview.com.cn/q/134">MySQL中JOIN的实现原理？</a><span class="rel-n">400 次浏览</span></li><li><a href="https://itinterview.com.cn/q/132">MySQL中MVCC的原理？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/130">MySQL索引的底层数据结构是什么？</a><span class="rel-n">332 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？ · IT面试题库">
   <meta property="og:description" content="作用：volatile 告诉编译器「该变量可能被程序之外的因素随时修改」，因此每次访问都必须生成真实的内存读写，禁止缓存到寄存器、禁止省略或重排看似冗余的访问。 三类典型场景 1. 内存映射寄存器（外设）：#define UART_SR ((volatile uint32_t)0x4000C000)，轮询状态位时…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/602.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/602">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？ · IT面试题库">
   <meta name="twitter:description" content="作用：volatile 告诉编译器「该变量可能被程序之外的因素随时修改」，因此每次访问都必须生成真实的内存读写，禁止缓存到寄存器、禁止省略或重排看似冗余的访问。 三类典型场景 1. 内存映射寄存器（外设）：#define UART_SR ((volatile uint32_t)0x4000C000)，轮询状态位时…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/602.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/602">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？","text":"请解释 volatile 告诉编译器什么，列举三类典型使用场景，并澄清「volatile 是否保证原子性与线程安全」这一常见误解。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"作用：volatile 告诉编译器「该变量可能被程序之外的因素随时修改」，因此每次访问都必须生成真实的内存读写，禁止缓存到寄存器、禁止省略或重排看似冗余的访问。 三类典型场景 1. 内存映射寄存器（外设）：#define UART_SR ((volatile uint32_t)0x4000C000)，轮询状态位时必须用 volatile，否则编译器可能只读一次。 2. ISR 与主循环共享的标志变量：volatile uint8_t flag; 防止主循环把判断优化掉。 3. DMA / 其他总线主控修改的变量。 常见误解澄清 ❌ volatile 不保证原子性：对超过总线宽度的多字节变量（如 32 位 MCU 上的 64 位），读/写仍可能被中断在中间，产生「撕裂读」。 ❌ volatile 不提供内存顺序/线程同步：多核或线程间共享请用 std::atomic / C11 _Atomic，并在弱内存模型（ARM）上配合 __DMB() 等内存屏障。 ✅ volatile 是「防止编译器优化掉访问」的必要但非充分条件，临界区/原子操作另需显式同步。","url":"https://itinterview.com.cn/question/602"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？","item":"https://itinterview.com.cn/q/602.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？","item":"https://itinterview.com.cn/q/602"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@ while (*reg &amp; 0x02) { /* 每次都重新读，不会优化成只读一次 */
       <a class="cta" href="https://itinterview.com.cn/question/602">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/603">中断服务程序（ISR）与主程序共享数据时，如何保护临界区？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/604">什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/605">如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/606">嵌入式系统中如何防止栈溢出（Stack Overflow）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

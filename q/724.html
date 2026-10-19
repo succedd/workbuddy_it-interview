@@ -9,15 +9,15 @@
   <meta property="og:title" content="HBase 的数据模型（行键/列族/版本）与适用场景？ · IT面试题库">
   <meta property="og:description" content="数据模型：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 行键+列族:列+版本时间戳 定位，可存多版本。 特点：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。 适用：时序/日志/画像等写多读少、单键查询场景…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/724.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/724">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HBase 的数据模型（行键/列族/版本）与适用场景？ · IT面试题库">
   <meta name="twitter:description" content="数据模型：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 行键+列族:列+版本时间戳 定位，可存多版本。 特点：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。 适用：时序/日志/画像等写多读少、单键查询场景…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/724.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/724">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HBase 的数据模型（行键/列族/版本）与适用场景？","text":"说明 HBase 的列式存储模型与典型用途。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"数据模型：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 行键+列族:列+版本时间戳 定位，可存多版本。 特点：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。 适用：时序/日志/画像等写多读少、单键查询场景；不支持复杂 join 与二级索引（需额外方案），不适合事务型关系查询。","url":"https://itinterview.com.cn/question/724"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"HBase","item":"https://itinterview.com.cn/category?cat=35"},{"@type":"ListItem","position":5,"name":"HBase 的数据模型（行键/列族/版本）与适用场景？","item":"https://itinterview.com.cn/q/724.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"HBase","item":"https://itinterview.com.cn/category?cat=35"},{"@type":"ListItem","position":5,"name":"HBase 的数据模型（行键/列族/版本）与适用场景？","item":"https://itinterview.com.cn/q/724"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/724">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1436">HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

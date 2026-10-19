@@ -9,15 +9,15 @@
   <meta property="og:title" content="Docker 镜像与容器的区别？ · IT面试题库">
   <meta property="og:description" content="镜像（Image） 是只读模板，由多层只读层（Layer）叠加而成（COPY、RUN 等指令各生成一层），通过联合文件系统（overlayfs）呈现统一视图。 容器（Container） 是镜像的运行实例：在镜像层之上加一层可写层（容器层），所有修改发生在此层；删除容器后该层丢失（除非 commit 成新镜像/用…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/52.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/52">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Docker 镜像与容器的区别？ · IT面试题库">
   <meta name="twitter:description" content="镜像（Image） 是只读模板，由多层只读层（Layer）叠加而成（COPY、RUN 等指令各生成一层），通过联合文件系统（overlayfs）呈现统一视图。 容器（Container） 是镜像的运行实例：在镜像层之上加一层可写层（容器层），所有修改发生在此层；删除容器后该层丢失（除非 commit 成新镜像/用…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/52.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/52">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker 镜像与容器的区别？","text":"解释 Image/Container 关系及分层机制。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"镜像（Image） 是只读模板，由多层只读层（Layer）叠加而成（COPY、RUN 等指令各生成一层），通过联合文件系统（overlayfs）呈现统一视图。 容器（Container） 是镜像的运行实例：在镜像层之上加一层可写层（容器层），所有修改发生在此层；删除容器后该层丢失（除非 commit 成新镜像/用 volume 持久化）。 分层优势：共享基础层、节省空间、构建缓存加速。 镜像存仓库（Registry），容器由 docker run 基于镜像启动。","url":"https://itinterview.com.cn/question/52"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Docker","item":"https://itinterview.com.cn/category?cat=136"},{"@type":"ListItem","position":4,"name":"Docker 镜像与容器的区别？","item":"https://itinterview.com.cn/q/52.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Docker","item":"https://itinterview.com.cn/category?cat=136"},{"@type":"ListItem","position":4,"name":"Docker 镜像与容器的区别？","item":"https://itinterview.com.cn/q/52"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/52">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/157">Docker网络模式有哪些？</a><span class="rel-n">267 次浏览</span></li><li><a href="https://itinterview.com.cn/q/152">Docker Compose的作用和使用场景？</a><span class="rel-n">143 次浏览</span></li><li><a href="https://itinterview.com.cn/q/53">Dockerfile 最佳实践有哪些？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/377">Docker 镜像的分层（layer）机制是怎样的？镜像、容器、仓库三者是什么关系？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

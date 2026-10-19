@@ -9,15 +9,15 @@
   <meta property="og:title" content="RTMP 与 HLS 协议的区别与适用场景？ · IT面试题库">
   <meta property="og:description" content="RTMP：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。 HLS（HTTP 切段）：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/686.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/686">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RTMP 与 HLS 协议的区别与适用场景？ · IT面试题库">
   <meta name="twitter:description" content="RTMP：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。 HLS（HTTP 切段）：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/686.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/686">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RTMP 与 HLS 协议的区别与适用场景？","text":"对比两种主流流媒体协议的延迟、兼容性与用途。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RTMP：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。 HLS（HTTP 切段）：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（通常 5–30 秒）。 取舍：低延迟互动用 RTMP/SRT/WebRTC 推流，广覆盖播放用 HLS/FLV；常见架构是 RTMP 推流 + 服务端转 HLS/FLV 分发。","url":"https://itinterview.com.cn/question/686"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"流媒体协议RTMP和HLS","item":"https://itinterview.com.cn/category?cat=253"},{"@type":"ListItem","position":4,"name":"RTMP 与 HLS 协议的区别与适用场景？","item":"https://itinterview.com.cn/q/686.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"流媒体协议RTMP和HLS","item":"https://itinterview.com.cn/category?cat=253"},{"@type":"ListItem","position":4,"name":"RTMP 与 HLS 协议的区别与适用场景？","item":"https://itinterview.com.cn/q/686"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/686">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1664">直播推流端正常但观众端 HLS 延迟很高，你会检查哪些链路环节？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1706">HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1707">HLS 的 ABR（自适应码率）是怎么工作的？播放器根据什么决定升档或降档，切档时为什么会卡一下？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1708">低延迟直播的三条主流路线（LL-HLS、HTTP-FLV、WebRTC 拉流）各能把延迟压到多少？选型时怎么权衡？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

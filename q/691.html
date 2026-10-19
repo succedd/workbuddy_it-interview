@@ -9,15 +9,15 @@
   <meta property="og:title" content="游戏客户端渲染主循环（update/render）与帧率控制要点？ · IT面试题库">
   <meta property="og:description" content="主循环：典型结构为 while(running){ input(); update(dt); render(); }，update 推进逻辑（物理、AI、动画），render 提交绘制，二者依赖固定/可变时间步长。 帧率控制：用 dt（帧间隔）做与帧率无关的运动；可变步长防卡顿跳变，固定步长（如 60Hz）保证物…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/691.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/691">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="游戏客户端渲染主循环（update/render）与帧率控制要点？ · IT面试题库">
   <meta name="twitter:description" content="主循环：典型结构为 while(running){ input(); update(dt); render(); }，update 推进逻辑（物理、AI、动画），render 提交绘制，二者依赖固定/可变时间步长。 帧率控制：用 dt（帧间隔）做与帧率无关的运动；可变步长防卡顿跳变，固定步长（如 60Hz）保证物…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/691.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/691">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"游戏客户端渲染主循环（update/render）与帧率控制要点？","text":"说明游戏主循环结构及稳定帧率的关键。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"主循环：典型结构为 while(running){ input(); update(dt); render(); }，update 推进逻辑（物理、AI、动画），render 提交绘制，二者依赖固定/可变时间步长。 帧率控制：用 dt（帧间隔）做与帧率无关的运动；可变步长防卡顿跳变，固定步长（如 60Hz）保证物理稳定。 关键：避免在主线程做重 I/O、对象池减少 GC、合批降低 Draw Call，保证不掉帧。","url":"https://itinterview.com.cn/question/691"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"游戏客户端渲染主循环（update/render）与帧率控制要点？","item":"https://itinterview.com.cn/q/691.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"游戏客户端渲染主循环（update/render）与帧率控制要点？","item":"https://itinterview.com.cn/q/691"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/691">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1581">游戏主循环（Game Loop）的作用是什么？固定步长更新与可变步长渲染有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1584">用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1585">游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

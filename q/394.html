@@ -9,15 +9,15 @@
   <meta property="og:title" content="下面这段经典代码输出什么？为什么？如何用 let 或闭包修正？（for 循环 + var + setTimeout） · IT面试题库">
   <meta property="og:description" content="要点： 现象： 原因：var 是函数/全局作用域，三个 setTimeout 回调共享同一个 i；定时器在循环结束后才执行，此时 i 已变为 3，于是三次都打印 3。 方案一并发修正（let）：把 var i 改成 let i，let 在每次迭代创建独立的块级绑定，每个回调捕获属于自己的那个 i，输出 0 1 2…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/394.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/394">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="下面这段经典代码输出什么？为什么？如何用 let 或闭包修正？（for 循环 + var + setTimeout） · IT面试题库">
   <meta name="twitter:description" content="要点： 现象： 原因：var 是函数/全局作用域，三个 setTimeout 回调共享同一个 i；定时器在循环结束后才执行，此时 i 已变为 3，于是三次都打印 3。 方案一并发修正（let）：把 var i 改成 let i，let 在每次迭代创建独立的块级绑定，每个回调捕获属于自己的那个 i，输出 0 1 2…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/394.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/394">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"下面这段经典代码输出什么？为什么？如何用 let 或闭包修正？（for 循环 + var + setTimeout）","text":"考察点：闭包共享 var 循环变量、事件循环与定时器时序、块级作用域（let）与 IIFE 闭包两种修正方案；是闭包 + 作用域 + this 的交叉高频坑。属高级题。","answerCount":1,"datePublished":"2026-09-01T09:26:09.925Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 现象： 原因：var 是函数/全局作用域，三个 setTimeout 回调共享同一个 i；定时器在循环结束后才执行，此时 i 已变为 3，于是三次都打印 3。 方案一并发修正（let）：把 var i 改成 let i，let 在每次迭代创建独立的块级绑定，每个回调捕获属于自己的那个 i，输出 0 1 2。 方案二闭包修正（IIFE）： 通过立即执行函数把当前 i 作为参数 j 传入，为每个回调创建独立作用域。 延伸：这也解释了为什么 forEach 的回调参数 (item, index) 能正确拿到索引——每次迭代的 index 是独立形参，本质就是“每个回调一份”。","url":"https://itinterview.com.cn/question/394"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"下面这段经典代码输出什么？为什么？如何用 let 或闭包修正？（for 循环 + var + setTimeout）","item":"https://itinterview.com.cn/q/394.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"下面这段经典代码输出什么？为什么？如何用 let 或闭包修正？（for 循环 + var + setTimeout）","item":"https://itinterview.com.cn/q/394"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/394">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/947">什么是闭包？有什么应用场景和问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/25">localStorage、sessionStorage、cookie 的区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/389">什么是闭包（closure）？它有哪些典型应用场景，又要注意什么陷阱？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/390">请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

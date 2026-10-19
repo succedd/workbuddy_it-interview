@@ -9,15 +9,15 @@
   <meta property="og:title" content="场景题：如何求「和为 K 的连续子数组个数」（LeetCode 560）？为什么用前缀和 + 哈希表？ · IT面试题库">
   <meta property="og:description" content="要点： 转化：子数组 nums[i..j] 和为 K 等价于 pre[j+1] - pre[i] = K，即对每个右端点 j 需要找有多少个左端点 i 满足 pre[i] = pre[j+1] - K。 哈希表解法：从左往右遍历，用哈希表 cnt 记录「已出现的前缀和值 → 出现次数」。每到一个前缀和 cur，答…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/399.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/399">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：如何求「和为 K 的连续子数组个数」（LeetCode 560）？为什么用前缀和 + 哈希表？ · IT面试题库">
   <meta name="twitter:description" content="要点： 转化：子数组 nums[i..j] 和为 K 等价于 pre[j+1] - pre[i] = K，即对每个右端点 j 需要找有多少个左端点 i 满足 pre[i] = pre[j+1] - K。 哈希表解法：从左往右遍历，用哈希表 cnt 记录「已出现的前缀和值 → 出现次数」。每到一个前缀和 cur，答…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/399.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/399">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：如何求「和为 K 的连续子数组个数」（LeetCode 560）？为什么用前缀和 + 哈希表？","text":"考察点：把「子数组和等于 K」转化为「pre[j]-pre[i]=K 即 pre[i]=pre[j]-K」的计数问题；用哈希表在 O(n) 内统计前缀和频次。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:42:55.561Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 转化：子数组 nums[i..j] 和为 K 等价于 pre[j+1] - pre[i] = K，即对每个右端点 j 需要找有多少个左端点 i 满足 pre[i] = pre[j+1] - K。 哈希表解法：从左往右遍历，用哈希表 cnt 记录「已出现的前缀和值 → 出现次数」。每到一个前缀和 cur，答案累加 cnt[cur - K]（之前有多少个前缀和等于 cur-K），再把 cur 自身计数 +1。 复杂度：单次遍历，时间 O(n)，空间 O(n)（哈希表）。 为什么不用暴力/滑动窗口：子数组含负数时窗口无法单调收缩，滑动窗口失效；哈希法对正负都适用，是通用正解。 初始化 cnt={0:1}：处理「前缀和本身就等于 K」的情形（从下标 0 开始的子数组）。","url":"https://itinterview.com.cn/question/399"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"场景题：如何求「和为 K 的连续子数组个数」（LeetCode 560）？为什么用前缀和 + 哈希表？","item":"https://itinterview.com.cn/q/399.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"场景题：如何求「和为 K 的连续子数组个数」（LeetCode 560）？为什么用前缀和 + 哈希表？","item":"https://itinterview.com.cn/q/399"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -113,6 +113,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/399">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/170">动态规划的核心思想？经典问题有哪些？</a><span class="rel-n">478 次浏览</span></li><li><a href="https://itinterview.com.cn/q/167">快排和归并排序的区别？</a><span class="rel-n">58 次浏览</span></li><li><a href="https://itinterview.com.cn/q/66">什么是时间复杂度与空间复杂度？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/67">快速排序的思想与最坏情况？</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？ · IT面试题库">
   <meta property="og:description" content="无畏并发：因借用检查器在编译期就杜绝数据竞争，Rust 让你“无所畏惧”地在多线程间共享/修改数据，竞争错误在编译期而非运行时暴露。 Arc ：原子引用计数智能指针，让同一份数据被多个线程共享所有权（clone 增加计数，最后一个 drop 才释放）。Arc 本身只提供共享只读访问。 Mutex ：互斥锁，包裹数…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/517.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/517">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？ · IT面试题库">
   <meta name="twitter:description" content="无畏并发：因借用检查器在编译期就杜绝数据竞争，Rust 让你“无所畏惧”地在多线程间共享/修改数据，竞争错误在编译期而非运行时暴露。 Arc ：原子引用计数智能指针，让同一份数据被多个线程共享所有权（clone 增加计数，最后一个 drop 才释放）。Arc 本身只提供共享只读访问。 Mutex ：互斥锁，包裹数…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/517.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/517">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？","text":"解释 Arc 的引用计数共享、Mutex 的互斥保护、RwLock 的读写分离，以及它们在多线程间共享可变状态时的组合。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"无畏并发：因借用检查器在编译期就杜绝数据竞争，Rust 让你“无所畏惧”地在多线程间共享/修改数据，竞争错误在编译期而非运行时暴露。 Arc ：原子引用计数智能指针，让同一份数据被多个线程共享所有权（clone 增加计数，最后一个 drop 才释放）。Arc 本身只提供共享只读访问。 Mutex ：互斥锁，包裹数据保证任意时刻仅一个线程能读写内部值；通过 .lock().unwrap() 获取 MutexGuard（守卫离开作用域自动解锁）。常与 Arc 组合 Arc > 实现跨线程可变状态。 RwLock ：读写锁——多个读可并发持有，但写独占；读多写少场景性能优于 Mutex。 组合模式： 注意 Arc > 用 clone 共享；RwLock 在读多写少时替换 Mutex。","url":"https://itinterview.com.cn/question/517"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Rust","item":"https://itinterview.com.cn/category?cat=17"},{"@type":"ListItem","position":4,"name":"Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？","item":"https://itinterview.com.cn/q/517.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Rust","item":"https://itinterview.com.cn/category?cat=17"},{"@type":"ListItem","position":4,"name":"Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？","item":"https://itinterview.com.cn/q/517"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -112,6 +112,7 @@ for _ in 0..4 {
       <a class="cta" href="https://itinterview.com.cn/question/517">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/516">请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/518">Rust 中 `dyn Trait`（trait 对象）与泛型（静态分发）有什么区别？各自适用场景与性能权衡如何？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/519">Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

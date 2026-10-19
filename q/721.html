@@ -9,15 +9,15 @@
   <meta property="og:title" content="微信小程序的生命周期与双线程模型（逻辑层/渲染层）？ · IT面试题库">
   <meta property="og:description" content="双线程模型：逻辑层（AppService，跑 JS 业务逻辑）与渲染层（WebView，管页面渲染）分属两个线程，通过 Native 桥接以 JSON/消息通信，避免 JS 卡顿阻塞渲染，也出于安全沙箱考虑。 生命周期：App 级有 onLaunch/onShow/onHide；Page 级有 onLoad/on…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/721.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/721">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="微信小程序的生命周期与双线程模型（逻辑层/渲染层）？ · IT面试题库">
   <meta name="twitter:description" content="双线程模型：逻辑层（AppService，跑 JS 业务逻辑）与渲染层（WebView，管页面渲染）分属两个线程，通过 Native 桥接以 JSON/消息通信，避免 JS 卡顿阻塞渲染，也出于安全沙箱考虑。 生命周期：App 级有 onLaunch/onShow/onHide；Page 级有 onLoad/on…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/721.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/721">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"微信小程序的生命周期与双线程模型（逻辑层/渲染层）？","text":"解释小程序的运行架构与关键生命周期。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"双线程模型：逻辑层（AppService，跑 JS 业务逻辑）与渲染层（WebView，管页面渲染）分属两个线程，通过 Native 桥接以 JSON/消息通信，避免 JS 卡顿阻塞渲染，也出于安全沙箱考虑。 生命周期：App 级有 onLaunch/onShow/onHide；Page 级有 onLoad/onShow/onReady/onHide/onUnload。 注意两线程异步通信有延迟，不可假设同步拿到 setData 后的 DOM 状态。","url":"https://itinterview.com.cn/question/721"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"小程序开发","item":"https://itinterview.com.cn/category?cat=76"},{"@type":"ListItem","position":4,"name":"微信小程序的生命周期与双线程模型（逻辑层/渲染层）？","item":"https://itinterview.com.cn/q/721.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"小程序开发","item":"https://itinterview.com.cn/category?cat=76"},{"@type":"ListItem","position":4,"name":"微信小程序的生命周期与双线程模型（逻辑层/渲染层）？","item":"https://itinterview.com.cn/q/721"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/721">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1041">小程序的 setData 为什么是性能瓶颈？长列表渲染该怎么优化？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1042">小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1043">小程序跨端方案（Taro / uni-app / 原生 + WebView）怎么选？编译型跨端的原理和代价是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

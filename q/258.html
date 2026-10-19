@@ -9,15 +9,15 @@
   <meta property="og:title" content="移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？ · IT面试题库">
   <meta property="og:description" content="结论 以 60fps 为例，每帧预算约 16.6ms（90Hz 约 11ms、120Hz 约 8ms）。若单帧超过预算未完成渲染，Choreographer 直接丢弃该帧，表现为掉帧/卡顿（jank）。 常见原因与对策： 主线程耗时：网络、IO、复杂计算移到子线程（协程/RxJava/Executor）。 布局过…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/258.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/258">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？ · IT面试题库">
   <meta name="twitter:description" content="结论 以 60fps 为例，每帧预算约 16.6ms（90Hz 约 11ms、120Hz 约 8ms）。若单帧超过预算未完成渲染，Choreographer 直接丢弃该帧，表现为掉帧/卡顿（jank）。 常见原因与对策： 主线程耗时：网络、IO、复杂计算移到子线程（协程/RxJava/Executor）。 布局过…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/258.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/258">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？","text":"移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？","answerCount":1,"datePublished":"2026-08-28T06:18:20.883Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 以 60fps 为例，每帧预算约 16.6ms（90Hz 约 11ms、120Hz 约 8ms）。若单帧超过预算未完成渲染，Choreographer 直接丢弃该帧，表现为掉帧/卡顿（jank）。 常见原因与对策： 主线程耗时：网络、IO、复杂计算移到子线程（协程/RxJava/Executor）。 布局过深：用 ConstraintLayout 扁平化，merge/ViewStub 减少层级与过度绘制。 频繁 GC（内存抖动）：避免在循环/频繁调用处创建对象，使用对象池、LRU 缓存。 图片处理：用 Glide/Coil 做缩放与缓存，避免主线程加载大图。 监控：本地用 GPU 呈现模式/Profile GPU、Systrace/Perfetto；线上用 Choreographer 回调做 FPS 埋点（APM/Matrix）。","url":"https://itinterview.com.cn/question/258"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？","item":"https://itinterview.com.cn/q/258.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？","item":"https://itinterview.com.cn/q/258"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -104,6 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/258">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/257">移动端 App 冷启动与热启动有什么区别？如何优化冷启动？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1562">Android 中常见的内存泄漏场景有哪些？如何定位与修复？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1564">什么是 ANR？产生的原因和线上排查思路是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1565">Android 冷启动为什么慢？有哪些常见的启动优化手段？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

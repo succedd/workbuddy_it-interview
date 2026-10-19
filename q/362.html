@@ -9,15 +9,15 @@
   <meta property="og:title" content="TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？ · IT面试题库">
   <meta property="og:description" content="要点： 流量控制原理：接收方在 ACK 中携带“窗口（rwnd）”字段，告知自己当前剩余缓存；发送方的可发送窗口 = min(拥塞窗口 cwnd, 接收窗口 rwnd)，从而让发送速率不超过接收方处理能力。 零窗口问题：当接收方缓存满，通告窗口为 0，发送方必须停止发送。之后若接收方腾出空间并发出“窗口更新”报文…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/362.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/362">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？ · IT面试题库">
   <meta name="twitter:description" content="要点： 流量控制原理：接收方在 ACK 中携带“窗口（rwnd）”字段，告知自己当前剩余缓存；发送方的可发送窗口 = min(拥塞窗口 cwnd, 接收窗口 rwnd)，从而让发送速率不超过接收方处理能力。 零窗口问题：当接收方缓存满，通告窗口为 0，发送方必须停止发送。之后若接收方腾出空间并发出“窗口更新”报文…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/362.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/362">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？","text":"考察点：流量控制原理（通过接收方通告窗口约束发送速率）；零窗口场景下的“坚持定时器/窗口探测”机制，以及糊涂窗口综合症（Silly Window Syndrome）的成因与规避。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:18.723Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 流量控制原理：接收方在 ACK 中携带“窗口（rwnd）”字段，告知自己当前剩余缓存；发送方的可发送窗口 = min(拥塞窗口 cwnd, 接收窗口 rwnd)，从而让发送速率不超过接收方处理能力。 零窗口问题：当接收方缓存满，通告窗口为 0，发送方必须停止发送。之后若接收方腾出空间并发出“窗口更新”报文但在网络中丢失，双方会陷入死锁（发送方一直等、接收方以为已通知）。 解决方案——坚持定时器（TCP Persist Timer）：发送方收到零窗口后启动定时器，周期性发送 1 字节的“窗口探测（Zero Window Probe）”报文，强制接收方回 ACK 通告最新窗口，打破僵局。 糊涂窗口综合症：若接收方频繁通告很小窗口、发送方又频繁发小包，网络利用率极低。规避需“接收方不通告小窗口”+“发送方开启 Nagle 算法”双管齐下；交互性强的程序（ssh/telnet）可设 TCP_NODELAY 关闭 Nagle。","url":"https://itinterview.com.cn/question/362"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？","item":"https://itinterview.com.cn/q/362.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 的滑动窗口是如何实现流量控制的？当接收方通告窗口为 0（零窗口）时，发送方应该怎么办？","item":"https://itinterview.com.cn/q/362"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/362">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/160">TCP流量控制和拥塞控制的区别？</a><span class="rel-n">206 次浏览</span></li><li><a href="https://itinterview.com.cn/q/364">常听说 TCP 有“粘包/拆包”问题，这是 TCP 协议本身的缺陷吗？应如何从应用层解决？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/60">TCP 三次握手与四次挥手的过程？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/61">TIME_WAIT 的作用与过多怎么办？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

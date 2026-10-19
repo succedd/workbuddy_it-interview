@@ -9,15 +9,15 @@
   <meta property="og:title" content="Ansible 的 playbook/role/inventory 是什么？为何无需 agent？ · IT面试题库">
   <meta property="og:description" content="Inventory：定义被管主机的清单与分组（可含变量）。 Playbook：用 YAML 描述“在哪些主机上做哪些任务”的剧本，幂等执行。 Role：把 playbook 按职责（如 nginx、mysql）模板化复用，结构清晰。 免 agent：Ansible 通过 SSH（Windows 用 WinRM）推…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/729.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/729">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Ansible 的 playbook/role/inventory 是什么？为何无需 agent？ · IT面试题库">
   <meta name="twitter:description" content="Inventory：定义被管主机的清单与分组（可含变量）。 Playbook：用 YAML 描述“在哪些主机上做哪些任务”的剧本，幂等执行。 Role：把 playbook 按职责（如 nginx、mysql）模板化复用，结构清晰。 免 agent：Ansible 通过 SSH（Windows 用 WinRM）推…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/729.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/729">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Ansible 的 playbook/role/inventory 是什么？为何无需 agent？","text":"解释 Ansible 的核心概念与免 agent 原理。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Inventory：定义被管主机的清单与分组（可含变量）。 Playbook：用 YAML 描述“在哪些主机上做哪些任务”的剧本，幂等执行。 Role：把 playbook 按职责（如 nginx、mysql）模板化复用，结构清晰。 免 agent：Ansible 通过 SSH（Windows 用 WinRM）推送模块到目标机临时执行并返回结果，目标机无需常驻 agent，部署简单、易于审计。","url":"https://itinterview.com.cn/question/729"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Ansible","item":"https://itinterview.com.cn/category?cat=148"},{"@type":"ListItem","position":4,"name":"Ansible 的 playbook/role/inventory 是什么？为何无需 agent？","item":"https://itinterview.com.cn/q/729.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Ansible","item":"https://itinterview.com.cn/category?cat=148"},{"@type":"ListItem","position":4,"name":"Ansible 的 playbook/role/inventory 是什么？为何无需 agent？","item":"https://itinterview.com.cn/q/729"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/729">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1559">如何用 Ansible 做配置管理与环境一致性保障？Playbook 的变量优先级与 Jinja2 模板如何避免配置漂移？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1440">Ansible 的 Playbook 为什么天然「幂等」？幂等性靠什么保证？role 的目录结构是怎样的？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

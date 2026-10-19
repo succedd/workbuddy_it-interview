@@ -9,15 +9,15 @@
   <meta property="og:title" content="场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？ · IT面试题库">
   <meta property="og:description" content="要点：reset 只移动分支指针，提交对象仍留在对象库中，只要 reflog 里还有记录就完全可恢复。 找回流程： 1. git reflog 查看本仓库 HEAD 的移动历史，找到 reset 之前的那个动作行（如 HEAD@{1}: commit: 完成支付回调），记下其 SHA； 2. git reset …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/856.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/856">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？ · IT面试题库">
   <meta name="twitter:description" content="要点：reset 只移动分支指针，提交对象仍留在对象库中，只要 reflog 里还有记录就完全可恢复。 找回流程： 1. git reflog 查看本仓库 HEAD 的移动历史，找到 reset 之前的那个动作行（如 HEAD@{1}: commit: 完成支付回调），记下其 SHA； 2. git reset …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/856.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/856">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？","text":"考察点：把「Git 几乎不会真正丢失数据」的原理（引用可达性 + reflog + GC）用于真实事故，是追问链的收口。追问：git gc 什么时候才会真正删掉这些提交？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：reset 只移动分支指针，提交对象仍留在对象库中，只要 reflog 里还有记录就完全可恢复。 找回流程： 1. git reflog 查看本仓库 HEAD 的移动历史，找到 reset 之前的那个动作行（如 HEAD@{1}: commit: 完成支付回调），记下其 SHA； 2. git reset --hard 或 git branch recover 把分支/新分支指向它，两个提交完整回来了； 3. 若记不清，git fsck --lost-found 可列出没有任何引用指向的悬空提交辅助排查。 为什么不会立刻消失：Git 的 GC 判断标准是可达性——从任何引用（分支、标签、reflog）出发遍历不到的对象才算垃圾。reset/rebase/amend 产生的「旧提交」在 reflog 过期前都可达，默认 reflog 条目保留 90 天（不可达提交 30 天），到期后 gc 才真正清理。所以「git reset 丢代码」九成是虚惊。 force push 重写公共分支的善后：受影响的同事不要直接 pull 合并，先 fetch，再 git rebase origin/ 或 git pull --rebase，Git 会按 patch-id 跳过已被重写吸收的提交；事后团队应开启分支保护禁止强推主干。 预防措施：重要分支开 protected branch；养成 git branch backup- 打临时书签再做危险操作的习惯——成本为一个指针文件，换一条完整退路。","url":"https://itinterview.com.cn/question/856"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？","item":"https://itinterview.com.cn/q/856.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"场景题：同事执行了 git reset --hard HEAD~2 丢掉了两个未推送的本地提交，随后又在另一个分支上 force push 重写了已共享的分支。请分别说明：如何用 reflog 找回「丢失」的提交？为什么被 reset 的提交并不会立刻消失？","item":"https://itinterview.com.cn/q/856"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/856">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/563">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/564">如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/565">请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/566">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

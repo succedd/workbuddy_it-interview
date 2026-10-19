@@ -9,15 +9,15 @@
   <meta property="og:title" content="Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？ · IT面试题库">
   <meta property="og:description" content="两种服务类型 Nacos 里每个 Service 都有服务类型，它决定实例状态由哪条一致性路径维护： 临时服务（Ephemeral）：实例由存活的客户端持有，靠心跳（2.x 是 gRPC 长连接）保活；客户端断开、心跳过期或连接释放后，实例会被直接移除。偏 AP，主要状态路径是运行时 client state +…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/452.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/452">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？ · IT面试题库">
   <meta name="twitter:description" content="两种服务类型 Nacos 里每个 Service 都有服务类型，它决定实例状态由哪条一致性路径维护： 临时服务（Ephemeral）：实例由存活的客户端持有，靠心跳（2.x 是 gRPC 长连接）保活；客户端断开、心跳过期或连接释放后，实例会被直接移除。偏 AP，主要状态路径是运行时 client state +…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/452.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/452">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？","text":"考察点：两种服务类型的存活判定与摘除方式、分别走 Distro（AP）与持久化（CP）一致性路径、ephemeral 在 2.x 是 Service 级语义。属简答题（中级）。","answerCount":1,"datePublished":"2026-09-03T00:54:20.484Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"两种服务类型 Nacos 里每个 Service 都有服务类型，它决定实例状态由哪条一致性路径维护： 临时服务（Ephemeral）：实例由存活的客户端持有，靠心跳（2.x 是 gRPC 长连接）保活；客户端断开、心跳过期或连接释放后，实例会被直接移除。偏 AP，主要状态路径是运行时 client state + Distro 协议同步。 持久服务（Persistent）：实例作为持久化资源管理，可从服务端快照恢复；实例异常时通常只被标记为不健康，不会被自动剔除，需要主动注销。偏 CP，主要状态路径是持久化的 client state + 元数据持久化。 为什么临时走 AP、持久走 CP 临时服务对应业务微服务，容器化部署、扩缩容极其频繁。注册中心哪怕出现网络分区、节点间数据短暂不一致，也必须能返回一个近似可用的实例列表——否则整个调用链会直接断掉，所以优先保可用性（AP）。 持久服务数量少、变化少，但往往是 MySQL、Redis、老系统接口这类基础设施。它们的宕机信息必须准确一致地同步到所有节点，避免消费者误连到已宕机的实例，所以优先保一致性（CP）。 使用要点 Spring Cloud 微服务默认注册的就是临时实例，对应配置 spring.cloud.nacos.discovery.ephemeral，设为 false 即注册为持久实例。 ephemeral 在 Nacos 2.x 是 Service 级语义：同一个 Service 下不要混用临时实例和持久实例，实例请求中的 ephemeral 必须与所属服务类型匹配（1.x 时该属性由单个实例决定，2.x 改为由服务决定）。 消费者拿到的不是原始存储数据，而是经过集群过滤、健康状态、权重、保护阈值处理后的「发现视图」；排查实例列表不一致时，要先确认你看的是运行时发现视图还是管理端视图。","url":"https://itinterview.com.cn/question/452"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"服务注册与发现Nacos","item":"https://itinterview.com.cn/category?cat=130"},{"@type":"ListItem","position":4,"name":"Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？","item":"https://itinterview.com.cn/q/452.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"服务注册与发现Nacos","item":"https://itinterview.com.cn/category?cat=130"},{"@type":"ListItem","position":4,"name":"Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？","item":"https://itinterview.com.cn/q/452"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/452">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1068">Nacos 配置中心的配置动态推送是怎么实现的？长轮询比「客户端定时拉取」好在哪？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1069">Nacos 的服务健康检查与心跳续约是怎么做的？服务下线后流量是如何摘除的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1070">Nacos 集群的数据一致性是怎么保证的？Raft 和 Distro 各用在什么数据上？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

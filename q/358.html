@@ -9,15 +9,15 @@
   <meta property="og:title" content="为什么重写 equals 时必须重写 hashCode？只重写其中一个会在 HashMap 里引发什么后果？ · IT面试题库">
   <meta property="og:description" content="约定：如果两个对象 equals 返回 true，那么它们的 hashCode 必须相等；反之 hashCode 相等的两个对象 equals 不一定相等（哈希冲突允许）。 HashMap 的依赖：put/get 先算 hashCode 定位桶，再在桶内用 equals 比较 key。所以定位靠 hashCode…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/358.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/358">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么重写 equals 时必须重写 hashCode？只重写其中一个会在 HashMap 里引发什么后果？ · IT面试题库">
   <meta name="twitter:description" content="约定：如果两个对象 equals 返回 true，那么它们的 hashCode 必须相等；反之 hashCode 相等的两个对象 equals 不一定相等（哈希冲突允许）。 HashMap 的依赖：put/get 先算 hashCode 定位桶，再在桶内用 equals 比较 key。所以定位靠 hashCode…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/358.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/358">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么重写 equals 时必须重写 hashCode？只重写其中一个会在 HashMap 里引发什么后果？","text":"考察点：equals 与 hashCode 的约定、HashMap 如何依赖这两个方法、不遵守约定的真实 bug。","answerCount":1,"datePublished":"2026-08-31T08:46:22.965Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"约定：如果两个对象 equals 返回 true，那么它们的 hashCode 必须相等；反之 hashCode 相等的两个对象 equals 不一定相等（哈希冲突允许）。 HashMap 的依赖：put/get 先算 hashCode 定位桶，再在桶内用 equals 比较 key。所以定位靠 hashCode，桶内判等靠 equals。 只重写 equals 不重写 hashCode 的后果：两个「逻辑相等」的对象（equals 为 true）由于继承自 Object 的 hashCode 默认按内存地址算，会得到不同的 hashCode，从而被放到不同的桶里。结果就是：你 put 一个 key，却用「相等」的另一个 key 去 get，HashMap 在错误的桶里找，返回 null——明明对象相等却查不到，产生隐蔽的数据「丢失」bug。 正确做法：只要重写了 equals，必须同步重写 hashCode，且要保证 equals 相等的对象 hashCode 一定相等（常用写法是用参与 equals 比较的所有字段一起算哈希，如 Objects.hash(a, b)）。","url":"https://itinterview.com.cn/question/358"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"为什么重写 equals 时必须重写 hashCode？只重写其中一个会在 HashMap 里引发什么后果？","item":"https://itinterview.com.cn/q/358.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"为什么重写 equals 时必须重写 hashCode？只重写其中一个会在 HashMap 里引发什么后果？","item":"https://itinterview.com.cn/q/358"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/358">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

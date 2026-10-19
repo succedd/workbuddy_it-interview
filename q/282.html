@@ -9,15 +9,15 @@
   <meta property="og:title" content="网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？ · IT面试题库">
   <meta property="og:description" content="TCP 的复杂度 = 在不可靠信道上重建可靠性的全套机制： 1. 确认与重传：每字节有序号，收不到 ACK 就重发——解决「丢没丢、顺序对不对」； 2. 滑动窗口：流量控制（对方处理不过来就减速）+ 拥塞控制（网络堵了全网一起退让）——解决「发多快才不压垮路径」； 3. 连接管理：三次握手（同步双方初始序号、确认…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/282.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/282">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？ · IT面试题库">
   <meta name="twitter:description" content="TCP 的复杂度 = 在不可靠信道上重建可靠性的全套机制： 1. 确认与重传：每字节有序号，收不到 ACK 就重发——解决「丢没丢、顺序对不对」； 2. 滑动窗口：流量控制（对方处理不过来就减速）+ 拥塞控制（网络堵了全网一起退让）——解决「发多快才不压垮路径」； 3. 连接管理：三次握手（同步双方初始序号、确认…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/282.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/282">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？","text":"底层网线会丢包、乱序、重复。TCP 收到数据凭什么敢说「可靠」？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TCP 的复杂度 = 在不可靠信道上重建可靠性的全套机制： 1. 确认与重传：每字节有序号，收不到 ACK 就重发——解决「丢没丢、顺序对不对」； 2. 滑动窗口：流量控制（对方处理不过来就减速）+ 拥塞控制（网络堵了全网一起退让）——解决「发多快才不压垮路径」； 3. 连接管理：三次握手（同步双方初始序号、确认双向通路）四次挥手（双向各自关闭）。 为什么握手三次不可两次：防止历史失效连接请求突然到达造成资源错配。所有可靠传输类问题（秒传、断点续传、消息不丢）本质都在重造这套机制。","url":"https://itinterview.com.cn/question/282"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？","item":"https://itinterview.com.cn/q/282.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？","item":"https://itinterview.com.cn/q/282"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/282">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/281">网络【诞生】网络协议为什么必须「分层」还要「标准化」？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/283">网络【边界】HTTP 从 1.1 到 2 再到 3，每一代都在解决什么「上一代治不好的病」？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/284">网络【演化】HTTPS 已经是标配了，为什么还会有人说「网络安全做得再好也可能出事」？协议层的安全边界在哪？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

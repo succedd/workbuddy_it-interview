@@ -9,15 +9,15 @@
   <meta property="og:title" content="K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？ · IT面试题库">
   <meta property="og:description" content="kubectl describe pod 看 Events 是关键。 Pending： 资源不足（CPU/内存 requests 超过节点剩余）→ 看 kubectl get nodes 与资源配额。 节点有 taint 但 Pod 无对应 toleration。 挂载 PVC 未绑定（StorageClass …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/56.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/56">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？ · IT面试题库">
   <meta name="twitter:description" content="kubectl describe pod 看 Events 是关键。 Pending： 资源不足（CPU/内存 requests 超过节点剩余）→ 看 kubectl get nodes 与资源配额。 节点有 taint 但 Pod 无对应 toleration。 挂载 PVC 未绑定（StorageClass …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/56.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/56">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？","text":"给出定位步骤。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"kubectl describe pod 看 Events 是关键。 Pending： 资源不足（CPU/内存 requests 超过节点剩余）→ 看 kubectl get nodes 与资源配额。 节点有 taint 但 Pod 无对应 toleration。 挂载 PVC 未绑定（StorageClass 问题）。 ImagePullBackOff： 镜像名/标签错、私有仓库未配 imagePullSecrets、仓库网络不通、节点无拉取权限。 kubectl describe 能看到 Failed to pull image ... not found / unauthorized。 CrashLoopBackOff：容器启动即退出，看 kubectl logs 与退出码（如配置错误、依赖缺失）。","url":"https://itinterview.com.cn/question/56"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？","item":"https://itinterview.com.cn/q/56.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？","item":"https://itinterview.com.cn/q/56"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/56">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/155">Kubernetes中ConfigMap和Secret的使用？</a><span class="rel-n">238 次浏览</span></li><li><a href="https://itinterview.com.cn/q/154">Kubernetes Service类型有哪些？</a><span class="rel-n">205 次浏览</span></li><li><a href="https://itinterview.com.cn/q/156">Kubernetes滚动更新和回滚？</a><span class="rel-n">186 次浏览</span></li><li><a href="https://itinterview.com.cn/q/158">Kubernetes资源限制和HPA自动扩缩容？</a><span class="rel-n">153 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

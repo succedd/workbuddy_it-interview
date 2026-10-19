@@ -9,15 +9,15 @@
   <meta property="og:title" content="Java线程池的工作原理？ · IT面试题库">
   <meta property="og:description" content="线程池原理 参数: corePoolSize、maximumPoolSize、keepAliveTime、workQueue、threadFactory、handler 流程: 1.线程数&lt;corePoolSize创建新线程 2.≥corePoolSize放入队列 3.队列满且&lt;maximumPoolSize创建…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/106.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/106">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java线程池的工作原理？ · IT面试题库">
   <meta name="twitter:description" content="线程池原理 参数: corePoolSize、maximumPoolSize、keepAliveTime、workQueue、threadFactory、handler 流程: 1.线程数&lt;corePoolSize创建新线程 2.≥corePoolSize放入队列 3.队列满且&lt;maximumPoolSize创建…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/106.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/106">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java线程池的工作原理？","text":"请解释ThreadPoolExecutor的核心参数、工作流程和拒绝策略。","answerCount":1,"datePublished":"2026-07-31T09:05:22.338Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"线程池原理 参数: corePoolSize、maximumPoolSize、keepAliveTime、workQueue、threadFactory、handler 流程: 1.线程数\u003ccorePoolSize创建新线程 2.≥corePoolSize放入队列 3.队列满且\u003cmaximumPoolSize创建新线程 4.队列满且≥maximumPoolSize执行拒绝策略 拒绝策略: AbortPolicy(默认抛异常)、CallerRunsPolicy、DiscardPolicy、DiscardOldestPolicy","url":"https://itinterview.com.cn/question/106"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java线程池的工作原理？","item":"https://itinterview.com.cn/q/106.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java线程池的工作原理？","item":"https://itinterview.com.cn/q/106"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/106">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li><li><a href="https://itinterview.com.cn/q/101">Java GC垃圾回收机制的工作原理？</a><span class="rel-n">7 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

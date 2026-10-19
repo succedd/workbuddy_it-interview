@@ -9,15 +9,15 @@
   <meta property="og:title" content="Kafka 与 RabbitMQ 如何选型？ · IT面试题库">
   <meta property="og:description" content="Kafka：分区日志模型，超高吞吐、持久化、重放、流式处理（配合 Flink/Spark）；适合日志、埋点、事件流、高并发解耦。消费后消息仍在，可回放。 RabbitMQ：AMQP 路由模型（exchange+binding），灵活路由（direct/topic/fanout）、低延迟、成熟的事务/确认；适合业务…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/84.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/84">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 与 RabbitMQ 如何选型？ · IT面试题库">
   <meta name="twitter:description" content="Kafka：分区日志模型，超高吞吐、持久化、重放、流式处理（配合 Flink/Spark）；适合日志、埋点、事件流、高并发解耦。消费后消息仍在，可回放。 RabbitMQ：AMQP 路由模型（exchange+binding），灵活路由（direct/topic/fanout）、低延迟、成熟的事务/确认；适合业务…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/84.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/84">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 与 RabbitMQ 如何选型？","text":"从模型、场景、可靠性对比。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Kafka：分区日志模型，超高吞吐、持久化、重放、流式处理（配合 Flink/Spark）；适合日志、埋点、事件流、高并发解耦。消费后消息仍在，可回放。 RabbitMQ：AMQP 路由模型（exchange+binding），灵活路由（direct/topic/fanout）、低延迟、成熟的事务/确认；适合业务异步、任务队列、需要复杂路由的场景。 选型：大数据/日志/流 → Kafka；业务消息/复杂路由/低延迟任务队列 → RabbitMQ。也常二者并存。","url":"https://itinterview.com.cn/question/84"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 与 RabbitMQ 如何选型？","item":"https://itinterview.com.cn/q/84.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 与 RabbitMQ 如何选型？","item":"https://itinterview.com.cn/q/84"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/84">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/183">Kafka如何实现消息的顺序消费？</a><span class="rel-n">486 次浏览</span></li><li><a href="https://itinterview.com.cn/q/182">Kafka中ISR机制是什么？</a><span class="rel-n">351 次浏览</span></li><li><a href="https://itinterview.com.cn/q/475">Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</a><span class="rel-n">4 次浏览</span></li><li><a href="https://itinterview.com.cn/q/80">Kafka 的核心概念有哪些？</a><span class="rel-n">3 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？ · IT面试题库">
   <meta property="og:description" content="指令周期（Instruction Cycle）指 CPU 取出并执行一条指令的过程，经典阶段： 1. 取指（IF, Instruction Fetch）：从内存按 PC 取指令。 2. 译码（ID, Decode）：解析操作码、读寄存器操作数。 3. 执行（EX, Execute）：ALU 运算或地址计算。 4.…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/485.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/485">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？ · IT面试题库">
   <meta name="twitter:description" content="指令周期（Instruction Cycle）指 CPU 取出并执行一条指令的过程，经典阶段： 1. 取指（IF, Instruction Fetch）：从内存按 PC 取指令。 2. 译码（ID, Decode）：解析操作码、读寄存器操作数。 3. 执行（EX, Execute）：ALU 运算或地址计算。 4.…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/485.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/485">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？","text":"请说明一条指令从取指到写回的典型阶段，并解释五级流水线的 CPI 与加速比原理。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"指令周期（Instruction Cycle）指 CPU 取出并执行一条指令的过程，经典阶段： 1. 取指（IF, Instruction Fetch）：从内存按 PC 取指令。 2. 译码（ID, Decode）：解析操作码、读寄存器操作数。 3. 执行（EX, Execute）：ALU 运算或地址计算。 4. 访存（MEM, Memory Access）：读/写数据内存（load/store）。 5. 写回（WB, Write Back）：结果写回寄存器。 （更细还含中断周期、间址周期等，依体系而定。） 流水线（Pipelining）原理：把一条指令分成多个阶段，不同指令的不同阶段在时间上重叠执行（类似工厂装配线）。若每阶段 1 个时钟周期，理想情况下： 非流水执行 n 条指令需 n × k 周期（k 为阶段数）； 五级流水需 k + (n-1) 周期，吞吐近似每周期 1 条，理想 CPI≈1。 注意：实际受冒险（结构/数据/控制）、冒险停顿、不均衡阶段长度影响，CPI 略大于 1；且流水线越深，控制冒险惩罚越大。加速比上限受限于最长阶段（木桶效应）。","url":"https://itinterview.com.cn/question/485"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？","item":"https://itinterview.com.cn/q/485.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？","item":"https://itinterview.com.cn/q/485"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/485">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？ · IT面试题库">
   <meta property="og:description" content="TLS 1.2（ECDHE 密钥协商）简化步骤： 1. ClientHello：客户端发送支持的 TLS 版本、密码套件列表、客户端随机数、支持的扩展。 2. ServerHello + Certificate：服务端选定套件、发送服务端随机数、X.509 证书（含公钥）与证书链。 3. ServerKeyExc…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/538.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/538">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？ · IT面试题库">
   <meta name="twitter:description" content="TLS 1.2（ECDHE 密钥协商）简化步骤： 1. ClientHello：客户端发送支持的 TLS 版本、密码套件列表、客户端随机数、支持的扩展。 2. ServerHello + Certificate：服务端选定套件、发送服务端随机数、X.509 证书（含公钥）与证书链。 3. ServerKeyExc…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/538.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/538">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？","text":"请分步骤说明基于 ECDHE 的 TLS 1.2 握手，并对比 TLS 1.3 在握手延迟、密钥交换算法与安全性上的改进。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TLS 1.2（ECDHE 密钥协商）简化步骤： 1. ClientHello：客户端发送支持的 TLS 版本、密码套件列表、客户端随机数、支持的扩展。 2. ServerHello + Certificate：服务端选定套件、发送服务端随机数、X.509 证书（含公钥）与证书链。 3. ServerKeyExchange：服务端发送 ECDHE 公钥参数，并用私钥对其签名；客户端验证证书链与签名。 4. ClientKeyExchange：客户端发送自己的 ECDHE 公钥参数。 5. 双方各自用 DH 参数计算出相同的预主密钥，结合两个随机数推导出主密钥/会话密钥。 6. ChangeCipherSpec + Finished：双方切换到对称加密并互发校验消息，握手完成。 ECDHE 的价值：每次会话使用临时密钥，即使服务器私钥日后泄露，历史会话也无法被解密（前向安全）。 TLS 1.3 的优化： 握手从 2-RTT 缩短为 1-RTT（ClientHello 直接带密钥共享，ServerHello 一次返回证书+密钥+Finished）； 移除不安全的 RSA 静态密钥交换与弱套件，仅保留 ECDHE； 支持 0-RTT 会话恢复（复用 PSK 提前发数据）。","url":"https://itinterview.com.cn/question/538"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"网络安全基础","item":"https://itinterview.com.cn/category?cat=201"},{"@type":"ListItem","position":4,"name":"请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？","item":"https://itinterview.com.cn/q/538.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"网络安全基础","item":"https://itinterview.com.cn/category?cat=201"},{"@type":"ListItem","position":4,"name":"请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？","item":"https://itinterview.com.cn/q/538"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/538">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/537">数字签名的原理是什么？它如何同时保证身份认证与完整性？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/536">对称加密与非对称加密的区别？为何 TLS 要两者结合使用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/539">什么是中间人攻击（MITM）？HTTPS 如何抵御它？遇到证书告警应如何排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/842">常见的网络层攻击（DDoS、ARP 欺骗、DNS 劫持）原理与防御手段有哪些？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

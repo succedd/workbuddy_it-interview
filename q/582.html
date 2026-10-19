@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？ · IT面试题库">
   <meta property="og:description" content="正确做法（原子加锁）： NX：仅当 key 不存在才设置 → 保证互斥。 PX 30000：30 秒自动过期 → 防止客户端崩溃后锁永不过期（死锁）。 value 用全局唯一随机值（如 UUID）：用于安全释放时校验“这把锁是我的”。 为什么不用 SETNX + 单独 EXPIRE： 这是两步非原子操作——若客户…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/582.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/582">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？ · IT面试题库">
   <meta name="twitter:description" content="正确做法（原子加锁）： NX：仅当 key 不存在才设置 → 保证互斥。 PX 30000：30 秒自动过期 → 防止客户端崩溃后锁永不过期（死锁）。 value 用全局唯一随机值（如 UUID）：用于安全释放时校验“这把锁是我的”。 为什么不用 SETNX + 单独 EXPIRE： 这是两步非原子操作——若客户…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/582.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/582">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？","text":"多实例要互斥执行一段逻辑。请用 Redis 实现一个分布式锁，说明 SET NX PX 的作用，并指出“先 SETNX 再单独 EXPIRE”在崩溃时会导致什么问题（死锁）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确做法（原子加锁）： NX：仅当 key 不存在才设置 → 保证互斥。 PX 30000：30 秒自动过期 → 防止客户端崩溃后锁永不过期（死锁）。 value 用全局唯一随机值（如 UUID）：用于安全释放时校验“这把锁是我的”。 为什么不用 SETNX + 单独 EXPIRE： 这是两步非原子操作——若客户端在步骤1成功后、步骤2前崩溃，锁已存在但没有过期时间，后续任何人都无法再获取 → 死锁。所以必须用 SET ... NX PX 一条命令原子完成。 释放锁：不能用裸 DEL（会误删别人的锁），需校验 value 一致再删。Redis 8.4+ 可用 DELEX key IFEQ ；否则用 Lua 脚本原子判断+删除（见“误删防护”题）。 注意：单实例 Redis 主从异步复制下仍存在安全性缺口（主宕机未同步时另一客户端可获锁），高安全要求用 Redlock 或 etcd/ZK。","url":"https://itinterview.com.cn/question/582"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？","item":"https://itinterview.com.cn/q/582.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？","item":"https://itinterview.com.cn/q/582"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@ EXPIRE lock 30      # 步骤2</code></pre>
       <a class="cta" href="https://itinterview.com.cn/question/582">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/894">分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/890">用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/583">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/584">什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

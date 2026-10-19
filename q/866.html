@@ -9,15 +9,15 @@
   <meta property="og:title" content="Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？ · IT面试题库">
   <meta property="og:description" content="要点：Git 把文件状态分为三个区域，add 负责「工作区 → 暂存区」，commit 负责「暂存区 → 版本库」。 工作区（working directory）：磁盘上你正在编辑的文件；暂存区（staging area / index）：下一次提交的内容清单，保存在 .git/index；版本库（reposit…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/866.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/866">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？ · IT面试题库">
   <meta name="twitter:description" content="要点：Git 把文件状态分为三个区域，add 负责「工作区 → 暂存区」，commit 负责「暂存区 → 版本库」。 工作区（working directory）：磁盘上你正在编辑的文件；暂存区（staging area / index）：下一次提交的内容清单，保存在 .git/index；版本库（reposit…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/866.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/866">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？","text":"考察点：Git 数据模型的底层认知——这是 Git 追问链的地基，分支、冲突、rebase 都建立在这上面。追问：git commit -a 跳过了哪一层，为什么团队规范常禁止它？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Git 把文件状态分为三个区域，add 负责「工作区 → 暂存区」，commit 负责「暂存区 → 版本库」。 工作区（working directory）：磁盘上你正在编辑的文件；暂存区（staging area / index）：下一次提交的内容清单，保存在 .git/index；版本库（repository）：commit 后 permanently 存进对象数据库的快照。 暂存区的价值：它让提交变成「精心组织的快照」而非「当前目录的大杂烩」——你可以改了 10 个文件，但只把其中逻辑相关的 3 个 add 后提交，保持每个 commit 单一职责。这是 SVN 等没有的能力。 常用对照：git status 看三层差异（红=未暂存，绿=已暂存）；git diff 比工作区与暂存区，git diff --staged 比暂存区与最近提交；git restore 丢弃工作区改动，git restore --staged 把文件移出暂存区。 commit -a 的风险：它把所有已跟踪文件的修改直接提交，绕过暂存区，容易把调试代码、无关改动混进提交历史，破坏 review 粒度。","url":"https://itinterview.com.cn/question/866"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？","item":"https://itinterview.com.cn/q/866.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？","item":"https://itinterview.com.cn/q/866"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/866">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/563">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/564">如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/565">请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/566">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

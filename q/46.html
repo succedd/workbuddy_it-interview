@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何使用 Redis 做限流？ · IT面试题库">
   <meta property="og:description" content="1. 固定窗口计数器：INCR + EXPIRE，超过阈值拒绝。简单但有临界突刺。 2. 滑动窗口：用 ZSet 存时间戳（score=时间），统计窗口内数量并移除过期，精确但耗内存。 3. 令牌桶：用 List/ZSet 模拟令牌补充，或 Redis-Cell 模块的 CL.THROTTLE。 4. 漏桶：匀速…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/46.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/46">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何使用 Redis 做限流？ · IT面试题库">
   <meta name="twitter:description" content="1. 固定窗口计数器：INCR + EXPIRE，超过阈值拒绝。简单但有临界突刺。 2. 滑动窗口：用 ZSet 存时间戳（score=时间），统计窗口内数量并移除过期，精确但耗内存。 3. 令牌桶：用 List/ZSet 模拟令牌补充，或 Redis-Cell 模块的 CL.THROTTLE。 4. 漏桶：匀速…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/46.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/46">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何使用 Redis 做限流？","text":"给出计数器/滑动窗口/令牌桶的实现思路。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 固定窗口计数器：INCR + EXPIRE，超过阈值拒绝。简单但有临界突刺。 2. 滑动窗口：用 ZSet 存时间戳（score=时间），统计窗口内数量并移除过期，精确但耗内存。 3. 令牌桶：用 List/ZSet 模拟令牌补充，或 Redis-Cell 模块的 CL.THROTTLE。 4. 漏桶：匀速处理，平滑但无突发。 实践：简单接口用固定窗口即可；需要平滑用滑动窗口或令牌桶；集群环境注意多实例共享计数（集中到同一 Redis）。","url":"https://itinterview.com.cn/question/46"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何使用 Redis 做限流？","item":"https://itinterview.com.cn/q/46.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何使用 Redis 做限流？","item":"https://itinterview.com.cn/q/46"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/46">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

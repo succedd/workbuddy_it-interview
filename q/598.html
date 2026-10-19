@@ -9,15 +9,15 @@
   <meta property="og:title" content="特征值与特征向量有什么几何与代数意义？如何求解？ · IT面试题库">
   <meta property="og:description" content="定义：对方阵 A，若存在非零向量 v 与标量 λ 使 $$A\,v=\lambda\,v$$ 则 v 为特征向量，λ 为特征值。 几何意义：特征向量是线性变换 A 下方向不变、仅被拉伸/压缩 λ 倍的特殊向量；λ&gt;1 拉伸，0&lt;λ&lt;1 压缩，λ&lt;0 反向。 求解： 1. 解特征方程 $\det(A-\lambda…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/598.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/598">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="特征值与特征向量有什么几何与代数意义？如何求解？ · IT面试题库">
   <meta name="twitter:description" content="定义：对方阵 A，若存在非零向量 v 与标量 λ 使 $$A\,v=\lambda\,v$$ 则 v 为特征向量，λ 为特征值。 几何意义：特征向量是线性变换 A 下方向不变、仅被拉伸/压缩 λ 倍的特殊向量；λ&gt;1 拉伸，0&lt;λ&lt;1 压缩，λ&lt;0 反向。 求解： 1. 解特征方程 $\det(A-\lambda…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/598.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/598">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"特征值与特征向量有什么几何与代数意义？如何求解？","text":"给出特征方程，解释特征向量在线性变换下方向不变的含义，并说明其在 PCA、矩阵对角化中的用途。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定义：对方阵 A，若存在非零向量 v 与标量 λ 使 $$A\\,v=\\lambda\\,v$$ 则 v 为特征向量，λ 为特征值。 几何意义：特征向量是线性变换 A 下方向不变、仅被拉伸/压缩 λ 倍的特殊向量；λ>1 拉伸，0\u003cλ\u003c1 压缩，λ\u003c0 反向。 求解： 1. 解特征方程 $\\det(A-\\lambda I)=0$ 得特征值 λ； 2. 对每个 λ 解 $(A-\\lambda I)v=0$ 得特征向量（零空间）。 应用 矩阵对角化：若 A 有 n 个线性无关特征向量，$A=P\\Lambda P^{-1}$，便于快速计算 $A^k=P\\Lambda^k P^{-1}$。 PCA（主成分分析）：数据协方差矩阵的特征向量 = 主轴方向，特征值 = 该方向方差大小；取最大特征值对应特征向量作为第一主成分，实现降维。 稳定性/动力系统：λ 模长决定迭代收敛或发散。","url":"https://itinterview.com.cn/question/598"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"数学基础","item":"https://itinterview.com.cn/category?cat=175"},{"@type":"ListItem","position":5,"name":"特征值与特征向量有什么几何与代数意义？如何求解？","item":"https://itinterview.com.cn/q/598.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"数学基础","item":"https://itinterview.com.cn/category?cat=175"},{"@type":"ListItem","position":5,"name":"特征值与特征向量有什么几何与代数意义？如何求解？","item":"https://itinterview.com.cn/q/598"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/598">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/597">贝叶斯定理是什么？请举例说明其在分类中的应用。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/599">凸优化中的凸函数、梯度与最优性条件是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/600">机器学习中常用的概率分布有哪些？各自适用什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/601">矩阵运算：乘法、转置、逆、秩分别是什么含义？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

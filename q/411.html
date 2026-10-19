@@ -9,15 +9,15 @@
   <meta property="og:title" content="相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？ · IT面试题库">
   <meta property="og:description" content="并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/411.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/411">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？ · IT面试题库">
   <meta name="twitter:description" content="并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/411.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/411">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？","text":"考察点：RNN 串行、梯度易消失；CNN 局部感受野需堆叠才能看远处；Transformer 全局、可并行但缺归纳偏置、数据饥渴。属对比题。","answerCount":1,"datePublished":"2026-09-01T09:51:57.279Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"并行性 RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。 CNN 可并行但受卷积核局部性限制。 长距离依赖 RNN 路径长度 O(n)，梯度沿序列传播易消失/爆炸，远处信息难传到。 CNN 需堆叠很多层，感受野才覆盖全长，路径 O(log n) 或 O(n)。 Transformer 任意两位置路径长度恒为 O(1)（一步注意力直达），天然擅长长序列，但代价是注意力矩阵 O(n²)。 归纳偏置（先验） RNN/CNN 自带时序/局部先验，小数据也能学。 Transformer 几乎无归纳偏置，更通用但更依赖大数据，小样本易过拟合。 代价 注意力复杂度 O(n²·d)，长序列显存/算力吃紧；后续用稀疏/线性注意力、FlashAttention、分块等缓解。","url":"https://itinterview.com.cn/question/411"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？","item":"https://itinterview.com.cn/q/411.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？","item":"https://itinterview.com.cn/q/411"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -114,6 +114,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/411">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/85">Transformer 的 Self-Attention 原理是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/407">缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/408">计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/409">什么是位置编码（Positional Encoding）？为什么 Transformer 必须引入它？正弦位置编码如何工作、有什么特点？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

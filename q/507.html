@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是移动语义与右值引用？std::move 做了什么？ · IT面试题库">
   <meta property="og:description" content="C++11 引入右值引用（T&amp;&amp;）与移动语义，目标是避免不必要的深拷贝，提升性能。 左值/右值： 左值（lvalue）：有名字、有地址、可取 &amp; 的对象（如变量 int x;）。 右值（rvalue）：临时对象、字面量、即将消亡的值（如 42、func() 返回值），没有持久身份。 右值引用 T&amp;&amp;：只能绑定到右…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/507.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/507">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是移动语义与右值引用？std::move 做了什么？ · IT面试题库">
   <meta name="twitter:description" content="C++11 引入右值引用（T&amp;&amp;）与移动语义，目标是避免不必要的深拷贝，提升性能。 左值/右值： 左值（lvalue）：有名字、有地址、可取 &amp; 的对象（如变量 int x;）。 右值（rvalue）：临时对象、字面量、即将消亡的值（如 42、func() 返回值），没有持久身份。 右值引用 T&amp;&amp;：只能绑定到右…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/507.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/507">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是移动语义与右值引用？std::move 做了什么？","text":"请解释左值/右值、右值引用 &&、移动构造/移动赋值，以及 std::move 如何避免深拷贝、提升性能。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"C++11 引入右值引用（T&&）与移动语义，目标是避免不必要的深拷贝，提升性能。 左值/右值： 左值（lvalue）：有名字、有地址、可取 & 的对象（如变量 int x;）。 右值（rvalue）：临时对象、字面量、即将消亡的值（如 42、func() 返回值），没有持久身份。 右值引用 T&&：只能绑定到右值，是移动语义的载体。 移动构造 / 移动赋值：对右值，不再深拷贝资源，而是“窃取”其内部的指针/资源并把源置空（源此后处于可析构的安全状态）。 std::move 的本质：它不做任何运行期移动，只是无条件地把左值 cast 成右值引用（static_cast ），从而允许编译器选用移动构造/赋值。是否真正移动由类型是否提供了移动操作决定；被 move 后的对象不应再被使用（除赋新值/析构）。 价值：容器扩容（vector realloc）、按值返回大对象、函数参数转发（完美转发 std::forward）等场景，移动语义把 O(n) 拷贝降为 O(1) 指针转移。","url":"https://itinterview.com.cn/question/507"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"什么是移动语义与右值引用？std::move 做了什么？","item":"https://itinterview.com.cn/q/507.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"什么是移动语义与右值引用？std::move 做了什么？","item":"https://itinterview.com.cn/q/507"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@ std::string b = std::move(a);    // 移动：b 直接接管 a 的缓冲区，a �
       <a class="cta" href="https://itinterview.com.cn/question/507">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/503">C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/504">C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/505">什么是 RAII？它在 C++ 中为什么重要？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/506">为什么基类析构函数通常要声明为 virtual（虚析构函数）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

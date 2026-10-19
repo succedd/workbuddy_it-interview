@@ -9,15 +9,15 @@
   <meta property="og:title" content="前端框架【本质】声明式渲染 + 组件化——现代框架的两大核心思想到底在解决什么？ · IT面试题库">
   <meta property="og:description" content="1. 声明式渲染：UI = f(data)。框架用虚拟 DOM diff 找出最小变更再更新真实 DOM——直接操作真实 DOM 的代价（重排重绘、全量替换）被 diff 摊薄；本质是用少量运行时开销买「不用手动同步」； 2. 组件化：把「结构 + 样式 + 逻辑」封装成可复用单元，组件间通过 props/事件通…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/286.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/286">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前端框架【本质】声明式渲染 + 组件化——现代框架的两大核心思想到底在解决什么？ · IT面试题库">
   <meta name="twitter:description" content="1. 声明式渲染：UI = f(data)。框架用虚拟 DOM diff 找出最小变更再更新真实 DOM——直接操作真实 DOM 的代价（重排重绘、全量替换）被 diff 摊薄；本质是用少量运行时开销买「不用手动同步」； 2. 组件化：把「结构 + 样式 + 逻辑」封装成可复用单元，组件间通过 props/事件通…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/286.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/286">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端框架【本质】声明式渲染 + 组件化——现代框架的两大核心思想到底在解决什么？","text":"React/Vue 的宣传语里都有「声明式」和「组件」。这两样东西各自消灭了什么痛苦？虚拟 DOM 又是为什么存在的？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 声明式渲染：UI = f(data)。框架用虚拟 DOM diff 找出最小变更再更新真实 DOM——直接操作真实 DOM 的代价（重排重绘、全量替换）被 diff 摊薄；本质是用少量运行时开销买「不用手动同步」； 2. 组件化：把「结构 + 样式 + 逻辑」封装成可复用单元，组件间通过 props/事件通信——把全局状态散落问题收拢为组件内状态 + 明确边界； 3. 延伸：状态管理库（Redux/Pinia）解决组件树共享状态的归属问题；编译时优化（Vue3/Svelte）则试图把运行时 diff 的开销省掉——路线之争的根源都是「diff 放运行时还是编译时」。","url":"https://itinterview.com.cn/question/286"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架【本质】声明式渲染 + 组件化——现代框架的两大核心思想到底在解决什么？","item":"https://itinterview.com.cn/q/286.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架【本质】声明式渲染 + 组件化——现代框架的两大核心思想到底在解决什么？","item":"https://itinterview.com.cn/q/286"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/286">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/285">前端框架【诞生】为什么会有前端框架？jQuery 时代到底痛在哪里？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/287">前端框架【边界】什么时候不该用前端框架？框架的「隐性账单」有哪些？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/288">前端框架【演化】从 jQuery 到 SPA 到 SSR 回潮，前端每次大演化分别是在补什么债？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

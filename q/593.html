@@ -9,15 +9,15 @@
   <meta property="og:title" content="偏差-方差权衡（Bias-Variance Tradeoff）是什么？ · IT面试题库">
   <meta property="og:description" content="对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\hat f(x))^2] = Bias^2 + Variance + Irreducible\ Noise$$ 其中： 偏差 Bias = $E[\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/593.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/593">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="偏差-方差权衡（Bias-Variance Tradeoff）是什么？ · IT面试题库">
   <meta name="twitter:description" content="对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\hat f(x))^2] = Bias^2 + Variance + Irreducible\ Noise$$ 其中： 偏差 Bias = $E[\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/593.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/593">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"偏差-方差权衡（Bias-Variance Tradeoff）是什么？","text":"请用数学分解说明期望泛化误差如何拆成偏差、方差与噪声，并解释模型复杂度与二者的关系。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"对真实函数 f 与预测模型 ŷ，期望平方误差可分解为： $$E[(y-\\hat f(x))^2] = Bias^2 + Variance + Irreducible\\ Noise$$ 其中： 偏差 Bias = $E[\\hat f(x)] - f(x)$：模型平均预测与真实值的偏离，源于假设过强/模型太简单。 方差 Variance = $E[(\\hat f(x)-E[\\hat f(x)])^2]$：模型对训练集扰动的敏感程度，源于模型太复杂/过拟合。 噪声：数据本身不可约误差。 权衡关系 模型越简单 → 偏差高、方差低（欠拟合）； 模型越复杂 → 偏差低、方差高（过拟合）； 目标是在复杂度中找到使总误差最小的甜点。 应用：正则化、集成（Bagging 降方差、Boosting 降偏差）本质上都是在调节这一权衡。例如随机森林通过平均多个高方差树降低方差；线性回归加 L2 正则抬高偏差、压低方差。","url":"https://itinterview.com.cn/question/593"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"偏差-方差权衡（Bias-Variance Tradeoff）是什么？","item":"https://itinterview.com.cn/q/593.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"偏差-方差权衡（Bias-Variance Tradeoff）是什么？","item":"https://itinterview.com.cn/q/593"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/593">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/592">什么是过拟合与欠拟合？如何诊断与缓解？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/594">批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/595">L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/596">交叉验证（Cross Validation）的作用与常见策略？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

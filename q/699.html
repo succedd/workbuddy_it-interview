@@ -9,15 +9,15 @@
   <meta property="og:title" content="STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？ · IT面试题库">
   <meta property="og:description" content="NVIC（嵌套向量中断控制器）：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。 GPIO 中断：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。 要点：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/699.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/699">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？ · IT面试题库">
   <meta name="twitter:description" content="NVIC（嵌套向量中断控制器）：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。 GPIO 中断：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。 要点：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/699.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？","text":"说明 STM32 中断控制器与 GPIO 中断配置思路。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"NVIC（嵌套向量中断控制器）：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。 GPIO 中断：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。 要点：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工作交回主循环或任务；注意清中断标志防重复触发。","url":"https://itinterview.com.cn/question/699"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"STM32","item":"https://itinterview.com.cn/category?cat=245"},{"@type":"ListItem","position":4,"name":"STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？","item":"https://itinterview.com.cn/q/699.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"STM32","item":"https://itinterview.com.cn/category?cat=245"},{"@type":"ListItem","position":4,"name":"STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？","item":"https://itinterview.com.cn/q/699"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/699">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1661">STM32 外设通信偶发丢字节，你会按什么顺序排查硬件、配置和软件？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1742">STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1743">STM32 串口不定长接收：DMA + IDLE 中断与半满/全满中断该怎么配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1744">STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

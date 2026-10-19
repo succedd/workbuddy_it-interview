@@ -9,15 +9,15 @@
   <meta property="og:title" content="Unity 的 GameObject 与 Component 设计哲学？MonoBehaviour 生命周期？ · IT面试题库">
   <meta property="og:description" content="GameObject + Component：一切皆 GameObject（空容器），能力由挂载的 Component 组合而成（Transform、Renderer、Collider、自定义脚本），复用与拼装灵活。 MonoBehaviour 生命周期：Awake（实例化初始化）→ Start（首次启用）→ U…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/689.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/689">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Unity 的 GameObject 与 Component 设计哲学？MonoBehaviour 生命周期？ · IT面试题库">
   <meta name="twitter:description" content="GameObject + Component：一切皆 GameObject（空容器），能力由挂载的 Component 组合而成（Transform、Renderer、Collider、自定义脚本），复用与拼装灵活。 MonoBehaviour 生命周期：Awake（实例化初始化）→ Start（首次启用）→ U…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/689.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/689">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Unity 的 GameObject 与 Component 设计哲学？MonoBehaviour 生命周期？","text":"说明 Unity 基于组件的对象模型与脚本生命周期关键回调。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"GameObject + Component：一切皆 GameObject（空容器），能力由挂载的 Component 组合而成（Transform、Renderer、Collider、自定义脚本），复用与拼装灵活。 MonoBehaviour 生命周期：Awake（实例化初始化）→ Start（首次启用）→ Update（每帧）→ FixedUpdate（物理步长）→ LateUpdate → OnDestroy。 理解生命周期才能正确管理初始化顺序与资源释放，避免空引用与重复逻辑。","url":"https://itinterview.com.cn/question/689"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Unity开发","item":"https://itinterview.com.cn/category?cat=233"},{"@type":"ListItem","position":4,"name":"Unity 的 GameObject 与 Component 设计哲学？MonoBehaviour 生命周期？","item":"https://itinterview.com.cn/q/689.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Unity开发","item":"https://itinterview.com.cn/category?cat=233"},{"@type":"ListItem","position":4,"name":"Unity 的 GameObject 与 Component 设计哲学？MonoBehaviour 生命周期？","item":"https://itinterview.com.cn/q/689"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/689">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1447">Unity 的协程（Coroutine）是怎么执行的？yield 不同返回值的时机有何差别？协程与 Invoke / async-await 如何取舍？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1582">对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1583">Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="交叉验证（Cross Validation）的作用与常见策略？ · IT面试题库">
   <meta property="og:description" content="动机 单次划分的评估结果依赖随机切分，方差大；若用同一测试集反复调参会数据泄露/过拟合测试集。交叉验证用多次划分取平均，更稳定地估计泛化能力。 k 折交叉验证 1. 将训练集分成 k 个大小相近的折； 2. 轮流用 k-1 折训练、1 折验证，得到 k 个分数； 3. 报告平均与标准差作为性能估计。 scikit…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/596.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/596">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="交叉验证（Cross Validation）的作用与常见策略？ · IT面试题库">
   <meta name="twitter:description" content="动机 单次划分的评估结果依赖随机切分，方差大；若用同一测试集反复调参会数据泄露/过拟合测试集。交叉验证用多次划分取平均，更稳定地估计泛化能力。 k 折交叉验证 1. 将训练集分成 k 个大小相近的折； 2. 轮流用 k-1 折训练、1 折验证，得到 k 个分数； 3. 报告平均与标准差作为性能估计。 scikit…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/596.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/596">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"交叉验证（Cross Validation）的作用与常见策略？","text":"为什么不能只用一次 train/test 划分来评估模型？请说明 k 折交叉验证原理，以及分类任务中为何常用 StratifiedKFold。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"动机 单次划分的评估结果依赖随机切分，方差大；若用同一测试集反复调参会数据泄露/过拟合测试集。交叉验证用多次划分取平均，更稳定地估计泛化能力。 k 折交叉验证 1. 将训练集分成 k 个大小相近的折； 2. 轮流用 k-1 折训练、1 折验证，得到 k 个分数； 3. 报告平均与标准差作为性能估计。 scikit-learn：cross_val_score(clf, X, y, cv=5)。 常见策略 KFold：均分，回归默认； StratifiedKFold：每折保持类别比例与原数据一致，分类任务默认（避免某折某类缺失）； Leave-One-Out（LOO）：k=n，样本极少时用； ShuffleSplit / TimeSeriesSplit：时间序列须按时间顺序滚动切分，禁止随机打乱未来信息。 注意：交叉验证用于选模型/调超参；最终仍应保留一个从未参与的测试集做最终评估。预处理（如标准化）须在每折的「训练部分」拟合并应用到验证部分，避免泄露。","url":"https://itinterview.com.cn/question/596"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"交叉验证（Cross Validation）的作用与常见策略？","item":"https://itinterview.com.cn/q/596.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"交叉验证（Cross Validation）的作用与常见策略？","item":"https://itinterview.com.cn/q/596"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -115,6 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/596">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/592">什么是过拟合与欠拟合？如何诊断与缓解？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/593">偏差-方差权衡（Bias-Variance Tradeoff）是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/594">批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/595">L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

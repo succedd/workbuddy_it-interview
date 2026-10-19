@@ -9,15 +9,15 @@
   <meta property="og:title" content="rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？ · IT面试题库">
   <meta property="og:description" content="要点：merge 生成合并提交、保留真实分叉历史；rebase 把你的提交摘下来「重放」到目标基线上，得到一条直线历史——但重放的提交是内容相同、SHA 全新的新提交。 SHA 变化的原因：Git 提交对象的内容包含父提交指针，基底变了、父指针变了，即使补丁一样，整个 commit 的校验和必然不同。所以 reb…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/855.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/855">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？ · IT面试题库">
   <meta name="twitter:description" content="要点：merge 生成合并提交、保留真实分叉历史；rebase 把你的提交摘下来「重放」到目标基线上，得到一条直线历史——但重放的提交是内容相同、SHA 全新的新提交。 SHA 变化的原因：Git 提交对象的内容包含父提交指针，基底变了、父指针变了，即使补丁一样，整个 commit 的校验和必然不同。所以 reb…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/855.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/855">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？","text":"考察点：rebase 的「重放/重写」本质与黄金法则，这是 Git 面试的经典分水岭。追问：rebase 之后提交的 SHA 为什么会变？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：merge 生成合并提交、保留真实分叉历史；rebase 把你的提交摘下来「重放」到目标基线上，得到一条直线历史——但重放的提交是内容相同、SHA 全新的新提交。 SHA 变化的原因：Git 提交对象的内容包含父提交指针，基底变了、父指针变了，即使补丁一样，整个 commit 的校验和必然不同。所以 rebase 的实质是丢弃旧提交、新建新提交。 黄金法则：Pro Git 原文——「如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基」。同事本地还基于旧提交 C4 开发，你 force push 重写为 C4' 后，他一 pull 就会把两个「内容相同的提交」都混进历史，出现重复提交、反复冲突的灾难现场。 实践取舍： 私有/feature 分支：push 前用 rebase 整理（含 interactive rebase 的 squash/fixup 合并琐碎提交），保持 PR 干净； 公共主干：只允许 merge（或 squash merge），禁止 rebase； 本地落后于远程：git pull --rebase（可设 git config --global pull.rebase true）避免无意义的 merge commit； 两种历史观（记录真实过程 vs 讲一个干净的故事）没有对错，关键是团队约定统一。 事故善后：若真的有人 rebase + force push 了公共分支，协作者用 git rebase teamone/origin 或 git pull --rebase，Git 会凭 patch-id 识别出自己手头的提交已在新历史中，从而跳过重复。","url":"https://itinterview.com.cn/question/855"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？","item":"https://itinterview.com.cn/q/855.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？","item":"https://itinterview.com.cn/q/855"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/855">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/563">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/564">如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/565">请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/566">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

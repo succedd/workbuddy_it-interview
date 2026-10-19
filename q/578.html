@@ -9,15 +9,15 @@
   <meta property="og:title" content="缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？ · IT面试题库">
   <meta property="og:description" content="1. 缓存穿透：请求的数据在缓存和数据库都不存在，缓存永不命中，请求每次都打到 DB（如恶意刷不存在的 id）。 方案：① 缓存空值/默认值（设短 TTL）；② 布隆过滤器拦截不存在的 key；③ 接口层参数校验、限流、IP 黑名单。 2. 缓存击穿（热点 key 失效）：某个高并发访问的热点 key 突然过期，…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/578.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/578">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？ · IT面试题库">
   <meta name="twitter:description" content="1. 缓存穿透：请求的数据在缓存和数据库都不存在，缓存永不命中，请求每次都打到 DB（如恶意刷不存在的 id）。 方案：① 缓存空值/默认值（设短 TTL）；② 布隆过滤器拦截不存在的 key；③ 接口层参数校验、限流、IP 黑名单。 2. 缓存击穿（热点 key 失效）：某个高并发访问的热点 key 突然过期，…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/578.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/578">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？","text":"三者常被混淆。请清晰区分缓存穿透、缓存击穿、缓存雪崩的定义、触发条件，并分别给出对应的常见解决方案（布隆过滤器、互斥锁、随机过期、集群等）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 缓存穿透：请求的数据在缓存和数据库都不存在，缓存永不命中，请求每次都打到 DB（如恶意刷不存在的 id）。 方案：① 缓存空值/默认值（设短 TTL）；② 布隆过滤器拦截不存在的 key；③ 接口层参数校验、限流、IP 黑名单。 2. 缓存击穿（热点 key 失效）：某个高并发访问的热点 key 突然过期，瞬间大量请求同时击穿到 DB。 方案：① 互斥锁/分布式锁：只允许一个线程回源重建缓存，其余等待；② 逻辑过期（不真实过期，异步更新）；③ 热点数据预热/较长 TTL。 3. 缓存雪崩：大量 key 同时过期或 Redis 宕机，请求集体涌向 DB。 方案：① 给 TTL 加随机值打散过期时间；② Redis 集群/哨兵提高可用；③ 多级缓存（本地+Redis）；④ 限流、熔断、降级。 区别速记：穿透=“查不存在的数据”；击穿=“一个热点过期”；雪崩=“一大批同时失效/服务挂”。三者都表现为 DB 压力激增，但根因与对策不同（JavaGuide 将其并列总结）。","url":"https://itinterview.com.cn/question/578"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式缓存","item":"https://itinterview.com.cn/category?cat=133"},{"@type":"ListItem","position":4,"name":"缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？","item":"https://itinterview.com.cn/q/578.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式缓存","item":"https://itinterview.com.cn/category?cat=133"},{"@type":"ListItem","position":4,"name":"缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？","item":"https://itinterview.com.cn/q/578"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/578">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/579">如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/580">Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/581">什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

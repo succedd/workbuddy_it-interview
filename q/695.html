@@ -9,15 +9,15 @@
   <meta property="og:title" content="顶点着色器与片元着色器各自的职责？GLSL 中 varying/uniform 作用？ · IT面试题库">
   <meta property="og:description" content="顶点着色器：对每个顶点执行，做坐标变换与逐顶点数据准备，输出裁剪坐标。 片元着色器：对每个片元（像素候选）执行，算最终颜色，决定像素外观。 uniform：由 CPU 每帧/每次绘制统一下发的常量（如模型视图矩阵、光照参数），对所有顶点/片元相同。 varying/attribute：varying 是顶点着色器…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/695.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/695">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="顶点着色器与片元着色器各自的职责？GLSL 中 varying/uniform 作用？ · IT面试题库">
   <meta name="twitter:description" content="顶点着色器：对每个顶点执行，做坐标变换与逐顶点数据准备，输出裁剪坐标。 片元着色器：对每个片元（像素候选）执行，算最终颜色，决定像素外观。 uniform：由 CPU 每帧/每次绘制统一下发的常量（如模型视图矩阵、光照参数），对所有顶点/片元相同。 varying/attribute：varying 是顶点着色器…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/695.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/695">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"顶点着色器与片元着色器各自的职责？GLSL 中 varying/uniform 作用？","text":"说明两种着色器分工及 GLSL 变量限定符。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"顶点着色器：对每个顶点执行，做坐标变换与逐顶点数据准备，输出裁剪坐标。 片元着色器：对每个片元（像素候选）执行，算最终颜色，决定像素外观。 uniform：由 CPU 每帧/每次绘制统一下发的常量（如模型视图矩阵、光照参数），对所有顶点/片元相同。 varying/attribute：varying 是顶点着色器输出、经插值传给片元着色器的插值变量（如 UV、世界坐标）；attribute 是顶点输入属性（如位置、法线）。","url":"https://itinterview.com.cn/question/695"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Shader编程","item":"https://itinterview.com.cn/category?cat=239"},{"@type":"ListItem","position":4,"name":"顶点着色器与片元着色器各自的职责？GLSL 中 varying/uniform 作用？","item":"https://itinterview.com.cn/q/695.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Shader编程","item":"https://itinterview.com.cn/category?cat=239"},{"@type":"ListItem","position":4,"name":"顶点着色器与片元着色器各自的职责？GLSL 中 varying/uniform 作用？","item":"https://itinterview.com.cn/q/695"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/695">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1568">顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

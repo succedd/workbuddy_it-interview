@@ -9,15 +9,15 @@
   <meta property="og:title" content="移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？ · IT面试题库">
   <meta property="og:description" content="采集：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。 编码：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。 渲染：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。 弱网对抗：自适应码率（ABR）、…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/688.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/688">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？ · IT面试题库">
   <meta name="twitter:description" content="采集：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。 编码：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。 渲染：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。 弱网对抗：自适应码率（ABR）、…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/688.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/688">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？","text":"说明自研或封装音视频 SDK 时需处理的核心环节。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"采集：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。 编码：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。 渲染：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。 弱网对抗：自适应码率（ABR）、抖动缓冲（Jitter Buffer）、丢帧/丢包重传（NACK/FEC）、QoS 上报；移动端还需处理前后台切换、旋转与功耗。","url":"https://itinterview.com.cn/question/688"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频SDK开发","item":"https://itinterview.com.cn/category?cat=254"},{"@type":"ListItem","position":4,"name":"移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？","item":"https://itinterview.com.cn/q/688.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频SDK开发","item":"https://itinterview.com.cn/category?cat=254"},{"@type":"ListItem","position":4,"name":"移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？","item":"https://itinterview.com.cn/q/688"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/688">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1665">开发多人实时音视频 SDK 时，房间服务和媒体转发层分别负责什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1709">实时通话里的音频 3A（AEC、ANS、AGC）分别解决什么问题？出现「对方能听到自己回声」时怎么定位？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1710">上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1711">设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

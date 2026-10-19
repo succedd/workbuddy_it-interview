@@ -9,15 +9,15 @@
   <meta property="og:title" content="TypeScript 的类型系统是「结构化类型(structural typing)」还是「名义类型(nominal typing)」？面试中该如何阐述其区别与影响？ · IT面试题库">
   <meta property="og:description" content="结论：TypeScript 是结构化类型（鸭子类型）系统——两个类型只要结构/形状相同就互相兼容，不关心它们是否来自同一声明；而 Java/C# 是名义类型，类型兼容取决于显式声明的名字/继承关系。 区别举例： 名义类型下，class A { x:number } 与 class B { x:number } 互…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/510.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/510">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TypeScript 的类型系统是「结构化类型(structural typing)」还是「名义类型(nominal typing)」？面试中该如何阐述其区别与影响？ · IT面试题库">
   <meta name="twitter:description" content="结论：TypeScript 是结构化类型（鸭子类型）系统——两个类型只要结构/形状相同就互相兼容，不关心它们是否来自同一声明；而 Java/C# 是名义类型，类型兼容取决于显式声明的名字/继承关系。 区别举例： 名义类型下，class A { x:number } 与 class B { x:number } 互…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/510.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/510">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 的类型系统是「结构化类型(structural typing)」还是「名义类型(nominal typing)」？面试中该如何阐述其区别与影响？","text":"请对比结构化类型与名义类型，并说明 TS 为什么是结构化类型、它带来什么好处与坑，以及如何“模拟”名义类型。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：TypeScript 是结构化类型（鸭子类型）系统——两个类型只要结构/形状相同就互相兼容，不关心它们是否来自同一声明；而 Java/C# 是名义类型，类型兼容取决于显式声明的名字/继承关系。 区别举例： 名义类型下，class A { x:number } 与 class B { x:number } 互不兼容； TS 下，只要对象拥有相同形状即可互相赋值，即使来源不同。 好处：更灵活，便于组合、适配第三方类型、增量迁移 JS。 坑：易产生“意外兼容”，例如不同语义的类因字段撞型而被误赋（brand 问题）。 模拟名义类型：给类型加一个私有/受保护字段（如 private __brand: void）或利用 unique symbol，由于私有成员不可跨声明共享，从而实现“名义”隔离。 面试要点：能讲清“结构相同即兼容”的核心，并给出 brand 技巧。","url":"https://itinterview.com.cn/question/510"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"TypeScript","item":"https://itinterview.com.cn/category?cat=15"},{"@type":"ListItem","position":4,"name":"TypeScript 的类型系统是「结构化类型(structural typing)」还是「名义类型(nominal typing)」？面试中该如何阐述其区别与影响？","item":"https://itinterview.com.cn/q/510.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"TypeScript","item":"https://itinterview.com.cn/category?cat=15"},{"@type":"ListItem","position":4,"name":"TypeScript 的类型系统是「结构化类型(structural typing)」还是「名义类型(nominal typing)」？面试中该如何阐述其区别与影响？","item":"https://itinterview.com.cn/q/510"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/510">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/508">TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/509">简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/511">请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

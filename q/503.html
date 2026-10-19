@@ -9,15 +9,15 @@
   <meta property="og:title" content="C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？ · IT面试题库">
   <meta property="og:description" content="C++ 通过虚函数 + 虚函数表（vtable）实现运行时多态（动态绑定）。 机制： 1. 每个含虚函数的类（或派生类）编译器为其生成一张虚函数表 vtable，存放该类各虚函数的实际地址。 2. 每个该类对象内部隐含一个虚表指针 vptr，构造时指向所属类的 vtable（通常在对象内存布局最前端）。 3. 通…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/503.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/503">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="C++ 通过虚函数 + 虚函数表（vtable）实现运行时多态（动态绑定）。 机制： 1. 每个含虚函数的类（或派生类）编译器为其生成一张虚函数表 vtable，存放该类各虚函数的实际地址。 2. 每个该类对象内部隐含一个虚表指针 vptr，构造时指向所属类的 vtable（通常在对象内存布局最前端）。 3. 通…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/503.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/503">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？","text":"请说明动态多态的底层机制：虚函数表、虚表指针（vptr）、动态绑定的调用过程，以及为什么需要基类指针调用派生类方法。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"C++ 通过虚函数 + 虚函数表（vtable）实现运行时多态（动态绑定）。 机制： 1. 每个含虚函数的类（或派生类）编译器为其生成一张虚函数表 vtable，存放该类各虚函数的实际地址。 2. 每个该类对象内部隐含一个虚表指针 vptr，构造时指向所属类的 vtable（通常在对象内存布局最前端）。 3. 通过基类指针/引用调用虚函数时，运行时按对象的 vptr 找到对应 vtable，再取函数地址调用——于是实际执行的是对象真实类型重写的函数。 要点： 动态绑定只对指针/引用生效；Base b = Derived(); b.foo(); 是对象切片，调用 Base::foo()（静态绑定）。 虚函数调用有少量开销（一次间接寻址），且对象多一个 vptr、类多一张表。 普通函数、构造函数不能是虚函数（构造时 vptr 尚未稳定）；析构函数常为虚函数（见下题）。 多重继承下可能有多张 vtable / 多个 vptr。","url":"https://itinterview.com.cn/question/503"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？","item":"https://itinterview.com.cn/q/503.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？","item":"https://itinterview.com.cn/q/503"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@ p-&gt;foo(); // 查 p 所指对象的 vtable，调用 Derived::foo()</code></pre
       <a class="cta" href="https://itinterview.com.cn/question/503">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/504">C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/505">什么是 RAII？它在 C++ 中为什么重要？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/506">为什么基类析构函数通常要声明为 virtual（虚析构函数）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/507">什么是移动语义与右值引用？std::move 做了什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

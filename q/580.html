@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="触发：当内存达到 maxmemory，按 maxmemory-policy 淘汰键以腾出空间。 常见策略： noeviction：不淘汰，写操作报错（默认，只读缓存可接受）。 allkeys-lru：对所有 key 用 LRU 淘汰。 volatile-lru：只对设了 TTL 的 key 用 LRU。 allk…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/580.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/580">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="触发：当内存达到 maxmemory，按 maxmemory-policy 淘汰键以腾出空间。 常见策略： noeviction：不淘汰，写操作报错（默认，只读缓存可接受）。 allkeys-lru：对所有 key 用 LRU 淘汰。 volatile-lru：只对设了 TTL 的 key 用 LRU。 allk…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/580.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/580">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？","text":"当 Redis 内存达到 maxmemory 时如何淘汰 key？请说明 noeviction、allkeys-lru、volatile-lru、allkeys-lfu、volatile-ttl 等策略，并对比 LRU 与 LFU。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"触发：当内存达到 maxmemory，按 maxmemory-policy 淘汰键以腾出空间。 常见策略： noeviction：不淘汰，写操作报错（默认，只读缓存可接受）。 allkeys-lru：对所有 key 用 LRU 淘汰。 volatile-lru：只对设了 TTL 的 key 用 LRU。 allkeys-lfu / volatile-lfu：用 LFU。 allkeys-random / volatile-random：随机淘汰。 volatile-ttl：优先淘汰剩余 TTL 最短的。 LRU vs LFU： LRU（最近最少使用）：淘汰“最久没被访问”的 key，基于时间局部性。近似实现（Redis 用随机采样近似，非严格链表）。 缺点：偶发批量扫描会把热点 key 冲到队尾被误淘汰（“缓存污染”）。 LFU（最不经常使用）：记录访问频率，淘汰访问次数最少者。Redis 用带衰减的 counter（概率递增）。 优点：抗扫描污染，更贴合真实热度；适合长期热点不均、有突发扫描的场景。 选型：纯最近访问模式用 LRU；存在“一次性大量扫描 + 少量常驻热点”用 LFU；有过期语义且只想淘汰带 TTL 的用 volatile-*。","url":"https://itinterview.com.cn/question/580"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式缓存","item":"https://itinterview.com.cn/category?cat=133"},{"@type":"ListItem","position":4,"name":"Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？","item":"https://itinterview.com.cn/q/580.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式缓存","item":"https://itinterview.com.cn/category?cat=133"},{"@type":"ListItem","position":4,"name":"Redis 常见的缓存淘汰策略有哪些？LRU 和 LFU 有什么区别，分别适合什么场景？","item":"https://itinterview.com.cn/q/580"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -114,6 +114,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/580">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/579">如何保证缓存与数据库的数据一致性？先删缓存还是先更新数据库？延迟双删是什么？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/578">缓存穿透、缓存击穿、缓存雪崩分别是什么？各有哪些解决方案？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/581">什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

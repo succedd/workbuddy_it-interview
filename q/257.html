@@ -9,15 +9,15 @@
   <meta property="og:title" content="移动端 App 冷启动与热启动有什么区别？如何优化冷启动？ · IT面试题库">
   <meta property="og:description" content="结论 冷启动：应用进程不存在，需从零创建（Zygote fork、类加载、Application/首屏 Activity 初始化），耗时最长；过快会触发用户流失。 热启动：进程仍在后台，重新回到前台只需恢复 Activity，瓶颈在恢复路径与内存保留。 冷启动优化方向： 1. 异步/延迟初始化：把非关键 SDK、…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/257.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/257">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="移动端 App 冷启动与热启动有什么区别？如何优化冷启动？ · IT面试题库">
   <meta name="twitter:description" content="结论 冷启动：应用进程不存在，需从零创建（Zygote fork、类加载、Application/首屏 Activity 初始化），耗时最长；过快会触发用户流失。 热启动：进程仍在后台，重新回到前台只需恢复 Activity，瓶颈在恢复路径与内存保留。 冷启动优化方向： 1. 异步/延迟初始化：把非关键 SDK、…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/257.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/257">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","text":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","answerCount":1,"datePublished":"2026-08-28T06:18:20.849Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 冷启动：应用进程不存在，需从零创建（Zygote fork、类加载、Application/首屏 Activity 初始化），耗时最长；过快会触发用户流失。 热启动：进程仍在后台，重新回到前台只需恢复 Activity，瓶颈在恢复路径与内存保留。 冷启动优化方向： 1. 异步/延迟初始化：把非关键 SDK、日志等移出主线程（postDelayed / IdleHandler / 协程），避免阻塞。 2. 布局与类加载：减少布局层级（ConstraintLayout）、减小 Dex 数量、用 R8/ProGuard 优化。 3. 主题预览：用启动主题（windowBackground）消除白屏。 4. 监控：线上采集 TTID/TTFD 的 P50/P90/P99，用 Android Vitals / MetricKit 设性能预算并做 CI 门禁。","url":"https://itinterview.com.cn/question/257"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","item":"https://itinterview.com.cn/q/257.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","item":"https://itinterview.com.cn/q/257"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/257">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/258">移动端卡顿（掉帧）的根本原因是什么？如何定位与优化？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1562">Android 中常见的内存泄漏场景有哪些？如何定位与修复？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1564">什么是 ANR？产生的原因和线上排查思路是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1565">Android 冷启动为什么慢？有哪些常见的启动优化手段？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

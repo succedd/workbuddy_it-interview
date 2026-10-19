@@ -9,15 +9,15 @@
   <meta property="og:title" content="设计一个短链系统（如 TinyURL）：短码如何生成？如何保证不冲突？301 还是 302？ · IT面试题库">
   <meta property="og:description" content="要点： 短码生成两类方案：① 分布式发号器（雪花/Leaf）拿到自增 ID 再做 Base62 编码，绝对不冲突、长度可控；② 对长 URL 取哈希（MD5/Murmur）再截断+Base62，简单但需处理哈希冲突（冲突则加盐重试）。 不冲突的关键：发号器方案天然唯一；哈希方案用「长 URL→短码」表去重，冲突时…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/625.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/625">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一个短链系统（如 TinyURL）：短码如何生成？如何保证不冲突？301 还是 302？ · IT面试题库">
   <meta name="twitter:description" content="要点： 短码生成两类方案：① 分布式发号器（雪花/Leaf）拿到自增 ID 再做 Base62 编码，绝对不冲突、长度可控；② 对长 URL 取哈希（MD5/Murmur）再截断+Base62，简单但需处理哈希冲突（冲突则加盐重试）。 不冲突的关键：发号器方案天然唯一；哈希方案用「长 URL→短码」表去重，冲突时…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/625.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/625">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一个短链系统（如 TinyURL）：短码如何生成？如何保证不冲突？301 还是 302？","text":"考察点：掌握短链系统核心——发号器/哈希短码、冲突处理、重定向语义。","answerCount":1,"datePublished":"2026-09-06T02:23:55.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 短码生成两类方案：① 分布式发号器（雪花/Leaf）拿到自增 ID 再做 Base62 编码，绝对不冲突、长度可控；② 对长 URL 取哈希（MD5/Murmur）再截断+Base62，简单但需处理哈希冲突（冲突则加盐重试）。 不冲突的关键：发号器方案天然唯一；哈希方案用「长 URL→短码」表去重，冲突时追加盐或走发号器兜底。 重定向 301 vs 302：301 永久重定向会被浏览器/CDN 缓存，省服务器压力但统计不到点击；302 临时重定向每次回源，便于做点击计数与 AB；短链统计场景多用 302。 其他：6 位 Base62 约 568 亿容量足够；需防短链爆破/恶意跳转，做归属与风控。","url":"https://itinterview.com.cn/question/625"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"软件架构模式","item":"https://itinterview.com.cn/category?cat=98"},{"@type":"ListItem","position":4,"name":"设计一个短链系统（如 TinyURL）：短码如何生成？如何保证不冲突？301 还是 302？","item":"https://itinterview.com.cn/q/625.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"软件架构模式","item":"https://itinterview.com.cn/category?cat=98"},{"@type":"ListItem","position":4,"name":"设计一个短链系统（如 TinyURL）：短码如何生成？如何保证不冲突？301 还是 302？","item":"https://itinterview.com.cn/q/625"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/625">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/232">讲一个你从零到一部署的项目？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/624">做系统设计时如何做容量估算？请给出通用的 QPS/存储/带宽估算方法（如二八定律、峰值因子）。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/626">设计一场秒杀系统：如何防止超卖、扛住瞬时洪峰、并保证下单成功？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/627">大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

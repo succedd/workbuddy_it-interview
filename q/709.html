@@ -9,15 +9,15 @@
   <meta property="og:title" content="实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？ · IT面试题库">
   <meta property="og:description" content="技术栈：Kafka 做高吞吐数据总线，Flink 做实时计算（聚合/关联），结果写入 ClickHouse/Doris 等 OLAP 供查询。 Lambda：批流双链路（批层算准、流层算快），结果合并，准确但维护两套逻辑。 Kappa：只用流（Kafka 保留全量+重放）一条链路，架构更简单；以流为主、按需重放替…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/709.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/709">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？ · IT面试题库">
   <meta name="twitter:description" content="技术栈：Kafka 做高吞吐数据总线，Flink 做实时计算（聚合/关联），结果写入 ClickHouse/Doris 等 OLAP 供查询。 Lambda：批流双链路（批层算准、流层算快），结果合并，准确但维护两套逻辑。 Kappa：只用流（Kafka 保留全量+重放）一条链路，架构更简单；以流为主、按需重放替…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/709.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/709">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？","text":"说明实时数仓技术栈，并对比两种数仓架构范式。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"技术栈：Kafka 做高吞吐数据总线，Flink 做实时计算（聚合/关联），结果写入 ClickHouse/Doris 等 OLAP 供查询。 Lambda：批流双链路（批层算准、流层算快），结果合并，准确但维护两套逻辑。 Kappa：只用流（Kafka 保留全量+重放）一条链路，架构更简单；以流为主、按需重放替代批层。现代多倾向 Kappa/流批一体以减少重复开发。","url":"https://itinterview.com.cn/question/709"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"实时数仓","item":"https://itinterview.com.cn/category?cat=165"},{"@type":"ListItem","position":4,"name":"实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？","item":"https://itinterview.com.cn/q/709.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"实时数仓","item":"https://itinterview.com.cn/category?cat=165"},{"@type":"ListItem","position":4,"name":"实时数仓常用架构（Kafka+Flink+OLAP）与 Lambda/Kappa 对比？","item":"https://itinterview.com.cn/q/709"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/709">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1481">设计实时数仓：Kafka + Flink 流式 ETL 写入 OLAP，如何保证 Exactly-Once 与乱序/迟到数据处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1578">实时数仓 Lambda 架构与 Kappa 架构的区别与演进？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

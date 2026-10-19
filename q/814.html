@@ -9,15 +9,15 @@
   <meta property="og:title" content="gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？ · IT面试题库">
   <meta property="og:description" content="Protobuf 优势：接口用 .proto 强类型定义，序列化后是二进制，体积远小于 JSON、编解码更快，且自动生成多语言客户端代码。 HTTP/2 优势：多路复用（单连接并发多请求，无队头阻塞）、头压缩、服务端推送，降低延迟与连接开销。 结果：gRPC 延迟低、吞吐高，特别适合内部服务间、移动端—后端、流式…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/814.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/814">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？ · IT面试题库">
   <meta name="twitter:description" content="Protobuf 优势：接口用 .proto 强类型定义，序列化后是二进制，体积远小于 JSON、编解码更快，且自动生成多语言客户端代码。 HTTP/2 优势：多路复用（单连接并发多请求，无队头阻塞）、头压缩、服务端推送，降低延迟与连接开销。 结果：gRPC 延迟低、吞吐高，特别适合内部服务间、移动端—后端、流式…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/814.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/814">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？","text":"说明 gRPC 的高性能来源与适用场景。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Protobuf 优势：接口用 .proto 强类型定义，序列化后是二进制，体积远小于 JSON、编解码更快，且自动生成多语言客户端代码。 HTTP/2 优势：多路复用（单连接并发多请求，无队头阻塞）、头压缩、服务端推送，降低延迟与连接开销。 结果：gRPC 延迟低、吞吐高，特别适合内部服务间、移动端—后端、流式通信（四种流模式）。代价是调试不如 JSON 直观、浏览器支持需 grpc-web 桥接。","url":"https://itinterview.com.cn/question/814"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"gRPC","item":"https://itinterview.com.cn/category?cat=125"},{"@type":"ListItem","position":4,"name":"gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？","item":"https://itinterview.com.cn/q/814.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"gRPC","item":"https://itinterview.com.cn/category?cat=125"},{"@type":"ListItem","position":4,"name":"gRPC 相比传统 HTTP/JSON RPC 的优势？为什么用 Protobuf 与 HTTP/2？","item":"https://itinterview.com.cn/q/814"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/814">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1071">gRPC 的四种流式模式分别适合什么场景？流式相比普通 RPC 复杂在哪里？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1072">gRPC 的超时、重试与负载均衡该怎么配？为什么默认的 RPC 重试很危险？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1073">gRPC 与 HTTP/JSON 生态怎么共存？grpc-gateway 解决什么问题、代价是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

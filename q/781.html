@@ -9,15 +9,15 @@
   <meta property="og:title" content="PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？ · IT面试题库">
   <meta property="og:description" content="Tensor：是带 GPU 加速支持的多维数组，类似 NumPy 但可在计算图上记录操作。 autograd：设置 requires_grad=True 的张量，其上的运算会被动态记录成计算图；调用 loss.backward() 后，PyTorch 自动沿图反向传播，算出各参数的 .grad（梯度）。 动态图优…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/781.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/781">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="Tensor：是带 GPU 加速支持的多维数组，类似 NumPy 但可在计算图上记录操作。 autograd：设置 requires_grad=True 的张量，其上的运算会被动态记录成计算图；调用 loss.backward() 后，PyTorch 自动沿图反向传播，算出各参数的 .grad（梯度）。 动态图优…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/781.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/781">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？","text":"说明 Tensor 的数据结构与反向传播所需的梯度记录机制。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Tensor：是带 GPU 加速支持的多维数组，类似 NumPy 但可在计算图上记录操作。 autograd：设置 requires_grad=True 的张量，其上的运算会被动态记录成计算图；调用 loss.backward() 后，PyTorch 自动沿图反向传播，算出各参数的 .grad（梯度）。 动态图优势：每次前向即时建图，控制流（if/for）灵活，调试直观；训练时常用 optimizer.zero_grad() 清空梯度再反传更新。","url":"https://itinterview.com.cn/question/781"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？","item":"https://itinterview.com.cn/q/781.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？","item":"https://itinterview.com.cn/q/781"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/781">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1520">PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1521">训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1522">DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1523">训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

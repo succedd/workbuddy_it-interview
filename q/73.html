@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spring Boot 自动配置原理（@SpringBootApplication）？ · IT面试题库">
   <meta property="og:description" content="@SpringBootApplication = @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration。 自动配置核心： 1. @EnableAutoConfiguration 借助 AutoConfigurationImport…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/73.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/73">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring Boot 自动配置原理（@SpringBootApplication）？ · IT面试题库">
   <meta name="twitter:description" content="@SpringBootApplication = @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration。 自动配置核心： 1. @EnableAutoConfiguration 借助 AutoConfigurationImport…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/73.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/73">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Boot 自动配置原理（@SpringBootApplication）？","text":"解释 @EnableAutoConfiguration 与 spring.factories / AutoConfiguration.imports。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"@SpringBootApplication = @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration。 自动配置核心： 1. @EnableAutoConfiguration 借助 AutoConfigurationImportSelector，读取 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports（旧版 spring.factories）。 2. 每个 XxxAutoConfiguration 用 @ConditionalOnClass、@ConditionalOnMissingBean 等条件注解，按需装配 Bean（类路径有某 jar、用户没自定义 Bean 时才生效）。 3. 绑定 application.yml 到 @ConfigurationProperties 配置类。 结论：约定优于配置，starter 提供依赖+自动配置，用户只需覆盖需要的 Bean。","url":"https://itinterview.com.cn/question/73"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"Spring Boot 自动配置原理（@SpringBootApplication）？","item":"https://itinterview.com.cn/q/73.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"Spring Boot 自动配置原理（@SpringBootApplication）？","item":"https://itinterview.com.cn/q/73"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -102,6 +102,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/73">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/178">Spring Boot如何实现异步处理？</a><span class="rel-n">453 次浏览</span></li><li><a href="https://itinterview.com.cn/q/176">Spring Boot拦截器和过滤器的区别？</a><span class="rel-n">444 次浏览</span></li><li><a href="https://itinterview.com.cn/q/177">Spring Boot集成MyBatis的方式？</a><span class="rel-n">434 次浏览</span></li><li><a href="https://itinterview.com.cn/q/175">Spring事务管理如何实现？</a><span class="rel-n">427 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

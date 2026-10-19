@@ -9,15 +9,15 @@
   <meta property="og:title" content="HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？ · IT面试题库">
   <meta property="og:description" content="架构：NameNode 是主节点，管元数据（目录树、块位置）；DataNode 是工作节点，存实际数据块并按指令读写。 副本机制：默认每块存 3 副本，跨机架分布，兼顾可靠与带宽。 容错：DataNode 心跳/块汇报异常时 NameNode 标记失效并调度复制恢复副本数；NameNode 用 EditLog+F…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/704.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/704">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？ · IT面试题库">
   <meta name="twitter:description" content="架构：NameNode 是主节点，管元数据（目录树、块位置）；DataNode 是工作节点，存实际数据块并按指令读写。 副本机制：默认每块存 3 副本，跨机架分布，兼顾可靠与带宽。 容错：DataNode 心跳/块汇报异常时 NameNode 标记失效并调度复制恢复副本数；NameNode 用 EditLog+F…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/704.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/704">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？","text":"解释 HDFS 主从结构与可靠性来源。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"架构：NameNode 是主节点，管元数据（目录树、块位置）；DataNode 是工作节点，存实际数据块并按指令读写。 副本机制：默认每块存 3 副本，跨机架分布，兼顾可靠与带宽。 容错：DataNode 心跳/块汇报异常时 NameNode 标记失效并调度复制恢复副本数；NameNode 用 EditLog+FsImage（HA 下由 JournalNode+ZKFC 实现主备切换）防单点。客户端读写自动重试可用副本。","url":"https://itinterview.com.cn/question/704"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"HDFS","item":"https://itinterview.com.cn/category?cat=157"},{"@type":"ListItem","position":4,"name":"HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？","item":"https://itinterview.com.cn/q/704.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"HDFS","item":"https://itinterview.com.cn/category?cat=157"},{"@type":"ListItem","position":4,"name":"HDFS 的架构（NameNode/DataNode）与副本机制、容错原理？","item":"https://itinterview.com.cn/q/704"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/704">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1458">HDFS 小文件问题是怎么产生的？为什么它会拖垮 NameNode 和计算层？有哪些治理手段？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1476">HDFS 的一次文件读写流程是怎样的？NameNode 如何做高可用（HA）与故障切换？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

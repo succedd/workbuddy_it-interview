@@ -9,15 +9,15 @@
   <meta property="og:title" content="Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？ · IT面试题库">
   <meta property="og:description" content="① 先用 jstat 确认趋势（不阻断服务） jstat -gcutil 1000 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。 对比多次 dump 的老年代水位，单调递增即泄漏信号。 ② 抓堆转储（选窗口期，注意 STW） jmap -dump:live,f…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/414.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/414">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？ · IT面试题库">
   <meta name="twitter:description" content="① 先用 jstat 确认趋势（不阻断服务） jstat -gcutil 1000 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。 对比多次 dump 的老年代水位，单调递增即泄漏信号。 ② 抓堆转储（选窗口期，注意 STW） jmap -dump:live,f…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/414.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/414">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？","text":"考察点：先用 jstat 看 GC 趋势确认泄漏，再用 jmap 抓堆转储，最后用 MAT 找支配树/疑似泄漏点（Dominator Tree、Path to GC Roots）。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T10:09:35.284Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"① 先用 jstat 确认趋势（不阻断服务） jstat -gcutil 1000 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。 对比多次 dump 的老年代水位，单调递增即泄漏信号。 ② 抓堆转储（选窗口期，注意 STW） jmap -dump:live,format=b,file=heap.hprof （live 只保留存活对象，但会触发 Full GC）；生产可用 -F（强制，但更慢）。 启动参数加 -XX:+HeapDumpOnOutOfMemoryError 让 OOM 时自动 dump。 ③ MAT 分析引用链 打开 heap.hprof，看 Histogram（按类统计实例数/浅堆/深堆），找异常膨胀的类（如 HashMap、缓存、ThreadLocal）。 用 Dominator Tree（支配树） 找『谁 hold 住了大部分内存』；对可疑对象 Path to GC Roots（exclude weak/soft/phantom）看谁强引用着它——典型是静态集合、未清理缓存、ThreadLocal 未 remove、监听器未注销。 Leak Suspects 报告会直接给疑似泄漏点与引用链，适合快速定位。 口诀：先 jstat 看趋势 → jmap 抓现场 → MAT 顺 GC Roots 找强引用。","url":"https://itinterview.com.cn/question/414"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？","item":"https://itinterview.com.cn/q/414.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？","item":"https://itinterview.com.cn/q/414"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/414">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/418">高级：给定一个完整的「接口变慢 → CPU 高 → OOM」线上故障，请给出一套标准化的应急排查 SOP（监控告警、保留现场、定位、止血、根因、复盘），并说明每一步的注意点。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/413">线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/415">服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/416">CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

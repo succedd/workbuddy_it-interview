@@ -9,15 +9,15 @@
   <meta property="og:title" content="WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？ · IT面试题库">
   <meta property="og:description" content="信令（Signaling）：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。 SDP 协商：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。 ICE 候选：收集主机/反…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/685.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/685">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？ · IT面试题库">
   <meta name="twitter:description" content="信令（Signaling）：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。 SDP 协商：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。 ICE 候选：收集主机/反…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/685.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/685">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？","text":"解释 WebRTC 建立 P2P 媒体连接的三个关键环节。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"信令（Signaling）：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。 SDP 协商：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。 ICE 候选：收集主机/反射/中继（TURN）候选地址，两两连通性检查选出可用路径，穿透 NAT 建立 P2P；失败回退 TURN 中继。此后用 SRTP 传输加密媒体流。","url":"https://itinterview.com.cn/question/685"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？","item":"https://itinterview.com.cn/q/685.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？","item":"https://itinterview.com.cn/q/685"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/685">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1444">WebRTC 两个浏览器之间是如何建立点对点连接的？信令、ICE/STUN/TURN 各自的角色是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1703">WebRTC 弱网对抗里的 NACK、FEC、GCC 各自解决什么问题？三者如何配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1704">SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1705">多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

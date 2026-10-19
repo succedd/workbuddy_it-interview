@@ -9,15 +9,15 @@
   <meta property="og:title" content="Angular 的双向数据绑定与脏检查（Zone.js）机制？ · IT面试题库">
   <meta property="og:description" content="双向绑定：用 [(ngModel)] 把模型与视图连起来，视图输入即时写回模型、模型变化即时刷新视图。 变更检测：Angular 基于 Zone.js 劫持异步事件（点击、XHR、定时器），事件结束后触发一轮变更检测，从根组件向下比对所有绑定值，变化则更新 DOM。 优化：可用 OnPush 策略让组件仅在 @I…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/715.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/715">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Angular 的双向数据绑定与脏检查（Zone.js）机制？ · IT面试题库">
   <meta name="twitter:description" content="双向绑定：用 [(ngModel)] 把模型与视图连起来，视图输入即时写回模型、模型变化即时刷新视图。 变更检测：Angular 基于 Zone.js 劫持异步事件（点击、XHR、定时器），事件结束后触发一轮变更检测，从根组件向下比对所有绑定值，变化则更新 DOM。 优化：可用 OnPush 策略让组件仅在 @I…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/715.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/715">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Angular 的双向数据绑定与脏检查（Zone.js）机制？","text":"解释 Angular 如何感知变化并更新视图。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"双向绑定：用 [(ngModel)] 把模型与视图连起来，视图输入即时写回模型、模型变化即时刷新视图。 变更检测：Angular 基于 Zone.js 劫持异步事件（点击、XHR、定时器），事件结束后触发一轮变更检测，从根组件向下比对所有绑定值，变化则更新 DOM。 优化：可用 OnPush 策略让组件仅在 @Input 引用变化或事件触发时检测，减少不必要的全树扫描。","url":"https://itinterview.com.cn/question/715"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Angular","item":"https://itinterview.com.cn/category?cat=65"},{"@type":"ListItem","position":5,"name":"Angular 的双向数据绑定与脏检查（Zone.js）机制？","item":"https://itinterview.com.cn/q/715.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Angular","item":"https://itinterview.com.cn/category?cat=65"},{"@type":"ListItem","position":5,"name":"Angular 的双向数据绑定与脏检查（Zone.js）机制？","item":"https://itinterview.com.cn/q/715"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/715">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1486">Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1487">什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1488">RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

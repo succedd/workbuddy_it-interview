@@ -9,15 +9,15 @@
   <meta property="og:title" content="网络【边界】HTTP 从 1.1 到 2 再到 3，每一代都在解决什么「上一代治不好的病」？ · IT面试题库">
   <meta property="og:description" content="协议演化的每一步都被真实痛点逼出来： 1. HTTP/1.1 的病：队头阻塞——同一连接上请求必须排队，一个慢响应堵死后续 → 浏览器被迫开多连接、拼雪碧图、域名分片（全是绕路 hack）； 2. HTTP/2：多路复用让多个流共享一条连接互不阻塞 + 头压缩 → 但 TCP 层的队头阻塞仍在（丢一个包所有流都得…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/283.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/283">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="网络【边界】HTTP 从 1.1 到 2 再到 3，每一代都在解决什么「上一代治不好的病」？ · IT面试题库">
   <meta name="twitter:description" content="协议演化的每一步都被真实痛点逼出来： 1. HTTP/1.1 的病：队头阻塞——同一连接上请求必须排队，一个慢响应堵死后续 → 浏览器被迫开多连接、拼雪碧图、域名分片（全是绕路 hack）； 2. HTTP/2：多路复用让多个流共享一条连接互不阻塞 + 头压缩 → 但 TCP 层的队头阻塞仍在（丢一个包所有流都得…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/283.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/283">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"网络【边界】HTTP 从 1.1 到 2 再到 3，每一代都在解决什么「上一代治不好的病」？","text":"HTTP/1.1 用了二十年，为什么非要升级？队头阻塞是什么？为什么 HTTP/3 干脆抛弃了 TCP？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"协议演化的每一步都被真实痛点逼出来： 1. HTTP/1.1 的病：队头阻塞——同一连接上请求必须排队，一个慢响应堵死后续 → 浏览器被迫开多连接、拼雪碧图、域名分片（全是绕路 hack）； 2. HTTP/2：多路复用让多个流共享一条连接互不阻塞 + 头压缩 → 但 TCP 层的队头阻塞仍在（丢一个包所有流都得等）； 3. HTTP/3（QUIC）：干脆基于 UDP 自己实现可靠传输，流之间真正独立，并把握手与加密合并降延迟。 规律：应用层治不了的病，就下沉重造传输层——这是理解协议演化的主线。","url":"https://itinterview.com.cn/question/283"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络【边界】HTTP 从 1.1 到 2 再到 3，每一代都在解决什么「上一代治不好的病」？","item":"https://itinterview.com.cn/q/283.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络【边界】HTTP 从 1.1 到 2 再到 3，每一代都在解决什么「上一代治不好的病」？","item":"https://itinterview.com.cn/q/283"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/283">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/281">网络【诞生】网络协议为什么必须「分层」还要「标准化」？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/282">网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/284">网络【演化】HTTPS 已经是标配了，为什么还会有人说「网络安全做得再好也可能出事」？协议层的安全边界在哪？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

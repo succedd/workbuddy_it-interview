@@ -9,15 +9,15 @@
   <meta property="og:title" content="C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？ · IT面试题库">
   <meta property="og:description" content="智能指针用 RAII 自动管理堆对象生命周期，避免裸指针的内存泄漏与野指针。 1. unique_ptr （独占所有权）： 同一时刻唯一拥有对象，不可拷贝，只能 std::move 转移所有权。 零额外开销（无计数），性能最佳。 场景：明确独占资源（如工厂返回值、容器元素）。 2. shared_ptr （共享所…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/504.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/504">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="智能指针用 RAII 自动管理堆对象生命周期，避免裸指针的内存泄漏与野指针。 1. unique_ptr （独占所有权）： 同一时刻唯一拥有对象，不可拷贝，只能 std::move 转移所有权。 零额外开销（无计数），性能最佳。 场景：明确独占资源（如工厂返回值、容器元素）。 2. shared_ptr （共享所…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/504.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/504">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？","text":"请说明三种智能指针的语义（所有权、引用计数、循环引用问题）与典型使用场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"智能指针用 RAII 自动管理堆对象生命周期，避免裸指针的内存泄漏与野指针。 1. unique_ptr （独占所有权）： 同一时刻唯一拥有对象，不可拷贝，只能 std::move 转移所有权。 零额外开销（无计数），性能最佳。 场景：明确独占资源（如工厂返回值、容器元素）。 2. shared_ptr （共享所有权）： 通过引用计数（control block）实现多个指针共享同一对象；计数归零时自动释放。 可拷贝；开销来自原子计数与额外控制块。 注意：循环引用会导致计数永不为 0、内存泄漏（见 weak_ptr）。 3. weak_ptr （弱引用）： 指向 shared_ptr 管理的对象但不增加引用计数，不影响生命周期。 需 lock() 提升为 shared_ptr 才能访问，避免悬空。 场景：打破循环引用（如双向链表、观察者模式）、缓存。 口诀：独占用 unique，共享用 shared，防环/观察用 weak；优先 make_shared/make_unique。","url":"https://itinterview.com.cn/question/504"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？","item":"https://itinterview.com.cn/q/504.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"C++ 智能指针 shared_ptr / unique_ptr / weak_ptr 有什么区别？","item":"https://itinterview.com.cn/q/504"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -117,6 +117,7 @@ if(auto s = w.lock()) { /* 对象仍存活 */ }</code></pre>
       <a class="cta" href="https://itinterview.com.cn/question/504">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/503">C++ 虚函数是如何实现多态的？虚函数表（vtable）原理是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/505">什么是 RAII？它在 C++ 中为什么重要？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/506">为什么基类析构函数通常要声明为 virtual（虚析构函数）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/507">什么是移动语义与右值引用？std::move 做了什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

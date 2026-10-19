@@ -9,15 +9,15 @@
   <meta property="og:title" content="外部用户从域名访问你的服务，请求链路是 域名→Ingress→Service→Pod，如何逐跳画清并在每跳给出排错点？ · IT面试题库">
   <meta property="og:description" content="端到端链路与每跳排错点： 1. DNS / 域名层：域名解析到 Ingress Controller 的 LB 地址（ADDRESS）；解析错或 TTL 问题 → 客户端直接连错 IP。 2. Ingress 层（LB→Ingress Controller→按 host/path 匹配→转发到后端 Service…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/818.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/818">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="外部用户从域名访问你的服务，请求链路是 域名→Ingress→Service→Pod，如何逐跳画清并在每跳给出排错点？ · IT面试题库">
   <meta name="twitter:description" content="端到端链路与每跳排错点： 1. DNS / 域名层：域名解析到 Ingress Controller 的 LB 地址（ADDRESS）；解析错或 TTL 问题 → 客户端直接连错 IP。 2. Ingress 层（LB→Ingress Controller→按 host/path 匹配→转发到后端 Service…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/818.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/818">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"外部用户从域名访问你的服务，请求链路是 域名→Ingress→Service→Pod，如何逐跳画清并在每跳给出排错点？","text":"考察点：是把 K8s 网络四件套串成端到端心智模型，而非孤立记忆。追问：某一跳延迟高，怎么判断瓶颈在 Ingress、Service 还是 Pod？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"端到端链路与每跳排错点： 1. DNS / 域名层：域名解析到 Ingress Controller 的 LB 地址（ADDRESS）；解析错或 TTL 问题 → 客户端直接连错 IP。 2. Ingress 层（LB→Ingress Controller→按 host/path 匹配→转发到后端 Service）： 查 kubectl get ingress 的 ADDRESS/host/path；404=规则不匹配，502=后端无端点，TLS 错=证书/主机不符； 控制器 Pod 状态、资源是否打满也在此层。 3. Service 层（ClusterIP→kube-proxy 规则→DNAT 到 Pod IP）： kubectl get endpointslices 看有无后端；ClusterIP 不通多半 kube-proxy 规则缺失或 NetworkPolicy 拦截； 此处做负载均衡，单 Pod 慢会被平均掩盖。 4. Pod 层（容器真正处理）：readiness 决定能否接流量，liveness 决定会不会被重启；应用自身慢/报错在此层暴露（kubectl logs/探针）。 瓶颈定位：在每一跳分别测——Ingress 控制器侧看其访问日志与延迟；Service 层用 kubectl port-forward 直连 Pod 排除 Service 干扰；Pod 层看应用 metrics 与日志。若直连 Pod 快、经 Service 慢 → kube-proxy/网络策略问题；经 Service 快、经 Ingress 慢 → Ingress 控制器或 LB 问题；直连 Pod 也慢 → 应用本身问题。 结论：把四层抽象成「漏斗」，逐层收敛——能直连测的就直连测，快速把锅甩到具体一层，避免同时改 Ingress/Service/Pod 却不知道哪层在出问题。","url":"https://itinterview.com.cn/question/818"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"外部用户从域名访问你的服务，请求链路是 域名→Ingress→Service→Pod，如何逐跳画清并在每跳给出排错点？","item":"https://itinterview.com.cn/q/818.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"外部用户从域名访问你的服务，请求链路是 域名→Ingress→Service→Pod，如何逐跳画清并在每跳给出排错点？","item":"https://itinterview.com.cn/q/818"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/818">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/155">Kubernetes中ConfigMap和Secret的使用？</a><span class="rel-n">238 次浏览</span></li><li><a href="https://itinterview.com.cn/q/154">Kubernetes Service类型有哪些？</a><span class="rel-n">205 次浏览</span></li><li><a href="https://itinterview.com.cn/q/156">Kubernetes滚动更新和回滚？</a><span class="rel-n">186 次浏览</span></li><li><a href="https://itinterview.com.cn/q/158">Kubernetes资源限制和HPA自动扩缩容？</a><span class="rel-n">153 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

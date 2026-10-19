@@ -9,15 +9,15 @@
   <meta property="og:title" content="CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？ · IT面试题库">
   <meta property="og:description" content="按 CPU 维度归因（top 里的 us/sy/wa） 用户态高（us 高）：业务计算密集。 死循环/热点方法：火焰图里某方法占比异常高（如 BigDecimal 大数运算、超大循环）。 正则灾难性回溯：某些输入让 (a+)+b 类表达式指数级回溯，单线程 CPU 打满；jstack 看到停在 Pattern.m…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/416.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/416">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？ · IT面试题库">
   <meta name="twitter:description" content="按 CPU 维度归因（top 里的 us/sy/wa） 用户态高（us 高）：业务计算密集。 死循环/热点方法：火焰图里某方法占比异常高（如 BigDecimal 大数运算、超大循环）。 正则灾难性回溯：某些输入让 (a+)+b 类表达式指数级回溯，单线程 CPU 打满；jstack 看到停在 Pattern.m…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/416.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/416">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？","text":"考察点：把『CPU 高』拆成可归因的几种模式，每种对应可观测信号（us/sy/wa、GC 时间、锁等待、正则），避免瞎猜。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:09:39.759Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"按 CPU 维度归因（top 里的 us/sy/wa） 用户态高（us 高）：业务计算密集。 死循环/热点方法：火焰图里某方法占比异常高（如 BigDecimal 大数运算、超大循环）。 正则灾难性回溯：某些输入让 (a+)+b 类表达式指数级回溯，单线程 CPU 打满；jstack 看到停在 Pattern.match。 序列化/反射/JSON 大对象：频繁 toString、Jackson 大字段、反射调用。 内核态高（sy 高）：系统调用多——大量小文件 IO、频繁上下文切换、锁竞争导致 syscall。 IO 等待高（wa 高）：不是 CPU 计算问题，是磁盘/网络堵（慢查询、刷盘），CPU 在等 IO。 锁竞争：sy 偏高 + 线程栈大量 BLOCKED/waiting to lock + jstack 里 java.lang.Thread.State: BLOCKED 成片出现；用 jstack 找 locked/waiting 的同一把锁，或 Arthas thread -b 找阻塞源。 频繁 Full GC：jstat 里 FGCT 时间占比高、GC 线程吃满 CPU；us 里看到 GC task thread——这是 GC 而非业务，需查堆。 对应动作：us 高看火焰图；sy/锁看 jstack 的 BLOCKED 与 thread -b；wa 高查下游依赖；GC 高查堆与 GC 日志。","url":"https://itinterview.com.cn/question/416"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？","item":"https://itinterview.com.cn/q/416.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"CPU 飙高的常见根因有哪些（死循环、频繁 Full GC、锁竞争、正则灾难性回溯、序列化/反射）？如何通过监控指标和线程栈一一对应到这些根因？","item":"https://itinterview.com.cn/q/416"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/416">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/418">高级：给定一个完整的「接口变慢 → CPU 高 → OOM」线上故障，请给出一套标准化的应急排查 SOP（监控告警、保留现场、定位、止血、根因、复盘），并说明每一步的注意点。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/413">线上 Java 服务 CPU 使用率突然飙到 100%，如何用 top -Hp / jstack / 火焰图 一步步定位到具体线程和代码行？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/414">Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/415">服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

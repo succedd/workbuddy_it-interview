@@ -9,15 +9,15 @@
   <meta property="og:title" content="解释 Python 的 GIL 是什么，对多线程有什么影响？ · IT面试题库">
   <meta property="og:description" content="GIL（全局解释器锁）是 CPython 的一把全局锁，保证同一时刻只有一个线程执行字节码，源于早期单核时代简化内存管理的设计。 影响： CPU 密集：多线程无法利用多核，反而因上下文切换变慢；应改用 multiprocessing（多进程，各自有独立 GIL）或 C 扩展（释放 GIL）。 IO 密集：线程在等…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/12.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/12">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="解释 Python 的 GIL 是什么，对多线程有什么影响？ · IT面试题库">
   <meta name="twitter:description" content="GIL（全局解释器锁）是 CPython 的一把全局锁，保证同一时刻只有一个线程执行字节码，源于早期单核时代简化内存管理的设计。 影响： CPU 密集：多线程无法利用多核，反而因上下文切换变慢；应改用 multiprocessing（多进程，各自有独立 GIL）或 C 扩展（释放 GIL）。 IO 密集：线程在等…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/12.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/12">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"解释 Python 的 GIL 是什么，对多线程有什么影响？","text":"说明 GIL 的成因、对 CPU 密集与 IO 密集任务的不同影响，以及绕过方式。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"GIL（全局解释器锁）是 CPython 的一把全局锁，保证同一时刻只有一个线程执行字节码，源于早期单核时代简化内存管理的设计。 影响： CPU 密集：多线程无法利用多核，反而因上下文切换变慢；应改用 multiprocessing（多进程，各自有独立 GIL）或 C 扩展（释放 GIL）。 IO 密集：线程在等待 IO 时会释放 GIL，多线程仍有效，可用 threading 或 asyncio。 绕过：多进程、asyncio 协程、Cython/Numba 释放 GIL 的计算。","url":"https://itinterview.com.cn/question/12"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Python","item":"https://itinterview.com.cn/category?cat=13"},{"@type":"ListItem","position":4,"name":"解释 Python 的 GIL 是什么，对多线程有什么影响？","item":"https://itinterview.com.cn/q/12.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Python","item":"https://itinterview.com.cn/category?cat=13"},{"@type":"ListItem","position":4,"name":"解释 Python 的 GIL 是什么，对多线程有什么影响？","item":"https://itinterview.com.cn/q/12"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/12">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/113">Python上下文管理器的原理？</a><span class="rel-n">300 次浏览</span></li><li><a href="https://itinterview.com.cn/q/110">Python中列表和元组的区别？</a><span class="rel-n">250 次浏览</span></li><li><a href="https://itinterview.com.cn/q/114">Python生成器和迭代器的区别？</a><span class="rel-n">249 次浏览</span></li><li><a href="https://itinterview.com.cn/q/112">Python中GIL是什么？如何解决？</a><span class="rel-n">10 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

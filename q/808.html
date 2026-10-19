@@ -9,15 +9,15 @@
   <meta property="og:title" content="Python 中的 GIL 是什么？对多线程并发有什么影响？如何绕过？ · IT面试题库">
   <meta property="og:description" content="GIL（全局解释器锁）：CPython 用一把全局锁保证同一时刻只有一个线程执行字节码，源于内存管理非线程安全的历史设计。 影响差异：CPU 密集型多线程无法真正并行，反而因切换开销变慢；I/O 密集型线程在等待 I/O 时释放 GIL，并发收益明显。 绕过手段：CPU 密集改用多进程（multiprocessi…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/808.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/808">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Python 中的 GIL 是什么？对多线程并发有什么影响？如何绕过？ · IT面试题库">
   <meta name="twitter:description" content="GIL（全局解释器锁）：CPython 用一把全局锁保证同一时刻只有一个线程执行字节码，源于内存管理非线程安全的历史设计。 影响差异：CPU 密集型多线程无法真正并行，反而因切换开销变慢；I/O 密集型线程在等待 I/O 时释放 GIL，并发收益明显。 绕过手段：CPU 密集改用多进程（multiprocessi…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/808.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/808">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Python 中的 GIL 是什么？对多线程并发有什么影响？如何绕过？","text":"解释全局解释器锁的成因、对 CPU 密集与 I/O 密集任务的不同影响与绕过手段。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"GIL（全局解释器锁）：CPython 用一把全局锁保证同一时刻只有一个线程执行字节码，源于内存管理非线程安全的历史设计。 影响差异：CPU 密集型多线程无法真正并行，反而因切换开销变慢；I/O 密集型线程在等待 I/O 时释放 GIL，并发收益明显。 绕过手段：CPU 密集改用多进程（multiprocessing）利用多核；或用 C 扩展/释放 GIL 的库（如 NumPy）；I/O 密集用 asyncio 协程；或换用无 GIL 的实现（如 PyPy、Jython）。","url":"https://itinterview.com.cn/question/808"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"Python 中的 GIL 是什么？对多线程并发有什么影响？如何绕过？","item":"https://itinterview.com.cn/q/808.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"Python 中的 GIL 是什么？对多线程并发有什么影响？如何绕过？","item":"https://itinterview.com.cn/q/808"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/808">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1634">用 Python asyncio 写并发任务时，如何避免 gather 中一个任务失败导致整体结果不可用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

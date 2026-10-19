@@ -9,15 +9,15 @@
   <meta property="og:title" content="Transformer 自注意力机制里的 Q / K / V 分别是什么？缩放点积注意力为什么要除以 √d_k？ · IT面试题库">
   <meta property="og:description" content="Q / K / V 的含义 输入经三个可学习线性变换得到： Q（Query，查询）：当前 token「想找什么信息」； K（Key，键）：每个 token「能提供什么信息」的索引； V（Value，值）：每个 token 实际携带的内容。 注意力就是「用 Q 去匹配各 token 的 K，按匹配度对 V 做加权求…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/470.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/470">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Transformer 自注意力机制里的 Q / K / V 分别是什么？缩放点积注意力为什么要除以 √d_k？ · IT面试题库">
   <meta name="twitter:description" content="Q / K / V 的含义 输入经三个可学习线性变换得到： Q（Query，查询）：当前 token「想找什么信息」； K（Key，键）：每个 token「能提供什么信息」的索引； V（Value，值）：每个 token 实际携带的内容。 注意力就是「用 Q 去匹配各 token 的 K，按匹配度对 V 做加权求…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/470.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/470">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 自注意力机制里的 Q / K / V 分别是什么？缩放点积注意力为什么要除以 √d_k？","text":"自注意力是 Transformer 的核心，Q/K/V 与缩放点积是最常被追问的实现细节，关系到对注意力数学本质的理解。","answerCount":1,"datePublished":"2026-09-03T01:03:35.583Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Q / K / V 的含义 输入经三个可学习线性变换得到： Q（Query，查询）：当前 token「想找什么信息」； K（Key，键）：每个 token「能提供什么信息」的索引； V（Value，值）：每个 token 实际携带的内容。 注意力就是「用 Q 去匹配各 token 的 K，按匹配度对 V 做加权求和」。 为什么要除以 √d_k 缩放点积注意力公式为 softmax(Q·Kᵀ / √d_k)·V。 Q·Kᵀ 的维度随 d_k（向量维度）增大而增大，方差也随 d_k 线性放大； 若不加缩放，点积值会非常大，把 softmax 推入梯度极小的饱和区，导致训练困难； 除以 √d_k 把点积的方差拉回稳定范围，使 softmax 有梯度、训练更稳。 多头注意力则是把 Q/K/V 投影到多组子空间并行计算，再拼接，从而捕捉不同类型的依赖关系。","url":"https://itinterview.com.cn/question/470"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"神经网络原理","item":"https://itinterview.com.cn/category?cat=179"},{"@type":"ListItem","position":5,"name":"Transformer 自注意力机制里的 Q / K / V 分别是什么？缩放点积注意力为什么要除以 √d_k？","item":"https://itinterview.com.cn/q/470.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"神经网络原理","item":"https://itinterview.com.cn/category?cat=179"},{"@type":"ListItem","position":5,"name":"Transformer 自注意力机制里的 Q / K / V 分别是什么？缩放点积注意力为什么要除以 √d_k？","item":"https://itinterview.com.cn/q/470"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/470">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1539">Transformer 为什么能取代 RNN/LSTM？位置编码与自注意力并行机制解决了序列模型的哪些根本瓶颈？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1543">如何用 Python/NumPy 手写 Scaled Dot-Product Attention 的前向计算，并正确处理变长序列的 padding 与因果掩码？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

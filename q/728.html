@@ -9,15 +9,15 @@
   <meta property="og:title" content="SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？ · IT面试题库">
   <meta property="og:description" content="探针（Agent）：以无侵入或低侵入方式挂载到应用，自动拦截 HTTP/RPC/DB 调用。 Trace 与 Span：一次请求生成一个 Trace，内部每个调用段是一个 Span（含起止时间、上下游关系），通过上下文透传串联。 采集与展示：Agent 把 span 上报给后端（OAP），聚合成调用链、服务拓扑图…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/728.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/728">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？ · IT面试题库">
   <meta name="twitter:description" content="探针（Agent）：以无侵入或低侵入方式挂载到应用，自动拦截 HTTP/RPC/DB 调用。 Trace 与 Span：一次请求生成一个 Trace，内部每个调用段是一个 Span（含起止时间、上下游关系），通过上下文透传串联。 采集与展示：Agent 把 span 上报给后端（OAP），聚合成调用链、服务拓扑图…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/728.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/728">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？","text":"说明 APM 实现全链路追踪的机制。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"探针（Agent）：以无侵入或低侵入方式挂载到应用，自动拦截 HTTP/RPC/DB 调用。 Trace 与 Span：一次请求生成一个 Trace，内部每个调用段是一个 Span（含起止时间、上下游关系），通过上下文透传串联。 采集与展示：Agent 把 span 上报给后端（OAP），聚合成调用链、服务拓扑图、慢调用与错误率。据此可定位跨服务瓶颈（哪一段慢、哪个依赖出错）。","url":"https://itinterview.com.cn/question/728"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"SkyWalking","item":"https://itinterview.com.cn/category?cat=146"},{"@type":"ListItem","position":4,"name":"SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？","item":"https://itinterview.com.cn/q/728.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"SkyWalking","item":"https://itinterview.com.cn/category?cat=146"},{"@type":"ListItem","position":4,"name":"SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？","item":"https://itinterview.com.cn/q/728"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/728">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1556">生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1555">分布式链路追踪中 Span 上下文如何在服务间传播（如 W3C traceparent/baggage）？高并发下采样率该如何权衡？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

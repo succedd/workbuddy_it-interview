@@ -9,15 +9,15 @@
   <meta property="og:title" content="请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。 · IT面试题库">
   <meta property="og:description" content="所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &amp;T（不可变引用）或 &amp;mut T（可变引用）在不转移所…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/516.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/516">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。 · IT面试题库">
   <meta name="twitter:description" content="所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &amp;T（不可变引用）或 &amp;mut T（可变引用）在不转移所…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/516.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/516">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。","text":"说明 Move 语义、同一时刻可变/不可变借用的约束、以及 'a 生命周期标注解决什么问题。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"所有权(Ownership)：每个值有唯一的所有者（owner）；离开作用域时自动调用 drop 释放资源；把值赋给另一个变量或传入函数会触发 Move（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。 借用(Borrowing)：通过 &T（不可变引用）或 &mut T（可变引用）在不转移所有权的前提下访问值。核心约束：同一时刻，要么有多个不可变借用，要么有唯一一个可变借用（不可二者共存），彻底杜绝数据竞争。 生命周期(Lifetime)：引用必须比它所指向的数据活得更久，否则产生悬垂指针。编译器用生命周期标注（如 fn longest (x: &'a str, y: &'a str) -> &'a str）来推导引用有效期，确保返回的引用不会比输入活得更久；多数情况编译器能自动省略（elision）标注。 三者关系：所有权负责“谁释放”，借用负责“共享/修改的规则”，生命周期负责“引用安全的时效性”。编译期由借用检查器（Borrow Checker）强制这些规则。","url":"https://itinterview.com.cn/question/516"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Rust","item":"https://itinterview.com.cn/category?cat=17"},{"@type":"ListItem","position":4,"name":"请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。","item":"https://itinterview.com.cn/q/516.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Rust","item":"https://itinterview.com.cn/category?cat=17"},{"@type":"ListItem","position":4,"name":"请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。","item":"https://itinterview.com.cn/q/516"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/516">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/517">Rust 如何实现“无畏并发(fearless concurrency)”？Arc、Mutex、RwLock 分别解决什么问题、如何组合使用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/518">Rust 中 `dyn Trait`（trait 对象）与泛型（静态分发）有什么区别？各自适用场景与性能权衡如何？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/519">Rust 的借用检查器(Borrow Checker)是如何工作的？什么是 NLL（非词法生命周期）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

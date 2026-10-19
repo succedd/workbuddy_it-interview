@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是 RAG（检索增强生成）？典型流程？ · IT面试题库">
   <meta property="og:description" content="RAG = Retrieval-Augmented Generation：先检索外部知识，再让 LLM 基于检索内容生成答案，缓解幻觉、注入私有/实时知识。 离线（建库）：文档切片 → 向量化（Embedding 模型）→ 存入向量数据库。 在线（问答）：用户问题向量化 → 向量库相似检索 Top-K 片段 → …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/86.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/86">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 RAG（检索增强生成）？典型流程？ · IT面试题库">
   <meta name="twitter:description" content="RAG = Retrieval-Augmented Generation：先检索外部知识，再让 LLM 基于检索内容生成答案，缓解幻觉、注入私有/实时知识。 离线（建库）：文档切片 → 向量化（Embedding 模型）→ 存入向量数据库。 在线（问答）：用户问题向量化 → 向量库相似检索 Top-K 片段 → …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/86.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/86">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 RAG（检索增强生成）？典型流程？","text":"说明为什么需要 RAG 及其关键组件。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RAG = Retrieval-Augmented Generation：先检索外部知识，再让 LLM 基于检索内容生成答案，缓解幻觉、注入私有/实时知识。 离线（建库）：文档切片 → 向量化（Embedding 模型）→ 存入向量数据库。 在线（问答）：用户问题向量化 → 向量库相似检索 Top-K 片段 → 拼进 Prompt（上下文）→ LLM 生成带引用的回答。 关键：切片策略、Embedding 质量、检索召回率、重排（rerank）、上下文裁剪、引用溯源。RAG 适合企业知识库、客服、合规问答。","url":"https://itinterview.com.cn/question/86"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"什么是 RAG（检索增强生成）？典型流程？","item":"https://itinterview.com.cn/q/86.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"什么是 RAG（检索增强生成）？典型流程？","item":"https://itinterview.com.cn/q/86"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/86">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/617">为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/618">给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/619">用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/620">RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

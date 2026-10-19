@@ -9,15 +9,15 @@
   <meta property="og:title" content="图形学【本质】渲染管线的本质是什么？「可编程管线」的普及为什么是图形学的分水岭？ · IT面试题库">
   <meta property="og:description" content="渲染管线 = 把 3D 数学描述批量变成像素的流水线：顶点变换（模型→世界→相机→投影）→ 图元装配 → 光栅化（三角形变像素）→ 像素着色 → 输出。 分水岭在「可编程」：早期管线固定（效果只能二选一），Shader（顶点/像素着色器）让程序员接管关键阶段——光照模型、水面波动、卡通渲染全是 Shader 的创…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/326.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/326">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="图形学【本质】渲染管线的本质是什么？「可编程管线」的普及为什么是图形学的分水岭？ · IT面试题库">
   <meta name="twitter:description" content="渲染管线 = 把 3D 数学描述批量变成像素的流水线：顶点变换（模型→世界→相机→投影）→ 图元装配 → 光栅化（三角形变像素）→ 像素着色 → 输出。 分水岭在「可编程」：早期管线固定（效果只能二选一），Shader（顶点/像素着色器）让程序员接管关键阶段——光照模型、水面波动、卡通渲染全是 Shader 的创…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/326.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/326">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"图形学【本质】渲染管线的本质是什么？「可编程管线」的普及为什么是图形学的分水岭？","text":"从「3D 世界的数学描述」到「屏幕上的像素」，中间发生了什么？哪几步是固定的、哪几步交给了程序员？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"渲染管线 = 把 3D 数学描述批量变成像素的流水线：顶点变换（模型→世界→相机→投影）→ 图元装配 → 光栅化（三角形变像素）→ 像素着色 → 输出。 分水岭在「可编程」：早期管线固定（效果只能二选一），Shader（顶点/像素着色器）让程序员接管关键阶段——光照模型、水面波动、卡通渲染全是 Shader 的创作。游戏画面的代际差异本质是 Shader 算法的差异。 性能第一性：管线每帧要处理百万级像素，吞吐是硬约束——GPU 的并行架构、draw call 合批、LOD（远处用低模）都是为了喂饱这条流水线。图形优化=「算得少」，不是「算得快」。","url":"https://itinterview.com.cn/question/326"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"图形学【本质】渲染管线的本质是什么？「可编程管线」的普及为什么是图形学的分水岭？","item":"https://itinterview.com.cn/q/326.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"图形学【本质】渲染管线的本质是什么？「可编程管线」的普及为什么是图形学的分水岭？","item":"https://itinterview.com.cn/q/326"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/326">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/325">游戏引擎【诞生】为什么会有游戏引擎？每个游戏都重写一遍渲染和物理，问题出在哪？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/327">游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/328">游戏开发【演化】引擎「通用化」与「特化定制」的张力为什么永远存在？大厂为什么自研引擎？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

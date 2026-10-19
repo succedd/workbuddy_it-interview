@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是同源策略（Same-Origin Policy）？它保护什么？ · IT面试题库">
   <meta property="og:description" content="同源策略（SOP） 是浏览器的核心安全机制：只有当协议、域名（host）、端口三者完全相同，两个资源才“同源”。 限制行为：阻止不同源的脚本读取彼此的 DOM、Cookie、LocalStorage，以及限制对跨源 XMLHttpRequest / fetch 响应的读取，防止恶意站点窃取向其他站点请求到的敏感数…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/548.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/548">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是同源策略（Same-Origin Policy）？它保护什么？ · IT面试题库">
   <meta name="twitter:description" content="同源策略（SOP） 是浏览器的核心安全机制：只有当协议、域名（host）、端口三者完全相同，两个资源才“同源”。 限制行为：阻止不同源的脚本读取彼此的 DOM、Cookie、LocalStorage，以及限制对跨源 XMLHttpRequest / fetch 响应的读取，防止恶意站点窃取向其他站点请求到的敏感数…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/548.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/548">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是同源策略（Same-Origin Policy）？它保护什么？","text":"请说明“同源”的判定规则、同源策略限制了哪些跨源行为，以及受控跨源通信的常用方式。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"同源策略（SOP） 是浏览器的核心安全机制：只有当协议、域名（host）、端口三者完全相同，两个资源才“同源”。 限制行为：阻止不同源的脚本读取彼此的 DOM、Cookie、LocalStorage，以及限制对跨源 XMLHttpRequest / fetch 响应的读取，防止恶意站点窃取向其他站点请求到的敏感数据。 注意区分： 同源 ≠ 同站：同站只看 scheme + 注册域（eTLD+1），子域间算“同站但跨源”。 、 、 等标签的资源加载不受 SOP 限制（这正是 XSS/CSRF 可利用之处），限制的是“读取响应”。 受控跨源方式：CORS（服务端白名单 Access-Control-Allow-Origin）、JSONP（历史方案）、postMessage（窗口间安全通信）、WebSocket（握手后不受 SOP 限制）。","url":"https://itinterview.com.cn/question/548"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"Web安全","item":"https://itinterview.com.cn/category?cat=202"},{"@type":"ListItem","position":4,"name":"什么是同源策略（Same-Origin Policy）？它保护什么？","item":"https://itinterview.com.cn/q/548.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"Web安全","item":"https://itinterview.com.cn/category?cat=202"},{"@type":"ListItem","position":4,"name":"什么是同源策略（Same-Origin Policy）？它保护什么？","item":"https://itinterview.com.cn/q/548"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -102,6 +102,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/548">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/544">XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/545">什么是 CSP（内容安全策略）？它如何缓解 XSS？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/546">什么是点击劫持（Clickjacking）？如何防护？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/547">常见的 Web 安全响应头有哪些？各自作用是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

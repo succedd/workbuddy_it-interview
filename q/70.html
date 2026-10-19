@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是递归？写阶乘并说明栈溢出风险。 · IT面试题库">
   <meta property="og:description" content="递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/70.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/70">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是递归？写阶乘并说明栈溢出风险。 · IT面试题库">
   <meta name="twitter:description" content="递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/70.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/70">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是递归？写阶乘并说明栈溢出风险。","text":"解释递归要素、基线条件，以及尾递归与迭代替代。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"递归：函数调用自身，须有基线条件（终止）与递推关系。 风险：每次调用压栈，深度过大（如 n 很大）会栈溢出（RecursionError/StackOverflow）。 优化： 尾递归：递归调用在末尾且返回值直接返回，部分语言（如开启优化的 Scheme）可复用栈帧；Python/Java 默认不优化，仍需迭代。 改迭代：用循环+累加变量，空间 O(1)。 记忆化（memoization）避免重复子问题（如斐波那契）。","url":"https://itinterview.com.cn/question/70"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"什么是递归？写阶乘并说明栈溢出风险。","item":"https://itinterview.com.cn/q/70.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"什么是递归？写阶乘并说明栈溢出风险。","item":"https://itinterview.com.cn/q/70"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -105,6 +105,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/70">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/170">动态规划的核心思想？经典问题有哪些？</a><span class="rel-n">478 次浏览</span></li><li><a href="https://itinterview.com.cn/q/167">快排和归并排序的区别？</a><span class="rel-n">58 次浏览</span></li><li><a href="https://itinterview.com.cn/q/66">什么是时间复杂度与空间复杂度？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/67">快速排序的思想与最坏情况？</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

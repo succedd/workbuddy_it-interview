@@ -9,15 +9,15 @@
   <meta property="og:title" content="Transformer 的 Self-Attention 原理是什么？ · IT面试题库">
   <meta property="og:description" content="Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/85.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/85">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Transformer 的 Self-Attention 原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/85.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/85">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Transformer 的 Self-Attention 原理是什么？","text":"解释 Q/K/V、注意力分数与多头机制。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Self-Attention 让序列中每个 token 关注其他 token 并加权聚合信息。 步骤： 1. 每个输入 token 映射为 Query(Q)、Key(K)、Value(V) 三个向量。 2. 计算相似度：score = Q·Kᵀ / √d_k（√d_k 防止点积过大导致 softmax 梯度消失）。 3. softmax 归一化得到注意力权重。 4. 权重对 V 加权求和得输出。 多头（Multi-Head）：并行多组 Q/K/V 投影，各自捕捉不同子空间关系（语法、语义、位置），拼接后线性融合，增强表达能力。 位置编码：因 attention 本身无序，需加入位置信息（正弦编码或可学习编码/RoPE）。","url":"https://itinterview.com.cn/question/85"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"Transformer 的 Self-Attention 原理是什么？","item":"https://itinterview.com.cn/q/85.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"Transformer 的 Self-Attention 原理是什么？","item":"https://itinterview.com.cn/q/85"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -104,6 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/85">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/407">缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/408">计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/409">什么是位置编码（Positional Encoding）？为什么 Transformer 必须引入它？正弦位置编码如何工作、有什么特点？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/410">Transformer 的 Encoder 与 Decoder 各由哪些子层堆叠而成？其中的 Encoder-Decoder 注意力（交叉注意力）起什么作用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

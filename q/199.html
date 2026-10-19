@@ -9,15 +9,15 @@
   <meta property="og:title" content="Kubernetes 集群中 GPU Pod 长时间处于 Pending 状态，请给出排查思路和常见原因 · IT面试题库">
   <meta property="og:description" content="排查思路： 1. 查看 Pod 事件：kubectl describe pod -n ，确认是否为 GPU 资源不足。 2. 检查节点 GPU 容量与分配：kubectl describe node | grep -i nvidia.com/gpu 或 kubectl get nodes -o custom-co…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/199.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/199">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kubernetes 集群中 GPU Pod 长时间处于 Pending 状态，请给出排查思路和常见原因 · IT面试题库">
   <meta name="twitter:description" content="排查思路： 1. 查看 Pod 事件：kubectl describe pod -n ，确认是否为 GPU 资源不足。 2. 检查节点 GPU 容量与分配：kubectl describe node | grep -i nvidia.com/gpu 或 kubectl get nodes -o custom-co…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/199.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/199">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kubernetes 集群中 GPU Pod 长时间处于 Pending 状态，请给出排查思路和常见原因","text":"Kubernetes 集群中 GPU Pod 长时间处于 Pending 状态，请给出排查思路和常见原因","answerCount":1,"datePublished":"2026-08-23T01:16:57.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查思路： 1. 查看 Pod 事件：kubectl describe pod -n ，确认是否为 GPU 资源不足。 2. 检查节点 GPU 容量与分配：kubectl describe node | grep -i nvidia.com/gpu 或 kubectl get nodes -o custom-columns=NAME:.metadata.name,GPU_ALLOC:.status.allocatable.nvidia\\.com/gpu,GPU_CAP:.status.capacity.nvidia\\.com/gpu。 3. 检查 device plugin：kubectl get pods -n kube-system | grep nvidia-device-plugin，登录节点执行 nvidia-smi 验证驱动和 GPU 是否健康。 4. 检查节点污点：kubectl describe node | grep Taints，确认是否缺少对应容忍。 5. 检查 namespace 是否设置了 ResourceQuota 限制 GPU 资源。 6. 检查 Pod 是否指定了 nodeSelector / 亲和性，且标签与 GPU 节点不匹配。 常见根因： 申请数量超过可分配 GPU，或 GPU 被其他 Pod 占用； NVIDIA device plugin 未运行或版本不匹配，未向 kubelet 上报 GPU 资源； GPU 节点存在污点，Pod 未添加容忍； Namespace ResourceQuota 限制 GPU 总量； Pod spec 中 nodeSelector 未匹配 GPU 节点标签。","url":"https://itinterview.com.cn/question/199"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Kubernetes 集群中 GPU Pod 长时间处于 Pending 状态，请给出排查思路和常见原因","item":"https://itinterview.com.cn/q/199.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Kubernetes 集群中 GPU Pod 长时间处于 Pending 状态，请给出排查思路和常见原因","item":"https://itinterview.com.cn/q/199"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/199">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/155">Kubernetes中ConfigMap和Secret的使用？</a><span class="rel-n">238 次浏览</span></li><li><a href="https://itinterview.com.cn/q/154">Kubernetes Service类型有哪些？</a><span class="rel-n">205 次浏览</span></li><li><a href="https://itinterview.com.cn/q/156">Kubernetes滚动更新和回滚？</a><span class="rel-n">186 次浏览</span></li><li><a href="https://itinterview.com.cn/q/158">Kubernetes资源限制和HPA自动扩缩容？</a><span class="rel-n">153 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

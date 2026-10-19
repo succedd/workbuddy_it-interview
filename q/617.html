@@ -9,15 +9,15 @@
   <meta property="og:title" content="为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？ · IT面试题库">
   <meta property="og:description" content="要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/617.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/617">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/617.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/617">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？","text":"考察点：理解 RAG 出现的动机，能说清大模型的三类固有短板（知识时效性、幻觉、私有/实时数据不可达）以及 RAG 的缓解思路。","answerCount":1,"datePublished":"2026-09-06T02:23:24.442Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 知识时效性与静态性：大模型的参数在训练后固定，无法获知训练截止之后的新事件、新政策、新版本 API；RAG 通过检索外部最新文档，把“记忆”与“知识”解耦，回答时可引用实时资料。 幻觉（Hallucination）：模型在参数记忆不足时会“编造”看似合理但错误的内容；RAG 要求生成时以检索到的上下文为依据（grounded generation），显著降低无依据作答。 私有/垂直数据不可达：企业内网文档、工单、代码库等无法进入公开训练集；RAG 让模型在不微调的前提下访问这些受控语料，兼顾数据安全与可用性。 边界提示：RAG 解决“知识获取”，微调解决“能力/风格塑造”；需要固定领域行为时用微调，需要动态知识时用 RAG，二者常结合使用。","url":"https://itinterview.com.cn/question/617"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？","item":"https://itinterview.com.cn/q/617.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？","item":"https://itinterview.com.cn/q/617"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/617">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/86">什么是 RAG（检索增强生成）？典型流程？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/618">给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/619">用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/620">RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

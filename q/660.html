@@ -9,15 +9,15 @@
   <meta property="og:title" content="JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？ · IT面试题库">
   <meta property="og:description" content="要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/660.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/660">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？ · IT面试题库">
   <meta name="twitter:description" content="要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/660.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/660">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","text":"追问链第三问。考察点：程序计数器/虚拟机栈/本地方法栈/堆/方法区的划分；线程私有与共享的边界；直接内存不算规范定义的运行时数据区；各区域会抛什么错误。","answerCount":1,"datePublished":"2026-09-08T13:40:44.056Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：整体划分 线程私有（随线程生灭，不参与 GC 的根区域讨论）：程序计数器、Java 虚拟机栈、本地方法栈。 线程共享（所有线程共用，是 GC 的主战场）：堆、方法区。 直接内存（堆外内存）不是《Java 虚拟机规范》定义的运行时数据区，但由于频繁被一起讨论且会触发 OOM，需要单独说明。 要点二：线程私有的三个区域 程序计数器：当前线程所执行字节码的行号指示器，用于分支、循环、跳转、异常处理和线程切换后恢复执行位置。执行 native 方法时值为 Undefined。它是唯一一个在规范中没有规定任何 OutOfMemoryError 的区域。 Java 虚拟机栈：由栈帧组成，每次方法调用压入一个栈帧，方法结束（正常 return 或抛异常）弹出。栈帧内含局部变量表、操作数栈、动态链接、方法返回地址。 本地方法栈：为 native 方法服务，HotSpot 中已与虚拟机栈合二为一。 要点三：线程共享的两个区域 堆：几乎所有对象实例与数组都在这里分配（JIT 逃逸分析成熟后出现了栈上分配与标量替换的例外）。堆是垃圾收集器管理的主要区域，可进一步划分为新生代（Eden + Survivor0/1）与老年代。 方法区：存储已被加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。JDK 7 及以前用永久代实现，JDK 8 起改用本地内存实现的元空间。 要点四：各区域会抛的错误 程序计数器：规范中没有 OOM。 虚拟机栈/本地方法栈：栈深度超限抛 StackOverflowError（典型是无限递归）；栈可动态扩展但申请不到内存时抛 OutOfMemoryError。 堆：无法分配实例且堆无法再扩展时抛 OutOfMemoryError: Java heap space。 方法区：JDK8 后元空间默认使用本地内存，溢出信息为 OutOfMemoryError: Metaspace。 直接内存：受 -XX:MaxDirectMemorySize 与物理内存限制，溢出时 Heap Dump 文件往往很小而看不出异常。","url":"https://itinterview.com.cn/question/660"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","item":"https://itinterview.com.cn/q/660.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？","item":"https://itinterview.com.cn/q/660"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -119,6 +119,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/660">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/658">Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/659">什么是双亲委派模型？它解决了什么问题？如何打破双亲委派？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/661">JDK 8 为什么用元空间取代永久代？方法区和永久代是一回事吗？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/662">一个 Java 对象从 new 到可以使用，JVM 内部经历了哪几步？对象的访问定位有哪两种方式？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

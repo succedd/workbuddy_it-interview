@@ -9,15 +9,15 @@
   <meta property="og:title" content="中断服务程序（ISR）与主程序共享数据时，如何保护临界区？ · IT面试题库">
   <meta property="og:description" content="问题：ISR 可能在主程序读写共享变量中途抢占，导致数据不一致（撕裂读/写），或主程序长时间关中断影响实时性。 方法一：关中断（临界区） 适用：短小、必须不可分割的操作；临界区越短越好，否则丢失中断、增大延迟。Cortex-M 进入 ISR 时硬件自动置 INTM 关中断，但嵌套 ISR 需谨慎。 方法二：原子操…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/603.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/603">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="中断服务程序（ISR）与主程序共享数据时，如何保护临界区？ · IT面试题库">
   <meta name="twitter:description" content="问题：ISR 可能在主程序读写共享变量中途抢占，导致数据不一致（撕裂读/写），或主程序长时间关中断影响实时性。 方法一：关中断（临界区） 适用：短小、必须不可分割的操作；临界区越短越好，否则丢失中断、增大延迟。Cortex-M 进入 ISR 时硬件自动置 INTM 关中断，但嵌套 ISR 需谨慎。 方法二：原子操…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/603.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/603">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"中断服务程序（ISR）与主程序共享数据时，如何保护临界区？","text":"主循环与 ISR 共享一个计数器/缓冲区时，简述临界区保护方法：关中断、原子操作、双缓冲。请说明各自的适用场景与注意点。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题：ISR 可能在主程序读写共享变量中途抢占，导致数据不一致（撕裂读/写），或主程序长时间关中断影响实时性。 方法一：关中断（临界区） 适用：短小、必须不可分割的操作；临界区越短越好，否则丢失中断、增大延迟。Cortex-M 进入 ISR 时硬件自动置 INTM 关中断，但嵌套 ISR 需谨慎。 方法二：原子操作 单条总线宽度的读写天然原子；多步 RMW 用 LDREX/STREX（ARM）或 C11 的 atomic_fetch_add 等，比关中断更轻量。 适用：计数、标志，高频场景性能优于临界区。 方法三：双缓冲 / 环形队列 ISR 写一缓冲、主程序读另一缓冲，定时交换；或 ISR 仅置 volatile 标志、主程序在循环里处理，避免在 ISR 内做重活。 注意：ISR 中不要调用阻塞/耗时函数；共享变量加 volatile；写多字结构体务必整体保护。","url":"https://itinterview.com.cn/question/603"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"中断服务程序（ISR）与主程序共享数据时，如何保护临界区？","item":"https://itinterview.com.cn/q/603.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"中断服务程序（ISR）与主程序共享数据时，如何保护临界区？","item":"https://itinterview.com.cn/q/603"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -112,6 +112,7 @@ __restore_irq(primask);</code></pre>
       <a class="cta" href="https://itinterview.com.cn/question/603">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/602">嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/604">什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/605">如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/606">嵌入式系统中如何防止栈溢出（Stack Overflow）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

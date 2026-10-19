@@ -9,15 +9,15 @@
   <meta property="og:title" content="一个 Java Pod 反复 CrashLoopBackOff，`kubectl logs` 看不到业务日志，`describe` 显示 Last State: Terminated, Exit Code: 137（OOMKilled），请定位根因并给出修复步骤。 · IT面试题库">
   <meta property="og:description" content="根因：Exit Code 137 = 容器被 SIGKILL（OOMKilled），即内存超过 limit 被内核杀掉；logs 空是因为进程还没打印就崩，或 stdout 缓冲未刷出。 排查与修复： 确认：describe 的 Last State 或 kubectl get pod 的 reason: OOM…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/883.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/883">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="一个 Java Pod 反复 CrashLoopBackOff，`kubectl logs` 看不到业务日志，`describe` 显示 Last State: Terminated, Exit Code: 137（OOMKilled），请定位根因并给出修复步骤。 · IT面试题库">
   <meta name="twitter:description" content="根因：Exit Code 137 = 容器被 SIGKILL（OOMKilled），即内存超过 limit 被内核杀掉；logs 空是因为进程还没打印就崩，或 stdout 缓冲未刷出。 排查与修复： 确认：describe 的 Last State 或 kubectl get pod 的 reason: OOM…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/883.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/883">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"一个 Java Pod 反复 CrashLoopBackOff，`kubectl logs` 看不到业务日志，`describe` 显示 Last State: Terminated, Exit Code: 137（OOMKilled），请定位根因并给出修复步骤。","text":"考察 exit code 137 = OOMKilled 的识别与内存限额调优。","answerCount":1,"datePublished":"2026-09-09T02:22:23.726Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：Exit Code 137 = 容器被 SIGKILL（OOMKilled），即内存超过 limit 被内核杀掉；logs 空是因为进程还没打印就崩，或 stdout 缓冲未刷出。 排查与修复： 确认：describe 的 Last State 或 kubectl get pod 的 reason: OOMKilled；看 resources.limits.memory 是否过小。 修复：调大 limits.memory（如 512Mi→1Gi）；同时检查 JVM 的 -Xmx 必须小于容器 limit，给非堆内存留余量（建议 -Xmx ≤ limit 的 70%~80%）。 预防：配 resources.requests.memory 让调度器放到内存充足的节点；用 kubectl top pod 观察真实用量后再定 limit。 注意：CrashLoopBackOff 不一定都是 OOM，需看 Exit Code——1/2 多为应用报错，137 才是 OOM。","url":"https://itinterview.com.cn/question/883"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"一个 Java Pod 反复 CrashLoopBackOff，`kubectl logs` 看不到业务日志，`describe` 显示 Last State: Terminated, Exit Code: 137（OOMKilled），请定位根因并给出修复步骤。","item":"https://itinterview.com.cn/q/883.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"一个 Java Pod 反复 CrashLoopBackOff，`kubectl logs` 看不到业务日志，`describe` 显示 Last State: Terminated, Exit Code: 137（OOMKilled），请定位根因并给出修复步骤。","item":"https://itinterview.com.cn/q/883"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -102,6 +102,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/883">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/155">Kubernetes中ConfigMap和Secret的使用？</a><span class="rel-n">238 次浏览</span></li><li><a href="https://itinterview.com.cn/q/154">Kubernetes Service类型有哪些？</a><span class="rel-n">205 次浏览</span></li><li><a href="https://itinterview.com.cn/q/156">Kubernetes滚动更新和回滚？</a><span class="rel-n">186 次浏览</span></li><li><a href="https://itinterview.com.cn/q/158">Kubernetes资源限制和HPA自动扩缩容？</a><span class="rel-n">153 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

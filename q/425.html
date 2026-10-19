@@ -9,15 +9,15 @@
   <meta property="og:title" content="Java 线程的生命周期有哪几种状态（NEW/RUNNABLE/BLOCKED/WAITING/TIMED_WAITING/TERMINATED）？BLOCKED、WAITING、TIMED_WAITING 三者的触发条件与区别是什么？ · IT面试题库">
   <meta property="og:description" content="六种状态（java.lang.Thread.State） NEW：已创建未 start。 RUNNABLE：可运行（JVM 把 OS 的『运行中』与『就绪』合一，不细分）。 BLOCKED：被 synchronized 阻塞，等监视器锁。 WAITING：无限期等待，需被唤醒（Object.wait() 无参 /…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/425.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/425">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 线程的生命周期有哪几种状态（NEW/RUNNABLE/BLOCKED/WAITING/TIMED_WAITING/TERMINATED）？BLOCKED、WAITING、TIMED_WAITING 三者的触发条件与区别是什么？ · IT面试题库">
   <meta name="twitter:description" content="六种状态（java.lang.Thread.State） NEW：已创建未 start。 RUNNABLE：可运行（JVM 把 OS 的『运行中』与『就绪』合一，不细分）。 BLOCKED：被 synchronized 阻塞，等监视器锁。 WAITING：无限期等待，需被唤醒（Object.wait() 无参 /…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/425.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/425">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 线程的生命周期有哪几种状态（NEW/RUNNABLE/BLOCKED/WAITING/TIMED_WAITING/TERMINATED）？BLOCKED、WAITING、TIMED_WAITING 三者的触发条件与区别是什么？","text":"考察点：线程状态机、三种『等待』状态的触发（synchronized/Object.wait/await/睡眠）与区别。属场景题（初级）。","answerCount":1,"datePublished":"2026-09-01T10:18:49.185Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"六种状态（java.lang.Thread.State） NEW：已创建未 start。 RUNNABLE：可运行（JVM 把 OS 的『运行中』与『就绪』合一，不细分）。 BLOCKED：被 synchronized 阻塞，等监视器锁。 WAITING：无限期等待，需被唤醒（Object.wait() 无参 / Thread.join() 无参 / LockSupport.park()）。 TIMED_WAITING：带超时的等待（Thread.sleep / wait(timeout) / join(timeout) / parkNanos）。 TERMINATED：执行结束。 三者区别 BLOCKED：专指等 synchronized 监视器锁，由锁竞争引起，卡在锁上不消耗 CPU。 WAITING / TIMED_WAITING：主动调用等待方法让出 CPU，等别的线程显式唤醒（WAITING）或超时自动醒（TIMED_WAITING）；常见于生产者消费者、await/signal。 高频坑：sleep 是 TIMED_WAITING 且不释放锁；wait 是 WAITING 且释放锁。 排查：jstack 里大面积 BLOCKED 多指锁竞争；WAITING/TIMED_WAITING 多指线程在等条件/IO。","url":"https://itinterview.com.cn/question/425"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 线程的生命周期有哪几种状态（NEW/RUNNABLE/BLOCKED/WAITING/TIMED_WAITING/TERMINATED）？BLOCKED、WAITING、TIMED_WAITING 三者的触发条件与区别是什么？","item":"https://itinterview.com.cn/q/425.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 线程的生命周期有哪几种状态（NEW/RUNNABLE/BLOCKED/WAITING/TIMED_WAITING/TERMINATED）？BLOCKED、WAITING、TIMED_WAITING 三者的触发条件与区别是什么？","item":"https://itinterview.com.cn/q/425"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/425">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

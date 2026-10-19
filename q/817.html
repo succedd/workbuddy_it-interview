@@ -9,15 +9,15 @@
   <meta property="og:title" content="Ingress 配置好了但外部访问 404 / 502，如何排查 Ingress 不生效？ · IT面试题库">
   <meta property="og:description" content="要点：Ingress 只是「规则」，真正干活的是 Ingress Controller，缺任何一环都不生效。 排查清单： 1. Ingress Controller 是否就绪：kubectl get pods -n ingress-nginx（或对应命名空间）确认控制器 Pod Running；没装控制器，Ing…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/817.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/817">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Ingress 配置好了但外部访问 404 / 502，如何排查 Ingress 不生效？ · IT面试题库">
   <meta name="twitter:description" content="要点：Ingress 只是「规则」，真正干活的是 Ingress Controller，缺任何一环都不生效。 排查清单： 1. Ingress Controller 是否就绪：kubectl get pods -n ingress-nginx（或对应命名空间）确认控制器 Pod Running；没装控制器，Ing…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/817.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/817">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Ingress 配置好了但外部访问 404 / 502，如何排查 Ingress 不生效？","text":"考察点：Ingress 生效的完整前置条件（Ingress Controller、ingressClassName、host/path 匹配、TLS、后端 Service）。追问：ADDRESS 一直是 pending 说明什么？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Ingress 只是「规则」，真正干活的是 Ingress Controller，缺任何一环都不生效。 排查清单： 1. Ingress Controller 是否就绪：kubectl get pods -n ingress-nginx（或对应命名空间）确认控制器 Pod Running；没装控制器，Ingress 资源建了也没用。 2. ingressClassName 是否匹配：Ingress 必须引用一个存在的 IngressClass（或默认类）；类名与控制器不符，规则不会被加载。 3. ADDRESS 是否 pending：kubectl get ingress 的 ADDRESS 长时间 通常是 LB 没分配成功（云厂商权限/配额/网络问题），外部流量根本进不来。 4. host / path 匹配：请求 Host 与 pathType（Exact/Prefix/ImplementationSpecific）必须命中规则；最容易错的是 pathType 与路径尾部斜线（如 /foo 不匹配 /foo/），以及通配符只覆盖一个 DNS 标签。 5. 后端 Service 名/端口：backend.service.name/port.number 必须存在且端口是 Service 暴露的端口（不是容器端口）；后端 Service 的 EndpointSlice 为空则 502。 6. TLS：https 访问需 tls 段引用含正确 CN 的 Secret，且 hosts 与 rules.host 完全一致，否则 SNI/证书不匹配。 结论：kubectl describe ingress 看 Events 能直接暴露类缺失/后端找不到；404 多为 host/path 不匹配，502 多为后端 Service 无就绪端点，pending 多为 LB 未就绪。","url":"https://itinterview.com.cn/question/817"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Ingress 配置好了但外部访问 404 / 502，如何排查 Ingress 不生效？","item":"https://itinterview.com.cn/q/817.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Ingress 配置好了但外部访问 404 / 502，如何排查 Ingress 不生效？","item":"https://itinterview.com.cn/q/817"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -105,6 +105,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/817">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/155">Kubernetes中ConfigMap和Secret的使用？</a><span class="rel-n">238 次浏览</span></li><li><a href="https://itinterview.com.cn/q/154">Kubernetes Service类型有哪些？</a><span class="rel-n">205 次浏览</span></li><li><a href="https://itinterview.com.cn/q/156">Kubernetes滚动更新和回滚？</a><span class="rel-n">186 次浏览</span></li><li><a href="https://itinterview.com.cn/q/158">Kubernetes资源限制和HPA自动扩缩容？</a><span class="rel-n">153 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

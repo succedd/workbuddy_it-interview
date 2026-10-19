@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？ · IT面试题库">
   <meta property="og:description" content="三者作用层面不同，按“影响范围 + 是否改写历史”区分： 1. 仅撤销工作区（未 add）： git restore 或 git checkout -- ：丢弃工作区改动，恢复到最近一次提交/暂存状态。安全，不影响历史。 2. 撤销暂存区（已 add 未 commit）： git restore --staged…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/564.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/564">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="三者作用层面不同，按“影响范围 + 是否改写历史”区分： 1. 仅撤销工作区（未 add）： git restore 或 git checkout -- ：丢弃工作区改动，恢复到最近一次提交/暂存状态。安全，不影响历史。 2. 撤销暂存区（已 add 未 commit）： git restore --staged…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/564.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/564">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？","text":"工作区改错、暂存区加错、或已经提交但想撤销，分别该用什么命令？请区分 git reset、git revert、git checkout/restore 的作用范围与风险。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三者作用层面不同，按“影响范围 + 是否改写历史”区分： 1. 仅撤销工作区（未 add）： git restore 或 git checkout -- ：丢弃工作区改动，恢复到最近一次提交/暂存状态。安全，不影响历史。 2. 撤销暂存区（已 add 未 commit）： git restore --staged 或 git reset HEAD ：把文件移出暂存区，改动仍保留在工作区。 3. 撤销已提交： git reset：移动分支指针，可改写历史。 --soft：只回退提交，改动留在暂存区。 --mixed（默认）：回退提交，改动留在工作区。 --hard：彻底丢弃提交及改动（危险，数据可能丢失）。 适合回退自己本地、未推送的提交。 git revert ：生成一个新提交来“反向”抵消指定提交的效果，不改写已有历史，对协作安全。适合撤销已推送的公共提交。 结论：本地未推送想抹掉历史用 reset（谨慎 --hard）；已推送/公共分支用 revert。checkout/restore 只动工作区/暂存区，不碰提交历史。","url":"https://itinterview.com.cn/question/564"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？","item":"https://itinterview.com.cn/q/564.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？","item":"https://itinterview.com.cn/q/564"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -115,6 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/564">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/563">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/565">请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/566">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/567">git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

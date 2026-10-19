@@ -9,15 +9,15 @@
   <meta property="og:title" content="客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？ · IT面试题库">
   <meta property="og:description" content="要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/634.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/634">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/634.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/634">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？","text":"考察点：具备主机安全事件响应能力——从现象到根因到止血的闭环。","answerCount":1,"datePublished":"2026-09-06T02:24:12.447Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先止血隔离：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。 定位根因：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账户。 清除与恢复：杀进程、删定时任务/恶意文件、改全部口令；若已被加密且无解密密钥，从干净快照/备份恢复（切勿付赎金）；打补丁闭环。 加固交付：收敛安全组、禁用弱口令、开启主机安全与异地备份，给客户出具加固清单，防止复发。","url":"https://itinterview.com.cn/question/634"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？","item":"https://itinterview.com.cn/q/634.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？","item":"https://itinterview.com.cn/q/634"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/634">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/202">Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/231">你处理过最复杂的客户故障是什么？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/200">云服务器 CPU 使用率持续 100%，如何定位故障进程并制定处理方案</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/206">客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？ · IT面试题库">
   <meta property="og:description" content="转码：ffmpeg -i in.mp4 -c:v libx264 -c:a aac out.mp4（重编码视频/音频）。 截取：ffmpeg -i in.mp4 -ss 00:01:00 -t 10 -c copy clip.mp4（-ss 起点、-t 时长，-c copy 不重编码更快）。 抽帧：ffmpeg …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/684.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/684">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？ · IT面试题库">
   <meta name="twitter:description" content="转码：ffmpeg -i in.mp4 -c:v libx264 -c:a aac out.mp4（重编码视频/音频）。 截取：ffmpeg -i in.mp4 -ss 00:01:00 -t 10 -c copy clip.mp4（-ss 起点、-t 时长，-c copy 不重编码更快）。 抽帧：ffmpeg …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/684.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/684">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？","text":"给出四类高频 FFmpeg 操作的典型命令示例。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"转码：ffmpeg -i in.mp4 -c:v libx264 -c:a aac out.mp4（重编码视频/音频）。 截取：ffmpeg -i in.mp4 -ss 00:01:00 -t 10 -c copy clip.mp4（-ss 起点、-t 时长，-c copy 不重编码更快）。 抽帧：ffmpeg -i in.mp4 -r 1 -q:v 2 frame_%03d.jpg（每秒 1 帧导出图片）。 转封装：ffmpeg -i in.flv -c copy out.mp4（只改容器不改编码，极快）。掌握这些可覆盖绝大多数离线处理需求。","url":"https://itinterview.com.cn/question/684"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？","item":"https://itinterview.com.cn/q/684.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？","item":"https://itinterview.com.cn/q/684"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/684">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1453">FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1700">FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1701">MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1702">用 FFmpeg 转码后音画不同步（声音超前或滞后画面），你会按什么顺序排查？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

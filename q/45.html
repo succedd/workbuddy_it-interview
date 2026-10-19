@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 跳表（zset）的原理？ · IT面试题库">
   <meta property="og:description" content="跳表（Skip List） 是有序集合 ZSet 的底层之一（元素多时用跳表+字典）。它在有序链表上建多层索引：底层全量有序，往上每层随机跳过部分节点（概率 1/2），形成“高速公路”。 查询/插入/删除平均 O(log n)，最坏 O(n)，但实现简单、无旋转。 范围查询优秀：定位起点后沿底层链表顺序遍历。 为…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/45.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/45">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 跳表（zset）的原理？ · IT面试题库">
   <meta name="twitter:description" content="跳表（Skip List） 是有序集合 ZSet 的底层之一（元素多时用跳表+字典）。它在有序链表上建多层索引：底层全量有序，往上每层随机跳过部分节点（概率 1/2），形成“高速公路”。 查询/插入/删除平均 O(log n)，最坏 O(n)，但实现简单、无旋转。 范围查询优秀：定位起点后沿底层链表顺序遍历。 为…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/45.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/45">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 跳表（zset）的原理？","text":"说明跳表结构、查询复杂度与为何不用平衡树。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"跳表（Skip List） 是有序集合 ZSet 的底层之一（元素多时用跳表+字典）。它在有序链表上建多层索引：底层全量有序，往上每层随机跳过部分节点（概率 1/2），形成“高速公路”。 查询/插入/删除平均 O(log n)，最坏 O(n)，但实现简单、无旋转。 范围查询优秀：定位起点后沿底层链表顺序遍历。 为何不用平衡树：跳表范围遍历更自然、实现与调试更简单、并发下锁粒度更细；内存略高但可接受。ZSet 同时用 dict 存 member→score 以 O(1) 查分。","url":"https://itinterview.com.cn/question/45"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 跳表（zset）的原理？","item":"https://itinterview.com.cn/q/45.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 跳表（zset）的原理？","item":"https://itinterview.com.cn/q/45"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/45">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

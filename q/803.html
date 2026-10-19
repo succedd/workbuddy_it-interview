@@ -9,15 +9,15 @@
   <meta property="og:title" content="Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？ · IT面试题库">
   <meta property="og:description" content="MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/803.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/803">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？ · IT面试题库">
   <meta name="twitter:description" content="MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/803.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/803">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？","text":"解释 MTV 各部分职责、一次请求的处理链路，以及 Django ORM 的利弊。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"MTV 分工：Model（数据模型与 ORM）、Template（页面模板）、View（业务逻辑处理请求并返回响应）；URLconf 负责路由分发。 请求流程：请求→URLconf 匹配→调用对应 View→View 操作 Model 取数→渲染 Template/返回 JSON。 ORM 优点：用 Python 类操作数据库，避免手写 SQL、跨库可移植、自带防注入。 ORM 缺点：复杂查询效率低、易产生 N+1 查询；深度优化需写原生 SQL 或用 select_related/prefetch_related 缓解。","url":"https://itinterview.com.cn/question/803"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"Django","item":"https://itinterview.com.cn/category?cat=87"},{"@type":"ListItem","position":5,"name":"Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？","item":"https://itinterview.com.cn/q/803.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"Django","item":"https://itinterview.com.cn/category?cat=87"},{"@type":"ListItem","position":5,"name":"Django 的 MTV 架构与请求处理流程是怎样的？ORM 有什么优缺点？","item":"https://itinterview.com.cn/q/803"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/803">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1017">Django ORM 中 select_related 和 prefetch_related 有什么区别？线上出现 N+1 查询怎么定位和修？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1018">Django 的中间件（Middleware）执行顺序如何？信号（Signal）适合放什么逻辑？为什么说信号容易被滥用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1019">Django 生产部署时数据库连接该怎么管理？CONN_MAX_AGE 和连接池分别解决什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

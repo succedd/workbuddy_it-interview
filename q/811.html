@@ -9,15 +9,15 @@
   <meta property="og:title" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
   <meta property="og:description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/811.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/811">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
   <meta name="twitter:description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/811.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/811">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？","text":"对比 Koa 与 Express 的中间件执行模型差异。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Koa 用 compose 把中间件递归嵌套；没有内置路由/body 解析，更精简，需自行引入 koa-router 等。","url":"https://itinterview.com.cn/question/811"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Koa","item":"https://itinterview.com.cn/category?cat=92"},{"@type":"ListItem","position":5,"name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？","item":"https://itinterview.com.cn/q/811.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Koa","item":"https://itinterview.com.cn/category?cat=92"},{"@type":"ListItem","position":5,"name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？","item":"https://itinterview.com.cn/q/811"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/811">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1029">Koa 的 ctx 是怎么实现的？delegates 做了什么？为什么它比 Express 的 req/res 更好用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1030">如何用 Koa 的洋葱模型实现统一的响应包装与全局异常捕获？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1031">Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

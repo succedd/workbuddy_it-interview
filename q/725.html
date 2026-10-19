@@ -9,15 +9,15 @@
   <meta property="og:title" content="Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？ · IT面试题库">
   <meta property="og:description" content="一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/725.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/725">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？ · IT面试题库">
   <meta name="twitter:description" content="一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/725.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/725">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","text":"解释 Cassandra 可调一致性与 AP 取向。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP 中优先可用与分区容忍），副本间异步修复（read repair/hinted handoff），短暂不一致会收敛。适合写入极高、可容忍短暂不一致的场景。","url":"https://itinterview.com.cn/question/725"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Cassandra","item":"https://itinterview.com.cn/category?cat=36"},{"@type":"ListItem","position":5,"name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","item":"https://itinterview.com.cn/q/725.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Cassandra","item":"https://itinterview.com.cn/category?cat=36"},{"@type":"ListItem","position":5,"name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","item":"https://itinterview.com.cn/q/725"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/725">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1435">Cassandra 的读写一致性如何调节？为什么说 W + R &gt; N 就能保证强一致？这个说法的漏洞在哪里？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

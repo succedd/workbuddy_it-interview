@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是虚拟 DOM？它一定比直接操作 DOM 快吗？ · IT面试题库">
   <meta property="og:description" content="虚拟 DOM：用 JS 对象描述 UI 结构，状态变化时生成新 vdom，与旧 vdom diff 出最小变更再批量更新真实 DOM。 diff 流程：同层比较、key 复用、类型不同整体替换。 误区：vdom 不是为了“比原生 DOM 操作更快”，而是为了跨平台、可预测、开发友好。极端细粒度高频更新下，手动精准…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/30.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/30">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是虚拟 DOM？它一定比直接操作 DOM 快吗？ · IT面试题库">
   <meta name="twitter:description" content="虚拟 DOM：用 JS 对象描述 UI 结构，状态变化时生成新 vdom，与旧 vdom diff 出最小变更再批量更新真实 DOM。 diff 流程：同层比较、key 复用、类型不同整体替换。 误区：vdom 不是为了“比原生 DOM 操作更快”，而是为了跨平台、可预测、开发友好。极端细粒度高频更新下，手动精准…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/30.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/30">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是虚拟 DOM？它一定比直接操作 DOM 快吗？","text":"解释 vdom 的初衷、diff 流程，并澄清性能认知误区。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"虚拟 DOM：用 JS 对象描述 UI 结构，状态变化时生成新 vdom，与旧 vdom diff 出最小变更再批量更新真实 DOM。 diff 流程：同层比较、key 复用、类型不同整体替换。 误区：vdom 不是为了“比原生 DOM 操作更快”，而是为了跨平台、可预测、开发友好。极端细粒度高频更新下，手动精准操作 DOM 可能更快；vdom 的价值在于避免开发者手写低效的重排重绘与复杂 diff。现代框架（Vue3/Facebook）还配合编译期优化（静态提升）进一步减少运行时开销。","url":"https://itinterview.com.cn/question/30"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"什么是虚拟 DOM？它一定比直接操作 DOM 快吗？","item":"https://itinterview.com.cn/q/30.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"什么是虚拟 DOM？它一定比直接操作 DOM 快吗？","item":"https://itinterview.com.cn/q/30"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/30">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/126">Vue中响应式数据的原理？</a><span class="rel-n">457 次浏览</span></li><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
