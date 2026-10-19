@@ -3535,10 +3535,43 @@
 
     /* 分享弹窗：生成题目卡片预览，支持「分享/保存图片」与「复制链接」 */
     async function openShareDialog(q) {
-      /* 优先分享 /q/<id>.html：含 per-question og:title/description/image，微信会渲染成带缩略图的链接卡片 */
-      const url = location.origin + "/q/" + q.id + ".html";
+      /* 分享前先确认线上题号（2026-10-19）：
+         编辑端本地可能有「同标题但 id 不同」的旧题/重复题，直接拿 q.id 会生成
+         q/1815 这类线上不存在的链接，卡片标题与打开的页面自然对不上。
+         优先查 manifest：当前 id 存在就用它；不存在则按归一化标题匹配线上同名题；
+         manifest 不可用时退回本地「同标题、已发布、id 更小」的候选。 */
+      let shareId = Number(q.id);
+      let publicKnown = null;
+      try {
+        const idx = await Cloud.fetchManifestIndex({ timeout: 4000 });
+        if (idx) {
+          if (idx[shareId]) publicKnown = true;
+          else {
+            const key = normTitleKey(q.title);
+            const hit = Object.values(idx).find(x => normTitleKey(x.title) === key);
+            if (hit) { shareId = Number(hit.id); publicKnown = true; }
+            else publicKnown = false;
+          }
+        }
+      } catch (e) {}
+      if (publicKnown == null) {
+        const key = normTitleKey(q.title);
+        const dup = (Services.questions || [])
+          .filter(x => Number(x.id) !== Number(q.id) && x.status === "published" && normTitleKey(x.title) === key)
+          .sort((a, b) => a.id - b.id)[0];
+        if (dup) shareId = Number(dup.id);
+      }
+      /* 卡片用「线上对应题」的内容，保证图片里的标题/答案与打开的页面一致 */
+      const cardQ = (shareId !== Number(q.id) ? (Services.questions.find(x => Number(x.id) === shareId) || q) : q);
+      const url = location.origin + "/q/" + shareId;
       const m = U.modal({ title: "分享这道题", closable: true });
+      const linkNote = shareId !== Number(q.id)
+        ? `<div class="note" style="font-size:12px;margin-top:6px;text-align:center">已匹配线上第 <b>#${shareId}</b> 题，分享链接按线上题号生成</div>`
+        : (publicKnown === false
+          ? `<div class="note" style="font-size:12px;margin-top:6px;text-align:center;color:#b45309">⚠️ 当前线上题库找不到这道题，分享页可能打不开；请先在管理端发布/同步</div>`
+          : "");
       m.body.innerHTML = `<div id="sc-preview" class="muted" style="text-align:center;padding:30px 0">正在生成卡片…</div>
+        ${linkNote}
         <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑推荐「复制图片」后到微信聊天框 Ctrl+V 粘贴发送</div>`;
       const btnShare = document.createElement("button");
       btnShare.className = "btn btn-primary"; btnShare.textContent = "分享图片"; btnShare.disabled = true;
@@ -3581,7 +3614,7 @@
       };
       let file = null;
       try {
-        const { canvas } = await window.ShareCard.render(q, url);
+        const { canvas } = await window.ShareCard.render(cardQ, url);
         const box = m.body.querySelector("#sc-preview");
         box.innerHTML = "";
         const img = document.createElement("img");
@@ -3589,7 +3622,7 @@
         img.alt = "题目分享卡片预览";
         img.style.cssText = "width:100%;max-width:300px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.18)";
         box.appendChild(img);
-        file = await window.ShareCard.toFile(canvas, "IT面试题库-" + (q.title || "题目").slice(0, 20) + ".png");
+        file = await window.ShareCard.toFile(canvas, "IT面试题库-" + (cardQ.title || "题目").slice(0, 20) + ".png");
         if (isWxMobile) {
           /* 微信环境：点击预览图放大为全屏图（长按即可发送给朋友/保存到相册） */
           const hint = document.createElement("div");
@@ -3628,7 +3661,7 @@
       };
       btnShare.onclick = async () => {
         if (!file) return;
-        const payload = { files: [file], title: q.title + " · IT面试题库", text: q.title };
+        const payload = { files: [file], title: cardQ.title + " · IT面试题库", text: cardQ.title };
         if (navigator.canShare && navigator.canShare(payload)) {
           try { await navigator.share(payload); return; }
           catch (e) {

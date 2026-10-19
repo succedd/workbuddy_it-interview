@@ -2630,6 +2630,23 @@ ${categories.map(c => `- ${c.name}(${c.count})`).join("\n")}
       return null;
     } catch (e) { return null; }
   };
+  /* 只拉 manifest 元数据（不拉分片/答案），用于分享前查「这个 id 在线上是否存在 / 同名题对应哪个 id」。
+     体积约 1MB 原文 / 123KB br，按需调用并缓存；失败返回 null，调用方走本地兜底。 */
+  C.fetchManifestIndex = async function (opt) {
+    if (C._manifestById && Object.keys(C._manifestById).length) return C._manifestById;
+    const o = opt || {};
+    try {
+      const r = await fetchT(MANIFEST_PATH + "?v=" + Date.now(), { cache: "no-store" }, o.timeout || 6000);
+      if (!r.ok) return null;
+      const m = await r.json();
+      if (!m || !Array.isArray(m.questions)) return null;
+      const idx = {};
+      for (const q of m.questions) idx[Number(q.id)] = q;
+      C._manifestById = idx;
+      return idx;
+    } catch (e) { return null; }
+  };
+
   /* 由快照对象构造指纹文本（发布侧复用，保证两端字段一致） */
   C.metaOf = function (data) {
     return JSON.stringify({
