@@ -669,6 +669,13 @@
     if (/^https?:\/\//i.test(v)) return "外部来源";
     return SRC_LABEL[v] || "其他来源";
   }
+  /* 外部来源显示真实域名（2026-10-19）：原先所有 URL 都显示「外部来源」，
+     读者无法判断出处、也点不进去。返回空串表示不是可解析的 URL。 */
+  function srcHost(s) {
+    const v = String(s == null ? "" : s).trim();
+    if (!/^https?:\/\//i.test(v)) return "";
+    try { return new URL(v).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
+  }
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
@@ -931,16 +938,32 @@
       </a>`;
     }).join("");
     const coreSystems = tree.filter(c => c.count).sort((a, b) => b.count - a.count).slice(0, 6);
-    const sampleQ = Services.questions.find(q => /缓存/.test(q.title || "") && (q.answer || q.body)) || best[0] || recent[0];
-    const sampleText = String((sampleQ && (sampleQ.answer || sampleQ.body)) || "")
-      .replace(/[#*`>]/g, "").replace(/\s+/g, " ").slice(0, 260);
+    const catTotal = (Services.categories || []).length;
+    const sampleExcerpt = (raw) => {
+      const lines = String(raw || "").replace(/\r\n/g, "\n").split("\n").map(x => x.trim())
+        .filter(x => x && !/^#{1,4}\s/.test(x) && !/^```/.test(x));
+      let md = "";
+      for (const line of lines) {
+        if (!md && line.length > 380) { md = line.slice(0, 380); break; }
+        if (md && (md + "\n" + line).length > 380) break;
+        md += (md ? "\n" : "") + line;
+      }
+      return { md: md, cut: lines.join("\n").length > md.length };
+    };
+    /* 首页示例优先取「已经有答案」的缓存题；首访是 metaOnly（答案为空）时先占位，
+       等 setMain 后再按需补一次分片，避免把标题当成答案渲染出来。 */
+    const sampleQ = Services.questions.find(q => (q.answer || "").trim() && /缓存/.test(q.title || ""))
+      || Services.questions.find(q => (q.answer || "").trim())
+      || Services.questions.find(q => /缓存/.test(q.title || "") && (q.answer || q.body))
+      || best[0] || recent[0];
+    const sampleEx = sampleExcerpt(sampleQ && sampleQ.answer);
     const sampleHtml = sampleQ ? `<article class="card home-sample">
       <div class="section-head" style="margin:0">
         <h2>答案质量示例</h2>
         <a class="more" href="/question/${sampleQ.id}">查看完整解析 →</a>
       </div>
       <h3>${U.esc(sampleQ.title)}</h3>
-      <div class="q-excerpt">${U.esc(sampleText)}${sampleText.length >= 260 ? "…" : ""}</div>
+      <div class="q-excerpt md" id="home-sample-body">${sampleEx.md ? U.md(sampleEx.md) + (sampleEx.cut ? '<p class="muted">…</p>' : "") : '<span class="muted">正在载入示例答案…</span>'}</div>
       <div class="q-meta">
         <span class="tag ${"diff-" + sampleQ.difficulty}">${U.esc(sampleQ.difficulty)}</span>
         <span class="tag">${U.esc(sampleQ.type)}</span>
@@ -1267,26 +1290,17 @@
       </section>
 
       <section class="stat-grid" style="margin-top:20px">
-        <a class="stat stat-ring" href="/panorama?view=cat" data-tooltip="点击查看技术分类树，支持展开/折叠浏览全部 ${tree.length} 个分类">
-          <svg class="ring-svg" viewBox="0 0 36 36">
-            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-blue" stroke-dasharray="${Math.min(tree.length,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          </svg>
-          <div class="num" data-roll="${tree.length}">0</div><div class="label">技术分类</div>
+        <a class="stat stat-tile" href="/panorama?view=cat" data-tooltip="点击查看技术分类树：${tree.length} 个技术域、${catTotal} 个分类">
+          <span class="stat-ico">${U.icon("grid")}</span>
+          <div class="stat-text"><div class="num" data-roll="${tree.length}">0</div><div class="label">技术域</div></div>
         </a>
-        <a class="stat stat-ring" href="/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
-          <svg class="ring-svg" viewBox="0 0 36 36">
-            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-green" stroke-dasharray="${Math.min(stats.total,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          </svg>
-          <div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div>
+        <a class="stat stat-tile" href="/panorama?view=all" data-tooltip="点击查看题库全景旭日图，按技术体系或岗位体系浏览全部 ${stats.total} 道题">
+          <span class="stat-ico">${U.icon("layers")}</span>
+          <div class="stat-text"><div class="num" data-roll="${stats.total}">0</div><div class="label">题目总数</div></div>
         </a>
-        <a class="stat stat-ring" href="/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
-          <svg class="ring-svg" viewBox="0 0 36 36">
-            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="ring-fg ring-fg-purple" stroke-dasharray="${Math.min(stats.positions,100)}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          </svg>
-          <div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div>
+        <a class="stat stat-tile" href="/panorama?view=pos" data-tooltip="点击查看岗位体系树，按时代阶段浏览全部 ${stats.positions} 个岗位">
+          <span class="stat-ico">${U.icon("briefcase")}</span>
+          <div class="stat-text"><div class="num" data-roll="${stats.positions}">0</div><div class="label">覆盖岗位</div></div>
         </a>
       </section>
 
@@ -1327,6 +1341,15 @@
     `, () => {
       if (App._wkInit) App._wkInit();
       if (window.DailyQuote) window.DailyQuote.mount(document.getElementById("daily-quote-mount"));
+      const sampleBody = document.getElementById("home-sample-body");
+      if (sampleBody && sampleQ && !(sampleQ.answer || "").trim()) {
+        Cloud.ensureQuestionBody(sampleQ.id).then(full => {
+          const el = document.getElementById("home-sample-body");
+          if (!el || !full || !(full.answer || "").trim()) return;
+          const ex = sampleExcerpt(full.answer);
+          if (ex.md) el.innerHTML = U.md(ex.md) + (ex.cut ? '<p class="muted">…</p>' : "");
+        }).catch(() => {});
+      }
     });
     maybeOnboarding();
     $("#profile-btn").onclick = () => maybeOnboarding(true);
@@ -1431,7 +1454,13 @@
       qs = Search.sort(qs, "updated");
       return qs;
     };
-    const treeHtml = (nodes, isRoot) => nodes.map(c => {
+    const nodeMatches = (n, f) => {
+      if (!f) return true;
+      if (String(n.name || "").toLowerCase().indexOf(f) >= 0) return true;
+      const kids = n.children || childrenOfId(n.id) || [];
+      return kids.some(k => nodeMatches(k, f));
+    };
+    const treeHtml = (nodes, isRoot, filter) => nodes.filter(c => nodeMatches(c, filter)).map(c => {
       /* fix 20261001g：此前递归用 childrenOfId(c.id)（原始分类对象，无 count 字段），
          导致子分类计数全部渲染成 undefined；统一改用 categoryTree 节点自带的 children（含 count），
          并对渲染加 || 0 兜底。 */
@@ -1440,18 +1469,21 @@
          203 个不足 5 题，树被撑得又长又空）。它们的题目本就通过 descendantIds
          并入了当前分类的题目列表，隐藏节点只影响树的观感、不动任何数据。
          规则：① 有子级的节点（域级）始终保留；② 顶层一级域不隐藏；③ 被隐藏的
-         小分类在父节点展开处汇总一行提示。 */
+         小分类在父节点展开处汇总一行提示。搜索时例外：小分类也要能被搜到。 */
       const SMALL = 3;
-      const kidsKept = isRoot ? kidsAll : kidsAll.filter(k => (k.children && k.children.length) || (k.count || 0) >= SMALL);
-      const kidsHidden = isRoot ? [] : kidsAll.filter(k => kidsKept.indexOf(k) < 0);
+      const kidsKept = kidsAll.filter(k => {
+        if (filter) return nodeMatches(k, filter);
+        return isRoot || (k.children && k.children.length) || (k.count || 0) >= SMALL;
+      });
+      const kidsHidden = (filter || isRoot) ? [] : kidsAll.filter(k => kidsKept.indexOf(k) < 0);
       const hiddenN = kidsHidden.length;
       const hiddenQ = kidsHidden.reduce((s, k) => s + (k.count || 0), 0);
-      const open = catId === c.id || (catId != null && Services.descendantIds(catId).indexOf(c.id) >= 0);
+      const open = filter ? true : (catId === c.id || (catId != null && Services.descendantIds(catId).indexOf(c.id) >= 0));
       const hasKids = (kidsKept.length || hiddenN) > 0;
       return `<div class="tree-node"><div class="tree-row ${open ? "open" : ""} ${catId === c.id ? "active" : ""}" data-id="${c.id}">
         ${hasKids ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
         <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count || 0}</span></div>
-        ${hasKids ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${kidsKept.length ? treeHtml(kidsKept) : ""}${hiddenN ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">🔒 另有 ${hiddenN} 个小分类（${hiddenQ} 题）未单列，题目已并入本分类列表</div>` : ""}</div>` : ""}</div>`;
+        ${hasKids ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${kidsKept.length ? treeHtml(kidsKept, false, filter) : ""}${hiddenN ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">🔒 另有 ${hiddenN} 个小分类（${hiddenQ} 题）未单列，题目已并入本分类列表</div>` : ""}</div>` : ""}</div>`;
     }).join("");
 
     let selected = catId != null ? Services.getCategory(catId) : null;
@@ -1602,7 +1634,9 @@
       <div class="layout cat-layout">
         <aside class="card tree-panel">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
-          <div id="page-tree">${treeHtml(tree, true)}</div>
+          <input id="cat-tree-search" type="search" placeholder="搜索分类，如 Redis、Kubernetes…" autocomplete="off" aria-label="搜索技术分类" />
+          <div class="muted" style="font-size:11px;margin:-4px 0 8px">只过滤左侧分类树，点分类查看题目</div>
+          <div id="page-tree">${treeHtml(tree, true, "")}</div>
         </aside>
         <div>
           <div class="section-head" style="margin-top:0"><h2>${selected ? U.esc(selected.name) : "全部题目"}</h2>
@@ -1632,13 +1666,30 @@
       </div>
     `, selected ? () => initCatMap() : null);
     renderList(qs);
-    $$("#page-tree .tree-row").forEach(row => {
-      row.onclick = (e) => {
-        const id = parseInt(row.dataset.id);
-        if (e.target.closest(".twist")) { row.classList.toggle("open"); const ch = row.parentElement.querySelector(".tree-children"); if (ch) ch.style.display = ch.style.display === "none" ? "block" : "none"; return; }
-        App.go("/category?cat=" + id);
-      };
-    });
+    const bindTreeRows = () => {
+      $$("#page-tree .tree-row").forEach(row => {
+        row.onclick = (e) => {
+          const id = parseInt(row.dataset.id);
+          if (e.target.closest(".twist")) { row.classList.toggle("open"); const ch = row.parentElement.querySelector(".tree-children"); if (ch) ch.style.display = ch.style.display === "none" ? "block" : "none"; return; }
+          App.go("/category?cat=" + id);
+        };
+      });
+    };
+    bindTreeRows();
+    const catTreeSearch = $("#cat-tree-search");
+    if (catTreeSearch) {
+      let treeTimer = null;
+      catTreeSearch.addEventListener("input", () => {
+        clearTimeout(treeTimer);
+        treeTimer = setTimeout(() => {
+          const box = $("#page-tree");
+          if (!box) return;
+          const html = treeHtml(tree, true, catTreeSearch.value.trim().toLowerCase());
+          box.innerHTML = html || '<div class="muted" style="padding:12px 0;font-size:13px">没有匹配的分类，换个关键词试试</div>';
+          bindTreeRows();
+        }, 120);
+      });
+    }
     $$("#sort-seg button").forEach(b => b.onclick = () => {
       $$("#sort-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active");
       renderList(Search.sort(qs, b.dataset.s));
@@ -1831,10 +1882,10 @@
       <h1>岗位刷题计划</h1>
       <p class="secondary">把每个岗位的题目按技术分类拆成 4–8 周的计划，每天只需几道题就能跟上进度。
         在「刷题练习」里点「已掌握」会自动记入计划，也可以直接在下面打勾。</p>
-      <div class="grid grid-cols-3" style="margin:16px 0">
-        <div class="card"><div class="stat"><div class="num">${posN}</div><div class="label">可规划岗位</div></div></div>
-        <div class="card"><div class="stat ai"><div class="num">${startedN}</div><div class="label">已开始的计划</div></div></div>
-        <div class="card"><div class="stat"><div class="num">${rmPct(doneAll, totAll)}%</div><div class="label">总掌握度（${doneAll}/${totAll}）</div></div></div>
+      <div class="roadmap-summary">
+        <div class="rm-stat"><div class="num">${posN}</div><div class="label">可规划岗位</div></div>
+        <div class="rm-stat"><div class="num">${startedN}</div><div class="label">已开始</div></div>
+        <div class="rm-stat"><div class="num">${rmPct(doneAll, totAll)}%</div><div class="label">总掌握度</div><div class="rm-sub">${doneAll}/${totAll}</div></div>
       </div>
       ${body}
       <p class="muted" style="margin-top:24px">题量不足 ${RM_MIN_Q} 道的岗位暂不生成计划，可直接在
@@ -2463,6 +2514,8 @@
     const noteQuote = (myNote && myNote.text)
       ? `<div class="note-quote"><span class="nq-tag">✍️ 我的批注</span>${U.esc(myNote.text)}</div>`
       : "";
+    const sourceUrl = /^https?:\/\//i.test(String(q.source || "").trim()) ? String(q.source).trim() : "";
+    const sourceHost = srcHost(q.source);
     /* 翻页行（2026-09-24 评审 P1-9）：原先只有页面最底部一组，刷题时最高频的「下一题」
        要滚过四张相关推荐卡才够得着。现在同一结构出现两次 —— 答案区下方（主链路）+ 页面最底。
        只有第一组带 id：键盘 ←/→ 与移动端滑动手势仍按 getElementById("prev-btn") 找它；
@@ -2483,11 +2536,15 @@
           ${q.years ? `<span class="tag tag-outline">${U.esc(q.years)}</span>` : ""}
           ${posTags}${techTags}
         </div>
-        <div class="muted" style="font-size:12px">更新：${U.fmtDate(q.updatedAt)}${(q.views || 0) > 0 ? ` · 浏览 ${q.views}` : ""}${(q.favorites || 0) > 0 ? ` · 收藏 ${q.favorites}` : ""}${srcLabel(q.source) ? ` · 来源 ${U.esc(srcLabel(q.source))}` : ""}${(q.aiScore || 0) > 0 ? ` · 质量分 ${q.aiScore}` : ""}</div>
         <div class="answer-trust">
-          <span>${q.reviewedAt ? `已人工复核 · ${U.fmtDate(q.reviewedAt)}` : `来源：${U.esc(srcLabel(q.source) || "未标注")}`}</span>
           <span>更新：${U.fmtDate(q.updatedAt)}</span>
-          <span>发现错误可在下方「报错」提交</span>
+          ${(q.views || 0) > 0 ? `<span>浏览 ${q.views}</span>` : ""}
+          ${(q.favorites || 0) > 0 ? `<span>收藏 ${q.favorites}</span>` : ""}
+          ${sourceUrl
+            ? `<span>来源：<a href="${U.esc(sourceUrl)}" target="_blank" rel="noopener nofollow">${U.esc(sourceHost || srcLabel(q.source))} ↗</a></span>`
+            : (srcLabel(q.source) ? `<span>来源：${U.esc(srcLabel(q.source))}</span>` : "")}
+          ${(q.aiScore || 0) > 0 ? `<span>质量分 ${q.aiScore}</span>` : ""}
+          ${q.reviewedAt ? `<span>已人工复核 · ${U.fmtDate(q.reviewedAt)}</span>` : ""}
         </div>
       </div>
       <div class="qd-body md">${U.md(q.body)}</div>
@@ -2498,9 +2555,12 @@
           <button class="btn" id="weak-btn" title="加入错题重练，按记忆曲线安排复习">${U.icon("alert")} 不太会</button>
           <button class="btn" id="share-btn" title="分享这道题（手机调起分享面板，电脑复制链接）">${U.icon("link")} 分享</button>
           <button class="btn" id="hit-btn" title="这家公司/面试里真的问到了这道题？点一下帮后来的兄弟主攻高频"></button>
-          <button class="btn" id="variant-btn" title="AI 生成同考点变式题，检验你是否真正掌握（不是背答案）">${U.icon("sparkles")} AI 变式</button>
-          <button class="btn" id="grade-btn" title="写下你的回答，AI 面试官按评分表打分并给改进版">✍️ AI 改卷</button>
-          <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
+          <button class="btn" id="q-more-btn" type="button" aria-expanded="false">更多</button>
+          <div class="q-actions-more" id="q-actions-more">
+            <button class="btn" id="variant-btn" title="AI 生成同考点变式题，检验你是否真正掌握（不是背答案）">${U.icon("sparkles")} AI 变式</button>
+            <button class="btn" id="grade-btn" title="写下你的回答，AI 面试官按评分表打分并给改进版">✍️ AI 改卷</button>
+            <button class="btn" id="report-btn" title="发现题目内容有误？点此提交纠错反馈">⚠ 报错</button>
+          </div>
           ${weakInfo ? `<span class="tag tag-warning" id="weak-status" title="该题在错题重练中，按记忆曲线第 ${weakInfo.box + 1}/8 阶段循环">📅 复习中 · ${weakInfo.dueAt <= Date.now() ? "待复习" : Services.EBBS_LABEL[weakInfo.box] + " 后"}</span>` : ""}
           ${Auth.isAdmin() ? `<a class="btn btn-sm" href="/admin/question/${q.id}">${U.icon("edit")} 编辑</a>
             <button class="btn btn-sm" id="del-btn">${U.icon("trash")} 删除</button>
@@ -2527,6 +2587,12 @@
       ${pagerHtml(false)}
     `, () => { U.highlightAll(main); });
     $("#show-answer").onclick = () => { const b = $("#answer-box"); b.style.display = b.style.display === "none" ? "block" : "none"; U.highlightAll(b); };
+    const moreBtn = $("#q-more-btn"), moreBox = $("#q-actions-more");
+    if (moreBtn && moreBox) moreBtn.onclick = () => {
+      const open = moreBox.classList.toggle("open");
+      moreBtn.textContent = open ? "收起" : "更多";
+      moreBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    };
     /* 我的批注：纯本地保存（IndexedDB），保存后同步回显到答案顶部 */
     try {
       const noteEl = $("#note-input");
@@ -3566,7 +3632,7 @@
       <div class="page-form-main">
       <div class="card">
         <label class="field"><span>目标岗位</span>
-          <input id="m-pos-input" class="full" list="${datalistId}" placeholder="输入岗位名或关键词搜索…" autocomplete="off">
+          <input id="m-pos-input" class="full" type="text" list="${datalistId}" placeholder="输入岗位名或关键词搜索…" autocomplete="off">
           <datalist id="${datalistId}">${allPos.map(p => `<option value="${U.esc(p.name)}" data-id="${p.id}">${U.esc(Services.posFullName(p))}</option>`).join("")}</datalist>
           <input type="hidden" id="m-pos" value="">
           <div id="m-pos-hint" class="muted" style="font-size:12px;margin-top:4px"></div>
@@ -5816,6 +5882,7 @@
   /* 关于本站/站长/联系信息；题数、分类数、岗位数、最近更新时间均从 Services 实时读取，
      每天 10:00 自动扩充流水线跑完后这些数字会自动更新，无需手动维护。 */
   function pageAbout() {
+    document.title = "关于本站 · IT面试题库";
     const qs = (Services.questions || []);
     const published = qs.filter(q => q.status === "published" || q.status == null);
     const qCount = published.length;

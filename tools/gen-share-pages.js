@@ -132,7 +132,7 @@ function breadcrumbLd(q, ctx) {
   (ctx.catPathOf(q.categoryId) || []).forEach(c => {
     trail.push({ name: c.name, url: `${SITE}/category?cat=${c.id}` });
   });
-  trail.push({ name: String(q.title || ""), url: `${SITE}/q/${q.id}.html` });
+  trail.push({ name: String(q.title || ""), url: `${SITE}/q/${q.id}` });
   const data = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -146,7 +146,7 @@ function breadcrumbLd(q, ctx) {
 function page(q, ctx) {
   const title = esc(`${q.title} · IT面试题库`);
   const desc = esc(excerpt(q));
-  const qUrl = `${SITE}/q/${q.id}.html`;
+  const qUrl = `${SITE}/q/${q.id}`;
   const appUrl = `${SITE}/question/${q.id}`;
   const bodyHtml = q.body ? mdToHtml(q.body) : "";
   const answerHtml = q.answer ? mdToHtml(q.answer) : "";
@@ -154,7 +154,7 @@ function page(q, ctx) {
      也给读完本题的用户「接着看什么」的路径 */
   const related = ((ctx && ctx.relatedOf) ? ctx.relatedOf(q) : []);
   const relatedHtml = related.length ? `<div class="card"><h2>同分类 · 高频题</h2><ul class="rel">${
-    related.map(x => `<li><a href="${SITE}/q/${x.id}.html">${esc(x.title)}</a><span class="rel-n">${(x.views || 0)} 次浏览</span></li>`).join("")
+    related.map(x => `<li><a href="${SITE}/q/${x.id}">${esc(x.title)}</a><span class="rel-n">${(x.views || 0) ? `${x.views} 次浏览` : "新题"}</span></li>`).join("")
   }</ul></div>` : "";
   /* 读完引导条：有分类的题连刷同类（含子分类），无分类的退回题目页 */
   const catId = parseInt(q.categoryId, 10);
@@ -259,6 +259,7 @@ function page(q, ctx) {
       <a class="cta" href="${appUrl}">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    ${relatedHtml}
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
@@ -274,7 +275,7 @@ function page(q, ctx) {
 
 function collectionPage(kind, id, name, intro, questions, canonical, appUrl) {
   const items = questions.slice(0, 60).map(q => `
-    <li><a href="${SITE}/q/${q.id}.html">${esc(q.title)}</a><span>${esc(q.difficulty || "")} · ${(q.views || 0)} 次浏览</span></li>`).join("");
+    <li><a href="${SITE}/q/${q.id}">${esc(q.title)}</a><span>${esc(q.difficulty || "")} · ${(q.views || 0) ? `${q.views} 次浏览` : "新题"}</span></li>`).join("");
   const jsonLdData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -285,7 +286,7 @@ function collectionPage(kind, id, name, intro, questions, canonical, appUrl) {
       "@type": "ItemList",
       numberOfItems: questions.length,
       itemListElement: questions.slice(0, 20).map((q, i) => ({
-        "@type": "ListItem", position: i + 1, url: `${SITE}/q/${q.id}.html`, name: String(q.title || "")
+        "@type": "ListItem", position: i + 1, url: `${SITE}/q/${q.id}`, name: String(q.title || "")
       }))
     }
   };
@@ -390,7 +391,7 @@ async function main() {
     if (qs.length < 3) continue;   // 避免 thin content；小分类由父分类页聚合
     categoriesWithPages.add(c.id);
     keepCatPages.add(`${c.id}.html`);
-    fs.writeFileSync(path.join(cOut, `${c.id}.html`), collectionPage("category", c.id, c.name, `${c.name}方向的 ${qs.length} 道 IT 面试题，覆盖高频考点、参考答案与错题复习。`, qs, `${SITE}/c/${c.id}.html`, `${SITE}/category?cat=${c.id}`), "utf8");
+    fs.writeFileSync(path.join(cOut, `${c.id}.html`), collectionPage("category", c.id, c.name, `${c.name}方向的 ${qs.length} 道 IT 面试题，覆盖高频考点、参考答案与错题复习。`, qs, `${SITE}/c/${c.id}`, `${SITE}/category?cat=${c.id}`), "utf8");
     cWritten++;
   }
   let pWritten = 0;
@@ -403,7 +404,7 @@ async function main() {
     if (!qs.length) continue;
     positionsWithQuestions.add(p.id);
     keepPosPages.add(`${p.id}.html`);
-    fs.writeFileSync(path.join(pOut, `${p.id}.html`), collectionPage("position", p.id, fullName, `${fullName}岗位的 ${qs.length} 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。`, qs, `${SITE}/p/${p.id}.html`, `${SITE}/position/${p.id}`), "utf8");
+    fs.writeFileSync(path.join(pOut, `${p.id}.html`), collectionPage("position", p.id, fullName, `${fullName}岗位的 ${qs.length} 道 IT 面试题，按岗位技术栈组织，支持限时小测与错题复习。`, qs, `${SITE}/p/${p.id}`, `${SITE}/position/${p.id}`), "utf8");
     pWritten++;
   }
   console.log(`已生成 ${cWritten} 个分类 SEO 页 / ${pWritten} 个岗位 SEO 页`);
@@ -425,9 +426,9 @@ async function main() {
     { loc: `${SITE}/questions`, priority: "0.8", freq: "daily" },
     { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
     { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
-    ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}.html`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
-    ,...(data.categories || []).filter(c => categoriesWithPages.has(c.id)).map(c => ({ loc: `${SITE}/c/${c.id}.html`, priority: "0.6", freq: "weekly" }))
-    ,...(data.positions || []).filter(p => p.id && positionsWithQuestions.has(p.id)).map(p => ({ loc: `${SITE}/p/${p.id}.html`, priority: "0.6", freq: "weekly" }))
+    ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
+    ,...(data.categories || []).filter(c => categoriesWithPages.has(c.id)).map(c => ({ loc: `${SITE}/c/${c.id}`, priority: "0.6", freq: "weekly" }))
+    ,...(data.positions || []).filter(p => p.id && positionsWithQuestions.has(p.id)).map(p => ({ loc: `${SITE}/p/${p.id}`, priority: "0.6", freq: "weekly" }))
   ];
   const NL = "\n";
   const xml = `<?xml version="1.0" encoding="UTF-8"?>${NL}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${NL}` +
