@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`8336107`（fix(分享): 分享前匹配线上题号，修复本地重复题卡片与链接不一致）｜缓存版本 `20261019b → 20261019c`｜更新时间：2026-10-19 16:55 (+08)**
+**本轮内容（用户反馈「分享的题目与实际的对不上」，WorkBuddy 会话执行）**
+
+- **现象**：用户分享卡标题是「HTTP 与 HTTPS 的区别？HTTPS 的握手过程？」，卡片网址却是 `itinterview.com.cn/q/1815.html`；线上 `q/1815` 404，而线上同名题是 id 62。根因是编辑端本地库里有「同标题、id 不同」的旧题/重复题（q1815），分享弹窗直接拿本地 `q.id` 生成链接，线上没有这个 id。
+- **修复**：新增 `Cloud.fetchManifestIndex()`（只拉 `data/manifest.json` 元数据并按 id 缓存，不拉分片/整包）；`openShareDialog` 分享前先查线上 manifest：当前 id 存在就用它；不存在则按 `normTitleKey` 匹配线上同名题，改用其 id/内容生成卡片和链接；manifest 不可用时退回本地「同标题、已发布、id 更小」候选；线上确实找不到时在弹窗里明确提示「先发布/同步」。分享链接同时从 `.html` 改为无后缀 `/q/<id>`。
+- **验证**：本地合成 q1815（复制 q62 的标题/答案）→ 分享弹窗显示「已匹配线上第 #62 题」、卡片页脚为 `.../q/62`、图片正常生成；测试后已删除合成题。线上 `q/62` 200。
+- **产物**：9 个文件（`index.html`、`sw.js`、`js/cloud.js`、`js/app.js`、`js/guide.js`、`js/bundle/bundle-app/extra/core`、`README.md`）；`q/c/p` 页面与 `data/*` 未动（仍 1713 题 / version 8）；缓存版本 `20261019c`，bundle 已重跑。
+- **核验**：Actions `Deploy to Cloudflare Pages` run 39226037004 **success**；线上首页含 `20261019c`、`sw.js` VERSION `20261019c`、`bundle-app` 含 `已匹配线上第` 与 `fetchManifestIndex`、`bundle-core` 含 `fetchManifestIndex`。用户侧需强刷/重开页面后重新分享；旧卡片的 `q/1815` 链接不会自动恢复（新卡片会走 q/62）。
+
 **最新 release commit：`3fa185e`（fix(页面): 报错改站内反馈弹窗 + 启动合并重复分类）｜缓存版本 `20261019a → 20261019b`｜更新时间：2026-10-19 16:35 (+08)**
 **本轮内容（用户反馈「报错点击没反应」「技术体系搜索 Redis 显示结果重复」，WorkBuddy 会话执行）**
 
