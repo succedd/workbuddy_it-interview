@@ -180,6 +180,7 @@
 | 2026-10-02 | 2026-10-02-b | Web 安全攻防追问链（信息安全域：OWASP Top10→XSS→CSRF→SQL注入→文件上传→综合安全层） | +7 |
 | 2026-10-02 | 2026-10-02-c | 大数据生态追问链（大数据与数据工程域：为何用大数据→HDFS→MapReduce→Hive分层→Spark vs Flink→实时数仓 Exactly-Once） | +7 |
 | 2026-10-05 | 2026-10-05-a | 优质补缺批次：18 个薄弱分类补 57 题（去重闸门拦下 1 题 Flutter 三棵树已有近似）——前端：Vue2×4/Angular×3/前端工程化×3/Webpack×3/Vite×3；移动端：Flutter×3/Android开发×4/iOS开发×4；安全：渗透测试×4/应急响应×3/密码学基础×4；AI 工程：PyTorch×4/LangChain×3/向量数据库×3；云原生：Helm×2/Terraform×2；数据：数仓建模理论×3；测试：接口测试×2。全部挂官方文档/OWASP Cheat Sheets 等权威来源，题库 1441→1498 题 | +57 |
+| 2026-10-19 | 20 | 5 | **事实错误（过时结论）**：#1631 要求「在每个包 `.eslintrc` 中覆盖特有规则」——已过时：ESLint 9 起扁平配置 `eslint.config.js` 为默认，2026-02 发布的 **ESLint 10 已彻底移除 `.eslintrc.*` 及 `ESLINT_USE_FLAT_CONFIG` 回退**，ESLint 9 亦于 2026-08-06 EOL，按此方案在 v10 下直接失效；**来源不支撑**：#1694 来源 attack.mitre.org 仅为 ATT&CK 战术/技术矩阵首页，完全不覆盖 NDR/EDR/SIEM/SOAR、MTTD/MTTR、告警分诊（**与上周 #1457 同源同病，连续第二周重复出现**）；#1648 来源 elasticsearch `search-analyzer` 页只讲索引期/查询期分析器与 edge_ngram 自动补全，不涉及召回-排序两段式架构、召回率与 NDCG；#1670 来源 agilealliance `user-story` 词条只讲「As a…I want…So that…」模板，不覆盖业务目标基线、边界异常与 Given/When/Then 验收标准；#1625 来源 ruby-lang.org/en/documentation 是文档索引页，无 block/Proc/lambda 内容。**答非所问 0 题。** 机器初筛 suspect=0，5 题全部人工复核抓出——初筛盲区仍是「结论时效性」与「来源是否匹配具体结论」。来源探测 15/20 可达（13×200、2×202 scrum.org bot 挑战），**无 404/410 真实死链**；4 题本机直连失败返回 000（#1670、#1672、#1659、#1657），#1660 返回 403（反爬），均非失效，待异地复核。笔误未计入：#1660「**蓝本**适合」应为「蓝图适合」。全库占位符来源 301 题（18.2%，与上周持平），本次 20 题占位符 0 题（连续第 3 周） |
 | 2026-10-05 | 2026-10-05-b | 人工智能LLM追问链（大模型域：Transformer取代RNN→预训练/SFT/提示学习→RAG召回质量→LoRA微调与灾难性遗忘→Attention实现→推理服务KV Cache/连续批处理→效果评测） | +7 |
 | 2026-10-05 | 2026-10-05-c | 软件测试自动化与性能链（测试域：白盒/黑盒与覆盖率→E2E登录用例设计→Selenium vs Playwright架构→性能根因定位→pytest参数化→测试金字塔与CI分层→性能测试类型） | +7 |
 | 2026-10-05 | 2026-10-05-d | 云原生可观测链（云原生域：GitOps与ArgoCD→ELK日志平台→链路追踪上下文传播与采样→可观测性三件套排障→K8s探活探针→混沌工程爆炸半径→Ansible配置管理） | +7 |
@@ -193,6 +194,8 @@
 | 2026-10-17 | 2026-10-17-b | 产品与项目管理：角色边界→需求评估→用研方法→数据归因→RICE框架→Scrum→OKR 追问链 | +7 |
 | 2026-10-17 | 2026-10-17-c | 信息安全：零信任架构→SDL安全左移→应急响应→威胁检测体系→等保2.0→密码学基础 追问链 | +7 |
 | 2026-10-17 | 2026-10-17-d | 音视频与流媒体域瘦叶子补充（人工批次，与当日自动扩充三链不撞车）：6 个分类各补 3 题——YUV 4:2:0 与色度抽样、H.264 编码流程（帧内/帧间预测/变换量化）、CBR 与 VBR 选型、FFmpeg 滤镜链、moov 与 faststart、音画同步排查、NACK·FEC·GCC 弱网对抗、SDP 协商与 codec 优先级、Simulcast 与 SVC、m3u8 与 EXT-X 标签、ABR 切档、LL-HLS/HTTP-FLV/WebRTC 低延迟对比、音频 3A、QoS/QoE 埋点、跨平台 SDK 分层、CDN 调度排查、连麦三路线、秒开与 GOP cache。来源 FFmpeg 官方文档·ITU-T H.264·RFC 8216/4585·W3C WebRTC-SVC·MDN·腾讯云文档，题库 1656→1674 题 | +18 |
+> ⚠️ 2026-10-19 抽检期间发现：`it-interview.is-a.dev` 的 is-a.dev 子域记录已被移除，站点返回 「Available Domain」页面，线上题库不可访问；本次抽检改用仓库内 data/published.json（git HEAD `ea4e381d`）。请人工确认并重新提交 CNAME 记录。
+
 
 ## 部署与自定义域名
 
