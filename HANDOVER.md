@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`9791143`（feat(题库扩充): 区块链与 Web3 + 嵌入式与物联网 13 个叶子分类 39 题）｜数据批次 `2026-10-19-a`（+39 题，1674→1713，version 6→7）｜更新时间：2026-10-19 13:55 (+08)**
+**本轮内容（用户「https://itinterview.com.cn，补充题目」，WorkBuddy 会话执行）**
+
+- **选域（数据驱动，不走轮转）**：按叶子分类题量排序，区块链与 Web3（6 叶、叶子合计 17 题）与嵌入式与物联网（7 叶、23 题）是全库最薄的两个域；本轮把两域全部 13 个叶子分类各补 3 题，共 39 题，分类内互挂 `relatedIds` 追问链。入库后 13 个分类题量全部 ≥5：区块链基础 6 / 以太坊 6 / Solidity 8 / Web3 开发 5 / DeFi 基础 5 / NFT 技术 5；嵌入式C 9 / 嵌入式Linux 7 / RTOS 7 / STM32 5 / MQTT 6 / 边缘计算 5 / IoT平台 5。
+- **质检**：`tools/enrich_questions.py` 严格字段校验 + 标题归一化/0.85 模糊去重 + 来源/答案结构闸门，**39 题全过、0 跳过**；`validate-question-data` 1713 题 / 276 分类 OK；`data-audit` 仅剩存量 10 题缺 body、70 个瘦分类（本批已把两域全部瘦分类消除）。来源：Bitcoin Developer Guide、ethereum.org、EIPs、Solidity/OpenZeppelin、Aave、cppreference、GNU ld/GCC、Buildroot、Linux kernel docs、FreeRTOS、ST RM/AN、OASIS MQTT、HiveMQ、EMQX、KubeEdge、k3s、AWS IoT、阿里云。
+- **产物**：新题 id `1715~1753`，max id 1753；新增 39 个 `q/` 页；6 个此前题量 <3 的 `c/` 页首次生成（245/247/248/260/261/262），9 个 `c/` 页 + 15 个 `p/` 页更新；`sitemap.xml` 的 q 条目 1713 = 题数；`data/manifest.json` 1713 / `data/shards` 7 片合计 1713 / `data/version.json` version=7 count=1713 三者自洽（published.json 3,153,702B，sha256 `49c09180…`）。
+- **发布通道（2026-10-19 实况）**：`github.com:443` 超时、`git fetch/push` 不可用；`api.github.com` / `codeload.github.com` / `raw.githubusercontent.com` 正常。改用 **Git Data API**：codeload 下载 release tarball 作基线 → 本地编辑 → diff 出 82 个变更 → 建 blob → 以线上 commit 为 `base_tree` 建 tree/commit → 更新 `refs/heads/release`（快进，父 `c0776ac`）。比 Contents API 适合批量文件，且不依赖 git 协议。**下轮沿用此通道，别在 github.com 上耗时间。**
+- **核验（全绿）**：Actions `Deploy to Cloudflare Pages` run 39206258034 对 `9791143` **success**；线上 `data/version.json` = version 7 / count 1713；线上 `data/published.json` 3,153,702B、sha256 与 release 完全一致；`q/1753` 标题正确、`c/262` 200、`p/125` 200；线上 `sitemap.xml` q 条目 1713 且含 q/1753；首页 200。**纯数据变更，缓存版本 `20261009g` 不动。**
+
 **最新 release commit：`9b819f4`（fix(SEO): 补齐 sitemap 与 c/p 集合页 + 修 version.json 指纹推送参数顺序）｜数据批次 `2026-10-17-d`（+18 题，1656→1674，version 5→6）｜更新时间：2026-10-17 18:55 (+08)**
 **本轮内容（用户「https://itinterview.com.cn/#/，补充题库」，WorkBuddy 会话执行）**
 
