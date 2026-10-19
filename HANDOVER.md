@@ -105,6 +105,14 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`3fa185e`（fix(页面): 报错改站内反馈弹窗 + 启动合并重复分类）｜缓存版本 `20261019a → 20261019b`｜更新时间：2026-10-19 16:35 (+08)**
+**本轮内容（用户反馈「报错点击没反应」「技术体系搜索 Redis 显示结果重复」，WorkBuddy 会话执行）**
+
+- **报错没反应**：原实现直接 `window.open` GitHub Issue 页，国内网络/弹窗拦截下用户看不到任何可见反馈。改为**站内反馈弹窗**：先填写问题描述，底部提供「复制反馈」「打开 GitHub 提交」「关闭」；复制走 `U.copyText`，GitHub 打不开也能把内容发给站长。桌面在操作行、手机在「更多」里都能打开。
+- **Redis 重复**：不是 published.json 里真有两条 Redis（数据只有 id 33 一条），而是旧本地库/种子与云端分类 id 不一致，IndexedDB 里留下了两条同路径分类（截图里 167/58/40 与 16/8/8）。新增 `DB.migrateMergeDuplicateCategories` 启动迁移：按「父链 + 名称」分组，保留被技能引用 / 题目更多 / id 更小的分支，把另一分支的 `questions.categoryId` 与 `positionSkills.categoryId` 改挂到保留项后删除，并重定向被合并父节点的 `parentId`；每次启动都跑（无重复时只读分类表即返回），幂等。合成 3 条重复分类的测试结果：`merged=3, dupLeft=0, qCat=33, skillCat=33`。
+- **产物**：仅 9 个文件（`index.html`、`sw.js`、`js/db.js`、`js/app.js`、`js/guide.js`、`js/bundle/bundle-app/extra/core`、`README.md`）；`q/c/p` 页面与 `data/*` 未动（仍 1713 题 / version 8）；缓存版本 `20261019b`，bundle 已重跑。
+- **核验**：Actions `Deploy to Cloudflare Pages` run 39223541593 **success**；线上首页含 `20261019b`、`sw.js` VERSION `20261019b`、`bundle-core` 含 `migrateMergeDuplicateCategories`、`bundle-app` 含 `report-text`。用户侧需强刷/重开页面让新 JS 生效，迁移会在启动时自动清掉旧重复分类。
+
 **最新 release commit：`276b142`（feat(页面): 12 项页面体检修复 + q/c/p 全量重生成；代码/集合页 `b20ede5`，q 页 `8455d73`/`276b142`）｜缓存版本 `20261009g → 20261019a`｜更新时间：2026-10-19 15:45 (+08)**
 **本轮内容（用户在看到页面体检清单后回复「全做」，WorkBuddy 会话执行）**
 
