@@ -105,6 +105,17 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`3e47d97`（feat(反馈): 站内报错反馈 + 管理端处理队列）｜缓存版本 `20261019d → 20261019e`｜Worker Version `dac28789-90de-4345-80b6-32ec3cf50748`｜更新时间：2026-10-19 21:10 (+08)**
+**本轮内容（用户反馈「报错提交 GitHub 体验不好」，选择站内反馈方案 A，WorkBuddy 会话执行）**
+
+- **背景**：GitHub Issues 对国内用户门槛高（要账号、经常打不开、跳走、没有站内处理状态）。用户确认做站内反馈，不跳 GitHub。
+- **Worker（已部署）**：`cloudflare/worker.js` 新增 `POST /report`（匿名可提交；`questionId/title/detail/contact/pageUrl`；detail 5~2000 字；蜜罐字段；IP 哈希后按 5 条/天限流）、`GET /admin/reports?status=open|fixed|rejected|all`（admin）、`POST /admin/reports/:id/status`（admin，可写 note）。`ensureReportTables` 建 `reports` 表（id/question_id/question_title/detail/contact/page_url/status/ip_hash/user_id/admin_note/created_at/updated_at + 状态/IP/题号索引），建表自愈。已用 `wrangler deploy --config cloudflare/wrangler.toml` 部署，Version ID `dac28789…`。
+- **前端**：题目详情「报错」弹窗改为站内提交（问题描述 + 可选联系方式 + 隐藏蜜罐），成功替换为「已收到反馈，编号 #N」；接口失败保留「复制反馈」兜底、不丢内容。管理端新增 `#/admin/reports`（待处理/已修复/已驳回/全部，标记状态、写备注、点题号直达题目），侧栏「站点 → 报错反馈」带待处理角标；`Submit.refreshReportsBadge` 登录后自动拉取。用户指南同步补「题目报错」「报错反馈」两条。
+- **验证**：Worker 路由用内存 D1 mock 单测通过（创建/短文本拒绝/蜜罐/无 token 403/admin 列表/状态更新/5 条限流）；线上经 Netlify 桥实测 `POST /report` → 200 `{ok,id}`、无 token `/admin/reports` → 403、临时 admin 会话列表/改状态 → 200；测试 report 与临时 session 已从 D1 删除，`reports` 当前 0 条。
+- **产物**：10 个文件（`cloudflare/worker.js`、`cloudflare/schema.sql`、`js/app.js`、`js/submit.js`、`js/guide.js`、`js/bundle/bundle-app/extra`、`index.html`、`sw.js`、`README.md`）；`q/c/p` 与 `data/*` 未改（仍 1713 题）。发布时远端已有用户 21:02 的题库发布/备份提交（`25aeeab`），本轮以它为父提交快进，未覆盖用户新数据。
+- **核验**：Actions `Deploy to Cloudflare Pages` run 39257465299 **success**；线上首页含 `20261019e`、`sw.js` VERSION `20261019e`、bundle-app 含「提交反馈/report-contact」、bundle-extra 含 `renderReports/报错反馈`。
+- **安全提醒**：Cloudflare Token 曾在对话中传递，部署后应 Revoke/Roll；Token 未写入仓库，仅用于本轮 `wrangler` 命令，默认 2026-10-19 23:59 到期。
+
 **最新 release commit：`0511412`（fix(技术体系): 搜索时计数改为匹配题数 + 父分类直属题提示）｜缓存版本 `20261019c → 20261019d`｜更新时间：2026-10-19 18:05 (+08)**
 **本轮内容（用户反馈「技术体系搜 Redis，父分类 66 与子分类 48 对不上」）**
 
