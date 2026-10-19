@@ -1454,13 +1454,23 @@
       qs = Search.sort(qs, "updated");
       return qs;
     };
+    const selfMatches = (n, f) => !f || String(n.name || "").toLowerCase().indexOf(f) >= 0;
     const nodeMatches = (n, f) => {
       if (!f) return true;
-      if (String(n.name || "").toLowerCase().indexOf(f) >= 0) return true;
+      if (selfMatches(n, f)) return true;
       const kids = n.children || childrenOfId(n.id) || [];
       return kids.some(k => nodeMatches(k, f));
     };
-    const treeHtml = (nodes, isRoot, filter) => nodes.filter(c => nodeMatches(c, filter)).map(c => {
+    /* 搜索时数字显示「匹配题数」而不是分类总题数：
+       否则父节点 66、唯一匹配的子节点 48，看起来像算错了（66 里还有未显示的
+       MongoDB / HBase / Cassandra / 直属题）。清空搜索后恢复分类总题数。 */
+    const matchedCount = (n, f) => {
+      if (!f) return n.count || 0;
+      if (selfMatches(n, f)) return n.count || 0;
+      const kids = n.children || childrenOfId(n.id) || [];
+      return kids.reduce((sum, k) => sum + matchedCount(k, f), 0);
+    };
+    const treeHtml = (nodes, isRoot, filter, showAll) => nodes.filter(c => showAll || nodeMatches(c, filter)).map(c => {
       /* fix 20261001g：此前递归用 childrenOfId(c.id)（原始分类对象，无 count 字段），
          导致子分类计数全部渲染成 undefined；统一改用 categoryTree 节点自带的 children（含 count），
          并对渲染加 || 0 兜底。 */
@@ -1469,10 +1479,13 @@
          203 个不足 5 题，树被撑得又长又空）。它们的题目本就通过 descendantIds
          并入了当前分类的题目列表，隐藏节点只影响树的观感、不动任何数据。
          规则：① 有子级的节点（域级）始终保留；② 顶层一级域不隐藏；③ 被隐藏的
-         小分类在父节点展开处汇总一行提示。搜索时例外：小分类也要能被搜到。 */
+         小分类在父节点展开处汇总一行提示。搜索时例外：小分类也要能被搜到；
+         父节点自身名命中时，整棵子树都展示，保证计数能对上。 */
       const SMALL = 3;
+      const selfMatch = !!filter && selfMatches(c, filter);
+      const showAllHere = !!showAll || selfMatch;
       const kidsKept = kidsAll.filter(k => {
-        if (filter) return nodeMatches(k, filter);
+        if (filter) return showAllHere || nodeMatches(k, filter);
         return isRoot || (k.children && k.children.length) || (k.count || 0) >= SMALL;
       });
       const kidsHidden = (filter || isRoot) ? [] : kidsAll.filter(k => kidsKept.indexOf(k) < 0);
@@ -1480,10 +1493,16 @@
       const hiddenQ = kidsHidden.reduce((s, k) => s + (k.count || 0), 0);
       const open = filter ? true : (catId === c.id || (catId != null && Services.descendantIds(catId).indexOf(c.id) >= 0));
       const hasKids = (kidsKept.length || hiddenN) > 0;
+      const shownCount = (!filter || showAllHere) ? (c.count || 0) : kidsKept.reduce((sum, k) => sum + matchedCount(k, filter), 0);
+      /* 分类自身的直属题（不在任何子分类里）：父分类名命中时把差额补一行，
+         否则「父 66 / 子加起来 62」会让人以为算错。 */
+      const directQ = Math.max(0, (c.count || 0) - kidsAll.reduce((sum, k) => sum + (k.count || 0), 0));
+      const directHint = ((showAllHere || !filter) && hasKids && directQ > 0)
+        ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">本分类直属 ${directQ} 题（不在子分类中）</div>` : "";
       return `<div class="tree-node"><div class="tree-row ${open ? "open" : ""} ${catId === c.id ? "active" : ""}" data-id="${c.id}">
         ${hasKids ? `<span class="twist">${U.icon("chevronRight")}</span>` : `<span class="twist" style="visibility:hidden">${U.icon("chevronRight")}</span>`}
-        <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${c.count || 0}</span></div>
-        ${hasKids ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${kidsKept.length ? treeHtml(kidsKept, false, filter) : ""}${hiddenN ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">🔒 另有 ${hiddenN} 个小分类（${hiddenQ} 题）未单列，题目已并入本分类列表</div>` : ""}</div>` : ""}</div>`;
+        <span>${U.esc(c.icon || "📁")} ${U.esc(c.name)}</span><span class="tree-count">${shownCount}</span></div>
+        ${hasKids ? `<div class="tree-children" ${open ? "" : 'style="display:none"'}>${kidsKept.length ? treeHtml(kidsKept, false, filter, showAllHere) : ""}${hiddenN ? `<div class="muted" style="font-size:12px;padding:3px 0 3px 26px">🔒 另有 ${hiddenN} 个小分类（${hiddenQ} 题）未单列，题目已并入本分类列表</div>` : ""}${directHint}</div>` : ""}</div>`;
     }).join("");
 
     let selected = catId != null ? Services.getCategory(catId) : null;
@@ -1635,8 +1654,8 @@
         <aside class="card tree-panel">
           <div class="nav-section-title" style="padding-left:0">分类树（按技术演进）</div>
           <input id="cat-tree-search" type="search" placeholder="搜索分类，如 Redis、Kubernetes…" autocomplete="off" aria-label="搜索技术分类" />
-          <div class="muted" style="font-size:11px;margin:-4px 0 8px">只过滤左侧分类树，点分类查看题目</div>
-          <div id="page-tree">${treeHtml(tree, true, "")}</div>
+          <div class="muted" style="font-size:11px;margin:-4px 0 8px">只过滤左侧分类树，点分类查看题目；搜索时数字为匹配题数</div>
+          <div id="page-tree">${treeHtml(tree, true, "", false)}</div>
         </aside>
         <div>
           <div class="section-head" style="margin-top:0"><h2>${selected ? U.esc(selected.name) : "全部题目"}</h2>
@@ -1684,7 +1703,7 @@
         treeTimer = setTimeout(() => {
           const box = $("#page-tree");
           if (!box) return;
-          const html = treeHtml(tree, true, catTreeSearch.value.trim().toLowerCase());
+          const html = treeHtml(tree, true, catTreeSearch.value.trim().toLowerCase(), false);
           box.innerHTML = html || '<div class="muted" style="padding:12px 0;font-size:13px">没有匹配的分类，换个关键词试试</div>';
           bindTreeRows();
         }, 120);
