@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`bc7e1b9`（fix(data): 题库版本指纹对齐 version 9 + 编辑端版本单调递增 + 构建时同步分片）｜缓存版本 `20261019e → 20261019f`｜数据 version `9`｜更新时间：2026-10-19 21:30 (+08)**
+**本轮内容（用户确认「可以」修复 version.json / manifest / shards 三套版本指纹漂移）**
+
+- **根因**：① 编辑端 `js/cloud.js` 的 `exportAll` 把 `version` 硬编码成 `1`，每次「发布题库」都会把线上 `version.json` 打回 1；② 编辑端一次 GitHub Contents API 只能推一个文件，只推 `published.json` + `version.json`，7 个分片和 `manifest.json` 不会跟着走 —— 于是线上出现 `version.json=1`、`manifest/shards=8` 的漂移。
+- **修复**：① `exportAll` 改为读云端指纹 `C.fetchMeta()` 与本机 `lastPublishVersion`，取最大值 +1，不再重置；② `tools/build-pages.mjs` 每次构建先跑 `python3 tools/split-published.py --write`，编辑端发布后线上 `dist` 里的 manifest/shards/version 立即与 `published.json` 同版本；③ 仓库侧另备 `.github/workflows/sync-shards.yml`（`data/published.json` 变更后自动 split 并提交 derived 文件），但当前 git token **缺少 `workflow` scope**，GitHub 拒绝推 `.github/workflows/*`（tree API 403），故该文件留本地未提交；构建时同步已覆盖线上。
+- **当前数据**：`data/published.json` / `manifest.json` / `version.json` / 7 个 shards 全部 **version=9**、`publishedAt=1792414949499`、**1713 题**；与用户 21:02 发布的题库逐题比对 **0 处差异**（只改了 version，内容未动）。下次编辑端发布将取 9+1=10。
+- **产物**：16 个文件（`js/cloud.js`、`js/bundle/bundle-core.js`、`tools/build-pages.mjs`、`data/published/manifest/version + 7 shards`、`index.html`、`sw.js`、`README.md`）。**未覆盖**远端已有的 `q/c/p`、`docs/quality-report.md`、`data/local-backup.json`（编辑端 21:02 那批提交更新过这些）；q/c/p 由 Pages 构建时从 published 重新生成。
+- **验证**：本地 `node tools/build-pages.mjs` 通过（1713 q / 214 c / 129 p / sitemap 2062）；线上 `data/version.json`=9、`manifest`=9、`shard s00`=9、`index` 含 `20261019f`；Actions `Deploy to Cloudflare Pages` run 39259250079 **success**。
+- **注意**：线上仍存在旧版遗留的 `q/1754~1774` 页面（当前 published 里没有这些题、sitemap 也不含），不影响使用；如需清理可另开一轮 404/noindex。sitemap 当前 2062 条 = 1713 q + 214 c + 129 p + 6 静态页。
+
 **最新 release commit：`3e47d97`（feat(反馈): 站内报错反馈 + 管理端处理队列）｜缓存版本 `20261019d → 20261019e`｜Worker Version `dac28789-90de-4345-80b6-32ec3cf50748`｜更新时间：2026-10-19 21:10 (+08)**
 **本轮内容（用户反馈「报错提交 GitHub 体验不好」，选择站内反馈方案 A，WorkBuddy 会话执行）**
 
