@@ -2689,12 +2689,34 @@
         U.toast("已标记「考到过」，感谢反馈 🙏", "success");
       };
     }
-    /* 纠错反馈：跳转 GitHub Issue（预填题号与标题），题目库的信任命门 */
+    /* 纠错反馈（2026-10-19）：原先直接 window.open GitHub Issue，
+       国内网络/弹窗拦截下用户会感觉「点了没反应」。改为先弹站内表单，
+       可复制反馈内容，再按需打开 GitHub；至少有明确的可见反馈。 */
     $("#report-btn").onclick = () => {
-      const u = "https://github.com/succedd/workbuddy_it-interview/issues/new?title=" + encodeURIComponent("[纠错] 题目 #" + q.id + " " + (q.title || ""))
-        + "&body=" + encodeURIComponent("题目链接：" + location.origin + "/question/" + q.id + nl + nl + "问题描述（哪里有误 / 建议）：");
-      window.open(u, "_blank");
-      U.toast("已打开纠错表单，描述问题后提交即可", "info");
+      const m = U.modal({ title: "报错 / 纠错" });
+      m.body.innerHTML = `<p class="muted" style="margin:0 0 10px">题目：<b>#${q.id}</b> ${U.esc(q.title)}</p>
+        <label class="field"><span>问题描述</span><textarea id="report-text" placeholder="例如：答案里的 …… 写错了；正确应该是 ……" style="min-height:110px"></textarea></label>
+        <p class="muted" style="font-size:12px;margin:8px 0 0">「打开 GitHub 提交」会新开 Issue 页；如果 GitHub 打不开，点「复制反馈」把内容发给我即可。</p>`;
+      const ta = m.body.querySelector("#report-text");
+      setTimeout(() => { try { ta.focus(); } catch (e) {} }, 50);
+      const reportText = () => "题目：#" + q.id + " " + (q.title || "") + "\n链接：" + location.origin + "/question/" + q.id + "\n问题描述：\n" + ((ta.value || "").trim() || "（未填写）");
+      const copy = document.createElement("button");
+      copy.className = "btn"; copy.type = "button"; copy.textContent = "复制反馈";
+      copy.onclick = async () => {
+        const ok = await U.copyText(reportText());
+        U.toast(ok ? "反馈内容已复制，可直接发给我" : "复制失败，请手动选中复制", ok ? "success" : "warn");
+      };
+      const openGh = document.createElement("button");
+      openGh.className = "btn btn-primary"; openGh.type = "button"; openGh.textContent = "打开 GitHub 提交";
+      openGh.onclick = () => {
+        const u = "https://github.com/succedd/workbuddy_it-interview/issues/new?title=" + encodeURIComponent("[纠错] 题目 #" + q.id + " " + (q.title || ""))
+          + "&body=" + encodeURIComponent(reportText());
+        window.open(u, "_blank");
+        U.toast("已尝试打开 GitHub；若页面打不开，请用「复制反馈」", "info");
+      };
+      const close = document.createElement("button");
+      close.className = "btn"; close.type = "button"; close.textContent = "关闭"; close.onclick = () => m.close();
+      m.foot.appendChild(close); m.foot.appendChild(copy); m.foot.appendChild(openGh);
     };
 
     /* ================= AI 变式训练（20260927e） =================
@@ -5738,6 +5760,7 @@
       try { const n = await DB.migrateDedupPositions(); if (n > 0) console.log("已清理", n, "条重复岗位记录"); } catch (_) {}
       try { const n = await DB.migrateRemoveFakePositions(); if (n > 0) { console.log("已清理", n, "条伪岗位记录"); U.toast("已自动清理 " + n + " 条与分类同名的空岗位", "info"); } } catch (_) {}
       try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
+      try { const n = await DB.migrateMergeDuplicateCategories(); if (n > 0) { console.log("已合并", n, "个重复分类"); U.toast("已自动合并 " + n + " 个重复分类", "info"); } } catch (_) {}
       _pm("boot:migrate-done");
       Boot.set(55, "检查云端题库更新…");
       try {

@@ -886,6 +886,63 @@
     return removed;
   };
 
+  /* 迁移：合并同名同路径的重复分类（2026-10-19）
+     旧版本地库 / 种子与云端分类 id 不同，会在树里留下同名重复分支
+     （典型：两个「数据库与数据存储 → 非关系型数据库 → Redis」）。
+     按「父链 + 名称」分组，保留题目更多 / 被技能引用 / id 更小的一条，
+     把另一条的题目与技能改挂到保留项后删除；父节点被合并时同步重定向 parentId。
+     每次启动都跑（无重复时只读分类表就返回），幂等，不依赖云端。 */
+  DB.migrateMergeDuplicateCategories = async function () {
+    const cats = await db.categories.toArray();
+    if (cats.length < 2) return 0;
+    const byId = new Map(cats.map(c => [c.id, c]));
+    const pathKey = (c) => {
+      const parts = []; let x = c; let guard = 0;
+      while (x && guard++ < 20) { parts.unshift(String(x.name || "").trim()); x = byId.get(x.parentId); }
+      return parts.join("\u0000");
+    };
+    const groups = new Map();
+    for (const c of cats) {
+      const k = pathKey(c);
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push(c);
+    }
+    const dupGroups = [...groups.values()].filter(g => g.length > 1);
+    if (!dupGroups.length) return 0;
+    const dupIds = new Set(dupGroups.flat().map(c => c.id));
+    const qCnt = {}, sCnt = {};
+    const qs = await db.questions.where("categoryId").anyOf([...dupIds]).toArray();
+    for (const q of qs) qCnt[q.categoryId] = (qCnt[q.categoryId] || 0) + 1;
+    const ss = await db.positionSkills.where("categoryId").anyOf([...dupIds]).toArray();
+    for (const s of ss) sCnt[s.categoryId] = (sCnt[s.categoryId] || 0) + 1;
+    let merged = 0;
+    const drop2keep = new Map();
+    await db.transaction("rw", [db.categories, db.questions, db.positionSkills], async () => {
+      for (const group of dupGroups) {
+        const rank = c => [sCnt[c.id] ? 1 : 0, qCnt[c.id] || 0, -c.id];
+        const sorted = group.slice().sort((a, b) => {
+          const ra = rank(a), rb = rank(b);
+          for (let i = 0; i < ra.length; i++) if (ra[i] !== rb[i]) return rb[i] - ra[i];
+          return 0;
+        });
+        const keep = sorted[0];
+        for (let i = 1; i < sorted.length; i++) drop2keep.set(sorted[i].id, keep.id);
+      }
+      for (const [dropId, keepId] of drop2keep) {
+        await db.questions.where("categoryId").equals(dropId).modify({ categoryId: keepId });
+        await db.positionSkills.where("categoryId").equals(dropId).modify({ categoryId: keepId });
+        await db.categories.delete(dropId);
+        merged++;
+      }
+      const remain = await db.categories.toArray();
+      for (const c of remain) {
+        const nk = drop2keep.get(c.parentId);
+        if (nk != null) await db.categories.update(c.id, { parentId: nk });
+      }
+    });
+    return merged;
+  };
+
   /* 迁移：清理与分类同名的伪岗位（如把“腾讯云”误建成岗位）
      注意：此清理每次启动都会执行（不做一次性开关），确保任何时期误建的空岗位都能被及时清除。
      仅删除「名字与分类冲突 + 无题目 + 无技术栈」的岗位，已有关联内容的岗位不会被误删（仅在前端隐藏）。 */
