@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何设计一个“可靠开机自启 + 故障自愈”的 systemd 服务？请综合 Restart、资源限制、看门狗与依赖排序说明，并指出它与容器/K8s 编排的关系。 · IT面试题库">
   <meta property="og:description" content="崩溃自愈：Restart=on-failure + RestartSec=2s，进程非 0 退出后自动拉起；配合 StartLimitInterval/StartLimitBurst 防止重启风暴把机器打挂。 资源配额防雪崩：在 [Service] 用 MemoryMax=（或 MemoryLimit）、CPUQ…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1140.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1140">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一个“可靠开机自启 + 故障自愈”的 systemd 服务？请综合 Restart、资源限制、看门狗与依赖排序说明，并指出它与容器/K8s 编排的关系。 · IT面试题库">
   <meta name="twitter:description" content="崩溃自愈：Restart=on-failure + RestartSec=2s，进程非 0 退出后自动拉起；配合 StartLimitInterval/StartLimitBurst 防止重启风暴把机器打挂。 资源配额防雪崩：在 [Service] 用 MemoryMax=（或 MemoryLimit）、CPUQ…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1140.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1140">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一个“可靠开机自启 + 故障自愈”的 systemd 服务？请综合 Restart、资源限制、看门狗与依赖排序说明，并指出它与容器/K8s 编排的关系。","text":"请给出一个生产级服务单元的配置要点：崩溃自拉起、资源配额防雪崩、看门狗防假死、正确的依赖顺序，并对比容器编排的做法。","answerCount":1,"datePublished":"2026-09-14T02:47:29.684Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"崩溃自愈：Restart=on-failure + RestartSec=2s，进程非 0 退出后自动拉起；配合 StartLimitInterval/StartLimitBurst 防止重启风暴把机器打挂。 资源配额防雪崩：在 [Service] 用 MemoryMax=（或 MemoryLimit）、CPUQuota=200%（限 2 核）、TasksMax= 限制线程数，基于 cgroup 硬隔离，避免一个服务内存泄漏拖垮整机——这正是 systemd 深度集成 cgroup 的优势。 看门狗防假死：服务周期性调用 sd_notify 上报 WATCHDOG=1，单元配 WatchdogSec=30，若 30s 内没收到心跳，systemd 直接 SIGABRT 杀掉并按 Restart 重启，解决“进程在但已死锁”的假活。 依赖排序：After=network-online.target、Wants=network-online.target 确保网络真通后再起；Requires= 表示强依赖（对方起不来本服务也失败），After= 只排顺序不保证成功。 与容器/K8s 的关系：K8s 的 Pod 重启策略、resources.limits、livenessProbe 本质上就是 systemd 这套思想的“集群化再实现”；单机 systemd 适合常驻守护进程，K8s 适合无状态弹性服务，二者理念同源。","url":"https://itinterview.com.cn/question/1140"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"如何设计一个“可靠开机自启 + 故障自愈”的 systemd 服务？请综合 Restart、资源限制、看门狗与依赖排序说明，并指出它与容器/K8s 编排的关系。","item":"https://itinterview.com.cn/q/1140.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"如何设计一个“可靠开机自启 + 故障自愈”的 systemd 服务？请综合 Restart、资源限制、看门狗与依赖排序说明，并指出它与容器/K8s 编排的关系。","item":"https://itinterview.com.cn/q/1140"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1140">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/147">Linux进程管理相关命令？</a><span class="rel-n">361 次浏览</span></li><li><a href="https://itinterview.com.cn/q/146">Linux常用文件操作命令？</a><span class="rel-n">337 次浏览</span></li><li><a href="https://itinterview.com.cn/q/150">Linux系统性能和资源监控？</a><span class="rel-n">230 次浏览</span></li><li><a href="https://itinterview.com.cn/q/148">Linux网络相关命令？</a><span class="rel-n">35 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

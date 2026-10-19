@@ -9,15 +9,15 @@
   <meta property="og:title" content="H.264 编码器的内部流程大致是怎样的？帧内预测、帧间预测、变换量化各自负责什么？ · IT面试题库">
   <meta property="og:description" content="要点： 总体流程：图像划分成宏块 → 预测（帧内/帧间）→ 对残差做整数变换（类 DCT）与量化 → 熵编码（CAVLC/CABAC）输出码流；解码端按相反顺序重建画面。 帧内预测：利用同一帧内相邻已编码块的空间相关性，用周围像素预测当前块，I 帧完全依赖它；H.264 提供多种方向预测模式。 帧间预测：通过运动…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1698.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1698">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="H.264 编码器的内部流程大致是怎样的？帧内预测、帧间预测、变换量化各自负责什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 总体流程：图像划分成宏块 → 预测（帧内/帧间）→ 对残差做整数变换（类 DCT）与量化 → 熵编码（CAVLC/CABAC）输出码流；解码端按相反顺序重建画面。 帧内预测：利用同一帧内相邻已编码块的空间相关性，用周围像素预测当前块，I 帧完全依赖它；H.264 提供多种方向预测模式。 帧间预测：通过运动…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1698.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1698">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"H.264 编码器的内部流程大致是怎样的？帧内预测、帧间预测、变换量化各自负责什么？","text":"考察编码原理框架，要求按流程说明各模块作用及其与 I/P/B 帧的关系。","answerCount":1,"datePublished":"2026-10-17T10:38:12.744Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 总体流程：图像划分成宏块 → 预测（帧内/帧间）→ 对残差做整数变换（类 DCT）与量化 → 熵编码（CAVLC/CABAC）输出码流；解码端按相反顺序重建画面。 帧内预测：利用同一帧内相邻已编码块的空间相关性，用周围像素预测当前块，I 帧完全依赖它；H.264 提供多种方向预测模式。 帧间预测：通过运动估计在参考帧中找到匹配块，只编码运动矢量与残差；P 帧参考过去、B 帧双向参考，这是压缩率的主要来源。 变换与量化：变换把残差能量集中到少数系数，量化步长决定画质与码率（步长大则码率低但块效应明显）；熵编码再做最后一层无损压缩。","url":"https://itinterview.com.cn/question/1698"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频基础编解码","item":"https://itinterview.com.cn/category?cat=250"},{"@type":"ListItem","position":4,"name":"H.264 编码器的内部流程大致是怎样的？帧内预测、帧间预测、变换量化各自负责什么？","item":"https://itinterview.com.cn/q/1698.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频基础编解码","item":"https://itinterview.com.cn/category?cat=250"},{"@type":"ListItem","position":4,"name":"H.264 编码器的内部流程大致是怎样的？帧内预测、帧间预测、变换量化各自负责什么？","item":"https://itinterview.com.cn/q/1698"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1698">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/683">常见视频编码（H.264/H.265）与音频编码（AAC/OPUS）特点？I/P/B 帧是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1663">实时视频通话如何定位“画面卡顿但声音正常”的问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1697">为什么视频编码普遍采用 YUV（尤其是 4:2:0）而不是 RGB？4:2:0 相比 RGB 节省多少数据量？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1699">带货直播该用 CBR 还是 VBR 码率控制？画面突然复杂时两种模式各有什么表现？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

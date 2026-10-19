@@ -9,15 +9,15 @@
   <meta property="og:title" content="COS 有哪几种存储类型，各自适合什么业务场景？ · IT面试题库">
   <meta property="og:description" content="标准存储：高吞吐、低延迟、无最小存储时长，适合热点图片、视频、频繁访问的业务数据，成本最高。 低频存储：成本约为标准的 1/3，有 30 天最小存储时长和取回费用，适合月访问几次的备份、日志。 智能分层存储：系统按实际访问频率自动在标准/低频间沉降，避免手动配置，适合访问模式不稳定的数据。 归档 / 深度归档存储…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1108.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1108">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="COS 有哪几种存储类型，各自适合什么业务场景？ · IT面试题库">
   <meta name="twitter:description" content="标准存储：高吞吐、低延迟、无最小存储时长，适合热点图片、视频、频繁访问的业务数据，成本最高。 低频存储：成本约为标准的 1/3，有 30 天最小存储时长和取回费用，适合月访问几次的备份、日志。 智能分层存储：系统按实际访问频率自动在标准/低频间沉降，避免手动配置，适合访问模式不稳定的数据。 归档 / 深度归档存储…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1108.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1108">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"COS 有哪几种存储类型，各自适合什么业务场景？","text":"请说明标准存储、低频存储、智能分层存储、归档存储、深度归档存储五种类型的成本与访问特性，并说明选型原则。","answerCount":1,"datePublished":"2026-09-13T02:40:01.144Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"标准存储：高吞吐、低延迟、无最小存储时长，适合热点图片、视频、频繁访问的业务数据，成本最高。 低频存储：成本约为标准的 1/3，有 30 天最小存储时长和取回费用，适合月访问几次的备份、日志。 智能分层存储：系统按实际访问频率自动在标准/低频间沉降，避免手动配置，适合访问模式不稳定的数据。 归档 / 深度归档存储：成本极低（深度归档最低），但取回需数分钟到数小时且最小存储 90/180 天，仅适合合规留档、冷备份。 选型原则：用「访问频率 × 取回时效要求 × 存储时长」三维衡量，热数据用标准、温数据用低频/智能分层、合规冷数据用归档。","url":"https://itinterview.com.cn/question/1108"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"COS 有哪几种存储类型，各自适合什么业务场景？","item":"https://itinterview.com.cn/q/1108.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"COS 有哪几种存储类型，各自适合什么业务场景？","item":"https://itinterview.com.cn/q/1108"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1108">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/202">Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/231">你处理过最复杂的客户故障是什么？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/200">云服务器 CPU 使用率持续 100%，如何定位故障进程并制定处理方案</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/206">客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

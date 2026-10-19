@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？ · IT面试题库">
   <meta property="og:description" content="二进制安全：C 字符串以 \0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。 长度 O(1)：C 字符串求长需遍历到 \0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。 空间预分配与惰性释放：S…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1122.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1122">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？ · IT面试题库">
   <meta name="twitter:description" content="二进制安全：C 字符串以 \0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。 长度 O(1)：C 字符串求长需遍历到 \0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。 空间预分配与惰性释放：S…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1122.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1122">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？","text":"为什么 Redis 不用 C 的 char* 而自己实现 SDS（Simple Dynamic String）？请从二进制安全、长度获取、扩容等角度说明。","answerCount":1,"datePublished":"2026-09-13T02:40:23.784Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"二进制安全：C 字符串以 \\0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。 长度 O(1)：C 字符串求长需遍历到 \\0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。 空间预分配与惰性释放：SDS 扩容时按需多分配「空闲空间」减少再分配次数；缩短时不立即回收，记录 free 复用，降低内存操作开销。 兼容 C 函数：SDS 末尾仍保留 \\0，可复用部分 C 字符串函数；同时携带 alloc/flags 等元信息支持多种编码（embstr/raw）。","url":"https://itinterview.com.cn/question/1122"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？","item":"https://itinterview.com.cn/q/1122.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？","item":"https://itinterview.com.cn/q/1122"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1122">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

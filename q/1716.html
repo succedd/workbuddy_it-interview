@@ -9,15 +9,15 @@
   <meta property="og:title" content="软分叉、硬分叉与链重组（reorg）：交易所为什么要求多次确认？ · IT面试题库">
   <meta property="og:description" content="要点： 软分叉是收紧规则：新节点产生的区块旧节点仍能验证，通常向后兼容；硬分叉是放宽或改变规则：旧节点会拒绝新块，社区不统一时会分裂成两条链（如 ETH / ETC）。 链重组：节点发现权重更高的链时，会回退本地链头并重放交易；PoW 下算力波动可能造成 1~2 个块的回滚，PoS 则通过 checkpoint …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1716.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1716">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="软分叉、硬分叉与链重组（reorg）：交易所为什么要求多次确认？ · IT面试题库">
   <meta name="twitter:description" content="要点： 软分叉是收紧规则：新节点产生的区块旧节点仍能验证，通常向后兼容；硬分叉是放宽或改变规则：旧节点会拒绝新块，社区不统一时会分裂成两条链（如 ETH / ETC）。 链重组：节点发现权重更高的链时，会回退本地链头并重放交易；PoW 下算力波动可能造成 1~2 个块的回滚，PoS 则通过 checkpoint …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1716.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1716">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"软分叉、硬分叉与链重组（reorg）：交易所为什么要求多次确认？","text":"考察共识规则变更、区块回滚与最终性，以及充值确认数的工程含义。","answerCount":1,"datePublished":"2026-10-19T05:43:24.195Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 软分叉是收紧规则：新节点产生的区块旧节点仍能验证，通常向后兼容；硬分叉是放宽或改变规则：旧节点会拒绝新块，社区不统一时会分裂成两条链（如 ETH / ETC）。 链重组：节点发现权重更高的链时，会回退本地链头并重放交易；PoW 下算力波动可能造成 1~2 个块的回滚，PoS 则通过 checkpoint / finality 让区块最终确定。 确认数的意义：确认越多，回滚所需成本越高。交易所对大额充值提高确认数，同时监听 reorg、按 blockHash 记录入账并在回滚时冲正；不能只看「交易已打包」就认为最终确定。","url":"https://itinterview.com.cn/question/1716"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"区块链基础","item":"https://itinterview.com.cn/category?cat=257"},{"@type":"ListItem","position":4,"name":"软分叉、硬分叉与链重组（reorg）：交易所为什么要求多次确认？","item":"https://itinterview.com.cn/q/1716.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"区块链基础","item":"https://itinterview.com.cn/category?cat=257"},{"@type":"ListItem","position":4,"name":"软分叉、硬分叉与链重组（reorg）：交易所为什么要求多次确认？","item":"https://itinterview.com.cn/q/1716"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1716">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/758">区块链的基本结构（区块、哈希、默克尔树）与不可篡改原理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1588">区块链的基本结构是什么？为什么说它「不可篡改」？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1589">PoW（工作量证明）与 PoS（权益证明）的核心区别？各自有什么优缺点？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1715">UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

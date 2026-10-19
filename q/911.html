@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？ · IT面试题库">
   <meta property="og:description" content="跳表：多层有序链表，底层包含全部元素，上层是下层的&quot;快速通道&quot;索引；节点以随机概率（Redis 中每层晋升概率 1/4，最高 32 层）决定层高。查找/插入/删除均 O(logN)（从顶层往下逐层缩小范围），范围查询沿底层链表顺序走。 相比红黑树： 1. 实现简单得多——无旋转变色，插入删除只改前后指针； 2. …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/911.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/911">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？ · IT面试题库">
   <meta name="twitter:description" content="跳表：多层有序链表，底层包含全部元素，上层是下层的&quot;快速通道&quot;索引；节点以随机概率（Redis 中每层晋升概率 1/4，最高 32 层）决定层高。查找/插入/删除均 O(logN)（从顶层往下逐层缩小范围），范围查询沿底层链表顺序走。 相比红黑树： 1. 实现简单得多——无旋转变色，插入删除只改前后指针； 2. …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/911.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/911">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？","text":"请解释跳表的结构与复杂度，以及相比红黑树在 Redis 场景下的优势。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"跳表：多层有序链表，底层包含全部元素，上层是下层的\"快速通道\"索引；节点以随机概率（Redis 中每层晋升概率 1/4，最高 32 层）决定层高。查找/插入/删除均 O(logN)（从顶层往下逐层缩小范围），范围查询沿底层链表顺序走。 相比红黑树： 1. 实现简单得多——无旋转变色，插入删除只改前后指针； 2. 范围查询天然高效——定位起点后沿底层链表线性遍历（ZRANGEBYSCORE 的核心操作）；红黑树需要中序遍历回溯，更繁琐； 3. 并发与内存可控——通过概率参数权衡层数与内存。 相比 B+ 树：B+ 树为磁盘页设计（减少 IO），而 Redis 全内存、无 IO 压力；跳表实现更轻。 补充：ZSet 元素少时（≤128 且元素短）实际用 listpack 存储，跳表只在数据量上来后启用——\"小数据走压缩编码\"是 Redis 的通用设计。","url":"https://itinterview.com.cn/question/911"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？","item":"https://itinterview.com.cn/q/911.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？","item":"https://itinterview.com.cn/q/911"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/911">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

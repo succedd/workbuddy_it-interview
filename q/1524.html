@@ -9,15 +9,15 @@
   <meta property="og:title" content="LangChain 的核心抽象（Model / Chain / Agent / Memory）如何理解？ · IT面试题库">
   <meta property="og:description" content="Model I/O：统一封装 LLM/ChatModel 与 Prompt 模板（PromptTemplate/few-shot），屏蔽各家 API 差异，支持流式与结构化输出（output parser）。 Chain：把「Prompt → 模型 → 后处理 → 再进模型」这类固定流程编排成可复用管道（LCEL…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1524.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1524">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LangChain 的核心抽象（Model / Chain / Agent / Memory）如何理解？ · IT面试题库">
   <meta name="twitter:description" content="Model I/O：统一封装 LLM/ChatModel 与 Prompt 模板（PromptTemplate/few-shot），屏蔽各家 API 差异，支持流式与结构化输出（output parser）。 Chain：把「Prompt → 模型 → 后处理 → 再进模型」这类固定流程编排成可复用管道（LCEL…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1524.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1524">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LangChain 的核心抽象（Model / Chain / Agent / Memory）如何理解？","text":"说明四大组件的职责与协作关系。","answerCount":1,"datePublished":"2026-10-05T01:04:00.568Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Model I/O：统一封装 LLM/ChatModel 与 Prompt 模板（PromptTemplate/few-shot），屏蔽各家 API 差异，支持流式与结构化输出（output parser）。 Chain：把「Prompt → 模型 → 后处理 → 再进模型」这类固定流程编排成可复用管道（LCEL 的 | 语法），适合路径确定的任务，如摘要、翻译、RAG 检索问答；带重试/回退（with_retry、with_fallbacks）。 Agent：流程不由代码写死而由模型决定——LLM 根据问题选择工具（搜索、计算器、SQL 查询）、观察结果、循环决策直到给出答案（ReAct/函数调用驱动）。适合开放任务，代价是延迟、成本与不确定性更高。 Memory：给无状态的 LLM 补对话记忆——窗口记忆（保留最近 N 轮）、摘要记忆（历史压缩成摘要）、向量记忆（语义检索相关历史）。 协作：Memory 注入历史到 Prompt → Chain/Agent 调 Model → Agent 可调 Tools → 结果写回 Memory。选型：流程确定用 Chain（便宜可控），需要动态决策才用 Agent。","url":"https://itinterview.com.cn/question/1524"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LangChain","item":"https://itinterview.com.cn/category?cat=195"},{"@type":"ListItem","position":5,"name":"LangChain 的核心抽象（Model / Chain / Agent / Memory）如何理解？","item":"https://itinterview.com.cn/q/1524.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LangChain","item":"https://itinterview.com.cn/category?cat=195"},{"@type":"ListItem","position":5,"name":"LangChain 的核心抽象（Model / Chain / Agent / Memory）如何理解？","item":"https://itinterview.com.cn/q/1524"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1524">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/784">LangChain 中 Chain、Tool、Memory、Agent 各自扮演什么角色？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1525">LangChain Agent 的工具调用原理是什么？ReAct 模式是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1526">LangChain 应用落地生产环境有哪些常见痛点与对策？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="Java 内存模型（JMM）的三大特性是什么？volatile 与 synchronized 有什么区别？ · IT面试题库">
   <meta property="og:description" content="结论：JMM 围绕原子性、可见性、有序性三大特性；volatile 保证可见性和有序性但不保证原子性，synchronized 三者兼保但开销更大。 JMM 三大特性 原子性：一个操作不可分割、不可中断（如 synchronized、CAS、Atomic*）。 可见性：一个线程修改共享变量，其他线程能立即看到（如…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1355.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1355">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 内存模型（JMM）的三大特性是什么？volatile 与 synchronized 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="结论：JMM 围绕原子性、可见性、有序性三大特性；volatile 保证可见性和有序性但不保证原子性，synchronized 三者兼保但开销更大。 JMM 三大特性 原子性：一个操作不可分割、不可中断（如 synchronized、CAS、Atomic*）。 可见性：一个线程修改共享变量，其他线程能立即看到（如…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1355.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1355">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 内存模型（JMM）的三大特性是什么？volatile 与 synchronized 有什么区别？","text":"考察 JMM 的原子性、可见性、有序性，以及 volatile 与 synchronized 各自能解决的问题。","answerCount":1,"datePublished":"2026-09-26T05:19:38.777Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：JMM 围绕原子性、可见性、有序性三大特性；volatile 保证可见性和有序性但不保证原子性，synchronized 三者兼保但开销更大。 JMM 三大特性 原子性：一个操作不可分割、不可中断（如 synchronized、CAS、Atomic*）。 可见性：一个线程修改共享变量，其他线程能立即看到（如 volatile、synchronized、final）。 有序性：程序执行顺序符合预期，禁止可能影响结果的指令重排（volatile 内存屏障、synchronized 串行临界区）。 volatile 的能力与局限 通过写回主内存 + 读前从主内存刷新保证可见性；通过内存屏障禁止重排序保证有序性。 不保证原子性：如 i++（读-改-写）在多线程下用 volatile 修饰仍可能丢失更新，必须靠锁或 AtomicInteger。 volatile vs synchronized | 维度 | volatile | synchronized | | :--- | :--- | :--- | | 原子性 | 不保证 | 保证 | | 可见性 | 保证 | 保证 | | 有序性 | 禁止重排 | 临界区串行化 | | 阻塞 | 不阻塞 | 可能阻塞 | | 适用 | 状态标志、双重检查锁 | 复合操作、临界区 | 面试要点：volatile 适合“一写多读”的标志位场景，不能替代锁解决所有并发安全问题。","url":"https://itinterview.com.cn/question/1355"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 内存模型（JMM）的三大特性是什么？volatile 与 synchronized 有什么区别？","item":"https://itinterview.com.cn/q/1355.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 内存模型（JMM）的三大特性是什么？volatile 与 synchronized 有什么区别？","item":"https://itinterview.com.cn/q/1355"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -115,6 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1355">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

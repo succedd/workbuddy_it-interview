@@ -9,15 +9,15 @@
   <meta property="og:title" content="嵌入式 Linux 字符设备驱动：file_operations、ioctl 与 platform driver 如何协作？ · IT面试题库">
   <meta property="og:description" content="要点： 字符设备入口：实现 file_operations 的 open / read / write / ioctl / release，申请设备号（alloc_chrdev_region）、cdev_init / cdev_add 注册，用户态通过 /dev 节点访问。 platform driver：设备树…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1737.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1737">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="嵌入式 Linux 字符设备驱动：file_operations、ioctl 与 platform driver 如何协作？ · IT面试题库">
   <meta name="twitter:description" content="要点： 字符设备入口：实现 file_operations 的 open / read / write / ioctl / release，申请设备号（alloc_chrdev_region）、cdev_init / cdev_add 注册，用户态通过 /dev 节点访问。 platform driver：设备树…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1737.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1737">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 Linux 字符设备驱动：file_operations、ioctl 与 platform driver 如何协作？","text":"考察设备号、cdev、设备树匹配与用户态接口。","answerCount":1,"datePublished":"2026-10-19T05:43:25.553Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 字符设备入口：实现 file_operations 的 open / read / write / ioctl / release，申请设备号（alloc_chrdev_region）、cdev_init / cdev_add 注册，用户态通过 /dev 节点访问。 platform driver：设备树 compatible 匹配 platform_driver，在 probe 中申请资源（ioremap、IRQ、clock、regulator）、注册 cdev 与 sysfs 属性；remove 中按相反顺序释放。 安全与并发：用户态/内核态拷贝用 copy_to_user / copy_from_user；ioctl 命令用 _IOR / _IOW 编码并校验参数；共享数据用 mutex / spinlock，热插拔注意引用计数与释放顺序，避免 UAF。","url":"https://itinterview.com.cn/question/1737"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"嵌入式 Linux 字符设备驱动：file_operations、ioctl 与 platform driver 如何协作？","item":"https://itinterview.com.cn/q/1737.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"嵌入式 Linux 字符设备驱动：file_operations、ioctl 与 platform driver 如何协作？","item":"https://itinterview.com.cn/q/1737"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1737">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/697">嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1450">Linux 内核的设备树（Device Tree）是干什么的？没有它之前是什么局面？驱动和设备如何通过 compatible 匹配？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1597">嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1598">嵌入式 Linux 里进程间通信（IPC）有哪些方式？共享内存和消息队列各适合什么场景？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

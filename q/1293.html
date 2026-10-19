@@ -9,15 +9,15 @@
   <meta property="og:title" content="实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？ · IT面试题库">
   <meta property="og:description" content="结论：现代项目首选 flex 或 grid，一行搞定；需要脱离文档流或子元素尺寸未知时再用绝对定位 + transform。 1. Flex（首选） justify-content 控制主轴、align-items 控制交叉轴。MDN 特别提示：对齐之所以生效是因为还有剩余空间，若容器中存在 flex-grow …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1293.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1293">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？ · IT面试题库">
   <meta name="twitter:description" content="结论：现代项目首选 flex 或 grid，一行搞定；需要脱离文档流或子元素尺寸未知时再用绝对定位 + transform。 1. Flex（首选） justify-content 控制主轴、align-items 控制交叉轴。MDN 特别提示：对齐之所以生效是因为还有剩余空间，若容器中存在 flex-grow …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1293.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1293">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？","text":"考察点：对 flex / grid / 绝对定位 / transform 等居中手段的掌握程度与选型判断。","answerCount":1,"datePublished":"2026-09-26T02:32:29.433Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：现代项目首选 flex 或 grid，一行搞定；需要脱离文档流或子元素尺寸未知时再用绝对定位 + transform。 1. Flex（首选） justify-content 控制主轴、align-items 控制交叉轴。MDN 特别提示：对齐之所以生效是因为还有剩余空间，若容器中存在 flex-grow 不为 0 的子项、主轴已被占满，对齐就不会生效。 2. Grid（最省代码） place-items 是 align-items + justify-items 的简写。 3. 绝对定位 + transform（不需要知道宽高） left/top 是相对最近的非 static 祖先（包含块）的偏移，父级要设 position:relative；translate 的百分比相对自身尺寸，因此宽高未知也能居中。副作用是 transform 会创建新的层叠上下文。 4. 绝对定位 + margin:auto（需固定宽高） inset:0 把四个方向都设为 0，再由 margin:auto 平分剩余空间。 5. 行内块 + text-align/line-height：只适合单行文本，且要固定行高，已不推荐。 坑点：父容器 height:auto 时「垂直居中」没有意义；transform 会让内部 position:fixed 元素改以该元素为包含块；绝对定位元素会为其内容建立新的 BFC。 选型：新项目用 flex/grid；覆盖层尺寸未知用 transform 方案；避免 table-cell 之类的老 hack。","url":"https://itinterview.com.cn/question/1293"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？","item":"https://itinterview.com.cn/q/1293.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？","item":"https://itinterview.com.cn/q/1293"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1293">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/21">CSS 盒模型与 BFC 是什么？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/22">Flex 布局常用属性与两端对齐怎么写？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1294">两条规则同时命中一个元素，浏览器最终用哪一条？请说明 CSS 优先级的计算规则，以及 !important 在整个体系里的位置。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1295">CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

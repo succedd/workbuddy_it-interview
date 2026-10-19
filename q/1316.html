@@ -9,15 +9,15 @@
   <meta property="og:title" content="虚拟线程的调度原理是什么？什么是 Pinning 问题，如何排查与规避？ · IT面试题库">
   <meta property="og:description" content="虚拟线程仍然是 java.lang.Thread，但它由 JDK 自己调度，而不是操作系统。平台线程采用 1:1 线程模型，一个平台线程对应一个操作系统线程；虚拟线程则由 JDK 的专用调度器（一个 FIFO 模式的 ForkJoinPool）把大量虚拟线程映射到少量平台线程上执行，这些平台线程被称为载体线程（C…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1316.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1316">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="虚拟线程的调度原理是什么？什么是 Pinning 问题，如何排查与规避？ · IT面试题库">
   <meta name="twitter:description" content="虚拟线程仍然是 java.lang.Thread，但它由 JDK 自己调度，而不是操作系统。平台线程采用 1:1 线程模型，一个平台线程对应一个操作系统线程；虚拟线程则由 JDK 的专用调度器（一个 FIFO 模式的 ForkJoinPool）把大量虚拟线程映射到少量平台线程上执行，这些平台线程被称为载体线程（C…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1316.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1316">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"虚拟线程的调度原理是什么？什么是 Pinning 问题，如何排查与规避？","text":"虚拟线程的调度原理是什么？什么是 Pinning 问题，如何排查与规避？","answerCount":1,"datePublished":"2026-09-26T03:31:53.165Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"虚拟线程仍然是 java.lang.Thread，但它由 JDK 自己调度，而不是操作系统。平台线程采用 1:1 线程模型，一个平台线程对应一个操作系统线程；虚拟线程则由 JDK 的专用调度器（一个 FIFO 模式的 ForkJoinPool）把大量虚拟线程映射到少量平台线程上执行，这些平台线程被称为载体线程（Carrier Thread），操作系统完全不知道虚拟线程的存在。 调度过程：一个虚拟线程开始执行时，会被挂载（mount）到某个载体线程上；执行到阻塞 I/O、BlockingQueue.take()、Future.get() 等支持挂起的阻塞点时，虚拟线程把栈保存到堆并卸载（unmount），载体线程被释放出来继续执行其他虚拟线程；阻塞就绪后再重新挂载继续跑。挂载卸载对业务代码透明，你写的仍是普通同步风格代码。虚拟线程很便宜，通常应「每个任务一个虚拟线程」，无需池化复用；同时它是并发规模工具而非速度工具，不会让纯计算代码跑得更快。 什么是 Pinning？ 可以理解为「虚拟线程暂时无法从载体线程上卸载」。一旦被钉住，虚拟线程阻塞期间会连带占住底层操作系统线程，扩展性优势随之消失。在 JDK 21 到 JDK 23 中，最典型的场景是虚拟线程在 synchronized 代码块或方法里执行阻塞 I/O——监视器锁无法配合挂起机制；调用 native 方法或 Foreign Function & Memory API 相关代码时也存在同样风险。短小、纯内存操作的 synchronized 问题不大，真正危险的是高频路径上持锁执行慢 I/O，比如持有对象锁时查数据库、调远程接口。 排查手段： 1. JFR 事件 jdk.VirtualThreadPinned：记录被固定的虚拟线程与时长，适合长期监控； 2. 临时参数 -Djdk.tracePinnedThreads=full：被固定时打印调用栈，适合本地定位。 规避方式：避免在 synchronized 内执行慢 I/O，改用 ReentrantLock 或缩小临界区。注意 JDK 24 的 JEP 491 已让 synchronized 阻塞时也能释放载体线程，基本消除了这类 Pinning；但 native/FFM 场景仍需关注，升级 JDK 后选择锁方式可以回归语义与功能本身来判断。","url":"https://itinterview.com.cn/question/1316"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"虚拟线程的调度原理是什么？什么是 Pinning 问题，如何排查与规避？","item":"https://itinterview.com.cn/q/1316.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"虚拟线程的调度原理是什么？什么是 Pinning 问题，如何排查与规避？","item":"https://itinterview.com.cn/q/1316"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -104,6 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1316">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

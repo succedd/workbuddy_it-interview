@@ -9,15 +9,15 @@
   <meta property="og:title" content="PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？ · IT面试题库">
   <meta property="og:description" content="要点： 锁排查：通过系统视图 pg_locks 结合 pg_stat_activity 看谁持锁、谁等待；死锁 PG 会自动检测并回滚其中一个事务（报 deadlock detected），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 LOCK 粒度（表锁 / 行锁 / 意向锁）与 ACCESS EXCLU…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1614.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1614">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？ · IT面试题库">
   <meta name="twitter:description" content="要点： 锁排查：通过系统视图 pg_locks 结合 pg_stat_activity 看谁持锁、谁等待；死锁 PG 会自动检测并回滚其中一个事务（报 deadlock detected），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 LOCK 粒度（表锁 / 行锁 / 意向锁）与 ACCESS EXCLU…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1614.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1614">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？","text":"高级，考察并发与维护。","answerCount":1,"datePublished":"2026-10-10T11:54:14.379Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 锁排查：通过系统视图 pg_locks 结合 pg_stat_activity 看谁持锁、谁等待；死锁 PG 会自动检测并回滚其中一个事务（报 deadlock detected），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 LOCK 粒度（表锁 / 行锁 / 意向锁）与 ACCESS EXCLUSIVE（DDL / TRUNCATE）会阻塞读写。 表膨胀（bloat）：MVCC 产生死元组，若 AUTOVACUUM 跟不上（长事务、高频更新、默认阈值保守）会堆积，导致表 / 索引变大、顺序扫描变慢。治理：VACUUM（回收空间标记复用）/ VACUUM FULL（真正收缩，但锁表），调 autovacuum_vacuum_scale_factor 等，定期监控 pgstattuple。 长事务危害：长事务持有旧快照，使所有被它之后更新行的旧版本都无法被 VACUUM 回收 → 放大膨胀；还可能长期持锁、阻塞 vacuum、撑大 pg_xact。治理：避免大事务、设 idle_in_transaction_session_timeout、监控 pg_stat_activity 中长时间 idle in transaction。","url":"https://itinterview.com.cn/question/1614"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？","item":"https://itinterview.com.cn/q/1614.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？","item":"https://itinterview.com.cn/q/1614"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1614">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/453">线上 PostgreSQL 磁盘占用只增不减，日志出现 &quot;database must be vacuumed within N transactions&quot; 警告，根因是什么？如何排查与处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/454">PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1609">PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1610">PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

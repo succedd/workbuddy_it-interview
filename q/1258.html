@@ -9,15 +9,15 @@
   <meta property="og:title" content="场景题：电商下单后 30 分钟未支付要自动关单，发货后 7 天要自动确认收货。用 RocketMQ 的延时消息怎么设计？有哪些坑？ · IT面试题库">
   <meta property="og:description" content="方案：用定时/延时消息替代数据库轮询 RocketMQ 的定时消息与延时消息本质相同：服务端在指定时刻才把消息投递给消费者。订单创建成功后发送一条延时消息，消费者收到后检查订单状态，未支付则关单。 相比「定时扫库」方案：数据库扫描在分布式场景下实现复杂、需要频繁调用接口扫描、性能容易成为瓶颈；RocketMQ 延…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1258.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1258">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：电商下单后 30 分钟未支付要自动关单，发货后 7 天要自动确认收货。用 RocketMQ 的延时消息怎么设计？有哪些坑？ · IT面试题库">
   <meta name="twitter:description" content="方案：用定时/延时消息替代数据库轮询 RocketMQ 的定时消息与延时消息本质相同：服务端在指定时刻才把消息投递给消费者。订单创建成功后发送一条延时消息，消费者收到后检查订单状态，未支付则关单。 相比「定时扫库」方案：数据库扫描在分布式场景下实现复杂、需要频繁调用接口扫描、性能容易成为瓶颈；RocketMQ 延…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1258.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1258">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：电商下单后 30 分钟未支付要自动关单，发货后 7 天要自动确认收货。用 RocketMQ 的延时消息怎么设计？有哪些坑？","text":"考察点：延时消息的使用方式、版本差异与业务状态校验的必要性。","answerCount":1,"datePublished":"2026-09-26T02:31:20.664Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"方案：用定时/延时消息替代数据库轮询 RocketMQ 的定时消息与延时消息本质相同：服务端在指定时刻才把消息投递给消费者。订单创建成功后发送一条延时消息，消费者收到后检查订单状态，未支付则关单。 相比「定时扫库」方案：数据库扫描在分布式场景下实现复杂、需要频繁调用接口扫描、性能容易成为瓶颈；RocketMQ 延时消息具备高并发与水平扩展能力，精度更灵活、开发门槛更低。 4.x 与 5.x 的写法差异 4.x：只支持延时消息，且只有固定的 18 个延时等级（1s、5s、10s、30s、1m、2m、3m、4m、5m、6m、7m、8m、9m、10m、20m、30m、1h、2h），可通过配置增加自定义等级。 5.x：支持用毫秒级 Unix 时间戳直接指定投递时间，更灵活。但注意三点：定时时间必须是当前时间之后的系统时间戳（设成过去的时间会立即投递）；定时时长默认上限 24 小时且不可自定义修改；默认定时粒度是 1000ms，实际投递还受服务端负载与存储恢复影响，不能理解成严格毫秒级准时触发。 因此 7 天确认收货不能直接用延时消息 最长 24 小时的限制意味着超过一天的延迟必须换方案：把到期时间落库或放 Redis，用调度系统/时间轮扫描到点后再投递一条普通消息触发业务。 必须注意的坑 1. 消费端必须校验业务状态：延时消息只保证「到点投递」，不保证「此时业务还需要执行」。订单可能已支付、已取消，消费者必须查库判断当前状态再决定是否关单。 2. 避免同一时刻集中触发：若把大批延时消息的定时时间设成同一时刻，到点后大量消息同时投递会造成系统压力过大、分发延迟，进一步影响定时精度，应打散到期时间。 3. 消息类型一致性：定时消息只能用在 MessageType 为 Delay 的主题内。 4. 生命周期要监控：初始化 → 定时中（单独存储在定时存储系统，对下游不可见）→ 待消费（到点后重新写入普通存储引擎）→ 消费中 → 消费提交 → 按滚动机制删除。「定时中」不占普通消费链路，但这条链路本身也需要监控与容灾。","url":"https://itinterview.com.cn/question/1258"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RocketMQ","item":"https://itinterview.com.cn/category?cat=129"},{"@type":"ListItem","position":5,"name":"场景题：电商下单后 30 分钟未支付要自动关单，发货后 7 天要自动确认收货。用 RocketMQ 的延时消息怎么设计？有哪些坑？","item":"https://itinterview.com.cn/q/1258.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RocketMQ","item":"https://itinterview.com.cn/category?cat=129"},{"@type":"ListItem","position":5,"name":"场景题：电商下单后 30 分钟未支付要自动关单，发货后 7 天要自动确认收货。用 RocketMQ 的延时消息怎么设计？有哪些坑？","item":"https://itinterview.com.cn/q/1258"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -113,6 +113,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1258">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1257">RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/447">RocketMQ 的事务消息是如何保证本地事务与消息发送一致的？什么是半事务消息和消息回查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1255">RocketMQ 的 NameServer、Broker、Producer、Consumer 各自负责什么？NameServer 节点之间互不通信，为什么还能提供路由服务？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1256">RocketMQ 的 CommitLog、ConsumeQueue、IndexFile 分别存储什么？为什么采用所有队列共用一个 CommitLog 的混合存储结构？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

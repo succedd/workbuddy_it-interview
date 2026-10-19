@@ -9,15 +9,15 @@
   <meta property="og:title" content="分库分表后，分布式主键/全局唯一 ID 应该怎么生成？ · IT面试题库">
   <meta property="og:description" content="要点： 雪花算法 Snowflake：64 位 = 时间戳(41) + 机器ID(10) + 序列号(12)，趋势递增、本地生成无中心依赖、性能高；缺点是依赖时钟，发生时钟回拨会生成重复 ID，需做回拨检测与等待/重算。 号段模式（Segment，如 Leaf）：从中心发号器批量取一段区间缓存在本地，用完再取；I…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1464.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1464">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分库分表后，分布式主键/全局唯一 ID 应该怎么生成？ · IT面试题库">
   <meta name="twitter:description" content="要点： 雪花算法 Snowflake：64 位 = 时间戳(41) + 机器ID(10) + 序列号(12)，趋势递增、本地生成无中心依赖、性能高；缺点是依赖时钟，发生时钟回拨会生成重复 ID，需做回拨检测与等待/重算。 号段模式（Segment，如 Leaf）：从中心发号器批量取一段区间缓存在本地，用完再取；I…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1464.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1464">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分库分表后，分布式主键/全局唯一 ID 应该怎么生成？","text":"对比雪花算法、号段模式、UUID 的取舍，并说明为什么不能用数据库自增。","answerCount":1,"datePublished":"2026-10-02T02:45:42.317Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 雪花算法 Snowflake：64 位 = 时间戳(41) + 机器ID(10) + 序列号(12)，趋势递增、本地生成无中心依赖、性能高；缺点是依赖时钟，发生时钟回拨会生成重复 ID，需做回拨检测与等待/重算。 号段模式（Segment，如 Leaf）：从中心发号器批量取一段区间缓存在本地，用完再取；ID 递增可控、性能高，但依赖高可用的发号服务。 UUID：本地生成零依赖，但无序、作为聚簇索引主键会导致页分裂频繁、存储空间大，不推荐做数据库主键。 禁忌：绝对不能跨分片用数据库自增主键，不同分片会生成相同 ID 互相冲突。","url":"https://itinterview.com.cn/question/1464"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"分库分表后，分布式主键/全局唯一 ID 应该怎么生成？","item":"https://itinterview.com.cn/q/1464.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"分库分表后，分布式主键/全局唯一 ID 应该怎么生成？","item":"https://itinterview.com.cn/q/1464"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1464">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/459">拿到一条慢 SQL，如何用 EXPLAIN ANALYZE 读懂执行计划并定位瓶颈？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/241">为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/247">数据库事务的四种隔离级别分别解决了哪些并发问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/674">MySQL 的 count(*)、count(1)、count(列名) 有什么区别？哪个性能最好？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？ · IT面试题库">
   <meta property="og:description" content="要点： 三份文档：desired 是应用期望的状态，reported 是设备实际上报的状态，delta 是两者差异；设备离线时应用仍可改 desired，设备上线后拉取 delta 执行，再更新 reported。 版本与并发：影子带版本号，更新时做乐观锁，避免应用与设备互相覆盖；delta 由服务端自动计算，设…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1751.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1751">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三份文档：desired 是应用期望的状态，reported 是设备实际上报的状态，delta 是两者差异；设备离线时应用仍可改 desired，设备上线后拉取 delta 执行，再更新 reported。 版本与并发：影子带版本号，更新时做乐观锁，避免应用与设备互相覆盖；delta 由服务端自动计算，设…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1751.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1751">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？","text":"考察物联网平台的状态同步模型与并发控制。","answerCount":1,"datePublished":"2026-10-19T05:43:26.408Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三份文档：desired 是应用期望的状态，reported 是设备实际上报的状态，delta 是两者差异；设备离线时应用仍可改 desired，设备上线后拉取 delta 执行，再更新 reported。 版本与并发：影子带版本号，更新时做乐观锁，避免应用与设备互相覆盖；delta 由服务端自动计算，设备只需处理差异，不必全量同步。 边界：影子适合「最终一致」的状态同步，不适合强实时控制；要限制影子大小、字段权限与更新频率，并区分「设备离线」与「设备已收到但执行失败」，后者要靠 reported 与错误码确认。","url":"https://itinterview.com.cn/question/1751"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"IoT平台开发","item":"https://itinterview.com.cn/category?cat=248"},{"@type":"ListItem","position":4,"name":"设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？","item":"https://itinterview.com.cn/q/1751.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"IoT平台开发","item":"https://itinterview.com.cn/category?cat=248"},{"@type":"ListItem","position":4,"name":"设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？","item":"https://itinterview.com.cn/q/1751"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1751">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/702">物联网平台的核心能力（设备接入、设备管理、规则引擎、数据流转）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1662">设计 IoT 平台设备接入层时，如何同时满足百万连接、低功耗和弱网恢复？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1752">IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1753">物模型（TSL）与规则引擎如何配合做设备数据流转？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？ · IT面试题库">
   <meta property="og:description" content="要点： 轻量打包：k3s 是单个二进制（约 100MB 以内），内置 containerd、Flannel、Traefik、local-path 等，默认用 SQLite 或嵌入式 etcd，去掉了云厂商插件与大量 alpha 特性，安装与运维成本低。 资源与场景：内存/CPU 占用小，适合边缘单机、门店、工厂网…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1750.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1750">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？ · IT面试题库">
   <meta name="twitter:description" content="要点： 轻量打包：k3s 是单个二进制（约 100MB 以内），内置 containerd、Flannel、Traefik、local-path 等，默认用 SQLite 或嵌入式 etcd，去掉了云厂商插件与大量 alpha 特性，安装与运维成本低。 资源与场景：内存/CPU 占用小，适合边缘单机、门店、工厂网…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1750.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1750">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？","text":"考察轻量发行版的裁剪、组件与适用边界。","answerCount":1,"datePublished":"2026-10-19T05:43:26.360Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 轻量打包：k3s 是单个二进制（约 100MB 以内），内置 containerd、Flannel、Traefik、local-path 等，默认用 SQLite 或嵌入式 etcd，去掉了云厂商插件与大量 alpha 特性，安装与运维成本低。 资源与场景：内存/CPU 占用小，适合边缘单机、门店、工厂网关和小集群；支持 air-gap 安装与证书轮换，能在断网环境运行。 边界：插件生态与上游兼容性不如标准 Kubernetes，默认存储不适合大规模持久化；多租户、大规模调度或需要完整 API 时，应选标准 k8s 或 KubeEdge 这类云边方案。","url":"https://itinterview.com.cn/question/1750"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"边缘计算","item":"https://itinterview.com.cn/category?cat=247"},{"@type":"ListItem","position":4,"name":"边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？","item":"https://itinterview.com.cn/q/1750.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"边缘计算","item":"https://itinterview.com.cn/category?cat=247"},{"@type":"ListItem","position":4,"name":"边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？","item":"https://itinterview.com.cn/q/1750"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1750">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/701">什么是边缘计算？相比云端处理的优势与典型场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1601">边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1748">边缘 AI 推理如何做模型量化与硬件加速？INT8 量化会损失什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1749">KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

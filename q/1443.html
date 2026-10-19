@@ -9,15 +9,15 @@
   <meta property="og:title" content="Playwright 的「自动等待」和 Trace Viewer 分别解决了什么问题？相比 Selenium 它为什么更快更稳？ · IT面试题库">
   <meta property="og:description" content="自动等待（Actionability Check） Playwright 在每次点击/输入前自动做一系列检查，全部通过才执行动作：元素可见（有非空包围盒且非 visibility:hidden）、稳定（连续两帧位置不变，等动画结束）、可交互（不在遮挡层下、不在 disabled 状态）、可接收事件（命中测试目标是…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1443.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1443">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Playwright 的「自动等待」和 Trace Viewer 分别解决了什么问题？相比 Selenium 它为什么更快更稳？ · IT面试题库">
   <meta name="twitter:description" content="自动等待（Actionability Check） Playwright 在每次点击/输入前自动做一系列检查，全部通过才执行动作：元素可见（有非空包围盒且非 visibility:hidden）、稳定（连续两帧位置不变，等动画结束）、可交互（不在遮挡层下、不在 disabled 状态）、可接收事件（命中测试目标是…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1443.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1443">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Playwright 的「自动等待」和 Trace Viewer 分别解决了什么问题？相比 Selenium 它为什么更快更稳？","text":"考察 Playwright 核心机制：actionability 自动等待、trace 调试回放、与 Selenium 架构差异（WebSocket 直连 vs HTTP 轮询）。","answerCount":1,"datePublished":"2026-10-01T04:20:58.982Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"自动等待（Actionability Check） Playwright 在每次点击/输入前自动做一系列检查，全部通过才执行动作：元素可见（有非空包围盒且非 visibility:hidden）、稳定（连续两帧位置不变，等动画结束）、可交互（不在遮挡层下、不在 disabled 状态）、可接收事件（命中测试目标是元素本身或其子元素）。 开发者因此几乎不需要手写等待——Selenium 需要显式 WebDriverWait 表达的「等按钮可点」，Playwright 的 click() 内置了。等待上限由 actionTimeout 控制，超时抛错并给出失败在哪一步检查。 Trace Viewer npx playwright test --trace on（或 CI 里失败重试时记录）后，每条用例可打开 trace 回放：每一步的前后截图 + DOM 快照 + 网络请求 + console 日志 + 耗时时间线，还能在快照里像 DevTools 一样检查元素。它把「CI 上跑挂了但本地复现不了」的经典难题变成「打开 trace 看当时页面长什么样」。 为什么比 Selenium 更快更稳 1. 通信协议：Selenium 走 W3C WebDriver 协议（HTTP 请求轮询式），每个动作一个 HTTP 往返；Playwright 用 WebSocket 长连接直连浏览器（CDP/Juggler），指令延迟低且能接收事件推送； 2. 浏览器级 API：直接在浏览器进程里注入脚本做命中测试，而不是跨进程反复查询； 3. 多上下文并行：BrowserContext 是轻量的「无痕浏览器实例」，毫秒级创建，天然支持 worker 并行； 4. 自动等待消除 sleep：不稳定用例的最大来源被机制性消除。 追问：Playwright 能否测多标签页/iframe？——能，page.context().newPage()、frameLocator() 都是一等公民，这正是它相对旧工具的优势场景。","url":"https://itinterview.com.cn/question/1443"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"Playwright","item":"https://itinterview.com.cn/category?cat=113"},{"@type":"ListItem","position":4,"name":"Playwright 的「自动等待」和 Trace Viewer 分别解决了什么问题？相比 Selenium 它为什么更快更稳？","item":"https://itinterview.com.cn/q/1443.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"Playwright","item":"https://itinterview.com.cn/category?cat=113"},{"@type":"ListItem","position":4,"name":"Playwright 的「自动等待」和 Trace Viewer 分别解决了什么问题？相比 Selenium 它为什么更快更稳？","item":"https://itinterview.com.cn/q/1443"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1443">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/466">Playwright 的自动等待（Auto-waiting）机制是怎么工作的？它为什么能减少 flaky 测试？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1548">Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

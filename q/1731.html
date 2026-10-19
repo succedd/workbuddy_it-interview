@@ -9,15 +9,15 @@
   <meta property="og:title" content="ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？ · IT面试题库">
   <meta property="og:description" content="要点： 标准只提供查询：royaltyInfo(tokenId, salePrice) 返回接收者与版税金额，但是否支付由交易市场自行决定；ERC-2981 不拦截转账，也不修改所有权逻辑。 执行方式：市场自愿遵守；用 operator filter 限制只能在与版税兼容的市场交易（争议大、已被部分生态放弃）；把…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1731.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1731">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？ · IT面试题库">
   <meta name="twitter:description" content="要点： 标准只提供查询：royaltyInfo(tokenId, salePrice) 返回接收者与版税金额，但是否支付由交易市场自行决定；ERC-2981 不拦截转账，也不修改所有权逻辑。 执行方式：市场自愿遵守；用 operator filter 限制只能在与版税兼容的市场交易（争议大、已被部分生态放弃）；把…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1731.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1731">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？","text":"考察 NFT 版税标准的边界，以及创作者收益的现实约束。","answerCount":1,"datePublished":"2026-10-19T05:43:25.164Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 标准只提供查询：royaltyInfo(tokenId, salePrice) 返回接收者与版税金额，但是否支付由交易市场自行决定；ERC-2981 不拦截转账，也不修改所有权逻辑。 执行方式：市场自愿遵守；用 operator filter 限制只能在与版税兼容的市场交易（争议大、已被部分生态放弃）；把版税写进链下许可/法律合同；或在转让钩子里收费（会影响可组合性与 Gas）。 现实风险：场外交易、包装合约、聚合器可绕过版税；不同市场对「以哪个价格计算」口径不一。创作者应把版税视为商业条款与生态激励，而不是链上强制保证。","url":"https://itinterview.com.cn/question/1731"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"NFT技术","item":"https://itinterview.com.cn/category?cat=262"},{"@type":"ListItem","position":4,"name":"ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？","item":"https://itinterview.com.cn/q/1731.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"NFT技术","item":"https://itinterview.com.cn/category?cat=262"},{"@type":"ListItem","position":4,"name":"ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？","item":"https://itinterview.com.cn/q/1731"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1731">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/682">NFT（非同质化代币）的技术原理？ERC-721 与 ERC-20 的区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1668">ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1730">NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1732">ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

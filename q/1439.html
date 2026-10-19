@@ -9,15 +9,15 @@
   <meta property="og:title" content="Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？ · IT面试题库">
   <meta property="og:description" content="state 里存了什么 terraform.tfstate 是 Terraform 的「真实世界资源 ↔ 配置代码」映射表：每条 resource 的实例 ID、属性快照、依赖关系、敏感字段（base64，明文敏感！）。plan 的本质 = 配置文件 diff state diff 真实云上资源。 为什么不能手改…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1439.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1439">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？ · IT面试题库">
   <meta name="twitter:description" content="state 里存了什么 terraform.tfstate 是 Terraform 的「真实世界资源 ↔ 配置代码」映射表：每条 resource 的实例 ID、属性快照、依赖关系、敏感字段（base64，明文敏感！）。plan 的本质 = 配置文件 diff state diff 真实云上资源。 为什么不能手改…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1439.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1439">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？","text":"考察 Terraform 状态管理：state 的作用、漂移检测、remote state 与 state locking，是 IaC 面试的核心题。","answerCount":1,"datePublished":"2026-10-01T04:20:52.510Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"state 里存了什么 terraform.tfstate 是 Terraform 的「真实世界资源 ↔ 配置代码」映射表：每条 resource 的实例 ID、属性快照、依赖关系、敏感字段（base64，明文敏感！）。plan 的本质 = 配置文件 diff state diff 真实云上资源。 为什么不能手改手删 手改 state 后，Terraform 认为的「真实」与云上实际脱节 → 下次 plan/apply 会做出错误的增删改（比如把还在用的数据库删掉重建）； 误删 state 条目不会删云资源，但会造成「孤儿资源」——代码里删了它却永远不 apply 成功； 正确姿势：terraform state list / show / rm（显式管理）、terraform import 收编存量资源、terraform refresh（或 plan 的 -refresh-only）同步漂移。 多人协作的 state 冲突 1. Remote State：state 放 S3 / OSS / Terraform Cloud 等远端，而不是各自笔记本上的本地文件； 2. State Locking：S3 + DynamoDB（或 OSS 锁表）实现 apply 互斥——有人 apply 时其他人被阻塞，防止并发写 state 互相覆盖； 3. 环境隔离：dev/staging/prod 用不同的 state 文件（workspace 或目录/后端前缀隔离），爆炸半径分离； 4. CI/CD 统一执行：apply 只在流水线里做，本地只跑 plan 出 diff。 面试加分点 state 里的敏感信息（数据库密码等）不会被加密，后端必须开静态加密 + 严格访问控制； -target 只应救急不该常规化（会造成 state 与实际目标偏差）； 漂移（drift）的根因是「绕过 Terraform 手工改控制台」，治理靠权限收口 + 定期 -refresh-only 告警。","url":"https://itinterview.com.cn/question/1439"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Terraform","item":"https://itinterview.com.cn/category?cat=147"},{"@type":"ListItem","position":4,"name":"Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？","item":"https://itinterview.com.cn/q/1439.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Terraform","item":"https://itinterview.com.cn/category?cat=147"},{"@type":"ListItem","position":4,"name":"Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？","item":"https://itinterview.com.cn/q/1439"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -115,6 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1439">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/443">有人手工在控制台改了资源、也有人本地跑 terraform apply，导致 state 冲突和计划里出现大量意外变更，怎么处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1532">Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1533">terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

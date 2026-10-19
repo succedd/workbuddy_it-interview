@@ -9,15 +9,15 @@
   <meta property="og:title" content="游戏主循环（Game Loop）的作用是什么？固定步长更新与可变步长渲染有什么区别？ · IT面试题库">
   <meta property="og:description" content="要点：游戏主循环是驱动整个游戏运转的核心：每一帧依次完成「输入处理 → 逻辑更新 → 渲染输出」，保证游戏按稳定节奏推进，并与操作系统/显示器的刷新协同。 要点：固定步长更新（Fixed Update）以恒定时间间隔（如 60Hz 物理步长）推进逻辑，保证物理与 gameplay 在不同帧率设备上表现一致、可复现…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1581.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1581">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="游戏主循环（Game Loop）的作用是什么？固定步长更新与可变步长渲染有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="要点：游戏主循环是驱动整个游戏运转的核心：每一帧依次完成「输入处理 → 逻辑更新 → 渲染输出」，保证游戏按稳定节奏推进，并与操作系统/显示器的刷新协同。 要点：固定步长更新（Fixed Update）以恒定时间间隔（如 60Hz 物理步长）推进逻辑，保证物理与 gameplay 在不同帧率设备上表现一致、可复现…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1581.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1581">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"游戏主循环（Game Loop）的作用是什么？固定步长更新与可变步长渲染有什么区别？","text":"考察对游戏循环与帧率控制的理解。","answerCount":1,"datePublished":"2026-10-07T08:05:38.490Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：游戏主循环是驱动整个游戏运转的核心：每一帧依次完成「输入处理 → 逻辑更新 → 渲染输出」，保证游戏按稳定节奏推进，并与操作系统/显示器的刷新协同。 要点：固定步长更新（Fixed Update）以恒定时间间隔（如 60Hz 物理步长）推进逻辑，保证物理与 gameplay 在不同帧率设备上表现一致、可复现；可变步长渲染（Variable Render）按实际帧率渲染，画面更平滑。 要点：典型实现用累加器（accumulator）把真实流逝时间折算成整数个固定步长，再处理剩余时间做插值渲染，避免「螺旋死亡」（spiral of death）。","url":"https://itinterview.com.cn/question/1581"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"游戏主循环（Game Loop）的作用是什么？固定步长更新与可变步长渲染有什么区别？","item":"https://itinterview.com.cn/q/1581.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"游戏主循环（Game Loop）的作用是什么？固定步长更新与可变步长渲染有什么区别？","item":"https://itinterview.com.cn/q/1581"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1581">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/691">游戏客户端渲染主循环（update/render）与帧率控制要点？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1584">用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1585">游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

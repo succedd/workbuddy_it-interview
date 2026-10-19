@@ -9,15 +9,15 @@
   <meta property="og:title" content="Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？ · IT面试题库">
   <meta property="og:description" content="在 HotSpot 虚拟机中，对象在内存中的布局分为三块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。 对象头包括两部分： 1. Mark Word（标记字段）：存储对象自身的运行时数据，如哈希码（HashCode）、GC 分代年龄、锁状态标志等。它被设计成随锁…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1320.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1320">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="在 HotSpot 虚拟机中，对象在内存中的布局分为三块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。 对象头包括两部分： 1. Mark Word（标记字段）：存储对象自身的运行时数据，如哈希码（HashCode）、GC 分代年龄、锁状态标志等。它被设计成随锁…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1320.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1320">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？","text":"Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？","answerCount":1,"datePublished":"2026-09-26T03:32:27.593Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"在 HotSpot 虚拟机中，对象在内存中的布局分为三块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。 对象头包括两部分： 1. Mark Word（标记字段）：存储对象自身的运行时数据，如哈希码（HashCode）、GC 分代年龄、锁状态标志等。它被设计成随锁状态复用位段的动态结构——无锁、轻量级锁、重量级锁等不同状态下，同一串二进制位表示不同含义，这是理解 synchronized 锁升级的基础。分代年龄就占其中 4 位，最大值 15，这正是对象晋升老年代的默认年龄阈值是 15 的原因。旧版 HotSpot 中偏向线程 ID、偏向时间戳也放在这里，但偏向锁自 JDK 15 起默认禁用，相关实现后来已被移除。 2. Klass Word（类型指针）：对象指向它的类元数据的指针，虚拟机通过它确定对象是哪个类的实例。数组对象的对象头还会额外存储数组长度。 实例数据是对象真正存储的有效信息，即程序中定义的各种字段内容；字段的存储顺序受虚拟机分配策略与字段定义顺序影响。 对齐填充不是必然存在，也没有特别含义，仅起占位作用：HotSpot 按 8 字节对齐边界分配对象（可由 -XX:ObjectAlignmentInBytes 影响），对象总大小必须补齐到对齐边界。 压缩指针：64 位 JVM 下原始指针占 8 字节，但绝大多数对象的堆内偏移量远小于 4GB，于是开启 -XX:+UseCompressedOops 后，指针只需存 4 字节的 32 位偏移，运行时乘以 8（配合对齐）还原为 64 位地址。效果是：Klass Word 从 8B 缩到 4B，对象头变为常见的 12B，普通空对象总大小 16B；堆内存占用显著下降，缓存命中率也随之提升。默认 64 位堆小于约 32GB 时开启，堆超过 32GB 会自动退化为普通 8 字节指针，对象「突然变大」，这也是堆容量规划中一个经典的坑——扩堆前要留意指针压缩的边界。 回答要点小结：三段式结构 → 对象头两部分（重点讲 Mark Word 位段复用）→ 对齐填充 → 压缩指针的原理与 32GB 边界。能顺手算出「12B 头 + 1 个 int 字段 = 16B」这类实例更显得扎实。","url":"https://itinterview.com.cn/question/1320"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？","item":"https://itinterview.com.cn/q/1320.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？","item":"https://itinterview.com.cn/q/1320"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -105,6 +105,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1320">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/658">Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/659">什么是双亲委派模型？它解决了什么问题？如何打破双亲委派？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/660">JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/661">JDK 8 为什么用元空间取代永久代？方法区和永久代是一回事吗？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

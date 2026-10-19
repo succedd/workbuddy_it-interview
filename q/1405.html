@@ -9,15 +9,15 @@
   <meta property="og:title" content="BERT 与 GPT 的核心区别是什么？双向编码与单向解码分别适合什么任务？为什么生成任务必须用因果掩码？ · IT面试题库">
   <meta property="og:description" content="结论 BERT 是双向 Transformer 编码器 + 掩码语言模型（MLM）预训练，每个 token 同时看左右上下文，擅长理解类任务；GPT 是单向（从左到右）Transformer 解码器 + 下一词预测预训练，带因果掩码，擅长生成类任务。 结构与预训练对照 | | BERT | GPT | |---|…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1405.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1405">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="BERT 与 GPT 的核心区别是什么？双向编码与单向解码分别适合什么任务？为什么生成任务必须用因果掩码？ · IT面试题库">
   <meta name="twitter:description" content="结论 BERT 是双向 Transformer 编码器 + 掩码语言模型（MLM）预训练，每个 token 同时看左右上下文，擅长理解类任务；GPT 是单向（从左到右）Transformer 解码器 + 下一词预测预训练，带因果掩码，擅长生成类任务。 结构与预训练对照 | | BERT | GPT | |---|…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1405.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1405">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"BERT 与 GPT 的核心区别是什么？双向编码与单向解码分别适合什么任务？为什么生成任务必须用因果掩码？","text":"考察编码器/解码器范式与预训练目标差异。","answerCount":1,"datePublished":"2026-09-29T13:30:37.661Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 BERT 是双向 Transformer 编码器 + 掩码语言模型（MLM）预训练，每个 token 同时看左右上下文，擅长理解类任务；GPT 是单向（从左到右）Transformer 解码器 + 下一词预测预训练，带因果掩码，擅长生成类任务。 结构与预训练对照 | | BERT | GPT | |---|---|---| | 结构 | Transformer Encoder（双向自注意力） | Transformer Decoder（因果掩码） | | 预训练 | 随机 mask 约 15% 的 token 再预测 + NSP/SOP | 自回归预测下一个 token | | 使用方式 | 微调 + 任务头 | prompt + 上下文学习 / 指令微调 | | 擅长 | 分类、NER、句子匹配、语义检索 | 文本生成、对话、few-shot | 为什么不能互换 生成必须单向：逐词产出时「未来」的词还不存在，双向注意力对未生成位置无意义，必须用因果掩码保证位置 i 只看 ≤ i； 理解偏好双向：MLM 迫使模型用两侧上下文消歧（如「他去银行_存钱」），单向信息不足； BERT 的 [MASK] 错配：[MASK] 只在预训练出现、微调/推理见不到，是它的固有缺陷（ELECTRA 用替换词检测改进）； 后续演化：T5/BART 走编解码统一；GPT 系靠规模 + 指令数据把理解任务也做到很强，因此当下通用基座以 decoder 路线为主。 面试追问常见点：BERT 双向是指预训练目标允许看全句，不是某种特殊注意力数学；GPT 的 few-shot 能力来自自回归目标的「模式补全」本质。","url":"https://itinterview.com.cn/question/1405"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"BERT","item":"https://itinterview.com.cn/category?cat=189"},{"@type":"ListItem","position":5,"name":"BERT 与 GPT 的核心区别是什么？双向编码与单向解码分别适合什么任务？为什么生成任务必须用因果掩码？","item":"https://itinterview.com.cn/q/1405.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"BERT","item":"https://itinterview.com.cn/category?cat=189"},{"@type":"ListItem","position":5,"name":"BERT 与 GPT 的核心区别是什么？双向编码与单向解码分别适合什么任务？为什么生成任务必须用因果掩码？","item":"https://itinterview.com.cn/q/1405"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1405">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/468">BERT 的预训练任务（MLM + NSP）是怎么设计的？为什么 MLM 要用 [MASK] 却又引入 15% 的随机替换策略？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？ · IT面试题库">
   <meta property="og:description" content="num_workers：DataLoader 默认在主进程同步读数据，GPU 等数据就空转。设为 N 后开 N 个子进程并行做「读盘→解码→增强→collate」，与 GPU 计算重叠成流水线。N 太小喂不饱 GPU（GPU util 波动大），太大则进程启动/IPC 开销与内存暴涨，还可能互相抢 IO。调法：从…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1522.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1522">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？ · IT面试题库">
   <meta name="twitter:description" content="num_workers：DataLoader 默认在主进程同步读数据，GPU 等数据就空转。设为 N 后开 N 个子进程并行做「读盘→解码→增强→collate」，与 GPU 计算重叠成流水线。N 太小喂不饱 GPU（GPU util 波动大），太大则进程启动/IPC 开销与内存暴涨，还可能互相抢 IO。调法：从…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1522.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1522">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？","text":"解释数据加载流水线与锁页内存的作用，给出调参建议。","answerCount":1,"datePublished":"2026-10-05T01:04:00.259Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"num_workers：DataLoader 默认在主进程同步读数据，GPU 等数据就空转。设为 N 后开 N 个子进程并行做「读盘→解码→增强→collate」，与 GPU 计算重叠成流水线。N 太小喂不饱 GPU（GPU util 波动大），太大则进程启动/IPC 开销与内存暴涨，还可能互相抢 IO。调法：从 CPU 物理核数的一半开始翻倍试，观察 GPU util 与每 epoch 时间拐点；数据小到内存放得下时直接缓存/内存盘更彻底。 pin_memory=True：把 batch 预拷到锁页内存（不可被 OS 换出的物理页），GPU 可用 DMA 直接异步搬运，配合 non_blocking=True 让 H2D 拷贝与计算重叠；代价是锁页内存占用高、不可换出。CPU 训练则无用。 排查口诀：先看 GPU util——低于 70% 且波动大，多半是数据管道瓶颈：加大 workers / pin_memory / prefetch_factor，检查是否 decode（如 PIL/JPEG）过重，必要时上 DALI/WebDataset。","url":"https://itinterview.com.cn/question/1522"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？","item":"https://itinterview.com.cn/q/1522.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？","item":"https://itinterview.com.cn/q/1522"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1522">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/781">PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1520">PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1521">训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1523">训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

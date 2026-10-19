@@ -9,15 +9,15 @@
   <meta property="og:title" content="Saga 的两种实现方式——编排（Orchestration）与协同（Choreography）有什么区别？长流程该选哪种？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 背景 微服务通常「每个服务独享数据库」：每个服务封装自己的数据、可独立选型和扩容，但跨服务的数据一致性变复杂，ACID 不再适用。Saga 通过把事务分解为一系列本地事务来管理：每个本地事务在单个服务内原子完成、更新自己的库、并通过事件或消息触发下一步；某步失败则执行一系列补偿事务撤销已完成步骤的更…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1286.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1286">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Saga 的两种实现方式——编排（Orchestration）与协同（Choreography）有什么区别？长流程该选哪种？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 背景 微服务通常「每个服务独享数据库」：每个服务封装自己的数据、可独立选型和扩容，但跨服务的数据一致性变复杂，ACID 不再适用。Saga 通过把事务分解为一系列本地事务来管理：每个本地事务在单个服务内原子完成、更新自己的库、并通过事件或消息触发下一步；某步失败则执行一系列补偿事务撤销已完成步骤的更…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1286.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1286">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Saga 的两种实现方式——编排（Orchestration）与协同（Choreography）有什么区别？长流程该选哪种？","text":"考察点：集中式编排与事件驱动协同的权衡，以及 Saga 的落地约束。","answerCount":1,"datePublished":"2026-09-26T02:32:22.166Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 背景 微服务通常「每个服务独享数据库」：每个服务封装自己的数据、可独立选型和扩容，但跨服务的数据一致性变复杂，ACID 不再适用。Saga 通过把事务分解为一系列本地事务来管理：每个本地事务在单个服务内原子完成、更新自己的库、并通过事件或消息触发下一步；某步失败则执行一系列补偿事务撤销已完成步骤的更改。 2. 三个关键概念 可补偿事务：可被撤销，或由具有相反效果的事务补偿，失败时由补偿事务回滚其更改。 枢轴事务（pivot）：Saga 中的不可逆点。枢轴成功后，前面的可补偿事务不再相关，系统必须完成所有后续操作才能达到一致的最终状态。 可重试事务：位于枢轴之后，具有幂等性，用于保证发生临时故障时也能到达最终状态。 3. 两种实现方式对比 | 维度 | 编排（Orchestration） | 协同（Choreography） | | --- | --- | --- | | 协调方式 | 集中式编排器掌管所有事务，按事件指挥参与者 | 无中心控制器，各服务通过发布/订阅领域事件互相触发 | | 优点 | 适合复杂工作流或需要频繁加新服务的场景；职责分离清晰，服务逻辑简单；不易产生循环依赖 | 适合服务少、流程简单且无需协调逻辑的场景；不需要额外协调服务；无单点故障，责任分散 | | 缺点 | 编排器成为单点故障，并引入额外的设计复杂度 | 加新步骤时流程易混乱；难以追踪各参与者响应哪些命令；参与者互相依赖易形成循环依赖；集成测试困难 | | 可观测性 | 编排器可集中记录流程状态，便于追踪与补偿 | 需依赖链路追踪/事件溯源还原流程 | 4. 落地要点 补偿事务本身也可能失败，需要「重试 + 上限 + 告警 + 人工干预」；参与者已提交本地事务，数据无法真正回滚，只能把业务拉回允许的状态，因此必须保证幂等。缺少隔离性会带来更新丢失、脏读、不可重复读等异常，缓解手段包括语义锁、可交换更新、悲观视图、重读校验、版本文件等，并按业务风险动态选择并发机制。 5. 结论 服务少、流程简单时用协同更轻；流程复杂、分支多、需要频繁插新步骤时，用编排（集中式编排器）更可控。","url":"https://itinterview.com.cn/question/1286"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务架构","item":"https://itinterview.com.cn/category?cat=121"},{"@type":"ListItem","position":4,"name":"Saga 的两种实现方式——编排（Orchestration）与协同（Choreography）有什么区别？长流程该选哪种？","item":"https://itinterview.com.cn/q/1286.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务架构","item":"https://itinterview.com.cn/category?cat=121"},{"@type":"ListItem","position":4,"name":"Saga 的两种实现方式——编排（Orchestration）与协同（Choreography）有什么区别？长流程该选哪种？","item":"https://itinterview.com.cn/q/1286"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -114,6 +114,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1286">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/245">微服务架构相比单体架构有哪些优点和典型挑战？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1210">微服务架构下，服务拆分应该按什么维度进行？拆分过细会带来哪些问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1211">服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1212">【场景】某微服务实例进程已崩溃，但注册中心里它的注册信息还在，导致网关仍把流量转发到这个「死节点」，请求大面积报错。这是什么现象？如何从根本上解决？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

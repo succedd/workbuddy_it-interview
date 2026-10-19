@@ -9,15 +9,15 @@
   <meta property="og:title" content="Kotlin 的 inline、reified 与扩展函数分别解决什么问题？各有什么陷阱？ · IT面试题库">
   <meta property="og:description" content="要点： inline：把 lambda 体直接内联到调用处，消除 Function 对象分配与调用开销——高频路径（如集合操作）的性能手段；同时让 lambda 里可以 return（非局部返回）。陷阱：内联大函数会膨胀字节码；noinline/crossinline 用于控制个别参数不内联。 reified：J…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/985.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/985">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kotlin 的 inline、reified 与扩展函数分别解决什么问题？各有什么陷阱？ · IT面试题库">
   <meta name="twitter:description" content="要点： inline：把 lambda 体直接内联到调用处，消除 Function 对象分配与调用开销——高频路径（如集合操作）的性能手段；同时让 lambda 里可以 return（非局部返回）。陷阱：内联大函数会膨胀字节码；noinline/crossinline 用于控制个别参数不内联。 reified：J…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/985.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/985">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 的 inline、reified 与扩展函数分别解决什么问题？各有什么陷阱？","text":"考察点：内联函数消除 lambda 对象开销、reified 具体化泛型、扩展函数的静态解析本质。","answerCount":1,"datePublished":"2026-09-10T07:22:45.469Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： inline：把 lambda 体直接内联到调用处，消除 Function 对象分配与调用开销——高频路径（如集合操作）的性能手段；同时让 lambda 里可以 return（非局部返回）。陷阱：内联大函数会膨胀字节码；noinline/crossinline 用于控制个别参数不内联。 reified：JVM 泛型运行时擦除，但 inline 函数的字节码在调用处展开，reified T 可以在函数体内拿到真实 Class（T::class），免去传 Class 参数——Gson/Retrofit 的 fromJson () 就靠它。 扩展函数：本质是静态方法（第一个参数是接收者），按编译期静态类型解析而非运行时多态——父类引用调子类扩展会调到父类的扩展，这是最经典的面试陷阱。 扩展属性同理没有 backing field，只是 getter/setter 语法糖。","url":"https://itinterview.com.cn/question/985"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Kotlin","item":"https://itinterview.com.cn/category?cat=224"},{"@type":"ListItem","position":5,"name":"Kotlin 的 inline、reified 与扩展函数分别解决什么问题？各有什么陷阱？","item":"https://itinterview.com.cn/q/985.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Kotlin","item":"https://itinterview.com.cn/category?cat=224"},{"@type":"ListItem","position":5,"name":"Kotlin 的 inline、reified 与扩展函数分别解决什么问题？各有什么陷阱？","item":"https://itinterview.com.cn/q/985"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/985">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/737">Kotlin 的密封类（sealed class）如何优雅表达有限状态机？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/983">Kotlin 相比 Java 有哪些核心优势？为什么 Google 把它定为 Android 首选语言？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/984">Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="接口测试用例设计要覆盖哪些维度？ · IT面试题库">
   <meta property="og:description" content="功能正向：标准入参→预期出参；业务主流程串联（下单→支付→发货）；状态机流转。 参数维度：① 必填缺失、类型错误（字符串传数字）；② 边界值（长度 0/1/max/max+1、金额 0/0.01/超大值、分页 page=0/-1/极大）；③ 枚举外的非法值；④ 字段组合（互斥参数同时传）。 异常与健壮性：重复提交…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1537.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1537">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="接口测试用例设计要覆盖哪些维度？ · IT面试题库">
   <meta name="twitter:description" content="功能正向：标准入参→预期出参；业务主流程串联（下单→支付→发货）；状态机流转。 参数维度：① 必填缺失、类型错误（字符串传数字）；② 边界值（长度 0/1/max/max+1、金额 0/0.01/超大值、分页 page=0/-1/极大）；③ 枚举外的非法值；④ 字段组合（互斥参数同时传）。 异常与健壮性：重复提交…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1537.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1537">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"接口测试用例设计要覆盖哪些维度？","text":"从功能、参数、异常、安全、性能五个维度列出设计要点。","answerCount":1,"datePublished":"2026-10-05T01:04:02.333Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"功能正向：标准入参→预期出参；业务主流程串联（下单→支付→发货）；状态机流转。 参数维度：① 必填缺失、类型错误（字符串传数字）；② 边界值（长度 0/1/max/max+1、金额 0/0.01/超大值、分页 page=0/-1/极大）；③ 枚举外的非法值；④ 字段组合（互斥参数同时传）。 异常与健壮性：重复提交（幂等）、并发竞争（库存超卖）、接口超时与重试、事务回滚（中途失败后数据一致性）。 鉴权与安全：① 未登录/过期 token/伪造 token → 401/403；② 越权（改 userId/orderId 访问他人资源——水平；普通用户调管理接口——垂直）；③ 敏感字段泄露（响应里的密码哈希、身份证）；④ 注入类（SQL/脚本）；⑤ 频控限流是否生效。 数据与环境：不同前置数据状态的分支覆盖（如优惠券过期/库存为零）；多环境配置差异。 设计方法：等价类+边界值打底，判定表覆盖组合，错误推测补漏；高频接口加契约测试与回归集。","url":"https://itinterview.com.cn/question/1537"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"接口测试","item":"https://itinterview.com.cn/category?cat=107"},{"@type":"ListItem","position":4,"name":"接口测试用例设计要覆盖哪些维度？","item":"https://itinterview.com.cn/q/1537.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"接口测试","item":"https://itinterview.com.cn/category?cat=107"},{"@type":"ListItem","position":4,"name":"接口测试用例设计要覆盖哪些维度？","item":"https://itinterview.com.cn/q/1537"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1537">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1538">接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？</a><span class="rel-n">4 次浏览</span></li><li><a href="https://itinterview.com.cn/q/467">如果让你从零设计一套接口测试用例，除了校验返回码还应该覆盖哪些维度？</a><span class="rel-n">3 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

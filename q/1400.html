@@ -9,15 +9,15 @@
   <meta property="og:title" content="JWT 由哪三部分组成？无状态认证的优缺点是什么？JWT「签发后无法作废」的注销难题怎么解决？ · IT面试题库">
   <meta property="og:description" content="结论 JWT = Header.Payload.Signature 三段 Base64URL 用 . 连接：Header 声明签名算法（HS256/RS256）；Payload 放 Claims（sub、exp、iat 及自定义）；Signature 对前两段签名，保证防篡改而非加密——Payload 默认任何人…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1400.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1400">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JWT 由哪三部分组成？无状态认证的优缺点是什么？JWT「签发后无法作废」的注销难题怎么解决？ · IT面试题库">
   <meta name="twitter:description" content="结论 JWT = Header.Payload.Signature 三段 Base64URL 用 . 连接：Header 声明签名算法（HS256/RS256）；Payload 放 Claims（sub、exp、iat 及自定义）；Signature 对前两段签名，保证防篡改而非加密——Payload 默认任何人…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1400.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1400">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JWT 由哪三部分组成？无状态认证的优缺点是什么？JWT「签发后无法作废」的注销难题怎么解决？","text":"考察 JWT 结构、无状态认证取舍与登出方案。","answerCount":1,"datePublished":"2026-09-29T13:30:09.720Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 JWT = Header.Payload.Signature 三段 Base64URL 用 . 连接：Header 声明签名算法（HS256/RS256）；Payload 放 Claims（sub、exp、iat 及自定义）；Signature 对前两段签名，保证防篡改而非加密——Payload 默认任何人可解码，敏感信息不能明文放。 无状态认证的取舍 优点：服务端不存会话状态 → 天然水平扩展；微服务间只需共享公钥即可验签（RS256）；适合 API 网关/多端场景； 缺点：签发后到期前无法主动作废；令牌体积大于 sessionId；泄露即冒用直到过期。 注销难题的三种解法 1. 短有效期 + Refresh Token：access token 15 分钟，refresh token 长期但服务端可吊销——最常用组合； 2. 黑名单：登出/改密时把 jti 写入 Redis，TTL = 剩余有效期；网关验签后查黑名单（轻微有状态化，只影响被吊销的少量 token）； 3. 版本号/会话代：把 pwdVer/sessionVer 写进 claims，敏感操作后版本号+1，旧 token 校验失败。 常见坑 alg:none 攻击与 RS256↔HS256 算法混淆：验签库要显式指定期望算法； exp 必设，iat/nbf 按需；时钟偏差留 skew； 存放位置：localStorage 有 XSS 风险；HttpOnly Cookie 防偷但引入 CSRF 面（配 SameSite + CSRF token）。 面试追问「为什么 JWT 换来换去还是要 Redis」：纯无状态的作废能力就是不存在，工程上都是「短 token 兜底 + 轻量有状态吊销」折中。","url":"https://itinterview.com.cn/question/1400"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"API设计与RESTful规范","item":"https://itinterview.com.cn/category?cat=94"},{"@type":"ListItem","position":4,"name":"JWT 由哪三部分组成？无状态认证的优缺点是什么？JWT「签发后无法作废」的注销难题怎么解决？","item":"https://itinterview.com.cn/q/1400.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"API设计与RESTful规范","item":"https://itinterview.com.cn/category?cat=94"},{"@type":"ListItem","position":4,"name":"JWT 由哪三部分组成？无状态认证的优缺点是什么？JWT「签发后无法作废」的注销难题怎么解决？","item":"https://itinterview.com.cn/q/1400"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -114,6 +114,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1400">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/805">设计 RESTful API 有哪些核心规范？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1401">什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

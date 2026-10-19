@@ -9,15 +9,15 @@
   <meta property="og:title" content="EIP-712 结构化签名如何防重放？domainSeparator、nonce 与 chainId 各起什么作用？ · IT面试题库">
   <meta property="og:description" content="要点： 签名摘要：digest = 0x1901 ‖ domainSeparator ‖ hashStruct(message)。domainSeparator 由 name、version、chainId、verifyingContract、salt 计算，钱包能把字段以可读形式展示给用户。 防重放四要素：ch…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1723.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1723">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="EIP-712 结构化签名如何防重放？domainSeparator、nonce 与 chainId 各起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 签名摘要：digest = 0x1901 ‖ domainSeparator ‖ hashStruct(message)。domainSeparator 由 name、version、chainId、verifyingContract、salt 计算，钱包能把字段以可读形式展示给用户。 防重放四要素：ch…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1723.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1723">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"EIP-712 结构化签名如何防重放？domainSeparator、nonce 与 chainId 各起什么作用？","text":"考察链下签名、链上验签与签名钓鱼的防护设计。","answerCount":1,"datePublished":"2026-10-19T05:43:24.672Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 签名摘要：digest = 0x1901 ‖ domainSeparator ‖ hashStruct(message)。domainSeparator 由 name、version、chainId、verifyingContract、salt 计算，钱包能把字段以可读形式展示给用户。 防重放四要素：chainId 阻止跨链重放，verifyingContract 阻止跨合约重放，nonce 阻止同一合约内重复使用，deadline 限制签名有效期；链上验签时用 ecrecover 恢复地址并校验 nonce 未被消费。 工程坑：链下签名的类型哈希、字段顺序必须与链上完全一致；permit 类签名要防钓鱼站点伪造 spender / value；nonce 要按用户维度递增并在失败时回滚，避免并发签名互相覆盖。","url":"https://itinterview.com.cn/question/1723"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"EIP-712 结构化签名如何防重放？domainSeparator、nonce 与 chainId 各起什么作用？","item":"https://itinterview.com.cn/q/1723.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"EIP-712 结构化签名如何防重放？domainSeparator、nonce 与 chainId 各起什么作用？","item":"https://itinterview.com.cn/q/1723"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1723">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/679">Solidity 中 view/pure、modifier、event 的作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1445">什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1591">用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1593">ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

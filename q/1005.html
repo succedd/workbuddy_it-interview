@@ -9,15 +9,15 @@
   <meta property="og:title" content="Objective-C 为什么必须手动处理循环引用？MRC 到 ARC 演化解决了什么？ · IT面试题库">
   <meta property="og:description" content="要点： 引用计数模型：OC 从 NeXTSTEP 时代就用引用计数（retain/release/autorelease），MRC 时代开发者必须严格手动配对——忘记 release 就泄漏、过度 release 就崩溃，心智负担巨大。 ARC 的本质：不是 GC，是编译器在编译期自动插入 retain/rele…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1005.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1005">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Objective-C 为什么必须手动处理循环引用？MRC 到 ARC 演化解决了什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 引用计数模型：OC 从 NeXTSTEP 时代就用引用计数（retain/release/autorelease），MRC 时代开发者必须严格手动配对——忘记 release 就泄漏、过度 release 就崩溃，心智负担巨大。 ARC 的本质：不是 GC，是编译器在编译期自动插入 retain/rele…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1005.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1005">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Objective-C 为什么必须手动处理循环引用？MRC 到 ARC 演化解决了什么？","text":"考察点：引用计数历史、ARC 编译器原理、block 循环引用的 OC 写法。","answerCount":1,"datePublished":"2026-09-10T07:24:09.520Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 引用计数模型：OC 从 NeXTSTEP 时代就用引用计数（retain/release/autorelease），MRC 时代开发者必须严格手动配对——忘记 release 就泄漏、过度 release 就崩溃，心智负担巨大。 ARC 的本质：不是 GC，是编译器在编译期自动插入 retain/release——运行时行为与手写 MRC 相同（确定性释放、无停顿），但人不再管配对。规则：强引用属性自动 retain、局部对象作用域结束自动 release。 循环引用依然要人管：ARC 只插计数操作，不管引用图成环——delegate 要 weak、block 捕获 self 要 __weak typeof(self) weakSelf（OC 版本），使用时再 strongify 防中途释放。这是 OC/Swift 同源的内存模型，Swift 换了语法（[weak self]）但原理一致。 autorelease pool：解决「返回临时对象」的所有权移交，主线程每帧 drain 一次；大量临时对象循环内手动 @autoreleasepool 削内存峰值。","url":"https://itinterview.com.cn/question/1005"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"Objective-C","item":"https://itinterview.com.cn/category?cat=220"},{"@type":"ListItem","position":5,"name":"Objective-C 为什么必须手动处理循环引用？MRC 到 ARC 演化解决了什么？","item":"https://itinterview.com.cn/q/1005.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"Objective-C","item":"https://itinterview.com.cn/category?cat=220"},{"@type":"ListItem","position":5,"name":"Objective-C 为什么必须手动处理循环引用？MRC 到 ARC 演化解决了什么？","item":"https://itinterview.com.cn/q/1005"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1005">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1004">Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

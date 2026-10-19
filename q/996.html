@@ -9,15 +9,15 @@
   <meta property="og:title" content="Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？ · IT面试题库">
   <meta property="og:description" content="要点： append 模式：针对只增不改的数据（日志、订单流水），check-column 用自增 ID，每次只导 id &gt; last-value 的新行，追加到目标目录。坑：last-value 要自己记录并回填（脚本维护）；源库删数据感知不到。 lastmodified 模式：针对会更新的数据，check-c…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/996.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/996">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？ · IT面试题库">
   <meta name="twitter:description" content="要点： append 模式：针对只增不改的数据（日志、订单流水），check-column 用自增 ID，每次只导 id &gt; last-value 的新行，追加到目标目录。坑：last-value 要自己记录并回填（脚本维护）；源库删数据感知不到。 lastmodified 模式：针对会更新的数据，check-c…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/996.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/996">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？","text":"考察点：增量模式语义、check-column 水位、append 与 merge-keys 的适用场景。","answerCount":1,"datePublished":"2026-09-10T07:23:23.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： append 模式：针对只增不改的数据（日志、订单流水），check-column 用自增 ID，每次只导 id > last-value 的新行，追加到目标目录。坑：last-value 要自己记录并回填（脚本维护）；源库删数据感知不到。 lastmodified 模式：针对会更新的数据，check-column 用 update_time，导出 >= last-value 的行。坑：① 老数据更新后旧文件里的行没删，HDFS 上会有重复——需配 --merge-key（主键）在合并 job 里去重（老记录+新记录按 key 取新）；② 时间边界取 > 还是 >= 要与水位管理一致，避免边界行丢/重。 通用建议：水位持久化在调度系统；定时对账（count/sum 校验）；要求更强一致性时改用 Binlog CDC 方案，Sqoop 只做历史全量初始化。","url":"https://itinterview.com.cn/question/996"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Sqoop","item":"https://itinterview.com.cn/category?cat=167"},{"@type":"ListItem","position":4,"name":"Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？","item":"https://itinterview.com.cn/q/996.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Sqoop","item":"https://itinterview.com.cn/category?cat=167"},{"@type":"ListItem","position":4,"name":"Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？","item":"https://itinterview.com.cn/q/996"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/996">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/995">Sqoop 的工作原理是什么？import 时 map 数与 --split-by 怎么影响性能？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/997">Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

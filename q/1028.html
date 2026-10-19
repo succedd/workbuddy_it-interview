@@ -9,15 +9,15 @@
   <meta property="og:title" content="为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？ · IT面试题库">
   <meta property="og:description" content="要点： Express 的瓶颈来源： 1. 路由匹配是线性遍历——router.stack 逐个正则匹配，路由一多（几百条）每次请求都要走一遍 O(n)，且正则回溯有成本； 2. 没有内置 schema 序列化——res.json() 每次走 JSON.stringify，字段裁剪与类型约定全靠手写； 3. 中间…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1028.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1028">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？ · IT面试题库">
   <meta name="twitter:description" content="要点： Express 的瓶颈来源： 1. 路由匹配是线性遍历——router.stack 逐个正则匹配，路由一多（几百条）每次请求都要走一遍 O(n)，且正则回溯有成本； 2. 没有内置 schema 序列化——res.json() 每次走 JSON.stringify，字段裁剪与类型约定全靠手写； 3. 中间…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1028.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1028">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？","text":"考察点：框架选型、路由实现、序列化开销。要求给出可验证的对比维度而不是站队。","answerCount":1,"datePublished":"2026-09-10T11:51:14.602Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Express 的瓶颈来源： 1. 路由匹配是线性遍历——router.stack 逐个正则匹配，路由一多（几百条）每次请求都要走一遍 O(n)，且正则回溯有成本； 2. 没有内置 schema 序列化——res.json() 每次走 JSON.stringify，字段裁剪与类型约定全靠手写； 3. 中间件链是函数递归，每层都有调用开销，重型中间件（body-parser 全量解析）往往对静态资源路由也生效； 4. 4.x 不支持 async 原生错误传播（见错误处理题），生态上不得不靠补丁； 5. 长期处于「稳定优先」状态，Express 5 间隔多年才发布，新特性推进慢。 Fastify 的改进：① 基于 Radix Tree（基数树）的路由，查找接近 O(路径长度) 而非路由数量；② 用 JSON Schema + fast-json-stringify 做序列化，预编译出专用序列化函数，比 JSON.stringify 快数倍，同时顺带完成出参校验和字段裁剪；③ 原生 async/await 支持与封装好的插件体系（fastify-plugin 控制作用域）；④ 内置 pino 高性能日志。 但要说清边界： 单纯 hello world 的 QPS 差距在真实业务里会被 DB/下游调用淹没——框架不是瓶颈，SQL 和 IO 才是； 迁移动机往往不是性能，而是想用 TypeScript 类型化（TypeBox/zod + 类型推导）和更好的插件模型； Express 的中间件生态体量仍是最大优势，迁移成本真实存在（路径语法、req/res 扩展习惯、中间件兼容）。 判断标准：路由数量大、需要严格出参 schema、团队已在用 TS，值得迁；否则维持 Express 5 + 针对性优化（去掉无用中间件、加缓存）性价比更高。","url":"https://itinterview.com.cn/question/1028"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Express","item":"https://itinterview.com.cn/category?cat=91"},{"@type":"ListItem","position":5,"name":"为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？","item":"https://itinterview.com.cn/q/1028.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Express","item":"https://itinterview.com.cn/category?cat=91"},{"@type":"ListItem","position":5,"name":"为什么越来越多团队从 Express 迁到 Fastify？Express 的性能瓶颈到底在哪？","item":"https://itinterview.com.cn/q/1028"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -113,6 +113,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1028">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/816">Express 中间件（middleware）的执行顺序与 next() 作用是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1026">Express 的错误处理中间件为什么必须是四个参数？在 async 路由里抛错为什么捕获不到？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1027">Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

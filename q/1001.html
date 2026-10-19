@@ -9,15 +9,15 @@
   <meta property="og:title" content="NLP 的完整处理流水线是什么？从原始文本到可建模的特征要经过哪些步骤？ · IT面试题库">
   <meta property="og:description" content="要点： 流水线：采集与清洗（去 HTML/乱码/去重）→ 分词与词性标注 → 归一化（大小写/繁简/全半角）→ 停用词处理 → 特征表示 → 模型 → 后处理。 中文分词：英文天然空格切分，中文需要分词——规则法（最大匹配）、统计法（HMM/CRF）、深度法（BiLSTM-CRF、预训练模型 tokenizer）…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1001.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1001">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NLP 的完整处理流水线是什么？从原始文本到可建模的特征要经过哪些步骤？ · IT面试题库">
   <meta name="twitter:description" content="要点： 流水线：采集与清洗（去 HTML/乱码/去重）→ 分词与词性标注 → 归一化（大小写/繁简/全半角）→ 停用词处理 → 特征表示 → 模型 → 后处理。 中文分词：英文天然空格切分，中文需要分词——规则法（最大匹配）、统计法（HMM/CRF）、深度法（BiLSTM-CRF、预训练模型 tokenizer）…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1001.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1001">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"NLP 的完整处理流水线是什么？从原始文本到可建模的特征要经过哪些步骤？","text":"考察点：文本预处理全链路、中文分词特殊性、表示学习从 one-hot 到预训练。","answerCount":1,"datePublished":"2026-09-10T07:23:38.464Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 流水线：采集与清洗（去 HTML/乱码/去重）→ 分词与词性标注 → 归一化（大小写/繁简/全半角）→ 停用词处理 → 特征表示 → 模型 → 后处理。 中文分词：英文天然空格切分，中文需要分词——规则法（最大匹配）、统计法（HMM/CRF）、深度法（BiLSTM-CRF、预训练模型 tokenizer）。歧义与未登录词（新词/人名）是难点。子词方案（BPE/WordPiece）部分绕开了分词问题，大模型时代中文多直接用字/子词级 tokenizer。 表示演化：one-hot（稀疏无语义）→ TF-IDF（统计加权）→ Word2Vec/GloVe（静态词向量，一词一向量解决不了多义）→ BERT 等上下文表示（动态向量，多义词随语境变）。 典型任务分层：分类/匹配（易）→ 序列标注（NER）→ 生成（摘要/翻译）→ 开放对话。现代实践：预训练模型 + 下游微调或 RAG/提示工程。","url":"https://itinterview.com.cn/question/1001"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"自然语言处理NLP","item":"https://itinterview.com.cn/category?cat=183"},{"@type":"ListItem","position":5,"name":"NLP 的完整处理流水线是什么？从原始文本到可建模的特征要经过哪些步骤？","item":"https://itinterview.com.cn/q/1001.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"自然语言处理NLP","item":"https://itinterview.com.cn/category?cat=183"},{"@type":"ListItem","position":5,"name":"NLP 的完整处理流水线是什么？从原始文本到可建模的特征要经过哪些步骤？","item":"https://itinterview.com.cn/q/1001"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1001">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1002">Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1003">NER 命名实体识别的 BIO 标注体系是什么？从规则到大模型，NER 技术方案怎么选？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

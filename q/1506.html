@@ -9,15 +9,15 @@
   <meta property="og:title" content="GCD 的常用 API 与使用场景？sync 与 async、串行与并行的组合有什么风险？ · IT面试题库">
   <meta property="og:description" content="常用 API：global() 并行队列跑任务；main() 回主线程刷 UI；DispatchGroup 聚合多个异步请求（enter/leave + notify）；Semaphore 控制并发数/同步等待（如限制下载并发 3）；DispatchBarrier 写屏障实现多读单写；DispatchWorkIt…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1506.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1506">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GCD 的常用 API 与使用场景？sync 与 async、串行与并行的组合有什么风险？ · IT面试题库">
   <meta name="twitter:description" content="常用 API：global() 并行队列跑任务；main() 回主线程刷 UI；DispatchGroup 聚合多个异步请求（enter/leave + notify）；Semaphore 控制并发数/同步等待（如限制下载并发 3）；DispatchBarrier 写屏障实现多读单写；DispatchWorkIt…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1506.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1506">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GCD 的常用 API 与使用场景？sync 与 async、串行与并行的组合有什么风险？","text":"覆盖队列/组/信号量/屏障，并指出死锁组合。","answerCount":1,"datePublished":"2026-10-05T01:03:58.446Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"常用 API：global() 并行队列跑任务；main() 回主线程刷 UI；DispatchGroup 聚合多个异步请求（enter/leave + notify）；Semaphore 控制并发数/同步等待（如限制下载并发 3）；DispatchBarrier 写屏障实现多读单写；DispatchWorkItem 可取消任务；DispatchSourceTimer 高精度定时。 组合与风险：async + 串行/并行都安全（立即返回）；sync + 当前串行队列 = 死锁（主线程 main.sync 必死：主队列在等它自己空闲）；sync 在并行队列不会死锁但会阻塞当前线程，慎用于主线程。 实践：① 子线程做 IO/解码，结果 main.async 回主刷 UI；② 多个请求都完成再刷新用 Group；③ DispatchQueue.sync 只在明确需要「读最新结果且并发安全」时用，且确认不在同队列内；④ iOS 上优先级用 QoS（userInteractive > userInitiated > utility > background）表达，避免优先级反转。","url":"https://itinterview.com.cn/question/1506"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"GCD 的常用 API 与使用场景？sync 与 async、串行与并行的组合有什么风险？","item":"https://itinterview.com.cn/q/1506.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"GCD 的常用 API 与使用场景？sync 与 async、串行与并行的组合有什么风险？","item":"https://itinterview.com.cn/q/1506"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1506">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/252">iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/253">iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1505">ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1507">iOS App 的启动流程是怎样的？启动耗时如何优化？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

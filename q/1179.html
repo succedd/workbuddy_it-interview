@@ -9,15 +9,15 @@
   <meta property="og:title" content="场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？ · IT面试题库">
   <meta property="og:description" content="要点： 先算显存账：FP16 权重 ~14GB，加上 KV Cache、激活、框架开销，24G 卡余量紧张甚至会 OOM。7B 用 INT4（AWQ/GPTQ） 权重降到 ~4GB，显存立刻宽裕，这是最关键的一步。 框架选型：选支持连续批处理（continuous batching）和 PagedAttentio…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1179.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1179">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先算显存账：FP16 权重 ~14GB，加上 KV Cache、激活、框架开销，24G 卡余量紧张甚至会 OOM。7B 用 INT4（AWQ/GPTQ） 权重降到 ~4GB，显存立刻宽裕，这是最关键的一步。 框架选型：选支持连续批处理（continuous batching）和 PagedAttentio…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1179.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1179">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？","text":"考察点：量化+推理框架的落地选型。要求给出「量化精度选择 → 框架选择 → 显存账」的完整决策，而不是只说「用量化」。","answerCount":1,"datePublished":"2026-09-17T02:35:52.465Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先算显存账：FP16 权重 ~14GB，加上 KV Cache、激活、框架开销，24G 卡余量紧张甚至会 OOM。7B 用 INT4（AWQ/GPTQ） 权重降到 ~4GB，显存立刻宽裕，这是最关键的一步。 框架选型：选支持连续批处理（continuous batching）和 PagedAttention 的推理框架（如 vLLM），而非朴素逐请求推理——连续批处理把多个请求拼到同一 batch 解码，GPU 利用率从「等最长请求」变成「来一个进一个」，吞吐可数倍提升；PagedAttention 把 KV Cache 像虚拟内存一样分页，消除碎片、按需分配。 配套调参：按剩余显存设 max_model_len（上下文上限）与 max_num_seqs（并发上限）；若延迟仍高，再上 FP8 KV Cache 或开启 speculative decoding（小草稿模型猜 token）降首 token 延迟。 结论：「INT4 量化 + vLLM 类框架 + 合理 max_model_len」是 7B/24G 单卡高并发 API 的标配组合，实测可同时把显存压进卡内并把吞吐拉满。","url":"https://itinterview.com.cn/question/1179"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"模型部署优化","item":"https://itinterview.com.cn/category?cat=197"},{"@type":"ListItem","position":5,"name":"场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？","item":"https://itinterview.com.cn/q/1179.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"模型部署优化","item":"https://itinterview.com.cn/category?cat=197"},{"@type":"ListItem","position":5,"name":"场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？","item":"https://itinterview.com.cn/q/1179"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,11 @@
       <a class="cta" href="https://itinterview.com.cn/question/1179">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/787">模型推理优化常用手段（量化、剪枝、ONNX、批处理）有哪些？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1177">大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1178">GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1180">单选题：关于大模型推理的 KV Cache 与显存占用，下列说法正确的是？
+A. KV Cache 大小与上下文长度无关，只和模型层数有关
+B. KV Cache 随序列长度近似线性增长，是长上下文高并发时显存的主要消耗项
+C. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈
+D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

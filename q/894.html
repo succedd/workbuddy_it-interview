@@ -9,15 +9,15 @@
   <meta property="og:title" content="分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？ · IT面试题库">
   <meta property="og:description" content="双层 ID 思路： 内部 ID：用雪花算法生成 long 型趋势递增 ID 作主键/分片键，利于 B+ 树索引顺序写、减少页分裂；不对外暴露。 业务可见 ID：对外展示用「雪花 ID 经混淆/编码」或独立号段（如 日期+类型+随机后缀），既不暴露总量，又能防遍历爬取。 映射关系：内部主键与业务号 1:1 存储（订…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/894.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/894">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？ · IT面试题库">
   <meta name="twitter:description" content="双层 ID 思路： 内部 ID：用雪花算法生成 long 型趋势递增 ID 作主键/分片键，利于 B+ 树索引顺序写、减少页分裂；不对外暴露。 业务可见 ID：对外展示用「雪花 ID 经混淆/编码」或独立号段（如 日期+类型+随机后缀），既不暴露总量，又能防遍历爬取。 映射关系：内部主键与业务号 1:1 存储（订…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/894.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/894">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？","text":"考察 ID 安全与性能的权衡。","answerCount":1,"datePublished":"2026-09-09T02:23:18.013Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"双层 ID 思路： 内部 ID：用雪花算法生成 long 型趋势递增 ID 作主键/分片键，利于 B+ 树索引顺序写、减少页分裂；不对外暴露。 业务可见 ID：对外展示用「雪花 ID 经混淆/编码」或独立号段（如 日期+类型+随机后缀），既不暴露总量，又能防遍历爬取。 映射关系：内部主键与业务号 1:1 存储（订单表同时存 id 与 order_no），外部查询用 order_no 走索引；内部关联用 id 高效 JOIN。 取舍：若强一致性要求，业务号也由号段生成（不暴露时间序）；若允许轻微可推算，用雪花+base62 编码即可。核心是「主键管性能、业务号管安全」。","url":"https://itinterview.com.cn/question/894"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？","item":"https://itinterview.com.cn/q/894.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？","item":"https://itinterview.com.cn/q/894"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/894">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/890">用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/582">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/583">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/584">什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

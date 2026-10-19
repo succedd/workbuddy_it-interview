@@ -9,15 +9,15 @@
   <meta property="og:title" content="TypeScript 的类型收窄（Narrowing）是怎么工作的？为什么应该优先用 unknown 而不是 any？ · IT面试题库">
   <meta property="og:description" content="要点： 类型收窄：TS 通过控制流分析（Control Flow Analysis）在每个代码分支里推断出「更窄」的类型。常见触发方式： typeof x === &#39;string&#39;（原始类型）； x instanceof Date（类）； &#39;name&#39; in obj（属性存在性）； 判等/真值判断 if (x)、…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1039.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1039">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TypeScript 的类型收窄（Narrowing）是怎么工作的？为什么应该优先用 unknown 而不是 any？ · IT面试题库">
   <meta name="twitter:description" content="要点： 类型收窄：TS 通过控制流分析（Control Flow Analysis）在每个代码分支里推断出「更窄」的类型。常见触发方式： typeof x === &#39;string&#39;（原始类型）； x instanceof Date（类）； &#39;name&#39; in obj（属性存在性）； 判等/真值判断 if (x)、…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1039.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1039">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 的类型收窄（Narrowing）是怎么工作的？为什么应该优先用 unknown 而不是 any？","text":"考察点：类型守卫、控制流分析、unknown 的强制校验。实操中最影响代码安全性的点。","answerCount":1,"datePublished":"2026-09-10T11:52:20.639Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 类型收窄：TS 通过控制流分析（Control Flow Analysis）在每个代码分支里推断出「更窄」的类型。常见触发方式： typeof x === 'string'（原始类型）； x instanceof Date（类）； 'name' in obj（属性存在性）； 判等/真值判断 if (x)、if (x === null)（注意 if (x) 会同时排除 0、''、NaN，是语义陷阱）； 自定义类型守卫：function isUser(v: unknown): v is User 或断言函数 asserts v is User。 unknown vs any： any 关闭所有检查——可以随意取值、调用、赋给任何类型，错误一路传导到运行时报错； unknown 只能接收、不能直接使用，必须先收窄才能访问属性/调用方法。它保留的类型安全性正是「来自外部世界的值」需要的：JSON.parse() 的返回值、catch (e)、HTTP 响应、postMessage 数据。 典型模式： 生产环境更推荐用 zod / io-ts / valibot 做运行时校验并把结果类型推导出来——一次校验同时得到类型和校验，比手写守卫可靠。 工程配置：strict: true 里最容易被忽略的是 useUnknownInCatchVariables（TS 4.4+ 默认随 strict 开启），即 catch (e) 的 e 是 unknown 而不是 any——这正是官方在推动「别把异常当 any 用」。 加分点：as const 与 satisfies 让字面量收窄且不被拓宽；is 守卫在联合类型里能一次性收窄整个对象；never 常用于穷尽性检查（default: const _x: never = action），编译期强制你处理所有分支。","url":"https://itinterview.com.cn/question/1039"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"TypeScript前端","item":"https://itinterview.com.cn/category?cat=75"},{"@type":"ListItem","position":4,"name":"TypeScript 的类型收窄（Narrowing）是怎么工作的？为什么应该优先用 unknown 而不是 any？","item":"https://itinterview.com.cn/q/1039.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"TypeScript前端","item":"https://itinterview.com.cn/category?cat=75"},{"@type":"ListItem","position":4,"name":"TypeScript 的类型收窄（Narrowing）是怎么工作的？为什么应该优先用 unknown 而不是 any？","item":"https://itinterview.com.cn/q/1039"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -122,6 +122,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1039">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/435">TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1038">TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1040">TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

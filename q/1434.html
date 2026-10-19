@@ -9,15 +9,15 @@
   <meta property="og:title" content="Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。 · IT面试题库">
   <meta property="og:description" content="排查路径（自上而下） 1. 定位 SQL：AWR（DBA_HIST_SNAPSHOT / dba_hist_sqlstat）按 elapsed time / CPU / logical reads 排 Top SQL；实时问题直接查 v$session + v$sql； 2. 拿执行计划：EXPLAIN PLAN…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1434.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1434">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。 · IT面试题库">
   <meta name="twitter:description" content="排查路径（自上而下） 1. 定位 SQL：AWR（DBA_HIST_SNAPSHOT / dba_hist_sqlstat）按 elapsed time / CPU / logical reads 排 Top SQL；实时问题直接查 v$session + v$sql； 2. 拿执行计划：EXPLAIN PLAN…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1434.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1434">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。","text":"考察 Oracle SQL 调优方法论：执行计划获取、统计信息、绑定变量窥探与 SQL Plan Baseline 固化。","answerCount":1,"datePublished":"2026-10-01T04:20:39.449Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查路径（自上而下） 1. 定位 SQL：AWR（DBA_HIST_SNAPSHOT / dba_hist_sqlstat）按 elapsed time / CPU / logical reads 排 Top SQL；实时问题直接查 v$session + v$sql； 2. 拿执行计划：EXPLAIN PLAN FOR + dbms_xplan.display（注意它不绑定真实值，可能有窥探偏差）；生产更可信的是 dbms_xplan.display_cursor(sql_id, null, 'ALLSTATS LAST')——看 A-Rows 与 E-Rows 的偏差，偏差大 = 统计信息过期或优化器估算失真； 3. 常见病因：统计信息过期（重新 dbms_stats.gather_table_stats）、索引被禁用/失效（分区表全局索引 truncate 后 unusable）、隐式类型转换（varchar 列用数字比较使索引失效）、绑定变量窥探（一执行计划吃所有值分布，直方图缺失时更糟）。 SQL Plan Baseline 的作用 把验证过的好计划固化下来：优化器生成的新计划必须先与 baseline 中已接受的计划比对，不在其中的进 history 观察区，不会自动启用。适合「统计信息变化导致计划突变、执行走全表扫」的生产止血场景： 配合 SQL Profile（给优化器注入更准的估算修正）可治本。 易混淆点 执行计划走索引但仍然慢：多半是回表（TABLE ACCESS BY ROWID）的随机 IO，聚簇因子（clustering_factor）过高时，索引扫 ≈ 全表扫的成本； Hint 只是建议，失效场景多（视图合并、优化器版本变化），基线才是「承诺」。","url":"https://itinterview.com.cn/question/1434"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"Oracle","item":"https://itinterview.com.cn/category?cat=30"},{"@type":"ListItem","position":5,"name":"Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。","item":"https://itinterview.com.cn/q/1434.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"Oracle","item":"https://itinterview.com.cn/category?cat=30"},{"@type":"ListItem","position":5,"name":"Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。","item":"https://itinterview.com.cn/q/1434"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@ dbms_spm.load_plans_from_cursor_cache(sql_id =&gt; &#39;bad_sql_id&#39;);</code>
       <a class="cta" href="https://itinterview.com.cn/question/1434">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/722">Oracle 中表空间（Tablespace）与用户/模式的关系？</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

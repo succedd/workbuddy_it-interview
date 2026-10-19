@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？ · IT面试题库">
   <meta property="og:description" content="攻击原理 Solidity 给外部地址转账（call{value: x}(&quot;&quot;)）时会移交控制权——对方若是合约，其 receive()/fallback() 会被执行。重入攻击：恶意合约在 receive() 里再次调用原合约的提款函数，而此时原合约的余额还没扣减，于是「一边转一边取」直到榨干。 经典案例即 2…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1445.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1445">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？ · IT面试题库">
   <meta name="twitter:description" content="攻击原理 Solidity 给外部地址转账（call{value: x}(&quot;&quot;)）时会移交控制权——对方若是合约，其 receive()/fallback() 会被执行。重入攻击：恶意合约在 receive() 里再次调用原合约的提款函数，而此时原合约的余额还没扣减，于是「一边转一边取」直到榨干。 经典案例即 2…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1445.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1445">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？","text":"考察 Solidity 智能合约安全：重入攻击原理、CEI 模式、互斥锁与 receive/payable 机制，是智能合约面试的第一高频题。","answerCount":1,"datePublished":"2026-10-01T04:21:12.451Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"攻击原理 Solidity 给外部地址转账（call{value: x}(\"\")）时会移交控制权——对方若是合约，其 receive()/fallback() 会被执行。重入攻击：恶意合约在 receive() 里再次调用原合约的提款函数，而此时原合约的余额还没扣减，于是「一边转一边取」直到榨干。 经典案例即 2016 年 The DAO 被盗 360 万 ETH（最终导致 ETH 硬分叉）。 防御一：Checks-Effects-Interactions（CEI） 先校验、再改状态、最后才与外部交互： 重入时余额已是 0，require(amount \u003c= balances[msg.sender]) 直接 revert——账本先落地，攻击者拿不到「还没扣的钱」。 防御二：重入锁（mutex） OpenZeppelin 的 ReentrancyGuard.nonReentrant 即此实现。CEI 是根本解，mutex 是多函数交叉调用（跨函数重入）时的保险。 补充 0.8+ 的内置溢出检查防不了重入，别混淆； transfer/send 有 2300 gas 限制曾被视为「天然防重入」，但 EIP-1884 后 gas 成本变化使其不可靠，正确姿势是 call + CEI + mutex； 审计必查清单：所有 call/delegatecall 外呼点是否在状态更新之后。","url":"https://itinterview.com.cn/question/1445"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？","item":"https://itinterview.com.cn/q/1445.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？","item":"https://itinterview.com.cn/q/1445"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -122,6 +122,7 @@ modifier noReentrant() {
       <a class="cta" href="https://itinterview.com.cn/question/1445">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/679">Solidity 中 view/pure、modifier、event 的作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1591">用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1593">ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1594">设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

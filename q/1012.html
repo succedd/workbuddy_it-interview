@@ -9,15 +9,15 @@
   <meta property="og:title" content="TiDB 兼容 MySQL 的边界在哪里？它的整体架构（TiDB/TiKV/PD）是怎么分工的？ · IT面试题库">
   <meta property="og:description" content="要点： 三层架构：TiDB Server（无状态计算层，解析/优化/执行 SQL，可水平扩）→ TiKV（分布式 KV 存储层，数据按 Range 切 Region≈96MB，每 Region 三副本 Raft 组）→ PD（集群大脑：TSO 全局时钟发号、调度 Region 副本与负载均衡）。 水平扩展的本质：…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1012.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1012">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TiDB 兼容 MySQL 的边界在哪里？它的整体架构（TiDB/TiKV/PD）是怎么分工的？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三层架构：TiDB Server（无状态计算层，解析/优化/执行 SQL，可水平扩）→ TiKV（分布式 KV 存储层，数据按 Range 切 Region≈96MB，每 Region 三副本 Raft 组）→ PD（集群大脑：TSO 全局时钟发号、调度 Region 副本与负载均衡）。 水平扩展的本质：…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1012.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1012">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TiDB 兼容 MySQL 的边界在哪里？它的整体架构（TiDB/TiKV/PD）是怎么分工的？","text":"考察点：计算存储分离、Raft 多副本、PD 调度、MySQL 兼容性边界。","answerCount":1,"datePublished":"2026-09-10T07:26:52.120Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三层架构：TiDB Server（无状态计算层，解析/优化/执行 SQL，可水平扩）→ TiKV（分布式 KV 存储层，数据按 Range 切 Region≈96MB，每 Region 三副本 Raft 组）→ PD（集群大脑：TSO 全局时钟发号、调度 Region 副本与负载均衡）。 水平扩展的本质：数据不是分库分表「切库」，而是切成 Region 自动调度分裂合并——扩容加 TiKV 节点，PD 自动搬 Region，业务无感；这是它相对分库分表中间件的根本优势。 事务：Percolator 模型两阶段提交 + TSO 单调时间戳，快照隔离（ROCKSDB 上的 MVCC），乐观/悲观事务模式可选。 兼容边界：兼容 MySQL 协议与大部分语法，但不支持：外键（v6.6 前后有限支持）、部分存储引擎/字符集、触发器、存储过程；自增 ID 不保证连续（只保证趋势递增，分布式 AUTO_RANDOM 防热点）。迁移前必须做兼容性扫描（ TiUP/_tidb_ 兼容性检查工具）。","url":"https://itinterview.com.cn/question/1012"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"新型数据库","item":"https://itinterview.com.cn/category?cat=37"},{"@type":"ListItem","position":4,"name":"TiDB","item":"https://itinterview.com.cn/category?cat=40"},{"@type":"ListItem","position":5,"name":"TiDB 兼容 MySQL 的边界在哪里？它的整体架构（TiDB/TiKV/PD）是怎么分工的？","item":"https://itinterview.com.cn/q/1012.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"新型数据库","item":"https://itinterview.com.cn/category?cat=37"},{"@type":"ListItem","position":4,"name":"TiDB","item":"https://itinterview.com.cn/category?cat=40"},{"@type":"ListItem","position":5,"name":"TiDB 兼容 MySQL 的边界在哪里？它的整体架构（TiDB/TiKV/PD）是怎么分工的？","item":"https://itinterview.com.cn/q/1012"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1012">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1013">什么场景该把 MySQL 换成 TiDB？迁移时热写入热点问题怎么处理？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/458">TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

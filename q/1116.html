@@ -9,15 +9,15 @@
   <meta property="og:title" content="@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？ · IT面试题库">
   <meta property="og:description" content="根因：代理失效：Spring 事务靠 AOP 代理实现，自调用是 this 直接调用目标对象而非代理，绕过了事务拦截器，@Transactional 完全不生效。 排查步骤：①确认是否同类内调用；②确认 Bean 是否经 Spring 代理（CGLIB/JDK）、方法是否为 public；③看日志是否出现事务开启…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1116.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1116">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？ · IT面试题库">
   <meta name="twitter:description" content="根因：代理失效：Spring 事务靠 AOP 代理实现，自调用是 this 直接调用目标对象而非代理，绕过了事务拦截器，@Transactional 完全不生效。 排查步骤：①确认是否同类内调用；②确认 Bean 是否经 Spring 代理（CGLIB/JDK）、方法是否为 public；③看日志是否出现事务开启…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1116.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1116">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？","text":"Service 内方法 A 调用同类的 @Transactional 方法 B，B 抛异常却未回滚。请定位根因并给出修复方案。","answerCount":1,"datePublished":"2026-09-13T02:40:15.334Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：代理失效：Spring 事务靠 AOP 代理实现，自调用是 this 直接调用目标对象而非代理，绕过了事务拦截器，@Transactional 完全不生效。 排查步骤：①确认是否同类内调用；②确认 Bean 是否经 Spring 代理（CGLIB/JDK）、方法是否为 public；③看日志是否出现事务开启（TransactionManager 未打印即未代理）。 修复方案 A：把 B 抽到另一个 Service 中，通过依赖注入的代理调用，让事务拦截器介入。 修复方案 B：同类中自注入（@Autowired 自己）或暴露 AopContext.currentProxy() 后通过代理调用；也可将方法提到父类/独立组件。核心是「让调用经过代理」而非 this 直连。","url":"https://itinterview.com.cn/question/1116"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？","item":"https://itinterview.com.cn/q/1116.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？","item":"https://itinterview.com.cn/q/1116"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1116">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1106">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1105">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/74">Spring 的 IOC 与 DI 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/75">Spring Bean 的作用域与生命周期？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

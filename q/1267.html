@@ -9,15 +9,15 @@
   <meta property="og:title" content="GraphRAG 解决什么问题？为什么说 Chunk 是信息孤岛、向量相似度不擅长多跳推理？什么场景下不应该上 GraphRAG？ · IT面试题库">
   <meta property="og:description" content="要点：GraphRAG（Graph-based Retrieval-Augmented Generation）是一类把图结构用于检索增强的方案：把文档中的实体、关系和结构化上下文显式建模，查询时沿图关系收集证据，再交给大模型生成答案。传统向量 RAG 检索的是 Chunk（文本片段），GraphRAG 检索的是节…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1267.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1267">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GraphRAG 解决什么问题？为什么说 Chunk 是信息孤岛、向量相似度不擅长多跳推理？什么场景下不应该上 GraphRAG？ · IT面试题库">
   <meta name="twitter:description" content="要点：GraphRAG（Graph-based Retrieval-Augmented Generation）是一类把图结构用于检索增强的方案：把文档中的实体、关系和结构化上下文显式建模，查询时沿图关系收集证据，再交给大模型生成答案。传统向量 RAG 检索的是 Chunk（文本片段），GraphRAG 检索的是节…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1267.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1267">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GraphRAG 解决什么问题？为什么说 Chunk 是信息孤岛、向量相似度不擅长多跳推理？什么场景下不应该上 GraphRAG？","text":"考察点：对向量 RAG 能力边界的理解，以及图结构增强方案的选型判断力。","answerCount":1,"datePublished":"2026-09-26T02:31:45.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：GraphRAG（Graph-based Retrieval-Augmented Generation）是一类把图结构用于检索增强的方案：把文档中的实体、关系和结构化上下文显式建模，查询时沿图关系收集证据，再交给大模型生成答案。传统向量 RAG 检索的是 Chunk（文本片段），GraphRAG 检索的是节点、边、路径、社区摘要。类比一下：向量 RAG 像在图书馆按语义找几页相似内容；GraphRAG 像先整理出人物关系图、事件时间线和主题目录，再沿关系线索找证据。 向量 RAG 的三类局限 1. Chunk 是信息孤岛。切块把长文档变成可检索单元，同时拆开了跨章节的事实。以一个系统为例：定义、负责人、依赖的数据库、事故记录可能出现在不同章节，进入索引后不再共享明确的业务标识。相似度可以把相关段落排到前面，却不表示这些段落已被识别为同一系统的上下游证据——语义接近与关系完整是两件事。 2. 向量相似度不擅长多跳推理。例如“A 系统的负责人最近参与过哪些和支付链路相关的故障复盘”，需要沿 系统 -> 负责人 -> 复盘 -> 链路 完成四次受约束的跳转。“A 系统说明”和“支付故障复盘”都可能被召回，但 Top-K 本身不会告诉检索器该沿哪条路径补齐证据。 3. 全局性问题很难靠 Top-K 回答。“这批客户投诉主要集中在哪几类问题”“过去一年知识库里反复出现的架构风险是什么”，这类问题要求对语料做聚合与主题归纳。召回片段太少看不到整体模式，太多则 Token 成本和噪声一起爆炸；扩大 Top-K、加 rerank 仍以片段排序为中心，关系链或全局主题缺少显式表示时，问题不会随候选数增多而消失。 核心概念：知识图谱（节点/边/属性）、实体（最小业务对象，抽取质量直接决定上限，建议用 JSON Schema 强约束格式、Few-shot 覆盖正反例、限制最大实体数、强制带 source_text_span 便于溯源）、关系（把“依赖/影响/导致”显式化，是处理多跳问题的关键）、社区发现（用 Leiden/Louvain 等划分层级社区并生成摘要）、全局检索 vs 局部检索（Local Search 从已知实体向邻居扩展；Global Search 用社区摘要做 Map-Reduce 归纳主题；DRIFT Search 在实体邻居之外加入社区摘要）。 什么场景不该上 GraphRAG 数据量小、问题简单：几十篇文档的规则问答，向量 RAG 加混合检索和 rerank 往往更划算。 文档质量太差：源文档主语缺失、版本混乱、术语不统一、表格解析错误严重时，抽出来的图谱也很脏。向量 RAG 的错误通常是“找错几段文本”，GraphRAG 的错误可能是“整张关系网方向错了”。 实时性要求极高：实体抽取、社区发现、摘要生成都会推高更新成本。 团队缺少图建模和评测能力：没人负责实体是否值得建模、关系类型怎么设计、实体如何消歧时，GraphRAG 很容易变成昂贵但不可控的黑盒。 判断顺序：相关文本没进入候选集 → 先排查解析、切分和召回；候选文本已齐全但系统无法按业务关系连起来 → 再验证 GraphRAG。落地建议走“向量 RAG 基线 → 收集关系型失败案例 → 轻量图谱 → 社区发现与全局检索 → 按需 Hybrid 路由”。","url":"https://itinterview.com.cn/question/1267"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"GraphRAG 解决什么问题？为什么说 Chunk 是信息孤岛、向量相似度不擅长多跳推理？什么场景下不应该上 GraphRAG？","item":"https://itinterview.com.cn/q/1267.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"GraphRAG 解决什么问题？为什么说 Chunk 是信息孤岛、向量相似度不擅长多跳推理？什么场景下不应该上 GraphRAG？","item":"https://itinterview.com.cn/q/1267"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1267">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/86">什么是 RAG（检索增强生成）？典型流程？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/617">为什么在已有大模型的情况下还需要 RAG？它主要解决了大模型的哪几类固有问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/618">给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/619">用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

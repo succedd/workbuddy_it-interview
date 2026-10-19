@@ -9,15 +9,15 @@
   <meta property="og:title" content="Yarn 的 PnP（Plug&#39;n&#39;Play）如何减少依赖安装时间？它和 node_modules 模式的取舍是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 机制：PnP 不生成 node_modules，安装后生成映射表，运行时直接从 zip 包解析依赖，减少大量文件复制。 优点：安装快、节省磁盘、能检测幽灵依赖。 取舍：部分依赖 Node 特定路径或未声明依赖的工具会不兼容，需要 fallback 到 node_modules；团队应评估构建链、编辑器插件…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1633.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1633">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Yarn 的 PnP（Plug&#39;n&#39;Play）如何减少依赖安装时间？它和 node_modules 模式的取舍是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 机制：PnP 不生成 node_modules，安装后生成映射表，运行时直接从 zip 包解析依赖，减少大量文件复制。 优点：安装快、节省磁盘、能检测幽灵依赖。 取舍：部分依赖 Node 特定路径或未声明依赖的工具会不兼容，需要 fallback 到 node_modules；团队应评估构建链、编辑器插件…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1633.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1633">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Yarn 的 PnP（Plug'n'Play）如何减少依赖安装时间？它和 node_modules 模式的取舍是什么？","text":"考察包管理与依赖解析机制。","answerCount":1,"datePublished":"2026-10-15T12:54:41.365Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 机制：PnP 不生成 node_modules，安装后生成映射表，运行时直接从 zip 包解析依赖，减少大量文件复制。 优点：安装快、节省磁盘、能检测幽灵依赖。 取舍：部分依赖 Node 特定路径或未声明依赖的工具会不兼容，需要 fallback 到 node_modules；团队应评估构建链、编辑器插件和部署环境再切换。","url":"https://itinterview.com.cn/question/1633"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"yarn","item":"https://itinterview.com.cn/category?cat=74"},{"@type":"ListItem","position":5,"name":"Yarn 的 PnP（Plug'n'Play）如何减少依赖安装时间？它和 node_modules 模式的取舍是什么？","item":"https://itinterview.com.cn/q/1633.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"yarn","item":"https://itinterview.com.cn/category?cat=74"},{"@type":"ListItem","position":5,"name":"Yarn 的 PnP（Plug'n'Play）如何减少依赖安装时间？它和 node_modules 模式的取舍是什么？","item":"https://itinterview.com.cn/q/1633"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1633">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/720">Yarn 相比 npm 的优势（yarn.lock/workspaces/速度快）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？ · IT面试题库">
   <meta property="og:description" content="先看简单 LRU 的两个问题 预读失效：InnoDB 加载数据页时会按局部性原理把相邻页一并预读进来，但这些页可能根本不会被访问。若直接插到 LRU 头部，反而把真正热的页往后挤，降低缓存命中率。 Buffer Pool 污染：一次全表扫描（哪怕结果集很小，比如 where name like &#39;%xx%&#39; 索引…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1321.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1321">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？ · IT面试题库">
   <meta name="twitter:description" content="先看简单 LRU 的两个问题 预读失效：InnoDB 加载数据页时会按局部性原理把相邻页一并预读进来，但这些页可能根本不会被访问。若直接插到 LRU 头部，反而把真正热的页往后挤，降低缓存命中率。 Buffer Pool 污染：一次全表扫描（哪怕结果集很小，比如 where name like &#39;%xx%&#39; 索引…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1321.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1321">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？","text":"考察点：对 InnoDB 缓存管理的理解深度，能否讲清楚预读失效与 Buffer Pool 污染两个问题及对应的解决机制。","answerCount":1,"datePublished":"2026-09-26T03:32:27.709Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先看简单 LRU 的两个问题 预读失效：InnoDB 加载数据页时会按局部性原理把相邻页一并预读进来，但这些页可能根本不会被访问。若直接插到 LRU 头部，反而把真正热的页往后挤，降低缓存命中率。 Buffer Pool 污染：一次全表扫描（哪怕结果集很小，比如 where name like '%xx%' 索引失效）会把大量只访问一次的页逐个插到 LRU 头部，把 young 区的热点数据全部替换出去，热数据再被访问时就要重新走磁盘 IO。 改进版 LRU：young/old 分区 + midpoint insertion InnoDB 把 LRU 链表分成 young 区（前半段，放热点数据）和 old 区（后半段），比例由 innodb_old_blocks_pct 控制，默认 37，即 young : old 约 63 : 37（近似 5:3）。 新页（含预读页）一律先插入 old 区头部，也就是整个链表约 5/8 的位置（midpoint insertion），而不是链表头部。这样预读页和扫描页都只能滞留在 old 区，不碰 young 区的热数据。 晋升条件：old 区的页第一次被访问时记录时间，只有当后续再次访问、且与首次访问的间隔超过 innodb_old_blocks_time（默认 1000ms）时，才会移到 young 区头部。全表扫描的典型特征是 1 秒内对同一页反复访问后立刻扫下一页，达不到停留阈值，所以这些页进不了 young 区。 淘汰：空间不足时从 old 区尾部淘汰，扫描页快速出局；young 区前 1/4 被访问不移动到头部，减少热点页搬移开销。 答题要点：先讲两个问题，再讲分区结构与两个关键参数（innodb_old_blocks_pct、innodb_old_blocks_time），最后点出效果——全表扫描只会在 old 区自生自灭，热数据不会被冲掉。注意与「为什么需要 redo log」区分：本题是缓存命中率管理，不是崩溃恢复。","url":"https://itinterview.com.cn/question/1321"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？","item":"https://itinterview.com.cn/q/1321.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？","item":"https://itinterview.com.cn/q/1321"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1321">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/137">InnoDB和MyISAM存储引擎的区别？</a><span class="rel-n">470 次浏览</span></li><li><a href="https://itinterview.com.cn/q/134">MySQL中JOIN的实现原理？</a><span class="rel-n">400 次浏览</span></li><li><a href="https://itinterview.com.cn/q/132">MySQL中MVCC的原理？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/130">MySQL索引的底层数据结构是什么？</a><span class="rel-n">332 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

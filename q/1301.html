@@ -9,15 +9,15 @@
   <meta property="og:title" content="script 的 defer 和 async 有什么区别？img 的 loading 与 srcset/sizes 又是怎么决定「要不要加载」和「加载哪一张」的？ · IT面试题库">
   <meta property="og:description" content="一、defer vs async（经典脚本） | 版本 | 下载 | 执行时机 | 执行顺序 | 是否阻塞解析 | |---|---|---|---|---| | 无属性 | 阻塞 | 立即 | 按顺序 | 是 | | async | 并行 | 下载完立刻执行，可能打断解析 | 不保证 | 否 | | defer…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1301.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1301">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="script 的 defer 和 async 有什么区别？img 的 loading 与 srcset/sizes 又是怎么决定「要不要加载」和「加载哪一张」的？ · IT面试题库">
   <meta name="twitter:description" content="一、defer vs async（经典脚本） | 版本 | 下载 | 执行时机 | 执行顺序 | 是否阻塞解析 | |---|---|---|---|---| | 无属性 | 阻塞 | 立即 | 按顺序 | 是 | | async | 并行 | 下载完立刻执行，可能打断解析 | 不保证 | 否 | | defer…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1301.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1301">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"script 的 defer 和 async 有什么区别？img 的 loading 与 srcset/sizes 又是怎么决定「要不要加载」和「加载哪一张」的？","text":"考察点：资源加载属性的语义差异，这是首屏性能优化的基本功。","answerCount":1,"datePublished":"2026-09-26T02:32:49.508Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、defer vs async（经典脚本） | 版本 | 下载 | 执行时机 | 执行顺序 | 是否阻塞解析 | |---|---|---|---|---| | 无属性 | 阻塞 | 立即 | 按顺序 | 是 | | async | 并行 | 下载完立刻执行，可能打断解析 | 不保证 | 否 | | defer | 并行 | 文档解析完成后、DOMContentLoaded 之前 | 按出现顺序 | 否 | 两者都指示浏览器在后台线程下载，获取期间不阻塞页面；差异在执行时机与顺序。 同时写 async 与 defer，行为等同只写 async；内联脚本（无 src）加这两个属性无效。 type=module 默认延迟执行，defer 对它无效；模块脚本跨源获取必须走 CORS。 结论：脚本互相独立、越快跑越好 → async；脚本之间有依赖或需要 DOM 就绪 → defer，并保持标签顺序。 二、 loading='lazy'：延迟到接近视口才加载；eager（默认）立即加载。注意两点：只有启用 JS 时才延迟生效（反跟踪设计）；且必须给 width/height，否则未加载时尺寸为 0，可能永远不进入视口从而永不加载。 srcset + sizes：sizes 描述「在当前视口下图片预期显示多宽」，其媒体条件针对视口而非图片；srcset 用 w（宽度描述符）或 x（像素密度描述符）给出候选。浏览器据此计算有效像素密度，自行挑选最合适的一张；使用 w 描述符时必须同时提供 sizes，否则 srcset 会被整个忽略。 同时写 width/height 可让浏览器提前算出宽高比、预留空间、减少 CLS；想提升首屏大图优先级可加 fetchpriority='high'。","url":"https://itinterview.com.cn/question/1301"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"HTML","item":"https://itinterview.com.cn/category?cat=57"},{"@type":"ListItem","position":5,"name":"script 的 defer 和 async 有什么区别？img 的 loading 与 srcset/sizes 又是怎么决定「要不要加载」和「加载哪一张」的？","item":"https://itinterview.com.cn/q/1301.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"HTML","item":"https://itinterview.com.cn/category?cat=57"},{"@type":"ListItem","position":5,"name":"script 的 defer 和 async 有什么区别？img 的 loading 与 srcset/sizes 又是怎么决定「要不要加载」和「加载哪一张」的？","item":"https://itinterview.com.cn/q/1301"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -118,6 +118,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1301">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/123">HTML5新增了哪些重要的API？</a><span class="rel-n">243 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1300">为什么提倡「语义化 HTML」？请举例说明语义化标签在 SEO 与无障碍上的实际收益，并给出判断该用什么标签的方法。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

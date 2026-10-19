@@ -9,15 +9,15 @@
   <meta property="og:title" content="PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？ · IT面试题库">
   <meta property="og:description" content="要点： 实现：PG 每行有隐藏字段 xmin（插入该版本的事务 ID）、xmax（删除 / 更新该版本的事务 ID）。每个事务开始时拿一个快照（snapshot）记录当前活跃事务区间；判断某行版本是否对当前事务可见，依据 xmin/xmax 与快照的可见性规则——已提交且在快照之前、且未被后续事务删除的版本才可见…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1609.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1609">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？ · IT面试题库">
   <meta name="twitter:description" content="要点： 实现：PG 每行有隐藏字段 xmin（插入该版本的事务 ID）、xmax（删除 / 更新该版本的事务 ID）。每个事务开始时拿一个快照（snapshot）记录当前活跃事务区间；判断某行版本是否对当前事务可见，依据 xmin/xmax 与快照的可见性规则——已提交且在快照之前、且未被后续事务删除的版本才可见…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1609.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1609">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？","text":"考察 PG 核心并发机制与事务可见性。","answerCount":1,"datePublished":"2026-10-10T11:54:12.342Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 实现：PG 每行有隐藏字段 xmin（插入该版本的事务 ID）、xmax（删除 / 更新该版本的事务 ID）。每个事务开始时拿一个快照（snapshot）记录当前活跃事务区间；判断某行版本是否对当前事务可见，依据 xmin/xmax 与快照的可见性规则——已提交且在快照之前、且未被后续事务删除的版本才可见。更新即写新版本 + 标记旧版本 xmax，旧版本成为「死元组（dead tuple）」。 与 InnoDB 区别：InnoDB 用 undo log + 事务 ID + 回滚指针在聚簇索引上构造历史版本，读取时按需回溯；PG 则是行上直接保留多版本，历史版本就在表 / 堆里。 代价不同：PG 的死元组需要 VACUUM / AUTOVACUUM 回收，否则表膨胀、性能下降；InnoDB 的 undo 由 purge 线程清理。PG 的 REPEATABLE READ 通过快照实现，且对写-写冲突用Serializable 快照隔离（SSI）可检测序列化异常。","url":"https://itinterview.com.cn/question/1609"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？","item":"https://itinterview.com.cn/q/1609.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？","item":"https://itinterview.com.cn/q/1609"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1609">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/453">线上 PostgreSQL 磁盘占用只增不减，日志出现 &quot;database must be vacuumed within N transactions&quot; 警告，根因是什么？如何排查与处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/454">PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1610">PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1611">PostgreSQL 一条查询很慢，如何用 EXPLAIN / EXPLAIN ANALYZE 定位根因？统计信息过期怎么办？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

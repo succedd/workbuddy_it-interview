@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何写出一个结构化的高质量 Prompt？拆解「角色-任务-上下文-格式-约束」五要素，并说明每一部分的作用。 · IT面试题库">
   <meta property="og:description" content="要点： 角色（Role）：用「你是一位…」给模型设定身份与专业视角，影响措辞与知识取舍，让回答更贴合场景。 任务（Task）：用一句话清晰说明「要做什么」，避免模糊动词（如『处理一下』），改用「总结 / 分类 / 翻译 / 抽取」等具体动作。 上下文（Context）：提供必要背景、输入数据与约束条件；信息越相关…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/968.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/968">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何写出一个结构化的高质量 Prompt？拆解「角色-任务-上下文-格式-约束」五要素，并说明每一部分的作用。 · IT面试题库">
   <meta name="twitter:description" content="要点： 角色（Role）：用「你是一位…」给模型设定身份与专业视角，影响措辞与知识取舍，让回答更贴合场景。 任务（Task）：用一句话清晰说明「要做什么」，避免模糊动词（如『处理一下』），改用「总结 / 分类 / 翻译 / 抽取」等具体动作。 上下文（Context）：提供必要背景、输入数据与约束条件；信息越相关…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/968.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/968">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何写出一个结构化的高质量 Prompt？拆解「角色-任务-上下文-格式-约束」五要素，并说明每一部分的作用。","text":"考察点：结构化提示词的五要素框架（Role/Task/Context/Format/Constraints）及其各自作用。是 Prompt Engineering 追问链的起点。","answerCount":1,"datePublished":"2026-09-10T02:29:55.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 角色（Role）：用「你是一位…」给模型设定身份与专业视角，影响措辞与知识取舍，让回答更贴合场景。 任务（Task）：用一句话清晰说明「要做什么」，避免模糊动词（如『处理一下』），改用「总结 / 分类 / 翻译 / 抽取」等具体动作。 上下文（Context）：提供必要背景、输入数据与约束条件；信息越相关、越聚焦，输出越准，也能减少模型自行脑补。 格式（Format）：明确输出形态——JSON / 表格 / 列表 / 字数上限，最好给模板或示例，便于下游程序解析。 约束（Constraints）：列出「不要做什么」（如『不要编造来源』『只用中文』『不超过 200 字』），划清知识边界。 经验：把五要素写成固定模板（角色→任务→上下文→格式→约束），比自由发挥稳定得多；复杂任务再叠加少样本与思维链。","url":"https://itinterview.com.cn/question/968"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Prompt Engineering","item":"https://itinterview.com.cn/category?cat=192"},{"@type":"ListItem","position":5,"name":"如何写出一个结构化的高质量 Prompt？拆解「角色-任务-上下文-格式-约束」五要素，并说明每一部分的作用。","item":"https://itinterview.com.cn/q/968.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Prompt Engineering","item":"https://itinterview.com.cn/category?cat=192"},{"@type":"ListItem","position":5,"name":"如何写出一个结构化的高质量 Prompt？拆解「角色-任务-上下文-格式-约束」五要素，并说明每一部分的作用。","item":"https://itinterview.com.cn/q/968"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/968">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/87">什么是 Prompt Engineering？常用技巧有哪些？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/969">少样本提示（Few-shot）在实战中该怎么用？什么时候该加示例、示例如何挑选、顺序与格式会影响结果吗？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/970">在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/971">思维链（Chain-of-Thought, CoT）是什么？zero-shot CoT 与 few-shot CoT 有什么区别，又适用于哪些任务？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

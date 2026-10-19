@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何设计并实现一个 O(1) 的 LRU 缓存？说明数据结构与淘汰策略 · IT面试题库">
   <meta property="og:description" content="核心结构 用哈希表做 O(1) 定位节点，用双向链表维护使用顺序（头=最近使用，尾=最久未用）。 访问或插入节点时移到表头；超过容量时删除表尾节点，并从哈希表移除。 复杂度 get 与 put 均为 O(1)。 代码（JavaScript，借助 Map 保序） JavaScript 的 Map 会保留插入顺序，删…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1364.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1364">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计并实现一个 O(1) 的 LRU 缓存？说明数据结构与淘汰策略 · IT面试题库">
   <meta name="twitter:description" content="核心结构 用哈希表做 O(1) 定位节点，用双向链表维护使用顺序（头=最近使用，尾=最久未用）。 访问或插入节点时移到表头；超过容量时删除表尾节点，并从哈希表移除。 复杂度 get 与 put 均为 O(1)。 代码（JavaScript，借助 Map 保序） JavaScript 的 Map 会保留插入顺序，删…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1364.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1364">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计并实现一个 O(1) 的 LRU 缓存？说明数据结构与淘汰策略","text":"考察哈希表与双向链表组合、容量淘汰策略","answerCount":1,"datePublished":"2026-09-26T05:19:39.562Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心结构 用哈希表做 O(1) 定位节点，用双向链表维护使用顺序（头=最近使用，尾=最久未用）。 访问或插入节点时移到表头；超过容量时删除表尾节点，并从哈希表移除。 复杂度 get 与 put 均为 O(1)。 代码（JavaScript，借助 Map 保序） JavaScript 的 Map 会保留插入顺序，删除再插入即可把节点置为最新，迭代首键即最久未用，从而省去手写双向链表。","url":"https://itinterview.com.cn/question/1364"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"如何设计并实现一个 O(1) 的 LRU 缓存？说明数据结构与淘汰策略","item":"https://itinterview.com.cn/q/1364.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"如何设计并实现一个 O(1) 的 LRU 缓存？说明数据结构与淘汰策略","item":"https://itinterview.com.cn/q/1364"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -122,6 +122,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1364">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/170">动态规划的核心思想？经典问题有哪些？</a><span class="rel-n">478 次浏览</span></li><li><a href="https://itinterview.com.cn/q/167">快排和归并排序的区别？</a><span class="rel-n">58 次浏览</span></li><li><a href="https://itinterview.com.cn/q/66">什么是时间复杂度与空间复杂度？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/67">快速排序的思想与最坏情况？</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

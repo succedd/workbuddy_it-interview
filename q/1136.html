@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。 · IT面试题库">
   <meta property="og:description" content="三段结构：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1136.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1136">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。 · IT面试题库">
   <meta name="twitter:description" content="三段结构：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1136.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1136">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。","text":"给出一个能开机自启、崩溃自拉起的服务单元示例，并解释三个段落的职责与关键字段含义。","answerCount":1,"datePublished":"2026-09-14T02:47:28.278Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三段结构：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开机进入多用户模式时拉起）。 最小示例：[Unit] Description=myapp After=network.target [Service] ExecStart=/usr/bin/python3 /opt/myapp.py Restart=on-failure User=app [Install] WantedBy=multi-user.target，写好后 systemctl daemon-reload && systemctl enable --now myapp 即开机自启并立即启动。 关键字段：Type=simple（默认，ExecStart 即主进程）/forking（后台 fork 需指定 PIDFile）；Restart=no/on-success/on-failure/always 决定退出后是否重启；WantedBy 决定挂在哪个 target 下，enable 实质是在 target.wants 目录建软链。 enable 与 start 的区别：enable 是“登记开机自启（建软链）”，start 是“现在就跑一次”；二者独立，常一起用。","url":"https://itinterview.com.cn/question/1136"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。","item":"https://itinterview.com.cn/q/1136.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。","item":"https://itinterview.com.cn/q/1136"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1136">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/147">Linux进程管理相关命令？</a><span class="rel-n">361 次浏览</span></li><li><a href="https://itinterview.com.cn/q/146">Linux常用文件操作命令？</a><span class="rel-n">337 次浏览</span></li><li><a href="https://itinterview.com.cn/q/150">Linux系统性能和资源监控？</a><span class="rel-n">230 次浏览</span></li><li><a href="https://itinterview.com.cn/q/148">Linux网络相关命令？</a><span class="rel-n">35 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

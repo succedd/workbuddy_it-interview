@@ -9,15 +9,15 @@
   <meta property="og:title" content="简述 IEEE 754 浮点数的单精度与双精度格式，说明符号位、阶码、尾数的排布、隐含位与偏移量，以及机器零。 · IT面试题库">
   <meta property="og:description" content="一、总体结构 IEEE 754 浮点数均按 V = (−1)^S × (1.M) × 2^(E−bias) 表示（规格化数），由三段组成：符号位 S、阶码 E、尾数 M（小数部分）。 二、单精度（32 位） 符号位 S：1 位，S=0 为正、S=1 为负。 阶码 E：8 位，存“有偏指数” E = e + 127…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1371.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1371">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="简述 IEEE 754 浮点数的单精度与双精度格式，说明符号位、阶码、尾数的排布、隐含位与偏移量，以及机器零。 · IT面试题库">
   <meta name="twitter:description" content="一、总体结构 IEEE 754 浮点数均按 V = (−1)^S × (1.M) × 2^(E−bias) 表示（规格化数），由三段组成：符号位 S、阶码 E、尾数 M（小数部分）。 二、单精度（32 位） 符号位 S：1 位，S=0 为正、S=1 为负。 阶码 E：8 位，存“有偏指数” E = e + 127…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1371.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1371">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"简述 IEEE 754 浮点数的单精度与双精度格式，说明符号位、阶码、尾数的排布、隐含位与偏移量，以及机器零。","text":"考察 IEEE 754 浮点数的二进制布局、规格化表示、隐藏位机制与特殊值（含机器零）。","answerCount":1,"datePublished":"2026-09-26T08:59:07.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、总体结构 IEEE 754 浮点数均按 V = (−1)^S × (1.M) × 2^(E−bias) 表示（规格化数），由三段组成：符号位 S、阶码 E、尾数 M（小数部分）。 二、单精度（32 位） 符号位 S：1 位，S=0 为正、S=1 为负。 阶码 E：8 位，存“有偏指数” E = e + 127，偏移量 bias = 127。 尾数 M：23 位，存小数部分 f；规格化数的整数部分恒为 1，称为隐含位/隐藏位，不存储，故实际精度为 24 位（1+23）。 表示范围约 ±1.18×10^−38 ~ ±3.4×10^38，机器 ε ≈ 2^−23。 三、双精度（64 位） S：1 位；E：11 位，bias = 1023；M：52 位，隐含位使实际精度 53 位。 范围约 ±2.23×10^−308 ~ ±1.8×10^308，机器 ε ≈ 2^−52。 四、特殊值与机器零 阶码全 0 且尾数全 0：表示 ±0（机器零）；阶码全 0、尾数非 0 为非规格化数。 阶码全 1 且尾数全 0：±∞；阶码全 1、尾数非 0：NaN。 机器零：尾数为 0 即数值为 0（与阶码无关），避免了阶码下溢导致的“伪零”问题。 五、对比小结 | 格式 | 总位 | S | E | M | bias | 实际精度 | |------|------|---|---|---|------|----------| | 单精度 | 32 | 1 | 8 | 23 | 127 | 24 | | 双精度 | 64 | 1 | 11 | 52 | 1023 | 53 |","url":"https://itinterview.com.cn/question/1371"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"简述 IEEE 754 浮点数的单精度与双精度格式，说明符号位、阶码、尾数的排布、隐含位与偏移量，以及机器零。","item":"https://itinterview.com.cn/q/1371.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"简述 IEEE 754 浮点数的单精度与双精度格式，说明符号位、阶码、尾数的排布、隐含位与偏移量，以及机器零。","item":"https://itinterview.com.cn/q/1371"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -119,6 +119,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1371">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

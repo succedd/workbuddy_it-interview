@@ -9,15 +9,15 @@
   <meta property="og:title" content="STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？ · IT面试题库">
   <meta property="og:description" content="要点： 时钟路径：HSE（外部晶振）或 HSI（内部 RC）经 PLL 倍频得到 SYSCLK，再经 AHB 预分频得到 HCLK，APB1/APB2 预分频得到外设时钟；每个外设还有独立的 RCC 时钟使能位，不开时钟寄存器写入无效。 配置顺序：开 HSE 并等待稳定 → 配 PLL 的 M/N/P/Q → 切…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1742.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1742">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？ · IT面试题库">
   <meta name="twitter:description" content="要点： 时钟路径：HSE（外部晶振）或 HSI（内部 RC）经 PLL 倍频得到 SYSCLK，再经 AHB 预分频得到 HCLK，APB1/APB2 预分频得到外设时钟；每个外设还有独立的 RCC 时钟使能位，不开时钟寄存器写入无效。 配置顺序：开 HSE 并等待稳定 → 配 PLL 的 M/N/P/Q → 切…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1742.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1742">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？","text":"考察时钟源选择、PLL 配置、Flash 等待周期与外设时钟使能。","answerCount":1,"datePublished":"2026-10-19T05:43:25.908Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 时钟路径：HSE（外部晶振）或 HSI（内部 RC）经 PLL 倍频得到 SYSCLK，再经 AHB 预分频得到 HCLK，APB1/APB2 预分频得到外设时钟；每个外设还有独立的 RCC 时钟使能位，不开时钟寄存器写入无效。 配置顺序：开 HSE 并等待稳定 → 配 PLL 的 M/N/P/Q → 切换 SYSCLK 到 PLL → 配 AHB/APB 分频 → 开外设时钟；主频提高后要同步增加 Flash latency，否则取指失败。 常见坑：APB 预分频不为 1 时，定时器时钟会再乘 2；UART/USB 等外设有时钟上限；改时钟后要重算波特率、SPI 分频与 SysTick，否则通信全乱。","url":"https://itinterview.com.cn/question/1742"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"STM32","item":"https://itinterview.com.cn/category?cat=245"},{"@type":"ListItem","position":4,"name":"STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？","item":"https://itinterview.com.cn/q/1742.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"STM32","item":"https://itinterview.com.cn/category?cat=245"},{"@type":"ListItem","position":4,"name":"STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？","item":"https://itinterview.com.cn/q/1742"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1742">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/699">STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1661">STM32 外设通信偶发丢字节，你会按什么顺序排查硬件、配置和软件？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1743">STM32 串口不定长接收：DMA + IDLE 中断与半满/全满中断该怎么配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1744">STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

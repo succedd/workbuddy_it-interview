@@ -9,15 +9,15 @@
   <meta property="og:title" content="ANR 的产生条件有哪些？如何定位与分析 ANR？ · IT面试题库">
   <meta property="og:description" content="超时条件：① 输入事件 5s 内未被消费（按键/触摸）；② 前台 Service 20s、后台 Service 200s 未完成 onStartCommand 等生命周期；③ BroadcastReceiver 前台 10s、后台 60s 未处理完 onReceive；④ ContentProvider publ…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1502.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1502">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ANR 的产生条件有哪些？如何定位与分析 ANR？ · IT面试题库">
   <meta name="twitter:description" content="超时条件：① 输入事件 5s 内未被消费（按键/触摸）；② 前台 Service 20s、后台 Service 200s 未完成 onStartCommand 等生命周期；③ BroadcastReceiver 前台 10s、后台 60s 未处理完 onReceive；④ ContentProvider publ…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1502.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1502">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ANR 的产生条件有哪些？如何定位与分析 ANR？","text":"说明三大类 ANR 的超时阈值，以及 traces.txt 的分析方法。","answerCount":1,"datePublished":"2026-10-05T01:03:57.951Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"超时条件：① 输入事件 5s 内未被消费（按键/触摸）；② 前台 Service 20s、后台 Service 200s 未完成 onStartCommand 等生命周期；③ BroadcastReceiver 前台 10s、后台 60s 未处理完 onReceive；④ ContentProvider publish 超时 10s。根因几乎都是主线程被阻塞：主线程 IO/锁等待、Binder 对端卡住、GC 风暴、跨进程死锁，或广播/服务回调里做重活。 定位：① /data/anr/traces.txt（或 Play Console/Vitals、bugly 上报）找发生时刻的 main 线程堆栈：Blocked/Waiting on 锁 → 看持锁线程；主线程在 binderTransact → 查对端进程；② 结合 CPU/IO 信息段（CPU usage from ... to ...）判断是否被后台抢资源；③ 复现时用 StrictMode（diskReadOnMainThread）、 systrace/Perfetto 看主线程长任务。 预防：主线程只做轻量工作，重活进线程池/协程；Broadcast 里用 goAsync 或转 Service。","url":"https://itinterview.com.cn/question/1502"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"ANR 的产生条件有哪些？如何定位与分析 ANR？","item":"https://itinterview.com.cn/q/1502.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"ANR 的产生条件有哪些？如何定位与分析 ANR？","item":"https://itinterview.com.cn/q/1502"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1502">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/250">Android 中 Activity 的生命周期回调有哪些？各自代表什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/251">Android 的 Handler、Looper、MessageQueue 是如何协作实现线程通信的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1501">Handler 消息机制的完整流程是什么？Looper、MessageQueue、Handler 如何配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1503">Android View 的事件分发机制是什么？滑动冲突如何解决？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

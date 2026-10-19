@@ -9,15 +9,15 @@
   <meta property="og:title" content="某服务配了 Restart=always，却偶发“一直卡在 activating”或反复重启进入失败状态，如何结合 journalctl -u 与 systemctl status 定位根因？ · IT面试题库">
   <meta property="og:description" content="第一步看状态：systemctl status 直接给出 Active（activating/failed）、主 PID、最近几行日志与退出码（如 code=exited, status=1），先判断是“一直起不来”还是“起来了又死”。 第二步看完整日志：journalctl -u -b --no-pager（只…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1137.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1137">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="某服务配了 Restart=always，却偶发“一直卡在 activating”或反复重启进入失败状态，如何结合 journalctl -u 与 systemctl status 定位根因？ · IT面试题库">
   <meta name="twitter:description" content="第一步看状态：systemctl status 直接给出 Active（activating/failed）、主 PID、最近几行日志与退出码（如 code=exited, status=1），先判断是“一直起不来”还是“起来了又死”。 第二步看完整日志：journalctl -u -b --no-pager（只…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1137.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1137">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"某服务配了 Restart=always，却偶发“一直卡在 activating”或反复重启进入失败状态，如何结合 journalctl -u 与 systemctl status 定位根因？","text":"请给出一个可复现的排查流程：先看什么、再看什么，如何区分“启动超时”“依赖未就绪”“进程快速退出”等根因。","answerCount":1,"datePublished":"2026-09-14T02:47:28.506Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"第一步看状态：systemctl status 直接给出 Active（activating/failed）、主 PID、最近几行日志与退出码（如 code=exited, status=1），先判断是“一直起不来”还是“起来了又死”。 第二步看完整日志：journalctl -u -b --no-pager（只看本次启动该单元）或加 -e 看尾部、-f 实时跟随；重点看 ExecStart 进程自己打印的错误（端口被占、配置错、权限不足）。 卡在 activating（启动超时）：Type 选了 forking 却没给 PIDFile，或 ExecStart 是阻塞前台进程但 systemd 在等“fork 完成”，超时（默认 StartTimeoutSec）后判失败；应改 Type=simple 或补 PIDFile。 反复重启：Restart=always/on-failure 下进程秒退会进入重启风暴，journalctl 里能看到成片的退出记录；先停掉 systemctl stop 再排查根因，否则日志被刷屏。 依赖未就绪：After= 只排顺序不保证对方“成功”，若依赖服务起不来本服务也跟着 failed；需要 Requires=/BindsTo 或在 ExecStartPre 里做探活。","url":"https://itinterview.com.cn/question/1137"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"某服务配了 Restart=always，却偶发“一直卡在 activating”或反复重启进入失败状态，如何结合 journalctl -u 与 systemctl status 定位根因？","item":"https://itinterview.com.cn/q/1137.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"某服务配了 Restart=always，却偶发“一直卡在 activating”或反复重启进入失败状态，如何结合 journalctl -u 与 systemctl status 定位根因？","item":"https://itinterview.com.cn/q/1137"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1137">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/147">Linux进程管理相关命令？</a><span class="rel-n">361 次浏览</span></li><li><a href="https://itinterview.com.cn/q/146">Linux常用文件操作命令？</a><span class="rel-n">337 次浏览</span></li><li><a href="https://itinterview.com.cn/q/150">Linux系统性能和资源监控？</a><span class="rel-n">230 次浏览</span></li><li><a href="https://itinterview.com.cn/q/148">Linux网络相关命令？</a><span class="rel-n">35 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

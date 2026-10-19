@@ -9,15 +9,15 @@
   <meta property="og:title" content="服务器磁盘告警，排查发现 /var/log/journal 持续膨胀甚至占满根分区，如何定位 journald 的日志占用、安全清理，并说清 journald 与 rsyslog / logrotate 的分工？ · IT面试题库">
   <meta property="og:description" content="两种存储位置：journald 默认把日志存于 /var/log/journal（持久化，重启不丢），若该目录不存在则只存 /run/log/journal（内存/临时，重启清空）；占满磁盘的通常是前者。 上限配置（journald.conf）：SystemMaxUse 限制 journal 在磁盘上的总占用（如…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1139.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1139">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="服务器磁盘告警，排查发现 /var/log/journal 持续膨胀甚至占满根分区，如何定位 journald 的日志占用、安全清理，并说清 journald 与 rsyslog / logrotate 的分工？ · IT面试题库">
   <meta name="twitter:description" content="两种存储位置：journald 默认把日志存于 /var/log/journal（持久化，重启不丢），若该目录不存在则只存 /run/log/journal（内存/临时，重启清空）；占满磁盘的通常是前者。 上限配置（journald.conf）：SystemMaxUse 限制 journal 在磁盘上的总占用（如…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1139.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1139">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"服务器磁盘告警，排查发现 /var/log/journal 持续膨胀甚至占满根分区，如何定位 journald 的日志占用、安全清理，并说清 journald 与 rsyslog / logrotate 的分工？","text":"请说明 journald 的两种存储位置、SystemMaxUse 等上限配置、journalctl --vacuum 系列清理手段，以及它与传统 rsyslog/logrotate 的职责边界。","answerCount":1,"datePublished":"2026-09-14T02:47:29.433Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"两种存储位置：journald 默认把日志存于 /var/log/journal（持久化，重启不丢），若该目录不存在则只存 /run/log/journal（内存/临时，重启清空）；占满磁盘的通常是前者。 上限配置（journald.conf）：SystemMaxUse 限制 journal 在磁盘上的总占用（如 500M/10%），SystemKeepFree 保留空闲空间，MaxRetentionSec 按时间淘汰；配好后 systemctl restart systemd-journald 生效，能从根本上防止膨胀。 安全清理：journalctl --vacuum-size=200M 按大小、--vacuum-time=2weeks 按时间清理归档日志，不影响正在写入的活跃文件；切勿直接 rm -rf /var/log/journal，会破坏 journal 索引。 与 rsyslog/logrotate 的分工：journald 是“结构化二进制日志的采集与查询中枢”（所有服务标准输出/错误都被它收走），rsyslog 负责“按规则落地成传统文本文件并转发”，logrotate 负责“对文本日志做切割/压缩/删除”；现代架构常让 journald 采集、rsyslog 落盘、logrotate 轮转文本，三者协作而非互相替代。","url":"https://itinterview.com.cn/question/1139"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"服务器磁盘告警，排查发现 /var/log/journal 持续膨胀甚至占满根分区，如何定位 journald 的日志占用、安全清理，并说清 journald 与 rsyslog / logrotate 的分工？","item":"https://itinterview.com.cn/q/1139.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"服务器磁盘告警，排查发现 /var/log/journal 持续膨胀甚至占满根分区，如何定位 journald 的日志占用、安全清理，并说清 journald 与 rsyslog / logrotate 的分工？","item":"https://itinterview.com.cn/q/1139"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1139">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/147">Linux进程管理相关命令？</a><span class="rel-n">361 次浏览</span></li><li><a href="https://itinterview.com.cn/q/146">Linux常用文件操作命令？</a><span class="rel-n">337 次浏览</span></li><li><a href="https://itinterview.com.cn/q/150">Linux系统性能和资源监控？</a><span class="rel-n">230 次浏览</span></li><li><a href="https://itinterview.com.cn/q/148">Linux网络相关命令？</a><span class="rel-n">35 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="指令系统中常见的寻址方式有哪些？请对比七种以上基本寻址方式，并说明指令格式中操作码与地址码的作用及扩展操作码设计 · IT面试题库">
   <meta property="og:description" content="一、指令格式 一条机器指令由「操作码 + 地址码」两部分组成：操作码（OP）指明要做什么操作（如加、转移、存），地址码（A）给出操作数的地址或寄存器编号。按地址码个数可分为零地址、一地址、二地址、三地址指令；操作码长度可以是定长（n 位最多表示 2^n 条指令，译码快）或可变长。 二、扩展操作码 为在指令字长固定…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1380.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1380">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="指令系统中常见的寻址方式有哪些？请对比七种以上基本寻址方式，并说明指令格式中操作码与地址码的作用及扩展操作码设计 · IT面试题库">
   <meta name="twitter:description" content="一、指令格式 一条机器指令由「操作码 + 地址码」两部分组成：操作码（OP）指明要做什么操作（如加、转移、存），地址码（A）给出操作数的地址或寄存器编号。按地址码个数可分为零地址、一地址、二地址、三地址指令；操作码长度可以是定长（n 位最多表示 2^n 条指令，译码快）或可变长。 二、扩展操作码 为在指令字长固定…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1380.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1380">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"指令系统中常见的寻址方式有哪些？请对比七种以上基本寻址方式，并说明指令格式中操作码与地址码的作用及扩展操作码设计","text":"考察指令格式（操作码+地址码）、定长/扩展操作码，以及立即/直接/间接/寄存器/基址/变址/相对/堆栈等寻址方式的原理与适用场景。","answerCount":1,"datePublished":"2026-09-26T08:59:07.887Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、指令格式 一条机器指令由「操作码 + 地址码」两部分组成：操作码（OP）指明要做什么操作（如加、转移、存），地址码（A）给出操作数的地址或寄存器编号。按地址码个数可分为零地址、一地址、二地址、三地址指令；操作码长度可以是定长（n 位最多表示 2^n 条指令，译码快）或可变长。 二、扩展操作码 为在指令字长固定下兼顾「指令条数」与「地址码位数」，常采用扩展操作码：用短操作码表示常用指令，把剩余编码空间让给地址码；用长操作码表示不常用指令。例如 4 位操作码可设计为 15 条三地址 + 15 条二地址 + 15 条一地址 + 16 条零地址（即 1111 作为扩展标志）。 三、常见寻址方式对比（EA 表示有效地址）： | 寻址方式 | 有效地址 EA | 特点 | 典型用途 | | --- | --- | --- | --- | | 立即寻址 | 操作数在指令中（无 EA） | 取指即得，速度快；但操作数位数受指令长度限制 | 赋常数 | | 直接寻址 | EA = A | 简单；寻址范围受 A 的位数限制 | 访问固定变量 | | 间接寻址 | EA = (A) | 可扩大寻址范围；但需多次访存，较慢 | 指针、动态地址 | | 寄存器寻址 | 操作数在 Ri 中 | 不访存、速度快、指令字短 | 高频操作数 | | 寄存器间接寻址 | EA = (Ri) | 既快又能扩大寻址范围 | 数组遍历 | | 基址寻址 | EA = (BR) + A | 面向系统，BR 不变、A 变，便于程序浮动/重定位 | 多道程序 | | 变址寻址 | EA = (IX) + A | 面向用户，IX 可变、A 为基址，便于数组/循环 | 循环、数组 | | 相对寻址 | EA = (PC) + A | 转移地址相对 PC，生成与位置无关代码 | 转移指令 | | 堆栈寻址 | EA = 栈顶 (SP) | 操作数隐含在栈顶，指令短 | 表达式求值 | 四、结论：寻址方式的选择本质是「寻址范围、速度、灵活性」的权衡；现代 CISC/RISC 通常组合使用寄存器寻址、基址/变址、相对寻址等以满足高效访存需求。","url":"https://itinterview.com.cn/question/1380"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"指令系统中常见的寻址方式有哪些？请对比七种以上基本寻址方式，并说明指令格式中操作码与地址码的作用及扩展操作码设计","item":"https://itinterview.com.cn/q/1380.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"指令系统中常见的寻址方式有哪些？请对比七种以上基本寻址方式，并说明指令格式中操作码与地址码的作用及扩展操作码设计","item":"https://itinterview.com.cn/q/1380"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -111,6 +111,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1380">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

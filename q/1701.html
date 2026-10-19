@@ -9,15 +9,15 @@
   <meta property="og:title" content="MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？ · IT面试题库">
   <meta property="og:description" content="要点： moov 是索引：记录每个 sample 的位置、时长与音视频轨信息，播放器必须先拿到 moov 才能起播。 默认在尾部：边编码边落盘时 moov 只能最后写入，播放器几乎要下载完整个文件才能开始播放，点播首帧慢。 faststart：-movflags +faststart 让 FFmpeg 编码完成后…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1701.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1701">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： moov 是索引：记录每个 sample 的位置、时长与音视频轨信息，播放器必须先拿到 moov 才能起播。 默认在尾部：边编码边落盘时 moov 只能最后写入，播放器几乎要下载完整个文件才能开始播放，点播首帧慢。 faststart：-movflags +faststart 让 FFmpeg 编码完成后…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1701.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1701">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？","text":"考察封装格式与秒开的关系，要求说明 moov 作用与两种封装的定位差异。","answerCount":1,"datePublished":"2026-10-17T10:38:14.554Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： moov 是索引：记录每个 sample 的位置、时长与音视频轨信息，播放器必须先拿到 moov 才能起播。 默认在尾部：边编码边落盘时 moov 只能最后写入，播放器几乎要下载完整个文件才能开始播放，点播首帧慢。 faststart：-movflags +faststart 让 FFmpeg 编码完成后把 moov 挪到文件头，牺牲一次整体重写换取边下边播；直播/实时场景无效（文件尚未写完）。 FLV vs MP4：FLV 是 tag 式流式封装、头部小、天然适合直播推流（RTMP 承载），但元数据弱、H5 支持差；MP4 是点播主流，box 结构规范、支持 fMP4 分片（HLS/DASH）。","url":"https://itinterview.com.cn/question/1701"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？","item":"https://itinterview.com.cn/q/1701.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？","item":"https://itinterview.com.cn/q/1701"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1701">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/684">FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1453">FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1700">FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1702">用 FFmpeg 转码后音画不同步（声音超前或滞后画面），你会按什么顺序排查？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

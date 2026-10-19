@@ -9,15 +9,15 @@
   <meta property="og:title" content="Windows Server 域环境登录很慢，你会按什么顺序排查组策略和域控问题？ · IT面试题库">
   <meta property="og:description" content="要点： 先分清本机/域侧：确认网络、DNS、域控制器可达；nltest /dsgetdc: 检查 DC 定位，事件查看器看 GroupPolicy 与 Netlogon 错误。 组策略侧：gpresult /r 查看实际应用结果；检查慢链路检测、登录脚本、漫游配置文件、文件夹重定向是否超时。 域控侧：确认 SYS…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1627.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1627">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Windows Server 域环境登录很慢，你会按什么顺序排查组策略和域控问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先分清本机/域侧：确认网络、DNS、域控制器可达；nltest /dsgetdc: 检查 DC 定位，事件查看器看 GroupPolicy 与 Netlogon 错误。 组策略侧：gpresult /r 查看实际应用结果；检查慢链路检测、登录脚本、漫游配置文件、文件夹重定向是否超时。 域控侧：确认 SYS…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1627.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1627">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Windows Server 域环境登录很慢，你会按什么顺序排查组策略和域控问题？","text":"考察 Windows 域登录链路排查。","answerCount":1,"datePublished":"2026-10-15T12:54:41.048Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先分清本机/域侧：确认网络、DNS、域控制器可达；nltest /dsgetdc: 检查 DC 定位，事件查看器看 GroupPolicy 与 Netlogon 错误。 组策略侧：gpresult /r 查看实际应用结果；检查慢链路检测、登录脚本、漫游配置文件、文件夹重定向是否超时。 域控侧：确认 SYSVOL 复制正常，避免多 DC 策略版本不一致；必要时用 gpotool、FRS/DFSR 复制日志进一步定位。","url":"https://itinterview.com.cn/question/1627"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Windows Server","item":"https://itinterview.com.cn/category?cat=44"},{"@type":"ListItem","position":4,"name":"Windows Server 域环境登录很慢，你会按什么顺序排查组策略和域控问题？","item":"https://itinterview.com.cn/q/1627.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Windows Server","item":"https://itinterview.com.cn/category?cat=44"},{"@type":"ListItem","position":4,"name":"Windows Server 域环境登录很慢，你会按什么顺序排查组策略和域控问题？","item":"https://itinterview.com.cn/q/1627"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1627">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/747">Windows Server 中 Active Directory 与组策略（GPO）的作用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

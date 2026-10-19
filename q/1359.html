@@ -9,15 +9,15 @@
   <meta property="og:title" content="类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？ · IT面试题库">
   <meta property="og:description" content="结论：类加载严格经历“加载→验证→准备→解析→初始化”五步；双亲委派模型让类随加载器具备层次优先级，保障核心类库唯一与安全。 五个阶段 1. 加载：通过全限定名获取字节流，转为方法区运行时结构，生成 Class 对象。 2. 验证：校验字节流合法性，确保不会危害虚拟机。 3. 准备：为 static 变量分配内存…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1359.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1359">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？ · IT面试题库">
   <meta name="twitter:description" content="结论：类加载严格经历“加载→验证→准备→解析→初始化”五步；双亲委派模型让类随加载器具备层次优先级，保障核心类库唯一与安全。 五个阶段 1. 加载：通过全限定名获取字节流，转为方法区运行时结构，生成 Class 对象。 2. 验证：校验字节流合法性，确保不会危害虚拟机。 3. 准备：为 static 变量分配内存…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1359.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1359">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？","text":"考察类生命周期中的加载过程，以及双亲委派模型的工作机制与安全性意义。","answerCount":1,"datePublished":"2026-09-26T05:19:39.152Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：类加载严格经历“加载→验证→准备→解析→初始化”五步；双亲委派模型让类随加载器具备层次优先级，保障核心类库唯一与安全。 五个阶段 1. 加载：通过全限定名获取字节流，转为方法区运行时结构，生成 Class 对象。 2. 验证：校验字节流合法性，确保不会危害虚拟机。 3. 准备：为 static 变量分配内存并赋零值（final static 常量直接赋真实值）。 4. 解析：将常量池符号引用替换为直接引用（可延后到初始化后）。 5. 初始化：执行 ()（编译器收集类变量赋值与静态块），真正运行 Java 代码。 双亲委派模型 三层加载器：Bootstrap（启动，C++ 实现）、Extension（扩展）、Application（应用）。 工作过程：子类加载器收到请求先委派给父加载器，只有父加载器无法完成时自己才尝试加载。 好处 避免重复加载：同一类只被最顶层的合法加载器加载一次。 安全防篡改：如 java.lang.Object 永远由 Bootstrap 加载，用户自定义同名类无法覆盖核心 API。 核心库一致性：保证基础类在各处行为统一。","url":"https://itinterview.com.cn/question/1359"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？","item":"https://itinterview.com.cn/q/1359.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？","item":"https://itinterview.com.cn/q/1359"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -114,6 +114,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1359">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/658">Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/659">什么是双亲委派模型？它解决了什么问题？如何打破双亲委派？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/660">JVM 运行时数据区由哪些区域组成？哪些是线程私有的，哪些是线程共享的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/661">JDK 8 为什么用元空间取代永久代？方法区和永久代是一回事吗？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

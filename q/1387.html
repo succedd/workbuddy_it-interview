@@ -9,15 +9,15 @@
   <meta property="og:title" content="单周期 CPU 的数据通路（Data Path）是如何连接的？以 add $t0,$t1,$t2 为例说明一条指令流经哪些部件。 · IT面试题库">
   <meta property="og:description" content="结论 单周期 CPU 把所有部件（PC、指令存储器、寄存器堆、ALU、数据存储器）用总线/连线固定连成一条数据通路，每条指令都在一个完整时钟周期内走完「取指→译码→执行→写回」。 add $t0,$t1,$t2 的流向 1. 取指：PC 送指令存储器 IM，取出指令；同时 PC+4 指向下一条。 2. 译码：指令…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1387.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1387">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="单周期 CPU 的数据通路（Data Path）是如何连接的？以 add $t0,$t1,$t2 为例说明一条指令流经哪些部件。 · IT面试题库">
   <meta name="twitter:description" content="结论 单周期 CPU 把所有部件（PC、指令存储器、寄存器堆、ALU、数据存储器）用总线/连线固定连成一条数据通路，每条指令都在一个完整时钟周期内走完「取指→译码→执行→写回」。 add $t0,$t1,$t2 的流向 1. 取指：PC 送指令存储器 IM，取出指令；同时 PC+4 指向下一条。 2. 译码：指令…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1387.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1387">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"单周期 CPU 的数据通路（Data Path）是如何连接的？以 add $t0,$t1,$t2 为例说明一条指令流经哪些部件。","text":"考察取指与各执行阶段在部件间的流向。","answerCount":1,"datePublished":"2026-09-26T11:05:10.493Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 单周期 CPU 把所有部件（PC、指令存储器、寄存器堆、ALU、数据存储器）用总线/连线固定连成一条数据通路，每条指令都在一个完整时钟周期内走完「取指→译码→执行→写回」。 add $t0,$t1,$t2 的流向 1. 取指：PC 送指令存储器 IM，取出指令；同时 PC+4 指向下一条。 2. 译码：指令中的 rs=$t1、rt=$t2 作为寄存器堆的读地址，读出两操作数。 3. 执行：两操作数进入 ALU 做加法运算。 4. 写回：ALU 结果写回寄存器堆的 rd=$t0。 单周期的代价 所有指令都按「最慢那条指令」定周期长度（例如访存指令最慢），导致大量简单指令在一个长周期里大半时间空闲，硬件利用率低。这也是后来演进为多周期和流水线的原因。 数据通路分两类信号：数据信号（在部件间流动的真实数据）与控制信号（ALU 操作选择、寄存器写使能、存储器读/写等，由控制单元根据 opcode 产生）。","url":"https://itinterview.com.cn/question/1387"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"单周期 CPU 的数据通路（Data Path）是如何连接的？以 add $t0,$t1,$t2 为例说明一条指令流经哪些部件。","item":"https://itinterview.com.cn/q/1387.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"单周期 CPU 的数据通路（Data Path）是如何连接的？以 add $t0,$t1,$t2 为例说明一条指令流经哪些部件。","item":"https://itinterview.com.cn/q/1387"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1387">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

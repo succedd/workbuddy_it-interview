@@ -9,15 +9,15 @@
   <meta property="og:title" content="Java 的异常体系是怎样的？受检异常与非受检异常的区别？ · IT面试题库">
   <meta property="og:description" content="体系：所有异常的根是 Throwable，下分： Error：严重错误，程序无法处理，不该捕获——OutOfMemoryError、StackOverflowError、NoClassDefFoundError； Exception： 受检异常（Checked）：编译器强制 try-catch 或 throws …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/932.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/932">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 的异常体系是怎样的？受检异常与非受检异常的区别？ · IT面试题库">
   <meta name="twitter:description" content="体系：所有异常的根是 Throwable，下分： Error：严重错误，程序无法处理，不该捕获——OutOfMemoryError、StackOverflowError、NoClassDefFoundError； Exception： 受检异常（Checked）：编译器强制 try-catch 或 throws …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/932.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/932">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 的异常体系是怎样的？受检异常与非受检异常的区别？","text":"请说明 Throwable→Error/Exception 的结构、checked 与 unchecked 异常的划分及实践建议。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"体系：所有异常的根是 Throwable，下分： Error：严重错误，程序无法处理，不该捕获——OutOfMemoryError、StackOverflowError、NoClassDefFoundError； Exception： 受检异常（Checked）：编译器强制 try-catch 或 throws 声明。发生在编译期可预见的外部问题——IOException、SQLException、ClassNotFoundException； 非受检异常（Unchecked，RuntimeException 及其子类）：多为程序 bug——NullPointerException、IndexOutOfBoundsException、IllegalArgumentException、ArithmeticException。不强制捕获。 实践建议： 1. 不要捕获 Throwable/Error；不要用异常做流程控制（性能差）； 2. 捕获后要么处理要么转译再抛，禁止空 catch 吞异常； 3. 自定义业务异常继承 RuntimeException，配合全局异常处理器（Spring @RestControllerAdvice）统一返回； 4. finally 中不要 return（会吞掉异常）；优先 try-with-resources 管理资源。","url":"https://itinterview.com.cn/question/932"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 的异常体系是怎样的？受检异常与非受检异常的区别？","item":"https://itinterview.com.cn/q/932.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 的异常体系是怎样的？受检异常与非受检异常的区别？","item":"https://itinterview.com.cn/q/932"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/932">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

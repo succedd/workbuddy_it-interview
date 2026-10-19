@@ -9,15 +9,15 @@
   <meta property="og:title" content="DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？ · IT面试题库">
   <meta property="og:description" content="三个阶段：捕获（capture，由外向内）→ 目标（target）→ 冒泡（bubble，由内向外）。默认的 addEventListener 注册在冒泡阶段。 MDN 的示例很直观：给 button、其父级 div、以及 body 都注册 click 后点击按钮，输出顺序是 BUTTON → DIV → BOD…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1302.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1302">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？ · IT面试题库">
   <meta name="twitter:description" content="三个阶段：捕获（capture，由外向内）→ 目标（target）→ 冒泡（bubble，由内向外）。默认的 addEventListener 注册在冒泡阶段。 MDN 的示例很直观：给 button、其父级 div、以及 body 都注册 click 后点击按钮，输出顺序是 BUTTON → DIV → BOD…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1302.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1302">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？","text":"考察点：事件捕获/冒泡机制与事件委托的工程价值。","answerCount":1,"datePublished":"2026-09-26T02:32:51.687Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三个阶段：捕获（capture，由外向内）→ 目标（target）→ 冒泡（bubble，由内向外）。默认的 addEventListener 注册在冒泡阶段。 MDN 的示例很直观：给 button、其父级 div、以及 body 都注册 click 后点击按钮，输出顺序是 BUTTON → DIV → BODY，说明事件从最内层被点击的元素「冒泡」而出；若把父级监听器加上 {capture:true}，顺序就反转为 BODY → DIV → BUTTON。现代浏览器同时实现捕获与冒泡，是 W3C 当年调和 Netscape 与 IE 两套模型的产物。 两个关键属性： event.target：实际触发事件的最内层元素； event.currentTarget：当前正在执行处理器的元素（即绑定的那个）。 为什么要能阻止冒泡：MDN 的视频示例里，点击 会同时命中 video 的播放处理器与父 div 的隐藏处理器，表现异常；在 video 处理器中调用 event.stopPropagation() 即可阻止事件继续向外传递。 事件委托（event delegation）：在父容器上只绑一个监听器，利用冒泡统一处理子元素事件，再用 event.target 定位具体元素： 收益： 1. 性能与内存：16 个格子甚至上千个列表项只需 1 个监听器，省去逐个绑定，列表重渲染也无需重新注册； 2. 动态节点天然生效：之后新增或替换的子节点会自动被冒泡事件覆盖； 3. 逻辑集中：统一处理、易于解绑、不易遗漏。 注意：stopPropagation 会破坏委托；focus、blur、mouseenter、mouseleave、load 等不冒泡的事件无法委托，需改用捕获阶段或 focusin/focusout；嵌套子元素时用 closest() 兼容。","url":"https://itinterview.com.cn/question/1302"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？","item":"https://itinterview.com.cn/q/1302.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"DOM 事件的传播有几个阶段？什么是事件委托，为什么它能减少监听器数量，又为什么对动态新增的节点也生效？","item":"https://itinterview.com.cn/q/1302"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -115,6 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1302">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/558">浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/559">请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/560">什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/561">什么是闭包（closure）？它有哪些典型应用场景和需要注意的内存问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

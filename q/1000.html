@@ -9,15 +9,15 @@
   <meta property="og:title" content="日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： Flume：JVM 生态、HDFS Sink 成熟、拦截器可做轻量 ETL——传统离线数仓日志落 HDFS 的老搭档；缺点：单 agent 吞吐一般、调优参数多、社区趋缓。 Filebeat+Kafka：Filebeat（Go，资源占用极低，registry 断点）采集 → Kafka 削峰解耦 → 消费…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1000.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1000">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： Flume：JVM 生态、HDFS Sink 成熟、拦截器可做轻量 ETL——传统离线数仓日志落 HDFS 的老搭档；缺点：单 agent 吞吐一般、调优参数多、社区趋缓。 Filebeat+Kafka：Filebeat（Go，资源占用极低，registry 断点）采集 → Kafka 削峰解耦 → 消费…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1000.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1000">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？","text":"考察点：采集链路选型维度（吞吐/可靠性/转换能力/生态）、典型架构。","answerCount":1,"datePublished":"2026-09-10T07:23:37.107Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Flume：JVM 生态、HDFS Sink 成熟、拦截器可做轻量 ETL——传统离线数仓日志落 HDFS 的老搭档；缺点：单 agent 吞吐一般、调优参数多、社区趋缓。 Filebeat+Kafka：Filebeat（Go，资源占用极低，registry 断点）采集 → Kafka 削峰解耦 → 消费端（落 HDFS/ES/Flink 实时计算）。互联网公司主流：Kafka 的一份数据同时喂离线与实时，扩展性最好。 Flink CDC：采集的是数据库变更而非日志文件——直接读 Binlog/逻辑日志，exactly-once、schema 演进友好，替代「Sqoop/Canal+Kafka」链路做库到仓/湖的实时同步。 选型口诀：文件日志→Filebeat+Kafka（新）/Flume（存量）；数据库变更→Flink CDC；小规模简单落盘→Flume 单 agent 即可。架构趋势是「采集归采集（beat 类），流处理归 Flink」。","url":"https://itinterview.com.cn/question/1000"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Flume","item":"https://itinterview.com.cn/category?cat=168"},{"@type":"ListItem","position":4,"name":"日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？","item":"https://itinterview.com.cn/q/1000.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Flume","item":"https://itinterview.com.cn/category?cat=168"},{"@type":"ListItem","position":4,"name":"日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？","item":"https://itinterview.com.cn/q/1000"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1000">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/998">Flume 的架构与核心概念（Source/Channel/Sink、Agent、Event）是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/999">Flume 采集日志到 HDFS，怎么保证不丢不重？HDFS Sink 的小文件问题怎么破？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？ · IT面试题库">
   <meta property="og:description" content="gossip：去中心化的状态传播 Cluster 节点间通过专门的集群总线通信（端口 = 业务端口 + 10000，如 6379 对应 16379），消息主要有四种： PING/PONG：每个节点每秒向随机选出的节点发 PING，消息里携带自己已知的集群状态（哪些节点存活、槽的归属），对方以 PONG 回应并同样…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1325.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1325">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="gossip：去中心化的状态传播 Cluster 节点间通过专门的集群总线通信（端口 = 业务端口 + 10000，如 6379 对应 16379），消息主要有四种： PING/PONG：每个节点每秒向随机选出的节点发 PING，消息里携带自己已知的集群状态（哪些节点存活、槽的归属），对方以 PONG 回应并同样…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1325.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1325">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？","text":"考察点：对 Redis Cluster 去中心化通信机制与故障转移流程的完整掌握，注意与哨兵机制区分。","answerCount":1,"datePublished":"2026-09-26T03:32:45.644Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"gossip：去中心化的状态传播 Cluster 节点间通过专门的集群总线通信（端口 = 业务端口 + 10000，如 6379 对应 16379），消息主要有四种： PING/PONG：每个节点每秒向随机选出的节点发 PING，消息里携带自己已知的集群状态（哪些节点存活、槽的归属），对方以 PONG 回应并同样携带自己的状态。经过多轮交换，全集群视图收敛一致。 MEET：新节点入群时，由已有节点向它发 MEET 打招呼，新节点再顺着 gossip 网络认识其他节点。 FAIL：节点被判定彻底下线后，向全集群广播 FAIL，统一更新状态。 代价是消息量随节点数平方级增长，官方建议主节点不超过 1000 个。 故障转移：两阶段下线 + 类 Raft 选举 1. 主观下线（PFail）：节点 A 在 cluster-node-timeout（默认 15 秒）内没收到节点 B 的 PONG 回复，只是 A 单方面的怀疑——可能只是 A、B 之间网络抖动。这个判断随 gossip 消息扩散。 2. 客观下线（Fail）：当半数以上持有槽的主节点都把 B 标记为 PFail 时，B 升级为客观下线，由节点广播 FAIL 消息。两阶段设计防止单点误判把健康节点拉下马。 3. 从节点选举：若下线的是主节点，其从节点先做资格检查（失联过久、数据陈旧的没有资格，由 cluster-replica-validity-factor 控制），然后按与主节点的复制进度排序——数据越新等待时间越短、越先发起选举，向所有持有槽的主节点拉票。只有持有槽的主节点有投票权，每个主节点一轮只能投一票。拿到半数以上选票的从节点晋升为新主，通过 gossip 广播接管槽，客户端后续经 MOVED 重定向到新主。 注意：这套下线检测和选举都在数据节点内部完成，与哨兵的独立进程方案是两条路线；且主从复制是异步的，故障转移可能丢失主节点刚写入、尚未同步的数据。","url":"https://itinterview.com.cn/question/1325"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？","item":"https://itinterview.com.cn/q/1325.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？","item":"https://itinterview.com.cn/q/1325"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1325">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

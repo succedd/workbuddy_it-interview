@@ -9,15 +9,15 @@
   <meta property="og:title" content="对象被误删或误覆盖，如何设计一套可演练的恢复方案？ · IT面试题库">
   <meta property="og:description" content="版本控制是第一道防线：开启后每次覆盖生成新版本、删除产生删除标记，旧版本可逐个恢复；恢复时「删除删除标记」即可让历史版本重新可见，或把指定版本复制为最新版本。 回收站兜底：部分场景提供回收站保留期，误删对象先入回收站，期内可一键还原，弥补未开版本控制时的盲区。 跨地域复制做地理冗余：将版本化对象复制到异地桶，单地…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1111.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1111">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="对象被误删或误覆盖，如何设计一套可演练的恢复方案？ · IT面试题库">
   <meta name="twitter:description" content="版本控制是第一道防线：开启后每次覆盖生成新版本、删除产生删除标记，旧版本可逐个恢复；恢复时「删除删除标记」即可让历史版本重新可见，或把指定版本复制为最新版本。 回收站兜底：部分场景提供回收站保留期，误删对象先入回收站，期内可一键还原，弥补未开版本控制时的盲区。 跨地域复制做地理冗余：将版本化对象复制到异地桶，单地…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1111.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1111">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"对象被误删或误覆盖，如何设计一套可演练的恢复方案？","text":"客户反馈关键文件被覆盖，要求最短时间找回历史版本。请结合版本控制、回收站、跨地域复制设计恢复链路并说明演练要点。","answerCount":1,"datePublished":"2026-09-13T02:40:01.599Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"版本控制是第一道防线：开启后每次覆盖生成新版本、删除产生删除标记，旧版本可逐个恢复；恢复时「删除删除标记」即可让历史版本重新可见，或把指定版本复制为最新版本。 回收站兜底：部分场景提供回收站保留期，误删对象先入回收站，期内可一键还原，弥补未开版本控制时的盲区。 跨地域复制做地理冗余：将版本化对象复制到异地桶，单地域灾难时仍有副本；但注意 CRR 会复制删除标记，需配套「不复制删除」策略或目标桶独立保护，避免误删被放大。 定期恢复演练：每季度做一次盲演——随机标记一个对象为「被破坏」，计时用版本控制+回收站恢复，验证 RTO/RPO 与权限链路；只配置不演练等于没配置。","url":"https://itinterview.com.cn/question/1111"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"对象被误删或误覆盖，如何设计一套可演练的恢复方案？","item":"https://itinterview.com.cn/q/1111.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"对象被误删或误覆盖，如何设计一套可演练的恢复方案？","item":"https://itinterview.com.cn/q/1111"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1111">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/202">Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/231">你处理过最复杂的客户故障是什么？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/200">云服务器 CPU 使用率持续 100%，如何定位故障进程并制定处理方案</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/206">客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

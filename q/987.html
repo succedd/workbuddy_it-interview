@@ -9,15 +9,15 @@
   <meta property="og:title" content="Swift 的 ARC 内存管理原理是什么？循环引用怎么产生、怎么破？ · IT面试题库">
   <meta property="og:description" content="要点： ARC 原理：编译器在每个引用类型实例的创建/赋值/离开作用域处自动插入 retain/release，计数归零立即释放（确定性析构，无 GC 停顿）。开销是额外的引用计数操作与原子性（可开启 exclusive access 优化）。 循环引用：两个对象互相强持有（如 parent↔child、对象↔其…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/987.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/987">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Swift 的 ARC 内存管理原理是什么？循环引用怎么产生、怎么破？ · IT面试题库">
   <meta name="twitter:description" content="要点： ARC 原理：编译器在每个引用类型实例的创建/赋值/离开作用域处自动插入 retain/release，计数归零立即释放（确定性析构，无 GC 停顿）。开销是额外的引用计数操作与原子性（可开启 exclusive access 优化）。 循环引用：两个对象互相强持有（如 parent↔child、对象↔其…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/987.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/987">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Swift 的 ARC 内存管理原理是什么？循环引用怎么产生、怎么破？","text":"考察点：引用计数、强/弱/无主引用、闭包捕获列表、delegate 的 weak 惯例。","answerCount":1,"datePublished":"2026-09-10T07:22:47.745Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： ARC 原理：编译器在每个引用类型实例的创建/赋值/离开作用域处自动插入 retain/release，计数归零立即释放（确定性析构，无 GC 停顿）。开销是额外的引用计数操作与原子性（可开启 exclusive access 优化）。 循环引用：两个对象互相强持有（如 parent↔child、对象↔其闭包捕获 self），计数永不归零 → 内存泄漏。ARC 不管循环（GC 的标记清除能处理，ARC 不能）。 破解手段：① weak——不增加计数、对象释放自动置 nil（必须可选类型），delegate 一律 weak 是铁律；② unowned——不增加计数但不置 nil，假设「我活着你必活」，访问已释放对象直接崩溃（性能比 weak 略好，慎用）；③ 闭包捕获列表 [weak self]——最常见场景：self 持有闭包、闭包捕获 self 形成环，在闭包内 guard let self 安全解包。 排查工具：Instruments 的 Leaks、Xcode Memory Graph Debugger、deinit 打日志验证释放。","url":"https://itinterview.com.cn/question/987"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"Swift","item":"https://itinterview.com.cn/category?cat=219"},{"@type":"ListItem","position":5,"name":"Swift 的 ARC 内存管理原理是什么？循环引用怎么产生、怎么破？","item":"https://itinterview.com.cn/q/987.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"Swift","item":"https://itinterview.com.cn/category?cat=219"},{"@type":"ListItem","position":5,"name":"Swift 的 ARC 内存管理原理是什么？循环引用怎么产生、怎么破？","item":"https://itinterview.com.cn/q/987"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/987">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/738">Swift 的枚举（关联值/模式匹配）相比 C 风格枚举强在哪？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/986">Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/988">SwiftUI 与 UIKit 的架构差异是什么？声明式 UI 相比命令式好在哪、边界在哪？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

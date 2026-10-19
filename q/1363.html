@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何用迭代法反转单向链表？说明指针操作、复杂度并给出代码 · IT面试题库">
   <meta property="og:description" content="思路 用 prev、cur 双指针：每次把 cur.next 指向 prev，再整体前移，直到 cur 为 null，此时 prev 即新头。 关键是用临时变量 next 保存后继，否则改指向后会丢失后续节点。 复杂度 时间复杂度 O(n)，只遍历一次。 空间复杂度 O(1)，仅用常数个变量。 代码（JavaSc…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1363.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1363">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用迭代法反转单向链表？说明指针操作、复杂度并给出代码 · IT面试题库">
   <meta name="twitter:description" content="思路 用 prev、cur 双指针：每次把 cur.next 指向 prev，再整体前移，直到 cur 为 null，此时 prev 即新头。 关键是用临时变量 next 保存后继，否则改指向后会丢失后续节点。 复杂度 时间复杂度 O(n)，只遍历一次。 空间复杂度 O(1)，仅用常数个变量。 代码（JavaSc…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1363.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1363">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用迭代法反转单向链表？说明指针操作、复杂度并给出代码","text":"考察双指针操作与边界处理","answerCount":1,"datePublished":"2026-09-26T05:19:39.502Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路 用 prev、cur 双指针：每次把 cur.next 指向 prev，再整体前移，直到 cur 为 null，此时 prev 即新头。 关键是用临时变量 next 保存后继，否则改指向后会丢失后续节点。 复杂度 时间复杂度 O(n)，只遍历一次。 空间复杂度 O(1)，仅用常数个变量。 代码（JavaScript） 循环里先暂存 next 再反转指针，prev 与 cur 同步右移；链表为空时直接返回 null，无需特判。","url":"https://itinterview.com.cn/question/1363"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"如何用迭代法反转单向链表？说明指针操作、复杂度并给出代码","item":"https://itinterview.com.cn/q/1363.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"如何用迭代法反转单向链表？说明指针操作、复杂度并给出代码","item":"https://itinterview.com.cn/q/1363"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1363">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/170">动态规划的核心思想？经典问题有哪些？</a><span class="rel-n">478 次浏览</span></li><li><a href="https://itinterview.com.cn/q/167">快排和归并排序的区别？</a><span class="rel-n">58 次浏览</span></li><li><a href="https://itinterview.com.cn/q/66">什么是时间复杂度与空间复杂度？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/67">快速排序的思想与最坏情况？</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

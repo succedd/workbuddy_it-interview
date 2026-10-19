@@ -9,15 +9,15 @@
   <meta property="og:title" content="Vue2 的响应式原理是什么？Vue3 为什么要改用 Proxy？ · IT面试题库">
   <meta property="og:description" content="Vue2：初始化时递归遍历 data，用 Object.defineProperty 把每个属性转成 getter/setter 收集依赖（Dep/Watcher）。缺陷：① 无法监听新增/删除属性，需 $set/$delete 兜底；② 无法原生监听数组下标赋值与 length，需重写 7 个数组方法；③ 初始…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1482.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1482">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vue2 的响应式原理是什么？Vue3 为什么要改用 Proxy？ · IT面试题库">
   <meta name="twitter:description" content="Vue2：初始化时递归遍历 data，用 Object.defineProperty 把每个属性转成 getter/setter 收集依赖（Dep/Watcher）。缺陷：① 无法监听新增/删除属性，需 $set/$delete 兜底；② 无法原生监听数组下标赋值与 length，需重写 7 个数组方法；③ 初始…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1482.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1482">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue2 的响应式原理是什么？Vue3 为什么要改用 Proxy？","text":"说明 Object.defineProperty 的劫持方式，以及它有哪些天然缺陷导致 Vue3 重写。","answerCount":1,"datePublished":"2026-10-05T01:03:55.152Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Vue2：初始化时递归遍历 data，用 Object.defineProperty 把每个属性转成 getter/setter 收集依赖（Dep/Watcher）。缺陷：① 无法监听新增/删除属性，需 $set/$delete 兜底；② 无法原生监听数组下标赋值与 length，需重写 7 个数组方法；③ 初始化就要递归整棵对象树，层级深、数据大时开销大。 Vue3：改用 Proxy 代理整个对象，可拦截新增/删除/下标/length 等 13 种操作，且惰性代理（访问到才深层转换），性能与语义都更正确。代价是 Proxy 无法 polyfill，放弃了 IE11。","url":"https://itinterview.com.cn/question/1482"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue2","item":"https://itinterview.com.cn/category?cat=62"},{"@type":"ListItem","position":5,"name":"Vue2 的响应式原理是什么？Vue3 为什么要改用 Proxy？","item":"https://itinterview.com.cn/q/1482.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue2","item":"https://itinterview.com.cn/category?cat=62"},{"@type":"ListItem","position":5,"name":"Vue2 的响应式原理是什么？Vue3 为什么要改用 Proxy？","item":"https://itinterview.com.cn/q/1482"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -96,6 +96,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1482">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/714">Vue2 的响应式原理（Object.defineProperty）及局限？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1483">为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1484">Vue2 有哪些组件通信方式？分别适用什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1485">Vuex 的核心概念有哪些？什么情况下其实不需要 Vuex？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

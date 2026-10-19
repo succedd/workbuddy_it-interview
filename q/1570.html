@@ -9,15 +9,15 @@
   <meta property="og:title" content="渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 原因：两个表面深度值非常接近，受浮点精度限制无法稳定区分前后，导致逐像素深浅判定抖动、画面闪烁；常见于共面物体、远裁剪面过远、near/far 比值过大。 缓解：① 缩小投影矩阵近远裁剪面范围（尤其增大 near），改善深度精度分布；② 启用对数深度缓冲（logarithmic depth buffer）…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1570.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1570">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 原因：两个表面深度值非常接近，受浮点精度限制无法稳定区分前后，导致逐像素深浅判定抖动、画面闪烁；常见于共面物体、远裁剪面过远、near/far 比值过大。 缓解：① 缩小投影矩阵近远裁剪面范围（尤其增大 near），改善深度精度分布；② 启用对数深度缓冲（logarithmic depth buffer）…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1570.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1570">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？","text":"考察点：定位共面/远近比导致的深度精度不足问题，给出工程上可落地的缓解手段（裁剪面、对数深度、polygon offset）。","answerCount":1,"datePublished":"2026-10-06T09:02:19.274Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原因：两个表面深度值非常接近，受浮点精度限制无法稳定区分前后，导致逐像素深浅判定抖动、画面闪烁；常见于共面物体、远裁剪面过远、near/far 比值过大。 缓解：① 缩小投影矩阵近远裁剪面范围（尤其增大 near），改善深度精度分布；② 启用对数深度缓冲（logarithmic depth buffer）让远处精度更均匀；③ 用 gl.polygonOffset 人为错开共面几何；④ 避免完全共面，适度留间隙。","url":"https://itinterview.com.cn/question/1570"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"OpenGL","item":"https://itinterview.com.cn/category?cat=237"},{"@type":"ListItem","position":4,"name":"渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？","item":"https://itinterview.com.cn/q/1570.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"OpenGL","item":"https://itinterview.com.cn/category?cat=237"},{"@type":"ListItem","position":4,"name":"渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？","item":"https://itinterview.com.cn/q/1570"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1570">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/693">OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1448">OpenGL 里 VBO / VAO / EBO 各存什么？为什么移动端 DrawCall 次数比三角形数量更影响性能？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1569">什么是 Z-buffer（深度缓冲）？它解决了什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

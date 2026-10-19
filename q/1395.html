@@ -9,15 +9,15 @@
   <meta property="og:title" content="低位交叉编址与高位交叉编址有何区别？连续访问时交叉编址如何提升存储器带宽？ · IT面试题库">
   <meta property="og:description" content="结论 多体并行存储器用多个存储模块提高带宽。模块号取自地址的不同位，决定了连续地址是集中在一个模块还是轮流分布，效果完全不同。 两种编址 高位交叉（模块号 = 地址高位）：连续地址块落在同一模块（块0~N 在 M0，N+1~ 在 M1）。仅当同时访问不同模块才并行，连续访问无带宽提升，适合多 CPU 共享。 低位…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1395.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1395">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="低位交叉编址与高位交叉编址有何区别？连续访问时交叉编址如何提升存储器带宽？ · IT面试题库">
   <meta name="twitter:description" content="结论 多体并行存储器用多个存储模块提高带宽。模块号取自地址的不同位，决定了连续地址是集中在一个模块还是轮流分布，效果完全不同。 两种编址 高位交叉（模块号 = 地址高位）：连续地址块落在同一模块（块0~N 在 M0，N+1~ 在 M1）。仅当同时访问不同模块才并行，连续访问无带宽提升，适合多 CPU 共享。 低位…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1395.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1395">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"低位交叉编址与高位交叉编址有何区别？连续访问时交叉编址如何提升存储器带宽？","text":"考察两种多体交叉编址方式与带宽提升原理。","answerCount":1,"datePublished":"2026-09-26T11:05:11.351Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 多体并行存储器用多个存储模块提高带宽。模块号取自地址的不同位，决定了连续地址是集中在一个模块还是轮流分布，效果完全不同。 两种编址 高位交叉（模块号 = 地址高位）：连续地址块落在同一模块（块0~N 在 M0，N+1~ 在 M1）。仅当同时访问不同模块才并行，连续访问无带宽提升，适合多 CPU 共享。 低位交叉（模块号 = 地址低位）：地址 0→M0、1→M1、2→M0、3→M1… 连续字轮流分布到各模块。 带宽提升（低位交叉） 设 m 个模块独立，总线每个存储周期启动一个新模块，则连续访问 m 个字的总时间 ≈ 1 个存储周期（流水线式），带宽提升约 m 倍（前提是模块可真正并行、启动间隔 = 单体访问周期）。 低位交叉的典型应用：内存芯片内部 bank 交错、GPU 显存突发传输。模块数 m 通常取 2 的幂，使模块选择 = 地址低 log₂m 位。","url":"https://itinterview.com.cn/question/1395"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"低位交叉编址与高位交叉编址有何区别？连续访问时交叉编址如何提升存储器带宽？","item":"https://itinterview.com.cn/q/1395.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"低位交叉编址与高位交叉编址有何区别？连续访问时交叉编址如何提升存储器带宽？","item":"https://itinterview.com.cn/q/1395"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -105,6 +105,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1395">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

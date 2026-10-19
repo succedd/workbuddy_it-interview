@@ -9,15 +9,15 @@
   <meta property="og:title" content="白盒测试（语句/分支/条件覆盖）与黑盒测试的核心差异是什么？覆盖率指标该怎么选？ · IT面试题库">
   <meta property="og:description" content="要点： 视角不同：黑盒测试只关心输入与输出，不关心内部实现，依据需求规格设计用例（等价类、边界值、场景法）；白盒测试则基于代码结构与逻辑路径，验证程序内部是否按设计运行。 覆盖粒度：白盒常用语句覆盖（每行是否执行）、分支覆盖（if/else 两路是否都走）、条件覆盖（每个子条件真假）与路径覆盖；覆盖越细越能暴露逻…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1546.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1546">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="白盒测试（语句/分支/条件覆盖）与黑盒测试的核心差异是什么？覆盖率指标该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="要点： 视角不同：黑盒测试只关心输入与输出，不关心内部实现，依据需求规格设计用例（等价类、边界值、场景法）；白盒测试则基于代码结构与逻辑路径，验证程序内部是否按设计运行。 覆盖粒度：白盒常用语句覆盖（每行是否执行）、分支覆盖（if/else 两路是否都走）、条件覆盖（每个子条件真假）与路径覆盖；覆盖越细越能暴露逻…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1546.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1546">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"白盒测试（语句/分支/条件覆盖）与黑盒测试的核心差异是什么？覆盖率指标该怎么选？","text":"考察点：白盒与黑盒测试的本质区别，以及覆盖率度量指标的选择思路。","answerCount":1,"datePublished":"2026-10-05T02:30:51.375Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 视角不同：黑盒测试只关心输入与输出，不关心内部实现，依据需求规格设计用例（等价类、边界值、场景法）；白盒测试则基于代码结构与逻辑路径，验证程序内部是否按设计运行。 覆盖粒度：白盒常用语句覆盖（每行是否执行）、分支覆盖（if/else 两路是否都走）、条件覆盖（每个子条件真假）与路径覆盖；覆盖越细越能暴露逻辑错误，但成本越高。 如何选覆盖率：核心模块、金融/安全相关逻辑追求高分支/条件覆盖；一般业务达到语句+分支覆盖即可，不应盲目追 100% 路径覆盖（组合爆炸）。覆盖率只是辅助指标，不能替代基于需求的黑盒用例。 两者互补：黑盒保证「做对了事」，白盒保证「内部逻辑无遗漏」；实际项目以黑盒为主、关键路径补充白盒，形成需求与实现双维度的质量保障。","url":"https://itinterview.com.cn/question/1546"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"功能测试","item":"https://itinterview.com.cn/category?cat=106"},{"@type":"ListItem","position":4,"name":"白盒测试（语句/分支/条件覆盖）与黑盒测试的核心差异是什么？覆盖率指标该怎么选？","item":"https://itinterview.com.cn/q/1546.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"功能测试","item":"https://itinterview.com.cn/category?cat=106"},{"@type":"ListItem","position":4,"name":"白盒测试（语句/分支/条件覆盖）与黑盒测试的核心差异是什么？覆盖率指标该怎么选？","item":"https://itinterview.com.cn/q/1546"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1546">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/850">黑盒测试有哪些常用用例设计方法？各自适用什么场景？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

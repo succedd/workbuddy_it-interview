@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？ · IT面试题库">
   <meta property="og:description" content="READ_UNCOMMITTED：能读到未提交数据，三种并发问题都不防，几乎不用。 READ_COMMITTED：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。 REPEATABLE_READ：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1118.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1118">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？ · IT面试题库">
   <meta name="twitter:description" content="READ_UNCOMMITTED：能读到未提交数据，三种并发问题都不防，几乎不用。 READ_COMMITTED：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。 REPEATABLE_READ：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1118.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1118">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？","text":"请说明 DEFAULT/READ_UNCOMMITTED/READ_COMMITTED/REPEATABLE_READ/SERIALIZABLE 各级别能防止的问题与性能代价。","answerCount":1,"datePublished":"2026-09-13T02:40:15.537Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"READ_UNCOMMITTED：能读到未提交数据，三种并发问题都不防，几乎不用。 READ_COMMITTED：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。 REPEATABLE_READ：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，靠 MVCC 与间隙锁抑制幻读。 SERIALIZABLE：完全串行化，防所有并发问题但并发度最低，仅极端一致性场景使用。 DEFAULT：沿用底层数据库默认隔离级别（MySQL 即 REPEATABLE_READ）。选型原则是在「一致性」与「并发性能」间权衡，多数业务用数据库默认即可。","url":"https://itinterview.com.cn/question/1118"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？","item":"https://itinterview.com.cn/q/1118.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？","item":"https://itinterview.com.cn/q/1118"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1118">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1106">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1105">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/74">Spring 的 IOC 与 DI 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/75">Spring Bean 的作用域与生命周期？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

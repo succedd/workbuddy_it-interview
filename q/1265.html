@@ -9,15 +9,15 @@
   <meta property="og:title" content="Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？ · IT面试题库">
   <meta property="og:description" content="要点：Token 是模型每一步“补”的文本碎片。一次调用从 Token 化开始，模型每生成一个 Token 就把它加入上下文并预测下一个，这个过程叫自回归生成（Autoregressive Generation）。 为什么不同内容的 Token 数不一样 如果固定按字切，词表小但序列会变长；固定按词切能缩短序列，…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1265.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1265">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？ · IT面试题库">
   <meta name="twitter:description" content="要点：Token 是模型每一步“补”的文本碎片。一次调用从 Token 化开始，模型每生成一个 Token 就把它加入上下文并预测下一个，这个过程叫自回归生成（Autoregressive Generation）。 为什么不同内容的 Token 数不一样 如果固定按字切，词表小但序列会变长；固定按词切能缩短序列，…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1265.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1265">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？","text":"考察点：对 LLM 运行机制的基础理解，以及把 Token 换算到容量规划和成本核算的能力。","answerCount":1,"datePublished":"2026-09-26T02:31:43.723Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Token 是模型每一步“补”的文本碎片。一次调用从 Token 化开始，模型每生成一个 Token 就把它加入上下文并预测下一个，这个过程叫自回归生成（Autoregressive Generation）。 为什么不同内容的 Token 数不一样 如果固定按字切，词表小但序列会变长；固定按词切能缩短序列，但中文词组数量会让词表快速膨胀。BPE、Unigram 等子词切分算法在两者之间取舍：高频片段尽量作为整体保留，低频词继续拆小。所以 Token 和字、词都没有固定的一一对应关系——英文单词可能占多个 Token，中文也可能一词多 Token，或多字合成一个 Token。代码里的缩进、符号、运算符和变量名更容易被单独切分，压缩率通常低于自然语言。 经验换算值（只用于预算，不能用于结算） 英文 1 Token ≈ 3~4 个字符； DeepSeek 官方数据：1 个英文字符 ≈ 0.3 Token、1 个中文字符 ≈ 0.6 Token，即 1 Token ≈ 3.3 个英文字符或 1.7 个中文字符； 实测新闻类文本约 1.5 字/Token，技术文档约 1.2 字/Token； Tokenizer 版本会影响结果：GPT-3.5 中文约 1 字 1.5~2 Token，GPT-4o 使用词表约 20 万的 o200k_base，Qwen2.5 词表约 15 万。 中文歧义、生僻字和低频专业术语被切成什么粒度，会直接影响模型对文本的处理效果。此外 BOS、EOS、PAD、工具调用标记等特殊 Token 对用户不可见但同样占用窗口；多模态输入按尺寸折算，例如 Anthropic 的近似公式是 tokens ≈ width × height / 750。 上下文窗口的容量边界 模型标注的 128K、200K、1M 指一次调用可容纳的 Token 上限，这部分容量要同时分给三块：固定内容（System Prompt、工具 Schema、格式标记）、本次输入（User Prompt、历史消息、RAG 片段）、生成预算。大多数模型输入输出合并计算，部分供应商（如 Gemini）分别设置上限。 注意上下文窗口 ≠ 最大生成长度，参数名可能是 max_tokens、max_completion_tokens 或 max_output_tokens，不要按供应商名称推断上限。 落地建议：预算阶段用经验值并留 10%~20% 安全余量，计费与告警一律读 API 返回的 usage（含缓存输入 Token、输出 Token、推理 Token），精确计数用官方 Tokenizer 工具。想省钱可用 Prompt Caching 复用前缀：把不变内容（System Prompt、工具定义、RAG Context）放前面，变化内容（User Prompt）放后面，并监控缓存读取/写入 Token 验证命中率。","url":"https://itinterview.com.cn/question/1265"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LLM原理","item":"https://itinterview.com.cn/category?cat=191"},{"@type":"ListItem","position":5,"name":"Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？","item":"https://itinterview.com.cn/q/1265.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LLM原理","item":"https://itinterview.com.cn/category?cat=191"},{"@type":"ListItem","position":5,"name":"Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？","item":"https://itinterview.com.cn/q/1265"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1265">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/471">大模型的「幻觉」（hallucination）是什么？主要成因有哪些，工程中如何缓解？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1410">大模型推理时的 KV Cache 是什么？为什么上下文越长推理越贵？请估算 7B 模型 8K 上下文的 KV 显存。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1266">Temperature、Top-p、Top-k 分别控制什么？生产环境该怎么设置？为什么 Temperature 设为 0，输出仍然可能不完全一致？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

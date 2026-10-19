@@ -9,15 +9,15 @@
   <meta property="og:title" content="FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？ · IT面试题库">
   <meta property="og:description" content="要点： -vf 单路滤镜链：对单一路视频依次串联滤镜，逗号分隔、顺序执行，例如 -vf scale=1280:-2,crop=1280:720。 -filter_complex 多路流图：多输入/多输出时用流图描述，例如 -filter_complex &quot;[0:v][1:v]overlay=10:10[v]&quot; -…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1700.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1700">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？ · IT面试题库">
   <meta name="twitter:description" content="要点： -vf 单路滤镜链：对单一路视频依次串联滤镜，逗号分隔、顺序执行，例如 -vf scale=1280:-2,crop=1280:720。 -filter_complex 多路流图：多输入/多输出时用流图描述，例如 -filter_complex &quot;[0:v][1:v]overlay=10:10[v]&quot; -…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1700.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1700">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？","text":"考察 FFmpeg 滤镜体系，要求说明单路链与复杂流图的写法及适用场景。","answerCount":1,"datePublished":"2026-10-17T10:38:14.389Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： -vf 单路滤镜链：对单一路视频依次串联滤镜，逗号分隔、顺序执行，例如 -vf scale=1280:-2,crop=1280:720。 -filter_complex 多路流图：多输入/多输出时用流图描述，例如 -filter_complex \"[0:v][1:v]overlay=10:10[v]\" -map \"[v]\"，方括号给中间流命名，最后用 -map 选取输出。 常用滤镜：scale/crop 缩放裁剪、overlay/drawtext 叠加与字幕、fps 抽帧、hflip/transpose 翻转、setpts/atempo 调速。 坑：滤镜顺序影响结果（先 crop 再 scale 与先 scale 再 crop 不同）；长链先用短视频段验证，滤镜名或参数写错会直接报错退出。","url":"https://itinterview.com.cn/question/1700"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？","item":"https://itinterview.com.cn/q/1700.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"FFmpeg 的滤镜链（filtergraph）怎么用？-vf 与 -filter_complex 有什么区别，多路视频叠加该用哪个？","item":"https://itinterview.com.cn/q/1700"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1700">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/684">FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1453">FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1701">MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1702">用 FFmpeg 转码后音画不同步（声音超前或滞后画面），你会按什么顺序排查？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？ · IT面试题库">
   <meta property="og:description" content="要点： 事件与日志：合约 event 写入交易日志，前端可用 eth_getLogs 按 address / topics / 区块范围查询，或通过 WebSocket eth_subscribe 订阅 logs；日志是链下索引的主要数据源。 reorg 的影响：已看到的日志可能因链重组而消失或换到另一个 blo…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1725.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1725">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？ · IT面试题库">
   <meta name="twitter:description" content="要点： 事件与日志：合约 event 写入交易日志，前端可用 eth_getLogs 按 address / topics / 区块范围查询，或通过 WebSocket eth_subscribe 订阅 logs；日志是链下索引的主要数据源。 reorg 的影响：已看到的日志可能因链重组而消失或换到另一个 blo…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1725.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1725">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？","text":"考察事件索引、确认策略与 reorg 回滚。","answerCount":1,"datePublished":"2026-10-19T05:43:24.838Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 事件与日志：合约 event 写入交易日志，前端可用 eth_getLogs 按 address / topics / 区块范围查询，或通过 WebSocket eth_subscribe 订阅 logs；日志是链下索引的主要数据源。 reorg 的影响：已看到的日志可能因链重组而消失或换到另一个 blockHash。入账前应等待 N 个确认，记录 blockNumber / blockHash，发现链头变化时按块回滚并重放，不能只用 txHash 做幂等。 常见坑：eth_getLogs 区块范围过大被节点拒绝；topics 的编码/顺序写错；匿名事件没有 topic0；索引服务（如 The Graph）同样要处理 reorg。高价值业务应做「确认数 + 对账 + 人工复核」三层保护。","url":"https://itinterview.com.cn/question/1725"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"Web3开发","item":"https://itinterview.com.cn/category?cat=260"},{"@type":"ListItem","position":4,"name":"前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？","item":"https://itinterview.com.cn/q/1725.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"Web3开发","item":"https://itinterview.com.cn/category?cat=260"},{"@type":"ListItem","position":4,"name":"前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？","item":"https://itinterview.com.cn/q/1725"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1725">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/680">Web3 前端如何连接钱包并与合约交互（ethers.js / web3.js）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1666">Web3 前端签名登录为什么必须由钱包发起，而不是让用户直接输入私钥？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1724">DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1726">DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

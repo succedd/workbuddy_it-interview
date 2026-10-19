@@ -9,15 +9,15 @@
   <meta property="og:title" content="大模型的「预训练 + 有监督微调(SFT) + 提示学习」三段式范式如何演进？SFT 与上下文学习(ICL)各自解决什么问题？ · IT面试题库">
   <meta property="og:description" content="要点： 预训练：在海量无标注语料上做自监督任务（如 GPT 的因果语言建模、BERT 的掩码语言建模），学到通用的语法、知识与语义表示，是能力的「底座」。 有监督微调（SFT）：用高质量指令/对话数据继续训练，把通用能力对齐到具体任务与人类的表达习惯，是「学会按要求做事」的关键一步。 提示学习 / 上下文学习（I…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1540.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1540">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大模型的「预训练 + 有监督微调(SFT) + 提示学习」三段式范式如何演进？SFT 与上下文学习(ICL)各自解决什么问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 预训练：在海量无标注语料上做自监督任务（如 GPT 的因果语言建模、BERT 的掩码语言建模），学到通用的语法、知识与语义表示，是能力的「底座」。 有监督微调（SFT）：用高质量指令/对话数据继续训练，把通用能力对齐到具体任务与人类的表达习惯，是「学会按要求做事」的关键一步。 提示学习 / 上下文学习（I…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1540.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1540">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大模型的「预训练 + 有监督微调(SFT) + 提示学习」三段式范式如何演进？SFT 与上下文学习(ICL)各自解决什么问题？","text":"考察点：理解预训练语言模型从「全参数微调」到「少样本提示」的能力获取路径。","answerCount":1,"datePublished":"2026-10-05T02:30:36.185Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 预训练：在海量无标注语料上做自监督任务（如 GPT 的因果语言建模、BERT 的掩码语言建模），学到通用的语法、知识与语义表示，是能力的「底座」。 有监督微调（SFT）：用高质量指令/对话数据继续训练，把通用能力对齐到具体任务与人类的表达习惯，是「学会按要求做事」的关键一步。 提示学习 / 上下文学习（ICL）：不更新参数，仅在输入里放少量示例或自然语言指令，模型就能泛化到新任务（GPT-3 展示的 few-shot 能力）。它把「任务定义」从训练阶段移到了推理阶段。 取舍：SFT 改权重、效果稳定但要训练成本；ICL 零训练、灵活但依赖模型规模与提示质量，且上下文长度有限。实践中常以 SFT 打底、再用提示/RAG 做下游适配。","url":"https://itinterview.com.cn/question/1540"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"GPT系列","item":"https://itinterview.com.cn/category?cat=190"},{"@type":"ListItem","position":5,"name":"大模型的「预训练 + 有监督微调(SFT) + 提示学习」三段式范式如何演进？SFT 与上下文学习(ICL)各自解决什么问题？","item":"https://itinterview.com.cn/q/1540.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"GPT系列","item":"https://itinterview.com.cn/category?cat=190"},{"@type":"ListItem","position":5,"name":"大模型的「预训练 + 有监督微调(SFT) + 提示学习」三段式范式如何演进？SFT 与上下文学习(ICL)各自解决什么问题？","item":"https://itinterview.com.cn/q/1540"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1540">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/469">GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

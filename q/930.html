@@ -9,15 +9,15 @@
   <meta property="og:title" content="ConcurrentHashMap 是如何保证线程安全的？1.7 和 1.8 有什么区别？ · IT面试题库">
   <meta property="og:description" content="JDK 1.7：分段锁 Segment（继承 ReentrantLock），默认 16 段，锁粒度是&quot;段&quot;，并发度最高 16，两重 hash 定位（先段后桶），实现复杂、内存浪费。 JDK 1.8：抛弃分段锁，改为 CAS + synchronized，锁粒度细化到单个桶头节点： 桶为空：CAS 直接插入头节点（…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/930.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/930">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ConcurrentHashMap 是如何保证线程安全的？1.7 和 1.8 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="JDK 1.7：分段锁 Segment（继承 ReentrantLock），默认 16 段，锁粒度是&quot;段&quot;，并发度最高 16，两重 hash 定位（先段后桶），实现复杂、内存浪费。 JDK 1.8：抛弃分段锁，改为 CAS + synchronized，锁粒度细化到单个桶头节点： 桶为空：CAS 直接插入头节点（…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/930.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/930">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ConcurrentHashMap 是如何保证线程安全的？1.7 和 1.8 有什么区别？","text":"请对比 JDK 1.7 分段锁与 1.8 CAS+synchronized 的实现，并说明 size 统计等细节。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"JDK 1.7：分段锁 Segment（继承 ReentrantLock），默认 16 段，锁粒度是\"段\"，并发度最高 16，两重 hash 定位（先段后桶），实现复杂、内存浪费。 JDK 1.8：抛弃分段锁，改为 CAS + synchronized，锁粒度细化到单个桶头节点： 桶为空：CAS 直接插入头节点（无锁）； 桶非空：synchronized 锁头节点后链表/树插入（锁只有一个桶，竞争概率极低）； 扩容：支持多线程协助迁移（每个线程认领一段桶区间转移，ForwardingNode 标记）。 size 统计：1.8 用 baseCount + CounterCell[] 分散计数（类似 LongAdder 思想），避免单点 CAS 热点；size 是近似值（弱一致）。 其他：1.8 的 get 全程无锁（Node.val 和 next 用 volatile 保证可见性）；key/value 都不允许 null。 一句话：锁粒度从\"段\"细化到\"桶\"+无锁 CAS，并发度从 16 变成实质上的无限。","url":"https://itinterview.com.cn/question/930"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"ConcurrentHashMap 是如何保证线程安全的？1.7 和 1.8 有什么区别？","item":"https://itinterview.com.cn/q/930.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"ConcurrentHashMap 是如何保证线程安全的？1.7 和 1.8 有什么区别？","item":"https://itinterview.com.cn/q/930"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -104,6 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/930">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

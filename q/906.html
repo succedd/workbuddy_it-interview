@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？ · IT面试题库">
   <meta property="og:description" content="RDB（快照持久化）：在指定间隔对内存数据做全量快照，保存为二进制文件。 优点：文件紧凑、恢复速度快、对性能影响小（fork 子进程写，copy-on-write）。 缺点：两次快照间宕机会丢失最近数据；数据量大时 fork 可能阻塞。 AOF（追加文件持久化）：记录每条写命令，以文本追加。通过 appendfs…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/906.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/906">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？ · IT面试题库">
   <meta name="twitter:description" content="RDB（快照持久化）：在指定间隔对内存数据做全量快照，保存为二进制文件。 优点：文件紧凑、恢复速度快、对性能影响小（fork 子进程写，copy-on-write）。 缺点：两次快照间宕机会丢失最近数据；数据量大时 fork 可能阻塞。 AOF（追加文件持久化）：记录每条写命令，以文本追加。通过 appendfs…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/906.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/906">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？","text":"考察两种持久化方式的原理、优缺点及生产配置选择。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RDB（快照持久化）：在指定间隔对内存数据做全量快照，保存为二进制文件。 优点：文件紧凑、恢复速度快、对性能影响小（fork 子进程写，copy-on-write）。 缺点：两次快照间宕机会丢失最近数据；数据量大时 fork 可能阻塞。 AOF（追加文件持久化）：记录每条写命令，以文本追加。通过 appendfsync 控制刷盘时机：always（每次都 fsync，最安全最慢）、everysec（每秒，默认，最多丢 1 秒）、no（交给 OS）。 优点：数据更安全（可做到不丢/最多丢 1 秒）。 缺点：文件大、恢复慢；需 AOF 重写（读取当前内存状态重新生成精简 AOF）压缩体积。 对比表 | 方式 | 原理 | 安全性 | 恢复速度 | 文件大小 | | --- | --- | --- | --- | --- | | RDB | 定时全量快照 | 可能丢间隔数据 | 快 | 小 | | AOF | 追加写命令 | 高(最多丢1秒) | 慢 | 大 | 混合持久化（Redis 4.0+，推荐）：AOF 重写时前半段用 RDB 格式（加载快），后半段用增量 AOF 命令，兼顾恢复速度和数据安全，是生产首选。","url":"https://itinterview.com.cn/question/906"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？","item":"https://itinterview.com.cn/q/906.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？","item":"https://itinterview.com.cn/q/906"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/906">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

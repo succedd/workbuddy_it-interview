@@ -9,15 +9,15 @@
   <meta property="og:title" content="浅拷贝和深拷贝的本质区别是什么？JSON.parse(JSON.stringify()) 有哪些致命缺陷，structuredClone 又如何？ · IT面试题库">
   <meta property="og:description" content="本质区别：拷贝第几层。 浅拷贝只复制第一层，嵌套对象仍是同一引用（Object.assign({}, obj)、扩展运算符 {...obj}、Array.prototype.slice/concat）。改内层会互相影响。 深拷贝递归复制所有层，得到完全独立的对象。 JSON.parse(JSON.stringif…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1308.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1308">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浅拷贝和深拷贝的本质区别是什么？JSON.parse(JSON.stringify()) 有哪些致命缺陷，structuredClone 又如何？ · IT面试题库">
   <meta name="twitter:description" content="本质区别：拷贝第几层。 浅拷贝只复制第一层，嵌套对象仍是同一引用（Object.assign({}, obj)、扩展运算符 {...obj}、Array.prototype.slice/concat）。改内层会互相影响。 深拷贝递归复制所有层，得到完全独立的对象。 JSON.parse(JSON.stringif…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1308.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1308">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浅拷贝和深拷贝的本质区别是什么？JSON.parse(JSON.stringify()) 有哪些致命缺陷，structuredClone 又如何？","text":"考察点：拷贝层级的本质、JSON 序列化的类型损失，以及结构化克隆算法的边界。","answerCount":1,"datePublished":"2026-09-26T02:33:05.839Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"本质区别：拷贝第几层。 浅拷贝只复制第一层，嵌套对象仍是同一引用（Object.assign({}, obj)、扩展运算符 {...obj}、Array.prototype.slice/concat）。改内层会互相影响。 深拷贝递归复制所有层，得到完全独立的对象。 JSON.parse(JSON.stringify(obj)) 的缺陷： 1. 丢类型：Date 变字符串，RegExp / Map / Set / Error 全变 {}； 2. 丢值：undefined、函数、Symbol 作为对象属性会被删除，数组中的会变成 null； 3. 报错或失真：BigInt 直接抛 TypeError，NaN / Infinity 变 null； 4. 循环引用直接抛错（Converting circular structure to JSON）； 5. 不保留原型链，类实例退化为普通对象。 手写深拷贝（面试常考）：用 WeakMap 记录已拷贝对象以解决循环引用（弱引用也避免「记录表」自身造成泄漏），对 Date / RegExp / Map / Set 分类处理，并用 Object.create(Object.getPrototypeOf(obj)) 保留原型。 structuredClone（现代首选，2022 年起主流浏览器广泛可用）：基于结构化克隆算法完成深拷贝，且支持循环引用： 支持 Date / RegExp / Map / Set / ArrayBuffer / TypedArray / Blob / File 等，能正确处理循环引用； 支持转移可转移对象，转移后原对象失效： 限制：不能克隆函数、DOM 节点、Symbol 与类原型方法，遇到不可序列化的部分会抛 DataCloneError；也不像手写方案那样能保留自定义原型。 选型：只改第一层 → 用浅拷贝，避免无谓开销；现代浏览器且数据可能含 Date / 循环引用 → 优先 structuredClone；需要保留原型与类实例、或处理不可克隆类型 → 手写递归或 lodash.cloneDeep；老环境且数据是纯 JSON → 才考虑序列化方案，并清楚它会丢什么。","url":"https://itinterview.com.cn/question/1308"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"浅拷贝和深拷贝的本质区别是什么？JSON.parse(JSON.stringify()) 有哪些致命缺陷，structuredClone 又如何？","item":"https://itinterview.com.cn/q/1308.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"浅拷贝和深拷贝的本质区别是什么？JSON.parse(JSON.stringify()) 有哪些致命缺陷，structuredClone 又如何？","item":"https://itinterview.com.cn/q/1308"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -123,6 +123,7 @@ const clone = structuredClone(original);
       <a class="cta" href="https://itinterview.com.cn/question/1308">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/947">什么是闭包？有什么应用场景和问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/25">localStorage、sessionStorage、cookie 的区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/389">什么是闭包（closure）？它有哪些典型应用场景，又要注意什么陷阱？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/390">请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

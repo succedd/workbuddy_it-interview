@@ -9,15 +9,15 @@
   <meta property="og:title" content="已知某二叉树的中序遍历为 D B E A C、前序遍历为 A B D E C，则它的后序遍历是哪一项？（考察由遍历序列还原树） · IT面试题库">
   <meta property="og:description" content="答案：B —— D B E C A。 要点： 前序首位即根：前序 A... → 整棵树根是 A。 在中序按根切分：中序 D B E | A | C → 左子树中序为 DBE，右子树中序为 C。 递归还原左右：左子树前序（去掉根 A 后取对应长度）为 B D E，其根是 B；中序 DBE 中 B 左为 D、右为 E…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/965.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/965">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="已知某二叉树的中序遍历为 D B E A C、前序遍历为 A B D E C，则它的后序遍历是哪一项？（考察由遍历序列还原树） · IT面试题库">
   <meta name="twitter:description" content="答案：B —— D B E C A。 要点： 前序首位即根：前序 A... → 整棵树根是 A。 在中序按根切分：中序 D B E | A | C → 左子树中序为 DBE，右子树中序为 C。 递归还原左右：左子树前序（去掉根 A 后取对应长度）为 B D E，其根是 B；中序 DBE 中 B 左为 D、右为 E…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/965.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/965">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"已知某二叉树的中序遍历为 D B E A C、前序遍历为 A B D E C，则它的后序遍历是哪一项？（考察由遍历序列还原树）","text":"考察点：前序定根、中序分左右、后序把根放最后的还原逻辑。单选题，验证对三种遍历关系的理解。","answerCount":1,"datePublished":"2026-09-10T02:29:37.187Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"答案：B —— D B E C A。 要点： 前序首位即根：前序 A... → 整棵树根是 A。 在中序按根切分：中序 D B E | A | C → 左子树中序为 DBE，右子树中序为 C。 递归还原左右：左子树前序（去掉根 A 后取对应长度）为 B D E，其根是 B；中序 DBE 中 B 左为 D、右为 E；右子树只有 C。 拼后序：后序 = 左子树后序 + 右子树后序 + 根。左 DBE 后序为 D E B；右 C；整树后序 = D E B + C + A = D B E C A（选项 B）。 记忆：前序定根、中序分左右、后序把根放最后；只有前/后序 + 中序才能唯一确定一棵树，缺中序无法唯一还原。","url":"https://itinterview.com.cn/question/965"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"已知某二叉树的中序遍历为 D B E A C、前序遍历为 A B D E C，则它的后序遍历是哪一项？（考察由遍历序列还原树）","item":"https://itinterview.com.cn/q/965.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"已知某二叉树的中序遍历为 D B E A C、前序遍历为 A B D E C，则它的后序遍历是哪一项？（考察由遍历序列还原树）","item":"https://itinterview.com.cn/q/965"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/965">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

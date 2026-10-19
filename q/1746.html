@@ -9,15 +9,15 @@
   <meta property="og:title" content="MQTT 主题设计：+ 与 # 通配符有哪些坑？如何做租户隔离与权限控制？ · IT面试题库">
   <meta property="og:description" content="要点： 通配符规则：+ 匹配单层，# 匹配多层且只能放在末尾；sensor/+/temp 只匹配一层，sensor/# 匹配所有子层。以 $ 开头的系统主题不会被根级通配符匹配。 设计模式：推荐 {tenant}/{deviceType}/{deviceId}/{measurement}，租户前缀隔离，设备 ID…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1746.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1746">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MQTT 主题设计：+ 与 # 通配符有哪些坑？如何做租户隔离与权限控制？ · IT面试题库">
   <meta name="twitter:description" content="要点： 通配符规则：+ 匹配单层，# 匹配多层且只能放在末尾；sensor/+/temp 只匹配一层，sensor/# 匹配所有子层。以 $ 开头的系统主题不会被根级通配符匹配。 设计模式：推荐 {tenant}/{deviceType}/{deviceId}/{measurement}，租户前缀隔离，设备 ID…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1746.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1746">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MQTT 主题设计：+ 与 # 通配符有哪些坑？如何做租户隔离与权限控制？","text":"考察主题层级、ACL 与大规模路由。","answerCount":1,"datePublished":"2026-10-19T05:43:26.144Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 通配符规则：+ 匹配单层，# 匹配多层且只能放在末尾；sensor/+/temp 只匹配一层，sensor/# 匹配所有子层。以 $ 开头的系统主题不会被根级通配符匹配。 设计模式：推荐 {tenant}/{deviceType}/{deviceId}/{measurement}，租户前缀隔离，设备 ID 全局唯一；状态类用保留消息，命令类用请求/响应主题，避免把业务数据堆在 $SYS。 权限与坑：ACL 按主题前缀/通配符授予，禁止客户端订阅 # 获取全量数据；通配符订阅过多会放大 broker 路由压力；主题名避免空格、中文与超长层级，升级时保持向后兼容。","url":"https://itinterview.com.cn/question/1746"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"物联网协议MQTT","item":"https://itinterview.com.cn/category?cat=246"},{"@type":"ListItem","position":4,"name":"MQTT 主题设计：+ 与 # 通配符有哪些坑？如何做租户隔离与权限控制？","item":"https://itinterview.com.cn/q/1746.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"物联网协议MQTT","item":"https://itinterview.com.cn/category?cat=246"},{"@type":"ListItem","position":4,"name":"MQTT 主题设计：+ 与 # 通配符有哪些坑？如何做租户隔离与权限控制？","item":"https://itinterview.com.cn/q/1746"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1746">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/700">MQTT 的发布/订阅模型、QoS 等级（0/1/2）与适用场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1452">MQTT 的遗嘱消息（LWT）、保留消息（Retained）与 Clean Session 如何配合做设备在线状态管理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1600">MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1745">MQTT 5.0 相比 3.1.1 新增了哪些关键能力？原因码、属性、共享订阅各解决什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

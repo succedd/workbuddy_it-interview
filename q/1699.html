@@ -9,15 +9,15 @@
   <meta property="og:title" content="带货直播该用 CBR 还是 VBR 码率控制？画面突然复杂时两种模式各有什么表现？ · IT面试题库">
   <meta property="og:description" content="要点： CBR（恒定码率）：尽量维持目标码率，画面突变时靠丢细节、降帧率硬扛；带宽可预测、CDN 成本可控，是直播推流的默认选择。 VBR（可变码率）：按画面复杂度动态分配码率，静态画面省带宽、剧烈运动给足码率，画质更稳但峰值带宽不可控。 直播场景结论：优先 CBR（或带上限的 CBR）——CDN 按峰值计费、观…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1699.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1699">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="带货直播该用 CBR 还是 VBR 码率控制？画面突然复杂时两种模式各有什么表现？ · IT面试题库">
   <meta name="twitter:description" content="要点： CBR（恒定码率）：尽量维持目标码率，画面突变时靠丢细节、降帧率硬扛；带宽可预测、CDN 成本可控，是直播推流的默认选择。 VBR（可变码率）：按画面复杂度动态分配码率，静态画面省带宽、剧烈运动给足码率，画质更稳但峰值带宽不可控。 直播场景结论：优先 CBR（或带上限的 CBR）——CDN 按峰值计费、观…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1699.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"带货直播该用 CBR 还是 VBR 码率控制？画面突然复杂时两种模式各有什么表现？","text":"考察码率控制模式选型，要求结合直播成本与画质稳定性给出结论。","answerCount":1,"datePublished":"2026-10-17T10:38:14.277Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： CBR（恒定码率）：尽量维持目标码率，画面突变时靠丢细节、降帧率硬扛；带宽可预测、CDN 成本可控，是直播推流的默认选择。 VBR（可变码率）：按画面复杂度动态分配码率，静态画面省带宽、剧烈运动给足码率，画质更稳但峰值带宽不可控。 直播场景结论：优先 CBR（或带上限的 CBR）——CDN 按峰值计费、观众网络也需要稳定；点播/录播才适合 VBR 或 CRF 一次编码出多档清晰度。 兜底手段：CBR 下仍要限制 GOP 长度与最低帧率，避免镜头切换时码率溢出导致花屏；FFmpeg 侧即 -maxrate 与 -bufsize 配合使用。","url":"https://itinterview.com.cn/question/1699"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频基础编解码","item":"https://itinterview.com.cn/category?cat=250"},{"@type":"ListItem","position":4,"name":"带货直播该用 CBR 还是 VBR 码率控制？画面突然复杂时两种模式各有什么表现？","item":"https://itinterview.com.cn/q/1699.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频基础编解码","item":"https://itinterview.com.cn/category?cat=250"},{"@type":"ListItem","position":4,"name":"带货直播该用 CBR 还是 VBR 码率控制？画面突然复杂时两种模式各有什么表现？","item":"https://itinterview.com.cn/q/1699"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1699">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/683">常见视频编码（H.264/H.265）与音频编码（AAC/OPUS）特点？I/P/B 帧是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1663">实时视频通话如何定位“画面卡顿但声音正常”的问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1697">为什么视频编码普遍采用 YUV（尤其是 4:2:0）而不是 RGB？4:2:0 相比 RGB 节省多少数据量？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1698">H.264 编码器的内部流程大致是怎样的？帧内预测、帧间预测、变换量化各自负责什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

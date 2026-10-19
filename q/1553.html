@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？ · IT面试题库">
   <meta property="og:description" content="要点： GitOps 核心：把「期望状态」以声明式清单（K8s YAML 等）存于 Git 作为唯一事实源，部署与回滚都通过改 Git 完成，所有变更可审计、可版本化、可回退。 Pull 模型 vs Push：传统 CI/CD 由流水线主动 push 到集群（需集群凭证外泄风险）；Argo CD 以控制器常驻集群…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1553.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1553">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？ · IT面试题库">
   <meta name="twitter:description" content="要点： GitOps 核心：把「期望状态」以声明式清单（K8s YAML 等）存于 Git 作为唯一事实源，部署与回滚都通过改 Git 完成，所有变更可审计、可版本化、可回退。 Pull 模型 vs Push：传统 CI/CD 由流水线主动 push 到集群（需集群凭证外泄风险）；Argo CD 以控制器常驻集群…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1553.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1553">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？","text":"考察点：GitOps 理念与 Argo CD 的声明式、Pull 式持续部署模型。","answerCount":1,"datePublished":"2026-10-05T02:31:04.217Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： GitOps 核心：把「期望状态」以声明式清单（K8s YAML 等）存于 Git 作为唯一事实源，部署与回滚都通过改 Git 完成，所有变更可审计、可版本化、可回退。 Pull 模型 vs Push：传统 CI/CD 由流水线主动 push 到集群（需集群凭证外泄风险）；Argo CD 以控制器常驻集群内，主动拉取 Git 中声明的状态并与集群实际状态对比，安全且自愈。 自动同步（Sync）：Argo CD 检测到 Git 期望状态与集群实际状态不一致时，按策略自动或手动同步；支持健康检查、进度展示与差异可视化，出问题可一键回滚到旧 commit。 价值：环境与集群「漂移」会被自动纠偏，集群凭证不必外发到 CI，发布流程天然可审计，非常适合多集群、多环境的规模化运维。","url":"https://itinterview.com.cn/question/1553"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"ArgoCD","item":"https://itinterview.com.cn/category?cat=142"},{"@type":"ListItem","position":4,"name":"什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？","item":"https://itinterview.com.cn/q/1553.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"ArgoCD","item":"https://itinterview.com.cn/category?cat=142"},{"@type":"ListItem","position":4,"name":"什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？","item":"https://itinterview.com.cn/q/1553"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1553">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/441">Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

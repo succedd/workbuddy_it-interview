@@ -9,15 +9,15 @@
   <meta property="og:title" content="XSS 和 CSRF 攻击的原理与防范？ · IT面试题库">
   <meta property="og:description" content="XSS（跨站脚本）：恶意脚本被注入页面并在受害者浏览器执行，窃取 Cookie/会话、篡改页面、挂马。三类： 存储型（留言写入库，所有访问者中招，危害最大）； 反射型（恶意链接携带脚本，服务端原样回显）； DOM 型（纯前端拼接 innerHTML 造成）。 防范：①输出转义/编码（HTML/JS/URL 上下文…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/921.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/921">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="XSS 和 CSRF 攻击的原理与防范？ · IT面试题库">
   <meta name="twitter:description" content="XSS（跨站脚本）：恶意脚本被注入页面并在受害者浏览器执行，窃取 Cookie/会话、篡改页面、挂马。三类： 存储型（留言写入库，所有访问者中招，危害最大）； 反射型（恶意链接携带脚本，服务端原样回显）； DOM 型（纯前端拼接 innerHTML 造成）。 防范：①输出转义/编码（HTML/JS/URL 上下文…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/921.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/921">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"XSS 和 CSRF 攻击的原理与防范？","text":"请分别解释跨站脚本（XSS）与跨站请求伪造（CSRF）的攻击方式与区别，并说明各自的防御手段。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"XSS（跨站脚本）：恶意脚本被注入页面并在受害者浏览器执行，窃取 Cookie/会话、篡改页面、挂马。三类： 存储型（留言写入库，所有访问者中招，危害最大）； 反射型（恶意链接携带脚本，服务端原样回显）； DOM 型（纯前端拼接 innerHTML 造成）。 防范：①输出转义/编码（HTML/JS/URL 上下文分别处理，用户内容进页面必须转义）；②CSP 内容安全策略限制脚本来源；③输入校验为辅；④Cookie 加 HttpOnly（JS 读不到，偷不走）。 CSRF（跨站请求伪造）：利用浏览器自动携带 Cookie 的特性，在第三方站点诱导已登录用户\"替攻击者发请求\"（如 img src 指向转账接口）。用户没输入任何恶意内容，请求却是伪造的。 防范：①CSRF Token（表单/头部携带服务端下发的随机 token，第三方拿不到）；②SameSite=Strict/Lax Cookie 限制跨站携带；③校验 Origin/Referer；④敏感操作二次验证。 区别一句话：XSS 是\"信任了用户的输入\"（代码注入执行），CSRF 是\"信任了浏览器带凭据的请求\"（借刀杀人）；XSS 能偷 Cookie 直接冒充用户，CSRF 只能借用现成会话。","url":"https://itinterview.com.cn/question/921"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"网络安全基础","item":"https://itinterview.com.cn/category?cat=201"},{"@type":"ListItem","position":4,"name":"XSS 和 CSRF 攻击的原理与防范？","item":"https://itinterview.com.cn/q/921.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"网络安全基础","item":"https://itinterview.com.cn/category?cat=201"},{"@type":"ListItem","position":4,"name":"XSS 和 CSRF 攻击的原理与防范？","item":"https://itinterview.com.cn/q/921"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -104,6 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/921">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/537">数字签名的原理是什么？它如何同时保证身份认证与完整性？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/536">对称加密与非对称加密的区别？为何 TLS 要两者结合使用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/538">请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/539">什么是中间人攻击（MITM）？HTTPS 如何抵御它？遇到证书告警应如何排查？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

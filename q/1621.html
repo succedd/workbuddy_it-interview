@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spring MVC 如何设计 RESTful 接口与统一响应？跨域（CORS）请求为什么要预检（OPTIONS），如何处理？ · IT面试题库">
   <meta property="og:description" content="要点： RESTful 设计：用 HTTP 动词表达语义（GET 查 / POST 增 / PUT 改 / PATCH 局部改 / DELETE 删），资源用名词复数 URI（/users/{id}），状态码表达结果（200 / 201 / 204 / 400 / 401 / 403 / 404 / 500）。用…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1621.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1621">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 如何设计 RESTful 接口与统一响应？跨域（CORS）请求为什么要预检（OPTIONS），如何处理？ · IT面试题库">
   <meta name="twitter:description" content="要点： RESTful 设计：用 HTTP 动词表达语义（GET 查 / POST 增 / PUT 改 / PATCH 局部改 / DELETE 删），资源用名词复数 URI（/users/{id}），状态码表达结果（200 / 201 / 204 / 400 / 401 / 403 / 404 / 500）。用…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1621.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1621">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 如何设计 RESTful 接口与统一响应？跨域（CORS）请求为什么要预检（OPTIONS），如何处理？","text":"高级，考察 REST 规范与跨域。","answerCount":1,"datePublished":"2026-10-10T11:54:35.685Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： RESTful 设计：用 HTTP 动词表达语义（GET 查 / POST 增 / PUT 改 / PATCH 局部改 / DELETE 删），资源用名词复数 URI（/users/{id}），状态码表达结果（200 / 201 / 204 / 400 / 401 / 403 / 404 / 500）。用 @RestController（@Controller+@ResponseBody）直接返回数据。 统一响应：定义统一返回体（如 {code,msg,data}），通过 @ControllerAdvice 把成功 / 异常都包成该结构，前端无需逐接口判错；分页 / 错误码规范一致。 CORS 预检：浏览器对非简单请求（带自定义头、非 GET / POST 或特殊 Content-Type）先发 OPTIONS 预检，问服务器是否允许该跨域；服务器回 Access-Control-Allow-Origin/Methods/Headers 后才发真实请求。 处理：Spring 用 @CrossOrigin 或全局 WebMvcConfigurer.addCorsMappings 配置允许的来源 / 方法 / 头，并正确处理 OPTIONS；注意携带凭据（cookie）时 Allow-Origin 不能是 *，须显式来源。","url":"https://itinterview.com.cn/question/1621"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 如何设计 RESTful 接口与统一响应？跨域（CORS）请求为什么要预检（OPTIONS），如何处理？","item":"https://itinterview.com.cn/q/1621.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 如何设计 RESTful 接口与统一响应？跨域（CORS）请求为什么要预检（OPTIONS），如何处理？","item":"https://itinterview.com.cn/q/1621"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1621">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1620">Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/798">Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/802">@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1616">请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

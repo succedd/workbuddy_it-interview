@@ -9,15 +9,15 @@
   <meta property="og:title" content="terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？ · IT面试题库">
   <meta property="og:description" content="plan 流程：① refresh：读取云上实际状态，更新 state（配置里删了但云上还有的资源会提示）；② diff：三层对比——HCL 配置（期望）vs state（上次已知）vs 实际云状态（现状），输出 will be created/updated/destroyed 清单；③ 人工审阅 plan。a…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1533.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1533">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？ · IT面试题库">
   <meta name="twitter:description" content="plan 流程：① refresh：读取云上实际状态，更新 state（配置里删了但云上还有的资源会提示）；② diff：三层对比——HCL 配置（期望）vs state（上次已知）vs 实际云状态（现状），输出 will be created/updated/destroyed 清单；③ 人工审阅 plan。a…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1533.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1533">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？","text":"描述 refresh→diff→apply 的三态对比，并给出流水线实践要点。","answerCount":1,"datePublished":"2026-10-05T01:04:01.788Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"plan 流程：① refresh：读取云上实际状态，更新 state（配置里删了但云上还有的资源会提示）；② diff：三层对比——HCL 配置（期望）vs state（上次已知）vs 实际云状态（现状），输出 will be created/updated/destroyed 清单；③ 人工审阅 plan。apply：按依赖图并行执行变更，先做依赖排序（如先建 VPC 再建子网），每步失败即停（部分资源已变更，需重新 plan 处理）。 CI/CD 安全实践：① MR 阶段自动跑 fmt + validate + plan，plan 结果贴到 PR 作为评审依据；② apply 只允许主分支触发，且需要人工 approve（尤其 destroy：加 prevent_destroy 生命周期保护 + 双人审批）；③ plan 输出可能含敏感值，注意日志脱敏；④ 用独立工作区/目录隔离环境（dev/staging/prod 各自 state），避免 blast radius；⑤ apply 前再次 plan 确认无漂移（两次 plan 之间云可能被人改过）；⑥ 记录变更审计：谁在何时 apply 了什么（plan 文件归档）。","url":"https://itinterview.com.cn/question/1533"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Terraform","item":"https://itinterview.com.cn/category?cat=147"},{"@type":"ListItem","position":4,"name":"terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？","item":"https://itinterview.com.cn/q/1533.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Terraform","item":"https://itinterview.com.cn/category?cat=147"},{"@type":"ListItem","position":4,"name":"terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？","item":"https://itinterview.com.cn/q/1533"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -96,6 +96,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1533">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/443">有人手工在控制台改了资源、也有人本地跑 terraform apply，导致 state 冲突和计划里出现大量意外变更，怎么处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1439">Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1532">Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

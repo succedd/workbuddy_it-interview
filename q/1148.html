@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。 · IT面试题库">
   <meta property="og:description" content="不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1148.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1148">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。 · IT面试题库">
   <meta name="twitter:description" content="不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1148.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1148">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。","text":"请站在“发布可靠性”视角，说明这四件套各自解决的痛点，以及它们如何组合成“出问题能秒级回退、新功能能灰度放量”的发布能力。","answerCount":1,"datePublished":"2026-09-14T02:47:35.336Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"不可变制品：一次构建、全环境同源部署，消除“测过的不等于上线的”这一最大不确定性，是回滚可预期的前提。 环境即代码（IaC）：用 Terraform/Ansible/Helm 把环境定义成声明式代码，环境可被重建、被版本化，回滚时连环境一起回到已知良好状态，而非手工修修补补。 一键回滚：基于不可变制品与 IaC，回滚=把流量/部署指回上一稳定版本（重新部署旧镜像或切 Ingress/路由），秒级完成；关键是“回滚路径要演练过”，不能事故时才第一次试。 特性开关（feature toggle）：把“代码上线”与“功能开放”解耦——新逻辑随开关默认关闭上线，确认无碍再按比例放量，出问题只关开关不必回滚代码，把回滚粒度从“整个版本”降到“单个功能”。 协同逻辑：不可变制品+IaC 保证“能回退且回得对”，一键回滚是兜底手段，特性开关是更轻量的日常减震；四件套合起来让“快速发布”与“安全可退”不再二选一。","url":"https://itinterview.com.cn/question/1148"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"GitLab CI/CD","item":"https://itinterview.com.cn/category?cat=140"},{"@type":"ListItem","position":4,"name":"如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。","item":"https://itinterview.com.cn/q/1148.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"GitLab CI/CD","item":"https://itinterview.com.cn/category?cat=140"},{"@type":"ListItem","position":4,"name":"如何设计一个健壮的发布系统？请从「不可变制品 + 环境即代码 + 一键回滚 + 特性开关」四件套说明各自解决什么问题、如何协同。","item":"https://itinterview.com.cn/q/1148"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1148">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1144">流水线里单元测试偶发失败（flaky test）卡住合入，如何区分“真 bug”与“不稳定测试”，并给出重试、隔离与 quarantine 的处理策略？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1147">数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/727">GitLab CI 的 pipeline/stage/job 与 .gitlab-ci.yml 基本结构？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1142">CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

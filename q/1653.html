@@ -9,15 +9,15 @@
   <meta property="og:title" content="UIKit 页面卡顿掉帧，你会从主线程和渲染链路哪些角度定位？ · IT面试题库">
   <meta property="og:description" content="要点： 主线程阻塞：用 Instruments Time Scanner 定位 CPU 热点；避免主线程同步 IO、复杂计算、网络等待。 布局与渲染：Auto Layout 过度约束、离屏渲染、圆角/阴影叠加、超大图片解码都会增加 CPU/GPU 压力。 数据更新：批量刷新 UITableView/UIColle…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1653.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1653">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="UIKit 页面卡顿掉帧，你会从主线程和渲染链路哪些角度定位？ · IT面试题库">
   <meta name="twitter:description" content="要点： 主线程阻塞：用 Instruments Time Scanner 定位 CPU 热点；避免主线程同步 IO、复杂计算、网络等待。 布局与渲染：Auto Layout 过度约束、离屏渲染、圆角/阴影叠加、超大图片解码都会增加 CPU/GPU 压力。 数据更新：批量刷新 UITableView/UIColle…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1653.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1653">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"UIKit 页面卡顿掉帧，你会从主线程和渲染链路哪些角度定位？","text":"考察 iOS 性能优化。","answerCount":1,"datePublished":"2026-10-15T12:54:42.357Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 主线程阻塞：用 Instruments Time Scanner 定位 CPU 热点；避免主线程同步 IO、复杂计算、网络等待。 布局与渲染：Auto Layout 过度约束、离屏渲染、圆角/阴影叠加、超大图片解码都会增加 CPU/GPU 压力。 数据更新：批量刷新 UITableView/UICollectionView，保持 cell 复用，避免频繁 reload 全量数据。","url":"https://itinterview.com.cn/question/1653"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"UIKit","item":"https://itinterview.com.cn/category?cat=221"},{"@type":"ListItem","position":5,"name":"UIKit 页面卡顿掉帧，你会从主线程和渲染链路哪些角度定位？","item":"https://itinterview.com.cn/q/1653.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"UIKit","item":"https://itinterview.com.cn/category?cat=221"},{"@type":"ListItem","position":5,"name":"UIKit 页面卡顿掉帧，你会从主线程和渲染链路哪些角度定位？","item":"https://itinterview.com.cn/q/1653"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1653">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/751">iOS 中 UIViewController 的生命周期方法是怎样的？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

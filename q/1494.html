@@ -9,15 +9,15 @@
   <meta property="og:title" content="Webpack HMR 热更新的原理是什么？ · IT面试题库">
   <meta property="og:description" content="链路：① watch 检测到文件变化，增量重新编译该模块，生成 hash 标识的补丁 manifest 与更新 chunk，保留在内存（不写盘）；② dev-server 通过 WebSocket 推送新 hash 给浏览器；③ 客户端 HMR runtime 发起请求拿 manifest，对比后按需拉取更新模块…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1494.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1494">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Webpack HMR 热更新的原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="链路：① watch 检测到文件变化，增量重新编译该模块，生成 hash 标识的补丁 manifest 与更新 chunk，保留在内存（不写盘）；② dev-server 通过 WebSocket 推送新 hash 给浏览器；③ 客户端 HMR runtime 发起请求拿 manifest，对比后按需拉取更新模块…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1494.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1494">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Webpack HMR 热更新的原理是什么？","text":"描述从文件变化到界面无刷新更新的完整链路，以及为什么状态能保留。","answerCount":1,"datePublished":"2026-10-05T01:03:56.709Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"链路：① watch 检测到文件变化，增量重新编译该模块，生成 hash 标识的补丁 manifest 与更新 chunk，保留在内存（不写盘）；② dev-server 通过 WebSocket 推送新 hash 给浏览器；③ 客户端 HMR runtime 发起请求拿 manifest，对比后按需拉取更新模块；④ module.hot.accept 注册的回调处理新模块：删除旧模块缓存 → 执行新模块代码 → 沿引用向上传播；⑤ 若向上传播到入口都没人 accept，就退化为 liveReload 整页刷新。 状态保留：因为只替换了模块代码、不刷新页面——组件实例、Vuex store、表单输入都还在内存里。框架 loader（vue-loader/react-refresh）内置了 accept 逻辑，把重渲染包装好，所以业务代码通常感知不到。 注意：样式文件 HMR 只是替换 style 标签，成本最低；改 webpack 配置/入口依赖结构仍需整页刷新。","url":"https://itinterview.com.cn/question/1494"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Webpack","item":"https://itinterview.com.cn/category?cat=69"},{"@type":"ListItem","position":5,"name":"Webpack HMR 热更新的原理是什么？","item":"https://itinterview.com.cn/q/1494.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Webpack","item":"https://itinterview.com.cn/category?cat=69"},{"@type":"ListItem","position":5,"name":"Webpack HMR 热更新的原理是什么？","item":"https://itinterview.com.cn/q/1494"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1494">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/432">Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1050">Webpack 的 HMR（热更新）原理是什么？为什么有时候改一行代码会整页刷新？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1051">Webpack 的 Loader 和 Plugin 有什么区别？写一个自定义 Loader 要注意什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1052">Webpack 产物名里的 hash、chunkhash、contenthash 有什么区别？怎么做才能让缓存收益最大化？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

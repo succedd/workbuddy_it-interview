@@ -9,15 +9,15 @@
   <meta property="og:title" content="Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？ · IT面试题库">
   <meta property="og:description" content="要点： 本质：OC 的方法调用 [obj foo] 编译为 objc_msgSend(obj, @selector(foo))——消息传递而非函数调用，方法在运行时才解析，这是 Runtime 动态性的根源（Category、Method Swizzling、KVO 都建立在此）。 查找流程：① 从对象的 isa…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1004.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1004">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="要点： 本质：OC 的方法调用 [obj foo] 编译为 objc_msgSend(obj, @selector(foo))——消息传递而非函数调用，方法在运行时才解析，这是 Runtime 动态性的根源（Category、Method Swizzling、KVO 都建立在此）。 查找流程：① 从对象的 isa…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1004.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1004">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？","text":"考察点：动态消息派发、isa 与方法查找、消息转发三步、Runtime 的本质。","answerCount":1,"datePublished":"2026-09-10T07:24:09.095Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质：OC 的方法调用 [obj foo] 编译为 objc_msgSend(obj, @selector(foo))——消息传递而非函数调用，方法在运行时才解析，这是 Runtime 动态性的根源（Category、Method Swizzling、KVO 都建立在此）。 查找流程：① 从对象的 isa 找到类，查类的方法缓存（哈希表，命中即调）→ ② 未命中，沿类的方法列表二分/线性查找 → ③ 沿 superclass 链向上重复 ①② → ④ 仍无 → 进入消息转发。 消息转发三步：resolveInstanceMethod:（动态添加实现，可「自救」）→ forwardingTargetForSelector:（备援接收者，换个对象响应）→ methodSignatureForSelector:+forwardInvocation:（完整转发，可任意处理——NSProxy/多代理的实现基础）。 对比 Swift：Swift 方法默认静态派发（vtable/直接调用），性能高但失去动态性（@objc/dynamic 可回退消息机制）——两门语言的设计哲学差异一目了然。","url":"https://itinterview.com.cn/question/1004"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"Objective-C","item":"https://itinterview.com.cn/category?cat=220"},{"@type":"ListItem","position":5,"name":"Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？","item":"https://itinterview.com.cn/q/1004.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"Objective-C","item":"https://itinterview.com.cn/category?cat=220"},{"@type":"ListItem","position":5,"name":"Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？","item":"https://itinterview.com.cn/q/1004"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1004">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1005">Objective-C 为什么必须手动处理循环引用？MRC 到 ARC 演化解决了什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

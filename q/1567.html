@@ -9,15 +9,15 @@
   <meta property="og:title" content="图形渲染管线（Render Pipeline）分为哪几个主要阶段？ · IT面试题库">
   <meta property="og:description" content="要点： 应用阶段（CPU）：准备好场景数据，做视锥/遮挡剔除，设置渲染状态，向 GPU 提交绘制命令。 几何阶段（GPU）：顶点着色器把顶点从模型空间变换到裁剪空间，经图元装配，可选曲面细分/几何着色器，输出裁剪空间顶点。 光栅化阶段（GPU）：把图元转为片元（像素候选），做裁剪、透视除法、屏幕映射；片元着色器计…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1567.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1567">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="图形渲染管线（Render Pipeline）分为哪几个主要阶段？ · IT面试题库">
   <meta name="twitter:description" content="要点： 应用阶段（CPU）：准备好场景数据，做视锥/遮挡剔除，设置渲染状态，向 GPU 提交绘制命令。 几何阶段（GPU）：顶点着色器把顶点从模型空间变换到裁剪空间，经图元装配，可选曲面细分/几何着色器，输出裁剪空间顶点。 光栅化阶段（GPU）：把图元转为片元（像素候选），做裁剪、透视除法、屏幕映射；片元着色器计…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1567.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1567">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"图形渲染管线（Render Pipeline）分为哪几个主要阶段？","text":"考察点：建立 GPU 渲染的整体心智模型（应用→几何→光栅化），是着色器、深度测试、延迟渲染等后续追问的基础。","answerCount":1,"datePublished":"2026-10-06T09:02:18.641Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 应用阶段（CPU）：准备好场景数据，做视锥/遮挡剔除，设置渲染状态，向 GPU 提交绘制命令。 几何阶段（GPU）：顶点着色器把顶点从模型空间变换到裁剪空间，经图元装配，可选曲面细分/几何着色器，输出裁剪空间顶点。 光栅化阶段（GPU）：把图元转为片元（像素候选），做裁剪、透视除法、屏幕映射；片元着色器计算颜色，再经深度/模板测试与混合写入帧缓冲。","url":"https://itinterview.com.cn/question/1567"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"图形学基础","item":"https://itinterview.com.cn/category?cat=238"},{"@type":"ListItem","position":4,"name":"图形渲染管线（Render Pipeline）分为哪几个主要阶段？","item":"https://itinterview.com.cn/q/1567.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"图形学基础","item":"https://itinterview.com.cn/category?cat=238"},{"@type":"ListItem","position":4,"name":"图形渲染管线（Render Pipeline）分为哪几个主要阶段？","item":"https://itinterview.com.cn/q/1567"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1567">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/694">什么是光照模型（兰伯特/Phong）？法线与漫反射计算原理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1449">深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1571">前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1573">模型-视图-投影（MVP）矩阵分别起什么作用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

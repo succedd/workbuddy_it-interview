@@ -17,7 +17,7 @@ C. 元素的 margin 会被计算进其 width 之内
 D. box-sizing 属性只能取值为 content-box · IT面试题库">
   <meta property="og:description" content="要点： 正确答案：A。标准盒模型（content-box，浏览器默认）中，你写的 width 只等于内容区宽度，元素的实际占位宽度 = width + padding + border（margin 在盒子外面，不计入自身占位）。 B 错误：border-box（替代盒模型）恰恰相反——width 已经「包住」了…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1419.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1419">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="关于 CSS 盒模型，下列哪种说法是正确的？
@@ -27,9 +27,9 @@ C. 元素的 margin 会被计算进其 width 之内
 D. box-sizing 属性只能取值为 content-box · IT面试题库">
   <meta name="twitter:description" content="要点： 正确答案：A。标准盒模型（content-box，浏览器默认）中，你写的 width 只等于内容区宽度，元素的实际占位宽度 = width + padding + border（margin 在盒子外面，不计入自身占位）。 B 错误：border-box（替代盒模型）恰恰相反——width 已经「包住」了…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1419.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1419">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"关于 CSS 盒模型，下列哪种说法是正确的？\nA. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度\nB. 在 border-box（替代盒模型）下，width 不包含 padding 和 border\nC. 元素的 margin 会被计算进其 width 之内\nD. box-sizing 属性只能取值为 content-box","text":"考察点：盒模型两种计算方式的区别，以及 width 与 padding/border/margin 的关系，是 CSS 基础的第一问，用单选题快速确认底子。","answerCount":1,"datePublished":"2026-10-01T03:58:52.842Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 正确答案：A。标准盒模型（content-box，浏览器默认）中，你写的 width 只等于内容区宽度，元素的实际占位宽度 = width + padding + border（margin 在盒子外面，不计入自身占位）。 B 错误：border-box（替代盒模型）恰恰相反——width 已经「包住」了 content + padding + border，即你设定的宽度就是元素边框盒的总宽，padding/border 从里面扣，不会额外撑大。 C 错误：margin 是盒子与其他盒子之间的外边距，始终在边框之外，永远不会算进 width。 D 错误：box-sizing 可取 content-box 与 border-box（部分旧实现还有 padding-box），并非只能 content-box。 记忆点：现代项目常写 *{box-sizing:border-box}，让宽度计算更直观（设多少宽就占多少宽，padding 不溢出布局）。","url":"https://itinterview.com.cn/question/1419"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"关于 CSS 盒模型，下列哪种说法是正确的？\nA. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度\nB. 在 border-box（替代盒模型）下，width 不包含 padding 和 border\nC. 元素的 margin 会被计算进其 width 之内\nD. box-sizing 属性只能取值为 content-box","item":"https://itinterview.com.cn/q/1419.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"关于 CSS 盒模型，下列哪种说法是正确的？\nA. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度\nB. 在 border-box（替代盒模型）下，width 不包含 padding 和 border\nC. 元素的 margin 会被计算进其 width 之内\nD. box-sizing 属性只能取值为 content-box","item":"https://itinterview.com.cn/q/1419"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -118,6 +118,7 @@ D. box-sizing 属性只能取值为 content-box</h1>
       <a class="cta" href="https://itinterview.com.cn/question/1419">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/21">CSS 盒模型与 BFC 是什么？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/22">Flex 布局常用属性与两端对齐怎么写？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1293">实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1294">两条规则同时命中一个元素，浏览器最终用哪一条？请说明 CSS 优先级的计算规则，以及 !important 在整个体系里的位置。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

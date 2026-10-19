@@ -9,15 +9,15 @@
   <meta property="og:title" content="Redis 的文件事件处理器（Reactor 模型）由哪四个部分组成？Redis 6.0 的多线程做了什么，命令执行为什么仍是单线程？ · IT面试题库">
   <meta property="og:description" content="文件事件处理器的四个组成部分 1. 套接字：客户端连接，产生连接、读、写等文件事件； 2. I/O 多路复用程序：基于 epoll/select/kqueue，同时监听多个套接字，把就绪的事件放入队列，这是单线程能看护大量连接的关键； 3. 文件事件分派器：把多路复用程序产出的事件，路由到对应的事件处理器； 4.…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1324.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1324">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的文件事件处理器（Reactor 模型）由哪四个部分组成？Redis 6.0 的多线程做了什么，命令执行为什么仍是单线程？ · IT面试题库">
   <meta name="twitter:description" content="文件事件处理器的四个组成部分 1. 套接字：客户端连接，产生连接、读、写等文件事件； 2. I/O 多路复用程序：基于 epoll/select/kqueue，同时监听多个套接字，把就绪的事件放入队列，这是单线程能看护大量连接的关键； 3. 文件事件分派器：把多路复用程序产出的事件，路由到对应的事件处理器； 4.…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1324.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1324">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的文件事件处理器（Reactor 模型）由哪四个部分组成？Redis 6.0 的多线程做了什么，命令执行为什么仍是单线程？","text":"考察点：对 Redis 网络模型四大组成与事件驱动流程的掌握，以及 6.0 多线程 IO 的准确边界（只做网络 IO、不执行命令）。","answerCount":1,"datePublished":"2026-09-26T03:32:42.904Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"文件事件处理器的四个组成部分 1. 套接字：客户端连接，产生连接、读、写等文件事件； 2. I/O 多路复用程序：基于 epoll/select/kqueue，同时监听多个套接字，把就绪的事件放入队列，这是单线程能看护大量连接的关键； 3. 文件事件分派器：把多路复用程序产出的事件，路由到对应的事件处理器； 4. 事件处理器：包括连接应答处理器（处理新连接，accept 后注册读事件）、命令请求处理器（读入并解析执行命令）、命令回复处理器（把执行结果写回客户端）。 整体流程：客户端连接触发连接事件 → 连接应答处理器建连并注册读事件 → 客户端发命令触发读事件 → 命令请求处理器读入、解析、执行、把响应挂到发送缓冲 → 可写时由命令回复处理器写回。整个过程以单线程方式运行，所以常说 Redis 是单线程模型。 6.0 多线程的边界 引入背景：网络硬件升级后，瓶颈有时出现在网络 IO 的读写上，而不是 CPU。 6.0 用多个 I/O 线程（io-threads，默认 4，即 3 个子 I/O 线程）并行处理网络请求的读取和回复写入；默认只对「写回复」启用多线程，读也要并行需设置 io-threads-do-reads yes。官方称该特性性能提升至少一倍。 命令执行仍然由主线程单线程完成：所有 I/O 线程只负责搬运数据，不碰命令。这样既提高了网络并行度，又保住了单线程执行的全部好处——内存操作本就够快、CPU 不是瓶颈，单线程免去了锁、线程切换和并发竞争，命令天然具备原子性语义。 答题要点：四大组成一个不能少；6.0 多线程务必说清「只做网络 IO、不做命令执行」，这是最容易答错翻车的边界。","url":"https://itinterview.com.cn/question/1324"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的文件事件处理器（Reactor 模型）由哪四个部分组成？Redis 6.0 的多线程做了什么，命令执行为什么仍是单线程？","item":"https://itinterview.com.cn/q/1324.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的文件事件处理器（Reactor 模型）由哪四个部分组成？Redis 6.0 的多线程做了什么，命令执行为什么仍是单线程？","item":"https://itinterview.com.cn/q/1324"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1324">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

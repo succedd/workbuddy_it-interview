@@ -17,7 +17,7 @@ C. String 类没有重写 equals()，因此 String 的 equals() 也是比较地�
 D. 只要两个字符串的字面量相同，用 == 比较就必然返回 true · IT面试题库">
   <meta property="og:description" content="要点： 正确答案：A。== 对基本类型比较「值」是否相等；对引用类型比较「引用（内存地址）」是否指向同一个对象，与内容无关。 B 错误：Object.equals() 的默认实现就是 return (this == obj)，即比较地址；只有子类重写后才可能比较内容。 C 错误：String 已经重写了 equa…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1426.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1426">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="关于 Java 中的 == 与 equals()，下列哪种说法是正确的？
@@ -27,9 +27,9 @@ C. String 类没有重写 equals()，因此 String 的 equals() 也是比较地�
 D. 只要两个字符串的字面量相同，用 == 比较就必然返回 true · IT面试题库">
   <meta name="twitter:description" content="要点： 正确答案：A。== 对基本类型比较「值」是否相等；对引用类型比较「引用（内存地址）」是否指向同一个对象，与内容无关。 B 错误：Object.equals() 的默认实现就是 return (this == obj)，即比较地址；只有子类重写后才可能比较内容。 C 错误：String 已经重写了 equa…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1426.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1426">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"关于 Java 中的 == 与 equals()，下列哪种说法是正确的？\nA. 对于基本数据类型，== 比较的是值；对于引用类型，== 比较的是对象的内存地址（是否同一个对象）\nB. Object 类默认的 equals() 比较的是两个对象的内容而非地址\nC. String 类没有重写 equals()，因此 String 的 equals() 也是比较地址\nD. 只要两个字符串的字面量相同，用 == 比较就必然返回 true","text":"考察点：== 与 equals 的语义差异，以及 Object/String 的默认行为，是 Java 基础的第一道分水岭题，用单选题快速确认。","answerCount":1,"datePublished":"2026-10-01T04:02:27.992Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 正确答案：A。== 对基本类型比较「值」是否相等；对引用类型比较「引用（内存地址）」是否指向同一个对象，与内容无关。 B 错误：Object.equals() 的默认实现就是 return (this == obj)，即比较地址；只有子类重写后才可能比较内容。 C 错误：String 已经重写了 equals()，改为按字符序列逐个比较「内容」是否相同，所以两个内容相同的不同 String 对象 equals 返回 true。 D 错误：字面量相同的字符串可能因来自不同创建方式（如 new String）而并非同一对象，== 比较地址会返回 false；比较内容必须用 equals()。 记忆点：== 比地址（基本类型比值），equals 默认比地址、String 已改成比内容。","url":"https://itinterview.com.cn/question/1426"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"关于 Java 中的 == 与 equals()，下列哪种说法是正确的？\nA. 对于基本数据类型，== 比较的是值；对于引用类型，== 比较的是对象的内存地址（是否同一个对象）\nB. Object 类默认的 equals() 比较的是两个对象的内容而非地址\nC. String 类没有重写 equals()，因此 String 的 equals() 也是比较地址\nD. 只要两个字符串的字面量相同，用 == 比较就必然返回 true","item":"https://itinterview.com.cn/q/1426.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"关于 Java 中的 == 与 equals()，下列哪种说法是正确的？\nA. 对于基本数据类型，== 比较的是值；对于引用类型，== 比较的是对象的内存地址（是否同一个对象）\nB. Object 类默认的 equals() 比较的是两个对象的内容而非地址\nC. String 类没有重写 equals()，因此 String 的 equals() 也是比较地址\nD. 只要两个字符串的字面量相同，用 == 比较就必然返回 true","item":"https://itinterview.com.cn/q/1426"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -118,6 +118,7 @@ D. 只要两个字符串的字面量相同，用 == 比较就必然返回 true</
       <a class="cta" href="https://itinterview.com.cn/question/1426">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？ · IT面试题库">
   <meta property="og:description" content="要点： static：文件作用域的 static 把符号限制为内部链接，避免多文件重名；函数内的 static 变量具有静态存储期，放在 .data / .bss，生命周期贯穿整个程序，但作用域仍限于函数。 extern：只是声明「别处有定义」，不分配存储；头文件里写 extern、在一个 .c 中定义，才能避免…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1733.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1733">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？ · IT面试题库">
   <meta name="twitter:description" content="要点： static：文件作用域的 static 把符号限制为内部链接，避免多文件重名；函数内的 static 变量具有静态存储期，放在 .data / .bss，生命周期贯穿整个程序，但作用域仍限于函数。 extern：只是声明「别处有定义」，不分配存储；头文件里写 extern、在一个 .c 中定义，才能避免…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1733.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1733">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？","text":"考察存储期、链接属性、Flash/RAM 布局，以及头文件中的常见误用。","answerCount":1,"datePublished":"2026-10-19T05:43:25.266Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： static：文件作用域的 static 把符号限制为内部链接，避免多文件重名；函数内的 static 变量具有静态存储期，放在 .data / .bss，生命周期贯穿整个程序，但作用域仍限于函数。 extern：只是声明「别处有定义」，不分配存储；头文件里写 extern、在一个 .c 中定义，才能避免多重定义。未初始化的全局/static 进 .bss（启动清零），有初值进 .data（启动时从 Flash 拷贝到 RAM）。 const：只读数据通常放 .rodata / Flash，能省 RAM；但 C 中 const 变量不是「整数常量表达式」，不能拿来定义数组长度。const volatile 常用于只读硬件寄存器。嵌入式里要结合链接脚本看实际落点，别假设 const 一定在 Flash。","url":"https://itinterview.com.cn/question/1733"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？","item":"https://itinterview.com.cn/q/1733.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？","item":"https://itinterview.com.cn/q/1733"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1733">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/602">嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/603">中断服务程序（ISR）与主程序共享数据时，如何保护临界区？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/604">什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/605">如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

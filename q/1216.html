@@ -9,15 +9,15 @@
   <meta property="og:title" content="虚拟 DOM 是什么？React 为什么用虚拟 DOM，其 Diff 算法的核心思想是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 虚拟 DOM 本质：用 JS 对象（轻量描述 UI 结构的树）表示真实 DOM。状态变化时，React 先在内存中生成新的虚拟 DOM 树，与旧树对比，只把差异应用到真实 DOM，避免全量重绘，从而降低昂贵的 DOM 操作次数。 为什么需要它：直接操作真实 DOM 成本高且频繁；虚拟 DOM 把「计算差异…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1216.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1216">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="虚拟 DOM 是什么？React 为什么用虚拟 DOM，其 Diff 算法的核心思想是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 虚拟 DOM 本质：用 JS 对象（轻量描述 UI 结构的树）表示真实 DOM。状态变化时，React 先在内存中生成新的虚拟 DOM 树，与旧树对比，只把差异应用到真实 DOM，避免全量重绘，从而降低昂贵的 DOM 操作次数。 为什么需要它：直接操作真实 DOM 成本高且频繁；虚拟 DOM 把「计算差异…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1216.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1216">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"虚拟 DOM 是什么？React 为什么用虚拟 DOM，其 Diff 算法的核心思想是什么？","text":"追问链第 1 问：React 渲染机制的起点是虚拟 DOM 与协调（Reconciliation）。","answerCount":1,"datePublished":"2026-09-21T02:22:09.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 虚拟 DOM 本质：用 JS 对象（轻量描述 UI 结构的树）表示真实 DOM。状态变化时，React 先在内存中生成新的虚拟 DOM 树，与旧树对比，只把差异应用到真实 DOM，避免全量重绘，从而降低昂贵的 DOM 操作次数。 为什么需要它：直接操作真实 DOM 成本高且频繁；虚拟 DOM 把「计算差异」放在 JS 层（快），只对必要的最小 DOM 节点做真实修改，兼顾开发体验与性能。它不是「永远比原生快」，而是用可预测的批量更新换取可维护性。 Diff 算法核心思想：① 同层比较——只比较同一层级节点，不跨层移动，复杂度从 O(n³) 降为 O(n)；② 类型判断——节点 type 不同直接销毁重建整棵子树（如 div 变 span）；③ key 复用——列表用稳定 key 标识，帮助 React 识别哪些可复用、哪些需移动/增删，避免错误复用导致状态错乱。 注意点：Diff 仍是 CPU 开销，超长列表/极深树要配合分页、虚拟列表（windowing）等手段优化。","url":"https://itinterview.com.cn/question/1216"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"虚拟 DOM 是什么？React 为什么用虚拟 DOM，其 Diff 算法的核心思想是什么？","item":"https://itinterview.com.cn/q/1216.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"虚拟 DOM 是什么？React 为什么用虚拟 DOM，其 Diff 算法的核心思想是什么？","item":"https://itinterview.com.cn/q/1216"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1216">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/129">React中Key属性的作用？</a><span class="rel-n">343 次浏览</span></li><li><a href="https://itinterview.com.cn/q/127">React虚拟DOM(Virtual DOM)的工作原理？</a><span class="rel-n">40 次浏览</span></li><li><a href="https://itinterview.com.cn/q/28">React 中 useEffect 的依赖数组怎么用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/950">React Hooks 的原理与使用规则是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

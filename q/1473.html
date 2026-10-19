@@ -9,15 +9,15 @@
   <meta property="og:title" content="用户头像上传功能如何既可用又安全？请从白名单、重命名、存储隔离等角度设计。 · IT面试题库">
   <meta property="og:description" content="要点： 类型白名单：服务端校验 MIME 与文件头（magic number），只允许 image/jpeg、png、webp 等，拒绝 .php/.jsp/.html 等可执行扩展名——不能只信客户端后缀。 重命名与隔离：用随机文件名（UUID/哈希）覆盖原名，禁止用户控制路径；存储到独立域名/对象存储（如 O…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1473.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1473">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用户头像上传功能如何既可用又安全？请从白名单、重命名、存储隔离等角度设计。 · IT面试题库">
   <meta name="twitter:description" content="要点： 类型白名单：服务端校验 MIME 与文件头（magic number），只允许 image/jpeg、png、webp 等，拒绝 .php/.jsp/.html 等可执行扩展名——不能只信客户端后缀。 重命名与隔离：用随机文件名（UUID/哈希）覆盖原名，禁止用户控制路径；存储到独立域名/对象存储（如 O…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1473.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1473">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用户头像上传功能如何既可用又安全？请从白名单、重命名、存储隔离等角度设计。","text":"场景题：设计安全的文件上传，防止恶意脚本上传与执行，同时保证正常图片可用。","answerCount":1,"datePublished":"2026-10-02T02:45:56.081Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 类型白名单：服务端校验 MIME 与文件头（magic number），只允许 image/jpeg、png、webp 等，拒绝 .php/.jsp/.html 等可执行扩展名——不能只信客户端后缀。 重命名与隔离：用随机文件名（UUID/哈希）覆盖原名，禁止用户控制路径；存储到独立域名/对象存储（如 OSS），与业务站点和执行环境隔离，即使被传恶意文件也无法被当作脚本执行。 内容与尺寸校验：限制大小，用图像处理库重新渲染以去除元数据与可能夹带的恶意 payload，并生成缩略图；必要时做病毒扫描。 访问收敛：上传目录禁用脚本执行权限（服务器配置），返回 Content-Type 强制为图片类型，不返回 text/html。","url":"https://itinterview.com.cn/question/1473"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"文件上传漏洞","item":"https://itinterview.com.cn/category?cat=207"},{"@type":"ListItem","position":4,"name":"用户头像上传功能如何既可用又安全？请从白名单、重命名、存储隔离等角度设计。","item":"https://itinterview.com.cn/q/1473.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"文件上传漏洞","item":"https://itinterview.com.cn/category?cat=207"},{"@type":"ListItem","position":4,"name":"用户头像上传功能如何既可用又安全？请从白名单、重命名、存储隔离等角度设计。","item":"https://itinterview.com.cn/q/1473"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1473">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/463">业务需要支持用户上传头像和简历附件，请从设计上说明如何保证文件上传功能的安全？</a><span class="rel-n">2 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

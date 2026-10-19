@@ -9,15 +9,15 @@
   <meta property="og:title" content="HLS 的 ABR（自适应码率）是怎么工作的？播放器根据什么决定升档或降档，切档时为什么会卡一下？ · IT面试题库">
   <meta property="og:description" content="要点： 多档输出：服务端把同一路直播转码成多档码率/分辨率，主播放列表（master playlist）用 EXT-X-STREAM-INF 列出各档地址，播放器动态选择其中一档。 决策依据：主流算法比较「已下载分片的实测吞吐量」与「当前档位码率」，并结合缓冲区水位——吞吐量持续高于当前档且水位健康就升档，下载超…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1707.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1707">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HLS 的 ABR（自适应码率）是怎么工作的？播放器根据什么决定升档或降档，切档时为什么会卡一下？ · IT面试题库">
   <meta name="twitter:description" content="要点： 多档输出：服务端把同一路直播转码成多档码率/分辨率，主播放列表（master playlist）用 EXT-X-STREAM-INF 列出各档地址，播放器动态选择其中一档。 决策依据：主流算法比较「已下载分片的实测吞吐量」与「当前档位码率」，并结合缓冲区水位——吞吐量持续高于当前档且水位健康就升档，下载超…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1707.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1707">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HLS 的 ABR（自适应码率）是怎么工作的？播放器根据什么决定升档或降档，切档时为什么会卡一下？","text":"考察 ABR 原理与播放器行为，要求说明多档码率与缓冲区水位决策。","answerCount":1,"datePublished":"2026-10-17T10:38:29.433Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 多档输出：服务端把同一路直播转码成多档码率/分辨率，主播放列表（master playlist）用 EXT-X-STREAM-INF 列出各档地址，播放器动态选择其中一档。 决策依据：主流算法比较「已下载分片的实测吞吐量」与「当前档位码率」，并结合缓冲区水位——吞吐量持续高于当前档且水位健康就升档，下载超时或水位下降就降档。 为什么切档会卡：不同档位分片时长与 GOP 结构可能不一致，切换点若不在分片边界、或解码器未拿到新档的参数集（SPS/PPS），会出现短暂黑屏或卡顿。 优化：服务端对齐各档分片时长与 IDR 帧位置；播放端加升档滞后避免频繁抖动，并在切换前预拉下一档首个分片。","url":"https://itinterview.com.cn/question/1707"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"流媒体协议RTMP和HLS","item":"https://itinterview.com.cn/category?cat=253"},{"@type":"ListItem","position":4,"name":"HLS 的 ABR（自适应码率）是怎么工作的？播放器根据什么决定升档或降档，切档时为什么会卡一下？","item":"https://itinterview.com.cn/q/1707.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"流媒体协议RTMP和HLS","item":"https://itinterview.com.cn/category?cat=253"},{"@type":"ListItem","position":4,"name":"HLS 的 ABR（自适应码率）是怎么工作的？播放器根据什么决定升档或降档，切档时为什么会卡一下？","item":"https://itinterview.com.cn/q/1707"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1707">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/686">RTMP 与 HLS 协议的区别与适用场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1664">直播推流端正常但观众端 HLS 延迟很高，你会检查哪些链路环节？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1706">HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1708">低延迟直播的三条主流路线（LL-HLS、HTTP-FLV、WebRTC 拉流）各能把延迟压到多少？选型时怎么权衡？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

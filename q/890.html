@@ -9,15 +9,15 @@
   <meta property="og:title" content="用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。 · IT面试题库">
   <meta property="og:description" content="加锁 Lua 要点：用 Hash 结构记录 lock:threadId -&gt; 重入次数，加锁时若已是自己持有则计数+1。 释放要点：用 Lua 先 hincrby -1，归零才 del，保证重入次数对齐。整段用 Lua 保证原子性，避免「判断归属」与「计数」之间被并发打断。相比基础锁，可重入锁解决了「同一线程内多…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/890.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/890">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。 · IT面试题库">
   <meta name="twitter:description" content="加锁 Lua 要点：用 Hash 结构记录 lock:threadId -&gt; 重入次数，加锁时若已是自己持有则计数+1。 释放要点：用 Lua 先 hincrby -1，归零才 del，保证重入次数对齐。整段用 Lua 保证原子性，避免「判断归属」与「计数」之间被并发打断。相比基础锁，可重入锁解决了「同一线程内多…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/890.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/890">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。","text":"考察可重入锁的 Redis 实现（区别于已有的基础锁题）。","answerCount":1,"datePublished":"2026-09-09T02:22:59.816Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"加锁 Lua 要点：用 Hash 结构记录 lock:threadId -> 重入次数，加锁时若已是自己持有则计数+1。 释放要点：用 Lua 先 hincrby -1，归零才 del，保证重入次数对齐。整段用 Lua 保证原子性，避免「判断归属」与「计数」之间被并发打断。相比基础锁，可重入锁解决了「同一线程内多次加锁死锁自己」的问题。","url":"https://itinterview.com.cn/question/890"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。","item":"https://itinterview.com.cn/q/890.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。","item":"https://itinterview.com.cn/q/890"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@ return 0  -- 被别人持有</code></pre>
       <a class="cta" href="https://itinterview.com.cn/question/890">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/894">分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/582">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/583">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/584">什么是 Redlock 算法？它解决了单实例 Redis 分布式锁的什么问题，又有哪些争议？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

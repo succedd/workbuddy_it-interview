@@ -9,15 +9,15 @@
   <meta property="og:title" content="声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？ · IT面试题库">
   <meta property="og:description" content="声明式（@Transactional）：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。 编程式（TransactionTemplate）：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1119.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1119">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？ · IT面试题库">
   <meta name="twitter:description" content="声明式（@Transactional）：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。 编程式（TransactionTemplate）：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1119.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1119">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？","text":"在什么情况下应优先用 @Transactional 声明式事务，什么情况下应改用 TransactionTemplate 编程式事务？","answerCount":1,"datePublished":"2026-09-13T02:40:15.641Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"声明式（@Transactional）：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。 编程式（TransactionTemplate）：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务、或要在异常时决定「部分提交」的复杂逻辑。 取舍要点：声明式胜在简洁但有「自调用失效、粒度粗」的坑；编程式可控但侵入业务代码。简单场景用声明式，需要细粒度控制或避坑时用编程式。 注意：二者不要混用同一连接造成嵌套混乱；批量场景更要关注事务时长与锁占用，避免长事务拖垮数据库。","url":"https://itinterview.com.cn/question/1119"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？","item":"https://itinterview.com.cn/q/1119.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？","item":"https://itinterview.com.cn/q/1119"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1119">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1106">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1105">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/74">Spring 的 IOC 与 DI 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/75">Spring Bean 的作用域与生命周期？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

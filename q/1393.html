@@ -9,15 +9,15 @@
   <meta property="og:title" content="海明码（Hamming Code）如何安排校验位与数据位？对 4 位数据 1011 编码，并说明如何定位单比特错误。 · IT面试题库">
   <meta property="og:description" content="结论 海明码把校验位放在 2^k 的位置（1,2,4,8…），每个校验位负责一组「其位置二进制表示中第 k 位为 1」的数据位，形成偶（或奇）校验，从而能定位并纠正 1 位错误。 4 位数据 D=1011（位 3,5,6,7）的编码（偶校验） 位置安排：位1=P1，位2=P2，位3=D3=1，位4=P4，位5=D…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1393.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1393">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="海明码（Hamming Code）如何安排校验位与数据位？对 4 位数据 1011 编码，并说明如何定位单比特错误。 · IT面试题库">
   <meta name="twitter:description" content="结论 海明码把校验位放在 2^k 的位置（1,2,4,8…），每个校验位负责一组「其位置二进制表示中第 k 位为 1」的数据位，形成偶（或奇）校验，从而能定位并纠正 1 位错误。 4 位数据 D=1011（位 3,5,6,7）的编码（偶校验） 位置安排：位1=P1，位2=P2，位3=D3=1，位4=P4，位5=D…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1393.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1393">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"海明码（Hamming Code）如何安排校验位与数据位？对 4 位数据 1011 编码，并说明如何定位单比特错误。","text":"考察校验位位置、覆盖关系与单错定位（syndrome）。","answerCount":1,"datePublished":"2026-09-26T11:05:11.153Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 海明码把校验位放在 2^k 的位置（1,2,4,8…），每个校验位负责一组「其位置二进制表示中第 k 位为 1」的数据位，形成偶（或奇）校验，从而能定位并纠正 1 位错误。 4 位数据 D=1011（位 3,5,6,7）的编码（偶校验） 位置安排：位1=P1，位2=P2，位3=D3=1，位4=P4，位5=D5=0，位6=D6=1，位7=D7=1。 P1（位1） 覆盖位 {1,3,5,7} → 数据位 D3,D5,D7 = 1,0,1 → 偶校验得 P1=0。 P2（位2） 覆盖位 {2,3,6,7} → D3,D6,D7 = 1,1,1 → 偶校验得 P2=1。 P4（位4） 覆盖位 {4,5,6,7} → D5,D6,D7 = 0,1,1 → 偶校验得 P4=0。 编码后位序 P1 P2 D3 P4 D5 D6 D7 = 0 1 1 0 0 1 1 → 即 0110011。 单错定位 收到码后，按三条校验分组各自重新计算奇/偶，把出错的组号按位拼成二进制，直接得到错误位号，取反即可纠正（ syndrome 非 0 即有错，0 表示无错）。 若要检测 2 位错，需再增加 1 个全局奇偶校验位（SEC-DED，服务器内存常用）。","url":"https://itinterview.com.cn/question/1393"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"海明码（Hamming Code）如何安排校验位与数据位？对 4 位数据 1011 编码，并说明如何定位单比特错误。","item":"https://itinterview.com.cn/q/1393.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"海明码（Hamming Code）如何安排校验位与数据位？对 4 位数据 1011 编码，并说明如何定位单比特错误。","item":"https://itinterview.com.cn/q/1393"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1393">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

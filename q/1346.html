@@ -9,15 +9,15 @@
   <meta property="og:title" content="MySQL 的三大日志 redo log、binlog、undo log 各自的作用是什么？有什么区别？ · IT面试题库">
   <meta property="og:description" content="三大日志分工不同，共同保障 MySQL 的持久性、一致性与主从复制。 作用 redo log（重做日志，InnoDB 引擎层）：记录「数据页的物理修改」，用于崩溃恢复。事务提交时先写 redo log（WAL 预写日志），保证即使脏页未刷盘，重启也能重放恢复，避免每次修改都随机刷盘。 undo log（回滚日志，…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1346.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1346">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MySQL 的三大日志 redo log、binlog、undo log 各自的作用是什么？有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="三大日志分工不同，共同保障 MySQL 的持久性、一致性与主从复制。 作用 redo log（重做日志，InnoDB 引擎层）：记录「数据页的物理修改」，用于崩溃恢复。事务提交时先写 redo log（WAL 预写日志），保证即使脏页未刷盘，重启也能重放恢复，避免每次修改都随机刷盘。 undo log（回滚日志，…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1346.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1346">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MySQL 的三大日志 redo log、binlog、undo log 各自的作用是什么？有什么区别？","text":"考察 InnoDB 崩溃恢复、主从复制与回滚/ MVCC 的日志支撑。","answerCount":1,"datePublished":"2026-09-26T05:19:37.839Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三大日志分工不同，共同保障 MySQL 的持久性、一致性与主从复制。 作用 redo log（重做日志，InnoDB 引擎层）：记录「数据页的物理修改」，用于崩溃恢复。事务提交时先写 redo log（WAL 预写日志），保证即使脏页未刷盘，重启也能重放恢复，避免每次修改都随机刷盘。 undo log（回滚日志，InnoDB 引擎层）：记录数据修改前的旧值，用于事务回滚；同时是 MVCC 多版本链的载体，支撑快照读。 binlog（归档日志，Server 层）：记录所有「逻辑修改（SQL 或行事件）」，用于主从复制（从库重放）和时间点恢复（PITR）。 核心区别对比表 | 日志 | 所属层 | 类型 | 主要用途 | 是否循环写 | | --- | --- | --- | --- | --- | | redo log | InnoDB | 物理日志(页修改) | 崩溃恢复、保证持久性 | 循环写、固定大小 | | undo log | InnoDB | 逻辑回滚信息 | 回滚、MVCC | 事务结束可清理 | | binlog | Server | 逻辑日志(SQL/行) | 主从复制、备份恢复 | 追加写、不循环 | 两阶段提交：为保证 redo log 与 binlog 一致性，事务提交采用 prepare → 写 binlog → commit 的两阶段提交，避免主从数据不一致。","url":"https://itinterview.com.cn/question/1346"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"MySQL 的三大日志 redo log、binlog、undo log 各自的作用是什么？有什么区别？","item":"https://itinterview.com.cn/q/1346.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"MySQL 的三大日志 redo log、binlog、undo log 各自的作用是什么？有什么区别？","item":"https://itinterview.com.cn/q/1346"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1346">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/137">InnoDB和MyISAM存储引擎的区别？</a><span class="rel-n">470 次浏览</span></li><li><a href="https://itinterview.com.cn/q/134">MySQL中JOIN的实现原理？</a><span class="rel-n">400 次浏览</span></li><li><a href="https://itinterview.com.cn/q/132">MySQL中MVCC的原理？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/130">MySQL索引的底层数据结构是什么？</a><span class="rel-n">332 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

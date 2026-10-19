@@ -9,15 +9,15 @@
   <meta property="og:title" content="用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。 · IT面试题库">
   <meta property="og:description" content="要点：最小 Ownable 实现（借鉴 OpenZeppelin 思路）： 要点：讲解：constructor 在部署时把部署者设为 owner；modifier onlyOwner 在 _; 前做权限校验，包裹敏感函数；transferOwner 用 onlyOwner 保护且拒绝零地址。注意「先改状态（eff…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1591.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1591">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。 · IT面试题库">
   <meta name="twitter:description" content="要点：最小 Ownable 实现（借鉴 OpenZeppelin 思路）： 要点：讲解：constructor 在部署时把部署者设为 owner；modifier onlyOwner 在 _; 前做权限校验，包裹敏感函数；transferOwner 用 onlyOwner 保护且拒绝零地址。注意「先改状态（eff…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1591.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1591">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。","text":"考察 Solidity 基础与合约安全。","answerCount":1,"datePublished":"2026-10-07T08:06:12.095Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：最小 Ownable 实现（借鉴 OpenZeppelin 思路）： 要点：讲解：constructor 在部署时把部署者设为 owner；modifier onlyOwner 在 _; 前做权限校验，包裹敏感函数；transferOwner 用 onlyOwner 保护且拒绝零地址。注意「先改状态（effects）再调外部合约（interactions）」的顺序。 要点：重入防范：本题只有状态赋值无外部调用，本身不易重入；若合约含提款，应「先更新余额再转账」（checks-effects-interactions），或加 nonReentrant 锁、用 OpenZeppelin 的 ReentrancyGuard，避免被恶意 fallback 递归掏空。","url":"https://itinterview.com.cn/question/1591"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。","item":"https://itinterview.com.cn/q/1591.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。","item":"https://itinterview.com.cn/q/1591"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1591">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/679">Solidity 中 view/pure、modifier、event 的作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1445">什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1593">ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1594">设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

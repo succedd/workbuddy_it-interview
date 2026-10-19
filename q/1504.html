@@ -9,15 +9,15 @@
   <meta property="og:title" content="Android 常见的内存泄漏场景有哪些？如何用 LeakCanary 排查？ · IT面试题库">
   <meta property="og:description" content="高频场景：① 静态变量持有 Activity/Context（单例构造传 Activity，应传 Application Context）；② 非静态内部类（Handler/AsyncTask/Thread）隐式持有外部 Activity，延时消息期间 Activity 无法回收——改静态类 + WeakRefe…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1504.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1504">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Android 常见的内存泄漏场景有哪些？如何用 LeakCanary 排查？ · IT面试题库">
   <meta name="twitter:description" content="高频场景：① 静态变量持有 Activity/Context（单例构造传 Activity，应传 Application Context）；② 非静态内部类（Handler/AsyncTask/Thread）隐式持有外部 Activity，延时消息期间 Activity 无法回收——改静态类 + WeakRefe…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1504.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1504">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Android 常见的内存泄漏场景有哪些？如何用 LeakCanary 排查？","text":"列举 5 类高频泄漏，并说明 LeakCanary 的引用链报告怎么读。","answerCount":1,"datePublished":"2026-10-05T01:03:58.187Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"高频场景：① 静态变量持有 Activity/Context（单例构造传 Activity，应传 Application Context）；② 非静态内部类（Handler/AsyncTask/Thread）隐式持有外部 Activity，延时消息期间 Activity 无法回收——改静态类 + WeakReference；③ 未注销的监听/广播/EventBus/协程——onDestroy 里对应 unregister/cancel；④ 属性动画/Handler 延时消息未 cancel；⑤ WebView 持有 Activity（独立进程或手动 destroy + remove 引用）。 LeakCanary 排查：debug 依赖集成后全自动——Activity/Fragment/ViewModel 销毁后仍被引用即触发 heap dump，通知栏给出泄漏报告。读法：看 Reference Chain（引用链）：从泄漏对象逐层列出 GC Roots 路径，标出的红色行是「你该断开的那一跳」——通常是某个静态字段/内部类 this$0；再判断是「真泄漏」还是「故意常驻」（如 Application 级缓存）。修复后重跑验证泄漏计数归零。","url":"https://itinterview.com.cn/question/1504"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android 常见的内存泄漏场景有哪些？如何用 LeakCanary 排查？","item":"https://itinterview.com.cn/q/1504.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android 常见的内存泄漏场景有哪些？如何用 LeakCanary 排查？","item":"https://itinterview.com.cn/q/1504"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -96,6 +96,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1504">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/250">Android 中 Activity 的生命周期回调有哪些？各自代表什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/251">Android 的 Handler、Looper、MessageQueue 是如何协作实现线程通信的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1501">Handler 消息机制的完整流程是什么？Looper、MessageQueue、Handler 如何配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1502">ANR 的产生条件有哪些？如何定位与分析 ANR？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

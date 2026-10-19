@@ -9,15 +9,15 @@
   <meta property="og:title" content="WebRTC 弱网对抗里的 NACK、FEC、GCC 各自解决什么问题？三者如何配合？ · IT面试题库">
   <meta property="og:description" content="要点： NACK（丢包重传）：接收端按序号发现缺口后发送重传请求，发送端补发丢失的包；RTT 小、带宽有余时最有效，属于事后补救（RTCP 反馈报文定义见 RFC 4585）。 FEC（前向纠错）：发送端按冗余度多发包（如每 N 个包加 1 个冗余包），接收端可本地恢复丢失包；不引入重传等待，但常驻消耗额外带宽，…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1703.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1703">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WebRTC 弱网对抗里的 NACK、FEC、GCC 各自解决什么问题？三者如何配合？ · IT面试题库">
   <meta name="twitter:description" content="要点： NACK（丢包重传）：接收端按序号发现缺口后发送重传请求，发送端补发丢失的包；RTT 小、带宽有余时最有效，属于事后补救（RTCP 反馈报文定义见 RFC 4585）。 FEC（前向纠错）：发送端按冗余度多发包（如每 N 个包加 1 个冗余包），接收端可本地恢复丢失包；不引入重传等待，但常驻消耗额外带宽，…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1703.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1703">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WebRTC 弱网对抗里的 NACK、FEC、GCC 各自解决什么问题？三者如何配合？","text":"考察 WebRTC 传输层抗弱网机制，要求说明各机制原理与协同关系。","answerCount":1,"datePublished":"2026-10-17T10:38:22.034Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： NACK（丢包重传）：接收端按序号发现缺口后发送重传请求，发送端补发丢失的包；RTT 小、带宽有余时最有效，属于事后补救（RTCP 反馈报文定义见 RFC 4585）。 FEC（前向纠错）：发送端按冗余度多发包（如每 N 个包加 1 个冗余包），接收端可本地恢复丢失包；不引入重传等待，但常驻消耗额外带宽，适合对延迟敏感的场景。 GCC（拥塞控制）：基于丢包率与延迟梯度估计可用带宽，动态调整编码码率与帧率，从源头避免网络过载，属于总量控制。 配合关系：GCC 决定发多少，FEC/NACK 决定发出去的怎么保——带宽估算偏低先降码率，RTT 低才重传，深度丢包网络提高 FEC 冗余度；浏览器侧这些都在协议栈内自动完成，可调入口主要是码率上限与 SDP 能力。","url":"https://itinterview.com.cn/question/1703"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"WebRTC 弱网对抗里的 NACK、FEC、GCC 各自解决什么问题？三者如何配合？","item":"https://itinterview.com.cn/q/1703.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"WebRTC 弱网对抗里的 NACK、FEC、GCC 各自解决什么问题？三者如何配合？","item":"https://itinterview.com.cn/q/1703"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1703">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/685">WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1444">WebRTC 两个浏览器之间是如何建立点对点连接的？信令、ICE/STUN/TURN 各自的角色是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1704">SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1705">多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

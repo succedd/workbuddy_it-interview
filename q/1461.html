@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？ · IT面试题库">
   <meta property="og:description" content="要点： 容量瓶颈：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。 性能瓶颈：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1461.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1461">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？ · IT面试题库">
   <meta name="twitter:description" content="要点： 容量瓶颈：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。 性能瓶颈：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1461.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1461">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？","text":"从容量、性能、运维三个维度说明拆分的触发点，并说明拆分应是第几优先级的手段。","answerCount":1,"datePublished":"2026-10-02T02:45:42.153Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 容量瓶颈：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。 性能瓶颈：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主从复制延迟被放大，读扩展也救不了写。 运维瓶颈：单表过大导致备份恢复窗口过长、DDL 变更锁表时间难以接受。 决策原则：拆分是最后手段——先优化索引、SQL、加缓存、做读写分离、归档冷数据；只有这些都做到位仍顶不住时，才引入分库分表带来的分布式复杂度（全局 ID、跨片事务、跨片查询）。","url":"https://itinterview.com.cn/question/1461"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？","item":"https://itinterview.com.cn/q/1461.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？","item":"https://itinterview.com.cn/q/1461"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1461">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/459">拿到一条慢 SQL，如何用 EXPLAIN ANALYZE 读懂执行计划并定位瓶颈？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/241">为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/247">数据库事务的四种隔离级别分别解决了哪些并发问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/674">MySQL 的 count(*)、count(1)、count(列名) 有什么区别？哪个性能最好？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

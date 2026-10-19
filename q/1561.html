@@ -9,15 +9,15 @@
   <meta property="og:title" content="屏幕旋转等配置变更会重建 Activity，如何避免数据丢失？ · IT面试题库">
   <meta property="og:description" content="要点： 默认行为：横竖屏、语言、深色模式等配置变更会销毁并重建 Activity，导致字段与临时状态丢失。 onSaveInstanceState(Bundle)：系统在此回调保存 UI 相关轻量状态（输入框文本、列表滚动位置），重建后在 onCreate(Bundle) 或 onRestoreInstanceS…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1561.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1561">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="屏幕旋转等配置变更会重建 Activity，如何避免数据丢失？ · IT面试题库">
   <meta name="twitter:description" content="要点： 默认行为：横竖屏、语言、深色模式等配置变更会销毁并重建 Activity，导致字段与临时状态丢失。 onSaveInstanceState(Bundle)：系统在此回调保存 UI 相关轻量状态（输入框文本、列表滚动位置），重建后在 onCreate(Bundle) 或 onRestoreInstanceS…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1561.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1561">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"屏幕旋转等配置变更会重建 Activity，如何避免数据丢失？","text":"考察点：理解配置变更重建机制，掌握 onSaveInstanceState 与 ViewModel 两种数据保留手段，区分「UI 轻量状态」与「界面相关数据」。","answerCount":1,"datePublished":"2026-10-06T09:01:43.454Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 默认行为：横竖屏、语言、深色模式等配置变更会销毁并重建 Activity，导致字段与临时状态丢失。 onSaveInstanceState(Bundle)：系统在此回调保存 UI 相关轻量状态（输入框文本、列表滚动位置），重建后在 onCreate(Bundle) 或 onRestoreInstanceState 取回。 ViewModel：与界面相关的数据放在 ViewModel 中，其生命周期跨越配置变更，重建后自动保留，适合较大对象（如列表数据、网络结果），避免重复请求。 其余手段：早期 onRetainNonConfigurationInstance() 已过时；android:configChanges 自行处理会失去系统资源管理，谨慎使用。","url":"https://itinterview.com.cn/question/1561"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"屏幕旋转等配置变更会重建 Activity，如何避免数据丢失？","item":"https://itinterview.com.cn/q/1561.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"屏幕旋转等配置变更会重建 Activity，如何避免数据丢失？","item":"https://itinterview.com.cn/q/1561"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1561">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/250">Android 中 Activity 的生命周期回调有哪些？各自代表什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/251">Android 的 Handler、Looper、MessageQueue 是如何协作实现线程通信的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1501">Handler 消息机制的完整流程是什么？Looper、MessageQueue、Handler 如何配合？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1502">ANR 的产生条件有哪些？如何定位与分析 ANR？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

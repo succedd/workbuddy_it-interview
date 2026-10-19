@@ -9,15 +9,15 @@
   <meta property="og:title" content="HashMap 的底层数据结构是怎样的？JDK 1.8 相比 1.7 做了哪些优化，扩容机制是什么？ · IT面试题库">
   <meta property="og:description" content="结论：HashMap 在 JDK 1.7 是“数组 + 链表”，JDK 1.8 升级为“数组 + 链表 + 红黑树”，并在哈希扰动、插入方式和扩容上做了优化。 底层结构 桶数组（table）：每个元素是一个“桶”，用拉链法解决哈希冲突。 链表：冲突元素以链表挂载；JDK 1.8 当链表长度 ≥ 8 且数组容量 ≥…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1353.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1353">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HashMap 的底层数据结构是怎样的？JDK 1.8 相比 1.7 做了哪些优化，扩容机制是什么？ · IT面试题库">
   <meta name="twitter:description" content="结论：HashMap 在 JDK 1.7 是“数组 + 链表”，JDK 1.8 升级为“数组 + 链表 + 红黑树”，并在哈希扰动、插入方式和扩容上做了优化。 底层结构 桶数组（table）：每个元素是一个“桶”，用拉链法解决哈希冲突。 链表：冲突元素以链表挂载；JDK 1.8 当链表长度 ≥ 8 且数组容量 ≥…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1353.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1353">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HashMap 的底层数据结构是怎样的？JDK 1.8 相比 1.7 做了哪些优化，扩容机制是什么？","text":"考察 HashMap 的底层实现、哈希冲突解决、树化阈值与扩容流程。","answerCount":1,"datePublished":"2026-09-26T05:19:38.519Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：HashMap 在 JDK 1.7 是“数组 + 链表”，JDK 1.8 升级为“数组 + 链表 + 红黑树”，并在哈希扰动、插入方式和扩容上做了优化。 底层结构 桶数组（table）：每个元素是一个“桶”，用拉链法解决哈希冲突。 链表：冲突元素以链表挂载；JDK 1.8 当链表长度 ≥ 8 且数组容量 ≥ 64 时转为红黑树，查询由 O(n) 降为 O(log n)。 JDK 1.8 主要优化 哈希扰动：1.7 做 4 次位运算、5 次异或；1.8 简化为 h ^ (h >>> 16)，高位参与运算减少冲突。 插入方式：1.7 头插法（并发下易成环），1.8 改为尾插法。 结构：1.7 用 Entry，1.8 用 Node 并支持树化（TreeNode）。 扩容机制 默认初始容量 16，负载因子 0.75；元素数超过 容量 × 负载因子 时扩容为 2 倍。 扩容时重新计算索引：利用 e.hash & oldCap 判定元素留在原位置还是迁移到 原位置 + oldCap，避免全部重算。 对比 | 维度 | JDK 1.7 | JDK 1.8 | | :--- | :--- | :--- | | 结构 | 数组+链表 | 数组+链表+红黑树 | | 插入 | 头插 | 尾插 | | 哈希计算 | 多次扰动 | 一次高位移位异或 | | 线程安全 | 不安全 | 不安全 |","url":"https://itinterview.com.cn/question/1353"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"HashMap 的底层数据结构是怎样的？JDK 1.8 相比 1.7 做了哪些优化，扩容机制是什么？","item":"https://itinterview.com.cn/q/1353.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"HashMap 的底层数据结构是怎样的？JDK 1.8 相比 1.7 做了哪些优化，扩容机制是什么？","item":"https://itinterview.com.cn/q/1353"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -118,6 +118,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1353">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

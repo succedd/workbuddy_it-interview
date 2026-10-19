@@ -9,15 +9,15 @@
   <meta property="og:title" content="哪些常见场景会导致 @Transactional 事务失效？请系统归类。 · IT面试题库">
   <meta property="og:description" content="访问修饰符：@Transactional 默认只对 public 方法生效，private/protected 方法上的注解被忽略——改 public 或改用编程式事务。 异常被吞：方法内 catch 了异常未重新抛出，事务拦截器感知不到，自然不回滚；要么抛出、要么手动 setRollbackOnly。 异常类型…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1117.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1117">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="哪些常见场景会导致 @Transactional 事务失效？请系统归类。 · IT面试题库">
   <meta name="twitter:description" content="访问修饰符：@Transactional 默认只对 public 方法生效，private/protected 方法上的注解被忽略——改 public 或改用编程式事务。 异常被吞：方法内 catch 了异常未重新抛出，事务拦截器感知不到，自然不回滚；要么抛出、要么手动 setRollbackOnly。 异常类型…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1117.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1117">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"哪些常见场景会导致 @Transactional 事务失效？请系统归类。","text":"生产环境发现异常抛出后数据却没有回滚。请列出导致声明式事务失效的典型场景，并说明每类该如何规避。","answerCount":1,"datePublished":"2026-09-13T02:40:15.450Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"访问修饰符：@Transactional 默认只对 public 方法生效，private/protected 方法上的注解被忽略——改 public 或改用编程式事务。 异常被吞：方法内 catch 了异常未重新抛出，事务拦截器感知不到，自然不回滚；要么抛出、要么手动 setRollbackOnly。 异常类型不匹配：默认只回滚 RuntimeException/Error，受检异常（Exception）不回滚；用 rollbackFor=Exception.class 显式声明。 非代理调用：自调用（见上一题）或对象未经 Spring 管理（new 出来的对象）都不会织入事务。 数据源/代理配置：方法内切换了非事务数据源、或类被 final 导致 CGLIB 无法代理、多线程调用使事务上下文不传播——逐类核对代理与连接绑定。","url":"https://itinterview.com.cn/question/1117"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"哪些常见场景会导致 @Transactional 事务失效？请系统归类。","item":"https://itinterview.com.cn/q/1117.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"哪些常见场景会导致 @Transactional 事务失效？请系统归类。","item":"https://itinterview.com.cn/q/1117"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1117">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1106">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1105">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/74">Spring 的 IOC 与 DI 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/75">Spring Bean 的作用域与生命周期？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="Cassandra 的读写一致性如何调节？为什么说 W + R &gt; N 就能保证强一致？这个说法的漏洞在哪里？ · IT面试题库">
   <meta property="og:description" content="基本参数 N（Replication Factor）：每行数据写入的副本数； W（Write CL）：写操作需确认的副本数； R（Read CL）：读操作需应答的副本数。 W + R &gt; N 的含义 读集合与写集合必然存在交集——至少有一个副本同时持有最新写入并参与本次读取，读取端就能看到最新值（配合时间戳仲裁取…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1435.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1435">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cassandra 的读写一致性如何调节？为什么说 W + R &gt; N 就能保证强一致？这个说法的漏洞在哪里？ · IT面试题库">
   <meta name="twitter:description" content="基本参数 N（Replication Factor）：每行数据写入的副本数； W（Write CL）：写操作需确认的副本数； R（Read CL）：读操作需应答的副本数。 W + R &gt; N 的含义 读集合与写集合必然存在交集——至少有一个副本同时持有最新写入并参与本次读取，读取端就能看到最新值（配合时间戳仲裁取…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1435.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1435">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cassandra 的读写一致性如何调节？为什么说 W + R > N 就能保证强一致？这个说法的漏洞在哪里？","text":"考察 Cassandra 一致性级别（CL）机制、Quorum 读写与 W+R>N 公式的适用边界，是 NoSQL 面试的经典深挖题。","answerCount":1,"datePublished":"2026-10-01T04:20:41.625Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"基本参数 N（Replication Factor）：每行数据写入的副本数； W（Write CL）：写操作需确认的副本数； R（Read CL）：读操作需应答的副本数。 W + R > N 的含义 读集合与写集合必然存在交集——至少有一个副本同时持有最新写入并参与本次读取，读取端就能看到最新值（配合时间戳仲裁取最新版本）。典型配置：N=3、W=R=2（Quorum），这是 Cassandra 在「可用性」与「一致性」间的常用折中：单副本故障仍可读写，同时保证读到最新写。 这个「强一致」的漏洞（面试加分点） 1. 只约束单行/单分区：Cassandra 没有跨分区事务，跨行/跨表的读一致无保障； 2. 时钟依赖：新旧的判定靠客户端时间戳仲裁，时钟漂移下「最新」可能不是真的最新； 3. 删除是标记（tombstone）而非物理删除：读路径合并 tombstone，依赖 gc_grace_seconds 与 compaction；若某副本长期宕机错过 repair，复活后会「复活旧数据」； 4. serial consistency（LWT）才接近真强一致：轻量事务用 Paxos 实现 compare-and-set，代价是延迟显著上升； 5. W+R>N 不等于持久性：W=1 时写只落一个副本，若它是 hint 与 repair 都救不回的丢失场景，交集逻辑无从谈起。 工程实践 金融类单点读用 CL=QUORUM + SERIAL LWT； 日志/统计类接受 ONE 换吞吐； 无论选什么 CL，定期 nodetool repair 是副本收敛的兜底，不是可选项。","url":"https://itinterview.com.cn/question/1435"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Cassandra","item":"https://itinterview.com.cn/category?cat=36"},{"@type":"ListItem","position":5,"name":"Cassandra 的读写一致性如何调节？为什么说 W + R > N 就能保证强一致？这个说法的漏洞在哪里？","item":"https://itinterview.com.cn/q/1435.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Cassandra","item":"https://itinterview.com.cn/category?cat=36"},{"@type":"ListItem","position":5,"name":"Cassandra 的读写一致性如何调节？为什么说 W + R > N 就能保证强一致？这个说法的漏洞在哪里？","item":"https://itinterview.com.cn/q/1435"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1435">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/725">Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

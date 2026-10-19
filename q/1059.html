@@ -9,15 +9,15 @@
   <meta property="og:title" content="浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库">
   <meta property="og:description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1059.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1059">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？ · IT面试题库">
   <meta name="twitter:description" content="要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1059.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1059">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？","text":"考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。","answerCount":1,"datePublished":"2026-09-10T11:53:15.976Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 浏览器的一次事件循环：从宏任务（task）队列取一个任务执行 → 该任务产生的所有微任务（microtask）在本轮内全部清空（queueMicrotask、Promise.then、MutationObserver）→ 可能需要渲染更新（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→ 进入下一轮。 两条铁律：① 每个宏任务之间会清空微任务队列；② 微任务执行期间新产生的微任务会在同一轮继续执行（所以「微任务里递归 Promise」会饿死渲染，页面卡死）。 执行顺序实例： setTimeout(fn, 0) 为什么不是「立即执行」：它至少要等下一个宏任务轮次，且浏览器有 4ms 的最小钳制（嵌套调用超过 5 层时）；requestAnimationFrame 在渲染前执行，适合动画；requestIdleCallback 在空闲时执行，适合低优先级任务。 Node.js 的不同（阶段模型）：事件循环分为 timers → pending callbacks → idle/prepare → poll → check（setImmediate）→ close callbacks，每个阶段之间（以及每个阶段内部）会清空微任务队列。要点： process.nextTick 优先级高于 Promise 微任务——它有自己的 nextTick 队列，且总在微任务之前清空（滥用会饿死 IO）； setImmediate 与 setTimeout(0) 的顺序不确定：在主模块（同步代码）里，两者顺序取决于进程启动耗时（通常不确定）；但在 I/O 回调里，setImmediate 总是先于 setTimeout（因为 IO 回调后先到 check 阶段，再到 timers 阶段）； Node 11+ 起两者都对齐到浏览器的「宏任务间清微任务」语义，早期版本的差异（微任务何时清空）已修正。 实践结论：想「尽快执行但仍让出渲染」→ 微任务（Promise/queueMicrotask）；想「下一帧前执行」→ rAF；想把长任务切片避免阻塞 INP → 用 setTimeout/scheduler.postTask/MessageChannel 主动让出；别用 setTimeout 做「同步后的立即刷新」，DOM 更新在微任务里就能被读到（await nextTick() / Vue 的 nextTick 就是基于微任务）。 渲染相关：微任务清空后才可能渲染，所以「改 DOM 后立刻读取布局」会强制同步布局（reflow）；Flush 频率取决于是否被 JS 长任务占满——这也是长任务拖慢 INP 的底层原因。","url":"https://itinterview.com.cn/question/1059"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？","item":"https://itinterview.com.cn/q/1059.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？","item":"https://itinterview.com.cn/q/1059"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@ console.log(&#39;4&#39;)
       <a class="cta" href="https://itinterview.com.cn/question/1059">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1128">现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1129">为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/23">浏览器从输入 URL 到页面展示发生了什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1060">浏览器的渲染管线包含哪些步骤？哪些 CSS 属性只会触发合成（Composite）而不引发重排重绘？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

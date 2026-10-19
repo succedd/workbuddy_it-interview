@@ -9,15 +9,15 @@
   <meta property="og:title" content="delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？ · IT面试题库">
   <meta property="og:description" content="要点： delegatecall 语义：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，msg.sender / msg.value 保持不变；代理在 fallback 中把 calldata 转发给实现合约。 升级模式：Transparent Proxy 由 admin 管理升级、普通用户不能调…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1721.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1721">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？ · IT面试题库">
   <meta name="twitter:description" content="要点： delegatecall 语义：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，msg.sender / msg.value 保持不变；代理在 fallback 中把 calldata 转发给实现合约。 升级模式：Transparent Proxy 由 admin 管理升级、普通用户不能调…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1721.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1721">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？","text":"考察可升级合约的存储布局、函数选择器冲突与初始化陷阱。","answerCount":1,"datePublished":"2026-10-19T05:43:24.541Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： delegatecall 语义：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，msg.sender / msg.value 保持不变；代理在 fallback 中把 calldata 转发给实现合约。 升级模式：Transparent Proxy 由 admin 管理升级、普通用户不能调用实现合约的管理函数；UUPS 把升级逻辑放在实现合约里，省一次 delegatecall，但实现合约必须包含升级入口；Beacon 适合多代理共享实现。 关键陷阱：构造函数不会在代理上下文中运行，必须用 initialize + initializer；代理与实现的存储布局必须兼容，只能追加变量、不能重排或删除；还要防函数选择器冲突、未初始化实现合约被劫持，以及 selfdestruct 等破坏性操作。","url":"https://itinterview.com.cn/question/1721"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？","item":"https://itinterview.com.cn/q/1721.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？","item":"https://itinterview.com.cn/q/1721"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1721">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/679">Solidity 中 view/pure、modifier、event 的作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1445">什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1591">用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1593">ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

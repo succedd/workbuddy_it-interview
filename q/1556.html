@@ -9,15 +9,15 @@
   <meta property="og:title" content="生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？ · IT面试题库">
   <meta property="og:description" content="要点： 先用指标圈范围：看 RED/USE 指标（请求速率、错误率、时延；资源利用率、饱和度、错误），确认是整体还是个别接口、是否伴随 CPU/内存/连接池饱和，把「偶发超时」收敛到具体服务与时间窗。 再用链路下钻：在链路追踪里按高耗时 span 排序，定位超时发生在哪一跳（自身慢、下游慢还是网络），查看该 sp…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1556.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1556">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先用指标圈范围：看 RED/USE 指标（请求速率、错误率、时延；资源利用率、饱和度、错误），确认是整体还是个别接口、是否伴随 CPU/内存/连接池饱和，把「偶发超时」收敛到具体服务与时间窗。 再用链路下钻：在链路追踪里按高耗时 span 排序，定位超时发生在哪一跳（自身慢、下游慢还是网络），查看该 sp…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1556.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1556">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？","text":"考察点：可观测性三大支柱协同排障的方法论（属于 SRE/可观测性实践）。","answerCount":1,"datePublished":"2026-10-05T02:31:05.876Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先用指标圈范围：看 RED/USE 指标（请求速率、错误率、时延；资源利用率、饱和度、错误），确认是整体还是个别接口、是否伴随 CPU/内存/连接池饱和，把「偶发超时」收敛到具体服务与时间窗。 再用链路下钻：在链路追踪里按高耗时 span 排序，定位超时发生在哪一跳（自身慢、下游慢还是网络），查看该 span 的耗时分布与依赖拓扑，区分「自己慢」还是「被依赖拖慢」。 最后用日志定因：拿 trace-id 去日志系统检索该次请求的完整上下文，看是否有慢 SQL、锁等待、第三方调用超时被吞掉（无报错日志常因异常被 catch 后未记录）；日志必须透传 trace-id 才能与链路对齐。 闭环与预防：定位后修复（扩容/加索引/限流/降级），并把这次的「关键指标 + 告警规则」固化下来，让同类偶发问题下次能被主动告警而非靠人肉排查。","url":"https://itinterview.com.cn/question/1556"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"SkyWalking","item":"https://itinterview.com.cn/category?cat=146"},{"@type":"ListItem","position":4,"name":"生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？","item":"https://itinterview.com.cn/q/1556.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"SkyWalking","item":"https://itinterview.com.cn/category?cat=146"},{"@type":"ListItem","position":4,"name":"生产环境出现偶发超时但无任何报错日志，如何用「日志 + 指标 + 链路」可观测性三件套定位根因？","item":"https://itinterview.com.cn/q/1556"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1556">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/728">SkyWalking 这类 APM 如何做分布式链路追踪（探针/span/拓扑）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1555">分布式链路追踪中 Span 上下文如何在服务间传播（如 W3C traceparent/baggage）？高并发下采样率该如何权衡？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

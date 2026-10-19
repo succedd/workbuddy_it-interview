@@ -9,15 +9,15 @@
   <meta property="og:title" content="用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？ · IT面试题库">
   <meta property="og:description" content="看 Network 的 Size 列：命中强缓存会显示 memory cache / disk cache 且 Waterfall 极短、不发请求；若显示具体体积且带 (304) 则是协商缓存，仍有一次 RTT 往返。 看 Waterfall 各阶段：某资源耗在 Initial connection / SSL …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1130.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1130">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？ · IT面试题库">
   <meta name="twitter:description" content="看 Network 的 Size 列：命中强缓存会显示 memory cache / disk cache 且 Waterfall 极短、不发请求；若显示具体体积且带 (304) 则是协商缓存，仍有一次 RTT 往返。 看 Waterfall 各阶段：某资源耗在 Initial connection / SSL …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1130.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1130">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？","text":"运营反馈“同一页面第二次打开还是很慢”。请给出用浏览器开发者工具逐一定位上面四类瓶颈的具体步骤与判断依据。","answerCount":1,"datePublished":"2026-09-14T02:47:24.742Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"看 Network 的 Size 列：命中强缓存会显示 memory cache / disk cache 且 Waterfall 极短、不发请求；若显示具体体积且带 (304) 则是协商缓存，仍有一次 RTT 往返。 看 Waterfall 各阶段：某资源耗在 Initial connection / SSL 说明建连慢；耗在 Waiting(TTFB) 说明源站/后端慢；耗在 Content Download 说明传输体积大。 查重定向链：在 Network 里按域名筛选，若同一资源经历多个 301/302 才到终态，Waterfall 上会串起多条短请求，重定向链过长是典型元凶（常见于 http→https、带/不带 www、CDN 回源）。 用 Performance 抓主线程：录制一次加载，若 Long Task 大量集中在脚本求值（Script Evaluation）且 Main 线程长条发紫，说明首屏 JS 过重；反之若大量时间花在 Parse/Compile 与布局，则是解析与样式成本。结合 Coverage 面板还能看出多少 JS/CSS 根本没被执行。","url":"https://itinterview.com.cn/question/1130"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？","item":"https://itinterview.com.cn/q/1130.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？","item":"https://itinterview.com.cn/q/1130"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1130">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1128">现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1129">为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/23">浏览器从输入 URL 到页面展示发生了什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1059">浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

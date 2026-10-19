@@ -9,15 +9,15 @@
   <meta property="og:title" content="Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？ · IT面试题库">
   <meta property="og:description" content="关系：Vite 插件是 Rollup 插件 API 的超集——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1497.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1497">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？ · IT面试题库">
   <meta name="twitter:description" content="关系：Vite 插件是 Rollup 插件 API 的超集——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1497.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1497">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？","text":"说明插件 API 的兼容设计与 dev/build 双引擎的统一方式。","answerCount":1,"datePublished":"2026-10-05T01:03:57.085Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关系：Vite 插件是 Rollup 插件 API 的超集——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服务 dev（esbuild/原生 ESM 管道）和 build（Rollup 管道），Vite 内部按环境过滤钩子执行。 build 选 Rollup 的原因：① 生产要的是最优产物而非构建速度——Rollup 的 Tree Shaking 基于更彻底的 ESM 静态分析，产物体积与可读性优于 Webpack；② 无运行时模块加载代码（Webpack 的 runtime/jsonp chunk 加载器），ESM 输出更干净；③ 代码分割算法成熟，适合多入口/多 chunk。 取舍：esbuild 负责依赖预构建与 TS/JSX 转译（快），Rollup 负责最终打包（优），二者职责互补。","url":"https://itinterview.com.cn/question/1497"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Vite","item":"https://itinterview.com.cn/category?cat=70"},{"@type":"ListItem","position":5,"name":"Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？","item":"https://itinterview.com.cn/q/1497.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Vite","item":"https://itinterview.com.cn/category?cat=70"},{"@type":"ListItem","position":5,"name":"Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？","item":"https://itinterview.com.cn/q/1497"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1497">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/431">Vite 的依赖预构建（Dependency Pre-Bundling）到底解决了什么问题？为什么开发环境下必须先做这一步？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1053">Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1054">Vite 的 HMR 为什么比 Webpack 更精准？它的实现机制是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1055">Vite 的插件体系和 Webpack 的有什么本质不同？写一个兼容两端的 Vite 插件要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

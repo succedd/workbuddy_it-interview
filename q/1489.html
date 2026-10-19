@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？ · IT面试题库">
   <meta property="og:description" content="Tree Shaking 依赖 ESM 的静态结构（import/export 在编译期确定），打包器从入口做模块级+声明级的可达性分析，删掉未被引用的 export。CommonJS 因 require 动态执行无法可靠分析，基本摇不掉。 生效条件：① 使用 ESM 语法（import/export）；② pa…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1489.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1489">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？ · IT面试题库">
   <meta name="twitter:description" content="Tree Shaking 依赖 ESM 的静态结构（import/export 在编译期确定），打包器从入口做模块级+声明级的可达性分析，删掉未被引用的 export。CommonJS 因 require 动态执行无法可靠分析，基本摇不掉。 生效条件：① 使用 ESM 语法（import/export）；② pa…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1489.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1489">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？","text":"从 ESM 静态分析讲起，说明 sideEffects 配置与常见失效场景。","answerCount":1,"datePublished":"2026-10-05T01:03:56.049Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Tree Shaking 依赖 ESM 的静态结构（import/export 在编译期确定），打包器从入口做模块级+声明级的可达性分析，删掉未被引用的 export。CommonJS 因 require 动态执行无法可靠分析，基本摇不掉。 生效条件：① 使用 ESM 语法（import/export）；② package.json 声明 \"sideEffects\": false（或列出有副作用的文件），否则 bundler 不敢删「看似未用」的模块（如 import './polyfill'）；③ production 模式（TerserPlugin 负责最终删除 + usedExports 标记）；④ Babel 配置 modules: false，防止转译成 CJS。 常见失效：① 引入了 UMD/CJS 版本的包；② import * as 全量引入；③ 类的方法（可能被反射调用，Terser 默认不删）；④ 无 sideEffects 声明的第三方库。可用 webpack-bundle-analyzer 验证。","url":"https://itinterview.com.cn/question/1489"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？","item":"https://itinterview.com.cn/q/1489.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？","item":"https://itinterview.com.cn/q/1489"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1489">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/717">前端工程化包含哪些内容？为什么需要？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1490">如何组织前端 Monorepo？pnpm workspace 加 Turborepo 的核心实践？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1491">生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

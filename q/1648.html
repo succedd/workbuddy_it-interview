@@ -9,15 +9,15 @@
   <meta property="og:title" content="搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？ · IT面试题库">
   <meta property="og:description" content="要点： 架构动机：全库精排计算成本高，先由召回从海量文档中拿回高相关候选，再由粗排/精排做精细打分。 排序无法补救：排序只能在召回集合内重排，漏召回无法恢复；需优化倒排、向量、多路召回和 query 改写。 指标拆分：分别监控召回率、排序 NDCG，定位问题应先看召回是否包含期望结果。">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1648.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1648">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？ · IT面试题库">
   <meta name="twitter:description" content="要点： 架构动机：全库精排计算成本高，先由召回从海量文档中拿回高相关候选，再由粗排/精排做精细打分。 排序无法补救：排序只能在召回集合内重排，漏召回无法恢复；需优化倒排、向量、多路召回和 query 改写。 指标拆分：分别监控召回率、排序 NDCG，定位问题应先看召回是否包含期望结果。">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1648.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1648">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？","text":"考察搜索系统架构理解。","answerCount":1,"datePublished":"2026-10-15T12:54:42.142Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 架构动机：全库精排计算成本高，先由召回从海量文档中拿回高相关候选，再由粗排/精排做精细打分。 排序无法补救：排序只能在召回集合内重排，漏召回无法恢复；需优化倒排、向量、多路召回和 query 改写。 指标拆分：分别监控召回率、排序 NDCG，定位问题应先看召回是否包含期望结果。","url":"https://itinterview.com.cn/question/1648"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"搜索系统","item":"https://itinterview.com.cn/category?cat=186"},{"@type":"ListItem","position":5,"name":"搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？","item":"https://itinterview.com.cn/q/1648.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"搜索系统","item":"https://itinterview.com.cn/category?cat=186"},{"@type":"ListItem","position":5,"name":"搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？","item":"https://itinterview.com.cn/q/1648"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1648">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/790">搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？ · IT面试题库">
   <meta property="og:description" content="要点： CloudCore：部署在云端，包含 cloudhub、edgecontroller、devicecontroller 等，负责把 Kubernetes 的 Pod、配置、设备模型下发到边缘，并接收边缘状态。 EdgeCore：部署在边缘节点，包含 edgehub、edged、metamanager、de…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1749.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1749">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： CloudCore：部署在云端，包含 cloudhub、edgecontroller、devicecontroller 等，负责把 Kubernetes 的 Pod、配置、设备模型下发到边缘，并接收边缘状态。 EdgeCore：部署在边缘节点，包含 edgehub、edged、metamanager、de…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1749.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1749">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？","text":"考察云边通道、边缘自治与设备管理。","answerCount":1,"datePublished":"2026-10-19T05:43:26.286Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： CloudCore：部署在云端，包含 cloudhub、edgecontroller、devicecontroller 等，负责把 Kubernetes 的 Pod、配置、设备模型下发到边缘，并接收边缘状态。 EdgeCore：部署在边缘节点，包含 edgehub、edged、metamanager、deviceTwin、eventbus 等；edgehub 与 cloudhub 建立隧道，断网时边缘可自治运行，metamanager 缓存元数据，deviceTwin 管理设备影子。 EdgeMesh：负责边缘侧服务发现与流量治理，让跨节点/跨边云的服务互相访问。落地时要处理网络抖动、证书轮换、边缘资源限制与版本升级，别把云端的强一致假设直接搬到边缘。","url":"https://itinterview.com.cn/question/1749"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"边缘计算","item":"https://itinterview.com.cn/category?cat=247"},{"@type":"ListItem","position":4,"name":"KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？","item":"https://itinterview.com.cn/q/1749.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"边缘计算","item":"https://itinterview.com.cn/category?cat=247"},{"@type":"ListItem","position":4,"name":"KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？","item":"https://itinterview.com.cn/q/1749"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1749">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/701">什么是边缘计算？相比云端处理的优势与典型场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1601">边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1748">边缘 AI 推理如何做模型量化与硬件加速？INT8 量化会损失什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1750">边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

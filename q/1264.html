@@ -9,15 +9,15 @@
   <meta property="og:title" content="JSON Mode、JSON Schema 和 Structured Outputs 分别在哪一层约束模型输出？为什么说「用了 Structured Outputs 就不用做服务端校验」是误区？ · IT面试题库">
   <meta property="og:description" content="要点：这三个词经常被混着说，但它们不在同一层——JSON Mode 管语法，JSON Schema 描述契约，Structured Outputs 把契约前移到模型生成阶段。 | 对比维度 | JSON Mode | JSON Schema | Structured Outputs | | --- | --- |…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1264.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1264">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JSON Mode、JSON Schema 和 Structured Outputs 分别在哪一层约束模型输出？为什么说「用了 Structured Outputs 就不用做服务端校验」是误区？ · IT面试题库">
   <meta name="twitter:description" content="要点：这三个词经常被混着说，但它们不在同一层——JSON Mode 管语法，JSON Schema 描述契约，Structured Outputs 把契约前移到模型生成阶段。 | 对比维度 | JSON Mode | JSON Schema | Structured Outputs | | --- | --- |…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1264.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1264">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JSON Mode、JSON Schema 和 Structured Outputs 分别在哪一层约束模型输出？为什么说「用了 Structured Outputs 就不用做服务端校验」是误区？","text":"考察点：结构化输出的分层认知，以及生成约束与业务校验的边界。","answerCount":1,"datePublished":"2026-09-26T02:31:41.725Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：这三个词经常被混着说，但它们不在同一层——JSON Mode 管语法，JSON Schema 描述契约，Structured Outputs 把契约前移到模型生成阶段。 | 对比维度 | JSON Mode | JSON Schema | Structured Outputs | | --- | --- | --- | --- | | 角色 | 输出格式开关 | 数据结构描述规范 | 模型 API 的结构化生成能力 | | 主要约束 | JSON 语法合法 | 字段、类型、枚举、必填、额外属性 | 输出尽量或严格匹配 Schema | | 是否保证业务字段完整 | 不保证 | 只描述，不执行生成 | 取决于供应商能力和 Schema 支持范围 | | 是否负责工具执行 | 不负责 | 不负责 | 不负责，只产出结构化结果 | | 典型用途 | 简单 JSON 输出 | 定义数据契约和校验规则 | 分类、抽取、函数参数生成 | | 仍需服务端校验 | 需要 | 需要 | 仍然需要 | JSON Mode 只能保证什么：它能解决“好的，以下是结果：\\{ ... }\\”这类包裹问题（即让输出是合法 JSON），但不能稳定解决下面这种：{\"category\":\"pay\",\"priority\":\"urgent\",\"confidence\":\"very high\"}。它是合法 JSON，却不是合法业务数据——枚举值不在集合里、字段类型不对。 JSON Schema 负责定义什么：properties 定义对象属性，required 声明必填，additionalProperties 控制是否允许未声明字段，enum 把取值限制在固定集合内。它本身不参与生成，只描述契约；调用支持结构化输出的 API 时要随请求传入，服务端也要用同一份规则或等价校验器检查模型输出。 为什么服务端校验不能省：Structured Outputs 只约束生成阶段。模型仍可能返回拒答、被 Token 上限截断、工具执行失败，因此“支持 Structured Outputs”不等于业务请求一定成功。真正落地前还要注意不同供应商支持的 JSON Schema 子集并不一致，pattern、format、递归 $ref、allOf/oneOf/anyOf 的支持程度不同，不要照搬完整 JSON Schema 规范，应先读供应商的 supported schemas 文档。 其他常见误区：Temperature 设为 0 就一定稳定；Schema 越复杂越好；工具越多 Agent 越强；Function Calling 可以绕过业务权限。实践经验是一个字段只表达一件事、枚举优先于自由文本、字段说明写清“何时用/何时不用”、必填字段谨慎但不偷懒、Schema 也要有版本号，并且校验失败时把具体错误回传给模型做修复重试。","url":"https://itinterview.com.cn/question/1264"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"JSON Mode、JSON Schema 和 Structured Outputs 分别在哪一层约束模型输出？为什么说「用了 Structured Outputs 就不用做服务端校验」是误区？","item":"https://itinterview.com.cn/q/1264.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"JSON Mode、JSON Schema 和 Structured Outputs 分别在哪一层约束模型输出？为什么说「用了 Structured Outputs 就不用做服务端校验」是误区？","item":"https://itinterview.com.cn/q/1264"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1264">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/187">大语言模型(LLM)的微调方法有哪些？</a><span class="rel-n">462 次浏览</span></li><li><a href="https://itinterview.com.cn/q/184">Transformer架构的核心思想是什么？</a><span class="rel-n">376 次浏览</span></li><li><a href="https://itinterview.com.cn/q/186">RAG(检索增强生成)的原理是什么？</a><span class="rel-n">204 次浏览</span></li><li><a href="https://itinterview.com.cn/q/188">AI Agent的原理和架构是什么？</a><span class="rel-n">119 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

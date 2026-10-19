@@ -9,15 +9,15 @@
   <meta property="og:title" content="链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？ · IT面试题库">
   <meta property="og:description" content="要点： 基本结构：MEMORY 定义 Flash / RAM 的起始地址与长度，SECTIONS 把 .text、.rodata、.data、.bss、.stack 放到指定区域；KEEP() 防止被 --gc-sections 回收，.init_array 承载 C++ 全局构造。 LMA 与 VMA：.dat…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1734.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1734">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？ · IT面试题库">
   <meta name="twitter:description" content="要点： 基本结构：MEMORY 定义 Flash / RAM 的起始地址与长度，SECTIONS 把 .text、.rodata、.data、.bss、.stack 放到指定区域；KEEP() 防止被 --gc-sections 回收，.init_array 承载 C++ 全局构造。 LMA 与 VMA：.dat…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1734.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1734">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？","text":"考察 MEMORY / SECTIONS、启动拷贝、向量表与 ITCM/DTCM 布局。","answerCount":1,"datePublished":"2026-10-19T05:43:25.343Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 基本结构：MEMORY 定义 Flash / RAM 的起始地址与长度，SECTIONS 把 .text、.rodata、.data、.bss、.stack 放到指定区域；KEEP() 防止被 --gc-sections 回收，.init_array 承载 C++ 全局构造。 LMA 与 VMA：.data 的加载地址（LMA）在 Flash，运行地址（VMA）在 RAM；启动代码负责把初值从 Flash 拷到 RAM，并把 .bss 清零。若只配 VMA 不配 LMA，复位后数据就是错的。 典型用途：向量表放到 Flash 起始或重定位到 RAM、把热函数放 ITCM、把 DMA 缓冲区放 DTCM/非缓存区、在固定地址保留 bootloader 参数。链接后要检查 map 文件、段大小与栈顶，防止溢出。","url":"https://itinterview.com.cn/question/1734"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？","item":"https://itinterview.com.cn/q/1734.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？","item":"https://itinterview.com.cn/q/1734"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1734">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/602">嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/603">中断服务程序（ISR）与主程序共享数据时，如何保护临界区？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/604">什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/605">如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

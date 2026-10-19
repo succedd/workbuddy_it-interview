@@ -9,15 +9,15 @@
   <meta property="og:title" content="借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？ · IT面试题库">
   <meta property="og:description" content="要点： LTV 与健康因子：存款人把抵押品按 liquidationThreshold 折算为可清算价值，借款人的健康因子 HF = Σ(抵押品 × 价格 × 阈值) / 债务；HF &lt; 1 时任何人可触发清算。 清算流程：清算人代还部分债务，按 liquidationBonus 折扣获得抵押品，协议收取罚金；折…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1727.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1727">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？ · IT面试题库">
   <meta name="twitter:description" content="要点： LTV 与健康因子：存款人把抵押品按 liquidationThreshold 折算为可清算价值，借款人的健康因子 HF = Σ(抵押品 × 价格 × 阈值) / 债务；HF &lt; 1 时任何人可触发清算。 清算流程：清算人代还部分债务，按 liquidationBonus 折扣获得抵押品，协议收取罚金；折…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1727.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1727">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？","text":"考察 DeFi 借贷风控，以及级联清算与坏账的成因。","answerCount":1,"datePublished":"2026-10-19T05:43:24.966Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： LTV 与健康因子：存款人把抵押品按 liquidationThreshold 折算为可清算价值，借款人的健康因子 HF = Σ(抵押品 × 价格 × 阈值) / 债务；HF \u003c 1 时任何人可触发清算。 清算流程：清算人代还部分债务，按 liquidationBonus 折扣获得抵押品，协议收取罚金；折扣太高会伤害借款人，太低则清算人没有动力，可能积累坏账。 预言机联动：抵押品价格来自预言机，价格延迟或插针会触发错误清算；极端行情下清算拥堵、抵押品流动性枯竭会形成级联清算。协议需设置储备金、借款上限、价格熔断，并对参数做压力测试。","url":"https://itinterview.com.cn/question/1727"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"DeFi基础","item":"https://itinterview.com.cn/category?cat=261"},{"@type":"ListItem","position":4,"name":"借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？","item":"https://itinterview.com.cn/q/1727.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"DeFi基础","item":"https://itinterview.com.cn/category?cat=261"},{"@type":"ListItem","position":4,"name":"借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？","item":"https://itinterview.com.cn/q/1727"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1727">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/681">什么是 DeFi（去中心化金融）？常见原语（AMM、借贷、稳定币）是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1667">AMM 自动做市商为什么需要无常损失？它和传统订单簿撮合的本质差异是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1728">法币抵押、加密超额抵押与算法稳定币：各自的脱锚风险与死亡螺旋怎么发生？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1729">预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

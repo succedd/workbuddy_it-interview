@@ -9,15 +9,15 @@
   <meta property="og:title" content="PostgreSQL 的分区表（范围 / 列表 / 哈希）有什么用？什么场景该上分区？ · IT面试题库">
   <meta property="og:description" content="要点： 作用：把大表按分区键拆成多个子表，查询时分区裁剪（partition pruning）只扫相关分区，显著降低 IO；也便于按时间滚动清理 / 归档（直接 detach 旧分区，比 DELETE 快且不留膨胀）。 三种策略：①范围分区（RANGE）最常用，按时间 / 数值区间（如按天 / 月），适合日志、订…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1615.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1615">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 的分区表（范围 / 列表 / 哈希）有什么用？什么场景该上分区？ · IT面试题库">
   <meta name="twitter:description" content="要点： 作用：把大表按分区键拆成多个子表，查询时分区裁剪（partition pruning）只扫相关分区，显著降低 IO；也便于按时间滚动清理 / 归档（直接 detach 旧分区，比 DELETE 快且不留膨胀）。 三种策略：①范围分区（RANGE）最常用，按时间 / 数值区间（如按天 / 月），适合日志、订…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1615.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1615">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 的分区表（范围 / 列表 / 哈希）有什么用？什么场景该上分区？","text":"基础，考察分区表适用场景（与慢查询 / 膨胀治理成链）。","answerCount":1,"datePublished":"2026-10-10T11:54:14.656Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 作用：把大表按分区键拆成多个子表，查询时分区裁剪（partition pruning）只扫相关分区，显著降低 IO；也便于按时间滚动清理 / 归档（直接 detach 旧分区，比 DELETE 快且不留膨胀）。 三种策略：①范围分区（RANGE）最常用，按时间 / 数值区间（如按天 / 月），适合日志、订单等时间序列；②列表分区（LIST）按离散值（如按地区、租户）；③哈希分区（HASH）按哈希均摊，适合无明显范围的均匀分布、避免热点。 适用判断：单表过大（千万到亿级）导致维护 / 查询变慢、有明显时间 / 地域维度、需要快速淘汰历史数据时才上分区；小表上分区反而增加规划开销。分区键选择要匹配高频查询的过滤条件，否则裁剪失效。","url":"https://itinterview.com.cn/question/1615"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 的分区表（范围 / 列表 / 哈希）有什么用？什么场景该上分区？","item":"https://itinterview.com.cn/q/1615.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 的分区表（范围 / 列表 / 哈希）有什么用？什么场景该上分区？","item":"https://itinterview.com.cn/q/1615"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1615">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/453">线上 PostgreSQL 磁盘占用只增不减，日志出现 &quot;database must be vacuumed within N transactions&quot; 警告，根因是什么？如何排查与处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/454">PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1609">PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1610">PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

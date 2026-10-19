@@ -9,15 +9,15 @@
   <meta property="og:title" content="ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？ · IT面试题库">
   <meta property="og:description" content="要点： ERC-721：一合约多唯一 tokenId，资产单位不可分割，所有权映射清晰。 可组合设计：尝试把 NFT 与 FT 流动性结合，通常引入碎片化、铸造/赎回机制和复杂状态转换。 风险：合约复杂度增加，需重点审计循环铸造、权限控制、重入和预言机依赖；标准化程度低也带来兼容风险。">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1668.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1668">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？ · IT面试题库">
   <meta name="twitter:description" content="要点： ERC-721：一合约多唯一 tokenId，资产单位不可分割，所有权映射清晰。 可组合设计：尝试把 NFT 与 FT 流动性结合，通常引入碎片化、铸造/赎回机制和复杂状态转换。 风险：合约复杂度增加，需重点审计循环铸造、权限控制、重入和预言机依赖；标准化程度低也带来兼容风险。">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1668.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1668">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？","text":"考察 NFT 技术演进。","answerCount":1,"datePublished":"2026-10-15T12:54:43.236Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： ERC-721：一合约多唯一 tokenId，资产单位不可分割，所有权映射清晰。 可组合设计：尝试把 NFT 与 FT 流动性结合，通常引入碎片化、铸造/赎回机制和复杂状态转换。 风险：合约复杂度增加，需重点审计循环铸造、权限控制、重入和预言机依赖；标准化程度低也带来兼容风险。","url":"https://itinterview.com.cn/question/1668"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"NFT技术","item":"https://itinterview.com.cn/category?cat=262"},{"@type":"ListItem","position":4,"name":"ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？","item":"https://itinterview.com.cn/q/1668.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"NFT技术","item":"https://itinterview.com.cn/category?cat=262"},{"@type":"ListItem","position":4,"name":"ERC-721 与 ERC-404/可组合 NFT 的设计差异是什么？为什么资产流动性会引入新风险？","item":"https://itinterview.com.cn/q/1668"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1668">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/682">NFT（非同质化代币）的技术原理？ERC-721 与 ERC-20 的区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1730">NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1731">ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1732">ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。 · IT面试题库">
   <meta property="og:description" content="要点： 静态提升（hoistStatic）：编译器在编译期识别出「永远不变的静态节点/属性」，把它们提升到 render 函数外面只创建一次，后续更新直接复用同一 vnode，不再参与 diff，减少比对数量。 PatchFlag（动态标记）：对模板里真正会变的节点，编译器在编译期就给它打上「动态类型编码」，例如…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1175.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1175">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。 · IT面试题库">
   <meta name="twitter:description" content="要点： 静态提升（hoistStatic）：编译器在编译期识别出「永远不变的静态节点/属性」，把它们提升到 render 函数外面只创建一次，后续更新直接复用同一 vnode，不再参与 diff，减少比对数量。 PatchFlag（动态标记）：对模板里真正会变的节点，编译器在编译期就给它打上「动态类型编码」，例如…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1175.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1175">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。","text":"考察点：渲染机制与 diff 优化原理（本链 diff 环节）。要求讲清编译器在编译期能做哪些静态分析，以及运行时如何只比对动态节点，而非整棵 vnode 树。","answerCount":1,"datePublished":"2026-09-17T02:27:46.611Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 静态提升（hoistStatic）：编译器在编译期识别出「永远不变的静态节点/属性」，把它们提升到 render 函数外面只创建一次，后续更新直接复用同一 vnode，不再参与 diff，减少比对数量。 PatchFlag（动态标记）：对模板里真正会变的节点，编译器在编译期就给它打上「动态类型编码」，例如 TEXT（只有文本变）、CLASS、PROPS（并附上具体属性名数组）。运行时 diff 不再递归比所有属性，而是只按 PatchFlag 去更新对应那一项（如只比 class、只比指定的 props），把 O(全属性) 降成 O(标记项)。 Block Tree（动态区块）：编译器把模板按 v-if/v-for/插槽等「结构可能变化」处切成 Block，每个 Block 内收集一个 dynamicChildren 动态子节点数组。diff 时只遍历 dynamicChildren 这个扁平数组，而不是整棵子树，跳过了所有静态子树；v-for 列表的 key 比对也只在动态节点间进行。 一句话总结：Vue2 的 diff 是「递归比整棵树」，Vue3 靠「编译期标记 + 运行时只走动态节点」把比对成本从树规模降到「动态节点数」，这是 Vue3 渲染性能大幅领先的关键之一。","url":"https://itinterview.com.cn/question/1175"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。","item":"https://itinterview.com.cn/q/1175.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"开放讨论：Vue3 的编译时优化（静态提升 / PatchFlag / Block Tree）是如何把虚拟 DOM 的 diff 从「全量比对」降到「靶向比对」的？结合编译产物说明。","item":"https://itinterview.com.cn/q/1175"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1175">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/126">Vue中响应式数据的原理？</a><span class="rel-n">457 次浏览</span></li><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

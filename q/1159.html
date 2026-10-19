@@ -9,15 +9,15 @@
   <meta property="og:title" content="前端调用 fetch(&#39;https://api.other.com/data&#39;) 被浏览器拦截报 CORS 错误，应如何排查并解决？ · IT面试题库">
   <meta property="og:description" content="思路：CORS 错误是浏览器基于『同源策略』拦截了跨源响应，根因在服务端响应头缺失，前端单改代码通常无效。 要点（先定位）： 看报错是『简单请求被拦』还是『预检 OPTIONS 失败』：带自定义头/非简单方法会先发 OPTIONS 预检，预检不过直接失败。 检查 Network 里该请求的 Response He…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1159.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1159">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前端调用 fetch(&#39;https://api.other.com/data&#39;) 被浏览器拦截报 CORS 错误，应如何排查并解决？ · IT面试题库">
   <meta name="twitter:description" content="思路：CORS 错误是浏览器基于『同源策略』拦截了跨源响应，根因在服务端响应头缺失，前端单改代码通常无效。 要点（先定位）： 看报错是『简单请求被拦』还是『预检 OPTIONS 失败』：带自定义头/非简单方法会先发 OPTIONS 预检，预检不过直接失败。 检查 Network 里该请求的 Response He…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1159.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1159">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端调用 fetch('https://api.other.com/data') 被浏览器拦截报 CORS 错误，应如何排查并解决？","text":"考察点：同源策略与跨域——CORS 预检、常见响应头、开发/生产环境的不同解法（场景题）。","answerCount":1,"datePublished":"2026-09-15T11:49:55.969Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路：CORS 错误是浏览器基于『同源策略』拦截了跨源响应，根因在服务端响应头缺失，前端单改代码通常无效。 要点（先定位）： 看报错是『简单请求被拦』还是『预检 OPTIONS 失败』：带自定义头/非简单方法会先发 OPTIONS 预检，预检不过直接失败。 检查 Network 里该请求的 Response Headers 是否有 Access-Control-Allow-Origin。 要点（服务端解决，正统）： 响应加 Access-Control-Allow-Origin: https://your.site（或 * 仅限公开接口）；带凭据需显式域名且 Allow-Credentials: true。 预检类需补 Access-Control-Allow-Methods / Allow-Headers，并可用 Access-Control-Max-Age 缓存预检。 要点（开发/兜底）： 开发期用 webpack/vite 的 dev proxy 把请求代理成同源；生产环境更推荐网关/Nginx 反向代理把跨域变同源，避免暴露 CORS 配置。","url":"https://itinterview.com.cn/question/1159"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"前端调用 fetch('https://api.other.com/data') 被浏览器拦截报 CORS 错误，应如何排查并解决？","item":"https://itinterview.com.cn/q/1159.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"前端调用 fetch('https://api.other.com/data') 被浏览器拦截报 CORS 错误，应如何排查并解决？","item":"https://itinterview.com.cn/q/1159"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -109,6 +109,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1159">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1128">现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1129">为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/23">浏览器从输入 URL 到页面展示发生了什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1059">浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

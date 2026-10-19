@@ -9,15 +9,15 @@
   <meta property="og:title" content="Agent 应用的评测为什么比 RAG 更难？任务完成率、工具调用精确率与召回率、轨迹准确率、错误恢复率分别该怎么定义？ · IT面试题库">
   <meta property="og:description" content="要点：Agent 评测比 RAG 更难。RAG 通常还能拆成“检索”和“生成”两段，Agent 会在多轮里调用工具、修改状态、读取反馈，前一步的小错可能在后面被放大。 第一步：把 Outcome 和 Transcript 分开看 Outcome 是任务结束后的真实状态：订单有没有退款成功、代码测试有没有通过、文件…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1278.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1278">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Agent 应用的评测为什么比 RAG 更难？任务完成率、工具调用精确率与召回率、轨迹准确率、错误恢复率分别该怎么定义？ · IT面试题库">
   <meta name="twitter:description" content="要点：Agent 评测比 RAG 更难。RAG 通常还能拆成“检索”和“生成”两段，Agent 会在多轮里调用工具、修改状态、读取反馈，前一步的小错可能在后面被放大。 第一步：把 Outcome 和 Transcript 分开看 Outcome 是任务结束后的真实状态：订单有没有退款成功、代码测试有没有通过、文件…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1278.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1278">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Agent 应用的评测为什么比 RAG 更难？任务完成率、工具调用精确率与召回率、轨迹准确率、错误恢复率分别该怎么定义？","text":"考察点：Agent 评测体系的设计能力，尤其是 Outcome 与 Transcript 分离的思维。","answerCount":1,"datePublished":"2026-09-26T02:32:09.083Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Agent 评测比 RAG 更难。RAG 通常还能拆成“检索”和“生成”两段，Agent 会在多轮里调用工具、修改状态、读取反馈，前一步的小错可能在后面被放大。 第一步：把 Outcome 和 Transcript 分开看 Outcome 是任务结束后的真实状态：订单有没有退款成功、代码测试有没有通过、文件有没有按要求改好。 Transcript / Trace 是一次运行的完整记录：调用了哪些工具、传了什么参数、跑了几轮。 只评最终文本容易把“说得像成功了”误判成“真的成功了”：回复“退款已处理”的 Agent 可能跳过了身份校验；测试通过的 Coding Agent 可能改了不该改的文件。 第二步：四条检查层——最终状态（外部状态是否正确）、决策与执行（工具、参数和关键动作是否合理）、运行稳定性（遇故障、重复运行能否稳住）、交互与边界（是否守住权限与风险边界）。 第三步：关键指标的定义 任务完成率：先把任务拆成可验证的完成标准再逐一检查，例如发会议邀请邮件可拆成收件人完整、主题含关键词、正文含时间地点、工具返回成功。任务完成率 = 通过所有完成标准的任务数 / 总任务数。 工具调用指标：只算“正确工具调用数 / 总调用数”反映的是精确率，无法发现本应调用工具却完全没调用的漏召回。因此标注集要写出必要工具集合，再分别算：工具选择精确率、工具选择召回率、工具集合完全匹配率、参数准确率、不必要调用率。不必要调用率高通常意味着 Agent 在没有新信息时继续查工具——不只多花 Token，还可能撞上限流或权限边界。 轨迹准确率：检查实际执行的工具和参数与专家标注的关键路径差多少。标注要控制粒度：退款 Agent 可要求“校验身份 → 查订单 → 判断政策 → 调退款工具”，但不必规定每步措辞，标太细容易把有效路径误判成失败。对代码执行、财务操作、账号权限等需审计的动作应严格检查关键路径；研究、写作、代码理解这类开放任务把轨迹当诊断工具，只要结果可靠、没有越权就允许用不同路径完成。 错误恢复率：工具失败后进入预定义恢复结果的次数 / 工具失败总次数。恢复结果可以是补齐参数后完成、换方式重试成功，也可以是在高风险操作前安全停止并转人工。不同结果应分开计数，不能把“任务完成”和“安全退出”混成同一种成功。 第四步：多次运行一致性 同一条任务跑一次通过不代表稳定可用。要分开记录 pass@k（k 次里至少一次成功，反映能力上限）和 pass^k（k 次全成功，更接近生产稳定性）。若单次成功率稳定在 90% 且各次独立，连续 5 次都成功的概率约 59%——支付、退款、合规类业务必须把连续成功率作为稳定性指标。 评测用例的六个对象：Task（输入 + 成功标准）、Trial（一次运行）、Grader（单元测试、JSON Schema、LLM-as-Judge、人工复核）、Transcript/Trace、Outcome、Eval Harness。设计前先确认 Agent 在完成哪类任务——对话/信息型、任务执行型和混合型的发布门槛并不相同。","url":"https://itinterview.com.cn/question/1278"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"模型评估","item":"https://itinterview.com.cn/category?cat=177"},{"@type":"ListItem","position":5,"name":"Agent 应用的评测为什么比 RAG 更难？任务完成率、工具调用精确率与召回率、轨迹准确率、错误恢复率分别该怎么定义？","item":"https://itinterview.com.cn/q/1278.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"模型评估","item":"https://itinterview.com.cn/category?cat=177"},{"@type":"ListItem","position":5,"name":"Agent 应用的评测为什么比 RAG 更难？任务完成率、工具调用精确率与召回率、轨迹准确率、错误恢复率分别该怎么定义？","item":"https://itinterview.com.cn/q/1278"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -112,6 +112,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1278">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/791">分类与回归分别常用哪些评估指标？精确率/召回率/F1 含义？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1545">如何科学评测大语言模型的效果？困惑度(PPL)、标准基准(MMLU/GSM8K)与人工评估各自的局限是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

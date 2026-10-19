@@ -9,15 +9,15 @@
   <meta property="og:title" content="模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？ · IT面试题库">
   <meta property="og:description" content="为什么模型会退化 模型学的是「训练时的分布」。线上世界在变：用户兴趣迁移、竞品改版、季节因素、上游埋点改动——P(输入) 或 P(输出|输入) 变了，静态模型必然劣化。 两类漂移（面试必区分） 1. 数据漂移（Data Drift / 协变量偏移）：输入分布变了，但输入→输出的关系没变。例：疫情后出行 App 的…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1460.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1460">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？ · IT面试题库">
   <meta name="twitter:description" content="为什么模型会退化 模型学的是「训练时的分布」。线上世界在变：用户兴趣迁移、竞品改版、季节因素、上游埋点改动——P(输入) 或 P(输出|输入) 变了，静态模型必然劣化。 两类漂移（面试必区分） 1. 数据漂移（Data Drift / 协变量偏移）：输入分布变了，但输入→输出的关系没变。例：疫情后出行 App 的…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1460.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1460">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？","text":"考察 MLOps 的模型退化管理：两类漂移的定义与检测、监控指标设计与再训练策略，是机器学习工程化面试的核心题。","answerCount":1,"datePublished":"2026-10-01T05:33:42.475Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么模型会退化 模型学的是「训练时的分布」。线上世界在变：用户兴趣迁移、竞品改版、季节因素、上游埋点改动——P(输入) 或 P(输出|输入) 变了，静态模型必然劣化。 两类漂移（面试必区分） 1. 数据漂移（Data Drift / 协变量偏移）：输入分布变了，但输入→输出的关系没变。例：疫情后出行 App 的「通勤路线」占比骤降；特征「用户年龄」的上游埋点口径改了导致均值偏移； 2. 概念漂移（Concept Drift）：输入→输出的关系本身变了。同一份输入，正确标签变了。例：风控里「深夜大额消费」以前是盗刷信号、直播打赏普及后变成正常行为；商品价格预测中「口罩」的需求规律在 2020 年彻底改变。 区分方法：数据漂移时模型输出分布也会变但准确率未必掉（可能只是新输入变多）；概念漂移准确率/业务指标直接下滑。工程上前者看特征分布监控就能发现，后者必须看真实标签回流的评估指标。 监控怎么建 特征层：对每个特征做训练 vs 线上分布对比（PSI > 0.2 告警、KS 检验、分箱占比偏移）；数值特征盯均值/分位数，类别特征盯类别覆盖率（新类别突现=上游枚举变了，常是埋点事故）； 输出层：预测分布漂移（预测均分整体上移可能是输入变了）； 效果层：延迟标签回流（电商转化 T+1、信贷违约 T+90）算线上 AUC/坏账率——这是判定退化的金标准； 数据质量层：NULL 率、取值域突变（这些是事故不是漂移，要的是报警修数据）。 再训练触发策略 1. 定时：按业务节奏（周/月）兜底，简单但可能不及时或浪费； 2. 性能触发：线上指标跌破阈值（AUC 掉 3 个点、业务转化率连跌 N 天）→ 立即重训； 3. 分布触发：PSI 等漂移指标超阈值 → 触发评估流程而非直接重训（先排查是漂移还是事故）； 4. 生产环境配套：影子模式（新模型并行打分不影响线上）、A/B 或 interleaving 验证、回滚能力（模型版本与特征版本一起存档，可回退）。 加分点：漂移监控必须带特征血缘——否则「上游改了字段枚举值」这种事故会被误判为漂移，重训也救不了坏数据。","url":"https://itinterview.com.cn/question/1460"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"MLOps","item":"https://itinterview.com.cn/category?cat=198"},{"@type":"ListItem","position":5,"name":"模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？","item":"https://itinterview.com.cn/q/1460.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"MLOps","item":"https://itinterview.com.cn/category?cat=198"},{"@type":"ListItem","position":5,"name":"模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？","item":"https://itinterview.com.cn/q/1460"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -117,6 +117,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1460">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/789">MLOps 是什么？相比传统 DevOps 多了哪些环节？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1541">构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1542">用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1544">如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

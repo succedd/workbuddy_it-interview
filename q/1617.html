@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spring MVC 如何做参数绑定与数据校验？@RequestParam、@RequestBody、@Valid、全局异常处理分别怎么用？ · IT面试题库">
   <meta property="og:description" content="要点： 参数绑定：@RequestParam 取 URL query / 表单字段；@PathVariable 取路径变量；@RequestBody 用 HttpMessageConverter 把请求体（如 JSON）反序列化为对象；@ModelAttribute 绑定表单到对象。 数据校验：在入参对象上用 j…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1617.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1617">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 如何做参数绑定与数据校验？@RequestParam、@RequestBody、@Valid、全局异常处理分别怎么用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 参数绑定：@RequestParam 取 URL query / 表单字段；@PathVariable 取路径变量；@RequestBody 用 HttpMessageConverter 把请求体（如 JSON）反序列化为对象；@ModelAttribute 绑定表单到对象。 数据校验：在入参对象上用 j…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1617.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1617">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 如何做参数绑定与数据校验？@RequestParam、@RequestBody、@Valid、全局异常处理分别怎么用？","text":"考察常用注解与校验 / 异常处理（场景）。","answerCount":1,"datePublished":"2026-10-10T11:54:34.096Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 参数绑定：@RequestParam 取 URL query / 表单字段；@PathVariable 取路径变量；@RequestBody 用 HttpMessageConverter 把请求体（如 JSON）反序列化为对象；@ModelAttribute 绑定表单到对象。 数据校验：在入参对象上用 jakarta.validation 注解（@NotNull/@Size/@Pattern 等），配合 @Valid / @Validated 触发校验，校验失败抛 MethodArgumentNotValidException。 全局异常处理：用 @ControllerAdvice + @ExceptionHandler 统一拦截异常，返回结构化错误响应，避免到处 try-catch；也可实现 ResponseEntityExceptionHandler 覆盖 Spring 内置异常（如 404 / 400）。 注意：@RequestBody 校验需 @Valid 标注；日期 / 枚举等类型转换失败会抛 TypeMismatch，应统一捕获返回友好错误信息。","url":"https://itinterview.com.cn/question/1617"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 如何做参数绑定与数据校验？@RequestParam、@RequestBody、@Valid、全局异常处理分别怎么用？","item":"https://itinterview.com.cn/q/1617.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 如何做参数绑定与数据校验？@RequestParam、@RequestBody、@Valid、全局异常处理分别怎么用？","item":"https://itinterview.com.cn/q/1617"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1617">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1620">Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/798">Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/802">@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1616">请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

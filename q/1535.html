@@ -9,15 +9,15 @@
   <meta property="og:title" content="数仓分层（ODS / DWD / DWS / ADS）的意义是什么？每层做什么？ · IT面试题库">
   <meta property="og:description" content="分层结构：① ODS（操作数据层）：原样贴源，不做清洗只做格式规整，保留原始证据与重跑能力；② DWD（明细数据层）：清洗（去重、空值、枚举标准化）、维度退化（把常用维度属性并入事实）、一行即一次业务过程（原子粒度事实）；③ DWS（汇总数据层）：按主题做轻粒度聚合（用户天粒度、商品天粒度），沉淀公共指标供上层复…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1535.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1535">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数仓分层（ODS / DWD / DWS / ADS）的意义是什么？每层做什么？ · IT面试题库">
   <meta name="twitter:description" content="分层结构：① ODS（操作数据层）：原样贴源，不做清洗只做格式规整，保留原始证据与重跑能力；② DWD（明细数据层）：清洗（去重、空值、枚举标准化）、维度退化（把常用维度属性并入事实）、一行即一次业务过程（原子粒度事实）；③ DWS（汇总数据层）：按主题做轻粒度聚合（用户天粒度、商品天粒度），沉淀公共指标供上层复…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1535.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1535">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数仓分层（ODS / DWD / DWS / ADS）的意义是什么？每层做什么？","text":"说明分层的解耦、复用与血缘价值，以及各层职责边界。","answerCount":1,"datePublished":"2026-10-05T01:04:02.095Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分层结构：① ODS（操作数据层）：原样贴源，不做清洗只做格式规整，保留原始证据与重跑能力；② DWD（明细数据层）：清洗（去重、空值、枚举标准化）、维度退化（把常用维度属性并入事实）、一行即一次业务过程（原子粒度事实）；③ DWS（汇总数据层）：按主题做轻粒度聚合（用户天粒度、商品天粒度），沉淀公共指标供上层复用，避免每个报表都从头扫明细；④ ADS（应用数据层）：直接面向报表/大屏/API 的最终宽表。 分层的意义：① 解耦——源系统变化只影响 ODS→DWD 映射；② 复用——公共逻辑沉淀在 DWD/DWS，上游改一次下游全受益，口径统一；③ 血缘清晰——问题可以逐层定位，数据质量可分层校验；④ 性能——聚合层预计算，查询不必每次扫全量明细；⑤ 权限——敏感字段在 DWD 脱敏，上层默认拿安全数据。 边界：层级不是越多越好，中小团队 ODS→DWD→ADS 三层即可，过度分层徒增任务数与延迟。","url":"https://itinterview.com.cn/question/1535"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"数仓建模理论","item":"https://itinterview.com.cn/category?cat=163"},{"@type":"ListItem","position":4,"name":"数仓分层（ODS / DWD / DWS / ADS）的意义是什么？每层做什么？","item":"https://itinterview.com.cn/q/1535.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"数仓建模理论","item":"https://itinterview.com.cn/category?cat=163"},{"@type":"ListItem","position":4,"name":"数仓分层（ODS / DWD / DWS / ADS）的意义是什么？每层做什么？","item":"https://itinterview.com.cn/q/1535"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1535">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/707">维度建模中星型与雪花模型区别？事实表与维度表？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1534">范式建模与维度建模的区别是什么？数仓为什么普遍采用维度建模？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1536">缓慢变化维（SCD）的常用处理方式有哪些？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1574">数仓建模中星型模型（Star Schema）与雪花模型（Snowflake）的区别是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

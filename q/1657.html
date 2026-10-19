@@ -9,15 +9,15 @@
   <meta property="og:title" content="Jetpack Compose 的 remember 和 derivedStateOf 各自解决什么问题？什么时候必须用 remember？ · IT面试题库">
   <meta property="og:description" content="要点： remember：在重组之间保留对象，避免每次重组重新创建计算结果或昂贵对象。 derivedStateOf：把一个/多个 state 转换为派生 state，只有依赖真正变化时读取方才重组；列表滚动位置转按钮可见性是典型例子。 使用原则：直接参与渲染的稳定状态用 remember；由其他状态计算出的只读…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1657.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1657">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jetpack Compose 的 remember 和 derivedStateOf 各自解决什么问题？什么时候必须用 remember？ · IT面试题库">
   <meta name="twitter:description" content="要点： remember：在重组之间保留对象，避免每次重组重新创建计算结果或昂贵对象。 derivedStateOf：把一个/多个 state 转换为派生 state，只有依赖真正变化时读取方才重组；列表滚动位置转按钮可见性是典型例子。 使用原则：直接参与渲染的稳定状态用 remember；由其他状态计算出的只读…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1657.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1657">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jetpack Compose 的 remember 和 derivedStateOf 各自解决什么问题？什么时候必须用 remember？","text":"考察 Compose 状态与性能。","answerCount":1,"datePublished":"2026-10-15T12:54:42.601Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： remember：在重组之间保留对象，避免每次重组重新创建计算结果或昂贵对象。 derivedStateOf：把一个/多个 state 转换为派生 state，只有依赖真正变化时读取方才重组；列表滚动位置转按钮可见性是典型例子。 使用原则：直接参与渲染的稳定状态用 remember；由其他状态计算出的只读状态用 derivedStateOf，避免每帧无效重组。","url":"https://itinterview.com.cn/question/1657"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Jetpack Compose","item":"https://itinterview.com.cn/category?cat=227"},{"@type":"ListItem","position":5,"name":"Jetpack Compose 的 remember 和 derivedStateOf 各自解决什么问题？什么时候必须用 remember？","item":"https://itinterview.com.cn/q/1657.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Jetpack Compose","item":"https://itinterview.com.cn/category?cat=227"},{"@type":"ListItem","position":5,"name":"Jetpack Compose 的 remember 和 derivedStateOf 各自解决什么问题？什么时候必须用 remember？","item":"https://itinterview.com.cn/q/1657"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1657">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/752">Jetpack Compose 的声明式 UI 与重组（recomposition）是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

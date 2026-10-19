@@ -9,15 +9,15 @@
   <meta property="og:title" content="为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？ · IT面试题库">
   <meta property="og:description" content="为什么需要：分库分表后单库自增主键会冲突且暴露业务量；分布式系统需要一个全局唯一、趋势递增、高性能的 ID。 方案对比： UUID：本地生成、无中心依赖、性能好；但无序、太长（36字符）、作索引碎片严重，不适合做主键。 数据库自增：简单、递增；但有单点/性能瓶颈，且分库分表下无法全局唯一。 号段模式（Leaf-s…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/889.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/889">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？ · IT面试题库">
   <meta name="twitter:description" content="为什么需要：分库分表后单库自增主键会冲突且暴露业务量；分布式系统需要一个全局唯一、趋势递增、高性能的 ID。 方案对比： UUID：本地生成、无中心依赖、性能好；但无序、太长（36字符）、作索引碎片严重，不适合做主键。 数据库自增：简单、递增；但有单点/性能瓶颈，且分库分表下无法全局唯一。 号段模式（Leaf-s…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/889.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/889">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？","text":"考察分布式 ID 的诉求与方案选型。","answerCount":1,"datePublished":"2026-09-09T02:22:55.588Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么需要：分库分表后单库自增主键会冲突且暴露业务量；分布式系统需要一个全局唯一、趋势递增、高性能的 ID。 方案对比： UUID：本地生成、无中心依赖、性能好；但无序、太长（36字符）、作索引碎片严重，不适合做主键。 数据库自增：简单、递增；但有单点/性能瓶颈，且分库分表下无法全局唯一。 号段模式（Leaf-segment）：从 DB/Redis 批量取一段号（如 1~1000），内存发号，DB 压力小、ID 递增；缺点是号段用完瞬间有轻微毛刺，需预加载。 雪花算法（Snowflake）：时间戳+机器ID+序列号，本地生成、毫秒级高吞吐、趋势递增；依赖时钟且需规划 workerId 分配。 选型：要绝对去中心用 UUID；要递增友好索引用号段/雪花；高并发低延迟首选雪花或号段。","url":"https://itinterview.com.cn/question/889"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？","item":"https://itinterview.com.cn/q/889.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"为什么需要分布式 ID 生成器？UUID、数据库自增、号段模式、雪花算法各有什么优缺点？","item":"https://itinterview.com.cn/q/889"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/889">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/894">分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/890">用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/582">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/583">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

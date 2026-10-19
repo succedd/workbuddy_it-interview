@@ -9,15 +9,15 @@
   <meta property="og:title" content="ES Module 是怎么处理循环依赖的？「构造-实例化-求值」三阶段为什么让循环依赖变得可用？和 CommonJS 的处理差在哪？ · IT面试题库">
   <meta property="og:description" content="三阶段模型（Mozilla Hacks 的经典拆解）：ESM 加载分 Construction（构造：找到、下载并解析全部文件，建立模块图）→ Instantiation（实例化：为所有导出分配内存，把 export/import 链接到同一内存位置）→ Evaluation（求值：执行代码填入真实值）。三个阶段…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1331.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1331">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ES Module 是怎么处理循环依赖的？「构造-实例化-求值」三阶段为什么让循环依赖变得可用？和 CommonJS 的处理差在哪？ · IT面试题库">
   <meta name="twitter:description" content="三阶段模型（Mozilla Hacks 的经典拆解）：ESM 加载分 Construction（构造：找到、下载并解析全部文件，建立模块图）→ Instantiation（实例化：为所有导出分配内存，把 export/import 链接到同一内存位置）→ Evaluation（求值：执行代码填入真实值）。三个阶段…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1331.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1331">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ES Module 是怎么处理循环依赖的？「构造-实例化-求值」三阶段为什么让循环依赖变得可用？和 CommonJS 的处理差在哪？","text":"考察点：ESM 三阶段加载模型与 live binding 机制，循环依赖下 a/b 的执行顺序与踩坑，不泛谈模块系统区别。","answerCount":1,"datePublished":"2026-09-26T03:33:00.148Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三阶段模型（Mozilla Hacks 的经典拆解）：ESM 加载分 Construction（构造：找到、下载并解析全部文件，建立模块图）→ Instantiation（实例化：为所有导出分配内存，把 export/import 链接到同一内存位置）→ Evaluation（求值：执行代码填入真实值）。三个阶段可以分开进行——构造阶段先把整张模块图建好（这正是 ESM 静态、可异步的原因），而 CommonJS 是「加载-实例化-求值」一气呵成的同步过程。 循环依赖下的执行顺序（main → a → b，b 又 import a）：求值按深度优先后序遍历，b 在依赖链最深处先求值完成，随后 a 求值完成。 为什么 ESM 下循环依赖大多能用： 1. 实例化阶段先完成链接：export/import 指向同一块内存（live binding），链接不依赖值是否已经存在； 2. 函数声明在实例化阶段就被初始化——即使 a 还没求值，b 也能直接调用 a 导出的函数； 3. 求值完成后，live binding 保证 b 看到的是 a 的最终值（MDN：imported bindings 是 read-only live bindings）。 坑在哪：若 b 在顶层立即访问 a 的 let/const 绑定，此时 a 尚未求值、绑定处于 TDZ，直接抛 ReferenceError。规避方法：循环依赖中把函数声明作为导出最安全；把顶层立即执行的逻辑改成惰性调用（用到时才调函数）。 CommonJS 的处理与踩坑：CJS 执行到 require 才同步加载求值。循环时 b 中 require('./a') 拿到的是 a 当时已求值部分的 exports 浅拷贝——a 未执行到的属性是 undefined，而且因为导出是值拷贝而非绑定，之后 a 更新该值 b 也看不到。典型事故就是循环里拿到半成品对象，只有当函数调用发生在双方都求值完成后才表现正常。 小结：ESM 靠「先静态建图、链接不执行、绑定共享内存」把循环依赖变成可控的时序问题；CJS 则把当时的半成品直接交给你。无论哪种，双方顶层都不要立即消费对方的导出值。","url":"https://itinterview.com.cn/question/1331"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"ES Module 是怎么处理循环依赖的？「构造-实例化-求值」三阶段为什么让循环依赖变得可用？和 CommonJS 的处理差在哪？","item":"https://itinterview.com.cn/q/1331.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"ES Module 是怎么处理循环依赖的？「构造-实例化-求值」三阶段为什么让循环依赖变得可用？和 CommonJS 的处理差在哪？","item":"https://itinterview.com.cn/q/1331"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1331">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/947">什么是闭包？有什么应用场景和问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/25">localStorage、sessionStorage、cookie 的区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/389">什么是闭包（closure）？它有哪些典型应用场景，又要注意什么陷阱？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/390">请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

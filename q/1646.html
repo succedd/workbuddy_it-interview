@@ -9,15 +9,15 @@
   <meta property="og:title" content="TensorFlow 中 Dataset pipeline 有哪些常见性能陷阱？ · IT面试题库">
   <meta property="og:description" content="要点： CPU/IO 瓶颈：训练 GPU 利用率低常因数据读取慢，应使用 tf.data 的 prefetch、cache、interleave、map 并行。 缓存选择：小数据可内存缓存，大数据可落盘缓存，但 map 顺序要在 cache 前后明确，避免随机增强失效。 批大小与形状：静态 shape 可提高吞吐…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1646.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1646">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TensorFlow 中 Dataset pipeline 有哪些常见性能陷阱？ · IT面试题库">
   <meta name="twitter:description" content="要点： CPU/IO 瓶颈：训练 GPU 利用率低常因数据读取慢，应使用 tf.data 的 prefetch、cache、interleave、map 并行。 缓存选择：小数据可内存缓存，大数据可落盘缓存，但 map 顺序要在 cache 前后明确，避免随机增强失效。 批大小与形状：静态 shape 可提高吞吐…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1646.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1646">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TensorFlow 中 Dataset pipeline 有哪些常见性能陷阱？","text":"考察数据管道性能优化。","answerCount":1,"datePublished":"2026-10-15T12:54:42.028Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： CPU/IO 瓶颈：训练 GPU 利用率低常因数据读取慢，应使用 tf.data 的 prefetch、cache、interleave、map 并行。 缓存选择：小数据可内存缓存，大数据可落盘缓存，但 map 顺序要在 cache 前后明确，避免随机增强失效。 批大小与形状：静态 shape 可提高吞吐，避免 Python 每步动态逻辑；用 profiling 工具确认数据侧耗时占比。","url":"https://itinterview.com.cn/question/1646"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"TensorFlow","item":"https://itinterview.com.cn/category?cat=181"},{"@type":"ListItem","position":5,"name":"TensorFlow 中 Dataset pipeline 有哪些常见性能陷阱？","item":"https://itinterview.com.cn/q/1646.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"TensorFlow","item":"https://itinterview.com.cn/category?cat=181"},{"@type":"ListItem","position":5,"name":"TensorFlow 中 Dataset pipeline 有哪些常见性能陷阱？","item":"https://itinterview.com.cn/q/1646"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1646">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/782">TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何组织前端 Monorepo？pnpm workspace 加 Turborepo 的核心实践？ · IT面试题库">
   <meta property="og:description" content="取舍：Monorepo 利于代码共享、原子提交、统一版本与 CI；代价是仓库变大、权限控制粗、构建慢——需要工具链兜底。 核心实践：① pnpm workspace 管依赖：硬链接 + 内容寻址 store 省磁盘，严格的 node_modules（幽灵依赖现形），workspace: 协议做包间引用；② 按领域…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1490.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1490">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何组织前端 Monorepo？pnpm workspace 加 Turborepo 的核心实践？ · IT面试题库">
   <meta name="twitter:description" content="取舍：Monorepo 利于代码共享、原子提交、统一版本与 CI；代价是仓库变大、权限控制粗、构建慢——需要工具链兜底。 核心实践：① pnpm workspace 管依赖：硬链接 + 内容寻址 store 省磁盘，严格的 node_modules（幽灵依赖现形），workspace: 协议做包间引用；② 按领域…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1490.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1490">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何组织前端 Monorepo？pnpm workspace 加 Turborepo 的核心实践？","text":"说明 Monorepo 与 Multirepo 的取舍，以及包拆分、依赖提升、任务编排的实践。","answerCount":1,"datePublished":"2026-10-05T01:03:56.193Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"取舍：Monorepo 利于代码共享、原子提交、统一版本与 CI；代价是仓库变大、权限控制粗、构建慢——需要工具链兜底。 核心实践：① pnpm workspace 管依赖：硬链接 + 内容寻址 store 省磁盘，严格的 node_modules（幽灵依赖现形），workspace: 协议做包间引用；② 按领域拆包：ui-components / utils / api-client / app- ，包边界即职责边界，对外统一 index.ts 出口；③ Turborepo 任务编排：turbo.json 声明 build/lint/test 的依赖图（dependsOn: [\"^build\"]），增量构建 + 远程缓存——没改的包直接命中缓存；④ 版本策略：内部包用 workspace:* 实时同步，发布包用 changesets 管理 changelog；⑤ CI 按 --filter=[origin/main] 只构建受影响的包。","url":"https://itinterview.com.cn/question/1490"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"如何组织前端 Monorepo？pnpm workspace 加 Turborepo 的核心实践？","item":"https://itinterview.com.cn/q/1490.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"如何组织前端 Monorepo？pnpm workspace 加 Turborepo 的核心实践？","item":"https://itinterview.com.cn/q/1490"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -96,6 +96,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1490">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/717">前端工程化包含哪些内容？为什么需要？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1489">什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1491">生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

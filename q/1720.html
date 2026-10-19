@@ -9,15 +9,15 @@
   <meta property="og:title" content="Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？ · IT面试题库">
   <meta property="og:description" content="要点： Optimistic Rollup：默认乐观执行，先提交状态根，留挑战期（常见 7 天）接受欺诈证明；EVM 兼容好、实现简单，但提款慢，安全性依赖至少一个诚实验证者。 ZK Rollup：每批交易生成有效性证明（zk-SNARK / zk-STARK），L1 验证通过即最终确定，提款快；代价是证明生成成…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1720.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1720">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： Optimistic Rollup：默认乐观执行，先提交状态根，留挑战期（常见 7 天）接受欺诈证明；EVM 兼容好、实现简单，但提款慢，安全性依赖至少一个诚实验证者。 ZK Rollup：每批交易生成有效性证明（zk-SNARK / zk-STARK），L1 验证通过即最终确定，提款快；代价是证明生成成…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1720.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1720">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？","text":"考察 L2 扩容路线的取舍，以及数据可用性成本对 Rollup 的影响。","answerCount":1,"datePublished":"2026-10-19T05:43:24.462Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Optimistic Rollup：默认乐观执行，先提交状态根，留挑战期（常见 7 天）接受欺诈证明；EVM 兼容好、实现简单，但提款慢，安全性依赖至少一个诚实验证者。 ZK Rollup：每批交易生成有效性证明（zk-SNARK / zk-STARK），L1 验证通过即最终确定，提款快；代价是证明生成成本高、EVM 等价性更难，通用电路与开发工具更复杂。 EIP-4844：引入短生命周期的 blob 承载 L2 交易数据，blob 不进入 EVM 执行、按独立市场计费，显著降低 L2 的数据可用性成本；但它不解决执行去中心化与 sequencer 中心化问题。","url":"https://itinterview.com.cn/question/1720"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"以太坊","item":"https://itinterview.com.cn/category?cat=258"},{"@type":"ListItem","position":4,"name":"Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？","item":"https://itinterview.com.cn/q/1720.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"以太坊","item":"https://itinterview.com.cn/category?cat=258"},{"@type":"ListItem","position":4,"name":"Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？","item":"https://itinterview.com.cn/q/1720"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1720">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/678">什么是以太坊？智能合约与 EVM 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1590">什么是以太坊虚拟机（EVM）？智能合约是如何被部署和调用的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1592">一笔交易 gas 费异常高、或一直停留在 pending 不打包，可能原因有哪些？如何排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1718">EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

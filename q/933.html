@@ -9,15 +9,15 @@
   <meta property="og:title" content="接口和抽象类有什么区别？如何选择？ · IT面试题库">
   <meta property="og:description" content="| 维度 | 抽象类 | 接口 | |---|---|---| | 语义 | &quot;是什么&quot;（is-a），抽取共性实现 | &quot;能做什么&quot;（can-do），定义能力契约 | | 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） | | 成员变量 | 任意（可有状态） | 只…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/933.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/933">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="接口和抽象类有什么区别？如何选择？ · IT面试题库">
   <meta name="twitter:description" content="| 维度 | 抽象类 | 接口 | |---|---|---| | 语义 | &quot;是什么&quot;（is-a），抽取共性实现 | &quot;能做什么&quot;（can-do），定义能力契约 | | 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） | | 成员变量 | 任意（可有状态） | 只…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/933.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/933">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"接口和抽象类有什么区别？如何选择？","text":"请从语法、设计语义（能否实例化、成员限制、多继承）等角度对比接口与抽象类。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"| 维度 | 抽象类 | 接口 | |---|---|---| | 语义 | \"是什么\"（is-a），抽取共性实现 | \"能做什么\"（can-do），定义能力契约 | | 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） | | 成员变量 | 任意（可有状态） | 只能 public static final 常量 | | 方法 | 可含具体实现与抽象方法 | Java 8 前只能抽象方法；8+ 有 default/static 方法 | | 构造器 | 有（供子类调用） | 无 | 如何选择： 需要复用公共实现、维护状态字段、模板方法模式（父类定骨架，子类填细节）→ 抽象类，如 AbstractList； 定义行为规范、解耦调用方与实现、需要多继承效果（如 Comparable+Serializable）→ 接口，如 List、Runnable。 典型组合：接口定义契约 + 抽象类提供骨架实现（List 接口 ↔ AbstractList 骨架类），调用方面向接口编程。","url":"https://itinterview.com.cn/question/933"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"接口和抽象类有什么区别？如何选择？","item":"https://itinterview.com.cn/q/933.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"接口和抽象类有什么区别？如何选择？","item":"https://itinterview.com.cn/q/933"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -107,6 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/933">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

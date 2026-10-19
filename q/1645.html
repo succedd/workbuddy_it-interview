@@ -9,15 +9,15 @@
   <meta property="og:title" content="类别特征取值基数极高时，one-hot 编码为什么失效？有哪些替代方案？ · IT面试题库">
   <meta property="og:description" content="要点： 问题：高基数 one-hot 会产生稀疏超大矩阵，树模型分裂收益下降，线性模型训练和推理成本高。 替代方案：目标编码需要交叉验证防泄漏；哈希编码可控维度；分桶/层级编码利用业务先验；嵌入适合深度模型。 关键：先做频次分析，低频类别合并为 Other；对 ID 类特征加时间衰减，避免模型学到过期的用户画像。">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1645.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1645">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="类别特征取值基数极高时，one-hot 编码为什么失效？有哪些替代方案？ · IT面试题库">
   <meta name="twitter:description" content="要点： 问题：高基数 one-hot 会产生稀疏超大矩阵，树模型分裂收益下降，线性模型训练和推理成本高。 替代方案：目标编码需要交叉验证防泄漏；哈希编码可控维度；分桶/层级编码利用业务先验；嵌入适合深度模型。 关键：先做频次分析，低频类别合并为 Other；对 ID 类特征加时间衰减，避免模型学到过期的用户画像。">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1645.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1645">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"类别特征取值基数极高时，one-hot 编码为什么失效？有哪些替代方案？","text":"考察高基数特征工程。","answerCount":1,"datePublished":"2026-10-15T12:54:41.983Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 问题：高基数 one-hot 会产生稀疏超大矩阵，树模型分裂收益下降，线性模型训练和推理成本高。 替代方案：目标编码需要交叉验证防泄漏；哈希编码可控维度；分桶/层级编码利用业务先验；嵌入适合深度模型。 关键：先做频次分析，低频类别合并为 Other；对 ID 类特征加时间衰减，避免模型学到过期的用户画像。","url":"https://itinterview.com.cn/question/1645"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"特征工程","item":"https://itinterview.com.cn/category?cat=176"},{"@type":"ListItem","position":5,"name":"类别特征取值基数极高时，one-hot 编码为什么失效？有哪些替代方案？","item":"https://itinterview.com.cn/q/1645.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"特征工程","item":"https://itinterview.com.cn/category?cat=176"},{"@type":"ListItem","position":5,"name":"类别特征取值基数极高时，one-hot 编码为什么失效？有哪些替代方案？","item":"https://itinterview.com.cn/q/1645"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1645">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/786">特征工程中编码、归一化/标准化、缺失值处理的常见做法及意义？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

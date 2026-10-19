@@ -9,15 +9,15 @@
   <meta property="og:title" content="TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？ · IT面试题库">
   <meta property="og:description" content="TCP 的重传不是只有一种触发方式，三者是一个逐步演进的组合：超时重传是兜底，快速重传让恢复更早发生，SACK 则补足累积确认的信息盲区。 1. 超时重传（RTO）：发送数据后启动定时器，超过 RTO 仍未收到 ACK 就认为数据可能丢失并重传，是所有场景下最基础的兜底方案。RTO 的取值很关键：不能直接用某一次…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1309.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1309">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？ · IT面试题库">
   <meta name="twitter:description" content="TCP 的重传不是只有一种触发方式，三者是一个逐步演进的组合：超时重传是兜底，快速重传让恢复更早发生，SACK 则补足累积确认的信息盲区。 1. 超时重传（RTO）：发送数据后启动定时器，超过 RTO 仍未收到 ACK 就认为数据可能丢失并重传，是所有场景下最基础的兜底方案。RTO 的取值很关键：不能直接用某一次…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1309.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1309">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？","text":"TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？","answerCount":1,"datePublished":"2026-09-26T03:30:56.877Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TCP 的重传不是只有一种触发方式，三者是一个逐步演进的组合：超时重传是兜底，快速重传让恢复更早发生，SACK 则补足累积确认的信息盲区。 1. 超时重传（RTO）：发送数据后启动定时器，超过 RTO 仍未收到 ACK 就认为数据可能丢失并重传，是所有场景下最基础的兜底方案。RTO 的取值很关键：不能直接用某一次 RTT 样本，现代 TCP 按 RFC 6298 用 RTT 样本维护平滑往返时间 SRTT 和波动 RTTVAR，RTO ≈ SRTT + 抖动余量；RTO 太小会造成不必要的重传，太大则延迟高。对已重传过的报文，其 ACK 不用于 RTT 采样（Karn 算法），避免「ACK 对应原始包还是重传包」的歧义；连续超时还会指数退避，避免在拥塞时继续加重负担。 2. 快速重传：解决「只能干等超时、恢复太慢」的问题。TCP 使用累积确认，接收方收到乱序数据时不会推进 ACK 号，而是重复回复同一个旧 ACK（duplicate ACK）。发送方连续收到 3 个 duplicate ACK，就认为该段大概率丢失，不等 RTO 直接重传。之所以要 3 个而不是 1 个，是因为短暂乱序也可能造成重复 ACK，3 个是「尽快恢复」与「避免误判乱序」之间的折中。 3. SACK（选择性确认）：解决多段丢包时的信息盲区。普通 ACK 只能表达「某序号之前都收到了」，无法表达「后面的某些区间虽然乱序但已收到」。SACK 在 TCP 选项里携带已收到的非连续字节区间，发送方只重传真正缺失的部分。例如发送 100、200、300、400 四段，100 丢失，接收方回 ACK=100 且 SACK 报告已收 200-400，发送方就只需重传 100。SACK 需要三次握手时通过 SACK-Permitted 选项协商，每个 block 占 8 字节，最多携带 4 个。 对比总结： | 机制 | 触发条件 | 解决的问题 | | --- | --- | --- | | 超时重传 | 超过 RTO 未收到 ACK | 兜底处理丢包 | | 快速重传 | 3 个重复 ACK | 不等超时，尽快恢复 | | SACK | ACK 携带已收区间 | 只重传真正缺失的部分 | 此外还有 D-SACK（重复 SACK），它报告「哪些数据被重复收到了」，帮助发送方识别误重传：比如原始包其实已到达、只是 ACK 丢失或网络乱序。D-SACK 不引入新选项，只是复用 SACK block。回答时先讲三者的定位（兜底 → 提速 → 精确），再展开机制细节，最后带一句 D-SACK 是加分项。","url":"https://itinterview.com.cn/question/1309"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？","item":"https://itinterview.com.cn/q/1309.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？","item":"https://itinterview.com.cn/q/1309"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1309">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/160">TCP流量控制和拥塞控制的区别？</a><span class="rel-n">206 次浏览</span></li><li><a href="https://itinterview.com.cn/q/364">常听说 TCP 有“粘包/拆包”问题，这是 TCP 协议本身的缺陷吗？应如何从应用层解决？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/60">TCP 三次握手与四次挥手的过程？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/61">TIME_WAIT 的作用与过多怎么办？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

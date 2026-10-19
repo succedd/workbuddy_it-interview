@@ -9,15 +9,15 @@
   <meta property="og:title" content="LangChain 应用落地生产环境有哪些常见痛点与对策？ · IT面试题库">
   <meta property="og:description" content="延迟与成本：Agent 多轮循环慢且贵——能 Chain 不 Agent、减少工具数、用小模型做路由/草稿 + 大模型做终稿、流式输出改善体感、缓存（语义缓存命中相似问题）。 稳定性：① 模型/网络抖动——超时、重试（指数退避）、fallback 链（主模型挂了切备用）；② 输出不可控——结构化输出 parser…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1526.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1526">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LangChain 应用落地生产环境有哪些常见痛点与对策？ · IT面试题库">
   <meta name="twitter:description" content="延迟与成本：Agent 多轮循环慢且贵——能 Chain 不 Agent、减少工具数、用小模型做路由/草稿 + 大模型做终稿、流式输出改善体感、缓存（语义缓存命中相似问题）。 稳定性：① 模型/网络抖动——超时、重试（指数退避）、fallback 链（主模型挂了切备用）；② 输出不可控——结构化输出 parser…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1526.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1526">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LangChain 应用落地生产环境有哪些常见痛点与对策？","text":"从延迟成本、稳定性、评测监控三方面总结工程化对策。","answerCount":1,"datePublished":"2026-10-05T01:04:00.888Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"延迟与成本：Agent 多轮循环慢且贵——能 Chain 不 Agent、减少工具数、用小模型做路由/草稿 + 大模型做终稿、流式输出改善体感、缓存（语义缓存命中相似问题）。 稳定性：① 模型/网络抖动——超时、重试（指数退避）、fallback 链（主模型挂了切备用）；② 输出不可控——结构化输出 parser + 校验失败自动重试，Prompt 加 few-shot 与明确格式约束；③ 幻觉——RAG 化（答案要求带引用），检索不足时宁说不知道；④ 长上下文溢出——分段摘要、记忆窗口、上下文裁剪策略。 评测与监控：① 离线评测集（golden set）跑准确率/相关性，每次改 Prompt 回归——不评测就上线的 Prompt 迟早翻车；② 在线追踪 LangSmith/Langfuse：trace 每次调用的 Prompt、工具、token、延迟，定位坏 case；③ 收集用户反馈（点赞/纠错）做数据飞轮；④ 密钥与注入防护：用户输入与检索内容当不可信数据处理，防 Prompt 注入越权调工具。","url":"https://itinterview.com.cn/question/1526"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LangChain","item":"https://itinterview.com.cn/category?cat=195"},{"@type":"ListItem","position":5,"name":"LangChain 应用落地生产环境有哪些常见痛点与对策？","item":"https://itinterview.com.cn/q/1526.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"LangChain","item":"https://itinterview.com.cn/category?cat=195"},{"@type":"ListItem","position":5,"name":"LangChain 应用落地生产环境有哪些常见痛点与对策？","item":"https://itinterview.com.cn/q/1526"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1526">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/784">LangChain 中 Chain、Tool、Memory、Agent 各自扮演什么角色？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1524">LangChain 的核心抽象（Model / Chain / Agent / Memory）如何理解？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1525">LangChain Agent 的工具调用原理是什么？ReAct 模式是怎样的？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

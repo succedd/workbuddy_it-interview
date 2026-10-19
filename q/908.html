@@ -9,15 +9,15 @@
   <meta property="og:title" content="如何用 Redis 实现分布式锁？有哪些注意事项？ · IT面试题库">
   <meta property="og:description" content="基本实现：SET lockKey uniqueValue NX EX 30——NX 保证互斥，EX 防死锁，value 用唯一标识（UUID+线程 ID）防误删。释放用 Lua 脚本原子执行&quot;判断 value 是自己→DEL&quot;，避免删掉别人的锁。 四个关键问题： 1. 业务超时锁过期：任务没做完锁先过期。缓解：看…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/908.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/908">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Redis 实现分布式锁？有哪些注意事项？ · IT面试题库">
   <meta name="twitter:description" content="基本实现：SET lockKey uniqueValue NX EX 30——NX 保证互斥，EX 防死锁，value 用唯一标识（UUID+线程 ID）防误删。释放用 Lua 脚本原子执行&quot;判断 value 是自己→DEL&quot;，避免删掉别人的锁。 四个关键问题： 1. 业务超时锁过期：任务没做完锁先过期。缓解：看…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/908.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/908">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Redis 实现分布式锁？有哪些注意事项？","text":"请说明基于 SETNX/SET 的 Redis 分布锁实现，及锁过期释放、误删、可重入与 Redlock 等问题。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"基本实现：SET lockKey uniqueValue NX EX 30——NX 保证互斥，EX 防死锁，value 用唯一标识（UUID+线程 ID）防误删。释放用 Lua 脚本原子执行\"判断 value 是自己→DEL\"，避免删掉别人的锁。 四个关键问题： 1. 业务超时锁过期：任务没做完锁先过期。缓解：看门狗续期（如 Redisson 的 watchdog，默认 30s，每 10s 续到 30s）。 2. 主从切换丢锁：主节点写入锁后未同步到从就宕机，新主上锁丢失。Redlock（向 N 个独立实例多数派加锁）可以缓解，但争议大，一般用 Redisson 或改用 ZooKeeper/etcd。 3. 可重入：Redisson 用 Hash 结构记录\"持有者+重入次数\"实现可重入锁。 4. 公平性/阻塞等待：Redisson 提供带等待队列的分布式锁。 生产建议：直接用 Redisson（封装了续期、重入、Lua 原子性）；强一致性要求高的场景选 ZooKeeper 临时顺序节点。","url":"https://itinterview.com.cn/question/908"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何用 Redis 实现分布式锁？有哪些注意事项？","item":"https://itinterview.com.cn/q/908.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何用 Redis 实现分布式锁？有哪些注意事项？","item":"https://itinterview.com.cn/q/908"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/908">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

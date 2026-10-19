@@ -9,15 +9,15 @@
   <meta property="og:title" content="ZSet 的底层编码是什么，为什么用跳表而不是平衡树？ · IT面试题库">
   <meta property="og:description" content="编码组成：元素少且小时用 listpack（紧凑）；元素多时升级为「跳表 skiplist + 字典」双结构——字典以 member 查 score（O(1)），跳表维护有序以支持范围遍历。 为何不用平衡树：跳表的 range 操作（ZRANGEBYSCORE、排名）只需顺着前向指针走，实现简单、范围扫描效率高；…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1123.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1123">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ZSet 的底层编码是什么，为什么用跳表而不是平衡树？ · IT面试题库">
   <meta name="twitter:description" content="编码组成：元素少且小时用 listpack（紧凑）；元素多时升级为「跳表 skiplist + 字典」双结构——字典以 member 查 score（O(1)），跳表维护有序以支持范围遍历。 为何不用平衡树：跳表的 range 操作（ZRANGEBYSCORE、排名）只需顺着前向指针走，实现简单、范围扫描效率高；…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1123.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1123">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ZSet 的底层编码是什么，为什么用跳表而不是平衡树？","text":"有序集合既要按 score 排序又要按成员查找，Redis 为何选择「跳表 + 哈希表（或 listpack）」的组合，而不是红黑树？","answerCount":1,"datePublished":"2026-09-13T02:40:23.934Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"编码组成：元素少且小时用 listpack（紧凑）；元素多时升级为「跳表 skiplist + 字典」双结构——字典以 member 查 score（O(1)），跳表维护有序以支持范围遍历。 为何不用平衡树：跳表的 range 操作（ZRANGEBYSCORE、排名）只需顺着前向指针走，实现简单、范围扫描效率高；红黑树做区间遍历需中序且缓存局部性更差。 范围与排名优势：跳表每层是链表，按 score 区间取 TopN、计算排名（ZRANK）非常自然，平均 O(log n)；且插入/删除不需像平衡树那样频繁旋转，代码更直观。 代价：跳表平均空间略高于平衡树（多级指针），但工程收益（范围查询 + 实现简单）明显占优，因此成为 ZSet 主选。","url":"https://itinterview.com.cn/question/1123"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"ZSet 的底层编码是什么，为什么用跳表而不是平衡树？","item":"https://itinterview.com.cn/q/1123.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"ZSet 的底层编码是什么，为什么用跳表而不是平衡树？","item":"https://itinterview.com.cn/q/1123"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1123">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/141">Redis分布式锁的实现方式？</a><span class="rel-n">220 次浏览</span></li><li><a href="https://itinterview.com.cn/q/145">Redis如何实现分布式Session？</a><span class="rel-n">191 次浏览</span></li><li><a href="https://itinterview.com.cn/q/142">Redis过期删除和内存淘汰策略？</a><span class="rel-n">167 次浏览</span></li><li><a href="https://itinterview.com.cn/q/144">Redis Cluster数据分片原理？</a><span class="rel-n">69 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

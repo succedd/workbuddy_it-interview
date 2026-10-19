@@ -9,15 +9,15 @@
   <meta property="og:title" content="消息队列有什么作用？会带来哪些问题？ · IT面试题库">
   <meta property="og:description" content="三大作用： 1. 异步：非核心链路（发短信、记积分）投递消息后立即返回，接口 RT 从串行累加变为主导步骤耗时； 2. 解耦：生产者不关心谁消费，新增订阅方不用改生产者代码（下单事件：库存、物流、风控各自订阅）； 3. 削峰：秒杀等瞬时流量先入队，消费端按自己的能力匀速处理，保护下游数据库。 代价（面试要主动说出…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/944.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/944">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="消息队列有什么作用？会带来哪些问题？ · IT面试题库">
   <meta name="twitter:description" content="三大作用： 1. 异步：非核心链路（发短信、记积分）投递消息后立即返回，接口 RT 从串行累加变为主导步骤耗时； 2. 解耦：生产者不关心谁消费，新增订阅方不用改生产者代码（下单事件：库存、物流、风控各自订阅）； 3. 削峰：秒杀等瞬时流量先入队，消费端按自己的能力匀速处理，保护下游数据库。 代价（面试要主动说出…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/944.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/944">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"消息队列有什么作用？会带来哪些问题？","text":"请说明消息队列的三大作用（异步、解耦、削峰）以及引入 MQ 后需要面对的一致性、可靠性问题。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三大作用： 1. 异步：非核心链路（发短信、记积分）投递消息后立即返回，接口 RT 从串行累加变为主导步骤耗时； 2. 解耦：生产者不关心谁消费，新增订阅方不用改生产者代码（下单事件：库存、物流、风控各自订阅）； 3. 削峰：秒杀等瞬时流量先入队，消费端按自己的能力匀速处理，保护下游数据库。 代价（面试要主动说出）： 1. 系统复杂度上升：要处理消息丢失、重复消费、顺序性等问题； 2. 一致性变弱：异步意味着短暂不一致，需要最终一致性方案（本地消息表/事务消息）； 3. 可用性风险：MQ 挂了影响主链路，需集群高可用与降级预案； 4. 运维成本：堆积监控、扩容、版本升级。 选型：日志采集/大数据吞吐选 Kafka，金融级事务消息选 RocketMQ，轻量级/延迟队列场景选 RabbitMQ。","url":"https://itinterview.com.cn/question/944"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"消息队列有什么作用？会带来哪些问题？","item":"https://itinterview.com.cn/q/944.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"消息队列有什么作用？会带来哪些问题？","item":"https://itinterview.com.cn/q/944"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/944">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/246">消息队列在分布式系统中主要解决哪些问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/448">场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1247">At Most Once、At Least Once 和 Exactly Once 三种投递语义分别表示什么？工程上为什么普遍选择「At Least Once + 消费端幂等」？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1248">消息队列的推模式（Push）和拉模式（Pull）有什么区别？RocketMQ 的 PushConsumer 为什么底层仍然用长轮询？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

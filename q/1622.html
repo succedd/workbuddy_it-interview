@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？ · IT面试题库">
   <meta property="og:description" content="要点： 所处层次：Filter 是 Servlet 规范层级，位于 Servlet 容器，对所有请求（包括静态资源、甚至 DispatcherServlet 之前）生效；Interceptor 是 Spring MVC 层级，只拦截进入 DispatcherServlet 并由 Handler 处理的请求。 能力…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1622.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1622">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？ · IT面试题库">
   <meta name="twitter:description" content="要点： 所处层次：Filter 是 Servlet 规范层级，位于 Servlet 容器，对所有请求（包括静态资源、甚至 DispatcherServlet 之前）生效；Interceptor 是 Spring MVC 层级，只拦截进入 DispatcherServlet 并由 Handler 处理的请求。 能力…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1622.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1622">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？","text":"基础，考察二者边界（与拦截器实战题呼应）。","answerCount":1,"datePublished":"2026-10-10T11:54:36.131Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 所处层次：Filter 是 Servlet 规范层级，位于 Servlet 容器，对所有请求（包括静态资源、甚至 DispatcherServlet 之前）生效；Interceptor 是 Spring MVC 层级，只拦截进入 DispatcherServlet 并由 Handler 处理的请求。 能力差异：Filter 拿不到 Spring 上下文 / Bean，只能做字符编码、XSS 过滤、粗粒度鉴权等；Interceptor 能访问 Handler（Controller 方法）、Spring Bean、ModelAndView，适合细粒度权限、日志、参数预处理。 执行顺序：请求时 Filter → DispatcherServlet → Interceptor.preHandle → Handler → Interceptor.postHandle → 视图渲染 → Interceptor.afterCompletion；响应返回时 afterCompletion 在 Filter 之后。异常时 afterCompletion 仍会执行（Filter 的异常由其自身处理）。","url":"https://itinterview.com.cn/question/1622"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？","item":"https://itinterview.com.cn/q/1622.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？","item":"https://itinterview.com.cn/q/1622"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1622">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1620">Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/798">Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/802">@RestController 与 @Controller 的区别？@RequestBody/@ResponseBody 作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1616">请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

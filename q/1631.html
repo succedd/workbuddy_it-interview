@@ -9,15 +9,15 @@
   <meta property="og:title" content="ESLint 如何配置 monorepo 里不同包使用不同规则但共享基础规则？ · IT面试题库">
   <meta property="og:description" content="要点： 抽基础规则包：把通用规则、Parser、插件封装为共享 config 包，各子包通过 extends 继承。 差异化配置：在每个包 .eslintrc 中覆盖特有规则，例如 Web 包启用 DOM 规则，Node 包启用 Node 规则，测试包放宽部分断言规则。 CI 强制执行：统一 root 脚本按 w…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1631.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1631">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ESLint 如何配置 monorepo 里不同包使用不同规则但共享基础规则？ · IT面试题库">
   <meta name="twitter:description" content="要点： 抽基础规则包：把通用规则、Parser、插件封装为共享 config 包，各子包通过 extends 继承。 差异化配置：在每个包 .eslintrc 中覆盖特有规则，例如 Web 包启用 DOM 规则，Node 包启用 Node 规则，测试包放宽部分断言规则。 CI 强制执行：统一 root 脚本按 w…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1631.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1631">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ESLint 如何配置 monorepo 里不同包使用不同规则但共享基础规则？","text":"考察工程化规则组织能力。","answerCount":1,"datePublished":"2026-10-15T12:54:41.229Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 抽基础规则包：把通用规则、Parser、插件封装为共享 config 包，各子包通过 extends 继承。 差异化配置：在每个包 .eslintrc 中覆盖特有规则，例如 Web 包启用 DOM 规则，Node 包启用 Node 规则，测试包放宽部分断言规则。 CI 强制执行：统一 root 脚本按 workspace 遍历执行，必要时用 eslint --ignore-pattern 排除构建产物，保证主分支零告警。","url":"https://itinterview.com.cn/question/1631"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"ESLint","item":"https://itinterview.com.cn/category?cat=72"},{"@type":"ListItem","position":5,"name":"ESLint 如何配置 monorepo 里不同包使用不同规则但共享基础规则？","item":"https://itinterview.com.cn/q/1631.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"ESLint","item":"https://itinterview.com.cn/category?cat=72"},{"@type":"ListItem","position":5,"name":"ESLint 如何配置 monorepo 里不同包使用不同规则但共享基础规则？","item":"https://itinterview.com.cn/q/1631"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1631">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/718">ESLint 的作用与配置（rules/extends/plugins）？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

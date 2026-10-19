@@ -17,7 +17,7 @@ C. graphical.target 与 multi-user.target 互不依赖，谁先谁后完全随�
 D. 想禁止某服务开机自启，应执行 systemctl stop &lt;svc&gt;。 · IT面试题库">
   <meta property="og:description" content="正确答案：B。WantedBy=multi-user.target 写在 [Install] 段，enable 时会在 multi-user.target.wants/ 下建立软链接，系统进入该 target（无图形界面的多用户模式）时就会拉起这个服务。 A 错误：enable 只是“登记开机自启”（建软链），并…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1138.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1138">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【单选题】关于 systemd 的 target 与开机自启，下列说法正确的是？
@@ -27,9 +27,9 @@ C. graphical.target 与 multi-user.target 互不依赖，谁先谁后完全随�
 D. 想禁止某服务开机自启，应执行 systemctl stop &lt;svc&gt;。 · IT面试题库">
   <meta name="twitter:description" content="正确答案：B。WantedBy=multi-user.target 写在 [Install] 段，enable 时会在 multi-user.target.wants/ 下建立软链接，系统进入该 target（无图形界面的多用户模式）时就会拉起这个服务。 A 错误：enable 只是“登记开机自启”（建软链），并…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1138.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1138">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】关于 systemd 的 target 与开机自启，下列说法正确的是？\nA. enable 一个服务等于立即启动它；\nB. WantedBy=multi-user.target 表示服务在系统进入“多用户命令行”运行级别时被拉起；\nC. graphical.target 与 multi-user.target 互不依赖，谁先谁后完全随机；\nD. 想禁止某服务开机自启，应执行 systemctl stop \u003csvc>。","text":"考查 systemd 的 target 概念、enable/start 区别与禁用方法。","answerCount":1,"datePublished":"2026-09-14T02:47:28.894Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B。WantedBy=multi-user.target 写在 [Install] 段，enable 时会在 multi-user.target.wants/ 下建立软链接，系统进入该 target（无图形界面的多用户模式）时就会拉起这个服务。 A 错误：enable 只是“登记开机自启”（建软链），并不立即启动；要现在就跑需 start（常连用 enable --now）。 C 错误：graphical.target 通过 Wants/Requires 依赖 multi-user.target，所以它其实是 multi-user 的“超集”、启动时晚于并包含多用户模式，二者有明确依赖，并非随机先后。 D 错误：stop 只是“停止当前运行”，下次开机仍会自启；正确禁用是 systemctl disable （删除软链），必要时再 mask 彻底锁死。","url":"https://itinterview.com.cn/question/1138"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"【单选题】关于 systemd 的 target 与开机自启，下列说法正确的是？\nA. enable 一个服务等于立即启动它；\nB. WantedBy=multi-user.target 表示服务在系统进入“多用户命令行”运行级别时被拉起；\nC. graphical.target 与 multi-user.target 互不依赖，谁先谁后完全随机；\nD. 想禁止某服务开机自启，应执行 systemctl stop \u003csvc>。","item":"https://itinterview.com.cn/q/1138.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"【单选题】关于 systemd 的 target 与开机自启，下列说法正确的是？\nA. enable 一个服务等于立即启动它；\nB. WantedBy=multi-user.target 表示服务在系统进入“多用户命令行”运行级别时被拉起；\nC. graphical.target 与 multi-user.target 互不依赖，谁先谁后完全随机；\nD. 想禁止某服务开机自启，应执行 systemctl stop \u003csvc>。","item":"https://itinterview.com.cn/q/1138"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -114,6 +114,7 @@ D. 想禁止某服务开机自启，应执行 systemctl stop &lt;svc&gt;。</h1>
       <a class="cta" href="https://itinterview.com.cn/question/1138">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/147">Linux进程管理相关命令？</a><span class="rel-n">361 次浏览</span></li><li><a href="https://itinterview.com.cn/q/146">Linux常用文件操作命令？</a><span class="rel-n">337 次浏览</span></li><li><a href="https://itinterview.com.cn/q/150">Linux系统性能和资源监控？</a><span class="rel-n">230 次浏览</span></li><li><a href="https://itinterview.com.cn/q/148">Linux网络相关命令？</a><span class="rel-n">35 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

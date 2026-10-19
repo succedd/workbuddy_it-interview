@@ -9,15 +9,15 @@
   <meta property="og:title" content="PostgreSQL 一条查询很慢，如何用 EXPLAIN / EXPLAIN ANALYZE 定位根因？统计信息过期怎么办？ · IT面试题库">
   <meta property="og:description" content="要点： 看计划结构：EXPLAIN 看预估计划（是否有 Seq Scan 全表扫、Join 方式、是否估算行数离谱）；EXPLAIN (ANALYZE, BUFFERS) 真实执行并对比预估行数 vs 实际行数——偏差大说明统计信息不准或缺少索引。 常见根因：① 该走索引却走了 Seq Scan（统计信息过期、索…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1611.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1611">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 一条查询很慢，如何用 EXPLAIN / EXPLAIN ANALYZE 定位根因？统计信息过期怎么办？ · IT面试题库">
   <meta name="twitter:description" content="要点： 看计划结构：EXPLAIN 看预估计划（是否有 Seq Scan 全表扫、Join 方式、是否估算行数离谱）；EXPLAIN (ANALYZE, BUFFERS) 真实执行并对比预估行数 vs 实际行数——偏差大说明统计信息不准或缺少索引。 常见根因：① 该走索引却走了 Seq Scan（统计信息过期、索…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1611.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1611">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 一条查询很慢，如何用 EXPLAIN / EXPLAIN ANALYZE 定位根因？统计信息过期怎么办？","text":"考察排障与执行计划解读。","answerCount":1,"datePublished":"2026-10-10T11:54:13.228Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 看计划结构：EXPLAIN 看预估计划（是否有 Seq Scan 全表扫、Join 方式、是否估算行数离谱）；EXPLAIN (ANALYZE, BUFFERS) 真实执行并对比预估行数 vs 实际行数——偏差大说明统计信息不准或缺少索引。 常见根因：① 该走索引却走了 Seq Scan（统计信息过期、索引选择性差、函数包列导致索引失效）；② 多表 Join 顺序 / 方式差（可调整 join_collapse_limit 或重写）；③ 内存不足导致落盘（work_mem 过小，Hash / 排序落盘）；④ 锁等待（被长事务 / 写锁阻塞）。 统计信息过期：执行 ANALYZE （或 VACUUM ANALYZE）刷新统计信息；AUTOVACUUM 默认会做，但大表写入频繁时可能滞后，需调 autovacuum_* 参数或手动 ANALYZE。 实战：先 EXPLAIN ANALYZE 定位最贵节点 → 针对性加索引 / 改 SQL / 刷新统计 / 调参数，再复测。","url":"https://itinterview.com.cn/question/1611"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 一条查询很慢，如何用 EXPLAIN / EXPLAIN ANALYZE 定位根因？统计信息过期怎么办？","item":"https://itinterview.com.cn/q/1611.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 一条查询很慢，如何用 EXPLAIN / EXPLAIN ANALYZE 定位根因？统计信息过期怎么办？","item":"https://itinterview.com.cn/q/1611"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1611">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/453">线上 PostgreSQL 磁盘占用只增不减，日志出现 &quot;database must be vacuumed within N transactions&quot; 警告，根因是什么？如何排查与处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/454">PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1609">PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1610">PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

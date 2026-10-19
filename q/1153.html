@@ -9,15 +9,15 @@
   <meta property="og:title" content="Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。 · IT面试题库">
   <meta property="og:description" content="核心答案：Kafka 把『磁盘很慢』的常识反过来用——以顺序写 + 顺序读 + OS 页缓存 + 零拷贝逼近内存速度。 要点（磁盘/存储层）： 顺序追加写：消息只 append 到 Partition 日志末尾，顺序磁盘 IO 远快于随机写，甚至比内存随机写还快；磁盘像『无限大的顺序缓冲区』。 页缓存（PageC…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1153.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1153">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。 · IT面试题库">
   <meta name="twitter:description" content="核心答案：Kafka 把『磁盘很慢』的常识反过来用——以顺序写 + 顺序读 + OS 页缓存 + 零拷贝逼近内存速度。 要点（磁盘/存储层）： 顺序追加写：消息只 append 到 Partition 日志末尾，顺序磁盘 IO 远快于随机写，甚至比内存随机写还快；磁盘像『无限大的顺序缓冲区』。 页缓存（PageC…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1153.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1153">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。","text":"考察点：Kafka 高性能设计原理——顺序 IO、OS 页缓存、零拷贝、批量与压缩，对比 RabbitMQ 等随机写模型。","answerCount":1,"datePublished":"2026-09-15T11:49:41.621Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心答案：Kafka 把『磁盘很慢』的常识反过来用——以顺序写 + 顺序读 + OS 页缓存 + 零拷贝逼近内存速度。 要点（磁盘/存储层）： 顺序追加写：消息只 append 到 Partition 日志末尾，顺序磁盘 IO 远快于随机写，甚至比内存随机写还快；磁盘像『无限大的顺序缓冲区』。 页缓存（PageCache）：Broker 依赖 OS 把文件映射到页缓存，热数据命中内存，写入先落页缓存由 OS 异步刷盘。 要点（网络/发送层）： 零拷贝（sendfile）：Consumer 拉取时，数据从文件经页缓存直接通过 sendfile 拷贝到网卡，省去内核态→用户态的多次拷贝，大幅降低 CPU 与上下文切换。 批量 + 压缩：Producer 端批量发送、服务端/客户端可 GZIP/Snappy 压缩，减少网络包数量与带宽占用。 对比：RabbitMQ 等基于『每消息独立路由+随机写+复杂 exchange 逻辑』，单位消息开销更大，因而吞吐较低。","url":"https://itinterview.com.cn/question/1153"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。","item":"https://itinterview.com.cn/q/1153.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。","item":"https://itinterview.com.cn/q/1153"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -106,6 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1153">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/183">Kafka如何实现消息的顺序消费？</a><span class="rel-n">486 次浏览</span></li><li><a href="https://itinterview.com.cn/q/182">Kafka中ISR机制是什么？</a><span class="rel-n">351 次浏览</span></li><li><a href="https://itinterview.com.cn/q/475">Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</a><span class="rel-n">4 次浏览</span></li><li><a href="https://itinterview.com.cn/q/80">Kafka 的核心概念有哪些？</a><span class="rel-n">3 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

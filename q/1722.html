@@ -9,15 +9,15 @@
   <meta property="og:title" content="Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？ · IT面试题库">
   <meta property="og:description" content="要点： 默认检查：Solidity 0.8 起对 +、-、* 做溢出/下溢检查，失败直接 revert；unchecked { ... } 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。 可安全使用的场景：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1722.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1722">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？ · IT面试题库">
   <meta name="twitter:description" content="要点： 默认检查：Solidity 0.8 起对 +、-、* 做溢出/下溢检查，失败直接 revert；unchecked { ... } 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。 可安全使用的场景：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1722.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1722">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？","text":"考察整数安全、Gas 优化与 0.7→0.8 升级审计。","answerCount":1,"datePublished":"2026-10-19T05:43:24.602Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 默认检查：Solidity 0.8 起对 +、-、* 做溢出/下溢检查，失败直接 revert；unchecked { ... } 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。 可安全使用的场景：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码；前提是有注释和测试支撑，而不是「为了省 Gas」全局关闭。 注意：unchecked 不关闭除零检查；升级旧合约时要逐处审计算术，尤其是 for 循环上限、代币精度换算和数组长度计算。即使使用 unchecked，也建议在边界处用 require 兜底。","url":"https://itinterview.com.cn/question/1722"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？","item":"https://itinterview.com.cn/q/1722.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？","item":"https://itinterview.com.cn/q/1722"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1722">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/679">Solidity 中 view/pure、modifier、event 的作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1445">什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1591">用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1593">ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？ · IT面试题库">
   <meta property="og:description" content="根因：雪花 ID 高位是 当前时间戳-epoch，若机器时钟往后回拨（NTP 校正、虚拟机迁移），会生成与历史相同时间戳+同序列的重复 ID，甚至时间戳变负→ID 变负。 排查：看 ID 解析出的时间戳是否 &lt; 上一次生成的时间戳；查机器 ntpdate/chrony 日志确认是否有回拨事件。 兜底方案： 等待追…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/891.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/891">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？ · IT面试题库">
   <meta name="twitter:description" content="根因：雪花 ID 高位是 当前时间戳-epoch，若机器时钟往后回拨（NTP 校正、虚拟机迁移），会生成与历史相同时间戳+同序列的重复 ID，甚至时间戳变负→ID 变负。 排查：看 ID 解析出的时间戳是否 &lt; 上一次生成的时间戳；查机器 ntpdate/chrony 日志确认是否有回拨事件。 兜底方案： 等待追…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/891.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/891">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？","text":"考察雪花算法的时钟回拨问题。","answerCount":1,"datePublished":"2026-09-09T02:23:03.037Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：雪花 ID 高位是 当前时间戳-epoch，若机器时钟往后回拨（NTP 校正、虚拟机迁移），会生成与历史相同时间戳+同序列的重复 ID，甚至时间戳变负→ID 变负。 排查：看 ID 解析出的时间戳是否 \u003c 上一次生成的时间戳；查机器 ntpdate/chrony 日志确认是否有回拨事件。 兜底方案： 等待追平：检测到回拨时，短暂自旋/睡眠直到时钟追上上次时间（仅适合小幅度回拨）。 回拨计数：用序列号借位或扩展位记录回拨次数，保证回拨期间不重复。 拒绝服务+告警：大幅回拨直接抛错并告警，由人工介入，比生成脏 ID 安全。 workerId 隔离：时钟不可靠的机器分配独立 workerId，避免回拨影响其他节点。根本解是用可靠时钟源（chrony）+ 禁止大步长 NTP 跳跃。","url":"https://itinterview.com.cn/question/891"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？","item":"https://itinterview.com.cn/q/891.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"雪花算法在生产中生成了重复/负数 ID，定位为「时钟回拨」导致。如何排查与兜底？","item":"https://itinterview.com.cn/q/891"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -103,6 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/891">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/894">分布式 ID 的「趋势递增」对分库分表/索引很友好，但会暴露订单量。如何设计「业务可见 ID」与「内部雪花 ID」的双层方案？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/890">用 Redis + Lua 实现一把「可重入」分布式锁：同一线程可重复加锁，靠计数释放。写出核心 Lua 并讲解。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/582">如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/583">释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

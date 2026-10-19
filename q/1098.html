@@ -9,15 +9,15 @@
   <meta property="og:title" content="【系统设计题·高级】一家业务要求数据库与 Web 接入层全年可用性不低于 99.99%，业务部署在单地域。请你设计基于 CLB 的高可用接入层：从集群架构、可用区容灾、后端部署、DNS 层兜底四个维度说明方案与理由，并指出仅靠单个标准 CLB 实例的 SLA 差距。 · IT面试题库">
   <meta property="og:description" content="先算 SLA 账（方案的起点）：非域名化公网 CLB 以 VIP 形式服务，官方 SLA 为 99.95%（年停机预算约 4.4 小时）——达不到 99.99%，必须在架构上叠加容灾能力。 维度一：接入集群： CLB 本身是集群部署（四层 TGW、七层 STGW，支持会话同步），单集群内无单点，这部分是平台默认能…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1098.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1098">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【系统设计题·高级】一家业务要求数据库与 Web 接入层全年可用性不低于 99.99%，业务部署在单地域。请你设计基于 CLB 的高可用接入层：从集群架构、可用区容灾、后端部署、DNS 层兜底四个维度说明方案与理由，并指出仅靠单个标准 CLB 实例的 SLA 差距。 · IT面试题库">
   <meta name="twitter:description" content="先算 SLA 账（方案的起点）：非域名化公网 CLB 以 VIP 形式服务，官方 SLA 为 99.95%（年停机预算约 4.4 小时）——达不到 99.99%，必须在架构上叠加容灾能力。 维度一：接入集群： CLB 本身是集群部署（四层 TGW、七层 STGW，支持会话同步），单集群内无单点，这部分是平台默认能…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1098.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1098">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【系统设计题·高级】一家业务要求数据库与 Web 接入层全年可用性不低于 99.99%，业务部署在单地域。请你设计基于 CLB 的高可用接入层：从集群架构、可用区容灾、后端部署、DNS 层兜底四个维度说明方案与理由，并指出仅靠单个标准 CLB 实例的 SLA 差距。","text":"考察点：CLB 集群高可用（TGW/STGW 集群部署）、主备可用区容灾、域名化 CLB 与多 CLB + DNS 调度的取舍、后端服务跨可用区部署与健康检查联动。考察把产品机制组合成架构方案的能力。","answerCount":1,"datePublished":"2026-09-11T11:56:08.230Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先算 SLA 账（方案的起点）：非域名化公网 CLB 以 VIP 形式服务，官方 SLA 为 99.95%（年停机预算约 4.4 小时）——达不到 99.99%，必须在架构上叠加容灾能力。 维度一：接入集群： CLB 本身是集群部署（四层 TGW、七层 STGW，支持会话同步），单集群内无单点，这部分是平台默认能力，不用额外设计； 优先考虑域名化公网 CLB：在 VIP 之上加一层 DNS 服务，SLA 提升到 99.99%，单 IP 故障时可自动替换故障 VIP——单地域场景官方最佳实践首选，且无需自己维护多个实例。 维度二：可用区容灾： 公网 CLB 选多可用区部署（主备可用区模式）：主可用区故障时在极短时间内自动切换到备可用区恢复服务，应对整个 AZ 级故障； 内网 CLB 则利用就近接入架构：实例下发到多个可用区，流量自动走延时最低的可用区集群，单可用区集群故障可切到其他可用区。 维度三：后端部署： 后端 CVM 跨可用区部署并全部绑定到 CLB——接入层容灾切换后，若后端只在主可用区，切过去一样全挂； 开启健康检查联动：异常实例自动摘除，恢复后自动纳管；维护下线用「权重置 0」优雅摘除存量连接。 维度四：DNS 层兜底： 若未来扩展到多地域，用多 CLB 实例 + 云解析 DNS 调度：不同地域各建 CLB，DNS 按策略分流并做故障切换；注意其 SLA 依赖自己配置的检测与切换策略（及时性不如域名化 CLB 的链路检测），运维成本更高——所以单地域不要用它，跨地域高容灾需求才用。 结论：单地域 99.99% 方案 = 域名化公网 CLB + 主备可用区 + 跨 AZ 后端 + 健康检查/告警联动；多地域再叠加多 CLB + DNS。设计时还要校验每一跳的单点（证书、带宽包、安全组变更流程），SLA 是全链路的最小值。","url":"https://itinterview.com.cn/question/1098"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"【系统设计题·高级】一家业务要求数据库与 Web 接入层全年可用性不低于 99.99%，业务部署在单地域。请你设计基于 CLB 的高可用接入层：从集群架构、可用区容灾、后端部署、DNS 层兜底四个维度说明方案与理由，并指出仅靠单个标准 CLB 实例的 SLA 差距。","item":"https://itinterview.com.cn/q/1098.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"【系统设计题·高级】一家业务要求数据库与 Web 接入层全年可用性不低于 99.99%，业务部署在单地域。请你设计基于 CLB 的高可用接入层：从集群架构、可用区容灾、后端部署、DNS 层兜底四个维度说明方案与理由，并指出仅靠单个标准 CLB 实例的 SLA 差距。","item":"https://itinterview.com.cn/q/1098"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -115,6 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1098">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/202">Linux 云服务器数据盘空间不足，如何在线扩容云盘并扩展文件系统</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/231">你处理过最复杂的客户故障是什么？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/200">云服务器 CPU 使用率持续 100%，如何定位故障进程并制定处理方案</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/206">客户反馈公网访问延迟抖动，如何定位是云厂商网络问题还是业务自身问题</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

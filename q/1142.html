@@ -9,15 +9,15 @@
   <meta property="og:title" content="CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？ · IT面试题库">
   <meta property="og:description" content="阶段划分与门禁：lint 做静态检查（风格/语法/安全扫描），build 编译打包，test 跑单元/集成测试，package 产出可部署制品，deploy 推到目标环境；每个阶段都是一道“门禁”，只有上一道通过才进入下一道。 失败即阻断：任意阶段非零退出，流水线变红、后续阶段跳过、合入被卡；这把“能不能交付”的…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1142.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1142">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？ · IT面试题库">
   <meta name="twitter:description" content="阶段划分与门禁：lint 做静态检查（风格/语法/安全扫描），build 编译打包，test 跑单元/集成测试，package 产出可部署制品，deploy 推到目标环境；每个阶段都是一道“门禁”，只有上一道通过才进入下一道。 失败即阻断：任意阶段非零退出，流水线变红、后续阶段跳过、合入被卡；这把“能不能交付”的…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1142.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1142">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？","text":"请说明一次提交如何流经流水线各阶段，每个阶段失败会怎样阻断后续，以及“越早发现越便宜”在 CI 里的工程含义。","answerCount":1,"datePublished":"2026-09-14T02:47:34.006Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"阶段划分与门禁：lint 做静态检查（风格/语法/安全扫描），build 编译打包，test 跑单元/集成测试，package 产出可部署制品，deploy 推到目标环境；每个阶段都是一道“门禁”，只有上一道通过才进入下一道。 失败即阻断：任意阶段非零退出，流水线变红、后续阶段跳过、合入被卡；这把“能不能交付”的判定权交给自动化，而不是靠人肉 review 兜底。 早期拦截最划算：一个 bug 在 lint/compile 阶段被发现，成本是秒级；漏到生产环境，成本是用户受影响 + 回滚 + 排查，差几个数量级；所以静态检查、编译、单测要尽量左移（shift-left）到最早阶段。 门禁不是越多越好：stage 太多、每阶段都拉全量环境会变慢，反而让人绕过 CI；要在“拦截力”与“反馈速度”间权衡，重活（端到端、性能）放在后面或定时跑。","url":"https://itinterview.com.cn/question/1142"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"GitLab CI/CD","item":"https://itinterview.com.cn/category?cat=140"},{"@type":"ListItem","position":4,"name":"CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？","item":"https://itinterview.com.cn/q/1142.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"GitLab CI/CD","item":"https://itinterview.com.cn/category?cat=140"},{"@type":"ListItem","position":4,"name":"CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？","item":"https://itinterview.com.cn/q/1142"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -98,6 +98,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1142">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1144">流水线里单元测试偶发失败（flaky test）卡住合入，如何区分“真 bug”与“不稳定测试”，并给出重试、隔离与 quarantine 的处理策略？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1147">数据库变更（DDL / 数据迁移）如何安全地纳入 CI/CD 流水线？如何做“可回滚的数据库发布”（向后兼容、expand-contract、双写回填）避免发布即事故？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/727">GitLab CI 的 pipeline/stage/job 与 .gitlab-ci.yml 基本结构？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1143">什么是 CI 里的“制品（artifact）”？为什么构建产物要“不可变、一次构建多处部署”？GitLab CI 中 artifacts 与 cache 有什么区别？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

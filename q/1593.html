@@ -9,15 +9,15 @@
   <meta property="og:title" content="ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？ · IT面试题库">
   <meta property="og:description" content="要点：ERC-20 是「同质化代币」：每个代币完全等价、可拆分（decimals），用 mapping(address =&gt; uint256) 记录余额，转账是「余额加减」，适合代币、积分、稳定币。 要点：ERC-721 是「非同质化代币（NFT）」：每个 token 由全局唯一的 tokenId 标识，用 ma…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1593.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1593">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？ · IT面试题库">
   <meta name="twitter:description" content="要点：ERC-20 是「同质化代币」：每个代币完全等价、可拆分（decimals），用 mapping(address =&gt; uint256) 记录余额，转账是「余额加减」，适合代币、积分、稳定币。 要点：ERC-721 是「非同质化代币（NFT）」：每个 token 由全局唯一的 tokenId 标识，用 ma…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1593.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1593">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？","text":"考察 Token 标准差异。","answerCount":1,"datePublished":"2026-10-07T08:06:15.441Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：ERC-20 是「同质化代币」：每个代币完全等价、可拆分（decimals），用 mapping(address => uint256) 记录余额，转账是「余额加减」，适合代币、积分、稳定币。 要点：ERC-721 是「非同质化代币（NFT）」：每个 token 由全局唯一的 tokenId 标识，用 mapping(uint256 => address) 记录归属，token 之间不可互换、通常不可拆分，适合藏品、确权、门票。 要点：唯一 tokenId 是 NFT 价值的来源：它让每个资产可独立溯源、可绑定元数据（URI→图片/属性），且无两个 token 等价；若去掉唯一 id 退化为余额模型，就失去「每个都不同」的稀缺性与可确权特性。","url":"https://itinterview.com.cn/question/1593"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？","item":"https://itinterview.com.cn/q/1593.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"ERC-20 与 ERC-721（NFT）在数据结构与适用场景上的核心差异是什么？为什么 NFT 必须依赖唯一 tokenId？","item":"https://itinterview.com.cn/q/1593"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1593">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/679">Solidity 中 view/pure、modifier、event 的作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1445">什么是重入（Reentrancy）攻击？Checks-Effects-Interactions 模式如何防它？重入锁（mutex）又是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1591">用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1594">设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

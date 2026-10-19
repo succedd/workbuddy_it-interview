@@ -9,15 +9,15 @@
   <meta property="og:title" content="百万连接的 MQTT Broker 如何做集群与会话保持？ · IT面试题库">
   <meta property="og:description" content="要点： 接入层：多节点 + 负载均衡（DNS / L4 LB），单节点用 epoll / IO 多路复用承载大量空闲连接；连接状态分片，避免全局锁；TLS 卸载与心跳参数要按设备网络质量调优。 集群路由：节点间维护订阅路由表，消息按主题转发到持有订阅者的节点；会话、离线消息、保留消息需要共享存储或分区副本，避免节…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1747.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1747">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="百万连接的 MQTT Broker 如何做集群与会话保持？ · IT面试题库">
   <meta name="twitter:description" content="要点： 接入层：多节点 + 负载均衡（DNS / L4 LB），单节点用 epoll / IO 多路复用承载大量空闲连接；连接状态分片，避免全局锁；TLS 卸载与心跳参数要按设备网络质量调优。 集群路由：节点间维护订阅路由表，消息按主题转发到持有订阅者的节点；会话、离线消息、保留消息需要共享存储或分区副本，避免节…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1747.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1747">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"百万连接的 MQTT Broker 如何做集群与会话保持？","text":"考察接入层、路由、会话存储与容量规划。","answerCount":1,"datePublished":"2026-10-19T05:43:26.190Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 接入层：多节点 + 负载均衡（DNS / L4 LB），单节点用 epoll / IO 多路复用承载大量空闲连接；连接状态分片，避免全局锁；TLS 卸载与心跳参数要按设备网络质量调优。 集群路由：节点间维护订阅路由表，消息按主题转发到持有订阅者的节点；会话、离线消息、保留消息需要共享存储或分区副本，避免节点故障丢会话。 容量与坑：按 70% 水位规划连接数、吞吐与内存；关注脑裂、重复订阅、跨节点顺序、会话迁移与升级闪断；用真实设备模型压测重连风暴，而不只是测空闲连接数。","url":"https://itinterview.com.cn/question/1747"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"物联网协议MQTT","item":"https://itinterview.com.cn/category?cat=246"},{"@type":"ListItem","position":4,"name":"百万连接的 MQTT Broker 如何做集群与会话保持？","item":"https://itinterview.com.cn/q/1747.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"物联网协议MQTT","item":"https://itinterview.com.cn/category?cat=246"},{"@type":"ListItem","position":4,"name":"百万连接的 MQTT Broker 如何做集群与会话保持？","item":"https://itinterview.com.cn/q/1747"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1747">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/700">MQTT 的发布/订阅模型、QoS 等级（0/1/2）与适用场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1452">MQTT 的遗嘱消息（LWT）、保留消息（Retained）与 Clean Session 如何配合做设备在线状态管理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1600">MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1745">MQTT 5.0 相比 3.1.1 新增了哪些关键能力？原因码、属性、共享订阅各解决什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

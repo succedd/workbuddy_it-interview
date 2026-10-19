@@ -9,15 +9,15 @@
   <meta property="og:title" content="Flutter 常见状态管理方案有哪些？如何选型？ · IT面试题库">
   <meta property="og:description" content="自底向上：① setState——单组件私有状态，一切方案的基础；② InheritedWidget——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ Provider——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1498.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1498">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flutter 常见状态管理方案有哪些？如何选型？ · IT面试题库">
   <meta name="twitter:description" content="自底向上：① setState——单组件私有状态，一切方案的基础；② InheritedWidget——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ Provider——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1498.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1498">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flutter 常见状态管理方案有哪些？如何选型？","text":"对比 setState / InheritedWidget / Provider / Riverpod / Bloc / GetX 的适用场景。","answerCount":1,"datePublished":"2026-10-05T01:03:57.376Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"自底向上：① setState——单组件私有状态，一切方案的基础；② InheritedWidget——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ Provider——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），适合中小项目；④ Riverpod——Provider 作者的下一代方案，编译期安全、无需 context、天然可测试，新项目首选之一；⑤ Bloc——事件驱动的单向数据流，强约束、可追溯（transformation 日志），适合大型团队与复杂业务流，学习成本高；⑥ GetX——路由/状态/依赖一体，上手快，但魔法多、规范松，团队协作需自律。 选型：小工具 setState 即可；中等项目 Provider/Riverpod；复杂状态机、强审计需求 Bloc；判断标准是团队规模与状态复杂度，而不是框架流行度。","url":"https://itinterview.com.cn/question/1498"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Flutter","item":"https://itinterview.com.cn/category?cat=228"},{"@type":"ListItem","position":4,"name":"Flutter 常见状态管理方案有哪些？如何选型？","item":"https://itinterview.com.cn/q/1498.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Flutter","item":"https://itinterview.com.cn/category?cat=228"},{"@type":"ListItem","position":4,"name":"Flutter 常见状态管理方案有哪些？如何选型？","item":"https://itinterview.com.cn/q/1498"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -96,6 +96,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1498">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/255">Flutter 中如何管理组件状态？setState 与状态提升分别用于什么场景？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/254">Flutter 的 Widget、Element、RenderObject 三棵树分别是什么？为什么要这样设计？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1499">Dart 的事件循环模型是什么？Isolate 与线程的区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1500">Flutter 界面卡顿如何定位与优化？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

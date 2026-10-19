@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spring IOC 和 AOP 的理解与实现原理？ · IT面试题库">
   <meta property="og:description" content="IOC（控制反转）：对象的创建与依赖关系的管理交给 Spring 容器，我们只声明需要什么（@Autowired），不用自己 new——控制权从程序员&quot;反转&quot;给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。 实现：容器启动时扫描 BeanDefinition → 实例化 → …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/941.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/941">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring IOC 和 AOP 的理解与实现原理？ · IT面试题库">
   <meta name="twitter:description" content="IOC（控制反转）：对象的创建与依赖关系的管理交给 Spring 容器，我们只声明需要什么（@Autowired），不用自己 new——控制权从程序员&quot;反转&quot;给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。 实现：容器启动时扫描 BeanDefinition → 实例化 → …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/941.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/941">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring IOC 和 AOP 的理解与实现原理？","text":"请说明控制反转/依赖注入的设计思想与 Bean 生命周期，以及 AOP 动态代理的实现方式。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"IOC（控制反转）：对象的创建与依赖关系的管理交给 Spring 容器，我们只声明需要什么（@Autowired），不用自己 new——控制权从程序员\"反转\"给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。 实现：容器启动时扫描 BeanDefinition → 实例化 → 依赖注入（反射按类型/名称装配）→ 初始化（Aware、BeanPostProcessor 前置、InitializingBean/@PostConstruct、后置）→ 使用 → 销毁回调。 AOP（面向切面编程）：把日志、事务、权限等横切逻辑从业务代码中抽离，通过动态代理织入目标方法前后。核心概念：切点 Pointcut（在哪里切）、通知 Advice（做什么：@Before/@After/@Around）、切面 Aspect。 实现方式：运行期动态代理——目标实现了接口用 JDK 动态代理（Proxy+InvocationHandler，基于反射实现接口）；无接口用 CGLIB（生成目标类的子类字节码，方法拦截）。Spring Boot 默认全用 CGLIB。 注意：自调用（同类内 this.method()）不走代理，@Transactional/@Async 失效的经典原因。","url":"https://itinterview.com.cn/question/941"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring IOC 和 AOP 的理解与实现原理？","item":"https://itinterview.com.cn/q/941.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring IOC 和 AOP 的理解与实现原理？","item":"https://itinterview.com.cn/q/941"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -99,6 +99,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/941">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1106">【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1105">【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/74">Spring 的 IOC 与 DI 是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/75">Spring Bean 的作用域与生命周期？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

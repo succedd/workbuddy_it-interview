@@ -9,15 +9,15 @@
   <meta property="og:title" content="TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。 · IT面试题库">
   <meta property="og:description" content="结论：TCP 通过序列号+确认应答做基础可靠，再用超时重传补丢包，用滑动窗口提升吞吐，用流量控制防止压垮接收方，用拥塞控制防止压垮网络。 核心机制： 序列号与确认应答（ACK）：每个字节编号，接收方对按序到达的数据回送 ACK，发送方据此判断哪些已收到。 超时重传（RTO）：未收到 ACK 超过重传超时即重发；并…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1334.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1334">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。 · IT面试题库">
   <meta name="twitter:description" content="结论：TCP 通过序列号+确认应答做基础可靠，再用超时重传补丢包，用滑动窗口提升吞吐，用流量控制防止压垮接收方，用拥塞控制防止压垮网络。 核心机制： 序列号与确认应答（ACK）：每个字节编号，接收方对按序到达的数据回送 ACK，发送方据此判断哪些已收到。 超时重传（RTO）：未收到 ACK 超过重传超时即重发；并…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1334.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1334">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。","text":"考察点：TCP 可靠性机制全家桶。要求分别说清序列号/确认应答、超时重传、滑动窗口、流量控制（接收窗口）、拥塞控制（慢启动/拥塞避免/快重传/快恢复）解决的问题。","answerCount":1,"datePublished":"2026-09-26T05:19:36.576Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：TCP 通过序列号+确认应答做基础可靠，再用超时重传补丢包，用滑动窗口提升吞吐，用流量控制防止压垮接收方，用拥塞控制防止压垮网络。 核心机制： 序列号与确认应答（ACK）：每个字节编号，接收方对按序到达的数据回送 ACK，发送方据此判断哪些已收到。 超时重传（RTO）：未收到 ACK 超过重传超时即重发；并配合快速重传（收到 3 个重复 ACK 立即重传，不等超时）。 滑动窗口：发送方维护发送窗口，窗口内可连续发送不必等每个 ACK，提高利用率；窗口随 ACK 向右滑动。 流量控制：接收方通过 TCP 头部的「接收窗口」字段告诉发送方自己还能收多少，发送窗口取 min(拥塞窗口, 接收窗口)，避免接收方缓冲区溢出。 拥塞控制：用「拥塞窗口 cwnd」感知网络，包含慢启动（指数增）、拥塞避免（线性增）、快重传、快恢复，避免一次性注入过多数据导致网络拥塞。 对比： | 机制 | 解决对象 | 调节依据 | | --- | --- | --- | | 流量控制 | 接收方处理能力 | 接收窗口 rwnd | | 拥塞控制 | 网络承载能力 | 拥塞窗口 cwnd |","url":"https://itinterview.com.cn/question/1334"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。","item":"https://itinterview.com.cn/q/1334.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 是如何保证可靠传输的？请说明超时重传、滑动窗口、流量控制与拥塞控制各自的作用。","item":"https://itinterview.com.cn/q/1334"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -108,6 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1334">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/160">TCP流量控制和拥塞控制的区别？</a><span class="rel-n">206 次浏览</span></li><li><a href="https://itinterview.com.cn/q/364">常听说 TCP 有“粘包/拆包”问题，这是 TCP 协议本身的缺陷吗？应如何从应用层解决？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/60">TCP 三次握手与四次挥手的过程？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/61">TIME_WAIT 的作用与过多怎么办？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

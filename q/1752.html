@@ -9,15 +9,15 @@
   <meta property="og:title" content="IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？ · IT面试题库">
   <meta property="og:description" content="要点： 原子与回滚：A/B 双分区把新固件写入备用分区，校验签名与 CRC 后切换 boot slot；启动失败由 bootloader 自动回滚到旧分区，保证断电/掉包不变砖。 签名与防降级：厂商私钥签名，设备用公钥验签，并校验硬件型号、版本号与安全版本号，拒绝降级到有漏洞的旧固件；密钥放安全存储，签名流程与发…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1752.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1752">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？ · IT面试题库">
   <meta name="twitter:description" content="要点： 原子与回滚：A/B 双分区把新固件写入备用分区，校验签名与 CRC 后切换 boot slot；启动失败由 bootloader 自动回滚到旧分区，保证断电/掉包不变砖。 签名与防降级：厂商私钥签名，设备用公钥验签，并校验硬件型号、版本号与安全版本号，拒绝降级到有漏洞的旧固件；密钥放安全存储，签名流程与发…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1752.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1752">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？","text":"考察固件升级的失败恢复、供应链安全与发布策略。","answerCount":1,"datePublished":"2026-10-19T05:43:26.483Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原子与回滚：A/B 双分区把新固件写入备用分区，校验签名与 CRC 后切换 boot slot；启动失败由 bootloader 自动回滚到旧分区，保证断电/掉包不变砖。 签名与防降级：厂商私钥签名，设备用公钥验签，并校验硬件型号、版本号与安全版本号，拒绝降级到有漏洞的旧固件；密钥放安全存储，签名流程与发布权限分离。 灰度与可观测：按设备分组/地域分批推送，监控成功率、重启次数、错误码与回滚率，异常自动暂停；支持断点续传与差分升级，控制流量与峰值。","url":"https://itinterview.com.cn/question/1752"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"IoT平台开发","item":"https://itinterview.com.cn/category?cat=248"},{"@type":"ListItem","position":4,"name":"IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？","item":"https://itinterview.com.cn/q/1752.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"IoT平台开发","item":"https://itinterview.com.cn/category?cat=248"},{"@type":"ListItem","position":4,"name":"IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？","item":"https://itinterview.com.cn/q/1752"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1752">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/702">物联网平台的核心能力（设备接入、设备管理、规则引擎、数据流转）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1662">设计 IoT 平台设备接入层时，如何同时满足百万连接、低功耗和弱网恢复？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1751">设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1753">物模型（TSL）与规则引擎如何配合做设备数据流转？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

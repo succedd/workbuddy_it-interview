@@ -9,15 +9,15 @@
   <meta property="og:title" content="组相联（Set-Associative）Cache 的地址如何划分？与直接映射、全相联在定量上有何关系？ · IT面试题库">
   <meta property="og:description" content="结论 组相联是「直接映射」与「全相联」的折中：先把 Cache 分成若干组（set），组内再放多行（路 way）。地址切成 Tag + SetIndex + Offset。 定量关系 路数（way）：每组行数。1 路 = 直接映射；全相联 = 只有 1 组（SetIndex=0）。 组数 = Cache 总行数 …">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1390.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1390">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="组相联（Set-Associative）Cache 的地址如何划分？与直接映射、全相联在定量上有何关系？ · IT面试题库">
   <meta name="twitter:description" content="结论 组相联是「直接映射」与「全相联」的折中：先把 Cache 分成若干组（set），组内再放多行（路 way）。地址切成 Tag + SetIndex + Offset。 定量关系 路数（way）：每组行数。1 路 = 直接映射；全相联 = 只有 1 组（SetIndex=0）。 组数 = Cache 总行数 …">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1390.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1390">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"组相联（Set-Associative）Cache 的地址如何划分？与直接映射、全相联在定量上有何关系？","text":"考察组相联地址字段与三种映射方式的定量关系。","answerCount":1,"datePublished":"2026-09-26T11:05:10.839Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 组相联是「直接映射」与「全相联」的折中：先把 Cache 分成若干组（set），组内再放多行（路 way）。地址切成 Tag + SetIndex + Offset。 定量关系 路数（way）：每组行数。1 路 = 直接映射；全相联 = 只有 1 组（SetIndex=0）。 组数 = Cache 总行数 / 路数。 SetIndex 位数 = log₂(组数)；Tag 位数 = 地址位 − SetIndex 位 − Offset 位。 算例（Cache 共 64 行，4 路组相联，块 16B） 组数 = 64 / 4 = 16 组 → SetIndex = log₂16 = 4 位。 Offset = log₂16 = 4 位。 Tag = 32 − 4 − 4 = 24 位。 三种映射对比 | 方式 | 冲突率 | 比较器/查找 | 硬件成本 | |---|---|---|---| | 直接映射（1 路） | 高（易抖动） | 比 1 个 Tag | 最低 | | 组相联（k 路） | 中 | 组内比 k 个 Tag | 中 | | 全相联（1 组） | 低 | 比全部 Tag | 最高、最慢 | 路数↑ → 冲突失效↓，但 Tag 位↑、每组需 k 个比较器并行、命中延迟略增；实际 CPU 常用 8~16 路 L1。","url":"https://itinterview.com.cn/question/1390"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"组相联（Set-Associative）Cache 的地址如何划分？与直接映射、全相联在定量上有何关系？","item":"https://itinterview.com.cn/q/1390.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"组相联（Set-Associative）Cache 的地址如何划分？与直接映射、全相联在定量上有何关系？","item":"https://itinterview.com.cn/q/1390"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -116,6 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1390">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/484">常见的 RAID 级别有哪些？各自如何权衡性能、容量与可靠性？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1398">为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/482">Cache 的三种映射方式是什么？各自有什么优缺点？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1394">磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。</a><span class="rel-n">1 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

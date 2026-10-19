@@ -9,15 +9,15 @@
   <meta property="og:title" content="Dart 的事件循环模型是什么？Isolate 与线程的区别？ · IT面试题库">
   <meta property="og:description" content="事件循环：Dart 单线程执行，两个队列——微任务队列（scheduleMicrotask、Future 同步完成的回调）优先清空，然后才处理事件队列（I/O、定时器、手势、Future.delayed）。所以同步代码里 `Future(...) Even 微任务先于事件任务执行；滥用微任务会饿死 UI 渲染（绘…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1499.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1499">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Dart 的事件循环模型是什么？Isolate 与线程的区别？ · IT面试题库">
   <meta name="twitter:description" content="事件循环：Dart 单线程执行，两个队列——微任务队列（scheduleMicrotask、Future 同步完成的回调）优先清空，然后才处理事件队列（I/O、定时器、手势、Future.delayed）。所以同步代码里 `Future(...) Even 微任务先于事件任务执行；滥用微任务会饿死 UI 渲染（绘…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1499.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1499">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Dart 的事件循环模型是什么？Isolate 与线程的区别？","text":"说明微任务/事件队列的调度顺序，以及 Isolate 不共享内存的设计意图。","answerCount":1,"datePublished":"2026-10-05T01:03:57.518Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"事件循环：Dart 单线程执行，两个队列——微任务队列（scheduleMicrotask、Future 同步完成的回调）优先清空，然后才处理事件队列（I/O、定时器、手势、Future.delayed）。所以同步代码里 `Future(...) Even 微任务先于事件任务执行；滥用微任务会饿死 UI 渲染（绘制事件也在事件队列）。 Isolate：Dart 的并发单元。与 OS 线程的区别——不共享内存，每个 Isolate 有独立堆与事件循环，靠消息传递（SendPort/ReceivePort）通信。好处：没有数据竞争，无需锁，GC 各自独立不互相暂停。代价：跨 Isolate 传大数据需拷贝（可用 TransferableTypedData 零拷贝、或 Isolate.run + compute 封装）。 实践：UI 全在主 Isolate；>16ms 的重计算（大 JSON 解析、图片处理）丢到后台 Isolate，避免掉帧。","url":"https://itinterview.com.cn/question/1499"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Flutter","item":"https://itinterview.com.cn/category?cat=228"},{"@type":"ListItem","position":4,"name":"Dart 的事件循环模型是什么？Isolate 与线程的区别？","item":"https://itinterview.com.cn/q/1499.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Flutter","item":"https://itinterview.com.cn/category?cat=228"},{"@type":"ListItem","position":4,"name":"Dart 的事件循环模型是什么？Isolate 与线程的区别？","item":"https://itinterview.com.cn/q/1499"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1499">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/255">Flutter 中如何管理组件状态？setState 与状态提升分别用于什么场景？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/254">Flutter 的 Widget、Element、RenderObject 三棵树分别是什么？为什么要这样设计？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1498">Flutter 常见状态管理方案有哪些？如何选型？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1500">Flutter 界面卡顿如何定位与优化？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

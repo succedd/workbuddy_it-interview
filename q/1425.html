@@ -9,15 +9,15 @@
   <meta property="og:title" content="Grid 布局相比 Flex 更适合哪些场景？请用 Grid 实现「响应式 12 列栅格」和「左侧固定 240px、右侧自适应的两栏布局」，并对比 Grid 与 Flex 的取舍。 · IT面试题库">
   <meta property="og:description" content="要点（Grid 适合什么）： Flex 是一维布局（只沿主轴排），Grid 是二维布局（同时控制行与列），适合「整体页面框架、卡片网格、需要精确行列对齐」的场景；纯一维流动（如导航、列表）用 Flex 更顺手。 要点（12 列栅格）： repeat(12,1fr) 生成 12 等宽列，span N 控制跨列；响应…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1425.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1425">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Grid 布局相比 Flex 更适合哪些场景？请用 Grid 实现「响应式 12 列栅格」和「左侧固定 240px、右侧自适应的两栏布局」，并对比 Grid 与 Flex 的取舍。 · IT面试题库">
   <meta name="twitter:description" content="要点（Grid 适合什么）： Flex 是一维布局（只沿主轴排），Grid 是二维布局（同时控制行与列），适合「整体页面框架、卡片网格、需要精确行列对齐」的场景；纯一维流动（如导航、列表）用 Flex 更顺手。 要点（12 列栅格）： repeat(12,1fr) 生成 12 等宽列，span N 控制跨列；响应…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1425.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1425">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Grid 布局相比 Flex 更适合哪些场景？请用 Grid 实现「响应式 12 列栅格」和「左侧固定 240px、右侧自适应的两栏布局」，并对比 Grid 与 Flex 的取舍。","text":"考察点：Grid 二维布局能力与典型实现，以及与 Flex 的分工取舍，CSS 布局段位的高级场景题。","answerCount":1,"datePublished":"2026-10-01T03:58:56.829Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（Grid 适合什么）： Flex 是一维布局（只沿主轴排），Grid 是二维布局（同时控制行与列），适合「整体页面框架、卡片网格、需要精确行列对齐」的场景；纯一维流动（如导航、列表）用 Flex 更顺手。 要点（12 列栅格）： repeat(12,1fr) 生成 12 等宽列，span N 控制跨列；响应式可用容器宽度切换 span 或 auto-fit/minmax。 要点（左固定右自适应两栏）： 240px 1fr 表示第一列固定 240px、第二列吃掉剩余空间（1fr），比 Flex 写法更直观且无 margin 计算。 要点（Grid vs Flex 取舍）： 选 Flex：一维流式排列、内容驱动尺寸、对齐简单； 选 Grid：二维排版、需要对齐到行列线、复杂响应式骨架； 二者可组合：Grid 做页面大骨架，内部小组件用 Flex。 记忆点：一维用 Flex，二维用 Grid。","url":"https://itinterview.com.cn/question/1425"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"Grid 布局相比 Flex 更适合哪些场景？请用 Grid 实现「响应式 12 列栅格」和「左侧固定 240px、右侧自适应的两栏布局」，并对比 Grid 与 Flex 的取舍。","item":"https://itinterview.com.cn/q/1425.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"Grid 布局相比 Flex 更适合哪些场景？请用 Grid 实现「响应式 12 列栅格」和「左侧固定 240px、右侧自适应的两栏布局」，并对比 Grid 与 Flex 的取舍。","item":"https://itinterview.com.cn/q/1425"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -113,6 +113,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1425">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/21">CSS 盒模型与 BFC 是什么？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/22">Flex 布局常用属性与两端对齐怎么写？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1293">实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1294">两条规则同时命中一个元素，浏览器最终用哪一条？请说明 CSS 优先级的计算规则，以及 !important 在整个体系里的位置。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

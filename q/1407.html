@@ -9,15 +9,15 @@
   <meta property="og:title" content="Spark 的 Shuffle 是怎么工作的？从 Hash Shuffle 到 Sort Shuffle 解决了什么问题？有哪些关键调优手段？ · IT面试题库">
   <meta property="og:description" content="结论 Shuffle 发生在宽依赖处：上游各分区的数据按 key 重新分组、跨网络分发到下游各分区。它必然伴随磁盘落盘 + 网络传输 + 序列化，还会切出新的 stage 边界，是 Spark 作业最贵的环节。 机制演进 Hash Shuffle（已移除）：每个 map task 为每个 reduce parti…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1407.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1407">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spark 的 Shuffle 是怎么工作的？从 Hash Shuffle 到 Sort Shuffle 解决了什么问题？有哪些关键调优手段？ · IT面试题库">
   <meta name="twitter:description" content="结论 Shuffle 发生在宽依赖处：上游各分区的数据按 key 重新分组、跨网络分发到下游各分区。它必然伴随磁盘落盘 + 网络传输 + 序列化，还会切出新的 stage 边界，是 Spark 作业最贵的环节。 机制演进 Hash Shuffle（已移除）：每个 map task 为每个 reduce parti…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1407.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1407">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spark 的 Shuffle 是怎么工作的？从 Hash Shuffle 到 Sort Shuffle 解决了什么问题？有哪些关键调优手段？","text":"考察 Shuffle 机制演进与调优抓手。","answerCount":1,"datePublished":"2026-09-29T13:30:58.544Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 Shuffle 发生在宽依赖处：上游各分区的数据按 key 重新分组、跨网络分发到下游各分区。它必然伴随磁盘落盘 + 网络传输 + 序列化，还会切出新的 stage 边界，是 Spark 作业最贵的环节。 机制演进 Hash Shuffle（已移除）：每个 map task 为每个 reduce partition 写一个文件 → M×R 个小文件；1 万 task × 1 万分区 = 1 亿文件句柄，随机 IO 与 open file 崩溃是常态； Sort Shuffle（默认）：每个 map task 输出一个按 partition id 排序的数据文件 + 一个索引文件（M 个文件），reduce 按索引区间拉取；普通算子只做分区排序、不做全局排序； bypass 机制：分区数 ≤ spark.shuffle.sort.bypassMergeThreshold（默认 200）且不需要 map 端聚合时，免排序直接合并写，省排序开销。 调优抓手 1. 能不 shuffle 就不 shuffle：reduceByKey（map 端预聚合）优于 groupByKey；小表 broadcast join 直接消掉大表 shuffle； 2. 数据倾斜：开启 AQE 自动拆分倾斜分区；两阶段聚合（key 加随机前缀局部聚合再全局聚合）；热点 key 单独广播处理； 3. 资源参数：spark.shuffle.file.buffer（写缓冲）、spark.reducer.maxSizeInFlight（拉取缓冲）、重试与超时；spill（内存溢写磁盘）大说明内存不足，优先加 executor 内存或核数； 4. 大 shuffle 作业给本地盘而非网络盘，shuffle read/write 量与 spill 在 Web UI 的 stage 页直接可见。 定位口诀：先看 stage 的 shuffle read 量是否异常放大（倾斜），再看 spill 与 GC，最后才调分区数（spark.sql.shuffle.partitions，AQE 开启后可自适应）。","url":"https://itinterview.com.cn/question/1407"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Spark","item":"https://itinterview.com.cn/category?cat=160"},{"@type":"ListItem","position":4,"name":"Spark 的 Shuffle 是怎么工作的？从 Hash Shuffle 到 Sort Shuffle 解决了什么问题？有哪些关键调优手段？","item":"https://itinterview.com.cn/q/1407.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Spark","item":"https://itinterview.com.cn/category?cat=160"},{"@type":"ListItem","position":4,"name":"Spark 的 Shuffle 是怎么工作的？从 Hash Shuffle 到 Sort Shuffle 解决了什么问题？有哪些关键调优手段？","item":"https://itinterview.com.cn/q/1407"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -110,6 +110,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1407">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1480">一个实时指标需求，该用 Spark 还是 Flink？请从批/流模型、时延、状态管理说明选型。</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/473">Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

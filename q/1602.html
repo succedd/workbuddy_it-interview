@@ -9,15 +9,15 @@
   <meta property="og:title" content="什么是推荐系统？协同过滤（User-Based / Item-Based CF）的原理、优缺点与冷启动问题是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 推荐系统的目标是在信息过载场景下，基于用户历史行为、画像与上下文，预测用户可能感兴趣的内容并排序呈现；主流范式分协同过滤、基于内容、混合、深度学习四类。 User-Based CF：计算用户相似度（余弦 / Jaccard / 皮尔逊），用相似用户的行为给目标用户做评分预测；Item-Based CF：计…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1602.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1602">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是推荐系统？协同过滤（User-Based / Item-Based CF）的原理、优缺点与冷启动问题是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 推荐系统的目标是在信息过载场景下，基于用户历史行为、画像与上下文，预测用户可能感兴趣的内容并排序呈现；主流范式分协同过滤、基于内容、混合、深度学习四类。 User-Based CF：计算用户相似度（余弦 / Jaccard / 皮尔逊），用相似用户的行为给目标用户做评分预测；Item-Based CF：计…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1602.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1602">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是推荐系统？协同过滤（User-Based / Item-Based CF）的原理、优缺点与冷启动问题是什么？","text":"考察推荐系统基础范式与最经典的协同过滤算法，以及它的核心短板冷启动。","answerCount":1,"datePublished":"2026-10-10T11:53:41.464Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 推荐系统的目标是在信息过载场景下，基于用户历史行为、画像与上下文，预测用户可能感兴趣的内容并排序呈现；主流范式分协同过滤、基于内容、混合、深度学习四类。 User-Based CF：计算用户相似度（余弦 / Jaccard / 皮尔逊），用相似用户的行为给目标用户做评分预测；Item-Based CF：计算物品相似度，给用户推荐与其历史喜欢物品相似的物品。Item-Based 在线计算更轻、更稳定，工业界更常用。 优点：无需物品内容特征、可发现长尾兴趣；缺点：依赖共现矩阵，存在数据稀疏（用户-物品矩阵极稀疏导致相似度不可靠）与冷启动（新用户无行为、新物品无交互）问题。 冷启动应对（追问铺垫）：热门榜单兜底、利用注册画像 / 设备 / 地域等 side information、内容相似召回、主动试探（EE 探索）。","url":"https://itinterview.com.cn/question/1602"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"推荐系统","item":"https://itinterview.com.cn/category?cat=185"},{"@type":"ListItem","position":5,"name":"什么是推荐系统？协同过滤（User-Based / Item-Based CF）的原理、优缺点与冷启动问题是什么？","item":"https://itinterview.com.cn/q/1602.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"推荐系统","item":"https://itinterview.com.cn/category?cat=185"},{"@type":"ListItem","position":5,"name":"什么是推荐系统？协同过滤（User-Based / Item-Based CF）的原理、优缺点与冷启动问题是什么？","item":"https://itinterview.com.cn/q/1602"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1602">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1406">工业级推荐系统为什么拆成「召回→粗排→精排→重排」多级漏斗？每一级各自解决什么问题？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/472">推荐系统里的协同过滤（User/Item-based CF）与矩阵分解（MF）有什么区别？Wide &amp; Deep 模型又解决了什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1603">工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1604">请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

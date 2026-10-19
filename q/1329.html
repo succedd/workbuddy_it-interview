@@ -9,15 +9,15 @@
   <meta property="og:title" content="Cookie 的 SameSite=Strict / Lax / None 有什么区别？它和 CSRF 是什么关系？第三方 Cookie 为什么被迫迁移？ · IT面试题库">
   <meta property="og:description" content="SameSite 控制跨站请求是否携带 Cookie（「站」按注册域名 eTLD+1 + scheme 划分，即 schemeful site）。MDN 定义三种取值： Strict：只有同站请求携带，最严格； Lax：同站携带；跨站时仅「顶级导航 + 安全方法（GET 等）」同时满足才携带； None：同站、跨…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1329.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1329">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cookie 的 SameSite=Strict / Lax / None 有什么区别？它和 CSRF 是什么关系？第三方 Cookie 为什么被迫迁移？ · IT面试题库">
   <meta name="twitter:description" content="SameSite 控制跨站请求是否携带 Cookie（「站」按注册域名 eTLD+1 + scheme 划分，即 schemeful site）。MDN 定义三种取值： Strict：只有同站请求携带，最严格； Lax：同站携带；跨站时仅「顶级导航 + 安全方法（GET 等）」同时满足才携带； None：同站、跨…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1329.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1329">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cookie 的 SameSite=Strict / Lax / None 有什么区别？它和 CSRF 是什么关系？第三方 Cookie 为什么被迫迁移？","text":"考察点：SameSite 三种取值在跨站场景下的精确行为差异，及其在 CSRF 防御与第三方 Cookie 生态中的位置。","answerCount":1,"datePublished":"2026-09-26T03:32:53.949Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"SameSite 控制跨站请求是否携带 Cookie（「站」按注册域名 eTLD+1 + scheme 划分，即 schemeful site）。MDN 定义三种取值： Strict：只有同站请求携带，最严格； Lax：同站携带；跨站时仅「顶级导航 + 安全方法（GET 等）」同时满足才携带； None：同站、跨站都携带，但必须同时设置 Secure。 逐场景对照（见图）：A 站内点击、表单、XHR 三者都带；从 B 站点链接跳转到 A（顶级 GET 导航）Strict 不带、Lax 带；B 站构造 POST 表单提交到 A（典型 CSRF 手法）Strict/Lax 都不带；B 站用 / 嵌入 A 的资源，Strict/Lax 都不带，只有 None 带。注意顶级导航会改变地址栏的请求才算，fetch、 子资源、iframe 内导航都不算。 与 CSRF 的关系：CSRF 正是利用「浏览器对目标站点的请求自动附带 Cookie」来伪造用户操作。Chrome 等浏览器在未指定 SameSite 时默认按 Lax 处理（实现上有个 2 分钟宽松期：2 分钟内设置 Cookie 的 POST 也放行）后，跨站 POST 表单不再自动带 Cookie，拦掉了绝大多数 CSRF 向量——这是第一道防线但不是全部：顶级 GET 导航、同站子域之间仍可能被利用，所以敏感操作仍需 CSRF Token + 校验 Origin/Referer。另注意：HttpOnly 防 XSS 偷 Cookie，但 JS 发起的 fetch 请求依然会带上 HttpOnly Cookie，两者防的不是一回事。 第三方 Cookie 迁移背景：依赖「跨站自动带 Cookie」的场景——iframe 内嵌登录态、广告归因、第三方支付页——在默认 Lax 下全部失效，必须显式改写为 SameSite=None; Secure，否则浏览器直接拒收。这正是近年第三方 Cookie 大规模改造的原因；Partitioned（CHIPS）进一步把 Cookie 按顶级站点分区隔离，跨站嵌入方各存各的。","url":"https://itinterview.com.cn/question/1329"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"Cookie 的 SameSite=Strict / Lax / None 有什么区别？它和 CSRF 是什么关系？第三方 Cookie 为什么被迫迁移？","item":"https://itinterview.com.cn/q/1329.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"Cookie 的 SameSite=Strict / Lax / None 有什么区别？它和 CSRF 是什么关系？第三方 Cookie 为什么被迫迁移？","item":"https://itinterview.com.cn/q/1329"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -104,6 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1329">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/558">浏览器从输入 URL 到页面渲染经历了哪些阶段？请说明关键渲染路径（解析/布局/绘制）。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/559">请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/560">什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/561">什么是闭包（closure）？它有哪些典型应用场景和需要注意的内存问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

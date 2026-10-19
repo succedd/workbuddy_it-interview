@@ -9,15 +9,15 @@
   <meta property="og:title" content="用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？ · IT面试题库">
   <meta property="og:description" content="要点： 先诊断再下药：灾难性遗忘表现为通用能力（如指令遵循、其他任务）在微调后明显下降，可用一组「保留集」评测前后差异定位；过拟合则表现为训练集 loss 持续下降、但验证集/下游任务指标先升后降，或对新样本泛化差。两者要分开看，不能混为一谈。 缓解灾难性遗忘：LoRA 只训练低秩适配矩阵、冻结主干，本身已大幅降…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1542.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1542">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先诊断再下药：灾难性遗忘表现为通用能力（如指令遵循、其他任务）在微调后明显下降，可用一组「保留集」评测前后差异定位；过拟合则表现为训练集 loss 持续下降、但验证集/下游任务指标先升后降，或对新样本泛化差。两者要分开看，不能混为一谈。 缓解灾难性遗忘：LoRA 只训练低秩适配矩阵、冻结主干，本身已大幅降…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1542.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1542">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？","text":"考察点：参数高效微调（PEFT）中的典型风险——灾难性遗忘与过拟合，以及对应的诊断与缓解手段。","answerCount":1,"datePublished":"2026-10-05T02:30:36.414Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先诊断再下药：灾难性遗忘表现为通用能力（如指令遵循、其他任务）在微调后明显下降，可用一组「保留集」评测前后差异定位；过拟合则表现为训练集 loss 持续下降、但验证集/下游任务指标先升后降，或对新样本泛化差。两者要分开看，不能混为一谈。 缓解灾难性遗忘：LoRA 只训练低秩适配矩阵、冻结主干，本身已大幅降低遗忘面；必要时加入 replay（混合一小部分通用/预训练数据共同训练）、降低学习率、缩小可训练秩 r，或在正则上约束 ΔW 偏离主干的幅度。 缓解过拟合：增加高质量指令数据多样性、做数据去重与清洗；用早停（monitor 验证集）、对 LoRA 权重加权重衰减；适当降低 rank 与 alpha、缩短训练步数；必要时做多轮小批量而非一次性灌入。 验证闭环：微调后以统一评测集（含原任务 + 新任务）做前后对比，确认新能力增益大于通用能力损失，再上线；线上用 A/B 与人工抽查持续监控，发现退化及时回滚到基座或上一版适配器。","url":"https://itinterview.com.cn/question/1542"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"MLOps","item":"https://itinterview.com.cn/category?cat=198"},{"@type":"ListItem","position":5,"name":"用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？","item":"https://itinterview.com.cn/q/1542.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"MLOps","item":"https://itinterview.com.cn/category?cat=198"},{"@type":"ListItem","position":5,"name":"用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？","item":"https://itinterview.com.cn/q/1542"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1542">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1460">模型上线后效果为什么会慢慢变差？数据漂移与概念漂移如何区分、怎么监控、再训练由什么触发？</a><span class="rel-n">4 次浏览</span></li><li><a href="https://itinterview.com.cn/q/789">MLOps 是什么？相比传统 DevOps 多了哪些环节？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1541">构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1544">如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="Saga 模式的正向操作与补偿操作应该如何设计？它和 TCC 的本质区别是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 核心思想 Saga 是长事务解决方案（1987 年 Hector &amp; Kenneth 在 ACM 论文《Sagas》中提出），把一个大事务拆成 T1…Tn 个本地短事务，每个短事务 Ti 对应一个补偿操作 Ci。正向全部成功则结束，某步失败则进入恢复模式。 2. 两种恢复方式 反向恢复：Ti 提交失…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1279.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1279">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Saga 模式的正向操作与补偿操作应该如何设计？它和 TCC 的本质区别是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 核心思想 Saga 是长事务解决方案（1987 年 Hector &amp; Kenneth 在 ACM 论文《Sagas》中提出），把一个大事务拆成 T1…Tn 个本地短事务，每个短事务 Ti 对应一个补偿操作 Ci。正向全部成功则结束，某步失败则进入恢复模式。 2. 两种恢复方式 反向恢复：Ti 提交失…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1279.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1279">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Saga 模式的正向操作与补偿操作应该如何设计？它和 TCC 的本质区别是什么？","text":"考察点：长事务拆分、补偿事务的幂等与隔离性缺失，以及 Saga 与 TCC 的取舍。","answerCount":1,"datePublished":"2026-09-26T02:32:11.058Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 核心思想 Saga 是长事务解决方案（1987 年 Hector & Kenneth 在 ACM 论文《Sagas》中提出），把一个大事务拆成 T1…Tn 个本地短事务，每个短事务 Ti 对应一个补偿操作 Ci。正向全部成功则结束，某步失败则进入恢复模式。 2. 两种恢复方式 反向恢复：Ti 提交失败，则依次补偿所有已完成事务，执行顺序为 T1→T2→…→Ti（失败）→Ci→…→C2→C1。 正向恢复：Ti 失败则一直重试 Ti 直到成功，再继续 Ti+1…Tn。 3. 补偿操作怎么设计 必须幂等：补偿本身也会因网络、外部依赖不可用而失败，框架通常采用「持续重试 + 最大重试上限 + 人工干预」，所以 Ci 必须可重复执行且结果一致。 记录 Saga log：为保证系统崩溃后能知道执行到哪一步、补偿到哪一步，需要把每步操作与补偿写入日志（类似数据库日志），恢复后据此续跑。 补偿不等于技术回滚：库存预占可以回滚，已发送的短信、已成功的第三方支付流水无法撤回，补偿只能把业务带到「业务允许的后续状态」。 4. 与 TCC 的本质区别 | 维度 | TCC | Saga | | --- | --- | --- | | 资源处理 | Try 阶段预留/冻结资源 | 每步本地事务直接提交，没有 Try | | 隔离性 | 靠业务预留实现「伪隔离」 | 隔离性弱，中间状态对外可见 | | 性能 | 有资源预留开销 | 直接提交，性能非常高 | | 适合链路 | 短链路、资源预留明确（转账、库存冻结、优惠券锁定） | 长链路多步骤（订单履约、旅行预订、审批流） | | 典型实现 | Seata TCC、Hmily | Seata Saga、ServiceComb Pack | 一句话概括：TCC 是「先预留再确认」，用资源预留换隔离性；Saga 是「先提交再补偿」，用隔离性换性能与长链路适配能力。选型时看链路长度和业务能否接受中间状态可见。","url":"https://itinterview.com.cn/question/1279"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式事务","item":"https://itinterview.com.cn/category?cat=119"},{"@type":"ListItem","position":4,"name":"Saga 模式的正向操作与补偿操作应该如何设计？它和 TCC 的本质区别是什么？","item":"https://itinterview.com.cn/q/1279.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式事务","item":"https://itinterview.com.cn/category?cat=119"},{"@type":"ListItem","position":4,"name":"Saga 模式的正向操作与补偿操作应该如何设计？它和 TCC 的本质区别是什么？","item":"https://itinterview.com.cn/q/1279"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -117,6 +117,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1279">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/445">Seata 的 AT 模式是怎么工作的？它为什么被称为「对业务无侵入」的分布式事务方案？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/828">实战：下单同时要扣减库存，如何设计既不超卖又不阻塞用户请求？请用最终一致方案说明。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/829">本地消息表 / RocketMQ 事务消息是如何实现「最终一致」的？半消息与回查起什么作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/830">TCC（Try-Confirm-Cancel）是什么？落地时如何避免空回滚、防悬挂和保证幂等？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？ · IT面试题库">
   <meta property="og:description" content="要点：上电后 ROM 代码（固化）跑起来，交给 Bootloader（如 U-Boot）：初始化时钟/内存/串口，把内核镜像从存储（eMMC/SD/NOR）搬进 RAM 并跳转；Bootloader 还负责传设备树（DTB）和启动参数。 要点：内核启动：解压、初始化体系结构/驱动、挂载根文件系统（rootfs，可…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1597.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1597">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？ · IT面试题库">
   <meta name="twitter:description" content="要点：上电后 ROM 代码（固化）跑起来，交给 Bootloader（如 U-Boot）：初始化时钟/内存/串口，把内核镜像从存储（eMMC/SD/NOR）搬进 RAM 并跳转；Bootloader 还负责传设备树（DTB）和启动参数。 要点：内核启动：解压、初始化体系结构/驱动、挂载根文件系统（rootfs，可…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1597.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1597">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？","text":"考察系统启动链路。","answerCount":1,"datePublished":"2026-10-07T08:06:38.034Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：上电后 ROM 代码（固化）跑起来，交给 Bootloader（如 U-Boot）：初始化时钟/内存/串口，把内核镜像从存储（eMMC/SD/NOR）搬进 RAM 并跳转；Bootloader 还负责传设备树（DTB）和启动参数。 要点：内核启动：解压、初始化体系结构/驱动、挂载根文件系统（rootfs，可以是 initramfs 或真实分区），然后启动第一个用户态进程（通常是 /init 或 systemd）；内核负责进程、内存、设备与网络管理。 要点：用户空间：init 按脚本拉起服务与应用程序。调试启动失败时，常用串口看 Bootloader 与内核日志，确认是「搬不起来」「内核 panic」还是「找不到/挂载不了 rootfs」三类典型问题。","url":"https://itinterview.com.cn/question/1597"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？","item":"https://itinterview.com.cn/q/1597.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？","item":"https://itinterview.com.cn/q/1597"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -97,6 +97,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1597">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/697">嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1450">Linux 内核的设备树（Device Tree）是干什么的？没有它之前是什么局面？驱动和设备如何通过 compatible 匹配？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1598">嵌入式 Linux 里进程间通信（IPC）有哪些方式？共享内存和消息队列各适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1736">Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

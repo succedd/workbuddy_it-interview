@@ -9,15 +9,15 @@
   <meta property="og:title" content="线程池 ThreadPoolExecutor 的核心参数有哪些？任务提交后的执行流程与拒绝策略是什么？ · IT面试题库">
   <meta property="og:description" content="结论：线程池通过“核心线程、队列、最大线程、拒绝策略”的协作控制并发，理解参数是调优和排错的基础。 七大核心参数 corePoolSize：核心线程数，常驻不回收（除非设置 allowCoreThreadTimeOut）。 maximumPoolSize：最大线程数。 keepAliveTime / unit：非…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1354.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1354">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线程池 ThreadPoolExecutor 的核心参数有哪些？任务提交后的执行流程与拒绝策略是什么？ · IT面试题库">
   <meta name="twitter:description" content="结论：线程池通过“核心线程、队列、最大线程、拒绝策略”的协作控制并发，理解参数是调优和排错的基础。 七大核心参数 corePoolSize：核心线程数，常驻不回收（除非设置 allowCoreThreadTimeOut）。 maximumPoolSize：最大线程数。 keepAliveTime / unit：非…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1354.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1354">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线程池 ThreadPoolExecutor 的核心参数有哪些？任务提交后的执行流程与拒绝策略是什么？","text":"考察线程池七大参数、execute 工作流程以及四种拒绝策略的适用场景。","answerCount":1,"datePublished":"2026-09-26T05:19:38.636Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：线程池通过“核心线程、队列、最大线程、拒绝策略”的协作控制并发，理解参数是调优和排错的基础。 七大核心参数 corePoolSize：核心线程数，常驻不回收（除非设置 allowCoreThreadTimeOut）。 maximumPoolSize：最大线程数。 keepAliveTime / unit：非核心线程空闲存活时间。 workQueue：任务阻塞队列（如 LinkedBlockingQueue、SynchronousQueue）。 threadFactory：线程创建工厂。 handler：拒绝策略。 执行流程（execute） 1. 线程数 \u003c corePoolSize，直接创建核心线程执行。 2. 核心线程满，任务入 workQueue 排队。 3. 队列满且线程数 \u003c maximumPoolSize，创建非核心线程执行。 4. 队列满且达到最大线程数，触发拒绝策略。 四种拒绝策略 | 策略 | 行为 | 适用场景 | | :--- | :--- | :--- | | AbortPolicy（默认） | 抛 RejectedExecutionException | 需感知失败 | | CallerRunsPolicy | 由提交任务的线程自己执行 | 不丢弃、可降级流速 | | DiscardPolicy | 静默丢弃 | 允许丢任务 | | DiscardOldestPolicy | 丢弃队列最老任务后重试 | 重时效场景 | 注意：Executors 的 FixedThreadPool/SingleThread 用无界队列易 OOM，CachedThreadPool 最大线程为 Integer.MAX_VALUE 也易 OOM，生产建议手动 new ThreadPoolExecutor。","url":"https://itinterview.com.cn/question/1354"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"线程池 ThreadPoolExecutor 的核心参数有哪些？任务提交后的执行流程与拒绝策略是什么？","item":"https://itinterview.com.cn/q/1354.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"线程池 ThreadPoolExecutor 的核心参数有哪些？任务提交后的执行流程与拒绝策略是什么？","item":"https://itinterview.com.cn/q/1354"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -119,6 +119,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1354">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/109">Exception和Error的区别？</a><span class="rel-n">415 次浏览</span></li><li><a href="https://itinterview.com.cn/q/102">synchronized关键字的实现原理？</a><span class="rel-n">296 次浏览</span></li><li><a href="https://itinterview.com.cn/q/106">Java线程池的工作原理？</a><span class="rel-n">274 次浏览</span></li><li><a href="https://itinterview.com.cn/q/108">Java反射机制的原理和应用场景？</a><span class="rel-n">203 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

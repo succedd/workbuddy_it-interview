@@ -9,15 +9,15 @@
   <meta property="og:title" content="@SpringBootApplication 是组合注解，它由哪三个核心注解组成？各自负责什么？ · IT面试题库">
   <meta property="og:description" content="要点： @SpringBootConfiguration（即 @Configuration）：标记该类为配置类，本质是 @Configuration，使其内部可用 @Bean 注册组件，同时也是 @ComponentScan 的扫描根。 @EnableAutoConfiguration：开启自动配置。它通过 @I…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1191.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1191">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="@SpringBootApplication 是组合注解，它由哪三个核心注解组成？各自负责什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： @SpringBootConfiguration（即 @Configuration）：标记该类为配置类，本质是 @Configuration，使其内部可用 @Bean 注册组件，同时也是 @ComponentScan 的扫描根。 @EnableAutoConfiguration：开启自动配置。它通过 @I…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1191.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1191">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"@SpringBootApplication 是组合注解，它由哪三个核心注解组成？各自负责什么？","text":"考察点：对 @SpringBootApplication 组合注解的理解，以及对『自动配置入口』与『包扫描范围』的掌握。要求讲清三个注解的分工，而不是只说『它是 Spring Boot 的启动注解』。","answerCount":1,"datePublished":"2026-09-20T02:21:39.821Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： @SpringBootConfiguration（即 @Configuration）：标记该类为配置类，本质是 @Configuration，使其内部可用 @Bean 注册组件，同时也是 @ComponentScan 的扫描根。 @EnableAutoConfiguration：开启自动配置。它通过 @Import(AutoConfigurationImportSelector.class) 导入自动配置选择器，按 classpath 依赖把数百个内置 AutoConfiguration 类按需加载进容器——这是 Spring Boot『约定大于配置』的核心入口。 @ComponentScan：扫描 @SpringBootApplication 所在类（及其子包）下的 @Component/@Service/@Controller/@Repository 等，把它们注册为 Bean；默认扫描范围是主类所在包及其子包，放错包会导致 Bean 扫不到。 核心：三者合并后，一个注解同时完成『声明配置类 + 开启自动配置 + 指定组件扫描范围』，这也是为什么主启动类通常要放在根包（root package）。","url":"https://itinterview.com.cn/question/1191"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"@SpringBootApplication 是组合注解，它由哪三个核心注解组成？各自负责什么？","item":"https://itinterview.com.cn/q/1191.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"@SpringBootApplication 是组合注解，它由哪三个核心注解组成？各自负责什么？","item":"https://itinterview.com.cn/q/1191"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1191">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/178">Spring Boot如何实现异步处理？</a><span class="rel-n">453 次浏览</span></li><li><a href="https://itinterview.com.cn/q/176">Spring Boot拦截器和过滤器的区别？</a><span class="rel-n">444 次浏览</span></li><li><a href="https://itinterview.com.cn/q/177">Spring Boot集成MyBatis的方式？</a><span class="rel-n">434 次浏览</span></li><li><a href="https://itinterview.com.cn/q/175">Spring事务管理如何实现？</a><span class="rel-n">427 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

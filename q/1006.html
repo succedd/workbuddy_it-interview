@@ -9,15 +9,15 @@
   <meta property="og:title" content="MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？ · IT面试题库">
   <meta property="og:description" content="要点： 文档模型：BSON（二进制 JSON）把关联数据内嵌在一个文档里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。 建模核心抉择：嵌入 vs 引用——「一起读写的数据嵌进去」（一对一、一对少量），「独立增…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1006.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1006">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？ · IT面试题库">
   <meta name="twitter:description" content="要点： 文档模型：BSON（二进制 JSON）把关联数据内嵌在一个文档里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。 建模核心抉择：嵌入 vs 引用——「一起读写的数据嵌进去」（一对一、一对少量），「独立增…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1006.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1006">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？","text":"考察点：文档模型与关系模型差异、嵌入 vs 引用、schema 灵活性的代价。","answerCount":1,"datePublished":"2026-09-10T07:26:34.178Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 文档模型：BSON（二进制 JSON）把关联数据内嵌在一个文档里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。 建模核心抉择：嵌入 vs 引用——「一起读写的数据嵌进去」（一对一、一对少量），「独立增长/多对多的用引用+$lookup」。反范式是有意设计而非偷懒，但引用层级过深会把 JOIN 问题换个形式带回来。 不该用的场景：① 强多表事务与复杂 SQL 分析（4.0+ 事务可用但不是主场）；② 高规范化、实体关系复杂的账务系统；③ 强 schema 合规审计要求；④ 重度 JOIN 报表——那是关系库/数仓的主场。 片键（shard key）：分片集群的片键一旦选定极难更换，范围片键防热但要防单调写入热点（用哈希片键），选型必须前置想清楚。","url":"https://itinterview.com.cn/question/1006"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？","item":"https://itinterview.com.cn/q/1006.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？","item":"https://itinterview.com.cn/q/1006"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -101,6 +101,11 @@
       <a class="cta" href="https://itinterview.com.cn/question/1006">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/455">为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1007">MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1412">MongoDB 与关系型数据库（如 MySQL）相比，下列哪种说法是正确的？
+A. MongoDB 要求建表时定义固定的列结构（Schema）
+B. MongoDB 用 BSON 存储文档，支持日期、二进制、ObjectId 等丰富类型
+C. MongoDB 原生支持跨集合的 JOIN 且默认开启事务
+D. MongoDB 只能通过垂直升级（加内存/CPU）来扩展</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1413">什么是 BSON？MongoDB 为什么使用 BSON 而不是纯 JSON 作为底层存储格式？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -9,15 +9,15 @@
   <meta property="og:title" content="Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？ · IT面试题库">
   <meta property="og:description" content="要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/p…">
   <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <meta property="og:url" content="https://itinterview.com.cn/q/1655.html">
+  <meta property="og:url" content="https://itinterview.com.cn/q/1655">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？ · IT面试题库">
   <meta name="twitter:description" content="要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/p…">
   <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
-  <link rel="canonical" href="https://itinterview.com.cn/q/1655.html">
+  <link rel="canonical" href="https://itinterview.com.cn/q/1655">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？","text":"考察 ANR 分析。","answerCount":1,"datePublished":"2026-10-15T12:54:42.461Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 读 ANR trace：找主线程状态、blocked/running 栈，确认阻塞在应用代码、系统服务还是 Binder 等待。 常见原因：主线程做磁盘/数据库/SP 同步写、网络请求、锁等待、深拷贝大对象、过度布局。 修复与验证：把阻塞操作移到协程/后台线程，主线程只更新 UI；用 systrace/perfetto 验证关键路径耗时。","url":"https://itinterview.com.cn/question/1655"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android Java","item":"https://itinterview.com.cn/category?cat=225"},{"@type":"ListItem","position":5,"name":"Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？","item":"https://itinterview.com.cn/q/1655.html"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android Java","item":"https://itinterview.com.cn/category?cat=225"},{"@type":"ListItem","position":5,"name":"Android ANR 日志里 input dispatching timed out，你会如何定位主线程阻塞点？","item":"https://itinterview.com.cn/q/1655"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -100,6 +100,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1655">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/754">Android 的四大组件（Activity/Service/Broadcast/ContentProvider）各自职责？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
