@@ -1,0 +1,756 @@
+{
+  "batch": "2026-10-19-a",
+  "note": "人工批次：把最薄的两个技术域一次补齐——区块链与Web3 全部 6 个叶子分类 + 嵌入式与物联网全部 7 个叶子分类，每类 3 题、分类内互挂 relatedIds；来源为官方文档 / RFC / EIP / 厂商手册。",
+  "chain": false,
+  "questions": [
+    {
+      "title": "UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？",
+      "body": "考察比特币与以太坊两种账本模型的差异，以及它们对钱包、隐私和智能合约的影响。",
+      "answer": "**要点**：\n- **UTXO（未花费交易输出）**：余额不是存在某个账户里，而是「属于你的所有 UTXO 之和」。每笔交易显式引用若干输入，并生成新的输出（找零给自己）；一个 UTXO 只能被花费一次，节点验证输入未被花费即可防双花。\n- **账户模型**：全局状态维护 `address → balance / nonce / code / storage`，交易只写 from、to、value，余额直接加减；`nonce` 严格递增，既防重放也决定交易顺序，合约账户另有代码与存储。\n- **取舍**：UTXO 天然并行验证、隐私与可审计性较好，但状态膨胀、表达智能合约困难；账户模型可读性强、适合合约与复杂状态，但需要 nonce 管理，状态膨胀更明显。比特币用 UTXO，以太坊用账户模型。",
+      "category": "区块链基础",
+      "positions": [
+        "区块链工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "UTXO",
+        "账户模型",
+        "双花"
+      ],
+      "years": "1-3年",
+      "source": "https://developer.bitcoin.org/devguide/transactions.html"
+    },
+    {
+      "title": "软分叉、硬分叉与链重组（reorg）：交易所为什么要求多次确认？",
+      "body": "考察共识规则变更、区块回滚与最终性，以及充值确认数的工程含义。",
+      "answer": "**要点**：\n- **软分叉**是收紧规则：新节点产生的区块旧节点仍能验证，通常向后兼容；**硬分叉**是放宽或改变规则：旧节点会拒绝新块，社区不统一时会分裂成两条链（如 ETH / ETC）。\n- **链重组**：节点发现权重更高的链时，会回退本地链头并重放交易；PoW 下算力波动可能造成 1~2 个块的回滚，PoS 则通过 checkpoint / finality 让区块最终确定。\n- **确认数的意义**：确认越多，回滚所需成本越高。交易所对大额充值提高确认数，同时监听 reorg、按 blockHash 记录入账并在回滚时冲正；不能只看「交易已打包」就认为最终确定。",
+      "category": "区块链基础",
+      "positions": [
+        "区块链工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "软分叉",
+        "硬分叉",
+        "链重组",
+        "最终性"
+      ],
+      "years": "3-5年",
+      "source": "https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/#finality"
+    },
+    {
+      "title": "轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？",
+      "body": "考察轻节点 / SPV 钱包的验证路径，以及它相比全节点的信任假设。",
+      "answer": "**要点**：\n- **验证路径**：轻客户端只下载区块头（含 Merkle Root），向全节点请求目标交易的 Merkle 路径；把交易哈希与路径上的兄弟哈希逐层计算，最终结果等于区块头中的 Root，即证明该交易被包含在这个区块里。\n- **安全边界**：Merkle Proof 只证明「包含」，不证明「所在链最长、交易未被双花」。轻客户端还要跟随最长链 / 最终性检查，并对多个全节点做抽样，防止被单个作恶节点用陈旧或分叉链头欺骗。\n- **工程代价**：轻客户端查询会泄露地址与交易偏好；全节点可能拒绝服务或返回旧数据。大额收款仍建议使用全节点或可信检查点，SPV 更适合资源受限的钱包与移动端。",
+      "category": "区块链基础",
+      "positions": [
+        "区块链工程师",
+        "Web3开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "轻客户端",
+        "SPV",
+        "Merkle Proof"
+      ],
+      "years": "3-5年",
+      "source": "https://ethereum.org/en/developers/docs/nodes-and-clients/light-clients/"
+    },
+    {
+      "title": "EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？",
+      "body": "考察以太坊手续费市场改革，以及钱包如何估算 maxFeePerGas / maxPriorityFeePerGas。",
+      "answer": "**要点**：\n- **费用拆分**：交易费 = **base fee**（协议按区块拥堵自动调整，直接销毁）+ **priority fee**（给验证者的小费）。用户设置 `maxFeePerGas` 与 `maxPriorityFeePerGas`，实际支付不超过上限。\n- **base fee 调整**：每个区块根据 gas 使用率相对目标值的偏差调整，单块最大变化约 12.5%；拥堵时 base fee 上升抑制需求，空闲时下降。销毁 base fee 让 ETH 供应随使用量收缩，也避免验证者通过打包自己交易瓜分基础费。\n- **钱包实践**：估算 `maxFee ≈ 2 × baseFee + tip`，替换卡住的交易时保持同一 nonce 并提高小费；注意 base fee 不以验证者意志转移，低 ball 交易在拥堵时会被持续推迟。",
+      "category": "以太坊",
+      "positions": [
+        "区块链工程师",
+        "智能合约开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "EIP-1559",
+        "Gas",
+        "base fee"
+      ],
+      "years": "3-5年",
+      "source": "https://eips.ethereum.org/EIPS/eip-1559"
+    },
+    {
+      "title": "ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？",
+      "body": "考察账户抽象的核心组件与安全边界，不要求改共识层。",
+      "answer": "**要点**：\n- **UserOperation**：一种「伪交易」结构，包含 sender、nonce、callData、签名、paymaster 等字段；它不直接上链，而是由 Bundler 打包。\n- **EntryPoint**：统一入口合约，负责校验和执行 UserOperation、管理 nonce 与保证金、结算 gas；账户合约在 `validateUserOp` 中验证签名，Paymaster 可代付 gas 或收 ERC-20。\n- **收益与风险**：可实现社交恢复、批量调用、免 gas 新手体验；但 Bundler 可能中心化，Paymaster 有资金与合规风险，EntryPoint 成为高价值攻击目标。生产环境要限制 callData 白名单、校验签名域，并关注 EIP-7702 等后续方案。",
+      "category": "以太坊",
+      "positions": [
+        "智能合约开发工程师",
+        "区块链工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "ERC-4337",
+        "账户抽象",
+        "Paymaster"
+      ],
+      "years": "3-5年",
+      "source": "https://eips.ethereum.org/EIPS/eip-4337"
+    },
+    {
+      "title": "Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？",
+      "body": "考察 L2 扩容路线的取舍，以及数据可用性成本对 Rollup 的影响。",
+      "answer": "**要点**：\n- **Optimistic Rollup**：默认乐观执行，先提交状态根，留挑战期（常见 7 天）接受欺诈证明；EVM 兼容好、实现简单，但提款慢，安全性依赖至少一个诚实验证者。\n- **ZK Rollup**：每批交易生成有效性证明（zk-SNARK / zk-STARK），L1 验证通过即最终确定，提款快；代价是证明生成成本高、EVM 等价性更难，通用电路与开发工具更复杂。\n- **EIP-4844**：引入短生命周期的 blob 承载 L2 交易数据，blob 不进入 EVM 执行、按独立市场计费，显著降低 L2 的数据可用性成本；但它不解决执行去中心化与 sequencer 中心化问题。",
+      "category": "以太坊",
+      "positions": [
+        "区块链工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "Rollup",
+        "EIP-4844",
+        "L2"
+      ],
+      "years": "3-5年",
+      "source": "https://ethereum.org/en/developers/docs/scaling/"
+    },
+    {
+      "title": "delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？",
+      "body": "考察可升级合约的存储布局、函数选择器冲突与初始化陷阱。",
+      "answer": "**要点**：\n- **delegatecall 语义**：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，`msg.sender` / `msg.value` 保持不变；代理在 fallback 中把 calldata 转发给实现合约。\n- **升级模式**：Transparent Proxy 由 admin 管理升级、普通用户不能调用实现合约的管理函数；UUPS 把升级逻辑放在实现合约里，省一次 delegatecall，但实现合约必须包含升级入口；Beacon 适合多代理共享实现。\n- **关键陷阱**：构造函数不会在代理上下文中运行，必须用 `initialize` + `initializer`；代理与实现的存储布局必须兼容，只能追加变量、不能重排或删除；还要防函数选择器冲突、未初始化实现合约被劫持，以及 `selfdestruct` 等破坏性操作。",
+      "category": "智能合约Solidity",
+      "positions": [
+        "智能合约开发工程师",
+        "区块链工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "delegatecall",
+        "代理升级",
+        "存储布局"
+      ],
+      "years": "3-5年",
+      "source": "https://docs.openzeppelin.com/contracts/5.x/api/proxy"
+    },
+    {
+      "title": "Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？",
+      "body": "考察整数安全、Gas 优化与 0.7→0.8 升级审计。",
+      "answer": "**要点**：\n- **默认检查**：Solidity 0.8 起对 `+`、`-`、`*` 做溢出/下溢检查，失败直接 revert；`unchecked { ... }` 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。\n- **可安全使用的场景**：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码；前提是有注释和测试支撑，而不是「为了省 Gas」全局关闭。\n- **注意**：`unchecked` 不关闭除零检查；升级旧合约时要逐处审计算术，尤其是 `for` 循环上限、代币精度换算和数组长度计算。即使使用 unchecked，也建议在边界处用 `require` 兜底。",
+      "category": "智能合约Solidity",
+      "positions": [
+        "智能合约开发工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Solidity",
+        "溢出",
+        "unchecked"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic"
+    },
+    {
+      "title": "EIP-712 结构化签名如何防重放？domainSeparator、nonce 与 chainId 各起什么作用？",
+      "body": "考察链下签名、链上验签与签名钓鱼的防护设计。",
+      "answer": "**要点**：\n- **签名摘要**：`digest = 0x1901 ‖ domainSeparator ‖ hashStruct(message)`。`domainSeparator` 由 name、version、chainId、verifyingContract、salt 计算，钱包能把字段以可读形式展示给用户。\n- **防重放四要素**：`chainId` 阻止跨链重放，`verifyingContract` 阻止跨合约重放，`nonce` 阻止同一合约内重复使用，`deadline` 限制签名有效期；链上验签时用 `ecrecover` 恢复地址并校验 nonce 未被消费。\n- **工程坑**：链下签名的类型哈希、字段顺序必须与链上完全一致；`permit` 类签名要防钓鱼站点伪造 spender / value；nonce 要按用户维度递增并在失败时回滚，避免并发签名互相覆盖。",
+      "category": "智能合约Solidity",
+      "positions": [
+        "智能合约开发工程师",
+        "Web3开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "EIP-712",
+        "签名",
+        "重放攻击"
+      ],
+      "years": "3-5年",
+      "source": "https://eips.ethereum.org/EIPS/eip-712"
+    },
+    {
+      "title": "DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？",
+      "body": "考察 Web3 前端与节点交互的完整链路，以及常见卡交易问题。",
+      "answer": "**要点**：\n- **Provider 是 DApp 与节点之间的 JSON-RPC 通道**（HTTP / WebSocket / IPC）。读操作走 `eth_call`、`eth_getBalance`、`eth_getLogs`，不广播、不花 Gas；写操作先 `eth_estimateGas` 估算，再由钱包签名，最后 `eth_sendRawTransaction` 广播。\n- **nonce 管理**：用 `eth_getTransactionCount(address, \"pending\")` 取下一个 nonce；同一账户并发发交易要在本地排队，nonce 断档会让后续交易一直 pending；替换交易必须复用同一 nonce 并提高小费。\n- **生产坑**：公共 RPC 有速率限制和区块滞后，`eth_call` 在 latest 与 pending 下结果可能不同；WebSocket 会断线，需要重连与补块；多链场景要校验 chainId，并准备多 RPC 故障转移。",
+      "category": "Web3开发",
+      "positions": [
+        "Web3开发工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "JSON-RPC",
+        "Provider",
+        "nonce"
+      ],
+      "years": "1-3年",
+      "source": "https://ethereum.org/en/developers/docs/apis/json-rpc/"
+    },
+    {
+      "title": "前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？",
+      "body": "考察事件索引、确认策略与 reorg 回滚。",
+      "answer": "**要点**：\n- **事件与日志**：合约 `event` 写入交易日志，前端可用 `eth_getLogs` 按 address / topics / 区块范围查询，或通过 WebSocket `eth_subscribe` 订阅 logs；日志是链下索引的主要数据源。\n- **reorg 的影响**：已看到的日志可能因链重组而消失或换到另一个 blockHash。入账前应等待 N 个确认，记录 blockNumber / blockHash，发现链头变化时按块回滚并重放，不能只用 txHash 做幂等。\n- **常见坑**：`eth_getLogs` 区块范围过大被节点拒绝；topics 的编码/顺序写错；匿名事件没有 topic0；索引服务（如 The Graph）同样要处理 reorg。高价值业务应做「确认数 + 对账 + 人工复核」三层保护。",
+      "category": "Web3开发",
+      "positions": [
+        "Web3开发工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "事件",
+        "reorg",
+        "eth_getLogs"
+      ],
+      "years": "3-5年",
+      "source": "https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getlogs"
+    },
+    {
+      "title": "DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？",
+      "body": "考察多链 DApp 的链路校验、钱包交互与盲签风险。",
+      "answer": "**要点**：\n- **chainId 是链的身份**：交易签名包含 chainId，可防跨链重放；DApp 必须校验钱包当前 chainId 与合约部署链一致，否则会把交易发到错误的链或调用到空地址。\n- **切换流程**：先 `wallet_switchEthereumChain` 请求切换，未收录的链用 `wallet_addEthereumChain` 添加；切换成功后重新初始化 provider、合约地址和后端签名域，不能复用旧链的 nonce / domain。\n- **防钓鱼**：恶意站点可伪造相似合约地址、诱导 `approve` 无限额度或 `permit` 盲签。DApp 侧要白名单合约、展示 chainId 与函数名；钱包侧要明确展示收款地址、金额与 spender，用户应拒绝无法读懂的签名请求。",
+      "category": "Web3开发",
+      "positions": [
+        "Web3开发工程师",
+        "智能合约开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "chainId",
+        "多链",
+        "签名钓鱼"
+      ],
+      "years": "1-3年",
+      "source": "https://eips.ethereum.org/EIPS/eip-3326"
+    },
+    {
+      "title": "借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？",
+      "body": "考察 DeFi 借贷风控，以及级联清算与坏账的成因。",
+      "answer": "**要点**：\n- **LTV 与健康因子**：存款人把抵押品按 `liquidationThreshold` 折算为可清算价值，借款人的健康因子 `HF = Σ(抵押品 × 价格 × 阈值) / 债务`；HF < 1 时任何人可触发清算。\n- **清算流程**：清算人代还部分债务，按 `liquidationBonus` 折扣获得抵押品，协议收取罚金；折扣太高会伤害借款人，太低则清算人没有动力，可能积累坏账。\n- **预言机联动**：抵押品价格来自预言机，价格延迟或插针会触发错误清算；极端行情下清算拥堵、抵押品流动性枯竭会形成级联清算。协议需设置储备金、借款上限、价格熔断，并对参数做压力测试。",
+      "category": "DeFi基础",
+      "positions": [
+        "区块链工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "DeFi",
+        "清算",
+        "健康因子",
+        "预言机"
+      ],
+      "years": "3-5年",
+      "source": "https://docs.aave.com/developers/guides/liquidations"
+    },
+    {
+      "title": "法币抵押、加密超额抵押与算法稳定币：各自的脱锚风险与死亡螺旋怎么发生？",
+      "body": "考察稳定币的抵押结构与失效模式，不要求具体项目估值。",
+      "answer": "**要点**：\n- **法币抵押型**（USDC / USDT）：1:1 法币或短期国债储备，锚定依赖发行方信用、托管审计与赎回通道；储备疑虑、监管冻结或挤兑会引发脱锚，风险集中在中心化对手方。\n- **加密超额抵押型**（DAI）：锁定 ETH 等资产生成稳定币，靠超额抵押与清算维持锚定；资本效率低，极端下跌时清算不及会形成坏账，但比算法型更有真实资产支撑。\n- **算法稳定币**（如 UST）：靠算法与双币套利维持价格，缺乏足额抵押；一旦信心动摇，套利机制反向运转，抛售→增发→价格更低，形成死亡螺旋。评估时要区分「足额抵押」「超额抵押」「算法锚定」三种本质不同的模型。",
+      "category": "DeFi基础",
+      "positions": [
+        "区块链工程师",
+        "智能合约开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "稳定币",
+        "脱锚",
+        "死亡螺旋"
+      ],
+      "years": "1-3年",
+      "source": "https://ethereum.org/en/defi/#stablecoins"
+    },
+    {
+      "title": "预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？",
+      "body": "考察 DeFi 价格源设计，以及单源现货价为何危险。",
+      "answer": "**要点**：\n- **攻击路径**：协议直接用 DEX 池的现货 reserve 作为价格，攻击者用闪电贷瞬间砸盘/拉盘，操纵抵押品价格后借出更多资产，再归还贷款，单笔交易内完成获利。\n- **防御手段**：多源聚合取中位数、使用时间加权平均价（TWAP）、Chainlink 等链下签名聚合源、设置价格偏差阈值与熔断、关键操作延迟确认；清算场景应使用更保守的价格。\n- **设计原则**：不要用单一 DEX 现货价做抵押品定价；对预言机更新频率、心跳、异常值处理做监控；闪电贷本身不是漏洞，漏洞是「在同一交易内可被操纵的价格源」。",
+      "category": "DeFi基础",
+      "positions": [
+        "智能合约开发工程师",
+        "区块链后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "预言机",
+        "闪电贷",
+        "TWAP"
+      ],
+      "years": "3-5年",
+      "source": "https://ethereum.org/en/developers/docs/oracles/"
+    },
+    {
+      "title": "NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？",
+      "body": "考察 NFT 元数据持久性、成本与可变性。",
+      "answer": "**要点**：\n- **tokenURI 返回什么**：通常是一段 JSON，包含 name、image、attributes 等；合约保存 baseURI 或逐 token 的 URI，市场按 URI 拉取元数据。\n- **存储方案对比**：链上 `data:` URI 最永久但最贵，适合小图/纯文本；IPFS 内容寻址、便宜，但需要 pin 服务持续托管，否则可能丢失；Arweave 一次付费、长期存储，适合图片与元数据；中心化 HTTPS 最便宜但可改、可下线，违背 NFT 的不可篡改预期。\n- **实践**：图片与 JSON 上 IPFS/Arweave，合约存不可变 URI 或提供冻结开关；注意 gateway 可用性、元数据更新权限与「同一 CID 内容不可变」的验证。",
+      "category": "NFT技术",
+      "positions": [
+        "智能合约开发工程师",
+        "Web3开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "NFT",
+        "tokenURI",
+        "IPFS",
+        "Arweave"
+      ],
+      "years": "1-3年",
+      "source": "https://ethereum.org/en/nft/"
+    },
+    {
+      "title": "ERC-2981 版税为什么在链上无法强制？市场有哪些执行方式？",
+      "body": "考察 NFT 版税标准的边界，以及创作者收益的现实约束。",
+      "answer": "**要点**：\n- **标准只提供查询**：`royaltyInfo(tokenId, salePrice)` 返回接收者与版税金额，但是否支付由交易市场自行决定；ERC-2981 不拦截转账，也不修改所有权逻辑。\n- **执行方式**：市场自愿遵守；用 operator filter 限制只能在与版税兼容的市场交易（争议大、已被部分生态放弃）；把版税写进链下许可/法律合同；或在转让钩子里收费（会影响可组合性与 Gas）。\n- **现实风险**：场外交易、包装合约、聚合器可绕过版税；不同市场对「以哪个价格计算」口径不一。创作者应把版税视为商业条款与生态激励，而不是链上强制保证。",
+      "category": "NFT技术",
+      "positions": [
+        "智能合约开发工程师",
+        "Web3开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "ERC-2981",
+        "版税",
+        "NFT市场"
+      ],
+      "years": "1-3年",
+      "source": "https://eips.ethereum.org/EIPS/eip-2981"
+    },
+    {
+      "title": "ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？",
+      "body": "考察多代币标准、批量接口与接收者回调风险。",
+      "answer": "**要点**：\n- **一个合约多种资产**：ERC-1155 用 `id → balance` 管理同质化与非同质化代币，适合游戏道具、门票、会员卡；相比每个 NFT 单独部署/管理，部署与转账成本更低。\n- **批量能力**：`balanceOfBatch`、`safeBatchTransferFrom` 一次处理多个 id 与数量，显著省 Gas；元数据用 `{id}` 模板，避免为每个 token 写 URI。\n- **安全设计**：批量数组要校验长度一致与数量非零；`safeTransferFrom` 会回调接收者，必须防重入并检查返回值；市场兼容性不如 ERC-721，转让前确认目标合约支持 1155。",
+      "category": "NFT技术",
+      "positions": [
+        "智能合约开发工程师",
+        "区块链工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "ERC-1155",
+        "批量转账",
+        "NFT"
+      ],
+      "years": "3-5年",
+      "source": "https://eips.ethereum.org/EIPS/eip-1155"
+    },
+    {
+      "title": "const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？",
+      "body": "考察存储期、链接属性、Flash/RAM 布局，以及头文件中的常见误用。",
+      "answer": "**要点**：\n- **static**：文件作用域的 `static` 把符号限制为内部链接，避免多文件重名；函数内的 `static` 变量具有静态存储期，放在 `.data` / `.bss`，生命周期贯穿整个程序，但作用域仍限于函数。\n- **extern**：只是声明「别处有定义」，不分配存储；头文件里写 `extern`、在一个 `.c` 中定义，才能避免多重定义。未初始化的全局/static 进 `.bss`（启动清零），有初值进 `.data`（启动时从 Flash 拷贝到 RAM）。\n- **const**：只读数据通常放 `.rodata` / Flash，能省 RAM；但 C 中 `const` 变量不是「整数常量表达式」，不能拿来定义数组长度。`const volatile` 常用于只读硬件寄存器。嵌入式里要结合链接脚本看实际落点，别假设 `const` 一定在 Flash。",
+      "category": "嵌入式C开发",
+      "positions": [
+        "嵌入式软件工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": [
+        "C语言",
+        "static",
+        "const",
+        "链接属性"
+      ],
+      "years": "1-3年",
+      "source": "https://en.cppreference.com/w/c/language/storage_duration"
+    },
+    {
+      "title": "链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？",
+      "body": "考察 MEMORY / SECTIONS、启动拷贝、向量表与 ITCM/DTCM 布局。",
+      "answer": "**要点**：\n- **基本结构**：`MEMORY` 定义 Flash / RAM 的起始地址与长度，`SECTIONS` 把 `.text`、`.rodata`、`.data`、`.bss`、`.stack` 放到指定区域；`KEEP()` 防止被 `--gc-sections` 回收，`.init_array` 承载 C++ 全局构造。\n- **LMA 与 VMA**：`.data` 的加载地址（LMA）在 Flash，运行地址（VMA）在 RAM；启动代码负责把初值从 Flash 拷到 RAM，并把 `.bss` 清零。若只配 VMA 不配 LMA，复位后数据就是错的。\n- **典型用途**：向量表放到 Flash 起始或重定位到 RAM、把热函数放 ITCM、把 DMA 缓冲区放 DTCM/非缓存区、在固定地址保留 bootloader 参数。链接后要检查 map 文件、段大小与栈顶，防止溢出。",
+      "category": "嵌入式C开发",
+      "positions": [
+        "嵌入式软件工程师",
+        "固件工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "链接脚本",
+        "LMA",
+        "VMA",
+        "内存布局"
+      ],
+      "years": "3-5年",
+      "source": "https://sourceware.org/binutils/docs/ld/Scripts.html"
+    },
+    {
+      "title": "DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？",
+      "body": "考察 Cortex-M7 等带 D-Cache 的 MCU 上，CPU 与 DMA 的一致性。",
+      "answer": "**要点**：\n- **方向决定操作**：CPU 写内存、DMA 读内存（发送）前，要对缓冲区做 **clean**（把 cache 写回内存）；DMA 写内存、CPU 读内存（接收）后，要对缓冲区做 **invalidate**（丢弃旧 cache 行），否则 CPU 可能读到旧数据。\n- **volatile 的局限**：`volatile` 只阻止编译器优化掉访问，不保证 CPU 乱序、不保证 cache 一致性，也不保证原子性；跨核/跨主控场景还需要 `DMB` / `DSB` 等内存屏障。\n- **工程做法**：把 DMA 缓冲区放在非缓存区或按 cache line 对齐，避免相邻数据被误 invalidate；传输完成中断里再 invalidate，不要在半满/全满中断里对同一行反复操作；用调试器与内存窗口验证一致性。",
+      "category": "嵌入式C开发",
+      "positions": [
+        "嵌入式软件工程师",
+        "驱动开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "DMA",
+        "Cache",
+        "内存屏障",
+        "volatile"
+      ],
+      "years": "3-5年",
+      "source": "https://gcc.gnu.org/onlinedocs/gcc/Volatiles.html"
+    },
+    {
+      "title": "Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？",
+      "body": "考察构建系统的复杂度、可维护性与团队协作成本。",
+      "answer": "**要点**：\n- **Buildroot**：以 Makefile + Kconfig 为核心，配置简单、构建快，直接产出工具链、内核、rootfs 与镜像；适合产品形态固定、团队小、需要快速迭代的场景，定制靠 package 与 patch。\n- **Yocto**：以 BitBake + layer / recipe 为核心，元数据驱动，支持多机器、多发行版、可复现构建、SDK、包管理和许可证清单；学习曲线陡、构建重，但长期维护与多硬件复用好。\n- **选型建议**：单一产品、资源紧、要快选 Buildroot；多硬件/多版本、需要长期维护与合规审计选 Yocto。也可组合：Yocto 产 SDK 与应用包，Buildroot 做最终镜像；无论哪种都要固定版本、锁定依赖并做可复现构建。",
+      "category": "嵌入式Linux",
+      "positions": [
+        "嵌入式软件工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Buildroot",
+        "Yocto",
+        "根文件系统"
+      ],
+      "years": "1-3年",
+      "source": "https://buildroot.org/downloads/manual/manual.html"
+    },
+    {
+      "title": "嵌入式 Linux 字符设备驱动：file_operations、ioctl 与 platform driver 如何协作？",
+      "body": "考察设备号、cdev、设备树匹配与用户态接口。",
+      "answer": "**要点**：\n- **字符设备入口**：实现 `file_operations` 的 open / read / write / ioctl / release，申请设备号（`alloc_chrdev_region`）、`cdev_init` / `cdev_add` 注册，用户态通过 `/dev` 节点访问。\n- **platform driver**：设备树 `compatible` 匹配 `platform_driver`，在 `probe` 中申请资源（`ioremap`、IRQ、clock、regulator）、注册 cdev 与 sysfs 属性；`remove` 中按相反顺序释放。\n- **安全与并发**：用户态/内核态拷贝用 `copy_to_user` / `copy_from_user`；`ioctl` 命令用 `_IOR` / `_IOW` 编码并校验参数；共享数据用 mutex / spinlock，热插拔注意引用计数与释放顺序，避免 UAF。",
+      "category": "嵌入式Linux",
+      "positions": [
+        "驱动开发工程师",
+        "嵌入式软件工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "字符设备",
+        "file_operations",
+        "platform driver"
+      ],
+      "years": "3-5年",
+      "source": "https://docs.kernel.org/driver-api/driver-model/overview.html"
+    },
+    {
+      "title": "initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？",
+      "body": "考察启动早期的临时根文件系统，以及 switch_root 的时机。",
+      "answer": "**要点**：\n- **initramfs 是临时根**：一个 cpio 归档，被内核解压到内存并挂载为早期 rootfs；它负责加载存储/网络/加密驱动，找到并挂载真正的根分区，然后 `switch_root` 切换到最终 rootfs。\n- **rootfs 是最终根**：通常是 ext4、UBIFS、squashfs 等持久化文件系统，存放完整的用户空间；initramfs 只放启动必需的模块与脚本，占 RAM、关机即消失。\n- **典型场景**：根分区在 LVM / RAID / 加密盘、通过网络（NFS / iSCSI）挂载、需要早期固件或图形初始化。常见坑是 initramfs 缺少驱动导致 panic、镜像过大占用内存、`switch_root` 前没有清理旧根。",
+      "category": "嵌入式Linux",
+      "positions": [
+        "嵌入式软件工程师",
+        "驱动开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "initramfs",
+        "rootfs",
+        "启动"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.kernel.org/filesystems/ramfs-rootfs-initramfs.html"
+    },
+    {
+      "title": "FreeRTOS 的 heap_1~heap_5 有什么区别？产品中如何选内存管理方案？",
+      "body": "考察五种堆实现的分配/释放能力、碎片与确定性。",
+      "answer": "**要点**：\n- **五种实现**：heap_1 只分配不释放，最简单、最确定；heap_2 可释放但不合并相邻空闲块，容易碎片化，已不推荐；heap_3 包装标准 `malloc/free` 并加锁；heap_4 首次适配 + 相邻合并，通用性最好；heap_5 在 heap_4 基础上支持多个不连续内存区域。\n- **选型**：启动时一次性创建所有任务/队列、运行期不再分配，用 heap_1 最稳；需要动态创建/删除用 heap_4；外扩 SDRAM 或多块 RAM 用 heap_5；长期运行的产品应尽量静态分配，避免碎片。\n- **注意**：分配失败返回 NULL 必须检查；任务栈、队列、定时器都会消耗堆；堆越界会破坏相邻块，建议加哨兵、统计高水位并做长时间压力测试。",
+      "category": "RTOS实时操作系统",
+      "positions": [
+        "嵌入式软件工程师",
+        "固件工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "FreeRTOS",
+        "heap",
+        "内存管理"
+      ],
+      "years": "3-5年",
+      "source": "https://www.freertos.org/a00111.html"
+    },
+    {
+      "title": "任务栈大小怎么估算？configCHECK_FOR_STACK_OVERFLOW 与高水位线怎么用？",
+      "body": "考察栈最坏路径分析、运行时检测与余量设计。",
+      "answer": "**要点**：\n- **估算方法**：沿最深调用链累加局部变量、返回地址、寄存器保存区，再加中断嵌套与库函数（printf / 浮点）开销；用 `-fstack-usage` 生成每个函数的栈用量，按最坏路径求和。\n- **运行时检测**：`configCHECK_FOR_STACK_OVERFLOW = 2` 在任务切换时检查栈末尾的填充 pattern，越界触发 `vApplicationStackOverflowHook`；`uxTaskGetStackHighWaterMark` 返回历史最小剩余栈空间，用于验证余量。\n- **实践**：避免大局部数组、递归和频繁 printf；中断使用独立栈；按最坏场景压测，保留 20%~30% 余量；发布前用 MPU 守卫页或填充字节做一次全路径检查。",
+      "category": "RTOS实时操作系统",
+      "positions": [
+        "嵌入式软件工程师",
+        "固件工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "FreeRTOS",
+        "任务栈",
+        "栈溢出"
+      ],
+      "years": "1-3年",
+      "source": "https://www.freertos.org/uxTaskGetStackHighWaterMark.html"
+    },
+    {
+      "title": "Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？",
+      "body": "考察 RTOS 空闲钩子、低功耗定时器与 tick 补偿。",
+      "answer": "**要点**：\n- **原理**：空闲时关闭周期 tick 中断，把「下一个任务到期时间」编程到低功耗定时器（RTC / LPTIM），CPU 进入深睡；唤醒后补偿丢失的 tick 计数，再重新调度。\n- **vTaskDelay 的局限**：它按 tick 计时，tick 被抑制后延时精度取决于低功耗定时器与补偿逻辑；周期任务优先用 `vTaskDelayUntil`，并确保唤醒源能覆盖最坏延迟。\n- **工程坑**：调试器连接、串口时钟、未关闭的外设都会阻止深睡；唤醒后要重建系统时钟与 Peripheral 时钟；用电流表测量各模式功耗，验证「计算—无线—休眠」占空比，而不是只看代码配置。",
+      "category": "RTOS实时操作系统",
+      "positions": [
+        "嵌入式软件工程师",
+        "嵌入式硬件工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "FreeRTOS",
+        "Tickless",
+        "低功耗"
+      ],
+      "years": "3-5年",
+      "source": "https://www.freertos.org/Documentation/02-Kernel/02-Kernel-features/07-Lower-power-support"
+    },
+    {
+      "title": "STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？",
+      "body": "考察时钟源选择、PLL 配置、Flash 等待周期与外设时钟使能。",
+      "answer": "**要点**：\n- **时钟路径**：HSE（外部晶振）或 HSI（内部 RC）经 PLL 倍频得到 SYSCLK，再经 AHB 预分频得到 HCLK，APB1/APB2 预分频得到外设时钟；每个外设还有独立的 RCC 时钟使能位，不开时钟寄存器写入无效。\n- **配置顺序**：开 HSE 并等待稳定 → 配 PLL 的 M/N/P/Q → 切换 SYSCLK 到 PLL → 配 AHB/APB 分频 → 开外设时钟；主频提高后要同步增加 Flash latency，否则取指失败。\n- **常见坑**：APB 预分频不为 1 时，定时器时钟会再乘 2；UART/USB 等外设有时钟上限；改时钟后要重算波特率、SPI 分频与 SysTick，否则通信全乱。",
+      "category": "STM32",
+      "positions": [
+        "嵌入式软件工程师",
+        "嵌入式硬件工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "STM32",
+        "时钟树",
+        "PLL"
+      ],
+      "years": "1-3年",
+      "source": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf"
+    },
+    {
+      "title": "STM32 串口不定长接收：DMA + IDLE 中断与半满/全满中断该怎么配合？",
+      "body": "考察环形缓冲区、DMA 计数与错误恢复。",
+      "answer": "**要点**：\n- **IDLE + DMA**：DMA 以循环模式把串口数据写入缓冲区，检测到总线空闲（IDLE）时读一次 SR/DR 清标志，用「缓冲区长度 − DMA 剩余计数」算出一帧长度；半满/全满中断用于批量处理，避免每字节进中断。\n- **环形缓冲区**：DMA 写指针由硬件推进，消费者读指针由软件维护；用临界区保护指针，处理「回绕」与「生产超过消费」；高吞吐场景用双缓冲或链表描述符。\n- **错误恢复**：使能 ORE/FE/NE 错误中断，溢出时清标志并重启 DMA；Cortex-M7 要注意 D-Cache 的 invalidate 时机；DMA 通道与串口请求映射、优先级要和业务匹配。",
+      "category": "STM32",
+      "positions": [
+        "嵌入式软件工程师",
+        "驱动开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "故障排查题",
+      "tags": [
+        "STM32",
+        "DMA",
+        "UART",
+        "IDLE"
+      ],
+      "years": "3-5年",
+      "source": "https://www.st.com/resource/en/application_note/an4031-using-the-stm32f2-stm32f4-and-stm32f7-dma-controller-stmicroelectronics.pdf"
+    },
+    {
+      "title": "STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？",
+      "body": "考察低功耗模式的状态保持、唤醒时间与功耗取舍。",
+      "answer": "**要点**：\n- **三种模式**：Sleep 只停 CPU，外设与时钟继续跑，任意中断可唤醒，唤醒最快；Stop 关闭主时钟与大部分外设，保留 SRAM/寄存器，唤醒后需重配时钟；Standby 关闭大部分电源域，只保留备份域，唤醒相当于复位，功耗最低。\n- **选型依据**：看唤醒时间、是否要保持 RAM/外设状态、电池寿命目标；周期性采集可用 Stop + RTC/LPTIM 唤醒，长期待机用 Standby + 外部中断。\n- **工程坑**：调试器连接会阻止进入低功耗；未用 GPIO 要配为模拟输入避免漏电；唤醒后要重建 PLL/外设时钟并重配串口；RTC/备份域要单独供电并检查复位标志。",
+      "category": "STM32",
+      "positions": [
+        "嵌入式软件工程师",
+        "嵌入式硬件工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "STM32",
+        "低功耗",
+        "Standby"
+      ],
+      "years": "1-3年",
+      "source": "https://www.st.com/resource/en/application_note/an4629-how-to-use-the-lowpower-modes-of-the-stm32l4-series-mcus-stmicroelectronics.pdf"
+    },
+    {
+      "title": "MQTT 5.0 相比 3.1.1 新增了哪些关键能力？原因码、属性、共享订阅各解决什么问题？",
+      "body": "考察 MQTT 5 的协议演进与物联网落地价值。",
+      "answer": "**要点**：\n- **原因码**：SUBACK / PUBACK / DISCONNECT 等报文携带具体原因码，客户端能区分「主题无权限」「配额超限」「会话不存在」，而不是只看到连接断开。\n- **属性与请求/响应**：报文可带 message expiry、content type、user properties、session expiry 等；配合 response topic + correlation data 支持标准化的请求/响应模式。\n- **共享订阅与主题别名**：`$share/group/topic` 让多个消费者负载均衡；主题别名减少重复主题名的传输开销。落地时要确认 broker 与客户端库的兼容性，并处理属性长度、会话过期与权限模型。",
+      "category": "物联网协议MQTT",
+      "positions": [
+        "IoT开发工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "MQTT 5.0",
+        "原因码",
+        "共享订阅"
+      ],
+      "years": "3-5年",
+      "source": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html"
+    },
+    {
+      "title": "MQTT 主题设计：+ 与 # 通配符有哪些坑？如何做租户隔离与权限控制？",
+      "body": "考察主题层级、ACL 与大规模路由。",
+      "answer": "**要点**：\n- **通配符规则**：`+` 匹配单层，`#` 匹配多层且只能放在末尾；`sensor/+/temp` 只匹配一层，`sensor/#` 匹配所有子层。以 `$` 开头的系统主题不会被根级通配符匹配。\n- **设计模式**：推荐 `{tenant}/{deviceType}/{deviceId}/{measurement}`，租户前缀隔离，设备 ID 全局唯一；状态类用保留消息，命令类用请求/响应主题，避免把业务数据堆在 `$SYS`。\n- **权限与坑**：ACL 按主题前缀/通配符授予，禁止客户端订阅 `#` 获取全量数据；通配符订阅过多会放大 broker 路由压力；主题名避免空格、中文与超长层级，升级时保持向后兼容。",
+      "category": "物联网协议MQTT",
+      "positions": [
+        "IoT开发工程师",
+        "后端开发工程师"
+      ],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": [
+        "MQTT",
+        "主题",
+        "ACL"
+      ],
+      "years": "1-3年",
+      "source": "https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/"
+    },
+    {
+      "title": "百万连接的 MQTT Broker 如何做集群与会话保持？",
+      "body": "考察接入层、路由、会话存储与容量规划。",
+      "answer": "**要点**：\n- **接入层**：多节点 + 负载均衡（DNS / L4 LB），单节点用 epoll / IO 多路复用承载大量空闲连接；连接状态分片，避免全局锁；TLS 卸载与心跳参数要按设备网络质量调优。\n- **集群路由**：节点间维护订阅路由表，消息按主题转发到持有订阅者的节点；会话、离线消息、保留消息需要共享存储或分区副本，避免节点故障丢会话。\n- **容量与坑**：按 70% 水位规划连接数、吞吐与内存；关注脑裂、重复订阅、跨节点顺序、会话迁移与升级闪断；用真实设备模型压测重连风暴，而不只是测空闲连接数。",
+      "category": "物联网协议MQTT",
+      "positions": [
+        "IoT开发工程师",
+        "后端架构师"
+      ],
+      "difficulty": "高级",
+      "type": "系统设计题",
+      "tags": [
+        "MQTT",
+        "集群",
+        "会话保持"
+      ],
+      "years": "3-5年",
+      "source": "https://docs.emqx.com/zh/emqx/latest/develop/cluster/introduction.html"
+    },
+    {
+      "title": "边缘 AI 推理如何做模型量化与硬件加速？INT8 量化会损失什么？",
+      "body": "考察 PTQ / QAT、算子支持与端到端精度回归。",
+      "answer": "**要点**：\n- **量化路线**：训练后量化（PTQ）用校准集统计激活范围，把 FP32 权重/激活转 INT8，成本低；量化感知训练（QAT）在训练中模拟量化误差，精度更好但需要标注数据与训练资源。\n- **收益与代价**：INT8 模型体积约为 FP32 的 1/4，内存带宽与功耗下降，整数算力更高；代价是精度损失、离群值难校准、部分算子不支持量化需要回退，端到端指标可能下降。\n- **落地**：用 ONNX Runtime / TFLite / TensorRT 检查算子支持，优先 per-channel 量化，校准集要覆盖真实分布；上线前做精度回归与延迟/功耗实测，保留 FP32 回退路径。",
+      "category": "边缘计算",
+      "positions": [
+        "边缘计算工程师",
+        "AI应用开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "边缘AI",
+        "量化",
+        "INT8",
+        "推理"
+      ],
+      "years": "3-5年",
+      "source": "https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html"
+    },
+    {
+      "title": "KubeEdge 的云边协同架构：CloudCore、EdgeCore、EdgeMesh 各自负责什么？",
+      "body": "考察云边通道、边缘自治与设备管理。",
+      "answer": "**要点**：\n- **CloudCore**：部署在云端，包含 cloudhub、edgecontroller、devicecontroller 等，负责把 Kubernetes 的 Pod、配置、设备模型下发到边缘，并接收边缘状态。\n- **EdgeCore**：部署在边缘节点，包含 edgehub、edged、metamanager、deviceTwin、eventbus 等；edgehub 与 cloudhub 建立隧道，断网时边缘可自治运行，metamanager 缓存元数据，deviceTwin 管理设备影子。\n- **EdgeMesh**：负责边缘侧服务发现与流量治理，让跨节点/跨边云的服务互相访问。落地时要处理网络抖动、证书轮换、边缘资源限制与版本升级，别把云端的强一致假设直接搬到边缘。",
+      "category": "边缘计算",
+      "positions": [
+        "边缘计算工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "KubeEdge",
+        "云边协同",
+        "边缘自治"
+      ],
+      "years": "3-5年",
+      "source": "https://kubeedge.io/docs/"
+    },
+    {
+      "title": "边缘节点资源受限，为什么常用 k3s 而不是完整 Kubernetes？",
+      "body": "考察轻量发行版的裁剪、组件与适用边界。",
+      "answer": "**要点**：\n- **轻量打包**：k3s 是单个二进制（约 100MB 以内），内置 containerd、Flannel、Traefik、local-path 等，默认用 SQLite 或嵌入式 etcd，去掉了云厂商插件与大量 alpha 特性，安装与运维成本低。\n- **资源与场景**：内存/CPU 占用小，适合边缘单机、门店、工厂网关和小集群；支持 air-gap 安装与证书轮换，能在断网环境运行。\n- **边界**：插件生态与上游兼容性不如标准 Kubernetes，默认存储不适合大规模持久化；多租户、大规模调度或需要完整 API 时，应选标准 k8s 或 KubeEdge 这类云边方案。",
+      "category": "边缘计算",
+      "positions": [
+        "边缘计算工程师",
+        "云平台开发工程师"
+      ],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": [
+        "k3s",
+        "Kubernetes",
+        "边缘"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.k3s.io/"
+    },
+    {
+      "title": "设备影子（Device Shadow）的 desired / reported / delta 如何解决离线设备控制？",
+      "body": "考察物联网平台的状态同步模型与并发控制。",
+      "answer": "**要点**：\n- **三份文档**：`desired` 是应用期望的状态，`reported` 是设备实际上报的状态，`delta` 是两者差异；设备离线时应用仍可改 desired，设备上线后拉取 delta 执行，再更新 reported。\n- **版本与并发**：影子带版本号，更新时做乐观锁，避免应用与设备互相覆盖；delta 由服务端自动计算，设备只需处理差异，不必全量同步。\n- **边界**：影子适合「最终一致」的状态同步，不适合强实时控制；要限制影子大小、字段权限与更新频率，并区分「设备离线」与「设备已收到但执行失败」，后者要靠 reported 与错误码确认。",
+      "category": "IoT平台开发",
+      "positions": [
+        "IoT开发工程师",
+        "嵌入式与物联网工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "设备影子",
+        "Device Shadow",
+        "状态同步"
+      ],
+      "years": "1-3年",
+      "source": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html"
+    },
+    {
+      "title": "IoT OTA 升级如何保证原子性与可回滚？A/B 分区、签名校验与灰度怎么做？",
+      "body": "考察固件升级的失败恢复、供应链安全与发布策略。",
+      "answer": "**要点**：\n- **原子与回滚**：A/B 双分区把新固件写入备用分区，校验签名与 CRC 后切换 boot slot；启动失败由 bootloader 自动回滚到旧分区，保证断电/掉包不变砖。\n- **签名与防降级**：厂商私钥签名，设备用公钥验签，并校验硬件型号、版本号与安全版本号，拒绝降级到有漏洞的旧固件；密钥放安全存储，签名流程与发布权限分离。\n- **灰度与可观测**：按设备分组/地域分批推送，监控成功率、重启次数、错误码与回滚率，异常自动暂停；支持断点续传与差分升级，控制流量与峰值。",
+      "category": "IoT平台开发",
+      "positions": [
+        "IoT开发工程师",
+        "固件工程师"
+      ],
+      "difficulty": "高级",
+      "type": "系统设计题",
+      "tags": [
+        "OTA",
+        "A/B分区",
+        "灰度发布"
+      ],
+      "years": "3-5年",
+      "source": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-ota.html"
+    },
+    {
+      "title": "物模型（TSL）与规则引擎如何配合做设备数据流转？",
+      "body": "考察属性/事件/服务建模，以及规则编排与性能边界。",
+      "answer": "**要点**：\n- **物模型 TSL**：用属性（property，设备状态）、事件（event，告警/故障）、服务（service，远程指令）描述设备能力，平台据此做数据解析、校验、可视化和指令下发；TSL 要与设备上报的 JSON 字段、单位、枚举严格对齐。\n- **规则引擎**：订阅设备消息，按 SQL / 条件过滤、转换后转发到 Kafka、数据库、函数计算或另一个主题；支持去重、重试、死信队列，把「设备接入」与「业务处理」解耦。\n- **坑**：TSL 版本升级要兼容旧设备；海量消息下规则不要做重计算；避免规则环路（A→B→A）；对单位/精度/时间戳做统一，否则统计结果会失真。",
+      "category": "IoT平台开发",
+      "positions": [
+        "IoT开发工程师",
+        "后端开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "物模型",
+        "TSL",
+        "规则引擎"
+      ],
+      "years": "1-3年",
+      "source": "https://www.alibabacloud.com/help/en/iot/user-guide/what-is-tsl"
+    }
+  ]
+}

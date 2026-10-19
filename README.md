@@ -193,6 +193,7 @@
 | 2026-10-17 | 2026-10-17-b | 产品与项目管理：角色边界→需求评估→用研方法→数据归因→RICE框架→Scrum→OKR 追问链 | +7 |
 | 2026-10-17 | 2026-10-17-c | 信息安全：零信任架构→SDL安全左移→应急响应→威胁检测体系→等保2.0→密码学基础 追问链 | +7 |
 | 2026-10-17 | 2026-10-17-d | 音视频与流媒体域瘦叶子补充（人工批次，与当日自动扩充三链不撞车）：6 个分类各补 3 题——YUV 4:2:0 与色度抽样、H.264 编码流程（帧内/帧间预测/变换量化）、CBR 与 VBR 选型、FFmpeg 滤镜链、moov 与 faststart、音画同步排查、NACK·FEC·GCC 弱网对抗、SDP 协商与 codec 优先级、Simulcast 与 SVC、m3u8 与 EXT-X 标签、ABR 切档、LL-HLS/HTTP-FLV/WebRTC 低延迟对比、音频 3A、QoS/QoE 埋点、跨平台 SDK 分层、CDN 调度排查、连麦三路线、秒开与 GOP cache。来源 FFmpeg 官方文档·ITU-T H.264·RFC 8216/4585·W3C WebRTC-SVC·MDN·腾讯云文档，题库 1656→1674 题 | +18 |
+| 2026-10-19 | 2026-10-19-a | 区块链与Web3（6 个叶子分类）+ 嵌入式与物联网（7 个叶子分类）各补 3 题：UTXO/分叉重组/SPV、EIP-1559/4337/4844、代理升级/unchecked/EIP-712、RPC nonce/事件 reorg/chainId、Aave 清算/稳定币/预言机、NFT 元数据/2981/1155；C 存储类/链接脚本/DMA cache、Buildroot/Yocto/字符驱动/initramfs、FreeRTOS heap/栈/Tickless、STM32 时钟/DMA IDLE/低功耗、MQTT 5/主题/集群、KubeEdge/k3s/量化、设备影子/OTA/TSL。来源 Bitcoin Developer Guide·ethereum.org·EIPs·Solidity·OpenZeppelin·Aave·cppreference·GNU ld/GCC·Buildroot·kernel docs·FreeRTOS·ST·OASIS·HiveMQ·EMQX·KubeEdge·k3s·AWS·阿里云，题库 1674→1713 题 | +39 |
 
 ## 部署与自定义域名
 
@@ -290,6 +291,13 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
+
+### 2026-10-19 · feat(题库扩充): 区块链与 Web3 + 嵌入式与物联网 13 个叶子分类 39 题（1674→1713，version 6→7）
+
+> **选题策略**：不再按单域轮转，而是把全库最薄的两个技术域**一次补齐**——区块链与 Web3 的 6 个叶子分类（区块链基础/以太坊/智能合约Solidity/Web3开发/DeFi基础/NFT技术）+ 嵌入式与物联网的 7 个叶子分类（嵌入式C开发/嵌入式Linux/RTOS/STM32/MQTT/边缘计算/IoT平台开发），每类 3 题、共 39 题；每类内部互挂 `relatedIds` 追问链，入库后 13 个分类题量全部 ≥5。
+> **角度与来源**：逐题对照分类内既有题错开角度（如 UTXO vs 账户模型、EIP-1559/4337/4844、delegatecall 代理升级、EIP-712、Aave 清算、NFT 元数据/2981/1155；C 存储类/链接脚本/DMA cache、Buildroot vs Yocto、字符驱动/initramfs、FreeRTOS heap/栈/Tickless、STM32 时钟/DMA IDLE/低功耗、MQTT 5/主题/集群、KubeEdge/k3s/量化、设备影子/OTA/TSL）。来源为 Bitcoin Developer Guide、ethereum.org、EIPs、Solidity/OpenZeppelin、Aave、cppreference、GNU ld/GCC、Buildroot、Linux kernel docs、FreeRTOS、ST RM/AN、OASIS MQTT、HiveMQ、EMQX、KubeEdge、k3s、AWS IoT、阿里云等权威文档。**39 题全过质检闸门、0 跳过；纯数据变更，缓存版本不变。**
+> **同步产物**：新增 39 个 `q/` 分享页；6 个此前题量 <3 的 `c/` 页（245/247/248/260/261/262）首次生成，9 个 `c/` 页与 15 个 `p/` 页内容更新；`sitemap.xml` 的 q 条目 1713 = 题数；`data/manifest.json` + `data/shards/` 由 6 片变为 7 片（末片 29KB），`data/version.json` 同源生成（version=7 / count=1713）。
+> **发布通道**：本机 `github.com:443` 仍不可达，改用 GitHub **Git Data API** 直接创建 blob/tree/commit 并快进 `release`（父提交 `c0776ac`），推后由 Actions 自动部署；不再逐文件走 Contents API，避免几十个文件的串行 PUT。
 
 ### 2026-10-17 · feat(题库扩充) + fix(发布链路): 音视频与流媒体域 18 题（1656→1674），并修复两个发布链路遗留问题
 
