@@ -547,6 +547,96 @@ async function handleSaveReport(env, request, origin) {
   }
 }
 
+/* ---------- 题目报错反馈 ---------- */
+
+async function hashReportIp(env, ip) {
+  const salt = env.REPORT_SALT || env.ADMIN_EMAIL || "iti-report";
+  const data = new TextEncoder().encode(String(ip || "unknown") + "|" + salt);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function handleCreateReport(env, request, origin) {
+  const db = env.USERS;
+  await ensureReportTables(db);
+  let b = {};
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  /* 蜜罐：机器人填了就静默成功，不写库 */
+  if (String(b.hp || "").trim()) return jsonResp({ ok: true, id: 0 }, origin);
+
+  const qid = parseInt(b.questionId, 10);
+  const title = String(b.title || "").trim().slice(0, 200);
+  const detail = String(b.detail || "").trim();
+  const contact = String(b.contact || "").trim().slice(0, 120);
+  const pageUrl = String(b.pageUrl || "").trim().slice(0, 300);
+  if (!qid || qid < 1 || qid > 9999999) return jsonResp({ error: "题目编号不正确" }, origin, 400);
+  if (detail.length < 5) return jsonResp({ error: "请把问题描述写清楚（至少 5 个字）" }, origin, 400);
+  if (detail.length > 2000) return jsonResp({ error: "问题描述太长了（最多 2000 字）" }, origin, 400);
+
+  let user = null;
+  try { user = await sessionUser(db, request); } catch (_) {}
+  const ip = (request.headers.get("CF-Connecting-IP") || request.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+  const ipHash = await hashReportIp(env, ip);
+  const now = Date.now();
+  try {
+    const cnt = await db.prepare("SELECT COUNT(*) AS n FROM reports WHERE ip_hash = ? AND created_at > ?")
+      .bind(ipHash, now - 86400000).first();
+    if ((cnt && cnt.n || 0) >= 5) return jsonResp({ error: "今天的反馈次数已达上限（5 条），明天再试或直接联系站长" }, origin, 429);
+    const ins = await db.prepare(
+      "INSERT INTO reports (question_id, question_title, detail, contact, page_url, status, ip_hash, user_id, admin_note, created_at, updated_at) " +
+      "VALUES (?, ?, ?, ?, ?, 'open', ?, ?, '', ?, ?)")
+      .bind(qid, title, detail, contact, pageUrl, ipHash, user ? user.id : 0, now, now).run();
+    const id = (ins.meta && ins.meta.last_row_id) || 0;
+    return jsonResp({ ok: true, id: id }, origin);
+  } catch (e) {
+    return jsonResp({ error: "反馈暂时存不进去，请稍后重试或复制反馈" }, origin, 500);
+  }
+}
+
+async function handleAdminReports(env, request, origin) {
+  const db = env.USERS;
+  const admin = await requireAdmin(db, request);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, origin, 403);
+  await ensureReportTables(db);
+  const url = new URL(request.url);
+  const status = String(url.searchParams.get("status") || "open");
+  const allowed = ["open", "fixed", "rejected", "all"];
+  const st = allowed.indexOf(status) >= 0 ? status : "open";
+  try {
+    const sql = st === "all"
+      ? "SELECT id, question_id, question_title, detail, contact, page_url, status, admin_note, user_id, created_at, updated_at FROM reports ORDER BY created_at DESC LIMIT 200"
+      : "SELECT id, question_id, question_title, detail, contact, page_url, status, admin_note, user_id, created_at, updated_at FROM reports WHERE status = ? ORDER BY created_at DESC LIMIT 200";
+    const stmt = st === "all" ? db.prepare(sql) : db.prepare(sql).bind(st);
+    const rows = await stmt.all();
+    const counts = { open: 0, fixed: 0, rejected: 0 };
+    const c = await db.prepare("SELECT status, COUNT(*) AS n FROM reports GROUP BY status").all();
+    for (const r of (c.results || [])) if (counts[r.status] != null) counts[r.status] = r.n;
+    return jsonResp({ reports: rows.results || [], counts: counts }, origin);
+  } catch (e) {
+    return jsonResp({ reports: [], counts: { open: 0, fixed: 0, rejected: 0 }, note: "reports_unavailable" }, origin);
+  }
+}
+
+async function handleAdminReportStatus(env, request, id, origin) {
+  const db = env.USERS;
+  const admin = await requireAdmin(db, request);
+  if (!admin) return jsonResp({ error: "需要管理员权限" }, origin, 403);
+  await ensureReportTables(db);
+  let b = {};
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const status = String(b.status || "");
+  if (["open", "fixed", "rejected"].indexOf(status) < 0) return jsonResp({ error: "status 只能是 open/fixed/rejected" }, origin, 400);
+  const note = String(b.note || "").trim().slice(0, 500);
+  try {
+    const r = await db.prepare("UPDATE reports SET status = ?, admin_note = ?, updated_at = ? WHERE id = ?")
+      .bind(status, note, Date.now(), id).run();
+    if (!r.meta || r.meta.changes === 0) return jsonResp({ error: "反馈不存在" }, origin, 404);
+    return jsonResp({ ok: true, status: status }, origin);
+  } catch (e) {
+    return jsonResp({ error: "更新失败，请稍后重试" }, origin, 500);
+  }
+}
+
 async function handleAdminUsers(env, request, origin) {
   const db = env.USERS;
   const admin = await requireAdmin(db, request);
@@ -650,6 +740,26 @@ const SITE_ORIGIN    = "https://itinterview.com.cn";
 
 /* 建表自愈：即使忘了跑 wrangler d1 execute，启动后第一次请求也会把表补齐。
    ⚠️ 必须整段 try/catch —— 建表失败绝不能连带打断登录/收藏等既有接口。 */
+/* ---------- 题目报错反馈（20261019） ----------
+   站内反馈，不要求 GitHub 账号；匿名可提交，按 IP 每天限 5 条。
+   表不存在时静默自愈，失败也不影响其它接口。 */
+let reportTablesPromise = null;
+function ensureReportTables(db) {
+  if (!reportTablesPromise) {
+    reportTablesPromise = (async () => {
+      for (const ddl of [
+        "CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTOINCREMENT, question_id INTEGER NOT NULL DEFAULT 0, question_title TEXT NOT NULL DEFAULT '', detail TEXT NOT NULL DEFAULT '', contact TEXT NOT NULL DEFAULT '', page_url TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'open', ip_hash TEXT NOT NULL DEFAULT '', user_id INTEGER DEFAULT 0, admin_note TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)",
+        "CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, created_at)",
+        "CREATE INDEX IF NOT EXISTS idx_reports_ip ON reports(ip_hash, created_at)",
+        "CREATE INDEX IF NOT EXISTS idx_reports_q ON reports(question_id, created_at)",
+      ]) {
+        try { await db.prepare(ddl).run(); } catch (_) { /* 表/索引已存在 */ }
+      }
+    })().catch(() => {});
+  }
+  return reportTablesPromise;
+}
+
 let submitTablesPromise = null;
 function ensureSubmitTables(db) {
   if (!submitTablesPromise) {
@@ -1700,6 +1810,13 @@ export default {
         if ((m = /^\/admin\/users\/(\d+)\/reset$/.exec(p)) && request.method === "POST")
           return await handleAdminResetPassword(env, request, parseInt(m[1]), corsOrigin);
         if (p === "/admin/users" && request.method === "GET") return await handleAdminUsers(env, request, corsOrigin);
+
+        /* ---- 题目报错反馈（20261019）---- */
+        await ensureReportTables(db);
+        if (p === "/report" && request.method === "POST") return await handleCreateReport(env, request, corsOrigin);
+        if (p === "/admin/reports" && request.method === "GET") return await handleAdminReports(env, request, corsOrigin);
+        if ((m = /^\/admin\/reports\/(\d+)\/status$/.exec(p)) && request.method === "POST")
+          return await handleAdminReportStatus(env, request, parseInt(m[1]), corsOrigin);
 
         /* ---- 用户投稿 + 专家群组审核 + 待入库（20260919f 新增；inbank 系列 20260919h 追加）---- */
         await ensureSubmitTables(db);      // 建表自愈（内部已 try/catch，失败不影响上面任何接口）

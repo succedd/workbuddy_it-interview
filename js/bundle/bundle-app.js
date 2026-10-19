@@ -827,7 +827,7 @@
       renderSidebar(parseHash());
       const r = parseHash();
       /* 这些页的可见性/内容都取决于服务端角色，提权或降级后需要重跑一次路由 */
-      if (r.parts[0] === "admin" && ["users", "submissions", "groups", "inbox"].indexOf(r.parts[1]) >= 0) route();
+      if (r.parts[0] === "admin" && ["users", "submissions", "groups", "inbox", "reports"].indexOf(r.parts[1]) >= 0) route();
     } catch (e) {}
   };
 
@@ -876,6 +876,12 @@
         if (!window.Account) return deferredPage("帐号管理");
         if (!App.requireServerAdmin()) return;
         return Account.renderAdminPage();
+      }
+      /* 题目报错反馈（20261019）：服务端管理员专属的纠错处理队列。 */
+      if (sub === "reports") {
+        if (!window.Submit) return deferredPage("报错反馈");
+        if (!App.requireServerAdmin()) return;
+        return window.Submit.renderReports();
       }
       /* 投稿审核（20260919f）：admin + expert 都能进，服务端按 role 裁剪可见范围；
          expert 可选「未分配」的投稿，避免没人管的分组把投稿卡死。 */
@@ -1246,6 +1252,7 @@
     if (window.Account && Account.isServerAdmin()) {
       html += navSec("site", "", `
         ${navItem("/admin/inbox", "download", "待入库", p0 === "admin" && r.parts[1] === "inbox", App.inboxPending || 0)}
+        ${navItem("/admin/reports", "alert", "报错反馈", p0 === "admin" && r.parts[1] === "reports", App.reportPending || 0)}
         ${navItem("/admin/users", "users", "帐号管理", p0 === "admin" && r.parts[1] === "users")}
         ${navItem("/admin/groups", "layers", "专家群组", p0 === "admin" && r.parts[1] === "groups")}`);
     }
@@ -3416,34 +3423,57 @@
         U.toast("已标记「考到过」，感谢反馈 🙏", "success");
       };
     }
-    /* 纠错反馈（2026-10-19）：原先直接 window.open GitHub Issue，
-       国内网络/弹窗拦截下用户会感觉「点了没反应」。改为先弹站内表单，
-       可复制反馈内容，再按需打开 GitHub；至少有明确的可见反馈。 */
+    /* 纠错反馈（20261019）：站内提交，不跳 GitHub、不要求账号；
+       写入 Worker /report → D1 reports，管理端「报错反馈」处理。
+       网络失败/接口未部署时保留「复制反馈」兜底，不丢用户写的内容。 */
     $("#report-btn").onclick = () => {
       const m = U.modal({ title: "报错 / 纠错" });
       m.body.innerHTML = `<p class="muted" style="margin:0 0 10px">题目：<b>#${q.id}</b> ${U.esc(q.title)}</p>
         <label class="field"><span>问题描述</span><textarea id="report-text" placeholder="例如：答案里的 …… 写错了；正确应该是 ……" style="min-height:110px"></textarea></label>
-        <p class="muted" style="font-size:12px;margin:8px 0 0">「打开 GitHub 提交」会新开 Issue 页；如果 GitHub 打不开，点「复制反馈」把内容发给我即可。</p>`;
+        <label class="field"><span>联系方式（可选）</span><input id="report-contact" type="text" placeholder="微信 / 邮箱，方便我回复你" autocomplete="off"></label>
+        <input id="report-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <p class="muted" style="font-size:12px;margin:8px 0 0">提交后进入站内反馈队列，管理员能看到并标记处理状态；联系方式不会公开。</p>`;
       const ta = m.body.querySelector("#report-text");
+      const contact = m.body.querySelector("#report-contact");
+      const hp = m.body.querySelector("#report-hp");
       setTimeout(() => { try { ta.focus(); } catch (e) {} }, 50);
-      const reportText = () => "题目：#" + q.id + " " + (q.title || "") + "\n链接：" + location.origin + "/question/" + q.id + "\n问题描述：\n" + ((ta.value || "").trim() || "（未填写）");
+      const reportText = () => "题目：#" + q.id + " " + (q.title || "") + "\n链接：" + location.origin + "/question/" + q.id +
+        "\n联系方式：" + ((contact.value || "").trim() || "（未填写）") + "\n问题描述：\n" + ((ta.value || "").trim() || "（未填写）");
       const copy = document.createElement("button");
       copy.className = "btn"; copy.type = "button"; copy.textContent = "复制反馈";
       copy.onclick = async () => {
         const ok = await U.copyText(reportText());
         U.toast(ok ? "反馈内容已复制，可直接发给我" : "复制失败，请手动选中复制", ok ? "success" : "warn");
       };
-      const openGh = document.createElement("button");
-      openGh.className = "btn btn-primary"; openGh.type = "button"; openGh.textContent = "打开 GitHub 提交";
-      openGh.onclick = () => {
-        const u = "https://github.com/succedd/workbuddy_it-interview/issues/new?title=" + encodeURIComponent("[纠错] 题目 #" + q.id + " " + (q.title || ""))
-          + "&body=" + encodeURIComponent(reportText());
-        window.open(u, "_blank");
-        U.toast("已尝试打开 GitHub；若页面打不开，请用「复制反馈」", "info");
-      };
+      const submit = document.createElement("button");
+      submit.className = "btn btn-primary"; submit.type = "button"; submit.textContent = "提交反馈";
       const close = document.createElement("button");
       close.className = "btn"; close.type = "button"; close.textContent = "关闭"; close.onclick = () => m.close();
-      m.foot.appendChild(close); m.foot.appendChild(copy); m.foot.appendChild(openGh);
+      submit.onclick = async () => {
+        const detail = (ta.value || "").trim();
+        if (detail.length < 5) { U.toast("请把问题描述写清楚（至少 5 个字）", "warn"); try { ta.focus(); } catch (e) {} return; }
+        submit.disabled = true; submit.textContent = "提交中…";
+        try {
+          if (!window.Account || typeof Account.call !== "function") throw new Error("反馈服务还在加载，请稍后重试，或先点「复制反馈」");
+          const r = await Account.call("POST", "/report", {
+            questionId: q.id, title: q.title || "", detail: detail,
+            contact: (contact.value || "").trim(), pageUrl: location.origin + "/question/" + q.id,
+            hp: (hp.value || "").trim()
+          });
+          if (!r || !r.ok) throw new Error((r && r.error) || "提交失败");
+          m.body.innerHTML = `<div style="text-align:center;padding:22px 6px"><div style="font-size:44px;line-height:1">✅</div>
+            <h3 style="margin:10px 0 6px">已收到反馈</h3>
+            <p class="muted" style="margin:0">编号 <b>#${r.id || "-"}</b>。我会尽快核对，感谢你帮题库纠错。</p></div>`;
+          m.foot.innerHTML = "";
+          const done = document.createElement("button");
+          done.className = "btn btn-primary"; done.type = "button"; done.textContent = "关闭"; done.onclick = () => m.close();
+          m.foot.appendChild(done);
+        } catch (e) {
+          submit.disabled = false; submit.textContent = "提交反馈";
+          U.toast((e && e.message) || "提交失败，可先复制反馈", "error");
+        }
+      };
+      m.foot.appendChild(close); m.foot.appendChild(copy); m.foot.appendChild(submit);
     };
 
     /* ================= AI 变式训练（20260927e） =================

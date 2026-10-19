@@ -167,3 +167,22 @@ CREATE TABLE IF NOT EXISTS rl_submit (
   cnt          INTEGER NOT NULL DEFAULT 0,
   window_start INTEGER NOT NULL
 );
+
+-- 题目报错反馈（20261019）：匿名可提交，按 IP 每日限流
+CREATE TABLE IF NOT EXISTS reports (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  question_id    INTEGER NOT NULL DEFAULT 0,
+  question_title TEXT NOT NULL DEFAULT '',
+  detail         TEXT NOT NULL DEFAULT '',
+  contact        TEXT NOT NULL DEFAULT '',
+  page_url       TEXT NOT NULL DEFAULT '',
+  status         TEXT NOT NULL DEFAULT 'open',   -- open / fixed / rejected
+  ip_hash        TEXT NOT NULL DEFAULT '',
+  user_id        INTEGER DEFAULT 0,
+  admin_note     TEXT NOT NULL DEFAULT '',
+  created_at     INTEGER NOT NULL,
+  updated_at     INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_reports_ip     ON reports(ip_hash, created_at);
+CREATE INDEX IF NOT EXISTS idx_reports_q      ON reports(question_id, created_at);

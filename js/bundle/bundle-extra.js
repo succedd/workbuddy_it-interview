@@ -3397,6 +3397,115 @@ function aiReportHtml(ai, row) {
     load("inbox");
   };
 
+  /* ==================== 题目报错反馈（管理员） ==================== */
+  const RP_STATUS = {
+    open:     { cls: "tag-warning", txt: "待处理" },
+    fixed:    { cls: "tag-success", txt: "已修复" },
+    rejected: { cls: "tag-outline", txt: "已驳回" },
+  };
+
+  S.renderReports = async function () {
+    if (!requireServerAdmin("「报错反馈」是题目纠错的处理队列，只有管理员能看。")) return;
+    document.title = "报错反馈 · IT面试题库";
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>报错反馈</span></div>
+      <h1>报错反馈</h1>
+      <p class="secondary">用户在题目详情页提交的纠错反馈。处理后可标记「已修复 / 已驳回」，备注仅管理员可见。</p>
+      <div class="list-tools" style="margin-bottom:12px">
+        <div class="seg" id="rp-tabs">
+          <button data-st="open" class="active">待处理</button>
+          <button data-st="fixed">已修复</button>
+          <button data-st="rejected">已驳回</button>
+          <button data-st="all">全部</button>
+        </div>
+        <span class="spacer"></span>
+        <button class="btn btn-sm" id="rp-refresh">刷新</button>
+      </div>
+      <div id="rp-list" class="muted" style="padding:18px 0">加载中…</div>`);
+    let status = "open";
+    const box = () => $("#rp-list");
+    const load = async function () {
+      const el = box();
+      if (!el) return;
+      el.innerHTML = '<div class="muted" style="padding:18px 0">加载中…</div>';
+      try {
+        const A = acc();
+        const r = await A.call("GET", "/admin/reports?status=" + encodeURIComponent(status));
+        const list = (r && r.reports) || [];
+        const counts = (r && r.counts) || {};
+        $$("#rp-tabs button").forEach(function (b) {
+          const n = counts[b.dataset.st];
+          const base = { open: "待处理", fixed: "已修复", rejected: "已驳回", all: "全部" }[b.dataset.st];
+          b.textContent = base + (n != null && b.dataset.st !== "all" ? " (" + n + ")" : "");
+        });
+        if (!list.length) {
+          el.innerHTML = '<div class="empty"><div class="em-ic">' + U.icon("check") + '</div><p>' +
+            (status === "open" ? "目前没有待处理的报错反馈" : "这里还没有记录") + '</p></div>';
+          return;
+        }
+        el.innerHTML = list.map(function (r2) {
+          const st = RP_STATUS[r2.status] || RP_STATUS.open;
+          return '<div class="card" style="margin-bottom:12px">' +
+            '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+              '<span class="tag ' + st.cls + '">' + st.txt + '</span>' +
+              '<a href="/question/' + r2.question_id + '" style="font-weight:600">#' + r2.question_id + ' ' + esc(r2.question_title || "（未带标题）") + '</a>' +
+              '<span class="spacer"></span><span class="muted" style="font-size:12px">' + fmt(r2.created_at) + '</span>' +
+            '</div>' +
+            '<div style="margin-top:8px;white-space:pre-wrap;line-height:1.8">' + esc(r2.detail) + '</div>' +
+            (r2.contact ? '<div class="muted" style="font-size:12px;margin-top:6px">联系方式：' + esc(r2.contact) + '</div>' : "") +
+            (r2.admin_note ? '<div class="muted" style="font-size:12px;margin-top:6px">处理备注：' + esc(r2.admin_note) + '</div>' : "") +
+            '<div class="pill-row" style="margin-top:10px">' +
+              (r2.status !== "fixed" ? '<button class="btn btn-sm btn-primary" data-rp="fixed" data-id="' + r2.id + '">标记已修复</button>' : "") +
+              (r2.status !== "rejected" ? '<button class="btn btn-sm" data-rp="rejected" data-id="' + r2.id + '">驳回</button>' : "") +
+              (r2.status !== "open" ? '<button class="btn btn-sm" data-rp="open" data-id="' + r2.id + '">重新打开</button>' : "") +
+            '</div>' +
+          '</div>';
+        }).join("");
+        $$("#rp-list [data-rp]").forEach(function (b) {
+          b.onclick = async function () {
+            const note = await U.prompt("处理备注（可选，仅管理员可见）", "");
+            if (note === null) return;
+            b.disabled = true;
+            try {
+              await acc().call("POST", "/admin/reports/" + b.dataset.id + "/status", { status: b.dataset.rp, note: note });
+              U.toast("已更新反馈状态", "success");
+              S.refreshReportsBadge();
+              load();
+            } catch (e) {
+              b.disabled = false;
+              U.toast((e && e.message) || "更新失败，请稍后重试", "error");
+            }
+          };
+        });
+      } catch (e) {
+        el.innerHTML = '<div class="empty"><div class="em-ic">' + U.icon("alert") + '</div><p>' + esc(e && e.message || "加载失败") + '</p></div>';
+      }
+    };
+    $$("#rp-tabs button").forEach(function (b) {
+      b.onclick = function () {
+        $$("#rp-tabs button").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+        status = b.dataset.st;
+        load();
+      };
+    });
+    $("#rp-refresh").onclick = load;
+    load();
+  };
+
+  S.refreshReportsBadge = async function () {
+    const A = acc();
+    if (!A || !A.isServerAdmin()) {
+      if (window.App && App.reportPending) { App.reportPending = 0; refreshNav(); }
+      return 0;
+    }
+    try {
+      const r = await A.call("GET", "/admin/reports?status=open");
+      const n = (r && r.counts && r.counts.open) || 0;
+      if (n !== (window.App.reportPending || 0)) { window.App.reportPending = n; refreshNav(); }
+      return n;
+    } catch (e) { return 0; }
+  };
+
   /* ==================== 待审角标 ==================== */
 
   /* 只有审核角色才真的发请求；条数变化才重渲染导航，避免无谓的 DOM 抖动。 */
@@ -3435,7 +3544,7 @@ function aiReportHtml(ai, row) {
     /* 启动时先按本地缓存的角色判断（不用等 /auth/me 回来），有 token 就拉一次。
        两个角标各拉各的：待审（open）给 admin+expert，待入库（inbox）只给 admin —— 各自内部
        都先判角色再发请求，非管理员不会白跑一次网络。 */
-    if (window.Account && Account.getToken()) { S.refreshPending(); S.refreshInboxBadge(); }
+    if (window.Account && Account.getToken()) { S.refreshPending(); S.refreshInboxBadge(); S.refreshReportsBadge(); }
     /* 登录 / 退出 / 提权 / 降级后 account.js 会回调 App.onAccountRefreshed，这里包一层补刷角标 */
     if (window.App && typeof App.onAccountRefreshed === "function") {
       const orig = App.onAccountRefreshed;
@@ -3443,6 +3552,7 @@ function aiReportHtml(ai, row) {
         try { orig.apply(this, arguments); } catch (_) {}
         try { S.refreshPending(); } catch (_) {}
         try { S.refreshInboxBadge(); } catch (_) {}
+        try { S.refreshReportsBadge(); } catch (_) {}
       };
     }
   } catch (e) {}
@@ -4781,7 +4891,7 @@ async function pageHelp() {
       ${li("岗位体系", "142 个岗位及细分方向，每个岗位页有必考技术栈、难度分布图和热门题")}
       ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序。手机上筛选条件默认收起成一颗「筛选」按钮，点开才展开，让题目更早出现在首屏")}
       ${li("「考到过」标记", "题目详情页有「🎯 考到过」按钮：这场面试真考到这道题就点一下，帮后来的同学判断重点；同一台设备对同一题只计一次，点完按钮变绿显示累计人次", true)}
-      ${li("来源可追溯", "题目详情页的「来源」显示真实域名（如 ethereum.org、learn.microsoft.com），点一下直达原文；发现内容有误点「报错」提交")}
+      ${li("来源可追溯", "题目详情页的「来源」显示真实域名（如 ethereum.org、learn.microsoft.com），点一下直达原文；发现内容有误点「报错」，填问题描述后站内提交，会显示反馈编号")}
       ${li("长尾分类", "技术体系树里题量极少（不足 3 题）的细分分类不再单独占行，题目并入父分类列表；父分类展开处会有一行「🔒 另有 N 个小分类」提示", true)}
     `)}
     ${sec("panorama", "🌐 题库全景图", `
@@ -4876,6 +4986,7 @@ async function pageHelp() {
       ${li("批量导入 / 备份", "支持 Excel / CSV / JSON / Markdown 导入；本地数据可加密备份到云端")}
       ${li("发布", "配置 GitHub Token 后，题目改动 10 秒自动发布到线上题库，所有访客同步更新")}
       ${li("帐号管理（服务器端）", "登录后侧栏「站点 → 帐号管理」可查看全部用户、启用 / 禁用，以及给他人重置密码。注意：「重置密码」会清空该用户所有登录状态（用于忘记密码的救急），因此不能对自己使用——系统会拦下并提示你改自己密码请去「账号」页")}
+      ${li("报错反馈", "侧栏「站点 → 报错反馈」集中处理用户提交的题目纠错：可看题目、问题描述、联系方式，标记「已修复 / 已驳回 / 重新打开」并写处理备注；待处理数量会显示在侧栏角标上")}
     `)}
     ${sec("faq", "❓ 常见问题", `
       ${li("需要注册吗？", "不需要，打开就能刷；注册只是为了多设备同步学习记录")}
@@ -4887,7 +4998,7 @@ async function pageHelp() {
       ${li("点登录报「连不上服务器」？", "报错里会标注当前页面版本。先按提示刷新一次页面（Ctrl+F5）再试——长时间开着的旧标签页可能还跑着旧代码；仍不行则到「设置 → Cloudflare Worker」点「自动选择可用入口」")}
       ${li("手机端登录总提示「邮箱或密码错误」？", "先别反复重打：见上方「👤 账号与数据」末尾的一分钟判断法——另一台设备「能登」可能只是旧凭证在撑，用无痕窗口即可分清是「密码本身对不上」还是「输入被改了」")}
       ${li("提示「需要管理员权限」？", "说明当前的登录状态已失效（例如密码被重置、账号被禁用，或换了设备）。重新登录一次即可；若反复出现请联系管理员")}
-      ${li("题目答案有误？", "欢迎反馈给管理员纠错，题库会持续迭代")}
+      ${li("题目答案有误？", "题目详情页点「报错」填写问题描述即可站内提交，提交后会显示反馈编号；管理员在后台「报错反馈」里处理")}
       ${li("首页题目总数怎么一直在涨？", "题库由自动化流水线持续补题（每周对薄弱分类扩充并全库质检），总数增长属正常；你本地题库会在打开网站时自动同步，无需任何操作")}
       ${li("「考到过」点错了能撤销吗？", "目前不能撤销；同一台设备对同一题只计一次，误点一次对整体参考价值影响极小，可以忽略")}
     `)}
