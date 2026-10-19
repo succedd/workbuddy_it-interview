@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`276b142`（feat(页面): 12 项页面体检修复 + q/c/p 全量重生成；代码/集合页 `b20ede5`，q 页 `8455d73`/`276b142`）｜缓存版本 `20261009g → 20261019a`｜更新时间：2026-10-19 15:45 (+08)**
+**本轮内容（用户在看到页面体检清单后回复「全做」，WorkBuddy 会话执行）**
+
+- **12 项改动**：① 桌面 Hero 搜索框 `flex` + 760px；② 详情正文/答案 780px 左对齐；③ 来源/更新合并 + 真实域名外链；④ 模拟面试岗位输入 `type=text`；⑤ 首页统计卡改为图标+数字+标签，去掉 `min(count,100)` 环形，21 改称「技术域」；⑥ 刷题计划移动端三列摘要；⑦ 技术体系树搜索（含无匹配提示）；⑧ 安装应用胶囊可关闭且仅首页；⑨ 首页示例保留 Markdown + 首访占位补分片；⑩ 移动端标题 22px + 低频操作「更多」；⑪ q 页「同分类·高频题」插值 + sitemap/canonical/内链无后缀；⑫ 关于页 title、指南 placeholder、桌面 toast 下移。
+- **关键实现**：`css/style.css`（hero/`qd-body`/`stat-tile`/`roadmap-summary`/`cat-tree-search`/`q-actions-more`/toast）、`css/home.css`（示例列表）、`js/app.js`（`srcHost`、来源 meta、树搜索 `nodeMatches/treeHtml(filter)`、统计卡、示例 hydration、更多操作、`pageAbout` title）、`js/guide.js`（指南补充分类搜索/来源/安装提示，日期 10-19）、`index.html`（安装胶囊 home-only + × + 持久关闭，版本 `20261019a`）、`sw.js`（VERSION 同步）、`tools/gen-share-pages.js`（`relatedHtml` 插值、`.html`→无后缀、0 浏览→「新题」）。`js/bundle/` 已用 `bundle-js.py --write` 重跑。
+- **产物**：q/ 1713 + c/ 214 + p/ 129 + sitemap 2062 条全量重生成；`data/*` 未动（题库 1713 / version 8）；`PAGES_GUARD_TEST` 51/51、`validate-question-data`、`smoke-test` 26/26 全过。
+- **发布通道**：GitHub Git Data API（本机 `github.com:443` 不通）。因 2066 个文件超过单次 tree 的稳妥范围，拆成 3 个快进提交：`b20ede5`（11 个代码/文档文件 + 343 个 c/p 页 + sitemap，354 文件）、`8455d73`（q/ 1~888，856 文件）、`276b142`（q/ 889~1753，857 文件）。Actions 三次 `Deploy to Cloudflare Pages` 全部 success（run 39216085136 / 39216743718 / 39217398986）。
+- **核验（全绿）**：线上 `data/version.json` 仍 version 8 / 1713；`q/1718` 200、canonical `/q/1718`、含「同分类·高频题」；`c/257` 200、canonical `/c/257`；首页含 `20261019a`；sitemap q 条目 1713、`.html` 0 条、含 q/1718；线上 `css/style.css` 含 `.hero-search{...760px}`、bundle 含 `q-actions-more/cat-tree-search/home-sample-body`、`sw.js` VERSION `20261019a`。
+
 **最新 release commit：`09938dbe`（fix(data): 修正 1718 答案中英混写，version 7→8；承数据提交 `9791143`）｜数据批次 `2026-10-19-a`（+39 题，1674→1713，version 6→8）｜更新时间：2026-10-19 14:00 (+08)**
 **本轮内容（用户「https://itinterview.com.cn，补充题目」，WorkBuddy 会话执行）**
 
