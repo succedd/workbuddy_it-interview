@@ -915,8 +915,21 @@
         haveSource = true;
       }
     } catch (e) {}
+    /* 版本号必须单调递增（20261019）：原先硬编码 version:1，编辑端每发布一次
+       就把线上 version.json / manifest / shards 从 8 打回 1，三套数据版本互相打架。
+       优先读云端指纹，其次本机上次发布版本，取最大值 +1。 */
+    let nextVersion = 1;
+    try {
+      const meta = await C.fetchMeta();
+      if (meta && Number.isInteger(meta.version) && meta.version > 0) nextVersion = Math.max(nextVersion, meta.version + 1);
+    } catch (_) {}
+    try {
+      const last = parseInt(await DB.getSetting("lastPublishVersion") || "0", 10);
+      if (last > 0) nextVersion = Math.max(nextVersion, last + 1);
+    } catch (_) {}
+    try { await DB.setSetting("lastPublishVersion", nextVersion); } catch (_) {}
     const out = {
-      version: 1,
+      version: nextVersion,
       publishedAt: Date.now(),
       categories: categories,
       positions: positions,

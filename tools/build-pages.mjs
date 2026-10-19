@@ -73,6 +73,20 @@ function generateSharePages() {
   if (result.status !== 0) fail("gen-share-pages.js 退出码：" + result.status);
 }
 
+/* 20261019：编辑端发布只推 published.json + version.json（一次 Contents API 只能写一个文件），
+   manifest/shards 不会跟着走，线上会出现 version.json=9 而 manifest=8 的版本漂移。
+   这里在每次构建时强制从 published.json 重新生成，保证 dist 里的三套数据始终同版本；
+   本地/CI 都需要 python3（GitHub Actions ubuntu-latest 自带）。 */
+function syncDataShards() {
+  const py = process.platform === "win32" ? "python" : "python3";
+  const result = spawnSync(py, [path.join(HERE, "split-published.py"), "--write"], {
+    cwd: ROOT,
+    stdio: "inherit"
+  });
+  if (result.error) fail("无法启动 split-published.py（需要 python3）：" + result.error.message);
+  if (result.status !== 0) fail("split-published.py 退出码：" + result.status);
+}
+
 function validateQuestionData() {
   const result = spawnSync(process.execPath, [path.join(HERE, "validate-question-data.mjs")], {
     cwd: ROOT,
@@ -110,7 +124,8 @@ if (CHECK_ONLY) {
   process.exit(0);
 }
 
-// ---------- 2) 生成分享/SEO 静态页 ----------
+// ---------- 2) 对齐数据分片 + 生成分享/SEO 静态页 ----------
+syncDataShards();
 validateQuestionData();
 generateSharePages();
 
