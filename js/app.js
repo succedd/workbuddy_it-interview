@@ -225,6 +225,9 @@
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
       case "help": return pageHelp();
+      case "feedback":
+        if (!window.Account) return deferredPage("我的反馈");
+        return pageFeedback();
       case "about": return pageAbout();
       case "practice": return pagePractice(r.q);
       case "review": return pageReview();
@@ -700,9 +703,11 @@
       : (posList.length > 1
         ? `<span class="tag tag-outline tag-fold" title="${U.esc(posList.join(" / "))}">+${posList.length} 岗位</span>`
         : "");
+    const ansHit = (matches || []).some(m => m.key === "answer") && (q.answer || "").trim();
     return `<a class="card card-hover q-card" href="/question/${q.id}">
       <div class="q-title">${hl(q.title, "title")}</div>
       <div class="q-excerpt">${hl((q.body || "").replace(/[#*`>]/g, "").slice(0, 100), "body")}</div>
+      ${ansHit ? `<div class="q-answer-hit">答案中命中：${Search.highlight((q.answer || "").replace(/[#*`>]/g, "").slice(0, 180), matches, "answer")}</div>` : ""}
       <div class="q-meta">
         <span class="tag ${diffCls}">${q.difficulty}</span>
         <span class="tag">${U.esc(q.type)}</span>
@@ -2547,7 +2552,7 @@
        只有第一组带 id：键盘 ←/→ 与移动端滑动手势仍按 getElementById("prev-btn") 找它；
        两组统一用 .js-prev / .js-next 类绑定，避免页面里出现重复 id。 */
     const pagerHtml = (withId) => `
-      <div class="qd-pager" style="margin-top:16px">
+      <div class="qd-pager${withId ? " qd-pager-main" : ""}" style="margin-top:16px">
         <button class="btn js-prev"${withId ? ' id="prev-btn"' : ""}>← 上一题</button>
         <button class="btn js-next"${withId ? ' id="next-btn"' : ""}>下一题 →</button>
       </div>`;
@@ -2604,7 +2609,16 @@
       </div>
       <div id="variant-box" style="display:none"></div>
       <div id="grade-box" style="display:none"></div>
-      <div class="qd-answer md" id="answer-box" style="display:none">${noteQuote}${(q.answer || "").trim()
+      <div class="qd-answer md" id="answer-box" style="display:none">
+        <div class="qd-answer-toolbar">
+          <button class="btn btn-sm" id="copy-answer" type="button">${U.icon("copy") || ""} 复制答案</button>
+          <button class="btn btn-sm" id="copy-question" type="button">${U.icon("copy") || ""} 复制题目</button>
+          <span class="spacer"></span>
+          <button class="btn btn-sm" id="qd-font-dec" type="button" aria-label="缩小答案字号">A-</button>
+          <button class="btn btn-sm" id="qd-font-reset" type="button" aria-label="恢复默认字号">A</button>
+          <button class="btn btn-sm" id="qd-font-inc" type="button" aria-label="放大答案字号">A+</button>
+        </div>
+        ${noteQuote}${(q.answer || "").trim()
         ? U.md(q.answer)
         : '<div class="muted" style="padding:8px 0">答案正在从云端载入…（首访只会先取题目清单，答案按需补上，通常几秒内完成）</div>'}</div>
       ${pagerHtml(true)}
@@ -2613,6 +2627,39 @@
       ${pagerHtml(false)}
     `, () => { U.highlightAll(main); });
     $("#show-answer").onclick = () => { const b = $("#answer-box"); b.style.display = b.style.display === "none" ? "block" : "none"; U.highlightAll(b); };
+    /* 答案复制 / 字号（20261020）：面试准备时经常要把题目和答案贴到笔记/微信；
+       字号只作用于答案区，存本机，刷新后保持。 */
+    const ansBox = $("#answer-box");
+    const rawAnswer = () => (q.answer || "").trim();
+    const copyAns = $("#copy-answer");
+    if (copyAns) copyAns.onclick = async () => {
+      const txt = rawAnswer();
+      if (!txt) { U.toast("答案还在载入，稍后再试", "info"); return; }
+      const ok = await U.copyText(txt);
+      U.toast(ok ? "答案已复制（Markdown）" : "复制失败，请手动选中复制", ok ? "success" : "error");
+    };
+    const copyQ = $("#copy-question");
+    if (copyQ) copyQ.onclick = async () => {
+      const txt = "# " + (q.title || "") + "\n\n" + (q.body || "") + "\n\n## 答案\n" + (rawAnswer() || "（答案载入中）")
+        + "\n\n---\n题目链接：" + location.origin + "/question/" + q.id
+        + (q.source ? "\n来源：" + q.source : "");
+      const ok = await U.copyText(txt);
+      U.toast(ok ? "题目已复制（Markdown）" : "复制失败，请手动选中复制", ok ? "success" : "error");
+    };
+    const fsKey = "iti_qd_font";
+    const applyFs = (v) => {
+      const n = Math.max(14, Math.min(20, v || 16));
+      if (ansBox) ansBox.style.setProperty("--qd-fs", n + "px");
+      try { localStorage.setItem(fsKey, String(n)); } catch (e) {}
+    };
+    let curFs = 16;
+    try { curFs = parseInt(localStorage.getItem(fsKey) || "16", 10) || 16; } catch (e) {}
+    applyFs(curFs);
+    const fsChange = (d) => { curFs = Math.max(14, Math.min(20, curFs + d)); applyFs(curFs); U.toast("答案字号：" + curFs + "px", "info"); };
+    const dec = $("#qd-font-dec"), inc = $("#qd-font-inc"), rst = $("#qd-font-reset");
+    if (dec) dec.onclick = () => fsChange(-1);
+    if (inc) inc.onclick = () => fsChange(1);
+    if (rst) rst.onclick = () => { curFs = 16; applyFs(curFs); U.toast("答案字号已恢复", "info"); };
     const moreBtn = $("#q-more-btn"), moreBox = $("#q-actions-more");
     if (moreBtn && moreBox) moreBtn.onclick = () => {
       const open = moreBox.classList.toggle("open");
@@ -2715,19 +2762,22 @@
         U.toast("已标记「考到过」，感谢反馈 🙏", "success");
       };
     }
-    /* 纠错反馈（20261019）：站内提交，不跳 GitHub、不要求账号；
-       写入 Worker /report → D1 reports，管理端「报错反馈」处理。
-       网络失败/接口未部署时保留「复制反馈」兜底，不丢用户写的内容。 */
+    /* 纠错反馈（20261020）：站内提交 + AI 相关性预检 + 反馈进度查询。
+       写入 Worker /report → D1 reports；AI 判定与本题无关会直接拒绝并计次，
+       登录用户累计 3 次封号（匿名按 IP 限流）。网络失败保留「复制反馈」兜底。 */
     $("#report-btn").onclick = () => {
       const m = U.modal({ title: "报错 / 纠错" });
       m.body.innerHTML = `<p class="muted" style="margin:0 0 10px">题目：<b>#${q.id}</b> ${U.esc(q.title)}</p>
         <label class="field"><span>问题描述</span><textarea id="report-text" placeholder="例如：答案里的 …… 写错了；正确应该是 ……" style="min-height:110px"></textarea></label>
         <label class="field"><span>联系方式（可选）</span><input id="report-contact" type="text" placeholder="微信 / 邮箱，方便我回复你" autocomplete="off"></label>
         <input id="report-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-        <p class="muted" style="font-size:12px;margin:8px 0 0">提交后进入站内反馈队列，管理员能看到并标记处理状态；联系方式不会公开。</p>`;
+        <p class="muted" style="font-size:12px;margin:8px 0 0">提交前会由 AI 检查是否与本题相关；无关内容会被拒绝，登录用户累计 3 次将封禁账号（匿名按 IP 限流）。联系方式不会公开。</p>
+        <p style="font-size:12px;margin:8px 0 0"><a href="/feedback" id="report-my-feedback">查看我提交过的反馈 →</a></p>`;
       const ta = m.body.querySelector("#report-text");
       const contact = m.body.querySelector("#report-contact");
       const hp = m.body.querySelector("#report-hp");
+      const myFb = m.body.querySelector("#report-my-feedback");
+      if (myFb) myFb.onclick = (e) => { e.preventDefault(); m.close(); App.go("/feedback"); };
       setTimeout(() => { try { ta.focus(); } catch (e) {} }, 50);
       const reportText = () => "题目：#" + q.id + " " + (q.title || "") + "\n链接：" + location.origin + "/question/" + q.id +
         "\n联系方式：" + ((contact.value || "").trim() || "（未填写）") + "\n问题描述：\n" + ((ta.value || "").trim() || "（未填写）");
@@ -2738,31 +2788,51 @@
         U.toast(ok ? "反馈内容已复制，可直接发给我" : "复制失败，请手动选中复制", ok ? "success" : "warn");
       };
       const submit = document.createElement("button");
-      submit.className = "btn btn-primary"; submit.type = "button"; submit.textContent = "提交反馈";
+      submit.className = "btn btn-primary"; submit.type = "button"; submit.textContent = "检查并提交";
       const close = document.createElement("button");
       close.className = "btn"; close.type = "button"; close.textContent = "关闭"; close.onclick = () => m.close();
+      const saveTicket = (t) => {
+        try {
+          const a = JSON.parse(localStorage.getItem("iti_feedback_tickets") || "[]");
+          a.unshift(t);
+          localStorage.setItem("iti_feedback_tickets", JSON.stringify(a.slice(0, 30)));
+        } catch (e) {}
+      };
       submit.onclick = async () => {
         const detail = (ta.value || "").trim();
         if (detail.length < 5) { U.toast("请把问题描述写清楚（至少 5 个字）", "warn"); try { ta.focus(); } catch (e) {} return; }
-        submit.disabled = true; submit.textContent = "提交中…";
+        submit.disabled = true; submit.textContent = "AI 检查中…";
         try {
           if (!window.Account || typeof Account.call !== "function") throw new Error("反馈服务还在加载，请稍后重试，或先点「复制反馈」");
           const r = await Account.call("POST", "/report", {
-            questionId: q.id, title: q.title || "", detail: detail,
+            questionId: q.id, title: q.title || "", categoryName: q.catName || "", detail: detail,
             contact: (contact.value || "").trim(), pageUrl: location.origin + "/question/" + q.id,
             hp: (hp.value || "").trim()
           });
           if (!r || !r.ok) throw new Error((r && r.error) || "提交失败");
+          saveTicket({ id: r.id, token: r.token || "", questionId: q.id, title: q.title || "", status: "open", createdAt: Date.now() });
           m.body.innerHTML = `<div style="text-align:center;padding:22px 6px"><div style="font-size:44px;line-height:1">✅</div>
             <h3 style="margin:10px 0 6px">已收到反馈</h3>
-            <p class="muted" style="margin:0">编号 <b>#${r.id || "-"}</b>。我会尽快核对，感谢你帮题库纠错。</p></div>`;
+            <p class="muted" style="margin:0">编号 <b>#${r.id || "-"}</b>。查询码已保存在本机，可在「我的反馈」查看处理进度。</p>
+            ${r.warning ? `<p class="muted" style="margin:8px 0 0;color:var(--c-warning)">${U.esc(r.warning)}</p>` : ""}</div>`;
           m.foot.innerHTML = "";
+          const fb = document.createElement("button");
+          fb.className = "btn"; fb.type = "button"; fb.textContent = "查看我的反馈"; fb.onclick = () => { m.close(); App.go("/feedback"); };
           const done = document.createElement("button");
           done.className = "btn btn-primary"; done.type = "button"; done.textContent = "关闭"; done.onclick = () => m.close();
-          m.foot.appendChild(done);
+          m.foot.appendChild(fb); m.foot.appendChild(done);
         } catch (e) {
-          submit.disabled = false; submit.textContent = "提交反馈";
-          U.toast((e && e.message) || "提交失败，可先复制反馈", "error");
+          submit.disabled = false; submit.textContent = "检查并提交";
+          const msg = (e && e.message) || "提交失败，可先复制反馈";
+          if (e && (e.status === 403 || e.status === 429)) {
+            m.body.innerHTML = `<div class="empty" style="padding:18px 6px"><div class="em-ic">${U.icon("shield")}</div><h3>暂时无法提交反馈</h3><p class="muted">${U.esc(msg)}</p></div>`;
+            m.foot.innerHTML = "";
+            const done = document.createElement("button");
+            done.className = "btn btn-primary"; done.type = "button"; done.textContent = "关闭"; done.onclick = () => m.close();
+            m.foot.appendChild(done);
+          } else {
+            U.toast(msg, "warn");
+          }
         }
       };
       m.foot.appendChild(close); m.foot.appendChild(copy); m.foot.appendChild(submit);
@@ -3030,14 +3100,34 @@
     if (sibIdx >= 0 && siblings.length > 1) {
       /* 消费方是**两组**翻页（答案区下方 + 页面最底），所以按类遍历绑定，
          不能再用 $("#next-btn").onclick —— 那样只有第一组生效。 */
-      const goNext = () => App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id);
-      const goPrev = () => App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id);
+      const saveQdScroll = () => { try { sessionStorage.setItem("qd_scroll_" + q.id, String(window.scrollY)); } catch (e) {} };
+      const goNext = () => { saveQdScroll(); App.go("/question/" + siblings[(sibIdx + 1) % siblings.length].id); };
+      const goPrev = () => { saveQdScroll(); App.go("/question/" + siblings[(sibIdx - 1 + siblings.length) % siblings.length].id); };
       $$(".qd-pager .js-next").forEach(b => { b.onclick = goNext; });
       $$(".qd-pager .js-prev").forEach(b => { b.onclick = goPrev; });
+      /* 空闲时预取下一题的答案分片：点「下一题」时少等一次网络（20261020） */
+      try {
+        const nextId = siblings[(sibIdx + 1) % siblings.length].id;
+        if (nextId !== q.id && window.Cloud && Cloud.ensureQuestionBody) {
+          const prefetch = () => Cloud.ensureQuestionBody(nextId).catch(() => {});
+          if ("requestIdleCallback" in window) window.requestIdleCallback(prefetch, { timeout: 3000 });
+          else setTimeout(prefetch, 1500);
+        }
+      } catch (e) {}
     } else {
       /* 该题没有同分类邻居：两组翻页一起藏（原来只处理了带 id 的那一组） */
       $$(".qd-pager").forEach(el => { el.style.display = "none"; });
     }
+    /* 从同组上一题/下一题返回时恢复滚动位置（只恢复一次，恢复后删除） */
+    try {
+      const sk = "qd_scroll_" + q.id;
+      const savedY = sessionStorage.getItem(sk);
+      if (savedY != null) {
+        sessionStorage.removeItem(sk);
+        const y = parseInt(savedY, 10) || 0;
+        setTimeout(() => { try { window.scrollTo(0, y); } catch (e) {} }, 30);
+      }
+    } catch (e) {}
     /* 键盘快捷键：←/→ 切题 · 空格 翻答案 · S 收藏（输入框聚焦或弹窗打开时不响应）
        ⚠️ 但**提示文案只在「有指针 + 能悬浮」的设备上给**（用户 2026-09-19 反馈「手机端出现
        空格键/展开收起答案，移动端没必要出现」）：手机上没有实体键盘，字样纯属噪音；更要紧的是
@@ -4011,6 +4101,14 @@
         <div class="stat"><div class="num" style="color:var(--c-warning)">${s.draft}</div><div class="label">草稿</div></div>
         <div class="stat ai"><div class="num">${s.ai}</div><div class="label">AI 生成</div></div>
       </div>
+      <div class="card" id="data-health" style="margin-top:20px">
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">数据健康（发布版本 / 分片 / 页面）</h2></div>
+        <div id="dh-body" class="muted">正在读取线上版本…</div>
+      </div>
+      <div class="card" id="quality-todo" style="margin-top:20px">
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">内容质量待办</h2><span class="muted" style="font-size:12px">按本机题库统计</span></div>
+        <div id="quality-body" class="muted">统计中…</div>
+      </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">技术体系分布</h2></div><div id="c1" style="height:280px"></div></div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">难度分布</h2></div><div id="c2" style="height:280px"></div></div>
@@ -4046,6 +4144,59 @@
       </div>
     `, () => {
       const axisColor = App.getTheme() === "dark" ? "#aeb9c9" : "#475569";
+      /* 数据健康卡（20261020）：读构建产物 build-info + 线上 version/manifest，三套版本必须一致。
+         线上任何一项对不上就用红字提示，不再靠人肉发现。 */
+      (async function loadDataHealth() {
+        const box = document.getElementById("dh-body");
+        if (!box) return;
+        const j = async (u) => { const r = await fetch(u + (u.indexOf("?") >= 0 ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" }); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); };
+        try {
+          const [bi, ver, man] = await Promise.all([
+            j("/data/build-info.json"), j("/data/version.json"), j("/data/manifest.json")
+          ]);
+          const checks = [
+            ["version.json", ver.version === bi.version && ver.publishedAt === bi.publishedAt],
+            ["manifest", man.version === bi.version && man.publishedAt === bi.publishedAt],
+            ["题数", bi.qPages === bi.count],
+            ["分片", bi.shards >= 1],
+            ["sitemap", bi.sitemapEntries > 0],
+          ];
+          const bad = checks.filter(x => !x[1]);
+          box.innerHTML = `<div class="pill-row" style="margin-bottom:10px">` +
+            checks.map(([n, ok]) => `<span class="tag ${ok ? "tag-success" : "tag-danger"}">${ok ? "✓" : "✗"} ${n}</span>`).join("") +
+            `</div><table class="data"><tbody>
+              <tr><td>线上 version</td><td><b>${ver.version}</b> · ${U.fmtDate(ver.publishedAt)}</td></tr>
+              <tr><td>发布题数</td><td>${bi.count}（q 页 ${bi.qPages} / 分类页 ${bi.cPages} / 岗位页 ${bi.pPages}）</td></tr>
+              <tr><td>manifest / 分片</td><td>${man.version} / ${bi.shards} 片</td></tr>
+              <tr><td>sitemap</td><td>${bi.sitemapEntries} 条</td></tr>
+              <tr><td>构建时间</td><td>${bi.builtAt ? U.fmtDate(Date.parse(bi.builtAt)) : "—"}</td></tr>
+            </tbody></table>` +
+            (bad.length ? `<p class="muted" style="color:var(--c-danger);margin:8px 0 0">发现 ${bad.length} 项不一致：${bad.map(x => x[0]).join("、")}。请检查发布链路或重新构建。</p>`
+              : `<p class="muted" style="color:var(--c-success);margin:8px 0 0">三套版本一致，线上数据健康。</p>`);
+        } catch (e) {
+          box.innerHTML = `<div class="muted">读取失败：${U.esc(e && e.message || e)}。如果这是旧版构建，重新发一次版即可生成 build-info.json。</div>`;
+        }
+      })();
+      /* 内容质量待办（20261020）：先把最容易翻车的几类挑出来，管理端不用逐题翻。
+         只看已发布题；答案 <80 字、无来源 URL、AI 分 0/未复核、归一化标题重复。 */
+      (function renderQualityTodo() {
+        const box = document.getElementById("quality-body");
+        if (!box) return;
+        const qs = (Services.questions || []).filter(q => q.status === "published");
+        const shortAns = qs.filter(q => (q.answer || "").trim().length > 0 && (q.answer || "").trim().length < 80);
+        const noSrc = qs.filter(q => !/^https?:\/\//i.test(String(q.source || "").trim()));
+        const noReview = qs.filter(q => !q.reviewedAt || !(q.aiScore || 0));
+        const norm = (t) => String(t || "").toLowerCase().replace(/[\s\p{P}\p{S}]/gu, "");
+        const seen = new Map(), dups = [];
+        qs.forEach(q => { const k = norm(q.title); if (!k) return; if (seen.has(k)) dups.push(q); else seen.set(k, q); });
+        const row = (label, arr, cls) => `<div style="display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap">
+          <span class="tag ${cls}">${label}</span><b>${arr.length}</b>
+          ${arr.slice(0, 4).map(q => `<a class="tag tag-outline" href="/admin/question/${q.id}" title="${U.esc(q.title)}">#${q.id} ${U.esc((q.title || "").slice(0, 18))}</a>`).join("")}
+        </div>`;
+        box.innerHTML = row("答案过短", shortAns, "tag-warning") + row("无来源链接", noSrc, "tag-outline") + row("AI 未复核/0 分", noReview, "tag-outline") + row("疑似重复标题", dups, "tag-danger")
+          + `<div class="muted" style="font-size:12px;margin-top:6px">提示：答案过短、无来源、疑似重复都可能被用户报错；处理完刷新即可。</div>`;
+      })();
+
       /* 本地浏览最多题目（不依赖 echarts，同步渲染） */
       const localStats = Stats.getLocalStats();
       const tq = localStats.topQuestions || [];
@@ -5986,6 +6137,78 @@
   /* ============================ 关于本站 ============================ */
   /* 关于本站/站长/联系信息；题数、分类数、岗位数、最近更新时间均从 Services 实时读取，
      每天 10:00 自动扩充流水线跑完后这些数字会自动更新，无需手动维护。 */
+  /* ============================ 我的反馈 ============================
+     匿名用户：提交时返回 id + token，本机保存 ticket，按 token 查状态；
+     登录用户：直接 GET /me/feedback（服务端按 user_id），不暴露 token。
+     管理员在「报错反馈」里标记 fixed/rejected 后，这里能看到进度与备注。 */
+  async function pageFeedback() {
+    document.title = "我的反馈 · IT面试题库";
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>我的反馈</span></div>
+      <h1>我的反馈</h1>
+      <p class="secondary">提交过的题目纠错都在这里；管理员标记「已修复 / 未通过」后，刷新即可看到进度。</p>
+      <div id="fb-list" class="muted" style="padding:18px 0">加载中…</div>`);
+    const box = document.getElementById("fb-list");
+    if (!box) return;
+    const localTickets = (() => {
+      try { return JSON.parse(localStorage.getItem("iti_feedback_tickets") || "[]"); } catch (e) { return []; }
+    })();
+    const server = [];
+    let logged = false;
+    if (window.Account && Account.isLoggedIn()) {
+      logged = true;
+      try {
+        const r = await Account.call("GET", "/me/feedback");
+        (r && r.reports || []).forEach(x => server.push({
+          id: x.id, questionId: x.question_id, title: x.question_title || "",
+          status: x.status, note: x.admin_note || "", ai: x.ai_verdict || "",
+          createdAt: x.created_at, updatedAt: x.updated_at, source: "server"
+        }));
+      } catch (e) { /* 离线/未登录降级到本机 ticket */ }
+    }
+    const byId = new Map(server.map(x => [x.id, x]));
+    const pending = localTickets.filter(t => t && t.id && !byId.has(t.id));
+    await Promise.all(pending.map(async (t) => {
+      if (!t.token) {
+        byId.set(t.id, { id: t.id, questionId: t.questionId, title: t.title || "", status: "unknown", note: "升级前提交的旧反馈，无法查询状态", ai: "", createdAt: t.createdAt, source: "local" });
+        return;
+      }
+      try {
+        const r = await Account.call("GET", "/report/status?id=" + encodeURIComponent(t.id) + "&token=" + encodeURIComponent(t.token));
+        const x = r && r.report;
+        if (x) byId.set(t.id, {
+          id: x.id, questionId: x.question_id, title: x.question_title || t.title || "",
+          status: x.status, note: x.admin_note || "", ai: x.ai_verdict || "",
+          createdAt: x.created_at, updatedAt: x.updated_at, source: "local"
+        });
+      } catch (e) {
+        byId.set(t.id, { id: t.id, questionId: t.questionId, title: t.title || "", status: "unknown", note: "查询失败或查询码已失效", ai: "", createdAt: t.createdAt, source: "local" });
+      }
+    }));
+    const items = Array.from(byId.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    if (!items.length) {
+      box.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("check")}</div><h3>还没有提交过反馈</h3>
+        <p class="muted">在题目详情页点「更多 → 报错」即可提交；${logged ? "提交后会自动出现在这里。" : "提交成功后会生成反馈编号和查询码，保存在这台设备上。"}</p>
+        <a class="btn" href="/questions">去刷题</a></div>`;
+      return;
+    }
+    const tag = (st) => st === "fixed" ? '<span class="tag tag-success">已修复</span>'
+      : st === "rejected" ? '<span class="tag tag-danger">未通过</span>'
+      : st === "open" ? '<span class="tag tag-warning">待处理</span>'
+      : '<span class="tag tag-outline">未知</span>';
+    box.innerHTML = items.map(x => `<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        ${tag(x.status)}
+        <a href="/question/${x.questionId}" style="font-weight:600">#${x.questionId} ${U.esc(x.title || "（题目）")}</a>
+        <span class="spacer"></span><span class="muted" style="font-size:12px">提交 ${U.fmtDate(x.createdAt)}</span>
+      </div>
+      ${x.note ? `<div class="muted" style="font-size:13px;margin-top:8px;white-space:pre-wrap">处理备注：${U.esc(x.note)}</div>` : ""}
+      ${x.ai === "irrelevant" || x.ai === "spam" || x.ai === "abuse" ? `<div class="muted" style="font-size:12px;margin-top:6px">AI 判定：与本题无关</div>` : ""}
+      <div class="muted" style="font-size:12px;margin-top:8px">编号 #${x.id}${x.updatedAt && x.updatedAt !== x.createdAt ? " · 更新 " + U.fmtDate(x.updatedAt) : ""}${x.source === "local" ? " · 本机记录" : ""}</div>
+    </div>`).join("") + `<button class="btn" id="fb-refresh">刷新状态</button>`;
+    const rf = document.getElementById("fb-refresh");
+    if (rf) rf.onclick = () => pageFeedback();
+  }
+
   function pageAbout() {
     document.title = "关于本站 · IT面试题库";
     const qs = (Services.questions || []);

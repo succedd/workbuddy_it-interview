@@ -87,6 +87,84 @@ function syncDataShards() {
   if (result.status !== 0) fail("split-published.py 退出码：" + result.status);
 }
 
+/* 20261020：数据健康检查 —— 发布前强制校验 published / version / manifest / shards
+   四套指纹一致，且分片题数能拼回 published。任何一项不一致直接让部署失败，
+   避免再次出现「version.json=9 而 manifest=8」的静默漂移。 */
+function checkDataConsistency() {
+  const read = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  const pub = read("data/published.json");
+  const ver = read("data/version.json");
+  const man = read("data/manifest.json");
+  const count = (pub.questions || []).length;
+  const bad = [];
+  if (ver.version !== pub.version) bad.push(`version.json.version=${ver.version} ≠ published.version=${pub.version}`);
+  if (ver.publishedAt !== pub.publishedAt) bad.push(`version.json.publishedAt≠published.publishedAt`);
+  if (ver.count !== count) bad.push(`version.json.count=${ver.count} ≠ 题数 ${count}`);
+  if (man.version !== pub.version) bad.push(`manifest.version=${man.version} ≠ published.version=${pub.version}`);
+  if (man.publishedAt !== pub.publishedAt) bad.push(`manifest.publishedAt≠published.publishedAt`);
+  if ((man.questions || []).length !== count) bad.push(`manifest 题数 ${(man.questions || []).length} ≠ ${count}`);
+  const shards = fs.readdirSync(path.join(ROOT, "data", "shards")).filter(n => /^s\d+\.json$/.test(n));
+  let shardQ = 0;
+  for (const f of shards) {
+    const d = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "shards", f), "utf8"));
+    if (d.version !== pub.version) bad.push(`${f}.version=${d.version} ≠ ${pub.version}`);
+    if (d.publishedAt !== pub.publishedAt) bad.push(`${f}.publishedAt≠published.publishedAt`);
+    shardQ += (d.questions || []).length;
+  }
+  if (shardQ !== count) bad.push(`分片题数合计 ${shardQ} ≠ ${count}`);
+  if (bad.length) fail("数据指纹不一致：\n  - " + bad.join("\n  - "));
+  console.log("[OK] 数据指纹一致：version=" + pub.version + " / " + count + " 题 / manifest + " + shards.length + " 个分片");
+}
+
+/* 20261020：清掉 q/c/p 里已经不在题库中的旧页（例如 q/1754~1774）。
+   gen-share-pages 只覆盖有效题目，不会删旧文件；不清理会留下能打开、但 sitemap 不含的僵尸页。 */
+function pruneStalePages() {
+  const pub = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "published.json"), "utf8"));
+  const sets = [
+    ["q", new Set((pub.questions || []).map(x => String(x.id) + ".html"))],
+    ["c", new Set((pub.categories || []).map(x => String(x.id) + ".html"))],
+    ["p", new Set((pub.positions || []).map(x => String(x.id) + ".html"))],
+  ];
+  let removed = 0;
+  for (const [dir, valid] of sets) {
+    const full = path.join(ROOT, dir);
+    if (!fs.existsSync(full)) continue;
+    for (const f of fs.readdirSync(full)) {
+      if (!f.endsWith(".html")) continue;
+      if (!valid.has(f)) { fs.unlinkSync(path.join(full, f)); removed += 1; }
+    }
+  }
+  if (removed) console.log("[OK] 已清理 " + removed + " 个已不在题库中的旧静态页");
+}
+
+/* 写进 dist（不落仓库）：管理仪表盘读它展示「线上当前构建」的健康信息。 */
+function writeBuildInfo() {
+  const read = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  const pub = read("data/published.json");
+  const countHtml = (dir) => {
+    const full = path.join(ROOT, dir);
+    return fs.existsSync(full) ? fs.readdirSync(full).filter(n => n.endsWith(".html")).length : 0;
+  };
+  let sitemapEntries = 0;
+  try { sitemapEntries = (fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8").match(/<url>/g) || []).length; } catch (_) {}
+  const info = {
+    builtAt: new Date().toISOString(),
+    version: pub.version,
+    publishedAt: pub.publishedAt,
+    count: (pub.questions || []).length,
+    categories: (pub.categories || []).length,
+    positions: (pub.positions || []).length,
+    qPages: countHtml("q"),
+    cPages: countHtml("c"),
+    pPages: countHtml("p"),
+    shards: fs.readdirSync(path.join(ROOT, "data", "shards")).filter(n => /^s\d+\.json$/.test(n)).length,
+    sitemapEntries,
+  };
+  fs.mkdirSync(path.join(DIST, "data"), { recursive: true });
+  fs.writeFileSync(path.join(DIST, "data", "build-info.json"), JSON.stringify(info, null, 2));
+  console.log("[OK] build-info.json：version=" + info.version + " / q=" + info.qPages + " / sitemap=" + info.sitemapEntries);
+}
+
 function validateQuestionData() {
   const result = spawnSync(process.execPath, [path.join(HERE, "validate-question-data.mjs")], {
     cwd: ROOT,
@@ -124,10 +202,12 @@ if (CHECK_ONLY) {
   process.exit(0);
 }
 
-// ---------- 2) 对齐数据分片 + 生成分享/SEO 静态页 ----------
+// ---------- 2) 对齐数据分片 + 校验指纹 + 生成/清理分享页 ----------
 syncDataShards();
+checkDataConsistency();
 validateQuestionData();
 generateSharePages();
+pruneStalePages();
 
 // ---------- 3) 清空并重建 dist ----------
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -202,6 +282,7 @@ const FORBIDDEN = ["tools", "cloudflare", "netlify", "HANDOVER.md", "README.md",
 const leaked = FORBIDDEN.filter((n) => fs.existsSync(path.join(DIST, n)));
 if (leaked.length) fail("dist/ 里出现内部文件：" + leaked.join(", "));
 
+writeBuildInfo();
 const total = walk(DIST);
 console.log("[OK] dist/ 已生成：" + total + " 个文件（拷贝计数 " + files + "）");
 console.log("[OK] 内部目录未泄漏（tools/ cloudflare/ netlify/ HANDOVER.md README.md 均不在 dist）");

@@ -455,6 +455,7 @@
           <div class="pill-row" style="margin-top:14px">
             <a class="btn btn-sm" href="/submit">${U.icon("plus")} 投稿面试题</a>
             <a class="btn btn-sm" href="/me/submissions">${U.icon("fileText")} 我的投稿</a>
+            <a class="btn btn-sm" href="/feedback">${U.icon("alert")} 我的反馈</a>
             ${A.isReviewer() ? `<a class="btn btn-sm" href="/admin/submissions">${U.icon("check")} 投稿审核</a>` : ""}
           </div>
           <div id="acc-pw-box" style="display:none;margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">

@@ -173,12 +173,14 @@ function page(q, ctx) {
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${desc}">
   <meta property="og:image" content="${OG_IMAGE}">
+  <meta property="og:image:alt" content="${title}">
   <meta property="og:url" content="${qUrl}">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
   <meta name="twitter:description" content="${desc}">
   <meta name="twitter:image" content="${OG_IMAGE}">
+  <meta name="twitter:image:alt" content="${title}">
   <link rel="canonical" href="${qUrl}">
   <script type="application/ld+json">${jsonLd(q)}</script>
   <script type="application/ld+json">${breadcrumbLd(q, ctx)}</script>
@@ -301,6 +303,7 @@ function collectionPage(kind, id, name, intro, questions, canonical, appUrl) {
   <meta property="og:type" content="website">
   <meta property="og:title" content="${esc(name)}面试题 · IT面试题库">
   <meta property="og:description" content="${esc(stripMd(intro).slice(0, 155))}">
+  <meta property="og:image:alt" content="${esc(name)}面试题 · IT面试题库">
   <meta property="og:url" content="${canonical}">
   <meta property="og:site_name" content="IT面试题库">
   <script type="application/ld+json">${JSON.stringify(jsonLdData).replace(/</g, "\\u003c")}</script>

@@ -173,6 +173,7 @@ CREATE TABLE IF NOT EXISTS reports (
   id             INTEGER PRIMARY KEY AUTOINCREMENT,
   question_id    INTEGER NOT NULL DEFAULT 0,
   question_title TEXT NOT NULL DEFAULT '',
+  category_name  TEXT NOT NULL DEFAULT '',
   detail         TEXT NOT NULL DEFAULT '',
   contact        TEXT NOT NULL DEFAULT '',
   page_url       TEXT NOT NULL DEFAULT '',
@@ -180,6 +181,10 @@ CREATE TABLE IF NOT EXISTS reports (
   ip_hash        TEXT NOT NULL DEFAULT '',
   user_id        INTEGER DEFAULT 0,
   admin_note     TEXT NOT NULL DEFAULT '',
+  reporter_token TEXT NOT NULL DEFAULT '',       -- 匿名查询码（32 hex）
+  ai_verdict     TEXT NOT NULL DEFAULT '',       -- relevant / irrelevant / spam / abuse / skipped
+  ai_reason      TEXT NOT NULL DEFAULT '',
+  ai_checked_at  INTEGER DEFAULT 0,
   created_at     INTEGER NOT NULL,
   updated_at     INTEGER NOT NULL
 );

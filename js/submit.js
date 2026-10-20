@@ -1303,6 +1303,13 @@ function aiReportHtml(ai, row) {
     fixed:    { cls: "tag-success", txt: "已修复" },
     rejected: { cls: "tag-outline", txt: "已驳回" },
   };
+  const RP_AI = {
+    relevant:   { cls: "tag-success", txt: "AI 相关" },
+    irrelevant: { cls: "tag-danger",  txt: "AI 判无关" },
+    spam:       { cls: "tag-danger",  txt: "AI 判广告" },
+    abuse:      { cls: "tag-danger",  txt: "AI 判辱骂" },
+    skipped:    { cls: "tag-outline", txt: "AI 未判定" },
+  };
 
   S.renderReports = async function () {
     if (!requireServerAdmin("「报错反馈」是题目纠错的处理队列，只有管理员能看。")) return;
@@ -1347,10 +1354,12 @@ function aiReportHtml(ai, row) {
           return '<div class="card" style="margin-bottom:12px">' +
             '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
               '<span class="tag ' + st.cls + '">' + st.txt + '</span>' +
+              (RP_AI[r2.ai_verdict] ? '<span class="tag ' + RP_AI[r2.ai_verdict].cls + '">' + RP_AI[r2.ai_verdict].txt + '</span>' : "") +
               '<a href="/question/' + r2.question_id + '" style="font-weight:600">#' + r2.question_id + ' ' + esc(r2.question_title || "（未带标题）") + '</a>' +
               '<span class="spacer"></span><span class="muted" style="font-size:12px">' + fmt(r2.created_at) + '</span>' +
             '</div>' +
             '<div style="margin-top:8px;white-space:pre-wrap;line-height:1.8">' + esc(r2.detail) + '</div>' +
+            (r2.ai_reason ? '<div class="muted" style="font-size:12px;margin-top:6px">AI 理由：' + esc(r2.ai_reason) + '</div>' : "") +
             (r2.contact ? '<div class="muted" style="font-size:12px;margin-top:6px">联系方式：' + esc(r2.contact) + '</div>' : "") +
             (r2.admin_note ? '<div class="muted" style="font-size:12px;margin-top:6px">处理备注：' + esc(r2.admin_note) + '</div>' : "") +
             '<div class="pill-row" style="margin-top:10px">' +

@@ -1709,3 +1709,40 @@ body.pan-fs-lock { overflow: hidden; }
 
 /* —— 「考到过」已标记态（20261005a） —— */
 .btn-hit-marked { color: #059669; border-color: rgba(16, 185, 129, .45); }
+
+/* 答案工具栏（20261020）：复制题目/答案 + 字号；粘在答案区顶部，长答案滚动时也能一键复制 */
+.qd-answer { font-size: var(--qd-fs, 16px); }
+.qd-answer-toolbar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: -4px 0 12px; padding: 0 0 10px;
+  border-bottom: 1px dashed var(--border);
+  position: sticky; top: calc(var(--topbar-h, 56px) + 8px);
+  background: var(--c-primary-50); z-index: 3;
+}
+.qd-answer-toolbar .spacer { flex: 1; }
+@media (max-width: 640px) {
+  .qd-answer-toolbar { top: calc(var(--topbar-h, 56px) + 2px); gap: 4px; }
+  .qd-answer-toolbar .btn { padding: 5px 8px; font-size: 12px; }
+}
+
+/* 搜索命中答案的片段（20261020）：此前能搜到但卡片只显示题干，用户不知道为什么命中 */
+.q-answer-hit { margin-top: 6px; font-size: 12px; line-height: 1.7; color: var(--muted); background: var(--c-primary-50); border-left: 3px solid var(--c-primary); border-radius: 4px; padding: 4px 8px; }
+.q-answer-hit mark { background: rgba(245,158,11,.25); color: inherit; border-radius: 2px; padding: 0 1px; }
+
+/* 移动端答案区下方的翻页行：滚到后吸顶，长答案/相关推荐里也能直接切题（20261020） */
+@media (max-width: 640px) {
+  .qd-pager-main { position: sticky; top: calc(var(--topbar-h, 56px) + 4px); z-index: 4; background: var(--bg); padding: 6px 0; border-radius: 8px; }
+  .qd-pager-main .btn { flex: 1; }
+}
+
+/* 无障碍（20261020）：键盘用户跳过导航直达正文；尊重系统减少动态偏好 */
+.skip-link {
+  position: fixed; left: 12px; top: -48px; z-index: 9999;
+  background: var(--c-primary); color: #fff; padding: 8px 14px;
+  border-radius: 8px; text-decoration: none; font-size: 14px;
+  transition: top .15s ease;
+}
+.skip-link:focus { top: 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .card-hover, .btn, .tag, .modal, .modal-mask { animation: none !important; transition: none !important; }
+}
