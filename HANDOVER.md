@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`335c1de`（feat(share): 1713 张逐题 OG 分享封面 + q 页 og:image）｜页面版本 `20261020a`（本轮无 JS/CSS 变化）｜数据 version `9`｜更新时间：2026-10-20 14:20 (+08)**
+**本轮内容（补做 P2#7：每题独立分享封面）**
+
+- **产物**：`assets/og/q/<id>.jpg` 共 **1713 张**，900×472（1200×630 排版后缩放），单张约 31.6KB，合计 **52.9MB**；文件数从 2170 → **3884**（Pages 上限 20000，未超）。
+- **生成器**：`tools/gen-og-images.py` 读 `data/published.json`，按题号/分类/难度/题型/标题/来源生成深蓝品牌卡；支持 `--only <id>` / `--limit N`。题库新增/改标题后重跑即可。
+- **页面接入**：`tools/gen-share-pages.js` 让 q 页 `og:image` / `twitter:image` 指向对应 `/assets/og/q/<id>.jpg`，带 900×472 尺寸与 `og:image:alt`；c/p 页继续用通用 `assets/og-cover.png`。
+- **构建保护**：`tools/build-pages.mjs` 新增 `checkOgImages()`，1713 道题缺任何一张封面直接部署失败，避免线上分享卡片 404。
+- **验证**：本地 `node tools/build-pages.mjs` 通过（3884 文件 / 51 条 guard）；线上 `q/62` 的 `og:image` 指向 `.../assets/og/q/62.jpg`（HTTP 200，`image/jpeg`，23.5KB），`q/1718` 同理；`build-info.json` 仍 version 9 / q=1713 / sitemap=2062；q/1754 仍 404。Actions run 39379436527 **success**。
+- **注意**：① 本轮只改了构建/生成器/q 页，`index.html` 与 JS bundle 不变，缓存版本仍 `20261020a`；② 首次推 Git tree 遇到 GitHub 422「not a valid blob」，等待后重试 ref 成功，最终对象 `335c1de`；③ 仓库体积 +53MB，后续每题封面可复用同一脚本。
+
 **最新 release commit：`bb0b354`（feat(体验): 报错 AI 预检 + 反馈闭环 + 复制答案 + 数据健康 + 内容质量 + 搜索/性能/无障碍）｜缓存版本 `20261020a`｜Worker Version `0e94051e-4362-4a69-b1e5-a6fdefd2ebf6`｜数据 version `9`｜更新时间：2026-10-20 11:25 (+08)**
 **本轮内容（用户要求：P0#1 报错增加 AI 相关性检查 + 无关累计封号；P0/P1/P2 其它全做）**
 
