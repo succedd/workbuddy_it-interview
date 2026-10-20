@@ -105,6 +105,25 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`bb0b354`（feat(体验): 报错 AI 预检 + 反馈闭环 + 复制答案 + 数据健康 + 内容质量 + 搜索/性能/无障碍）｜缓存版本 `20261020a`｜Worker Version `0e94051e-4362-4a69-b1e5-a6fdefd2ebf6`｜数据 version `9`｜更新时间：2026-10-20 11:25 (+08)**
+**本轮内容（用户要求：P0#1 报错增加 AI 相关性检查 + 无关累计封号；P0/P1/P2 其它全做）**
+
+- **Worker（已部署 `0e94051e`）**：
+  - `POST /report` 增加 DeepSeek 相关性预检：判断反馈是否在具体说本题的题干/答案/分类/来源问题；`irrelevant/spam/abuse` 直接拒绝并写 `status=rejected`；`relevant` 正常入库；AI 不可用/超时/无 Key 时 `skipped` 放行转人工（不误杀真实反馈）。
+  - 计次：登录用户 30 天内累计 3 次 AI 判定无关 → `users.status=0` + 删除该用户全部会话，返回 403「账号已被封禁」；匿名按 `ip_hash` 24 小时限流，第 3 次起 429「当前网络已被限制反馈」；第 1/2 次返回 422 并提示当前 X/3。
+  - 新增 `GET /report/status?id=&token=`（匿名凭提交返回的 32 hex 查询码看状态/备注）与 `GET /me/feedback`（登录用户按 user_id 查）；`POST /report` 返回 `{ok,id,token,ai,warning}`。
+  - `reports` 表新增 `category_name / reporter_token / ai_verdict / ai_reason / ai_checked_at`，建表自愈 + `ALTER TABLE` 兼容旧表；admin 列表返回 AI 字段。
+- **前端（`20261020a`）**：
+  - 报错弹窗：提交按钮改「检查并提交」，AI 检查中禁用；无关 422 保留内容并提示计次；封禁/限流 403/429 替换为说明页；成功保存 `{id,token}` 到本机并给「查看我的反馈」。
+  - 新增 `#/feedback`「我的反馈」页：匿名按本机 ticket + token 查状态，登录用户走 `/me/feedback`；显示待处理/已修复/未通过、备注、AI 判定。
+  - 题目答案区新增「复制答案 / 复制题目」（Markdown）+ A-/A+ 字号（本机持久化），答案区工具栏移动端吸顶。
+  - 管理端报错页展示「AI 相关/判无关/判广告/判辱骂/未判定」与理由；管理仪表盘新增「数据健康」卡（version/manifest/shards/q页/c页/p页/sitemap 一致性）与「内容质量待办」（答案过短/无来源/AI 未复核/疑似重复标题）。
+  - 搜索命中答案时结果卡显示「答案中命中」片段；题目页空闲预取下一题分片；移动端翻页行吸顶；同组上一题/下一题恢复滚动位置；新增跳过导航链接与 `prefers-reduced-motion` 降级。
+- **构建/数据健康**：`tools/build-pages.mjs` 每次构建先 `split-published.py --write`，然后强校验 published/version/manifest/shards 指纹（不一致直接失败）；自动清理已不在题库中的 q/c/p 静态页；写 `dist/data/build-info.json` 供管理端健康卡读取。线上 `q/1754~1774` 等旧页已 404，q 页 1713，sitemap 2062。
+- **验证**：Worker mock 单测覆盖 relevant / irrelevant / 3 次封号 / 匿名 3 次限流 / AI skipped / status / me feedback；线上实测（Netlify 桥）relevant → 200 `{id,token,ai:"relevant"}`、irrelevant → 422 `{strikes:1}`、临时 admin 会话 `/admin/reports`+`/me/feedback`+标记 fixed+`/report/status` 全通；测试报告 `id=3/4/5/6` 与临时 session 已从 D1 删除，`reports` 当前 0 条。Actions run 39364049834 **success**；线上首页 `20261020a`、`build-info.json`（version 9 / q=1713 / sitemap=2062）。
+- **未做/下一轮**：P2#7「逐题独立 OG 封面图」本轮只加了逐题 `og:title/description/alt`，真正逐图需要 Pillow 批量生成或 Worker 渲染流水线；其余 P0/P1/P2 已包含。
+- **安全**：本轮 Cloudflare Token 仅用于 Worker 部署，未写入仓库；`.cf-token` 已删除，请到 Cloudflare Revoke/轮换（expires 2026-10-20 23:59）。
+
 **最新 release commit：`bc7e1b9`（fix(data): 题库版本指纹对齐 version 9 + 编辑端版本单调递增 + 构建时同步分片）｜缓存版本 `20261019e → 20261019f`｜数据 version `9`｜更新时间：2026-10-19 21:30 (+08)**
 **本轮内容（用户确认「可以」修复 version.json / manifest / shards 三套版本指纹漂移）**
 
