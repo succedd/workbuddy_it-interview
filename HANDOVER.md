@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`6d73b8f`（fix(反馈/分享): AI 自动驳回不进人工队列 + 微信图片抓取 403 修复）｜缓存版本 `20261020a → 20261020b`｜数据 version `9`｜更新时间：2026-10-20 15:35 (+08)**
+**本轮内容（用户反馈：AI 判无关的内容不该再到管理端审核；微信粘贴链接看不到预览图）**
+
+- **AI 自动驳回不进人工队列**：`js/submit.js` 的管理端报错页在渲染前过滤 `status=rejected && ai_verdict ∈ {irrelevant,spam,abuse}` 的记录；「已驳回/全部」不再展示这些 AI 自动拦截项，也不显示「已驳回」计数，页面加说明「AI 自动拦截的内容不进入人工队列」。D1 仍保留这些内部记录用于 3 次封号/限流计次，管理 UI 不展示；人工只处理真实用户反馈。
+- **微信/QQ 预览图 403 修复**：根因是 `cloudflare/pages/_worker.js` 对所有路径做 UA 过滤，微信/QQ 的图片抓取代理有时**不带 UA**，`empty-ua` 直接 403；现在 `/assets/*` 不参与 UA 过滤（图片是公开资源）。q 页补 `og:image:type` 与 `rel="image_src"`，增强旧解析器兼容。
+- **验证**：线上 `q/62`（WeChat UA）200 且含 `og:image` 900×472 / type / image_src；`assets/og/q/62.jpg` **无 UA 请求也 200**（23.5KB image/jpeg）；`index` 含 `20261020b`；Actions run 39387251465 **success**。
+- **微信说明**：微信个人聊天里**直接粘贴裸 URL 通常不会生成富卡片**，只会是文字链接；正确测试方式是：在微信内打开 `/q/62` → 右上角「…」→「分享给朋友」，或粘贴到 Telegram/QQ 看自动预览。微信按 URL 缓存旧卡片，换一道没分享过的题（如 `/q/1718`）或加 `?v=2` 可绕过旧缓存。
+- **产物**：`index.html`、`sw.js`、`js/submit.js`、`js/bundle/bundle-extra.js`、`cloudflare/pages/_worker.js`、`tools/gen-share-pages.js`、`README.md`；q 页构建时再生；题库数据未变。
+
 **最新 release commit：`335c1de`（feat(share): 1713 张逐题 OG 分享封面 + q 页 og:image）｜页面版本 `20261020a`（本轮无 JS/CSS 变化）｜数据 version `9`｜更新时间：2026-10-20 14:20 (+08)**
 **本轮内容（补做 P2#7：每题独立分享封面）**
 
