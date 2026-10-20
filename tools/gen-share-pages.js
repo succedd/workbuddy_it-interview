@@ -178,7 +178,9 @@ function page(q, ctx) {
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:width" content="900">
   <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:alt" content="${title}">
+  <link rel="image_src" href="${ogImage}">
   <meta property="og:url" content="${qUrl}">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">

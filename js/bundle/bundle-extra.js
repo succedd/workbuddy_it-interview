@@ -3418,6 +3418,7 @@ function aiReportHtml(ai, row) {
     setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>报错反馈</span></div>
       <h1>报错反馈</h1>
       <p class="secondary">用户在题目详情页提交的纠错反馈。处理后可标记「已修复 / 已驳回」，备注仅管理员可见。</p>
+      <div class="muted" id="rp-ai-note" style="font-size:12px;margin:0 0 10px"></div>
       <div class="list-tools" style="margin-bottom:12px">
         <div class="seg" id="rp-tabs">
           <button data-st="open" class="active">待处理</button>
@@ -3438,12 +3439,23 @@ function aiReportHtml(ai, row) {
       try {
         const A = acc();
         const r = await A.call("GET", "/admin/reports?status=" + encodeURIComponent(status));
-        const list = (r && r.reports) || [];
-        const counts = (r && r.counts) || {};
+        const raw = (r && r.reports) || [];
+        /* AI 直接驳回（无关/广告/辱骂）不进入人工审核队列：服务端保留记录用于计次，
+           管理端不展示、也不计入「已驳回」数量。这里的过滤是产品口径：
+           人工只处理真实用户对题目的反馈。 */
+        const autoRejected = function (x) {
+          return x && x.status === "rejected" && ["irrelevant", "spam", "abuse"].indexOf(x.ai_verdict) >= 0;
+        };
+        const hiddenAuto = raw.filter(autoRejected).length;
+        const list = raw.filter(function (x) { return !autoRejected(x); });
+        const counts = Object.assign({}, (r && r.counts) || {});
+        if (counts.rejected != null) counts.rejected = Math.max(0, counts.rejected - hiddenAuto);
+        const note = document.getElementById("rp-ai-note");
+        if (note) note.textContent = "AI 自动判定无关/广告/辱骂的反馈已直接拦截，不进入人工队列；这里只显示人工处理记录。";
         $$("#rp-tabs button").forEach(function (b) {
           const n = counts[b.dataset.st];
           const base = { open: "待处理", fixed: "已修复", rejected: "已驳回", all: "全部" }[b.dataset.st];
-          b.textContent = base + (n != null && b.dataset.st !== "all" ? " (" + n + ")" : "");
+          b.textContent = base + (n != null && b.dataset.st !== "all" && b.dataset.st !== "rejected" ? " (" + n + ")" : "");
         });
         if (!list.length) {
           el.innerHTML = '<div class="empty"><div class="em-ic">' + U.icon("check") + '</div><p>' +

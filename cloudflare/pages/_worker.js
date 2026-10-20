@@ -411,13 +411,17 @@ export default {
     if (INTERNAL_RE.test(path)) return harden(notFound());
 
     const isData = path === "/data" || path.indexOf("/data/") === 0;
+    /* 静态图片（含逐题 OG 封面）不参与 UA 过滤：微信/QQ 的图片抓取代理
+       有时不带 UA 或带自定义 UA，此前会被 "empty-ua" 403 掉，表现为
+       "链接有标题但分享卡片没有预览图"。图片本身就是公开资源，允许直取。 */
+    const isAsset = path.indexOf("/assets/") === 0;
 
     // ② 先认人：脚本 / 爬虫 / 无头浏览器、AI 训练抓取，以及
     //    「UA 自称搜索引擎但来源网络完全对不上」的伪装者 —— 全站一律拒绝。
     //    这里放行的是：真实搜索引擎（白名单 UA + 来源 ASN 对得上）与普通浏览器。
     //    注意微信 / 微博 / QQ 的链接预览抓取器都不在 BOT_RE 里，所以分享卡片不受影响。
     const cls = classifyUa(ua, request.cf);
-    if (cls.reason) {
+    if (cls.reason && !isAsset) {
       return harden(isData ? jsonDeny(cls.reason, path) : denyHtml(cls.reason));
     }
 
