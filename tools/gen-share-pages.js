@@ -148,6 +148,9 @@ function page(q, ctx) {
   const desc = esc(excerpt(q));
   const qUrl = `${SITE}/q/${q.id}`;
   const appUrl = `${SITE}/question/${q.id}`;
+  /* 逐题分享封面（20261020）：1200x630 排版后压成 1000x525 JPEG，
+     由 tools/gen-og-images.py 生成；爬虫不执行页面 Canvas，必须有静态图。 */
+  const ogImage = `${SITE}/assets/og/q/${q.id}.jpg`;
   const bodyHtml = q.body ? mdToHtml(q.body) : "";
   const answerHtml = q.answer ? mdToHtml(q.answer) : "";
   /* 同分类高频题内链（20261005a）：按浏览量取同分类其它 4 题，站内互链强化 SEO 抓取，
@@ -172,14 +175,16 @@ function page(q, ctx) {
   <meta property="og:type" content="article">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${desc}">
-  <meta property="og:image" content="${OG_IMAGE}">
+  <meta property="og:image" content="${ogImage}">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
   <meta property="og:image:alt" content="${title}">
   <meta property="og:url" content="${qUrl}">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
   <meta name="twitter:description" content="${desc}">
-  <meta name="twitter:image" content="${OG_IMAGE}">
+  <meta name="twitter:image" content="${ogImage}">
   <meta name="twitter:image:alt" content="${title}">
   <link rel="canonical" href="${qUrl}">
   <script type="application/ld+json">${jsonLd(q)}</script>

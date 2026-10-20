@@ -116,6 +116,20 @@ function checkDataConsistency() {
   console.log("[OK] 数据指纹一致：version=" + pub.version + " / " + count + " 题 / manifest + " + shards.length + " 个分片");
 }
 
+/* 20261020：逐题分享封面必须齐全 —— q 页的 og:image 指向 assets/og/q/<id>.jpg，
+   题库新增题后如果忘了重跑 tools/gen-og-images.py，线上分享卡片会 404。
+   这里在构建时硬校验，缺一张就让部署失败（比线上才发现好）。 */
+function checkOgImages() {
+  const pub = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "published.json"), "utf8"));
+  const missing = (pub.questions || []).filter(q => !fs.existsSync(path.join(ROOT, "assets", "og", "q", String(q.id) + ".jpg")));
+  if (missing.length) {
+    fail("缺少 " + missing.length + " 张题目分享封面（assets/og/q/<id>.jpg）。\n" +
+      "  请在本地运行：python3 tools/gen-og-images.py\n" +
+      "  缺的题号示例：" + missing.slice(0, 10).map(q => q.id).join(", "));
+  }
+  console.log("[OK] 题目分享封面齐全：" + (pub.questions || []).length + " 张");
+}
+
 /* 20261020：清掉 q/c/p 里已经不在题库中的旧页（例如 q/1754~1774）。
    gen-share-pages 只覆盖有效题目，不会删旧文件；不清理会留下能打开、但 sitemap 不含的僵尸页。 */
 function pruneStalePages() {
@@ -205,6 +219,7 @@ if (CHECK_ONLY) {
 // ---------- 2) 对齐数据分片 + 校验指纹 + 生成/清理分享页 ----------
 syncDataShards();
 checkDataConsistency();
+checkOgImages();
 validateQuestionData();
 generateSharePages();
 pruneStalePages();
