@@ -3976,7 +3976,7 @@
       pool = pool.slice(0, num);
     } else { pool = Services.published().sort(() => Math.random() - 0.5).slice(0, num); }
     if (!pool.length) { U.toast("题库题目不足", "warn"); return; }
-    let i = 0, t0 = Date.now(), unknownList = [], mastery = { master: 0, familiar: 0, unknown: 0 }, cov = {};
+    let i = 0, t0 = Date.now(), unknownList = [], marks = {}, mastery = { master: 0, familiar: 0, unknown: 0 }, cov = {};
     const show = () => {
       const q = pool[i];
       (q.tags || []).forEach(t => cov[t] = (cov[t] || 0) + 1);
@@ -3997,6 +3997,7 @@
       const tick = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $("#timer").innerHTML = U.icon("clock") + " " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }, 1000);
       $("#sa").onclick = () => { const b = $("#ab"); b.style.display = "block"; $("#mark").style.display = "flex"; U.highlightAll(b); };
       const mk = async (m) => {
+        marks[q.id] = m;
         mastery[m]++;
         /* 标「不会/不熟悉」的题同步进错题本，纳入艾宾浩斯复习闭环（与练习页行为一致） */
         if (m === "unknown" || m === "familiar") {
@@ -4009,15 +4010,44 @@
         clearInterval(tick); next();
       };
       $$("#mark button").forEach(b => b.onclick = () => mk(b.dataset.m));
-      const next = () => { clearInterval(tick); if (i < pool.length - 1) { i++; show(); } else finishMock(pos, years, pool, mastery, unknownList, cov, t0); };
+      const next = () => { clearInterval(tick); if (i < pool.length - 1) { i++; show(); } else finishMock(pos, years, pool, mastery, unknownList, cov, t0, marks); };
       $("#next").onclick = next;
     };
     show();
   }
-  async function finishMock(pos, years, pool, mastery, unknownList, cov, t0) {
+  async function finishMock(pos, years, pool, mastery, unknownList, cov, t0, marks) {
     const sec = Math.floor((Date.now() - t0) / 1000);
     const covKeys = Object.keys(cov);
-    let md = `# 模拟面试报告\n\n- 岗位：${pos ? pos.name : "通用"}\n- 年限：${years}\n- 题目数：${pool.length}\n- 用时：${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}\n- 掌握：${mastery.master} 不熟悉：${mastery.familiar} 不会：${mastery.unknown}\n- 技术覆盖：${covKeys.join("、")}\n\n## 需加强的题目\n${unknownList.length ? unknownList.map(t => "- " + t).join("\n") : "（无）"}\n`;
+    /* 逐题结果：mark 是本次面试的原始判断，用于报告建议；skip 表示未标记 */
+    const results = pool.map(q => ({ q: q, mark: (marks || {})[q.id] || "skip" }));
+    const weak = results.filter(r => r.mark === "familiar" || r.mark === "unknown");
+    const weakCat = new Map();
+    weak.forEach(r => {
+      const name = r.q.catName || "未分类";
+      const cur = weakCat.get(name) || { name: name, id: r.q.categoryId, count: 0 };
+      cur.count++; weakCat.set(name, cur);
+    });
+    const topCats = [...weakCat.values()].sort((a, b) => b.count - a.count).slice(0, 3);
+    /* 覆盖缺口只代表“本次没抽到”，不代表不会；避免误导用户 */
+    const covered = new Set(covKeys);
+    const gaps = (pos ? Services.skillsOf(pos.id) : []).filter(s => {
+      const name = s.techName || "";
+      return s.required && name && !covered.has(name) && !pool.some(q => q.catName === name || (q.tags || []).indexOf(name) >= 0);
+    }).slice(0, 4);
+    const statusText = m => m === "master" ? "掌握" : m === "familiar" ? "不熟悉" : m === "unknown" ? "不会" : "未标记";
+    const statusCls = m => m === "master" ? "tag-success" : m === "familiar" ? "tag-warning" : m === "unknown" ? "tag-danger" : "tag-outline";
+    const weakLink = "/practice?scope=weak&mode=seq";
+    const recItems = [];
+    if (weak.length) recItems.push(`<li><b>错题本</b>：本次 ${weak.length} 题已自动加入错题本（不熟悉 ${mastery.familiar} · 不会 ${mastery.unknown}），已按艾宾浩斯排期。<a href="${weakLink}">按到期顺序复习 →</a></li>`);
+    else recItems.push(`<li><b>本次没有标记不熟悉/不会</b>：可以再做一组 20 题限时小测，或换一个岗位交叉验证。</li>`);
+    topCats.slice(0, 2).forEach(c => {
+      const href = c.id != null ? `/practice?scope=cat&cat=${c.id}&mode=seq` : `/questions?q=${encodeURIComponent(c.name)}`;
+      recItems.push(`<li><b>薄弱分类 · ${U.esc(c.name)}</b>（${c.count} 题）：<a href="${href}">按该分类顺序刷 →</a></li>`);
+    });
+    if (pos) recItems.push(`<li><b>岗位题单</b>：回到 ${U.esc(pos.name)} 的「基础 → 进阶 → 冲刺」题单，把这次暴露的薄弱点串起来。<a href="/practice?scope=pos&pos=${pos.id}&mode=seq">进入岗位题单 →</a></li>`);
+    if (gaps.length) recItems.push(`<li><b>本次未抽到的必考技术栈</b>：${gaps.map(s => s.categoryId != null ? `<a href="/category?cat=${s.categoryId}">${U.esc(s.techName)}</a>` : `<a href="/questions?q=${encodeURIComponent(s.techName)}">${U.esc(s.techName)}</a>`).join("、")}（只是没抽到，不代表不会；建议下一轮覆盖）</li>`);
+    const resultHtml = `<details class="card" style="max-width:640px;margin:12px auto 0;text-align:left"><summary style="cursor:pointer;font-weight:700">逐题结果（${results.length} 题）</summary><div style="margin-top:8px;font-size:13px;line-height:1.9">${results.map(r => `<div><span class="tag ${statusCls(r.mark)}">${statusText(r.mark)}</span> <a href="/question/${r.q.id}">${U.esc(r.q.title)}</a></div>`).join("")}</div></details>`;
+    let md = `# 模拟面试报告\n\n- 岗位：${pos ? pos.name : "通用"}\n- 年限：${years}\n- 题目数：${pool.length}\n- 用时：${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}\n- 掌握：${mastery.master} 不熟悉：${mastery.familiar} 不会：${mastery.unknown}\n- 技术覆盖：${covKeys.join("、")}\n\n## 下一步建议\n${recItems.map(x => "- " + x.replace(/<[^>]+>/g, "")).join("\n")}\n\n## 逐题结果\n${results.map(r => `- [${statusText(r.mark)}] ${r.q.title}（${location.origin}/question/${r.q.id}）`).join("\n")}\n`;
     /* 云端保存：登录后写入，失败静默，绝不打断面试结果展示 */
     let saved = false;
     try {
@@ -4069,6 +4099,12 @@
         <div class="card"><div class="num" style="color:var(--c-danger)">${mastery.unknown}</div><div class="label">不会</div></div>
       </div>
       <p class="secondary">技术方向覆盖：${covKeys.join("、") || "—"}</p>
+      <div class="card" style="max-width:640px;margin:12px auto;text-align:left">
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">下一步建议</h2><span class="muted" style="font-size:12px">按优先级排序</span></div>
+        <ol style="margin:0;padding-left:20px;font-size:14px;line-height:1.8">${recItems.join("")}</ol>
+      </div>
+      ${weak.length ? `<div class="note" style="max-width:640px;margin:0 auto 10px">已自动加入错题本 <b>${weak.length}</b> 题 · <a href="${weakLink}">去错题本复习 →</a></div>` : ""}
+      ${resultHtml}
       ${histHtml}
       <div class="pill-row" style="justify-content:center">
         <button class="btn btn-primary" id="exp">${U.icon("download")} 导出报告(MD)</button>
