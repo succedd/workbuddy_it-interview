@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`34066af`（feat(账号): 忘记密码 + Resend 邮件重置）｜缓存版本 `20261021b → 20261021c`｜Worker Version `74f216cb-40f8-4eed-800c-6b4a8e4ef27c`｜数据 version `12`｜更新时间：2026-10-21 21:53 (+08)**
+**本轮内容（按用户指定顺序，P0#3 账号找回密码）**
+
+- **Resend**：已注册/验证域名 `itinterview.com.cn`，DKIM/SPF/MX/CNAME 已写入 Cloudflare 并 verified；Worker Secret 已设置 `RESEND_API_KEY`、`RESEND_FROM=IT面试题库 <noreply@itinterview.com.cn>`。`tools/setup-resend.mjs` 已保留（dry-run / `--apply` 自动写 DNS，后续换域名可复用）。
+- **Worker**（`74f216cb`）：新增 `POST /auth/forgot`（Resend 发信；已注册/未注册都返回相同成功；邮箱 3 次/小时 + IP 10 次/小时限流）、`POST /auth/reset`（token 30 分钟、一次性、只存 SHA-256；重置后删全部会话）。新增 D1 `password_resets` 表（自愈建表）。
+- **前端**（`20261021c`）：登录页「忘记密码？」→ 邮箱弹窗；邮件链接 `/#/account?reset=<token>` → 重置密码页（8-72 位、二次确认）；成功后清本机会话回登录页。
+- **验证**：Resend 域名 `verified`；自定义域名实际发信成功；`/auth/forgot` 对未知邮箱返回 200、对真实邮箱发信成功；临时用户预先插入 reset 记录后 `/auth/reset` 200，测试用户/重置记录/session 已清理。线上 `index` 20261021c、bundle-extra 含「忘记密码/设置新密码」；`/auth/reset` 非法 token 400。Actions run 39611719304 **success**。
+- **安全**：`.resend-key` / `.cf-token` 本轮用完将删除；Cloudflare Token 建议 Revoke（expires 2026-10-21 23:59），Resend Key 如不再用于自动化也建议轮换。
+- **下一步**：按顺序进入 P1#4「模拟面试复盘」（错题自动入错题本 + 报告建议 + 可选 AI 追问）。
+
 **最新 release commit：`68568db`（feat(岗位): 岗位题单 + 题量偏少提示）｜缓存版本 `20261021a → 20261021b`｜数据 version `12` / 1759 题｜更新时间：2026-10-21 16:36 (+08)**
 **本轮内容（按用户指定顺序，P0#2 岗位题单从「有题」到「够刷」）**
 
