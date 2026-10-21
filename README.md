@@ -198,6 +198,7 @@
 | 2026-10-17 | 2026-10-17-c | 信息安全：零信任架构→SDL安全左移→应急响应→威胁检测体系→等保2.0→密码学基础 追问链 | +7 |
 | 2026-10-17 | 2026-10-17-d | 音视频与流媒体域瘦叶子补充（人工批次，与当日自动扩充三链不撞车）：6 个分类各补 3 题——YUV 4:2:0 与色度抽样、H.264 编码流程（帧内/帧间预测/变换量化）、CBR 与 VBR 选型、FFmpeg 滤镜链、moov 与 faststart、音画同步排查、NACK·FEC·GCC 弱网对抗、SDP 协商与 codec 优先级、Simulcast 与 SVC、m3u8 与 EXT-X 标签、ABR 切档、LL-HLS/HTTP-FLV/WebRTC 低延迟对比、音频 3A、QoS/QoE 埋点、跨平台 SDK 分层、CDN 调度排查、连麦三路线、秒开与 GOP cache。来源 FFmpeg 官方文档·ITU-T H.264·RFC 8216/4585·W3C WebRTC-SVC·MDN·腾讯云文档，题库 1656→1674 题 | +18 |
 | 2026-10-19 | 2026-10-19-a | 区块链与Web3（6 个叶子分类）+ 嵌入式与物联网（7 个叶子分类）各补 3 题：UTXO/分叉重组/SPV、EIP-1559/4337/4844、代理升级/unchecked/EIP-712、RPC nonce/事件 reorg/chainId、Aave 清算/稳定币/预言机、NFT 元数据/2981/1155；C 存储类/链接脚本/DMA cache、Buildroot/Yocto/字符驱动/initramfs、FreeRTOS heap/栈/Tickless、STM32 时钟/DMA IDLE/低功耗、MQTT 5/主题/集群、KubeEdge/k3s/量化、设备影子/OTA/TSL。来源 Bitcoin Developer Guide·ethereum.org·EIPs·Solidity·OpenZeppelin·Aave·cppreference·GNU ld/GCC·Buildroot·kernel docs·FreeRTOS·ST·OASIS·HiveMQ·EMQX·KubeEdge·k3s·AWS·阿里云，题库 1674→1713 题 | +39 |
+| 2026-10-21 | 2026-10-21-a | 软件测试 / 测试架构师：10 题覆盖多团队测试策略与质量门禁、测试平台四层架构、Pact 契约测试、质量度量体系、测试环境与数据治理、全链路压测、AI 辅助测试、混沌工程、微服务可测试性评审、3 人 QA 团队 0→1 质量体系；另补 2 道初级基本功（测试用例四要素、冒烟/回归/验收区别）。来源 Martin Fowler·Pact·DORA·Testcontainers·Grafana k6·Google Testing Blog·Chaos Mesh·Google SRE·ISTQB，题库 1713→1725 题，**测试架构师岗位从 0 题补到 10 题** | +12 |
 
 ## 部署与自定义域名
 
@@ -295,6 +296,10 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
+
+### 2026-10-21 · feat(题库扩充): 软件测试 / 测试架构师 12 题（1713→1725，version 9→10）
+
+> **本轮**：软件测试域只有 34 题，且「测试架构师」岗位 0 题。补 12 题：① 多团队分层测试策略与质量门禁；② 测试平台四层架构（用例/调度/环境/分析）；③ 消费者驱动契约测试（Pact 工作流与边界）；④ 质量度量体系（缺陷逃逸率/覆盖率/MTTR/flaky 率与指标陷阱）；⑤ 测试环境与测试数据治理；⑥ 全链路压测（影子流量/数据隔离/容量评估/熔断）；⑦ AI/LLM 辅助测试的能力边界与评估；⑧ 混沌工程落地与爆炸半径控制；⑨ 微服务可测试性评审；⑩ 3 人 QA 团队 0→1 质量体系；⑪ 测试用例四要素与合格预期结果；⑫ 冒烟/回归/验收的区别与接力。新题 ID `1754~1765`，全部带真实权威来源；`测试架构师` 岗位覆盖 0→10 题。构建通过（1725 题 / sitemap 2077 / OG 1725 张）。
 
 ### 2026-10-20 · feat(体验): 报错 AI 预检 + 反馈闭环 + 复制答案 + 数据健康 + 内容质量 + 无障碍
 
