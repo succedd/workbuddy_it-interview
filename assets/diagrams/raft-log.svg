@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker></defs>
+  <rect width="900" height="430" fill="#f8fafc"/>
+  <text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">Raft 日志复制与 commitIndex</text>
+  <text x="40" y="64" font-size="15" fill="#64748b">Leader 追加日志 → Follower 复制 → 多数确认后提交并 apply</text>
+  <rect x="55" y="100" width="185" height="60" rx="12" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="80" y="126" font-size="16" font-weight="700" fill="#1e40af">Leader</text>
+  <text x="80" y="148" font-size="12" fill="#334155">term=5, nextIndex/matchIndex</text>
+  <rect x="55" y="205" width="185" height="60" rx="12" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="80" y="231" font-size="16" font-weight="700" fill="#166534">Follower A</text>
+  <text x="80" y="253" font-size="12" fill="#334155">已复制到 index=7</text>
+  <rect x="55" y="310" width="185" height="60" rx="12" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="80" y="336" font-size="16" font-weight="700" fill="#166534">Follower B</text>
+  <text x="80" y="358" font-size="12" fill="#334155">已复制到 index=6</text>
+  <rect x="330" y="90" width="500" height="250" rx="14" fill="#fff" stroke="#cbd5e1"/>
+  <text x="350" y="120" font-size="14" font-weight="700" fill="#0f172a">日志（log index → term / command）</text>
+  <g font-size="13" fill="#334155">
+    <text x="350" y="155">Leader:   1/4  2/4  3/4  4/5  5/5  6/5  7/5</text>
+    <text x="350" y="190">FollowerA:1/4  2/4  3/4  4/5  5/5  6/5  7/5</text>
+    <text x="350" y="225">FollowerB:1/4  2/4  3/4  4/5  5/5  6/5  —</text>
+    <text x="350" y="272" fill="#0f766e" font-weight="700">commitIndex = 6（多数派已复制）</text>
+    <text x="350" y="300" fill="#0f766e">index 7 尚未拿到多数确认，不能 apply</text>
+  </g>
+  <line x1="240" y1="130" x2="320" y2="160" stroke="#2563eb" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="240" y1="235" x2="320" y2="195" stroke="#0f766e" stroke-width="2.5" marker-end="url(#b)"/>
+  <line x1="240" y1="340" x2="320" y2="230" stroke="#0f766e" stroke-width="2.5" marker-end="url(#b)"/>
+  <text x="350" y="380" font-size="13" fill="#64748b">规则：只有 commitIndex 之前的日志才能 apply；Leader 只能提交当前 term 的日志，再间接提交旧 term。</text>
+</svg>

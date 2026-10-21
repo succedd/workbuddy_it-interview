@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker>
+  </defs>
+  <rect width="900" height="430" fill="#f8fafc"/>
+  <text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">MySQL 索引下推（ICP）</text>
+  <text x="40" y="64" font-size="15" fill="#64748b">把能利用索引的 WHERE 条件下推到存储引擎，减少不必要的回表</text>
+  <rect x="40" y="95" width="250" height="90" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="65" y="128" font-size="17" font-weight="700" fill="#1e40af">Server 层</text>
+  <text x="65" y="156" font-size="14" fill="#334155">解析 / 优化 / 最终过滤</text>
+  <rect x="610" y="95" width="250" height="90" rx="14" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="635" y="128" font-size="17" font-weight="700" fill="#047857">InnoDB 存储引擎</text>
+  <text x="635" y="156" font-size="14" fill="#334155">二级索引扫描 / 回表</text>
+  <line x1="290" y1="125" x2="600" y2="125" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <text x="365" y="112" font-size="13" fill="#2563eb">① 下推索引条件</text>
+  <line x1="600" y1="158" x2="290" y2="158" stroke="#0f766e" stroke-width="3" marker-end="url(#b)"/>
+  <text x="330" y="200" font-size="13" fill="#0f766e">② 只返回满足索引条件的行</text>
+  <rect x="210" y="255" width="480" height="70" rx="12" fill="#fff" stroke="#cbd5e1"/>
+  <text x="240" y="285" font-size="16" font-weight="700" fill="#0f172a">没有 ICP</text>
+  <text x="240" y="309" font-size="13" fill="#64748b">按最左前缀回表，再由 Server 层过滤 → 回表次数多</text>
+  <rect x="210" y="345" width="480" height="70" rx="12" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="240" y="375" font-size="16" font-weight="700" fill="#166534">有 ICP</text>
+  <text x="240" y="399" font-size="13" fill="#166534">索引列条件在引擎内先过滤，不满足就不回表</text>
+</svg>

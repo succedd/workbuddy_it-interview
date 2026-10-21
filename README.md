@@ -200,6 +200,7 @@
 | 2026-10-19 | 2026-10-19-a | 区块链与Web3（6 个叶子分类）+ 嵌入式与物联网（7 个叶子分类）各补 3 题：UTXO/分叉重组/SPV、EIP-1559/4337/4844、代理升级/unchecked/EIP-712、RPC nonce/事件 reorg/chainId、Aave 清算/稳定币/预言机、NFT 元数据/2981/1155；C 存储类/链接脚本/DMA cache、Buildroot/Yocto/字符驱动/initramfs、FreeRTOS heap/栈/Tickless、STM32 时钟/DMA IDLE/低功耗、MQTT 5/主题/集群、KubeEdge/k3s/量化、设备影子/OTA/TSL。来源 Bitcoin Developer Guide·ethereum.org·EIPs·Solidity·OpenZeppelin·Aave·cppreference·GNU ld/GCC·Buildroot·kernel docs·FreeRTOS·ST·OASIS·HiveMQ·EMQX·KubeEdge·k3s·AWS·阿里云，题库 1674→1713 题 | +39 |
 | 2026-10-21 | 2026-10-21-a | 软件测试 / 测试架构师：10 题覆盖多团队测试策略与质量门禁、测试平台四层架构、Pact 契约测试、质量度量体系、测试环境与数据治理、全链路压测、AI 辅助测试、混沌工程、微服务可测试性评审、3 人 QA 团队 0→1 质量体系；另补 2 道初级基本功（测试用例四要素、冒烟/回归/验收区别）。来源 Martin Fowler·Pact·DORA·Testcontainers·Grafana k6·Google Testing Blog·Chaos Mesh·Google SRE·ISTQB，题库 1713→1725 题，**测试架构师岗位从 0 题补到 10 题** | +12 |
 | 2026-10-21 | 2026-10-21-b | 覆盖剩余 **12 个 0 题岗位**各 2 题（PCB设计、UI、视觉、企业软件产品、C端产品、业务数据分析、量化、强化学习、研究科学家、低代码、解决方案架构、企业架构），并新增 5 个叶子分类承载新方向（硬件与PCB设计、UI与视觉设计、量化金融、强化学习、低代码平台）。来源 Altium·Material Design·WCAG·NN/g·Atlassian·Kimball·Mode·QuantStart·Investopedia·OpenAI Spinning Up·Stable-Baselines3·Reproducibility Checklist·Papers with Code·lowcode-engine·AWS Well-Architected·Martin Fowler·TOGAF；题库 1725→1749 题，**全站 0 题岗位清零** | +24 |
+| 2026-10-21 | 2026-10-21-c | 经典高频图解 10 题：索引下推（ICP）、fork 写时复制、K8s Pod 生命周期/探针/优雅下线、Raft 日志复制与 commitIndex、CFS 调度、接雨水、二分查找边界、Top K 堆/快选、并查集、ZGC 着色指针/读屏障；答案内嵌 6 张本地 SVG 图解（MySQL ICP / COW / Pod / Raft / 接雨水 / ZGC），来源 MySQL·Linux man-pages·Kubernetes·Raft·LeetCode·OpenJDK；题库 1749→1759 题 | +10 |
 
 ## 部署与自定义域名
 
@@ -297,6 +298,10 @@ node tools/gen-published.js
 ## 更新日志
 
 > 按时间**逆序**记录（最新在最上方）。
+
+### 2026-10-21 · feat(题库扩充): 经典高频图解 10 题（1749→1759，version 11→12）
+
+> **本轮**：按「经典、高质量、不重复、答案可带图」补 10 题，全部为现有标题未覆盖的经典考点：MySQL 索引下推（ICP）、Linux fork 写时复制、Kubernetes Pod 生命周期/探针/优雅下线、Raft 日志复制与 commitIndex、CFS 调度器、接雨水（LeetCode 42）、二分查找边界、Top K 堆/快速选择、并查集、ZGC。答案内嵌 **6 张本地 SVG 图解**（`assets/diagrams/`：MySQL ICP、COW、Pod 生命周期、Raft 日志、接雨水、ZGC），不依赖外链；来源 MySQL/Linux man-pages/Kubernetes/Raft/LeetCode/OpenJDK 官方文档。新题 ID `1790~1799`，构建通过：1759 题 / sitemap 2124 / OG 1759 张。
 
 ### 2026-10-21 · feat(题库扩充): 覆盖全部 0 题岗位 24 题（1725→1749，version 10→11）
 
