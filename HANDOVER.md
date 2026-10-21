@@ -105,6 +105,26 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`d9c6c84`（feat(题库): 经典高频图解 10 题）｜页面版本 `20261020b`（本轮无 JS/CSS 变化）｜数据 version `11 → 12`｜题库 1749 → **1759**｜更新时间：2026-10-21 10:05 (+08)**
+**本轮内容（用户要求「经典、高质量、不重复、答案可带图」）**
+
+- **批次**：`tools/batches/2026-10-21-c.json`，10 题，ID **1790~1799**；每题都避开现有重复标题，覆盖：
+  - MySQL 索引下推（ICP）→ 回表/EXPLAIN `Using index condition`
+  - Linux `fork` 写时复制（COW）→ 页表/缺页异常
+  - Kubernetes Pod 生命周期 → startup/readiness/liveness + preStop/优雅下线
+  - Raft 日志复制与 commitIndex → 日志匹配/多数派提交/分区恢复
+  - Linux CFS 调度 → vruntime/红黑树/nice 权重
+  - 接雨水（LeetCode 42）→ 双指针正确性证明 + 代码
+  - 二分查找边界 → 循环不变量/lower_bound/死循环
+  - Top K → 小顶堆 O(n log k) vs 快速选择
+  - 并查集 → 路径压缩/按秩合并/判环
+  - ZGC → 着色指针/读屏障/与 G1 的区别
+- **图解**：新增 6 张本地 SVG，直接内嵌在答案 Markdown 中（不依赖外链）：
+  `assets/diagrams/mysql-icp.svg`、`cow-fork.svg`、`k8s-pod-lifecycle.svg`、`raft-log.svg`、`trapping-rain.svg`、`zgc.svg`。
+- **数据**：version **12** / `publishedAt=1792548134153` / count **1759**；manifest/7 shards 同步。
+- **产物**：新增 10 张 OG 封面 `assets/og/q/1790~1799.jpg`；q 页 1759；sitemap 2124；README 自动扩充记录。
+- **验证**：dry 10 新增/0 跳过；build 指纹一致 / 1759 封面 / guard 51；smoke 26/26；线上 `q/1790` 200 且答案内包含 `<img src="/assets/diagrams/mysql-icp.svg">`；SVG 无 UA 也 200（`image/svg+xml`）；`q/1799` 200、`q/1800` 404；`build-info` version 12 / q=1759 / sitemap=2124；Actions run 39530822915 **success**。
+
 **最新 release commit：`4f0d561`（feat(题库): 补齐全部 0 题岗位 24 题）｜页面版本 `20261020b`（本轮无 JS/CSS 变化）｜数据 version `10 → 11`｜题库 1725 → **1749**｜更新时间：2026-10-21 09:48 (+08)**
 **本轮内容（用户指令「全部补」：把剩余 12 个 0 题岗位一次补齐）**
 
