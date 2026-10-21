@@ -904,6 +904,7 @@
         return window.Submit ? Submit.renderInbox() : page404(r.parts.join("/"));
       }
       if (!App.requireAdmin()) return;
+      if (sub === "quality") return pageAdminQuality();
       if (sub === "dashboard") return pageAdminDashboard();
       if (sub === "questions") return pageAdminQuestions();
       if (sub === "question") return pageAdminQuestionEdit(r.parts[2]);
@@ -1240,6 +1241,7 @@
     if (Auth.isAdmin()) {
       html += navSec("admin", "", `
         ${navItem("/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
+        ${navItem("/admin/quality", "alert", "内容质量", p0 === "admin" && r.parts[1] === "quality")}
         ${navItem("/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
         ${navItem("/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
         ${navItem("/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`);
@@ -4798,6 +4800,39 @@
     ok.onclick = login; $("#pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
   }
 
+  /* ============================ 管理员：内容质量 ============================ */
+  async function pageAdminQuality() {
+    document.title = "内容质量 · IT面试题库";
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>内容质量</span></div>
+      <h1>内容质量</h1>
+      <p class="secondary">由 <code>python3 tools/content-audit.py</code> 生成的全库体检报告：近重复、来源失效、答案偏短、无来源。报告只做初筛，不自动下架题目。</p>
+      <div id="cq-body" class="muted" style="padding:18px 0">加载中…</div>`);
+    const box = document.getElementById("cq-body");
+    if (!box) return;
+    let r;
+    try {
+      const res = await fetch("/data/quality-report.json?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      r = await res.json();
+    } catch (e) {
+      box.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("alert")}</div><h3>报告还没生成</h3><p class="muted">在仓库执行：<code>python3 tools/content-audit.py</code>，然后重新发布。</p></div>`;
+      return;
+    }
+    const s = r.summary || {};
+    const card = (n, label, cls) => `<div class="stat"><div class="num" style="${cls ? "color:var(--c-" + cls + ")" : ""}">${n ?? 0}</div><div class="label">${label}</div></div>`;
+    const qlink = (x) => `<a href="/admin/question/${x.id}">#${x.id} ${U.esc((x.title || "").slice(0, 60))}</a>`;
+    const section = (title, list, render, empty) => `<div class="card" style="margin-top:16px"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">${title}</h2><span class="muted" style="font-size:12px">${list.length} 条</span></div>${list.length ? `<div class="muted" style="font-size:13px;line-height:1.9">${list.slice(0, 60).map(render).join("")}</div>` : `<div class="muted">${empty}</div>`}</div>`;
+    box.innerHTML = `<div class="stat-grid">
+        ${card(s.total, "总题数")}${card(s.nearDuplicates, "近重复对", "warning")}${card(s.brokenSources, "来源失效", "danger")}
+        ${card(s.shortAnswers, "答案偏短", "warning")}${card(s.noSource, "无来源", "warning")}${card(s.unverified, "未复核")}
+      </div>
+      <p class="muted" style="font-size:12px;margin:10px 0 0">生成时间：${U.esc(r.generatedAt || "—")} · 来源 404/410 计“失效”，403/超时计“未知”，不自动改题。${s.unknownSources != null ? " 未知来源 " + s.unknownSources + " 条。" : ""}</p>
+      ${section("近重复（建议人工合并）", r.duplicates || [], d => `<div>相似度 <b>${d.similarity}</b>：${qlink(d.a)} ↔ ${qlink(d.b)} <span class="muted">· ${U.esc(d.category || "")}</span></div>`, "本次没有发现 ≥0.82 的近重复。") }
+      ${section("来源失效（404/410）", r.brokenSources || [], d => `<div>${qlink(d)} <span class="tag tag-danger">${U.esc(d.status)}</span> <span class="muted">${U.esc(d.url)}</span></div>`, "没有发现 404/410 来源。") }
+      ${section("答案偏短（<200 字）", r.shortAnswers || [], d => `<div>${qlink(d)} <span class="muted">· ${d.length} 字 · ${U.esc(d.category || "")}</span></div>`, "没有偏短答案。") }
+      ${section("无来源（非 http）", r.noSource || [], d => `<div>${qlink(d)} <span class="muted">· ${U.esc(d.source || "空")}</span></div>`, "所有题都有 http 来源。") }`;
+  }
+
   /* ============================ 管理员：仪表盘 ============================ */
   async function pageAdminDashboard() {
     const s = await Services.stats();
@@ -4814,7 +4849,7 @@
         <div id="dh-body" class="muted">正在读取线上版本…</div>
       </div>
       <div class="card" id="quality-todo" style="margin-top:20px">
-        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">内容质量待办</h2><span class="muted" style="font-size:12px">按本机题库统计</span></div>
+        <div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">内容质量待办</h2><a class="more" href="/admin/quality">完整报告 →</a></div>
         <div id="quality-body" class="muted">统计中…</div>
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
