@@ -105,6 +105,18 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`9db4d13`（feat(题库): 补充软件测试/测试架构师 12 题）｜页面版本 `20261020b`（本轮无 JS/CSS 变化）｜数据 version `9 → 10`｜题库 1713 → **1725**｜更新时间：2026-10-21 09:40 (+08)**
+**本轮内容（用户指令「补充题目」；按 intake-plan 在「软件测试」低题量域 + 零覆盖岗位「测试架构师」做深度补充）**
+
+- **批次**：`tools/batches/2026-10-21-a.json`，12 题，ID **1754~1765**。
+  - 10 道测试架构师方向（高级/中级）：多团队分层测试策略与质量门禁、测试平台四层架构、Pact 消费者驱动契约测试、质量度量体系、测试环境与数据治理、全链路压测、AI/LLM 辅助测试、混沌工程、微服务可测试性评审、3 人 QA 团队 0→1 质量体系。
+  - 2 道初级基本功（功能测试/测试理论基础）：测试用例四要素与合格预期结果、冒烟/回归/验收的区别与接力。
+  - 岗位覆盖：**测试架构师 0 题 → 10 题**；所有题带权威来源（Martin Fowler / Pact / DORA / Testcontainers / Grafana k6 / Google Testing Blog / Chaos Mesh / Google SRE / ISTQB），分类/岗位由 `enrich_questions.py` 解析校验。
+- **数据**：`data/published.json` version **10**、`publishedAt=1792546589940`、count **1725**；`version.json` / `manifest.json` / 7 个 shards 同步 version 10（1713→1725）。
+- **产物**：新增 12 张逐题 OG 封面 `assets/og/q/1754~1765.jpg`；q 页由 Pages 构建生成 1725 个；sitemap 2077 条；c/p 页 216/130。README「自动扩充记录」已登记。
+- **验证**：`enrich_questions --dry` 通过（12 新增/0 跳过）；`build-pages` 通过（数据指纹一致 / 1725 张封面齐全 / 1725 q 页 / sitemap 2077 / guard 51 条）；`smoke-test` 26/26。线上 `data/version.json` version 10/count 1725；`q/1754` 200 且标题正确、OG 指向 `assets/og/q/1754.jpg`；`q/1765` 200、`q/1766` 404；`build-info` q=1725/sitemap=2077；Actions run 39528413302 **success**。
+- **备注**：题库数据 version 10；前端缓存版本仍 `20261020b`，访客无需强刷即可在题库更新后拉到新数据（version.json 网络优先）。q/1754~1765 覆盖旧孤儿页 1754~1774 中对应 ID；1766~1774 已被构建 prune 为 404。
+
 **最新 release commit：`6d73b8f`（fix(反馈/分享): AI 自动驳回不进人工队列 + 微信图片抓取 403 修复）｜缓存版本 `20261020a → 20261020b`｜数据 version `9`｜更新时间：2026-10-20 15:35 (+08)**
 **本轮内容（用户反馈：AI 判无关的内容不该再到管理端审核；微信粘贴链接看不到预览图）**
 
