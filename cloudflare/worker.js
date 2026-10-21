@@ -332,6 +332,98 @@ async function handleRegister(env, request, origin) {
   return jsonResp({ token, user: { id: uid, email, nick, role } }, origin, 201);
 }
 
+/* ---------- 找回密码（Resend 邮件） ---------- */
+async function sha256Hex(s) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(s)));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sendResetEmail(env, to, token) {
+  const key = env.RESEND_API_KEY;
+  if (!key) return { ok: false, error: "mail_not_configured" };
+  const from = env.RESEND_FROM || "IT面试题库 <noreply@itinterview.com.cn>";
+  const link = SITE_ORIGIN + "/#/account?reset=" + encodeURIComponent(token);
+  const html = '<div style="font-family:-apple-system,BlinkMacSystemFont,PingFang SC,Microsoft YaHei,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#0f172a">'
+    + '<h2 style="margin:0 0 12px">重置 IT 面试题库密码</h2>'
+    + '<p style="line-height:1.8;color:#334155">我们收到了你的密码重置请求。点击下面的按钮设置新密码，链接 <b>30 分钟内有效</b>，且只能使用一次。</p>'
+    + '<p style="margin:24px 0"><a href="' + link + '" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">重置密码</a></p>'
+    + '<p style="font-size:12px;color:#94a3b8;line-height:1.7">如果按钮无法点击，请复制链接：<br>' + link + '</p>'
+    + '<p style="font-size:12px;color:#94a3b8;line-height:1.7">如果不是你本人操作，请忽略这封邮件；你的密码不会被修改。</p></div>';
+  try {
+    const resp = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: "Bearer " + key },
+      body: JSON.stringify({ from: from, to: [to], subject: "重置你的 IT 面试题库密码", html: html }),
+    });
+    if (!resp.ok) return { ok: false, error: "resend_http_" + resp.status };
+    return { ok: true };
+  } catch (e) { return { ok: false, error: "resend_network" }; }
+}
+
+async function handleForgotPassword(env, request, origin) {
+  const db = env.USERS;
+  await ensureResetTables(db);
+  const ip = (request.headers.get("cf-connecting-ip") || "x");
+  if (!await rateLimitOk(db, ip)) return jsonResp({ error: "请求过于频繁，稍后再试" }, origin, 429);
+  let b = {};
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const email = String(b.email || "").trim().toLowerCase();
+  if (!validEmail(email)) return jsonResp({ error: "邮箱格式不正确" }, origin, 400);
+  /* 不论邮箱是否存在都返回同样的成功，避免账号枚举 */
+  try {
+    const user = await db.prepare("SELECT id, email FROM users WHERE email = ? AND status = 1").bind(email).first();
+    if (user) {
+      /* 每邮箱 3 次/小时 + 每 IP 10 次/小时（KV 计数，避免邮件轰炸） */
+      if (env.STATS) {
+        const emailKey = "reset:mail:" + (await sha256Hex(email));
+        const ipKey = "reset:ip:" + (ip || "x");
+        const [n1, n2] = await Promise.all([kvInc(env, emailKey, 3600), kvInc(env, ipKey, 3600)]);
+        if (n1 > 3 || n2 > 10) return jsonResp({ ok: true }, origin);
+      }
+      const token = randomHex(32);
+      const tokenHash = await sha256Hex(token);
+      const now = Date.now();
+      try { await db.prepare("DELETE FROM password_resets WHERE expires_at < ?").bind(now).run(); } catch (_) {}
+      await db.prepare("INSERT INTO password_resets (user_id, token_hash, created_at, expires_at, used, ip_hash) VALUES (?, ?, ?, ?, 0, ?)")
+        .bind(user.id, tokenHash, now, now + 30 * 60 * 1000, await sha256Hex(ip || "x")).run();
+      const mail = await sendResetEmail(env, user.email, token);
+      if (!mail.ok) {
+        console.warn("reset mail failed:", mail.error);
+        return jsonResp({ error: "邮件发送失败，请稍后重试或联系管理员" }, origin, 502);
+      }
+    }
+    return jsonResp({ ok: true }, origin);
+  } catch (e) {
+    return jsonResp({ error: "服务暂时不可用，请稍后重试" }, origin, 500);
+  }
+}
+
+async function handleResetPassword(env, request, origin) {
+  const db = env.USERS;
+  await ensureResetTables(db);
+  let b = {};
+  try { b = await request.json(); } catch (_) { return jsonResp({ error: "参数错误" }, origin, 400); }
+  const token = String(b.token || "").trim();
+  const password = String(b.password || "").trim();
+  if (!/^[0-9a-f]{64}$/i.test(token)) return jsonResp({ error: "重置链接无效或已过期" }, origin, 400);
+  if (!validPassword(password)) return jsonResp({ error: "新密码需 8-72 位" }, origin, 400);
+  try {
+    const tokenHash = await sha256Hex(token);
+    const row = await db.prepare("SELECT id, user_id, expires_at, used FROM password_resets WHERE token_hash = ?").bind(tokenHash).first();
+    if (!row || row.used || row.expires_at < Date.now()) return jsonResp({ error: "重置链接无效或已过期，请重新申请" }, origin, 400);
+    const salt = randomHex(16);
+    const passHash = await hashPassword(password, salt);
+    const now = Date.now();
+    await db.prepare("UPDATE users SET pass_hash = ?, salt = ? WHERE id = ?").bind(passHash, salt, row.user_id).run();
+    await db.prepare("UPDATE password_resets SET used = 1 WHERE id = ?").bind(row.id).run();
+    /* 重置后让所有旧会话失效，避免被盗号会话继续使用 */
+    await db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(row.user_id).run();
+    return jsonResp({ ok: true }, origin);
+  } catch (e) {
+    return jsonResp({ error: "重置失败，请稍后重试" }, origin, 500);
+  }
+}
+
 async function handleLogin(env, request, origin) {
   const db = env.USERS;
   const ip = (request.headers.get("cf-connecting-ip") || "x");
@@ -876,6 +968,23 @@ const SITE_ORIGIN    = "https://itinterview.com.cn";
 /* ---------- 题目报错反馈（20261019） ----------
    站内反馈，不要求 GitHub 账号；匿名可提交，按 IP 每天限 5 条。
    表不存在时静默自愈，失败也不影响其它接口。 */
+/* 密码重置 token（只存哈希，不存明文 token） */
+let resetTablesPromise = null;
+function ensureResetTables(db) {
+  if (!resetTablesPromise) {
+    resetTablesPromise = (async () => {
+      for (const ddl of [
+        "CREATE TABLE IF NOT EXISTS password_resets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, token_hash TEXT NOT NULL UNIQUE, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, used INTEGER NOT NULL DEFAULT 0, ip_hash TEXT NOT NULL DEFAULT '')",
+        "CREATE INDEX IF NOT EXISTS idx_pwreset_user ON password_resets(user_id, created_at)",
+        "CREATE INDEX IF NOT EXISTS idx_pwreset_exp ON password_resets(expires_at)",
+      ]) {
+        try { await db.prepare(ddl).run(); } catch (_) {}
+      }
+    })().catch(() => {});
+  }
+  return resetTablesPromise;
+}
+
 let reportTablesPromise = null;
 function ensureReportTables(db) {
   if (!reportTablesPromise) {
@@ -1939,6 +2048,8 @@ export default {
         if (p === "/auth/logout" && request.method === "POST") return await handleLogout(env, request, corsOrigin);
         if (p === "/auth/me" && request.method === "GET") return await handleMe(env, request, corsOrigin);
         if (p === "/auth/password" && request.method === "POST") return await handleChangePassword(env, request, corsOrigin);
+        if (p === "/auth/forgot" && request.method === "POST") return await handleForgotPassword(env, request, corsOrigin);
+        if (p === "/auth/reset" && request.method === "POST") return await handleResetPassword(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request, corsOrigin);
         if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request, corsOrigin);

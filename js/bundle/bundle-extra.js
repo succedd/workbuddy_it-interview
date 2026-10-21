@@ -1850,6 +1850,9 @@ return He}()
   A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
   /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
   A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
+  /* 找回密码（20261021）：发信由 Worker 调 Resend；令牌 30 分钟、一次性、只存哈希 */
+  A.forgotPassword = (email) => call("POST", "/auth/forgot", { email: email });
+  A.resetPassword = (token, password) => call("POST", "/auth/reset", { token: token, password: password });
 
   /* ---------------- 用户投稿 / 审核 / 专家群组（20260919f） ----------------
    * 后端：Cloudflare Worker + D1（/submit、/me/submissions、/admin/*）。
@@ -1883,7 +1886,51 @@ return He}()
   A.adminUserRole = (id, role) => call("POST", "/admin/users/" + id + "/role", { role: role });
 
   /* ---------------- UI：登录/注册页 ---------------- */
+  function resetTokenFromHash() {
+    /* 邮件链接是 /#/account?reset=...；也兼容 /account?reset=... 的 history 路由 */
+    let qs = "";
+    const h = location.hash || "";
+    const i = h.indexOf("?");
+    if (i >= 0) qs = h.slice(i + 1);
+    else qs = String(location.search || "").replace(/^\?/, "");
+    if (!qs) return "";
+    try { return new URLSearchParams(qs).get("reset") || ""; } catch (e) { return ""; }
+  }
+
+  function renderResetPage(token) {
+    setMain(`<div class="section-head"><h2>设置新密码</h2></div>
+      <div class="card" style="max-width:440px;margin:0 auto">
+        <p class="muted" style="font-size:13px">重置链接 30 分钟内有效、只能使用一次；提交后所有旧登录会下线，请用新密码重新登录。</p>
+        <label class="field"><span>新密码（8-72 位）</span><input id="reset-pw" type="password" placeholder="••••••••" autocomplete="new-password"></label>
+        <label class="field"><span>确认新密码</span><input id="reset-pw2" type="password" placeholder="••••••••" autocomplete="new-password"></label>
+        <button class="btn btn-primary full" id="reset-go">设置新密码</button>
+        <div id="reset-out" class="muted" style="margin-top:12px;font-size:13px"></div>
+        <p class="muted" style="font-size:12px;margin-top:12px"><a href="#/account" id="reset-back">返回登录</a></p>
+      </div>`);
+    const out = $("#reset-out");
+    $("#reset-back").onclick = (e) => { e.preventDefault(); history.replaceState(null, "", "#/account"); route(); };
+    $("#reset-go").onclick = async () => {
+      const p1 = $("#reset-pw").value.trim(), p2 = $("#reset-pw2").value.trim();
+      out.style.color = "#DC2626";
+      if (p1.length < 8) { out.textContent = "新密码至少 8 位"; return; }
+      if (p1 !== p2) { out.textContent = "两次输入不一致"; return; }
+      const b = $("#reset-go"); b.disabled = true; b.textContent = "提交中…"; out.textContent = "";
+      try {
+        await A.resetPassword(token, p1);
+        A.logout();
+        out.style.color = "#16A34A"; out.textContent = "密码已重置，请用新密码登录。";
+        U.toast("密码已重置，请重新登录", "success");
+        setTimeout(() => { history.replaceState(null, "", "#/account"); route(); }, 700);
+      } catch (e) {
+        out.style.color = "#DC2626"; out.textContent = e.message || "重置失败，请重新申请";
+        b.disabled = false; b.textContent = "设置新密码";
+      }
+    };
+  }
+
   A.renderLoginPage = function () {
+    const resetToken = resetTokenFromHash();
+    if (resetToken) return renderResetPage(resetToken);
     const user = A.getUser();
     setMain(`
       <div class="section-head"><h2>${user ? "我的帐号" : "登录 / 注册"}</h2></div>
@@ -1919,6 +1966,7 @@ return He}()
           </div>
           <label class="field"><span>邮箱</span><input id="acc-email" type="email" placeholder="you@example.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" /></label>
           <label class="field"><span>密码（至少 8 位）</span><input id="acc-pass" type="password" placeholder="••••••••" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" /></label>
+          <p style="text-align:right;margin:-2px 0 8px"><a href="#" id="acc-forgot" style="font-size:13px">忘记密码？</a></p>
           <label class="field" id="nick-row" style="display:none"><span>昵称（可选）</span><input id="acc-nick" type="text" /></label>
           <div id="acc-ts" style="margin:12px 0"></div>
           <button class="btn btn-primary full" id="acc-go" style="margin-top:8px">注 册</button>
@@ -1966,6 +2014,29 @@ return He}()
     /* 人机验证（开关式）：未配置 sitekey 时 mount 直接返回 null，界面无任何变化 */
     const tsBox = $("#acc-ts");
     if (window.TS && TS.enabled()) TS.mount(tsBox);
+    $("#acc-forgot").onclick = (e) => {
+      e.preventDefault();
+      const m = U.modal({ title: "找回密码" });
+      m.body.innerHTML = `<p class="muted" style="font-size:13px;margin:0 0 10px">输入注册邮箱，我们会发送一封重置邮件（30 分钟内有效）。无论邮箱是否注册，页面都会显示相同提示。</p>
+        <label class="field"><span>邮箱</span><input id="forgot-email" type="email" placeholder="you@example.com" autocomplete="email" value="${U.esc($("#acc-email").value.trim())}"></label>
+        <div id="forgot-out" class="muted" style="font-size:13px"></div>`;
+      const btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.textContent = "发送重置邮件";
+      const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消"; cancel.onclick = () => m.close();
+      const send = async () => {
+        const email = (m.body.querySelector("#forgot-email").value || "").trim();
+        const out = m.body.querySelector("#forgot-out");
+        if (!email) { out.textContent = "请填写邮箱"; return; }
+        btn.disabled = true; btn.textContent = "发送中…"; out.style.color = "#64748B"; out.textContent = "";
+        try {
+          await A.forgotPassword(email);
+          m.body.innerHTML = `<div style="padding:8px 0"><h3 style="margin:0 0 6px">如果邮箱已注册</h3><p class="muted" style="font-size:13px;margin:0">你会收到一封重置邮件，请检查收件箱和垃圾箱；30 分钟内有效。没收到可稍后再试，或联系管理员。</p></div>`;
+          m.foot.innerHTML = ""; const close = document.createElement("button"); close.className = "btn btn-primary"; close.textContent = "关闭"; close.onclick = () => m.close(); m.foot.appendChild(close);
+        } catch (err) {
+          btn.disabled = false; btn.textContent = "发送重置邮件"; out.style.color = "#DC2626"; out.textContent = err.message || "发送失败，请稍后重试";
+        }
+      };
+      btn.onclick = send; m.foot.appendChild(cancel); m.foot.appendChild(btn);
+    };
     $("#tab-login").onclick = () => { mode = "login"; nickRow.style.display = "none"; goBtn.textContent = "登 录"; };
     $("#tab-reg").onclick   = () => { mode = "reg";   nickRow.style.display = "";     goBtn.textContent = "注 册"; };
     goBtn.onclick = async () => {

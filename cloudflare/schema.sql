@@ -191,3 +191,16 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, created_at);
 CREATE INDEX IF NOT EXISTS idx_reports_ip     ON reports(ip_hash, created_at);
 CREATE INDEX IF NOT EXISTS idx_reports_q      ON reports(question_id, created_at);
+
+-- 密码重置 token（20261021）：只存 SHA-256 哈希，30 分钟有效、一次性
+CREATE TABLE IF NOT EXISTS password_resets (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    INTEGER NOT NULL,
+  token_hash TEXT NOT NULL UNIQUE,
+  created_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL,
+  used       INTEGER NOT NULL DEFAULT 0,
+  ip_hash    TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_pwreset_user ON password_resets(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_pwreset_exp  ON password_resets(expires_at);
