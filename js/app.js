@@ -1757,6 +1757,7 @@
           <div class="muted" style="font-size:12px;margin-top:4px">${catLink}</div>
           <div class="q-meta" style="margin-top:10px">
             <span class="tag">${qn} 题</span>
+            ${qn < 5 ? '<span class="tag tag-warning">题量偏少</span>' : ""}
             <!-- 「0 技术栈」与「热度 中」都藏起来（2026-09-24 评审 P2-15）：
                  此前 142 张卡片上的「热度 中」结论完全一致 —— 一水儿相同的标签等于没有标签，
                  反而让整页显得信息稀薄；「0 技术栈」更会让人以为站内是空的。
@@ -1817,6 +1818,31 @@
       <div class="grid grid-cols-3">${bonus.length ? bonus.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>
       <div class="section-head"><h2>题目难度分布</h2></div>
       <div class="card"><div id="pos-chart" style="height:260px"></div></div>
+      ${(() => {
+        /* 岗位题单（20261021）：把岗位题按「基础 → 进阶 → 冲刺」排成可执行顺序；
+           题量 <5 的岗位明确提示，并推荐同阶段题量充足的相邻岗位，避免点进来只有两题。 */
+        const thin = qn < 5;
+        const used = new Set();
+        const take = (pred, n) => {
+          const arr = posQs.filter(q => !used.has(q.id) && pred(q));
+          const out = arr.slice(0, n);
+          out.forEach(q => used.add(q.id));
+          return out;
+        };
+        const base = take(q => q.difficulty === "初级" || q.difficulty === "中级", 8);
+        const adv = take(() => true, 8);
+        const sprint = take(() => true, 8);
+        const row = (q) => `<li style="margin:5px 0"><a href="/question/${q.id}">${U.esc(q.title)}</a> <span class="tag diff-${q.difficulty}" style="transform:scale(.85)">${U.esc(q.difficulty)}</span></li>`;
+        const stageCard = (title, desc, list) => list.length ? `<div class="card"><div class="section-head" style="margin:0 0 6px"><h2 style="font-size:15px">${title}</h2><span class="muted" style="font-size:12px">${list.length} 题</span></div><div class="muted" style="font-size:12px;margin-bottom:6px">${desc}</div><ol style="margin:0;padding-left:20px;font-size:14px;line-height:1.7">${list.map(row).join("")}</ol></div>` : "";
+        const all = thin ? posQs.slice(0, 12) : [];
+        const allCard = thin ? `<div class="card"><div class="section-head" style="margin:0 0 6px"><h2 style="font-size:15px">该岗位全部题目</h2><span class="muted" style="font-size:12px">${posQs.length} 题</span></div><div class="muted" style="font-size:12px;margin-bottom:6px">当前题量较少，先按顺序把这些题过一遍；建议同时看相邻岗位。</div><ol style="margin:0;padding-left:20px;font-size:14px;line-height:1.7">${all.map(row).join("")}</ol></div>` : "";
+        const allPos = Services.positionsByStage().flatMap(x => x.list).filter(x => x.id !== p.id && !Services.isHiddenPosition(x) && (x.stage || "") === (p.stage || ""));
+        const adj = allPos.filter(x => Services.questionCountForPosition(x) >= 8).slice(0, 3);
+        const adjHtml = adj.length ? `<div class="note" style="margin-top:12px;font-size:13px">同阶段题量更足的岗位：${adj.map(x => `<a href="/position/${x.id}">${U.esc(Services.posFullName(x))}（${Services.questionCountForPosition(x)} 题）</a>`).join(" · ")}</div>` : "";
+        return `<div class="section-head"><h2>岗位题单</h2><a class="more" href="/practice?scope=pos&pos=${p.id}&mode=seq">按题单顺序刷 →</a></div>
+          ${thin ? `<div class="note" style="margin-bottom:10px">该岗位题量偏少，目前只有 <b>${qn}</b> 题，题单先覆盖现有题目；后续会继续补题。${adjHtml}</div>` : `<div class="muted" style="font-size:13px;margin:-4px 0 10px">按「基础 → 进阶 → 冲刺」顺序刷，避免一上来就做难题。</div>`}
+          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">${thin ? allCard : stageCard("第 1 阶段 · 基础", "先过初级/中级高频题，建立知识框架", base) + stageCard("第 2 阶段 · 进阶", "覆盖中级/高级场景题，练分析和取舍", adv) + stageCard("第 3 阶段 · 冲刺", "面试前快速过题，优先看高浏览/高收藏", sprint)}</div>`;
+      })()}
       <div class="section-head"><h2>热门题目</h2></div>
       <div class="grid grid-cols-2">${hot.length ? hot.map(q => qCard(q)).join("") : '<div class="muted">暂无题目</div>'}</div>
       <div class="pill-row" style="margin-top:20px">
