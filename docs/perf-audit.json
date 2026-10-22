@@ -1,188 +1,820 @@
 {
-  "generatedAt": "2026-10-22T02:26:43.354Z",
+  "generatedAt": "2026-10-22T06:30:28.459Z",
+  "base": "http://127.0.0.1:8277",
   "device": "mobile-4g-4xcpu",
-  "runs": 1,
+  "runs": 3,
   "summary": {
     "home": {
-      "runs": 1,
-      "fcp": 4492,
-      "lcp": 4492,
-      "cls": 0,
-      "tbt": 738,
-      "dcl": 6134,
-      "load": 11712,
-      "totalTransfer": 493064,
-      "jsTransfer": 265660
+      "runs": 3,
+      "fcp": 952,
+      "lcp": 3360,
+      "cls": 0.004,
+      "tbt": 700,
+      "dcl": 967,
+      "load": 3362,
+      "totalTransfer": 734016,
+      "jsTransfer": 486812
     },
     "questions": {
-      "runs": 1,
-      "fcp": 4280,
-      "lcp": 4280,
+      "runs": 3,
+      "fcp": 944,
+      "lcp": 944,
       "cls": 0.004,
-      "tbt": 125,
-      "dcl": 4289,
-      "load": 8153,
-      "totalTransfer": 493886,
-      "jsTransfer": 265660
+      "tbt": 134,
+      "dcl": 941,
+      "load": 3137,
+      "totalTransfer": 734016,
+      "jsTransfer": 486812
     },
     "question-detail": {
-      "runs": 1,
-      "fcp": 6264,
-      "lcp": 6264,
+      "runs": 3,
+      "fcp": 864,
+      "lcp": 864,
       "cls": 0.004,
-      "tbt": 85,
-      "dcl": 6274,
-      "load": 9762,
-      "totalTransfer": 888149,
-      "jsTransfer": 487694
+      "tbt": 121,
+      "dcl": 882,
+      "load": 3011,
+      "totalTransfer": 734016,
+      "jsTransfer": 486812
     }
   },
   "results": [
     {
       "case": "home",
-      "url": "https://itinterview.com.cn/?perf=1",
-      "wallMs": 14895,
+      "url": "http://127.0.0.1:8277/?perf=1",
+      "wallMs": 7938,
       "nav": {
-        "ttfb": 1359,
-        "dcl": 6134,
-        "load": 11712,
-        "transfer": 7463
+        "ttfb": 155,
+        "dcl": 957,
+        "load": 3723,
+        "transfer": 16443
       },
-      "fcp": 4492,
+      "fcp": 952,
       "lcp": {
-        "start": 4492,
-        "size": 3960,
-        "tag": "DIV",
+        "start": 3708,
+        "size": 14218,
+        "tag": "SPAN",
         "id": "",
-        "text": "IT 面试题库 · 正在加载中"
+        "text": "搜索算法工程师"
       },
-      "cls": 0,
-      "tbt": 738,
-      "longTasks": 2,
+      "cls": 0.004,
+      "tbt": 1057,
+      "longTasks": 11,
       "eventDurations": [],
       "resources": [
         {
-          "name": "https://itinterview.com.cn/vendor/github.min.css",
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
           "type": "link",
-          "transfer": 875,
-          "duration": 2122,
-          "start": 1438
+          "transfer": 914,
+          "duration": 157,
+          "start": 306
         },
         {
-          "name": "https://itinterview.com.cn/css/bundle.css?v=20261021f",
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
           "type": "link",
-          "transfer": 40989,
-          "duration": 2922,
-          "start": 1438
+          "transfer": 39569,
+          "duration": 544,
+          "start": 306
         },
         {
-          "name": "https://itinterview.com.cn/data/manifest.json",
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 184878,
-          "duration": 3744,
-          "start": 2470
+          "transfer": 205476,
+          "duration": 2478,
+          "start": 306
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-vendor.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 168,
+          "start": 325
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
           "type": "script",
-          "transfer": 59644,
-          "duration": 1926,
-          "start": 5207
+          "transfer": 59127,
+          "duration": 1281,
+          "start": 949
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-core.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
           "type": "script",
-          "transfer": 58979,
-          "duration": 2550,
-          "start": 5208
+          "transfer": 57171,
+          "duration": 1261,
+          "start": 949
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-app.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
           "type": "script",
-          "transfer": 147037,
-          "duration": 6307,
-          "start": 5208
+          "transfer": 151912,
+          "duration": 2088,
+          "start": 949
         },
         {
-          "name": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650558223",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 162,
+          "start": 3558
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1199,
+          "start": 3964
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1001,
+          "start": 3969
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 205,
+          "start": 4931
+        },
+        {
+          "name": "https://v1.hitokoto.cn/?encode=json&c=i&c=k&c=d&c=a&c=b&c=c&c=f&c=g&c=h&c=j&c=l",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 2016,
+          "start": 5176
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 622,
+          "start": 5177
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792650560360",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 4,
+          "start": 5674
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
           "type": "script",
           "transfer": 0,
-          "duration": 902,
-          "start": 5219
+          "duration": 22,
+          "start": 5698
         },
         {
-          "name": "https://itinterview.com.cn/data/version.json?v=1792635970845",
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 32,
+          "start": 5756
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 20,
+          "start": 5798
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 45,
+          "start": 5901
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
           "type": "fetch",
-          "transfer": 362,
-          "duration": 404,
-          "start": 11681
+          "transfer": 0,
+          "duration": 112,
+          "start": 5918
         },
         {
-          "name": "https://itinterview.com.cn/cdn-cgi/rum?",
-          "type": "xmlhttprequest",
-          "transfer": 300,
-          "duration": 336,
-          "start": 11720
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 80,
+          "start": 5964
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 16,
+          "start": 6071
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 31,
+          "start": 6444
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 26,
+          "start": 6601
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 66,
+          "start": 7083
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 10,
+          "start": 7492
         }
       ],
-      "totalTransfer": 493064,
-      "jsTransfer": 265660,
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
       "largest": [
         {
-          "name": "https://itinterview.com.cn/data/manifest.json",
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 184878,
-          "duration": 3744,
-          "start": 2470
+          "transfer": 205476,
+          "duration": 2478,
+          "start": 306
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-app.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
           "type": "script",
-          "transfer": 147037,
-          "duration": 6307,
-          "start": 5208
+          "transfer": 151912,
+          "duration": 2088,
+          "start": 949
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-vendor.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
           "type": "script",
-          "transfer": 59644,
-          "duration": 1926,
-          "start": 5207
+          "transfer": 128905,
+          "duration": 1199,
+          "start": 3964
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-core.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
           "type": "script",
-          "transfer": 58979,
-          "duration": 2550,
-          "start": 5208
+          "transfer": 89697,
+          "duration": 1001,
+          "start": 3969
         },
         {
-          "name": "https://itinterview.com.cn/css/bundle.css?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1281,
+          "start": 949
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1261,
+          "start": 949
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
           "type": "link",
-          "transfer": 40989,
-          "duration": 2922,
-          "start": 1438
+          "transfer": 39569,
+          "duration": 544,
+          "start": 306
         },
         {
-          "name": "https://itinterview.com.cn/vendor/github.min.css",
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
           "type": "link",
-          "transfer": 875,
-          "duration": 2122,
-          "start": 1438
+          "transfer": 914,
+          "duration": 157,
+          "start": 306
+        }
+      ],
+      "hasMain": true,
+      "title": "首页 · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "home",
+      "url": "http://127.0.0.1:8277/?perf=1",
+      "wallMs": 7925,
+      "nav": {
+        "ttfb": 153,
+        "dcl": 1070,
+        "load": 3276,
+        "transfer": 16443
+      },
+      "fcp": 1036,
+      "lcp": {
+        "start": 3300,
+        "size": 8690,
+        "tag": "SPAN",
+        "id": "",
+        "text": "SRE工程师"
+      },
+      "cls": 0.004,
+      "tbt": 656,
+      "longTasks": 9,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 158,
+          "start": 334
         },
         {
-          "name": "https://itinterview.com.cn/data/version.json?v=1792635970845",
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 543,
+          "start": 335
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2532,
+          "start": 335
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 178,
+          "start": 337
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 888
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1259,
+          "start": 888
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2079,
+          "start": 888
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650567532",
           "type": "fetch",
-          "transfer": 362,
-          "duration": 404,
-          "start": 11681
+          "transfer": 368,
+          "duration": 161,
+          "start": 3170
         },
         {
-          "name": "https://itinterview.com.cn/cdn-cgi/rum?",
-          "type": "xmlhttprequest",
-          "transfer": 300,
-          "duration": 336,
-          "start": 11720
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1198,
+          "start": 3306
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1014,
+          "start": 3312
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792650568932",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 26,
+          "start": 4567
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4594
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4668
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 13,
+          "start": 4686
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 27,
+          "start": 4703
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 29,
+          "start": 4733
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 49,
+          "start": 4765
+        },
+        {
+          "name": "https://iti-api.netlify.app/visit",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 2622,
+          "start": 5152
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 174,
+          "start": 5185
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 458,
+          "start": 5375
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 33,
+          "start": 5979
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 35,
+          "start": 6210
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 32,
+          "start": 6345
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 37,
+          "start": 6525
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 8,
+          "start": 6671
+        }
+      ],
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2532,
+          "start": 335
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2079,
+          "start": 888
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1198,
+          "start": 3306
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1014,
+          "start": 3312
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 888
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1259,
+          "start": 888
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 543,
+          "start": 335
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 158,
+          "start": 334
+        }
+      ],
+      "hasMain": true,
+      "title": "首页 · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "home",
+      "url": "http://127.0.0.1:8277/?perf=1",
+      "wallMs": 6605,
+      "nav": {
+        "ttfb": 48,
+        "dcl": 967,
+        "load": 3362,
+        "transfer": 16443
+      },
+      "fcp": 936,
+      "lcp": {
+        "start": 3360,
+        "size": 11440,
+        "tag": "SPAN",
+        "id": "",
+        "text": "大数据开发工程师"
+      },
+      "cls": 0.004,
+      "tbt": 700,
+      "longTasks": 8,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 162,
+          "start": 226
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 547,
+          "start": 226
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2393,
+          "start": 226
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 176,
+          "start": 233
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1293,
+          "start": 889
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1278,
+          "start": 889
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 1980,
+          "start": 889
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650577277",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 155,
+          "start": 3265
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1196,
+          "start": 3468
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1010,
+          "start": 3498
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 285,
+          "start": 4302
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 279,
+          "start": 4318
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792650578789",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 4,
+          "start": 4763
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 12,
+          "start": 4769
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4797
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 34,
+          "start": 4800
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 18,
+          "start": 4818
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 12,
+          "start": 4853
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 17,
+          "start": 4894
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4916
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 33,
+          "start": 5003
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 5115
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 43,
+          "start": 5262
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 6,
+          "start": 5415
+        }
+      ],
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2393,
+          "start": 226
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 1980,
+          "start": 889
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1196,
+          "start": 3468
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1010,
+          "start": 3498
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1293,
+          "start": 889
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1278,
+          "start": 889
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 547,
+          "start": 226
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 162,
+          "start": 226
         }
       ],
       "hasMain": true,
@@ -191,156 +823,766 @@
     },
     {
       "case": "questions",
-      "url": "https://itinterview.com.cn/#/questions",
-      "wallMs": 11464,
+      "url": "http://127.0.0.1:8277/#/questions",
+      "wallMs": 5972,
       "nav": {
-        "ttfb": 2800,
-        "dcl": 4289,
-        "load": 8153,
-        "transfer": 7463
+        "ttfb": 130,
+        "dcl": 937,
+        "load": 3137,
+        "transfer": 16443
       },
-      "fcp": 4280,
+      "fcp": 940,
       "lcp": {
-        "start": 4280,
+        "start": 940,
         "size": 3960,
         "tag": "DIV",
         "id": "",
         "text": "IT 面试题库 · 正在加载中"
       },
       "cls": 0.004,
-      "tbt": 125,
-      "longTasks": 4,
+      "tbt": 156,
+      "longTasks": 6,
       "eventDurations": [],
       "resources": [
         {
-          "name": "https://itinterview.com.cn/vendor/github.min.css",
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
           "type": "link",
-          "transfer": 875,
-          "duration": 1061,
-          "start": 2830
+          "transfer": 914,
+          "duration": 162,
+          "start": 296
         },
         {
-          "name": "https://itinterview.com.cn/css/bundle.css?v=20261021f",
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
           "type": "link",
-          "transfer": 40989,
-          "duration": 1333,
-          "start": 2831
+          "transfer": 39569,
+          "duration": 548,
+          "start": 297
         },
         {
-          "name": "https://itinterview.com.cn/data/manifest.json",
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 184830,
-          "duration": 4272,
-          "start": 2831
+          "transfer": 205476,
+          "duration": 2535,
+          "start": 297
         },
         {
-          "name": "https://itinterview.com.cn/manifest.json?v=20261021f",
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
           "type": "link",
-          "transfer": 870,
-          "duration": 7370,
-          "start": 2881
+          "transfer": 877,
+          "duration": 178,
+          "start": 301
         },
         {
-          "name": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1277,
+          "start": 853
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1256,
+          "start": 854
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2079,
+          "start": 854
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650585869",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 160,
+          "start": 3038
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1192,
+          "start": 3141
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1011,
+          "start": 3143
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 29,
+          "start": 3963
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4061
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4155
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 26,
+          "start": 4244
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792650587233",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 5,
+          "start": 4393
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
           "type": "script",
           "transfer": 0,
-          "duration": 715,
-          "start": 2898
+          "duration": 11,
+          "start": 4409
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-vendor.js?v=20261021f",
-          "type": "script",
-          "transfer": 59644,
-          "duration": 2858,
-          "start": 4267
-        },
-        {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-core.js?v=20261021f",
-          "type": "script",
-          "transfer": 58979,
-          "duration": 3436,
-          "start": 4268
-        },
-        {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-app.js?v=20261021f",
-          "type": "script",
-          "transfer": 147037,
-          "duration": 3664,
-          "start": 4268
-        },
-        {
-          "name": "https://itinterview.com.cn/data/version.json?v=1792635983687",
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
           "type": "fetch",
-          "transfer": 362,
-          "duration": 316,
-          "start": 8038
+          "transfer": 0,
+          "duration": 25,
+          "start": 4416
         },
         {
-          "name": "https://itinterview.com.cn/cdn-cgi/rum?",
-          "type": "xmlhttprequest",
-          "transfer": 300,
-          "duration": 264,
-          "start": 8184
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 23,
+          "start": 4422
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 7,
+          "start": 4453
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4484
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 16,
+          "start": 4503
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 7,
+          "start": 4520
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4541
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 5,
+          "start": 4638
         }
       ],
-      "totalTransfer": 493886,
-      "jsTransfer": 265660,
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
       "largest": [
         {
-          "name": "https://itinterview.com.cn/data/manifest.json",
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 184830,
-          "duration": 4272,
-          "start": 2831
+          "transfer": 205476,
+          "duration": 2535,
+          "start": 297
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-app.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
           "type": "script",
-          "transfer": 147037,
-          "duration": 3664,
-          "start": 4268
+          "transfer": 151912,
+          "duration": 2079,
+          "start": 854
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-vendor.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
           "type": "script",
-          "transfer": 59644,
-          "duration": 2858,
-          "start": 4267
+          "transfer": 128905,
+          "duration": 1192,
+          "start": 3141
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-core.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
           "type": "script",
-          "transfer": 58979,
-          "duration": 3436,
-          "start": 4268
+          "transfer": 89697,
+          "duration": 1011,
+          "start": 3143
         },
         {
-          "name": "https://itinterview.com.cn/css/bundle.css?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1277,
+          "start": 853
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1256,
+          "start": 854
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
           "type": "link",
-          "transfer": 40989,
-          "duration": 1333,
-          "start": 2831
+          "transfer": 39569,
+          "duration": 548,
+          "start": 297
         },
         {
-          "name": "https://itinterview.com.cn/vendor/github.min.css",
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
           "type": "link",
-          "transfer": 875,
-          "duration": 1061,
-          "start": 2830
-        },
+          "transfer": 914,
+          "duration": 162,
+          "start": 296
+        }
+      ],
+      "hasMain": true,
+      "title": "题目列表 · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "questions",
+      "url": "http://127.0.0.1:8277/#/questions",
+      "wallMs": 5903,
+      "nav": {
+        "ttfb": 106,
+        "dcl": 941,
+        "load": 3049,
+        "transfer": 16443
+      },
+      "fcp": 944,
+      "lcp": {
+        "start": 944,
+        "size": 3960,
+        "tag": "DIV",
+        "id": "",
+        "text": "IT 面试题库 · 正在加载中"
+      },
+      "cls": 0.004,
+      "tbt": 100,
+      "longTasks": 5,
+      "eventDurations": [],
+      "resources": [
         {
-          "name": "https://itinterview.com.cn/manifest.json?v=20261021f",
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
           "type": "link",
-          "transfer": 870,
-          "duration": 7370,
-          "start": 2881
+          "transfer": 914,
+          "duration": 161,
+          "start": 283
         },
         {
-          "name": "https://itinterview.com.cn/data/version.json?v=1792635983687",
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 547,
+          "start": 284
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2443,
+          "start": 284
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 180,
+          "start": 288
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1286,
+          "start": 927
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1264,
+          "start": 927
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 1994,
+          "start": 927
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650593666",
           "type": "fetch",
-          "transfer": 362,
-          "duration": 316,
-          "start": 8038
+          "transfer": 368,
+          "duration": 162,
+          "start": 3001
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1197,
+          "start": 3054
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1006,
+          "start": 3058
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 26,
+          "start": 3901
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 20,
+          "start": 3996
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4088
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4174
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792650594967",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 3,
+          "start": 4301
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 9,
+          "start": 4309
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 11,
+          "start": 4324
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 34,
+          "start": 4325
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4337
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 10,
+          "start": 4372
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 17,
+          "start": 4401
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 7,
+          "start": 4420
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4444
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4541
+        }
+      ],
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2443,
+          "start": 284
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 1994,
+          "start": 927
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1197,
+          "start": 3054
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1006,
+          "start": 3058
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1286,
+          "start": 927
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1264,
+          "start": 927
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 547,
+          "start": 284
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 161,
+          "start": 283
+        }
+      ],
+      "hasMain": true,
+      "title": "题目列表 · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "questions",
+      "url": "http://127.0.0.1:8277/#/questions",
+      "wallMs": 6077,
+      "nav": {
+        "ttfb": 235,
+        "dcl": 1025,
+        "load": 3205,
+        "transfer": 16443
+      },
+      "fcp": 1024,
+      "lcp": {
+        "start": 1024,
+        "size": 3960,
+        "tag": "DIV",
+        "id": "",
+        "text": "IT 面试题库 · 正在加载中"
+      },
+      "cls": 0.004,
+      "tbt": 134,
+      "longTasks": 5,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 153,
+          "start": 404
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 540,
+          "start": 404
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2527,
+          "start": 405
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 167,
+          "start": 412
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 952
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 952
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2079,
+          "start": 952
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650601128",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 159,
+          "start": 3130
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1189,
+          "start": 3251
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1007,
+          "start": 3255
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 24,
+          "start": 4054
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 21,
+          "start": 4155
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 25,
+          "start": 4246
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 24,
+          "start": 4342
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792650602500",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 3,
+          "start": 4496
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4509
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 26,
+          "start": 4515
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 21,
+          "start": 4525
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4555
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4583
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4602
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4619
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 23,
+          "start": 4630
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 9,
+          "start": 4777
+        }
+      ],
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2527,
+          "start": 405
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2079,
+          "start": 952
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1189,
+          "start": 3251
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1007,
+          "start": 3255
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 952
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 952
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 540,
+          "start": 404
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 153,
+          "start": 404
         }
       ],
       "hasMain": true,
@@ -349,182 +1591,772 @@
     },
     {
       "case": "question-detail",
-      "url": "https://itinterview.com.cn/#/question/1",
-      "wallMs": 14393,
+      "url": "http://127.0.0.1:8277/#/question/1",
+      "wallMs": 6412,
       "nav": {
-        "ttfb": 3254,
-        "dcl": 6274,
-        "load": 9762,
-        "transfer": 7463
+        "ttfb": 96,
+        "dcl": 882,
+        "load": 3011,
+        "transfer": 16443
       },
-      "fcp": 6264,
+      "fcp": 864,
       "lcp": {
-        "start": 6264,
+        "start": 864,
         "size": 3960,
         "tag": "DIV",
         "id": "",
         "text": "IT 面试题库 · 正在加载中"
       },
       "cls": 0.004,
-      "tbt": 85,
+      "tbt": 121,
       "longTasks": 4,
       "eventDurations": [],
       "resources": [
         {
-          "name": "https://itinterview.com.cn/vendor/github.min.css",
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
           "type": "link",
-          "transfer": 875,
-          "duration": 430,
-          "start": 4243
+          "transfer": 914,
+          "duration": 159,
+          "start": 239
         },
         {
-          "name": "https://itinterview.com.cn/css/bundle.css?v=20261021f",
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
           "type": "link",
-          "transfer": 40989,
-          "duration": 1940,
-          "start": 4244
+          "transfer": 39569,
+          "duration": 545,
+          "start": 240
         },
         {
-          "name": "https://itinterview.com.cn/data/manifest.json",
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 184830,
-          "duration": 3685,
-          "start": 4244
+          "transfer": 205476,
+          "duration": 2468,
+          "start": 240
         },
         {
-          "name": "https://itinterview.com.cn/manifest.json?v=20261021f",
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
           "type": "link",
-          "transfer": 870,
-          "duration": 1241,
-          "start": 4255
+          "transfer": 877,
+          "duration": 173,
+          "start": 263
         },
         {
-          "name": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1278,
+          "start": 859
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1261,
+          "start": 860
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2013,
+          "start": 861
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650608689",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 157,
+          "start": 2967
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1199,
+          "start": 3073
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1007,
+          "start": 3074
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 24,
+          "start": 3659
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 40,
+          "start": 3664
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 83,
+          "start": 3780
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 91,
+          "start": 3942
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 301,
+          "start": 4102
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
           "type": "script",
           "transfer": 0,
-          "duration": 775,
-          "start": 4293
+          "duration": 11,
+          "start": 4385
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-core.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
           "type": "script",
-          "transfer": 58979,
-          "duration": 1978,
-          "start": 6195
+          "transfer": 0,
+          "duration": 10,
+          "start": 4401
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-vendor.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
           "type": "script",
-          "transfer": 59644,
-          "duration": 2084,
-          "start": 6195
+          "transfer": 0,
+          "duration": 8,
+          "start": 4423
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-app.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
           "type": "script",
-          "transfer": 147037,
-          "duration": 3408,
-          "start": 6195
+          "transfer": 0,
+          "duration": 11,
+          "start": 4441
         },
         {
-          "name": "https://itinterview.com.cn/data/version.json?v=1792635998608",
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 13,
+          "start": 4455
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 7,
+          "start": 4471
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
           "type": "fetch",
-          "transfer": 362,
-          "duration": 400,
-          "start": 9696
+          "transfer": 0,
+          "duration": 24,
+          "start": 4473
         },
         {
-          "name": "https://itinterview.com.cn/cdn-cgi/rum?",
-          "type": "xmlhttprequest",
-          "transfer": 300,
-          "duration": 363,
-          "start": 9775
-        },
-        {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-extra.js?v=20261021f",
-          "type": "script",
-          "transfer": 129894,
-          "duration": 2861,
-          "start": 9809
-        },
-        {
-          "name": "https://itinterview.com.cn/js/docs/java.js?v=20261021f",
-          "type": "script",
-          "transfer": 92140,
-          "duration": 2515,
-          "start": 9811
-        },
-        {
-          "name": "https://itinterview.com.cn/data/shards/s00.json",
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
           "type": "fetch",
-          "transfer": 172229,
-          "duration": 2188,
-          "start": 12084
+          "transfer": 0,
+          "duration": 37,
+          "start": 4601
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 12,
+          "start": 4728
         }
       ],
-      "totalTransfer": 888149,
-      "jsTransfer": 487694,
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
       "largest": [
         {
-          "name": "https://itinterview.com.cn/data/manifest.json",
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 184830,
-          "duration": 3685,
-          "start": 4244
+          "transfer": 205476,
+          "duration": 2468,
+          "start": 240
         },
         {
-          "name": "https://itinterview.com.cn/data/shards/s00.json",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2013,
+          "start": 861
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1199,
+          "start": 3073
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1007,
+          "start": 3074
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1278,
+          "start": 859
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1261,
+          "start": 860
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 545,
+          "start": 240
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 159,
+          "start": 239
+        }
+      ],
+      "hasMain": true,
+      "title": "Java 中 == 和 equals 的区别是什么？ · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "question-detail",
+      "url": "http://127.0.0.1:8277/#/question/1",
+      "wallMs": 6430,
+      "nav": {
+        "ttfb": 129,
+        "dcl": 917,
+        "load": 3088,
+        "transfer": 16443
+      },
+      "fcp": 916,
+      "lcp": {
+        "start": 916,
+        "size": 3960,
+        "tag": "DIV",
+        "id": "",
+        "text": "IT 面试题库 · 正在加载中"
+      },
+      "cls": 0.004,
+      "tbt": 143,
+      "longTasks": 4,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 158,
+          "start": 298
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 544,
+          "start": 298
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2475,
+          "start": 298
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 178,
+          "start": 301
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1275,
+          "start": 911
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1252,
+          "start": 912
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2018,
+          "start": 912
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650616669",
           "type": "fetch",
-          "transfer": 172229,
-          "duration": 2188,
-          "start": 12084
+          "transfer": 368,
+          "duration": 152,
+          "start": 3021
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-app.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
           "type": "script",
-          "transfer": 147037,
-          "duration": 3408,
-          "start": 6195
+          "transfer": 128905,
+          "duration": 1195,
+          "start": 3095
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-extra.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
           "type": "script",
-          "transfer": 129894,
-          "duration": 2861,
-          "start": 9809
+          "transfer": 89697,
+          "duration": 1006,
+          "start": 3140
         },
         {
-          "name": "https://itinterview.com.cn/js/docs/java.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 25,
+          "start": 3812
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 44,
+          "start": 3814
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 81,
+          "start": 4025
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 313,
+          "start": 4198
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
           "type": "script",
-          "transfer": 92140,
-          "duration": 2515,
-          "start": 9811
+          "transfer": 0,
+          "duration": 11,
+          "start": 4492
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-vendor.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
           "type": "script",
-          "transfer": 59644,
-          "duration": 2084,
-          "start": 6195
+          "transfer": 0,
+          "duration": 10,
+          "start": 4510
         },
         {
-          "name": "https://itinterview.com.cn/js/bundle/bundle-core.js?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
           "type": "script",
-          "transfer": 58979,
-          "duration": 1978,
-          "start": 6195
+          "transfer": 0,
+          "duration": 9,
+          "start": 4532
         },
         {
-          "name": "https://itinterview.com.cn/css/bundle.css?v=20261021f",
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 9,
+          "start": 4551
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 13,
+          "start": 4562
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 7,
+          "start": 4576
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4587
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 28,
+          "start": 4728
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4851
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4950
+        }
+      ],
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
           "type": "link",
-          "transfer": 40989,
-          "duration": 1940,
-          "start": 4244
+          "transfer": 205476,
+          "duration": 2475,
+          "start": 298
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2018,
+          "start": 912
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1195,
+          "start": 3095
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1006,
+          "start": 3140
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1275,
+          "start": 911
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1252,
+          "start": 912
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 544,
+          "start": 298
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 158,
+          "start": 298
+        }
+      ],
+      "hasMain": true,
+      "title": "Java 中 == 和 equals 的区别是什么？ · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "question-detail",
+      "url": "http://127.0.0.1:8277/#/question/1",
+      "wallMs": 6929,
+      "nav": {
+        "ttfb": 63,
+        "dcl": 863,
+        "load": 3006,
+        "transfer": 16443
+      },
+      "fcp": 864,
+      "lcp": {
+        "start": 864,
+        "size": 3960,
+        "tag": "DIV",
+        "id": "",
+        "text": "IT 面试题库 · 正在加载中"
+      },
+      "cls": 0.004,
+      "tbt": 92,
+      "longTasks": 4,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 156,
+          "start": 238
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 542,
+          "start": 239
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2530,
+          "start": 239
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021i",
+          "type": "link",
+          "transfer": 877,
+          "duration": 170,
+          "start": 261
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1259,
+          "start": 788
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 788
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2081,
+          "start": 788
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792650624479",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 159,
+          "start": 2954
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1212,
+          "start": 3045
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1024,
+          "start": 3047
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 23,
+          "start": 3885
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 43,
+          "start": 3886
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 70,
+          "start": 4002
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 146,
+          "start": 4199
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 10,
+          "start": 4336
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 10,
+          "start": 4359
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 10,
+          "start": 4387
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 12,
+          "start": 4399
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4414
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 180,
+          "start": 4429
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021i",
+          "type": "script",
+          "transfer": 0,
+          "duration": 19,
+          "start": 4433
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4688
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4784
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 9,
+          "start": 4891
+        }
+      ],
+      "totalTransfer": 734016,
+      "jsTransfer": 486812,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2530,
+          "start": 239
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021i",
+          "type": "script",
+          "transfer": 151912,
+          "duration": 2081,
+          "start": 788
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021i",
+          "type": "script",
+          "transfer": 128905,
+          "duration": 1212,
+          "start": 3045
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021i",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1024,
+          "start": 3047
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021i",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 788
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021i",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1259,
+          "start": 788
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021i",
+          "type": "link",
+          "transfer": 39569,
+          "duration": 542,
+          "start": 239
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 156,
+          "start": 238
         }
       ],
       "hasMain": true,
       "title": "Java 中 == 和 equals 的区别是什么？ · IT面试题库",
       "ready": "complete"
     }
-  ]
+  ],
+  "note": "本地 gzip + 4G 模拟 3 轮中位数；线上 4G 多轮受中国大陆到 Cloudflare 链路波动影响，部分请求超时，不作为稳定中位数。"
 }

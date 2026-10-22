@@ -10,6 +10,7 @@
  *   node tools/perf-audit.mjs --desktop       # 桌面视口，不降 CPU
  */
 import { spawn } from "node:child_process";
+import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,14 +38,26 @@ function chromeLaunch() {
     "--user-data-dir=/tmp/perf-chrome-" + Date.now(),
   ], { stdio: "ignore" });
 }
+function getJson(url, method = "GET") {
+  return new Promise((resolve, reject) => {
+    const req = http.request(url, { method, family: 4 }, res => {
+      let data = "";
+      res.on("data", c => data += c);
+      res.on("end", () => { try { resolve(JSON.parse(data)); } catch (e) { reject(e); } });
+    });
+    req.on("error", reject);
+    req.setTimeout(30000, () => { req.destroy(new Error("CDP HTTP timeout")); });
+    req.end();
+  });
+}
 async function connect() {
   for (let i = 0; i < 60; i++) {
     try {
-      const v = await (await fetch(`http://127.0.0.1:${PORT}/json/version`)).json();
+      const v = await getJson(`http://127.0.0.1:${PORT}/json/version`);
       if (v) break;
     } catch (_) { await sleep(200); }
   }
-  const t = await (await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: "PUT" })).json();
+  const t = await getJson(`http://127.0.0.1:${PORT}/json/new?about:blank`, "PUT");
   const ws = new WebSocket(t.webSocketDebuggerUrl);
   await new Promise((res, rej) => { ws.addEventListener("open", res, { once: true }); ws.addEventListener("error", rej, { once: true }); });
   let id = 0; const pending = new Map();
@@ -122,7 +135,7 @@ async function measure(url) {
     const med = key => { const v = arr.map(x => typeof key === "function" ? key(x) : x[key]).filter(x => typeof x === "number").sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };
     summary[k] = { runs: arr.length, fcp: med("fcp"), lcp: med(x => x.lcp && x.lcp.start), cls: med("cls"), tbt: med("tbt"), dcl: med(x => x.nav.dcl), load: med(x => x.nav.load), totalTransfer: med("totalTransfer"), jsTransfer: med("jsTransfer") };
   }
-  const report = { generatedAt: new Date().toISOString(), device: DESKTOP ? "desktop" : "mobile-4g-4xcpu", runs: RUNS, summary, results };
+  const report = { generatedAt: new Date().toISOString(), base: BASE, device: DESKTOP ? "desktop" : "mobile-4g-4xcpu", runs: RUNS, summary, results };
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify(report, null, 2));
   console.log(JSON.stringify(summary, null, 2));
