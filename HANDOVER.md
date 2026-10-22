@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`381d13a`（quality: 重写 Top 20 高浏览题 / version 17）｜缓存版本 `20261021m → 20261021n`｜数据 version `17` / 1887 题｜更新时间：2026-10-22 16:57 (+08)**
+**本轮内容（Top 20 高浏览题重写）**
+
+- 按种子浏览量取 Top 20（薪资谈判、Kafka 顺序、JS this、DP、InnoDB/MyISAM、LLM 微调、Vue 响应式、Spring Boot 异步/事务/拦截器/MyBatis、HTTPS、深拷贝、Scrum、Java 异常、MySQL JOIN/MVCC、DNS、哈希表、栈/队列），答案补到 400–600 字，加入机制/取舍/常见坑，来源换官方文档；修正明显错配岗位关联，写入 `reviewedAt`/`reviewedBy`。
+- 质量指标：短答案 174→**159**，无 http 来源 354→**334**，未复核 1887→1867；近重复仍 0；题库数据量仍 1887（version 16→17）。
+- **构建**：q 20 页 + 全部 p 页重新生成；sitemap 2262；OG 1887；缓存 m→n。
+- **验证**：线上 index 20261021n、version 17/count 1887、q/197 200（答案含“总包”6 处）、quality-report 200（短答案 159/来源 334）；Actions run 39751532581 **success**。
+- **产物**：data 文件、20 个 q 页、全部 p 页、`tools/rewrite_top20.py`、`docs/content-quality-2026-10-22.md`、`README.md`、`index.html`、`sw.js`。
+- **下一步**：剩余短答案 159 / 无来源 334；建议继续按浏览量修 Top 30，而不是扩题；同时接真实统计重排优先级。
+
 **最新 release commit：`eb29434`（feat(题库): 第四批 8 岗位各补 4 题 / 1887 / version 16）｜缓存版本 `20261021l → 20261021m`｜数据 version `16` / 1887 题｜更新时间：2026-10-22 16:39 (+08)**
 **本轮内容（题库第四批，全部岗位补齐）**
 
