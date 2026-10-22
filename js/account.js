@@ -665,19 +665,19 @@
                 : "取消「专家」？该用户将立即失去审核权限，并从所有专家群组中移除。";
               if (!(await U.confirm(okMsg, { okText: "确定" }))) return;
               b.disabled = true;
-              try { await A.adminUserRole(id, to); U.toast(to === "expert" ? "已设为专家" : "已取消专家", "success"); load($("#u-q").value.trim()); }
+              try { await A.adminUserRole(id, to); if (window.Audit) Audit.log("admin.user.role", "用户 #" + id + " → " + to); U.toast(to === "expert" ? "已设为专家" : "已取消专家", "success"); load($("#u-q").value.trim()); }
               catch (e) { U.toast(e.message, "error"); b.disabled = false; }
               return;
             }
             if (act === "toggle") {
               const s = b.dataset.s === "1" ? 0 : 1;
               if (!(await U.confirm(s === 0 ? "禁用该用户？其所有会话将失效。" : "重新启用该用户？", { okText: "确定" }))) return;
-              try { await A.adminSetStatus(id, s); U.toast("已更新", "success"); load($("#u-q").value.trim()); }
+              try { await A.adminSetStatus(id, s); if (window.Audit) Audit.log("admin.user.status", "用户 #" + id + " → " + (s === 1 ? "启用" : "禁用")); U.toast("已更新", "success"); load($("#u-q").value.trim()); }
               catch (e) { U.toast(e.message, "error"); }
             } else {
               const pw = prompt("为该用户设置新密码（至少 8 位）：");
               if (!pw) return;
-              try { await A.adminResetPassword(id, pw); U.toast("已重置并强制下线", "success"); }
+              try { await A.adminResetPassword(id, pw); if (window.Audit) Audit.log("admin.user.reset", "用户 #" + id + " 重置密码"); U.toast("已重置并强制下线", "success"); }
               catch (e) { U.alert(e.message); }
             }
           };

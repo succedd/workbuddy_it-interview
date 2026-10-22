@@ -904,6 +904,7 @@
         return window.Submit ? Submit.renderInbox() : page404(r.parts.join("/"));
       }
       if (!App.requireAdmin()) return;
+      if (sub === "audit") return pageAdminAudit();
       if (sub === "quality") return pageAdminQuality();
       if (sub === "dashboard") return pageAdminDashboard();
       if (sub === "questions") return pageAdminQuestions();
@@ -1242,6 +1243,7 @@
       html += navSec("admin", "", `
         ${navItem("/admin/dashboard", "barChart", "仪表盘", p0 === "admin" && r.parts[1] === "dashboard")}
         ${navItem("/admin/quality", "alert", "内容质量", p0 === "admin" && r.parts[1] === "quality")}
+        ${navItem("/admin/audit", "fileText", "审计日志", p0 === "admin" && r.parts[1] === "audit")}
         ${navItem("/admin/ai", "sparkles", "AI 出题", p0 === "admin" && r.parts[1] === "ai")}
         ${navItem("/admin/import", "upload", "批量导入", p0 === "admin" && r.parts[1] === "import")}
         ${navItem("/admin/backup", "database", "备份恢复", p0 === "admin" && r.parts[1] === "backup")}`);
@@ -5026,12 +5028,51 @@
     ok.onclick = login; $("#pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
   }
 
+  /* ============================ 管理员操作审计（本机） ============================ */
+  const Audit = (() => {
+    const KEY = "iti_admin_audit_v1";
+    const MAX = 300;
+    const read = () => { try { const a = JSON.parse(localStorage.getItem(KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+    const log = (action, detail) => {
+      if (!action) return;
+      const user = (window.Account && Account.getUser && Account.getUser()) || null;
+      const rows = read();
+      rows.unshift({ at: Date.now(), action: String(action).slice(0, 60), detail: String(detail || "").slice(0, 500), user: user ? (user.email || user.nick || "") : "本机管理员" });
+      try { localStorage.setItem(KEY, JSON.stringify(rows.slice(0, MAX))); } catch (e) {}
+    };
+    return { log, all: read, clear: () => { try { localStorage.removeItem(KEY); } catch (e) {} } };
+  })();
+  window.Audit = Audit;
+
+  async function pageAdminAudit() {
+    document.title = "审计日志 · IT面试题库";
+    const render = (filter) => {
+      const rows = Audit.all().filter(x => !filter || ((x.action || "") + " " + (x.detail || "") + " " + (x.user || "")).toLowerCase().includes(filter.toLowerCase()));
+      const body = $("#audit-body");
+      if (!body) return;
+      body.innerHTML = rows.length ? `<table class="data"><thead><tr><th>时间</th><th>操作</th><th>详情</th><th>操作人</th></tr></thead><tbody>${rows.map(r => `<tr><td class="muted" style="white-space:nowrap">${U.fmtDate(r.at)}</td><td><span class="tag tag-outline">${U.esc(r.action)}</span></td><td>${U.esc(r.detail || "")}</td><td class="muted">${U.esc(r.user || "")}</td></tr>`).join("")}</tbody></table>` : `<div class="empty"><div class="em-ic">${U.icon("fileText")}</div><p>暂无审计记录</p></div>`;
+      const count = $("#audit-count"); if (count) count.textContent = rows.length + " 条";
+    };
+    setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>审计日志</span></div>
+      <h1>审计日志 <span class="muted" id="audit-count" style="font-size:16px"></span></h1>
+      <p class="secondary">记录本机管理员在报错反馈、内容质量等页面的关键操作，最多保留 300 条；用于回溯，不作为服务端安全审计。</p>
+      <div class="toolbar"><input id="audit-q" class="full" style="max-width:300px" placeholder="搜索操作/详情/操作人…"><span class="spacer"></span><button class="btn btn-sm" id="audit-export">${U.icon("download")} 导出 JSON</button><button class="btn btn-sm btn-danger" id="audit-clear">清空</button></div>
+      <div id="audit-body" class="muted" style="padding:12px 0">加载中…</div>`);
+    render("");
+    $("#audit-q").addEventListener("input", U.debounce(e => render(e.target.value.trim()), 200));
+    $("#audit-export").onclick = () => U.download("admin-audit-" + new Date().toISOString().slice(0, 10) + ".json", JSON.stringify(Audit.all(), null, 2), "application/json");
+    $("#audit-clear").onclick = async () => {
+      if (!(await U.confirm("清空本机审计日志？不可恢复。", { okText: "清空" }))) return;
+      Audit.clear(); render(""); U.toast("审计日志已清空", "info");
+    };
+  }
+
   /* ============================ 管理员：内容质量 ============================ */
   async function pageAdminQuality() {
     document.title = "内容质量 · IT面试题库";
     setMain(`<div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>管理</span><span class="sep">/</span><span>内容质量</span></div>
       <h1>内容质量</h1>
-      <p class="secondary">由 <code>python3 tools/content-audit.py</code> 生成的全库体检报告：近重复、来源失效、答案偏短、无来源。报告只做初筛，不自动下架题目。</p>
+      <p class="secondary">由 <code>python3 tools/content-audit.py</code> 生成的全库体检报告：近重复、来源失效、答案偏短、无来源。报告只做初筛，不自动下架题目；复核/忽略状态保存在本机。</p>
       <div id="cq-body" class="muted" style="padding:18px 0">加载中…</div>`);
     const box = document.getElementById("cq-body");
     if (!box) return;
@@ -5044,19 +5085,61 @@
       box.innerHTML = `<div class="empty"><div class="em-ic">${U.icon("alert")}</div><h3>报告还没生成</h3><p class="muted">在仓库执行：<code>python3 tools/content-audit.py</code>，然后重新发布。</p></div>`;
       return;
     }
-    const s = r.summary || {};
+    const CK_IGNORED = "iti_quality_ignored_v1";
+    const CK_REVIEWED = "iti_quality_reviewed_v1";
+    const loadSet = (k) => { try { const a = JSON.parse(localStorage.getItem(k) || "[]"); return new Set(Array.isArray(a) ? a : []); } catch (e) { return new Set(); } };
+    const saveSet = (k, set) => { try { localStorage.setItem(k, JSON.stringify([...set])); } catch (e) {} };
+    const ignored = loadSet(CK_IGNORED);
+    const reviewed = loadSet(CK_REVIEWED);
+    let showIgnored = false;
+    const keyOf = (kind, d) => kind === "dup" ? `dup:${d.a.id}:${d.b.id}` : `${kind}:${d.id}`;
+    const rowActions = (key) => `<span style="margin-left:8px;white-space:nowrap"><button class="btn btn-sm" data-cq="review" data-key="${U.esc(key)}">${reviewed.has(key) ? "✓ 已复核" : "标记复核"}</button> <button class="btn btn-sm" data-cq="ignore" data-key="${U.esc(key)}">${ignored.has(key) ? "恢复" : "忽略"}</button></span>`;
+    const allKeys = [];
+    (r.duplicates || []).forEach(d => allKeys.push(keyOf("dup", d)));
+    (r.brokenSources || []).forEach(d => allKeys.push(keyOf("src", d)));
+    (r.shortAnswers || []).forEach(d => allKeys.push(keyOf("short", d)));
+    (r.noSource || []).forEach(d => allKeys.push(keyOf("nosrc", d)));
     const card = (n, label, cls) => `<div class="stat"><div class="num" style="${cls ? "color:var(--c-" + cls + ")" : ""}">${n ?? 0}</div><div class="label">${label}</div></div>`;
     const qlink = (x) => `<a href="/admin/question/${x.id}">#${x.id} ${U.esc((x.title || "").slice(0, 60))}</a>`;
-    const section = (title, list, render, empty) => `<div class="card" style="margin-top:16px"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">${title}</h2><span class="muted" style="font-size:12px">${list.length} 条</span></div>${list.length ? `<div class="muted" style="font-size:13px;line-height:1.9">${list.slice(0, 60).map(render).join("")}</div>` : `<div class="muted">${empty}</div>`}</div>`;
-    box.innerHTML = `<div class="stat-grid">
-        ${card(s.total, "总题数")}${card(s.nearDuplicates, "近重复对", "warning")}${card(s.brokenSources, "来源失效", "danger")}
-        ${card(s.shortAnswers, "答案偏短", "warning")}${card(s.noSource, "无来源", "warning")}${card(s.unverified, "未复核")}
-      </div>
-      <p class="muted" style="font-size:12px;margin:10px 0 0">生成时间：${U.esc(r.generatedAt || "—")} · 来源 404/410 计“失效”，403/超时计“未知”，不自动改题。${s.unknownSources != null ? " 未知来源 " + s.unknownSources + " 条。" : ""}</p>
-      ${section("近重复（建议人工合并）", r.duplicates || [], d => `<div>相似度 <b>${d.similarity}</b>：${qlink(d.a)} ↔ ${qlink(d.b)} <span class="muted">· ${U.esc(d.category || "")}</span></div>`, "本次没有发现 ≥0.82 的近重复。") }
-      ${section("来源失效（404/410）", r.brokenSources || [], d => `<div>${qlink(d)} <span class="tag tag-danger">${U.esc(d.status)}</span> <span class="muted">${U.esc(d.url)}</span></div>`, "没有发现 404/410 来源。") }
-      ${section("答案偏短（<200 字）", r.shortAnswers || [], d => `<div>${qlink(d)} <span class="muted">· ${d.length} 字 · ${U.esc(d.category || "")}</span></div>`, "没有偏短答案。") }
-      ${section("无来源（非 http）", r.noSource || [], d => `<div>${qlink(d)} <span class="muted">· ${U.esc(d.source || "空")}</span></div>`, "所有题都有 http 来源。") }`;
+    const section = (title, list, kind, render, empty) => {
+      const visible = (list || []).filter(d => showIgnored || !ignored.has(keyOf(kind, d)));
+      const hidden = (list || []).length - visible.length;
+      return `<div class="card" style="margin-top:16px"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">${title}</h2><span class="muted" style="font-size:12px">${visible.length} 条${hidden ? " · 已忽略 " + hidden : ""}</span></div>${visible.length ? `<div class="muted" style="font-size:13px;line-height:1.9">${visible.slice(0, 60).map(render).join("")}</div>` : `<div class="muted">${hidden ? "已全部忽略（可点上方“显示已忽略”）" : empty}</div>`}</div>`;
+    };
+    const render = () => {
+      const s = r.summary || {};
+      const ignoredTotal = [...new Set(allKeys)].filter(k => ignored.has(k)).length;
+      box.innerHTML = `<div class="stat-grid">
+          ${card(s.total, "总题数")}${card(s.nearDuplicates, "近重复对", "warning")}${card(s.brokenSources, "来源失效", "danger")}
+          ${card(s.shortAnswers, "答案偏短", "warning")}${card(s.noSource, "无来源", "warning")}${card(reviewed.size, "已复核")}
+        </div>
+        <div class="pill-row" style="margin:10px 0 0;align-items:center">
+          <span class="muted" style="font-size:12px">生成时间：${U.esc(r.generatedAt || "—")} · 来源 404/410 计“失效”，403/超时计“未知”；状态仅存本机。</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm" id="cq-toggle">${showIgnored ? "隐藏已忽略" : "显示已忽略"} (${ignoredTotal})</button>
+        </div>
+        ${section("近重复（建议人工合并）", r.duplicates || [], "dup", d => `<div>相似度 <b>${d.similarity}</b>：${qlink(d.a)} ↔ ${qlink(d.b)} <span class="muted">· ${U.esc(d.category || "")}</span>${rowActions(keyOf("dup", d))}</div>`, "本次没有发现 ≥0.82 的近重复。")}
+        ${section("来源失效（404/410）", r.brokenSources || [], "src", d => `<div>${qlink(d)} <span class="tag tag-danger">${U.esc(d.status)}</span> <span class="muted">${U.esc(d.url)}</span>${rowActions(keyOf("src", d))}</div>`, "没有发现 404/410 来源。")}
+        ${section("答案偏短（<200 字）", r.shortAnswers || [], "short", d => `<div>${qlink(d)} <span class="muted">· ${d.length} 字 · ${U.esc(d.category || "")}</span>${rowActions(keyOf("short", d))}</div>`, "没有偏短答案。")}
+        ${section("无来源（非 http）", r.noSource || [], "nosrc", d => `<div>${qlink(d)} <span class="muted">· ${U.esc(d.source || "空")}</span>${rowActions(keyOf("nosrc", d))}</div>`, "所有题都有 http 来源。")}`;
+      $("#cq-toggle").onclick = () => { showIgnored = !showIgnored; render(); };
+      box.querySelectorAll("[data-cq]").forEach(b => {
+        b.onclick = () => {
+          const key = b.dataset.key;
+          if (b.dataset.cq === "review") {
+            if (reviewed.has(key)) reviewed.delete(key); else reviewed.add(key);
+            saveSet(CK_REVIEWED, reviewed);
+            if (window.Audit) Audit.log("quality.review", (reviewed.has(key) ? "标记已复核 " : "取消复核 ") + key);
+          } else {
+            if (ignored.has(key)) ignored.delete(key); else ignored.add(key);
+            saveSet(CK_IGNORED, ignored);
+            if (window.Audit) Audit.log("quality.ignore", (ignored.has(key) ? "忽略 " : "恢复 ") + key);
+          }
+          render();
+        };
+      });
+    };
+    render();
   }
 
   /* ============================ 管理员：仪表盘 ============================ */

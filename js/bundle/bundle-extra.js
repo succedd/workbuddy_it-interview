@@ -2111,19 +2111,19 @@ return He}()
                 : "取消「专家」？该用户将立即失去审核权限，并从所有专家群组中移除。";
               if (!(await U.confirm(okMsg, { okText: "确定" }))) return;
               b.disabled = true;
-              try { await A.adminUserRole(id, to); U.toast(to === "expert" ? "已设为专家" : "已取消专家", "success"); load($("#u-q").value.trim()); }
+              try { await A.adminUserRole(id, to); if (window.Audit) Audit.log("admin.user.role", "用户 #" + id + " → " + to); U.toast(to === "expert" ? "已设为专家" : "已取消专家", "success"); load($("#u-q").value.trim()); }
               catch (e) { U.toast(e.message, "error"); b.disabled = false; }
               return;
             }
             if (act === "toggle") {
               const s = b.dataset.s === "1" ? 0 : 1;
               if (!(await U.confirm(s === 0 ? "禁用该用户？其所有会话将失效。" : "重新启用该用户？", { okText: "确定" }))) return;
-              try { await A.adminSetStatus(id, s); U.toast("已更新", "success"); load($("#u-q").value.trim()); }
+              try { await A.adminSetStatus(id, s); if (window.Audit) Audit.log("admin.user.status", "用户 #" + id + " → " + (s === 1 ? "启用" : "禁用")); U.toast("已更新", "success"); load($("#u-q").value.trim()); }
               catch (e) { U.toast(e.message, "error"); }
             } else {
               const pw = prompt("为该用户设置新密码（至少 8 位）：");
               if (!pw) return;
-              try { await A.adminResetPassword(id, pw); U.toast("已重置并强制下线", "success"); }
+              try { await A.adminResetPassword(id, pw); if (window.Audit) Audit.log("admin.user.reset", "用户 #" + id + " 重置密码"); U.toast("已重置并强制下线", "success"); }
               catch (e) { U.alert(e.message); }
             }
           };
@@ -3500,8 +3500,19 @@ function aiReportHtml(ai, row) {
         <span class="spacer"></span>
         <button class="btn btn-sm" id="rp-refresh">刷新</button>
       </div>
+      <div id="rp-bulk" class="card" style="display:none;margin-bottom:12px;padding:10px 12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="rp-all"> 全选本页</label>
+          <span class="muted" style="font-size:12px">已选 <b id="rp-sel-count">0</b> 条</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-primary" data-bulk="fixed">批量标记已修复</button>
+          <button class="btn btn-sm" data-bulk="ignored">批量忽略（驳回）</button>
+          <button class="btn btn-sm" data-bulk="open">批量重新打开</button>
+        </div>
+      </div>
       <div id="rp-list" class="muted" style="padding:18px 0">加载中…</div>`);
     let status = "open";
+    const selected = new Set();
     const box = () => $("#rp-list");
     const load = async function () {
       const el = box();
@@ -3537,6 +3548,7 @@ function aiReportHtml(ai, row) {
           const st = RP_STATUS[r2.status] || RP_STATUS.open;
           return '<div class="card" style="margin-bottom:12px">' +
             '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+              '<input type="checkbox" class="rp-check" data-id="' + r2.id + '"' + (selected.has(r2.id) ? ' checked' : '') + ' aria-label="选择反馈 #' + r2.id + '">' +
               '<span class="tag ' + st.cls + '">' + st.txt + '</span>' +
               (RP_AI[r2.ai_verdict] ? '<span class="tag ' + RP_AI[r2.ai_verdict].cls + '">' + RP_AI[r2.ai_verdict].txt + '</span>' : "") +
               '<a href="/question/' + r2.question_id + '" style="font-weight:600">#' + r2.question_id + ' ' + esc(r2.question_title || "（未带标题）") + '</a>' +
@@ -3553,6 +3565,57 @@ function aiReportHtml(ai, row) {
             '</div>' +
           '</div>';
         }).join("");
+        const syncBulk = function () {
+          const bulk = $("#rp-bulk");
+          if (bulk) bulk.style.display = selected.size ? "block" : "none";
+          const n = $("#rp-sel-count"); if (n) n.textContent = String(selected.size);
+          const all = $("#rp-all");
+          const checks = $$("#rp-list .rp-check");
+          if (all) {
+            all.checked = checks.length > 0 && checks.every(function (x) { return x.checked; });
+            all.indeterminate = checks.some(function (x) { return x.checked; }) && !all.checked;
+          }
+        };
+        $$("#rp-list .rp-check").forEach(function (cb) {
+          cb.onchange = function () {
+            const id = parseInt(cb.dataset.id, 10);
+            if (cb.checked) selected.add(id); else selected.delete(id);
+            syncBulk();
+          };
+        });
+        const allBox = $("#rp-all");
+        if (allBox) allBox.onchange = function () {
+          $$("#rp-list .rp-check").forEach(function (cb) {
+            cb.checked = allBox.checked;
+            const id = parseInt(cb.dataset.id, 10);
+            if (allBox.checked) selected.add(id); else selected.delete(id);
+          });
+          syncBulk();
+        };
+        $$("#rp-bulk [data-bulk]").forEach(function (b) {
+          b.onclick = async function () {
+            if (!selected.size) return;
+            const act = b.dataset.bulk;
+            const target = act === "ignored" ? "rejected" : act;
+            const note = await U.prompt(act === "ignored" ? "忽略原因（可选，仅管理员可见）" : "批量处理备注（可选，仅管理员可见）", "");
+            if (note === null) return;
+            const ids = Array.from(selected);
+            b.disabled = true;
+            try {
+              const results = await Promise.allSettled(ids.map(function (id) {
+                return acc().call("POST", "/admin/reports/" + id + "/status", { status: target, note: (act === "ignored" ? "忽略：" : "") + note });
+              }));
+              const ok = results.filter(function (r) { return r.status === "fulfilled"; }).length;
+              const bad = ids.length - ok;
+              if (window.Audit) Audit.log("report.bulk." + act, ids.length + " 条，成功 " + ok + (bad ? "，失败 " + bad : "") + (note ? " · " + note : ""));
+              U.toast("已处理 " + ok + " 条" + (bad ? "，失败 " + bad + " 条" : ""), bad ? "warn" : "success");
+              selected.clear(); S.refreshReportsBadge(); load();
+            } catch (e) {
+              b.disabled = false; U.toast((e && e.message) || "批量处理失败", "error");
+            }
+          };
+        });
+        syncBulk();
         $$("#rp-list [data-rp]").forEach(function (b) {
           b.onclick = async function () {
             const note = await U.prompt("处理备注（可选，仅管理员可见）", "");
@@ -3560,6 +3623,7 @@ function aiReportHtml(ai, row) {
             b.disabled = true;
             try {
               await acc().call("POST", "/admin/reports/" + b.dataset.id + "/status", { status: b.dataset.rp, note: note });
+              if (window.Audit) Audit.log("report." + b.dataset.rp, "#" + b.dataset.id + (note ? " · " + note : ""));
               U.toast("已更新反馈状态", "success");
               S.refreshReportsBadge();
               load();
