@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`4c4ec46`（feat(SEO/分享): 图片 sitemap + 2 题分类 noindex + 分享二维码）｜缓存版本 `20261021f → 20261021g`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 10:45 (+08)**
+**本轮内容（按用户指定顺序，P2#7 SEO / 分享）**
+
+- **图片 sitemap**：`sitemap.xml` 增加 `xmlns:image` 与 1759 个 `<image:image>`（`assets/og/q/<id>.jpg`），`<url>` 仍为 2124；`xmllint` 校验通过。
+- **2 题分类策略**：`tools/gen-share-pages.js` 现在生成 281 个分类页——**≥3 题的 217 个可索引并进 sitemap**；2 题的 64 个也生成，但 `robots=noindex,follow` 且 canonical 指向父分类（无父页则指向 SPA `/category?cat=`），避免 thin content 被索引；1 题及以下仍由父分类聚合。
+- **分享二维码**：分享弹窗新增本地二维码（`vendor/qrcode.min.js`，112×112 canvas，指向 `https://itinterview.com.cn/q/<id>`），不依赖外部二维码服务；加载失败不影响图片/链接分享。
+- **验证**：本地分享弹窗 `#sc-qr-wrap` display=flex、canvas 112；线上 `/c/100` 200 且 noindex + canonical `/c/96`；线上 sitemap 200（images=1759 / urls=2124）；`vendor/qrcode.min.js` 200；构建 4065 文件，guard 51、smoke 26；Actions run 39712398025 **success**。
+- **产物**：`js/app.js`、`js/bundle/bundle-app.js`、`index.html`、`sw.js`、`vendor/qrcode.min.js`、`tools/gen-share-pages.js`、`sitemap.xml`、64 个 `c/*.html`、`README.md`；数据未变。
+- **下一步**：按顺序进入 P2#8「管理端效率」（报错批量处理/忽略、内容质量状态、审计日志）。
+
 **最新 release commit：`a9d4ef7`（perf(首屏): CSS 合并 + 静态加载壳 + extra 延后）｜缓存版本 `20261021e → 20261021f`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 10:25 (+08)**
 **本轮内容（按用户指定顺序，P1#6 首屏性能实测）**
 
