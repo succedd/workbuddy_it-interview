@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`94c5f1f`（a11y: 深色 SVG + 图表 alt + 焦点复核）｜缓存版本 `20261021h → 20261021i`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 14:18 (+08)**
+**本轮内容（按用户指定顺序，P2#9 无障碍细节）**
+
+- **深色 SVG**：`css/style.css` 给 `.md img[src*="/assets/diagrams/"]` 加 `invert(.9) hue-rotate(180deg) saturate(.85) contrast(.95)`，6 张白底图解在深色模式不刺眼；Markdown alt 保留。
+- **图表 alt**：仪表盘 4 张分布图、访客地域、岗位难度、技术体系分类图补 `role="img"` + `aria-label`（如「岗位题目难度分布图」）。
+- **焦点/键盘**：复核现有 `U.modal` 已具备 `role=dialog`/`aria-modal`、Tab 焦点陷阱、Esc 关闭、关闭后焦点回到触发按钮；全站 `:focus-visible` 与 `skip-link` 保留，无需重复改。
+- **验证**：本地 headless 打开 `#/question/1790` 切 dark，图解 `filter` 计算值正确、`alt=MySQL 索引下推示意`；`#/position/42` 的 `#pos-chart` 为 `role=img` + `aria-label=岗位题目难度分布图`；构建 guard 51、smoke 26；线上 index 20261021i、bundle.css 含 hue-rotate、bundle-app 含图表 aria；Actions run 39733063254 **success**。
+- **产物**：`css/style.css`、`css/bundle.css`、`js/app.js`、`js/bundle/bundle-app.js`、`index.html`、`sw.js`、`README.md`；数据未变。
+- **状态**：按用户指定顺序的 9 项（P0#1-3、P1#4-6、P2#7-9）全部完成；后续可做真实多轮性能采样或内容扩充批次。
+
 **最新 release commit：`d400ab2`（feat(管理): 报错批量处理 + 内容质量状态 + 审计日志）｜缓存版本 `20261021g → 20261021h`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 13:50 (+08)**
 **本轮内容（按用户指定顺序，P2#8 管理端效率）**
 
