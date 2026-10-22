@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>如何做技术方案设计？ · IT面试题库</title>
-  <meta name="description" content="技术方案设计流程 1. 需求分析: 明确业务目标、功能需求、非功能需求 2. 技术选型: 评估不同技术方案的优缺点 3. 架构设计: 整体架构、模块划分、数据流 4. 详细设计: 接口设计、数据库设计、关键流程 5. 风险评估: 识别潜在问题和应对方案 6. 评审优化: 团队评审、迭代优化">
+  <meta name="description" content="结构 背景/目标/非目标 → 现状与约束 → 方案选项与取舍 → 详细设计（架构/数据/接口/流程）→ 容量/性能/安全 → 迁移/回滚 → 里程碑/风险。 先写「为什么」和「不做什么」，避免方案跑偏；用图+关键接口，不堆代码。 评审 拉相关方（产品/研发/运维/安全/数据）评审；列出假设/依赖/开放问题；记录决…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何做技术方案设计？ · IT面试题库">
-  <meta property="og:description" content="技术方案设计流程 1. 需求分析: 明确业务目标、功能需求、非功能需求 2. 技术选型: 评估不同技术方案的优缺点 3. 架构设计: 整体架构、模块划分、数据流 4. 详细设计: 接口设计、数据库设计、关键流程 5. 风险评估: 识别潜在问题和应对方案 6. 评审优化: 团队评审、迭代优化">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="结构 背景/目标/非目标 → 现状与约束 → 方案选项与取舍 → 详细设计（架构/数据/接口/流程）→ 容量/性能/安全 → 迁移/回滚 → 里程碑/风险。 先写「为什么」和「不做什么」，避免方案跑偏；用图+关键接口，不堆代码。 评审 拉相关方（产品/研发/运维/安全/数据）评审；列出假设/依赖/开放问题；记录决…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/191.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何做技术方案设计？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/191.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/191">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何做技术方案设计？ · IT面试题库">
-  <meta name="twitter:description" content="技术方案设计流程 1. 需求分析: 明确业务目标、功能需求、非功能需求 2. 技术选型: 评估不同技术方案的优缺点 3. 架构设计: 整体架构、模块划分、数据流 4. 详细设计: 接口设计、数据库设计、关键流程 5. 风险评估: 识别潜在问题和应对方案 6. 评审优化: 团队评审、迭代优化">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="结构 背景/目标/非目标 → 现状与约束 → 方案选项与取舍 → 详细设计（架构/数据/接口/流程）→ 容量/性能/安全 → 迁移/回滚 → 里程碑/风险。 先写「为什么」和「不做什么」，避免方案跑偏；用图+关键接口，不堆代码。 评审 拉相关方（产品/研发/运维/安全/数据）评审；列出假设/依赖/开放问题；记录决…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/191.jpg">
+  <meta name="twitter:image:alt" content="如何做技术方案设计？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/191">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何做技术方案设计？","text":"请解释技术方案设计的完整流程。","answerCount":1,"datePublished":"2026-08-16T14:12:58.271Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"技术方案设计流程 1. 需求分析: 明确业务目标、功能需求、非功能需求 2. 技术选型: 评估不同技术方案的优缺点 3. 架构设计: 整体架构、模块划分、数据流 4. 详细设计: 接口设计、数据库设计、关键流程 5. 风险评估: 识别潜在问题和应对方案 6. 评审优化: 团队评审、迭代优化","url":"https://itinterview.com.cn/question/191"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何做技术方案设计？","text":"请解释技术方案设计的完整流程。","answerCount":1,"datePublished":"2026-08-16T14:12:58.271Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结构 背景/目标/非目标 → 现状与约束 → 方案选项与取舍 → 详细设计（架构/数据/接口/流程）→ 容量/性能/安全 → 迁移/回滚 → 里程碑/风险。 先写「为什么」和「不做什么」，避免方案跑偏；用图+关键接口，不堆代码。 评审 拉相关方（产品/研发/运维/安全/数据）评审；列出假设/依赖/开放问题；记录决策（ADR）。 方案要可验证：指标、压测/灰度、验收标准；对高风险点做 PoC。 落地 任务拆解/owner/排期；上线计划/回滚；事后复盘，文档持续更新，不写「一次性 PPT」。","url":"https://itinterview.com.cn/question/191"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"通用面试能力与软技能","item":"https://itinterview.com.cn/category?cat=272"},{"@type":"ListItem","position":3,"name":"常见HR面试题","item":"https://itinterview.com.cn/category?cat=279"},{"@type":"ListItem","position":4,"name":"如何做技术方案设计？","item":"https://itinterview.com.cn/q/191"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,15 +96,20 @@
     <h1>如何做技术方案设计？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Go开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">技术方案</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>请解释技术方案设计的完整流程。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>技术方案设计流程</h3>
-<ol>
-<li><strong>需求分析</strong>: 明确业务目标、功能需求、非功能需求</li>
-<li><strong>技术选型</strong>: 评估不同技术方案的优缺点</li>
-<li><strong>架构设计</strong>: 整体架构、模块划分、数据流</li>
-<li><strong>详细设计</strong>: 接口设计、数据库设计、关键流程</li>
-<li><strong>风险评估</strong>: 识别潜在问题和应对方案</li>
-<li><strong>评审优化</strong>: 团队评审、迭代优化</li>
-</ol></div>
+    <div class="card"><h2>参考答案</h2><p><strong>结构</strong></p>
+<ul>
+<li>背景/目标/非目标 → 现状与约束 → 方案选项与取舍 → 详细设计（架构/数据/接口/流程）→ 容量/性能/安全 → 迁移/回滚 → 里程碑/风险。</li>
+<li>先写「为什么」和「不做什么」，避免方案跑偏；用图+关键接口，不堆代码。</li>
+</ul>
+<p><strong>评审</strong></p>
+<ul>
+<li>拉相关方（产品/研发/运维/安全/数据）评审；列出假设/依赖/开放问题；记录决策（ADR）。</li>
+<li>方案要可验证：指标、压测/灰度、验收标准；对高风险点做 PoC。</li>
+</ul>
+<p><strong>落地</strong></p>
+<ul>
+<li>任务拆解/owner/排期；上线计划/回滚；事后复盘，文档持续更新，不写「一次性 PPT」。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/191">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

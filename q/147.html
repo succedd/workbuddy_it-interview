@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linux进程管理相关命令？ · IT面试题库</title>
-  <meta name="description" content="Linux进程管理 查看: ps、top、htop、pstree 信号: kill -9(强制终止)、kill -15(优雅终止)、kill -1(重载配置) 后台: &amp;、nohup、jobs、fg/bg 资源: free、df、du">
+  <meta name="description" content="查看 ps aux / ps -ef 看进程与父进程；pgrep -af name 按名找；pstree -p 看进程树。 top/htop 看 CPU/内存实时；pidstat -p PID 1 看单进程；/proc/PID/{status,cmdline,fd} 看详情。 管理 kill -15 优雅终止，-…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Linux进程管理相关命令？ · IT面试题库">
-  <meta property="og:description" content="Linux进程管理 查看: ps、top、htop、pstree 信号: kill -9(强制终止)、kill -15(优雅终止)、kill -1(重载配置) 后台: &amp;、nohup、jobs、fg/bg 资源: free、df、du">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="查看 ps aux / ps -ef 看进程与父进程；pgrep -af name 按名找；pstree -p 看进程树。 top/htop 看 CPU/内存实时；pidstat -p PID 1 看单进程；/proc/PID/{status,cmdline,fd} 看详情。 管理 kill -15 优雅终止，-…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/147.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Linux进程管理相关命令？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/147.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/147">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Linux进程管理相关命令？ · IT面试题库">
-  <meta name="twitter:description" content="Linux进程管理 查看: ps、top、htop、pstree 信号: kill -9(强制终止)、kill -15(优雅终止)、kill -1(重载配置) 后台: &amp;、nohup、jobs、fg/bg 资源: free、df、du">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="查看 ps aux / ps -ef 看进程与父进程；pgrep -af name 按名找；pstree -p 看进程树。 top/htop 看 CPU/内存实时；pidstat -p PID 1 看单进程；/proc/PID/{status,cmdline,fd} 看详情。 管理 kill -15 优雅终止，-…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/147.jpg">
+  <meta name="twitter:image:alt" content="Linux进程管理相关命令？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/147">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux进程管理相关命令？","text":"请解释进程查看、信号发送等命令。","answerCount":1,"datePublished":"2026-07-31T08:06:47.483Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Linux进程管理 查看: ps、top、htop、pstree 信号: kill -9(强制终止)、kill -15(优雅终止)、kill -1(重载配置) 后台: &、nohup、jobs、fg/bg 资源: free、df、du","url":"https://itinterview.com.cn/question/147"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux进程管理相关命令？","text":"请解释进程查看、信号发送等命令。","answerCount":1,"datePublished":"2026-07-31T08:06:47.483Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"查看 ps aux / ps -ef 看进程与父进程；pgrep -af name 按名找；pstree -p 看进程树。 top/htop 看 CPU/内存实时；pidstat -p PID 1 看单进程；/proc/PID/{status,cmdline,fd} 看详情。 管理 kill -15 优雅终止，-9 强杀（最后手段）；nice/renice 调优先级；nohup ... &/setsid 后台运行。 systemctl status/start/stop/restart 管理服务；journalctl -u 看日志。 排查 僵尸进程看父进程回收；D 状态看 I/O；OOM 看 dmesg；不要盲目 kill -9 数据库/中间件。","url":"https://itinterview.com.cn/question/147"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"Linux进程管理相关命令？","item":"https://itinterview.com.cn/q/147"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,11 +96,20 @@
     <h1>Linux进程管理相关命令？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">网络运维工程师</span><span class="chip">FPGA工程师</span><span class="chip tag">Linux</span><span class="chip tag">进程管理</span></div>
     <div class="card"><h2>题目</h2><p>请解释进程查看、信号发送等命令。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Linux进程管理</h3>
-<p><strong>查看</strong>: ps、top、htop、pstree</p>
-<p><strong>信号</strong>: kill -9(强制终止)、kill -15(优雅终止)、kill -1(重载配置)</p>
-<p><strong>后台</strong>: &amp;、nohup、jobs、fg/bg</p>
-<p><strong>资源</strong>: free、df、du</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>查看</strong></p>
+<ul>
+<li><code>ps aux</code> / <code>ps -ef</code> 看进程与父进程；<code>pgrep -af name</code> 按名找；<code>pstree -p</code> 看进程树。</li>
+<li><code>top</code>/<code>htop</code> 看 CPU/内存实时；<code>pidstat -p PID 1</code> 看单进程；<code>/proc/PID/{status,cmdline,fd}</code> 看详情。</li>
+</ul>
+<p><strong>管理</strong></p>
+<ul>
+<li><code>kill -15</code> 优雅终止，<code>-9</code> 强杀（最后手段）；<code>nice/renice</code> 调优先级；<code>nohup ... &amp;</code>/<code>setsid</code> 后台运行。</li>
+<li><code>systemctl status/start/stop/restart</code> 管理服务；<code>journalctl -u</code> 看日志。</li>
+</ul>
+<p><strong>排查</strong></p>
+<ul>
+<li>僵尸进程看父进程回收；D 状态看 I/O；OOM 看 dmesg；不要盲目 kill -9 数据库/中间件。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/147">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

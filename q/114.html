@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Python生成器和迭代器的区别？ · IT面试题库</title>
-  <meta name="description" content="生成器vs迭代器 迭代器: 实现__iter__()和__next__()的对象 生成器: 使用yield关键字，自动保存状态 场景: 处理大数据流(惰性求值)、无限序列">
+  <meta name="description" content="迭代器 实现 __iter__/__next__，一次遍历，耗尽后 StopIteration；可被 for 消费；自身就是迭代器。 生成器 用 yield 的函数，调用返回生成器（也是迭代器）；惰性求值、节省内存，适合大文件/流式数据。 生成器只能遍历一次；可用 send/throw/close 做协程；yie…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Python生成器和迭代器的区别？ · IT面试题库">
-  <meta property="og:description" content="生成器vs迭代器 迭代器: 实现__iter__()和__next__()的对象 生成器: 使用yield关键字，自动保存状态 场景: 处理大数据流(惰性求值)、无限序列">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="迭代器 实现 __iter__/__next__，一次遍历，耗尽后 StopIteration；可被 for 消费；自身就是迭代器。 生成器 用 yield 的函数，调用返回生成器（也是迭代器）；惰性求值、节省内存，适合大文件/流式数据。 生成器只能遍历一次；可用 send/throw/close 做协程；yie…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/114.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Python生成器和迭代器的区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/114.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/114">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Python生成器和迭代器的区别？ · IT面试题库">
-  <meta name="twitter:description" content="生成器vs迭代器 迭代器: 实现__iter__()和__next__()的对象 生成器: 使用yield关键字，自动保存状态 场景: 处理大数据流(惰性求值)、无限序列">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="迭代器 实现 __iter__/__next__，一次遍历，耗尽后 StopIteration；可被 for 消费；自身就是迭代器。 生成器 用 yield 的函数，调用返回生成器（也是迭代器）；惰性求值、节省内存，适合大文件/流式数据。 生成器只能遍历一次；可用 send/throw/close 做协程；yie…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/114.jpg">
+  <meta name="twitter:image:alt" content="Python生成器和迭代器的区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/114">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Python生成器和迭代器的区别？","text":"请解释迭代器协议和yield关键字。","answerCount":1,"datePublished":"2026-08-19T10:53:48.036Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"生成器vs迭代器 迭代器: 实现__iter__()和__next__()的对象 生成器: 使用yield关键字，自动保存状态 场景: 处理大数据流(惰性求值)、无限序列","url":"https://itinterview.com.cn/question/114"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Python生成器和迭代器的区别？","text":"请解释迭代器协议和yield关键字。","answerCount":1,"datePublished":"2026-08-19T10:53:48.036Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"迭代器 实现 __iter__/__next__，一次遍历，耗尽后 StopIteration；可被 for 消费；自身就是迭代器。 生成器 用 yield 的函数，调用返回生成器（也是迭代器）；惰性求值、节省内存，适合大文件/流式数据。 生成器只能遍历一次；可用 send/throw/close 做协程；yield from 委托子生成器。 区别 迭代器是协议，生成器是创建迭代器的语法；列表推导是立即求值，生成器表达式是惰性。 注意生成器中的异常/资源释放，用 try/finally 或 contextlib。","url":"https://itinterview.com.cn/question/114"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Python","item":"https://itinterview.com.cn/category?cat=13"},{"@type":"ListItem","position":4,"name":"Python生成器和迭代器的区别？","item":"https://itinterview.com.cn/q/114"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>Python生成器和迭代器的区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式硬件工程师</span><span class="chip tag">Python</span><span class="chip tag">生成器</span></div>
     <div class="card"><h2>题目</h2><p>请解释迭代器协议和yield关键字。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>生成器vs迭代器</h3>
-<p><strong>迭代器</strong>: 实现__iter__()和__next__()的对象</p>
-<p><strong>生成器</strong>: 使用yield关键字，自动保存状态</p>
-<p><strong>场景</strong>: 处理大数据流(惰性求值)、无限序列</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>迭代器</strong></p>
+<ul>
+<li>实现 <code>__iter__</code>/<code>__next__</code>，一次遍历，耗尽后 StopIteration；可被 for 消费；自身就是迭代器。</li>
+</ul>
+<p><strong>生成器</strong></p>
+<ul>
+<li>用 <code>yield</code> 的函数，调用返回生成器（也是迭代器）；惰性求值、节省内存，适合大文件/流式数据。</li>
+<li>生成器只能遍历一次；可用 <code>send/throw/close</code> 做协程；<code>yield from</code> 委托子生成器。</li>
+</ul>
+<p><strong>区别</strong></p>
+<ul>
+<li>迭代器是协议，生成器是创建迭代器的语法；列表推导是立即求值，生成器表达式是惰性。</li>
+<li>注意生成器中的异常/资源释放，用 try/finally 或 contextlib。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/114">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

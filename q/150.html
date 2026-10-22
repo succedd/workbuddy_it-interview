@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linux系统性能和资源监控？ · IT面试题库</title>
-  <meta name="description" content="Linux性能监控 CPU: top、mpstat、vmstat 内存: free -h、cat /proc/meminfo 磁盘IO: iostat、iotop、df -h、du -sh 网络: sar -n DEV、iftop 系统负载: uptime、w、cat /proc/loadavg">
+  <meta name="description" content="CPU/负载 top/htop 看 load average、%CPU、运行队列；vmstat 1 看 r/b、si/so、us/sy/id/wa；mpstat -P ALL 1 看每核。 负载高但 CPU 低看 D 状态/I/O；sy 高看系统调用/中断；steal 高看虚拟化。 内存 free -h、vmst…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Linux系统性能和资源监控？ · IT面试题库">
-  <meta property="og:description" content="Linux性能监控 CPU: top、mpstat、vmstat 内存: free -h、cat /proc/meminfo 磁盘IO: iostat、iotop、df -h、du -sh 网络: sar -n DEV、iftop 系统负载: uptime、w、cat /proc/loadavg">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="CPU/负载 top/htop 看 load average、%CPU、运行队列；vmstat 1 看 r/b、si/so、us/sy/id/wa；mpstat -P ALL 1 看每核。 负载高但 CPU 低看 D 状态/I/O；sy 高看系统调用/中断；steal 高看虚拟化。 内存 free -h、vmst…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/150.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Linux系统性能和资源监控？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/150.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/150">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Linux系统性能和资源监控？ · IT面试题库">
-  <meta name="twitter:description" content="Linux性能监控 CPU: top、mpstat、vmstat 内存: free -h、cat /proc/meminfo 磁盘IO: iostat、iotop、df -h、du -sh 网络: sar -n DEV、iftop 系统负载: uptime、w、cat /proc/loadavg">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="CPU/负载 top/htop 看 load average、%CPU、运行队列；vmstat 1 看 r/b、si/so、us/sy/id/wa；mpstat -P ALL 1 看每核。 负载高但 CPU 低看 D 状态/I/O；sy 高看系统调用/中断；steal 高看虚拟化。 内存 free -h、vmst…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/150.jpg">
+  <meta name="twitter:image:alt" content="Linux系统性能和资源监控？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/150">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux系统性能和资源监控？","text":"请解释常用的性能监控命令。","answerCount":1,"datePublished":"2026-08-04T11:05:39.607Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Linux性能监控 CPU: top、mpstat、vmstat 内存: free -h、cat /proc/meminfo 磁盘IO: iostat、iotop、df -h、du -sh 网络: sar -n DEV、iftop 系统负载: uptime、w、cat /proc/loadavg","url":"https://itinterview.com.cn/question/150"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux系统性能和资源监控？","text":"请解释常用的性能监控命令。","answerCount":1,"datePublished":"2026-08-04T11:05:39.607Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CPU/负载 top/htop 看 load average、%CPU、运行队列；vmstat 1 看 r/b、si/so、us/sy/id/wa；mpstat -P ALL 1 看每核。 负载高但 CPU 低看 D 状态/I/O；sy 高看系统调用/中断；steal 高看虚拟化。 内存 free -h、vmstat、/proc/meminfo；看 available 而非 free；OOM 看 dmesg；cache/buffer 可回收。 进程级 pidstat -r、smem、pmap。 磁盘/网络 iostat -x 1 看 await/util、iotop；ss -s/sar -n DEV 看连接/流量；df -h/du。 先定位资源瓶颈，再看应用；保留基线/时间线。","url":"https://itinterview.com.cn/question/150"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"Linux系统性能和资源监控？","item":"https://itinterview.com.cn/q/150"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,12 +96,21 @@
     <h1>Linux系统性能和资源监控？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络运维工程师</span><span class="chip">FPGA工程师</span><span class="chip tag">Linux</span><span class="chip tag">性能监控</span></div>
     <div class="card"><h2>题目</h2><p>请解释常用的性能监控命令。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Linux性能监控</h3>
-<p><strong>CPU</strong>: top、mpstat、vmstat</p>
-<p><strong>内存</strong>: free -h、cat /proc/meminfo</p>
-<p><strong>磁盘IO</strong>: iostat、iotop、df -h、du -sh</p>
-<p><strong>网络</strong>: sar -n DEV、iftop</p>
-<p><strong>系统负载</strong>: uptime、w、cat /proc/loadavg</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>CPU/负载</strong></p>
+<ul>
+<li><code>top/htop</code> 看 load average、%CPU、运行队列；<code>vmstat 1</code> 看 r/b、si/so、us/sy/id/wa；<code>mpstat -P ALL 1</code> 看每核。</li>
+<li>负载高但 CPU 低看 D 状态/I/O；sy 高看系统调用/中断；steal 高看虚拟化。</li>
+</ul>
+<p><strong>内存</strong></p>
+<ul>
+<li><code>free -h</code>、<code>vmstat</code>、<code>/proc/meminfo</code>；看 available 而非 free；OOM 看 dmesg；cache/buffer 可回收。</li>
+<li>进程级 <code>pidstat -r</code>、<code>smem</code>、<code>pmap</code>。</li>
+</ul>
+<p><strong>磁盘/网络</strong></p>
+<ul>
+<li><code>iostat -x 1</code> 看 await/util、<code>iotop</code>；<code>ss -s</code>/<code>sar -n DEV</code> 看连接/流量；<code>df -h</code>/<code>du</code>。</li>
+<li>先定位资源瓶颈，再看应用；保留基线/时间线。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/150">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

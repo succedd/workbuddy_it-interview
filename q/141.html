@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redis分布式锁的实现方式？ · IT面试题库</title>
-  <meta name="description" content="分布式锁 SETNX: SET key value NX PX 30000，UUID作为value防误删 Redlock: 向多个Redis实例请求锁，超过半数加锁成功才算获取 Redisson: 看门狗机制自动续期，可重入锁">
+  <meta name="description" content="基本做法 SET lock_key unique_value NX PX 30000 原子加锁；value 用随机 token，释放时用 Lua 比对 token 再删，防误删。 锁过期要大于业务执行时间；看门狗/续期（Redisson）解决长任务；重试要有退避/超时。 边界 单 Redis 主从异步复制：主挂后…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis分布式锁的实现方式？ · IT面试题库">
-  <meta property="og:description" content="分布式锁 SETNX: SET key value NX PX 30000，UUID作为value防误删 Redlock: 向多个Redis实例请求锁，超过半数加锁成功才算获取 Redisson: 看门狗机制自动续期，可重入锁">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="基本做法 SET lock_key unique_value NX PX 30000 原子加锁；value 用随机 token，释放时用 Lua 比对 token 再删，防误删。 锁过期要大于业务执行时间；看门狗/续期（Redisson）解决长任务；重试要有退避/超时。 边界 单 Redis 主从异步复制：主挂后…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/141.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis分布式锁的实现方式？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/141.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/141">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis分布式锁的实现方式？ · IT面试题库">
-  <meta name="twitter:description" content="分布式锁 SETNX: SET key value NX PX 30000，UUID作为value防误删 Redlock: 向多个Redis实例请求锁，超过半数加锁成功才算获取 Redisson: 看门狗机制自动续期，可重入锁">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="基本做法 SET lock_key unique_value NX PX 30000 原子加锁；value 用随机 token，释放时用 Lua 比对 token 再删，防误删。 锁过期要大于业务执行时间；看门狗/续期（Redisson）解决长任务；重试要有退避/超时。 边界 单 Redis 主从异步复制：主挂后…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/141.jpg">
+  <meta name="twitter:image:alt" content="Redis分布式锁的实现方式？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/141">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis分布式锁的实现方式？","text":"请解释SETNX和Redlock算法。","answerCount":1,"datePublished":"2026-08-13T23:20:27.606Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分布式锁 SETNX: SET key value NX PX 30000，UUID作为value防误删 Redlock: 向多个Redis实例请求锁，超过半数加锁成功才算获取 Redisson: 看门狗机制自动续期，可重入锁","url":"https://itinterview.com.cn/question/141"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis分布式锁的实现方式？","text":"请解释SETNX和Redlock算法。","answerCount":1,"datePublished":"2026-08-13T23:20:27.606Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"基本做法 SET lock_key unique_value NX PX 30000 原子加锁；value 用随机 token，释放时用 Lua 比对 token 再删，防误删。 锁过期要大于业务执行时间；看门狗/续期（Redisson）解决长任务；重试要有退避/超时。 边界 单 Redis 主从异步复制：主挂后锁可能丢失；Redlock 多节点也有争议（时钟/网络分区）。 强一致场景用 ZooKeeper/etcd 或数据库唯一约束/乐观锁；锁只是降低并发，不是事务替代。 实践 锁粒度尽量小；可重入要记录；释放必须原子；监控锁等待/超时/续期失败；业务操作要幂等。","url":"https://itinterview.com.cn/question/141"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis分布式锁的实现方式？","item":"https://itinterview.com.cn/q/141"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>Redis分布式锁的实现方式？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">硬件工程师</span><span class="chip">路由交换工程师</span><span class="chip tag">Redis</span><span class="chip tag">分布式锁</span></div>
     <div class="card"><h2>题目</h2><p>请解释SETNX和Redlock算法。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>分布式锁</h3>
-<p><strong>SETNX</strong>: SET key value NX PX 30000，UUID作为value防误删</p>
-<p><strong>Redlock</strong>: 向多个Redis实例请求锁，超过半数加锁成功才算获取</p>
-<p><strong>Redisson</strong>: 看门狗机制自动续期，可重入锁</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>基本做法</strong></p>
+<ul>
+<li><code>SET lock_key unique_value NX PX 30000</code> 原子加锁；value 用随机 token，释放时用 Lua 比对 token 再删，防误删。</li>
+<li>锁过期要大于业务执行时间；看门狗/续期（Redisson）解决长任务；重试要有退避/超时。</li>
+</ul>
+<p><strong>边界</strong></p>
+<ul>
+<li>单 Redis 主从异步复制：主挂后锁可能丢失；Redlock 多节点也有争议（时钟/网络分区）。</li>
+<li>强一致场景用 ZooKeeper/etcd 或数据库唯一约束/乐观锁；锁只是降低并发，不是事务替代。</li>
+</ul>
+<p><strong>实践</strong></p>
+<ul>
+<li>锁粒度尽量小；可重入要记录；释放必须原子；监控锁等待/超时/续期失败；业务操作要幂等。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/141">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

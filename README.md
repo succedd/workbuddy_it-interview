@@ -310,6 +310,10 @@ node tools/gen-published.js
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
 
+### 2026-10-22 · quality: 重写下一批 30 道高浏览短答案（version 18 / 缓存 o）
+
+> **本轮**：按浏览量继续取 30 道答案偏短/来源为 manual 的题（Transformer、技术分享、Linux 进程/文件命令、Kafka ISR、React key、JS 闭包/事件循环、MySQL 索引/SQL 优化、Docker 网络、HTTP/1.1/2/3、Python 上下文/列表元组/生成器、synchronized/线程池/反射、技术方案、HTML5 API、K8s ConfigMap/Secret/Service/滚动更新、Linux 监控、Redis 分布式锁/Session、三大范式、TCP 流控/拥塞、RAG、Spring Boot），重写答案并补官方来源；30 题写入 reviewedAt。短答案 159→**133**，无 http 来源 334→**304**，未复核 1867→1837；题库仍 1887，version 17→18，缓存 n→o。
+
 ### 2026-10-22 · quality: 重写 Top 20 高浏览题（version 17 / 缓存 n）
 
 > **本轮**：按种子浏览量取 Top 20，重写答案并补权威来源（薪资谈判、Kafka 顺序、JS this、动态规划、InnoDB/MyISAM、LLM 微调、Vue 响应式、Spring Boot 异步/事务/拦截器/MyBatis、HTTPS、深拷贝、Scrum、Java 异常、MySQL JOIN/MVCC、DNS、哈希表、栈/队列），答案统一补到 400–600 字，加入机制/取舍/常见坑；同时修正明显错配的岗位关联，并写入 `reviewedAt`。题库仍 1887 题，data version 16→17，缓存 m→n，sitemap 2262。质量报告更新：短答案 174→**159**，无 http 来源 354→**334**。
