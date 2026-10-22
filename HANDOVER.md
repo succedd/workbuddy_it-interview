@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`7efd93d`（feat(题库): 第三批 8 岗位各补 4 题 / 1855 / version 15）｜缓存版本 `20261021k → 20261021l`｜数据 version `15` / 1855 题｜更新时间：2026-10-22 15:28 (+08)**
+**本轮内容（题库第三批扩充）**
+
+- **新增 32 题**（ID `1864–1895`，每岗 4 题）：UX（菲茨/希克、任务分析、原型保真度、防呆）；AR/VR（晕动症、SLAM/平面检测、手部追踪/手柄、90fps/注视点）；PHP（Composer PSR-4、Session 并发、OPcache/JIT、SQL/XSS/CSRF）；Unreal（GC/UPROPERTY、RPC/属性复制、DrawCall/LOD/Nanite/Lumen、模块热更新）；Windows（FSMO/域信任、PerfMon/ETW、IIS 500.19、WSUS）；CTO（技术战略、OKR/绩效、自研 vs 采购、研发效能）；React Native（FlatList、原生模块线程、CodePush、混合导航/状态）；Prompt（注入、结构化 JSON、Few-shot/CoT、版本评测）。
+- **岗位题量**：UX/AR/PHP/Unreal/Windows/CTO 6，RN/Prompt 7；总题库 1823→**1855**；data version 14→15；OG 1855；sitemap 2193→**2229**（32 题页 + 4 分类页转可索引）；缓存 k→l。
+- **验证**：batch dry-run 32 新增 0 跳过；构建 guard 51、smoke 26；线上 index 20261021l、version 15/count 1855、q/1864 200、c/237 200/5 题、sitemap 2229/images 1855；Actions run 39740577776 **success**。
+- **产物**：data 文件、`assets/og/q/1864–1895.jpg`、`q/1864–1895.html`、10 个受影响 c 页、8 个 p 页、`tools/batches/2026-10-22-c.json`、`sitemap.xml`、`index.html`、`sw.js`、`README.md`。
+- **剩余题量 <5 岗位**：8 个（.NET、UI/UX、数据采集、新兴方向、游戏服务端、编译器、CV、移动端架构师，均 3–4 题）；下一批可一次补齐。
+
 **最新 release commit：`8548167`（feat(题库): 第二批 8 岗位各补 4 题 / 1823 / version 14）｜缓存版本 `20261021j → 20261021k`｜数据 version `14` / 1823 题｜更新时间：2026-10-22 15:14 (+08)**
 **本轮内容（题库第二批扩充）**
 
