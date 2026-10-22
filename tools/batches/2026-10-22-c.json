@@ -1,0 +1,647 @@
+{
+  "batch": "2026-10-22-c",
+  "note": "人工批次：第三批 8 个题量不足岗位各补 4 题（UX/ARVR/PHP/Unreal/Windows/CTO/RN/Prompt），共 32 题；避开现有标题，覆盖交互定律、VR晕动、PHP自动加载/会话/OPcache/安全、UE GC/网络/渲染/热更、AD/性能/IIS/补丁、CTO战略/OKR/自研/效能、RN列表/原生/热更/混合、Prompt注入/JSON/CoT/版本评测。",
+  "chain": false,
+  "questions": [
+    {
+      "title": "菲茨定律和希克定律在交互设计中怎么用？",
+      "body": "考察交互设计中的目标大小、距离和选项复杂度。",
+      "answer": "**菲茨定律**\n- 目标越大、距离越近，点击越快；重要操作放大点击区域、放在拇指/鼠标易达位置，危险操作不要放在相邻位置。\n- 移动端底部操作、浮动按钮、列表整行可点都是应用；但不要把所有按钮都做大，造成视觉噪音。\n\n**希克定律**\n- 选项越多、越复杂，决策越慢；导航/表单要分组、渐进披露、默认值，减少一次性选择。\n- 不是「越少越好」：复杂任务需要必要信息；用搜索/筛选/推荐降低选择成本。\n\n**一起用**\n- 高频操作大而近；低频/危险操作收起并确认；用分组和默认值降低选择数；用可用性测试验证，不要只套公式。",
+      "category": "UI与视觉设计",
+      "positions": [
+        "UX交互设计师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "菲茨定律",
+        "希克定律",
+        "交互设计",
+        "可用性"
+      ],
+      "years": "1-3年",
+      "source": "https://www.nngroup.com/articles/fitts-law/",
+      "aiScore": 88
+    },
+    {
+      "title": "任务分析（task analysis）怎么做？和用户旅程图有什么区别？",
+      "body": "考察任务拆解、用户目标和旅程地图的适用边界。",
+      "answer": "**任务分析**\n- 选真实用户和场景，观察/访谈他们完成目标的步骤；拆成目标→子任务→动作→信息/工具→痛点，记录频率、耗时、错误。\n- 产出任务清单/层级图/流程，用于发现冗余步骤、信息缺口和自动化机会。\n\n**与旅程图区别**\n- 任务分析聚焦「完成一个具体任务的操作细节」，颗粒度细；旅程图聚焦「跨渠道/跨时间的体验和情绪」，颗粒度粗。\n- 旅程图适合找关键时刻和跨部门问题；任务分析适合优化具体流程/界面。\n\n**做法**\n- 先定任务边界和成功标准，多角色分别分析；用真实样本验证，不要把专家假设当用户任务。",
+      "category": "用户研究",
+      "positions": [
+        "UX交互设计师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "任务分析",
+        "用户旅程图",
+        "流程",
+        "用户目标"
+      ],
+      "years": "3-5年",
+      "source": "https://www.nngroup.com/articles/task-analysis/",
+      "aiScore": 89
+    },
+    {
+      "title": "低保真和高保真原型分别适合什么阶段？",
+      "body": "考察原型保真度与验证目标、成本的匹配。",
+      "answer": "**低保真**\n- 纸面/线框/可点击灰稿，成本低、改得快；适合早期探索信息架构、流程、概念验证，避免用户被视觉细节带偏。\n- 不适合验证视觉品牌、动效和真实内容密度。\n\n**高保真**\n- 接近最终视觉/交互，适合验证视觉层级、品牌、动效、开发交接；成本高，改一次牵动多页。\n- 不要过早做高保真：需求/流程没定就精修，容易返工。\n\n**选择**\n- 按要验证的问题选：流程/概念→低保真；视觉/体验细节→高保真；可用性测试可先用低保真发现大问题，再用高保真验证细节。",
+      "category": "UI与视觉设计",
+      "positions": [
+        "UX交互设计师"
+      ],
+      "difficulty": "初级",
+      "type": "简答题",
+      "tags": [
+        "低保真",
+        "高保真",
+        "原型",
+        "可用性测试"
+      ],
+      "years": "0-1年",
+      "source": "https://www.nngroup.com/articles/paper-prototyping-low-fidelity/",
+      "aiScore": 87
+    },
+    {
+      "title": "防呆设计（error prevention）有哪些常用模式？",
+      "body": "考察如何从设计上减少用户犯错，而不是只靠错误提示。",
+      "answer": "**约束与默认**\n- 用格式/范围/必填约束、输入掩码、日期选择器减少非法输入；给安全默认值，危险操作默认不选中。\n- 不可逆操作要二次确认/输入名称/延迟执行；能撤销的优先提供撤销。\n\n**引导与预览**\n- 分步向导、实时校验、示例/模板；提交前预览影响范围（影响多少条数据/谁会收到通知）。\n- 相关字段联动，避免用户填出矛盾组合；禁用不可用选项并说明原因。\n\n**恢复**\n- 错误时保留输入、定位到第一个错误、给出具体修正建议；自动保存草稿。\n- 防呆不是阻止用户，而是在关键处让正确操作更容易、错误操作更难。",
+      "category": "UI与视觉设计",
+      "positions": [
+        "UX交互设计师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "防呆设计",
+        "错误预防",
+        "约束",
+        "撤销"
+      ],
+      "years": "1-3年",
+      "source": "https://www.nngroup.com/articles/error-message-guidelines/",
+      "aiScore": 88
+    },
+    {
+      "title": "VR 晕动症（motion sickness）的成因和缓解设计有哪些？",
+      "body": "考察 VR 晕动症、前庭冲突和交互设计缓解。",
+      "answer": "**成因**\n- 视觉显示在移动，但前庭系统没感到对应加速度，产生感觉冲突；帧率低、延迟高、视野遮挡/加速旋转会加重。\n- 个体差异大，首次体验、疲劳、空腹/酒后更明显。\n\n**设计缓解**\n- 稳定 90/120fps、低延迟；避免强制镜头加速/旋转，提供 snap turn、传送移动、视野收缩（vignette）。\n- 固定参考物/舒适框架、地平线稳定；不要在用户未准备时移动相机；提供坐姿/站姿和舒适选项。\n\n**流程**\n- 首次引导、短时体验、随时退出；监控用户不适并允许休息；不要用「晕着晕着就习惯」当设计。",
+      "category": "图形学基础",
+      "positions": [
+        "AR/VR开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "VR",
+        "晕动症",
+        "前庭冲突",
+        "舒适设计"
+      ],
+      "years": "3-5年",
+      "source": "https://developers.meta.com/horizon/design/",
+      "aiScore": 89
+    },
+    {
+      "title": "AR 平面检测/SLAM 的原理和限制是什么？",
+      "body": "考察 AR 跟踪、平面检测和真实环境限制。",
+      "answer": "**原理**\n- SLAM 用相机/IMU 估计设备位姿，同时构建环境地图；平面检测从深度/特征拟合水平/垂直面，给虚拟物体提供锚点。\n- 视觉特征+IMU 融合提高稳定性；光照、纹理和运动影响跟踪。\n\n**限制**\n- 弱纹理/反光/透明/动态场景容易丢失跟踪；平面可能是近似，边缘/小平面不稳定；遮挡和光照一致性难。\n- 多设备/多人共享锚点需要云端对齐；长时间使用会漂移，需要重定位/锚点更新。\n\n**设计**\n- 引导用户扫描环境、给平面提示/重试；关键交互不要依赖单帧检测；提供无跟踪降级和重置。",
+      "category": "图形学基础",
+      "positions": [
+        "AR/VR开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "AR",
+        "SLAM",
+        "平面检测",
+        "跟踪"
+      ],
+      "years": "3-5年",
+      "source": "https://developers.google.com/ar/develop",
+      "aiScore": 89
+    },
+    {
+      "title": "VR 手部追踪和手柄交互的设计原则有什么不同？",
+      "body": "考察 VR 输入方式、反馈和可用性。",
+      "answer": "**手柄**\n- 有按键/扳机/摇杆，精确、可提供触觉反馈；适合复杂操作、长时间使用；要定义按键映射和防误触。\n- 交互可依赖射线/直接抓取；注意手部遮挡和疲劳。\n\n**手部追踪**\n- 更自然、沉浸，但精度/延迟/遮挡限制大；缺少物理反馈，抓取要宽容判定/吸附。\n- 手势要少而明确，提供视觉/音效确认；避免长时间悬空导致疲劳；关键操作保留手柄/语音替代。\n\n**共同**\n- 交互距离/角度舒适区、可见反馈、误操作恢复；做用户测试，不要假设「自然手势」一定好用。",
+      "category": "UI与视觉设计",
+      "positions": [
+        "AR/VR开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "手部追踪",
+        "手柄",
+        "VR交互",
+        "反馈"
+      ],
+      "years": "1-3年",
+      "source": "https://developer.apple.com/design/human-interface-guidelines/visionos",
+      "aiScore": 88
+    },
+    {
+      "title": "AR/VR 性能优化：90fps、单眼渲染和注视点渲染怎么配合？",
+      "body": "考察 VR 渲染管线、延迟和 GPU 优化。",
+      "answer": "**目标**\n- VR 通常需 90/120fps 且低延迟，否则晕动；先保证帧时间预算，再谈画质。\n- 用单眼/多视图渲染减少重复提交，实例化/合批降低 DrawCall；LOD/遮挡剔除/简化材质。\n\n**注视点渲染**\n- 按眼睛注视区域分级分辨率，周边降低；需要眼动追踪/校准，注意延迟和边缘伪影。\n- 固定注视点（foveated rendering）可用屏幕分区，不需眼动，但节省有限。\n\n**验证**\n- 用 GPU/CPU 帧时间、丢帧率、延迟、发热/功耗评估；在目标头显实测，不要只看 PC 编辑器帧率。",
+      "category": "OpenGL",
+      "positions": [
+        "AR/VR开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "VR渲染",
+        "90fps",
+        "单眼渲染",
+        "注视点渲染"
+      ],
+      "years": "3-5年",
+      "source": "https://developers.meta.com/horizon/design/",
+      "aiScore": 89
+    },
+    {
+      "title": "Composer 的 PSR-4 自动加载是怎么工作的？",
+      "body": "考察 PHP 自动加载、命名空间和 Composer 配置。",
+      "answer": "**流程**\n- Composer 读取 `composer.json` 的 `autoload.psr-4`，把命名空间前缀映射到目录；生成 `vendor/autoload.php` 和 classmap/psr-4 映射。\n- 注册 `spl_autoload_register`；使用未定义类时，按命名空间前缀找到文件并 `require`。\n\n**规则**\n- 命名空间前缀必须以 `\\` 结尾，目录路径对应；类名/文件名大小写要匹配（Linux 区分大小写）。\n- `composer dump-autoload -o` 生成优化 classmap，生产可加速；新增类后要重新生成。\n\n**排查**\n- 类找不到先查命名空间/路径/大小写、autoload 配置、是否执行 dump；不要用 `require` 到处补。",
+      "category": "PHP",
+      "positions": [
+        "PHP后端工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Composer",
+        "PSR-4",
+        "自动加载",
+        "命名空间"
+      ],
+      "years": "1-3年",
+      "source": "https://www.php.net/manual/en/language.oop5.autoload.php",
+      "aiScore": 88
+    },
+    {
+      "title": "PHP Session 并发请求为什么会丢数据？文件锁和 Redis 怎么处理？",
+      "body": "考察 Session 锁、并发写入和分布式会话。",
+      "answer": "**原因**\n- 默认文件 Session 在请求开始时锁住 session 文件，同一会话的并发请求会串行；请求 A 读到旧数据、B 修改后，A 再写回会覆盖 B（lost update）。\n- 长请求持锁会阻塞同一用户的其他请求，表现为页面卡顿。\n\n**处理**\n- 不需要写的请求尽早 `session_write_close()` 释放锁；需要并发写时用 Redis/数据库做原子操作/版本号，不要盲目关锁。\n- 分布式多机用共享 Redis Session，设置合理 TTL/一致性；敏感数据加密/签名，防会话固定。\n\n**注意**\n- 关闭锁后要自己处理并发一致性；Session 不适合存大对象/高频写。",
+      "category": "PHP",
+      "positions": [
+        "PHP后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "Session",
+        "文件锁",
+        "并发",
+        "Redis"
+      ],
+      "years": "3-5年",
+      "source": "https://www.php.net/manual/en/session.security.php",
+      "aiScore": 89
+    },
+    {
+      "title": "PHP OPcache 和 JIT 分别解决什么问题？生产怎么配？",
+      "body": "考察 PHP 字节码缓存、JIT 和部署注意事项。",
+      "answer": "**OPcache**\n- 缓存编译后的字节码，避免每个请求重复解析/编译；大幅降低 CPU、提高吞吐。生产开启，开发关闭以及时生效。\n- 关键配置：`opcache.memory_consumption`、`max_accelerated_files`、`validate_timestamps`（生产可关，发布后 reload）。\n\n**JIT**\n- 在 OPcache 基础上把热点字节码编译为机器码，适合 CPU 密集型计算；对 I/O 型 Web 应用收益有限，可能增加内存。\n- 用真实负载压测决定是否开/缓冲区大小，不要默认开。\n\n**部署**\n- 发布后 `opcache_reset` 或 reload FPM；监控命中率/内存/重启；代码热更新与 OPcache 缓存要配合。",
+      "category": "PHP",
+      "positions": [
+        "PHP后端工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "OPcache",
+        "JIT",
+        "字节码",
+        "性能"
+      ],
+      "years": "3-5年",
+      "source": "https://www.php.net/manual/en/book.opcache.php",
+      "aiScore": 89
+    },
+    {
+      "title": "PHP 如何防 SQL 注入、XSS 和 CSRF？",
+      "body": "考察 PHP Web 安全的三类常见漏洞和防御。",
+      "answer": "**SQL 注入**\n- 用 PDO/MySQLi 预处理语句绑定参数，不要拼接 SQL；表名/排序字段用白名单，不能参数化。\n- 最小权限数据库账号，关闭详细错误回显。\n\n**XSS**\n- 输出按上下文转义（HTML/属性/JS/URL），用 `htmlspecialchars` 并指定 UTF-8；富文本用白名单净化，不要只依赖前端过滤。\n- 设置 CSP、HttpOnly Cookie 降低危害。\n\n**CSRF**\n- 状态变更用 POST + CSRF token（每会话/每表单），校验 Referer/Origin；Cookie 用 SameSite=Lax/Strict。\n- 关键操作二次确认；不要用 GET 做删除/支付。",
+      "category": "PHP",
+      "positions": [
+        "PHP后端工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "SQL注入",
+        "XSS",
+        "CSRF",
+        "预处理"
+      ],
+      "years": "1-3年",
+      "source": "https://www.php.net/manual/en/security.php",
+      "aiScore": 89
+    },
+    {
+      "title": "Unreal Engine 的垃圾回收怎么工作？UPROPERTY、TObjectPtr 和智能指针怎么选？",
+      "body": "考察 UE GC、引用管理和对象生命周期。",
+      "answer": "**GC**\n- UE 用标记-清除 GC，从根集合（GEngine/PlayerController 等）追踪 UObject 引用；未被引用的 UObject 会被回收。\n- 普通 C++ 指针不被 GC 识别，可能导致对象被回收后悬空。\n\n**引用**\n- UObject 成员用 `UPROPERTY()` 暴露给 GC；UE5 用 `TObjectPtr<T>` 代替裸指针，支持访问追踪/延迟加载。\n- 非 UObject 用 `TSharedPtr/TUniquePtr`；跨 UObject/非 UObject 边界要明确所有权，避免循环引用。\n\n**实践**\n- 不要在 UObject 里用 `new` 管理 UObject；用 `NewObject`/`CreateDefaultSubobject`；注意 `IsValid` 和 GC 时机，避免在异步回调里裸指针。",
+      "category": "Unreal Engine开发",
+      "positions": [
+        "Unreal Engine开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "UE",
+        "GC",
+        "UPROPERTY",
+        "TObjectPtr"
+      ],
+      "years": "3-5年",
+      "source": "https://dev.epicgames.com/documentation/en-us/unreal-engine",
+      "aiScore": 90
+    },
+    {
+      "title": "Unreal Engine 的网络同步：RPC 和属性复制怎么配合？",
+      "body": "考察 UE 客户端-服务器模型、RPC 和复制规则。",
+      "answer": "**模型**\n- UE 采用服务器权威；客户端把输入发给服务器，服务器更新状态再复制给客户端。\n- Actor 复制需要 `bReplicates`，属性用 `Replicated`/`ReplicatedUsing`；只在服务器改，客户端收到回调。\n\n**RPC**\n- Server RPC：客户端调用、服务器执行（如开火/使用）；Client RPC：服务器调用、指定客户端执行（如特效/提示）；Multicast：服务器广播。\n- RPC 要验证权限/参数，防作弊；不要用 RPC 每帧传高频数据。\n\n**权衡**\n- 高频移动用 `CharacterMovement`/预测；低频状态用属性复制；用相关性/优先级/带宽限制优化，测试延迟/丢包。",
+      "category": "Unreal Engine开发",
+      "positions": [
+        "Unreal Engine开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "UE网络",
+        "RPC",
+        "属性复制",
+        "服务器权威"
+      ],
+      "years": "3-5年",
+      "source": "https://dev.epicgames.com/documentation/en-us/unreal-engine",
+      "aiScore": 90
+    },
+    {
+      "title": "Unreal Engine 性能优化：DrawCall、LOD、Nanite 和 Lumen 怎么权衡？",
+      "body": "考察 UE 渲染性能瓶颈和功能取舍。",
+      "answer": "**先定位**\n- 用 Stat GPU/CPU、GPU Visualizer、Unreal Insights 找瓶颈：DrawCall/材质/阴影/后处理/GPU 粒子。\n- 移动端尤其怕 DrawCall 和带宽；PC/主机可更多依赖 Nanite/Lumen。\n\n**手段**\n- 合批/实例化、合并材质、减少透明/遮罩；LOD/HLOD、剔除距离、纹理流送；阴影/后处理分级。\n- Nanite 降低几何 DrawCall，但不适合骨骼网格/透明/移动端全部场景；Lumen 提升动态 GI，但开销大，需按平台开关/降级。\n\n**验证**\n- 在目标机型/分辨率测帧时间，不只编辑器；设性能预算，发布前跑基准场景。",
+      "category": "Unreal Engine开发",
+      "positions": [
+        "Unreal Engine开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "DrawCall",
+        "LOD",
+        "Nanite",
+        "Lumen"
+      ],
+      "years": "3-5年",
+      "source": "https://dev.epicgames.com/documentation/en-us/unreal-engine",
+      "aiScore": 89
+    },
+    {
+      "title": "Unreal Engine 的模块/插件热更新怎么做？为什么不能直接替换 DLL？",
+      "body": "考察 UE 模块加载、热更新限制和打包发布。",
+      "answer": "**模块/插件**\n- UE 用模块化 DLL/构建目标，插件有 `.uplugin` 描述依赖/模块/平台；可在编辑器/打包时启用或禁用。\n- 热更新通常更新资源/Pak 或 Lua/脚本层；原生 C++ 模块 ABI/内存布局变化不能安全热替换。\n\n**限制**\n- 直接替换 DLL 会导致已加载对象虚表/类型信息不一致、崩溃；Windows 文件锁也阻止替换。\n- 需要重启进程或做版本化补丁/增量 Pak；网络游戏还要考虑服务器/客户端版本一致。\n\n**实践**\n- 把可热更逻辑放脚本/数据/插件边界；C++ 改动走版本发布；Pak 签名/加密/校验，防篡改；灰度/回滚方案。",
+      "category": "Unreal Engine开发",
+      "positions": [
+        "Unreal Engine开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "UE模块",
+        "插件",
+        "热更新",
+        "Pak"
+      ],
+      "years": "3-5年",
+      "source": "https://dev.epicgames.com/documentation/en-us/unreal-engine",
+      "aiScore": 89
+    },
+    {
+      "title": "Windows AD 的 FSMO 五个角色分别是什么？域信任怎么排查？",
+      "body": "考察 Active Directory 架构和故障排查。",
+      "answer": "**FSMO**\n- 林级：Schema Master（架构）、Domain Naming Master（域命名）；域级：PDC Emulator（时间/密码/兼容）、RID Master（RID 池）、Infrastructure Master（跨域引用）。\n- 角色应放在可用 DC 上，定期检查持有者；离线/抢占要谨慎，避免复制冲突。\n\n**域信任**\n- 信任方向（单向/双向）、传递性、信任类型（林/外部/快捷）；检查 DNS 解析、端口（53/88/389/445/3268）、凭据/委派。\n- 用 `nltest /dsgetdc`、`repadmin /showrepl`、事件日志定位；跨域登录慢先查 DNS/SRV/站点链路。\n\n**实践**\n- 监控复制/时间同步/角色；变更前备份/演练。",
+      "category": "Windows Server",
+      "positions": [
+        "Windows运维工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "AD",
+        "FSMO",
+        "域信任",
+        "复制"
+      ],
+      "years": "3-5年",
+      "source": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/",
+      "aiScore": 89
+    },
+    {
+      "title": "Windows 性能排查：PerfMon、ETW 和进程转储怎么配合？",
+      "body": "考察 Windows 性能工具链和根因定位。",
+      "answer": "**先看资源**\n- PerfMon/资源监视器看 CPU/内存/磁盘/网络；关键计数器：Processor Queue Length、Available MBytes、Avg. Disk Queue、Context Switches。\n- 区分应用/系统/驱动问题；先记录基线，避免只看瞬时峰值。\n\n**深入**\n- ETW/WPR 抓 CPU/磁盘/网络/锁竞争，WPA 分析调用栈/等待原因；ProcMon 看文件/注册表/网络访问。\n- 进程转储（Task Manager/ProcDump）分析线程栈/句柄/内存；高 CPU 抓多个 dump 对比。\n\n**注意**\n- 生产抓取注意开销/磁盘；先低开销监控，再按需开 ETW；保留时间线/变更记录。",
+      "category": "Windows Server",
+      "positions": [
+        "Windows运维工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "PerfMon",
+        "ETW",
+        "WPR",
+        "dump"
+      ],
+      "years": "3-5年",
+      "source": "https://learn.microsoft.com/en-us/windows-server/administration/performance-tuning/",
+      "aiScore": 89
+    },
+    {
+      "title": "IIS 网站启动失败/500.19 怎么排查？应用程序池关键配置有哪些？",
+      "body": "考察 IIS 配置、应用池和权限排查。",
+      "answer": "**500.19**\n- 多为 web.config 配置错误/节锁定/权限：看 IIS 详细错误、模块/处理程序、`applicationHost.config` 是否允许该节。\n- 检查 .NET CLR 版本、32/64 位、ASP.NET 注册、路径权限；不要只重启 IIS。\n\n**应用池**\n- .NET CLR 版本/管道模式（集成/经典）、32 位、托管管道、回收时间/闲置超时、最大工作进程、失败快速保护。\n- 身份账号对网站目录/数据库的权限；应用池崩溃看事件日志/WER/dump。\n\n**流程**\n- 先复现/看日志，再对比可用环境配置；变更前备份 applicationHost.config；用 appcmd 导出配置。",
+      "category": "Windows Server",
+      "positions": [
+        "Windows运维工程师"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "IIS",
+        "500.19",
+        "应用程序池",
+        "web.config"
+      ],
+      "years": "1-3年",
+      "source": "https://learn.microsoft.com/en-us/iis/",
+      "aiScore": 88
+    },
+    {
+      "title": "Windows Server 补丁和 WSUS 怎么做到合规又不背锅？",
+      "body": "考察补丁分级、WSUS 审批和回滚。",
+      "answer": "**流程**\n- 资产分组/维护窗口；补丁分级（安全/关键/可选），先在测试环验证，再分批生产；紧急补丁走例外流程。\n- WSUS 审批到组，设置截止/重启策略；用 GPO 控制自动更新/维护窗口，避免业务时段重启。\n\n**合规**\n- 定期导出补丁合规报告（缺失/失败/待重启）；关键服务器双人复核；保留变更/回滚记录。\n- 应用兼容性测试/快照/备份；失败补丁要能卸载/回滚。\n\n**注意**\n- 不要长期不审批导致漏洞；也不要全量同一天打；监控磁盘/重启失败/WSUS 客户端错误。",
+      "category": "Windows Server",
+      "positions": [
+        "Windows运维工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "WSUS",
+        "补丁",
+        "合规",
+        "维护窗口"
+      ],
+      "years": "1-3年",
+      "source": "https://learn.microsoft.com/en-us/windows-server/administration/windows-server-update-services/get-started/windows-server-update-services",
+      "aiScore": 88
+    },
+    {
+      "title": "CTO 如何把技术战略和业务战略对齐？",
+      "body": "考察技术路线图、业务目标和组织协同。",
+      "answer": "**先理解业务**\n- 和 CEO/业务负责人明确 1–3 年目标、客户价值、收入/成本/风险；把业务目标翻译成技术能力（交付速度、稳定性、数据、AI 等）。\n- 识别约束：预算、人才、合规、存量系统；不要做「技术自嗨」的路线图。\n\n**路线图**\n- 用能力地图/差距分析排优先级，分「保命（稳定安全）、增长（业务赋能）、未来（平台/新技术）」；每项有 owner、指标、预算。\n- 用季度 OKR/架构评审对齐，公开决策和取舍；技术债/平台投入要业务共同认账。\n\n**组织**\n- 建立产品/研发/数据/安全协同机制；度量交付/稳定性/成本；定期复盘，战略随业务变化调整。",
+      "category": "技术管理能力",
+      "positions": [
+        "技术总监CTO"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "技术战略",
+        "路线图",
+        "业务对齐",
+        "组织"
+      ],
+      "years": "5年以上",
+      "source": "https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights",
+      "aiScore": 90
+    },
+    {
+      "title": "研发组织 OKR 和绩效怎么设计，避免变成 KPI 内卷？",
+      "body": "考察研发目标管理、团队绩效和激励。",
+      "answer": "**OKR**\n- O 要有业务/用户价值，KR 可量化但不要全是产出（代码量/工时）；研发 KR 可含交付、质量、稳定性、成本。\n- 团队 OKR 对齐公司目标，个人不机械拆分；双周 check-in，季度复盘，允许调整。\n\n**绩效**\n- 看结果 + 行为/协作 + 技术影响力；区分团队/个人，避免只按代码行/加班；用同行评审/项目复盘/360。\n- 目标完成度不与绩效简单等号，防止挑容易的目标/数据造假；设护栏（质量/故障/技术债）。\n\n**机制**\n- 公开目标/进度，减少信息不对称；奖励长期价值/分享；对失败创新有容错；绩效结果用于发展/激励，不只打分。",
+      "category": "技术管理能力",
+      "positions": [
+        "技术总监CTO"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "OKR",
+        "绩效",
+        "研发效能",
+        "激励"
+      ],
+      "years": "5年以上",
+      "source": "https://www.atlassian.com/company/news/okrs",
+      "aiScore": 89
+    },
+    {
+      "title": "CTO 怎么做自研 vs 采购/开源的决策？",
+      "body": "考察 build/buy/open source 的 TCO、战略性和风险。",
+      "answer": "**先看战略性**\n- 是否核心差异化/数据护城河/长期成本可控？核心且市场无合适方案→自研；通用能力（CRM/监控/支付）→采购/开源。\n- 评估 TCO：许可/订阅、集成、运维、人力、迁移/锁定、合规；不要只比首年报价。\n\n**风险**\n- 开源看 license、社区活跃、安全漏洞、维护者/商业化风险；采购看 SLA、数据主权、退出/迁移条款。\n- 自研要算长期维护/招聘/文档成本，避免「Demo 很爽、维护火葬场」。\n\n**决策**\n- 用评分矩阵 + PoC/参考客户；设退出策略/抽象层；定期复盘，不搞意识形态。",
+      "category": "技术管理能力",
+      "positions": [
+        "技术总监CTO"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "自研",
+        "采购",
+        "开源",
+        "TCO"
+      ],
+      "years": "5年以上",
+      "source": "https://martinfowler.com/articles/",
+      "aiScore": 89
+    },
+    {
+      "title": "研发效能度量怎么做，才能真正降本增效？",
+      "body": "考察效能指标、DORA/价值流和反作弊。",
+      "answer": "**指标**\n- 交付：需求前置时间、部署频率、变更失败率、恢复时间（DORA）；质量：缺陷逃逸/返工；成本：云/人力/单位需求成本。\n- 价值流看从想法到上线各环节等待时间，找瓶颈，不要只压开发编码。\n\n**方法**\n- 先基线/分团队看趋势，不搞全公司排名；结合定性访谈/价值流图；改进小步实验，验证是否真的提升。\n- 自动化数据采集，减少填报；指标被博弈时换配对指标（速度+质量+稳定性）。\n\n**降本**\n- 减少返工/等待/重复建设，比裁员更可持续；平台化/自动化/复用；云成本 FinOps；保留关键人才。",
+      "category": "技术管理能力",
+      "positions": [
+        "技术总监CTO"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "研发效能",
+        "DORA",
+        "价值流",
+        "降本"
+      ],
+      "years": "5年以上",
+      "source": "https://dora.dev/",
+      "aiScore": 89
+    },
+    {
+      "title": "React Native 长列表（FlatList）性能怎么优化？",
+      "body": "考察 RN 列表渲染、虚拟化和内存。",
+      "answer": "**基础**\n- 用 FlatList/SectionList，不要用 ScrollView 渲染大列表；设置 `keyExtractor`、`getItemLayout`（固定高度）减少测量。\n- `initialNumToRender`/`maxToRenderPerBatch`/`windowSize`/`removeClippedSubviews` 按场景调，别一次渲染几百条。\n\n**渲染**\n- 列表项用 `React.memo`，避免每次 render 新建函数/对象；图片懒加载/缓存/固定尺寸；复杂项用 `renderItem` 稳定引用。\n- 长列表可考虑 FlashList/虚拟化库；避免在滚动中做重计算。\n\n**验证**\n- 用 Flipper/React DevTools/原生性能工具看 JS/UI 帧、内存；在低端机测试，不要只看模拟器。",
+      "category": "React Native",
+      "positions": [
+        "React Native开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "FlatList",
+        "虚拟化",
+        "memo",
+        "性能"
+      ],
+      "years": "3-5年",
+      "source": "https://reactnative.dev/docs/optimizing-flatlist-configuration",
+      "aiScore": 89
+    },
+    {
+      "title": "React Native 原生模块的线程模型是什么？JS 和原生怎么安全通信？",
+      "body": "考察 RN 桥接/JSI、线程和原生模块设计。",
+      "answer": "**旧架构**\n- JS 线程执行业务，UI 线程渲染原生视图；跨 Bridge 异步序列化消息，频繁/大 payload 会阻塞/延迟。\n- 原生模块方法默认在原生模块队列执行，UI 操作要切主线程；不能假设同步返回。\n\n**新架构**\n- JSI 允许 JS 直接持有 C++ HostObject，减少序列化；TurboModules 懒加载，Fabric 渲染 UI；仍需注意线程安全。\n- 共享数据要不可变/加锁；回调注意 JS 运行时生命周期，避免多次 resolve/内存泄漏。\n\n**设计**\n- 批量/节流跨端调用；大数据用文件/共享内存；错误码/取消；在主线程只做 UI，耗时任务放后台队列。",
+      "category": "React Native",
+      "positions": [
+        "React Native开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "JSI",
+        "TurboModules",
+        "线程",
+        "原生模块"
+      ],
+      "years": "3-5年",
+      "source": "https://reactnative.dev/docs/native-modules-intro",
+      "aiScore": 89
+    },
+    {
+      "title": "React Native 热更新（CodePush/JS bundle）怎么做才安全可控？",
+      "body": "考察 RN 热更新、版本兼容和回滚。",
+      "answer": "**机制**\n- 热更新下发 JS bundle/资源，启动时加载最新版本；需要版本/哈希校验、签名/加密，防止篡改。\n- 原生代码/权限/依赖变更不能靠 JS 热更，必须发版；bundle 要与原生版本兼容。\n\n**发布**\n- 灰度/按用户/渠道分批，监控崩溃/白屏/关键指标；失败自动回滚到内置 bundle；保留上一版。\n- 苹果/Google 商店政策：不能改变核心功能/绕过审核；企业分发也要合规。\n\n**工程**\n- CI 构建/签名/上传，版本清单/回滚脚本；网络失败/磁盘损坏的兜底；用户提示/强制更新策略。",
+      "category": "React Native",
+      "positions": [
+        "React Native开发工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "CodePush",
+        "热更新",
+        "灰度",
+        "回滚"
+      ],
+      "years": "3-5年",
+      "source": "https://microsoft.github.io/code-push/",
+      "aiScore": 89
+    },
+    {
+      "title": "React Native 与原生混合开发时，导航和状态怎么同步？",
+      "body": "考察混合导航、生命周期和状态一致性。",
+      "answer": "**导航**\n- 明确单一导航容器：RN 页面嵌原生，或原生页面嵌 RN；避免两套导航栈互相 push 导致返回栈混乱。\n- 定义路由协议/参数 schema；原生返回键/手势要同步到 RN；深链统一解析。\n\n**状态**\n- 全局状态放共享层（Redux/Context/原生事件总线），避免双份；跨端事件用明确事件名/payload 版本。\n- 登录/权限/主题等变更要广播；页面恢复时拉取最新状态，防止过期。\n\n**生命周期**\n- RN 页面挂载/卸载与原生 ViewController/Fragment 对齐；内存/监听器释放；后台/前台事件转发。\n- 用集成测试覆盖前进/返回/深链/权限变更。",
+      "category": "React Native",
+      "positions": [
+        "React Native开发工程师"
+      ],
+      "difficulty": "中级",
+      "type": "场景题",
+      "tags": [
+        "混合开发",
+        "导航",
+        "状态同步",
+        "生命周期"
+      ],
+      "years": "3-5年",
+      "source": "https://reactnative.dev/docs/integration-with-existing-apps",
+      "aiScore": 88
+    },
+    {
+      "title": "Prompt 注入（prompt injection）怎么防？",
+      "body": "考察 LLM 应用的安全边界、指令层级和工具权限。",
+      "answer": "**风险**\n- 用户/检索文档里夹带「忽略之前的指令」「泄露系统提示」等内容，诱导模型越权；Agent 还可能被诱导调用危险工具。\n- 不能只靠系统提示「不要听用户的」；模型无法可靠区分数据与指令。\n\n**防御**\n- 分层：系统指令/开发者指令/用户内容/工具输出明确分隔；对不可信内容做转义/标记，不让其进入高优先级指令。\n- 工具最小权限、参数校验、危险操作二次确认/人工审批；输出过滤/敏感信息检测；RAG 引用来源但不执行文档指令。\n\n**测试**\n- 红队用例（直接/间接注入、编码绕过、多轮诱导）；监控异常工具调用；发现后限流/下架/修复。",
+      "category": "Prompt Engineering",
+      "positions": [
+        "Prompt工程师"
+      ],
+      "difficulty": "高级",
+      "type": "场景题",
+      "tags": [
+        "Prompt注入",
+        "LLM安全",
+        "工具权限",
+        "红队"
+      ],
+      "years": "3-5年",
+      "source": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "aiScore": 90
+    },
+    {
+      "title": "如何让大模型稳定输出 JSON？Schema、few-shot 和校验怎么配合？",
+      "body": "考察结构化输出、约束解码和失败重试。",
+      "answer": "**约束**\n- 用 JSON Schema/函数调用/结构化输出能力，明确字段、类型、枚举、必填；不要只在 prompt 里写「请输出 JSON」。\n- 给 1–2 个高质量 few-shot，覆盖边界/空值；系统提示说明不允许额外文本。\n\n**校验**\n- 服务端用 JSON Schema 校验，失败把错误信息回给模型重试（限次数）；对关键字段做业务校验/范围检查。\n- 流式输出要处理不完整 JSON；超时/截断要有兜底。\n\n**工程**\n- 低温度、固定版本；记录原始输出/重试原因；对高风险场景人工复核；不要相信模型「保证合法」。",
+      "category": "Prompt Engineering",
+      "positions": [
+        "Prompt工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "JSON Schema",
+        "结构化输出",
+        "few-shot",
+        "校验"
+      ],
+      "years": "1-3年",
+      "source": "https://platform.openai.com/docs/guides/structured-outputs",
+      "aiScore": 89
+    },
+    {
+      "title": "Few-shot 和 Chain-of-Thought 什么时候有效，什么时候反而变差？",
+      "body": "考察提示技术的适用条件和局限。",
+      "answer": "**Few-shot**\n- 有效：任务格式/边界难用文字描述、类别不平衡、需要固定输出风格；示例要覆盖典型/边界，避免错误示例被模仿。\n- 变差：示例太长占上下文、示例有偏/泄漏答案、任务需要模型自身推理而不是模式匹配；示例顺序也可能影响结果。\n\n**CoT**\n- 有效：多步数学/逻辑/规划、需要中间约束；可显著提升复杂推理。\n- 变差：简单事实/分类任务可能过度推理/增加幻觉；推理链不忠实时会「编理由」；对延迟/成本敏感场景不划算。\n\n**实践**\n- 先零样本基线，再按失败类型加示例/分解/工具；用评测集验证，不盲目堆技巧。",
+      "category": "Prompt Engineering",
+      "positions": [
+        "Prompt工程师"
+      ],
+      "difficulty": "中级",
+      "type": "简答题",
+      "tags": [
+        "Few-shot",
+        "Chain-of-Thought",
+        "提示技术",
+        "评测"
+      ],
+      "years": "1-3年",
+      "source": "https://www.promptingguide.ai/",
+      "aiScore": 88
+    },
+    {
+      "title": "Prompt 版本管理和评测怎么做，才能持续迭代不回归？",
+      "body": "考察 Prompt 资产化、评测集和发布流程。",
+      "answer": "**版本化**\n- Prompt/模型参数/工具配置/检索配置都纳入版本库，记录变更人/原因/评测结果；线上请求可追溯到版本。\n- 不要把 Prompt 散落在代码字符串里；用模板/变量 schema，环境隔离。\n\n**评测**\n- 建固定评测集（高频/长尾/对抗/安全），自动指标 + 人工抽检；每次变更跑回归，和基线对比。\n- 线上 A/B/灰度，看任务成功率/成本/延迟/投诉；失败样本回流评测集。\n\n**发布**\n- 设准入门槛/回滚开关；模型升级单独评测；监控漂移；Prompt 不是「写完就完」，是持续运营的资产。",
+      "category": "Prompt Engineering",
+      "positions": [
+        "Prompt工程师"
+      ],
+      "difficulty": "高级",
+      "type": "简答题",
+      "tags": [
+        "Prompt版本",
+        "评测集",
+        "回归",
+        "灰度"
+      ],
+      "years": "3-5年",
+      "source": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "aiScore": 89
+    }
+  ]
+}
