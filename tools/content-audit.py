@@ -55,7 +55,7 @@ def check_url(url):
     for method in ("HEAD", "GET"):
         try:
             req = urllib.request.Request(url, method=method, headers={"User-Agent": UA, "Accept": "*/*"})
-            with urllib.request.urlopen(req, timeout=8) as r:
+            with urllib.request.urlopen(req, timeout=5) as r:
                 return "ok" if r.status < 400 else "http_%d" % r.status
         except urllib.error.HTTPError as e:
             if e.code in (404, 410): return "broken_%d" % e.code
@@ -103,7 +103,7 @@ def main():
     urls = sorted({str(q.get("source") or "").strip() for q in qs if re.match(r"^https?://", str(q.get("source") or "").strip())})
     status = {}
     if not args.no_net:
-        with ThreadPoolExecutor(max_workers=12) as ex:
+        with ThreadPoolExecutor(max_workers=24) as ex:
             futs = {ex.submit(check_url, u): u for u in urls}
             for f in as_completed(futs):
                 status[futs[f]] = f.result()
