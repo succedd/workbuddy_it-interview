@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vue中响应式数据的原理？ · IT面试题库</title>
-  <meta name="description" content="响应式原理 Vue 2: Object.defineProperty，递归遍历属性，无法检测新增/删除属性 Vue 3: Proxy，代理整个对象，可检测新增/删除，惰性代理，性能更好">
+  <meta name="description" content="Vue 2 Object.defineProperty 递归把属性转 getter/setter；getter 收集依赖，setter 触发更新。 无法检测新增/删除属性（需 Vue.set/delete）、数组索引/长度变更；初始化时递归，性能开销大。 Vue 3 Proxy 代理整个对象，支持新增/删除/数组…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vue中响应式数据的原理？ · IT面试题库">
-  <meta property="og:description" content="响应式原理 Vue 2: Object.defineProperty，递归遍历属性，无法检测新增/删除属性 Vue 3: Proxy，代理整个对象，可检测新增/删除，惰性代理，性能更好">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="Vue 2 Object.defineProperty 递归把属性转 getter/setter；getter 收集依赖，setter 触发更新。 无法检测新增/删除属性（需 Vue.set/delete）、数组索引/长度变更；初始化时递归，性能开销大。 Vue 3 Proxy 代理整个对象，支持新增/删除/数组…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/126.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Vue中响应式数据的原理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/126.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/126">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vue中响应式数据的原理？ · IT面试题库">
-  <meta name="twitter:description" content="响应式原理 Vue 2: Object.defineProperty，递归遍历属性，无法检测新增/删除属性 Vue 3: Proxy，代理整个对象，可检测新增/删除，惰性代理，性能更好">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="Vue 2 Object.defineProperty 递归把属性转 getter/setter；getter 收集依赖，setter 触发更新。 无法检测新增/删除属性（需 Vue.set/delete）、数组索引/长度变更；初始化时递归，性能开销大。 Vue 3 Proxy 代理整个对象，支持新增/删除/数组…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/126.jpg">
+  <meta name="twitter:image:alt" content="Vue中响应式数据的原理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/126">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue中响应式数据的原理？","text":"请解释Vue 2和Vue 3响应式系统的差异。","answerCount":1,"datePublished":"2026-08-08T10:49:28.655Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"响应式原理 Vue 2: Object.defineProperty，递归遍历属性，无法检测新增/删除属性 Vue 3: Proxy，代理整个对象，可检测新增/删除，惰性代理，性能更好","url":"https://itinterview.com.cn/question/126"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue中响应式数据的原理？","text":"考察 Vue 2/3 响应式实现、依赖收集和边界。","answerCount":1,"datePublished":"2026-08-08T10:49:28.655Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Vue 2 Object.defineProperty 递归把属性转 getter/setter；getter 收集依赖，setter 触发更新。 无法检测新增/删除属性（需 Vue.set/delete）、数组索引/长度变更；初始化时递归，性能开销大。 Vue 3 Proxy 代理整个对象，支持新增/删除/数组索引；track/trigger 做依赖收集，惰性代理，性能更好。 ref 包装基本类型（.value），reactive 用于对象；computed 惰性缓存，watchEffect 自动收集。 边界 解构 reactive 会丢响应式，用 toRefs；深层大对象用 shallowRef/shallowReactive；避免在渲染中做重计算。","url":"https://itinterview.com.cn/question/126"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"Vue中响应式数据的原理？","item":"https://itinterview.com.cn/q/126"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -89,15 +95,26 @@
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Vue中响应式数据的原理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数字电路工程师</span><span class="chip tag">Vue</span><span class="chip tag">响应式</span></div>
-    <div class="card"><h2>题目</h2><p>请解释Vue 2和Vue 3响应式系统的差异。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>响应式原理</h3>
-<p><strong>Vue 2</strong>: Object.defineProperty，递归遍历属性，无法检测新增/删除属性</p>
-<p><strong>Vue 3</strong>: Proxy，代理整个对象，可检测新增/删除，惰性代理，性能更好</p></div>
+    <div class="card"><h2>题目</h2><p>考察 Vue 2/3 响应式实现、依赖收集和边界。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>Vue 2</strong></p>
+<ul>
+<li><code>Object.defineProperty</code> 递归把属性转 getter/setter；getter 收集依赖，setter 触发更新。</li>
+<li>无法检测新增/删除属性（需 <code>Vue.set/delete</code>）、数组索引/长度变更；初始化时递归，性能开销大。</li>
+</ul>
+<p><strong>Vue 3</strong></p>
+<ul>
+<li><code>Proxy</code> 代理整个对象，支持新增/删除/数组索引；<code>track/trigger</code> 做依赖收集，惰性代理，性能更好。</li>
+<li><code>ref</code> 包装基本类型（<code>.value</code>），<code>reactive</code> 用于对象；<code>computed</code> 惰性缓存，<code>watchEffect</code> 自动收集。</li>
+</ul>
+<p><strong>边界</strong></p>
+<ul>
+<li>解构 reactive 会丢响应式，用 <code>toRefs</code>；深层大对象用 <code>shallowRef/shallowReactive</code>；避免在渲染中做重计算。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/126">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/29">Vue 与 React 的核心差异有哪些？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/29">Vue 与 React 的核心差异有哪些？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
