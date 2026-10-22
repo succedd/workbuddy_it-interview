@@ -310,6 +310,10 @@ node tools/gen-published.js
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
 
+### 2026-10-22 · feat(题库): 第四批 8 岗位各补 4 题（全部岗位 ≥5 题 / 1887 / version 16）
+
+> **本轮**：补齐最后 8 个题量不足岗位各 4 题，共 **32 题**：.NET（async 状态机、LINQ/IQueryable、DI 生命周期、EF Core 跟踪/N+1）、UI/UX（尼尔森启发式、移动导航、无障碍、设计交付）、数据采集（CDC、Kafka Connect、断点续传/幂等、埋点 SDK）、新兴方向（Rust async、WebAssembly、边缘计算、零信任）、游戏服务端（分区/跨服、反外挂、Redis 排行榜、匹配）、编译器（SSA、寄存器分配、JIT/AOT、内联/常量传播/DCE）、CV（BatchNorm、数据增强、分割类型、NMS/mAP）、移动端架构（组件化、跨端选型、弱网、App 安全）。新题 ID `1896~1927`；岗位题量：.NET/UIUX/数据采集/新兴/游戏/编译器/CV 8，移动端架构 7；**142 个岗位全部 ≥5 题**；题库 1855→**1887**，version 15→16，sitemap 2229→**2262**，缓存 l→m。
+
 ### 2026-10-22 · feat(题库): 第三批 8 岗位各补 4 题（1855 题 / version 15）
 
 > **本轮**：补第三批 8 个题量不足岗位各 4 题，共 **32 题**：UX（菲茨/希克定律、任务分析、低保真/高保真、防呆设计）、AR/VR（晕动症、SLAM/平面检测、手部追踪/手柄、90fps/注视点渲染）、PHP（Composer PSR-4、Session 并发、OPcache/JIT、SQL注入/XSS/CSRF）、Unreal（GC/UPROPERTY、RPC/属性复制、DrawCall/LOD/Nanite/Lumen、模块热更新）、Windows（FSMO/域信任、PerfMon/ETW、IIS 500.19、WSUS 补丁）、CTO（技术战略、OKR/绩效、自研 vs 采购、研发效能）、React Native（FlatList、原生模块线程、CodePush、混合导航/状态）、Prompt（注入、结构化 JSON、Few-shot/CoT、版本评测）。新题 ID `1864~1895`；岗位题量：UX/AR/VR/PHP/Unreal/Windows/CTO 6，RN/Prompt 7；题库 1823→**1855**，version 14→15，sitemap 2193→**2229**（32 题页 + 4 个分类页转可索引），缓存 k→l。
