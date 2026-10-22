@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`40006ae`（quality: 重写下一批 30 道高浏览短答案 / version 18）｜缓存版本 `20261021n → 20261021o`｜数据 version `18` / 1887 题｜更新时间：2026-10-22 17:30 (+08)**
+**本轮内容（下一批 30 道高浏览短答案）**
+
+- 按浏览量继续取 30 道短答案/manual 来源题：Transformer、技术分享、Linux 进程/文件命令、Kafka ISR、React key、JS 闭包/事件循环、MySQL 索引/SQL 优化、Docker 网络、HTTP/1.1/2/3、Python 上下文/列表元组/生成器、synchronized/线程池/反射、技术方案、HTML5 API、K8s ConfigMap/Secret/Service/滚动更新、Linux 监控、Redis 分布式锁/Session、三大范式、TCP 流控/拥塞、RAG、Spring Boot。
+- 重写答案并补官方来源；30 题写入 `reviewedAt`。短答案 159→**133**，无 http 来源 334→**304**，未复核 1867→1837；题库仍 1887，version 17→18，缓存 n→o。
+- **验证**：split + build guard 51、smoke 26；线上 index 20261021o、version 18/count 1887（短暂边缘缓存后已刷新）、q/184 200（Transformer 自注意力内容）、quality-report 200（短答案 133 / 无来源 304）；Actions run 39755658190 **success**。
+- **产物**：data 文件、30 个 q 页、`tools/rewrite_next30.py`、`docs/content-quality-2026-10-22.md`、`README.md`、`index.html`、`sw.js`。
+- **下一步**：剩 133 条短答案 / 304 条无来源；继续按浏览量修下一批 30，或接真实统计重排。
+
 **最新 release commit：`381d13a`（quality: 重写 Top 20 高浏览题 / version 17）｜缓存版本 `20261021m → 20261021n`｜数据 version `17` / 1887 题｜更新时间：2026-10-22 16:57 (+08)**
 **本轮内容（Top 20 高浏览题重写）**
 
