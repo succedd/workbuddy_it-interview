@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`eb29434`（feat(题库): 第四批 8 岗位各补 4 题 / 1887 / version 16）｜缓存版本 `20261021l → 20261021m`｜数据 version `16` / 1887 题｜更新时间：2026-10-22 16:39 (+08)**
+**本轮内容（题库第四批，全部岗位补齐）**
+
+- **新增 32 题**（ID `1896–1927`，每岗 4 题）：.NET（async 状态机、LINQ/IQueryable、DI 生命周期、EF Core 跟踪/N+1）；UI/UX（尼尔森启发式、移动导航、无障碍、设计交付）；数据采集（CDC、Kafka Connect、断点续传/幂等、埋点 SDK）；新兴方向（Rust async、WebAssembly、边缘计算、零信任）；游戏服务端（分区/跨服、反外挂、Redis 排行榜、匹配）；编译器（SSA、寄存器分配、JIT/AOT、内联/常量传播/DCE）；CV（BatchNorm、数据增强、分割类型、NMS/mAP）；移动端架构（组件化、跨端选型、弱网、App 安全）。
+- **全部 142 个岗位 ≥5 题**（最低 AI产品工程师 5 题）；总题库 1855→**1887**；data version 15→16；OG 1887；sitemap 2229→**2262**；缓存 l→m。
+- **验证**：batch dry-run 32 新增 0 跳过；构建 guard 51、smoke 26；线上 index 20261021m、version 16/count 1887、q/1896 200、c/184 200/6 题、sitemap 2262/images 1887；Actions run 39749195559 **success**（另有 docs run）。
+- **产物**：data 文件、`assets/og/q/1896–1927.jpg`、`q/1896–1927.html`、10 个受影响 c 页、8 个 p 页、`tools/batches/2026-10-22-d.json`、`sitemap.xml`、`index.html`、`sw.js`、`README.md`。
+- **状态**：四批内容扩充完成，全站 1887 题、281 分类、142 岗位且每岗位至少 5 题；后续建议做内容质量抽检/用户反馈迭代，而非继续盲目扩量。
+
 **最新 release commit：`7efd93d`（feat(题库): 第三批 8 岗位各补 4 题 / 1855 / version 15）｜缓存版本 `20261021k → 20261021l`｜数据 version `15` / 1855 题｜更新时间：2026-10-22 15:28 (+08)**
 **本轮内容（题库第三批扩充）**
 
