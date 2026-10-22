@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`a9d4ef7`（perf(首屏): CSS 合并 + 静态加载壳 + extra 延后）｜缓存版本 `20261021e → 20261021f`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 10:25 (+08)**
+**本轮内容（按用户指定顺序，P1#6 首屏性能实测）**
+
+- **工具**：`tools/perf-audit.mjs`（Chrome CDP；移动端 390×844 / 4G 1.6Mbps / 4x CPU；FCP/LCP/CLS/TBT/DCL/Load/传输量/最大资源）；`tools/bundle-css.py`（7 个首屏 CSS 合 1，源文件保留）。
+- **优化**：① 首屏 CSS 7 请求→1（`css/bundle.css`，gzip 约 41KB）；② `#boot-loader` 改为 CSS 默认显示（深链/回访 `boot-skip` 提前隐藏），首访不再等 JS 才出现；③ `bundle-extra` 改 `requestIdleCallback` 延后；④ `data/manifest.json` 改 `preload`；⑤ 移除关键脚本 preload（实测与动态 loader 重复下载）。
+- **实测**：本地 gzip + 4G：FCP 0.91–1.01s，首页 LCP 3.15s（加载动画），列表/详情 LCP 0.91–0.94s（加载壳），CLS 0.004，TBT 122–406ms，总传输 731KB（JS 484KB）。线上 4G 冷启单次：FCP 4.28–6.26s（LCP 为加载壳，受网络波动），TBT 85–738ms，传输 493–888KB。报告 `docs/perf-audit.json`。
+- **验证**：构建 guard 51、smoke 26；线上 `index` 20261021f、`css/bundle.css` 200（cf-cache HIT / gzip）、无旧 7 个 CSS 链接；Actions run 39711217633 **success**。
+- **注意**：本轮尝试给 deploy workflow 加 `bundle-css.py` 步骤，但 GitHub Token 无 `workflow` scope，未提交该文件；`css/bundle.css` 已生成并提交，CSS 改动后需手动 `python3 tools/bundle-css.py --write` 再部署。
+- **下一步**：按顺序进入 P2#7「SEO / 分享」（OG 图片 sitemap、2 题分类页策略、分享二维码）。
+
 **最新 release commit：`c384379`（feat(搜索): 保存筛选 + 分类/岗位二次筛选 + 零结果推荐）｜缓存版本 `20261021d → 20261021e`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 10:02 (+08)**
 **本轮内容（按用户指定顺序，P1#5 搜索/筛选可保存）**
 
