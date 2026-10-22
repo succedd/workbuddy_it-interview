@@ -105,6 +105,15 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`c0e014e`（fix(layout): 首页学习卡窄桌面单列）｜缓存版本 `20261021r → 20261021s`｜数据 version `19` / 1887 题｜更新时间：2026-10-22 22:20 (+08)**
+**本轮内容（Chrome 13 寸/125% 缩放首页右侧看不到）**
+
+- **现象**：截图在 CSS 视口约 1000–1250px 时，首页「学习打卡」+「今日 5 题」两列卡片的右列被挤出屏幕；属于响应式布局问题，不是数据问题。
+- **修复**：`@media (max-width:1280px)` 下 `.home-learning > .grid-cols-2` 改单列；快捷入口 6→3 列、岗位链接 3→2 列；1100px 以下统计卡 4→2 列。1253px 实测两张学习卡均 961px 宽、`docSW=innerWidth`，无横向溢出。
+- **验证**：本地 1253px CDP 检查通过；线上 index 20261021s、`css/bundle.css` 200 且含 `max-width: 1280px`；Actions run 39794103536 **success**。
+- **附带**：用户本机 `DB.db.questions.count()` 显示 1561（线上 1887），说明浏览器本地题库/旧 Service Worker 仍是旧版；已提示注销 SW + `Cloud.syncNow()` 更新。启动优化与 JS 压缩仍在（cache r→s）。
+- **产物**：`css/home.css`、`css/bundle.css`、`index.html`、`sw.js`、`README.md`。
+
 **最新 release commit：`1244bc2`（perf(启动): JS bundle Terser 压缩 + 回访本机优先）｜缓存版本 `20261021q → 20261021r`｜数据 version `19` / 1887 题｜更新时间：2026-10-22 21:54 (+08)**
 **本轮内容（用户反馈「打开仍慢」/ 只有 boomr marks）**
 
