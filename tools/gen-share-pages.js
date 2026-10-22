@@ -282,7 +282,7 @@ function page(q, ctx) {
 `;
 }
 
-function collectionPage(kind, id, name, intro, questions, canonical, appUrl) {
+function collectionPage(kind, id, name, intro, questions, canonical, appUrl, noindex) {
   const items = questions.slice(0, 60).map(q => `
     <li><a href="${SITE}/q/${q.id}">${esc(q.title)}</a><span>${esc(q.difficulty || "")} · ${(q.views || 0) ? `${q.views} 次浏览` : "新题"}</span></li>`).join("");
   const jsonLdData = {
@@ -306,6 +306,7 @@ function collectionPage(kind, id, name, intro, questions, canonical, appUrl) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(name)}面试题 · IT面试题库</title>
   <meta name="description" content="${esc(stripMd(intro).slice(0, 155))}">
+  ${noindex ? '<meta name="robots" content="noindex,follow">' : ""}
   <link rel="canonical" href="${canonical}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${esc(name)}面试题 · IT面试题库">
@@ -395,13 +396,24 @@ async function main() {
   let cWritten = 0;
   const categoriesWithPages = new Set();
   const keepCatPages = new Set();
+  /* 先算每个分类含子分类的题量：>=3 页可索引；2 题也生成落地页，但 noindex,follow 并 canonical 到父分类/SPA，避免 thin content 进索引。 */
+  const catQs = new Map();
   for (const c of data.categories || []) {
     const ids = new Set([c.id, ...descendantIds(c.id)]);
-    const qs = questions.filter(q => ids.has(parseInt(q.categoryId, 10))).sort((a, b) => (b.views || 0) - (a.views || 0));
-    if (qs.length < 3) continue;   // 避免 thin content；小分类由父分类页聚合
-    categoriesWithPages.add(c.id);
+    catQs.set(c.id, questions.filter(q => ids.has(parseInt(q.categoryId, 10))).sort((a, b) => (b.views || 0) - (a.views || 0)));
+  }
+  const indexableCats = new Set((data.categories || []).filter(c => (catQs.get(c.id) || []).length >= 3).map(c => c.id));
+  for (const c of data.categories || []) {
+    const qs = catQs.get(c.id) || [];
+    if (qs.length < 2) continue;   // 1 题及以下由父分类聚合
     keepCatPages.add(`${c.id}.html`);
-    fs.writeFileSync(path.join(cOut, `${c.id}.html`), collectionPage("category", c.id, c.name, `${c.name}方向的 ${qs.length} 道 IT 面试题，覆盖高频考点、参考答案与错题复习。`, qs, `${SITE}/c/${c.id}`, `${SITE}/category?cat=${c.id}`), "utf8");
+    const indexable = qs.length >= 3;
+    if (indexable) categoriesWithPages.add(c.id);
+    const parentId = parseInt(c.parentId, 10);
+    const canonical = indexable
+      ? `${SITE}/c/${c.id}`
+      : (parentId && indexableCats.has(parentId) ? `${SITE}/c/${parentId}` : `${SITE}/category?cat=${c.id}`);
+    fs.writeFileSync(path.join(cOut, `${c.id}.html`), collectionPage("category", c.id, c.name, `${c.name}方向的 ${qs.length} 道 IT 面试题，覆盖高频考点、参考答案与错题复习。`, qs, canonical, `${SITE}/category?cat=${c.id}`, !indexable), "utf8");
     cWritten++;
   }
   let pWritten = 0;
@@ -436,13 +448,13 @@ async function main() {
     { loc: `${SITE}/questions`, priority: "0.8", freq: "daily" },
     { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
     { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
-    ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt }))
+    ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt, image: `${SITE}/assets/og/q/${q.id}.jpg`, imageTitle: q.title }))
     ,...(data.categories || []).filter(c => categoriesWithPages.has(c.id)).map(c => ({ loc: `${SITE}/c/${c.id}`, priority: "0.6", freq: "weekly" }))
     ,...(data.positions || []).filter(p => p.id && positionsWithQuestions.has(p.id)).map(p => ({ loc: `${SITE}/p/${p.id}`, priority: "0.6", freq: "weekly" }))
   ];
   const NL = "\n";
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>${NL}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${NL}` +
-    sitemapUrls.map(u => `  <url>${NL}    <loc>${u.loc}</loc>${NL}    <lastmod>${u.lastmod ? new Date(u.lastmod).toISOString().slice(0, 10) : today}</lastmod>${NL}    <changefreq>${u.freq}</changefreq>${NL}    <priority>${u.priority}</priority>${NL}  </url>`).join(NL) +
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>${NL}<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${NL}` +
+    sitemapUrls.map(u => `  <url>${NL}    <loc>${u.loc}</loc>${NL}    <lastmod>${u.lastmod ? new Date(u.lastmod).toISOString().slice(0, 10) : today}</lastmod>${NL}    <changefreq>${u.freq}</changefreq>${NL}    <priority>${u.priority}</priority>${u.image ? `${NL}    <image:image>${NL}      <image:loc>${u.image}</image:loc>${NL}      <image:title>${esc(u.imageTitle || "")}</image:title>${NL}    </image:image>` : ""}${NL}  </url>`).join(NL) +
     `${NL}</urlset>${NL}`;
   fs.writeFileSync(path.join(__dirname, "..", "sitemap.xml"), xml, "utf8");
   console.log(`sitemap.xml 已更新（${sitemapUrls.length} 条）`);

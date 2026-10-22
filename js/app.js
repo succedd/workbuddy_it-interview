@@ -3159,7 +3159,23 @@
           : "");
       m.body.innerHTML = `<div id="sc-preview" class="muted" style="text-align:center;padding:30px 0">正在生成卡片…</div>
         ${linkNote}
+        <div id="sc-qr-wrap" style="display:none;align-items:center;justify-content:center;gap:10px;margin:12px auto 0;padding:10px;border:1px solid var(--border);border-radius:10px;width:max-content;max-width:100%">
+          <div id="sc-qr" aria-label="题目分享二维码"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;max-width:150px">扫码在手机上打开这道题<br><span style="font-size:11px">微信扫一扫 / 手机相机</span></div>
+        </div>
         <div class="muted" style="font-size:12px;margin-top:10px;text-align:center">手机上点「分享图片」可直接发到微信；电脑推荐「复制图片」后到微信聊天框 Ctrl+V 粘贴发送</div>`;
+      /* 分享二维码（20261022）：本地 vendor/qrcode.min.js，不依赖外部二维码服务 */
+      (async () => {
+        try {
+          await U.loadScript("QRCode", "/vendor/qrcode.min.js");
+          const qrBox = m.body.querySelector("#sc-qr");
+          const wrap = m.body.querySelector("#sc-qr-wrap");
+          if (qrBox && wrap && window.QRCode) {
+            new QRCode(qrBox, { text: url, width: 112, height: 112, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+            wrap.style.display = "flex";
+          }
+        } catch (e) { /* 二维码加载失败不影响图片/链接分享 */ }
+      })();
       const btnShare = document.createElement("button");
       btnShare.className = "btn btn-primary"; btnShare.textContent = "分享图片"; btnShare.disabled = true;
       const btnSave = document.createElement("button");
