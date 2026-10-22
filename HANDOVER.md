@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`1244bc2`（perf(启动): JS bundle Terser 压缩 + 回访本机优先）｜缓存版本 `20261021q → 20261021r`｜数据 version `19` / 1887 题｜更新时间：2026-10-22 21:54 (+08)**
+**本轮内容（用户反馈「打开仍慢」/ 只有 boomr marks）**
+
+- **诊断**：用户提供的 `performance.getEntriesByType("mark")` 只有 4 个 `boomr:*`（Cloudflare Web Analytics），没有 `boot:start`，说明应用 JS 还没下载/执行到 init；慢在**脚本加载**，不是本地数据库或云端题库同步。
+- **回访本机优先**（`cc6ea08`）：本机 ≥400 题时跳过启动期 `fetchMeta`，直接渲染本机题库；云端检查延后 1.2s 后台；首次访客 fetchMeta 6s→2.5s，Boot 先到 8%/15%。
+- **JS 压缩**（`1244bc2`）：Terser compress+mangle 4 个 bundle：app 492→**327KB**、core 176→86KB、extra 403→299KB、vendor 179→177KB；关键路径约 -30%。线上 gzip：app **105KB** / core **12.7KB** / vendor **57.6KB**，关键 JS 约 **175KB**（此前约 260–270KB）。
+- **验证**：index 20261021r；`bundle-app.js?v=20261021r` 200（gzip 105KB）；构建 guard 51、smoke 26；Deploy job 完成 success（GitHub run 39788490822 记录仍显示 in_progress，站点已实际更新）。
+- **仍需用户侧确认**：强制刷新一次后第二次打开是否变快；若 Network 面板里 `bundle-vendor/core/app` 仍长时间 pending，属于网络/Cloudflare 链路；检查是否启用 Cloudflare Rocket Loader（会延迟/改写脚本），建议关闭。
+- **产物**：`js/bundle/*.js`（压缩）、`index.html`、`sw.js`、`README.md`、`js/app.js`、`js/cloud.js`。
+
 **最新 release commit：`cc6ea08`（perf(启动): 回访本机优先，云端更新后台化）｜缓存版本 `20261021p → 20261021q`｜数据 version `19` / 1887 题｜更新时间：2026-10-22 21:21 (+08)**
 **本轮内容（解决启动卡 0% / 每次打开慢）**
 
