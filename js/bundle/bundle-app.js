@@ -2842,8 +2842,9 @@
       statePredicates.push(x => !ids.has(x.id));
     }
 
-    const filters = { difficulty: [], type: [], source: [], status: [], tags: [], aiMin: null, aiMax: null, q: q.q || "", predicates: statePredicates };
-    const sortBy = q.sort || "updated";
+    const filters = { difficulty: q.diff ? [q.diff] : [], type: q.type ? [q.type] : [], source: [], status: q.status ? [q.status] : [], tags: [], aiMin: null, aiMax: null, q: q.q || "", predicates: statePredicates,
+      catFilter: q.fcat ? parseInt(q.fcat, 10) : null, posFilter: q.fpos ? parseInt(q.fpos, 10) : null };
+    let sortBy = q.sort || "updated";
     if (q.nocat) base = base.filter(x => x.categoryId == null);   /* 全景图「未归类」节点跳转过来 */
     /* 来源预筛选（题库全景图来源构成条跳转过来）：?source=ai|manual|import|submission|seed|principles|url|other */
     if (q.source) {
@@ -2884,9 +2885,55 @@
     /* 已选条件计数：显示在移动端「筛选」按钮的角标上。
        移动端筛选面板默认折叠，没有这个数字就看不出「当前是否带着筛选条件」，
        容易让人以为题库少了内容（桌面端按钮本身隐藏，调用无副作用）。 */
+    /* 保存常用筛选（20261021）：只存筛选条件，不存页码；同一 query 覆盖名称，最多 8 组 */
+    const SAVED_FILTER_KEY = "iti_saved_filters_v1";
+    const readSavedFilters = () => {
+      try {
+        const rows = JSON.parse(localStorage.getItem(SAVED_FILTER_KEY) || "[]");
+        return Array.isArray(rows) ? rows.filter(x => x && x.name && typeof x.query === "string").slice(0, 8) : [];
+      } catch (e) { return []; }
+    };
+    const hasAnyFilter = () => !!(filters.q || filters.difficulty.length || filters.type.length || filters.source.length
+      || filters.status.length || stateMode || filters.catFilter || filters.posFilter || q.cat || q.posid || q.pos);
+    const currentFilterQuery = () => {
+      const sp = new URLSearchParams();
+      const put = (k, v) => { if (v !== null && v !== undefined && v !== "") sp.set(k, String(v)); };
+      put("q", filters.q);
+      if (filters.difficulty.length === 1) put("diff", filters.difficulty[0]);
+      if (filters.type.length === 1) put("type", filters.type[0]);
+      if (filters.source.length === 1) put("source", filters.source[0]);
+      if (filters.status.length === 1) put("status", filters.status[0]);
+      put("state", stateMode);
+      put("cat", q.cat); put("posid", q.posid); put("pos", q.pos);
+      put("fcat", filters.catFilter); put("fpos", filters.posFilter);
+      if (sortBy !== "updated") put("sort", sortBy);
+      return sp.toString();
+    };
+    const renderSavedFilters = () => {
+      const box = $("#saved-filters");
+      if (!box) return;
+      const rows = readSavedFilters();
+      if (!rows.length) { box.innerHTML = ""; return; }
+      box.innerHTML = `<span class="muted" style="font-size:12px">已保存筛选</span>` + rows.map((r, i) =>
+        `<span class="saved-filter-chip" style="display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:var(--bg-elevated);font-size:12px"><a href="#/questions?${U.esc(r.query)}" data-saved-route="${U.esc(r.query)}" style="padding:4px 8px;color:var(--c-primary);text-decoration:none">${U.esc(r.name)}</a><button type="button" data-del-saved="${i}" title="删除这组筛选" aria-label="删除这组筛选" style="border:0;border-left:1px solid var(--border);background:transparent;padding:2px 8px;cursor:pointer;color:var(--muted)">×</button></span>`
+      ).join("");
+      box.querySelectorAll("a[data-saved-route]").forEach(a => {
+        a.onclick = (e) => { e.preventDefault(); App.go("/questions?" + a.dataset.savedRoute); };
+      });
+      box.querySelectorAll("[data-del-saved]").forEach(b => {
+        b.onclick = (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const rows2 = readSavedFilters(); rows2.splice(parseInt(b.dataset.delSaved, 10), 1);
+          try { localStorage.setItem(SAVED_FILTER_KEY, JSON.stringify(rows2)); } catch (_) {}
+          renderSavedFilters(); U.toast("已删除这组筛选", "info");
+        };
+      });
+    };
+
     const updateFilterBadge = () => {
       const n = (filters.difficulty.length ? 1 : 0) + (filters.type.length ? 1 : 0)
-        + (filters.source.length ? 1 : 0) + (filters.status.length ? 1 : 0) + (stateMode ? 1 : 0);
+        + (filters.source.length ? 1 : 0) + (filters.status.length ? 1 : 0) + (stateMode ? 1 : 0)
+        + (filters.catFilter ? 1 : 0) + (filters.posFilter ? 1 : 0);
       const b = $("#filter-badge");
       if (!b) return;
       b.textContent = n;
@@ -2894,6 +2941,15 @@
     };
     const apply = (resetPage) => {
       let arr = Search.filter(base, filters);
+      /* 结果页二次筛选：分类含子分类、岗位按技术栈匹配 */
+      if (filters.catFilter) {
+        const ids = [filters.catFilter].concat(Services.descendantIds(filters.catFilter));
+        arr = arr.filter(x => ids.indexOf(x.categoryId) >= 0);
+      }
+      if (filters.posFilter) {
+        const p = Services.getPosition(filters.posFilter);
+        if (p) arr = arr.filter(x => Services.matchPosition(x, p));
+      }
       const fuseMap = (filters.q && Services.fuse) ? Search.run(Services.fuse, filters.q) : null;
       if (fuseMap) arr = arr.filter(x => fuseMap.has(x.id));
       arr = Search.sort(arr, sortBy);
@@ -2905,13 +2961,42 @@
     const renderGrid = (arr) => {
       const grid = $("#q-grid");
       if (!arr.length) {
-        const term = filters.q;
-        const lower = String(term || "").toLowerCase();
-        const cats = term ? Services.categories.filter(c => (c.name || "").toLowerCase().indexOf(lower) >= 0).slice(0, 3) : [];
-        const catHtml = cats.length ? `<div class="pill-row" style="margin-top:8px">${cats.map(c => `<a class="tag tag-outline" href="/category?cat=${c.id}">${U.esc(c.name)}</a>`).join("")}</div>` : "";
+        const term = String(filters.q || "").trim();
+        const lower = term.toLowerCase();
+        const cats = term ? Services.categories.filter(c => (c.name || "").toLowerCase().indexOf(lower) >= 0).slice(0, 4) : [];
+        const seenPos = new Set();
+        const positions = term ? Services.positions.filter(p => {
+          if (Services.isHiddenPosition(p)) return false;
+          const name = Services.posFullName(p);
+          if (seenPos.has(name)) return false;
+          if (name.toLowerCase().indexOf(lower) < 0 && (p.name || "").toLowerCase().indexOf(lower) < 0) return false;
+          seenPos.add(name); return true;
+        }).slice(0, 4) : [];
+        const tags = term ? [...new Set(Services.questions.flatMap(x => x.tags || []).filter(t => String(t).toLowerCase().indexOf(lower) >= 0))].slice(0, 5) : [];
+        const topCats = Services.categories.map(c => {
+          const ids = [c.id].concat(Services.descendantIds(c.id));
+          return { id: c.id, name: c.name, count: Services.questions.filter(x => ids.indexOf(x.categoryId) >= 0).length };
+        }).filter(c => c.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
+        const topPos = Services.positions.filter(p => !Services.isHiddenPosition(p))
+          .map(p => ({ p: p, n: Services.questionCountForPosition(p) }))
+          .filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 4);
         const hot = term ? `<div class="sd-hot" style="margin-top:10px;justify-content:flex-start">${HOT_TERMS.map(t => `<button type="button" class="tag tag-link" data-sug="${U.esc(t)}">${U.esc(t)}</button>`).join("")}</div>` : "";
-        grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>${catHtml}${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}</div>`;
+        const chipRow = (label, items) => items.length ? `<div class="pill-row" style="margin-top:8px;align-items:center"><span class="muted" style="font-size:12px">${label}</span>${items.join("")}</div>` : "";
+        const catChips = cats.map(c => `<a class="tag tag-outline" href="/category?cat=${c.id}">${U.esc(c.name)}</a>`);
+        const posChips = positions.map(p => `<a class="tag tag-outline" href="/questions?posid=${p.id}">${U.esc(Services.posFullName(p))}</a>`);
+        const tagChips = tags.map(t => `<a class="tag tag-outline" href="/questions?q=${encodeURIComponent(t)}">${U.esc(t)}</a>`);
+        const fallbackCats = (!cats.length && term) ? topCats.map(c => `<a class="tag tag-outline" href="/category?cat=${c.id}">${U.esc(c.name)} <span class="muted">${c.count || 0}</span></a>`) : [];
+        const fallbackPos = (!positions.length && term) ? topPos.map(x => `<a class="tag tag-outline" href="/questions?posid=${x.p.id}">${U.esc(Services.posFullName(x.p))} <span class="muted">${x.n}</span></a>`) : [];
+        const clearBtn = hasAnyFilter() ? `<button type="button" class="btn btn-sm" id="zero-clear">清除全部筛选</button>` : "";
+        grid.innerHTML = `<div class="empty" style="text-align:left;align-items:flex-start">
+          <div style="display:flex;gap:8px;align-items:center">${U.icon("search")}<b>没有匹配的题目${term ? `：${U.esc(term)}` : ""}</b></div>
+          ${chipRow("相关分类", catChips)}${chipRow("相关岗位", posChips)}${chipRow("相关标签", tagChips)}
+          ${term ? `<p class="muted" style="margin-top:8px">换个关键词试试，或看看热门：</p>${hot}` : `<p class="muted" style="margin-top:8px">换个筛选条件看看</p>`}
+          ${chipRow("热门分类", fallbackCats)}${chipRow("热门岗位", fallbackPos)}
+          ${clearBtn ? `<div class="pill-row" style="margin-top:12px">${clearBtn}</div>` : ""}
+        </div>`;
         $$("#q-grid [data-sug]").forEach(b => b.onclick = () => { $("#q-search").value = b.dataset.sug; filters.q = b.dataset.sug; apply(); });
+        const zc = $("#zero-clear"); if (zc) zc.onclick = () => App.go("/questions");
         $("#q-count").textContent = "0";
         totalPages = 1; const pg0 = $("#q-pager"); if (pg0) pg0.innerHTML = "";   /* 空结果要清掉分页，否则残留上一页的页码 */
         return;
@@ -2975,6 +3060,25 @@
       }
     };
 
+    const catOpts = (() => {
+      const walk = (nodes, depth = 0) => nodes.map(c =>
+        `<option value="${c.id}" ${filters.catFilter === c.id ? "selected" : ""}>${"　".repeat(depth)}${U.esc(c.name)}</option>` +
+        walk(c.children || [], depth + 1)
+      ).join("");
+      return walk(Services.categoryTree());
+    })();
+    const posOpts = (() => {
+      const seen = new Set();
+      return Services.positionsByStage().map(stage => {
+        const rows = stage.list.filter(p => {
+          if (Services.isHiddenPosition(p)) return false;
+          const name = Services.posFullName(p);
+          if (seen.has(name)) return false;
+          seen.add(name); return true;
+        });
+        return rows.length ? `<optgroup label="${U.esc(stage.stage)}">${rows.map(p => `<option value="${p.id}" ${filters.posFilter === p.id ? "selected" : ""}>${U.esc(Services.posFullName(p))}</option>`).join("")}</optgroup>` : "";
+      }).join("");
+    })();
     setMain(`
       <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>题目列表</span>${q.cat ? `<span class="sep">/</span><span>${U.esc(Services.catName(parseInt(q.cat)))}</span>` : ""}${q.pos ? `<span class="sep">/</span><span>${U.esc(decodeURIComponent(q.pos))}</span>` : ""}</div>
       <h1 style="margin-bottom:10px">题目列表 <span class="muted" id="q-count" style="font-size:16px"></span></h1>
@@ -2986,6 +3090,7 @@
         <button type="button" class="btn btn-sm filter-toggle" id="filter-toggle" aria-expanded="false" aria-controls="q-toolbar">
           ${U.icon("filter")} 筛选<span class="ft-badge" id="filter-badge" style="display:none"></span>
         </button>
+        <button type="button" class="btn btn-sm" id="save-filter" title="把当前筛选条件保存为快捷入口">${U.icon("bookmark")} 存筛选</button>
         <span class="spacer"></span>
         <div class="seg" id="sort-seg">
           <button data-s="updated" class="${sortBy === "updated" ? "active" : ""}">最新</button>
@@ -3000,6 +3105,8 @@
         <select id="f-type" class="select-mini"><option value="">题型</option>${types.map(t => `<option>${t}</option>`).join("")}</select>
         <select id="f-source" class="select-mini"><option value="">来源</option><option value="manual">手动</option><option value="ai">AI</option><option value="import">导入</option><option value="submission">用户投稿</option></select>
         ${Auth.isAdmin() ? `<select id="f-status" class="select-mini"><option value="">状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="offline">下线</option></select>` : ""}
+        <select id="f-cat" class="select-mini" title="按分类二次筛选"><option value="">全部分类</option>${catOpts}</select>
+        <select id="f-pos" class="select-mini" title="按岗位二次筛选"><option value="">全部岗位</option>${posOpts}</select>
       </div>
       <div class="diff-quick" id="diff-quick">
         <button data-d="" class="${!filters.difficulty.length ? "active" : ""}">全部难度</button>
@@ -3011,6 +3118,7 @@
         <button data-state="fav" class="${stateMode === "fav" ? "active" : ""}">已收藏</button>
         <button data-state="weak" class="${stateMode === "weak" ? "active" : ""}">错题</button>
       </div>
+      <div id="saved-filters" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 8px"></div>
       <div class="grid grid-cols-2" id="q-grid"></div>
       <div class="pager" id="q-pager"></div>
     `);
@@ -3053,12 +3161,52 @@
     $("#f-type").onchange = e => { filters.type = e.target.value ? [e.target.value] : []; apply(); };
     if (filters.source.length) { const f = $("#f-source"); if (f) f.value = filters.source[0]; }   // 同步来源下拉框（?source= 跳转时）
     $("#f-source").onchange = e => { filters.source = e.target.value ? [e.target.value] : []; apply(); };
+    /* 结果页二次筛选（20261021）：分类含子分类，岗位按技术栈匹配；同步到 URL，刷新不丢 */
+    $("#f-cat").onchange = e => {
+      const v = e.target.value;
+      filters.catFilter = v ? parseInt(v, 10) : null;
+      syncRouteParams({ fcat: v || null });
+      apply();
+    };
+    $("#f-pos").onchange = e => {
+      const v = e.target.value;
+      filters.posFilter = v ? parseInt(v, 10) : null;
+      syncRouteParams({ fpos: v || null });
+      apply();
+    };
     if (Auth.isAdmin()) $("#f-status").onchange = e => { filters.status = e.target.value ? [e.target.value] : []; apply(); };
     $$("#sort-seg button").forEach(b => b.onclick = () => {
       $$("#sort-seg button").forEach(x => x.classList.remove("active")); b.classList.add("active");
-      const s = b.dataset.s; syncRouteParams({ sort: s });
-      renderGrid(Search.sort(Search.filter(base, filters), s));
+      const s = b.dataset.s; sortBy = s; syncRouteParams({ sort: s });
+      apply();
     });
+    /* 保存当前筛选：名称弹窗 + 本机 localStorage；空条件不保存 */
+    $("#save-filter").onclick = () => {
+      if (!hasAnyFilter()) { U.toast("先设置关键词或筛选条件，再保存", "warn"); return; }
+      const rows = readSavedFilters();
+      const m = U.modal({ title: "保存当前筛选" });
+      const defaultName = filters.q ? "搜索：" + filters.q.slice(0, 12) : "筛选 " + (rows.length + 1);
+      m.body.innerHTML = `<p class="muted" style="font-size:13px;margin:0 0 10px">保存后可在题目列表上方一键打开；最多 8 组，同一组条件会覆盖名称。</p>
+        <label class="field"><span>名称</span><input id="save-filter-name" type="text" maxlength="20" value="${U.esc(defaultName)}" placeholder="例如：Java 中级 + 未做过"></label>`;
+      const cancel = document.createElement("button"); cancel.className = "btn"; cancel.textContent = "取消"; cancel.onclick = () => m.close();
+      const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.textContent = "保存";
+      const save = () => {
+        const name = (m.body.querySelector("#save-filter-name").value || "").trim().slice(0, 20);
+        if (!name) { U.toast("请填写名称", "warn"); return; }
+        const query = currentFilterQuery();
+        if (!query) { U.toast("当前没有可保存的筛选条件", "warn"); return; }
+        const next = readSavedFilters();
+        const same = next.findIndex(r => r.query === query);
+        if (same >= 0) next[same].name = name; else next.unshift({ name: name, query: query });
+        try { localStorage.setItem(SAVED_FILTER_KEY, JSON.stringify(next.slice(0, 8))); } catch (e) { U.toast("保存失败：浏览器存储不可用", "error"); return; }
+        renderSavedFilters(); m.close(); U.toast("已保存筛选：" + name, "success");
+      };
+      ok.onclick = save;
+      m.body.querySelector("#save-filter-name").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); save(); } });
+      m.foot.appendChild(cancel); m.foot.appendChild(ok);
+      setTimeout(() => { const i = m.body.querySelector("#save-filter-name"); if (i) { i.focus(); i.select(); } }, 30);
+    };
+    renderSavedFilters();
     apply(false);   /* 首屏：尊重 ?page= 深链，不重置页码 */
   }
 
