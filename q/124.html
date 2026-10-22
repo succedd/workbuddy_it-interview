@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>什么是事件代理(Event Delegation)？ · IT面试题库</title>
-  <meta name="description" content="事件代理 原理: 利用事件冒泡，在父元素监听事件，通过event.target判断实际元素 优点: 1.减少事件监听器 2.动态元素也能响应 3.减少内存占用 场景: 列表点击、表格行操作">
+  <meta name="description" content="原理 事件从目标元素向上冒泡到父级；把监听器挂在父容器，利用 event.target 判断实际点击元素，减少监听器数量。 适合列表/表格/动态新增元素；新增子元素无需重新绑定。 写法 container.addEventListener(&#39;click&#39;, e =&gt; { const btn=e.target.cl…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是事件代理(Event Delegation)？ · IT面试题库">
-  <meta property="og:description" content="事件代理 原理: 利用事件冒泡，在父元素监听事件，通过event.target判断实际元素 优点: 1.减少事件监听器 2.动态元素也能响应 3.减少内存占用 场景: 列表点击、表格行操作">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="原理 事件从目标元素向上冒泡到父级；把监听器挂在父容器，利用 event.target 判断实际点击元素，减少监听器数量。 适合列表/表格/动态新增元素；新增子元素无需重新绑定。 写法 container.addEventListener(&#39;click&#39;, e =&gt; { const btn=e.target.cl…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/124.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是事件代理(Event Delegation)？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/124.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/124">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是事件代理(Event Delegation)？ · IT面试题库">
-  <meta name="twitter:description" content="事件代理 原理: 利用事件冒泡，在父元素监听事件，通过event.target判断实际元素 优点: 1.减少事件监听器 2.动态元素也能响应 3.减少内存占用 场景: 列表点击、表格行操作">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="原理 事件从目标元素向上冒泡到父级；把监听器挂在父容器，利用 event.target 判断实际点击元素，减少监听器数量。 适合列表/表格/动态新增元素；新增子元素无需重新绑定。 写法 container.addEventListener(&#39;click&#39;, e =&gt; { const btn=e.target.cl…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/124.jpg">
+  <meta name="twitter:image:alt" content="什么是事件代理(Event Delegation)？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/124">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是事件代理(Event Delegation)？","text":"请解释事件代理的原理和优点。","answerCount":1,"datePublished":"2026-08-17T15:48:25.079Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"事件代理 原理: 利用事件冒泡，在父元素监听事件，通过event.target判断实际元素 优点: 1.减少事件监听器 2.动态元素也能响应 3.减少内存占用 场景: 列表点击、表格行操作","url":"https://itinterview.com.cn/question/124"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是事件代理(Event Delegation)？","text":"请解释事件代理的原理和优点。","answerCount":1,"datePublished":"2026-08-17T15:48:25.079Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理 事件从目标元素向上冒泡到父级；把监听器挂在父容器，利用 event.target 判断实际点击元素，减少监听器数量。 适合列表/表格/动态新增元素；新增子元素无需重新绑定。 写法 container.addEventListener('click', e => { const btn=e.target.closest('[data-action]'); ... })；closest 处理嵌套。 需要阻止冒泡用 stopPropagation（慎用）；事件委托对不冒泡事件（focus/blur）用捕获或 focusin/out。 注意 动态 DOM 销毁时移除监听；大量委托注意性能；event.target 可能是文本节点/子元素。","url":"https://itinterview.com.cn/question/124"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"JavaScript","item":"https://itinterview.com.cn/category?cat=14"},{"@type":"ListItem","position":4,"name":"什么是事件代理(Event Delegation)？","item":"https://itinterview.com.cn/q/124"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>什么是事件代理(Event Delegation)？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">数字电路工程师</span><span class="chip tag">JavaScript</span><span class="chip tag">事件代理</span></div>
     <div class="card"><h2>题目</h2><p>请解释事件代理的原理和优点。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>事件代理</h3>
-<p><strong>原理</strong>: 利用事件冒泡，在父元素监听事件，通过event.target判断实际元素</p>
-<p><strong>优点</strong>: 1.减少事件监听器 2.动态元素也能响应 3.减少内存占用</p>
-<p><strong>场景</strong>: 列表点击、表格行操作</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>原理</strong></p>
+<ul>
+<li>事件从目标元素向上冒泡到父级；把监听器挂在父容器，利用 <code>event.target</code> 判断实际点击元素，减少监听器数量。</li>
+<li>适合列表/表格/动态新增元素；新增子元素无需重新绑定。</li>
+</ul>
+<p><strong>写法</strong></p>
+<ul>
+<li><code>container.addEventListener(&#39;click&#39;, e =&gt; { const btn=e.target.closest(&#39;[data-action]&#39;); ... })</code>；<code>closest</code> 处理嵌套。</li>
+<li>需要阻止冒泡用 <code>stopPropagation</code>（慎用）；事件委托对不冒泡事件（focus/blur）用捕获或 focusin/out。</li>
+</ul>
+<p><strong>注意</strong></p>
+<ul>
+<li>动态 DOM 销毁时移除监听；大量委托注意性能；<code>event.target</code> 可能是文本节点/子元素。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/124">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

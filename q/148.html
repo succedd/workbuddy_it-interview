@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linux网络相关命令？ · IT面试题库</title>
-  <meta name="description" content="Linux网络命令 配置: ifconfig/ip addr、ip route 端口: netstat -tlnp、ss -tlnp、lsof -i:端口 诊断: ping、traceroute、nslookup、curl、telnet 抓包: tcpdump 防火墙: iptables、firewall-cmd">
+  <meta name="description" content="查看 ip addr/ip link 看网卡/IP；ip route 看路由；ss -tulnp 看端口/连接；ping/traceroute 通断。 curl -v/dig 看 HTTP/DNS；tcpdump -i any port 80 抓包；nstat/sar -n DEV 看统计。 配置 ip addr…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Linux网络相关命令？ · IT面试题库">
-  <meta property="og:description" content="Linux网络命令 配置: ifconfig/ip addr、ip route 端口: netstat -tlnp、ss -tlnp、lsof -i:端口 诊断: ping、traceroute、nslookup、curl、telnet 抓包: tcpdump 防火墙: iptables、firewall-cmd">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="查看 ip addr/ip link 看网卡/IP；ip route 看路由；ss -tulnp 看端口/连接；ping/traceroute 通断。 curl -v/dig 看 HTTP/DNS；tcpdump -i any port 80 抓包；nstat/sar -n DEV 看统计。 配置 ip addr…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/148.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Linux网络相关命令？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/148.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/148">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Linux网络相关命令？ · IT面试题库">
-  <meta name="twitter:description" content="Linux网络命令 配置: ifconfig/ip addr、ip route 端口: netstat -tlnp、ss -tlnp、lsof -i:端口 诊断: ping、traceroute、nslookup、curl、telnet 抓包: tcpdump 防火墙: iptables、firewall-cmd">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="查看 ip addr/ip link 看网卡/IP；ip route 看路由；ss -tulnp 看端口/连接；ping/traceroute 通断。 curl -v/dig 看 HTTP/DNS；tcpdump -i any port 80 抓包；nstat/sar -n DEV 看统计。 配置 ip addr…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/148.jpg">
+  <meta name="twitter:image:alt" content="Linux网络相关命令？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/148">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux网络相关命令？","text":"请列举网络诊断、端口查看命令。","answerCount":1,"datePublished":"2026-08-02T18:05:36.428Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Linux网络命令 配置: ifconfig/ip addr、ip route 端口: netstat -tlnp、ss -tlnp、lsof -i:端口 诊断: ping、traceroute、nslookup、curl、telnet 抓包: tcpdump 防火墙: iptables、firewall-cmd","url":"https://itinterview.com.cn/question/148"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux网络相关命令？","text":"请列举网络诊断、端口查看命令。","answerCount":1,"datePublished":"2026-08-02T18:05:36.428Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"查看 ip addr/ip link 看网卡/IP；ip route 看路由；ss -tulnp 看端口/连接；ping/traceroute 通断。 curl -v/dig 看 HTTP/DNS；tcpdump -i any port 80 抓包；nstat/sar -n DEV 看统计。 配置 ip addr add、ip route add（临时）；持久化用 NetworkManager/netplan；ethtool 看链路/速率。 防火墙 nft/iptables；ss 替代 netstat；nc -zv host port 测端口。 排查 先链路（link）→IP/路由→DNS→端口→应用；区分本机/网络/服务；抓包确认请求/响应。","url":"https://itinterview.com.cn/question/148"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"Linux网络相关命令？","item":"https://itinterview.com.cn/q/148"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,12 +96,20 @@
     <h1>Linux网络相关命令？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">网络运维工程师</span><span class="chip">功能测试工程师</span><span class="chip tag">Linux</span><span class="chip tag">网络命令</span></div>
     <div class="card"><h2>题目</h2><p>请列举网络诊断、端口查看命令。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Linux网络命令</h3>
-<p><strong>配置</strong>: ifconfig/ip addr、ip route</p>
-<p><strong>端口</strong>: netstat -tlnp、ss -tlnp、lsof -i:端口</p>
-<p><strong>诊断</strong>: ping、traceroute、nslookup、curl、telnet</p>
-<p><strong>抓包</strong>: tcpdump</p>
-<p><strong>防火墙</strong>: iptables、firewall-cmd</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>查看</strong></p>
+<ul>
+<li><code>ip addr</code>/<code>ip link</code> 看网卡/IP；<code>ip route</code> 看路由；<code>ss -tulnp</code> 看端口/连接；<code>ping</code>/<code>traceroute</code> 通断。</li>
+<li><code>curl -v</code>/<code>dig</code> 看 HTTP/DNS；<code>tcpdump -i any port 80</code> 抓包；<code>nstat</code>/<code>sar -n DEV</code> 看统计。</li>
+</ul>
+<p><strong>配置</strong></p>
+<ul>
+<li><code>ip addr add</code>、<code>ip route add</code>（临时）；持久化用 NetworkManager/netplan；<code>ethtool</code> 看链路/速率。</li>
+<li>防火墙 <code>nft/iptables</code>；<code>ss</code> 替代 netstat；<code>nc -zv host port</code> 测端口。</li>
+</ul>
+<p><strong>排查</strong></p>
+<ul>
+<li>先链路（link）→IP/路由→DNS→端口→应用；区分本机/网络/服务；抓包确认请求/响应。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/148">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

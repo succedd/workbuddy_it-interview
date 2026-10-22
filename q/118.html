@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JavaScript中Promise的原理？ · IT面试题库</title>
-  <meta name="description" content="Promise 状态: pending→fulfilled/rejected，状态不可逆 方法: then(链式调用)、catch(错误处理)、finally(无论成功失败) 静态方法: Promise.all、Promise.race、Promise.allSettled、Promise.any">
+  <meta name="description" content="状态 Promise 有 pending/fulfilled/rejected，状态不可逆；then 返回新 Promise，可链式；catch 捕获 rejection，finally 清理。 执行器同步执行；resolve/reject 只第一次生效；then 回调进微任务。 组合 Promise.all 全…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="JavaScript中Promise的原理？ · IT面试题库">
-  <meta property="og:description" content="Promise 状态: pending→fulfilled/rejected，状态不可逆 方法: then(链式调用)、catch(错误处理)、finally(无论成功失败) 静态方法: Promise.all、Promise.race、Promise.allSettled、Promise.any">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="状态 Promise 有 pending/fulfilled/rejected，状态不可逆；then 返回新 Promise，可链式；catch 捕获 rejection，finally 清理。 执行器同步执行；resolve/reject 只第一次生效；then 回调进微任务。 组合 Promise.all 全…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/118.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="JavaScript中Promise的原理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/118.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/118">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JavaScript中Promise的原理？ · IT面试题库">
-  <meta name="twitter:description" content="Promise 状态: pending→fulfilled/rejected，状态不可逆 方法: then(链式调用)、catch(错误处理)、finally(无论成功失败) 静态方法: Promise.all、Promise.race、Promise.allSettled、Promise.any">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="状态 Promise 有 pending/fulfilled/rejected，状态不可逆；then 返回新 Promise，可链式；catch 捕获 rejection，finally 清理。 执行器同步执行；resolve/reject 只第一次生效；then 回调进微任务。 组合 Promise.all 全…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/118.jpg">
+  <meta name="twitter:image:alt" content="JavaScript中Promise的原理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/118">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JavaScript中Promise的原理？","text":"请解释Promise的状态机和链式调用。","answerCount":1,"datePublished":"2026-07-28T16:54:11.018Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Promise 状态: pending→fulfilled/rejected，状态不可逆 方法: then(链式调用)、catch(错误处理)、finally(无论成功失败) 静态方法: Promise.all、Promise.race、Promise.allSettled、Promise.any","url":"https://itinterview.com.cn/question/118"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JavaScript中Promise的原理？","text":"请解释Promise的状态机和链式调用。","answerCount":1,"datePublished":"2026-07-28T16:54:11.018Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"状态 Promise 有 pending/fulfilled/rejected，状态不可逆；then 返回新 Promise，可链式；catch 捕获 rejection，finally 清理。 执行器同步执行；resolve/reject 只第一次生效；then 回调进微任务。 组合 Promise.all 全部成功才成功（一个失败即失败）；allSettled 等全部；race 第一个 settled；any 第一个成功。 错误处理：链末尾 catch；避免忘记 return 导致链断裂；未处理 rejection 要监控。 手写 维护状态/回调队列，resolve/reject 时异步清空；then 要处理返回值/抛错并返回新 Promise；注意 thenable 递归。","url":"https://itinterview.com.cn/question/118"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"JavaScript","item":"https://itinterview.com.cn/category?cat=14"},{"@type":"ListItem","position":4,"name":"JavaScript中Promise的原理？","item":"https://itinterview.com.cn/q/118"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>JavaScript中Promise的原理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数字电路工程师</span><span class="chip tag">JavaScript</span><span class="chip tag">Promise</span></div>
     <div class="card"><h2>题目</h2><p>请解释Promise的状态机和链式调用。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Promise</h3>
-<p><strong>状态</strong>: pending→fulfilled/rejected，状态不可逆</p>
-<p><strong>方法</strong>: then(链式调用)、catch(错误处理)、finally(无论成功失败)</p>
-<p><strong>静态方法</strong>: Promise.all、Promise.race、Promise.allSettled、Promise.any</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>状态</strong></p>
+<ul>
+<li>Promise 有 pending/fulfilled/rejected，状态不可逆；<code>then</code> 返回新 Promise，可链式；<code>catch</code> 捕获 rejection，<code>finally</code> 清理。</li>
+<li>执行器同步执行；resolve/reject 只第一次生效；then 回调进微任务。</li>
+</ul>
+<p><strong>组合</strong></p>
+<ul>
+<li><code>Promise.all</code> 全部成功才成功（一个失败即失败）；<code>allSettled</code> 等全部；<code>race</code> 第一个 settled；<code>any</code> 第一个成功。</li>
+<li>错误处理：链末尾 catch；避免忘记 return 导致链断裂；未处理 rejection 要监控。</li>
+</ul>
+<p><strong>手写</strong></p>
+<ul>
+<li>维护状态/回调队列，resolve/reject 时异步清空；then 要处理返回值/抛错并返回新 Promise；注意 thenable 递归。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/118">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

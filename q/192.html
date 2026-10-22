@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>如何进行Code Review？ · IT面试题库</title>
-  <meta name="description" content="Code Review要点 1. 功能正确性: 逻辑是否正确，边界条件是否覆盖 2. 代码质量: 命名规范、可读性、设计模式 3. 性能: 是否有性能隐患、不必要的循环 4. 安全: SQL注入、XSS、敏感信息泄露 5. 测试: 是否有单元测试、测试覆盖率 最佳实践: 小PR、及时Review、友好沟通、自动化检查">
+  <meta name="description" content="目标 Code Review 是保证正确性/可维护性/知识共享，不是挑刺或炫技；先看设计/边界/测试，再看风格。 小 PR（&lt;400 行）更容易审；作者写清背景/验证方式/风险。 评审 正确性：边界/错误/并发/安全；可读性/命名/重复；测试覆盖；性能/兼容性。 评论分级：blocking / suggestio…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何进行Code Review？ · IT面试题库">
-  <meta property="og:description" content="Code Review要点 1. 功能正确性: 逻辑是否正确，边界条件是否覆盖 2. 代码质量: 命名规范、可读性、设计模式 3. 性能: 是否有性能隐患、不必要的循环 4. 安全: SQL注入、XSS、敏感信息泄露 5. 测试: 是否有单元测试、测试覆盖率 最佳实践: 小PR、及时Review、友好沟通、自动化检查">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="目标 Code Review 是保证正确性/可维护性/知识共享，不是挑刺或炫技；先看设计/边界/测试，再看风格。 小 PR（&lt;400 行）更容易审；作者写清背景/验证方式/风险。 评审 正确性：边界/错误/并发/安全；可读性/命名/重复；测试覆盖；性能/兼容性。 评论分级：blocking / suggestio…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/192.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何进行Code Review？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/192.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/192">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何进行Code Review？ · IT面试题库">
-  <meta name="twitter:description" content="Code Review要点 1. 功能正确性: 逻辑是否正确，边界条件是否覆盖 2. 代码质量: 命名规范、可读性、设计模式 3. 性能: 是否有性能隐患、不必要的循环 4. 安全: SQL注入、XSS、敏感信息泄露 5. 测试: 是否有单元测试、测试覆盖率 最佳实践: 小PR、及时Review、友好沟通、自动化检查">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="目标 Code Review 是保证正确性/可维护性/知识共享，不是挑刺或炫技；先看设计/边界/测试，再看风格。 小 PR（&lt;400 行）更容易审；作者写清背景/验证方式/风险。 评审 正确性：边界/错误/并发/安全；可读性/命名/重复；测试覆盖；性能/兼容性。 评论分级：blocking / suggestio…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/192.jpg">
+  <meta name="twitter:image:alt" content="如何进行Code Review？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/192">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何进行Code Review？","text":"请解释Code Review的要点和最佳实践。","answerCount":1,"datePublished":"2026-08-10T21:47:12.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Code Review要点 1. 功能正确性: 逻辑是否正确，边界条件是否覆盖 2. 代码质量: 命名规范、可读性、设计模式 3. 性能: 是否有性能隐患、不必要的循环 4. 安全: SQL注入、XSS、敏感信息泄露 5. 测试: 是否有单元测试、测试覆盖率 最佳实践: 小PR、及时Review、友好沟通、自动化检查","url":"https://itinterview.com.cn/question/192"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何进行Code Review？","text":"请解释Code Review的要点和最佳实践。","answerCount":1,"datePublished":"2026-08-10T21:47:12.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"目标 Code Review 是保证正确性/可维护性/知识共享，不是挑刺或炫技；先看设计/边界/测试，再看风格。 小 PR（\u003c400 行）更容易审；作者写清背景/验证方式/风险。 评审 正确性：边界/错误/并发/安全；可读性/命名/重复；测试覆盖；性能/兼容性。 评论分级：blocking / suggestion / nit；给具体改法，不只说「不好」；尊重作者，讨论代码不讨论人。 流程 及时响应；至少一人（关键模块两人）；作者解决/回复；合并前 CI 绿；事后复盘缺陷，更新规范/自动化。","url":"https://itinterview.com.cn/question/192"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"代码规范","item":"https://itinterview.com.cn/category?cat=100"},{"@type":"ListItem","position":4,"name":"如何进行Code Review？","item":"https://itinterview.com.cn/q/192"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,15 +96,20 @@
     <h1>如何进行Code Review？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Go开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">Code Review</span><span class="chip tag">代码规范</span></div>
     <div class="card"><h2>题目</h2><p>请解释Code Review的要点和最佳实践。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Code Review要点</h3>
-<ol>
-<li><strong>功能正确性</strong>: 逻辑是否正确，边界条件是否覆盖</li>
-<li><strong>代码质量</strong>: 命名规范、可读性、设计模式</li>
-<li><strong>性能</strong>: 是否有性能隐患、不必要的循环</li>
-<li><strong>安全</strong>: SQL注入、XSS、敏感信息泄露</li>
-<li><strong>测试</strong>: 是否有单元测试、测试覆盖率</li>
-</ol>
-<p><strong>最佳实践</strong>: 小PR、及时Review、友好沟通、自动化检查</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>目标</strong></p>
+<ul>
+<li>Code Review 是保证正确性/可维护性/知识共享，不是挑刺或炫技；先看设计/边界/测试，再看风格。</li>
+<li>小 PR（&lt;400 行）更容易审；作者写清背景/验证方式/风险。</li>
+</ul>
+<p><strong>评审</strong></p>
+<ul>
+<li>正确性：边界/错误/并发/安全；可读性/命名/重复；测试覆盖；性能/兼容性。</li>
+<li>评论分级：blocking / suggestion / nit；给具体改法，不只说「不好」；尊重作者，讨论代码不讨论人。</li>
+</ul>
+<p><strong>流程</strong></p>
+<ul>
+<li>及时响应；至少一人（关键模块两人）；作者解决/回复；合并前 CI 绿；事后复盘缺陷，更新规范/自动化。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/192">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spring IoC和DI的原理？ · IT面试题库</title>
-  <meta name="description" content="IoC和DI IoC: 对象创建和依赖管理交给Spring容器 DI方式: 1.字段注入(@Autowired) 2.Setter注入 3.构造器注入(推荐) Bean生命周期: 实例化→设置属性→Aware接口→BeanPostProcessor→InitializingBean→init-method→Bea…">
+  <meta name="description" content="IoC 控制反转：对象的创建/依赖装配交给 Spring 容器，而不是在代码里 new；容器管理 Bean 生命周期/作用域。 DI 是 IoC 的实现方式：构造器/Setter/字段注入；推荐构造器注入（不可变、易测试、依赖明确）。 容器 BeanDefinition 注册/扫描，实例化/属性填充/初始化/销毁…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring IoC和DI的原理？ · IT面试题库">
-  <meta property="og:description" content="IoC和DI IoC: 对象创建和依赖管理交给Spring容器 DI方式: 1.字段注入(@Autowired) 2.Setter注入 3.构造器注入(推荐) Bean生命周期: 实例化→设置属性→Aware接口→BeanPostProcessor→InitializingBean→init-method→Bea…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="IoC 控制反转：对象的创建/依赖装配交给 Spring 容器，而不是在代码里 new；容器管理 Bean 生命周期/作用域。 DI 是 IoC 的实现方式：构造器/Setter/字段注入；推荐构造器注入（不可变、易测试、依赖明确）。 容器 BeanDefinition 注册/扫描，实例化/属性填充/初始化/销毁…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/173.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring IoC和DI的原理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/173.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/173">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring IoC和DI的原理？ · IT面试题库">
-  <meta name="twitter:description" content="IoC和DI IoC: 对象创建和依赖管理交给Spring容器 DI方式: 1.字段注入(@Autowired) 2.Setter注入 3.构造器注入(推荐) Bean生命周期: 实例化→设置属性→Aware接口→BeanPostProcessor→InitializingBean→init-method→Bea…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="IoC 控制反转：对象的创建/依赖装配交给 Spring 容器，而不是在代码里 new；容器管理 Bean 生命周期/作用域。 DI 是 IoC 的实现方式：构造器/Setter/字段注入；推荐构造器注入（不可变、易测试、依赖明确）。 容器 BeanDefinition 注册/扫描，实例化/属性填充/初始化/销毁…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/173.jpg">
+  <meta name="twitter:image:alt" content="Spring IoC和DI的原理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/173">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring IoC和DI的原理？","text":"请解释IoC容器、Bean生命周期和注入方式。","answerCount":1,"datePublished":"2026-08-17T00:13:56.773Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"IoC和DI IoC: 对象创建和依赖管理交给Spring容器 DI方式: 1.字段注入(@Autowired) 2.Setter注入 3.构造器注入(推荐) Bean生命周期: 实例化→设置属性→Aware接口→BeanPostProcessor→InitializingBean→init-method→BeanPostProcessor→就绪→DisposableBean→destroy-method","url":"https://itinterview.com.cn/question/173"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring IoC和DI的原理？","text":"请解释IoC容器、Bean生命周期和注入方式。","answerCount":1,"datePublished":"2026-08-17T00:13:56.773Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"IoC 控制反转：对象的创建/依赖装配交给 Spring 容器，而不是在代码里 new；容器管理 Bean 生命周期/作用域。 DI 是 IoC 的实现方式：构造器/Setter/字段注入；推荐构造器注入（不可变、易测试、依赖明确）。 容器 BeanDefinition 注册/扫描，实例化/属性填充/初始化/销毁；作用域 singleton/prototype/request/session。 循环依赖：单例 setter 可三级缓存解决，构造器循环依赖报错；优先重构。 价值 解耦/可测试/统一配置；但别滥用字段注入/服务定位器；理解代理/AOP 与 Bean 生命周期。","url":"https://itinterview.com.cn/question/173"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"Spring IoC和DI的原理？","item":"https://itinterview.com.cn/q/173"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>Spring IoC和DI的原理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">硬件工程师</span><span class="chip">路由交换工程师</span><span class="chip tag">Spring</span><span class="chip tag">IoC</span><span class="chip tag">DI</span></div>
     <div class="card"><h2>题目</h2><p>请解释IoC容器、Bean生命周期和注入方式。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>IoC和DI</h3>
-<p><strong>IoC</strong>: 对象创建和依赖管理交给Spring容器</p>
-<p><strong>DI方式</strong>: 1.字段注入(@Autowired) 2.Setter注入 3.构造器注入(推荐)</p>
-<p><strong>Bean生命周期</strong>: 实例化→设置属性→Aware接口→BeanPostProcessor→InitializingBean→init-method→BeanPostProcessor→就绪→DisposableBean→destroy-method</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>IoC</strong></p>
+<ul>
+<li>控制反转：对象的创建/依赖装配交给 Spring 容器，而不是在代码里 new；容器管理 Bean 生命周期/作用域。</li>
+<li>DI 是 IoC 的实现方式：构造器/Setter/字段注入；推荐构造器注入（不可变、易测试、依赖明确）。</li>
+</ul>
+<p><strong>容器</strong></p>
+<ul>
+<li>BeanDefinition 注册/扫描，实例化/属性填充/初始化/销毁；作用域 singleton/prototype/request/session。</li>
+<li>循环依赖：单例 setter 可三级缓存解决，构造器循环依赖报错；优先重构。</li>
+</ul>
+<p><strong>价值</strong></p>
+<ul>
+<li>解耦/可测试/统一配置；但别滥用字段注入/服务定位器；理解代理/AOP 与 Bean 生命周期。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/173">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

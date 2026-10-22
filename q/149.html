@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shell脚本变量和条件判断？ · IT面试题库</title>
-  <meta name="description" content="Shell基础 变量: name=&quot;hello&quot;、$name、readonly、unset 特殊变量: $0(脚本名)、$#(参数个数)、$?(退出状态) 条件: if [ $a -gt $b ]、[ -f file ]、[ -z &quot;$var&quot; ] 循环: for i in {1..10}、while read …">
+  <meta name="description" content="变量 name=value（等号无空格），$name/${name} 引用；export 导出给子进程；local 函数内局部变量。 特殊变量：$? 上条退出码、$# 参数个数、$@ 参数列表、$$ PID；引用加引号防空格/通配。 条件 if [ &quot;$x&quot; = &quot;y&quot; ]; then ...; fi；数值 -e…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Shell脚本变量和条件判断？ · IT面试题库">
-  <meta property="og:description" content="Shell基础 变量: name=&quot;hello&quot;、$name、readonly、unset 特殊变量: $0(脚本名)、$#(参数个数)、$?(退出状态) 条件: if [ $a -gt $b ]、[ -f file ]、[ -z &quot;$var&quot; ] 循环: for i in {1..10}、while read …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="变量 name=value（等号无空格），$name/${name} 引用；export 导出给子进程；local 函数内局部变量。 特殊变量：$? 上条退出码、$# 参数个数、$@ 参数列表、$$ PID；引用加引号防空格/通配。 条件 if [ &quot;$x&quot; = &quot;y&quot; ]; then ...; fi；数值 -e…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/149.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Shell脚本变量和条件判断？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/149.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/149">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Shell脚本变量和条件判断？ · IT面试题库">
-  <meta name="twitter:description" content="Shell基础 变量: name=&quot;hello&quot;、$name、readonly、unset 特殊变量: $0(脚本名)、$#(参数个数)、$?(退出状态) 条件: if [ $a -gt $b ]、[ -f file ]、[ -z &quot;$var&quot; ] 循环: for i in {1..10}、while read …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="变量 name=value（等号无空格），$name/${name} 引用；export 导出给子进程；local 函数内局部变量。 特殊变量：$? 上条退出码、$# 参数个数、$@ 参数列表、$$ PID；引用加引号防空格/通配。 条件 if [ &quot;$x&quot; = &quot;y&quot; ]; then ...; fi；数值 -e…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/149.jpg">
+  <meta name="twitter:image:alt" content="Shell脚本变量和条件判断？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/149">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Shell脚本变量和条件判断？","text":"请解释Shell脚本的基本语法。","answerCount":1,"datePublished":"2026-08-03T18:39:04.171Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Shell基础 变量: name=\"hello\"、$name、readonly、unset 特殊变量: $0(脚本名)、$#(参数个数)、$?(退出状态) 条件: if [ $a -gt $b ]、[ -f file ]、[ -z \"$var\" ] 循环: for i in {1..10}、while read line","url":"https://itinterview.com.cn/question/149"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Shell脚本变量和条件判断？","text":"请解释Shell脚本的基本语法。","answerCount":1,"datePublished":"2026-08-03T18:39:04.171Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"变量 name=value（等号无空格），$name/${name} 引用；export 导出给子进程；local 函数内局部变量。 特殊变量：$? 上条退出码、$# 参数个数、$@ 参数列表、$$ PID；引用加引号防空格/通配。 条件 if [ \"$x\" = \"y\" ]; then ...; fi；数值 -eq/-lt，文件 -f/-d/-x；[[ ]] 支持正则/逻辑且更安全。 case 多分支；&&/|| 短路；set -euo pipefail 提升健壮性（注意兼容）。 坑 未加引号导致 word splitting；[ 两侧空格；变量为空时 [ -f $f ] 报错；用 shellcheck。","url":"https://itinterview.com.cn/question/149"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"Shell脚本变量和条件判断？","item":"https://itinterview.com.cn/q/149"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,11 +96,20 @@
     <h1>Shell脚本变量和条件判断？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络运维工程师</span><span class="chip">FPGA工程师</span><span class="chip tag">Shell</span><span class="chip tag">脚本</span></div>
     <div class="card"><h2>题目</h2><p>请解释Shell脚本的基本语法。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Shell基础</h3>
-<p><strong>变量</strong>: name=&quot;hello&quot;、$name、readonly、unset</p>
-<p><strong>特殊变量</strong>: $0(脚本名)、$#(参数个数)、$?(退出状态)</p>
-<p><strong>条件</strong>: if [ $a -gt $b ]、[ -f file ]、[ -z &quot;$var&quot; ]</p>
-<p><strong>循环</strong>: for i in {1..10}、while read line</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>变量</strong></p>
+<ul>
+<li><code>name=value</code>（等号无空格），<code>$name</code>/<code>${name}</code> 引用；<code>export</code> 导出给子进程；<code>local</code> 函数内局部变量。</li>
+<li>特殊变量：<code>$?</code> 上条退出码、<code>$#</code> 参数个数、<code>$@</code> 参数列表、<code>$$</code> PID；引用加引号防空格/通配。</li>
+</ul>
+<p><strong>条件</strong></p>
+<ul>
+<li><code>if [ &quot;$x&quot; = &quot;y&quot; ]; then ...; fi</code>；数值 <code>-eq/-lt</code>，文件 <code>-f/-d/-x</code>；<code>[[ ]]</code> 支持正则/逻辑且更安全。</li>
+<li><code>case</code> 多分支；<code>&amp;&amp;/||</code> 短路；<code>set -euo pipefail</code> 提升健壮性（注意兼容）。</li>
+</ul>
+<p><strong>坑</strong></p>
+<ul>
+<li>未加引号导致 word splitting；<code>[</code> 两侧空格；变量为空时 <code>[ -f $f ]</code> 报错；用 shellcheck。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/149">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

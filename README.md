@@ -310,6 +310,10 @@ node tools/gen-published.js
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
 
+### 2026-10-22 · quality: 再重写 30 道高浏览短答案（version 19 / 缓存 p）
+
+> **本轮**：继续重写 30 道短答案/manual 来源题（JS 原型链/事件代理/Promise/async、Redis 过期淘汰/Cluster、Shell、需求分析、K8s 资源/HPA/Pod 控制器、Docker Compose、Code Review、Spring AOP/IoC、AI Agent、Vue Composition、聚簇索引、行为面试、Redis 分片、二叉树遍历、排序、OKR、虚拟 DOM、Linux 网络、Prompt 原则、Python GIL、团队冲突、MySQL B+ 树、Java GC），补官方来源并写入 reviewedAt。短答案 133→**107**，无 http 来源 304→**274**，未复核 1837→1807；题库仍 1887，version 18→19，缓存 o→p。
+
 ### 2026-10-22 · quality: 重写下一批 30 道高浏览短答案（version 18 / 缓存 o）
 
 > **本轮**：按浏览量继续取 30 道答案偏短/来源为 manual 的题（Transformer、技术分享、Linux 进程/文件命令、Kafka ISR、React key、JS 闭包/事件循环、MySQL 索引/SQL 优化、Docker 网络、HTTP/1.1/2/3、Python 上下文/列表元组/生成器、synchronized/线程池/反射、技术方案、HTML5 API、K8s ConfigMap/Secret/Service/滚动更新、Linux 监控、Redis 分布式锁/Session、三大范式、TCP 流控/拥塞、RAG、Spring Boot），重写答案并补官方来源；30 题写入 reviewedAt。短答案 159→**133**，无 http 来源 334→**304**，未复核 1867→1837；题库仍 1887，version 17→18，缓存 n→o。

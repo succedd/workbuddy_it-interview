@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Agent的原理和架构是什么？ · IT面试题库</title>
-  <meta name="description" content="AI Agent 核心: LLM作为大脑，结合工具调用和记忆系统 架构: 1.感知(环境/用户输入) 2.规划(任务分解/推理) 3.工具调用(API/代码执行) 4.记忆(短期/长期) 5.行动 框架: LangChain Agent、AutoGPT、CrewAI 场景: 自动化工作流、客服系统、代码开发">
+  <meta name="description" content="组成 LLM 负责规划/决策，工具（搜索/代码/API）负责执行，记忆/上下文保存状态，编排层控制循环、重试、权限和人工接管。 常见模式：ReAct（推理+行动）、Plan-and-Execute、多 Agent 分工；不是所有任务都需要 Agent。 设计 工具 schema 清晰、幂等、最小权限；限制最大步数…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="AI Agent的原理和架构是什么？ · IT面试题库">
-  <meta property="og:description" content="AI Agent 核心: LLM作为大脑，结合工具调用和记忆系统 架构: 1.感知(环境/用户输入) 2.规划(任务分解/推理) 3.工具调用(API/代码执行) 4.记忆(短期/长期) 5.行动 框架: LangChain Agent、AutoGPT、CrewAI 场景: 自动化工作流、客服系统、代码开发">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="组成 LLM 负责规划/决策，工具（搜索/代码/API）负责执行，记忆/上下文保存状态，编排层控制循环、重试、权限和人工接管。 常见模式：ReAct（推理+行动）、Plan-and-Execute、多 Agent 分工；不是所有任务都需要 Agent。 设计 工具 schema 清晰、幂等、最小权限；限制最大步数…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/188.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="AI Agent的原理和架构是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/188.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/188">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AI Agent的原理和架构是什么？ · IT面试题库">
-  <meta name="twitter:description" content="AI Agent 核心: LLM作为大脑，结合工具调用和记忆系统 架构: 1.感知(环境/用户输入) 2.规划(任务分解/推理) 3.工具调用(API/代码执行) 4.记忆(短期/长期) 5.行动 框架: LangChain Agent、AutoGPT、CrewAI 场景: 自动化工作流、客服系统、代码开发">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="组成 LLM 负责规划/决策，工具（搜索/代码/API）负责执行，记忆/上下文保存状态，编排层控制循环、重试、权限和人工接管。 常见模式：ReAct（推理+行动）、Plan-and-Execute、多 Agent 分工；不是所有任务都需要 Agent。 设计 工具 schema 清晰、幂等、最小权限；限制最大步数…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/188.jpg">
+  <meta name="twitter:image:alt" content="AI Agent的原理和架构是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/188">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"AI Agent的原理和架构是什么？","text":"请解释AI Agent的核心组成和工作方式。","answerCount":1,"datePublished":"2026-08-08T08:35:07.886Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"AI Agent 核心: LLM作为大脑，结合工具调用和记忆系统 架构: 1.感知(环境/用户输入) 2.规划(任务分解/推理) 3.工具调用(API/代码执行) 4.记忆(短期/长期) 5.行动 框架: LangChain Agent、AutoGPT、CrewAI 场景: 自动化工作流、客服系统、代码开发","url":"https://itinterview.com.cn/question/188"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"AI Agent的原理和架构是什么？","text":"请解释AI Agent的核心组成和工作方式。","answerCount":1,"datePublished":"2026-08-08T08:35:07.886Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"组成 LLM 负责规划/决策，工具（搜索/代码/API）负责执行，记忆/上下文保存状态，编排层控制循环、重试、权限和人工接管。 常见模式：ReAct（推理+行动）、Plan-and-Execute、多 Agent 分工；不是所有任务都需要 Agent。 设计 工具 schema 清晰、幂等、最小权限；限制最大步数/超时/成本；失败可恢复；关键动作人工确认。 评估任务成功率/步骤/成本/延迟；做故障注入和红队，防止死循环/工具滥用。 边界 简单固定流程用 workflow/规则更可靠；Agent 适合开放、多步、工具丰富的任务；要可观测/可回滚。","url":"https://itinterview.com.cn/question/188"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"AI Agent的原理和架构是什么？","item":"https://itinterview.com.cn/q/188"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,11 +96,20 @@
     <h1>AI Agent的原理和架构是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip tag">AI Agent</span><span class="chip tag">AI</span></div>
     <div class="card"><h2>题目</h2><p>请解释AI Agent的核心组成和工作方式。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>AI Agent</h3>
-<p><strong>核心</strong>: LLM作为大脑，结合工具调用和记忆系统</p>
-<p><strong>架构</strong>: 1.感知(环境/用户输入) 2.规划(任务分解/推理) 3.工具调用(API/代码执行) 4.记忆(短期/长期) 5.行动</p>
-<p><strong>框架</strong>: LangChain Agent、AutoGPT、CrewAI</p>
-<p><strong>场景</strong>: 自动化工作流、客服系统、代码开发</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>组成</strong></p>
+<ul>
+<li>LLM 负责规划/决策，工具（搜索/代码/API）负责执行，记忆/上下文保存状态，编排层控制循环、重试、权限和人工接管。</li>
+<li>常见模式：ReAct（推理+行动）、Plan-and-Execute、多 Agent 分工；不是所有任务都需要 Agent。</li>
+</ul>
+<p><strong>设计</strong></p>
+<ul>
+<li>工具 schema 清晰、幂等、最小权限；限制最大步数/超时/成本；失败可恢复；关键动作人工确认。</li>
+<li>评估任务成功率/步骤/成本/延迟；做故障注入和红队，防止死循环/工具滥用。</li>
+</ul>
+<p><strong>边界</strong></p>
+<ul>
+<li>简单固定流程用 workflow/规则更可靠；Agent 适合开放、多步、工具丰富的任务；要可观测/可回滚。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/188">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

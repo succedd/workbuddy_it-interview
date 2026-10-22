@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redis过期删除和内存淘汰策略？ · IT面试题库</title>
-  <meta name="description" content="过期删除 惰性删除: 访问时检查 定期删除: 每秒10次随机抽取 淘汰策略 allkeys-lru(推荐): 从所有key中淘汰最近最少使用的 volatile-lru: 从有过期时间的key中淘汰 noeviction: 不淘汰返回错误">
+  <meta name="description" content="过期删除 Redis 同时用惰性删除（访问时检查过期）和定期删除（抽样清理），不是到点立即删除；过期 key 可能仍占内存。 EXPIRE/PEXPIRE、TTL；主从过期由主节点驱动，从节点读到过期 key 返回空。 内存淘汰 达到 maxmemory 后按 maxmemory-policy 淘汰：noevic…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis过期删除和内存淘汰策略？ · IT面试题库">
-  <meta property="og:description" content="过期删除 惰性删除: 访问时检查 定期删除: 每秒10次随机抽取 淘汰策略 allkeys-lru(推荐): 从所有key中淘汰最近最少使用的 volatile-lru: 从有过期时间的key中淘汰 noeviction: 不淘汰返回错误">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="过期删除 Redis 同时用惰性删除（访问时检查过期）和定期删除（抽样清理），不是到点立即删除；过期 key 可能仍占内存。 EXPIRE/PEXPIRE、TTL；主从过期由主节点驱动，从节点读到过期 key 返回空。 内存淘汰 达到 maxmemory 后按 maxmemory-policy 淘汰：noevic…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/142.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis过期删除和内存淘汰策略？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/142.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/142">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis过期删除和内存淘汰策略？ · IT面试题库">
-  <meta name="twitter:description" content="过期删除 惰性删除: 访问时检查 定期删除: 每秒10次随机抽取 淘汰策略 allkeys-lru(推荐): 从所有key中淘汰最近最少使用的 volatile-lru: 从有过期时间的key中淘汰 noeviction: 不淘汰返回错误">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="过期删除 Redis 同时用惰性删除（访问时检查过期）和定期删除（抽样清理），不是到点立即删除；过期 key 可能仍占内存。 EXPIRE/PEXPIRE、TTL；主从过期由主节点驱动，从节点读到过期 key 返回空。 内存淘汰 达到 maxmemory 后按 maxmemory-policy 淘汰：noevic…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/142.jpg">
+  <meta name="twitter:image:alt" content="Redis过期删除和内存淘汰策略？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/142">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis过期删除和内存淘汰策略？","text":"请解释Redis的过期和淘汰机制。","answerCount":1,"datePublished":"2026-08-15T19:50:16.935Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"过期删除 惰性删除: 访问时检查 定期删除: 每秒10次随机抽取 淘汰策略 allkeys-lru(推荐): 从所有key中淘汰最近最少使用的 volatile-lru: 从有过期时间的key中淘汰 noeviction: 不淘汰返回错误","url":"https://itinterview.com.cn/question/142"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis过期删除和内存淘汰策略？","text":"请解释Redis的过期和淘汰机制。","answerCount":1,"datePublished":"2026-08-15T19:50:16.935Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"过期删除 Redis 同时用惰性删除（访问时检查过期）和定期删除（抽样清理），不是到点立即删除；过期 key 可能仍占内存。 EXPIRE/PEXPIRE、TTL；主从过期由主节点驱动，从节点读到过期 key 返回空。 内存淘汰 达到 maxmemory 后按 maxmemory-policy 淘汰：noeviction、allkeys-lru/lfu、volatile-lru/lfu/ttl、random 等。 LRU/LFU 是近似算法（采样）；volatile 只淘汰有过期时间的 key；noeviction 写入会报错。 实践 缓存用 allkeys-lru/lfu + 合理 maxmemory；持久化/队列不要被淘汰；监控 evicted_keys/内存碎片。","url":"https://itinterview.com.cn/question/142"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis过期删除和内存淘汰策略？","item":"https://itinterview.com.cn/q/142"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,13 +96,20 @@
     <h1>Redis过期删除和内存淘汰策略？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">硬件工程师</span><span class="chip">路由交换工程师</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Redis</span><span class="chip tag">淘汰策略</span></div>
     <div class="card"><h2>题目</h2><p>请解释Redis的过期和淘汰机制。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>过期删除</h3>
-<p><strong>惰性删除</strong>: 访问时检查</p>
-<p><strong>定期删除</strong>: 每秒10次随机抽取</p>
-<h3>淘汰策略</h3>
-<p><strong>allkeys-lru(推荐)</strong>: 从所有key中淘汰最近最少使用的</p>
-<p><strong>volatile-lru</strong>: 从有过期时间的key中淘汰</p>
-<p><strong>noeviction</strong>: 不淘汰返回错误</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>过期删除</strong></p>
+<ul>
+<li>Redis 同时用惰性删除（访问时检查过期）和定期删除（抽样清理），不是到点立即删除；过期 key 可能仍占内存。</li>
+<li><code>EXPIRE/PEXPIRE</code>、<code>TTL</code>；主从过期由主节点驱动，从节点读到过期 key 返回空。</li>
+</ul>
+<p><strong>内存淘汰</strong></p>
+<ul>
+<li>达到 <code>maxmemory</code> 后按 <code>maxmemory-policy</code> 淘汰：noeviction、allkeys-lru/lfu、volatile-lru/lfu/ttl、random 等。</li>
+<li>LRU/LFU 是近似算法（采样）；volatile 只淘汰有过期时间的 key；noeviction 写入会报错。</li>
+</ul>
+<p><strong>实践</strong></p>
+<ul>
+<li>缓存用 allkeys-lru/lfu + 合理 maxmemory；持久化/队列不要被淘汰；监控 evicted_keys/内存碎片。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/142">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

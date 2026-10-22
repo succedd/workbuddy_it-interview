@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Docker Compose的作用和使用场景？ · IT面试题库</title>
-  <meta name="description" content="Docker Compose 作用: YAML定义多容器应用，一键启停 命令: docker-compose up -d、down、logs、ps 场景: 本地开发环境、CI/CD测试、微服务编排">
+  <meta name="description" content="作用 用 YAML 定义多容器应用（服务/网络/卷/环境/依赖），一条 docker compose up 启动整套；适合本地开发/测试/小型部署。 services 定义镜像/构建/端口/环境/依赖；volumes 持久化；networks 服务发现；depends_on 控制启动顺序（不保证就绪）。 常用 u…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Docker Compose的作用和使用场景？ · IT面试题库">
-  <meta property="og:description" content="Docker Compose 作用: YAML定义多容器应用，一键启停 命令: docker-compose up -d、down、logs、ps 场景: 本地开发环境、CI/CD测试、微服务编排">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="作用 用 YAML 定义多容器应用（服务/网络/卷/环境/依赖），一条 docker compose up 启动整套；适合本地开发/测试/小型部署。 services 定义镜像/构建/端口/环境/依赖；volumes 持久化；networks 服务发现；depends_on 控制启动顺序（不保证就绪）。 常用 u…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/152.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Docker Compose的作用和使用场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/152.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/152">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Docker Compose的作用和使用场景？ · IT面试题库">
-  <meta name="twitter:description" content="Docker Compose 作用: YAML定义多容器应用，一键启停 命令: docker-compose up -d、down、logs、ps 场景: 本地开发环境、CI/CD测试、微服务编排">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="作用 用 YAML 定义多容器应用（服务/网络/卷/环境/依赖），一条 docker compose up 启动整套；适合本地开发/测试/小型部署。 services 定义镜像/构建/端口/环境/依赖；volumes 持久化；networks 服务发现；depends_on 控制启动顺序（不保证就绪）。 常用 u…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/152.jpg">
+  <meta name="twitter:image:alt" content="Docker Compose的作用和使用场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/152">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker Compose的作用和使用场景？","text":"请解释Compose如何定义多容器应用。","answerCount":1,"datePublished":"2026-08-01T15:17:36.440Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Docker Compose 作用: YAML定义多容器应用，一键启停 命令: docker-compose up -d、down、logs、ps 场景: 本地开发环境、CI/CD测试、微服务编排","url":"https://itinterview.com.cn/question/152"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Docker Compose的作用和使用场景？","text":"请解释Compose如何定义多容器应用。","answerCount":1,"datePublished":"2026-08-01T15:17:36.440Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"作用 用 YAML 定义多容器应用（服务/网络/卷/环境/依赖），一条 docker compose up 启动整套；适合本地开发/测试/小型部署。 services 定义镜像/构建/端口/环境/依赖；volumes 持久化；networks 服务发现；depends_on 控制启动顺序（不保证就绪）。 常用 up -d、down、logs -f、ps、exec、build；--profile 可选服务；.env 变量。 生产编排通常用 K8s/Swarm；Compose 不擅长跨主机/自动扩缩/滚动升级。 坑 数据未挂载丢失；depends_on 不等于健康检查；端口冲突；镜像版本漂移；敏感信息别写进 compose。","url":"https://itinterview.com.cn/question/152"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Docker","item":"https://itinterview.com.cn/category?cat=136"},{"@type":"ListItem","position":4,"name":"Docker Compose的作用和使用场景？","item":"https://itinterview.com.cn/q/152"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>Docker Compose的作用和使用场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">FPGA工程师</span><span class="chip">硬件工程师</span><span class="chip tag">Docker</span><span class="chip tag">Compose</span></div>
     <div class="card"><h2>题目</h2><p>请解释Compose如何定义多容器应用。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Docker Compose</h3>
-<p><strong>作用</strong>: YAML定义多容器应用，一键启停</p>
-<p><strong>命令</strong>: docker-compose up -d、down、logs、ps</p>
-<p><strong>场景</strong>: 本地开发环境、CI/CD测试、微服务编排</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>作用</strong></p>
+<ul>
+<li>用 YAML 定义多容器应用（服务/网络/卷/环境/依赖），一条 <code>docker compose up</code> 启动整套；适合本地开发/测试/小型部署。</li>
+<li><code>services</code> 定义镜像/构建/端口/环境/依赖；<code>volumes</code> 持久化；<code>networks</code> 服务发现；<code>depends_on</code> 控制启动顺序（不保证就绪）。</li>
+</ul>
+<p><strong>常用</strong></p>
+<ul>
+<li><code>up -d</code>、<code>down</code>、<code>logs -f</code>、<code>ps</code>、<code>exec</code>、<code>build</code>；<code>--profile</code> 可选服务；<code>.env</code> 变量。</li>
+<li>生产编排通常用 K8s/Swarm；Compose 不擅长跨主机/自动扩缩/滚动升级。</li>
+</ul>
+<p><strong>坑</strong></p>
+<ul>
+<li>数据未挂载丢失；depends_on 不等于健康检查；端口冲突；镜像版本漂移；敏感信息别写进 compose。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/152">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

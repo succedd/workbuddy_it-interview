@@ -4,19 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>快排和归并排序的区别？ · IT面试题库</title>
-  <meta name="description" content="快排vs归并 快排: 选基准分区，原地排序，O(n log n)平均/ O(n²)最坏，O(log n)空间，不稳定 归并: 分治合并，非原地排序，O(n log n)稳定，O(n)空间，稳定 选择: 数据随机用快排，需要稳定用归并">
+  <meta name="description" content="快排 选 pivot 分区，左小右大，递归；平均 O(n log n)，最坏 O(n²)（已排序/极端 pivot），原地但不稳定。 适合内存排序/平均性能；随机 pivot/三数取中缓解最坏；小数组可切插入排序。 归并 分治合并两个有序子数组；稳定 O(n log n)，需要 O(n) 额外空间；适合链表/外部…">
   <meta property="og:type" content="article">
   <meta property="og:title" content="快排和归并排序的区别？ · IT面试题库">
-  <meta property="og:description" content="快排vs归并 快排: 选基准分区，原地排序，O(n log n)平均/ O(n²)最坏，O(log n)空间，不稳定 归并: 分治合并，非原地排序，O(n log n)稳定，O(n)空间，稳定 选择: 数据随机用快排，需要稳定用归并">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:description" content="快排 选 pivot 分区，左小右大，递归；平均 O(n log n)，最坏 O(n²)（已排序/极端 pivot），原地但不稳定。 适合内存排序/平均性能；随机 pivot/三数取中缓解最坏；小数组可切插入排序。 归并 分治合并两个有序子数组；稳定 O(n log n)，需要 O(n) 额外空间；适合链表/外部…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/167.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="快排和归并排序的区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/167.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/167">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="快排和归并排序的区别？ · IT面试题库">
-  <meta name="twitter:description" content="快排vs归并 快排: 选基准分区，原地排序，O(n log n)平均/ O(n²)最坏，O(log n)空间，不稳定 归并: 分治合并，非原地排序，O(n log n)稳定，O(n)空间，稳定 选择: 数据随机用快排，需要稳定用归并">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:description" content="快排 选 pivot 分区，左小右大，递归；平均 O(n log n)，最坏 O(n²)（已排序/极端 pivot），原地但不稳定。 适合内存排序/平均性能；随机 pivot/三数取中缓解最坏；小数组可切插入排序。 归并 分治合并两个有序子数组；稳定 O(n log n)，需要 O(n) 额外空间；适合链表/外部…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/167.jpg">
+  <meta name="twitter:image:alt" content="快排和归并排序的区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/167">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"快排和归并排序的区别？","text":"请比较两种排序算法的原理和性能。","answerCount":1,"datePublished":"2026-08-19T21:13:12.051Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"快排vs归并 快排: 选基准分区，原地排序，O(n log n)平均/ O(n²)最坏，O(log n)空间，不稳定 归并: 分治合并，非原地排序，O(n log n)稳定，O(n)空间，稳定 选择: 数据随机用快排，需要稳定用归并","url":"https://itinterview.com.cn/question/167"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"快排和归并排序的区别？","text":"请比较两种排序算法的原理和性能。","answerCount":1,"datePublished":"2026-08-19T21:13:12.051Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"快排 选 pivot 分区，左小右大，递归；平均 O(n log n)，最坏 O(n²)（已排序/极端 pivot），原地但不稳定。 适合内存排序/平均性能；随机 pivot/三数取中缓解最坏；小数组可切插入排序。 归并 分治合并两个有序子数组；稳定 O(n log n)，需要 O(n) 额外空间；适合链表/外部排序/要求稳定。 递归/迭代自底向上；合并时比较取小，稳定性靠先取左。 选择 要稳定/最坏可控→归并；内存敏感/平均快→快排；工程中常混合（Timsort/内省排序）。","url":"https://itinterview.com.cn/question/167"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"快排和归并排序的区别？","item":"https://itinterview.com.cn/q/167"}]}</script>
   <style>
     :root { color-scheme: light; }
@@ -90,10 +96,20 @@
     <h1>快排和归并排序的区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">硬件工程师</span><span class="chip">芯片设计工程师(IC设计)</span><span class="chip tag">算法</span><span class="chip tag">排序</span></div>
     <div class="card"><h2>题目</h2><p>请比较两种排序算法的原理和性能。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>快排vs归并</h3>
-<p><strong>快排</strong>: 选基准分区，原地排序，O(n log n)平均/ O(n²)最坏，O(log n)空间，不稳定</p>
-<p><strong>归并</strong>: 分治合并，非原地排序，O(n log n)稳定，O(n)空间，稳定</p>
-<p><strong>选择</strong>: 数据随机用快排，需要稳定用归并</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>快排</strong></p>
+<ul>
+<li>选 pivot 分区，左小右大，递归；平均 O(n log n)，最坏 O(n²)（已排序/极端 pivot），原地但不稳定。</li>
+<li>适合内存排序/平均性能；随机 pivot/三数取中缓解最坏；小数组可切插入排序。</li>
+</ul>
+<p><strong>归并</strong></p>
+<ul>
+<li>分治合并两个有序子数组；稳定 O(n log n)，需要 O(n) 额外空间；适合链表/外部排序/要求稳定。</li>
+<li>递归/迭代自底向上；合并时比较取小，稳定性靠先取左。</li>
+</ul>
+<p><strong>选择</strong></p>
+<ul>
+<li>要稳定/最坏可控→归并；内存敏感/平均快→快排；工程中常混合（Timsort/内省排序）。</li>
+</ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/167">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
