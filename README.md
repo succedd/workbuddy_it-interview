@@ -310,6 +310,10 @@ node tools/gen-published.js
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
 
+### 2026-10-22 · perf(启动): 回访本机优先，云端更新后台化（缓存 p → q）
+
+> **本轮**：针对「打开一直停在 0% 初始化本地数据库」的体感，增加回访快速路径——本机已有 ≥400 道题时不再等云端 meta 探测，直接 `Services.reload()` 渲染本机题库；云端版本检查放到首屏后 1.2s 后台执行，有更新再静默重载并 toast。首次访客的 `fetchMeta` 超时从 6s 降到 2.5s，Boot 进度在探测前先到 8%/15%，不再长时间停在 0%。`Cloud.fetchMeta` 支持可选 timeout；无网络时回访仍可立即打开本地题库。缓存 p→q。
+
 ### 2026-10-22 · quality: 再重写 30 道高浏览短答案（version 19 / 缓存 p）
 
 > **本轮**：继续重写 30 道短答案/manual 来源题（JS 原型链/事件代理/Promise/async、Redis 过期淘汰/Cluster、Shell、需求分析、K8s 资源/HPA/Pod 控制器、Docker Compose、Code Review、Spring AOP/IoC、AI Agent、Vue Composition、聚簇索引、行为面试、Redis 分片、二叉树遍历、排序、OKR、虚拟 DOM、Linux 网络、Prompt 原则、Python GIL、团队冲突、MySQL B+ 树、Java GC），补官方来源并写入 reviewedAt。短答案 133→**107**，无 http 来源 304→**274**，未复核 1837→1807；题库仍 1887，version 18→19，缓存 o→p。

@@ -449,9 +449,10 @@
    * 本地较新时会走全量拉取自愈，绝不会因 stale 指纹漏更新。 */
   C.META_PATH = "data/version.json";
   C.META_URL = "/" + C.META_PATH;
-  C.fetchMeta = async function () {
+  C.fetchMeta = async function (opt) {
+    const o = opt || {};
     try {
-      const r = await fetchT(C.META_URL + "?v=" + Date.now(), { cache: "no-store" }, 6000);
+      const r = await fetchT(C.META_URL + "?v=" + Date.now(), { cache: "no-store" }, o.timeout || 6000);
       if (!r.ok) return null;
       const j = await r.json();
       if (j && Number.isInteger(j.publishedAt) && j.publishedAt >= 0 && Number.isInteger(j.count)) return j;

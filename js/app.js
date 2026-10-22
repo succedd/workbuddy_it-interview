@@ -6296,7 +6296,14 @@
          用 tools/mobile-perf.mjs 或 devtools 的 performance.getEntriesByType("mark") 即可读出。 */
       const _pm = (n) => { try { performance.mark(n); } catch (_) {} };
       _pm("boot:start");
+      Boot.set(8, "检查本机题库…");
       let justSeeded = false;
+      /* 回访快速路径（20261022）：本机已有完整题库时，先直接渲染本机数据，
+         云端更新放到首屏之后后台做；不再为一次 meta 探测白等 6 秒（常见卡在 0%）。 */
+      let localCount = 0;
+      try { localCount = await DB.db.questions.count(); } catch (_) {}
+      const localFast = localCount >= 400 && !Cloud.isEditor();
+      if (localFast) { Boot.set(25, "从本机载入题库…"); _pm("boot:local-fast"); }
       /* 跳过无谓的 seed（2026-10-06 移动端优化，实测省 1.6s）
          原先首访一定要先把 seed 的 99 题写进 IndexedDB，紧接着 Cloud.syncIfNeeded
          又把云端的 1540 题整包覆盖上去 —— 那 99 题从头到尾没人看过，却要付出
@@ -6307,9 +6314,12 @@
          `justSeeded = true` 在这里表示「本机没有需要保护的数据，可直接采用云端」，
          正是 syncIfNeeded 判定「全新访客」所用的语义，因此下游逻辑无需改动。 */
       let cloudProbe = null;
-      try {
-        if (!Cloud.isEditor()) cloudProbe = await Cloud.fetchMeta();
-      } catch (_) { /* 探测失败按「云端不可用」处理，走 seed */ }
+      if (!localFast) Boot.set(15, "检查云端题库…");
+      if (!localFast) {
+        try {
+          if (!Cloud.isEditor()) cloudProbe = await Cloud.fetchMeta({ timeout: 2500 });
+        } catch (_) { /* 探测失败按「云端不可用」处理，走 seed */ }
+      }
       /* data/seed.js 有 111KB（gzip 约 40KB），里面是 99 道兜底题目。
          云端可达时它一行都用不上，却要在首屏下载并解析 —— 实测这笔开销不小。
          所以改成「要用才加载」：只有走 seed 兜底这条路时才把它取进来。
@@ -6322,7 +6332,10 @@
         el.onerror = () => resolve(false);
         document.head.appendChild(el);
       });
-      if (cloudProbe && cloudProbe.count > 0) {
+      if (localFast) {
+        Boot.set(35, "从本机载入题库…");
+        _pm("boot:seed-local");
+      } else if (cloudProbe && cloudProbe.count > 0) {
         justSeeded = true;
         Boot.set(35, "从云端载入题库…");
         _pm("boot:seed-skipped");
@@ -6339,8 +6352,8 @@
       try { const n = await DB.migrateSeedDirectionExamples(); if (n > 0) console.log("已为公有云售后技术支持预置", n, "个细分方向示例岗位"); } catch (_) {}
       try { const n = await DB.migrateMergeDuplicateCategories(); if (n > 0) { console.log("已合并", n, "个重复分类"); U.toast("已自动合并 " + n + " 个重复分类", "info"); } } catch (_) {}
       _pm("boot:migrate-done");
-      Boot.set(55, "检查云端题库更新…");
-      try {
+      Boot.set(55, localFast ? "本机题库就绪，后台检查更新…" : "检查云端题库更新…");
+      if (!localFast) try {
         const r = await Cloud.syncIfNeeded(justSeeded);
         _pm("boot:sync-done");
         if (r && r.applied) U.toast(r.recovered ? "题库补全完成：共 " + r.count + " 题" : "已同步云端题库最新版（共 " + r.count + " 题）", "success");
@@ -6416,6 +6429,20 @@
       _pm("boot:route-start");
       route();
       _pm("boot:route-called");
+      /* 本机快速路径：首屏已出，后台再检查/吸收云端更新；成功则静默重载数据并重绘当前页 */
+      if (localFast) {
+        setTimeout(async () => {
+          try {
+            const r = await Cloud.syncIfNeeded(false);
+            if (r && r.applied) {
+              await Services.reload();
+              App.dailyList = await buildDailyList();
+              route();
+              U.toast("题库已更新到最新版（" + r.count + " 题）", "success");
+            }
+          } catch (e) { console.warn("background sync error", e); }
+        }, 1200);
+      }
       /* 首访是「只拉了元数据」的：等首屏渲染完之后，再在后台把答案补齐。
          必须放在 route() 之后 —— 放到前面就会和首屏抢带宽/主线程，反倒更慢。
          用 requestIdleCallback 让它在真正空闲时才开始；不支持则退 2s。
