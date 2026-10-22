@@ -1814,6 +1814,13 @@ body.pan-fs-lock { overflow: hidden; }
   .page-enter, .card-hover, .btn, .tag, .modal, .modal-mask { animation: none !important; transition: none !important; }
 }
 
+/* 深色模式图解：SVG 是白底，反相+色相旋转让它在深色页面不刺眼；alt 仍保留原文 */
+[data-theme="dark"] .md img[src*="/assets/diagrams/"] {
+  filter: invert(.9) hue-rotate(180deg) saturate(.85) contrast(.95);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
 /* ===== animations.css ===== */
 /* =========================================================================
  *  animations.css — 动效集中定义

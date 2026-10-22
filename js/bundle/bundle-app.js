@@ -2392,7 +2392,7 @@
               <span class="spacer"></span>
               <button id="catmap-toggle" class="btn btn-sm btn-secondary">收起</button>
             </div>
-            <div id="catmap-box" class="chart-fade" style="height:min(58vh,480px);margin-top:8px"></div>
+            <div id="catmap-box" class="chart-fade" style="height:min(58vh,480px);margin-top:8px" role="img" aria-label="技术体系分类与架构图"></div>
           </div>` : ""}
           <div class="toolbar">
             <div class="seg" id="sort-seg">
@@ -2527,7 +2527,7 @@
       <div class="section-head"><h2>加分技术栈</h2></div>
       <div class="grid grid-cols-3">${bonus.length ? bonus.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>
       <div class="section-head"><h2>题目难度分布</h2></div>
-      <div class="card"><div id="pos-chart" style="height:260px"></div></div>
+      <div class="card"><div id="pos-chart" style="height:260px" role="img" aria-label="岗位题目难度分布图"></div></div>
       ${(() => {
         /* 岗位题单（20261021）：把岗位题按「基础 → 进阶 → 冲刺」排成可执行顺序；
            题量 <5 的岗位明确提示，并推荐同阶段题量充足的相邻岗位，避免点进来只有两题。 */
@@ -5162,10 +5162,10 @@
         <div id="quality-body" class="muted">统计中…</div>
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
-        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">技术体系分布</h2></div><div id="c1" style="height:280px"></div></div>
-        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">难度分布</h2></div><div id="c2" style="height:280px"></div></div>
-        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">题型分布</h2></div><div id="c3" style="height:280px"></div></div>
-        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">AI 评分分布</h2></div><div id="c4" style="height:280px"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">技术体系分布</h2></div><div id="c1" style="height:280px" role="img" aria-label="技术体系题目分布图"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">难度分布</h2></div><div id="c2" style="height:280px" role="img" aria-label="题目难度分布图"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">题型分布</h2></div><div id="c3" style="height:280px" role="img" aria-label="题型分布图"></div></div>
+        <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">AI 评分分布</h2></div><div id="c4" style="height:280px" role="img" aria-label="AI 评分分布图"></div></div>
       </div>
       <div class="grid grid-cols-2" style="margin-top:20px">
         <div class="card"><h2 style="font-size:16px">题目不足的分类（<5题）</h2>${s.insufficient.length ? `<table class="data">${s.insufficient.map(x => `<tr><td>${U.esc(x.name)}</td><td>${x.count}</td></tr>`).join("")}</table>` : '<div class="muted">无</div>'}</div>
@@ -5180,7 +5180,7 @@
           ${Stats.cfEnabled()
             ? `<div class="muted" style="margin-bottom:8px">已接入云端统计（Cloudflare Worker），下方为访客地域分布。</div>`
             : `<div style="text-align:center;padding:24px 16px"><div style="font-size:48px;margin-bottom:8px">${U.icon("barChart")}</div><p class="muted" style="margin-bottom:16px">配置云端统计接口后可查看访客地域分布与浏览量</p><a class="btn" href="/admin/settings">前往配置 →</a></div>`}
-          ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px"><div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div></div>` : ""}
+          ${Stats.cfEnabled() ? `<div id="c-geo" style="height:240px;margin-top:12px" role="img" aria-label="访客地域分布图"><div class="muted" style="text-align:center;padding:40px 0">正在加载访客数据…</div></div>` : ""}
         </div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">本机浏览最多题目 Top</h2></div><div id="c-topq"></div></div>
         <div class="card"><div class="section-head" style="margin:0 0 8px"><h2 style="font-size:16px">搜索反馈</h2></div><div id="c-searches"></div></div>
