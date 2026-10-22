@@ -105,6 +105,16 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`cc2993d`（feat(题库): 8 岗位各补 4 题 / 1791 / version 13）｜缓存版本 `20261021i → 20261021j`｜数据 version `13` / 1791 题｜更新时间：2026-10-22 14:54 (+08)**
+**本轮内容（题库第一批扩充，用户确认的 8 个题量不足岗位）**
+
+- **新增 32 题**（ID `1800–1831`，每岗 4 题）：PCB（DDR Fly-by/Leveling、跨分割回流、过孔 stub/背钻、共模/差模 EMC）；UI（卡片分类/树测试、可用性测试、空/错/载状态、B 端表格）；视觉（色彩系统/对比度、图标系统、动效、响应式图片）；量化（因子 IC/IR/分层、MVO/风险平价/BL、滑点/冲击成本、协整配对）；强化学习（DQN replay/target、GAE/A2C/A3C/PPO、SAC、Sim2Real）；研究科学家（研究问题、训练稳定性、error analysis、生成模型评估）；低代码（表单/流程引擎、出码 vs 运行时、版本/灰度/回滚、大页面性能）；解决方案架构（遗留集成、混合云容灾、容量/成本、等保/数据跨境）。
+- **岗位题量**：PCB 6、UI 7、视觉 7、量化 6、RL 6、研究科学家 6、低代码 6、解决方案架构 6；全部题库 1759→**1791**。
+- **构建产物**：OG 封面 1791 张；q 分享页 1791；sitemap 2124→**2160**（新增 32 题页 + 分类 280/282/283/284 转为可索引）；c 页 281（可索引 221 / noindex 60）；p 页 142；data version 12→13；缓存 i→j。
+- **验证**：batch dry-run 32 新增 0 跳过；构建 guard 51、smoke 26；线上 index 20261021j、version 13/count 1791、q/1800 200、c/280 canonical self 且 6 题、sitemap 2160/images 1791、OG 200；Actions run 39736689384 **success**。
+- **产物**：`data/published.json`、manifest/shards/version、`assets/og/q/1800–1831.jpg`、`q/1800–1831.html`、8 个受影响 c/p 页、`tools/batches/2026-10-22-a.json`、`sitemap.xml`、`index.html`、`sw.js`、`README.md`。
+- **下一步**：可继续第二批扩题（建议优先剩余题量 <5 的岗位）或真实多轮线上性能采样（本轮线上 3 轮受链路波动，部分超时）。
+
 **补充：多轮性能采样（2026-10-22）**：`tools/perf-audit.mjs --runs=3` 本地 gzip + 4G 中位数——FCP 0.86–0.95s，首页 LCP 3.36s（加载动画），列表/详情 LCP 0.86–0.94s（加载壳），CLS 0.004，TBT 121–700ms，总传输 734KB（JS 487KB）。线上 4G 3 轮受中国大陆到 Cloudflare 链路波动影响，首页/列表仅 1/3 完整加载、详情 3/3；部分请求 TTFB 6–29s，未作为稳定中位数。报告 `docs/perf-audit.json`（base 为本地 gzip，note 已注明）。工具新增 `base` 字段；后续可在境外探针/WebPageTest 复测线上。
 **最新 release commit：`94c5f1f`（a11y: 深色 SVG + 图表 alt + 焦点复核）｜缓存版本 `20261021h → 20261021i`｜数据 version `12` / 1759 题｜更新时间：2026-10-22 14:18 (+08)**
 **本轮内容（按用户指定顺序，P2#9 无障碍细节）**
