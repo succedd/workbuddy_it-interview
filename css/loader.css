@@ -3,7 +3,7 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  display: none;                 /* 由 JS 置为 flex 显示 */
+  display: flex;                 /* 首屏先显示静态加载壳；JS 在 deep link/回访时隐藏 */
   align-items: center;
   justify-content: center;
   background: radial-gradient(1200px 620px at 50% -12%, #102438 0%, #070d15 58%, #04070b 100%);
@@ -134,3 +134,6 @@
   .boot-name { animation: none; opacity: .25 !important; }
   .boot-caret { animation: none; }
 }
+
+/* 回访/深链：在 CSS 解析前就隐藏，避免闪一下加载屏 */
+html.boot-skip #boot-loader { display: none !important; }

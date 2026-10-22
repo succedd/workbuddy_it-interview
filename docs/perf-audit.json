@@ -1,0 +1,824 @@
+{
+  "generatedAt": "2026-10-22T02:22:16.450Z",
+  "device": "mobile-4g-4xcpu",
+  "runs": 1,
+  "summary": {
+    "home": {
+      "runs": 1,
+      "fcp": 1008,
+      "lcp": 3152,
+      "cls": 0.004,
+      "tbt": 406,
+      "dcl": 1008,
+      "load": 3144,
+      "totalTransfer": 730826,
+      "jsTransfer": 483769
+    },
+    "questions": {
+      "runs": 1,
+      "fcp": 908,
+      "lcp": 908,
+      "cls": 0.004,
+      "tbt": 208,
+      "dcl": 908,
+      "load": 3021,
+      "totalTransfer": 730826,
+      "jsTransfer": 483769
+    },
+    "question-detail": {
+      "runs": 1,
+      "fcp": 940,
+      "lcp": 940,
+      "cls": 0.004,
+      "tbt": 122,
+      "dcl": 937,
+      "load": 3066,
+      "totalTransfer": 730826,
+      "jsTransfer": 483769
+    }
+  },
+  "results": [
+    {
+      "case": "home",
+      "url": "http://127.0.0.1:8277/?perf=1",
+      "wallMs": 6415,
+      "nav": {
+        "ttfb": 153,
+        "dcl": 1008,
+        "load": 3144,
+        "transfer": 16443
+      },
+      "fcp": 1008,
+      "lcp": {
+        "start": 3152,
+        "size": 12485,
+        "tag": "SPAN",
+        "id": "",
+        "text": "Java开发工程师"
+      },
+      "cls": 0.004,
+      "tbt": 406,
+      "longTasks": 7,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 161,
+          "start": 313
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021f",
+          "type": "link",
+          "transfer": 39422,
+          "duration": 546,
+          "start": 313
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2534,
+          "start": 314
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021f",
+          "type": "link",
+          "transfer": 877,
+          "duration": 168,
+          "start": 335
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021f",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1277,
+          "start": 870
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021f",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 870
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021f",
+          "type": "script",
+          "transfer": 149776,
+          "duration": 2065,
+          "start": 870
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792635716694",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 153,
+          "start": 3081
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021f",
+          "type": "script",
+          "transfer": 127998,
+          "duration": 1198,
+          "start": 3260
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021f",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1006,
+          "start": 3264
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 117,
+          "start": 3999
+        },
+        {
+          "name": "https://v1.hitokoto.cn/?encode=json&c=i&c=k&c=d&c=a&c=b&c=c&c=f&c=g&c=h&c=j&c=l",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 684,
+          "start": 4126
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 437,
+          "start": 4127
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792635718146",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 3,
+          "start": 4531
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 11,
+          "start": 4538
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 12,
+          "start": 4565
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 73,
+          "start": 4583
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 10,
+          "start": 4642
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 15,
+          "start": 4654
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 15,
+          "start": 4684
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 7,
+          "start": 4727
+        },
+        {
+          "name": "https://loremflickr.com/1600/900/film,cinema?lock=295",
+          "type": "img",
+          "transfer": 0,
+          "duration": 1260,
+          "start": 4821
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 73,
+          "start": 4933
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 27,
+          "start": 5157
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 36,
+          "start": 5283
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 5,
+          "start": 5413
+        }
+      ],
+      "totalTransfer": 730826,
+      "jsTransfer": 483769,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2534,
+          "start": 314
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021f",
+          "type": "script",
+          "transfer": 149776,
+          "duration": 2065,
+          "start": 870
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021f",
+          "type": "script",
+          "transfer": 127998,
+          "duration": 1198,
+          "start": 3260
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021f",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1006,
+          "start": 3264
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021f",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1277,
+          "start": 870
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021f",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 870
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021f",
+          "type": "link",
+          "transfer": 39422,
+          "duration": 546,
+          "start": 313
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 161,
+          "start": 313
+        }
+      ],
+      "hasMain": true,
+      "title": "首页 · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "questions",
+      "url": "http://127.0.0.1:8277/#/questions",
+      "wallMs": 6461,
+      "nav": {
+        "ttfb": 65,
+        "dcl": 908,
+        "load": 3021,
+        "transfer": 16443
+      },
+      "fcp": 908,
+      "lcp": {
+        "start": 908,
+        "size": 3960,
+        "tag": "DIV",
+        "id": "",
+        "text": "IT 面试题库 · 正在加载中"
+      },
+      "cls": 0.004,
+      "tbt": 208,
+      "longTasks": 6,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 157,
+          "start": 241
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021f",
+          "type": "link",
+          "transfer": 39422,
+          "duration": 543,
+          "start": 241
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2423,
+          "start": 241
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021f",
+          "type": "link",
+          "transfer": 877,
+          "duration": 166,
+          "start": 281
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021f",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1278,
+          "start": 900
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021f",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 900
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021f",
+          "type": "script",
+          "transfer": 149776,
+          "duration": 1958,
+          "start": 900
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792635724856",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 152,
+          "start": 2956
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021f",
+          "type": "script",
+          "transfer": 127998,
+          "duration": 1193,
+          "start": 3074
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021f",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1005,
+          "start": 3076
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 31,
+          "start": 4166
+        },
+        {
+          "name": "http://127.0.0.1:8277/api-endpoints.json?t=1792635726269",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 5,
+          "start": 4363
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 23,
+          "start": 4374
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 35,
+          "start": 4395
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 37,
+          "start": 4401
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 13,
+          "start": 4450
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 20,
+          "start": 4476
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 28,
+          "start": 4499
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 13,
+          "start": 4531
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 29,
+          "start": 4572
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 29,
+          "start": 4691
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 26,
+          "start": 4799
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 32,
+          "start": 4946
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 7,
+          "start": 5076
+        }
+      ],
+      "totalTransfer": 730826,
+      "jsTransfer": 483769,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2423,
+          "start": 241
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021f",
+          "type": "script",
+          "transfer": 149776,
+          "duration": 1958,
+          "start": 900
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021f",
+          "type": "script",
+          "transfer": 127998,
+          "duration": 1193,
+          "start": 3074
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021f",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1005,
+          "start": 3076
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021f",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1278,
+          "start": 900
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021f",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 900
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021f",
+          "type": "link",
+          "transfer": 39422,
+          "duration": 543,
+          "start": 241
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 157,
+          "start": 241
+        }
+      ],
+      "hasMain": true,
+      "title": "题目列表 · IT面试题库",
+      "ready": "complete"
+    },
+    {
+      "case": "question-detail",
+      "url": "http://127.0.0.1:8277/#/question/1",
+      "wallMs": 6435,
+      "nav": {
+        "ttfb": 109,
+        "dcl": 937,
+        "load": 3066,
+        "transfer": 16443
+      },
+      "fcp": 940,
+      "lcp": {
+        "start": 940,
+        "size": 3960,
+        "tag": "DIV",
+        "id": "",
+        "text": "IT 面试题库 · 正在加载中"
+      },
+      "cls": 0.004,
+      "tbt": 122,
+      "longTasks": 6,
+      "eventDurations": [],
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 157,
+          "start": 278
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021f",
+          "type": "link",
+          "transfer": 39422,
+          "duration": 543,
+          "start": 279
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2432,
+          "start": 279
+        },
+        {
+          "name": "http://127.0.0.1:8277/manifest.json?v=20261021f",
+          "type": "link",
+          "transfer": 877,
+          "duration": 171,
+          "start": 301
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021f",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 931
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021f",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 931
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021f",
+          "type": "script",
+          "transfer": 149776,
+          "duration": 1965,
+          "start": 932
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/version.json?v=1792635732979",
+          "type": "fetch",
+          "transfer": 368,
+          "duration": 160,
+          "start": 2993
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021f",
+          "type": "script",
+          "transfer": 127998,
+          "duration": 1193,
+          "start": 3112
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021f",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1007,
+          "start": 3113
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 23,
+          "start": 3798
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s00.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 40,
+          "start": 3800
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s01.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 91,
+          "start": 3913
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s02.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 88,
+          "start": 4105
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s03.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 234,
+          "start": 4260
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/network.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 9,
+          "start": 4474
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/dba.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 10,
+          "start": 4490
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/frontend.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4507
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/security.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 11,
+          "start": 4532
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/devops.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 14,
+          "start": 4545
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs-data.js?v=20261021f",
+          "type": "script",
+          "transfer": 0,
+          "duration": 6,
+          "start": 4561
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s04.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4565
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s05.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 22,
+          "start": 4663
+        },
+        {
+          "name": "http://127.0.0.1:8277/data/shards/s06.json",
+          "type": "fetch",
+          "transfer": 0,
+          "duration": 5,
+          "start": 4775
+        }
+      ],
+      "totalTransfer": 730826,
+      "jsTransfer": 483769,
+      "largest": [
+        {
+          "name": "http://127.0.0.1:8277/data/manifest.json",
+          "type": "link",
+          "transfer": 205476,
+          "duration": 2432,
+          "start": 279
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-app.js?v=20261021f",
+          "type": "script",
+          "transfer": 149776,
+          "duration": 1965,
+          "start": 932
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-extra.js?v=20261021f",
+          "type": "script",
+          "transfer": 127998,
+          "duration": 1193,
+          "start": 3112
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/docs/java.js?v=20261021f",
+          "type": "script",
+          "transfer": 89697,
+          "duration": 1007,
+          "start": 3113
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-vendor.js?v=20261021f",
+          "type": "script",
+          "transfer": 59127,
+          "duration": 1279,
+          "start": 931
+        },
+        {
+          "name": "http://127.0.0.1:8277/js/bundle/bundle-core.js?v=20261021f",
+          "type": "script",
+          "transfer": 57171,
+          "duration": 1257,
+          "start": 931
+        },
+        {
+          "name": "http://127.0.0.1:8277/css/bundle.css?v=20261021f",
+          "type": "link",
+          "transfer": 39422,
+          "duration": 543,
+          "start": 279
+        },
+        {
+          "name": "http://127.0.0.1:8277/vendor/github.min.css",
+          "type": "link",
+          "transfer": 914,
+          "duration": 157,
+          "start": 278
+        }
+      ],
+      "hasMain": true,
+      "title": "Java 中 == 和 equals 的区别是什么？ · IT面试题库",
+      "ready": "complete"
+    }
+  ]
+}
