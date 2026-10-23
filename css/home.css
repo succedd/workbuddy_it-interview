@@ -228,3 +228,33 @@ body.keyboard-open .quiz-pager {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* 2026-10-23：学习进度区在部分 Chrome 缩放/超宽窗口下仍会被内部 grid 的 min-content 撑开。
+   这里给学习区所有直接卡片加硬约束：宽度只跟随容器，内容超出的部分由卡片自身裁剪，
+   不再把「今日 5 题」/热力图推到屏幕外。 */
+.home-learning {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.home-learning > .grid.grid-cols-2 {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+.home-learning > .grid.grid-cols-2 > * {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.home-learning .card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.home-learning .heat-grid {
+  width: 100%;
+  max-width: 100%;
+}
