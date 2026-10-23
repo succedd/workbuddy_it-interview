@@ -105,6 +105,14 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`a050051`（fix(layout): 学习进度卡片强制约束在容器内）｜缓存版本 `20261021s → 20261021t`｜数据 version `19` / 1887 题｜更新时间：2026-10-23 10:31 (+08)**
+**本轮内容（学习进度区仍出屏幕）**
+
+- 在 1280px 单列修复基础上，给 `.home-learning` / 其 `.grid-cols-2` / 卡片加 `width:100%; max-width:100%; min-width:0`，卡片 `overflow:hidden`；热力图不再用 min-content 撑开父级。
+- 学习区在所有宽度固定单列，避免超宽窗口/125% 缩放下「今日 5 题」右列被裁切。
+- 验证：本地 1253px 两张卡均 961px；线上 index 20261021t、css bundle 200（含 `home-learning .card` 规则）；Actions run 39889897333 **success**。
+- **注意**：用户本机 `DB.db.questions.count()` 仍为 1561（线上 1887），旧 Service Worker/本地缓存需注销并 `Cloud.syncNow()`；与布局问题分开。
+
 **最新 release commit：`c0e014e`（fix(layout): 首页学习卡窄桌面单列）｜缓存版本 `20261021r → 20261021s`｜数据 version `19` / 1887 题｜更新时间：2026-10-22 22:20 (+08)**
 **本轮内容（Chrome 13 寸/125% 缩放首页右侧看不到）**
 
