@@ -312,7 +312,7 @@ node tools/gen-published.js
 
 ### 2026-10-22 · fix(layout): 首页学习卡在窄桌面单列（缓存 r → s）
 
-> **现象**：Chrome 在 13 寸屏 / 125% 缩放（CSS 视口约 1000–1250px）打开首页时，「学习打卡」和「今日 5 题」两列卡片的右侧被挤出可视区。**修复**：`@media (max-width:1280px)` 下把首页 `.home-learning > .grid-cols-2` 改为单列，快捷入口 6→3 列、岗位链接 3→2 列；1100px 以下统计卡 4→2 列；大屏仍双列。验证 1253px 下两张学习卡均宽 961px、无横向溢出。**追加**：给 `.home-learning` 及其卡片加 `width/max-width:100%; min-width:0; overflow:hidden`，防止内部热力图/长标题的 min-content 把卡片再次撑出屏幕；学习区在所有宽度强制单列。缓存 s→t。
+> **现象**：Chrome 在 13 寸屏 / 125% 缩放（CSS 视口约 1000–1250px）打开首页时，「学习打卡」和「今日 5 题」两列卡片的右侧被挤出可视区。**修复**：`@media (max-width:1280px)` 下把首页 `.home-learning > .grid-cols-2` 改为单列，快捷入口 6→3 列、岗位链接 3→2 列；1100px 以下统计卡 4→2 列；大屏仍双列。验证 1253px 下两张学习卡均宽 961px、无横向溢出。**追加**：给 `.home-learning` 及其卡片加 `width/max-width:100%; min-width:0; overflow:hidden`，防止内部热力图/长标题的 min-content 把卡片再次撑出屏幕；学习区在所有宽度强制单列。缓存 s→t。**再追加**：把同样的约束内联到 `index.html` 的 `#layout-hotfix`，即使 `bundle.css` 被旧 Service Worker 缓存，也不影响学习区布局；缓存 t→u。
 
 ### 2026-10-22 · perf(启动): JS bundle 压缩（缓存 q → r）
 
