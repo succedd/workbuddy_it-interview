@@ -63,6 +63,7 @@ GROUPS = [
     ("app", "应用主体：路由 / 首屏页面", [
         "js/daily-quote.js",
         "js/docs-loader.js",   # 必须先于 app.js（app.js 启动时用它预热）
+        "js/sharecard.js",     # 分享卡是题目详情的核心操作，不能等 extra 才可用
         "js/app.js",
     ]),
     # ↓ 非首屏：由加载器在关键路径出齐之后再拉，失败也不影响首屏
@@ -72,7 +73,6 @@ GROUPS = [
         "js/account.js",
         "js/submit.js",
         "js/panorama.js",
-        "js/sharecard.js",
         "js/guide.js",
         "js/docs.js",
         "js/festival.js",
