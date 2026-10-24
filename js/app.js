@@ -152,6 +152,27 @@
     renderSidebar(parseHash());
     try { if (window.Account) Account.autoSyncIfDue(); } catch (e) { console.warn("account autosync error", e); }
   };
+  /* 点击「技术教程/使用指南」时 extra bundle 可能还没加载完（它被刻意延后）。
+     旧实现直接调用 window.pageDocs/pageHelp，会抛 ReferenceError，表现为点击没反应。
+     这里在路由 fallback 时主动催一次 extra；加载完成后 deferredReady 会自动重进当前路由。 */
+  App.ensureExtra = function (label) {
+    try {
+      if (typeof window.__itiLoadExtra === "function") {
+        if (!window.__extraLoading) {
+          window.__extraLoading = true;
+          window.__itiLoadExtra();
+        }
+        setTimeout(function () {
+          if (!window.pageHelp && !window.pageDocs) {
+            window.__extraLoading = false;
+            U.toast("「" + label + "」模块加载失败，请检查网络后刷新重试", "warn", 9000);
+          }
+        }, 12000);
+        return;
+      }
+    } catch (e) {}
+    U.toast("「" + label + "」模块加载失败，请刷新重试", "warn", 9000);
+  };
 
   async function route() {
     clearCharts();
@@ -218,6 +239,7 @@
       /* 「学」版块：技术教程（方向 × 初级/中级/高级），
          #/docs | #/docs/<dir> | #/docs/<dir>/<level>/<chapter> */
       case "docs":
+        if (!window.pageDocs) { App.ensureExtra("技术教程"); return deferredPage("技术教程"); }
         if (!r.parts[1]) return window.pageDocs();
         if (r.parts[2] && r.parts[3]) return window.pageDocsChapter(r.parts[1], r.parts[2], r.parts[3]);
         return window.pageDocsDir(r.parts[1]);
@@ -226,7 +248,9 @@
       case "quiz": return pageQuiz(r.q);
       case "favorites": return pageFavorites();
       case "history": return pageHistory();
-      case "help": return pageHelp();
+      case "help":
+        if (typeof pageHelp !== "function") { App.ensureExtra("使用指南"); return deferredPage("使用指南"); }
+        return pageHelp();
       case "feedback":
         if (!window.Account) return deferredPage("我的反馈");
         return pageFeedback();

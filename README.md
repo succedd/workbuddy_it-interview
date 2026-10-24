@@ -310,6 +310,10 @@ node tools/gen-published.js
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
 
+### 2026-10-24 · fix(routes): 技术教程 / 使用指南 点击无反应（缓存 u → v）
+
+> **根因**：`guide.js` / `docs.js` 在延迟加载的 `bundle-extra` 里，但路由直接调用 `pageHelp()` / `window.pageDocs()`；用户点击时 extra 还没下载完（或加载失败），直接抛 `ReferenceError`，看起来就是「点击没反应」。**修复**：路由先判断函数是否存在，缺失时显示「模块加载中」并主动调用 `window.__itiLoadExtra()` 催加载；extra 完成后 `deferredReady` 自动重进当前路由；12 秒仍失败给明确 toast。**验证**：本地点击 `/help`、`/docs` 正常打开；模拟阻断 extra 时不再报错，显示加载中占位。缓存 u→v。
+
 ### 2026-10-22 · fix(layout): 首页学习卡在窄桌面单列（缓存 r → s）
 
 > **现象**：Chrome 在 13 寸屏 / 125% 缩放（CSS 视口约 1000–1250px）打开首页时，「学习打卡」和「今日 5 题」两列卡片的右侧被挤出可视区。**修复**：`@media (max-width:1280px)` 下把首页 `.home-learning > .grid-cols-2` 改为单列，快捷入口 6→3 列、岗位链接 3→2 列；1100px 以下统计卡 4→2 列；大屏仍双列。验证 1253px 下两张学习卡均宽 961px、无横向溢出。**追加**：给 `.home-learning` 及其卡片加 `width/max-width:100%; min-width:0; overflow:hidden`，防止内部热力图/长标题的 min-content 把卡片再次撑出屏幕；学习区在所有宽度强制单列。缓存 s→t。**再追加**：把同样的约束内联到 `index.html` 的 `#layout-hotfix`，即使 `bundle.css` 被旧 Service Worker 缓存，也不影响学习区布局；缓存 t→u。
