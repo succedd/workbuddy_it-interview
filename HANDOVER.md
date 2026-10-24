@@ -105,6 +105,18 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**最新 release commit：`879c28e`（data 合并: canonical 1929 题 + 布局/缓存/教程/分享修复）｜缓存版本 `20261021x → y`｜数据 version `26` / 1929 题｜更新时间：2026-10-24 18:16 (+08)**
+**本轮内容（全项调整）**
+
+- **数据合并**：线上自动扩充 1929、本地 1887；新增 42 题 common diff 0、无重名；以 **1929** 为 canonical（version 26），重新生成 42 张 OG、1929 个 q 页、sitemap **2310**、质量报告（短答案 107 / 无来源 274 / 未复核 1849）。
+- **发布守卫**：构建缺新题 OG 时用 #1 封面占位并告警，避免自动扩充导致整批部署失败；自动扩充任务已在 10:25 停止，当前 head 无自动提交。
+- **布局**：首页学习区 `>1440px` 双列、`<=1440px` 单列；1261/1920 验证无横向溢出。
+- **缓存**：新增 `https://itinterview.com.cn/?resetCache=1` 自助修复（只注销 SW/Clear CacheStorage，不动 IndexedDB）；教程 hover 预取。
+- **路由/分享**：`/help`、`/docs` 缺模块时显示加载并主动催 extra；`sharecard.js` 移入关键 bundle，详情页分享不再等 extra。
+- **验证**：线上 index 20261021y、version 26/count 1929、sitemap 2310/images 1929；Actions run 40085222592 **success**。
+- **产物**：data/OG/q/c/p/index/sw/css/js bundles/README/HANDOVER。
+- **注意**：普通窗口若仍加载旧缓存，打开 `/?resetCache=1`；真实 `views/favorites` 仍多为种子数据，下一步接 Worker 真实统计。
+
 **最新 release commit：`a050051`（fix(layout): 学习进度卡片强制约束在容器内）｜缓存版本 `20261021s → 20261021t`｜数据 version `19` / 1887 题｜更新时间：2026-10-23 10:31 (+08)**
 **本轮内容（学习进度区仍出屏幕）**
 
