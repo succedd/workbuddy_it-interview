@@ -135,12 +135,20 @@
 
      无论走哪条路，用户看到的都是同一份数据；差异只是「首次点击多等一瞬」。
      加载失败（离线且无缓存）时给出可重试的提示，而不是白屏或报未找到方向。 */
-  async function ensureDocs() {
+  async function ensureDocs(force) {
     if (window.DOCS && Array.isArray(window.DOCS.dirs) && window.DOCS.dirs.filter(Boolean).length) return true;
     if (window.DocsLoader && window.DocsLoader.load) {
-      try { await window.DocsLoader.load(); } catch (_) {}
+      try { await window.DocsLoader.load(!!force); } catch (_) {}
     }
     return !!(window.DOCS && Array.isArray(window.DOCS.dirs) && window.DOCS.dirs.filter(Boolean).length);
+  }
+
+  function docsLoadingHtml() {
+    return `<div class="empty" style="text-align:center;padding:48px 20px">
+      <div class="em-ic">${U.icon("refresh")}</div>
+      <h3>技术教程数据加载中…</h3>
+      <p class="muted">首次打开需要下载教程数据（约数 MB），完成前会停在这里；加载完自动展示目录。</p>
+    </div>`;
   }
 
   function docsLoadFailHtml(retryHref) {
@@ -155,7 +163,8 @@
   async function pageDocs() {
     ensureCss();
     document.title = "技术教程 · IT面试题库";
-    if (!(await ensureDocs())) { setMain(docsLoadFailHtml()); return; }
+    if (!(window.DOCS && Array.isArray(window.DOCS.dirs) && window.DOCS.dirs.filter(Boolean).length)) setMain(docsLoadingHtml());
+    if (!(await ensureDocs(true))) { setMain(docsLoadFailHtml()); return; }
     const dirs = (window.DOCS.dirs || []).filter(Boolean);
     /* 页脚的方向数/篇数从数据实时统计，避免增删章节后文案不同步 */
     const allChapters = dirs.reduce((a, d) => a + dirStat(d).total, 0);
@@ -196,7 +205,8 @@
   /* ============================ 页面二：方向页（分级目录） ============================ */
   async function pageDocsDir(dirId) {
     ensureCss();
-    if (!(await ensureDocs())) { setMain(docsLoadFailHtml(`#/docs/${dirId}`)); return; }
+    if (!(window.DOCS && Array.isArray(window.DOCS.dirs) && window.DOCS.dirs.filter(Boolean).length)) setMain(docsLoadingHtml());
+    if (!(await ensureDocs(true))) { setMain(docsLoadFailHtml(`#/docs/${dirId}`)); return; }
     const dir = findDir(dirId);
     if (!dir) { setMain(`<div class="empty">未找到该方向</div>`); return; }
     document.title = dir.name + " · 技术教程";
@@ -239,7 +249,8 @@
   /* ============================ 页面三：阅读页 ============================ */
   async function pageDocsChapter(dirId, lvId, chId) {
     ensureCss();
-    if (!(await ensureDocs())) { setMain(docsLoadFailHtml(`#/docs/${dirId}/${lvId}/${chId}`)); return; }
+    if (!(window.DOCS && Array.isArray(window.DOCS.dirs) && window.DOCS.dirs.filter(Boolean).length)) setMain(docsLoadingHtml());
+    if (!(await ensureDocs(true))) { setMain(docsLoadFailHtml(`#/docs/${dirId}/${lvId}/${chId}`)); return; }
     const dir = findDir(dirId);
     if (!dir) { setMain(`<div class="empty">未找到该方向</div>`); return; }
     const hit = findChapter(dir, lvId, chId);

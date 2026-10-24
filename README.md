@@ -312,7 +312,7 @@ node tools/gen-published.js
 
 ### 2026-10-24 · fix(routes): 技术教程 / 使用指南 点击无反应（缓存 u → v）
 
-> **根因**：`guide.js` / `docs.js` 在延迟加载的 `bundle-extra` 里，但路由直接调用 `pageHelp()` / `window.pageDocs()`；用户点击时 extra 还没下载完（或加载失败），直接抛 `ReferenceError`，看起来就是「点击没反应」。**修复**：路由先判断函数是否存在，缺失时显示「模块加载中」并主动调用 `window.__itiLoadExtra()` 催加载；extra 完成后 `deferredReady` 自动重进当前路由；12 秒仍失败给明确 toast。**验证**：本地点击 `/help`、`/docs` 正常打开；模拟阻断 extra 时不再报错，显示加载中占位。缓存 u→v。
+> **根因**：`guide.js` / `docs.js` 在延迟加载的 `bundle-extra` 里，但路由直接调用 `pageHelp()` / `window.pageDocs()`；用户点击时 extra 还没下载完（或加载失败），直接抛 `ReferenceError`，看起来就是「点击没反应」。**修复**：路由先判断函数是否存在，缺失时显示「模块加载中」并主动调用 `window.__itiLoadExtra()` 催加载；extra 完成后 `deferredReady` 自动重进当前路由；12 秒仍失败给明确 toast。**验证**：本地点击 `/help`、`/docs` 正常打开；模拟阻断 extra 时不再报错，显示加载中占位。缓存 u→v。**补充**：`docs.js` 原来在 `pageDocs()` 里先 `await ensureDocs()`，加载教程数据期间页面完全不变；现在先 `setMain` 显示「技术教程数据加载中…」，并把点击视为强制重试（`load(true)`），教程/方向/章节三条路由都覆盖。缓存 v→w。
 
 ### 2026-10-22 · fix(layout): 首页学习卡在窄桌面单列（缓存 r → s）
 
