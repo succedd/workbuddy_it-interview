@@ -208,6 +208,9 @@
 | 2026-10-21 | 2026-10-21-a | 软件测试 / 测试架构师：10 题覆盖多团队测试策略与质量门禁、测试平台四层架构、Pact 契约测试、质量度量体系、测试环境与数据治理、全链路压测、AI 辅助测试、混沌工程、微服务可测试性评审、3 人 QA 团队 0→1 质量体系；另补 2 道初级基本功（测试用例四要素、冒烟/回归/验收区别）。来源 Martin Fowler·Pact·DORA·Testcontainers·Grafana k6·Google Testing Blog·Chaos Mesh·Google SRE·ISTQB，题库 1713→1725 题，**测试架构师岗位从 0 题补到 10 题** | +12 |
 | 2026-10-21 | 2026-10-21-b | 覆盖剩余 **12 个 0 题岗位**各 2 题（PCB设计、UI、视觉、企业软件产品、C端产品、业务数据分析、量化、强化学习、研究科学家、低代码、解决方案架构、企业架构），并新增 5 个叶子分类承载新方向（硬件与PCB设计、UI与视觉设计、量化金融、强化学习、低代码平台）。来源 Altium·Material Design·WCAG·NN/g·Atlassian·Kimball·Mode·QuantStart·Investopedia·OpenAI Spinning Up·Stable-Baselines3·Reproducibility Checklist·Papers with Code·lowcode-engine·AWS Well-Architected·Martin Fowler·TOGAF；题库 1725→1749 题，**全站 0 题岗位清零** | +24 |
 | 2026-10-21 | 2026-10-21-c | 经典高频图解 10 题：索引下推（ICP）、fork 写时复制、K8s Pod 生命周期/探针/优雅下线、Raft 日志复制与 commitIndex、CFS 调度、接雨水、二分查找边界、Top K 堆/快选、并查集、ZGC 着色指针/读屏障；答案内嵌 6 张本地 SVG 图解（MySQL ICP / COW / Pod / Raft / 接雨水 / ZGC），来源 MySQL·Linux man-pages·Kubernetes·Raft·LeetCode·OpenJDK；题库 1749→1759 题 | +10 |
+| 2026-10-24 | 2026-10-24-d | 云原生 GitOps/ArgoCD 持续交付追问链（瘦叶子补充） | +7 题 |
+| 2026-10-24 | 2026-10-24-e | ClickHouse 数仓追问链（瘦叶子补充） | +7 题 |
+| 2026-10-24 | 2026-10-24-f | 机器学习特征工程追问链（瘦叶子补充） | +7 题 |
 
 ## 部署与自定义域名
 
@@ -309,6 +312,14 @@ node tools/gen-published.js
 ### 2026-10-21 · feat(岗位): 岗位题单 + 题量偏少提示（缓存 20261021a → 20261021b）
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
+
+### 2026-10-24 · fix(share): 题目分享卡片生成失败（缓存 w → x）
+
+> **根因**：`sharecard.js` 原先在延迟加载的 `bundle-extra` 里，题目详情的「分享」按钮在 extra 未加载时调用 `window.ShareCard.render` 会抛错，页面只显示「卡片生成失败」。**修复**：把 `sharecard.js` 移入关键 `bundle-app`（详情页是首屏核心操作，不应等 extra），本地 `/question/1` 实测能生成 PNG 预览。**运维补充**：构建时若自动扩充的新题缺 OG 封面，用 #1 封面占位并告警，不再让部署失败。缓存 w→x。
+
+### 2026-10-24 · fix(routes): 技术教程 / 使用指南 点击无反应（缓存 u → v）
+
+> **根因**：`guide.js` / `docs.js` 在延迟加载的 `bundle-extra` 里，但路由直接调用 `pageHelp()` / `window.pageDocs()`；用户点击时 extra 还没下载完（或加载失败），直接抛 `ReferenceError`，看起来就是「点击没反应」。**修复**：路由先判断函数是否存在，缺失时显示「模块加载中」并主动调用 `window.__itiLoadExtra()` 催加载；extra 完成后 `deferredReady` 自动重进当前路由；12 秒仍失败给明确 toast。**验证**：本地点击 `/help`、`/docs` 正常打开；模拟阻断 extra 时不再报错，显示加载中占位。缓存 u→v。**补充**：`docs.js` 原来在 `pageDocs()` 里先 `await ensureDocs()`，加载教程数据期间页面完全不变；现在先 `setMain` 显示「技术教程数据加载中…」，并把点击视为强制重试（`load(true)`），教程/方向/章节三条路由都覆盖。缓存 v→w。
 
 ### 2026-10-22 · fix(layout): 首页学习卡在窄桌面单列（缓存 r → s）
 
@@ -1376,9 +1387,6 @@ node tools/gen-published.js
 | 2026-09-07 | 20 | 0 | 本轮无事实错误/答非所问/来源失效；#412「注意力沉没→MoE 优化」表述偏松（MoE 并非针对注意力的优化，建议人工复核）；全库仍有 325 题来源为占位符（历史欠账，待补） |
 | 2026-09-21 | 20 | 4 | **事实错误**：#1178 称 AWQ「不量化显著权重、只量化其余权重」——错，AWQ 明确反对混合精度（硬件不友好），改用 per-channel scaling 保护显著权重，所有权重仍量化到低比特，且答案内部自相矛盾；**来源不支撑**：#1178 来源 arXiv 2210.17323 是 GPTQ 论文，只覆盖 GPTQ 不覆盖 AWQ（AWQ 论文为 arXiv 2306.00978）；**答非所问**：#1140 题干要「可靠开机自启＋故障自愈」，答案只讲 Restart/资源限制/看门狗/依赖排序，完全缺 [Install]/WantedBy=/systemctl enable（开机自启未答），来源 man5/systemd.resource-control 也不覆盖 Restart/WatchdogSec；**题型不符**：#1155、#1161 标注单选题但题干与答案均无 A/B/C/D 选项，无法作答（全库 24 道单选题中 20 道同病，83.3%）。轻微瑕疵（未计入不合格）：#1153「RabbitMQ 随机写」对比句过度简化、#1147 来源 evodb.html 未覆盖 expand-contract、#1169 回溯判据措辞不严谨。来源 19/20 可达（#1141 freedesktop 返回 418 系反爬非 404）；本次抽样 0 题来源为占位符 |
 | 2026-10-05 | 20 | 4 | **事实错误（过时结论）**：#1417 称「shard key 一旦选定难以更改（需分片集合重建）」——已过时：MongoDB 5.0 起 `reshardCollection` 支持在线变更 shard key（仅需容忍约 2 秒写阻塞），4.4 起 `refineCollectionShardKey` 可追加后缀字段，无需重建集合；**来源不支撑**：#1466、#1464 来源为 ShardingSphere 产品概览页，页面只讲 JDBC/Proxy 架构与功能清单，完全不覆盖「深翻页/游标分页/ES 异构/基因法」与「Snowflake/号段/UUID 选型」；#1457 来源 attack.mitre.org 是 ATT&CK 框架首页，既不定义 IOC/IOA（IOA 概念出自 CrowdStrike），也不覆盖情报生命周期与 TIP/SIEM/SOAR 落地流程。机器初筛 suspect=0（无 404/410、无要点不足、无几乎纯代码），4 题全部由人工复核抓出——初筛盲区仍是「结论时效性」与「来源是否匹配具体结论」。来源探测 17/18 返回 200，#1444 来源 webrtc.org 本次本机全站超时（根域亦不可达），非 404，待异地复核。上周顽疾「单选题无 A/B/C/D 选项」本周未复现（#1426 选项完整）；本次 20 题来源全为真实 URL，占位符（seed/manual/principles/ai）0 题 |
-| 2026-10-24 | 2026-10-24-a | Flink 流处理追问链（大数据与数据工程域，瘦叶子补充） | +7 |
-| 2026-10-24 | 2026-10-24-b | SwiftUI 追问链（移动端与跨平台开发域，瘦叶子补充） | +7 |
-| 2026-10-24 | 2026-10-24-c | Nuxt 追问链（Web 前端开发域，瘦叶子补充） | +7 |
 
 ## 许可证
 
