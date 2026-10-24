@@ -237,11 +237,15 @@ body.keyboard-open .quiz-pager {
   max-width: 100%;
   min-width: 0;
 }
+@media (max-width: 1440px) {
+  .home-learning > .grid.grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .home-learning > .grid.grid-cols-2 {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  grid-template-columns: minmax(0, 1fr);
 }
 .home-learning > .grid.grid-cols-2 > * {
   width: 100%;
