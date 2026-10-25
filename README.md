@@ -208,9 +208,9 @@
 | 2026-10-21 | 2026-10-21-a | 软件测试 / 测试架构师：10 题覆盖多团队测试策略与质量门禁、测试平台四层架构、Pact 契约测试、质量度量体系、测试环境与数据治理、全链路压测、AI 辅助测试、混沌工程、微服务可测试性评审、3 人 QA 团队 0→1 质量体系；另补 2 道初级基本功（测试用例四要素、冒烟/回归/验收区别）。来源 Martin Fowler·Pact·DORA·Testcontainers·Grafana k6·Google Testing Blog·Chaos Mesh·Google SRE·ISTQB，题库 1713→1725 题，**测试架构师岗位从 0 题补到 10 题** | +12 |
 | 2026-10-21 | 2026-10-21-b | 覆盖剩余 **12 个 0 题岗位**各 2 题（PCB设计、UI、视觉、企业软件产品、C端产品、业务数据分析、量化、强化学习、研究科学家、低代码、解决方案架构、企业架构），并新增 5 个叶子分类承载新方向（硬件与PCB设计、UI与视觉设计、量化金融、强化学习、低代码平台）。来源 Altium·Material Design·WCAG·NN/g·Atlassian·Kimball·Mode·QuantStart·Investopedia·OpenAI Spinning Up·Stable-Baselines3·Reproducibility Checklist·Papers with Code·lowcode-engine·AWS Well-Architected·Martin Fowler·TOGAF；题库 1725→1749 题，**全站 0 题岗位清零** | +24 |
 | 2026-10-21 | 2026-10-21-c | 经典高频图解 10 题：索引下推（ICP）、fork 写时复制、K8s Pod 生命周期/探针/优雅下线、Raft 日志复制与 commitIndex、CFS 调度、接雨水、二分查找边界、Top K 堆/快选、并查集、ZGC 着色指针/读屏障；答案内嵌 6 张本地 SVG 图解（MySQL ICP / COW / Pod / Raft / 接雨水 / ZGC），来源 MySQL·Linux man-pages·Kubernetes·Raft·LeetCode·OpenJDK；题库 1749→1759 题 | +10 |
-| 2026-10-24 | 2026-10-24-d | 云原生 GitOps/ArgoCD 持续交付追问链（瘦叶子补充） | +7 题 |
-| 2026-10-24 | 2026-10-24-e | ClickHouse 数仓追问链（瘦叶子补充） | +7 题 |
-| 2026-10-24 | 2026-10-24-f | 机器学习特征工程追问链（瘦叶子补充） | +7 题 |
+| 2026-10-25 | 2026-10-25-a | HBase 追问链（非关系型数据库：数据模型 / RowKey 设计 / 写入读取路径 / RegionServer GC 排查 / Region Split·Compaction / HBase vs Cassandra 选型） | +7 |
+| 2026-10-25 | 2026-10-25-b | 混沌工程追问链（云原生与 DevOps：定义 / 稳态指标 / 生产 PodKill 实验 / 雪崩复盘 / Chaos Mesh·Gremlin·Litmus / SLO 融入 / 平台架构） | +7 |
+| 2026-10-25 | 2026-10-25-c | 数据治理追问链（大数据与数据工程：定义 / 核心域 / 口径统一 / 质量 NULL 止血 / 数据血缘 / 分级分类与合规 / 治理平台） | +7 |
 
 ## 部署与自定义域名
 
@@ -312,6 +312,10 @@ node tools/gen-published.js
 ### 2026-10-21 · feat(岗位): 岗位题单 + 题量偏少提示（缓存 20261021a → 20261021b）
 
 > **本轮（P0#2 岗位题单）**：岗位详情页新增「岗位题单」——按「基础 → 进阶 → 冲刺」把岗位题排成 3 个阶段（各最多 8 题，去重），并提供「按题单顺序刷」入口；核心岗位（Java 后端 369 题、前端 241、算法 159、运维 148 等）可直接按顺序刷。题量 <5 的岗位（含新补的 PCB/UI/量化/强化学习等 32 个岗位）显示「题量偏少」标签，题单页展示现有全部题并推荐同阶段题量更足的相邻岗位（如 PCB → 硬件工程师/数字电路/嵌入式硬件）。`js/app.js` 变更，`index.html`/`sw.js` 缓存 `20261021a → 20261021b`。
+
+### 2026-10-24 · data(合并): 线上 1929 题 canonical + 大屏两列 + 缓存自助修复（缓存 x → y）
+
+> **合并**：线上自动扩充把题库推到 1929（本地 1887）；校验 42 道新增题与本地 1887 无字段差异、无标题重复后，以 1929 为 canonical（version 26），重新生成 42 张 OG、1929 个 q 页、sitemap **2310**、质量报告。**布局**：学习区在 `>1440px` 恢复两列，`<=1440px` 单列；1261 与 1920 均无横向溢出。**缓存**：新增 `/?resetCache=1` 自助修复（只注销 SW/清 CacheStorage，不动 IndexedDB），并给「技术教程」加 hover 预取。**部署**：缺新题 OG 时构建占位兜底，避免自动扩充导致整批失败。
 
 ### 2026-10-24 · fix(share): 题目分享卡片生成失败（缓存 w → x）
 
