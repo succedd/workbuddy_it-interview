@@ -163,6 +163,8 @@ async function pageHelp() {
       ${li("我的反馈", "题目报错提交后，在「站点 → 账号 → 我的反馈」或 /feedback 查看处理进度；匿名用户凭本机保存的查询码也能看。管理员标记已修复 / 未通过后会更新")}
       ${li("关闭页面也不丢", "关闭标签页时自动兜底上传一次，最大程度保护学习数据")}
       ${li("加密备份", "系统设置里可开启备份密码，本机配置（Token、AI Key 等）加密后存云端，凭密码一键恢复")}
+      ${li("导出 / 清空 / 注销", "「我的帐号 → 数据与隐私」可以：把收藏、历史、错题与面试报告<b>导出成 JSON</b>；<b>清空云端学习数据</b>（保留账号）；<b>注销账号</b>（永久删除账号与云端数据，不可撤销，建议先导出）。注销前会让你输入邮箱二次确认")}
+      ${li("隐私政策与用户协议", "<a href=\"/privacy\" style=\"color:var(--c-primary,#2563eb)\">隐私政策</a>说明我们收集什么、AI 功能会送出什么内容、保存多久；<a href=\"/terms\" style=\"color:var(--c-primary,#2563eb)\">用户协议</a>说明投稿授权与免责范围")}
       <div style="margin-top:10px;padding-left:10px;border-left:3px solid #94a3b8;line-height:1.75">
         <div style="font-weight:600">📱 登录提示「邮箱或密码错误」？先用一分钟分清是哪一种</div>
         <div class="muted" style="margin-top:4px">

@@ -1,13 +1,14 @@
 /* =========================================================================
  *  js/bundle/bundle-extra.js  —— **自动生成，请勿直接编辑**
  * =========================================================================
- *  由 tools/bundle-js.py 按依赖顺序拼接以下 9 个文件（非首屏（路由 / 交互触发时才用））：
+ *  由 tools/bundle-js.py 按依赖顺序拼接以下 10 个文件（非首屏（路由 / 交互触发时才用））：
  *    · vendor/highlight.min.js
  *    · js/roadmap.js
  *    · js/account.js
  *    · js/submit.js
  *    · js/panorama.js
  *    · js/guide.js
+ *    · js/legal.js
  *    · js/docs.js
  *    · js/festival.js
  *    · js/importexport.js
@@ -1849,6 +1850,11 @@ return He}()
   A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
   /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
   A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
+  /* ---- 隐私政策第七条承诺的三项能力（20261026b） ----
+     后端接口：DELETE /me/data（清学习数据）、POST /auth/delete（注销，需邮箱二次确认）。
+     旧版 Worker 没有这两个接口时会返回 404，前端按此给提示，不让用户以为删了其实没删。 */
+  A.clearCloudData = () => call("DELETE", "/me/data");
+  A.deleteAccount = (email) => call("POST", "/auth/delete", { email });
   /* 找回密码（20261021）：发信由 Worker 调 Resend；令牌 30 分钟、一次性、只存哈希 */
   A.forgotPassword = (email) => call("POST", "/auth/forgot", { email: email });
   A.resetPassword = (token, password) => call("POST", "/auth/reset", { token: token, password: password });
@@ -1957,6 +1963,25 @@ return He}()
             <button class="btn btn-primary" id="acc-pw-go">确认修改</button>
             <p class="muted" style="font-size:12px;margin-top:8px">修改后其它设备的登录会失效，本机保持登录。</p>
           </div>
+          <div style="margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
+            <div style="font-weight:600;font-size:14px">数据与隐私</div>
+            <p class="muted" style="font-size:12px;margin-top:4px">
+              可随时导出或删除云端数据，详见 <a href="/privacy" style="color:var(--c-primary,#2563eb)">隐私政策</a>。
+            </p>
+            <div class="pill-row" style="margin-top:10px">
+              <button class="btn btn-sm" id="acc-export">导出我的数据</button>
+              <button class="btn btn-sm" id="acc-clear">清空云端学习数据</button>
+              <button class="btn btn-sm btn-danger" id="acc-del">注销账号</button>
+            </div>
+            <div id="acc-priv-box" style="display:none;margin-top:12px">
+              <p class="muted" style="font-size:12px">
+                注销会<b>永久删除</b>账号，以及云端的收藏、刷题历史、错题本、打卡、面试报告、投稿与反馈记录，
+                <b>不可撤销</b>。建议先点「导出我的数据」留一份。确认请输入账号邮箱：<b>${U.esc(user.email || "")}</b>
+              </p>
+              <label class="field"><span>账号邮箱</span><input id="acc-del-email" type="email" placeholder="you@example.com" autocapitalize="none" autocorrect="off" spellcheck="false" /></label>
+              <button class="btn btn-danger" id="acc-del-go">确认注销</button>
+            </div>
+          </div>
           <div id="acc-out" class="muted" style="margin-top:12px;font-size:13px"></div>
         ` : `
           <div class="tabs" style="margin-bottom:16px">
@@ -2003,6 +2028,72 @@ return He}()
           U.toast("密码已更新", "success");
         } catch (e) {
           out.style.color = "#DC2626"; out.textContent = e.message;
+        } finally { btn.disabled = false; }
+      };
+      /* ---- 数据与隐私：导出 / 清空 / 注销（20261026b）---- */
+      $("#acc-export").onclick = async () => {
+        const out = $("#acc-out");
+        out.style.color = "#64748B"; out.textContent = "正在导出…";
+        try {
+          const data = await call("GET", "/me/data");
+          let reports = [];
+          try { reports = (await A.getReports()) || []; } catch (_) { /* 报告接口不可用时跳过，不拖垮导出 */ }
+          const payload = {
+            app: "it-interview-hub", exportedAt: Date.now(),
+            account: { email: user.email || "", nick: user.nick || "", role: user.role || "user" },
+            favorites: data.favorites || [], histories: data.histories || [], weak: data.weak || [],
+            daily: data.daily || [], mockReports: Array.isArray(reports) ? reports : (reports.reports || []),
+          };
+          const n = payload.favorites.length + payload.histories.length + payload.weak.length;
+          U.download("it-interview-my-data.json", JSON.stringify(payload, null, 2), "application/json");
+          out.style.color = "#16A34A";
+          out.textContent = `已导出：收藏 ${payload.favorites.length} / 历史 ${payload.histories.length} / 错题 ${payload.weak.length} / 面试报告 ${payload.mockReports.length}（共 ${n} 条学习记录）`;
+        } catch (e) {
+          out.style.color = "#DC2626"; out.textContent = "导出失败：" + e.message;
+        }
+      };
+      $("#acc-clear").onclick = async () => {
+        if (!confirm("清空云端学习数据？\n\n将删除云端的收藏、刷题历史、错题本、打卡与面试报告；账号保留，本机数据不受影响。\n此操作不可撤销，建议先导出。")) return;
+        const out = $("#acc-out");
+        out.style.color = "#64748B"; out.textContent = "正在清空…";
+        try {
+          const r = await A.clearCloudData();
+          out.style.color = "#16A34A"; out.textContent = "已清空云端学习数据（" + ((r && r.removed) || 0) + " 条）。本机数据仍在，如需一并清除请到设置里清理。";
+          U.toast("云端学习数据已清空", "success");
+        } catch (e) {
+          /* 旧版后端没有该接口：明确告诉用户没删成，别留「以为清了」的错觉 */
+          out.style.color = "#DC2626";
+          out.textContent = (e && e.status === 404)
+            ? "当前服务端尚未支持自助清空（接口未部署）。可通过「关于本站」页的联系方式提出删除请求。"
+            : "清空失败：" + e.message;
+        }
+      };
+      $("#acc-del").onclick = () => {
+        const box = $("#acc-priv-box");
+        box.style.display = box.style.display === "none" ? "" : "none";
+        if (box.style.display !== "none") $("#acc-del-email").focus();
+      };
+      $("#acc-del-go").onclick = async () => {
+        const out = $("#acc-out");
+        const email = ($("#acc-del-email").value || "").trim();
+        if (!email) { out.style.color = "#DC2626"; out.textContent = "请输入账号邮箱以确认注销"; return; }
+        if (!confirm("确认注销账号？\n\n账号与云端全部数据将被永久删除，不可撤销。")) return;
+        const btn = $("#acc-del-go");
+        btn.disabled = true; out.style.color = "#64748B"; out.textContent = "正在注销…";
+        try {
+          await A.deleteAccount(email);
+          A.logout();
+          U.toast("账号已注销", "success");
+          renderTopbar();
+          setMain(`<div class="empty"><div class="em-ic">${U.icon("check")}</div>
+            <h3>账号已注销</h3>
+            <p class="muted">云端数据已删除；本机浏览器里保留的数据可在设置中清理。</p>
+            <p class="muted" style="font-size:12px">感谢使用，祝你面试顺利。</p></div>`);
+        } catch (e) {
+          out.style.color = "#DC2626";
+          out.textContent = (e && e.status === 404)
+            ? "当前服务端尚未支持自助注销（接口未部署）。可通过「关于本站」页的联系方式提出注销请求。"
+            : "注销失败：" + e.message;
         } finally { btn.disabled = false; }
       };
       return;
@@ -4747,6 +4838,8 @@ async function pageHelp() {
       ${li("我的反馈", "题目报错提交后，在「站点 → 账号 → 我的反馈」或 /feedback 查看处理进度；匿名用户凭本机保存的查询码也能看。管理员标记已修复 / 未通过后会更新")}
       ${li("关闭页面也不丢", "关闭标签页时自动兜底上传一次，最大程度保护学习数据")}
       ${li("加密备份", "系统设置里可开启备份密码，本机配置（Token、AI Key 等）加密后存云端，凭密码一键恢复")}
+      ${li("导出 / 清空 / 注销", "「我的帐号 → 数据与隐私」可以：把收藏、历史、错题与面试报告<b>导出成 JSON</b>；<b>清空云端学习数据</b>（保留账号）；<b>注销账号</b>（永久删除账号与云端数据，不可撤销，建议先导出）。注销前会让你输入邮箱二次确认")}
+      ${li("隐私政策与用户协议", "<a href=\"/privacy\" style=\"color:var(--c-primary,#2563eb)\">隐私政策</a>说明我们收集什么、AI 功能会送出什么内容、保存多久；<a href=\"/terms\" style=\"color:var(--c-primary,#2563eb)\">用户协议</a>说明投稿授权与免责范围")}
       <div style="margin-top:10px;padding-left:10px;border-left:3px solid #94a3b8;line-height:1.75">
         <div style="font-weight:600">📱 登录提示「邮箱或密码错误」？先用一分钟分清是哪一种</div>
         <div class="muted" style="margin-top:4px">
@@ -4857,6 +4950,232 @@ async function pageHelp() {
 })();
 
 ;/* ===== << js/guide.js ===== */
+
+;/* ===== >> js/legal.js ===== */
+/* =========================================================================
+ *  js/legal.js — 隐私政策 / 用户协议（#/privacy、#/terms）
+ *
+ *  为什么单独拆一个文件：
+ *   这两页是「文本型内容」，既要能被 SPA 路由渲染，也要能被
+ *   tools/gen-legal-pages.js 读出来生成静态页 privacy.html / terms.html
+ *   （爬虫不执行 JS，纯 SPA 页面在百度/必应眼里是空的）。
+ *   因此正文一律以**纯数据结构**存放（不掺运行时变量），
+ *   两端各自渲染，杜绝「网页上一套、静态页另一套」的口径漂移。
+ *
+ *  ⚠️ 内容维护原则：这里写的每一条都必须与代码实际行为一致。
+ *     改后端存储字段、换 AI 服务商、调缓存时长后，同步改这里。
+ *     依据：cloudflare/worker.js 接口表、cloudflare/schema.sql、cloudflare/部署指南.md。
+ * ========================================================================= */
+(function () {
+  "use strict";
+
+  const UPDATED = "2026-10-26";
+  const CONTACT = "微信（见「关于本站」页）或 GitHub Issues：github.com/succedd/workbuddy_it-interview/issues";
+
+  const DOCS = {
+    /* ============================ 隐私政策 ============================ */
+    privacy: {
+      key: "privacy",
+      route: "/privacy",
+      file: "privacy.html",
+      title: "隐私政策",
+      updated: UPDATED,
+      desc: "IT面试题库收集哪些信息、用于什么目的、保存多久，以及你如何导出或删除自己的数据。",
+      intro: "本政策说明你使用 IT面试题库（itinterview.com.cn）时，我们收集哪些信息、为什么收集、保存多久，以及你如何查看、导出和删除这些数据。",
+      sections: [
+        {
+          h: "一、一句话总结",
+          p: ["不登录也能刷题：此时你的收藏、历史、错题只存在你这台设备的浏览器里，不会上传。",
+              "登录只是为了让换设备时不丢数据。我们不会出售你的数据，也不会用它做广告投放。"],
+        },
+        {
+          h: "二、我们收集哪些信息",
+          p: ["按「你主动给的」和「使用过程中自动产生的」两类分开说："],
+          ul: [
+            "<b>账号信息</b>：邮箱、昵称（可选）、密码。密码经「加盐 + PBKDF2-SHA256 单向派生」后保存，服务端只存派生结果与随机盐，<b>不保存明文密码</b>，因此我们也无法找回，只能通过邮件重置。",
+            "<b>学习数据</b>：收藏的题目、刷题历史（含浏览时间/次数）、错题本与复习进度、每日打卡记录、模拟面试的评分报告。登录后才上传，用于跨设备同步。",
+            "<b>你主动提交的内容</b>：投稿的面试题、题目报错反馈（含你填写的联系方式）。投稿会记录提交时的 IP 用于防滥用限流。",
+            "<b>访问与设备信息</b>：全站访问计数（累计/当日）、访客所属国家与城市（来自 Cloudflare 请求头，精确到城市级，不含街道或 GPS）、题目浏览计数。这些都是<b>聚合数字</b>，不与你的账号身份绑定。",
+            "<b>安全与限流信息</b>：注册/登录/投稿/AI 功能按 IP 记录短窗口计数，用于拦住刷接口；密码重置记录邮箱重置令牌的哈希、IP 哈希与 30 分钟有效期。",
+          ],
+        },
+        {
+          h: "三、AI 功能会送出什么内容",
+          p: ["本站的「AI 变式题」和「AI 改卷」调用第三方大模型服务（DeepSeek，接口 api.deepseek.com）完成推理。请求时会送出："],
+          ul: [
+            "AI 变式题：<b>题目标题、参考答案</b>、所属分类名与标签（用于生成同考点的变式练习）。",
+            "AI 改卷：<b>题目标题、参考答案，以及你写下的回答</b>（用于按正确性/完整性/表达打分）。",
+            "生成结果会被缓存复用：变式题缓存最长 180 天，改卷结果对「同一题 + 同一回答」缓存 7 天；过期自动失效。",
+          ],
+          p: ["请<b>不要</b>在回答里填写真实姓名、手机号、公司内网信息、客户名称或未公开的业务数据。这些内容一旦送出，我们无法从服务商侧撤回。"],
+        },
+        {
+          h: "四、我们不做什么",
+          ul: [
+            "不使用广告追踪 Cookie，不接入任何广告联盟或用户画像平台。",
+            "不向第三方出售或出租你的个人信息。",
+            "不读取你设备上的其它数据；本站只使用自己域名下的浏览器本地存储。",
+          ],
+        },
+        {
+          h: "五、Cookie 与本地存储",
+          p: ["本站不用 Cookie 记录身份，登录凭据（令牌，有效期 30 天）与未登录时的学习数据保存在浏览器的本地存储（localStorage / IndexedDB）中。你可以随时在浏览器设置里清除它们，代价是本机未同步的数据会一起丢失。"],
+          p: ["人机验证（Cloudflare Turnstile）在注册/登录等环节启用，它会按自身策略进行必要校验。"],
+        },
+        {
+          h: "六、信息保存多久",
+          ul: [
+            "账号与学习数据：<b>保留到你注销为止</b>；注销后按下面的流程删除。",
+            "登录令牌：30 天，到期自动失效。",
+            "密码重置令牌：30 分钟有效、一次性使用，且只保存哈希值。",
+            "IP 限流计数：短窗口（分钟级到天级），到期自动淘汰。",
+            "访问统计：聚合数字，保留用于观察站点趋势。",
+          ],
+        },
+        {
+          h: "七、你的权利",
+          p: ["登录后在「我的帐号 → 数据与隐私」可以自助完成："],
+          ul: [
+            "<b>导出我的数据</b>：把云端的收藏、历史、错题与面试报告导出成 JSON 文件下载到本地。",
+            "<b>清空云端学习数据</b>：删除云端的收藏、历史与错题记录（保留账号，本机数据不受影响）。",
+            "<b>注销账号</b>：永久删除账号，以及云端的学习数据、模拟面试报告、投稿与反馈记录；注销不可撤销，请先导出需要保留的内容。",
+          ],
+          p: ["未登录用户的数据只在本机，清除浏览器数据即为删除。若你想让我们处理上述范围之外的请求，可以通过 " + CONTACT + " 联系我们。"],
+        },
+        {
+          h: "八、未成年人",
+          p: ["本站内容面向求职者与在职工程师。未满 14 周岁的儿童请在监护人陪同下使用；如我们发现在未取得监护人同意的情况下收集了儿童个人信息，会尽快删除。"],
+        },
+        {
+          h: "九、政策更新",
+          p: ["本政策随功能调整而更新，更新日期见页首。涉及收集范围、用途或第三方共享的重大变更，我们会在站内显著位置提示。"],
+        },
+      ],
+    },
+
+    /* ============================ 用户协议 ============================ */
+    terms: {
+      key: "terms",
+      route: "/terms",
+      file: "terms.html",
+      title: "用户协议",
+      updated: UPDATED,
+      desc: "IT面试题库的服务说明、账号规则、投稿授权、AI 功能说明与免责条款。",
+      intro: "本协议是你与 IT面试题库（itinterview.com.cn）之间的服务约定。开始使用即视为已阅读并同意本协议。",
+      sections: [
+        {
+          h: "一、服务内容",
+          p: ["本站提供免费的 IT 面试题浏览、分类与岗位检索、刷题与错题复习、模拟面试、技术教程等学习工具，以及登录后的跨设备云同步。"],
+        },
+        {
+          h: "二、账号规则",
+          ul: [
+            "一人一号，请用真实可用的邮箱注册（找回密码需要它）。",
+            "请自行保管密码。账号下的一切活动视为你本人的行为。",
+            "不得批量注册、刷接口、抓取本站数据库或干扰他人正常使用；确有此类行为时，我们有权禁用账号。",
+          ],
+        },
+        {
+          h: "三、投稿与内容授权",
+          ul: [
+            "你投稿的题目应为你原创或有权发布的内容，不得侵犯他人著作权、商业秘密，也不得夹带真实客户名称、内部资料或未脱敏的生产数据。",
+            "投稿即表示你<b>授权本站为运营与传播目的免费使用、复制、修改、整理与发布</b>该内容（包括收录进题库、生成分享页与导出文件），并同意我们在必要时做文字校对与结构调整。",
+            "投稿会经过自动质检与人工/专家审核，未通过不会被收录；你可在「我的投稿」查看结果并撤回。",
+          ],
+        },
+        {
+          h: "四、AI 功能说明与免责",
+          p: ["「AI 变式题」「AI 改卷」由第三方大模型生成，<b>可能不准确、不完整或与实际面试要求存在偏差</b>，仅作为练习参考，不构成评分、录用或能力认证的依据。AI 生成的内容不代表本站立场，请以官方文档与权威资料为准。"],
+        },
+        {
+          h: "五、题库内容免责",
+          p: ["题目与答案整理自公开资料、官方文档与真实面试场景，并由人工逐题核对，但技术发展快、场景差异大，我们<b>不保证内容完全准确、最新，也不保证面试命中</b>。因使用本站内容产生的决策后果，由使用者自行承担。本站内容不构成生产环境的操作建议，线上变更请先在测试环境验证。"],
+        },
+        {
+          h: "六、服务可用性",
+          p: ["本站运行在第三方云平台上，可能因网络、运营商、平台维护或不可抗力出现访问缓慢、加载失败或暂时不可用。我们会尽力保障可用性，但不承诺无中断服务。"],
+        },
+        {
+          h: "七、协议的变更与终止",
+          ul: [
+            "协议更新后继续使用即视为接受更新后的条款。",
+            "你可以随时在「我的帐号 → 数据与隐私」注销账号，注销后本协议对你终止。",
+            "严重违反本协议（如侵犯他人权益、攻击站点）时，我们有权停止服务并保留相关记录。",
+          ],
+        },
+        {
+          h: "八、法律适用",
+          p: ["本协议适用中华人民共和国大陆地区法律。因本协议产生的争议，应友好协商解决；协商不成的，提交本站运营者所在地有管辖权的人民法院处理。"],
+        },
+      ],
+    },
+  };
+
+  window.LEGAL_DOCS = DOCS;
+
+  /* ---------------- SPA 渲染（#/privacy、#/terms） ---------------- */
+  function renderPage(key) {
+    const doc = DOCS[key];
+    if (!doc) return;
+    document.title = doc.title + " · IT面试题库";
+    /* SPA 路由（#/privacy）与静态页（privacy.html）正文同源。
+       把 canonical 统一指向静态页，避免两个 URL 被当成重复内容各收一份。 */
+    try {
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", location.origin + "/" + doc.file);
+    } catch (e) {}
+    const set = (window.App && window.App._internals && window.App._internals.setMain) || window.setMain;
+    const other = key === "privacy" ? DOCS.terms : DOCS.privacy;
+    const body = doc.sections.map((s) => {
+      const ps = (s.p || []).map(t => `<p class="lg-p">${t}</p>`).join("");
+      const ul = (s.ul || []).length
+        ? `<ul class="lg-ul">${(s.ul || []).map(t => `<li>${t}</li>`).join("")}</ul>` : "";
+      return `<section class="lg-sec"><h2>${s.h}</h2>${ps}${ul}</section>`;
+    }).join("");
+    const html = `
+      <div class="lg-wrap">
+        <div class="lg-head">
+          <h1>${doc.title}</h1>
+          <p class="muted">最后更新：${doc.updated} · 生效日期：${doc.updated}</p>
+        </div>
+        <div class="card lg-card">
+          <p class="lg-lead">${doc.intro}</p>
+          ${body}
+          <div class="lg-foot">
+            <a class="btn btn-sm" href="${other.route}">阅读${other.title}</a>
+            <a class="btn btn-sm" href="/about">关于本站</a>
+            ${window.Account && window.Account.isLoggedIn && window.Account.isLoggedIn()
+              ? `<a class="btn btn-sm" href="/account">我的帐号 · 数据与隐私</a>` : ""}
+          </div>
+        </div>
+      </div>
+      <style>
+        .lg-wrap { max-width: 780px; margin: 0 auto; }
+        .lg-head h1 { font-size: 24px; margin: 0 0 6px; }
+        .lg-card { margin-top: 14px; line-height: 1.8; }
+        .lg-lead { font-size: 15px; margin-bottom: 18px; }
+        .lg-sec { margin-top: 20px; }
+        .lg-sec h2 { font-size: 16px; margin-bottom: 8px; }
+        .lg-p { margin: 8px 0; }
+        .lg-ul { margin: 8px 0; padding-left: 20px; }
+        .lg-ul li { margin: 6px 0; }
+        .lg-foot { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border, #e2e8f0); }
+      </style>`;
+    if (typeof set === "function") set(html);
+    else { const m = document.getElementById("main"); if (m) m.innerHTML = html; }
+    if (typeof window.scrollTo === "function") window.scrollTo(0, 0);
+  }
+
+  window.pagePrivacy = function () { renderPage("privacy"); };
+  window.pageTerms = function () { renderPage("terms"); };
+})();
+
+;/* ===== << js/legal.js ===== */
 
 ;/* ===== >> js/docs.js ===== */
 /* =========================================================================

@@ -448,6 +448,10 @@ async function main() {
     { loc: `${SITE}/questions`, priority: "0.8", freq: "daily" },
     { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
     { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
+    /* 隐私政策 / 用户协议（20261026b）：由 tools/gen-legal-pages.js 生成静态页，
+       信任类页面必须可被直接抓取，这里同步进 sitemap。 */
+    { loc: `${SITE}/privacy.html`, priority: "0.4", freq: "monthly" },
+    { loc: `${SITE}/terms.html`, priority: "0.4", freq: "monthly" },
     ...questions.filter(q => q.id && q.title).map(q => ({ loc: `${SITE}/q/${q.id}`, priority: "0.7", freq: "weekly", lastmod: q.updatedAt, image: `${SITE}/assets/og/q/${q.id}.jpg`, imageTitle: q.title }))
     ,...(data.categories || []).filter(c => categoriesWithPages.has(c.id)).map(c => ({ loc: `${SITE}/c/${c.id}`, priority: "0.6", freq: "weekly" }))
     ,...(data.positions || []).filter(p => p.id && positionsWithQuestions.has(p.id)).map(p => ({ loc: `${SITE}/p/${p.id}`, priority: "0.6", freq: "weekly" }))

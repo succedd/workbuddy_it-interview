@@ -404,6 +404,11 @@
   A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
   /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
   A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
+  /* ---- 隐私政策第七条承诺的三项能力（20261026b） ----
+     后端接口：DELETE /me/data（清学习数据）、POST /auth/delete（注销，需邮箱二次确认）。
+     旧版 Worker 没有这两个接口时会返回 404，前端按此给提示，不让用户以为删了其实没删。 */
+  A.clearCloudData = () => call("DELETE", "/me/data");
+  A.deleteAccount = (email) => call("POST", "/auth/delete", { email });
   /* 找回密码（20261021）：发信由 Worker 调 Resend；令牌 30 分钟、一次性、只存哈希 */
   A.forgotPassword = (email) => call("POST", "/auth/forgot", { email: email });
   A.resetPassword = (token, password) => call("POST", "/auth/reset", { token: token, password: password });
@@ -512,6 +517,25 @@
             <button class="btn btn-primary" id="acc-pw-go">确认修改</button>
             <p class="muted" style="font-size:12px;margin-top:8px">修改后其它设备的登录会失效，本机保持登录。</p>
           </div>
+          <div style="margin-top:14px;border-top:1px solid rgba(128,128,128,.25);padding-top:14px">
+            <div style="font-weight:600;font-size:14px">数据与隐私</div>
+            <p class="muted" style="font-size:12px;margin-top:4px">
+              可随时导出或删除云端数据，详见 <a href="/privacy" style="color:var(--c-primary,#2563eb)">隐私政策</a>。
+            </p>
+            <div class="pill-row" style="margin-top:10px">
+              <button class="btn btn-sm" id="acc-export">导出我的数据</button>
+              <button class="btn btn-sm" id="acc-clear">清空云端学习数据</button>
+              <button class="btn btn-sm btn-danger" id="acc-del">注销账号</button>
+            </div>
+            <div id="acc-priv-box" style="display:none;margin-top:12px">
+              <p class="muted" style="font-size:12px">
+                注销会<b>永久删除</b>账号，以及云端的收藏、刷题历史、错题本、打卡、面试报告、投稿与反馈记录，
+                <b>不可撤销</b>。建议先点「导出我的数据」留一份。确认请输入账号邮箱：<b>${U.esc(user.email || "")}</b>
+              </p>
+              <label class="field"><span>账号邮箱</span><input id="acc-del-email" type="email" placeholder="you@example.com" autocapitalize="none" autocorrect="off" spellcheck="false" /></label>
+              <button class="btn btn-danger" id="acc-del-go">确认注销</button>
+            </div>
+          </div>
           <div id="acc-out" class="muted" style="margin-top:12px;font-size:13px"></div>
         ` : `
           <div class="tabs" style="margin-bottom:16px">
@@ -558,6 +582,72 @@
           U.toast("密码已更新", "success");
         } catch (e) {
           out.style.color = "#DC2626"; out.textContent = e.message;
+        } finally { btn.disabled = false; }
+      };
+      /* ---- 数据与隐私：导出 / 清空 / 注销（20261026b）---- */
+      $("#acc-export").onclick = async () => {
+        const out = $("#acc-out");
+        out.style.color = "#64748B"; out.textContent = "正在导出…";
+        try {
+          const data = await call("GET", "/me/data");
+          let reports = [];
+          try { reports = (await A.getReports()) || []; } catch (_) { /* 报告接口不可用时跳过，不拖垮导出 */ }
+          const payload = {
+            app: "it-interview-hub", exportedAt: Date.now(),
+            account: { email: user.email || "", nick: user.nick || "", role: user.role || "user" },
+            favorites: data.favorites || [], histories: data.histories || [], weak: data.weak || [],
+            daily: data.daily || [], mockReports: Array.isArray(reports) ? reports : (reports.reports || []),
+          };
+          const n = payload.favorites.length + payload.histories.length + payload.weak.length;
+          U.download("it-interview-my-data.json", JSON.stringify(payload, null, 2), "application/json");
+          out.style.color = "#16A34A";
+          out.textContent = `已导出：收藏 ${payload.favorites.length} / 历史 ${payload.histories.length} / 错题 ${payload.weak.length} / 面试报告 ${payload.mockReports.length}（共 ${n} 条学习记录）`;
+        } catch (e) {
+          out.style.color = "#DC2626"; out.textContent = "导出失败：" + e.message;
+        }
+      };
+      $("#acc-clear").onclick = async () => {
+        if (!confirm("清空云端学习数据？\n\n将删除云端的收藏、刷题历史、错题本、打卡与面试报告；账号保留，本机数据不受影响。\n此操作不可撤销，建议先导出。")) return;
+        const out = $("#acc-out");
+        out.style.color = "#64748B"; out.textContent = "正在清空…";
+        try {
+          const r = await A.clearCloudData();
+          out.style.color = "#16A34A"; out.textContent = "已清空云端学习数据（" + ((r && r.removed) || 0) + " 条）。本机数据仍在，如需一并清除请到设置里清理。";
+          U.toast("云端学习数据已清空", "success");
+        } catch (e) {
+          /* 旧版后端没有该接口：明确告诉用户没删成，别留「以为清了」的错觉 */
+          out.style.color = "#DC2626";
+          out.textContent = (e && e.status === 404)
+            ? "当前服务端尚未支持自助清空（接口未部署）。可通过「关于本站」页的联系方式提出删除请求。"
+            : "清空失败：" + e.message;
+        }
+      };
+      $("#acc-del").onclick = () => {
+        const box = $("#acc-priv-box");
+        box.style.display = box.style.display === "none" ? "" : "none";
+        if (box.style.display !== "none") $("#acc-del-email").focus();
+      };
+      $("#acc-del-go").onclick = async () => {
+        const out = $("#acc-out");
+        const email = ($("#acc-del-email").value || "").trim();
+        if (!email) { out.style.color = "#DC2626"; out.textContent = "请输入账号邮箱以确认注销"; return; }
+        if (!confirm("确认注销账号？\n\n账号与云端全部数据将被永久删除，不可撤销。")) return;
+        const btn = $("#acc-del-go");
+        btn.disabled = true; out.style.color = "#64748B"; out.textContent = "正在注销…";
+        try {
+          await A.deleteAccount(email);
+          A.logout();
+          U.toast("账号已注销", "success");
+          renderTopbar();
+          setMain(`<div class="empty"><div class="em-ic">${U.icon("check")}</div>
+            <h3>账号已注销</h3>
+            <p class="muted">云端数据已删除；本机浏览器里保留的数据可在设置中清理。</p>
+            <p class="muted" style="font-size:12px">感谢使用，祝你面试顺利。</p></div>`);
+        } catch (e) {
+          out.style.color = "#DC2626";
+          out.textContent = (e && e.status === 404)
+            ? "当前服务端尚未支持自助注销（接口未部署）。可通过「关于本站」页的联系方式提出注销请求。"
+            : "注销失败：" + e.message;
         } finally { btn.disabled = false; }
       };
       return;

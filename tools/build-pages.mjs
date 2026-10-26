@@ -40,7 +40,11 @@ const ROOT_FILES = [
   "robots.txt",
   "sitemap.xml",
   "api-endpoints.json",
-  "404.html"
+  "404.html",
+  /* 隐私政策 / 用户协议静态页（20261026b，由 tools/gen-legal-pages.js 生成）。
+     不加进清单的话，--check 会过、但 dist/ 里没有这两页，线上 404。 */
+  "privacy.html",
+  "terms.html"
 ];
 
 // 站点必需：整目录拷贝

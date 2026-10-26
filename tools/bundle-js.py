@@ -74,6 +74,7 @@ GROUPS = [
         "js/submit.js",
         "js/panorama.js",
         "js/guide.js",
+        "js/legal.js",     # 隐私政策 / 用户协议：与静态页共用同一份正文数据
         "js/docs.js",
         "js/festival.js",
         "js/importexport.js",

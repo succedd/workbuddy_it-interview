@@ -512,6 +512,53 @@ function ensureWeakCols(db) {
   return weakColsPromise;
 }
 
+/* ==================== 数据删除（20261026b） ====================
+ * 隐私政策承诺了「导出 / 清空 / 注销」三项能力，这里提供后两项：
+ *   DELETE /me/data    清学习数据（收藏/历史/错题/打卡/面试报告），保留账号
+ *   POST   /auth/delete 注销：上面全部 + 会话/重置令牌/投稿/反馈 + 账号行本身
+ * 逐表 try/catch 的原因：老库可能缺某张表（如 mock_reports、submissions），
+ * 不能因为一张表不存在就让整个删除失败、留下「以为删了其实还在」的残局。 */
+async function deleteUserRows(db, uid, tables) {
+  let removed = 0;
+  for (const t of tables) {
+    try {
+      const r = await db.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(uid).run();
+      removed += (r && r.meta && r.meta.changes) || 0;
+    } catch (_) { /* 表不存在时跳过 */ }
+  }
+  return removed;
+}
+const USER_DATA_TABLES = ["favorites", "histories", "weak_bank", "daily_done", "mock_reports"];
+
+async function handleDeleteMyData(env, request, origin) {
+  const db = env.USERS;
+  const u = await sessionUser(db, request);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
+  const removed = await deleteUserRows(db, u.id, USER_DATA_TABLES);
+  return jsonResp({ ok: true, removed }, origin);
+}
+
+async function handleDeleteAccount(env, request, origin) {
+  const db = env.USERS;
+  const u = await sessionUser(db, request);
+  if (!u) return jsonResp({ error: "未登录或登录过期" }, origin, 401);
+  let body;
+  try { body = await request.json(); } catch (_) { body = {}; }
+  /* 二次确认：必须填对账号邮箱才执行——注销不可撤销，
+     不能让「点错按钮」或「脚本误调」就把数据带走。 */
+  const confirm = String((body && body.email) || "").trim().toLowerCase();
+  if (!confirm || confirm !== String(u.email || "").trim().toLowerCase())
+    return jsonResp({ error: "请输入账号邮箱以确认注销（需与当前账号邮箱完全一致）" }, origin, 400);
+
+  const removed = await deleteUserRows(db, u.id,
+    USER_DATA_TABLES.concat(["sessions", "password_resets", "group_members", "submissions", "reports"]));
+  try { await db.prepare("DELETE FROM users WHERE id = ?").bind(u.id).run(); } catch (e) {
+    return jsonResp({ error: "注销失败，请稍后重试" }, origin, 500);
+  }
+  console.log("[auth/delete] user", u.id, "removed rows", removed);
+  return jsonResp({ ok: true, removed }, origin);
+}
+
 async function handleGetMyData(env, request, origin) {
   const db = env.USERS;
   const u = await sessionUser(db, request);
@@ -2052,6 +2099,9 @@ export default {
         if (p === "/auth/reset" && request.method === "POST") return await handleResetPassword(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request, corsOrigin);
+        /* 清空学习数据 / 注销账号（20261026b，对应隐私政策第七条） */
+        if (p === "/me/data" && request.method === "DELETE") return await handleDeleteMyData(env, request, corsOrigin);
+        if (p === "/auth/delete" && request.method === "POST") return await handleDeleteAccount(env, request, corsOrigin);
         if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request, corsOrigin);
         if (p === "/me/reports" && request.method === "POST") return await handleSaveReport(env, request, corsOrigin);
         if ((m = /^\/admin\/users\/(\d+)\/status$/.exec(p)) && request.method === "POST")

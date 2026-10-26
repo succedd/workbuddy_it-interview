@@ -255,6 +255,14 @@
         if (!window.Account) return deferredPage("我的反馈");
         return pageFeedback();
       case "about": return pageAbout();
+      /* 隐私政策 / 用户协议（20261026b）：正文在 js/legal.js（extra bundle），
+         与静态页 privacy.html / terms.html 共用同一份数据，避免两处口径不一致。 */
+      case "privacy":
+        if (typeof window.pagePrivacy !== "function") { App.ensureExtra("隐私政策"); return deferredPage("隐私政策"); }
+        return window.pagePrivacy();
+      case "terms":
+        if (typeof window.pageTerms !== "function") { App.ensureExtra("用户协议"); return deferredPage("用户协议"); }
+        return window.pageTerms();
       case "practice": return pagePractice(r.q);
       case "review": return pageReview();
       case "random": {
@@ -6322,12 +6330,16 @@
           ${col("刷题", [["题目列表", "/questions"], ["随机一题", "/random"], ["错题重练", "/review"], ["收藏夹", "/favorites"]])}
           ${col("体系", [["技术体系", "/category"], ["岗位体系", "/position"], ["模拟面试", "/mock"], ["技术教程", "/docs"]])}
           ${col("我的", [["学习周报", "/?to=week-report"], ["我的帐号", "/account"], ["投稿面试题", "/submit"], ["使用指南", "/help"]])}
-          ${col("关于", [["关于本站", "/about"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
+          ${col("关于", [["关于本站", "/about"], ["隐私政策", "/privacy"], ["用户协议", "/terms"], ["GitHub 仓库", "https://github.com/succedd/workbuddy_it-interview"]])}
         </div>
         <div class="f-bottom">
           <span>IT 面试题库 · 覆盖技术体系与岗位体系的高频面试题</span>
           <span class="sep">·</span>
           <span>数据存于本机浏览器，登录后云端同步</span>
+          <span class="sep">·</span>
+          <a href="/privacy">隐私政策</a>
+          <span class="sep">·</span>
+          <a href="/terms">用户协议</a>
           <span class="sep">·</span>
           <a href="https://github.com/succedd/workbuddy_it-interview" target="_blank" rel="noopener">开源仓库</a>
         </div>`;
