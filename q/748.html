@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="文件系统中的 inode 与软硬链接区别？ · IT面试题库">
   <meta property="og:description" content="inode：文件在磁盘上的元数据块（权限、大小、数据块指针），文件名只是指向 inode 的链接。 硬链接：多个文件名指向同一 inode，删除任一不影响数据，不能跨文件系统、不能链目录。 软链接（符号链接）：是一类特殊文件，内容为“另一个路径”，可跨文件系统、可链目录；原文件删除后软链失效（悬空）。理解它有助于…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/748.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="文件系统中的 inode 与软硬链接区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/748.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/748">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="文件系统中的 inode 与软硬链接区别？ · IT面试题库">
   <meta name="twitter:description" content="inode：文件在磁盘上的元数据块（权限、大小、数据块指针），文件名只是指向 inode 的链接。 硬链接：多个文件名指向同一 inode，删除任一不影响数据，不能跨文件系统、不能链目录。 软链接（符号链接）：是一类特殊文件，内容为“另一个路径”，可跨文件系统、可链目录；原文件删除后软链失效（悬空）。理解它有助于…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/748.jpg">
+  <meta name="twitter:image:alt" content="文件系统中的 inode 与软硬链接区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/748">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"文件系统中的 inode 与软硬链接区别？","text":"解释 inode 概念及软链接/硬链接的差异。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"inode：文件在磁盘上的元数据块（权限、大小、数据块指针），文件名只是指向 inode 的链接。 硬链接：多个文件名指向同一 inode，删除任一不影响数据，不能跨文件系统、不能链目录。 软链接（符号链接）：是一类特殊文件，内容为“另一个路径”，可跨文件系统、可链目录；原文件删除后软链失效（悬空）。理解它有助于排查“删了文件空间不释放”（有硬链接/被进程占用）等问题。","url":"https://itinterview.com.cn/question/748"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"存储与文件系统","item":"https://itinterview.com.cn/category?cat=47"},{"@type":"ListItem","position":4,"name":"文件系统中的 inode 与软硬链接区别？","item":"https://itinterview.com.cn/q/748"}]}</script>

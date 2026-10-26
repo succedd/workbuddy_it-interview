@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库">
   <meta property="og:description" content="要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按&quot;先入队后扩容&quot;的提交流程，队列永远不满 →…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/644.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/644.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/644">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库">
   <meta name="twitter:description" content="要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按&quot;先入队后扩容&quot;的提交流程，队列永远不满 →…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/644.jpg">
+  <meta name="twitter:image:alt" content="【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/644">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案","text":"追问链收口：综合考察线程池实战。场景：代码里用 Executors.newFixedThreadPool 创建线程池处理异步任务，运行数日后 OutOfMemoryError。考察点：Executors 三大隐患；无界队列与 OOM 的因果链；CPU 密集/IO 密集的参数设定；拒绝策略与监控选型。","answerCount":1,"datePublished":"2026-09-07T13:14:26.791Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：根因定位——Executors.newFixedThreadPool 的无界队列 newFixedThreadPool 内部使用 LinkedBlockingQueue 且未指定容量（无界），maximumPoolSize 与 corePoolSize 相等，按\"先入队后扩容\"的提交流程，队列永远不满 → 非核心线程永远不会创建 → 任务消费速度跟不上生产速度时任务无限堆积。 每个待执行任务连同其闭包引用的对象长期滞留堆中，最终 Old 区打满 OOM；堆转储中大量 WAITING 线程（核心线程在队列 take() 上空等）+ 海量排队任务对象正是这一因果链的证据。同理 newCachedThreadPool 允许创建 Integer.MAX_VALUE 个线程，高并发下会耗尽线程/内存。 要点二：正确姿势——显式 new ThreadPoolExecutor 用七参构造器显式声明有界队列（如 ArrayBlockingQueue(capacity)）与拒绝策略，让\"队列满→扩容→拒绝\"的防御链路真实生效。 参数设定：CPU 密集型任务线程数 ≈ N+1（N 为核数），减少上下文切换；IO 密集型任务 ≈ 2N 或按 N × (1 + 等待时间/计算时间) 估算，再通过压测校准；队列容量按可容忍的延迟与内存预算倒推。 拒绝策略选型：CallerRunsPolicy 提供反压但会拖慢调用方，适合可降速场景；对不能丢的任务应自定义策略——落库/落 MQ 后异步补偿，而不是默默 AbortPolicy 抛异常丢弃。 要点三：预防体系 线程池监控：定期上报 getActiveCount/getQueue().size()/getCompletedTaskCount()，队列持续增长即触发告警，比等 OOM 早发现数小时。 参数动态化：把 corePoolSize/maximumPoolSize 等放到配置中心，支持不重启动态调参；配合 setKeepAliveTime 与 allowCoreThreadTimeOut 应对流量潮汐。 规范层面：生产代码禁止使用 Executors 快捷方法（阿里 Java 开发手册强制规则），统一经线程池工厂创建并打业务化线程名。","url":"https://itinterview.com.cn/question/644"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"【故障排查】服务重启几天后 OOM，堆转储发现大量 WAITING 线程和堆积的任务对象，排查线程池配置问题并给出参数调优方案","item":"https://itinterview.com.cn/q/644"}]}</script>

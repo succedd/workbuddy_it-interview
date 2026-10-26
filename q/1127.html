@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用 Redis 实现去重、基数统计与布隆过滤器式判重？ · IT面试题库">
   <meta property="og:description" content="精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1127.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何用 Redis 实现去重、基数统计与布隆过滤器式判重？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1127.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1127">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Redis 实现去重、基数统计与布隆过滤器式判重？ · IT面试题库">
   <meta name="twitter:description" content="精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1127.jpg">
+  <meta name="twitter:image:alt" content="如何用 Redis 实现去重、基数统计与布隆过滤器式判重？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1127">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Redis 实现去重、基数统计与布隆过滤器式判重？","text":"日活 UV 统计、爬虫 URL 去重、抽奖不重复等场景，如何选择合适的 Redis 数据类型（Set / Bitmap / HyperLogLog / 布隆过滤器）？","answerCount":1,"datePublished":"2026-09-13T02:40:24.599Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"精确去重：用 Set 的 SADD + SCARD/SISMEMBER，适合中小规模、需判断「是否在集合内」的场景（如抽奖已中奖名单）。 位图判重：Bitmap（基于 String 的位运算）用 SETBIT/GETBIT，按用户 ID 位标记，省内存，适合「海量布尔标记」如签到、是否访问过。 基数统计：UV 只需「大约多少人」而非具体名单时，用 HyperLogLog 的 PFADD/PFCOUNT，12 KB 内存估数亿级基数，误差约 0.81%，代价是不存明细。 布隆过滤器式判重：Redis 本身无原生 BF 命令（部分模块/RedisBloom 提供），核心是用多位哈希降低误判；爬虫 URL 去重可用 Set（精确）或 HLL/Bitmap（近似）。选型：要精确明细用 Set，只要计数用 HLL，只要标记用 Bitmap。","url":"https://itinterview.com.cn/question/1127"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何用 Redis 实现去重、基数统计与布隆过滤器式判重？","item":"https://itinterview.com.cn/q/1127"}]}</script>

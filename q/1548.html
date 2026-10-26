@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？ · IT面试题库">
   <meta property="og:description" content="要点： 通信协议不同：Selenium 通过 W3C WebDriver 协议经 driver 进程中转命令到浏览器，是标准但偏「文本协议」；Playwright 直接基于浏览器的 DevTools 协议（CDP）通信，命令更底层、更贴近浏览器内核。 自动等待机制：Playwright 内建 auto-waiti…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1548.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1548.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1548">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？ · IT面试题库">
   <meta name="twitter:description" content="要点： 通信协议不同：Selenium 通过 W3C WebDriver 协议经 driver 进程中转命令到浏览器，是标准但偏「文本协议」；Playwright 直接基于浏览器的 DevTools 协议（CDP）通信，命令更底层、更贴近浏览器内核。 自动等待机制：Playwright 内建 auto-waiti…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1548.jpg">
+  <meta name="twitter:image:alt" content="Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1548">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？","text":"考察点：两款主流 Web 自动化框架的底层通信模型差异及其工程取舍。","answerCount":1,"datePublished":"2026-10-05T02:30:51.904Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 通信协议不同：Selenium 通过 W3C WebDriver 协议经 driver 进程中转命令到浏览器，是标准但偏「文本协议」；Playwright 直接基于浏览器的 DevTools 协议（CDP）通信，命令更底层、更贴近浏览器内核。 自动等待机制：Playwright 内建 auto-waiting，操作前自动等元素可交互，从框架层减少 flaky；Selenium 默认无自动等待，需开发者自己写显式等待。 并发与隔离：Playwright 原生支持多浏览器/多上下文（context）隔离，一个进程内可并发多个独立会话，资源占用更优；Selenium 通常以浏览器实例为粒度，并发隔离成本更高。 选型取舍：老项目/Selenium Grid 生态成熟、跨 driver 兼容好；新项目追求稳定与速度、且需要移动端/多浏览器一致体验时，Playwright 优势明显。两者都要遵循「稳定定位 + 显式等待 + 数据清理」的测试工程基本原则。","url":"https://itinterview.com.cn/question/1548"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"Playwright","item":"https://itinterview.com.cn/category?cat=113"},{"@type":"ListItem","position":4,"name":"Selenium（基于 W3C WebDriver 协议）与 Playwright（基于 DevTools/浏览器协议）的架构差异是什么？这如何影响执行稳定性与并发？","item":"https://itinterview.com.cn/q/1548"}]}</script>

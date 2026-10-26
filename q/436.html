@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？ · IT面试题库">
   <meta property="og:description" content="一、基本模型 Module Federation 的出发点是：多个独立构建组成一个应用。每个构建既是一个容器（container），又能消费其它容器暴露的模块。 本地模块属于当前构建；远程模块不在当前构建中，在运行时从远程容器加载。 加载远程模块是异步的，分两步：先异步加载模块，再同步求值。这样把模块从本地改成远…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/436.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/436.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/436">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？ · IT面试题库">
   <meta name="twitter:description" content="一、基本模型 Module Federation 的出发点是：多个独立构建组成一个应用。每个构建既是一个容器（container），又能消费其它容器暴露的模块。 本地模块属于当前构建；远程模块不在当前构建中，在运行时从远程容器加载。 加载远程模块是异步的，分两步：先异步加载模块，再同步求值。这样把模块从本地改成远…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/436.jpg">
+  <meta name="twitter:image:alt" content="用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/436">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？","text":"几个团队各自独立部署的子应用要拼成一个整体，且 react 等公共库只能加载一份。请说明其工作机制、shared 的语义，以及常见的运行期报错与解法。","answerCount":1,"datePublished":"2026-09-03T00:53:26.863Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、基本模型 Module Federation 的出发点是：多个独立构建组成一个应用。每个构建既是一个容器（container），又能消费其它容器暴露的模块。 本地模块属于当前构建；远程模块不在当前构建中，在运行时从远程容器加载。 加载远程模块是异步的，分两步：先异步加载模块，再同步求值。这样把模块从本地改成远程（或反之）不会影响求值顺序。 容器可以嵌套，容器之间也允许循环依赖。底层由 ContainerPlugin 与 ContainerReferencePlugin 组成，高层的 ModuleFederationPlugin 把两者打包在一起。 二、shared：共享依赖的核心 共享模块（shared modules）既可被覆盖、也作为覆盖提供给嵌套容器，通常指向每个构建里的同一个库（例如同一份 react）。 packageName 用于查找 requiredVersion，默认会根据模块请求自动推断；可用 requiredVersion: false 关闭推断。 shared 中的模块请求只在真正被使用时才提供，会匹配构建中所有相同的模块请求，并从该位置的 package.json 提取 requiredVersion；存在嵌套 node_modules 时，可能同时提供并消费多个不同版本。 相对/绝对路径的 shared 项则总是提供、不使用 requiredVersion、且相对 config.context 解析。 三、版本不一致 / 被提前消费会怎样 容器会尝试提供自己的共享模块；但如果该共享模块已经被使用过，会给出一条警告并忽略这次提供的版本，容器仍可能把它当作 fallback 使用。这意味着运行时实际生效的共享依赖版本并不总如你预期——因此共享库的版本收敛必须在多团队之间约定，而不是指望 Federation 帮你兜底。 四、最常见的报错与解法 Uncaught Error: Shared module is not available for eager consumption 出现的原因是应用同步地执行了一个同时作为 host 的代码。推荐解法不是把依赖设成 eager: true（那样所有 provided 与 fallback 模块都会被下载，且建议只在壳应用一处提供），而是加异步边界：把入口内容挪到 bootstrap.js，入口只用 import('./bootstrap') 引入，从而把初始化代码切进异步 chunk，避免额外往返。 五、典型落地形态 一是按页独立构建：每页各自构建并单独部署，应用外壳作为 host 把各页当远程模块引用，外壳统一声明公共库为 shared 避免重复；二是组件库作为容器：组件库单独构建并暴露每个组件，各应用消费它，组件库更新无需重新部署所有应用。","url":"https://itinterview.com.cn/question/436"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"微前端","item":"https://itinterview.com.cn/category?cat=78"},{"@type":"ListItem","position":4,"name":"用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？","item":"https://itinterview.com.cn/q/436"}]}</script>

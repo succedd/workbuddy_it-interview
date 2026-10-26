@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？ · IT面试题库">
   <meta property="og:description" content="3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1113.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1113.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1113">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？ · IT面试题库">
   <meta name="twitter:description" content="3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1113.jpg">
+  <meta name="twitter:image:alt" content="如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1113">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？","text":"为生产系统的非结构化数据设计备份容灾方案，要求防误删、抗地域级故障、且成本可控。请给出一个可落地的架构设计与关键决策。","answerCount":1,"datePublished":"2026-09-13T02:40:01.849Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"3-2-1 基线：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。 防误删层：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。 抗地域故障层：用 CRR 将版本化对象复制到异地桶，RPO 取决于复制延迟（分钟级），RTO 取决于是否需跨地域拉取；极端合规场景可再加云外归档。 成本与演练：热数据标准、温数据低频、冷数据归档，配合生命周期自动沉降；每季度做一次真实恢复演练量化 RTO/RPO，并监控碎片与历史版本容量，防止隐性成本膨胀。","url":"https://itinterview.com.cn/question/1113"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？","item":"https://itinterview.com.cn/q/1113"}]}</script>

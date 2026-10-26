@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？ · IT面试题库">
   <meta property="og:description" content="要点： 一个合约多种资产：ERC-1155 用 id → balance 管理同质化与非同质化代币，适合游戏道具、门票、会员卡；相比每个 NFT 单独部署/管理，部署与转账成本更低。 批量能力：balanceOfBatch、safeBatchTransferFrom 一次处理多个 id 与数量，显著省 Gas；元…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1732.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1732.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1732">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？ · IT面试题库">
   <meta name="twitter:description" content="要点： 一个合约多种资产：ERC-1155 用 id → balance 管理同质化与非同质化代币，适合游戏道具、门票、会员卡；相比每个 NFT 单独部署/管理，部署与转账成本更低。 批量能力：balanceOfBatch、safeBatchTransferFrom 一次处理多个 id 与数量，显著省 Gas；元…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1732.jpg">
+  <meta name="twitter:image:alt" content="ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1732">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？","text":"考察多代币标准、批量接口与接收者回调风险。","answerCount":1,"datePublished":"2026-10-19T05:43:25.208Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 一个合约多种资产：ERC-1155 用 id → balance 管理同质化与非同质化代币，适合游戏道具、门票、会员卡；相比每个 NFT 单独部署/管理，部署与转账成本更低。 批量能力：balanceOfBatch、safeBatchTransferFrom 一次处理多个 id 与数量，显著省 Gas；元数据用 {id} 模板，避免为每个 token 写 URI。 安全设计：批量数组要校验长度一致与数量非零；safeTransferFrom 会回调接收者，必须防重入并检查返回值；市场兼容性不如 ERC-721，转让前确认目标合约支持 1155。","url":"https://itinterview.com.cn/question/1732"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"NFT技术","item":"https://itinterview.com.cn/category?cat=262"},{"@type":"ListItem","position":4,"name":"ERC-1155 多代币标准解决了 ERC-721 的什么问题？批量转账与安全性如何设计？","item":"https://itinterview.com.cn/q/1732"}]}</script>

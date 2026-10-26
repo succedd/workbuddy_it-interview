@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？ · IT面试题库">
   <meta property="og:description" content="TLS 1.2（ECDHE 密钥协商）简化步骤： 1. ClientHello：客户端发送支持的 TLS 版本、密码套件列表、客户端随机数、支持的扩展。 2. ServerHello + Certificate：服务端选定套件、发送服务端随机数、X.509 证书（含公钥）与证书链。 3. ServerKeyExc…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/538.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/538.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/538">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？ · IT面试题库">
   <meta name="twitter:description" content="TLS 1.2（ECDHE 密钥协商）简化步骤： 1. ClientHello：客户端发送支持的 TLS 版本、密码套件列表、客户端随机数、支持的扩展。 2. ServerHello + Certificate：服务端选定套件、发送服务端随机数、X.509 证书（含公钥）与证书链。 3. ServerKeyExc…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/538.jpg">
+  <meta name="twitter:image:alt" content="请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/538">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？","text":"请分步骤说明基于 ECDHE 的 TLS 1.2 握手，并对比 TLS 1.3 在握手延迟、密钥交换算法与安全性上的改进。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TLS 1.2（ECDHE 密钥协商）简化步骤： 1. ClientHello：客户端发送支持的 TLS 版本、密码套件列表、客户端随机数、支持的扩展。 2. ServerHello + Certificate：服务端选定套件、发送服务端随机数、X.509 证书（含公钥）与证书链。 3. ServerKeyExchange：服务端发送 ECDHE 公钥参数，并用私钥对其签名；客户端验证证书链与签名。 4. ClientKeyExchange：客户端发送自己的 ECDHE 公钥参数。 5. 双方各自用 DH 参数计算出相同的预主密钥，结合两个随机数推导出主密钥/会话密钥。 6. ChangeCipherSpec + Finished：双方切换到对称加密并互发校验消息，握手完成。 ECDHE 的价值：每次会话使用临时密钥，即使服务器私钥日后泄露，历史会话也无法被解密（前向安全）。 TLS 1.3 的优化： 握手从 2-RTT 缩短为 1-RTT（ClientHello 直接带密钥共享，ServerHello 一次返回证书+密钥+Finished）； 移除不安全的 RSA 静态密钥交换与弱套件，仅保留 ECDHE； 支持 0-RTT 会话恢复（复用 PSK 提前发数据）。","url":"https://itinterview.com.cn/question/538"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"网络安全基础","item":"https://itinterview.com.cn/category?cat=201"},{"@type":"ListItem","position":4,"name":"请描述 TLS 1.2（ECDHE）握手过程，以及 TLS 1.3 做了哪些优化？","item":"https://itinterview.com.cn/q/538"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="强引用、软引用、弱引用、虚引用有什么区别？ · IT面试题库">
   <meta property="og:description" content="1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因&quot;该断的强引用没断&quot;（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/937.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="强引用、软引用、弱引用、虚引用有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/937.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/937">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="强引用、软引用、弱引用、虚引用有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因&quot;该断的强引用没断&quot;（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/937.jpg">
+  <meta name="twitter:image:alt" content="强引用、软引用、弱引用、虚引用有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/937">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"强引用、软引用、弱引用、虚引用有什么区别？","text":"请说明四种引用类型的回收时机与典型应用场景。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 强引用（Object o = new Object()）：普通赋值。只要强引用存在，GC 绝不回收——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因\"该断的强引用没断\"（如静态 Map 一直往里塞）。 2. 软引用 SoftReference：内存不足时才回收（GC 后内存仍不够则回收）。适合内存敏感的缓存——图片缓存、网页缓存；回收前会尽量保留，OOM 前的最后防线。 3. 弱引用 WeakReference：下次 GC 必然回收（无论内存是否充足）。典型：ThreadLocalMap 的 Entry 的 key 就是弱引用（线程存活时 key 可被回收防止泄漏，value 需手动 remove）；WeakHashMap。 4. 虚引用 PhantomReference：形同虚设——get 永远返回 null，唯一作用是配合引用队列（ReferenceQueue）在对象被回收时收到通知，用于管理堆外/直接内存的释放（NIO 的 Cleaner 机制）。 记忆：强度递减——强（永不回收）> 软（内存不足回收）> 弱（GC 就回收）> 虚（只做回收通知）。","url":"https://itinterview.com.cn/question/937"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"强引用、软引用、弱引用、虚引用有什么区别？","item":"https://itinterview.com.cn/q/937"}]}</script>

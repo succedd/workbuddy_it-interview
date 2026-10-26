@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Cache 的三种映射方式是什么？各自有什么优缺点？ · IT面试题库">
   <meta property="og:description" content="Cache 映射决定“主存块能放到 Cache 的哪些位置”，三种方式： 1. 直接映射（Direct-Mapped）：主存块 i 只能放到 i mod (Cache行数) 这一行。地址分为 Tag | Index | Offset。 优点：硬件最简单，只需比较一个 Tag，速度快、功耗低。 缺点：冲突缺失（co…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/482.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Cache 的三种映射方式是什么？各自有什么优缺点？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/482.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/482">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cache 的三种映射方式是什么？各自有什么优缺点？ · IT面试题库">
   <meta name="twitter:description" content="Cache 映射决定“主存块能放到 Cache 的哪些位置”，三种方式： 1. 直接映射（Direct-Mapped）：主存块 i 只能放到 i mod (Cache行数) 这一行。地址分为 Tag | Index | Offset。 优点：硬件最简单，只需比较一个 Tag，速度快、功耗低。 缺点：冲突缺失（co…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/482.jpg">
+  <meta name="twitter:image:alt" content="Cache 的三种映射方式是什么？各自有什么优缺点？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/482">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cache 的三种映射方式是什么？各自有什么优缺点？","text":"主存块如何放到 Cache 中？请说明直接映射、全相联映射、组相联映射的原理，并对比硬件成本、命中率和冲突缺失。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Cache 映射决定“主存块能放到 Cache 的哪些位置”，三种方式： 1. 直接映射（Direct-Mapped）：主存块 i 只能放到 i mod (Cache行数) 这一行。地址分为 Tag | Index | Offset。 优点：硬件最简单，只需比较一个 Tag，速度快、功耗低。 缺点：冲突缺失（conflict miss）严重，多个映射到同一行的块会互相替换。 2. 全相联映射（Fully Associative）：主存块可放到任意 Cache 行。地址只有 Tag | Offset。 优点：冲突缺失最少，命中率最高。 缺点：需并行比较所有行的 Tag，硬件成本高、速度慢、功耗大。 3. 组相联映射（Set-Associative）：Cache 分成若干组（set），组内多行（way）。块映射到固定组，组内任意行。地址为 Tag | SetIndex | Offset，映射公式 Set = i mod (组数)。当每组 1 行即退化为直接映射，1 组即退化为全相联。 折中方案：硬件成本与命中率适中，是实际 CPU 的主流选择（如 8-way、16-way）。 对比小结： | 方式 | 放置位置 | 硬件成本 | 冲突缺失 | |---|---|---|---| | 直接 | 固定一行 | 低 | 高 | | 全相联 | 任意行 | 高 | 无 | | 组相联 | 固定组内任意行 | 中 | 低 |","url":"https://itinterview.com.cn/question/482"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"Cache 的三种映射方式是什么？各自有什么优缺点？","item":"https://itinterview.com.cn/q/482"}]}</script>

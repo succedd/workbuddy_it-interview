@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis 的 List 底层 quicklist 是什么，如何用 List 实现队列与栈？ · IT面试题库">
   <meta property="og:description" content="quicklist 结构：早期 List 用 ziplist（紧凑）或 linkedlist（指针开销大）；Redis 3.2 起统一为 quicklist——由多个 ziplist 节点组成的双向链表，兼顾紧凑存储与头尾 O(1) 操作。 队列（FIFO）：RPUSH 入队 + LPOP 出队；或 LPUSH …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1126.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis 的 List 底层 quicklist 是什么，如何用 List 实现队列与栈？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1126.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1126">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的 List 底层 quicklist 是什么，如何用 List 实现队列与栈？ · IT面试题库">
   <meta name="twitter:description" content="quicklist 结构：早期 List 用 ziplist（紧凑）或 linkedlist（指针开销大）；Redis 3.2 起统一为 quicklist——由多个 ziplist 节点组成的双向链表，兼顾紧凑存储与头尾 O(1) 操作。 队列（FIFO）：RPUSH 入队 + LPOP 出队；或 LPUSH …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1126.jpg">
+  <meta name="twitter:image:alt" content="Redis 的 List 底层 quicklist 是什么，如何用 List 实现队列与栈？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1126">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的 List 底层 quicklist 是什么，如何用 List 实现队列与栈？","text":"List 既能当队列又能当栈，其底层结构经历了 ziplist→quicklist 的演进。请说明 quicklist 设计，并给出队列/栈/阻塞队列的实现。","answerCount":1,"datePublished":"2026-09-13T02:40:24.357Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"quicklist 结构：早期 List 用 ziplist（紧凑）或 linkedlist（指针开销大）；Redis 3.2 起统一为 quicklist——由多个 ziplist 节点组成的双向链表，兼顾紧凑存储与头尾 O(1) 操作。 队列（FIFO）：RPUSH 入队 + LPOP 出队；或 LPUSH + RPOP，保证「一端进一端出」。 栈（LIFO）：LPUSH 同端进出（LPUSH + LPOP），后进先出。 阻塞队列：用 BRPOP/BLPOP 阻塞等待，无元素时挂起直到超时或有新数据，天然实现可靠消费；配合 LPUSH 即简单消息队列。注意单 List 无确认机制，重要场景应上 Stream 类型做消费组与 Ack。","url":"https://itinterview.com.cn/question/1126"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 List 底层 quicklist 是什么，如何用 List 实现队列与栈？","item":"https://itinterview.com.cn/q/1126"}]}</script>

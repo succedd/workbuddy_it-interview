@@ -20,7 +20,18 @@ function reverseList(head) {
 }
 ``` · IT面试题库">
   <meta property="og:description" content="要点：核心是「逐个摘头、头插到已反转部分」，用 prev/cur 双指针推进。 迭代解法： 必须先存 tmp 的原因：一旦执行 cur.next = prev，原链表向后走的路径就被切断，不提前保存 next 就永远找不回剩余节点。 递归解法：reverseList(head.next) 先反转后续链表并返回新头…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/864.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="编程题：反转一个单链表（LeetCode 206）。请分别写出迭代与递归两种解法，并分析各自的时间/空间复杂度。
+
+```js
+function reverseList(head) {
+  // 你的实现
+}
+``` · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/864.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/864">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
@@ -32,7 +43,14 @@ function reverseList(head) {
 }
 ``` · IT面试题库">
   <meta name="twitter:description" content="要点：核心是「逐个摘头、头插到已反转部分」，用 prev/cur 双指针推进。 迭代解法： 必须先存 tmp 的原因：一旦执行 cur.next = prev，原链表向后走的路径就被切断，不提前保存 next 就永远找不回剩余节点。 递归解法：reverseList(head.next) 先反转后续链表并返回新头…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/864.jpg">
+  <meta name="twitter:image:alt" content="编程题：反转一个单链表（LeetCode 206）。请分别写出迭代与递归两种解法，并分析各自的时间/空间复杂度。
+
+```js
+function reverseList(head) {
+  // 你的实现
+}
+``` · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/864">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：反转一个单链表（LeetCode 206）。请分别写出迭代与递归两种解法，并分析各自的时间/空间复杂度。\n\n```js\nfunction reverseList(head) {\n  // 你的实现\n}\n```","text":"考察点：链表指针操作的基本功——这是链表类追问链的起点，后续 K 组翻转、合并都建立在这上面。追问：迭代法中为什么必须先用 tmp 保存 next？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：核心是「逐个摘头、头插到已反转部分」，用 prev/cur 双指针推进。 迭代解法： 必须先存 tmp 的原因：一旦执行 cur.next = prev，原链表向后走的路径就被切断，不提前保存 next 就永远找不回剩余节点。 递归解法：reverseList(head.next) 先反转后续链表并返回新头 newHead，再 head.next.next = head; head.next = null 把自己接到尾部。时间 O(n)，空间 O(n)（递归栈）。 复杂度对比：迭代 O(n)/O(1)，是面试首选；递归写法优雅但有栈溢出风险（长链表），能主动说出这一点是加分项。","url":"https://itinterview.com.cn/question/864"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"编程题：反转一个单链表（LeetCode 206）。请分别写出迭代与递归两种解法，并分析各自的时间/空间复杂度。\n\n```js\nfunction reverseList(head) {\n  // 你的实现\n}\n```","item":"https://itinterview.com.cn/q/864"}]}</script>
@@ -137,7 +155,7 @@ function reverseList(head) {
       <a class="cta" href="https://itinterview.com.cn/question/864">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">395 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

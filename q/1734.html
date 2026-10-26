@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？ · IT面试题库">
   <meta property="og:description" content="要点： 基本结构：MEMORY 定义 Flash / RAM 的起始地址与长度，SECTIONS 把 .text、.rodata、.data、.bss、.stack 放到指定区域；KEEP() 防止被 --gc-sections 回收，.init_array 承载 C++ 全局构造。 LMA 与 VMA：.dat…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1734.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1734.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1734">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？ · IT面试题库">
   <meta name="twitter:description" content="要点： 基本结构：MEMORY 定义 Flash / RAM 的起始地址与长度，SECTIONS 把 .text、.rodata、.data、.bss、.stack 放到指定区域；KEEP() 防止被 --gc-sections 回收，.init_array 承载 C++ 全局构造。 LMA 与 VMA：.dat…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1734.jpg">
+  <meta name="twitter:image:alt" content="链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1734">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？","text":"考察 MEMORY / SECTIONS、启动拷贝、向量表与 ITCM/DTCM 布局。","answerCount":1,"datePublished":"2026-10-19T05:43:25.343Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 基本结构：MEMORY 定义 Flash / RAM 的起始地址与长度，SECTIONS 把 .text、.rodata、.data、.bss、.stack 放到指定区域；KEEP() 防止被 --gc-sections 回收，.init_array 承载 C++ 全局构造。 LMA 与 VMA：.data 的加载地址（LMA）在 Flash，运行地址（VMA）在 RAM；启动代码负责把初值从 Flash 拷到 RAM，并把 .bss 清零。若只配 VMA 不配 LMA，复位后数据就是错的。 典型用途：向量表放到 Flash 起始或重定位到 RAM、把热函数放 ITCM、把 DMA 缓冲区放 DTCM/非缓存区、在固定地址保留 bootloader 参数。链接后要检查 map 文件、段大小与栈顶，防止溢出。","url":"https://itinterview.com.cn/question/1734"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"链接脚本如何把代码和数据放到指定地址？.data 的 LMA 与 VMA 为什么要分开？","item":"https://itinterview.com.cn/q/1734"}]}</script>

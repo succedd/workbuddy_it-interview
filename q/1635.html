@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？ · IT面试题库">
   <meta property="og:description" content="要点： 看趋势和阈值：缓存类增长通常有上限，泄漏呈单调增长；记录 heap、rss 与请求量，压测后观察是否回落。 抓堆快照对比：连续采集 heap snapshot，找持续增加的 Retainer；结合 --trace-gc 与 process.memoryUsage() 判断老生代压力。 常见泄漏源：全局数组…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1635.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1635.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1635">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？ · IT面试题库">
   <meta name="twitter:description" content="要点： 看趋势和阈值：缓存类增长通常有上限，泄漏呈单调增长；记录 heap、rss 与请求量，压测后观察是否回落。 抓堆快照对比：连续采集 heap snapshot，找持续增加的 Retainer；结合 --trace-gc 与 process.memoryUsage() 判断老生代压力。 常见泄漏源：全局数组…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1635.jpg">
+  <meta name="twitter:image:alt" content="Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1635">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？","text":"考察 Node 进程内存诊断。","answerCount":1,"datePublished":"2026-10-15T12:54:41.507Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 看趋势和阈值：缓存类增长通常有上限，泄漏呈单调增长；记录 heap、rss 与请求量，压测后观察是否回落。 抓堆快照对比：连续采集 heap snapshot，找持续增加的 Retainer；结合 --trace-gc 与 process.memoryUsage() 判断老生代压力。 常见泄漏源：全局数组未清理、定时器/监听器未解绑、闭包持有大对象、错误日志保存完整请求体。","url":"https://itinterview.com.cn/question/1635"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Node.js 服务出现内存持续上涨，你会如何区分正常缓存增长和内存泄漏？","item":"https://itinterview.com.cn/q/1635"}]}</script>

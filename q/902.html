@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="InnoDB 为什么选择 B+ 树作为索引结构？ · IT面试题库">
   <meta property="og:description" content="从&quot;磁盘 IO 次数&quot;这个核心约束出发逐个排除： 哈希表：等值查询 O(1) 很快，但不支持范围查询与排序（数据无序），而范围查询是数据库最高频需求之一。 二叉搜索树/红黑树：树高 = log₂N，100 万数据约 20 层，每层一次磁盘 IO，且数据量大时树会越来越高；二叉结构每节点只存 1 个键，浪费磁盘页空…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/902.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="InnoDB 为什么选择 B+ 树作为索引结构？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/902.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/902">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="InnoDB 为什么选择 B+ 树作为索引结构？ · IT面试题库">
   <meta name="twitter:description" content="从&quot;磁盘 IO 次数&quot;这个核心约束出发逐个排除： 哈希表：等值查询 O(1) 很快，但不支持范围查询与排序（数据无序），而范围查询是数据库最高频需求之一。 二叉搜索树/红黑树：树高 = log₂N，100 万数据约 20 层，每层一次磁盘 IO，且数据量大时树会越来越高；二叉结构每节点只存 1 个键，浪费磁盘页空…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/902.jpg">
+  <meta name="twitter:image:alt" content="InnoDB 为什么选择 B+ 树作为索引结构？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/902">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"InnoDB 为什么选择 B+ 树作为索引结构？","text":"对比哈希表、二叉/红黑树、B 树、B+ 树，说明 InnoDB 选择 B+ 树的原因。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"从\"磁盘 IO 次数\"这个核心约束出发逐个排除： 哈希表：等值查询 O(1) 很快，但不支持范围查询与排序（数据无序），而范围查询是数据库最高频需求之一。 二叉搜索树/红黑树：树高 = log₂N，100 万数据约 20 层，每层一次磁盘 IO，且数据量大时树会越来越高；二叉结构每节点只存 1 个键，浪费磁盘页空间。 B 树：多叉已降低树高，但每个节点都存数据，单页（16KB）能放的键变少，树高变高；且范围查询需要中序回溯，IO 不友好。 B+ 树：①非叶子节点只存键，一个 16KB 页可放上千个键，3~4 层即可承载千万级数据（查询仅 3~4 次 IO，顶层还常驻内存）；②数据全在叶子节点且叶子间双向链表相连，范围查询、排序沿链表顺序扫描即可；③查询性能稳定（每次都到叶子层）。 这就是为什么 MySQL 的千万级表 B+ 树索引依然稳定高效。","url":"https://itinterview.com.cn/question/902"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"InnoDB 为什么选择 B+ 树作为索引结构？","item":"https://itinterview.com.cn/q/902"}]}</script>

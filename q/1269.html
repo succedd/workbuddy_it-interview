@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？ · IT面试题库">
   <meta property="og:description" content="要点：用户输入往往缺少检索需要的对象、时间和范围。例如“这个报错咋整”没说明报错码和服务，“钱能退吗”没说明订单状态。Query Rewrite 要补出可检索的表达，但不能替用户改变问题的含义。 六种常见策略 | 策略 | 适用场景 | 例子 | | --- | --- | --- | | 规范化改写 | 口语化…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1269.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1269.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1269">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？ · IT面试题库">
   <meta name="twitter:description" content="要点：用户输入往往缺少检索需要的对象、时间和范围。例如“这个报错咋整”没说明报错码和服务，“钱能退吗”没说明订单状态。Query Rewrite 要补出可检索的表达，但不能替用户改变问题的含义。 六种常见策略 | 策略 | 适用场景 | 例子 | | --- | --- | --- | | 规范化改写 | 口语化…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1269.jpg">
+  <meta name="twitter:image:alt" content="Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1269">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？","text":"考察点：RAG 召回侧的优化手段，以及候选池、重排和上下文三层配额的分工。","answerCount":1,"datePublished":"2026-09-26T02:31:49.296Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：用户输入往往缺少检索需要的对象、时间和范围。例如“这个报错咋整”没说明报错码和服务，“钱能退吗”没说明订单状态。Query Rewrite 要补出可检索的表达，但不能替用户改变问题的含义。 六种常见策略 | 策略 | 适用场景 | 例子 | | --- | --- | --- | | 规范化改写 | 口语化、缩写、上下文缺失 | “钱能退吗”改成“退款政策、退款条件、退款流程” | | Multi-Query | 表达可能有多种说法 | 同时检索“取消订阅”“关闭自动续费”“停止会员计划” | | Query Decomposition | 问题包含多个子问题 | 把“对比 Stripe 和 Square 的手续费和争议处理”拆成 4 个子问题 | | Step-back Query | 问题太细、缺背景 | 先检索“订阅计费规则”，再回答具体取消问题 | | HyDE | 查询太短、和文档形态差异大 | 先生成假设答案，再用假设答案的向量检索真实文档 | | Self-Query | 问题里包含过滤条件 | 从“查 2025 年 Java 相关政策”中提取年份和类别过滤 | 一条关键工程约束：无论是否使用 LangChain 的 MultiQueryRetriever、SelfQueryRetriever 等组件，原始 Query 都应和改写结果一起参与召回并融合。改写模型把“退款”错误理解为“取消订阅”时，原始 Query 仍能保留正确的召回入口，相当于给改写加了一层保险。 Top-K 不是越大越好 扩大 Top-K 会提高正确证据进入候选池的机会，同时也会拉高 Rerank 的输入量、Prompt Token 和噪声比例。正确做法是把三层上限分开设： recall_top_k：粗召回候选池，例如 30 到 100，用防漏召回； rerank_top_n：重排后保留，例如 5 到 10，用控精排成本； context_top_n：最终进入上下文，例如 3 到 6，由模型实际可阅读的证据量决定。 三者应在同一评估集上一起调整。 为什么还需要 Hybrid Search 把 Query 转成 Embedding 取 Top-K 可以作为基线，但错误码、型号和版本号这类精确词容易被近义但错误的内容挤掉。对比一下：“错误码 E1027”“ABX-4421 型号参数”必须保留关键词召回（BM25 精确命中，向量检索可能召回泛化故障或相似型号）；“如何取消订阅”向量能匹配“关闭自动续费”而 BM25 可能匹配不到；“最新 v3.2 价格政策”则需要 Metadata + Hybrid。 实际链路是并行取语义候选和关键词候选，用 RRF（Reciprocal Rank Fusion，只依据候选名次融合，不必把 BM25 分数与向量余弦分数换算到同一尺度，几乎不用调参，适合冷启动）或归一化加权合并，再对合并结果去重并交给 Rerank。注意文档高度结构化、查询几乎不含关键词时，Hybrid 的增益可能不明显。","url":"https://itinterview.com.cn/question/1269"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"Query Rewrite 有哪些常见策略（Multi-Query、Query Decomposition、Step-back、HyDE、Self-Query）？检索时 Top-K 是不是越大越好？","item":"https://itinterview.com.cn/q/1269"}]}</script>

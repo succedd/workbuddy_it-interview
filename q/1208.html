@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="配置题：请手写一条 Prometheus 告警规则——例如『某实例 CPU 使用率持续 5 分钟超过 80%』或『HTTP 5xx 率超过 5%』，并说明 expr / for / labels / annotations 各字段含义。 · IT面试题库">
   <meta property="og:description" content="要点： 示例（CPU 使用率超阈值）： expr：触发条件的 PromQL 表达式；CPU 使用率 = 1 - 空闲率，必须用 rate() 算 Counter。 for：条件需持续满足的时长（5m），避免瞬时抖动误报；设为 0 则一命中立即告警。 labels：附加到告警的标签，常用于路由（如 severity…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1208.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="配置题：请手写一条 Prometheus 告警规则——例如『某实例 CPU 使用率持续 5 分钟超过 80%』或『HTTP 5xx 率超过 5%』，并说明 expr / for / labels / annotations 各字段含义。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1208.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1208">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="配置题：请手写一条 Prometheus 告警规则——例如『某实例 CPU 使用率持续 5 分钟超过 80%』或『HTTP 5xx 率超过 5%』，并说明 expr / for / labels / annotations 各字段含义。 · IT面试题库">
   <meta name="twitter:description" content="要点： 示例（CPU 使用率超阈值）： expr：触发条件的 PromQL 表达式；CPU 使用率 = 1 - 空闲率，必须用 rate() 算 Counter。 for：条件需持续满足的时长（5m），避免瞬时抖动误报；设为 0 则一命中立即告警。 labels：附加到告警的标签，常用于路由（如 severity…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1208.jpg">
+  <meta name="twitter:image:alt" content="配置题：请手写一条 Prometheus 告警规则——例如『某实例 CPU 使用率持续 5 分钟超过 80%』或『HTTP 5xx 率超过 5%』，并说明 expr / for / labels / annotations 各字段含义。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1208">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"配置题：请手写一条 Prometheus 告警规则——例如『某实例 CPU 使用率持续 5 分钟超过 80%』或『HTTP 5xx 率超过 5%』，并说明 expr / for / labels / annotations 各字段含义。","text":"考察点：告警规则落地——能写出合法的 YAML 规则，并讲清四个字段的语义（尤其 for 防抖、labels 做路由、annotations 给上下文）。要求阈值贴合 SLO。","answerCount":1,"datePublished":"2026-09-20T02:22:35.100Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 示例（CPU 使用率超阈值）： expr：触发条件的 PromQL 表达式；CPU 使用率 = 1 - 空闲率，必须用 rate() 算 Counter。 for：条件需持续满足的时长（5m），避免瞬时抖动误报；设为 0 则一命中立即告警。 labels：附加到告警的标签，常用于路由（如 severity=warning/page 决定走哪个 receiver）和分组。 annotations：人类可读摘要/描述，支持模板变量 {{ $labels.xxx }} 与 {{ $value }}（命中时表达式的值），便于运维一眼定位。 HTTP 5xx 率示例：expr: sum(rate(http_requests_total{code=~\"5..\"}[5m])) by(service) / sum(rate(http_requests_total[5m])) by(service) > 0.05。 核心：一条规则 = 正确的 expr + 合理的 for 防抖 + labels 做路由 + annotations 给上下文；阈值要贴合 SLO，而非拍脑袋。","url":"https://itinterview.com.cn/question/1208"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Prometheus","item":"https://itinterview.com.cn/category?cat=143"},{"@type":"ListItem","position":4,"name":"配置题：请手写一条 Prometheus 告警规则——例如『某实例 CPU 使用率持续 5 分钟超过 80%』或『HTTP 5xx 率超过 5%』，并说明 expr / for / labels / annotations 各字段含义。","item":"https://itinterview.com.cn/q/1208"}]}</script>

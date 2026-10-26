@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？ · IT面试题库">
   <meta property="og:description" content="1. 触发与过程 触发条件：消费者加入/离开、心跳超时（超过 session.timeout.ms）、两次 poll() 间隔超过 max.poll.interval.ms、订阅主题分区数变化。 过程：Group Coordinator（由 group.id 哈希 __consumer_offsets 分区选定）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/588.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/588.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/588">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？ · IT面试题库">
   <meta name="twitter:description" content="1. 触发与过程 触发条件：消费者加入/离开、心跳超时（超过 session.timeout.ms）、两次 poll() 间隔超过 max.poll.interval.ms、订阅主题分区数变化。 过程：Group Coordinator（由 group.id 哈希 __consumer_offsets 分区选定）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/588.jpg">
+  <meta name="twitter:image:alt" content="Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/588">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？","text":"当消费者组内的成员发生变化（新增、宕机、订阅变更、分区数变化）时，Kafka 会触发 Rebalance 重新分配分区。请说明 Rebalance 的过程、Eager 与 Cooperative 两种协议的区别，以及如何减少其对业务的影响。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 触发与过程 触发条件：消费者加入/离开、心跳超时（超过 session.timeout.ms）、两次 poll() 间隔超过 max.poll.interval.ms、订阅主题分区数变化。 过程：Group Coordinator（由 group.id 哈希 __consumer_offsets 分区选定）主导 JoinGroup → 选 leader 计算分配 → SyncGroup 下发新分配。 2. Eager（饥饿式，旧默认）vs Cooperative（协作式，Kafka 2.4+） Eager：每次 Rebalance 所有消费者先撤销全部分区、停止消费（stop-the-world），再统一分配。会造成整组消费停顿数秒。 Cooperative（CooperativeStickyAssignor）：只撤销确实需要迁移的分区，其余分区继续消费，Rebalance 分多阶段增量完成，停顿大幅缩短（可达 ~100ms 级）。 3. 优化手段 使用 CooperativeStickyAssignor 协作式分配器； 配置 group.instance.id 静态成员身份：重启在 session.timeout.ms 内重新加入可不触发 Rebalance，对滚动发布至关重要； 调大 session.timeout.ms、合理设置 heartbeat.interval.ms（≤ 1/3 session），避免慢处理被踢出； 在 ConsumerRebalanceListener.onPartitionsRevoked 中手动提交偏移，防止自动提交在重平衡时丢/重复偏移； 控制单批 max.poll.records，避免处理超时触发 Rebalance 风暴。","url":"https://itinterview.com.cn/question/588"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Kafka数据","item":"https://itinterview.com.cn/category?cat=162"},{"@type":"ListItem","position":4,"name":"Kafka 消费者组的 Rebalance（重平衡）是什么？会带来什么问题，如何优化？","item":"https://itinterview.com.cn/q/588"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="实时数仓 Lambda 架构与 Kappa 架构的区别与演进？ · IT面试题库">
   <meta property="og:description" content="要点： Lambda：批层（离线，Hive/Spark 全量精确）+ 速度层（实时，Flink 近似低延迟）双管道，服务层合并；容错、批准确，但维护两套代码、实时结果可能不一致。 Kappa：只用一条流式管道（Kafka+Flink），历史修正靠 Kafka 重放（重置 offset 重算）；架构简洁、口径统一。…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1578.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="实时数仓 Lambda 架构与 Kappa 架构的区别与演进？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1578.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1578">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="实时数仓 Lambda 架构与 Kappa 架构的区别与演进？ · IT面试题库">
   <meta name="twitter:description" content="要点： Lambda：批层（离线，Hive/Spark 全量精确）+ 速度层（实时，Flink 近似低延迟）双管道，服务层合并；容错、批准确，但维护两套代码、实时结果可能不一致。 Kappa：只用一条流式管道（Kafka+Flink），历史修正靠 Kafka 重放（重置 offset 重算）；架构简洁、口径统一。…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1578.jpg">
+  <meta name="twitter:image:alt" content="实时数仓 Lambda 架构与 Kappa 架构的区别与演进？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1578">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"实时数仓 Lambda 架构与 Kappa 架构的区别与演进？","text":"考察点：理解批流双管道与单一流管道的取舍，以及流批一体的演进方向，属实时数仓高级追问。","answerCount":1,"datePublished":"2026-10-06T09:02:52.261Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Lambda：批层（离线，Hive/Spark 全量精确）+ 速度层（实时，Flink 近似低延迟）双管道，服务层合并；容错、批准确，但维护两套代码、实时结果可能不一致。 Kappa：只用一条流式管道（Kafka+Flink），历史修正靠 Kafka 重放（重置 offset 重算）；架构简洁、口径统一。 演进：实时性与口径统一优先选 Kappa；需要极准确离线校正可选 Lambda，或折中「流批一体」（Flink 同时出离线与实时）。","url":"https://itinterview.com.cn/question/1578"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"实时数仓","item":"https://itinterview.com.cn/category?cat=165"},{"@type":"ListItem","position":4,"name":"实时数仓 Lambda 架构与 Kappa 架构的区别与演进？","item":"https://itinterview.com.cn/q/1578"}]}</script>

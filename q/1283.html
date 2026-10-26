@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 为什么一发布就报错 实例被直接杀掉时仍有在途请求、连接未排空、注册中心里实例状态还没更新，调用方和网关就会把流量打到正在下线的节点上，出现零星 5xx 或连接重置。 2. 优雅停机的正确顺序 1）先从注册中心 / 服务发现摘除：把实例置为下线或把权重置 0，让调用方停止把新流量打进来。 2）等待流量…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1283.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1283.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1283">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 为什么一发布就报错 实例被直接杀掉时仍有在途请求、连接未排空、注册中心里实例状态还没更新，调用方和网关就会把流量打到正在下线的节点上，出现零星 5xx 或连接重置。 2. 优雅停机的正确顺序 1）先从注册中心 / 服务发现摘除：把实例置为下线或把权重置 0，让调用方停止把新流量打进来。 2）等待流量…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1283.jpg">
+  <meta name="twitter:image:alt" content="【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1283">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？","text":"考察点：流量摘除、连接排空与健康探针的协同设计。","answerCount":1,"datePublished":"2026-09-26T02:32:18.664Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 为什么一发布就报错 实例被直接杀掉时仍有在途请求、连接未排空、注册中心里实例状态还没更新，调用方和网关就会把流量打到正在下线的节点上，出现零星 5xx 或连接重置。 2. 优雅停机的正确顺序 1）先从注册中心 / 服务发现摘除：把实例置为下线或把权重置 0，让调用方停止把新流量打进来。 2）等待流量摘除生效：给下游负载均衡缓存、网关路由缓存留出失效窗口（本地缓存通常有秒级刷新周期），不能摘除后立刻杀进程。 3）让 Readiness 探针先失败：把就绪探针置为未就绪，让 K8s 把 Pod 从 Service Endpoints 中摘除。 4）排空连接：停止接收新连接，等在途请求处理完（设置合理的宽限期），再优雅关闭线程池、连接池、MQ 消费者。 5）最后退出进程：给足进程宽限期（如 terminationGracePeriodSeconds），超时才强杀。 3. 探针不要「全依赖塞一个」 Liveness、Readiness、Startup 职责不同：Readiness 回答「能不能接流量」，Liveness 回答「进程要不要重启」，Startup 用于启动慢的应用。把数据库等外部依赖直接塞进 Liveness 很危险——数据库短暂变慢会让所有实例同时被判死并重启，把一次依赖抖动放大成集群级故障。健康检查应只检查自身关键状态。 4. 还要注意的几点 消费者的优雅下线：先停止拉取新消息，处理完在途消息再退出，避免重复消费或卡在重平衡。 发布策略：滚动发布按批次进行，配合就绪探针与最小可用实例数，避免全量同时重启。 兼容性：新旧版本并存期间接口与消息格式要向后兼容，否则滚动/灰度期间会因字段不识别而报错。 可观测：发布期间盯错误率、P99、连接数、注册实例数，出现异常能快速回滚。 一句话总结：先摘流量，再等生效，最后排空退出，同时让探针各司其职。","url":"https://itinterview.com.cn/question/1283"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"服务治理","item":"https://itinterview.com.cn/category?cat=132"},{"@type":"ListItem","position":4,"name":"【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？","item":"https://itinterview.com.cn/q/1283"}]}</script>

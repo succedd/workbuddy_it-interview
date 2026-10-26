@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="垂直拆分和水平拆分有什么区别？分别适用于什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： 垂直拆分（按业务/列）：① 垂直分库——把耦合度低的业务表拆到不同库（订单库、用户库），解耦并降低单库连接压力；② 垂直分表——把大表的“热点字段”与“扩展字段”拆开，减少单行宽度、提升缓冲池命中率。适用于业务边界清晰、或宽表冷热字段分明的场景。 水平拆分（分库分表，按行）：按分片规则（取模、范围、哈希）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1462.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="垂直拆分和水平拆分有什么区别？分别适用于什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1462.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1462">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="垂直拆分和水平拆分有什么区别？分别适用于什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： 垂直拆分（按业务/列）：① 垂直分库——把耦合度低的业务表拆到不同库（订单库、用户库），解耦并降低单库连接压力；② 垂直分表——把大表的“热点字段”与“扩展字段”拆开，减少单行宽度、提升缓冲池命中率。适用于业务边界清晰、或宽表冷热字段分明的场景。 水平拆分（分库分表，按行）：按分片规则（取模、范围、哈希）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1462.jpg">
+  <meta name="twitter:image:alt" content="垂直拆分和水平拆分有什么区别？分别适用于什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1462">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"垂直拆分和水平拆分有什么区别？分别适用于什么场景？","text":"请区分垂直分库、垂直分表与水平分库分表，并说明各自的取舍。","answerCount":1,"datePublished":"2026-10-02T02:45:42.211Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 垂直拆分（按业务/列）：① 垂直分库——把耦合度低的业务表拆到不同库（订单库、用户库），解耦并降低单库连接压力；② 垂直分表——把大表的“热点字段”与“扩展字段”拆开，减少单行宽度、提升缓冲池命中率。适用于业务边界清晰、或宽表冷热字段分明的场景。 水平拆分（分库分表，按行）：按分片规则（取模、范围、哈希）把同一张表的数据分散到多库多表，表结构完全一致，真正解决单表数据量过大的问题。 取舍：垂直拆不改变单表行数、治理简单；水平拆能横向扩容，但引入分片键、分布式事务、跨片查询等复杂度。实践中常两者结合：先垂直分库，再对超大单表水平拆分。","url":"https://itinterview.com.cn/question/1462"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"垂直拆分和水平拆分有什么区别？分别适用于什么场景？","item":"https://itinterview.com.cn/q/1462"}]}</script>

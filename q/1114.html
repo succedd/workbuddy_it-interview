@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring 事务的 7 种传播行为分别是什么，各自语义为何？ · IT面试题库">
   <meta property="og:description" content="REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1114.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring 事务的 7 种传播行为分别是什么，各自语义为何？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1114.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1114">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 事务的 7 种传播行为分别是什么，各自语义为何？ · IT面试题库">
   <meta name="twitter:description" content="REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1114.jpg">
+  <meta name="twitter:image:alt" content="Spring 事务的 7 种传播行为分别是什么，各自语义为何？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1114">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 事务的 7 种传播行为分别是什么，各自语义为何？","text":"请梳理 REQUIRED、SUPPORTS、MANDATORY、REQUIRES_NEW、NOT_SUPPORTED、NEVER、NESTED 七种传播行为的语义与典型适用场景。","answerCount":1,"datePublished":"2026-09-13T02:40:15.072Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"REQUIRED（默认）：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。 SUPPORTS / MANDATORY：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。 REQUIRES_NEW：挂起外层事务，新建独立事务，内层提交/回滚与外层互不影响——适合写审计日志、内部独立记账。 NOT_SUPPORTED / NEVER：NOT_SUPPORTED 挂起外层以非事务执行；NEVER 若已存在事务直接抛异常。 NESTED：在当前事务中建保存点，内层回滚只到保存点、外层仍可继续；依赖 JDBC 保存点，且仅同一物理事务（与 REQUIRES_NEW 的「两个物理事务」本质不同）。","url":"https://itinterview.com.cn/question/1114"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring 事务的 7 种传播行为分别是什么，各自语义为何？","item":"https://itinterview.com.cn/q/1114"}]}</script>

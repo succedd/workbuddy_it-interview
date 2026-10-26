@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="RTMP 与 HLS 协议的区别与适用场景？ · IT面试题库">
   <meta property="og:description" content="RTMP：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。 HLS（HTTP 切段）：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/686.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="RTMP 与 HLS 协议的区别与适用场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/686.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/686">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RTMP 与 HLS 协议的区别与适用场景？ · IT面试题库">
   <meta name="twitter:description" content="RTMP：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。 HLS（HTTP 切段）：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/686.jpg">
+  <meta name="twitter:image:alt" content="RTMP 与 HLS 协议的区别与适用场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/686">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RTMP 与 HLS 协议的区别与适用场景？","text":"对比两种主流流媒体协议的延迟、兼容性与用途。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RTMP：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。 HLS（HTTP 切段）：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（通常 5–30 秒）。 取舍：低延迟互动用 RTMP/SRT/WebRTC 推流，广覆盖播放用 HLS/FLV；常见架构是 RTMP 推流 + 服务端转 HLS/FLV 分发。","url":"https://itinterview.com.cn/question/686"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"流媒体协议RTMP和HLS","item":"https://itinterview.com.cn/category?cat=253"},{"@type":"ListItem","position":4,"name":"RTMP 与 HLS 协议的区别与适用场景？","item":"https://itinterview.com.cn/q/686"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？ · IT面试题库">
   <meta property="og:description" content="要点： 结构化身份：视图树位置与显式 .id 决定身份；身份变化会让系统视为销毁旧视图并创建新视图。 状态生命周期：@State 绑定到视图身份；在 ForEach 中使用不稳定 ID 会导致状态丢失或异常刷新。 实践：数据模型使用稳定唯一 ID；列表增删改时保持身份稳定，性能和导航状态才可控。">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1654.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1654.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1654">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？ · IT面试题库">
   <meta name="twitter:description" content="要点： 结构化身份：视图树位置与显式 .id 决定身份；身份变化会让系统视为销毁旧视图并创建新视图。 状态生命周期：@State 绑定到视图身份；在 ForEach 中使用不稳定 ID 会导致状态丢失或异常刷新。 实践：数据模型使用稳定唯一 ID；列表增删改时保持身份稳定，性能和导航状态才可控。">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1654.jpg">
+  <meta name="twitter:image:alt" content="SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1654">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？","text":"考察 SwiftUI 核心语义。","answerCount":1,"datePublished":"2026-10-15T12:54:42.406Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 结构化身份：视图树位置与显式 .id 决定身份；身份变化会让系统视为销毁旧视图并创建新视图。 状态生命周期：@State 绑定到视图身份；在 ForEach 中使用不稳定 ID 会导致状态丢失或异常刷新。 实践：数据模型使用稳定唯一 ID；列表增删改时保持身份稳定，性能和导航状态才可控。","url":"https://itinterview.com.cn/question/1654"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"SwiftUI","item":"https://itinterview.com.cn/category?cat=222"},{"@type":"ListItem","position":5,"name":"SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？","item":"https://itinterview.com.cn/q/1654"}]}</script>
@@ -100,7 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1654">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/756">SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/756">SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1935">SwiftUI 是什么？它和传统的 UIKit 命令式编程有什么本质区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1936">SwiftUI 中 @State、@Binding、@StateObject、@ObservedObject、@EnvironmentObject 各自解决什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1937">SwiftUI 的视图生命周期是怎样的？onAppear、onDisappear 与 .task 修饰符分别何时调用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

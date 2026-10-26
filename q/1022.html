@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="WSGI 和 ASGI 有什么区别？Flask 什么时候必须换成 ASGI？ · IT面试题库">
   <meta property="og:description" content="要点： WSGI：同步、一请求一线程/进程模型，接口是 app(environ, start_response)。无法原生支持 WebSocket、HTTP/2、SSE 长连接——因为一次调用只能返回一个完整响应体。 ASGI：异步接口，async def app(scope, receive, send)，把「…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1022.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="WSGI 和 ASGI 有什么区别？Flask 什么时候必须换成 ASGI？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1022.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1022">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WSGI 和 ASGI 有什么区别？Flask 什么时候必须换成 ASGI？ · IT面试题库">
   <meta name="twitter:description" content="要点： WSGI：同步、一请求一线程/进程模型，接口是 app(environ, start_response)。无法原生支持 WebSocket、HTTP/2、SSE 长连接——因为一次调用只能返回一个完整响应体。 ASGI：异步接口，async def app(scope, receive, send)，把「…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1022.jpg">
+  <meta name="twitter:image:alt" content="WSGI 和 ASGI 有什么区别？Flask 什么时候必须换成 ASGI？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1022">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"WSGI 和 ASGI 有什么区别？Flask 什么时候必须换成 ASGI？","text":"考察点：同步阻塞模型 vs 异步模型、WebSocket/SSE 支持、部署方式。选型题。","answerCount":1,"datePublished":"2026-09-10T11:50:56.452Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： WSGI：同步、一请求一线程/进程模型，接口是 app(environ, start_response)。无法原生支持 WebSocket、HTTP/2、SSE 长连接——因为一次调用只能返回一个完整响应体。 ASGI：异步接口，async def app(scope, receive, send)，把「接收」和「发送」拆成两个协程通道，所以支持长连接、WebSocket、流式响应、服务端推送。 性能对比要说清：ASGI ≠ 一定更快。IO 密集且并发连接数很高时优势明显（少量协程扛住上万连接）；CPU 密集场景 ASGI 没有收益（协程不能解决计算瓶颈，还要担心阻塞事件循环）。 Flask 何时必须转：① 需要 WebSocket（实时推送、协同编辑）；② 需要 SSE 流式输出（大模型对话逐字返回）；③ 大量长轮询/慢请求占满线程池，线程数成为瓶颈；④ 需要 HTTP/2 或与 ASGI 生态（如 asgi 中间件）集成。 迁移路径：Flask 本身保持同步逻辑，可用 asgiref 的 WSGIMiddleware 套一层跑在 uvicorn 上；但真正的异步需要代码 async 化——本质瓶颈在同步的 DB 驱动和 ORM。彻底重构通常意味着换 FastAPI/Starlette + async ORM（SQLAlchemy 2.0 async / Tortoise）。 加分点：Flask 也支持 async def 视图，但会被丢到线程池执行（asgiref.sync），并发能力提升有限，不是真正的异步。","url":"https://itinterview.com.cn/question/1022"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"Flask","item":"https://itinterview.com.cn/category?cat=88"},{"@type":"ListItem","position":5,"name":"WSGI 和 ASGI 有什么区别？Flask 什么时候必须换成 ASGI？","item":"https://itinterview.com.cn/q/1022"}]}</script>

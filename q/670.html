@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？ · IT面试题库">
   <meta property="og:description" content="要点一：复制依赖 binlog 主库把数据变更写进 binlog；从库把主库的 binlog 拉过来重放（replay），从而保持一致。 因为 binlog 是 Server 层日志且追加写不覆盖，天然适合作为复制的传输介质；而 redo log 循环写会覆盖，无法用于复制。 要点二：三个线程的协作过程 1) 主…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/670.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/670.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/670">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？ · IT面试题库">
   <meta name="twitter:description" content="要点一：复制依赖 binlog 主库把数据变更写进 binlog；从库把主库的 binlog 拉过来重放（replay），从而保持一致。 因为 binlog 是 Server 层日志且追加写不覆盖，天然适合作为复制的传输介质；而 redo log 循环写会覆盖，无法用于复制。 要点二：三个线程的协作过程 1) 主…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/670.jpg">
+  <meta name="twitter:image:alt" content="MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/670">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？","text":"追问链第三问。考察点：binlog + 三个线程（dump / I/O / SQL）的协作；异步复制默认不保证零丢失；半同步与 GTID 的作用。","answerCount":1,"datePublished":"2026-09-08T13:40:59.860Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：复制依赖 binlog 主库把数据变更写进 binlog；从库把主库的 binlog 拉过来重放（replay），从而保持一致。 因为 binlog 是 Server 层日志且追加写不覆盖，天然适合作为复制的传输介质；而 redo log 循环写会覆盖，无法用于复制。 要点二：三个线程的协作过程 1) 主库的 log dump 线程：从库连上来后，主库为其创建一个 dump 线程，负责读取 binlog 并推送给从库。 2) 从库的 I/O 线程：连接主库，请求 binlog，把收到的日志写入本地的 relay log（中继日志）。 3) 从库的 SQL 线程：读取 relay log，解析出日志内容并在从库上重放，使数据与主库一致。 所以整条链路是：主库 binlog → 从库 relay log → 从库数据。 要点三：复制格式与一致性 STATEMENT 格式在主从上执行同一条 SQL，遇到 now()、uuid()、limit 无 order by 等场景可能结果不同，存在主从不一致风险。 ROW 格式记录行的实际变化，最安全（MySQL 8.0 默认），但日志体积大、网络与磁盘开销更高。 生产上通常选 ROW（或 MIXED），并把从库设为 read_only 防止误写破坏一致性。 要点四：主库宕机后从库不一定完整 MySQL 默认的复制是异步的：主库写完 binlog 就返回给客户端，不等待从库接收。若主库此时宕机且 binlog 尚未传给从库，这部分数据会永久丢失，切换后从库就少了数据。 改进方案： 半同步复制（semi-sync）：主库提交后至少等待一个从库确认收到 binlog 才返回，降低丢失概率（不保证完全不丢，且超时会退化为异步）。 全同步 / 强一致方案（如 MySQL Group Replication、MGR）：多数派确认后才提交，牺牲延迟换一致性。 GTID 复制：用全局事务 ID 代替「文件名 + 偏移量」定位同步位点，故障切换时能自动找到正确位置，避免重复或漏执行。 要点五：复制的典型用途 读写分离（写走主、读走从）、数据备份（在从库备份不影响主库）、高可用切换、灰度/分析查询隔离。","url":"https://itinterview.com.cn/question/670"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？","item":"https://itinterview.com.cn/q/670"}]}</script>
@@ -88,7 +94,7 @@
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">UIKit</span><span class="chip tag">生命周期</span><span class="chip tag">UIViewController</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">UIKit</span><span class="chip tag">生命周期</span><span class="chip tag">UIViewController</span></div>
     <div class="card"><h2>题目</h2><p>追问链第三问。考察点：binlog + 三个线程（dump / I/O / SQL）的协作；异步复制默认不保证零丢失；半同步与 GTID 的作用。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点一：复制依赖 binlog</strong></p>
 <ul>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？ · IT面试题库">
   <meta property="og:description" content="关键认知：Kafka 的 EOS 是『Producer 端幂等/事务』+『Consumer 端消费与输出原子提交』协同达成的，并非单靠某一处。 要点（Producer 端）： enable.idempotence=true：Broker 为每条消息分配序列号，自动去重，保证单分区内不重不漏（at-least-on…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1154.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1154.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1154">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？ · IT面试题库">
   <meta name="twitter:description" content="关键认知：Kafka 的 EOS 是『Producer 端幂等/事务』+『Consumer 端消费与输出原子提交』协同达成的，并非单靠某一处。 要点（Producer 端）： enable.idempotence=true：Broker 为每条消息分配序列号，自动去重，保证单分区内不重不漏（at-least-on…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1154.jpg">
+  <meta name="twitter:image:alt" content="在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1154">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？","text":"考察点：精确一次语义的实现——幂等 Producer、事务、消费-处理-提交原子化，以及下游幂等兜底（高级场景题）。","answerCount":1,"datePublished":"2026-09-15T11:49:41.689Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关键认知：Kafka 的 EOS 是『Producer 端幂等/事务』+『Consumer 端消费与输出原子提交』协同达成的，并非单靠某一处。 要点（Producer 端）： enable.idempotence=true：Broker 为每条消息分配序列号，自动去重，保证单分区内不重不漏（at-least-once 升级为 effectively-once）。 跨分区的原子写用事务（transactional.id + initTransaction/send/commitTransaction），确保『向多个 Topic/Partition 写』要么全成功要么全回滚。 要点（消费-处理-输出原子化）： 用 read_committed 隔离级别消费，Consumer 把『读取消息 → 业务处理 → 写出结果 → 提交 offset』放在同一个事务里（sendOffsetsToTransaction），避免半吊子状态。 要点（兜底）：若下游是数据库，仍建议加唯一键/幂等约束，因为 EOS 主要保证 Kafka 内部语义，端到端还需下游配合。","url":"https://itinterview.com.cn/question/1154"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"在下单这类不能重复也不能丢失的场景，如何用 Kafka 实现 Exactly-Once（精确一次）语义？端到端方案是什么？","item":"https://itinterview.com.cn/q/1154"}]}</script>

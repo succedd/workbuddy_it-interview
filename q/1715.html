@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？ · IT面试题库">
   <meta property="og:description" content="要点： UTXO（未花费交易输出）：余额不是存在某个账户里，而是「属于你的所有 UTXO 之和」。每笔交易显式引用若干输入，并生成新的输出（找零给自己）；一个 UTXO 只能被花费一次，节点验证输入未被花费即可防双花。 账户模型：全局状态维护 address → balance / nonce / code / …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1715.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1715.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1715">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？ · IT面试题库">
   <meta name="twitter:description" content="要点： UTXO（未花费交易输出）：余额不是存在某个账户里，而是「属于你的所有 UTXO 之和」。每笔交易显式引用若干输入，并生成新的输出（找零给自己）；一个 UTXO 只能被花费一次，节点验证输入未被花费即可防双花。 账户模型：全局状态维护 address → balance / nonce / code / …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1715.jpg">
+  <meta name="twitter:image:alt" content="UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1715">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？","text":"考察比特币与以太坊两种账本模型的差异，以及它们对钱包、隐私和智能合约的影响。","answerCount":1,"datePublished":"2026-10-19T05:43:24.146Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： UTXO（未花费交易输出）：余额不是存在某个账户里，而是「属于你的所有 UTXO 之和」。每笔交易显式引用若干输入，并生成新的输出（找零给自己）；一个 UTXO 只能被花费一次，节点验证输入未被花费即可防双花。 账户模型：全局状态维护 address → balance / nonce / code / storage，交易只写 from、to、value，余额直接加减；nonce 严格递增，既防重放也决定交易顺序，合约账户另有代码与存储。 取舍：UTXO 天然并行验证、隐私与可审计性较好，但状态膨胀、表达智能合约困难；账户模型可读性强、适合合约与复杂状态，但需要 nonce 管理，状态膨胀更明显。比特币用 UTXO，以太坊用账户模型。","url":"https://itinterview.com.cn/question/1715"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"区块链基础","item":"https://itinterview.com.cn/category?cat=257"},{"@type":"ListItem","position":4,"name":"UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？","item":"https://itinterview.com.cn/q/1715"}]}</script>

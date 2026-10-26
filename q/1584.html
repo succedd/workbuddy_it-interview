@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。 · IT面试题库">
   <meta property="og:description" content="要点：AABB 相交判定只需在 x、y 两个轴上分别判断「两中心距离是否都小于各自半尺寸之和」，两轴都满足才相交（分离轴定理在一维上的特例）。 要点：参考实现（C#）： 要点：讲解：用中心点相减取绝对值得到「中心间距」，与「半宽/半高之和」比较即可，时间复杂度 O(1)；若要算碰撞法线或穿透深度，再比较各轴重叠量…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1584.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1584.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1584">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。 · IT面试题库">
   <meta name="twitter:description" content="要点：AABB 相交判定只需在 x、y 两个轴上分别判断「两中心距离是否都小于各自半尺寸之和」，两轴都满足才相交（分离轴定理在一维上的特例）。 要点：参考实现（C#）： 要点：讲解：用中心点相减取绝对值得到「中心间距」，与「半宽/半高之和」比较即可，时间复杂度 O(1)；若要算碰撞法线或穿透深度，再比较各轴重叠量…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1584.jpg">
+  <meta name="twitter:image:alt" content="用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1584">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。","text":"考察碰撞数学与基础几何。","answerCount":1,"datePublished":"2026-10-07T08:05:39.668Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：AABB 相交判定只需在 x、y 两个轴上分别判断「两中心距离是否都小于各自半尺寸之和」，两轴都满足才相交（分离轴定理在一维上的特例）。 要点：参考实现（C#）： 要点：讲解：用中心点相减取绝对值得到「中心间距」，与「半宽/半高之和」比较即可，时间复杂度 O(1)；若要算碰撞法线或穿透深度，再比较各轴重叠量取最小轴。注意浮点用 \u003c= 而非 \u003c，避免相切时被误判为不相交。","url":"https://itinterview.com.cn/question/1584"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"用代码实现 2D AABB（轴对齐包围盒）碰撞检测：给定两个矩形（中心 x,y 与半宽 hw、半高 hh），判断是否相交。","item":"https://itinterview.com.cn/q/1584"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？ · IT面试题库">
   <meta property="og:description" content="要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/834.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/834.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/834">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？ · IT面试题库">
   <meta name="twitter:description" content="要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/834.jpg">
+  <meta name="twitter:image:alt" content="Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/834">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？","text":"考察点：是否理解 Pod 作为最小调度单元的设计语义（共享网络/存储命名空间、逻辑主机）。追问：一个 Pod 里放多个容器适合什么场景？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。 为什么需要 Pod：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协作。 共享什么：Pod 内所有容器共享同一个网络命名空间（同一 IP + 端口空间，用 localhost 互访）和共享存储卷；不同 Pod 默认各有独立 IP，跨 Pod 通信走集群网络。 两种用法：单容器 Pod（最常见，Pod 视为容器的包装器，K8s 直接管理 Pod 而非容器）；多容器 Pod（边车/适配器等需共享资源的高级场景），例如「主容器提供 Web 服务 + sidecar 容器刷新共享卷文件」。 结论：绝大多数情况用 Deployment 间接管理 Pod 副本，而非手写裸 Pod；Pod 提供的是「共享上下文 + 协同调度」这一层抽象，容器负责运行，Pod 负责编排边界。","url":"https://itinterview.com.cn/question/834"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？","item":"https://itinterview.com.cn/q/834"}]}</script>

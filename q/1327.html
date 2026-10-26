@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？ · IT面试题库">
   <meta property="og:description" content="核心边界：Web Worker 让脚本在独立后台线程运行，使耗时处理不阻塞主线程。但 Worker 与主线程是两个独立的全局作用域：Worker 内不能直接操作 DOM，也不能使用 window 对象的默认方法和属性（MDN 原文），所以任何涉及界面更新的逻辑都必须留在主线程。 Worker 里能用什么：标准 J…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1327.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1327.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1327">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？ · IT面试题库">
   <meta name="twitter:description" content="核心边界：Web Worker 让脚本在独立后台线程运行，使耗时处理不阻塞主线程。但 Worker 与主线程是两个独立的全局作用域：Worker 内不能直接操作 DOM，也不能使用 window 对象的默认方法和属性（MDN 原文），所以任何涉及界面更新的逻辑都必须留在主线程。 Worker 里能用什么：标准 J…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1327.jpg">
+  <meta name="twitter:image:alt" content="Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1327">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？","text":"考察点：对 Web Worker 能力边界的准确认知，以及主线程与 Worker 之间的通信机制（结构化克隆 / Transferable）。","answerCount":1,"datePublished":"2026-09-26T03:32:47.517Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心边界：Web Worker 让脚本在独立后台线程运行，使耗时处理不阻塞主线程。但 Worker 与主线程是两个独立的全局作用域：Worker 内不能直接操作 DOM，也不能使用 window 对象的默认方法和属性（MDN 原文），所以任何涉及界面更新的逻辑都必须留在主线程。 Worker 里能用什么：标准 JS（String、Object、JSON 等）本身没问题；MDN 列出可用的 Web API 包括 fetch / XMLHttpRequest（注意 responseXML 恒为 null）、WebSocket、IndexedDB、定时器、OffscreenCanvas 等；Worker 还可以再创建子 Worker（必须与父页面同源）。专用 Worker（DedicatedWorker）的作用域是 DedicatedWorkerGlobalScope，不是 window。 通信机制：双方用 postMessage() 发送、onmessage（message 事件的 data 属性）接收。数据默认通过结构化克隆复制，而不是共享——MDN 原话是 \"The data is copied rather than shared\"，因此大对象跨线程传递有克隆成本。对超大 ArrayBuffer 可改用 Transferable 对象：转移所有权、零拷贝，但转移后原线程不再能访问这块内存。主线程可随时 worker.terminate() 终止，Worker 内也可 self.close() 自行结束。 适合丢给 Worker 的任务（与 UI 无关、CPU 密集、耗时明显）： 大数组排序 / 过滤 / 数值计算； 大数据解析：大 JSON / CSV 解析、文本处理； 图像像素级处理（配合 OffscreenCanvas）、加密压缩等。 不适合：需要频繁读写 DOM 的逻辑；计算量极小的任务——创建线程与克隆数据的开销可能超过计算本身。 实践要点：打包器下用 new Worker(new URL('./w.js', import.meta.url))；高频小消息应合并批量传；SharedWorker 可被多个标签页共享，Service Worker 是网络代理层，三者职责不同，别混为一谈。","url":"https://itinterview.com.cn/question/1327"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"Web Worker 能做什么、不能做什么？postMessage 传数据是复制还是共享？什么样的计算适合丢给 Worker？","item":"https://itinterview.com.cn/q/1327"}]}</script>

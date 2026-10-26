@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="对称加密（AES）与非对称加密（RSA/ECC）各自的强弱项是什么？TLS 握手为什么要「两者混用」？ · IT面试题库">
   <meta property="og:description" content="两类算法的强弱项 | | 对称（AES、ChaCha20） | 非对称（RSA、ECC） | |---|---|---| | 速度 | 极快（硬件加速，GB/s 级） | 慢 3~5 个数量级 | | 密钥 | 双方共享同一把 | 公钥可公开，私钥自持 | | 密钥分发 | 致命弱点：怎么安全地把钥匙给对方？ |…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1456.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="对称加密（AES）与非对称加密（RSA/ECC）各自的强弱项是什么？TLS 握手为什么要「两者混用」？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1456.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1456">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="对称加密（AES）与非对称加密（RSA/ECC）各自的强弱项是什么？TLS 握手为什么要「两者混用」？ · IT面试题库">
   <meta name="twitter:description" content="两类算法的强弱项 | | 对称（AES、ChaCha20） | 非对称（RSA、ECC） | |---|---|---| | 速度 | 极快（硬件加速，GB/s 级） | 慢 3~5 个数量级 | | 密钥 | 双方共享同一把 | 公钥可公开，私钥自持 | | 密钥分发 | 致命弱点：怎么安全地把钥匙给对方？ |…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1456.jpg">
+  <meta name="twitter:image:alt" content="对称加密（AES）与非对称加密（RSA/ECC）各自的强弱项是什么？TLS 握手为什么要「两者混用」？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1456">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"对称加密（AES）与非对称加密（RSA/ECC）各自的强弱项是什么？TLS 握手为什么要「两者混用」？","text":"考察现代密码学体系设计：对称/非对称的效率与密钥分发矛盾、混合加密与前向保密，是安全与后端面试的密码学基础题。","answerCount":1,"datePublished":"2026-10-01T05:33:36.091Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"两类算法的强弱项 | | 对称（AES、ChaCha20） | 非对称（RSA、ECC） | |---|---|---| | 速度 | 极快（硬件加速，GB/s 级） | 慢 3~5 个数量级 | | 密钥 | 双方共享同一把 | 公钥可公开，私钥自持 | | 密钥分发 | 致命弱点：怎么安全地把钥匙给对方？ | 天然解决（公钥随便发） | | 典型用途 | 批量数据加密 | 密钥交换、数字签名、身份认证 | 单独用任何一个都有死穴：只用对称 → 密钥无法安全分发（互联网上两方从未见过面）；只用非对称 → 性能撑不住数据量。 TLS 的混合加密体系 1. 握手阶段（非对称）：客户端验证服务器证书（证书链 + 签名验证 = 身份认证），然后协商出会话密钥——TLS 1.2 RSA 密钥传输或 TLS 1.3 ECDHE 密钥协商； 2. 数据阶段（对称）：之后所有应用数据用会话密钥 + AES-GCM / ChaCha20 加密，快。 非对称管「身份与钥匙交换」，对称管「数据批量加密」——各用所长。 前向保密（PFS）——面试必答 TLS 1.2 的 RSA 密钥传输：客户端用服务器 RSA 公钥加密预主密钥。风险：私钥一旦泄露，历史上抓过的全部流量可被解密（先存后解攻击）； TLS 1.3 强制 ECDHE：会话密钥由双方每次临时生成的椭圆曲线参数算出，私钥泄露也无法回溯解密历史流量——因为历史会话密钥根本没在网上传过、且临时参数已销毁。这就是前向保密，也是 TLS 1.3 砍掉 RSA 密钥交换的原因。 工程要点 RSA 密钥长度 ≥2048（3072 更稳），ECC 用 P-256/Curve25519 同安全强度密钥更短更快； 对称模式用 AEAD（GCM/ChaCha20-Poly1305），自带完整性——别用裸 CBC； 永远不要自己发明协议：密码学原语组合是蜜罐，直接用 TLS 库。","url":"https://itinterview.com.cn/question/1456"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"密码学基础","item":"https://itinterview.com.cn/category?cat=209"},{"@type":"ListItem","position":4,"name":"对称加密（AES）与非对称加密（RSA/ECC）各自的强弱项是什么？TLS 握手为什么要「两者混用」？","item":"https://itinterview.com.cn/q/1456"}]}</script>

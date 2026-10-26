@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？ · IT面试题库">
   <meta property="og:description" content="READ_UNCOMMITTED：能读到未提交数据，三种并发问题都不防，几乎不用。 READ_COMMITTED：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。 REPEATABLE_READ：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1118.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1118.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1118">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？ · IT面试题库">
   <meta name="twitter:description" content="READ_UNCOMMITTED：能读到未提交数据，三种并发问题都不防，几乎不用。 READ_COMMITTED：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。 REPEATABLE_READ：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1118.jpg">
+  <meta name="twitter:image:alt" content="Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1118">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？","text":"请说明 DEFAULT/READ_UNCOMMITTED/READ_COMMITTED/REPEATABLE_READ/SERIALIZABLE 各级别能防止的问题与性能代价。","answerCount":1,"datePublished":"2026-09-13T02:40:15.537Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"READ_UNCOMMITTED：能读到未提交数据，三种并发问题都不防，几乎不用。 READ_COMMITTED：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。 REPEATABLE_READ：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，靠 MVCC 与间隙锁抑制幻读。 SERIALIZABLE：完全串行化，防所有并发问题但并发度最低，仅极端一致性场景使用。 DEFAULT：沿用底层数据库默认隔离级别（MySQL 即 REPEATABLE_READ）。选型原则是在「一致性」与「并发性能」间权衡，多数业务用数据库默认即可。","url":"https://itinterview.com.cn/question/1118"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？","item":"https://itinterview.com.cn/q/1118"}]}</script>

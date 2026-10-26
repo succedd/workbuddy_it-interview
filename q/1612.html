@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请用一条 SQL 实现「每个用户取最近 3 笔订单」，并解释窗口函数相比子查询的优势。 · IT面试题库">
   <meta property="og:description" content="要点： 实现（窗口函数）：用 ROW_NUMBER() 在「按用户分区、按下单时间倒序」的窗口内编号，再取编号 ≤3。 讲解：PARTITION BY user_id 保证「每个用户」独立计数，ORDER BY created_at DESC 让最新订单编号为 1；外层 rn&lt;=3 即取每用户最近 3 笔。相比「…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1612.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请用一条 SQL 实现「每个用户取最近 3 笔订单」，并解释窗口函数相比子查询的优势。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1612.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1612">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请用一条 SQL 实现「每个用户取最近 3 笔订单」，并解释窗口函数相比子查询的优势。 · IT面试题库">
   <meta name="twitter:description" content="要点： 实现（窗口函数）：用 ROW_NUMBER() 在「按用户分区、按下单时间倒序」的窗口内编号，再取编号 ≤3。 讲解：PARTITION BY user_id 保证「每个用户」独立计数，ORDER BY created_at DESC 让最新订单编号为 1；外层 rn&lt;=3 即取每用户最近 3 笔。相比「…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1612.jpg">
+  <meta name="twitter:image:alt" content="请用一条 SQL 实现「每个用户取最近 3 笔订单」，并解释窗口函数相比子查询的优势。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1612">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请用一条 SQL 实现「每个用户取最近 3 笔订单」，并解释窗口函数相比子查询的优势。","text":"考察 SQL 实战（窗口函数 / 分组 Top-N）。","answerCount":1,"datePublished":"2026-10-10T11:54:13.675Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 实现（窗口函数）：用 ROW_NUMBER() 在「按用户分区、按下单时间倒序」的窗口内编号，再取编号 ≤3。 讲解：PARTITION BY user_id 保证「每个用户」独立计数，ORDER BY created_at DESC 让最新订单编号为 1；外层 rn\u003c=3 即取每用户最近 3 笔。相比「关联子查询 + COUNT」的老写法，窗口函数只需一次扫描、可读性好、且 PG 优化器能更好并行。 扩展：取「并列」用 RANK()/DENSE_RANK()；分页用 ROW_NUMBER() 配合 OFFSET（深分页改用 keyset 游标 WHERE id \u003c ? ORDER BY id DESC LIMIT n 避免 OFFSET 越深越慢）。","url":"https://itinterview.com.cn/question/1612"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"请用一条 SQL 实现「每个用户取最近 3 笔订单」，并解释窗口函数相比子查询的优势。","item":"https://itinterview.com.cn/q/1612"}]}</script>

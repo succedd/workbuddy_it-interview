@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？ · IT面试题库">
   <meta property="og:description" content="结论 Raft 把共识拆成「领导人选举 + 日志复制」。节点三种角色：Follower / Candidate / Leader，一切以任期（term）为逻辑时钟，term 单调递增。 选举流程 1. Follower 在随机选举超时（150–300ms）内没收到 leader 心跳 → term+1、转为 Ca…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1402.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1402.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1402">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？ · IT面试题库">
   <meta name="twitter:description" content="结论 Raft 把共识拆成「领导人选举 + 日志复制」。节点三种角色：Follower / Candidate / Leader，一切以任期（term）为逻辑时钟，term 单调递增。 选举流程 1. Follower 在随机选举超时（150–300ms）内没收到 leader 心跳 → term+1、转为 Ca…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1402.jpg">
+  <meta name="twitter:image:alt" content="Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1402">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？","text":"考察 Raft 选举流程与安全性论证。","answerCount":1,"datePublished":"2026-09-29T13:30:15.743Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 Raft 把共识拆成「领导人选举 + 日志复制」。节点三种角色：Follower / Candidate / Leader，一切以任期（term）为逻辑时钟，term 单调递增。 选举流程 1. Follower 在随机选举超时（150–300ms）内没收到 leader 心跳 → term+1、转为 Candidate、给自己投票并向所有节点发 RequestVote 拉票； 2. 收到请求的节点投票规则：对方 term 不小于自己，且对方日志至少与自己一样新（最后日志 term 更大；相同则 index 更大），且本任期尚未投过票 → 投票并重置自己的超时； 3. 拿到多数派选票 → 成为 leader，先 append 一条 no-op 再开始心跳；任何时刻发现更大的 term → 立即退回 Follower。 三个设计为什么能防脑裂 随机超时：各节点错峰发起选举，先到者容易拿票，避免多候选人长期活锁； 一任期一票 + 多数派：同一 term 最多产生一个 leader。网络分区下少数派永远凑不齐多数票、选不出 leader；旧 term 的 leader 一旦收到新 term 消息会自动退位——两个「主」并存且都接受写的情况在 Raft 里不可能出现，最多出现「旧 leader 还在服务少数派但写不进去」（未提交）； 日志新者胜：已提交（多数派持有）的日志不会被没有它的候选人赢走选举，保证已提交数据不丢。 分区恢复后：旧 leader 降级，其未提交日志被新 leader 的日志覆盖；已提交日志由 Log Matching 性质保证一致。这是「CAP 里选 C 而不是 A」的教科书体现——分区时少数派不可用，但数据绝不分裂。","url":"https://itinterview.com.cn/question/1402"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"一致性算法","item":"https://itinterview.com.cn/category?cat=120"},{"@type":"ListItem","position":4,"name":"Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？","item":"https://itinterview.com.cn/q/1402"}]}</script>
@@ -109,7 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1402">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/446">Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1403">Basic Paxos 的两阶段（Prepare/Promise、Accept/Accepted）是如何达成共识的？Multi-Paxos 又优化了什么？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/446">Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1403">Basic Paxos 的两阶段（Prepare/Promise、Accept/Accepted）是如何达成共识的？Multi-Paxos 又优化了什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1793">Raft 的日志复制和 commitIndex 是怎么推进的？网络分区恢复后如何保证已提交日志不丢？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

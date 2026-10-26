@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="进程间通信（IPC）有哪些方式？分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： 管道（Pipe/FIFO）：半双工、字节流，适合有亲缘关系的进程（如父子）之间简单的单向数据流；匿名管道只能用于父子，命名管道（FIFO）可跨无亲缘关系进程。 消息队列：内核维护的带类型消息链表，解耦生产者/消费者，适合结构化、异步通信，但存在内核拷贝开销与队列长度上限。 共享内存：多个进程映射同一块物理…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/366.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="进程间通信（IPC）有哪些方式？分别适合什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/366.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/366">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="进程间通信（IPC）有哪些方式？分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： 管道（Pipe/FIFO）：半双工、字节流，适合有亲缘关系的进程（如父子）之间简单的单向数据流；匿名管道只能用于父子，命名管道（FIFO）可跨无亲缘关系进程。 消息队列：内核维护的带类型消息链表，解耦生产者/消费者，适合结构化、异步通信，但存在内核拷贝开销与队列长度上限。 共享内存：多个进程映射同一块物理…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/366.jpg">
+  <meta name="twitter:image:alt" content="进程间通信（IPC）有哪些方式？分别适合什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/366">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"进程间通信（IPC）有哪些方式？分别适合什么场景？","text":"考察点：管道、消息队列、共享内存、信号量、信号、Socket 等 IPC 手段的对比，以及“大数据量/跨主机/父子进程”等不同场景下的选型。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:32.546Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 管道（Pipe/FIFO）：半双工、字节流，适合有亲缘关系的进程（如父子）之间简单的单向数据流；匿名管道只能用于父子，命名管道（FIFO）可跨无亲缘关系进程。 消息队列：内核维护的带类型消息链表，解耦生产者/消费者，适合结构化、异步通信，但存在内核拷贝开销与队列长度上限。 共享内存：多个进程映射同一块物理内存，速度最快（免拷贝），适合大数据量交换；缺点是无内置同步，必须配合信号量/互斥锁使用。 信号量（Semaphore）：本质是计数器，用于进程间同步与互斥，常作为共享内存的“锁”。 信号（Signal）：异步通知机制（如 SIGKILL、SIGTERM），适合事件通知而非数据传输。 Socket：最通用，支持跨主机通信，性能略低但适用范围最广（本地域套接字也常用于本机进程间）。 选型口诀：小数据通知用信号、父子流用管道、结构化异步用消息队列、海量数据用共享内存+信号量、跨机器用 Socket。","url":"https://itinterview.com.cn/question/366"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"操作系统原理","item":"https://itinterview.com.cn/category?cat=4"},{"@type":"ListItem","position":4,"name":"进程间通信（IPC）有哪些方式？分别适合什么场景？","item":"https://itinterview.com.cn/q/366"}]}</script>

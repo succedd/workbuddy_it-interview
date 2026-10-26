@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。 · IT面试题库">
   <meta property="og:description" content="GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/565.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/565.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/565">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。 · IT面试题库">
   <meta name="twitter:description" content="GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/565.jpg">
+  <meta name="twitter:image:alt" content="请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/565">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。","text":"GitFlow 定义了 master/develop/feature/release/hotfix 等长期分支。请说明各分支职责与典型流程，并开放性讨论：在 CI/CD 高频发布、main 即生产的今天，GitFlow 的优缺点与适用边界。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"GitFlow 分支模型： master：仅存放已发布的生产代码，每次合并都对应一个版本标签。 develop：集成分支，日常开发成果的汇总。 feature/：从 develop 拉出，开发单个功能，完成后合并回 develop。 release/：从 develop 拉出做发布准备（测试、修 bug、打版本），完成后合并回 master 与 develop。 hotfix/*：从 master 拉出修线上紧急 bug，修完合并回 master 与 develop。 流程：feature→develop→release→master(打tag) + develop。 优缺点（开放讨论）： 优点：结构清晰、适合有明确版本节奏/多版本并行维护（如客户端、嵌入式）的团队；hotfix 路径明确。 缺点：分支多、流程重；长期存在的 develop/release 易与 master 脱节；与“小步快跑、持续部署”理念冲突。 现代取舍： 高频 CI/CD、main 即生产的团队更倾向 Trunk-Based Development（TBD）：仅 main + 短命 feature 分支，靠保护分支 + CI + Feature Flag 控制发布。 结论：GitFlow 仍适合需要维护多个已发布版本、发布周期较长的项目；纯 Web 服务且持续交付的场景，TBD/GitHub Flow 更轻量高效。选型取决于发布频率与多版本需求，而非一概而论。","url":"https://itinterview.com.cn/question/565"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"Git版本控制","item":"https://itinterview.com.cn/category?cat=99"},{"@type":"ListItem","position":4,"name":"请描述 GitFlow 工作流的核心分支模型，并讨论它在现代团队（如 trunk-based 开发）中是否仍然适用。","item":"https://itinterview.com.cn/q/565"}]}</script>
@@ -113,7 +119,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/565">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/563">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/564">如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/566">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/567">git cherry-pick 是什么？在什么场景下使用，使用时要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/855">rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/563">git rebase 和 git merge 有什么区别？各自适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/564">如何撤销 Git 中的修改？reset、revert、checkout 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/566">合并时出现冲突（conflict）该如何定位与解决？给出一个典型冲突文件的修复步骤。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

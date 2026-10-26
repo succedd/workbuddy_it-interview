@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？ · IT面试题库">
   <meta property="og:description" content="① 先用 jstat 确认趋势（不阻断服务） jstat -gcutil 1000 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。 对比多次 dump 的老年代水位，单调递增即泄漏信号。 ② 抓堆转储（选窗口期，注意 STW） jmap -dump:live,f…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/414.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/414.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/414">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？ · IT面试题库">
   <meta name="twitter:description" content="① 先用 jstat 确认趋势（不阻断服务） jstat -gcutil 1000 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。 对比多次 dump 的老年代水位，单调递增即泄漏信号。 ② 抓堆转储（选窗口期，注意 STW） jmap -dump:live,f…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/414.jpg">
+  <meta name="twitter:image:alt" content="Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/414">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？","text":"考察点：先用 jstat 看 GC 趋势确认泄漏，再用 jmap 抓堆转储，最后用 MAT 找支配树/疑似泄漏点（Dominator Tree、Path to GC Roots）。属故障排查题。","answerCount":1,"datePublished":"2026-09-01T10:09:35.284Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"① 先用 jstat 确认趋势（不阻断服务） jstat -gcutil 1000 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。 对比多次 dump 的老年代水位，单调递增即泄漏信号。 ② 抓堆转储（选窗口期，注意 STW） jmap -dump:live,format=b,file=heap.hprof （live 只保留存活对象，但会触发 Full GC）；生产可用 -F（强制，但更慢）。 启动参数加 -XX:+HeapDumpOnOutOfMemoryError 让 OOM 时自动 dump。 ③ MAT 分析引用链 打开 heap.hprof，看 Histogram（按类统计实例数/浅堆/深堆），找异常膨胀的类（如 HashMap、缓存、ThreadLocal）。 用 Dominator Tree（支配树） 找『谁 hold 住了大部分内存』；对可疑对象 Path to GC Roots（exclude weak/soft/phantom）看谁强引用着它——典型是静态集合、未清理缓存、ThreadLocal 未 remove、监听器未注销。 Leak Suspects 报告会直接给疑似泄漏点与引用链，适合快速定位。 口诀：先 jstat 看趋势 → jmap 抓现场 → MAT 顺 GC Roots 找强引用。","url":"https://itinterview.com.cn/question/414"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？","item":"https://itinterview.com.cn/q/414"}]}</script>

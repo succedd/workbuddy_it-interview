@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>什么场景下该选 Cassandra？它和 HBase、传统关系型数据库该怎么取舍？ · IT面试题库</title>
-  <meta name="description" content="要点： 选 Cassandra 的场景：写多读少、需要线性水平扩展与多机房多活/高可用（AP 系统，节点故障不影响写入）、按主键/宽行查询为主（如时序、会话、事件日志、消息收件箱、IoT 数据）。其优势是「加节点即加吞吐」、无单点、可调一致性。 vs 关系型（MySQL/PG）：关系型强在事务（ACID）、复杂 …">
+  <title>PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？ · IT面试题库</title>
+  <meta name="description" content="去耦的目标是降低 PDN 阻抗 芯片在开关瞬间需要电流，电源平面和去耦电容要在目标频段内提供低阻抗回路；如果回路电感大，电容再大也来不及供电流。 电容的有效频段受容值、ESL、安装过孔和走线电感限制：大电容管低频，小电容管高频，但小电容的 ESL 可能让它在高频反而失效。 布局比选型更重要 去耦电容尽量靠近电源脚…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="什么场景下该选 Cassandra？它和 HBase、传统关系型数据库该怎么取舍？ · IT面试题库">
-  <meta property="og:description" content="要点： 选 Cassandra 的场景：写多读少、需要线性水平扩展与多机房多活/高可用（AP 系统，节点故障不影响写入）、按主键/宽行查询为主（如时序、会话、事件日志、消息收件箱、IoT 数据）。其优势是「加节点即加吞吐」、无单点、可调一致性。 vs 关系型（MySQL/PG）：关系型强在事务（ACID）、复杂 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:title" content="PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？ · IT面试题库">
+  <meta property="og:description" content="去耦的目标是降低 PDN 阻抗 芯片在开关瞬间需要电流，电源平面和去耦电容要在目标频段内提供低阻抗回路；如果回路电感大，电容再大也来不及供电流。 电容的有效频段受容值、ESL、安装过孔和走线电感限制：大电容管低频，小电容管高频，但小电容的 ESL 可能让它在高频反而失效。 布局比选型更重要 去耦电容尽量靠近电源脚…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1767.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1767.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1767">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="什么场景下该选 Cassandra？它和 HBase、传统关系型数据库该怎么取舍？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 选 Cassandra 的场景：写多读少、需要线性水平扩展与多机房多活/高可用（AP 系统，节点故障不影响写入）、按主键/宽行查询为主（如时序、会话、事件日志、消息收件箱、IoT 数据）。其优势是「加节点即加吞吐」、无单点、可调一致性。 vs 关系型（MySQL/PG）：关系型强在事务（ACID）、复杂 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:title" content="PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？ · IT面试题库">
+  <meta name="twitter:description" content="去耦的目标是降低 PDN 阻抗 芯片在开关瞬间需要电流，电源平面和去耦电容要在目标频段内提供低阻抗回路；如果回路电感大，电容再大也来不及供电流。 电容的有效频段受容值、ESL、安装过孔和走线电感限制：大电容管低频，小电容管高频，但小电容的 ESL 可能让它在高频反而失效。 布局比选型更重要 去耦电容尽量靠近电源脚…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1767.jpg">
+  <meta name="twitter:image:alt" content="PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1767">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么场景下该选 Cassandra？它和 HBase、传统关系型数据库该怎么取舍？","text":"考察点：存储选型能力——理解各数据库的适用边界，而非「哪个最新用哪个」。","answerCount":1,"datePublished":"2026-10-19T12:30:56.441Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 选 Cassandra 的场景：写多读少、需要线性水平扩展与多机房多活/高可用（AP 系统，节点故障不影响写入）、按主键/宽行查询为主（如时序、会话、事件日志、消息收件箱、IoT 数据）。其优势是「加节点即加吞吐」、无单点、可调一致性。 vs 关系型（MySQL/PG）：关系型强在事务（ACID）、复杂 JOIN 与即席查询、强一致；Cassandra 没有跨行事务、不擅长聚合/JOIN，但扩展性与写吞吐远超单机关系库。需要事务/强一致选关系型，需要海量写与多活选 Cassandra。 vs HBase：HBase 也基于 LSM、强一致（CP，依赖 HDFS/ZK）、适合超大规模随机读写的列式存储，但运维重（依赖 Hadoop 生态）；Cassandra 自带完整存储、部署轻、原生多数据中心复制更易用。简单说：要「简单多活+写扩展」用 Cassandra，已在 Hadoop 体系且要强一致随机读写用 HBase。选型看一致性诉求、运维能力与查询模式。","url":"https://itinterview.com.cn/question/1767"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Cassandra","item":"https://itinterview.com.cn/category?cat=36"},{"@type":"ListItem","position":5,"name":"什么场景下该选 Cassandra？它和 HBase、传统关系型数据库该怎么取舍？","item":"https://itinterview.com.cn/q/1767"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？","text":"考察电源完整性（PI）与去耦网络设计：电容不是越多越好，位置、回路电感和频段匹配更关键。","answerCount":1,"datePublished":"2026-10-21T01:44:36.564Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"去耦的目标是降低 PDN 阻抗 芯片在开关瞬间需要电流，电源平面和去耦电容要在目标频段内提供低阻抗回路；如果回路电感大，电容再大也来不及供电流。 电容的有效频段受容值、ESL、安装过孔和走线电感限制：大电容管低频，小电容管高频，但小电容的 ESL 可能让它在高频反而失效。 布局比选型更重要 去耦电容尽量靠近电源脚，缩短到电源/地平面的过孔回路；多个过孔并联降低电感；避免长细走线。 电源平面与地平面靠近、完整，形成平面电容；不要让电源平面被大量过孔/分割切碎。 先做 PDN 目标阻抗分析（按电流、允许纹波、频段），再用仿真/实测调整电容组合，而不是机械地每个脚放 0.1µF。 常见问题 只放小电容没有大容量储能，低频跌落；电容离芯片太远，回路电感抵消效果；过孔太少；地平面不完整导致回流路径差。 验证 用网络分析仪测 PDN 阻抗、用示波器测电源纹波和负载瞬态响应；高速芯片参考厂商的 PDN/去耦指南。","url":"https://itinterview.com.cn/question/1767"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"硬件与PCB设计","item":"https://itinterview.com.cn/category?cat=280"},{"@type":"ListItem","position":4,"name":"PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？","item":"https://itinterview.com.cn/q/1767"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -87,25 +93,38 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>什么场景下该选 Cassandra？它和 HBase、传统关系型数据库该怎么取舍？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">Cassandra</span><span class="chip tag">选型</span><span class="chip tag">HBase</span><span class="chip tag">分布式存储</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：存储选型能力——理解各数据库的适用边界，而非「哪个最新用哪个」。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>PCB 去耦电容和电源平面怎么配合？为什么「每个电源脚放 0.1µF」不一定有效？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">PCB设计工程师</span><span class="chip tag">去耦电容</span><span class="chip tag">电源完整性</span><span class="chip tag">PDN</span><span class="chip tag">EMC</span></div>
+    <div class="card"><h2>题目</h2><p>考察电源完整性（PI）与去耦网络设计：电容不是越多越好，位置、回路电感和频段匹配更关键。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>去耦的目标是降低 PDN 阻抗</strong></p>
 <ul>
-<li>选 Cassandra 的场景：写多读少、需要<strong>线性水平扩展</strong>与<strong>多机房多活/高可用</strong>（AP 系统，节点故障不影响写入）、按主键/宽行查询为主（如时序、会话、事件日志、消息收件箱、IoT 数据）。其优势是「加节点即加吞吐」、无单点、可调一致性。</li>
-<li>vs 关系型（MySQL/PG）：关系型强在事务（ACID）、复杂 JOIN 与即席查询、强一致；Cassandra 没有跨行事务、不擅长聚合/JOIN，但扩展性与写吞吐远超单机关系库。需要事务/强一致选关系型，需要海量写与多活选 Cassandra。</li>
-<li>vs HBase：HBase 也基于 LSM、强一致（CP，依赖 HDFS/ZK）、适合超大规模随机读写的列式存储，但运维重（依赖 Hadoop 生态）；Cassandra 自带完整存储、部署轻、原生多数据中心复制更易用。简单说：要「简单多活+写扩展」用 Cassandra，已在 Hadoop 体系且要强一致随机读写用 HBase。选型看一致性诉求、运维能力与查询模式。</li>
+<li>芯片在开关瞬间需要电流，电源平面和去耦电容要在目标频段内提供低阻抗回路；如果回路电感大，电容再大也来不及供电流。</li>
+<li>电容的有效频段受容值、ESL、安装过孔和走线电感限制：大电容管低频，小电容管高频，但小电容的 ESL 可能让它在高频反而失效。</li>
+</ul>
+<p><strong>布局比选型更重要</strong></p>
+<ul>
+<li>去耦电容尽量靠近电源脚，缩短到电源/地平面的过孔回路；多个过孔并联降低电感；避免长细走线。</li>
+<li>电源平面与地平面靠近、完整，形成平面电容；不要让电源平面被大量过孔/分割切碎。</li>
+<li>先做 PDN 目标阻抗分析（按电流、允许纹波、频段），再用仿真/实测调整电容组合，而不是机械地每个脚放 0.1µF。</li>
+</ul>
+<p><strong>常见问题</strong></p>
+<ul>
+<li>只放小电容没有大容量储能，低频跌落；电容离芯片太远，回路电感抵消效果；过孔太少；地平面不完整导致回流路径差。</li>
+</ul>
+<p><strong>验证</strong></p>
+<ul>
+<li>用网络分析仪测 PDN 阻抗、用示波器测电源纹波和负载瞬态响应；高速芯片参考厂商的 PDN/去耦指南。</li>
 </ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1767">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/725">Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1435">Cassandra 的读写一致性如何调节？为什么说 W + R &gt; N 就能保证强一致？这个说法的漏洞在哪里？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1761">要为「用户最近 100 条消息」这类时序/会话场景设计 Cassandra 表，应该怎么建表？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1762">Cassandra 的写路径是怎样的？为什么写入快、又是基于 LSM 树？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1766">PCB 叠层设计时，层数、参考平面和阻抗控制之间是什么关系？为什么高速信号不能只看线宽？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1800">DDR 布线为什么常用 Fly-by 拓扑？Write Leveling、Read Leveling 和等长分别解决什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1801">PCB 地平面为什么要避免跨分割？回流路径断了会发生什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1802">过孔 stub 为什么会影响高速信号？背钻（back drilling）解决什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=36&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=280&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

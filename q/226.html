@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Pod 为什么会在 Pending 状态卡住？ · IT面试题库">
   <meta property="og:description" content="Pending 是 K8s Pod 的一种状态，表示 Pod 已经被 K8s 接收了，但还没能正常运行起来——相当于&quot;排队等候中&quot;。 --- Pod 的几种常见状态 | 状态 | 含义 | 类比 | |------|------|------| | Pending | 已提交，但还没启动 | 你取了号，但还在等叫…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/226.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Pod 为什么会在 Pending 状态卡住？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/226.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/226">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Pod 为什么会在 Pending 状态卡住？ · IT面试题库">
   <meta name="twitter:description" content="Pending 是 K8s Pod 的一种状态，表示 Pod 已经被 K8s 接收了，但还没能正常运行起来——相当于&quot;排队等候中&quot;。 --- Pod 的几种常见状态 | 状态 | 含义 | 类比 | |------|------|------| | Pending | 已提交，但还没启动 | 你取了号，但还在等叫…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/226.jpg">
+  <meta name="twitter:image:alt" content="Pod 为什么会在 Pending 状态卡住？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/226">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Pod 为什么会在 Pending 状态卡住？","text":"Pod 为什么会在 Pending 状态卡住？","answerCount":1,"datePublished":"2026-08-24T09:04:05.325Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Pending 是 K8s Pod 的一种状态，表示 Pod 已经被 K8s 接收了，但还没能正常运行起来——相当于\"排队等候中\"。 --- Pod 的几种常见状态 | 状态 | 含义 | 类比 | |------|------|------| | Pending | 已提交，但还没启动 | 你取了号，但还在等叫号 | | Running | 正常运行中 | 正在吃饭 | | Succeeded | 任务完成（一次性任务） | 吃完了走人 | | Failed | 出错了 | 饭没做好 | | CrashLoopBackOff | 启动→崩溃→重启→崩溃循环 | 吃了吐、吐了吃 | | Unknown | 联系不上 Pod 了 | 人不见了 | --- Pod 为什么会在 Pending 状态卡住？ Pending 说白了就是资源不够或者条件不满足，常见原因： | 原因 | 具体说明 | |------|---------| | CPU/内存不足 | 集群没有足够的资源来运行这个 Pod | | GPU 资源不够 | 你要用 GPU 卡，但集群里没空余的 | | 镜像拉不下来 | 镜像不存在、仓库认证失败、网络不通 | | PVC 未就绪 | 申请的持久化存储还没准备好 | | 节点选择器不匹配 | 你指定了要在某类节点上跑，但没有符合条件的节点 | | 污点/容忍度 | 节点有污点（Taints），Pod 没有对应的容忍度（Tolerations） | --- 面试中可以怎么讲？ 结合你的简历，可以这样说： \"在电信项目运维 K8s 平台时，我经常需要排查 Pod 处于 Pending 状态的问题。通常先用 kubectl describe pod 查看 Events，定位具体原因——比如是资源不足就申请扩容节点，是镜像拉取失败就检查仓库配置和网络策略。定位到根因后，协调对应资源解决，确保业务 Pod 尽快进入 Running 状态。\" --- 一句话总结：Pending 就是 Pod 在\"排队等资源\"，用 kubectl describe pod 看 Events 就能知道它卡在哪一步了～😊","url":"https://itinterview.com.cn/question/226"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Pod 为什么会在 Pending 状态卡住？","item":"https://itinterview.com.cn/q/226"}]}</script>
@@ -88,7 +94,7 @@
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>Pod 为什么会在 Pending 状态卡住？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">前端开发工程师</span><span class="chip">公有云售后技术支持</span><span class="chip">公有云售后技术支持</span><span class="chip tag">k8s</span><span class="chip tag">pending</span></div>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">前端开发工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">k8s</span><span class="chip tag">pending</span></div>
     <div class="card"><h2>题目</h2><p>Pod 为什么会在 Pending 状态卡住？</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>Pending</strong> 是 K8s Pod 的一种状态，表示 Pod <strong>已经被 K8s 接收了，但还没能正常运行起来</strong>——相当于&quot;排队等候中&quot;。</p>
 <p>---</p>

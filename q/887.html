@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="liveness 与 readiness 探针配错会导致「Pod 一直重启」或「流量打进未就绪实例」。请分别给出错误配置样例与正确姿势。 · IT面试题库">
   <meta property="og:description" content="错误 vs 正确： liveness 误配：把「依赖外部 DB 的接口」当存活探针 → DB 抖动就杀容器触发无限重启。正确：liveness 只探进程自身是否活着（如 /healthz 仅查内存/内部状态），不依赖外部依赖。 readiness 误配：漏配 readiness，或 readiness 探针路径错…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/887.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="liveness 与 readiness 探针配错会导致「Pod 一直重启」或「流量打进未就绪实例」。请分别给出错误配置样例与正确姿势。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/887.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/887">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="liveness 与 readiness 探针配错会导致「Pod 一直重启」或「流量打进未就绪实例」。请分别给出错误配置样例与正确姿势。 · IT面试题库">
   <meta name="twitter:description" content="错误 vs 正确： liveness 误配：把「依赖外部 DB 的接口」当存活探针 → DB 抖动就杀容器触发无限重启。正确：liveness 只探进程自身是否活着（如 /healthz 仅查内存/内部状态），不依赖外部依赖。 readiness 误配：漏配 readiness，或 readiness 探针路径错…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/887.jpg">
+  <meta name="twitter:image:alt" content="liveness 与 readiness 探针配错会导致「Pod 一直重启」或「流量打进未就绪实例」。请分别给出错误配置样例与正确姿势。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/887">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"liveness 与 readiness 探针配错会导致「Pod 一直重启」或「流量打进未就绪实例」。请分别给出错误配置样例与正确姿势。","text":"考察两类探针的误用。","answerCount":1,"datePublished":"2026-09-09T02:22:50.351Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"错误 vs 正确： liveness 误配：把「依赖外部 DB 的接口」当存活探针 → DB 抖动就杀容器触发无限重启。正确：liveness 只探进程自身是否活着（如 /healthz 仅查内存/内部状态），不依赖外部依赖。 readiness 误配：漏配 readiness，或 readiness 探针路径错误 → 容器一启动就被加进 Service endpoints，流量打进还没初始化的实例（报错）。正确：readiness 探「能否接流量」（依赖就绪、缓存预热完成）才通过。 initialDelaySeconds 太短：应用还没起来探针就失败，Pod 反复重启。正确：配 startupProbe 给慢启动应用更长的启动宽限期，期间 liveness 不介入。 判据：「重启多」查 liveness；「有流量但报错/503」查 readiness。","url":"https://itinterview.com.cn/question/887"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"liveness 与 readiness 探针配错会导致「Pod 一直重启」或「流量打进未就绪实例」。请分别给出错误配置样例与正确姿势。","item":"https://itinterview.com.cn/q/887"}]}</script>

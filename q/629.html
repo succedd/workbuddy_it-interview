@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="实现短链核心：用自增发号器 ID 生成 Base62 短码，并支持短码反解回 ID，写出代码并讲解。 · IT面试题库">
   <meta property="og:description" content="要点： 核心思路：短码 = 把十进制发号器 ID 转为 62 进制（字符集 0-9a-zA-Z），位数 = ⌈log62(ID)⌉；反解即 62 进制转十进制，天然可逆、无需查表前缀。 字符集顺序固定：前后端必须共用同一套 62 字符，否则短码错位。 注意：ID 从 1 起避免前导 0；高并发下发号器用 Redi…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/629.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="实现短链核心：用自增发号器 ID 生成 Base62 短码，并支持短码反解回 ID，写出代码并讲解。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/629.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/629">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="实现短链核心：用自增发号器 ID 生成 Base62 短码，并支持短码反解回 ID，写出代码并讲解。 · IT面试题库">
   <meta name="twitter:description" content="要点： 核心思路：短码 = 把十进制发号器 ID 转为 62 进制（字符集 0-9a-zA-Z），位数 = ⌈log62(ID)⌉；反解即 62 进制转十进制，天然可逆、无需查表前缀。 字符集顺序固定：前后端必须共用同一套 62 字符，否则短码错位。 注意：ID 从 1 起避免前导 0；高并发下发号器用 Redi…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/629.jpg">
+  <meta name="twitter:image:alt" content="实现短链核心：用自增发号器 ID 生成 Base62 短码，并支持短码反解回 ID，写出代码并讲解。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/629">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"实现短链核心：用自增发号器 ID 生成 Base62 短码，并支持短码反解回 ID，写出代码并讲解。","text":"考察点：掌握进制编码（Base62）在短链中的应用与可逆性。","answerCount":1,"datePublished":"2026-09-06T02:24:01.533Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心思路：短码 = 把十进制发号器 ID 转为 62 进制（字符集 0-9a-zA-Z），位数 = ⌈log62(ID)⌉；反解即 62 进制转十进制，天然可逆、无需查表前缀。 字符集顺序固定：前后端必须共用同一套 62 字符，否则短码错位。 注意：ID 从 1 起避免前导 0；高并发下发号器用 Redis INCR/雪花/Leaf 保证唯一。 讲解：id_to_code 是除 62 取余拼字符；code_to_id 是 Horner 法按位加权求和；二者互逆，短码即 ID 的紧凑表示。","url":"https://itinterview.com.cn/question/629"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"软件架构模式","item":"https://itinterview.com.cn/category?cat=98"},{"@type":"ListItem","position":4,"name":"实现短链核心：用自增发号器 ID 生成 Base62 短码，并支持短码反解回 ID，写出代码并讲解。","item":"https://itinterview.com.cn/q/629"}]}</script>

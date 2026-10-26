@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。 · IT面试题库">
   <meta property="og:description" content="要点： 生成向量：用 sentence-transformers 的 encode，开启 normalize_embeddings=True 让余弦相似度等价于内积，检索更稳定；中英文选多语言模型（如 paraphrase-multilingual-MiniLM 或 bge 系列）。 建库与检索：FAISS 的 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/619.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/619.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/619">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。 · IT面试题库">
   <meta name="twitter:description" content="要点： 生成向量：用 sentence-transformers 的 encode，开启 normalize_embeddings=True 让余弦相似度等价于内积，检索更稳定；中英文选多语言模型（如 paraphrase-multilingual-MiniLM 或 bge 系列）。 建库与检索：FAISS 的 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/619.jpg">
+  <meta name="twitter:image:alt" content="用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/619">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。","text":"考察点：掌握 embedding 生成与向量检索的最小可运行实现，理解 model、normalize_embeddings、index 选型等关键参数。","answerCount":1,"datePublished":"2026-09-06T02:23:31.518Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 生成向量：用 sentence-transformers 的 encode，开启 normalize_embeddings=True 让余弦相似度等价于内积，检索更稳定；中英文选多语言模型（如 paraphrase-multilingual-MiniLM 或 bge 系列）。 建库与检索：FAISS 的 IndexFlatIP（内积）配合归一化向量即余弦检索，简单场景够用；量大再换 IVF/PQ 近似索引降延迟。 关键参数：batch_size 控制显存；top_k 决定召回候选数（通常 3–10）；k 越大召回越全但噪声越多。 讲解：normalize_embeddings=True 后内积=余弦；IndexFlatIP 是精确检索，上线前用它验证召回上限，再按需切换到近似索引降延迟与显存。","url":"https://itinterview.com.cn/question/619"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。","item":"https://itinterview.com.cn/q/619"}]}</script>

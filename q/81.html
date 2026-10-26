@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 如何保证消息不丢失？ · IT面试题库">
   <meta property="og:description" content="生产端：acks=all（leader 等待 ISR 副本都写入才返回）+ 重试 retries + 关闭异步丢弃；可配 enable.idempotence=true 防重。 服务端：副本因子 replication.factor≥3，min.insync.replicas≥2，leader 切换时数据不丢。 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/81.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 如何保证消息不丢失？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/81.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/81">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 如何保证消息不丢失？ · IT面试题库">
   <meta name="twitter:description" content="生产端：acks=all（leader 等待 ISR 副本都写入才返回）+ 重试 retries + 关闭异步丢弃；可配 enable.idempotence=true 防重。 服务端：副本因子 replication.factor≥3，min.insync.replicas≥2，leader 切换时数据不丢。 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/81.jpg">
+  <meta name="twitter:image:alt" content="Kafka 如何保证消息不丢失？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/81">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 如何保证消息不丢失？","text":"从生产端、服务端、消费端三方说明。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"生产端：acks=all（leader 等待 ISR 副本都写入才返回）+ 重试 retries + 关闭异步丢弃；可配 enable.idempotence=true 防重。 服务端：副本因子 replication.factor≥3，min.insync.replicas≥2，leader 切换时数据不丢。 消费端：先处理业务再手动提交 offset（enable.auto.commit=false），避免“消费中崩溃但 offset 已提交”导致丢消息。 权衡：高可靠会牺牲一点吞吐与延迟，按业务要求调参。","url":"https://itinterview.com.cn/question/81"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 如何保证消息不丢失？","item":"https://itinterview.com.cn/q/81"}]}</script>

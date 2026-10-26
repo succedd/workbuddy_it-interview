@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Android 中 Activity 的生命周期回调有哪些？各自代表什么？ · IT面试题库">
   <meta property="og:description" content="结论 Activity 是 Android 四大组件之一，生命周期由系统通过一组回调管理： onCreate()：Activity 第一次创建时调用，做初始化（setContentView、绑定数据、初始化变量）。 onStart()：Activity 即将可见但尚未可交互。 onResume()：进入前台、可交…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/250.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Android 中 Activity 的生命周期回调有哪些？各自代表什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/250.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/250">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Android 中 Activity 的生命周期回调有哪些？各自代表什么？ · IT面试题库">
   <meta name="twitter:description" content="结论 Activity 是 Android 四大组件之一，生命周期由系统通过一组回调管理： onCreate()：Activity 第一次创建时调用，做初始化（setContentView、绑定数据、初始化变量）。 onStart()：Activity 即将可见但尚未可交互。 onResume()：进入前台、可交…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/250.jpg">
+  <meta name="twitter:image:alt" content="Android 中 Activity 的生命周期回调有哪些？各自代表什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/250">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Android 中 Activity 的生命周期回调有哪些？各自代表什么？","text":"Android 中 Activity 的生命周期回调有哪些？各自代表什么？","answerCount":1,"datePublished":"2026-08-28T06:18:20.392Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 Activity 是 Android 四大组件之一，生命周期由系统通过一组回调管理： onCreate()：Activity 第一次创建时调用，做初始化（setContentView、绑定数据、初始化变量）。 onStart()：Activity 即将可见但尚未可交互。 onResume()：进入前台、可交互，应用真正“运行中”的状态。 onPause()：失去焦点但仍可见（如被弹窗覆盖），应保存临时状态、停止动画。 onStop()：完全不可见。 onDestroy()：被销毁前调用，释放资源。 onRestart()：从停止态重新回到运行态时调用（stop → start 之间）。 典型流转：启动 → onCreate → onStart → onResume；按 Home 键 → onPause → onStop；再回来 → onRestart → onStart → onResume；退出 → onPause → onStop → onDestroy。 注意：系统可能不调用 onDestroy 直接杀进程；临时 UI 状态用 onSaveInstanceState / onRestoreInstanceState 在 onStop 前 / onStart 后保存恢复。","url":"https://itinterview.com.cn/question/250"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android 中 Activity 的生命周期回调有哪些？各自代表什么？","item":"https://itinterview.com.cn/q/250"}]}</script>

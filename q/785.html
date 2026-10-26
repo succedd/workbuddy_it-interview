@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库">
   <meta property="og:description" content="Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/785.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/785.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/785">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库">
   <meta name="twitter:description" content="Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/785.jpg">
+  <meta name="twitter:image:alt" content="常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/785">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？","text":"对比三种激活函数的用途、优缺点与适用位置。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Sigmoid：把输出压到 (0,1)，适合二分类输出层；缺点是易饱和导致梯度消失、输出非零中心。 ReLU：f(x)=max(0,x)，计算简单、缓解梯度消失、加速收敛；缺点是“神经元死亡”（负区恒为 0），衍生 LeakyReLU/PReLU 改进。 Softmax：把多类 logits 转成和为 1 的概率分布，用于多分类输出层。隐藏层现代多用 ReLU 族，输出层按任务选 Sigmoid/Softmax。","url":"https://itinterview.com.cn/question/785"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"常用激活函数（Sigmoid/ReLU/Softmax）各自作用与缺点？","item":"https://itinterview.com.cn/q/785"}]}</script>
@@ -97,7 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/785">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/794">神经网络反向传播（BP）的基本思想是什么？梯度消失/爆炸怎么缓解？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/794">神经网络反向传播（BP）的基本思想是什么？梯度消失/爆炸怎么缓解？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1783">论文复现时，数据泄漏、随机种子和评估协议分别该怎么处理？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1821">训练深度网络时，学习率 warmup、归一化和梯度裁剪分别解决什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1823">生成模型的评估为什么要结合自动指标和人类评估？FID、CLIPScore 各有什么局限？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

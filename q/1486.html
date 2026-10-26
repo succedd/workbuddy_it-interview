@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？ · IT面试题库">
   <meta property="og:description" content="机制：Angular 每个 Module/组件/指令都有 Injector，形成层级注入器。实例化时按「组件树从下往上 → 模块注入器 → root」查找 token：就近优先，子级 provider 会遮蔽父级，实现按组件树隔离（如路由级服务每个 lazy module 一份）。 注册方式：① 类上 @Inje…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1486.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1486.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1486">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？ · IT面试题库">
   <meta name="twitter:description" content="机制：Angular 每个 Module/组件/指令都有 Injector，形成层级注入器。实例化时按「组件树从下往上 → 模块注入器 → root」查找 token：就近优先，子级 provider 会遮蔽父级，实现按组件树隔离（如路由级服务每个 lazy module 一份）。 注册方式：① 类上 @Inje…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1486.jpg">
+  <meta name="twitter:image:alt" content="Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1486">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？","text":"说明 Injector 层级与查找规则，以及 @Injectable、providers、Module、forRoot 的区别。","answerCount":1,"datePublished":"2026-10-05T01:03:55.605Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"机制：Angular 每个 Module/组件/指令都有 Injector，形成层级注入器。实例化时按「组件树从下往上 → 模块注入器 → root」查找 token：就近优先，子级 provider 会遮蔽父级，实现按组件树隔离（如路由级服务每个 lazy module 一份）。 注册方式：① 类上 @Injectable({providedIn: 'root'})——tree-shakable，最推荐；② Module/组件 providers: [{provide, useClass/useValue/useFactory/useExisting}]——控制作用域与多实现替换；③ 路由级 providers——进入路由才创建；④ 懒加载模块 forRoot()/forChild() 避免 root 重复实例化。 注意：providedIn:'root' 是全局单例；组件级 provider 每个组件实例各一份；@SkipSelf/@Optional/@Self 修饰查找行为。","url":"https://itinterview.com.cn/question/1486"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Angular","item":"https://itinterview.com.cn/category?cat=65"},{"@type":"ListItem","position":5,"name":"Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？","item":"https://itinterview.com.cn/q/1486"}]}</script>

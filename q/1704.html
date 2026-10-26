@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？ · IT面试题库">
   <meta property="og:description" content="要点： SDP 是能力清单：描述媒体类型（音频/视频/数据通道）、传输协议、codec 及参数（payload type、rtcp-fb 能力）、ICE 候选与 DTLS 指纹。 m-line 对应一条媒体轨：每条 m-line 声明一类媒体及其端口/协议，answer 必须逐条回应；数量或顺序不匹配会直接导致协…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1704.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1704.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1704">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？ · IT面试题库">
   <meta name="twitter:description" content="要点： SDP 是能力清单：描述媒体类型（音频/视频/数据通道）、传输协议、codec 及参数（payload type、rtcp-fb 能力）、ICE 候选与 DTLS 指纹。 m-line 对应一条媒体轨：每条 m-line 声明一类媒体及其端口/协议，answer 必须逐条回应；数量或顺序不匹配会直接导致协…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1704.jpg">
+  <meta name="twitter:image:alt" content="SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1704">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？","text":"考察 SDP 协商细节，要求说明 m-line/codec 的匹配规则与优先级语义。","answerCount":1,"datePublished":"2026-10-17T10:38:23.657Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： SDP 是能力清单：描述媒体类型（音频/视频/数据通道）、传输协议、codec 及参数（payload type、rtcp-fb 能力）、ICE 候选与 DTLS 指纹。 m-line 对应一条媒体轨：每条 m-line 声明一类媒体及其端口/协议，answer 必须逐条回应；数量或顺序不匹配会直接导致协商失败。 codec 顺序即优先级：answer 通常取双方支持的交集中按 offer 顺序最靠前的一个——想让对端优先用 H.264 而不是 VP8，就把 H.264 放到 offer 的 m=video 段前面。 实践：协商失败先对比两侧 SDP 的 m-line 与 rtcp-fb 支持（nack/pli/transport-cc 缺项会让弱网对抗能力失效），再查 ICE 候选收集情况。","url":"https://itinterview.com.cn/question/1704"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"SDP 的 offer/answer 协商具体在谈什么？m-line 与 codec 列表的顺序为什么会影响最终使用的编码？","item":"https://itinterview.com.cn/q/1704"}]}</script>

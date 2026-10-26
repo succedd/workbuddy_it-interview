@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？ · IT面试题库">
   <meta property="og:description" content="完整链路（以 www.example.com 为例）： 1. 浏览器 DNS 缓存 → 操作系统缓存（hosts 文件）→ 路由器缓存； 2. 均未命中，请求本地 DNS 服务器（运营商分配的递归服务器）； 3. 本地 DNS 依次问：根服务器（返回 .com 顶级域服务器地址）→ 顶级域服务器（返回 examp…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/915.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/915.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/915">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？ · IT面试题库">
   <meta name="twitter:description" content="完整链路（以 www.example.com 为例）： 1. 浏览器 DNS 缓存 → 操作系统缓存（hosts 文件）→ 路由器缓存； 2. 均未命中，请求本地 DNS 服务器（运营商分配的递归服务器）； 3. 本地 DNS 依次问：根服务器（返回 .com 顶级域服务器地址）→ 顶级域服务器（返回 examp…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/915.jpg">
+  <meta name="twitter:image:alt" content="DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/915">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？","text":"请描述从浏览器到权威 DNS 的完整解析链路，并解释递归与迭代、DNS 缓存与常见记录类型。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"完整链路（以 www.example.com 为例）： 1. 浏览器 DNS 缓存 → 操作系统缓存（hosts 文件）→ 路由器缓存； 2. 均未命中，请求本地 DNS 服务器（运营商分配的递归服务器）； 3. 本地 DNS 依次问：根服务器（返回 .com 顶级域服务器地址）→ 顶级域服务器（返回 example.com 权威服务器地址）→ 权威服务器（返回最终 IP）； 4. 本地 DNS 缓存结果并返回给客户端。 递归 vs 迭代：客户端→本地 DNS 是递归（你要替我拿到最终答案）；本地 DNS→各级服务器是迭代（每次只告诉我下一步问谁）。 常见记录类型：A（域名→IPv4）、AAAA（IPv6）、CNAME（别名，常用于接入 CDN）、NS（权威服务器）、MX（邮件）、TXT（验证/防垃圾）。 优化：TTL 控制缓存时长；HTTPDNS 绕过运营商劫持；预解析 。","url":"https://itinterview.com.cn/question/915"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"DNS原理","item":"https://itinterview.com.cn/category?cat=52"},{"@type":"ListItem","position":4,"name":"DNS 域名解析的完整过程是什么？递归查询与迭代查询有何区别？","item":"https://itinterview.com.cn/q/915"}]}</script>

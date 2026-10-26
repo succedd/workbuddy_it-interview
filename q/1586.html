@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="多人实时游戏里，帧同步（Lockstep）与状态同步（State Sync）如何取舍？各自适合什么游戏、有哪些网络难点？ · IT面试题库">
   <meta property="og:description" content="要点：帧同步：所有客户端跑同一套确定性逻辑，只同步「输入指令」，由帧号驱动；优点是带宽极小、逻辑一致性强（适合 MOBA/格斗/RTS），难点是「确定性」要求极高（浮点、随机数、执行顺序都必须一致），且断线重连/防作弊难。 要点：状态同步：服务器是权威，每帧/每 tick 把实体状态（位置、血量）下发给客户端；优…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1586.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="多人实时游戏里，帧同步（Lockstep）与状态同步（State Sync）如何取舍？各自适合什么游戏、有哪些网络难点？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1586.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1586">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="多人实时游戏里，帧同步（Lockstep）与状态同步（State Sync）如何取舍？各自适合什么游戏、有哪些网络难点？ · IT面试题库">
   <meta name="twitter:description" content="要点：帧同步：所有客户端跑同一套确定性逻辑，只同步「输入指令」，由帧号驱动；优点是带宽极小、逻辑一致性强（适合 MOBA/格斗/RTS），难点是「确定性」要求极高（浮点、随机数、执行顺序都必须一致），且断线重连/防作弊难。 要点：状态同步：服务器是权威，每帧/每 tick 把实体状态（位置、血量）下发给客户端；优…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1586.jpg">
+  <meta name="twitter:image:alt" content="多人实时游戏里，帧同步（Lockstep）与状态同步（State Sync）如何取舍？各自适合什么游戏、有哪些网络难点？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1586">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"多人实时游戏里，帧同步（Lockstep）与状态同步（State Sync）如何取舍？各自适合什么游戏、有哪些网络难点？","text":"考察网络同步架构选型。","answerCount":1,"datePublished":"2026-10-07T08:05:40.594Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：帧同步：所有客户端跑同一套确定性逻辑，只同步「输入指令」，由帧号驱动；优点是带宽极小、逻辑一致性强（适合 MOBA/格斗/RTS），难点是「确定性」要求极高（浮点、随机数、执行顺序都必须一致），且断线重连/防作弊难。 要点：状态同步：服务器是权威，每帧/每 tick 把实体状态（位置、血量）下发给客户端；优点是防作弊强、断线易重连（适合 FPS/MMO），难点是带宽大、延迟感强需做客户端预测与插值。 要点：工程折中：现代方案多在状态同步基础上加「客户端预测 + 服务器和解（reconciliation）」来掩盖延迟——本地先按输入推进，收到服务器权威状态后回滚修正，配合插值让其他玩家平滑移动，参考 Gabriel Gambetta 的经典架构。","url":"https://itinterview.com.cn/question/1586"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏服务端开发","item":"https://itinterview.com.cn/category?cat=236"},{"@type":"ListItem","position":4,"name":"多人实时游戏里，帧同步（Lockstep）与状态同步（State Sync）如何取舍？各自适合什么游戏、有哪些网络难点？","item":"https://itinterview.com.cn/q/1586"}]}</script>
@@ -97,7 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1586">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/692">游戏服务端（如 MMO）的架构挑战（状态同步/帧同步、断线重连）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1587">多人游戏里客户端预测（Client-side Prediction）与插值（Interpolation）分别解决什么问题？为什么缺一不可？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/692">游戏服务端（如 MMO）的架构挑战（状态同步/帧同步、断线重连）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1587">多人游戏里客户端预测（Client-side Prediction）与插值（Interpolation）分别解决什么问题？为什么缺一不可？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1912">MMO 游戏服务端为什么要分区分服/跨服？怎么设计？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1913">游戏服务端如何做反外挂和协议安全？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

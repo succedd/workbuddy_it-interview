@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？ · IT面试题库">
   <meta property="og:description" content="要点： 所处层次：Filter 是 Servlet 规范层级，位于 Servlet 容器，对所有请求（包括静态资源、甚至 DispatcherServlet 之前）生效；Interceptor 是 Spring MVC 层级，只拦截进入 DispatcherServlet 并由 Handler 处理的请求。 能力…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1622.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1622.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1622">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？ · IT面试题库">
   <meta name="twitter:description" content="要点： 所处层次：Filter 是 Servlet 规范层级，位于 Servlet 容器，对所有请求（包括静态资源、甚至 DispatcherServlet 之前）生效；Interceptor 是 Spring MVC 层级，只拦截进入 DispatcherServlet 并由 Handler 处理的请求。 能力…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1622.jpg">
+  <meta name="twitter:image:alt" content="Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1622">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？","text":"基础，考察二者边界（与拦截器实战题呼应）。","answerCount":1,"datePublished":"2026-10-10T11:54:36.131Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 所处层次：Filter 是 Servlet 规范层级，位于 Servlet 容器，对所有请求（包括静态资源、甚至 DispatcherServlet 之前）生效；Interceptor 是 Spring MVC 层级，只拦截进入 DispatcherServlet 并由 Handler 处理的请求。 能力差异：Filter 拿不到 Spring 上下文 / Bean，只能做字符编码、XSS 过滤、粗粒度鉴权等；Interceptor 能访问 Handler（Controller 方法）、Spring Bean、ModelAndView，适合细粒度权限、日志、参数预处理。 执行顺序：请求时 Filter → DispatcherServlet → Interceptor.preHandle → Handler → Interceptor.postHandle → 视图渲染 → Interceptor.afterCompletion；响应返回时 afterCompletion 在 Filter 之后。异常时 afterCompletion 仍会执行（Filter 的异常由其自身处理）。","url":"https://itinterview.com.cn/question/1622"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 的拦截器（Interceptor）和过滤器（Filter）有什么区别？执行顺序如何？","item":"https://itinterview.com.cn/q/1622"}]}</script>

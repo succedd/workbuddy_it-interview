@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="向量数据库常用索引（Flat / HNSW / IVF / PQ）的原理与取舍是什么？ · IT面试题库">
   <meta property="og:description" content="Flat（暴力）：全量精确扫描，召回率 100%，但 O(N·d)，适合百万以下或做召回基准。 HNSW（分层图）：多层跳表式近邻图，查询从顶层稀疏图贪心下降到底层精细图。优点：召回高（95%+）、低延迟、支持增量插入；缺点：内存占用大（存大量图边）、构建慢、删除支持弱。中小规模高要求场景首选。 IVF（倒排文件…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1527.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="向量数据库常用索引（Flat / HNSW / IVF / PQ）的原理与取舍是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1527.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1527">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="向量数据库常用索引（Flat / HNSW / IVF / PQ）的原理与取舍是什么？ · IT面试题库">
   <meta name="twitter:description" content="Flat（暴力）：全量精确扫描，召回率 100%，但 O(N·d)，适合百万以下或做召回基准。 HNSW（分层图）：多层跳表式近邻图，查询从顶层稀疏图贪心下降到底层精细图。优点：召回高（95%+）、低延迟、支持增量插入；缺点：内存占用大（存大量图边）、构建慢、删除支持弱。中小规模高要求场景首选。 IVF（倒排文件…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1527.jpg">
+  <meta name="twitter:image:alt" content="向量数据库常用索引（Flat / HNSW / IVF / PQ）的原理与取舍是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1527">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"向量数据库常用索引（Flat / HNSW / IVF / PQ）的原理与取舍是什么？","text":"对比四类索引在召回率、速度、内存、构建成本上的差异。","answerCount":1,"datePublished":"2026-10-05T01:04:01.008Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Flat（暴力）：全量精确扫描，召回率 100%，但 O(N·d)，适合百万以下或做召回基准。 HNSW（分层图）：多层跳表式近邻图，查询从顶层稀疏图贪心下降到底层精细图。优点：召回高（95%+）、低延迟、支持增量插入；缺点：内存占用大（存大量图边）、构建慢、删除支持弱。中小规模高要求场景首选。 IVF（倒排文件）：先 K-means 把向量聚成 nlist 个簇，查询只扫最近的 nprobe 个簇。优点：内存友好、构建快；缺点：召回受 nprobe 影响（扫得少漏得多），簇边界数据易漏。大数据量基础款，常与 PQ 组合。 PQ（乘积量化）：把向量切段、每段聚类用码本 ID 压缩，内存降 10~30 倍，有损。IVF-PQ 组合是十亿级向量标配。 取舍口诀：数据小用 Flat；要高召回低延迟用 HNSW；数据巨大先 IVF/PQ 压内存再谈召回；磁盘型场景（DiskANN）平衡成本与召回。","url":"https://itinterview.com.cn/question/1527"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"向量数据库","item":"https://itinterview.com.cn/category?cat=199"},{"@type":"ListItem","position":5,"name":"向量数据库常用索引（Flat / HNSW / IVF / PQ）的原理与取舍是什么？","item":"https://itinterview.com.cn/q/1527"}]}</script>

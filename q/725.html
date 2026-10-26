@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？ · IT面试题库">
   <meta property="og:description" content="一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/725.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/725.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/725">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？ · IT面试题库">
   <meta name="twitter:description" content="一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/725.jpg">
+  <meta name="twitter:image:alt" content="Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/725">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","text":"解释 Cassandra 可调一致性与 AP 取向。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一致性级别：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。 可调一致：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。 最终一致性：Cassandra 属 AP 系统（CAP 中优先可用与分区容忍），副本间异步修复（read repair/hinted handoff），短暂不一致会收敛。适合写入极高、可容忍短暂不一致的场景。","url":"https://itinterview.com.cn/question/725"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Cassandra","item":"https://itinterview.com.cn/category?cat=36"},{"@type":"ListItem","position":5,"name":"Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？","item":"https://itinterview.com.cn/q/725"}]}</script>

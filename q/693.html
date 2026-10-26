@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？ · IT面试题库">
   <meta property="og:description" content="顶点处理：顶点着色器变换坐标（模型→视图→投影），输出裁剪空间坐标。 图元装配与裁剪：把顶点连成三角形，裁剪掉视锥外部分，做透视除法得 NDC。 光栅化：把三角形离散为屏幕上的片元（候选像素）。 片元处理：片元着色器计算每个片元颜色，再做深度/模板测试、混合，写入帧缓冲。理解管线才能定位性能瓶颈（顶点重/填充率重）。">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/693.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/693.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/693">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="顶点处理：顶点着色器变换坐标（模型→视图→投影），输出裁剪空间坐标。 图元装配与裁剪：把顶点连成三角形，裁剪掉视锥外部分，做透视除法得 NDC。 光栅化：把三角形离散为屏幕上的片元（候选像素）。 片元处理：片元着色器计算每个片元颜色，再做深度/模板测试、混合，写入帧缓冲。理解管线才能定位性能瓶颈（顶点重/填充率重）。">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/693.jpg">
+  <meta name="twitter:image:alt" content="OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/693">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？","text":"描述从提交顶点到屏幕像素经过的关键阶段。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"顶点处理：顶点着色器变换坐标（模型→视图→投影），输出裁剪空间坐标。 图元装配与裁剪：把顶点连成三角形，裁剪掉视锥外部分，做透视除法得 NDC。 光栅化：把三角形离散为屏幕上的片元（候选像素）。 片元处理：片元着色器计算每个片元颜色，再做深度/模板测试、混合，写入帧缓冲。理解管线才能定位性能瓶颈（顶点重/填充率重）。","url":"https://itinterview.com.cn/question/693"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"OpenGL","item":"https://itinterview.com.cn/category?cat=237"},{"@type":"ListItem","position":4,"name":"OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？","item":"https://itinterview.com.cn/q/693"}]}</script>
@@ -98,7 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/693">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1448">OpenGL 里 VBO / VAO / EBO 各存什么？为什么移动端 DrawCall 次数比三角形数量更影响性能？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1569">什么是 Z-buffer（深度缓冲）？它解决了什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1570">渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1448">OpenGL 里 VBO / VAO / EBO 各存什么？为什么移动端 DrawCall 次数比三角形数量更影响性能？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1569">什么是 Z-buffer（深度缓冲）？它解决了什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1570">渲染出现 Z-fighting（深度闪烁/打架）的原因与缓解办法是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1871">AR/VR 性能优化：90fps、单眼渲染和注视点渲染怎么配合？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

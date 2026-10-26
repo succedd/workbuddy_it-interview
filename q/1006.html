@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？ · IT面试题库">
   <meta property="og:description" content="要点： 文档模型：BSON（二进制 JSON）把关联数据内嵌在一个文档里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。 建模核心抉择：嵌入 vs 引用——「一起读写的数据嵌进去」（一对一、一对少量），「独立增…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1006.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1006.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1006">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？ · IT面试题库">
   <meta name="twitter:description" content="要点： 文档模型：BSON（二进制 JSON）把关联数据内嵌在一个文档里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。 建模核心抉择：嵌入 vs 引用——「一起读写的数据嵌进去」（一对一、一对少量），「独立增…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1006.jpg">
+  <meta name="twitter:image:alt" content="MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1006">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？","text":"考察点：文档模型与关系模型差异、嵌入 vs 引用、schema 灵活性的代价。","answerCount":1,"datePublished":"2026-09-10T07:26:34.178Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 文档模型：BSON（二进制 JSON）把关联数据内嵌在一个文档里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。 建模核心抉择：嵌入 vs 引用——「一起读写的数据嵌进去」（一对一、一对少量），「独立增长/多对多的用引用+$lookup」。反范式是有意设计而非偷懒，但引用层级过深会把 JOIN 问题换个形式带回来。 不该用的场景：① 强多表事务与复杂 SQL 分析（4.0+ 事务可用但不是主场）；② 高规范化、实体关系复杂的账务系统；③ 强 schema 合规审计要求；④ 重度 JOIN 报表——那是关系库/数仓的主场。 片键（shard key）：分片集群的片键一旦选定极难更换，范围片键防热但要防单调写入热点（用哈希片键），选型必须前置想清楚。","url":"https://itinterview.com.cn/question/1006"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？","item":"https://itinterview.com.cn/q/1006"}]}</script>

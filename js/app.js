@@ -1812,6 +1812,8 @@
   async function pagePositionDetail(id) {
     const p = Services.getPosition(parseInt(id));
     if (!p) { setMain(`<div class="empty">未找到该岗位</div>`); return; }
+    /* 岗位页此前一律沿用站点通用标题，搜索引擎和分享出去都看不出是哪个岗位。 */
+    document.title = Services.posFullName(p) + "面试题 · IT面试题库";
     const skills = Services.skillsOf(p.id);
     const required = skills.filter(s => s.required);
     const bonus = skills.filter(s => !s.required);
@@ -1820,13 +1822,36 @@
     const posQs = Services.questions.filter(q => Services.matchPosition(q, p));
     const dist = { "初级": 0, "中级": 0, "高级": 0, "专家": 0 };
     posQs.forEach(q => { if (dist[q.difficulty] != null) dist[q.difficulty]++; });
+    /* 未整理技术栈的岗位（目前占多数）此前会摆一座「技术栈数量 0」+ 两行「暂无配置」，
+       看着像页面坏了。这里改用题目真实分布兜底：按分类统计，不编造技术栈。 */
+    const catTally = new Map();
+    posQs.forEach(q => {
+      if (q.categoryId == null) return;
+      catTally.set(q.categoryId, (catTally.get(q.categoryId) || 0) + 1);
+    });
+    const catById = new Map((Services.categories || []).map(c => [c.id, c]));
+    const topCats = [...catTally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const catCard = ([cid, n]) => {
+      const c = catById.get(cid);
+      const name = (c && c.name) || ("分类 #" + cid);
+      return `<div class="skill-card" style="cursor:pointer" onclick="App.go('/category?cat=${cid}')">
+        <div class="sk-name">${U.esc(name)}</div>
+        <div class="muted" style="font-size:12px;margin-top:4px">本岗位 ${n} 题</div>
+      </div>`;
+    };
     const skillCard = (s) => {
       const onClick = s.categoryId != null ? `onclick="App.go('/category?cat=${s.categoryId}')"` : `onclick="App.go('/questions?q=${encodeURIComponent(s.techName)}')"`;
+      /* 原先只比对 tags / catName，子分类下的题统计不到，几乎恒为 0；
+         改成整个分类子树一起计，与点进去看到的题目列表数量一致。 */
+      const catIds = s.categoryId != null ? new Set([s.categoryId].concat(Services.descendantIds(s.categoryId))) : null;
+      const relatedCount = Services.questions.filter(q => catIds
+        ? catIds.has(q.categoryId)
+        : (q.tags || []).indexOf(s.techName) >= 0 || q.catName === s.techName).length;
       return `<div class="skill-card ${s.required ? "" : "bonus"}" style="cursor:pointer" ${onClick}>
         <div class="sk-name">${U.esc(s.techName)} ${s.required ? "" : '<span class="tag tag-ai" style="font-size:10px">加分</span>'}</div>
         <div class="sk-depth">掌握深度：${U.esc(s.depth)}</div>
         <div>${U.stars(s.stars)}</div>
-        <div class="muted" style="font-size:12px;margin-top:4px">题库相关题：${Services.questions.filter(q => (q.tags || []).indexOf(s.techName) >= 0 || (q.catName === s.techName)).length}</div>
+        <div class="muted" style="font-size:12px;margin-top:4px">题库相关题：${relatedCount}</div>
       </div>`;
     };
     const hot = posQs.slice().sort((a, b) => (b.views || 0) + (b.favorites || 0) - (a.views || 0) - (a.favorites || 0)).slice(0, 6);
@@ -1836,12 +1861,15 @@
       <p class="secondary">${U.esc(p.description || (p.category ? "隶属「" + p.category + "」方向" : "该岗位共关联 " + qn + " 道题目"))}</p>
       <div class="grid grid-cols-2" style="margin:16px 0">
         <div class="card"><div class="stat"><div class="num">${qn}</div><div class="label">岗位题目数</div></div></div>
-        <div class="card"><div class="stat ai"><div class="num">${skills.length}</div><div class="label">技术栈数量</div></div></div>
+        <div class="card"><div class="stat ai"><div class="num">${skills.length || topCats.length}</div><div class="label">${skills.length ? "技术栈数量" : "覆盖技术分类"}</div></div></div>
       </div>
+      ${skills.length ? `
       <div class="section-head"><h2>必考技术栈</h2></div>
       <div class="grid grid-cols-3">${required.length ? required.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>
       <div class="section-head"><h2>加分技术栈</h2></div>
-      <div class="grid grid-cols-3">${bonus.length ? bonus.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>
+      <div class="grid grid-cols-3">${bonus.length ? bonus.map(skillCard).join("") : '<div class="muted">暂无配置</div>'}</div>` : `
+      <div class="section-head"><h2>高频技术分类</h2><span class="muted" style="font-size:12px">按本岗位现有题目统计（技术栈尚未人工整理）</span></div>
+      <div class="grid grid-cols-3">${topCats.length ? topCats.map(catCard).join("") : '<div class="muted">暂无题目</div>'}</div>`}
       <div class="section-head"><h2>题目难度分布</h2></div>
       <div class="card"><div id="pos-chart" style="height:260px" role="img" aria-label="岗位题目难度分布图"></div></div>
       ${(() => {
@@ -1866,7 +1894,7 @@
         const adj = allPos.filter(x => Services.questionCountForPosition(x) >= 8).slice(0, 3);
         const adjHtml = adj.length ? `<div class="note" style="margin-top:12px;font-size:13px">同阶段题量更足的岗位：${adj.map(x => `<a href="/position/${x.id}">${U.esc(Services.posFullName(x))}（${Services.questionCountForPosition(x)} 题）</a>`).join(" · ")}</div>` : "";
         return `<div class="section-head"><h2>岗位题单</h2><a class="more" href="/practice?scope=pos&pos=${p.id}&mode=seq">按题单顺序刷 →</a></div>
-          ${thin ? `<div class="note" style="margin-bottom:10px">该岗位题量偏少，目前只有 <b>${qn}</b> 题，题单先覆盖现有题目；后续会继续补题。${adjHtml}</div>` : `<div class="muted" style="font-size:13px;margin:-4px 0 10px">按「基础 → 进阶 → 冲刺」顺序刷，避免一上来就做难题。</div>`}
+          ${thin ? `<div class="note" style="margin-bottom:10px">该岗位题量偏少，目前只有 <b>${qn}</b> 题，题单先覆盖现有题目；后续会继续补题。${adjHtml}</div>` : `<div class="muted" style="font-size:13px;margin:-4px 0 10px">本页精选 ${used.size}/${qn} 题，按「基础 → 进阶 → 冲刺」顺序分组；要看完整题单请点下方「查看全部题目」。</div>`}
           <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">${thin ? allCard : stageCard("第 1 阶段 · 基础", "先过初级/中级高频题，建立知识框架", base) + stageCard("第 2 阶段 · 进阶", "覆盖中级/高级场景题，练分析和取舍", adv) + stageCard("第 3 阶段 · 冲刺", "面试前快速过题，优先看高浏览/高收藏", sprint)}</div>`;
       })()}
       <div class="section-head"><h2>热门题目</h2></div>
@@ -6637,7 +6665,7 @@
 
         <div class="about-stats">
           ${stat("layers", qCount, "题目", "#2563EB")}
-          ${stat("grid", catCount, "技术体系", "#7C3AED")}
+          ${stat("grid", catCount, "技术分类", "#7C3AED")}
           ${stat("briefcase", posCount, "岗位", "#0EA5A5")}
           ${stat("clock", updStr, "最近更新", "#F59E0B", true)}
         </div>

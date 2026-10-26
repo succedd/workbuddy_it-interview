@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。 · IT面试题库">
   <meta property="og:description" content="正确认知：两者最易被混淆的是『是否自动随请求发送』，选错会带来安全或性能问题。 要点： 是否随请求发送：Cookie 约 4KB，每次同源 HTTP 请求自动携带（含给后端的请求），可设 HttpOnly/Secure/SameSite；Web Storage（localStorage/sessionStorag…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1161.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1161.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1161">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。 · IT面试题库">
   <meta name="twitter:description" content="正确认知：两者最易被混淆的是『是否自动随请求发送』，选错会带来安全或性能问题。 要点： 是否随请求发送：Cookie 约 4KB，每次同源 HTTP 请求自动携带（含给后端的请求），可设 HttpOnly/Secure/SameSite；Web Storage（localStorage/sessionStorag…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1161.jpg">
+  <meta name="twitter:image:alt" content="Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1161">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。","text":"考察点：浏览器存储方案对比——容量、生命周期、作用域、是否随请求发送，避免把敏感 token 误存（单选题）。","answerCount":1,"datePublished":"2026-09-15T11:49:56.703Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确认知：两者最易被混淆的是『是否自动随请求发送』，选错会带来安全或性能问题。 要点： 是否随请求发送：Cookie 约 4KB，每次同源 HTTP 请求自动携带（含给后端的请求），可设 HttpOnly/Secure/SameSite；Web Storage（localStorage/sessionStorage）不随请求发送，纯客户端。 生命周期：localStorage 持久化，关浏览器也不丢，同源共享；sessionStorage 仅当前标签页会话有效，关页即清。 容量与用途：localStorage/sessionStorage 约 5~10MB，适合长期偏好设置、离线数据；Cookie 体积小便签，适合存认证 token、会话标识（但需防 XSS 读取，故敏感值加 HttpOnly）。 关键区别：Cookie 随请求走、有大小限制且涉安全属性；Web Storage 容量大、不自动发送。 典型干扰项：『localStorage 关页就清空』（错，那是 sessionStorage）。","url":"https://itinterview.com.cn/question/1161"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。","item":"https://itinterview.com.cn/q/1161"}]}</script>

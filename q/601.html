@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="矩阵运算：乘法、转置、逆、秩分别是什么含义？ · IT面试题库">
   <meta property="og:description" content="1. 矩阵乘法 $C=AB$，其中 $c_{ij}=\sum_k a_{ik}b_{kj}$。 维度约束：A 为 $m\times n$、B 为 $n\times p$ → C 为 $m\times p$（内维必须相等）。 不满足交换律（$AB\neq BA$），满足结合律、分配律。神经网络前向传播本质就是矩阵连…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/601.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="矩阵运算：乘法、转置、逆、秩分别是什么含义？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/601.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/601">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="矩阵运算：乘法、转置、逆、秩分别是什么含义？ · IT面试题库">
   <meta name="twitter:description" content="1. 矩阵乘法 $C=AB$，其中 $c_{ij}=\sum_k a_{ik}b_{kj}$。 维度约束：A 为 $m\times n$、B 为 $n\times p$ → C 为 $m\times p$（内维必须相等）。 不满足交换律（$AB\neq BA$），满足结合律、分配律。神经网络前向传播本质就是矩阵连…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/601.jpg">
+  <meta name="twitter:image:alt" content="矩阵运算：乘法、转置、逆、秩分别是什么含义？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/601">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"矩阵运算：乘法、转置、逆、秩分别是什么含义？","text":"请说明矩阵乘法规则与维度约束、转置、逆存在的条件、以及秩（rank）的意义，并指出这些内容在 ML 中的用途。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 矩阵乘法 $C=AB$，其中 $c_{ij}=\\sum_k a_{ik}b_{kj}$。 维度约束：A 为 $m\\times n$、B 为 $n\\times p$ → C 为 $m\\times p$（内维必须相等）。 不满足交换律（$AB\\neq BA$），满足结合律、分配律。神经网络前向传播本质就是矩阵连乘。 2. 转置 $A^T$：$(A^T)_{ij}=a_{ji}$。性质：$(AB)^T=B^T A^T$。 3. 逆 $A^{-1}$ 满足 $AA^{-1}=I$。 存在条件：A 为方阵且满秩（可逆/非奇异）。 线性方程组 $Ax=b$ 的解为 $x=A^{-1}b$（实际计算多用 LU/QR 分解而非直接求逆）。 线性回归正规方程 $\\hat w=(X^TX)^{-1}X^Ty$ 即用到伪逆思想。 4. 秩 rank(A)：线性无关行/列的最大数目。 rank 满（=min(行,列)）↔ 可逆（方阵时）； 秩反映数据「有效维度」，低秩常用于矩阵分解/降维/推荐系统（如 SVD、协同过滤）。 ML 用途：特征变换=矩阵乘；协方差矩阵对称；PCA 依赖特征值分解；梯度即雅可比/向量化矩阵运算。","url":"https://itinterview.com.cn/question/601"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"数学基础","item":"https://itinterview.com.cn/category?cat=175"},{"@type":"ListItem","position":5,"name":"矩阵运算：乘法、转置、逆、秩分别是什么含义？","item":"https://itinterview.com.cn/q/601"}]}</script>

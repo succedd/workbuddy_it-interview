@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="对称加密与非对称加密的区别？为何 TLS 要两者结合使用？ · IT面试题库">
   <meta property="og:description" content="对称加密：加解密使用同一把密钥。 优点：运算快、适合大数据量加密（AES、DES、ChaCha20）。 缺点：密钥分发困难，双方需安全共享同一密钥。 非对称加密：使用公钥加密、私钥解密的一对密钥（RSA、ECC）。 优点：解决密钥分发问题，公钥可公开。 缺点：运算慢（约为对称的千分之一），不适合加密大量数据。 T…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/536.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="对称加密与非对称加密的区别？为何 TLS 要两者结合使用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/536.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/536">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="对称加密与非对称加密的区别？为何 TLS 要两者结合使用？ · IT面试题库">
   <meta name="twitter:description" content="对称加密：加解密使用同一把密钥。 优点：运算快、适合大数据量加密（AES、DES、ChaCha20）。 缺点：密钥分发困难，双方需安全共享同一密钥。 非对称加密：使用公钥加密、私钥解密的一对密钥（RSA、ECC）。 优点：解决密钥分发问题，公钥可公开。 缺点：运算慢（约为对称的千分之一），不适合加密大量数据。 T…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/536.jpg">
+  <meta name="twitter:image:alt" content="对称加密与非对称加密的区别？为何 TLS 要两者结合使用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/536">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"对称加密与非对称加密的区别？为何 TLS 要两者结合使用？","text":"请说明两类加密的核心区别、代表算法，以及 TLS/HTTPS 为何不单纯使用其中一种，而是组合使用。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"对称加密：加解密使用同一把密钥。 优点：运算快、适合大数据量加密（AES、DES、ChaCha20）。 缺点：密钥分发困难，双方需安全共享同一密钥。 非对称加密：使用公钥加密、私钥解密的一对密钥（RSA、ECC）。 优点：解决密钥分发问题，公钥可公开。 缺点：运算慢（约为对称的千分之一），不适合加密大量数据。 TLS 的组合思路：握手阶段用非对称加密（或 ECDHE 密钥协商）安全地协商出一个对称会话密钥；之后所有业务数据用该对称密钥加密传输。这样既解决了密钥分发，又保证了大数据量传输的性能。","url":"https://itinterview.com.cn/question/536"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"网络安全基础","item":"https://itinterview.com.cn/category?cat=201"},{"@type":"ListItem","position":4,"name":"对称加密与非对称加密的区别？为何 TLS 要两者结合使用？","item":"https://itinterview.com.cn/q/536"}]}</script>

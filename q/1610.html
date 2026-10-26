@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： B-Tree（默认）：适合等值、范围、排序、前缀查询，最通用；绝大多数场景用它即可。 Hash：只支持等值查询，且 PG 中 B-Tree 已能覆盖等值，Hash 索引使用场景极少（历史上不支持 WAL 复制，现已支持但仍非首选）。 GIN（倒排）：适合包含多个值的列——如 tsvector 全文检索、j…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1610.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1610.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1610">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： B-Tree（默认）：适合等值、范围、排序、前缀查询，最通用；绝大多数场景用它即可。 Hash：只支持等值查询，且 PG 中 B-Tree 已能覆盖等值，Hash 索引使用场景极少（历史上不支持 WAL 复制，现已支持但仍非首选）。 GIN（倒排）：适合包含多个值的列——如 tsvector 全文检索、j…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1610.jpg">
+  <meta name="twitter:image:alt" content="PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1610">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？","text":"考察索引选型的场景化判断。","answerCount":1,"datePublished":"2026-10-10T11:54:12.889Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： B-Tree（默认）：适合等值、范围、排序、前缀查询，最通用；绝大多数场景用它即可。 Hash：只支持等值查询，且 PG 中 B-Tree 已能覆盖等值，Hash 索引使用场景极少（历史上不支持 WAL 复制，现已支持但仍非首选）。 GIN（倒排）：适合包含多个值的列——如 tsvector 全文检索、jsonb、数组、intarray；一个 key 映射到多行，天然适配「包含 / 相交」查询。 GiST（广义搜索树）：适合非等值、多维、近似查询——如几何类型、范围类型、全文检索（模糊）、近邻搜索（ 距离）；是 GIN 之外处理「不是精确点查」的通用框架。 选型原则：先确定查询模式（等值 / 范围 / 包含 / 近邻），再选类型；务必用 EXPLAIN 验证是否走了索引，避免建了却用不上的无效索引拖慢写入。","url":"https://itinterview.com.cn/question/1610"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？","item":"https://itinterview.com.cn/q/1610"}]}</script>

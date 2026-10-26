@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？ · IT面试题库">
   <meta property="og:description" content="核心角色：Provider（服务提供者）、Consumer（消费者）、Registry（注册中心，如 Zookeeper/Nacos）、Monitor（监控）。 调用流程：Provider 启动后向 Registry 注册接口地址；Consumer 订阅并本地缓存可用列表；调用时经负载均衡选一个 Provider…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/806.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/806.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/806">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？ · IT面试题库">
   <meta name="twitter:description" content="核心角色：Provider（服务提供者）、Consumer（消费者）、Registry（注册中心，如 Zookeeper/Nacos）、Monitor（监控）。 调用流程：Provider 启动后向 Registry 注册接口地址；Consumer 订阅并本地缓存可用列表；调用时经负载均衡选一个 Provider…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/806.jpg">
+  <meta name="twitter:image:alt" content="Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/806">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？","text":"解释 Dubbo 的服务注册发现与一次远程调用的链路。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心角色：Provider（服务提供者）、Consumer（消费者）、Registry（注册中心，如 Zookeeper/Nacos）、Monitor（监控）。 调用流程：Provider 启动后向 Registry 注册接口地址；Consumer 订阅并本地缓存可用列表；调用时经负载均衡选一个 Provider，走 Dubbo 协议（Netty）序列化传输；结果返回并更新监控。 特点：面向接口代理、长连接、支持多种协议与集群容错（failover/failsafe），适合内部高性能服务间调用。","url":"https://itinterview.com.cn/question/806"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"Dubbo","item":"https://itinterview.com.cn/category?cat=124"},{"@type":"ListItem","position":4,"name":"Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？","item":"https://itinterview.com.cn/q/806"}]}</script>

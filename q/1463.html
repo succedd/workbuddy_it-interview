@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？ · IT面试题库">
   <meta property="og:description" content="要点： 看核心访问路径：订单查询绝大多数按“用户查自己订单”（where user_id=?）。若按 user_id 分片，这类查询只落一个分片，性能好且无需跨片聚合；若按 order_id 分片，用户维度的查询会被广播到全部分片再归并，代价极高。 折中方案（基因法）：用 user_id 作主分片键保证高频用户查…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1463.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1463.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1463">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 看核心访问路径：订单查询绝大多数按“用户查自己订单”（where user_id=?）。若按 user_id 分片，这类查询只落一个分片，性能好且无需跨片聚合；若按 order_id 分片，用户维度的查询会被广播到全部分片再归并，代价极高。 折中方案（基因法）：用 user_id 作主分片键保证高频用户查…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1463.jpg">
+  <meta name="twitter:image:alt" content="订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1463">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？","text":"场景题：订单系统高频查询是‘用户查看自己的订单列表’，同时支付回调按订单号查单。请设计分片键并说明理由，并指出常见坑。","answerCount":1,"datePublished":"2026-10-02T02:45:42.259Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 看核心访问路径：订单查询绝大多数按“用户查自己订单”（where user_id=?）。若按 user_id 分片，这类查询只落一个分片，性能好且无需跨片聚合；若按 order_id 分片，用户维度的查询会被广播到全部分片再归并，代价极高。 折中方案（基因法）：用 user_id 作主分片键保证高频用户查询单分片命中；同时把 user_id 哈希后的低位“基因”嵌入 order_id，使同一用户的订单落在同一分片，order_id 也能直接路由，兼顾支付回调按订单号点查。 常见坑：禁止用“单调递增订单号”直接取模——新订单永远落在最后一个分片/表，造成写入热点；必须加入随机或哈希因子打散。","url":"https://itinterview.com.cn/question/1463"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"订单表要拆分，分片键该选“用户ID”还是“订单ID”？为什么？","item":"https://itinterview.com.cn/q/1463"}]}</script>

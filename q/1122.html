@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？ · IT面试题库">
   <meta property="og:description" content="二进制安全：C 字符串以 \0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。 长度 O(1)：C 字符串求长需遍历到 \0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。 空间预分配与惰性释放：S…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1122.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1122.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1122">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？ · IT面试题库">
   <meta name="twitter:description" content="二进制安全：C 字符串以 \0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。 长度 O(1)：C 字符串求长需遍历到 \0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。 空间预分配与惰性释放：S…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1122.jpg">
+  <meta name="twitter:image:alt" content="Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1122">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？","text":"为什么 Redis 不用 C 的 char* 而自己实现 SDS（Simple Dynamic String）？请从二进制安全、长度获取、扩容等角度说明。","answerCount":1,"datePublished":"2026-09-13T02:40:23.784Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"二进制安全：C 字符串以 \\0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。 长度 O(1)：C 字符串求长需遍历到 \\0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。 空间预分配与惰性释放：SDS 扩容时按需多分配「空闲空间」减少再分配次数；缩短时不立即回收，记录 free 复用，降低内存操作开销。 兼容 C 函数：SDS 末尾仍保留 \\0，可复用部分 C 字符串函数；同时携带 alloc/flags 等元信息支持多种编码（embstr/raw）。","url":"https://itinterview.com.cn/question/1122"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？","item":"https://itinterview.com.cn/q/1122"}]}</script>

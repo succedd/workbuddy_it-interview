@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？ · IT面试题库">
   <meta property="og:description" content="要点： 深翻页难题：LIMIT 100000,10 在分库中需要每个分片都查出前 100010 条再在中间件内存归并，越往后越慢、越废资源。 方案1（游标分页）：产品上只允许“上一页/下一页”，基于上一页最大 ID/游标取下一页，每个分片只取一页并归并截断，彻底避免深翻页。 方案2（异构到 ES/数仓）：把分片数…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1466.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1466.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1466">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？ · IT面试题库">
   <meta name="twitter:description" content="要点： 深翻页难题：LIMIT 100000,10 在分库中需要每个分片都查出前 100010 条再在中间件内存归并，越往后越慢、越废资源。 方案1（游标分页）：产品上只允许“上一页/下一页”，基于上一页最大 ID/游标取下一页，每个分片只取一页并归并截断，彻底避免深翻页。 方案2（异构到 ES/数仓）：把分片数…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1466.jpg">
+  <meta name="twitter:image:alt" content="分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1466">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？","text":"系统设计题：LIMIT 深翻页在分库中代价极高，请设计可行的分页与聚合方案。","answerCount":1,"datePublished":"2026-10-02T02:45:42.425Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 深翻页难题：LIMIT 100000,10 在分库中需要每个分片都查出前 100010 条再在中间件内存归并，越往后越慢、越废资源。 方案1（游标分页）：产品上只允许“上一页/下一页”，基于上一页最大 ID/游标取下一页，每个分片只取一页并归并截断，彻底避免深翻页。 方案2（异构到 ES/数仓）：把分片数据异步同步到 Elasticsearch 或数据仓库，复杂查询与深分页交给 ES，应用侧只做单分片点查。 方案3（冗余维度/基因）：把常用查询维度冗余成“基因”让该维度查询能路由到单分片。 聚合下推：COUNT/SUM 各分片并行算后汇总；ORDER BY+LIMIT 各分片取 TopN 再归并；GROUP BY 各分片预聚合后再二次聚合。核心是“计算下推到分片并行 + 中间件归并”，禁止全量拉取。","url":"https://itinterview.com.cn/question/1466"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"分库分表后，跨分片的分页与聚合查询怎么做才能避免全分片扫描？","item":"https://itinterview.com.cn/q/1466"}]}</script>

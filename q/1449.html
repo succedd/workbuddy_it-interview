@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？ · IT面试题库">
   <meta property="og:description" content="Z-Buffer 原理 每像素存一个「当前离相机最近的深度值」。片元通过深度测试的条件通常是 depth &lt; zbuffer（越近越小）→ 通过则同时更新颜色与深度。它是逐像素的、与绘制顺序无关的遮挡方案——这是硬件光栅化能随手画对不透明物体遮挡的根本原因。 为什么透明必须排序 透明物体走 alpha 混合（bl…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1449.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1449.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1449">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？ · IT面试题库">
   <meta name="twitter:description" content="Z-Buffer 原理 每像素存一个「当前离相机最近的深度值」。片元通过深度测试的条件通常是 depth &lt; zbuffer（越近越小）→ 通过则同时更新颜色与深度。它是逐像素的、与绘制顺序无关的遮挡方案——这是硬件光栅化能随手画对不透明物体遮挡的根本原因。 为什么透明必须排序 透明物体走 alpha 混合（bl…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1449.jpg">
+  <meta name="twitter:image:alt" content="深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1449">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？","text":"考察深度测试原理、透明渲染的画家算法困境与 Early-Z 优化，是图形学面试的高频基础题。","answerCount":1,"datePublished":"2026-10-01T05:33:22.064Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Z-Buffer 原理 每像素存一个「当前离相机最近的深度值」。片元通过深度测试的条件通常是 depth \u003c zbuffer（越近越小）→ 通过则同时更新颜色与深度。它是逐像素的、与绘制顺序无关的遮挡方案——这是硬件光栅化能随手画对不透明物体遮挡的根本原因。 为什么透明必须排序 透明物体走 alpha 混合（blend）：final = src alpha + dst (1-alpha)，混合要拿「已经画好的背景色」，即顺序敏感——先画远的再画近的（画家算法，从后往前）。而 Z-Buffer 是「覆写」语义，天然不适合「叠加」语义。所以引擎的渲染队列规则是： 1. 不透明物体：从前往后画（充分利用 Early-Z 剔除被遮挡片元，省的是片元着色器）； 2. 透明物体：从后往前画（保证混合顺序正确，且通常关闭深度写入、只保留深度测试）。 两个透明物体互相穿插时排序无解，只能拆分网格或用 Order-Independent Transparency（如 depth peeling）。 Early-Z 传统深度测试在片元着色器之后（着色完才知道深度），被遮挡的片元白算了昂贵的着色。Early-Z 在光栅化阶段、着色之前先做深度测试，被遮挡的片元直接丢弃——这就是「不透明从近到远排序」能提速的原因（先画近的把深度写满，后面全被 Early-Z 杀掉）。 Early-Z 失效的典型场景（面试加分点） 片元着色器里主动写 gl_FragDepth / discard（深度或是否丢弃要算完才知道）； alpha test（discard）在部分移动 TBDR 架构上会阻塞 Hidden Surface Removal； 透明队列关闭了深度写入，Early-Z 只对不透明队列收益最大。","url":"https://itinterview.com.cn/question/1449"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"图形学基础","item":"https://itinterview.com.cn/category?cat=238"},{"@type":"ListItem","position":4,"name":"深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？","item":"https://itinterview.com.cn/q/1449"}]}</script>

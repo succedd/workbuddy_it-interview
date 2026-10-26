@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="HTTPS 的握手过程是怎样的？RSA 与 ECDHE 两种密钥交换方式有什么区别？ · IT面试题库">
   <meta property="og:description" content="结论：HTTPS 握手先通过非对称加密安全地协商出「对称密钥」，之后用对称加密传输应用数据；密钥交换既可用 RSA，也可用 ECDHE，二者安全性关键差异在前向安全。 RSA 握手要点： 客户端校验服务端证书（CA 链）拿到公钥； 客户端生成「预主密钥」并用服务端公钥加密发回； 双方据此算出相同主密钥，之后用对称…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1336.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="HTTPS 的握手过程是怎样的？RSA 与 ECDHE 两种密钥交换方式有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1336.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1336">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HTTPS 的握手过程是怎样的？RSA 与 ECDHE 两种密钥交换方式有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="结论：HTTPS 握手先通过非对称加密安全地协商出「对称密钥」，之后用对称加密传输应用数据；密钥交换既可用 RSA，也可用 ECDHE，二者安全性关键差异在前向安全。 RSA 握手要点： 客户端校验服务端证书（CA 链）拿到公钥； 客户端生成「预主密钥」并用服务端公钥加密发回； 双方据此算出相同主密钥，之后用对称…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1336.jpg">
+  <meta name="twitter:image:alt" content="HTTPS 的握手过程是怎样的？RSA 与 ECDHE 两种密钥交换方式有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1336">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HTTPS 的握手过程是怎样的？RSA 与 ECDHE 两种密钥交换方式有什么区别？","text":"考察点：TLS 握手流程与密钥协商。要求说清证书校验、预主密钥/主密钥、对称加密切换，并对比 RSA（不支持前向安全）与 ECDHE（支持前向安全）。","answerCount":1,"datePublished":"2026-09-26T05:19:36.779Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：HTTPS 握手先通过非对称加密安全地协商出「对称密钥」，之后用对称加密传输应用数据；密钥交换既可用 RSA，也可用 ECDHE，二者安全性关键差异在前向安全。 RSA 握手要点： 客户端校验服务端证书（CA 链）拿到公钥； 客户端生成「预主密钥」并用服务端公钥加密发回； 双方据此算出相同主密钥，之后用对称算法（如 AES）通信。 缺点：无前向安全——一旦服务端私钥泄露，历史会话可被解密。 ECDHE 握手要点： 双方各自生成临时椭圆曲线密钥对，通过 ServerKeyExchange/ClientKeyExchange 交换公钥参数； 用 ECDHE 推导出共享的预主密钥，服务端再用证书私钥对参数签名以防篡改； 同样算出主密钥后切对称加密。 优点：临时密钥每次握手都不同，私钥泄露也无法解密历史流量（前向安全）。 对比： | 方式 | 前向安全 | 性能 | 现状 | | --- | --- | --- | --- | | RSA | 否 | 简单、少一次交互 | 已不推荐 | | ECDHE | 是 | 稍复杂但更快 | 主流默认 |","url":"https://itinterview.com.cn/question/1336"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"HTTP与HTTPS","item":"https://itinterview.com.cn/category?cat=51"},{"@type":"ListItem","position":4,"name":"HTTPS 的握手过程是怎样的？RSA 与 ECDHE 两种密钥交换方式有什么区别？","item":"https://itinterview.com.cn/q/1336"}]}</script>

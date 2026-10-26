@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？ · IT面试题库">
   <meta property="og:description" content="为什么要缩放 设 Q、K 各分量独立同分布、均值 0、方差 1，则点积 q·k = Σ q_i k_i 的均值为 0、方差为 d_k（维度越高方差越大）。 方差大 → 点积的绝对值普遍很大 → 喂进 softmax 后分布在饱和区，梯度趋近 0，训练难以更新。 除以 √d_k 后，缩放后点积的方差回到约 1，so…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/407.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/407.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/407">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？ · IT面试题库">
   <meta name="twitter:description" content="为什么要缩放 设 Q、K 各分量独立同分布、均值 0、方差 1，则点积 q·k = Σ q_i k_i 的均值为 0、方差为 d_k（维度越高方差越大）。 方差大 → 点积的绝对值普遍很大 → 喂进 softmax 后分布在饱和区，梯度趋近 0，训练难以更新。 除以 √d_k 后，缩放后点积的方差回到约 1，so…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/407.jpg">
+  <meta name="twitter:image:alt" content="缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/407">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？","text":"考察点：点积的方差随维度增长而放大，导致 softmax 进入梯度极小的饱和区；√d_k 把方差拉回 1 附近。属原理探究题。","answerCount":1,"datePublished":"2026-09-01T09:51:53.425Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么要缩放 设 Q、K 各分量独立同分布、均值 0、方差 1，则点积 q·k = Σ q_i k_i 的均值为 0、方差为 d_k（维度越高方差越大）。 方差大 → 点积的绝对值普遍很大 → 喂进 softmax 后分布在饱和区，梯度趋近 0，训练难以更新。 除以 √d_k 后，缩放后点积的方差回到约 1，softmax 输入落在合理区间，梯度健康。 不缩放的后果 高维时 softmax 输出接近 one-hot，注意力权重过于尖锐，模型难以在多个 token 间柔和分配注意力，表达与学习都受限。 梯度消失使深层 Transformer 难以训练。 补充 该缩放仅针对点积注意力；加性注意力（Bahdanau）无此问题，但计算更贵。 后续 RoPE、线性注意力等变体在缩放/相似度定义上做文章，本质仍在控制相似度尺度。","url":"https://itinterview.com.cn/question/407"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？","item":"https://itinterview.com.cn/q/407"}]}</script>

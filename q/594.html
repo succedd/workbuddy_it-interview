@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？ · IT面试题库">
   <meta property="og:description" content="设损失 $J(\theta)$，梯度 $g=\nabla_\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\theta \leftarrow \theta - \eta \frac1m\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/594.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/594.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/594">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="设损失 $J(\theta)$，梯度 $g=\nabla_\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\theta \leftarrow \theta - \eta \frac1m\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/594.jpg">
+  <meta name="twitter:image:alt" content="批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/594">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？","text":"请对比 BGD、SGD、Mini-batch GD 三者在每次更新使用的样本量、收敛稳定性、速度与内存占用上的差异，并说明实践中的默认选择。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设损失 $J(\\theta)$，梯度 $g=\\nabla_\\theta J$。 1. 批量梯度下降（BGD） 用全部 m 个样本算梯度后更新：$\\theta \\leftarrow \\theta - \\eta \\frac1m\\sum g_i$。 优点：更新方向稳定、收敛平滑；缺点：每步耗时大，内存高，不适合大数据。 2. 随机梯度下降（SGD） 每次仅用1 个样本更新。 优点：更新快、可在线学习、带噪声有助于跳出局部极小；缺点：梯度震荡大、收敛不稳定，需仔细调学习率。 3. 小批量梯度下降（Mini-batch GD） 每次用 b（如 32/64/128） 个样本。 折中：兼顾稳定与效率，可利用矩阵运算/GPU 并行，是深度学习的事实标准。 对比表 | 方法 | 单步样本 | 稳定性 | 速度/内存 | |---|---|---|---| | BGD | m | 高 | 慢/高 | | SGD | 1 | 低 | 快/低 | | Mini-batch | b | 中 | 快/中 | 实践中几乎都用 Mini-batch，并配合学习率衰减、Momentum/Adam 等优化器。","url":"https://itinterview.com.cn/question/594"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"批量梯度下降、随机梯度下降、小批量梯度下降有什么区别？","item":"https://itinterview.com.cn/q/594"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】生产 Redis 出现「脑裂」（网络分区导致原主与新主并存、双写）或主从延迟过大，你如何定位根因并防御？ · IT面试题库">
   <meta property="og:description" content="要点： 脑裂根因与危害：网络分区时，哨兵把原主判为下线并提升新主，但原主其实还活着（客户端仍在写它），形成「双主」，分区恢复后原主降级为从、丢弃自身写入，造成分区期间的数据丢失。这是异步复制 + 自动切换的固有风险。 定位手段：① 监控 master_link_status/master_sync_in_prog…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1227.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【故障排查】生产 Redis 出现「脑裂」（网络分区导致原主与新主并存、双写）或主从延迟过大，你如何定位根因并防御？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1227.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1227">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】生产 Redis 出现「脑裂」（网络分区导致原主与新主并存、双写）或主从延迟过大，你如何定位根因并防御？ · IT面试题库">
   <meta name="twitter:description" content="要点： 脑裂根因与危害：网络分区时，哨兵把原主判为下线并提升新主，但原主其实还活着（客户端仍在写它），形成「双主」，分区恢复后原主降级为从、丢弃自身写入，造成分区期间的数据丢失。这是异步复制 + 自动切换的固有风险。 定位手段：① 监控 master_link_status/master_sync_in_prog…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1227.jpg">
+  <meta name="twitter:image:alt" content="【故障排查】生产 Redis 出现「脑裂」（网络分区导致原主与新主并存、双写）或主从延迟过大，你如何定位根因并防御？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1227">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】生产 Redis 出现「脑裂」（网络分区导致原主与新主并存、双写）或主从延迟过大，你如何定位根因并防御？","text":"追问链第 5 问：高可用架构自身的典型故障。","answerCount":1,"datePublished":"2026-09-21T02:33:12.554Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 脑裂根因与危害：网络分区时，哨兵把原主判为下线并提升新主，但原主其实还活着（客户端仍在写它），形成「双主」，分区恢复后原主降级为从、丢弃自身写入，造成分区期间的数据丢失。这是异步复制 + 自动切换的固有风险。 定位手段：① 监控 master_link_status/master_sync_in_progress 看主从连接与同步状态；② 用 INFO replication 对比各节点 offset 是否持续拉大；③ 业务侧核对「双主期间写入冲突」导致的脏数据；④ 网络层排查分区（丢包、交换机故障）。 防御配置：① min-replicas-to-write N + min-replicas-max-lag M——主节点在「健康副本数 M」时拒绝写入，从源头遏制脑裂丢数；② 合理设置 quorum 与 down-after-milliseconds，避免过于敏感误切；③ 关键链路配合 WAIT 多副本确认；④ 网络层面做冗余（双网卡/独立心跳）。 事后止血：发现脑裂后比对原主与新主数据差异，必要时以新主为准做数据修复，并复盘网络。","url":"https://itinterview.com.cn/question/1227"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"【故障排查】生产 Redis 出现「脑裂」（网络分区导致原主与新主并存、双写）或主从延迟过大，你如何定位根因并防御？","item":"https://itinterview.com.cn/q/1227"}]}</script>

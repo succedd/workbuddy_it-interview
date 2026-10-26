@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？ · IT面试题库">
   <meta property="og:description" content="正确认知：改变几何属性触发重排，改变仅外观属性触发重绘，而 transform/opacity 通常只走合成层——三者代价递减。 要点： width（几何）：修改影响布局的属性（width、height、margin、top、font-size、增删 DOM 节点等）→ 触发 重排，浏览器重新计算所有受影响元素的…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1157.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1157.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1157">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？ · IT面试题库">
   <meta name="twitter:description" content="正确认知：改变几何属性触发重排，改变仅外观属性触发重绘，而 transform/opacity 通常只走合成层——三者代价递减。 要点： width（几何）：修改影响布局的属性（width、height、margin、top、font-size、增删 DOM 节点等）→ 触发 重排，浏览器重新计算所有受影响元素的…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1157.jpg">
+  <meta name="twitter:image:alt" content="改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1157">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？","text":"考察点：重排（Reflow/Layout）与重绘（Repaint）的触发条件与性能代价差异，以及 transform/opacity 走合成层的原因（单选题）。","answerCount":1,"datePublished":"2026-09-15T11:49:55.076Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确认知：改变几何属性触发重排，改变仅外观属性触发重绘，而 transform/opacity 通常只走合成层——三者代价递减。 要点： width（几何）：修改影响布局的属性（width、height、margin、top、font-size、增删 DOM 节点等）→ 触发 重排，浏览器重新计算所有受影响元素的位置与尺寸。 color（外观）：仅修改 color、background、visibility、box-shadow 等不影响布局的属性 → 只触发 重绘，重新绘制像素，无需 Layout。 transform（合成）：transform/opacity 变动通常由 GPU 在合成层完成，跳过 Layout 与 Paint，因此几乎不耗时、不阻塞主线程。 优化方向：用 transform/opacity 做动画，并配合 will-change 提升为独立图层；批量读写样式避免『布局抖动（layout thrashing）』。 典型干扰项：『改 color 会重排』（错，只重绘）、『重绘比重排更慢』（错）。","url":"https://itinterview.com.cn/question/1157"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"改动 width、color、transform 各会触发浏览器的哪一层渲染动作？为什么 transform 几乎不耗时？","item":"https://itinterview.com.cn/q/1157"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复 · IT面试题库">
   <meta property="og:description" content="要点一：定位根因——丢失更新 count++ 实际是&quot;读取 count → 加 1 → 写回&quot;三步操作，volatile 只保证每一步读到的都是最新值，但两个线程可以同时读到相同旧值、各自加 1 后写回，导致一次加法丢失。 这是原子性问题而非可见性问题，加 volatile 治不了本症；这也解释了为什么压测结果持…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/639.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/639.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/639">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复 · IT面试题库">
   <meta name="twitter:description" content="要点一：定位根因——丢失更新 count++ 实际是&quot;读取 count → 加 1 → 写回&quot;三步操作，volatile 只保证每一步读到的都是最新值，但两个线程可以同时读到相同旧值、各自加 1 后写回，导致一次加法丢失。 这是原子性问题而非可见性问题，加 volatile 治不了本症；这也解释了为什么压测结果持…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/639.jpg">
+  <meta name="twitter:image:alt" content="【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/639">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复","text":"承接上题：既然 volatile 保证可见性，为什么计数还是错的？考察点：识别 i++ 的\"读-改-写\"三步非原子性；区分可见性问题与原子性问题；给出正确修复方案与权衡。","answerCount":1,"datePublished":"2026-09-07T13:14:26.174Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：定位根因——丢失更新 count++ 实际是\"读取 count → 加 1 → 写回\"三步操作，volatile 只保证每一步读到的都是最新值，但两个线程可以同时读到相同旧值、各自加 1 后写回，导致一次加法丢失。 这是原子性问题而非可见性问题，加 volatile 治不了本症；这也解释了为什么压测结果持续偏小且偏差随并发度上升。 要点二：修复方案对比 方案 A（推荐）：改用 AtomicInteger.incrementAndGet()，底层 CAS 自旋实现，无锁、高并发下性能好；属原子性语义的正确载体。 方案 B：synchronized 包裹自增代码块，简单可靠但引入锁竞争，吞吐量低于 CAS。 方案 C：LongAdder（热点写场景更优），通过分段 Cell 分散竞争、最终求和，写多读少时性能最佳。 要点三：排查方法论沉淀 线上\"计数偏小\"类问题先区分是统计口径问题还是并发 bug：用固定脚本单线程复现排除前者，再用多线程压测 + 期望值断言复现丢失更新。 经验法则：volatile 适合状态标志（如 running=false 停止线程）、一次性发布（DCL 单例）；复合操作必须换原子类或锁。","url":"https://itinterview.com.cn/question/639"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"【场景题】线上统计接口用 volatile int count 做计数，压测发现结果始终偏小，请排查并修复","item":"https://itinterview.com.cn/q/639"}]}</script>

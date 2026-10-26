@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CAP 定理是什么？为什么分布式系统通常无法同时满足三者？ · IT面试题库">
   <meta property="og:description" content="CAP 定理指出：一个分布式系统不可能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三者，在出现网络分区时只能在 C 与 A 之间二选一。 一致性 C：每次读取都能拿到最近一次写入的结果（线性一致）。 可用性 A：每个非故障节点…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/240.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CAP 定理是什么？为什么分布式系统通常无法同时满足三者？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/240.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/240">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CAP 定理是什么？为什么分布式系统通常无法同时满足三者？ · IT面试题库">
   <meta name="twitter:description" content="CAP 定理指出：一个分布式系统不可能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三者，在出现网络分区时只能在 C 与 A 之间二选一。 一致性 C：每次读取都能拿到最近一次写入的结果（线性一致）。 可用性 A：每个非故障节点…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/240.jpg">
+  <meta name="twitter:image:alt" content="CAP 定理是什么？为什么分布式系统通常无法同时满足三者？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/240">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CAP 定理是什么？为什么分布式系统通常无法同时满足三者？","text":"请解释 CAP 定理的含义，并说明为什么在网络分区发生时只能在一致性和可用性之间取舍。","answerCount":1,"datePublished":"2026-08-27T01:34:16.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CAP 定理指出：一个分布式系统不可能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三者，在出现网络分区时只能在 C 与 A 之间二选一。 一致性 C：每次读取都能拿到最近一次写入的结果（线性一致）。 可用性 A：每个非故障节点收到的请求都必须返回响应（不保证是最新值）。 分区容错 P：网络分区（节点间丢包、延迟）时系统仍能继续工作。 由于分布式系统必然要考虑 P（网络不可靠是常态），因此实践中是在 C 和 A 之间权衡：CP 系统（如 ZooKeeper、etcd）在分区时优先保证一致、牺牲可用；AP 系统（如 Cassandra、Eureka）在分区时优先保证可用、牺牲强一致，采用最终一致性。","url":"https://itinterview.com.cn/question/240"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"CAP理论","item":"https://itinterview.com.cn/category?cat=118"},{"@type":"ListItem","position":4,"name":"CAP 定理是什么？为什么分布式系统通常无法同时满足三者？","item":"https://itinterview.com.cn/q/240"}]}</script>

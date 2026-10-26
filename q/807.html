@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库">
   <meta property="og:description" content="核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/807.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/807.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/807">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库">
   <meta name="twitter:description" content="核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/807.jpg">
+  <meta name="twitter:image:alt" content="JVM 垃圾回收器 G1 的工作原理与适用场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/807">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JVM 垃圾回收器 G1 的工作原理与适用场景？","text":"解释 G1 的分区（Region）思路、可预测停顿模型与适用场景。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心设计：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。 可预测停顿：通过 -XX:MaxGCPauseMillis 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。 适用场景：大堆（数 GB 到数十 GB）、对停顿敏感的服务端应用；JDK 9+ 后成为默认收集器。相比 CMS，它避免了内存碎片导致的 Full GC，并发标记用 SATB 算法。","url":"https://itinterview.com.cn/question/807"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"JVM 垃圾回收器 G1 的工作原理与适用场景？","item":"https://itinterview.com.cn/q/807"}]}</script>

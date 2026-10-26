@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？ · IT面试题库">
   <meta property="og:description" content="版本机制：Helm 把每次 install/upgrade 的渲染结果存为 release revision（存于集群 Secret），helm rollback 回到任意历史版本；helm history 查看版本列表，helm get values/manifest --revision N 对比差异。 --…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1531.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1531.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1531">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="版本机制：Helm 把每次 install/upgrade 的渲染结果存为 release revision（存于集群 Secret），helm rollback 回到任意历史版本；helm history 查看版本列表，helm get values/manifest --revision N 对比差异。 --…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1531.jpg">
+  <meta name="twitter:image:alt" content="Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1531">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？","text":"说明 release 版本机制与常用排障手段。","answerCount":1,"datePublished":"2026-10-05T01:04:01.506Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"版本机制：Helm 把每次 install/upgrade 的渲染结果存为 release revision（存于集群 Secret），helm rollback 回到任意历史版本；helm history 查看版本列表，helm get values/manifest --revision N 对比差异。 --wait：upgrade 阻塞等到所有资源 Ready（Deployment 完成滚动、Pod Running）才返回，超时默认 5m——用于 CI 里确认发布真正生效。--atomic：--wait + 失败自动回滚到上一版本，是发布流水线的推荐姿势（配合 --timeout 设定上限）。 排障路径：helm upgrade 报错先看是渲染期（模板语法/values 类型错，helm template 复现）还是 apply 期（kubectl describe/events 看 apiserver 拒绝原因，如 quota/探针失败）；升级后 Pod 起不来常见于探针太急、资源不足、配置错误——--atomic 能自动兜住，但根因仍要靠 kubectl 侧定位。注意：rollback 恢复的是渲染产物，若镜像 tag 不变而 Pod 模板没变化，需确认滚动更新是否触发。","url":"https://itinterview.com.cn/question/1531"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Helm","item":"https://itinterview.com.cn/category?cat=138"},{"@type":"ListItem","position":4,"name":"Helm 升级失败如何回滚？--atomic 与 --wait 各起什么作用？","item":"https://itinterview.com.cn/q/1531"}]}</script>

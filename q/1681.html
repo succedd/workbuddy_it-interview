@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Jetpack 的 ViewModel、LiveData、Room 如何协作实现 MVVM，并避免 Activity 重建导致的数据丢失与内存泄漏？ · IT面试题库">
   <meta property="og:description" content="要点： 职责划分：ViewModel 持有 UI 状态与业务逻辑，生命周期感知（配置变更如旋转屏幕时不销毁）；Repository 层通过 Room（SQLite 封装）做本地持久化，LiveData 作为可观察数据源连接 ViewModel 与 UI。 抗重建：ViewModel 由 ViewModelStor…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1681.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Jetpack 的 ViewModel、LiveData、Room 如何协作实现 MVVM，并避免 Activity 重建导致的数据丢失与内存泄漏？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1681.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1681">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jetpack 的 ViewModel、LiveData、Room 如何协作实现 MVVM，并避免 Activity 重建导致的数据丢失与内存泄漏？ · IT面试题库">
   <meta name="twitter:description" content="要点： 职责划分：ViewModel 持有 UI 状态与业务逻辑，生命周期感知（配置变更如旋转屏幕时不销毁）；Repository 层通过 Room（SQLite 封装）做本地持久化，LiveData 作为可观察数据源连接 ViewModel 与 UI。 抗重建：ViewModel 由 ViewModelStor…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1681.jpg">
+  <meta name="twitter:image:alt" content="Jetpack 的 ViewModel、LiveData、Room 如何协作实现 MVVM，并避免 Activity 重建导致的数据丢失与内存泄漏？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1681">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Jetpack 的 ViewModel、LiveData、Room 如何协作实现 MVVM，并避免 Activity 重建导致的数据丢失与内存泄漏？","text":"考察点：Android 架构组件与生命周期感知设计。","answerCount":1,"datePublished":"2026-10-17T04:29:49.985Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 职责划分：ViewModel 持有 UI 状态与业务逻辑，生命周期感知（配置变更如旋转屏幕时不销毁）；Repository 层通过 Room（SQLite 封装）做本地持久化，LiveData 作为可观察数据源连接 ViewModel 与 UI。 抗重建：ViewModel 由 ViewModelStore 在配置变更时保留，Activity 重建后复用同一实例，避免重新拉数据；配合 onSaveInstanceState 仅存极少量瞬时状态。 防泄漏：LiveData 观察绑定到 viewLifecycleOwner，页面销毁自动解绑；Room 的查询返回 LiveData/Flow，避免在主线程做 IO；ViewModel 不持有 Activity/View 引用，杜绝泄漏。 数据流：UI 触发事件 → ViewModel 调用 Repository → Room/网络返回 → LiveData 通知 → 自动刷新 UI，形成单向可测试的数据流。","url":"https://itinterview.com.cn/question/1681"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android Jetpack","item":"https://itinterview.com.cn/category?cat=226"},{"@type":"ListItem","position":5,"name":"Jetpack 的 ViewModel、LiveData、Room 如何协作实现 MVVM，并避免 Activity 重建导致的数据丢失与内存泄漏？","item":"https://itinterview.com.cn/q/1681"}]}</script>

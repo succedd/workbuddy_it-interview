@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruby 的内存管理与 GC 是怎样工作的？面对内存上涨/Full GC 频繁该怎么优化？ · IT面试题库</title>
-  <meta name="description" content="要点： 机制：Ruby 2.1+ 使用分代 GC（RGenGC），对象分「新生代/老生代」，新对象先入新生代，存活久的晋升老生代；以标记-清除为主、Minor GC 只扫新生代、Major/Full GC 才扫全堆。还有老生代回收（oldgen）与增量/并发标记降低停顿。GC 统计可用 GC.stat、GC::P…">
+  <title>AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？ · IT面试题库</title>
+  <meta name="description" content="能做的事 从需求/接口文档生成初始用例和边界条件，帮人查漏；把失败日志、堆栈、截图总结成可读的缺陷描述；对 flaky 用例做聚类和初步归因；生成测试数据、Mock 响应；做视觉回归的差异描述。 适合“生成候选 + 人工筛选”的场景，不适合直接作为发布门禁的唯一依据。 不能做/风险 会编造预期结果和接口字段；同一…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Ruby 的内存管理与 GC 是怎样工作的？面对内存上涨/Full GC 频繁该怎么优化？ · IT面试题库">
-  <meta property="og:description" content="要点： 机制：Ruby 2.1+ 使用分代 GC（RGenGC），对象分「新生代/老生代」，新对象先入新生代，存活久的晋升老生代；以标记-清除为主、Minor GC 只扫新生代、Major/Full GC 才扫全堆。还有老生代回收（oldgen）与增量/并发标记降低停顿。GC 统计可用 GC.stat、GC::P…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:title" content="AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？ · IT面试题库">
+  <meta property="og:description" content="能做的事 从需求/接口文档生成初始用例和边界条件，帮人查漏；把失败日志、堆栈、截图总结成可读的缺陷描述；对 flaky 用例做聚类和初步归因；生成测试数据、Mock 响应；做视觉回归的差异描述。 适合“生成候选 + 人工筛选”的场景，不适合直接作为发布门禁的唯一依据。 不能做/风险 会编造预期结果和接口字段；同一…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1760.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1760.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1760">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Ruby 的内存管理与 GC 是怎样工作的？面对内存上涨/Full GC 频繁该怎么优化？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 机制：Ruby 2.1+ 使用分代 GC（RGenGC），对象分「新生代/老生代」，新对象先入新生代，存活久的晋升老生代；以标记-清除为主、Minor GC 只扫新生代、Major/Full GC 才扫全堆。还有老生代回收（oldgen）与增量/并发标记降低停顿。GC 统计可用 GC.stat、GC::P…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:title" content="AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？ · IT面试题库">
+  <meta name="twitter:description" content="能做的事 从需求/接口文档生成初始用例和边界条件，帮人查漏；把失败日志、堆栈、截图总结成可读的缺陷描述；对 flaky 用例做聚类和初步归因；生成测试数据、Mock 响应；做视觉回归的差异描述。 适合“生成候选 + 人工筛选”的场景，不适合直接作为发布门禁的唯一依据。 不能做/风险 会编造预期结果和接口字段；同一…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1760.jpg">
+  <meta name="twitter:image:alt" content="AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1760">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Ruby 的内存管理与 GC 是怎样工作的？面对内存上涨/Full GC 频繁该怎么优化？","text":"考察点：Ruby 的分代 GC（RGenGC）与常见内存问题定位手段，是 Ruby 服务端稳定性的高频考点。","answerCount":1,"datePublished":"2026-10-19T12:30:17.626Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 机制：Ruby 2.1+ 使用分代 GC（RGenGC），对象分「新生代/老生代」，新对象先入新生代，存活久的晋升老生代；以标记-清除为主、Minor GC 只扫新生代、Major/Full GC 才扫全堆。还有老生代回收（oldgen）与增量/并发标记降低停顿。GC 统计可用 GC.stat、GC::Profiler。 内存上涨定位：用 ObjectSpace.count_objects/ObjectSpace.each_object 看哪类对象最多；用 memory_profiler、derailed_benchmarks 或 heapdump 找泄漏点（常见是缓存无限增长、全局变量、闭包持有大对象、Nokogiri 等大对象未释放）。 优化：① 减少短命大对象分配（字符串拼接用 \u003c\u003c、避免循环内建大数组）；② 控制缓存大小、用 LRU；③ 调整 RUBY_GC_HEAP_/RUBY_GC_OLDMALLOC_ 环境变量扩大堆或老生代阈值；④ 长期服务用 Puma 的 fork 预加载 + 定期重启 worker 兜底。原则是先测量再调参，别盲调 GC 参数。","url":"https://itinterview.com.cn/question/1760"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Ruby","item":"https://itinterview.com.cn/category?cat=24"},{"@type":"ListItem","position":4,"name":"Ruby 的内存管理与 GC 是怎样工作的？面对内存上涨/Full GC 频繁该怎么优化？","item":"https://itinterview.com.cn/q/1760"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？","text":"考察对 AI 辅助测试的理性认知：既不神化，也不因风险完全拒绝，而是把它放进可验证的流程。","answerCount":1,"datePublished":"2026-10-21T01:36:29.606Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"能做的事 从需求/接口文档生成初始用例和边界条件，帮人查漏；把失败日志、堆栈、截图总结成可读的缺陷描述；对 flaky 用例做聚类和初步归因；生成测试数据、Mock 响应；做视觉回归的差异描述。 适合“生成候选 + 人工筛选”的场景，不适合直接作为发布门禁的唯一依据。 不能做/风险 会编造预期结果和接口字段；同一输入输出不稳定；可能泄露需求、代码、用户数据到外部模型；提示词注入会污染结果；训练数据偏差导致只覆盖常见路径，漏掉业务特有边界。 AI 生成的用例可能“看起来合理但不可执行”，也可能把错误答案写得很自信。 质量评估 建一个小型 golden set（人工确认过的需求/用例/缺陷），定期评估 AI 的召回、准确、可执行率和误报率；按任务分别评估，不用一个总分。 要求每条 AI 用例带来源（需求段落/接口定义）和可追溯 ID；人工 review 后才能进回归集；设置采纳率和返工率指标。 落地边界 敏感数据脱敏/本地化模型；限制外部调用；AI 只做建议，门禁仍由确定性测试和人工决定；对 AI 生成内容做版本记录，出问题可回滚。","url":"https://itinterview.com.cn/question/1760"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"自动化测试","item":"https://itinterview.com.cn/category?cat=108"},{"@type":"ListItem","position":4,"name":"AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？","item":"https://itinterview.com.cn/q/1760"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -87,25 +93,38 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Ruby 的内存管理与 GC 是怎样工作的？面对内存上涨/Full GC 频繁该怎么优化？</h1>
-    <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">后端开发工程师</span><span class="chip tag">Ruby</span><span class="chip tag">GC</span><span class="chip tag">内存优化</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：Ruby 的分代 GC（RGenGC）与常见内存问题定位手段，是 Ruby 服务端稳定性的高频考点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>AI/LLM 辅助测试能做什么、不能做什么？如何评估 AI 生成用例的质量和风险？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论</span><span class="chip">测试架构师</span><span class="chip">测试开发工程师</span><span class="chip tag">AI测试</span><span class="chip tag">LLM</span><span class="chip tag">用例生成</span><span class="chip tag">风险治理</span></div>
+    <div class="card"><h2>题目</h2><p>考察对 AI 辅助测试的理性认知：既不神化，也不因风险完全拒绝，而是把它放进可验证的流程。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>能做的事</strong></p>
 <ul>
-<li>机制：Ruby 2.1+ 使用分代 GC（RGenGC），对象分「新生代/老生代」，新对象先入新生代，存活久的晋升老生代；以标记-清除为主、Minor GC 只扫新生代、Major/Full GC 才扫全堆。还有老生代回收（oldgen）与增量/并发标记降低停顿。GC 统计可用 <code>GC.stat</code>、<code>GC::Profiler</code>。</li>
-<li>内存上涨定位：用 <code>ObjectSpace.count_objects</code>/<code>ObjectSpace.each_object</code> 看哪类对象最多；用 <code>memory_profiler</code>、<code>derailed_benchmarks</code> 或 <code>heapdump</code> 找泄漏点（常见是缓存无限增长、全局变量、闭包持有大对象、Nokogiri 等大对象未释放）。</li>
-<li>优化：① 减少短命大对象分配（字符串拼接用 <code>&lt;&lt;</code>、避免循环内建大数组）；② 控制缓存大小、用 LRU；③ 调整 <code>RUBY_GC_HEAP_<em></code>/<code>RUBY_GC_OLDMALLOC_</em></code> 环境变量扩大堆或老生代阈值；④ 长期服务用 Puma 的 <code>fork</code> 预加载 + 定期重启 worker 兜底。原则是先测量再调参，别盲调 GC 参数。</li>
+<li>从需求/接口文档生成初始用例和边界条件，帮人查漏；把失败日志、堆栈、截图总结成可读的缺陷描述；对 flaky 用例做聚类和初步归因；生成测试数据、Mock 响应；做视觉回归的差异描述。</li>
+<li>适合“生成候选 + 人工筛选”的场景，不适合直接作为发布门禁的唯一依据。</li>
+</ul>
+<p><strong>不能做/风险</strong></p>
+<ul>
+<li>会编造预期结果和接口字段；同一输入输出不稳定；可能泄露需求、代码、用户数据到外部模型；提示词注入会污染结果；训练数据偏差导致只覆盖常见路径，漏掉业务特有边界。</li>
+<li>AI 生成的用例可能“看起来合理但不可执行”，也可能把错误答案写得很自信。</li>
+</ul>
+<p><strong>质量评估</strong></p>
+<ul>
+<li>建一个小型 golden set（人工确认过的需求/用例/缺陷），定期评估 AI 的召回、准确、可执行率和误报率；按任务分别评估，不用一个总分。</li>
+<li>要求每条 AI 用例带来源（需求段落/接口定义）和可追溯 ID；人工 review 后才能进回归集；设置采纳率和返工率指标。</li>
+</ul>
+<p><strong>落地边界</strong></p>
+<ul>
+<li>敏感数据脱敏/本地化模型；限制外部调用；AI 只做建议，门禁仍由确定性测试和人工决定；对 AI 生成内容做版本记录，出问题可回滚。</li>
 </ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1760">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/736">Ruby 的元编程（metaprogramming）能力？Rails 的约定优于配置？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1625">Ruby 的块、Proc 与 Lambda 有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1754">Ruby 常说「一切皆对象」，这具体体现在哪里？和 Java 的基本类型/封装类有什么区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1755">用 Ruby 写一个「闭包计数器」，并说明 block / Proc / lambda 三者的区别。</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/843">自动化测试框架有哪些常见类型？何时该引入自动化？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1547">如何为前端登录流程设计一条端到端自动化测试？请说明元素定位、等待策略与测试数据清理。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1761">混沌工程如何从“偶尔做一次故障演练”变成质量体系的一部分？如何控制爆炸半径？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=24&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=108&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

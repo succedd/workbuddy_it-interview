@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="翻转一棵二叉树（左右子树互换），给出递归实现，并思考能否用层序遍历（非递归）完成？ · IT面试题库">
   <meta property="og:description" content="要点： 递归（自顶向下）：先递归翻转左子树、再翻转右子树，最后交换当前节点的左右指针；注意要「先拿到左右子树翻转后的结果再交换」，避免边遍历边覆盖导致丢失引用。 非递归（层序）：BFS 遍历每个节点，访问时直接 swap(node.left, node.right)，再把子树入队继续。两种写法本质都是「访问每个节…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/964.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="翻转一棵二叉树（左右子树互换），给出递归实现，并思考能否用层序遍历（非递归）完成？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/964.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/964">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="翻转一棵二叉树（左右子树互换），给出递归实现，并思考能否用层序遍历（非递归）完成？ · IT面试题库">
   <meta name="twitter:description" content="要点： 递归（自顶向下）：先递归翻转左子树、再翻转右子树，最后交换当前节点的左右指针；注意要「先拿到左右子树翻转后的结果再交换」，避免边遍历边覆盖导致丢失引用。 非递归（层序）：BFS 遍历每个节点，访问时直接 swap(node.left, node.right)，再把子树入队继续。两种写法本质都是「访问每个节…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/964.jpg">
+  <meta name="twitter:image:alt" content="翻转一棵二叉树（左右子树互换），给出递归实现，并思考能否用层序遍历（非递归）完成？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/964">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"翻转一棵二叉树（左右子树互换），给出递归实现，并思考能否用层序遍历（非递归）完成？","text":"考察点：递归自顶向下翻转、非递归（层序）翻转、边界与『镜像』概念的延伸。这是二叉树操作类的经典追问。","answerCount":1,"datePublished":"2026-09-10T02:29:35.754Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 递归（自顶向下）：先递归翻转左子树、再翻转右子树，最后交换当前节点的左右指针；注意要「先拿到左右子树翻转后的结果再交换」，避免边遍历边覆盖导致丢失引用。 非递归（层序）：BFS 遍历每个节点，访问时直接 swap(node.left, node.right)，再把子树入队继续。两种写法本质都是「访问每个节点并交换其左右孩子」。 边界：空节点返回 null；叶子节点无需操作（其左右本为 null）。 延伸：翻转即「整树镜像」，常作为「判断两棵树是否对称/镜像」「判断两棵树是否相同」的铺垫（对称 = 一棵的左镜像等于另一棵的右）。 参考实现（递归）： 复杂度：O(n) 时间，递归 O(h) 空间。","url":"https://itinterview.com.cn/question/964"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"翻转一棵二叉树（左右子树互换），给出递归实现，并思考能否用层序遍历（非递归）完成？","item":"https://itinterview.com.cn/q/964"}]}</script>
@@ -111,7 +117,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/964">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">395 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

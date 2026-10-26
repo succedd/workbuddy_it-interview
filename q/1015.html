@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？ · IT面试题库">
   <meta property="og:description" content="要点： 核心答案：JDK 动态代理。SqlSession.getMapper(XxxMapper.class) 内部调用 MapperRegistry#getMapper，从 knownMappers 拿到对应 MapperProxyFactory，再 newInstance(sqlSession) 生成一个实现…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1015.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1015.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1015">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 核心答案：JDK 动态代理。SqlSession.getMapper(XxxMapper.class) 内部调用 MapperRegistry#getMapper，从 knownMappers 拿到对应 MapperProxyFactory，再 newInstance(sqlSession) 生成一个实现…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1015.jpg">
+  <meta name="twitter:image:alt" content="MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1015">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？","text":"考察点：JDK 动态代理、MapperProxy、MapperMethod。这是「会用但说不清」的典型题，考察是否真的读过框架源码。","answerCount":1,"datePublished":"2026-09-10T11:50:40.144Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心答案：JDK 动态代理。SqlSession.getMapper(XxxMapper.class) 内部调用 MapperRegistry#getMapper，从 knownMappers 拿到对应 MapperProxyFactory，再 newInstance(sqlSession) 生成一个实现了该接口的动态代理对象返回。 调用链：代理对象的 invoke 由 MapperProxy 处理 → 先封装成 MapperMethod 并放入 methodCache（避免每次反射解析）→ 由 MapperMethod#execute 按注解/XML 判断语句类型（SELECT/INSERT/UPDATE/DELETE），最终走 SqlSession 的 selectOne/selectList/insert 等方法。 语句定位：statementId 是 namespace + \".\" + methodName，所以接口全限定名必须和 XML 的 namespace 完全一致——对不上就是经典的 Invalid bound statement (not found)。 @Param 为什么必需：单参数且无 @Param 时，#{任意名} 都能取到；多参数时 MyBatis 会把它们封装成 ParamMap（key 为 param1/param2 或 arg0/arg1），此时不写 @Param 就只能用 param1 这种可读性极差的名字。 延伸考点：接口可以写 default 方法，代理会识别 isDefaultMethod 并直接调用真实实现；Object 的方法（toString/equals）会被特殊处理，不走 SQL。","url":"https://itinterview.com.cn/question/1015"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"MyBatis","item":"https://itinterview.com.cn/category?cat=84"},{"@type":"ListItem","position":5,"name":"MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？","item":"https://itinterview.com.cn/q/1015"}]}</script>

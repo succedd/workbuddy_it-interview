@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？ · IT面试题库">
   <meta property="og:description" content="不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE &#39;%${kw}%&#39; 危险…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/553.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/553.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/553">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？ · IT面试题库">
   <meta name="twitter:description" content="不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE &#39;%${kw}%&#39; 危险…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/553.jpg">
+  <meta name="twitter:image:alt" content="ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/553">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？","text":"以 MyBatis 的 #{} 与 ${} 为例，说明为什么 ORM 不是“注入免疫”的，以及哪些场景容易踩坑。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"不能。ORM 只是工具，是否防注入取决于怎么用。 MyBatis 为例： #{}：MyBatis 会将其替换为 JDBC 占位符 ? 并参数化，安全。 ${}：直接做字符串拼接/原样替换，等同于拼接 SQL，会注入。 常见踩坑场景（被迫用 ${} 又处理不当）： LIKE 查询：LIKE '%${kw}%' 危险，应改为 LIKE CONCAT('%', #{kw}, '%') 或 Java 端拼接好再 #{}。 IN 列表：用 + #{} 生成多个占位符，而不是 ${ids}。 ORDER BY / 表名 / 列名：这些不能参数化，只能用白名单枚举校验，绝不能把用户输入直接 ${}。 Hibernate / JPA：用 HQL/JPQL 的命名参数（setParameter）安全；但若拼接 HQL 字符串或用原生 createSQLQuery 拼接，同样注入。 结论：ORM 防注入前提是使用参数化 API，拼接（尤其 ${}、原生 SQL 拼接）一律视为危险。","url":"https://itinterview.com.cn/question/553"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"SQL注入","item":"https://itinterview.com.cn/category?cat=204"},{"@type":"ListItem","position":4,"name":"ORM 框架（如 MyBatis / Hibernate）一定能防 SQL 注入吗？","item":"https://itinterview.com.cn/q/553"}]}</script>

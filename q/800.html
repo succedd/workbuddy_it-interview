@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？ · IT面试题库">
   <meta property="og:description" content="常见 OOM：Heap OOM（堆内存不足，对象过多/泄漏）、Metaspace OOM（类元数据爆炸）、StackOverflow（递归过深）、Direct Buffer OOM。 排查思路：先加 -XX:+HeapDumpOnOutOfMemoryError 导出堆转储，再用 MAT 分析占用最大的对象与引用…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/800.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/800.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/800">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？ · IT面试题库">
   <meta name="twitter:description" content="常见 OOM：Heap OOM（堆内存不足，对象过多/泄漏）、Metaspace OOM（类元数据爆炸）、StackOverflow（递归过深）、Direct Buffer OOM。 排查思路：先加 -XX:+HeapDumpOnOutOfMemoryError 导出堆转储，再用 MAT 分析占用最大的对象与引用…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/800.jpg">
+  <meta name="twitter:image:alt" content="如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/800">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？","text":"说明 OOM 的常见类型、定位思路和主要诊断工具。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"常见 OOM：Heap OOM（堆内存不足，对象过多/泄漏）、Metaspace OOM（类元数据爆炸）、StackOverflow（递归过深）、Direct Buffer OOM。 排查思路：先加 -XX:+HeapDumpOnOutOfMemoryError 导出堆转储，再用 MAT 分析占用最大的对象与引用链，定位泄漏点；结合 GC 日志看回收效率。 工具：jstack（线程栈/死锁）、jmap（堆直方图/转储）、jstat（GC 统计）、Arthas（线上诊断无需重启）、VisualVM。调优核心是合理设堆大小、选合适 GC、减少不必要的对象持有。","url":"https://itinterview.com.cn/question/800"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？","item":"https://itinterview.com.cn/q/800"}]}</script>

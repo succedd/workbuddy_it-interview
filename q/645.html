@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库">
   <meta property="og:description" content="要点一：正确答案是 B max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/645.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/645.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/645">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库">
   <meta name="twitter:description" content="要点一：正确答案是 B max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/645.jpg">
+  <meta name="twitter:image:alt" content="【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/645">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？","text":"A. Read View 的 max_trx_id 就是创建时刻活跃事务 id 列表中的最大值 B. 记录的 trx_id 大于等于 max_trx_id，说明该版本由 Read View 创建之后才启动的事务生成，对当前事务不可见 C. 记录的 trx_id 介于 min_trx_id 与 max_trx_id 之间时，该版本对当前事务一定可见 D. m_ids 中必须包含创建 Read View 的事务自身的 id，否则可见性判断会出错 请选出正确答案，并解释其余选项错误的原因。","answerCount":1,"datePublished":"2026-09-07T13:18:41.465Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：正确答案是 B max_trx_id 是创建 Read View 时\"下一个将要分配给新事务的事务 id\"（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id >= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。 要点二：错误选项分析 A 错：max_trx_id 是\"下一个待分配的事务 id\"（高水位），不是活跃列表的最大值；min_trx_id 才是 m_ids 中的最小值（低水位）。 C 错：trx_id 落在 [min_trx_id, max_trx_id) 区间时还需二分查找 m_ids：在列表中说明该事务创建时仍活跃，版本不可见；不在列表中才可见，并非\"一定可见\"。 D 错：m_ids 不包括创建 Read View 的事务自身；trx_id == creator_trx_id 的版本\"自己的修改对自己总是可见\"，由可见性算法的第一条分支直接返回，与 m_ids 是否包含自身无关。 要点三：完整可见性规则速记 trx_id = max_trx_id：创建后才启动，不可见；区间内查 m_ids，在则不可见、不在则可见；等于 creator_trx_id 恒可见。沿 undo log 版本链逐版本判断直到找到可见版本。","url":"https://itinterview.com.cn/question/645"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"【单选题】InnoDB 通过 Read View 判断记录版本可见性，下列说法正确的是？","item":"https://itinterview.com.cn/q/645"}]}</script>

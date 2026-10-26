@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？ · IT面试题库">
   <meta property="og:description" content="按粒度： 表级锁：表锁、元数据锁 MDL（防 DDL 与查询/事务冲突）、意向锁（IS/IX，表明&quot;表内有行被锁&quot;，让表锁判断不用逐行检查）、AUTO-INC 锁。 行级锁（InnoDB，加在索引记录上）： 1. 记录锁 Record Lock：锁定单条索引记录（S/X 两种）。 2. 间隙锁 Gap Lock：…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/903.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/903.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/903">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？ · IT面试题库">
   <meta name="twitter:description" content="按粒度： 表级锁：表锁、元数据锁 MDL（防 DDL 与查询/事务冲突）、意向锁（IS/IX，表明&quot;表内有行被锁&quot;，让表锁判断不用逐行检查）、AUTO-INC 锁。 行级锁（InnoDB，加在索引记录上）： 1. 记录锁 Record Lock：锁定单条索引记录（S/X 两种）。 2. 间隙锁 Gap Lock：…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/903.jpg">
+  <meta name="twitter:image:alt" content="InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/903">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？","text":"请介绍 MySQL 的表级锁与行级锁，重点说明 InnoDB 记录锁、间隙锁、临键锁的锁定范围与作用场景。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"按粒度： 表级锁：表锁、元数据锁 MDL（防 DDL 与查询/事务冲突）、意向锁（IS/IX，表明\"表内有行被锁\"，让表锁判断不用逐行检查）、AUTO-INC 锁。 行级锁（InnoDB，加在索引记录上）： 1. 记录锁 Record Lock：锁定单条索引记录（S/X 两种）。 2. 间隙锁 Gap Lock：锁定两条记录之间的开区间，只防插入不防读——RR 级别下防止幻读的核心手段；对不存在的记录加锁时产生。 3. 临键锁 Next-Key Lock：记录锁+间隙锁的左开右闭区间 (a,b]，RR 下的默认加锁单位，配合 MVCC 实现\"当前读防幻读\"。 4. 插入意向锁：INSERT 前的间隙锁兼容性机制，同间隙并发插入互不冲突。 关键细节：行锁锁的是索引——WHERE 条件无索引时会升级为对所有记录加锁（近似锁全表），这是\"行锁变表锁\"事故的经典成因；唯一索引等值命中时退化为纯记录锁（如 id=1），不再加间隙锁。","url":"https://itinterview.com.cn/question/903"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？","item":"https://itinterview.com.cn/q/903"}]}</script>

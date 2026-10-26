@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？ · IT面试题库">
   <meta property="og:description" content="要点： 原理：把用户输入直接拼接到 SQL 语句中，改变了原 SQL 的语义（如 &#39; OR &#39;1&#39;=&#39;1&#39;），可实现越权查询、绕过鉴权、拖库删库。 预编译为什么能防：PreparedStatement 先把带 ? 占位符的 SQL 模板发给数据库编译执行计划，之后传入的参数只作为“数据”绑定，不会被当作 SQL …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1472.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1472.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1472">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？ · IT面试题库">
   <meta name="twitter:description" content="要点： 原理：把用户输入直接拼接到 SQL 语句中，改变了原 SQL 的语义（如 &#39; OR &#39;1&#39;=&#39;1&#39;），可实现越权查询、绕过鉴权、拖库删库。 预编译为什么能防：PreparedStatement 先把带 ? 占位符的 SQL 模板发给数据库编译执行计划，之后传入的参数只作为“数据”绑定，不会被当作 SQL …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1472.jpg">
+  <meta name="twitter:image:alt" content="SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1472">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？","text":"说明注入如何改变 SQL 语义，并解释参数化查询从根源上阻断“数据变代码”。","answerCount":1,"datePublished":"2026-10-02T02:45:55.948Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原理：把用户输入直接拼接到 SQL 语句中，改变了原 SQL 的语义（如 ' OR '1'='1'），可实现越权查询、绕过鉴权、拖库删库。 预编译为什么能防：PreparedStatement 先把带 ? 占位符的 SQL 模板发给数据库编译执行计划，之后传入的参数只作为“数据”绑定，不会被当作 SQL 代码解析——从根本上切断“数据变代码”的通道。 注意：① 不能在字符串拼接完成后再预编译（为时已晚）；② 表名/列名/ORDER BY 字段无法参数化，必须走白名单校验；③ 配合最小权限账号、关闭错误回显、正确使用 ORM。","url":"https://itinterview.com.cn/question/1472"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"OWASP Top 10","item":"https://itinterview.com.cn/category?cat=203"},{"@type":"ListItem","position":4,"name":"SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？","item":"https://itinterview.com.cn/q/1472"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis 为什么这么快？ · IT面试题库">
   <meta property="og:description" content="1. 纯内存操作：数据全在内存，读写比磁盘数据库快几个数量级（内存随机访问约 100ns 级，磁盘毫秒级）。 2. 高效数据结构：针对不同场景定制——SDS 动态字符串（O(1) 取长度）、ziplist/listpack 压缩列表（小数据省内存）、skiplist 跳表（ZSet 范围查询 O(logN)）、i…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/905.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis 为什么这么快？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/905.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/905">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 为什么这么快？ · IT面试题库">
   <meta name="twitter:description" content="1. 纯内存操作：数据全在内存，读写比磁盘数据库快几个数量级（内存随机访问约 100ns 级，磁盘毫秒级）。 2. 高效数据结构：针对不同场景定制——SDS 动态字符串（O(1) 取长度）、ziplist/listpack 压缩列表（小数据省内存）、skiplist 跳表（ZSet 范围查询 O(logN)）、i…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/905.jpg">
+  <meta name="twitter:image:alt" content="Redis 为什么这么快？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/905">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 为什么这么快？","text":"从内存、数据结构、线程模型、IO 等角度说明 Redis 高性能的原因。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 纯内存操作：数据全在内存，读写比磁盘数据库快几个数量级（内存随机访问约 100ns 级，磁盘毫秒级）。 2. 高效数据结构：针对不同场景定制——SDS 动态字符串（O(1) 取长度）、ziplist/listpack 压缩列表（小数据省内存）、skiplist 跳表（ZSet 范围查询 O(logN)）、intset、quicklist 等；多数命令 O(1)~O(logN)。 3. 单线程无锁竞争（指命令执行线程）：没有多线程上下文切换和锁开销，实现简单且可预测。 4. IO 多路复用：epoll 单线程监听大量连接，Redis 6.0 后网络读写甚至并行化（多线程 IO），但命令执行仍是单线程。 5. 通信协议 RESP 简单：文本协议解析开销极小。 追问点：单线程快的前提是\"每条命令都足够快\"——所以有大 key（如百万元素的集合）或 O(N) 命令（KEYS、HGETALL 大哈希）时要拆分，否则会阻塞整个实例。","url":"https://itinterview.com.cn/question/905"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 为什么这么快？","item":"https://itinterview.com.cn/q/905"}]}</script>

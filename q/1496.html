@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="从 Webpack 迁移到 Vite 的主要坑有哪些？ · IT面试题库">
   <meta property="og:description" content="高频坑：① CJS 依赖：只提供 CommonJS 的包会报「无法预优化」，需加入 optimizeDeps.include 让 esbuild 预转换；② global/Node API：浏览器缺 process/global/Buffer，用 define 注入或 polyfill；③ 环境变量：webpac…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1496.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="从 Webpack 迁移到 Vite 的主要坑有哪些？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1496.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1496">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="从 Webpack 迁移到 Vite 的主要坑有哪些？ · IT面试题库">
   <meta name="twitter:description" content="高频坑：① CJS 依赖：只提供 CommonJS 的包会报「无法预优化」，需加入 optimizeDeps.include 让 esbuild 预转换；② global/Node API：浏览器缺 process/global/Buffer，用 define 注入或 polyfill；③ 环境变量：webpac…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1496.jpg">
+  <meta name="twitter:image:alt" content="从 Webpack 迁移到 Vite 的主要坑有哪些？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1496">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"从 Webpack 迁移到 Vite 的主要坑有哪些？","text":"结合实操列迁移中的典型问题与解法。","answerCount":1,"datePublished":"2026-10-05T01:03:56.978Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"高频坑：① CJS 依赖：只提供 CommonJS 的包会报「无法预优化」，需加入 optimizeDeps.include 让 esbuild 预转换；② global/Node API：浏览器缺 process/global/Buffer，用 define 注入或 polyfill；③ 环境变量：webpack.DefinePlugin 换成 import.meta.env，自定义前缀 VITE_；④ require 上下文：require.context 改 import.meta.glob；⑤ 路径别名/后缀：确认 resolve.alias 与 extensions 一致，.vue 后缀显式补全；⑥ 懒加载语法：动态 import 里的模板字符串要用 import.meta.glob 预先枚举（Vite 无法运行时拼接 URL）；⑦ 插件替换：HtmlWebpackPlugin→vite-plugin-html、MiniCssExtract 内置 CSS 处理；⑧ 老浏览器：需 @vitejs/plugin-legacy 生成 nomodule 兜底。建议先在非核心项目试点，CI 里加产物对比。","url":"https://itinterview.com.cn/question/1496"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Vite","item":"https://itinterview.com.cn/category?cat=70"},{"@type":"ListItem","position":5,"name":"从 Webpack 迁移到 Vite 的主要坑有哪些？","item":"https://itinterview.com.cn/q/1496"}]}</script>

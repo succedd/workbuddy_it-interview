@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？ · IT面试题库">
   <meta property="og:description" content="B-tree（默认，覆盖绝大多数场景） 支持 =、&gt; 五种比较，等价的 BETWEEN、IN 以及 IS NULL 也能走索引，还能直接按索引顺序返回有序结果、省掉排序。 对模式匹配只在前缀锚定时有效：col LIKE &#39;foo%&#39;、col ~ &#39;^foo&#39; 可以，col LIKE &#39;%bar&#39; 不行。若数据库不…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/454.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/454.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/454">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？ · IT面试题库">
   <meta name="twitter:description" content="B-tree（默认，覆盖绝大多数场景） 支持 =、&gt; 五种比较，等价的 BETWEEN、IN 以及 IS NULL 也能走索引，还能直接按索引顺序返回有序结果、省掉排序。 对模式匹配只在前缀锚定时有效：col LIKE &#39;foo%&#39;、col ~ &#39;^foo&#39; 可以，col LIKE &#39;%bar&#39; 不行。若数据库不…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/454.jpg">
+  <meta name="twitter:image:alt" content="PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/454">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？","text":"默认的 CREATE INDEX 建的是 B-tree。实际业务中遇到数组/JSONB 包含查询、全文检索、地理位置检索和海量时序数据范围扫描时，应该选哪种索引？","answerCount":1,"datePublished":"2026-09-03T00:54:35.635Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"B-tree（默认，覆盖绝大多数场景） 支持 =、> 五种比较，等价的 BETWEEN、IN 以及 IS NULL 也能走索引，还能直接按索引顺序返回有序结果、省掉排序。 对模式匹配只在前缀锚定时有效：col LIKE 'foo%'、col ~ '^foo' 可以，col LIKE '%bar' 不行。若数据库不是 C locale，需要额外指定 operator class 才能支持这类查询。 Hash 只存索引列值的 32 位哈希，仅支持等值 =，不支持范围、排序。相比 B-tree 优势有限，日常很少用。 GiST / SP-GiST（通用索引基础设施） 两者本身不是「一种索引」，而是可插拔框架，支持哪些操作符取决于 operator class。内置 opclass 覆盖二维几何类型（如 、 point '(101,456)' LIMIT 10，配合 PostGIS 做「附近的门店」非常合适。 SP-GiST 支持非平衡的磁盘数据结构（四叉树、k-d 树、radix trie），适合点数据、IP 路由、前缀/分词类场景。 GIN（倒排索引） 专为一个字段含多个分量值的数据设计，为每个分量建一条倒排项。典型用途：jsonb 的 @> 包含查询、数组包含/相交（@>、\u003c@、&&、=）、全文检索 tsvector。 代价是写入时维护倒排项开销大、索引体积更大，通常配合 fastupdate 与 gin_pending_list_limit 使用；写多读少的列要谨慎。 BRIN（块范围索引） 不记录单行，只记录连续物理块区间内该列的摘要（对有线性排序的类型就是 min/max）。 适合列值与物理存储顺序强相关的数据（如按时间追加的日志、时序表、自增 ID 表），索引体积可能只有 KB 级，却能在大范围扫描时整块跳过。 如果数据被大量 UPDATE 打乱物理顺序，BRIN 的 min/max 区间会互相重叠，效果急剧下降。","url":"https://itinterview.com.cn/question/454"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？","item":"https://itinterview.com.cn/q/454"}]}</script>

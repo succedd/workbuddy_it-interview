@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 IEEE 754 单精度格式表示十进制数 −6.625，画出 32 位字段并说明符号位、阶码、尾数、隐含位与偏移量。 · IT面试题库">
   <meta property="og:description" content="结论 IEEE 754 单精度用 1 位符号 S + 8 位阶码 E + 23 位尾数 M 共 32 位表示一个浮点数，真实值为 (−1)^S × 1.M × 2^(E−127)（规格化数，尾数前有隐含的 1）。 −6.625 的编码步骤 1. 符号 S = 1（负数）。 2. 6.625 = 110.101₂ …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1392.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 IEEE 754 单精度格式表示十进制数 −6.625，画出 32 位字段并说明符号位、阶码、尾数、隐含位与偏移量。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1392.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1392">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 IEEE 754 单精度格式表示十进制数 −6.625，画出 32 位字段并说明符号位、阶码、尾数、隐含位与偏移量。 · IT面试题库">
   <meta name="twitter:description" content="结论 IEEE 754 单精度用 1 位符号 S + 8 位阶码 E + 23 位尾数 M 共 32 位表示一个浮点数，真实值为 (−1)^S × 1.M × 2^(E−127)（规格化数，尾数前有隐含的 1）。 −6.625 的编码步骤 1. 符号 S = 1（负数）。 2. 6.625 = 110.101₂ …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1392.jpg">
+  <meta name="twitter:image:alt" content="用 IEEE 754 单精度格式表示十进制数 −6.625，画出 32 位字段并说明符号位、阶码、尾数、隐含位与偏移量。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1392">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 IEEE 754 单精度格式表示十进制数 −6.625，画出 32 位字段并说明符号位、阶码、尾数、隐含位与偏移量。","text":"考察 IEEE 754 单精度位级编码与规格化过程。","answerCount":1,"datePublished":"2026-09-26T11:05:11.046Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 IEEE 754 单精度用 1 位符号 S + 8 位阶码 E + 23 位尾数 M 共 32 位表示一个浮点数，真实值为 (−1)^S × 1.M × 2^(E−127)（规格化数，尾数前有隐含的 1）。 −6.625 的编码步骤 1. 符号 S = 1（负数）。 2. 6.625 = 110.101₂ = 1.10101₂ × 2²（规格化）。 3. 阶码 E = 真值 2 + 偏移 127 = 129 = 1000 0001₂。 4. 尾数 M = 小数部分 .10101 左补 0 至 23 位 = 10101000000000000000000。 5. 拼接 32 位：1 | 10000001 | 10101000000000000000000。 特殊约定 隐含位：规格化数的尾数整数位固定为 1，不占存储位 → 实际 24 位精度。 偏移量：单精度 127、双精度 1023，使阶码可用无符号数表示正负指数。 机器零：E=0 且 M=0。 非规数：E=0 且 M≠0（隐含位变 0，表示接近 0 的数）。 无穷大：E=全 1 且 M=0；NaN：E=全 1 且 M≠0。 双精度：S1 / E11(偏移1023) / M52，范围更大、精度更高。","url":"https://itinterview.com.cn/question/1392"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"用 IEEE 754 单精度格式表示十进制数 −6.625，画出 32 位字段并说明符号位、阶码、尾数、隐含位与偏移量。","item":"https://itinterview.com.cn/q/1392"}]}</script>

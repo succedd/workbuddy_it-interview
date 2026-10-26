@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？ · IT面试题库">
   <meta property="og:description" content="设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u &gt; n) &amp; 1u; 读取多位掩码：int field = (reg &gt;&gt; 4) &amp; 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 =…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/605.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/605.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/605">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？ · IT面试题库">
   <meta name="twitter:description" content="设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u &gt; n) &amp; 1u; 读取多位掩码：int field = (reg &gt;&gt; 4) &amp; 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 =…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/605.jpg">
+  <meta name="twitter:image:alt" content="如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/605">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？","text":"给出对 32 位寄存器某一位或多位进行置 1、清 0、读取、翻转的标准写法，并说明位域（bit-field）的注意事项。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设寄存器指针 volatile uint32_t reg，位编号 n（从 0 起）。 置位（Set）：reg |= (1u > n) & 1u; 读取多位掩码：int field = (reg >> 4) & 0x7; // 取 bit4~6 为何用 RMW 而非直接赋值：寄存器多为「读写-修改-写回」，直接 = 会误清其他位。注意该 RMW 本身非原子，若 ISR 同时访问需加临界区。 位域（bit-field） 好处：可读性好；风险：位域的位序、对齐是编译器实现定义（不同编译器/端序可能不同），做跨平台/硬件寄存器映射时不推荐，优先用移位宏保证可移植。 硬件 SDK（如 STM32 CMSIS）通常已用 volatile 定义寄存器，应用层用移位宏操作最稳妥。","url":"https://itinterview.com.cn/question/605"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"如何用位操作读写寄存器中的特定位（置位/清位/取位/翻转）？","item":"https://itinterview.com.cn/q/605"}]}</script>

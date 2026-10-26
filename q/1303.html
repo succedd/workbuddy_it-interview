@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：前端调第三方接口报 CORS 错误，但你只是想读数据。请对比「服务端加 CORS 头、开发代理/网关转发、BFF 中转、JSONP、postMessage」的适用场景与代价。 · IT面试题库">
   <meta property="og:description" content="先厘清一个常见误解：CORS 是基于 HTTP 头的机制，浏览器用它决定是否允许别的源读取本源的资源。被拦截的通常不是「请求没发出去」，而是响应读取被浏览器阻断——请求往往已到达服务器并执行。且出于安全，JS 层面看不到具体失败原因，只能查控制台。 方案对比： | 方案 | 原理 | 适用场景 | 代价 | |-…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1303.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="场景题：前端调第三方接口报 CORS 错误，但你只是想读数据。请对比「服务端加 CORS 头、开发代理/网关转发、BFF 中转、JSONP、postMessage」的适用场景与代价。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1303.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1303">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：前端调第三方接口报 CORS 错误，但你只是想读数据。请对比「服务端加 CORS 头、开发代理/网关转发、BFF 中转、JSONP、postMessage」的适用场景与代价。 · IT面试题库">
   <meta name="twitter:description" content="先厘清一个常见误解：CORS 是基于 HTTP 头的机制，浏览器用它决定是否允许别的源读取本源的资源。被拦截的通常不是「请求没发出去」，而是响应读取被浏览器阻断——请求往往已到达服务器并执行。且出于安全，JS 层面看不到具体失败原因，只能查控制台。 方案对比： | 方案 | 原理 | 适用场景 | 代价 | |-…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1303.jpg">
+  <meta name="twitter:image:alt" content="场景题：前端调第三方接口报 CORS 错误，但你只是想读数据。请对比「服务端加 CORS 头、开发代理/网关转发、BFF 中转、JSONP、postMessage」的适用场景与代价。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1303">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：前端调第三方接口报 CORS 错误，但你只是想读数据。请对比「服务端加 CORS 头、开发代理/网关转发、BFF 中转、JSONP、postMessage」的适用场景与代价。","text":"考察点：把同源策略与 CORS 机制转化为可落地的工程方案选型能力。","answerCount":1,"datePublished":"2026-09-26T02:32:53.839Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先厘清一个常见误解：CORS 是基于 HTTP 头的机制，浏览器用它决定是否允许别的源读取本源的资源。被拦截的通常不是「请求没发出去」，而是响应读取被浏览器阻断——请求往往已到达服务器并执行。且出于安全，JS 层面看不到具体失败原因，只能查控制台。 方案对比： | 方案 | 原理 | 适用场景 | 代价 | |---|---|---|---| | 服务端加 CORS 响应头 | 返回 Access-Control-Allow-Origin 等 | 自己有服务端，或对方愿意配合 | 需改服务端；带凭证时不能用 | | 开发代理 / 网关反向代理 | 由同源 dev-server 或 Nginx 转发到目标，浏览器看到的是同源 | 本地开发；生产用同域网关 | 生产需部署转发层、维护路由 | | BFF / 后端中转 | 前端只调自家后端，后端再调第三方 | 第三方不放行 CORS、要隐藏密钥、统一鉴权 | 多一跳，依赖后端支持 | | JSONP | 动态 加载，靠回调函数收数据 | 仅历史遗留、且只需 GET | 只支持 GET、有 XSS 风险、拿不到状态码，已不推荐 | | postMessage | 跨窗口 / iframe 结构化通信 | 嵌入第三方页面、跨窗口通信 | 必须校验 event.origin，且它不解决「读接口」 | | 关闭浏览器安全策略 | --disable-web-security 等 | 仅本地临时调试 | 绝不能用于生产 | 两个必须掌握的细节： 预检（preflight）：非简单请求（PUT/DELETE、自定义头、Content-Type 非 text/plain/multipart/form-data/application/x-www-form-urlencoded）浏览器会先发 OPTIONS，带上 Access-Control-Request-Method / -Headers；服务端需回 Access-Control-Allow-Methods / -Headers，并用 Access-Control-Max-Age 缓存预检结果（MDN 示例为 86400 秒，默认仅 5 秒）。 要带 Cookie：需 credentials:'include' 且服务端 Access-Control-Allow-Credentials: true；此时 Access-Control-Allow-Origin 不能用 ，必须回具体源并配 Vary: Origin；跨站 Cookie 还受 SameSite 策略约束。另外默认只能读少量安全响应头，要读自定义头需服务端设置 Access-Control-Expose-Headers。 选型建议：能改服务端就规范配 CORS；改不了就走同域网关 / BFF 代理（生产最稳、还能藏密钥）；JSONP 只作为兼容历史的最后手段。","url":"https://itinterview.com.cn/question/1303"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"场景题：前端调第三方接口报 CORS 错误，但你只是想读数据。请对比「服务端加 CORS 头、开发代理/网关转发、BFF 中转、JSONP、postMessage」的适用场景与代价。","item":"https://itinterview.com.cn/q/1303"}]}</script>

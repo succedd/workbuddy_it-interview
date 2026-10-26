@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。 · IT面试题库">
   <meta property="og:description" content="要点： 先判症状：全部 5xx/RT 飙升多为容量与限流不足；出现「卖超了」是库存扣减非原子；个别商品 RT 极高多为热点 key。 限流与降级不到位：网关/接口未配令牌桶限流、没做静态化与答题削峰→补限流、排队、返回「稍后再试」兜底页。 超卖根因：库存扣减查库非原子、或用 SELECT 再 UPDATE 有竞态…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/627.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/627.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/627">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 先判症状：全部 5xx/RT 飙升多为容量与限流不足；出现「卖超了」是库存扣减非原子；个别商品 RT 极高多为热点 key。 限流与降级不到位：网关/接口未配令牌桶限流、没做静态化与答题削峰→补限流、排队、返回「稍后再试」兜底页。 超卖根因：库存扣减查库非原子、或用 SELECT 再 UPDATE 有竞态…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/627.jpg">
+  <meta name="twitter:image:alt" content="大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/627">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。","text":"考察点：能区分秒杀场景下的「容量不足」「超卖」「热点 key」并给出针对性防护（不同于通用缓存三件套）。","answerCount":1,"datePublished":"2026-09-06T02:23:59.591Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先判症状：全部 5xx/RT 飙升多为容量与限流不足；出现「卖超了」是库存扣减非原子；个别商品 RT 极高多为热点 key。 限流与降级不到位：网关/接口未配令牌桶限流、没做静态化与答题削峰→补限流、排队、返回「稍后再试」兜底页。 超卖根因：库存扣减查库非原子、或用 SELECT 再 UPDATE 有竞态→改为 Redis Lua 原子预扣 + DB 乐观锁/行锁兜底。 热点与下单链路：单 SKU 热点 key 打爆单分片→打散库存到多个桶（分段扣减）；下单链路同步阻塞→MQ 异步化+库存回滚补偿；监控 QPS/库存/下单成功率实时熔断。","url":"https://itinterview.com.cn/question/627"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"软件架构模式","item":"https://itinterview.com.cn/category?cat=98"},{"@type":"ListItem","position":4,"name":"大促秒杀一开始系统就被打挂或出现超卖，请列出定位与防护清单（限流、热点、下单链路）。","item":"https://itinterview.com.cn/q/627"}]}</script>

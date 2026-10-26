@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis 的 RDB 和 AOF 两种持久化方式有什么区别？生产环境如何选型？ · IT面试题库">
   <meta property="og:description" content="RDB（Redis Database）：在指定间隔对内存数据做二进制快照（point-in-time）。 优点：文件紧凑、适合备份与灾难恢复、恢复速度快、父进程仅 fork 子进程写盘，主进程几乎不阻塞。 缺点：快照间隔内宕机易丢失最近分钟级数据；大数据集 fork 可能短暂阻塞。 AOF（Append Only…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/533.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis 的 RDB 和 AOF 两种持久化方式有什么区别？生产环境如何选型？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/533.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/533">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的 RDB 和 AOF 两种持久化方式有什么区别？生产环境如何选型？ · IT面试题库">
   <meta name="twitter:description" content="RDB（Redis Database）：在指定间隔对内存数据做二进制快照（point-in-time）。 优点：文件紧凑、适合备份与灾难恢复、恢复速度快、父进程仅 fork 子进程写盘，主进程几乎不阻塞。 缺点：快照间隔内宕机易丢失最近分钟级数据；大数据集 fork 可能短暂阻塞。 AOF（Append Only…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/533.jpg">
+  <meta name="twitter:image:alt" content="Redis 的 RDB 和 AOF 两种持久化方式有什么区别？生产环境如何选型？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/533">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的 RDB 和 AOF 两种持久化方式有什么区别？生产环境如何选型？","text":"请对比 RDB 与 AOF 的原理、数据安全、性能影响与恢复速度，并说明 Redis 重启时加载顺序及推荐的生产配置。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RDB（Redis Database）：在指定间隔对内存数据做二进制快照（point-in-time）。 优点：文件紧凑、适合备份与灾难恢复、恢复速度快、父进程仅 fork 子进程写盘，主进程几乎不阻塞。 缺点：快照间隔内宕机易丢失最近分钟级数据；大数据集 fork 可能短暂阻塞。 AOF（Append Only File）：以 Redis 协议格式追加记录每一条写命令，重启时重放恢复。 优点：默认 appendfsync everysec 策略下最多丢失 1 秒数据，持久性更强；append-only 不易损坏，有 redis-check-aof 修复工具；支持后台重写压缩。 缺点：文件通常比 RDB 大；恢复需重放命令，较慢。 加载顺序：重启时优先加载 AOF，AOF 不存在才加载 RDB。 生产选型：对数据安全性要求高建议同时开启 RDB（冷备/快速恢复）与 AOF（数据完整），Redis 4.0+ 强烈建议开启混合持久化（AOF 重写时先以 RDB 写全量再追加增量命令），兼顾加载速度与连续性。","url":"https://itinterview.com.cn/question/533"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis 的 RDB 和 AOF 两种持久化方式有什么区别？生产环境如何选型？","item":"https://itinterview.com.cn/q/533"}]}</script>

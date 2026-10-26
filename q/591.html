@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 中消息在什么情况下会丢失或重复？分别如何规避？ · IT面试题库">
   <meta property="og:description" content="一、生产端 丢失：acks=0（发完即忘）、acks=1 且 leader 宕机未同步到 follower。 对策：acks=all + 设置 min.insync.replicas&gt;=2，确保写入 ISR 才返回。 重复：Broker 已写入但响应丢失，生产者重试 → 重复。 对策：开启 enable.idem…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/591.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 中消息在什么情况下会丢失或重复？分别如何规避？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/591.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/591">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 中消息在什么情况下会丢失或重复？分别如何规避？ · IT面试题库">
   <meta name="twitter:description" content="一、生产端 丢失：acks=0（发完即忘）、acks=1 且 leader 宕机未同步到 follower。 对策：acks=all + 设置 min.insync.replicas&gt;=2，确保写入 ISR 才返回。 重复：Broker 已写入但响应丢失，生产者重试 → 重复。 对策：开启 enable.idem…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/591.jpg">
+  <meta name="twitter:image:alt" content="Kafka 中消息在什么情况下会丢失或重复？分别如何规避？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/591">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 中消息在什么情况下会丢失或重复？分别如何规避？","text":"请分别从生产端、服务端、消费端三个环节，分析消息丢失与重复的可能原因，并给出对应的配置/编码对策。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、生产端 丢失：acks=0（发完即忘）、acks=1 且 leader 宕机未同步到 follower。 对策：acks=all + 设置 min.insync.replicas>=2，确保写入 ISR 才返回。 重复：Broker 已写入但响应丢失，生产者重试 → 重复。 对策：开启 enable.idempotence=true（PID+序列号去重）。 二、服务端（Broker） 丢失：leader 宕机且未同步的 follower 被提为新 leader（ISR 收缩）。 对策：提高副本因子（replication.factor>=3）、min.insync.replicas=2、unclean.leader.election.enable=false。 三、消费端 丢失：先 commitSync 再处理，处理中崩溃 → 已提交偏移但消息未处理。（自动提交 enable.auto.commit=true 最易丢） 对策：关闭自动提交，采用先处理、后手动提交（处理成功才 commitSync/commitAsync）。 重复：处理后、提交前崩溃 → 重启重复消费（at-least-once 固有）。 对策：业务做幂等（数据库唯一索引/去重表/状态机），必要时上 EOS 事务。 总结口诀：生产 acks=all+幂等，消费「处理后提交」+业务幂等。","url":"https://itinterview.com.cn/question/591"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Kafka数据","item":"https://itinterview.com.cn/category?cat=162"},{"@type":"ListItem","position":4,"name":"Kafka 中消息在什么情况下会丢失或重复？分别如何规避？","item":"https://itinterview.com.cn/q/591"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Top K 问题（最大 K 个数）有哪些解法？ · IT面试题库">
   <meta property="og:description" content="1. 全排序 O(n log n)：简单但浪费（只需 K 个）。 2. 最小堆（优先队列） O(n log K)：维护大小为 K 的最小堆，遍历时比堆顶大就替换，最终堆内即 Top K。适合流式/海量数据。 3. 快速选择（BFPRT） 平均 O(n)：类似快排 partition，每次只递归含第 K 大的那一侧…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/72.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Top K 问题（最大 K 个数）有哪些解法？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/72.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/72">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Top K 问题（最大 K 个数）有哪些解法？ · IT面试题库">
   <meta name="twitter:description" content="1. 全排序 O(n log n)：简单但浪费（只需 K 个）。 2. 最小堆（优先队列） O(n log K)：维护大小为 K 的最小堆，遍历时比堆顶大就替换，最终堆内即 Top K。适合流式/海量数据。 3. 快速选择（BFPRT） 平均 O(n)：类似快排 partition，每次只递归含第 K 大的那一侧…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/72.jpg">
+  <meta name="twitter:image:alt" content="Top K 问题（最大 K 个数）有哪些解法？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/72">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Top K 问题（最大 K 个数）有哪些解法？","text":"对比排序、最小堆、快速选择。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 全排序 O(n log n)：简单但浪费（只需 K 个）。 2. 最小堆（优先队列） O(n log K)：维护大小为 K 的最小堆，遍历时比堆顶大就替换，最终堆内即 Top K。适合流式/海量数据。 3. 快速选择（BFPRT） 平均 O(n)：类似快排 partition，每次只递归含第 K 大的那一侧，不全局排序。 4. 计数/桶排序：数据范围有限时 O(n)。 工程选型：内存够且需稳定 → 堆；追求理论最优 → 快速选择；分布式 → MapReduce 分桶。","url":"https://itinterview.com.cn/question/72"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"Top K 问题（最大 K 个数）有哪些解法？","item":"https://itinterview.com.cn/q/72"}]}</script>

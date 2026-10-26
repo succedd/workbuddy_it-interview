@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。 · IT面试题库">
   <meta property="og:description" content="三段结构：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1136.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1136.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1136">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。 · IT面试题库">
   <meta name="twitter:description" content="三段结构：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1136.jpg">
+  <meta name="twitter:image:alt" content="如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1136">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。","text":"给出一个能开机自启、崩溃自拉起的服务单元示例，并解释三个段落的职责与关键字段含义。","answerCount":1,"datePublished":"2026-09-14T02:47:28.278Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三段结构：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开机进入多用户模式时拉起）。 最小示例：[Unit] Description=myapp After=network.target [Service] ExecStart=/usr/bin/python3 /opt/myapp.py Restart=on-failure User=app [Install] WantedBy=multi-user.target，写好后 systemctl daemon-reload && systemctl enable --now myapp 即开机自启并立即启动。 关键字段：Type=simple（默认，ExecStart 即主进程）/forking（后台 fork 需指定 PIDFile）；Restart=no/on-success/on-failure/always 决定退出后是否重启；WantedBy 决定挂在哪个 target 下，enable 实质是在 target.wants 目录建软链。 enable 与 start 的区别：enable 是“登记开机自启（建软链）”，start 是“现在就跑一次”；二者独立，常一起用。","url":"https://itinterview.com.cn/question/1136"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。","item":"https://itinterview.com.cn/q/1136"}]}</script>

@@ -16,7 +16,16 @@ B. 在 border-box（替代盒模型）下，width 不包含 padding 和 border
 C. 元素的 margin 会被计算进其 width 之内
 D. box-sizing 属性只能取值为 content-box · IT面试题库">
   <meta property="og:description" content="要点： 正确答案：A。标准盒模型（content-box，浏览器默认）中，你写的 width 只等于内容区宽度，元素的实际占位宽度 = width + padding + border（margin 在盒子外面，不计入自身占位）。 B 错误：border-box（替代盒模型）恰恰相反——width 已经「包住」了…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1419.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="关于 CSS 盒模型，下列哪种说法是正确的？
+A. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度
+B. 在 border-box（替代盒模型）下，width 不包含 padding 和 border
+C. 元素的 margin 会被计算进其 width 之内
+D. box-sizing 属性只能取值为 content-box · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1419.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1419">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
@@ -26,7 +35,12 @@ B. 在 border-box（替代盒模型）下，width 不包含 padding 和 border
 C. 元素的 margin 会被计算进其 width 之内
 D. box-sizing 属性只能取值为 content-box · IT面试题库">
   <meta name="twitter:description" content="要点： 正确答案：A。标准盒模型（content-box，浏览器默认）中，你写的 width 只等于内容区宽度，元素的实际占位宽度 = width + padding + border（margin 在盒子外面，不计入自身占位）。 B 错误：border-box（替代盒模型）恰恰相反——width 已经「包住」了…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1419.jpg">
+  <meta name="twitter:image:alt" content="关于 CSS 盒模型，下列哪种说法是正确的？
+A. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度
+B. 在 border-box（替代盒模型）下，width 不包含 padding 和 border
+C. 元素的 margin 会被计算进其 width 之内
+D. box-sizing 属性只能取值为 content-box · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1419">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"关于 CSS 盒模型，下列哪种说法是正确的？\nA. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度\nB. 在 border-box（替代盒模型）下，width 不包含 padding 和 border\nC. 元素的 margin 会被计算进其 width 之内\nD. box-sizing 属性只能取值为 content-box","text":"考察点：盒模型两种计算方式的区别，以及 width 与 padding/border/margin 的关系，是 CSS 基础的第一问，用单选题快速确认底子。","answerCount":1,"datePublished":"2026-10-01T03:58:52.842Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 正确答案：A。标准盒模型（content-box，浏览器默认）中，你写的 width 只等于内容区宽度，元素的实际占位宽度 = width + padding + border（margin 在盒子外面，不计入自身占位）。 B 错误：border-box（替代盒模型）恰恰相反——width 已经「包住」了 content + padding + border，即你设定的宽度就是元素边框盒的总宽，padding/border 从里面扣，不会额外撑大。 C 错误：margin 是盒子与其他盒子之间的外边距，始终在边框之外，永远不会算进 width。 D 错误：box-sizing 可取 content-box 与 border-box（部分旧实现还有 padding-box），并非只能 content-box。 记忆点：现代项目常写 *{box-sizing:border-box}，让宽度计算更直观（设多少宽就占多少宽，padding 不溢出布局）。","url":"https://itinterview.com.cn/question/1419"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"关于 CSS 盒模型，下列哪种说法是正确的？\nA. 在标准盒模型（content-box）下，width 只表示内容区宽度，padding 与 border 会额外增加元素实际占用的总宽度\nB. 在 border-box（替代盒模型）下，width 不包含 padding 和 border\nC. 元素的 margin 会被计算进其 width 之内\nD. box-sizing 属性只能取值为 content-box","item":"https://itinterview.com.cn/q/1419"}]}</script>

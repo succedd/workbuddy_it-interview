@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？ · IT面试题库">
   <meta property="og:description" content="核心三要素 1. 可重放的 Source：如 Kafka，offset 能保存与回放； 2. Checkpoint（检查点）：JobManager 周期性向所有算子注入对齐的 barrier，各算子把状态快照写入持久化状态后端（如 RocksDB + HDFS），形成全局一致快照； 3. 事务性 Sink：用 T…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/474.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/474.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/474">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？ · IT面试题库">
   <meta name="twitter:description" content="核心三要素 1. 可重放的 Source：如 Kafka，offset 能保存与回放； 2. Checkpoint（检查点）：JobManager 周期性向所有算子注入对齐的 barrier，各算子把状态快照写入持久化状态后端（如 RocksDB + HDFS），形成全局一致快照； 3. 事务性 Sink：用 T…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/474.jpg">
+  <meta name="twitter:image:alt" content="Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/474">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？","text":"流处理对数据不重不漏要求极高，Flink 的 exactly-once 是大数据岗位的高级考点，需要串起检查点、可重放源与事务性 Sink。","answerCount":1,"datePublished":"2026-09-03T01:03:42.264Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心三要素 1. 可重放的 Source：如 Kafka，offset 能保存与回放； 2. Checkpoint（检查点）：JobManager 周期性向所有算子注入对齐的 barrier，各算子把状态快照写入持久化状态后端（如 RocksDB + HDFS），形成全局一致快照； 3. 事务性 Sink：用 TwoPhaseCommitSinkFunction 实现两阶段提交。 Checkpoint 与 2PC 的配合 预提交（pre-commit）：当 Checkpoint 的 barrier 流过 Sink，Sink 把这批数据写入外部系统但先不提交事务（处于预提交状态），并向 JobManager 确认； 提交（commit）：JobManager 收到所有算子 Checkpoint 完成的完成通知后，通知 Sink 真正提交事务； 失败回滚：若 Checkpoint 失败或 Sink 提交前崩溃，外部系统的预提交事务超时回滚，重启从最近 Checkpoint 的 offset 重放——从而保证端到端 exactly-once（不重不漏）。","url":"https://itinterview.com.cn/question/474"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Flink","item":"https://itinterview.com.cn/category?cat=161"},{"@type":"ListItem","position":4,"name":"Flink 如何保证端到端 exactly-once？Checkpoint 与两阶段提交（2PC）分别是怎么配合的？","item":"https://itinterview.com.cn/q/474"}]}</script>
@@ -106,7 +112,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/474">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1437">Flink 的 Watermark 是怎么处理乱序数据的？event time 与 processing time 的取舍是什么？TwoPhaseCommitSink 如何实现 Exactly-Once？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1437">Flink 的 Watermark 是怎么处理乱序数据的？event time 与 processing time 的取舍是什么？TwoPhaseCommitSink 如何实现 Exactly-Once？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1928">Flink 的整体架构由哪些核心组件构成？各自职责是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1929">Flink 有哪三种时间语义？Watermark 解决了什么问题，常见窗口类型有哪些？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1930">Flink 如何保证精确一次（exactly-once）语义？Checkpoint 与状态后端原理是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
   <meta property="og:description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/811.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/811.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/811">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
   <meta name="twitter:description" content="Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Ko…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/811.jpg">
+  <meta name="twitter:image:alt" content="Koa 的洋葱模型中间件与 Express 中间件有何不同？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/811">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？","text":"对比 Koa 与 Express 的中间件执行模型差异。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Express：中间件是线性“单向”执行，靠 next() 往下走，难以在响应返回阶段统一做后置处理。 Koa 洋葱模型：基于 async 函数，每个中间件用 await next() 把执行切分为“前半段→内层→后半段”两层，像洋葱一样由外到内再由内到外，便于统一环绕逻辑（如计耗时、统一错误处理）。 实现：Koa 用 compose 把中间件递归嵌套；没有内置路由/body 解析，更精简，需自行引入 koa-router 等。","url":"https://itinterview.com.cn/question/811"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Koa","item":"https://itinterview.com.cn/category?cat=92"},{"@type":"ListItem","position":5,"name":"Koa 的洋葱模型中间件与 Express 中间件有何不同？","item":"https://itinterview.com.cn/q/811"}]}</script>

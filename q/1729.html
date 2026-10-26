@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？ · IT面试题库">
   <meta property="og:description" content="要点： 攻击路径：协议直接用 DEX 池的现货 reserve 作为价格，攻击者用闪电贷瞬间砸盘/拉盘，操纵抵押品价格后借出更多资产，再归还贷款，单笔交易内完成获利。 防御手段：多源聚合取中位数、使用时间加权平均价（TWAP）、Chainlink 等链下签名聚合源、设置价格偏差阈值与熔断、关键操作延迟确认；清算场…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1729.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1729.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1729">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？ · IT面试题库">
   <meta name="twitter:description" content="要点： 攻击路径：协议直接用 DEX 池的现货 reserve 作为价格，攻击者用闪电贷瞬间砸盘/拉盘，操纵抵押品价格后借出更多资产，再归还贷款，单笔交易内完成获利。 防御手段：多源聚合取中位数、使用时间加权平均价（TWAP）、Chainlink 等链下签名聚合源、设置价格偏差阈值与熔断、关键操作延迟确认；清算场…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1729.jpg">
+  <meta name="twitter:image:alt" content="预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1729">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？","text":"考察 DeFi 价格源设计，以及单源现货价为何危险。","answerCount":1,"datePublished":"2026-10-19T05:43:25.052Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 攻击路径：协议直接用 DEX 池的现货 reserve 作为价格，攻击者用闪电贷瞬间砸盘/拉盘，操纵抵押品价格后借出更多资产，再归还贷款，单笔交易内完成获利。 防御手段：多源聚合取中位数、使用时间加权平均价（TWAP）、Chainlink 等链下签名聚合源、设置价格偏差阈值与熔断、关键操作延迟确认；清算场景应使用更保守的价格。 设计原则：不要用单一 DEX 现货价做抵押品定价；对预言机更新频率、心跳、异常值处理做监控；闪电贷本身不是漏洞，漏洞是「在同一交易内可被操纵的价格源」。","url":"https://itinterview.com.cn/question/1729"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"DeFi基础","item":"https://itinterview.com.cn/category?cat=261"},{"@type":"ListItem","position":4,"name":"预言机价格操纵与闪电贷攻击：TWAP、多源聚合与延迟确认如何降低风险？","item":"https://itinterview.com.cn/q/1729"}]}</script>

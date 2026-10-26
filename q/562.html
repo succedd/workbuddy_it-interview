@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？ · IT面试题库">
   <meta property="og:description" content="同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/562.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/562.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/562">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？ · IT面试题库">
   <meta name="twitter:description" content="同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/562.jpg">
+  <meta name="twitter:image:alt" content="前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/562">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？","text":"浏览器报错 'No Access-Control-Allow-Origin header'。请解释同源策略、CORS 机制，说明什么情况下会发 OPTIONS 预检请求，并列出常见跨域解决方案（CORS、代理、JSONP、Nginx 反向代理等）及其适用场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"同源策略：协议、域名、端口三者相同才同源。浏览器限制脚本（XHR/fetch）跨源读取响应，防止恶意站点读取其它源数据。 CORS（跨源资源共享）：基于 HTTP 头的机制，服务器通过响应头声明允许哪些源访问资源： Access-Control-Allow-Origin：允许的源（ 或具体域名；带凭据时不能用 ）。 Access-Control-Allow-Credentials: true：允许携带 Cookie。 Access-Control-Allow-Methods / Access-Control-Allow-Headers：预检允许的Methods/Headers。 Access-Control-Max-Age：预检结果缓存时长。 预检请求（OPTIONS）：当请求“非简单”时，浏览器先发 OPTIONS 询问服务器是否允许真实请求。触发条件（满足任一即非简单）： 方法非 GET/HEAD/POST； Content-Type 非 text/plain、multipart/form-data、application/x-www-form-urlencoded； 携带自定义请求头（如 Authorization、X-Token）； 使用 ReadableStream 等。 预检通过后浏览器才发真实请求。 常见解决方案： 1. CORS（首选）：后端加响应头，最标准。 2. 开发代理：Vite/webpack devServer proxy，把跨域请求转发为同源。 3. Nginx 反向代理：生产环境常用，由同源网关转发。 4. JSONP：仅 GET，利用 不受同源限制，已逐渐淘汰。 5. WebSocket / postMessage：特定场景的跨文档通信。","url":"https://itinterview.com.cn/question/562"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"前端跨域问题怎么产生的？CORS 是什么，预检（preflight）请求在何时触发？有哪些常见解决方案？","item":"https://itinterview.com.cn/q/562"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？ · IT面试题库">
   <meta property="og:description" content="IoC 反转的是「依赖的装配权」：传统写法里对象自己 new 依赖（UserService 内部 new UserDao）→ 强耦合、不可替换、测试要连真库。反转后：对象只声明「我需要什么」，容器负责「给什么、给单例还是新实例」——换来可替换（换实现不动业务）、可测试（注入 mock）、生命周期统一管理。 AOP…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/290.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/290.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/290">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？ · IT面试题库">
   <meta name="twitter:description" content="IoC 反转的是「依赖的装配权」：传统写法里对象自己 new 依赖（UserService 内部 new UserDao）→ 强耦合、不可替换、测试要连真库。反转后：对象只声明「我需要什么」，容器负责「给什么、给单例还是新实例」——换来可替换（换实现不动业务）、可测试（注入 mock）、生命周期统一管理。 AOP…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/290.jpg">
+  <meta name="twitter:image:alt" content="后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/290">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？","text":"不要背「IOC 是控制反转」。想想：一个 UserService 需要 UserDao，传统写法里是谁 new 谁？这带来了什么耦合？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"IoC 反转的是「依赖的装配权」：传统写法里对象自己 new 依赖（UserService 内部 new UserDao）→ 强耦合、不可替换、测试要连真库。反转后：对象只声明「我需要什么」，容器负责「给什么、给单例还是新实例」——换来可替换（换实现不动业务）、可测试（注入 mock）、生命周期统一管理。 AOP 解决「横切关注点」：日志、事务、权限不属于任何业务类却无处不在 → 切面把它们织入，业务代码保持纯净。 两者共同的第一性原理：把「业务逻辑」与「非业务的装配/横切逻辑」分离。Spring 全家桶的一切神奇都长在这两条根上。","url":"https://itinterview.com.cn/question/290"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"后端框架【本质】Spring 的 IoC 和 AOP 到底在解决什么？「控制反转」反转的是什么？","item":"https://itinterview.com.cn/q/290"}]}</script>

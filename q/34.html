@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是最左前缀原则？ · IT面试题库">
   <meta property="og:description" content="联合索引 (a,b,c) 按 a→b→c 排序，必须从最左列开始且连续才能充分利用索引： WHERE a=? ✅ 命中 a WHERE a=? AND b=? ✅ 命中 a,b WHERE a=? AND b=? AND c=? ✅ 全命中 WHERE b=? ❌ 跳过 a，无法命中（除非索引跳跃扫描） WHER…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/34.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是最左前缀原则？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/34.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/34">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是最左前缀原则？ · IT面试题库">
   <meta name="twitter:description" content="联合索引 (a,b,c) 按 a→b→c 排序，必须从最左列开始且连续才能充分利用索引： WHERE a=? ✅ 命中 a WHERE a=? AND b=? ✅ 命中 a,b WHERE a=? AND b=? AND c=? ✅ 全命中 WHERE b=? ❌ 跳过 a，无法命中（除非索引跳跃扫描） WHER…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/34.jpg">
+  <meta name="twitter:image:alt" content="什么是最左前缀原则？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/34">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是最左前缀原则？","text":"举例联合索引 (a,b,c) 哪些查询能命中。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"联合索引 (a,b,c) 按 a→b→c 排序，必须从最左列开始且连续才能充分利用索引： WHERE a=? ✅ 命中 a WHERE a=? AND b=? ✅ 命中 a,b WHERE a=? AND b=? AND c=? ✅ 全命中 WHERE b=? ❌ 跳过 a，无法命中（除非索引跳跃扫描） WHERE a=? AND c=? ⚠️ 命中 a，c 无法用索引过滤（范围后失效） 范围查询（>、\u003c、like 'x%'）之后的列失效。 设计：高频等值列放左，范围列放右。","url":"https://itinterview.com.cn/question/34"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"什么是最左前缀原则？","item":"https://itinterview.com.cn/q/34"}]}</script>

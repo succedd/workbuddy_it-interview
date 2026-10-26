@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？ · IT面试题库">
   <meta property="og:description" content="热点 key：某个（或少数几个）key 访问量远超其它，集中打到同一 Redis 节点/分片，成为性能瓶颈甚至拖垮实例（如秒杀商品、热门微博）。 成因：突发流量集中在单一资源（明星事件、大促单品、计数器）。 发现手段： Redis 自带的 redis-cli --hotkeys（基于 LFU 计数）； 监控 IN…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/581.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/581.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/581">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？ · IT面试题库">
   <meta name="twitter:description" content="热点 key：某个（或少数几个）key 访问量远超其它，集中打到同一 Redis 节点/分片，成为性能瓶颈甚至拖垮实例（如秒杀商品、热门微博）。 成因：突发流量集中在单一资源（明星事件、大促单品、计数器）。 发现手段： Redis 自带的 redis-cli --hotkeys（基于 LFU 计数）； 监控 IN…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/581.jpg">
+  <meta name="twitter:image:alt" content="什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/581">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？","text":"某个 key 被超高并发访问，单分片成为瓶颈甚至被打挂。请说明热点 key 的成因、发现手段，以及本地缓存、分片/复制读、限流等缓解方案。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"热点 key：某个（或少数几个）key 访问量远超其它，集中打到同一 Redis 节点/分片，成为性能瓶颈甚至拖垮实例（如秒杀商品、热门微博）。 成因：突发流量集中在单一资源（明星事件、大促单品、计数器）。 发现手段： Redis 自带的 redis-cli --hotkeys（基于 LFU 计数）； 监控 INFO 命令统计、代理层（Twemproxy/Codis）访问日志； 业务埋点统计 top key。 缓解方案： 1. 本地缓存（多级缓存）：在应用层用 Caffeine/Guava 缓存热点值，挡掉绝大多数读，Redis 只兜底（注意本地缓存失效/一致性）。 2. 复制读（多副本）：把一个热点 key 复制成多个副本 key（如 key:1~key:N），读请求按哈希分散到不同副本/节点，写时同步更新全部副本。 3. 分片打散：对大 value 做分片存储，避免单值过大。 4. 限流/降级：对热点接口做熔断限流，保护后端。 5. 过期错峰：热点 key 设较长或逻辑过期，避免同一时刻重建。 思路：核心是“把单点压力分摊到多节点/多层”，而非只靠单实例扛。","url":"https://itinterview.com.cn/question/581"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式缓存","item":"https://itinterview.com.cn/category?cat=133"},{"@type":"ListItem","position":4,"name":"什么是热点 key 问题？在 Redis 中如何发现与缓解热点 key？","item":"https://itinterview.com.cn/q/581"}]}</script>

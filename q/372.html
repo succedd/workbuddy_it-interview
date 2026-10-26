@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？ · IT面试题库">
   <meta property="og:description" content="要点： Top10 IP：awk &#39;{print $1}&#39; access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/372.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/372.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/372">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？ · IT面试题库">
   <meta name="twitter:description" content="要点： Top10 IP：awk &#39;{print $1}&#39; access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/372.jpg">
+  <meta name="twitter:image:alt" content="有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/372">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？","text":"考察点：不写程序、纯用命令行组合完成日志统计的工程能力；考查 sort/uniq/awk/head 的管道编排与性能意识（大文件不能一次性 load 进内存）。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:08:57.582Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Top10 IP：awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -10。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。 关键词出现次数：grep -o 'keyword' access.log | wc -l（-o 每匹配一行，适合关键词在一行多次出现）；或 grep -c 'keyword' access.log（按行计数）。 性能要点：管道是流式处理，不需要把整个文件读进内存，所以能处理超大日志；若日志已按时间滚动，可先 grep 缩小范围再统计。 进阶：频次统计本质就是“取列→排序→去重计数→排序取头”，这套组合拳是运维排查的标配，应熟练到条件反射。","url":"https://itinterview.com.cn/question/372"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？","item":"https://itinterview.com.cn/q/372"}]}</script>

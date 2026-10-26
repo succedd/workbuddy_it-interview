@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring Boot 自动配置原理（@SpringBootApplication）？ · IT面试题库">
   <meta property="og:description" content="@SpringBootApplication = @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration。 自动配置核心： 1. @EnableAutoConfiguration 借助 AutoConfigurationImport…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/73.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring Boot 自动配置原理（@SpringBootApplication）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/73.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/73">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring Boot 自动配置原理（@SpringBootApplication）？ · IT面试题库">
   <meta name="twitter:description" content="@SpringBootApplication = @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration。 自动配置核心： 1. @EnableAutoConfiguration 借助 AutoConfigurationImport…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/73.jpg">
+  <meta name="twitter:image:alt" content="Spring Boot 自动配置原理（@SpringBootApplication）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/73">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Boot 自动配置原理（@SpringBootApplication）？","text":"解释 @EnableAutoConfiguration 与 spring.factories / AutoConfiguration.imports。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"@SpringBootApplication = @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration。 自动配置核心： 1. @EnableAutoConfiguration 借助 AutoConfigurationImportSelector，读取 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports（旧版 spring.factories）。 2. 每个 XxxAutoConfiguration 用 @ConditionalOnClass、@ConditionalOnMissingBean 等条件注解，按需装配 Bean（类路径有某 jar、用户没自定义 Bean 时才生效）。 3. 绑定 application.yml 到 @ConfigurationProperties 配置类。 结论：约定优于配置，starter 提供依赖+自动配置，用户只需覆盖需要的 Bean。","url":"https://itinterview.com.cn/question/73"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"Spring Boot 自动配置原理（@SpringBootApplication）？","item":"https://itinterview.com.cn/q/73"}]}</script>

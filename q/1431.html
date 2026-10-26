@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？ · IT面试题库">
   <meta property="og:description" content="要点（核心区别）： 继承 vs 实现：类只能单继承抽象类（extends），但可实现多个接口（implements），接口弥补了 Java 的单继承局限； 成员能力：抽象类可有普通字段、构造器、非抽象方法、各种访问修饰符；接口（Java 8 前）只能有常量（public static final）和抽象方法，Ja…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1431.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1431.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1431">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？ · IT面试题库">
   <meta name="twitter:description" content="要点（核心区别）： 继承 vs 实现：类只能单继承抽象类（extends），但可实现多个接口（implements），接口弥补了 Java 的单继承局限； 成员能力：抽象类可有普通字段、构造器、非抽象方法、各种访问修饰符；接口（Java 8 前）只能有常量（public static final）和抽象方法，Ja…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1431.jpg">
+  <meta name="twitter:image:alt" content="Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1431">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？","text":"考察点：接口与抽象类的设计取舍，以及 Java 8 default 方法带来的演进，是 Java 面向对象段位的高级场景题。","answerCount":1,"datePublished":"2026-10-01T04:02:30.564Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（核心区别）： 继承 vs 实现：类只能单继承抽象类（extends），但可实现多个接口（implements），接口弥补了 Java 的单继承局限； 成员能力：抽象类可有普通字段、构造器、非抽象方法、各种访问修饰符；接口（Java 8 前）只能有常量（public static final）和抽象方法，Java 8+ 才支持 default/static 方法，Java 9+ 支持 private 方法，但仍不能有实例字段与构造器； 语义：抽象类表达「is-a」的共性抽取（同一族类的模板），接口表达「can-do」的能力契约（跨族的能力）。 要点（如何选型）： 需要复用代码/状态、定义模板方法、表示层级关系 → 用抽象类； 需要定义能力契约、支持多重行为、做解耦与 SPI 扩展 → 用接口； 典型组合：抽象类实现接口并给出部分默认实现，子类只补差异（如 InputStream）。 要点（default 方法是否模糊边界）： 确有一定模糊——接口现在也能提供默认实现，但接口仍不能有状态（实例字段），也无法定义构造器，语义上仍是「能力」而非「类模板」； default 方法主要用于「接口演进时向后兼容」（如 Collection 新增 forEach 不破坏旧实现），并非用来替代抽象类； 设计原则未变：有状态/模板用抽象类，无状态契约用接口。","url":"https://itinterview.com.cn/question/1431"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？","item":"https://itinterview.com.cn/q/1431"}]}</script>

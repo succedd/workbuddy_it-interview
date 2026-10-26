@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？ · IT面试题库">
   <meta property="og:description" content="结论 两者都用于并发编程，底层都基于线程池。 GCD（Grand Central Dispatch）：底层 C API，通过 dispatch queue（串行/并发）提交 block，轻量、灵活，适合一次性、简单的异步任务（如后台取数据、避免阻塞主线程）。 OperationQueue：基于 GCD 的 Obj…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/253.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/253.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/253">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？ · IT面试题库">
   <meta name="twitter:description" content="结论 两者都用于并发编程，底层都基于线程池。 GCD（Grand Central Dispatch）：底层 C API，通过 dispatch queue（串行/并发）提交 block，轻量、灵活，适合一次性、简单的异步任务（如后台取数据、避免阻塞主线程）。 OperationQueue：基于 GCD 的 Obj…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/253.jpg">
+  <meta name="twitter:image:alt" content="iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/253">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","text":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","answerCount":1,"datePublished":"2026-08-28T06:18:20.579Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 两者都用于并发编程，底层都基于线程池。 GCD（Grand Central Dispatch）：底层 C API，通过 dispatch queue（串行/并发）提交 block，轻量、灵活，适合一次性、简单的异步任务（如后台取数据、避免阻塞主线程）。 OperationQueue：基于 GCD 的 Objective-C 对象封装，额外提供：任务依赖（addDependency）、取消（cancel）、状态查询（isFinished/isExecuting）、最大并发数、KVO 监听。适合需要取消、依赖编排、进度追踪的复杂任务流。 经验法则：简单并发用 GCD；需要任务依赖、取消、优先级与状态管理时用 OperationQueue。","url":"https://itinterview.com.cn/question/253"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"iOS 中 GCD 和 OperationQueue 有什么区别？何时选用？","item":"https://itinterview.com.cn/q/253"}]}</script>

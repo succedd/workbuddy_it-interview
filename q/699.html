@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？ · IT面试题库">
   <meta property="og:description" content="NVIC（嵌套向量中断控制器）：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。 GPIO 中断：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。 要点：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/699.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/699.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/699">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？ · IT面试题库">
   <meta name="twitter:description" content="NVIC（嵌套向量中断控制器）：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。 GPIO 中断：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。 要点：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/699.jpg">
+  <meta name="twitter:image:alt" content="STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？","text":"说明 STM32 中断控制器与 GPIO 中断配置思路。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"NVIC（嵌套向量中断控制器）：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。 GPIO 中断：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。 要点：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工作交回主循环或任务；注意清中断标志防重复触发。","url":"https://itinterview.com.cn/question/699"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"STM32","item":"https://itinterview.com.cn/category?cat=245"},{"@type":"ListItem","position":4,"name":"STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？","item":"https://itinterview.com.cn/q/699"}]}</script>

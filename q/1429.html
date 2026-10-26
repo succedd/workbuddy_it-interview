@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 的异常体系是怎样的？Checked Exception 与 Unchecked Exception（RuntimeException）有什么区别？try-catch-finally 中，若 try 里有 return，finally 还会执行吗？执行顺序是怎样的？ · IT面试题库">
   <meta property="og:description" content="要点（异常体系）： 顶层是 Throwable，分为 Error（严重系统错误，如 OOM，一般不该捕获）与 Exception；Exception 又分为受检异常（Checked，编译期强制处理，如 IOException、SQLException）和运行时异常（Unchecked，RuntimeExcepti…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1429.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Java 的异常体系是怎样的？Checked Exception 与 Unchecked Exception（RuntimeException）有什么区别？try-catch-finally 中，若 try 里有 return，finally 还会执行吗？执行顺序是怎样的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1429.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1429">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 的异常体系是怎样的？Checked Exception 与 Unchecked Exception（RuntimeException）有什么区别？try-catch-finally 中，若 try 里有 return，finally 还会执行吗？执行顺序是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="要点（异常体系）： 顶层是 Throwable，分为 Error（严重系统错误，如 OOM，一般不该捕获）与 Exception；Exception 又分为受检异常（Checked，编译期强制处理，如 IOException、SQLException）和运行时异常（Unchecked，RuntimeExcepti…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1429.jpg">
+  <meta name="twitter:image:alt" content="Java 的异常体系是怎样的？Checked Exception 与 Unchecked Exception（RuntimeException）有什么区别？try-catch-finally 中，若 try 里有 return，finally 还会执行吗？执行顺序是怎样的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1429">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 的异常体系是怎样的？Checked Exception 与 Unchecked Exception（RuntimeException）有什么区别？try-catch-finally 中，若 try 里有 return，finally 还会执行吗？执行顺序是怎样的？","text":"考察点：异常体系分类与 try-catch-finally 执行顺序（含 return 与 finally 的交互），是 Java 异常段位的必问题。","answerCount":1,"datePublished":"2026-10-01T04:02:29.671Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（异常体系）： 顶层是 Throwable，分为 Error（严重系统错误，如 OOM，一般不该捕获）与 Exception；Exception 又分为受检异常（Checked，编译期强制处理，如 IOException、SQLException）和运行时异常（Unchecked，RuntimeException 及其子类，如 NPE/数组越界，编译期不强制）。 要点（Checked vs Unchecked）： Checked 必须在方法签名 throws 声明或用 try-catch 处理，否则编译不通过，用于「调用方理应恢复」的可预期异常； Unchecked（RuntimeException）通常是程序逻辑错误，不强制处理，应靠修复代码而非捕获来避免。 要点（finally 与 return 顺序）： finally 一定会执行（除非 JVM 退出 System.exit 或进程崩溃），常用于释放资源（关流、解锁）。 执行顺序：try 中代码先跑 → 若抛异常被 catch 捕获则进 catch → 无论是否异常，finally 在方法返回前执行； return 细节：若 try 和 finally 都有 return，finally 的 return 会「覆盖」try 的返回值（因为 finally 最后执行）；且 finally 中对返回变量的修改不会影响已确定的基本类型返回值（引用类型除外）。因此不要在 finally 里写 return，以免掩盖异常。","url":"https://itinterview.com.cn/question/1429"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 的异常体系是怎样的？Checked Exception 与 Unchecked Exception（RuntimeException）有什么区别？try-catch-finally 中，若 try 里有 return，finally 还会执行吗？执行顺序是怎样的？","item":"https://itinterview.com.cn/q/1429"}]}</script>

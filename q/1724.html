@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？ · IT面试题库">
   <meta property="og:description" content="要点： Provider 是 DApp 与节点之间的 JSON-RPC 通道（HTTP / WebSocket / IPC）。读操作走 eth_call、eth_getBalance、eth_getLogs，不广播、不花 Gas；写操作先 eth_estimateGas 估算，再由钱包签名，最后 eth_send…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1724.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1724.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1724">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？ · IT面试题库">
   <meta name="twitter:description" content="要点： Provider 是 DApp 与节点之间的 JSON-RPC 通道（HTTP / WebSocket / IPC）。读操作走 eth_call、eth_getBalance、eth_getLogs，不广播、不花 Gas；写操作先 eth_estimateGas 估算，再由钱包签名，最后 eth_send…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1724.jpg">
+  <meta name="twitter:image:alt" content="DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1724">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？","text":"考察 Web3 前端与节点交互的完整链路，以及常见卡交易问题。","answerCount":1,"datePublished":"2026-10-19T05:43:24.750Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Provider 是 DApp 与节点之间的 JSON-RPC 通道（HTTP / WebSocket / IPC）。读操作走 eth_call、eth_getBalance、eth_getLogs，不广播、不花 Gas；写操作先 eth_estimateGas 估算，再由钱包签名，最后 eth_sendRawTransaction 广播。 nonce 管理：用 eth_getTransactionCount(address, \"pending\") 取下一个 nonce；同一账户并发发交易要在本地排队，nonce 断档会让后续交易一直 pending；替换交易必须复用同一 nonce 并提高小费。 生产坑：公共 RPC 有速率限制和区块滞后，eth_call 在 latest 与 pending 下结果可能不同；WebSocket 会断线，需要重连与补块；多链场景要校验 chainId，并准备多 RPC 故障转移。","url":"https://itinterview.com.cn/question/1724"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"Web3开发","item":"https://itinterview.com.cn/category?cat=260"},{"@type":"ListItem","position":4,"name":"DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？","item":"https://itinterview.com.cn/q/1724"}]}</script>

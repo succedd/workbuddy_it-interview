@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="游戏主循环里固定时间步长（Fixed Timestep）与可变时间步长（Variable Timestep）有何区别？为何物理常用固定步长？ · IT面试题库">
   <meta property="og:description" content="要点： 可变步长：每次循环用真实帧间隔 dt 推进，画面平滑但 dt 抖动大；物理积分在大幅 dt 下不稳定，且不同机器表现不一致、易被变速穿模。 固定步长：以恒定 dt（如 1/60s）累加真实时间、多次步进物理，渲染插值显示；物理确定性强、可复现、数值稳定。 实践：常见「固定步长更新 + 插值渲染」混合（累加…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1572.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="游戏主循环里固定时间步长（Fixed Timestep）与可变时间步长（Variable Timestep）有何区别？为何物理常用固定步长？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1572.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1572">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="游戏主循环里固定时间步长（Fixed Timestep）与可变时间步长（Variable Timestep）有何区别？为何物理常用固定步长？ · IT面试题库">
   <meta name="twitter:description" content="要点： 可变步长：每次循环用真实帧间隔 dt 推进，画面平滑但 dt 抖动大；物理积分在大幅 dt 下不稳定，且不同机器表现不一致、易被变速穿模。 固定步长：以恒定 dt（如 1/60s）累加真实时间、多次步进物理，渲染插值显示；物理确定性强、可复现、数值稳定。 实践：常见「固定步长更新 + 插值渲染」混合（累加…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1572.jpg">
+  <meta name="twitter:image:alt" content="游戏主循环里固定时间步长（Fixed Timestep）与可变时间步长（Variable Timestep）有何区别？为何物理常用固定步长？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1572">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"游戏主循环里固定时间步长（Fixed Timestep）与可变时间步长（Variable Timestep）有何区别？为何物理常用固定步长？","text":"考察点：理解游戏循环的时间推进模型，解释物理积分稳定性与跨机器一致性的取舍。","answerCount":1,"datePublished":"2026-10-06T09:02:19.686Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 可变步长：每次循环用真实帧间隔 dt 推进，画面平滑但 dt 抖动大；物理积分在大幅 dt 下不稳定，且不同机器表现不一致、易被变速穿模。 固定步长：以恒定 dt（如 1/60s）累加真实时间、多次步进物理，渲染插值显示；物理确定性强、可复现、数值稳定。 实践：常见「固定步长更新 + 插值渲染」混合（累加器模式），既保证物理稳定又画面流畅。","url":"https://itinterview.com.cn/question/1572"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"物理引擎","item":"https://itinterview.com.cn/category?cat=240"},{"@type":"ListItem","position":4,"name":"游戏主循环里固定时间步长（Fixed Timestep）与可变时间步长（Variable Timestep）有何区别？为何物理常用固定步长？","item":"https://itinterview.com.cn/q/1572"}]}</script>

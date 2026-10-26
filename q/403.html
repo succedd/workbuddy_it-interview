@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="策略模式解决什么问题？相比一大串 if-else 分支有什么优势？能结合 Java/Spring 举例吗？ · IT面试题库">
   <meta property="og:description" content="要点： 解决的问题：当同一行为有多种实现（如不同折扣规则、不同排序、不同支付方式），用 if/else 或 switch 会把所有变体塞进一个方法，新增一种就要改原代码、易引入回归。 做法：定义统一策略接口（如 Strategy.execute(ctx)），每种算法实现一个具体策略类，上下文持有当前策略引用并委托…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/403.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="策略模式解决什么问题？相比一大串 if-else 分支有什么优势？能结合 Java/Spring 举例吗？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/403.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/403">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="策略模式解决什么问题？相比一大串 if-else 分支有什么优势？能结合 Java/Spring 举例吗？ · IT面试题库">
   <meta name="twitter:description" content="要点： 解决的问题：当同一行为有多种实现（如不同折扣规则、不同排序、不同支付方式），用 if/else 或 switch 会把所有变体塞进一个方法，新增一种就要改原代码、易引入回归。 做法：定义统一策略接口（如 Strategy.execute(ctx)），每种算法实现一个具体策略类，上下文持有当前策略引用并委托…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/403.jpg">
+  <meta name="twitter:image:alt" content="策略模式解决什么问题？相比一大串 if-else 分支有什么优势？能结合 Java/Spring 举例吗？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/403">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"策略模式解决什么问题？相比一大串 if-else 分支有什么优势？能结合 Java/Spring 举例吗？","text":"考察点：把可互换的算法封装成独立策略类，客户端按需选择；消除条件分支、提升可扩展性与可测试性。属场景题。","answerCount":1,"datePublished":"2026-09-01T09:43:10.738Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决的问题：当同一行为有多种实现（如不同折扣规则、不同排序、不同支付方式），用 if/else 或 switch 会把所有变体塞进一个方法，新增一种就要改原代码、易引入回归。 做法：定义统一策略接口（如 Strategy.execute(ctx)），每种算法实现一个具体策略类，上下文持有当前策略引用并委托执行；运行时注入/切换策略。 对比 if-else：新增策略只需新增类，不改旧代码（开闭原则）；每个策略可独立单测；消除了臃肿分支。代价是类数量增加。 Java/Spring 实例：Comparator 就是策略；Spring 中用 @Autowired List 注入所有策略实现，再按 type 路由；支付/风控规则引擎常用此模式把规则插件化。 注意：策略种类极少且稳定时，引入策略模式反而过度设计，直接用简单分支更直观。","url":"https://itinterview.com.cn/question/403"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"设计模式","item":"https://itinterview.com.cn/category?cat=97"},{"@type":"ListItem","position":4,"name":"策略模式解决什么问题？相比一大串 if-else 分支有什么优势？能结合 Java/Spring 举例吗？","item":"https://itinterview.com.cn/q/403"}]}</script>

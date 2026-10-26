@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？ · IT面试题库">
   <meta property="og:description" content="要点： 先看是否 inode 耗尽：df -h 有空间但 df -i 到 100%，常见于海量小文件；定位大目录后清理或归档。 确认保留块：文件系统默认给 root 保留少量空间，普通用户接近满时创建失败；tune2fs -l 查看 reserved blocks 是否过大。 检查挂载与句柄：确认没有 ro 挂载…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1628.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1628.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1628">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先看是否 inode 耗尽：df -h 有空间但 df -i 到 100%，常见于海量小文件；定位大目录后清理或归档。 确认保留块：文件系统默认给 root 保留少量空间，普通用户接近满时创建失败；tune2fs -l 查看 reserved blocks 是否过大。 检查挂载与句柄：确认没有 ro 挂载…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1628.jpg">
+  <meta name="twitter:image:alt" content="Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1628">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？","text":"考察 inode、文件系统保留块、挂载参数和残留句柄。","answerCount":1,"datePublished":"2026-10-15T12:54:41.102Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先看是否 inode 耗尽：df -h 有空间但 df -i 到 100%，常见于海量小文件；定位大目录后清理或归档。 确认保留块：文件系统默认给 root 保留少量空间，普通用户接近满时创建失败；tune2fs -l 查看 reserved blocks 是否过大。 检查挂载与句柄：确认没有 ro 挂载；lsof +L1 找已删除但仍占用空间的进程，重启进程或释放 fd。","url":"https://itinterview.com.cn/question/1628"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"存储与文件系统","item":"https://itinterview.com.cn/category?cat=47"},{"@type":"ListItem","position":4,"name":"Linux 服务器磁盘显示有空间但创建文件失败，你会排查哪些文件系统层问题？","item":"https://itinterview.com.cn/q/1628"}]}</script>

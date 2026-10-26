@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？ · IT面试题库">
   <meta property="og:description" content="这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。 Nagle 算法（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1311.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1311.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1311">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？ · IT面试题库">
   <meta name="twitter:description" content="这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。 Nagle 算法（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1311.jpg">
+  <meta name="twitter:image:alt" content="Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1311">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","text":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","answerCount":1,"datePublished":"2026-09-26T03:31:19.542Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。 Nagle 算法（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② 之前发出的数据已收到 ACK。两个条件都不满足时，数据先囤在发送缓冲区。 延迟确认（接收方机制）的目的：减少纯 ACK 包。纯 ACK 只有 40 字节头部没有数据，很浪费。策略是：有响应数据要发时，ACK 捎带一起发；没有响应数据时，ACK 延迟一段时间再发；等待期间对方的下一个报文到了，就立刻确认。Linux 内核里由 HZ 计算得出：最大延迟 200ms（HZ/5），最短 40ms（HZ/25）。 死等是如何形成的：发送方先发出一个小包；接收方收到了，但自己暂时没有响应数据要发，按延迟确认机制「等对方的下一个包，等到了就捎带 ACK」；而发送方按 Nagle 规则「没收到第一个包的 ACK，后续小包一律不许发」。于是双方互相等待：接收方等发送方的下一个报文，发送方等接收方的 ACK，谁都不动，直到接收方的延迟确认计时器到期（Linux 上典型为 40ms）才回 ACK，发送方随后才能把囤着的数据发出去。整个过程没有任何丢包，纯粹是机制叠加造成的固定延迟。 什么时候该开 TCP_NODELAY： 1. 交互式或低延迟场景应当关闭 Nagle（即设置 TCP_NODELAY）：telnet/ssh、RPC 框架、游戏同步、IM 消息、Redis 客户端等小包高频交互程序； 2. 吞吐优先、大块数据传输的场景可以保留默认：文件传输、日志批量上报等，Nagle 合并小包反而有利； 3. 更好的根治法是在应用层做写合并：把多次小写合并成一次大写再写入 socket，同时保留 TCP_NODELAY，兼顾延迟与效率； 4. 接收端侧可用 TCP_QUICKACK 关闭延迟确认，但它是每收到数据就重置的临时模式，需要配合 recv 循环反复设置，一般不如发送端关 Nagle 直接。 排查特征：抓包看到 ACK 延迟稳定集中在 40ms 或 200ms 附近、数据包长度小于 MSS、无重传标志，基本可以定位为该组合；把两端任一机制关掉后延迟立即消失即可确认。","url":"https://itinterview.com.cn/question/1311"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？","item":"https://itinterview.com.cn/q/1311"}]}</script>

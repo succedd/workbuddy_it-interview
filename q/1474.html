@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一套接口安全层，统一防御 XSS/CSRF/注入/恶意上传等常见攻击。 · IT面试题库">
   <meta property="og:description" content="要点： 统一输入网关：所有入口经 API 网关做 WAF 规则、限流、身份鉴权；请求参数统一走“类型校验 + 转义 + 净化”中间件，业务代码不再各自处理。 防注入：全局强制参数化查询/ORM，禁止拼接；表名/列名走白名单；危险函数黑名单。 防 XSS/CSRF：响应统一输出编码；下发 CSP；所有写接口强制 C…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1474.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="设计一套接口安全层，统一防御 XSS/CSRF/注入/恶意上传等常见攻击。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1474.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1474">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一套接口安全层，统一防御 XSS/CSRF/注入/恶意上传等常见攻击。 · IT面试题库">
   <meta name="twitter:description" content="要点： 统一输入网关：所有入口经 API 网关做 WAF 规则、限流、身份鉴权；请求参数统一走“类型校验 + 转义 + 净化”中间件，业务代码不再各自处理。 防注入：全局强制参数化查询/ORM，禁止拼接；表名/列名走白名单；危险函数黑名单。 防 XSS/CSRF：响应统一输出编码；下发 CSP；所有写接口强制 C…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1474.jpg">
+  <meta name="twitter:image:alt" content="设计一套接口安全层，统一防御 XSS/CSRF/注入/恶意上传等常见攻击。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1474">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一套接口安全层，统一防御 XSS/CSRF/注入/恶意上传等常见攻击。","text":"高级系统设计题：请给出分层、可落地的统一安全方案，而非单点修补。","answerCount":1,"datePublished":"2026-10-02T02:45:56.171Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 统一输入网关：所有入口经 API 网关做 WAF 规则、限流、身份鉴权；请求参数统一走“类型校验 + 转义 + 净化”中间件，业务代码不再各自处理。 防注入：全局强制参数化查询/ORM，禁止拼接；表名/列名走白名单；危险函数黑名单。 防 XSS/CSRF：响应统一输出编码；下发 CSP；所有写接口强制 CSRF Token + SameSite；Cookie 设 HttpOnly。 防恶意上传：上传走独立存储与专用校验服务（白名单 + 重渲染 + 扫描）。 纵深防御闭环：统一安全日志与监控（记录异常请求、失败鉴权）、告警与对账，并配合依赖组件漏洞扫描（防“易受攻击的组件”）。核心思想：默认不信任任何外部输入 + 分层兜底。","url":"https://itinterview.com.cn/question/1474"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"安全开发规范","item":"https://itinterview.com.cn/category?cat=212"},{"@type":"ListItem","position":4,"name":"设计一套接口安全层，统一防御 XSS/CSRF/注入/恶意上传等常见攻击。","item":"https://itinterview.com.cn/q/1474"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="两个服务之间调用超时/不通，如何用 Service、EndpointSlice、DNS 和 kube-proxy 逐层定位？ · IT面试题库">
   <meta property="og:description" content="逐层定位链路： 1. selector 是否匹配：kubectl get endpointslices -l 或旧版 kubectl get endpoints ；Endpoints 为空 = Service 的 selector 没匹配到任何 Pod（标签写错/命名空间不对/Pod 未就绪），这是最高频根因。 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/819.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="两个服务之间调用超时/不通，如何用 Service、EndpointSlice、DNS 和 kube-proxy 逐层定位？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/819.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/819">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="两个服务之间调用超时/不通，如何用 Service、EndpointSlice、DNS 和 kube-proxy 逐层定位？ · IT面试题库">
   <meta name="twitter:description" content="逐层定位链路： 1. selector 是否匹配：kubectl get endpointslices -l 或旧版 kubectl get endpoints ；Endpoints 为空 = Service 的 selector 没匹配到任何 Pod（标签写错/命名空间不对/Pod 未就绪），这是最高频根因。 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/819.jpg">
+  <meta name="twitter:image:alt" content="两个服务之间调用超时/不通，如何用 Service、EndpointSlice、DNS 和 kube-proxy 逐层定位？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/819">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"两个服务之间调用超时/不通，如何用 Service、EndpointSlice、DNS 和 kube-proxy 逐层定位？","text":"考察点：服务间网络不通的排查顺序（selector→endpoints→DNS→kube-proxy 模式→网络策略）。追问：describe svc 看到 Endpoints 为空说明什么？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"逐层定位链路： 1. selector 是否匹配：kubectl get endpointslices -l 或旧版 kubectl get endpoints ；Endpoints 为空 = Service 的 selector 没匹配到任何 Pod（标签写错/命名空间不对/Pod 未就绪），这是最高频根因。 2. Pod 是否就绪：即使 Pod 在跑，readinessProbe 失败也不会进 EndpointSlice，需 kubectl get pod 看 READY 列。 3. DNS 解析：集群内用 . .svc.cluster.local 访问；nslookup/getent hosts 确认解析到 ClusterIP；跨命名空间必须带命名空间，否则解析不到。 4. kube-proxy 转发：kubectl get nodes -o wide 后在节点上 iptables -t nat -L | grep （或 ipvsadm -ln）看规则是否生成；kube-proxy 崩溃/没起会导致规则缺失、直连 Pod IP 通但 ClusterIP 不通。 5. 网络策略 / CNI：NetworkPolicy 拒绝、或 CNI 插件故障会导致 Pod 间不通；kubectl describe np 排查是否有 Deny 规则。 结论：先 endpoints 看有没有后端（selector 匹配），再 DNS，再 kube-proxy 规则，最后 NetworkPolicy；绝大多数「服务不通」停在第 1 步——selector 与 Pod 标签对不上。","url":"https://itinterview.com.cn/question/819"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"两个服务之间调用超时/不通，如何用 Service、EndpointSlice、DNS 和 kube-proxy 逐层定位？","item":"https://itinterview.com.cn/q/819"}]}</script>

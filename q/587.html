@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？ · IT面试题库">
   <meta property="og:description" content="1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/587.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/587.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/587">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？ · IT面试题库">
   <meta name="twitter:description" content="1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/587.jpg">
+  <meta name="twitter:image:alt" content="Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/587">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？","text":"Kafka 以高吞吐著称，常被问到它为什么快。请解释：(1) 生产者写入时为什么是顺序写而不是随机写；(2) 同一个分区内消息的消费顺序如何保证；(3) 跨分区是否能保证全局顺序。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 顺序写（磁盘 append-only log） Kafka 每个分区是一个有序的、不可变的提交日志（commit log），新消息总是追加到日志尾部（offset 递增）。 磁盘的顺序写吞吐远高于随机写：顺序写只需移动磁头一次、批量刷盘；现代 OS 页缓存 + 顺序写使 Kafka 能达到接近内存的写入速度。 配合 sendfile 零拷贝读取，消费端也是顺序读，避免大量 lseek/random read。 2. 分区内顺序 同一分区内的消息严格按 offset 递增顺序存储与消费，单分区内消费顺序 = 生产顺序（在单生产者、未开启乱序重试的前提下）。 这是 Kafka 仅提供分区级有序的核心原因。 3. 跨分区无全局顺序 不同分区的 offset 相互独立，不能保证跨分区的全局顺序。需要全局有序时只能使用单分区（牺牲并行度），或按业务键（如 user_id）做 key 分区，使同键消息落到同分区。","url":"https://itinterview.com.cn/question/587"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Kafka数据","item":"https://itinterview.com.cn/category?cat=162"},{"@type":"ListItem","position":4,"name":"Kafka 为什么要做顺序写（磁盘顺序 I/O）？消费者又能保证怎样的顺序性？","item":"https://itinterview.com.cn/q/587"}]}</script>

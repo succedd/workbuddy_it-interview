@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？ · IT面试题库">
   <meta property="og:description" content="执行原理：Hive 用元数据（Metastore）描述表结构，把 HiveQL 经解析/优化生成执行计划，早期翻译为 MapReduce、现多跑在 Tez/Spark 引擎上。 分区（Partition）：按字段（如日期）把数据物理分目录，查询加分区条件可大幅裁剪扫描。 分桶（Bucket）：按哈希把数据分到固定…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/706.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/706.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/706">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？ · IT面试题库">
   <meta name="twitter:description" content="执行原理：Hive 用元数据（Metastore）描述表结构，把 HiveQL 经解析/优化生成执行计划，早期翻译为 MapReduce、现多跑在 Tez/Spark 引擎上。 分区（Partition）：按字段（如日期）把数据物理分目录，查询加分区条件可大幅裁剪扫描。 分桶（Bucket）：按哈希把数据分到固定…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/706.jpg">
+  <meta name="twitter:image:alt" content="Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/706">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？","text":"说明 Hive 的 SQL-on-Hadoop 机制与表设计优化。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行原理：Hive 用元数据（Metastore）描述表结构，把 HiveQL 经解析/优化生成执行计划，早期翻译为 MapReduce、现多跑在 Tez/Spark 引擎上。 分区（Partition）：按字段（如日期）把数据物理分目录，查询加分区条件可大幅裁剪扫描。 分桶（Bucket）：按哈希把数据分到固定桶文件，利于采样与 join 优化。二者是 Hive 海量表查询提速的核心手段。","url":"https://itinterview.com.cn/question/706"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Hive","item":"https://itinterview.com.cn/category?cat=159"},{"@type":"ListItem","position":4,"name":"Hive 把 SQL 转为 MapReduce/Tez 的原理？分区与分桶作用？","item":"https://itinterview.com.cn/q/706"}]}</script>

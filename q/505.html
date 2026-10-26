@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 RAII？它在 C++ 中为什么重要？ · IT面试题库">
   <meta property="og:description" content="RAII（Resource Acquisition Is Initialization）：把“资源”的获取绑定到对象构造，释放绑定到析构。资源（内存、文件句柄、锁、socket 等）在栈对象构造时取得，在对象离开作用域（无论正常返回还是异常抛出）时由析构自动释放。 核心优势： 确定性释放：C++ 保证栈展开（st…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/505.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 RAII？它在 C++ 中为什么重要？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/505.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/505">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 RAII？它在 C++ 中为什么重要？ · IT面试题库">
   <meta name="twitter:description" content="RAII（Resource Acquisition Is Initialization）：把“资源”的获取绑定到对象构造，释放绑定到析构。资源（内存、文件句柄、锁、socket 等）在栈对象构造时取得，在对象离开作用域（无论正常返回还是异常抛出）时由析构自动释放。 核心优势： 确定性释放：C++ 保证栈展开（st…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/505.jpg">
+  <meta name="twitter:image:alt" content="什么是 RAII？它在 C++ 中为什么重要？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/505">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 RAII？它在 C++ 中为什么重要？","text":"请解释 RAII（资源获取即初始化）的思想，并举例说明它如何保证异常安全与资源不泄漏。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RAII（Resource Acquisition Is Initialization）：把“资源”的获取绑定到对象构造，释放绑定到析构。资源（内存、文件句柄、锁、socket 等）在栈对象构造时取得，在对象离开作用域（无论正常返回还是异常抛出）时由析构自动释放。 核心优势： 确定性释放：C++ 保证栈展开（stack unwinding）时局部对象析构一定被调用，因此即使发生异常也不会泄漏资源。 异常安全：相比手动 free/close，RAII 把清理逻辑从“记得做”变为“语言保证做”。 标准库中 lock_guard/unique_lock（锁）、unique_ptr/shared_ptr（内存）、ofstream（文件）、vector（缓冲）都是 RAII 体现。 与 Java 的 finally / try-with-resources、Python 的 with 类似，但 C++ 用析构实现更底层、零语法负担，是 C++ 资源管理的基石。","url":"https://itinterview.com.cn/question/505"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C++","item":"https://itinterview.com.cn/category?cat=11"},{"@type":"ListItem","position":4,"name":"什么是 RAII？它在 C++ 中为什么重要？","item":"https://itinterview.com.cn/q/505"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？ · IT面试题库">
   <meta property="og:description" content="要点： Buildroot：以 Makefile + Kconfig 为核心，配置简单、构建快，直接产出工具链、内核、rootfs 与镜像；适合产品形态固定、团队小、需要快速迭代的场景，定制靠 package 与 patch。 Yocto：以 BitBake + layer / recipe 为核心，元数据驱动，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1736.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1736.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1736">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？ · IT面试题库">
   <meta name="twitter:description" content="要点： Buildroot：以 Makefile + Kconfig 为核心，配置简单、构建快，直接产出工具链、内核、rootfs 与镜像；适合产品形态固定、团队小、需要快速迭代的场景，定制靠 package 与 patch。 Yocto：以 BitBake + layer / recipe 为核心，元数据驱动，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1736.jpg">
+  <meta name="twitter:image:alt" content="Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1736">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？","text":"考察构建系统的复杂度、可维护性与团队协作成本。","answerCount":1,"datePublished":"2026-10-19T05:43:25.493Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Buildroot：以 Makefile + Kconfig 为核心，配置简单、构建快，直接产出工具链、内核、rootfs 与镜像；适合产品形态固定、团队小、需要快速迭代的场景，定制靠 package 与 patch。 Yocto：以 BitBake + layer / recipe 为核心，元数据驱动，支持多机器、多发行版、可复现构建、SDK、包管理和许可证清单；学习曲线陡、构建重，但长期维护与多硬件复用好。 选型建议：单一产品、资源紧、要快选 Buildroot；多硬件/多版本、需要长期维护与合规审计选 Yocto。也可组合：Yocto 产 SDK 与应用包，Buildroot 做最终镜像；无论哪种都要固定版本、锁定依赖并做可复现构建。","url":"https://itinterview.com.cn/question/1736"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"Buildroot 与 Yocto 的定位差异？构建嵌入式根文件系统时如何选？","item":"https://itinterview.com.cn/q/1736"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Dockerfile 最佳实践有哪些？ · IT面试题库">
   <meta property="og:description" content="1. 小基础镜像：alpine、distroless，减少体积与攻击面。 2. 多阶段构建：编译阶段与运行阶段分离，最终镜像只留产物。 3. 利用缓存：变动少的指令（依赖安装）放前，源码拷贝放后。 4. 精简层：合并 RUN，清理 apt/yum 缓存。 5. 非 root 运行：USER 指定普通用户。 6. …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/53.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Dockerfile 最佳实践有哪些？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/53.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/53">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Dockerfile 最佳实践有哪些？ · IT面试题库">
   <meta name="twitter:description" content="1. 小基础镜像：alpine、distroless，减少体积与攻击面。 2. 多阶段构建：编译阶段与运行阶段分离，最终镜像只留产物。 3. 利用缓存：变动少的指令（依赖安装）放前，源码拷贝放后。 4. 精简层：合并 RUN，清理 apt/yum 缓存。 5. 非 root 运行：USER 指定普通用户。 6. …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/53.jpg">
+  <meta name="twitter:image:alt" content="Dockerfile 最佳实践有哪些？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/53">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Dockerfile 最佳实践有哪些？","text":"从镜像体积、安全、缓存角度说明。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 小基础镜像：alpine、distroless，减少体积与攻击面。 2. 多阶段构建：编译阶段与运行阶段分离，最终镜像只留产物。 3. 利用缓存：变动少的指令（依赖安装）放前，源码拷贝放后。 4. 精简层：合并 RUN，清理 apt/yum 缓存。 5. 非 root 运行：USER 指定普通用户。 6. 明确 CMD/ENTRYPOINT，不写死 secrets（用环境变量/secret）。 7. .dockerignore 排除无关文件。 8. 固定基础镜像版本，避免 latest 漂移。","url":"https://itinterview.com.cn/question/53"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Docker","item":"https://itinterview.com.cn/category?cat=136"},{"@type":"ListItem","position":4,"name":"Dockerfile 最佳实践有哪些？","item":"https://itinterview.com.cn/q/53"}]}</script>

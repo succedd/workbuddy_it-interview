@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？ · IT面试题库">
   <meta property="og:description" content="state 的作用：Terraform 是声明式的，但真正执行要靠 state 里记录的「资源地址 → 真实云资源 ID」映射：① plan 时对比「配置 ↔ state ↔ 实际云上状态」三者算 diff；② 销毁时知道删哪个；③ 依赖图、敏感值缓存都在其中。没有 state，Terraform 就不知道自己管…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1532.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1532.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1532">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？ · IT面试题库">
   <meta name="twitter:description" content="state 的作用：Terraform 是声明式的，但真正执行要靠 state 里记录的「资源地址 → 真实云资源 ID」映射：① plan 时对比「配置 ↔ state ↔ 实际云上状态」三者算 diff；② 销毁时知道删哪个；③ 依赖图、敏感值缓存都在其中。没有 state，Terraform 就不知道自己管…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1532.jpg">
+  <meta name="twitter:image:alt" content="Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1532">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？","text":"说明 state 记录的资源映射与漂移检测基础，以及远程后端的并发安全。","answerCount":1,"datePublished":"2026-10-05T01:04:01.653Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"state 的作用：Terraform 是声明式的，但真正执行要靠 state 里记录的「资源地址 → 真实云资源 ID」映射：① plan 时对比「配置 ↔ state ↔ 实际云上状态」三者算 diff；② 销毁时知道删哪个；③ 依赖图、敏感值缓存都在其中。没有 state，Terraform 就不知道自己管过什么。 为什么远程化：state 默认本地文件——① 团队协作各自一份会互相覆盖；② CI 上没有 state 就会重复创建资源。远程后端（S3+DynamoDB / OSS / Terraform Cloud）集中存储。 为什么必须加锁：两人（或两条流水线）同时 apply 会基于同一份 state 并发变更，产生竞态与重复资源。S3 后端用 DynamoDB 锁、Terraform Cloud 内置锁，apply 期间持锁，异常退出需 terraform force-unlock。 补充：state 含敏感值（需加密存储 + 最小权限访问）；手工改云资源会造成漂移，用 terraform plan -refresh-only 检测、import 收编或恢复配置。","url":"https://itinterview.com.cn/question/1532"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Terraform","item":"https://itinterview.com.cn/category?cat=147"},{"@type":"ListItem","position":4,"name":"Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？","item":"https://itinterview.com.cn/q/1532"}]}</script>

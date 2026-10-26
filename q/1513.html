@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="怀疑服务器被入侵，你的应急响应流程是什么？ · IT面试题库">
   <meta property="og:description" content="顺序不能乱：① 保全：先备份内存/进程/网络状态与关键日志到取证机（ps auxww、ss -antup、lsof、/var/log 打包），避免清除动作毁掉证据；② 遏制：隔离网络（安全组只留堡垒机）、必要时停服务，防止横向扩散；③ 排查：账号（/etc/passwd 新增用户、last/lastlog）、异常…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1513.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="怀疑服务器被入侵，你的应急响应流程是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1513.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1513">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="怀疑服务器被入侵，你的应急响应流程是什么？ · IT面试题库">
   <meta name="twitter:description" content="顺序不能乱：① 保全：先备份内存/进程/网络状态与关键日志到取证机（ps auxww、ss -antup、lsof、/var/log 打包），避免清除动作毁掉证据；② 遏制：隔离网络（安全组只留堡垒机）、必要时停服务，防止横向扩散；③ 排查：账号（/etc/passwd 新增用户、last/lastlog）、异常…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1513.jpg">
+  <meta name="twitter:image:alt" content="怀疑服务器被入侵，你的应急响应流程是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1513">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"怀疑服务器被入侵，你的应急响应流程是什么？","text":"给出「取证保全→遏制→排查→清除→恢复→复盘」的完整顺序及关键命令。","answerCount":1,"datePublished":"2026-10-05T01:03:59.222Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"顺序不能乱：① 保全：先备份内存/进程/网络状态与关键日志到取证机（ps auxww、ss -antup、lsof、/var/log 打包），避免清除动作毁掉证据；② 遏制：隔离网络（安全组只留堡垒机）、必要时停服务，防止横向扩散；③ 排查：账号（/etc/passwd 新增用户、last/lastlog）、异常进程（CPU 高、隐藏路径、可疑父进程）、定时任务（crontab -l、/etc/cron.*、systemd timer）、启动项、SSH authorized_keys、history、Web 日志中的可疑请求、rootkit 检测（rkhunter/chkrootkit）；④ 清除：杀进程、删文件、清持久化（注意先断持久化再杀进程，否则被拉起）；⑤ 恢复：改全部口令与密钥、打补丁、修漏洞入口、从干净备份恢复数据；⑥ 复盘：入侵时间线、入口漏洞、影响评估、检测规则补齐、报告归档。 原则：先遏制作业后取证要平衡——重要系统优先保留证据，紧急情况先断网。","url":"https://itinterview.com.cn/question/1513"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"应急响应","item":"https://itinterview.com.cn/category?cat=214"},{"@type":"ListItem","position":4,"name":"怀疑服务器被入侵，你的应急响应流程是什么？","item":"https://itinterview.com.cn/q/1513"}]}</script>

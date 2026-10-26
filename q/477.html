@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库">
   <meta property="og:description" content="TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/477.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/477.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/477">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库">
   <meta name="twitter:description" content="TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/477.jpg">
+  <meta name="twitter:image:alt" content="TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/477">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？","text":"TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？","answerCount":1,"datePublished":"2026-09-05T06:18:10.910Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TLS 握手的目标：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。 第一次握手 — ClientHello（客户端打招呼）： 客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 TLS_RSA_WITH_AES_128_GCM_SHA256），以及一个随机数 Client Random。 解决什么：告诉服务端「我支持哪些能力」，并提供第一个随机数用于后续生成会话密钥。 第二次握手 — ServerHello + Certificate + ServerHello Done（服务端回应）： 服务端确认 TLS 版本和密码套件，返回自己的随机数 Server Random、服务器的数字证书（内含公钥、域名、CA 签名等），以及 Server Hello Done 表示信息发完。 解决什么：服务端证明身份（通过证书），双方各有一个随机数，为后续密钥协商打基础。 第三次握手 — Client Key Exchange + Change Cipher Spec + Finished（客户端完成）： 客户端用服务器公钥加密一个随机数 pre-master key 发给服务端；然后两端各自用 Client Random + Server Random + pre-master key 计算出会话密钥；最后发 Change Cipher Spec 通知后续消息加密，并发 Finished（对之前握手数据的摘要 + 加密）让服务端校验。 解决什么：安全地共享对称密钥，切换到加密通信通道。 第四次握手 — Change Cipher Spec + Finished（服务端完成）： 服务端同样发 Change Cipher Spec 和 Finished，双方互相校验摘要，确认握手未被篡改。 解决什么：双向确认握手完整、未被中间人干扰，TLS 握手正式结束，之后所有 HTTP 数据都用会话密钥对称加密传输。 追问：RSA 密钥交换不支持前向保密，如果服务端私钥泄露，历史通信都能被破解。现代网站多用 ECDHE（Elliptic Curve Diffie-Hellman Ephemeral），每次会话独立协商临时密钥，即使私钥泄露也无法解密历史数据。","url":"https://itinterview.com.cn/question/477"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"HTTP与HTTPS","item":"https://itinterview.com.cn/category?cat=51"},{"@type":"ListItem","position":4,"name":"TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？","item":"https://itinterview.com.cn/q/477"}]}</script>

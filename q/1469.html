@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 三类：① 存储型——恶意脚本存入数据库，他人访问页面时执行，危害最大；② 反射型——脚本拼在 URL 参数里，诱导用户点击触发；③ DOM 型——前端 JS 把不可信数据拼进 DOM，不经过服务端即可执行。 防御（输入+输出双保险）：① 输出编码——按 HTML/属性/JS/URL 不同上下文做对应转义，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1469.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1469.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1469">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三类：① 存储型——恶意脚本存入数据库，他人访问页面时执行，危害最大；② 反射型——脚本拼在 URL 参数里，诱导用户点击触发；③ DOM 型——前端 JS 把不可信数据拼进 DOM，不经过服务端即可执行。 防御（输入+输出双保险）：① 输出编码——按 HTML/属性/JS/URL 不同上下文做对应转义，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1469.jpg">
+  <meta name="twitter:image:alt" content="XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1469">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？","text":"区分存储型、反射型、DOM 型 XSS，并说明输入/输出双保险与 CSP 的防御思路。","answerCount":1,"datePublished":"2026-10-02T02:45:55.672Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三类：① 存储型——恶意脚本存入数据库，他人访问页面时执行，危害最大；② 反射型——脚本拼在 URL 参数里，诱导用户点击触发；③ DOM 型——前端 JS 把不可信数据拼进 DOM，不经过服务端即可执行。 防御（输入+输出双保险）：① 输出编码——按 HTML/属性/JS/URL 不同上下文做对应转义，禁止用 innerHTML 拼接未过滤内容；② 输入校验与白名单——富文本用 DOMPurify 等净化库保留安全标签；③ 内容安全策略 CSP 限制脚本来源；④ 给 Cookie 设 HttpOnly 防窃取，SameSite 降低跨站携带。","url":"https://itinterview.com.cn/question/1469"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"XSS跨站脚本","item":"https://itinterview.com.cn/category?cat=205"},{"@type":"ListItem","position":4,"name":"XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？","item":"https://itinterview.com.cn/q/1469"}]}</script>

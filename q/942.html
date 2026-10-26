@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring 是如何解决循环依赖的？三级缓存是什么？ · IT面试题库">
   <meta property="og:description" content="三级缓存（DefaultSingletonBeanRegistry）： 1. 一级 singletonObjects：成品单例池； 2. 二级 earlySingletonObjects：提前曝光的半成品（已实例化未填充属性）； 3. 三级 singletonFactories：能产出半成品的ObjectFact…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/942.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring 是如何解决循环依赖的？三级缓存是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/942.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/942">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 是如何解决循环依赖的？三级缓存是什么？ · IT面试题库">
   <meta name="twitter:description" content="三级缓存（DefaultSingletonBeanRegistry）： 1. 一级 singletonObjects：成品单例池； 2. 二级 earlySingletonObjects：提前曝光的半成品（已实例化未填充属性）； 3. 三级 singletonFactories：能产出半成品的ObjectFact…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/942.jpg">
+  <meta name="twitter:image:alt" content="Spring 是如何解决循环依赖的？三级缓存是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/942">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 是如何解决循环依赖的？三级缓存是什么？","text":"请说明 A 依赖 B、B 又依赖 A 时 Spring 的处理流程，以及三级缓存各自的作用与无法解决的情况。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三级缓存（DefaultSingletonBeanRegistry）： 1. 一级 singletonObjects：成品单例池； 2. 二级 earlySingletonObjects：提前曝光的半成品（已实例化未填充属性）； 3. 三级 singletonFactories：能产出半成品的ObjectFactory（含 SmartInstantiationAwareBeanPostProcessor，AOP 时提前生成代理）。 流程（A↔B 循环）：实例化 A（构造器跑完，属性未填）→ 把 A 的工厂放入三级缓存 → 填充属性发现依赖 B → 创建 B → B 填属性时需要 A → 从三级缓存拿到 A 的工厂，提前得到 A 的引用（若 A 需要 AOP，此处提前生成代理）放入二级缓存 → B 完成初始化进一级缓存 → 回头 A 注入 B，完成。 为什么需要第三级而不是两级：保证正常情况下代理只在初始化后生成一次；只有发生循环依赖时才提前生成代理，且确保全局只有一份代理。 解决不了的循环依赖：①构造器注入循环依赖（实例化阶段就卡死，Spring 直接报错）；②prototype 作用域（不使用缓存）；③Spring Boot 2.6+ 默认禁止循环依赖（spring.main.allow-circular-references=false），鼓励通过重构（抽取中间类）消除设计坏味道。","url":"https://itinterview.com.cn/question/942"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring 是如何解决循环依赖的？三级缓存是什么？","item":"https://itinterview.com.cn/q/942"}]}</script>

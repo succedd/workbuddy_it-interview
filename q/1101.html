@@ -16,7 +16,16 @@ B. @PostConstruct init1() → afterPropertiesSet() → init2()
 C. init2() → afterPropertiesSet() → @PostConstruct init1()
 D. 三者顺序不确定，取决于 Bean 注册顺序 · IT面试题库">
   <meta property="og:description" content="正确答案：B。 官方定义的初始化顺序（Spring Framework 文档明确列出）： 1. @PostConstruct 标注的方法（JSR-250 注解，现代 Spring 应用的最佳实践，不与 Spring 接口耦合）； 2. InitializingBean 的 afterPropertiesSet()…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1101.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=&quot;init2()&quot;。初始化阶段的执行顺序是：
+A. afterPropertiesSet() → @PostConstruct init1() → init2()
+B. @PostConstruct init1() → afterPropertiesSet() → init2()
+C. init2() → afterPropertiesSet() → @PostConstruct init1()
+D. 三者顺序不确定，取决于 Bean 注册顺序 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1101.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1101">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
@@ -26,7 +35,12 @@ B. @PostConstruct init1() → afterPropertiesSet() → init2()
 C. init2() → afterPropertiesSet() → @PostConstruct init1()
 D. 三者顺序不确定，取决于 Bean 注册顺序 · IT面试题库">
   <meta name="twitter:description" content="正确答案：B。 官方定义的初始化顺序（Spring Framework 文档明确列出）： 1. @PostConstruct 标注的方法（JSR-250 注解，现代 Spring 应用的最佳实践，不与 Spring 接口耦合）； 2. InitializingBean 的 afterPropertiesSet()…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1101.jpg">
+  <meta name="twitter:image:alt" content="【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=&quot;init2()&quot;。初始化阶段的执行顺序是：
+A. afterPropertiesSet() → @PostConstruct init1() → init2()
+B. @PostConstruct init1() → afterPropertiesSet() → init2()
+C. init2() → afterPropertiesSet() → @PostConstruct init1()
+D. 三者顺序不确定，取决于 Bean 注册顺序 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1101">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=\"init2()\"。初始化阶段的执行顺序是：\nA. afterPropertiesSet() → @PostConstruct init1() → init2()\nB. @PostConstruct init1() → afterPropertiesSet() → init2()\nC. init2() → afterPropertiesSet() → @PostConstruct init1()\nD. 三者顺序不确定，取决于 Bean 注册顺序","text":"考察点：Bean 初始化回调的三种机制及官方固定执行顺序、Aware 回调的位置、为什么官方推荐 @PostConstruct。追问链第二环：Bean 生命周期的精确时序。","answerCount":1,"datePublished":"2026-09-11T11:56:19.051Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：B。 官方定义的初始化顺序（Spring Framework 文档明确列出）： 1. @PostConstruct 标注的方法（JSR-250 注解，现代 Spring 应用的最佳实践，不与 Spring 接口耦合）； 2. InitializingBean 的 afterPropertiesSet()（官方不推荐——会让业务代码耦合 Spring 接口）； 3. 自定义 init-method / @Bean(initMethod=...)（既想要解耦又不使用注解时的方案）。 销毁侧顺序同理：@PreDestroy → destroy() → 自定义 destroy-method。 时序全景（答题加分项）：实例化（构造器）→ 属性填充（依赖注入）→ Aware 回调（如 BeanNameAware.setBeanName、ApplicationContextAware.setApplicationContext，发生在普通属性填充之后、初始化回调之前）→ BeanPostProcessor 前置处理 → 初始化回调（按 B 的顺序）→ BeanPostProcessor 后置处理（AOP 代理就是在这里生成的）→ Bean 就绪。 补充要点：初始化回调在容器的单例创建锁内执行，官方提醒 @PostConstruct 里只做配置校验和轻量数据准备——重量级异步初始化（如预热数据库）应放到 SmartInitializingSingleton.afterSingletonsInstantiated() 或监听 ContextRefreshedEvent，避免初始化死锁；若多种机制配置了同一个方法名，该方法只会被执行一次。","url":"https://itinterview.com.cn/question/1101"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"【单选】一个单例 Bean 同时实现了 InitializingBean 接口、标注了 @PostConstruct 的 init1() 方法，并在 @Bean 上指定了 initMethod=\"init2()\"。初始化阶段的执行顺序是：\nA. afterPropertiesSet() → @PostConstruct init1() → init2()\nB. @PostConstruct init1() → afterPropertiesSet() → init2()\nC. init2() → afterPropertiesSet() → @PostConstruct init1()\nD. 三者顺序不确定，取决于 Bean 注册顺序","item":"https://itinterview.com.cn/q/1101"}]}</script>

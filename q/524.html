@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？ · IT面试题库">
   <meta property="og:description" content="ACID： A 原子性(Atomicity)：事务要么全部成功，要么全部回滚，不存在中间状态（靠 undo log/回滚实现）。 C 一致性(Consistency)：事务执行前后，数据始终满足业务约束（如唯一键、外键、总额不变）。 I 隔离性(Isolation)：并发事务彼此隔离，互不干扰。 D 持久性(Du…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/524.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/524.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/524">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？ · IT面试题库">
   <meta name="twitter:description" content="ACID： A 原子性(Atomicity)：事务要么全部成功，要么全部回滚，不存在中间状态（靠 undo log/回滚实现）。 C 一致性(Consistency)：事务执行前后，数据始终满足业务约束（如唯一键、外键、总额不变）。 I 隔离性(Isolation)：并发事务彼此隔离，互不干扰。 D 持久性(Du…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/524.jpg">
+  <meta name="twitter:image:alt" content="关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/524">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？","text":"解释原子性、一致性、隔离性、持久性；列出 Read Uncommitted/Read Committed/Repeatable Read/Serializable 及其能防止的读现象。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"ACID： A 原子性(Atomicity)：事务要么全部成功，要么全部回滚，不存在中间状态（靠 undo log/回滚实现）。 C 一致性(Consistency)：事务执行前后，数据始终满足业务约束（如唯一键、外键、总额不变）。 I 隔离性(Isolation)：并发事务彼此隔离，互不干扰。 D 持久性(Durability)：一旦提交，结果永久保存（靠 redo log + 落盘实现）。 隔离级别与读现象（级别由低到高）： | 隔离级别 | 脏读 | 不可重复读 | 幻读 | |---|---|---|---| | Read Uncommitted | 可能 | 可能 | 可能 | | Read Committed | 防止 | 可能 | 可能 | | Repeatable Read | 防止 | 防止 | 可能（MySQL InnoDB 靠 MVCC+间隙锁可防） | | Serializable | 防止 | 防止 | 防止 | 三种读现象： 脏读：读到别的事务未提交的数据，其回滚后读到的是无效的。 不可重复读：同一事务内两次读同一行，结果被别的事务修改/删除而不同（侧重“值变”）。 幻读：同一事务内同一查询条件两次执行，返回的行集合因别的事务插入/删除而不同（侧重“行数变”）。 实现：靠锁（共享/排他、间隙锁）与 MVCC（多版本并发控制） 提供快照读。","url":"https://itinterview.com.cn/question/524"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"关系型数据库的 ACID 是什么？事务的四种隔离级别如何解决脏读/不可重复读/幻读？","item":"https://itinterview.com.cn/q/524"}]}</script>

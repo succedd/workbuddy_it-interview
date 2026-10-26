@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？ · IT面试题库">
   <meta property="og:description" content="关系：Vite 插件是 Rollup 插件 API 的超集——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1497.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1497.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1497">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？ · IT面试题库">
   <meta name="twitter:description" content="关系：Vite 插件是 Rollup 插件 API 的超集——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1497.jpg">
+  <meta name="twitter:image:alt" content="Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1497">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？","text":"说明插件 API 的兼容设计与 dev/build 双引擎的统一方式。","answerCount":1,"datePublished":"2026-10-05T01:03:57.085Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关系：Vite 插件是 Rollup 插件 API 的超集——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服务 dev（esbuild/原生 ESM 管道）和 build（Rollup 管道），Vite 内部按环境过滤钩子执行。 build 选 Rollup 的原因：① 生产要的是最优产物而非构建速度——Rollup 的 Tree Shaking 基于更彻底的 ESM 静态分析，产物体积与可读性优于 Webpack；② 无运行时模块加载代码（Webpack 的 runtime/jsonp chunk 加载器），ESM 输出更干净；③ 代码分割算法成熟，适合多入口/多 chunk。 取舍：esbuild 负责依赖预构建与 TS/JSX 转译（快），Rollup 负责最终打包（优），二者职责互补。","url":"https://itinterview.com.cn/question/1497"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Vite","item":"https://itinterview.com.cn/category?cat=70"},{"@type":"ListItem","position":5,"name":"Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？","item":"https://itinterview.com.cn/q/1497"}]}</script>

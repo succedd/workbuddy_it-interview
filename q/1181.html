@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库">
   <meta property="og:description" content="要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1181.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1181.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1181">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1181.jpg">
+  <meta name="twitter:image:alt" content="故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1181">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？","text":"考察点：显存 OOM 排查与调优。要求给出从监控定位到具体参数的完整链路，区分「碎片」与「并发上限」两类问题。","answerCount":1,"datePublished":"2026-09-17T02:35:52.721Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是并发上限 max_num_seqs 设太高或单个请求上下文过长把 block 占满。 优化一（限并发/限长）：调小 max_num_seqs、收紧 max_model_len，让「并发×平均长度」落在显存预算内；对超长请求做截断或拒绝。 优化二（省 KV）：开启 FP8/KV Cache 量化把每 token 的 KV 显存减半；开启 prefix caching 让相同系统提示/多轮前缀复用 block，长 prompt 场景显存与首 token 延迟双降。 优化三（架构）：把「长上下文推理」与「短请求」分到不同实例（不同 max_model_len），避免长请求挤占短请求资源；必要时多卡张量并行把单请求显存摊薄。 排错顺序：先看是不是静态批处理 → 再调 max_num_seqs/max_model_len → 再上 KV 量化/prefix cache → 最后才加卡。","url":"https://itinterview.com.cn/question/1181"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"模型部署优化","item":"https://itinterview.com.cn/category?cat=197"},{"@type":"ListItem","position":5,"name":"故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？","item":"https://itinterview.com.cn/q/1181"}]}</script>

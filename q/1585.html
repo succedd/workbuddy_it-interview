@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。 · IT面试题库">
   <meta property="og:description" content="要点：先用性能分析器（Profiler）量化瓶颈归属：看 CPU 占用（逻辑/脚本/GarbageCollect）、GPU 占用（Draw Call、填充率）、内存与 GC 频率，确定是「CPU bound」还是「GPU bound」再下手。 要点：常见方向：① GC 抖动——脚本里每帧 new 临时对象/字符串…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1585.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1585.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1585">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。 · IT面试题库">
   <meta name="twitter:description" content="要点：先用性能分析器（Profiler）量化瓶颈归属：看 CPU 占用（逻辑/脚本/GarbageCollect）、GPU 占用（Draw Call、填充率）、内存与 GC 频率，确定是「CPU bound」还是「GPU bound」再下手。 要点：常见方向：① GC 抖动——脚本里每帧 new 临时对象/字符串…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1585.jpg">
+  <meta name="twitter:image:alt" content="游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1585">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。","text":"考察性能定位方法论。","answerCount":1,"datePublished":"2026-10-07T08:05:40.223Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：先用性能分析器（Profiler）量化瓶颈归属：看 CPU 占用（逻辑/脚本/GarbageCollect）、GPU 占用（Draw Call、填充率）、内存与 GC 频率，确定是「CPU bound」还是「GPU bound」再下手。 要点：常见方向：① GC 抖动——脚本里每帧 new 临时对象/字符串拼接、闭包捕获，导致周期性卡顿，改用对象池/结构体/缓存；② Draw Call 过高——合并批次、合图（Atlas）、减少材质切换；③ 同步加载/大资源——改用异步分帧加载、对象池预热。 要点：移动端额外关注：过度绘制（Overdraw）、分辨率/画质档位、发热降频；用帧时间（Frame Time）而非 FPS 更准，定位到具体函数后再针对性优化。","url":"https://itinterview.com.cn/question/1585"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"游戏运行中出现 FPS 骤降、周期性卡顿，你会如何定位瓶颈？列出至少三个排查方向。","item":"https://itinterview.com.cn/q/1585"}]}</script>

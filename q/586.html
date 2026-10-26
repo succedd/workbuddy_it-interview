@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？ · IT面试题库">
   <meta property="og:description" content="问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/586.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/586.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/586">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？ · IT面试题库">
   <meta name="twitter:description" content="问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/586.jpg">
+  <meta name="twitter:image:alt" content="分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/586">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？","text":"业务执行时间不确定，锁 TTL 难以预估。请说明看门狗（watchdog）续期机制的思想，以及使用 Redisson 等客户端时续期与释放的注意点。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"问题背景：TTL 太短 → 业务没跑完锁就过期，别人抢锁（自己变“无锁执行”）；TTL 太长 → 客户端崩溃后临界区长时间无法进入。 看门狗（watchdog）续期： 客户端加锁成功后，启动一个后台定时任务（看门狗）； 只要客户端仍持有锁且业务未结束，就周期性地把锁的过期时间重置/延长（如每 1/3 TTL 续一次）； 客户端正常释放锁时，取消看门狗并删除 key； 客户端崩溃 → 看门狗随之停止 → 锁在 TTL 到期后自动释放，避免死锁。 Redisson 实践：lock() 默认带 watchdog（每 10s 续期到 30s），lock(leaseTime) 显式指定后不自动续期；释放用 unlock()（内部校验+删除）。 注意点： 1. 续期本身须原子（用 Lua 或 PEXPIRE）； 2. 续期间隔应小于 TTL，且留网络余量； 3. 必须配合唯一 value + 安全释放（Lua/DELEX），否则续期/释放会动到他人锁； 4. 看门狗不能解决“GC/STW 长停顿导致续期失败”的极端场景，超高安全要求仍需 fencing token（etcd/ZK）。","url":"https://itinterview.com.cn/question/586"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"分布式锁的过期时间设短了会误删自己、设长了阻塞久，如何做“锁续期（watchdog）”？","item":"https://itinterview.com.cn/q/586"}]}</script>

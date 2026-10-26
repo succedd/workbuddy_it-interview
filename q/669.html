@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库">
   <meta property="og:description" content="要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/669.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/669.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/669">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库">
   <meta name="twitter:description" content="要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/669.jpg">
+  <meta name="twitter:image:alt" content="redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/669">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？","text":"追问链第二问。考察点：物理日志 vs 逻辑日志、循环写 vs 追加写；两阶段提交的 prepare→binlog→commit 三步；崩恢复时如何判定事务该提交还是回滚。","answerCount":1,"datePublished":"2026-09-08T13:40:59.705Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：四项核心区别 归属层次：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，所有引擎都能产生。 日志类型：redo log 是物理日志（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是逻辑日志（记录语句原始逻辑，STATEMENT 记 SQL，ROW 记行的前后镜像）。 写入方式：redo log 循环写，空间固定会用完，写满前必须把脏页刷盘以推进 checkpoint 腾出空间；binlog 追加写，写完一个文件切换到下一个，不会覆盖。 用途：redo log 用于崩溃恢复（crash-safe）；binlog 用于备份恢复与主从复制。 要点二：为什么必须两阶段提交 如果简单地「先写 redo log 再写 binlog」或反过来，只要中间宕机，两份日志就会出现分歧： 先 redo 后 binlog：redo 说事务提交了，binlog 里没有 → 从库少了这条数据，主从不一致。 先 binlog 后 redo：binlog 有而 redo 没有 → 主库崩溃恢复后丢了这条数据，但从库却多了一条，同样不一致。 由于 redo log 保证主库 crash-safe、binlog 决定从库数据，二者必须逻辑上原子：要么都写入，要么都不写入。 要点三：两阶段提交的过程 1) prepare 阶段：把 redo log 写入，标记为 prepare 状态。 2) 写 binlog 并刷盘。 3) commit 阶段：把 redo log 状态改为 commit，事务提交完成。 关键判据：binlog 是否完整写入决定了事务的命运。 要点四：异常重启时会发生什么 redo 处于 prepare、binlog 完整：说明 binlog 已落盘，从库会同步到这条数据 → 主库继续提交（把 redo 改成 commit）。 redo 处于 prepare、binlog 不完整/不存在：从库拿不到这条数据 → 主库回滚（用 undo log 撤销）。 这样无论在哪一步宕机，重启后主库与从库的数据都能保持一致。 要点五：代价与优化 两阶段提交需要两次刷盘（redo prepare 一次、binlog 一次），且为了保证多事务并发时 binlog 与 redo 顺序一致，MySQL 还引入了 prepare_commit_mutex，这会降低并发吞吐。 优化手段：把 innodb_flush_log_at_trx_commit 与 sync_binlog 都设为 1 最安全但最慢（双 1 配置）；MySQL 5.6 后引入 组提交（group commit），把多个事务的刷盘合并成一次，大幅缓解该开销。","url":"https://itinterview.com.cn/question/669"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？","item":"https://itinterview.com.cn/q/669"}]}</script>
@@ -88,7 +94,7 @@
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
     <h1>redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Swift</span><span class="chip tag">ObjectiveC</span><span class="chip tag">iOS</span></div>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">Swift</span><span class="chip tag">ObjectiveC</span><span class="chip tag">iOS</span></div>
     <div class="card"><h2>题目</h2><p>追问链第二问。考察点：物理日志 vs 逻辑日志、循环写 vs 追加写；两阶段提交的 prepare→binlog→commit 三步；崩恢复时如何判定事务该提交还是回滚。</p></div>
     <div class="card"><h2>参考答案</h2><p><strong>要点一：四项核心区别</strong></p>
 <ul>

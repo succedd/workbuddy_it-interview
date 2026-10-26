@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？ · IT面试题库">
   <meta property="og:description" content="一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/441.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/441.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/441">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？ · IT面试题库">
   <meta name="twitter:description" content="一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/441.jpg">
+  <meta name="twitter:image:alt" content="Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/441">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？","text":"用 Argo CD 部署应用时，需要先跑数据库迁移、再发应用、最后做冒烟验证。请说明同步阶段与同步波次的机制、排序规则，以及裁剪（prune）时的顺序特点。","answerCount":1,"datePublished":"2026-09-03T00:53:51.934Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、Sync Phases：粗粒度的阶段编排 通过注解 argocd.argoproj.io/hook 把资源标记为某个阶段，Hook 通常是 Pod、Job 或 Argo Workflow： PreSync：在应用 manifests 之前执行，任一失败则整个同步终止（适合做前置检查、数据库迁移）。 Sync：所有 PreSync 成功之后、与应用 manifests 同时执行。 PostSync：同步成功且所有资源进入 Healthy 之后执行，适合冒烟测试与通知。 SyncFail：同步失败时执行，用于清理与告警。 Skip：Argo CD 跳过该资源（常用于绕开 Helm chart 里有问题的 hook）。 Hook 的清理由 argocd.argoproj.io/hook-delete-policy 决定：HookSucceeded、HookFailed、BeforeHookCreation（不指定时的默认行为，创建新 hook 前先删掉旧的）。 二、Sync Waves：阶段内的精确排序 用注解 argocd.argoproj.io/sync-wave: \"5\" 指定波次，值为整数，默认 0，可以是负数（例如把 DB 迁移 Job 放在 -1，保证跑在所有资源之前）。 完整排序优先级：阶段（phase）→ 波次（由小到大）→ 资源 kind（Namespace 优先，然后是其它内置资源，最后是 CRD）→ 名称。 两个关键行为： 1. 同步时先找到第一个存在「不同步或不健康」资源的波次，应用它，然后重复该过程直到全部波次同步且健康。这意味着如果第一个波次里的资源永远不健康，整个应用就永远到不了 Healthy。 2. 每两个波次之间有约 2 秒延迟（可用环境变量 ARGOCD_SYNC_WAVE_DELAY 调整），目的是给其它控制器（如 Deployment 控制器）反应时间，避免 Argo CD 拿着旧对象状态过早判定健康、过早触发 Hook。 三、裁剪时顺序相反 开启 prune 时，波次顺序会反转：波次号大的先删，且任一波次删除失败即停止，不会继续删除更低波次，从而保证「先删依赖方、后删被依赖方」。 四、注意 Hook 不会在选择性同步（selective sync）中执行；SyncFail Hook 自身失败时，Argo CD 只会把整体操作标记为失败，不会再做额外动作。","url":"https://itinterview.com.cn/question/441"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"ArgoCD","item":"https://itinterview.com.cn/category?cat=142"},{"@type":"ListItem","position":4,"name":"Argo CD 如何控制一批资源的上线顺序？Sync Phases（Hook）与 Sync Waves 有什么区别，如何配合使用？","item":"https://itinterview.com.cn/q/441"}]}</script>
@@ -116,7 +122,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/441">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1553">什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1553">什么是 GitOps？Argo CD 如何基于 Git 声明式地实现应用的持续部署与自动同步？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1949">什么是 GitOps？它与传统 CI/CD（命令式部署）的核心区别是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1950">描述 ArgoCD 的核心架构：API Server、Repository Server、Application Controller、Application CRD 各自负责什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1951">ArgoCD 中声明式配置应用有哪几种方式？Application CRD、App of Apps、ApplicationSet 分别适合什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

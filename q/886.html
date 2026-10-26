@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。 · IT面试题库">
   <meta property="og:description" content="分层隔离要点： requests/limits：requests.cpu 决定调度器把 Pod 放到「空闲 CPU ≥ requests」的节点，并作为可压缩资源的保障下限；limits.cpu 是硬上限，超出被 throttle（限流） 而非杀死。内存 requests 影响调度，limits 超出则 OOMK…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/886.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/886.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/886">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。 · IT面试题库">
   <meta name="twitter:description" content="分层隔离要点： requests/limits：requests.cpu 决定调度器把 Pod 放到「空闲 CPU ≥ requests」的节点，并作为可压缩资源的保障下限；limits.cpu 是硬上限，超出被 throttle（限流） 而非杀死。内存 requests 影响调度，limits 超出则 OOMK…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/886.jpg">
+  <meta name="twitter:image:alt" content="某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/886">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。","text":"考察资源 QoS 与隔离。","answerCount":1,"datePublished":"2026-09-09T02:22:38.132Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分层隔离要点： requests/limits：requests.cpu 决定调度器把 Pod 放到「空闲 CPU ≥ requests」的节点，并作为可压缩资源的保障下限；limits.cpu 是硬上限，超出被 throttle（限流） 而非杀死。内存 requests 影响调度，limits 超出则 OOMKill。 ResourceQuota（命名空间级）：限制该 ns 的总 CPU/内存/Pod 数，防止一个团队吃光集群；配合 LimitRange 给未声明资源的 Pod 设默认 requests/limits。 PriorityClass：给核心服务高优先级，节点资源紧张触发抢占（preemption）时，低优先级 Pod 被驱逐让出资源。 关键点：只设 limits 不设 requests → 调度器按 0 保障调度，易发生「同节点争抢被 throttle」；应 requests 与 limits 都设，且 requests 贴近真实均值、limits 留突发余量。","url":"https://itinterview.com.cn/question/886"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。","item":"https://itinterview.com.cn/q/886"}]}</script>

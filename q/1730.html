@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？ · IT面试题库">
   <meta property="og:description" content="要点： tokenURI 返回什么：通常是一段 JSON，包含 name、image、attributes 等；合约保存 baseURI 或逐 token 的 URI，市场按 URI 拉取元数据。 存储方案对比：链上 data: URI 最永久但最贵，适合小图/纯文本；IPFS 内容寻址、便宜，但需要 pin 服…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1730.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1730.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1730">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？ · IT面试题库">
   <meta name="twitter:description" content="要点： tokenURI 返回什么：通常是一段 JSON，包含 name、image、attributes 等；合约保存 baseURI 或逐 token 的 URI，市场按 URI 拉取元数据。 存储方案对比：链上 data: URI 最永久但最贵，适合小图/纯文本；IPFS 内容寻址、便宜，但需要 pin 服…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1730.jpg">
+  <meta name="twitter:image:alt" content="NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1730">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？","text":"考察 NFT 元数据持久性、成本与可变性。","answerCount":1,"datePublished":"2026-10-19T05:43:25.095Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： tokenURI 返回什么：通常是一段 JSON，包含 name、image、attributes 等；合约保存 baseURI 或逐 token 的 URI，市场按 URI 拉取元数据。 存储方案对比：链上 data: URI 最永久但最贵，适合小图/纯文本；IPFS 内容寻址、便宜，但需要 pin 服务持续托管，否则可能丢失；Arweave 一次付费、长期存储，适合图片与元数据；中心化 HTTPS 最便宜但可改、可下线，违背 NFT 的不可篡改预期。 实践：图片与 JSON 上 IPFS/Arweave，合约存不可变 URI 或提供冻结开关；注意 gateway 可用性、元数据更新权限与「同一 CID 内容不可变」的验证。","url":"https://itinterview.com.cn/question/1730"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"NFT技术","item":"https://itinterview.com.cn/category?cat=262"},{"@type":"ListItem","position":4,"name":"NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？","item":"https://itinterview.com.cn/q/1730"}]}</script>

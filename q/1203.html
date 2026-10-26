@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="系统设计题：对一致性要求较高的场景，如何用 Canal 订阅 MySQL Binlog / MQ 异步来维护缓存一致性？它的优缺点与适用边界是什么？ · IT面试题库">
   <meta property="og:description" content="要点： 架构链路：MySQL 开启 Binlog → Canal 伪装成从库订阅 Binlog → 解析变更投递到 MQ（Kafka/RocketMQ）→ 消费者收到事件后更新或删除对应 Redis key。业务代码只管写 DB，缓存维护完全解耦。 优点：① 业务无侵入，研发只写 DB；② Binlog 顺序消费…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1203.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="系统设计题：对一致性要求较高的场景，如何用 Canal 订阅 MySQL Binlog / MQ 异步来维护缓存一致性？它的优缺点与适用边界是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1203.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1203">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="系统设计题：对一致性要求较高的场景，如何用 Canal 订阅 MySQL Binlog / MQ 异步来维护缓存一致性？它的优缺点与适用边界是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 架构链路：MySQL 开启 Binlog → Canal 伪装成从库订阅 Binlog → 解析变更投递到 MQ（Kafka/RocketMQ）→ 消费者收到事件后更新或删除对应 Redis key。业务代码只管写 DB，缓存维护完全解耦。 优点：① 业务无侵入，研发只写 DB；② Binlog 顺序消费…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1203.jpg">
+  <meta name="twitter:image:alt" content="系统设计题：对一致性要求较高的场景，如何用 Canal 订阅 MySQL Binlog / MQ 异步来维护缓存一致性？它的优缺点与适用边界是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1203">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"系统设计题：对一致性要求较高的场景，如何用 Canal 订阅 MySQL Binlog / MQ 异步来维护缓存一致性？它的优缺点与适用边界是什么？","text":"考察点：缓存一致性的『进阶最终一致方案』——Binlog 订阅架构，以及它相对延迟双删的取舍。要求讲清链路、优点、代价，并点明『强一致别用缓存』的边界。","answerCount":1,"datePublished":"2026-09-20T02:22:11.330Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 架构链路：MySQL 开启 Binlog → Canal 伪装成从库订阅 Binlog → 解析变更投递到 MQ（Kafka/RocketMQ）→ 消费者收到事件后更新或删除对应 Redis key。业务代码只管写 DB，缓存维护完全解耦。 优点：① 业务无侵入，研发只写 DB；② Binlog 顺序消费保证缓存更新顺序与 DB 一致，达到最终一致；③ 删除失败可经 MQ 重试，可靠性高。 缺点与代价：① 引入 Canal/MQ 中间件，运维与复杂度显著上升（事务拆分、消息乱序重排、DDL 过滤）；② 从 Binlog 产生到缓存更新存在毫秒级延迟，不是强一致；③ 表结构变更需同步处理。 与延迟双删对比：延迟双删（改 DB→删缓存→休眠→再删）依赖拍脑袋的休眠时间、会阻塞主线程、并发高时仍漏脏读，生产已逐渐淘汰；Binlog 方案更干净但更重。 适用边界：适合『读多写少、能接受最终一致』的高并发场景；对余额、库存等真正强一致的写，别用缓存，走 DB 事务或独立一致性协议。 核心：Binlog 订阅是『业务解耦 + 最终一致』的进阶方案，代价是中间件复杂度；强一致需求不属于缓存的适用范畴。","url":"https://itinterview.com.cn/question/1203"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"系统设计题：对一致性要求较高的场景，如何用 Canal 订阅 MySQL Binlog / MQ 异步来维护缓存一致性？它的优缺点与适用边界是什么？","item":"https://itinterview.com.cn/q/1203"}]}</script>

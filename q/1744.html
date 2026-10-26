@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？ · IT面试题库">
   <meta property="og:description" content="要点： 三种模式：Sleep 只停 CPU，外设与时钟继续跑，任意中断可唤醒，唤醒最快；Stop 关闭主时钟与大部分外设，保留 SRAM/寄存器，唤醒后需重配时钟；Standby 关闭大部分电源域，只保留备份域，唤醒相当于复位，功耗最低。 选型依据：看唤醒时间、是否要保持 RAM/外设状态、电池寿命目标；周期性采…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1744.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1744.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1744">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三种模式：Sleep 只停 CPU，外设与时钟继续跑，任意中断可唤醒，唤醒最快；Stop 关闭主时钟与大部分外设，保留 SRAM/寄存器，唤醒后需重配时钟；Standby 关闭大部分电源域，只保留备份域，唤醒相当于复位，功耗最低。 选型依据：看唤醒时间、是否要保持 RAM/外设状态、电池寿命目标；周期性采…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1744.jpg">
+  <meta name="twitter:image:alt" content="STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1744">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？","text":"考察低功耗模式的状态保持、唤醒时间与功耗取舍。","answerCount":1,"datePublished":"2026-10-19T05:43:26.025Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三种模式：Sleep 只停 CPU，外设与时钟继续跑，任意中断可唤醒，唤醒最快；Stop 关闭主时钟与大部分外设，保留 SRAM/寄存器，唤醒后需重配时钟；Standby 关闭大部分电源域，只保留备份域，唤醒相当于复位，功耗最低。 选型依据：看唤醒时间、是否要保持 RAM/外设状态、电池寿命目标；周期性采集可用 Stop + RTC/LPTIM 唤醒，长期待机用 Standby + 外部中断。 工程坑：调试器连接会阻止进入低功耗；未用 GPIO 要配为模拟输入避免漏电；唤醒后要重建 PLL/外设时钟并重配串口；RTC/备份域要单独供电并检查复位标志。","url":"https://itinterview.com.cn/question/1744"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"STM32","item":"https://itinterview.com.cn/category?cat=245"},{"@type":"ListItem","position":4,"name":"STM32 的 Sleep / Stop / Standby 如何选？唤醒源与时钟恢复要注意什么？","item":"https://itinterview.com.cn/q/1744"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？ · IT面试题库">
   <meta property="og:description" content="思路：可靠性是『生产→存储→消费』整条链路共同保证的，任一段短板都会丢消息。 要点（生产者端）： acks=all：Leader 需等待所有 ISR 副本都落盘才返回成功，避免 Leader 宕机丢数据（代价是延迟升高）。 retries 配大值 + enable.idempotence=true：网络抖动时自动…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1152.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1152.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1152">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？ · IT面试题库">
   <meta name="twitter:description" content="思路：可靠性是『生产→存储→消费』整条链路共同保证的，任一段短板都会丢消息。 要点（生产者端）： acks=all：Leader 需等待所有 ISR 副本都落盘才返回成功，避免 Leader 宕机丢数据（代价是延迟升高）。 retries 配大值 + enable.idempotence=true：网络抖动时自动…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1152.jpg">
+  <meta name="twitter:image:alt" content="Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1152">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？","text":"考察点：消息可靠性的三端保障链路，以及『不丢失』与吞吐/延迟之间的取舍（场景题，需说清每端配置与权衡）。","answerCount":1,"datePublished":"2026-09-15T11:49:41.521Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路：可靠性是『生产→存储→消费』整条链路共同保证的，任一段短板都会丢消息。 要点（生产者端）： acks=all：Leader 需等待所有 ISR 副本都落盘才返回成功，避免 Leader 宕机丢数据（代价是延迟升高）。 retries 配大值 + enable.idempotence=true：网络抖动时自动重试且保证不重不漏（幂等 Producer）。 要点（服务端）： min.insync.replicas≥2：确保写入时至少有 2 个副本确认，防止单点故障丢消息。 unclean.leader.election.enable=false：禁止非 ISR 副本成 Leader，避免丢已提交数据。 要点（消费者端）： 采用手动提交，且务必『先处理业务、再提交 offset』；绝不在处理前提交，否则处理失败会丢消息。 权衡：acks=all+多副本牺牲部分吞吐，核心业务值得，日志类可放宽到 acks=1。","url":"https://itinterview.com.cn/question/1152"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 消息可靠性三道防线：生产端 acks、服务端 ISR/min.insync.replicas、消费端手动提交，各自如何防丢？","item":"https://itinterview.com.cn/q/1152"}]}</script>

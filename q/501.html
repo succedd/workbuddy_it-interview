@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="C 程序的内存是怎么分段的？栈、堆、全局/静态区、常量区各存什么？ · IT面试题库">
   <meta property="og:description" content="典型进程内存布局（由低地址到高地址常见排列）： 1. 代码段（Text）：存放可执行机器指令，只读、可共享。 2. 数据段（Data）：存放已初始化的全局/静态变量（如 int g=10;）。 3. BSS 段：存放未初始化或初始化为 0 的全局/静态变量，程序加载时由系统清零（不占磁盘空间）。 4. 堆（Hea…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/501.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="C 程序的内存是怎么分段的？栈、堆、全局/静态区、常量区各存什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/501.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/501">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="C 程序的内存是怎么分段的？栈、堆、全局/静态区、常量区各存什么？ · IT面试题库">
   <meta name="twitter:description" content="典型进程内存布局（由低地址到高地址常见排列）： 1. 代码段（Text）：存放可执行机器指令，只读、可共享。 2. 数据段（Data）：存放已初始化的全局/静态变量（如 int g=10;）。 3. BSS 段：存放未初始化或初始化为 0 的全局/静态变量，程序加载时由系统清零（不占磁盘空间）。 4. 堆（Hea…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/501.jpg">
+  <meta name="twitter:image:alt" content="C 程序的内存是怎么分段的？栈、堆、全局/静态区、常量区各存什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/501">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"C 程序的内存是怎么分段的？栈、堆、全局/静态区、常量区各存什么？","text":"请描述 C 程序典型内存布局（代码段、数据段、BSS、堆、栈），并说明各区域的生命周期与增长方向。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"典型进程内存布局（由低地址到高地址常见排列）： 1. 代码段（Text）：存放可执行机器指令，只读、可共享。 2. 数据段（Data）：存放已初始化的全局/静态变量（如 int g=10;）。 3. BSS 段：存放未初始化或初始化为 0 的全局/静态变量，程序加载时由系统清零（不占磁盘空间）。 4. 堆（Heap）：动态分配区，malloc/free、calloc、realloc 管理；向高地址增长，需手动释放，否则泄漏。 5. 栈（Stack）：存放局部变量、函数参数、返回地址；向低地址增长，由系统自动分配/回收，遵循 LIFO；容量有限，过深递归会栈溢出。 6. 常量区/只读数据：字符串字面量（\"abc\"）等只读常量存放处，修改会导致未定义行为。 生命周期对照： 栈/堆变量：进入/分配时生，退出/free 时灭； 全局/静态（数据段、BSS）：整个程序运行期存在； 代码段：全程只读。 面试要点：栈快但小且自动管理；堆灵活但慢且需手动管理，是内存泄漏与野指针的主要来源。","url":"https://itinterview.com.cn/question/501"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C语言","item":"https://itinterview.com.cn/category?cat=10"},{"@type":"ListItem","position":4,"name":"C 程序的内存是怎么分段的？栈、堆、全局/静态区、常量区各存什么？","item":"https://itinterview.com.cn/q/501"}]}</script>

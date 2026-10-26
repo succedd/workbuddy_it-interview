@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库">
   <meta property="og:description" content="静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.fun…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/782.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/782.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/782">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库">
   <meta name="twitter:description" content="静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.fun…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/782.jpg">
+  <meta name="twitter:image:alt" content="TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/782">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？","text":"对比两种执行模式的特点与适用场景。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"静态图（Graph）：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。 Eager Execution：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 @tf.function 把函数编译成图以获得性能与可部署性。 实际工程：用 Eager 开发调试，用 tf.function/ SavedModel 做生产化。","url":"https://itinterview.com.cn/question/782"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"TensorFlow","item":"https://itinterview.com.cn/category?cat=181"},{"@type":"ListItem","position":5,"name":"TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？","item":"https://itinterview.com.cn/q/782"}]}</script>

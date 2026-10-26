@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？ · IT面试题库">
   <meta property="og:description" content="要点（与关系型事务的异同）： 同：提供 ACID——原子性（all-or-nothing）、一致性、隔离性（快照隔离/snapshot，读已提交快照）、持久性（写复制到多数节点才提交）。 异：MongoDB 多文档事务默认有 60 秒执行超时（maxTransactionLockRequestTimeoutMil…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1418.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1418.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1418">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？ · IT面试题库">
   <meta name="twitter:description" content="要点（与关系型事务的异同）： 同：提供 ACID——原子性（all-or-nothing）、一致性、隔离性（快照隔离/snapshot，读已提交快照）、持久性（写复制到多数节点才提交）。 异：MongoDB 多文档事务默认有 60 秒执行超时（maxTransactionLockRequestTimeoutMil…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1418.jpg">
+  <meta name="twitter:image:alt" content="MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1418">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？","text":"考察点：多文档事务的能力边界与成本，以及「事务 vs 内嵌」的建模权衡，是 MongoDB 进阶面试的高频高级题。","answerCount":1,"datePublished":"2026-10-01T03:53:46.455Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（与关系型事务的异同）： 同：提供 ACID——原子性（all-or-nothing）、一致性、隔离性（快照隔离/snapshot，读已提交快照）、持久性（写复制到多数节点才提交）。 异：MongoDB 多文档事务默认有 60 秒执行超时（maxTransactionLockRequestTimeoutMillis），且事务内操作会被记录到 oplog 造成「写放大」；并非所有操作都支持（如部分 DDL、某些聚合阶段受限）；跨分片事务开销更大、延迟更高。 要点（优先内嵌还是优先事务）： 优先内嵌/反范式设计：MongoDB 的设计哲学是「把一起访问的数据放一起」，用内嵌文档在一次原子写里完成，根本不需要跨文档事务，这是首选且性能最好的一致性方案。 事务作兜底：只有当数据必须拆成多个独立聚合根、且业务要求它们「同时成功或同时失败」（如账户间转账、跨集合的库存扣减与订单创建）时才用多文档事务。 不要滥用：事务持有锁、放大 oplog、拖慢整个副本集吞吐；高频路径上用事务会迅速成为性能瓶颈。 实践建议：先用「内嵌 + 单文档原子更新」解决 90% 的一致性需求；仅在真跨文档场景用事务，并尽量缩短事务范围、降低事务内文档数。","url":"https://itinterview.com.cn/question/1418"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？","item":"https://itinterview.com.cn/q/1418"}]}</script>

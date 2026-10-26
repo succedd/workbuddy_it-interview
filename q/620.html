@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。 · IT面试题库">
   <meta property="og:description" content="要点： 先确认检索是否命中（治本在检索）：抽样 bad case，看 top-k 上下文里有没有正确答案。没有→召回问题；有但答错→生成/压缩问题。 召回侧排查：chunk 粒度过大引入噪声、过小丢上下文，调 size/overlap；embedding 模型领域不匹配（中文用了英文模型）换 bge/m3e；to…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/620.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/620.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/620">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 先确认检索是否命中（治本在检索）：抽样 bad case，看 top-k 上下文里有没有正确答案。没有→召回问题；有但答错→生成/压缩问题。 召回侧排查：chunk 粒度过大引入噪声、过小丢上下文，调 size/overlap；embedding 模型领域不匹配（中文用了英文模型）换 bge/m3e；to…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/620.jpg">
+  <meta name="twitter:image:alt" content="RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/620">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。","text":"考察点：具备端到端定位 RAG 质量问题的能力，能区分是“检索不到”还是“检索到了但生成没用”。","answerCount":1,"datePublished":"2026-09-06T02:23:32.215Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先确认检索是否命中（治本在检索）：抽样 bad case，看 top-k 上下文里有没有正确答案。没有→召回问题；有但答错→生成/压缩问题。 召回侧排查：chunk 粒度过大引入噪声、过小丢上下文，调 size/overlap；embedding 模型领域不匹配（中文用了英文模型）换 bge/m3e；top-k 过小错过答案、元数据过滤条件写错把正确块排除；纯向量检索对关键词弱，叠加 BM25 做混合检索。 生成侧排查：是否把检索上下文真正塞进 prompt（被截断/压缩丢弃）；prompt 是否要求“仅依据上下文作答”；长上下文用重排(rerank)把最相关块排到前面。 可观测性：记录每次请求的 query、召回块、最终答案，建立评估集（RAGAS）定期回归，避免凭感觉调参。","url":"https://itinterview.com.cn/question/620"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"RAG 上线后用户反馈“回答和文档内容对不上/答非所问”，请给出系统化的排查清单（从检索质量到生成）。","item":"https://itinterview.com.cn/q/620"}]}</script>

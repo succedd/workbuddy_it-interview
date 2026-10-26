@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。 · IT面试题库">
   <meta property="og:description" content="要点：频繁 new/销毁子弹、特效、敌人会触发 GC 卡顿（掉帧、毛刺）。对象池预先创建一批可复用对象，用完后「回收」而非销毁，再次需要时直接「取出」，把内存分配从运行时转移到初始化阶段。 要点：实现思路：① 维护一个空闲列表（Stack/Queue）；② 取对象时若池空则新建，否则弹出；③ 用完后调用回收方法（…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1582.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1582.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1582">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。 · IT面试题库">
   <meta name="twitter:description" content="要点：频繁 new/销毁子弹、特效、敌人会触发 GC 卡顿（掉帧、毛刺）。对象池预先创建一批可复用对象，用完后「回收」而非销毁，再次需要时直接「取出」，把内存分配从运行时转移到初始化阶段。 要点：实现思路：① 维护一个空闲列表（Stack/Queue）；② 取对象时若池空则新建，否则弹出；③ 用完后调用回收方法（…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1582.jpg">
+  <meta name="twitter:image:alt" content="对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1582">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。","text":"考察性能优化与 GC 意识。","answerCount":1,"datePublished":"2026-10-07T08:05:38.868Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：频繁 new/销毁子弹、特效、敌人会触发 GC 卡顿（掉帧、毛刺）。对象池预先创建一批可复用对象，用完后「回收」而非销毁，再次需要时直接「取出」，把内存分配从运行时转移到初始化阶段。 要点：实现思路：① 维护一个空闲列表（Stack/Queue）；② 取对象时若池空则新建，否则弹出；③ 用完后调用回收方法（重置状态、设为不可见）放回池；④ 可设上限防止无限增长。 要点：进阶做法：按类型分池、配合对象初始容量预热、对象复用前必须重置关键字段（位置/血量/状态机），否则会残留上一次使用的状态导致 bug。","url":"https://itinterview.com.cn/question/1582"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Unity开发","item":"https://itinterview.com.cn/category?cat=233"},{"@type":"ListItem","position":4,"name":"对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。","item":"https://itinterview.com.cn/q/1582"}]}</script>

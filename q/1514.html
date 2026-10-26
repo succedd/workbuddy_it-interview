@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何排查与处置 Linux 服务器上的挖矿木马？ · IT面试题库">
   <meta property="og:description" content="定位：① top/uptime 找高 CPU 进程——挖矿进程常改名为 kdevtmpfsi/kinsing 或伪装系统名，ls -l /proc/ /exe 看真实路径，ps -ef --forest 看父子进程（父子都在但 CPU 交替 = 有守护拉起）；② 网络侧 ss -antp | grep 看矿池连接…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1514.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何排查与处置 Linux 服务器上的挖矿木马？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1514.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1514">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何排查与处置 Linux 服务器上的挖矿木马？ · IT面试题库">
   <meta name="twitter:description" content="定位：① top/uptime 找高 CPU 进程——挖矿进程常改名为 kdevtmpfsi/kinsing 或伪装系统名，ls -l /proc/ /exe 看真实路径，ps -ef --forest 看父子进程（父子都在但 CPU 交替 = 有守护拉起）；② 网络侧 ss -antp | grep 看矿池连接…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1514.jpg">
+  <meta name="twitter:image:alt" content="如何排查与处置 Linux 服务器上的挖矿木马？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1514">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何排查与处置 Linux 服务器上的挖矿木马？","text":"从高 CPU 告警出发，给出定位进程、找到持久化与清除加固的步骤。","answerCount":1,"datePublished":"2026-10-05T01:03:59.308Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位：① top/uptime 找高 CPU 进程——挖矿进程常改名为 kdevtmpfsi/kinsing 或伪装系统名，ls -l /proc/ /exe 看真实路径，ps -ef --forest 看父子进程（父子都在但 CPU 交替 = 有守护拉起）；② 网络侧 ss -antp | grep 看矿池连接（3333/45700 等端口、域名含 pool/xmr）；③ 定时任务：crontab -l、/etc/cron*、/var/spool/cron/，挖矿木马几乎必写下载型定时任务（curl|bash）；④ 检查 SSH authorized_keys、/etc/ld.so.preload（动态库劫持隐藏进程）、systemd service/timer、~/.bashrc。 处置顺序：先清持久化（定时任务/服务/preload），再杀进程，否则立刻复活；必要时 chattr -ia 解锁被锁的定时文件。 加固：找到入口（Redis 未授权、弱口令、RCE 漏洞）修掉——不修入口必然复发；改口令换密钥、Redis 加 requirelist+bind、装 HIDS、出网白名单封矿池域名。","url":"https://itinterview.com.cn/question/1514"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"应急响应","item":"https://itinterview.com.cn/category?cat=214"},{"@type":"ListItem","position":4,"name":"如何排查与处置 Linux 服务器上的挖矿木马？","item":"https://itinterview.com.cn/q/1514"}]}</script>

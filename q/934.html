@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="线程池的核心参数有哪些？工作流程和拒绝策略是什么？ · IT面试题库">
   <meta property="og:description" content="七大核心参数：corePoolSize（常驻核心线程数）、maximumPoolSize（最大线程数）、keepAliveTime+unit（非核心线程空闲存活时间）、workQueue（任务队列）、threadFactory（线程工厂，命名/守护设置）、handler（拒绝策略）。 提交流程（execute）：…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/934.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="线程池的核心参数有哪些？工作流程和拒绝策略是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/934.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/934">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线程池的核心参数有哪些？工作流程和拒绝策略是什么？ · IT面试题库">
   <meta name="twitter:description" content="七大核心参数：corePoolSize（常驻核心线程数）、maximumPoolSize（最大线程数）、keepAliveTime+unit（非核心线程空闲存活时间）、workQueue（任务队列）、threadFactory（线程工厂，命名/守护设置）、handler（拒绝策略）。 提交流程（execute）：…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/934.jpg">
+  <meta name="twitter:image:alt" content="线程池的核心参数有哪些？工作流程和拒绝策略是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/934">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线程池的核心参数有哪些？工作流程和拒绝策略是什么？","text":"请说明 ThreadPoolExecutor 的 7 个核心参数、任务提交的处理流程与四种拒绝策略。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"七大核心参数：corePoolSize（常驻核心线程数）、maximumPoolSize（最大线程数）、keepAliveTime+unit（非核心线程空闲存活时间）、workQueue（任务队列）、threadFactory（线程工厂，命名/守护设置）、handler（拒绝策略）。 提交流程（execute）： 1. 线程数 \u003c core → 新建核心线程执行； 2. 达到 core → 任务入队列排队； 3. 队列满 → 创建非核心线程（直到 max）执行； 4. 达到 max 且队列满 → 执行拒绝策略。 注意顺序：先入队再扩容，所以用无界队列（如默认 LinkedBlockingQueue）时 maximumPoolSize 形同虚设——这是\"配了 max 却不生效\"的常见坑。 四种拒绝策略：AbortPolicy（默认，抛 RejectedExecutionException）、CallerRunsPolicy（提交线程自己跑，天然削峰降速）、DiscardPolicy（静默丢弃）、DiscardOldestPolicy（丢最老的再入队）。 实践：禁用 Executors 快捷方法（无界队列/无限线程隐患），手动 new ThreadPoolExecutor；按任务类型定线程数——CPU 密集≈N+1，IO 密集≈2N 或 N×(1+等待/计算比）；用有界队列+合理拒绝策略兜底。","url":"https://itinterview.com.cn/question/934"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"线程池的核心参数有哪些？工作流程和拒绝策略是什么？","item":"https://itinterview.com.cn/q/934"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库">
   <meta property="og:description" content="要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerA…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1616.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1616.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1616">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerA…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1616.jpg">
+  <meta name="twitter:image:alt" content="请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1616">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。","text":"考察核心组件与流程。","answerCount":1,"datePublished":"2026-10-10T11:54:33.832Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 入口：请求先到 DispatcherServlet（前端控制器），它统一受理并调度，避免了各 Servlet 各自处理逻辑。 映射：DispatcherServlet 通过 HandlerMapping 找到能处理该请求的 Handler（通常是 @Controller 方法），并适配出 HandlerAdapter。 执行：HandlerAdapter 调用目标方法前完成参数解析与数据绑定（将请求参数 / JSON 绑定到方法入参），方法返回 ModelAndView 或 @ResponseBody 数据。 渲染 / 写出：若返回视图，经 ViewResolver 解析视图并渲染；若 @ResponseBody（REST），由 HttpMessageConverter 把对象序列化为 JSON 直接写响应。期间 HandlerExceptionResolver 统一处理异常。 拦截器：HandlerInterceptor 的 preHandle/postHandle/afterCompletion 在对应节点织入（如登录校验、耗时统计）。","url":"https://itinterview.com.cn/question/1616"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"请描述 Spring MVC 一次请求的处理全流程（从请求进入到返回视图 / 数据）。","item":"https://itinterview.com.cn/q/1616"}]}</script>

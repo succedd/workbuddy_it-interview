@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？ · IT面试题库">
   <meta property="og:description" content="形式（λ 为正则系数） L2（Ridge）：$\min\, J(\theta) + \lambda\sum \theta_j^2$ L1（Lasso）：$\min\, J(\theta) + \lambda\sum |\theta_j|$ 几何直观（等高线 + 约束区域交点） L2 约束是圆（球），与损失等高线的…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/595.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/595.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/595">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？ · IT面试题库">
   <meta name="twitter:description" content="形式（λ 为正则系数） L2（Ridge）：$\min\, J(\theta) + \lambda\sum \theta_j^2$ L1（Lasso）：$\min\, J(\theta) + \lambda\sum |\theta_j|$ 几何直观（等高线 + 约束区域交点） L2 约束是圆（球），与损失等高线的…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/595.jpg">
+  <meta name="twitter:image:alt" content="L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/595">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？","text":"请在损失函数中加入惩罚项，解释 L1（Lasso）与 L2（Ridge）正则化的数学形式，并从几何与解的角度说明二者差异及 L1 产生稀疏性的原因。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"形式（λ 为正则系数） L2（Ridge）：$\\min\\, J(\\theta) + \\lambda\\sum \\theta_j^2$ L1（Lasso）：$\\min\\, J(\\theta) + \\lambda\\sum |\\theta_j|$ 几何直观（等高线 + 约束区域交点） L2 约束是圆（球），与损失等高线的交点一般不落在坐标轴上 → 权重整体变小但不全为 0。 L1 约束是菱形（菱形多面），顶点在坐标轴上；交点极易落在轴上 → 部分权重被精确压缩为 0，产生稀疏解。 为何 L1 能特征选择\\n- 绝对值函数在 0 处不可导，次梯度优化会把它推到 0；等价于在最优解处对不重要特征的权重做「截断」。 其他差异 L2 更稳定、对共线性鲁棒，L1 在特征多且需降维/可解释时更优； 实践常组合为 Elastic Net（αL1+(1-α)L2）兼顾二者。","url":"https://itinterview.com.cn/question/595"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"L1 与 L2 正则化有何区别？为什么 L1 能做特征选择？","item":"https://itinterview.com.cn/q/595"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？ · IT面试题库">
   <meta property="og:description" content="要点： Clustered Index Scan：沿聚集索引顺序扫描多行，统计信息不准或谓词选择性差时常见。 Key Lookup：非聚集索引命中后缺少查询列，回聚集索引补数据；大量 Key Lookup 说明非聚集索引未覆盖。 优化：把 SELECT/JOIN/ORDER BY 需要的列加入 INCLUDE；避…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1626.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1626.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1626">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？ · IT面试题库">
   <meta name="twitter:description" content="要点： Clustered Index Scan：沿聚集索引顺序扫描多行，统计信息不准或谓词选择性差时常见。 Key Lookup：非聚集索引命中后缺少查询列，回聚集索引补数据；大量 Key Lookup 说明非聚集索引未覆盖。 优化：把 SELECT/JOIN/ORDER BY 需要的列加入 INCLUDE；避…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1626.jpg">
+  <meta name="twitter:image:alt" content="SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1626">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？","text":"考察读取执行计划和索引覆盖优化。","answerCount":1,"datePublished":"2026-10-15T12:54:40.955Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Clustered Index Scan：沿聚集索引顺序扫描多行，统计信息不准或谓词选择性差时常见。 Key Lookup：非聚集索引命中后缺少查询列，回聚集索引补数据；大量 Key Lookup 说明非聚集索引未覆盖。 优化：把 SELECT/JOIN/ORDER BY 需要的列加入 INCLUDE；避免 SELECT *；确认统计信息更新；必要时调整索引顺序并评估写放大。","url":"https://itinterview.com.cn/question/1626"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"SQL Server","item":"https://itinterview.com.cn/category?cat=31"},{"@type":"ListItem","position":5,"name":"SQL Server 的执行计划里 Clustered Index Scan 和 Key Lookup 各代表什么？出现大量 Key Lookup 时如何优化？","item":"https://itinterview.com.cn/q/1626"}]}</script>

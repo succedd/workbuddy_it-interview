@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="systemd 是什么？它取代了哪些传统 init 系统，核心概念“单元（unit）”有哪些常见类型？ · IT面试题库">
   <meta property="og:description" content="systemd 的定位：它是现代 Linux 发行版默认的初始化系统与服务管理器，作为开机后的第一个进程（PID 1）接管“挂载文件系统、启动服务、拉起登录”等所有引导工作，并常驻管理后续服务的生命周期。 取代了什么：传统 SysVinit 用一串 rc 脚本串行启动、依赖靠文件名排序、状态难追踪；Upstart…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1135.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="systemd 是什么？它取代了哪些传统 init 系统，核心概念“单元（unit）”有哪些常见类型？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1135.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1135">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="systemd 是什么？它取代了哪些传统 init 系统，核心概念“单元（unit）”有哪些常见类型？ · IT面试题库">
   <meta name="twitter:description" content="systemd 的定位：它是现代 Linux 发行版默认的初始化系统与服务管理器，作为开机后的第一个进程（PID 1）接管“挂载文件系统、启动服务、拉起登录”等所有引导工作，并常驻管理后续服务的生命周期。 取代了什么：传统 SysVinit 用一串 rc 脚本串行启动、依赖靠文件名排序、状态难追踪；Upstart…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1135.jpg">
+  <meta name="twitter:image:alt" content="systemd 是什么？它取代了哪些传统 init 系统，核心概念“单元（unit）”有哪些常见类型？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1135">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"systemd 是什么？它取代了哪些传统 init 系统，核心概念“单元（unit）”有哪些常见类型？","text":"请说明 systemd 作为 Linux 主流 init（PID 1）的定位，它替换了 SysVinit / Upstart 的哪些职责，并列举 service / socket / target / timer / mount 等单元类型的用途。","answerCount":1,"datePublished":"2026-09-14T02:47:28.112Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"systemd 的定位：它是现代 Linux 发行版默认的初始化系统与服务管理器，作为开机后的第一个进程（PID 1）接管“挂载文件系统、启动服务、拉起登录”等所有引导工作，并常驻管理后续服务的生命周期。 取代了什么：传统 SysVinit 用一串 rc 脚本串行启动、依赖靠文件名排序、状态难追踪；Upstart 用事件驱动但不统一；systemd 用声明式 unit 文件 + 依赖图，实现并行启动、按需激活（socket/timer 激活）与统一日志。 常见单元类型：service 是后台守护进程；socket 是监听端口/套接字按需拉起对应 service（加快启动）；target 是“一组 unit 的集合”，相当于运行级别（如 multi-user.target、graphical.target）；timer 替代 crontab 做定时任务；mount/automount 管理文件系统挂载；path 监听文件变化触发。 一句话记忆：unit 是 systemd 管理一切资源（服务、端口、挂载、定时、路径）的统一抽象，类型由文件后缀区分。","url":"https://itinterview.com.cn/question/1135"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"systemd 是什么？它取代了哪些传统 init 系统，核心概念“单元（unit）”有哪些常见类型？","item":"https://itinterview.com.cn/q/1135"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。 · IT面试题库">
   <meta property="og:description" content="要点：断网不丢数据：边缘节点在本地用持久化队列（SQLite/文件环形缓冲）缓存待上报数据，打上本地时间戳与单调递增 seq；联网恢复后按序补传，broker 侧用 seq/去重键做幂等消费，避免重复。 要点：去重与可靠：每条消息带唯一 messageId，云端用「已处理集合/去重表」判重；补传采用「确认+重试」…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1601.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1601.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1601">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。 · IT面试题库">
   <meta name="twitter:description" content="要点：断网不丢数据：边缘节点在本地用持久化队列（SQLite/文件环形缓冲）缓存待上报数据，打上本地时间戳与单调递增 seq；联网恢复后按序补传，broker 侧用 seq/去重键做幂等消费，避免重复。 要点：去重与可靠：每条消息带唯一 messageId，云端用「已处理集合/去重表」判重；补传采用「确认+重试」…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1601.jpg">
+  <meta name="twitter:image:alt" content="边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1601">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。","text":"考察边缘可靠传输与低功耗。","answerCount":1,"datePublished":"2026-10-07T08:06:40.933Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：断网不丢数据：边缘节点在本地用持久化队列（SQLite/文件环形缓冲）缓存待上报数据，打上本地时间戳与单调递增 seq；联网恢复后按序补传，broker 侧用 seq/去重键做幂等消费，避免重复。 要点：去重与可靠：每条消息带唯一 messageId，云端用「已处理集合/去重表」判重；补传采用「确认+重试」（ACK + 指数退避），失败保留在队首重发，成功才出队；对大体积数据可做本地压缩/聚合再上传。 要点：低功耗：① 通信按需唤醒（间断连接、批量上报而非每条都连）；② 用 MQTT 的 QoS0 + 遗嘱减少握手；③ 边缘侧先做过滤/聚合，只传有价值数据；④ 调度上「计算-无线-休眠」三段式，空闲即深度休眠，把无线与 CPU 活跃时间压到最短。","url":"https://itinterview.com.cn/question/1601"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"边缘计算","item":"https://itinterview.com.cn/category?cat=247"},{"@type":"ListItem","position":4,"name":"边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。","item":"https://itinterview.com.cn/q/1601"}]}</script>

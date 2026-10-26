@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？ · IT面试题库">
   <meta property="og:description" content="1. 前端控制器接收：所有请求先到 DispatcherServlet。 2. 映射查找：HandlerMapping 根据 URL 找到对应的 Handler（Controller 方法）与拦截器链。 3. 适配执行：HandlerAdapter 调用目标方法，完成参数绑定与校验，执行业务并返回 ModelAn…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/798.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/798.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/798">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="1. 前端控制器接收：所有请求先到 DispatcherServlet。 2. 映射查找：HandlerMapping 根据 URL 找到对应的 Handler（Controller 方法）与拦截器链。 3. 适配执行：HandlerAdapter 调用目标方法，完成参数绑定与校验，执行业务并返回 ModelAn…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/798.jpg">
+  <meta name="twitter:image:alt" content="Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/798">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？","text":"说明 DispatcherServlet、HandlerMapping、HandlerAdapter、Controller、ViewResolver 的协作。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 前端控制器接收：所有请求先到 DispatcherServlet。 2. 映射查找：HandlerMapping 根据 URL 找到对应的 Handler（Controller 方法）与拦截器链。 3. 适配执行：HandlerAdapter 调用目标方法，完成参数绑定与校验，执行业务并返回 ModelAndView。 4. 视图解析：ViewResolver 把视图名解析为具体视图（JSP/Thymeleaf/JSON）。 5. 渲染响应：视图渲染数据并返回客户端。现代 @RestController 多用 HttpMessageConverter 直接写 JSON，跳过视图解析。","url":"https://itinterview.com.cn/question/798"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 处理一个 HTTP 请求的整体流程是怎样的？","item":"https://itinterview.com.cn/q/798"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="RabbitMQ 的 direct、fanout、topic、headers 四种交换器分别怎么路由消息？topic 里的 `*` 和 `#` 有什么区别？ · IT面试题库">
   <meta property="og:description" content="为什么需要 Exchange RabbitMQ 中消息不是直接投递到队列，而是先发给 Exchange（交换器），由交换器根据 RoutingKey（路由键） 与 BindingKey（绑定键） 的匹配规则把消息路由到一个或多个 Queue，绑定（Binding）就是两者之间的路由规则，可以多对多。 四种类型对比…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1260.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="RabbitMQ 的 direct、fanout、topic、headers 四种交换器分别怎么路由消息？topic 里的 `*` 和 `#` 有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1260.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1260">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RabbitMQ 的 direct、fanout、topic、headers 四种交换器分别怎么路由消息？topic 里的 `*` 和 `#` 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="为什么需要 Exchange RabbitMQ 中消息不是直接投递到队列，而是先发给 Exchange（交换器），由交换器根据 RoutingKey（路由键） 与 BindingKey（绑定键） 的匹配规则把消息路由到一个或多个 Queue，绑定（Binding）就是两者之间的路由规则，可以多对多。 四种类型对比…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1260.jpg">
+  <meta name="twitter:image:alt" content="RabbitMQ 的 direct、fanout、topic、headers 四种交换器分别怎么路由消息？topic 里的 `*` 和 `#` 有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1260">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RabbitMQ 的 direct、fanout、topic、headers 四种交换器分别怎么路由消息？topic 里的 `*` 和 `#` 有什么区别？","text":"考察点：AMQP 路由模型、Exchange 类型与通配符语义。","answerCount":1,"datePublished":"2026-09-26T02:31:20.863Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么需要 Exchange RabbitMQ 中消息不是直接投递到队列，而是先发给 Exchange（交换器），由交换器根据 RoutingKey（路由键） 与 BindingKey（绑定键） 的匹配规则把消息路由到一个或多个 Queue，绑定（Binding）就是两者之间的路由规则，可以多对多。 四种类型对比 | 类型 | 路由规则 | 常见场景 | | --- | --- | --- | | fanout | 忽略 RoutingKey，投给所有绑定队列 | 配置刷新、缓存失效、日志同时分发给多个消费者 | | direct | BindingKey 与 RoutingKey 完全匹配 | 按级别、业务类型或服务名精确分发 | | topic | RoutingKey 按 . 分段，BindingKey 支持 与 # 通配 | 按地域、业务模块、事件类型做多级过滤 | | headers | 按消息 headers 匹配，支持 x-match=all / any | 很少使用，能用 topic 表达时一般不选它 | topic 的两个通配符 只匹配一个单词（一段）；# 可匹配零个或多个单词。 示例：order.china.* 能匹配 order.china.beijing，但不能匹配 order.china.beijing.created；#.client.# 可以匹配 com.rabbitmq.client。 两个容易踩的细节 默认交换器：AMQP 0-9-1 预声明了名称为空字符串 \"\" 的 direct 交换器，RoutingKey 直接等于目标队列名。 fanout ≠ 广播消费：多个消费者订阅同一队列时消息只分发给其中一个（分发还受 prefetch_count 影响）。要让每个消费者都收到完整消息，必须给每个消费者建独立队列再绑定到同一个 fanout 或 topic 交换器。 结论：Exchange 类型决定「一条消息打给几个队列、按什么规则打」，而「要不要被多个消费者都拿到」靠的是独立队列 + fanout/topic。","url":"https://itinterview.com.cn/question/1260"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RabbitMQ","item":"https://itinterview.com.cn/category?cat=128"},{"@type":"ListItem","position":5,"name":"RabbitMQ 的 direct、fanout、topic、headers 四种交换器分别怎么路由消息？topic 里的 `*` 和 `#` 有什么区别？","item":"https://itinterview.com.cn/q/1260"}]}</script>

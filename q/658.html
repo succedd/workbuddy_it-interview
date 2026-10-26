@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库">
   <meta property="og:description" content="要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 J…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/658.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/658.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/658">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库">
   <meta name="twitter:description" content="要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 J…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/658.jpg">
+  <meta name="twitter:image:alt" content="Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/658">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？","text":"追问链起点。考察点：类生命周期的完整阶段划分；加载/连接（验证-准备-解析）/初始化/使用/卸载各自做什么；加载阶段的三件事（取字节流、转运行时结构、生成 Class 对象）。","answerCount":1,"datePublished":"2026-09-08T13:40:43.018Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：生命周期的七个阶段 类从被加载到卸载，完整经历：加载 → 验证 → 准备 → 解析 → 初始化 → 使用 → 卸载。 其中验证、准备、解析合称连接，所以也常概括为「加载 → 连接 → 初始化 → 使用 → 卸载」五个大阶段。 注意顺序：验证、准备、解析并非严格串行，解析阶段常常在初始化之后才开始（支持 Java 的动态绑定）。 要点二：加载阶段的三件事 1) 通过类的全限定名获取定义该类的二进制字节流（并不要求一定来自 .class 文件，也可以是 jar、网络、动态代理生成、JSP 等）。 2) 将字节流代表的静态存储结构，转换为方法区的运行时数据结构。 3) 在堆中生成一个 java.lang.Class 对象，作为方法区中该类各种数据的访问入口。 要点三：连接三步各自做什么 验证：校验字节流符合《Java 虚拟机规范》约束，保证不会危害虚拟机安全（文件格式、元数据、字节码、符号引用四层校验）。 准备：为类变量（static 修饰）分配内存并设置零值（如 int 为 0、引用为 null），此时不会执行赋初值的代码。 解析：把常量池中的符号引用替换为直接引用（指向目标的指针、偏移量或句柄）。 要点四：初始化阶段 初始化才真正执行类构造器 ()，即静态变量赋值语句与静态代码块。 JVM 规范严格规定有且仅有六种情况必须立即初始化（new/getstatic/putstatic/invokestatic 指令、反射调用、父类未初始化时先初始化父类、主类、MethodHandle 等），这六个场景也是面试高频追问点。","url":"https://itinterview.com.cn/question/658"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"Java 类的生命周期分为哪几个阶段？其中「加载」这一步 JVM 具体完成了哪三件事？","item":"https://itinterview.com.cn/q/658"}]}</script>

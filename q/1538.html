@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？ · IT面试题库">
   <meta property="og:description" content="登录态处理：① 登录接口本身只测一次，token 全局共享：fixture/conftest 里做单例缓存（未过期直接复用，过期自动刷新）；② 多角色用例用账号池（admin/普通/被禁用各若干），按 tag 取用；③ 长链路不依赖真实登录的环境可用签发短期测试 token（需要后端提供测试通道），避免验证码/短…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1538.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1538.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1538">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？ · IT面试题库">
   <meta name="twitter:description" content="登录态处理：① 登录接口本身只测一次，token 全局共享：fixture/conftest 里做单例缓存（未过期直接复用，过期自动刷新）；② 多角色用例用账号池（admin/普通/被禁用各若干），按 tag 取用；③ 长链路不依赖真实登录的环境可用签发短期测试 token（需要后端提供测试通道），避免验证码/短…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1538.jpg">
+  <meta name="twitter:image:alt" content="接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1538">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？","text":"说明会话复用、Mock 策略与测试数据治理的实践。","answerCount":1,"datePublished":"2026-10-05T01:04:02.400Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"登录态处理：① 登录接口本身只测一次，token 全局共享：fixture/conftest 里做单例缓存（未过期直接复用，过期自动刷新）；② 多角色用例用账号池（admin/普通/被禁用各若干），按 tag 取用；③ 长链路不依赖真实登录的环境可用签发短期测试 token（需要后端提供测试通道），避免验证码/短信依赖。 Mock 策略：① 外部依赖必须 Mock（三方支付、短信、风控）——用契约 mock（录制的响应 schema）保证稳定性，联调期再切真实；② 被测服务内部模块用桩（返回固定异常码验证降级）；③ Mock 平台化（YApi/Har 录制回放），避免用例里散落硬编码。 测试数据：① API 造数优先——调注册/开通接口构造前置数据，比 SQL 直插更接近真实且不破坏约束；② 数据隔离：每条用例自建自清理（teardown），或用唯一前缀+定时清扫；③ 环境数据快照（DB 备份还原）用于不可逆流程；④ 敏感配置走环境变量/配置中心，不进代码库。","url":"https://itinterview.com.cn/question/1538"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"接口测试","item":"https://itinterview.com.cn/category?cat=107"},{"@type":"ListItem","position":4,"name":"接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？","item":"https://itinterview.com.cn/q/1538"}]}</script>
@@ -97,7 +103,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1538">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/467">如果让你从零设计一套接口测试用例，除了校验返回码还应该覆盖哪些维度？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1537">接口测试用例设计要覆盖哪些维度？</a><span class="rel-n">2 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/467">如果让你从零设计一套接口测试用例，除了校验返回码还应该覆盖哪些维度？</a><span class="rel-n">3 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1537">接口测试用例设计要覆盖哪些维度？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1756">微服务契约测试（消费者驱动契约）解决什么问题？Pact 的完整工作流和落地边界是什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

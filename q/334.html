@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="直播【本质】直播延迟为什么难压？从按下开播到观众看到画面，延迟都花在哪了？ · IT面试题库">
   <meta property="og:description" content="延迟是全链路各环节缓冲的累加： 1. 采集/编码：编码器为了压缩率需要攒帧（B 帧参考前后帧）→ 天生引入百 ms 级延迟； 2. 传输协议：RTMP（TCP）稳定但 1-3s 起步；HLS 把视频切成 TS 小片 + 播放器缓冲多片 → 6-30s（点播友好，直播延迟大）；WebRTC（UDP）为实时而生，&lt;5…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/334.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="直播【本质】直播延迟为什么难压？从按下开播到观众看到画面，延迟都花在哪了？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/334.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/334">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="直播【本质】直播延迟为什么难压？从按下开播到观众看到画面，延迟都花在哪了？ · IT面试题库">
   <meta name="twitter:description" content="延迟是全链路各环节缓冲的累加： 1. 采集/编码：编码器为了压缩率需要攒帧（B 帧参考前后帧）→ 天生引入百 ms 级延迟； 2. 传输协议：RTMP（TCP）稳定但 1-3s 起步；HLS 把视频切成 TS 小片 + 播放器缓冲多片 → 6-30s（点播友好，直播延迟大）；WebRTC（UDP）为实时而生，&lt;5…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/334.jpg">
+  <meta name="twitter:image:alt" content="直播【本质】直播延迟为什么难压？从按下开播到观众看到画面，延迟都花在哪了？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/334">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"直播【本质】直播延迟为什么难压？从按下开播到观众看到画面，延迟都花在哪了？","text":"把「主播说一句话 → 观众听到」的链路切开数：采集、编码、传输、转码、分发、缓冲、解码渲染——每一环都在贡献延迟。不同协议是在哪一环做取舍？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"延迟是全链路各环节缓冲的累加： 1. 采集/编码：编码器为了压缩率需要攒帧（B 帧参考前后帧）→ 天生引入百 ms 级延迟； 2. 传输协议：RTMP（TCP）稳定但 1-3s 起步；HLS 把视频切成 TS 小片 + 播放器缓冲多片 → 6-30s（点播友好，直播延迟大）；WebRTC（UDP）为实时而生，\u003c500ms，但成本高、弱网敏感； 3. 分发与缓冲：CDN 每层、播放器的抗抖动缓冲都在加延迟。 取舍矩阵：连麦/互动用 WebRTC（延迟优先），普通直播用 RTMP-推流+HLS/HTTP-FLV 分发（成本与规模优先）。 低延迟没有免费午餐：延迟、成本、卡顿率是三角——每提一档，另两项跟着变差。","url":"https://itinterview.com.cn/question/334"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"直播【本质】直播延迟为什么难压？从按下开播到观众看到画面，延迟都花在哪了？","item":"https://itinterview.com.cn/q/334"}]}</script>

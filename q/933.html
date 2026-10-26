@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="接口和抽象类有什么区别？如何选择？ · IT面试题库">
   <meta property="og:description" content="| 维度 | 抽象类 | 接口 | |---|---|---| | 语义 | &quot;是什么&quot;（is-a），抽取共性实现 | &quot;能做什么&quot;（can-do），定义能力契约 | | 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） | | 成员变量 | 任意（可有状态） | 只…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/933.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="接口和抽象类有什么区别？如何选择？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/933.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/933">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="接口和抽象类有什么区别？如何选择？ · IT面试题库">
   <meta name="twitter:description" content="| 维度 | 抽象类 | 接口 | |---|---|---| | 语义 | &quot;是什么&quot;（is-a），抽取共性实现 | &quot;能做什么&quot;（can-do），定义能力契约 | | 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） | | 成员变量 | 任意（可有状态） | 只…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/933.jpg">
+  <meta name="twitter:image:alt" content="接口和抽象类有什么区别？如何选择？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/933">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"接口和抽象类有什么区别？如何选择？","text":"请从语法、设计语义（能否实例化、成员限制、多继承）等角度对比接口与抽象类。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"| 维度 | 抽象类 | 接口 | |---|---|---| | 语义 | \"是什么\"（is-a），抽取共性实现 | \"能做什么\"（can-do），定义能力契约 | | 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） | | 成员变量 | 任意（可有状态） | 只能 public static final 常量 | | 方法 | 可含具体实现与抽象方法 | Java 8 前只能抽象方法；8+ 有 default/static 方法 | | 构造器 | 有（供子类调用） | 无 | 如何选择： 需要复用公共实现、维护状态字段、模板方法模式（父类定骨架，子类填细节）→ 抽象类，如 AbstractList； 定义行为规范、解耦调用方与实现、需要多继承效果（如 Comparable+Serializable）→ 接口，如 List、Runnable。 典型组合：接口定义契约 + 抽象类提供骨架实现（List 接口 ↔ AbstractList 骨架类），调用方面向接口编程。","url":"https://itinterview.com.cn/question/933"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"接口和抽象类有什么区别？如何选择？","item":"https://itinterview.com.cn/q/933"}]}</script>

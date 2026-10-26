@@ -78,6 +78,50 @@ if (noCat.length) add(`未分类（categoryId 为空）${noCat.length} 题：${i
 if (unknownCat.length) add(`categoryId 无法映射到 seed 分类树 ${unknownCat.length} 题：${ids(unknownCat)}`);
 if (emptyCatName.length === qs.length) info(`catName 字段 100% 为空（${qs.length}/${qs.length}）——发布导出链路未写入分类名，SPA 端靠 seed.js 树兜底，但搜索索引的 catName 权重实际无效`);
 
+/* 3b) 岗位关联：id 有效、显示名不重复，并拦截已确认的跨方向错配 */
+const positions = Array.isArray(data.positions) ? data.positions : [];
+const skills = Array.isArray(data.positionSkills) ? data.positionSkills : [];
+const posMap = new Map(positions.map(p => [p.id, p]));
+const badPositionIds = qs.filter(q => (q.positionIds || []).some(id => !posMap.has(id)));
+const dupPositionNames = qs.filter(q => new Set(q.positionNames || []).size !== (q.positionNames || []).length);
+const noPositions = qs.filter(q => !(q.positionIds || []).length);
+if (badPositionIds.length) add(`岗位 id 无效 ${badPositionIds.length} 题：${ids(badPositionIds.slice(0, 20))}`);
+if (dupPositionNames.length) add(`岗位显示名重复 ${dupPositionNames.length} 题：${ids(dupPositionNames.slice(0, 20))}`);
+if (noPositions.length) add(`未关联岗位 ${noPositions.length} 题：${ids(noPositions.slice(0, 20))}${noPositions.length > 20 ? "…" : ""}`);
+
+/* 白名单式拦截：只判「已人工复核确认」的错配，避免误伤
+   （如计算机网络、计算机组成原理挂到硬件/网络岗是合理的，不在表内） */
+const incompatible = {
+  Java: ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"],
+  MySQL: ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"],
+  Redis: ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"],
+  Docker: ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"],
+  Kubernetes: ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"],
+  "Spring Boot": ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"],
+  Kafka: ["硬件工程师", "FPGA工程师", "网络工程师", "路由交换工程师"]
+};
+const mismatched = qs.filter(q => {
+  const name = (catMap.get(q.categoryId) || {}).name;
+  const banned = incompatible[name] || [];
+  return (q.positionIds || []).some(id => banned.includes((posMap.get(id) || {}).name));
+});
+if (mismatched.length) add(`已确认的岗位方向错配 ${mismatched.length} 题：${ids(mismatched.slice(0, 20))}${mismatched.length > 20 ? "…" : ""}`);
+
+const posWithQuestions = new Set();
+qs.forEach(q => (q.positionIds || []).forEach(id => posWithQuestions.add(id)));
+const posWithSkills = new Set(skills.map(s => s.positionId));
+const missingSkills = [...posWithQuestions].filter(id => !posWithSkills.has(id));
+if (missingSkills.length) add(`有题目但未整理技术栈的岗位 ${missingSkills.length} 个：${missingSkills.slice(0, 20).map(id => (posMap.get(id) || {}).name || "#" + id).join("，")}${missingSkills.length > 20 ? "…" : ""}`);
+
+/* 3c) 已确认的技术名词 / 招聘文案拼写（新出现的同类错误在这里加规则） */
+const typoRules = [/Kubemetes/i, /EVA\/AS\/Azure/, /昙备/];
+const typoPositions = positions.filter(p => typoRules.some(re => re.test(p.description || "")));
+const typoSkills = skills.filter(s => typoRules.some(re => re.test(s.techName || "")));
+const typoQuestions = qs.filter(q => typoRules.some(re => re.test(q.remark || "") || re.test(q.answer || "") || re.test(q.title || "")));
+if (typoPositions.length) add(`岗位描述含已确认拼写错误：${typoPositions.map(p => "#" + p.id + " " + p.name).join("，")}`);
+if (typoSkills.length) add(`技术栈含已确认拼写错误：${typoSkills.map(s => "#" + s.id).join("，")}`);
+if (typoQuestions.length) add(`题目含已确认拼写错误：${ids(typoQuestions.slice(0, 20))}${typoQuestions.length > 20 ? "…" : ""}`);
+
 /* 4) 瘦分类 */
 const byCat = new Map();
 qs.forEach(q => { const n = catName(q) || "#" + q.categoryId; byCat.set(n, (byCat.get(n) || 0) + 1); });

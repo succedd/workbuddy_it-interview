@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="长列表虚拟滚动是怎么实现的？为什么它对性能的收益远大于虚拟 DOM 优化？ · IT面试题库">
   <meta property="og:description" content="要点： 核心思想：只渲染可视区域内的节点（加少量缓冲区），把「10000 个 DOM」变成「恒定 20 个左右 DOM」。无论数据量多大，DOM 数量与内存占用都保持不变——这是它与「虚拟 DOM diff 优化」的根本区别。 实现四要素： 1. 容器定高 + 内部占位撑高：外层 overflow: auto 固…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1046.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="长列表虚拟滚动是怎么实现的？为什么它对性能的收益远大于虚拟 DOM 优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1046.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1046">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="长列表虚拟滚动是怎么实现的？为什么它对性能的收益远大于虚拟 DOM 优化？ · IT面试题库">
   <meta name="twitter:description" content="要点： 核心思想：只渲染可视区域内的节点（加少量缓冲区），把「10000 个 DOM」变成「恒定 20 个左右 DOM」。无论数据量多大，DOM 数量与内存占用都保持不变——这是它与「虚拟 DOM diff 优化」的根本区别。 实现四要素： 1. 容器定高 + 内部占位撑高：外层 overflow: auto 固…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1046.jpg">
+  <meta name="twitter:image:alt" content="长列表虚拟滚动是怎么实现的？为什么它对性能的收益远大于虚拟 DOM 优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1046">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"长列表虚拟滚动是怎么实现的？为什么它对性能的收益远大于虚拟 DOM 优化？","text":"考察点：视口计算、回收复用、布局影响。前端列表性能的核心方案。","answerCount":1,"datePublished":"2026-09-10T11:52:35.780Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心思想：只渲染可视区域内的节点（加少量缓冲区），把「10000 个 DOM」变成「恒定 20 个左右 DOM」。无论数据量多大，DOM 数量与内存占用都保持不变——这是它与「虚拟 DOM diff 优化」的根本区别。 实现四要素： 1. 容器定高 + 内部占位撑高：外层 overflow: auto 固定高度，内部放一个 height = total × itemHeight 的占位元素，从而滚动条长度正确； 2. 滚动监听：用 scroll 事件 + requestAnimationFrame 节流（或用 IntersectionObserver），算出 startIndex = floor(scrollTop / itemHeight)； 3. 偏移渲染：列表用 position: absolute; top: startIndex * itemHeight 或 transform: translateY(...) 偏移——用 transform 更好，不触发重排且能走合成层； 4. 缓冲区（buffer）：前后多渲染几项，避免快速滚动时出现白屏。 不定高怎么办：两种方案——① 预估 + 动态修正：先按估算高度渲染，用 ResizeObserver 量到真实高度后更新位置缓存并修正总高（可能伴随滚动位置跳变，需要补偿 scrollTop）；② 把不定高列表转成定高（限行数、省略号），工程上最省事。 为什么收益远大于虚拟 DOM 优化： 虚拟 DOM 优化的对象是框架的 diff 成本（毫秒级、O(n) 但常数小），而 10000 个 DOM 的瓶颈是浏览器自身的样式计算、布局、绘制与内存（几十上百毫秒、甚至 OOM 崩溃）。优化掉一整类开销 ≠ 优化某个函数。 同时它顺带解决了首次渲染的长时间阻塞（不用创建万个节点）与滚动掉帧（布局稳定），这两点虚拟 DOM 层面根本管不到。 落地建议：优先用成熟库（vue-virtual-scroller、react-window/react-virtuoso、@tanstack/virtual），别手写；务必保证 key 稳定唯一；列表项内含图片时要给固定尺寸避免高度抖动（否则虚拟滚动的位置计算全乱）；滚动位置持久化（返回列表时恢复位置）是体验加分项。","url":"https://itinterview.com.cn/question/1046"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端性能优化","item":"https://itinterview.com.cn/category?cat=77"},{"@type":"ListItem","position":4,"name":"长列表虚拟滚动是怎么实现的？为什么它对性能的收益远大于虚拟 DOM 优化？","item":"https://itinterview.com.cn/q/1046"}]}</script>

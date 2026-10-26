@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？ · IT面试题库">
   <meta property="og:description" content="结论：常见 IPC 包括管道、命名管道(FIFO)、消息队列、共享内存、信号/信号量、Socket；取舍主要在「速度、是否需要内核中转、是否跨主机」之间。 主要方式： 匿名管道 pipe：父子进程间单向字节流，简单但有血缘限制、内核缓冲中转。 命名管道 FIFO：无亲缘关系进程也可用，依旧内核中转。 消息队列：内…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1339.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1339.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1339">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？ · IT面试题库">
   <meta name="twitter:description" content="结论：常见 IPC 包括管道、命名管道(FIFO)、消息队列、共享内存、信号/信号量、Socket；取舍主要在「速度、是否需要内核中转、是否跨主机」之间。 主要方式： 匿名管道 pipe：父子进程间单向字节流，简单但有血缘限制、内核缓冲中转。 命名管道 FIFO：无亲缘关系进程也可用，依旧内核中转。 消息队列：内…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1339.jpg">
+  <meta name="twitter:image:alt" content="进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1339">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？","text":"考察点：IPC 方式全景。要求列举管道、消息队列、共享内存、信号、信号量、Socket，并对比速度与复杂度、是否需内核中转。","answerCount":1,"datePublished":"2026-09-26T05:19:37.197Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：常见 IPC 包括管道、命名管道(FIFO)、消息队列、共享内存、信号/信号量、Socket；取舍主要在「速度、是否需要内核中转、是否跨主机」之间。 主要方式： 匿名管道 pipe：父子进程间单向字节流，简单但有血缘限制、内核缓冲中转。 命名管道 FIFO：无亲缘关系进程也可用，依旧内核中转。 消息队列：内核维护的有界消息链表，解耦收发、自带类型，但存在内核拷贝开销与大小上限。 共享内存：映射同一块物理内存，最快（零拷贝），但需配信号量等做同步，最易出竞态。 信号 signal：异步事件通知，承载信息极少，仅适合通知类场景。 信号量 semaphore：主要用于进程间同步/互斥，本身不传大量数据。 Socket：可跨主机，最通用，但开销最大。 对比： | 方式 | 速度 | 跨主机 | 备注 | | --- | --- | --- | --- | | 共享内存 | 最快 | 否 | 需自行同步 | | 管道/消息队列 | 中 | 否 | 内核中转 | | Socket | 慢 | 是 | 通用 |","url":"https://itinterview.com.cn/question/1339"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"操作系统原理","item":"https://itinterview.com.cn/category?cat=4"},{"@type":"ListItem","position":4,"name":"进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？","item":"https://itinterview.com.cn/q/1339"}]}</script>

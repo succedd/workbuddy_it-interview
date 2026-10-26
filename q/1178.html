@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1178.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1178.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1178">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1178.jpg">
+  <meta name="twitter:image:alt" content="GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1178">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？","text":"考察点：量化算法原理对比。要求讲清 GPTQ 用二阶信息逐层量化+补偿、AWQ 保护「显著权重」两条路线，以及各自适用面。","answerCount":1,"datePublished":"2026-09-17T02:35:52.414Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： GPTQ（基于二阶信息）：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做层内补偿——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能接受量化耗时的场景。 AWQ（Activation-aware Weight Quantization）：核心观察是「少量显著性权重（对激活影响大）决定性能」。它不量化这些显著权重、只量化其余权重，并按激活大小给权重乘一个可学习的缩放 protection 系数，等价于用激活分布指导量化。特点是「不依赖昂贵反量化补偿、对校准集敏感低、部署简单」，常作为 LLM 推理框架的默认 INT4 方案（如 4-bit AWQ）。 选型：追求极限精度且能跑离线量化→GPTQ；追求简单、稳、框架开箱即用→AWQ 更主流。两者都是 W4A16（权重 4bit、激活 16bit）范式。","url":"https://itinterview.com.cn/question/1178"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"模型部署优化","item":"https://itinterview.com.cn/category?cat=197"},{"@type":"ListItem","position":5,"name":"GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？","item":"https://itinterview.com.cn/q/1178"}]}</script>

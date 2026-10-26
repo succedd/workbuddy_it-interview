@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Seata AT 模式里的「全局锁」是做什么的？它是怎么避免脏写的？ · IT面试题库">
   <meta property="og:description" content="要点： 1. AT 模式整体机制 一阶段：业务数据和回滚日志在同一个本地事务中提交，随后释放本地锁和连接资源；二阶段：提交异步化、非常快，回滚则依据一阶段生成的 undo_log 做反向补偿（用前镜像还原数据）。核心是业务照常写本地事务，框架记录 before/after image。 2. 全局锁的作用：保证写…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1280.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Seata AT 模式里的「全局锁」是做什么的？它是怎么避免脏写的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1280.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1280">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Seata AT 模式里的「全局锁」是做什么的？它是怎么避免脏写的？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. AT 模式整体机制 一阶段：业务数据和回滚日志在同一个本地事务中提交，随后释放本地锁和连接资源；二阶段：提交异步化、非常快，回滚则依据一阶段生成的 undo_log 做反向补偿（用前镜像还原数据）。核心是业务照常写本地事务，框架记录 before/after image。 2. 全局锁的作用：保证写…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1280.jpg">
+  <meta name="twitter:image:alt" content="Seata AT 模式里的「全局锁」是做什么的？它是怎么避免脏写的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1280">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Seata AT 模式里的「全局锁」是做什么的？它是怎么避免脏写的？","text":"考察点：AT 模式的写隔离、读隔离实现与性能代价。","answerCount":1,"datePublished":"2026-09-26T02:32:13.089Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. AT 模式整体机制 一阶段：业务数据和回滚日志在同一个本地事务中提交，随后释放本地锁和连接资源；二阶段：提交异步化、非常快，回滚则依据一阶段生成的 undo_log 做反向补偿（用前镜像还原数据）。核心是业务照常写本地事务，框架记录 before/after image。 2. 全局锁的作用：保证写隔离 一阶段本地事务提交前，必须先拿到该记录的全局锁；拿不到就不能提交本地事务。 获取全局锁的尝试被限制在一定范围内，超出范围就放弃，并回滚本地事务、释放本地锁。 举例：tx1、tx2 都要更新 a 表的 m 字段（初值 1000）。tx1 先拿到本地锁，改成 900，提交前先拿到该记录的全局锁，本地提交并释放本地锁。tx2 随后拿到本地锁改成 800，但提交前尝试拿全局锁时发现被 tx1 持有，只能重试等待。tx1 二阶段全局提交、释放全局锁后，tx2 才能拿到全局锁并提交。 因为整个过程全局锁在 tx1 结束前一直被 tx1 持有，所以不会发生脏写——不会出现「基于已被别人改过、但对方仍可能回滚的数据」继续提交。 3. 全局锁与前镜像校验的双保险 二阶段回滚时，RM 会拿 undo_log 中的后镜像与当前数据比对：如果不同，说明数据被当前全局事务之外的动作改过，需要按配置策略处理，而不是盲目覆盖。 4. 读隔离 在数据库本地隔离级别为读已提交（RC）或以上时，AT 模式默认的全局隔离级别是读未提交（RU）。如果业务必须全局读已提交，Seata 的方式是代理 SELECT ... FOR UPDATE：该语句会申请全局锁，若被其他事务持有则回滚本地执行并重试，查询被阻塞直到拿到全局锁。出于性能考虑，只代理 FOR UPDATE 的 SELECT，不代理所有查询。 5. 代价 AT 对业务侵入低，适合常规关系型数据库 CRUD，但对 SQL 类型、表主键、全局锁、隔离级别都有要求：全局锁会引入跨服务的锁等待，热点数据并发写会成为瓶颈，也不适合复杂 SQL 与跨非关系型资源的场景。","url":"https://itinterview.com.cn/question/1280"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式事务","item":"https://itinterview.com.cn/category?cat=119"},{"@type":"ListItem","position":4,"name":"Seata AT 模式里的「全局锁」是做什么的？它是怎么避免脏写的？","item":"https://itinterview.com.cn/q/1280"}]}</script>

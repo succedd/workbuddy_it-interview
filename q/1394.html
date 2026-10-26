@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。 · IT面试题库">
   <meta property="og:description" content="结论 磁盘由多个「盘面」组成，每个盘面有若干同心「磁道（柱面）」，每磁道分为若干「扇区」（通常 512 字节）。容量 = 各维乘积；CHS 是物理三元组，LBA 是线性逻辑块号。 容量公式 算例 2 个盘面 × 10000 柱面 × 500 扇区/磁道 × 512B ≈ 5.12 GB（简化模型）。 CHS ↔ …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1394.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1394.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1394">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。 · IT面试题库">
   <meta name="twitter:description" content="结论 磁盘由多个「盘面」组成，每个盘面有若干同心「磁道（柱面）」，每磁道分为若干「扇区」（通常 512 字节）。容量 = 各维乘积；CHS 是物理三元组，LBA 是线性逻辑块号。 容量公式 算例 2 个盘面 × 10000 柱面 × 500 扇区/磁道 × 512B ≈ 5.12 GB（简化模型）。 CHS ↔ …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1394.jpg">
+  <meta name="twitter:image:alt" content="磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1394">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。","text":"考察磁盘几何参数、容量公式与 CHS/LBA 换算。","answerCount":1,"datePublished":"2026-09-26T11:05:11.261Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 磁盘由多个「盘面」组成，每个盘面有若干同心「磁道（柱面）」，每磁道分为若干「扇区」（通常 512 字节）。容量 = 各维乘积；CHS 是物理三元组，LBA 是线性逻辑块号。 容量公式 算例 2 个盘面 × 10000 柱面 × 500 扇区/磁道 × 512B ≈ 5.12 GB（简化模型）。 CHS ↔ LBA 换算 LBA = (C × H + Hn) × S + Sn （C=柱面, H=磁头, S=每道扇区, Hn/Sn 为当前磁头/扇区号，从 0 起）。 逆变换由磁盘控制器/BIOS 完成，操作系统只需按 LBA 顺序读写。 现代磁盘对外一律用 LBA（逻辑块寻址），物理 CHS 细节被固件屏蔽；「扇区」也逐步从 512B 过渡到 4KB（高级格式化）。","url":"https://itinterview.com.cn/question/1394"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"磁盘容量如何由盘面数、柱面数、扇区数计算？CHS 与 LBA 寻址如何换算？给出一组参数算容量。","item":"https://itinterview.com.cn/q/1394"}]}</script>

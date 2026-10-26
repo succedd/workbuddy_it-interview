@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。 · IT面试题库">
   <meta property="og:description" content="要点： 思路：把用户-物品评分组织成矩阵，按行（用户）计算余弦相似度，取最相似的 K 个用户，用加权平均预测目标用户对其未评分物品的评分，取 Top-N。 代码骨架： 讲解：余弦只利用共同评分维度，避免「评分尺度」差异；加权时用相似度做权重，近邻贡献更大。工程上多用 Item-Based 或矩阵分解（稀疏场景下 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1604.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1604.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1604">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 思路：把用户-物品评分组织成矩阵，按行（用户）计算余弦相似度，取最相似的 K 个用户，用加权平均预测目标用户对其未评分物品的评分，取 Top-N。 代码骨架： 讲解：余弦只利用共同评分维度，避免「评分尺度」差异；加权时用相似度做权重，近邻贡献更大。工程上多用 Item-Based 或矩阵分解（稀疏场景下 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1604.jpg">
+  <meta name="twitter:image:alt" content="请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1604">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。","text":"考察能否把协同过滤落到代码，理解相似度计算与近邻聚合。","answerCount":1,"datePublished":"2026-10-10T11:53:41.843Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 思路：把用户-物品评分组织成矩阵，按行（用户）计算余弦相似度，取最相似的 K 个用户，用加权平均预测目标用户对其未评分物品的评分，取 Top-N。 代码骨架： 讲解：余弦只利用共同评分维度，避免「评分尺度」差异；加权时用相似度做权重，近邻贡献更大。工程上多用 Item-Based 或矩阵分解（稀疏场景下 user-user 近邻不稳定）。矩阵分解（如 ALS）把矩阵拆成用户 / 物品隐向量，用内积拟合评分，缓解稀疏与可扩展性。","url":"https://itinterview.com.cn/question/1604"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"推荐系统","item":"https://itinterview.com.cn/category?cat=185"},{"@type":"ListItem","position":5,"name":"请用伪代码或 Python 实现 User-Based 协同过滤的相似度计算与 Top-N 推荐（余弦相似度）。","item":"https://itinterview.com.cn/q/1604"}]}</script>

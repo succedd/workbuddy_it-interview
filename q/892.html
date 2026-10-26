@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？ · IT面试题库">
   <meta property="og:description" content="Redisson lock() 做了什么： 加锁用一段 Lua 脚本：判断锁不存在则 hset 并设默认 leaseTime（默认 30s），已持有则重入计数+1——和手写可重入锁同源。 看门狗（watchdog）：如果加锁时没指定 leaseTime，Redisson 启动一个后台定时任务，每 leaseTim…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/892.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/892.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/892">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？ · IT面试题库">
   <meta name="twitter:description" content="Redisson lock() 做了什么： 加锁用一段 Lua 脚本：判断锁不存在则 hset 并设默认 leaseTime（默认 30s），已持有则重入计数+1——和手写可重入锁同源。 看门狗（watchdog）：如果加锁时没指定 leaseTime，Redisson 启动一个后台定时任务，每 leaseTim…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/892.jpg">
+  <meta name="twitter:image:alt" content="Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/892">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？","text":"考察 Redisson 客户端对分布式锁的工程化封装。","answerCount":1,"datePublished":"2026-09-09T02:23:03.087Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Redisson lock() 做了什么： 加锁用一段 Lua 脚本：判断锁不存在则 hset 并设默认 leaseTime（默认 30s），已持有则重入计数+1——和手写可重入锁同源。 看门狗（watchdog）：如果加锁时没指定 leaseTime，Redisson 启动一个后台定时任务，每 leaseTime/3（约 10s）给锁 pexpire 续到 30s，只要持锁客户端还活着，锁就不会因业务耗时过长而过期——这正是「锁续期」的自动化实现。 业务显式指定 lock(10, SECONDS) 时不启用看门狗，到点强制释放。 释放时同样用 Lua 校验归属并 hincrby -1，归零才删，且取消看门狗任务。 价值：把「加锁+续期+释放」的易错细节封装成一行 lock()，避免手写遗漏续期导致锁提前失效。","url":"https://itinterview.com.cn/question/892"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"Redisson 的 lock() 底层做了什么？它如何封装 SET NX + 看门狗自动续期，让业务无需手动管过期？","item":"https://itinterview.com.cn/q/892"}]}</script>

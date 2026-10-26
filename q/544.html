@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？ · IT面试题库">
   <meta property="og:description" content="1. 反射型（Reflected XSS）：恶意脚本作为请求参数拼入响应页面（如搜索框回显），需诱骗受害者点击含 payload 的链接才会触发；不持久。 2. 存储型（Stored XSS）：恶意脚本被存入服务端（评论、昵称、留言等），任何访问该页面的用户都会执行，危害最大、影响面最广。 3. DOM 型（DO…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/544.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/544.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/544">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？ · IT面试题库">
   <meta name="twitter:description" content="1. 反射型（Reflected XSS）：恶意脚本作为请求参数拼入响应页面（如搜索框回显），需诱骗受害者点击含 payload 的链接才会触发；不持久。 2. 存储型（Stored XSS）：恶意脚本被存入服务端（评论、昵称、留言等），任何访问该页面的用户都会执行，危害最大、影响面最广。 3. DOM 型（DO…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/544.jpg">
+  <meta name="twitter:image:alt" content="XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/544">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？","text":"请区分反射型、存储型、DOM 型 XSS 的触发链路，并指出哪种危害最大、以及通用的防御手段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 反射型（Reflected XSS）：恶意脚本作为请求参数拼入响应页面（如搜索框回显），需诱骗受害者点击含 payload 的链接才会触发；不持久。 2. 存储型（Stored XSS）：恶意脚本被存入服务端（评论、昵称、留言等），任何访问该页面的用户都会执行，危害最大、影响面最广。 3. DOM 型（DOM-based XSS）：漏洞在前端 JS，攻击者构造的非法输入被 innerHTML、eval、document.write 等直接操作 DOM 而执行，完全不经过服务端存储/响应拼接。 通用防御： 输入输出转义/编码（HTML、属性、JS、URL 上下文分别编码）； 设置 HttpOnly Cookie 防止脚本读取会话； 部署 CSP 限制脚本来源（纵深防御）； 严格的输入校验与富文本白名单。","url":"https://itinterview.com.cn/question/544"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"Web安全","item":"https://itinterview.com.cn/category?cat=202"},{"@type":"ListItem","position":4,"name":"XSS 跨站脚本攻击有哪几种类型？分别如何触发与防御？","item":"https://itinterview.com.cn/q/544"}]}</script>

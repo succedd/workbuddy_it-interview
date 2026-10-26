@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dubbo 的 SPI 扩展机制是什么？相比 JDK 原生 SPI 强在哪？ · IT面试题库</title>
-  <meta name="description" content="要点： 概念：SPI（Service Provider Interface）让框架在运行期按需加载实现类，实现「面向接口编程、具体实现可插拔」。Dubbo 几乎所有能力（协议、序列化、负载均衡、注册中心）都通过 SPI 扩展。 比 JDK SPI 强在哪：① 按需实例化——JDK 一次性实例化所有实现，Dubbo…">
+  <title>视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？ · IT面试题库</title>
+  <meta name="description" content="栅格定秩序 用列栅格/基线栅格统一边距、模块宽度和对齐方式，让页面在不同屏幕下保持节奏；栅格不是画辅助线，而是约束内容宽度和间距的规则。 先定内容区最大宽度和列数，再定卡片/图片的跨列方式；移动端减少列数，保持单列阅读。 留白定呼吸 用间距 token（4/8 的倍数）区分「组内间距 &lt; 组间间距 &lt; 区块间距」…">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Dubbo 的 SPI 扩展机制是什么？相比 JDK 原生 SPI 强在哪？ · IT面试题库">
-  <meta property="og:description" content="要点： 概念：SPI（Service Provider Interface）让框架在运行期按需加载实现类，实现「面向接口编程、具体实现可插拔」。Dubbo 几乎所有能力（协议、序列化、负载均衡、注册中心）都通过 SPI 扩展。 比 JDK SPI 强在哪：① 按需实例化——JDK 一次性实例化所有实现，Dubbo…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:title" content="视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？ · IT面试题库">
+  <meta property="og:description" content="栅格定秩序 用列栅格/基线栅格统一边距、模块宽度和对齐方式，让页面在不同屏幕下保持节奏；栅格不是画辅助线，而是约束内容宽度和间距的规则。 先定内容区最大宽度和列数，再定卡片/图片的跨列方式；移动端减少列数，保持单列阅读。 留白定呼吸 用间距 token（4/8 的倍数）区分「组内间距 &lt; 组间间距 &lt; 区块间距」…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1770.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1770.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1770">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Dubbo 的 SPI 扩展机制是什么？相比 JDK 原生 SPI 强在哪？ · IT面试题库">
-  <meta name="twitter:description" content="要点： 概念：SPI（Service Provider Interface）让框架在运行期按需加载实现类，实现「面向接口编程、具体实现可插拔」。Dubbo 几乎所有能力（协议、序列化、负载均衡、注册中心）都通过 SPI 扩展。 比 JDK SPI 强在哪：① 按需实例化——JDK 一次性实例化所有实现，Dubbo…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:title" content="视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？ · IT面试题库">
+  <meta name="twitter:description" content="栅格定秩序 用列栅格/基线栅格统一边距、模块宽度和对齐方式，让页面在不同屏幕下保持节奏；栅格不是画辅助线，而是约束内容宽度和间距的规则。 先定内容区最大宽度和列数，再定卡片/图片的跨列方式；移动端减少列数，保持单列阅读。 留白定呼吸 用间距 token（4/8 的倍数）区分「组内间距 &lt; 组间间距 &lt; 区块间距」…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1770.jpg">
+  <meta name="twitter:image:alt" content="视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1770">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Dubbo 的 SPI 扩展机制是什么？相比 JDK 原生 SPI 强在哪？","text":"考察点：Dubbo 可扩展性的基石——SPI，以及它相对 JDK SPI 的「自适应/IOC/AOP」增强。","answerCount":1,"datePublished":"2026-10-19T12:31:26.464Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 概念：SPI（Service Provider Interface）让框架在运行期按需加载实现类，实现「面向接口编程、具体实现可插拔」。Dubbo 几乎所有能力（协议、序列化、负载均衡、注册中心）都通过 SPI 扩展。 比 JDK SPI 强在哪：① 按需实例化——JDK 一次性实例化所有实现，Dubbo 只实例化用到的；② 自适应扩展（@Adaptive）——根据 URL/参数在调用时才决定用哪个实现（如 Protocol 按 url.protocol 选 dubbo/http），动态路由；③ IOC/AOP——扩展点可注入其他扩展点、可套用 Wrapper 做链式增强（类似过滤器链）。 实战：META-INF/dubbo/ 下 接口全限定名=实现类 注册，配合 @SPI 标注默认实现、@Adaptive 标注自适应方法。理解 SPI 才能看懂 Dubbo 各种 Filter/Cluster/LoadBalance 的可替换机制，也是做二次开发（自定义序列化、鉴权 Filter）的入口。","url":"https://itinterview.com.cn/question/1770"}}}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"Dubbo","item":"https://itinterview.com.cn/category?cat=124"},{"@type":"ListItem","position":4,"name":"Dubbo 的 SPI 扩展机制是什么？相比 JDK 原生 SPI 强在哪？","item":"https://itinterview.com.cn/q/1770"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？","text":"考察视觉设计师对版式系统的理解：不是“好看”，而是信息优先级和阅读节奏。","answerCount":1,"datePublished":"2026-10-21T01:44:36.716Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"栅格定秩序 用列栅格/基线栅格统一边距、模块宽度和对齐方式，让页面在不同屏幕下保持节奏；栅格不是画辅助线，而是约束内容宽度和间距的规则。 先定内容区最大宽度和列数，再定卡片/图片的跨列方式；移动端减少列数，保持单列阅读。 留白定呼吸 用间距 token（4/8 的倍数）区分「组内间距 \u003c 组间间距 \u003c 区块间距」；留白不是浪费，是告诉用户哪些内容属于一组。 标题周围留白大于正文行距，避免信息挤压；表格/表单的留白要兼顾扫读和点击区域。 字体层级定优先级 用字号、字重、颜色和间距建立 3–4 级层级（标题/小标题/正文/辅助），不要每段都换字号；正文行高约 1.5–1.8，行长控制在 45–75 个字符。 中文注意字重和字距，英文注意大小写与数字对齐；对比度满足 WCAG，辅助文字不要低到看不清。 一起使用 栅格保证对齐，留白分组，字体层级表达主次；三者冲突时优先保证阅读顺序和可扫读性，而不是视觉花样。 验证 用 5 秒测试/眼动或简单走查：用户能否第一眼找到主标题、主操作和关键信息；移动端在真实设备上检查行长和点击区域。","url":"https://itinterview.com.cn/question/1770"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"产品与项目管理","item":"https://itinterview.com.cn/category?cat=263"},{"@type":"ListItem","position":3,"name":"UI与视觉设计","item":"https://itinterview.com.cn/category?cat=281"},{"@type":"ListItem","position":4,"name":"视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？","item":"https://itinterview.com.cn/q/1770"}]}</script>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -87,25 +93,42 @@
 <body>
   <div class="wrap">
     <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
-    <h1>Dubbo 的 SPI 扩展机制是什么？相比 JDK 原生 SPI 强在哪？</h1>
-    <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Dubbo</span><span class="chip tag">SPI</span><span class="chip tag">扩展机制</span></div>
-    <div class="card"><h2>题目</h2><p>考察点：Dubbo 可扩展性的基石——SPI，以及它相对 JDK SPI 的「自适应/IOC/AOP」增强。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <h1>视觉设计中的栅格、留白和字体层级如何共同决定页面的可读性？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">视觉设计师</span><span class="chip tag">栅格</span><span class="chip tag">留白</span><span class="chip tag">字体层级</span><span class="chip tag">可读性</span></div>
+    <div class="card"><h2>题目</h2><p>考察视觉设计师对版式系统的理解：不是“好看”，而是信息优先级和阅读节奏。</p></div>
+    <div class="card"><h2>参考答案</h2><p><strong>栅格定秩序</strong></p>
 <ul>
-<li>概念：SPI（Service Provider Interface）让框架在<strong>运行期</strong>按需加载实现类，实现「面向接口编程、具体实现可插拔」。Dubbo 几乎所有能力（协议、序列化、负载均衡、注册中心）都通过 SPI 扩展。</li>
-<li>比 JDK SPI 强在哪：① <strong>按需实例化</strong>——JDK 一次性实例化所有实现，Dubbo 只实例化用到的；② <strong>自适应扩展（@Adaptive）</strong>——根据 URL/参数在调用时才决定用哪个实现（如 <code>Protocol</code> 按 <code>url.protocol</code> 选 dubbo/http），动态路由；③ <strong>IOC/AOP</strong>——扩展点可注入其他扩展点、可套用 Wrapper 做链式增强（类似过滤器链）。</li>
-<li>实战：<code>META-INF/dubbo/</code> 下 <code>接口全限定名=实现类</code> 注册，配合 <code>@SPI</code> 标注默认实现、<code>@Adaptive</code> 标注自适应方法。理解 SPI 才能看懂 Dubbo 各种 <code>Filter</code>/<code>Cluster</code>/<code>LoadBalance</code> 的可替换机制，也是做二次开发（自定义序列化、鉴权 Filter）的入口。</li>
+<li>用列栅格/基线栅格统一边距、模块宽度和对齐方式，让页面在不同屏幕下保持节奏；栅格不是画辅助线，而是约束内容宽度和间距的规则。</li>
+<li>先定内容区最大宽度和列数，再定卡片/图片的跨列方式；移动端减少列数，保持单列阅读。</li>
+</ul>
+<p><strong>留白定呼吸</strong></p>
+<ul>
+<li>用间距 token（4/8 的倍数）区分「组内间距 &lt; 组间间距 &lt; 区块间距」；留白不是浪费，是告诉用户哪些内容属于一组。</li>
+<li>标题周围留白大于正文行距，避免信息挤压；表格/表单的留白要兼顾扫读和点击区域。</li>
+</ul>
+<p><strong>字体层级定优先级</strong></p>
+<ul>
+<li>用字号、字重、颜色和间距建立 3–4 级层级（标题/小标题/正文/辅助），不要每段都换字号；正文行高约 1.5–1.8，行长控制在 45–75 个字符。</li>
+<li>中文注意字重和字距，英文注意大小写与数字对齐；对比度满足 WCAG，辅助文字不要低到看不清。</li>
+</ul>
+<p><strong>一起使用</strong></p>
+<ul>
+<li>栅格保证对齐，留白分组，字体层级表达主次；三者冲突时优先保证阅读顺序和可扫读性，而不是视觉花样。</li>
+</ul>
+<p><strong>验证</strong></p>
+<ul>
+<li>用 5 秒测试/眼动或简单走查：用户能否第一眼找到主标题、主操作和关键信息；移动端在真实设备上检查行长和点击区域。</li>
 </ul></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1770">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/806">Dubbo 的 RPC 调用流程与核心概念（Provider/Consumer/Registry）是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1642">Dubbo 调用出现超时但提供方日志正常，你会从哪些层面排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1768">什么是 RPC？引入 Dubbo 这样的框架主要解决单体应用什么痛点？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1769">画一次 Dubbo 调用全流程：Provider、Consumer、Registry、Monitor 各自干什么？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1768">设计系统和 Design Token 如何从 0 到 1 落地，避免变成一份没人用的组件库？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1769">移动端表单设计如何降低出错率和放弃率？请从信息架构、校验、错误提示和无障碍角度说明。</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1771">品牌视觉规范落地到 Web/App 时，设计师和前端如何协作，避免「设计稿还原度 90% 但体验不一致」？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1804">做信息架构时，卡片分类（card sorting）和树测试（tree testing）分别解决什么问题？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">
     <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
-    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=124&mode=random">进入刷题</a>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=281&mode=random">进入刷题</a>
     <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
   </div>
   <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>

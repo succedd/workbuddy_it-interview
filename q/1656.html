@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？ · IT面试题库">
   <meta property="og:description" content="要点： 作用域保存：ViewModel 挂在 ViewModelStore 上，Activity 旋转销毁重建时新实例从同一 Store 获取旧对象。 边界：仅配置变更中保留；Activity 真正 finish 或进程被杀后会销毁，不能当持久存储。 持久化配合：需要跨进程恢复时用 SavedStateHandl…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1656.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1656.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1656">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？ · IT面试题库">
   <meta name="twitter:description" content="要点： 作用域保存：ViewModel 挂在 ViewModelStore 上，Activity 旋转销毁重建时新实例从同一 Store 获取旧对象。 边界：仅配置变更中保留；Activity 真正 finish 或进程被杀后会销毁，不能当持久存储。 持久化配合：需要跨进程恢复时用 SavedStateHandl…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1656.jpg">
+  <meta name="twitter:image:alt" content="ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1656">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？","text":"考察 Jetpack 架构组件。","answerCount":1,"datePublished":"2026-10-15T12:54:42.545Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 作用域保存：ViewModel 挂在 ViewModelStore 上，Activity 旋转销毁重建时新实例从同一 Store 获取旧对象。 边界：仅配置变更中保留；Activity 真正 finish 或进程被杀后会销毁，不能当持久存储。 持久化配合：需要跨进程恢复时用 SavedStateHandle 或本地存储，避免把大对象长期塞进 ViewModel 造成内存压力。","url":"https://itinterview.com.cn/question/1656"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android Jetpack","item":"https://itinterview.com.cn/category?cat=226"},{"@type":"ListItem","position":5,"name":"ViewModel 为什么能在配置变更后保留数据？它的生命周期边界在哪里？","item":"https://itinterview.com.cn/q/1656"}]}</script>

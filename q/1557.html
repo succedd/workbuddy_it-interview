@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。 · IT面试题库">
   <meta property="og:description" content="要点： 探针语义：K8s 的 liveness 探针失败会重启容器（判定「死了」），readiness 失败会把 Pod 移出服务负载（判定「暂不能接流量」），startup 探针保护启动慢的容器。探活脚本的退出码（0=健康/非0=不健康）直接驱动这些动作。 健壮性要点：必须设超时（避免探针本身挂死拖垮判定）、做…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1557.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1557.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1557">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。 · IT面试题库">
   <meta name="twitter:description" content="要点： 探针语义：K8s 的 liveness 探针失败会重启容器（判定「死了」），readiness 失败会把 Pod 移出服务负载（判定「暂不能接流量」），startup 探针保护启动慢的容器。探活脚本的退出码（0=健康/非0=不健康）直接驱动这些动作。 健壮性要点：必须设超时（避免探针本身挂死拖垮判定）、做…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1557.jpg">
+  <meta name="twitter:image:alt" content="用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1557">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。","text":"考察点：健康检查脚本的健壮性设计，以及探针语义的对应关系。","answerCount":1,"datePublished":"2026-10-05T02:31:06.296Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 探针语义：K8s 的 liveness 探针失败会重启容器（判定「死了」），readiness 失败会把 Pod 移出服务负载（判定「暂不能接流量」），startup 探针保护启动慢的容器。探活脚本的退出码（0=健康/非0=不健康）直接驱动这些动作。 健壮性要点：必须设超时（避免探针本身挂死拖垮判定）、做有限次重试（容忍瞬时抖动）、区分「依赖不可用」与「自身不可用」（依赖坏应返回 readiness 而非 liveness 失败，避免误重启）。 下面给出带超时+重试的 HTTP 探活实现，用子进程超时控制单次探测，连续失败才判定不健康： 工程补充：探活接口本身要轻量（查 DB 连接而非全量业务），避免探针成为新瓶颈；超时应小于 K8s 的 periodSeconds，否则会出现「探针未完成就再次触发」的堆积。","url":"https://itinterview.com.cn/question/1557"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。","item":"https://itinterview.com.cn/q/1557"}]}</script>

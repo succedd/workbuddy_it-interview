@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？ · IT面试题库">
   <meta property="og:description" content="窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/529.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/529.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/529">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？ · IT面试题库">
   <meta name="twitter:description" content="窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/529.jpg">
+  <meta name="twitter:image:alt" content="什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/529">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？","text":"解释窗口函数的“分组但不聚合 collapsing”语义，给出 ROW_NUMBER/RANK/DENSE_RANK 与 SUM() OVER 示例。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"窗口函数：对每一行在其所属“窗口（分组）”内计算聚合/排序，但不把多行压缩成一行（与 GROUP BY 不同，后者会折叠行数）。语法：函数() OVER (PARTITION BY 分组列 ORDER BY 排序列 [窗口帧])。 常见函数： ROW_NUMBER()：组内连续序号（1,2,3…），并列也唯一。 RANK()：并列同号、跳过后续号（1,1,3）。 DENSE_RANK()：并列同号、不跳号（1,1,2）。 聚合类 SUM/AVG/COUNT(...) OVER (...)：计算累计/移动值。 与 GROUP BY 区别：GROUP BY 把同组聚成一行；窗口函数保留原行并附加计算列。 示例（各部门按工资排名）： 示例（累计销售额）： 典型用途：取每组 TopN、去重取最新、计算同比/环比、累计求和。","url":"https://itinterview.com.cn/question/529"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"SQL基础","item":"https://itinterview.com.cn/category?cat=27"},{"@type":"ListItem","position":5,"name":"什么是 SQL 窗口函数(window function)？`OVER(... PARTITION BY ... ORDER BY ...)` 如何使用？与 GROUP BY 有何不同？","item":"https://itinterview.com.cn/q/529"}]}</script>

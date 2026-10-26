@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。 · IT面试题库">
   <meta property="og:description" content="要点： 内嵌（Embedded）：把关联数据作为子文档/数组直接放进父文档。优点是不需要 JOIN、一次查询即可拿到完整数据、可原子更新；适合「强关联、一起读写、规模可控」的关系。例：1:1 的用户与用户资料、1:N 的订单与订单项（订单项数组内嵌在订单里）。 引用（Reference）：在文档里只存对方文档的 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1414.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1414.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1414">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。 · IT面试题库">
   <meta name="twitter:description" content="要点： 内嵌（Embedded）：把关联数据作为子文档/数组直接放进父文档。优点是不需要 JOIN、一次查询即可拿到完整数据、可原子更新；适合「强关联、一起读写、规模可控」的关系。例：1:1 的用户与用户资料、1:N 的订单与订单项（订单项数组内嵌在订单里）。 引用（Reference）：在文档里只存对方文档的 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1414.jpg">
+  <meta name="twitter:image:alt" content="MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1414">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。","text":"考察点：MongoDB 反范式化建模的核心决策——内嵌还是引用，能否结合具体关系给出合理方案，是区分「会用」和「用得好」的关键场景题。","answerCount":1,"datePublished":"2026-10-01T03:53:45.035Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 内嵌（Embedded）：把关联数据作为子文档/数组直接放进父文档。优点是不需要 JOIN、一次查询即可拿到完整数据、可原子更新；适合「强关联、一起读写、规模可控」的关系。例：1:1 的用户与用户资料、1:N 的订单与订单项（订单项数组内嵌在订单里）。 引用（Reference）：在文档里只存对方文档的 _id（必要时加 dbref），靠应用层或 $lookup 再去取。适合「会被独立访问」「规模会无限增长」「多对多」的场景。例：N:N 的用户与课程，用单独的中间集合或双方维护 id 数组；1:N 中「N 会无限膨胀」的评论列表（内嵌会导致文档超 16MB 上限）应改为引用+单独集合。 1:1：几乎总是内嵌（除非子文档极大或需单独权限）。 1:N：N 较小且整体读取用内嵌；N 巨大或需独立查询/分页用引用。 N:N：用引用 + 中间集合（或双方 id 数组），避免双重海量内嵌。 反范式化代价：内嵌带来冗余，更新时要同步多份（如作者名内嵌到文章后改名需批量更新），需在「读性能」与「写一致性成本」间权衡。","url":"https://itinterview.com.cn/question/1414"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。","item":"https://itinterview.com.cn/q/1414"}]}</script>

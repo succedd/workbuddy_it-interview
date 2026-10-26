@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？ · IT面试题库">
   <meta property="og:description" content="一、先确认三个前置条件 Tree Shaking 是死代码消除，依赖 ESM 的静态结构生效，缺一不可： 1. 源码必须保持 ESM：一旦编译器（如 Babel 的 preset-env）把 import/export 转成 CommonJS，静态结构就丢失了，webpack 无法分析，Tree Shaking …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/432.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/432.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/432">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？ · IT面试题库">
   <meta name="twitter:description" content="一、先确认三个前置条件 Tree Shaking 是死代码消除，依赖 ESM 的静态结构生效，缺一不可： 1. 源码必须保持 ESM：一旦编译器（如 Babel 的 preset-env）把 import/export 转成 CommonJS，静态结构就丢失了，webpack 无法分析，Tree Shaking …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/432.jpg">
+  <meta name="twitter:image:alt" content="Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/432">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？","text":"按文档配了 sideEffects 与生产模式，构建后 bundle 依旧很大，甚至出现组件能渲染但样式全丢的情况。请给出系统性的排查思路。","answerCount":1,"datePublished":"2026-09-03T00:53:21.484Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、先确认三个前置条件 Tree Shaking 是死代码消除，依赖 ESM 的静态结构生效，缺一不可： 1. 源码必须保持 ESM：一旦编译器（如 Babel 的 preset-env）把 import/export 转成 CommonJS，静态结构就丢失了，webpack 无法分析，Tree Shaking 直接失效。 2. package.json 的 sideEffects 字段：告诉 webpack 哪些文件是「纯」的、可以安全剪除未使用的导出。 3. 生产模式：它会自动启用 Terser 压缩与 ModuleConcatenationPlugin（作用域提升）。手动配置时若没加后者，Tree Shaking 不工作。 二、典型失效原因 只在 development 下验证：usedExports 只是给未使用的导出打上「unused harmony export」注释标记，代码仍然留在包里，真正删除靠的是压缩。只在 dev 测试会把问题一直藏到上线之后。 sideEffects: false 配过头：CSS import、polyfill、注册全局监听、修改原型链的代码都会被当成无副作用剪掉。典型现象是组件渲染正常但完全没有样式，正确写法是把 CSS 等列入白名单数组。 复杂调用无法判定副作用：例如通过 React 高阶组件包装后导出（形如 withAppProvider()(Button)）这类写法，Terser 很难判断有没有副作用，需要 PURE 注解来标记函数调用无副作用（webpack 5.107+ 还支持用 NO_SIDE_EFFECTS 注解标记函数声明）。 嵌套依赖标注错误：你自己的包标对了，但第三方依赖的 sideEffects 标错，照样出问题。 动态导入未指定导出：动态 import 时应使用 webpackExports 魔法注释声明需要暴露的导出，否则其余导出无法被摇掉。 devtool 取值不当：部分值不能用于 production 模式，会影响优化结果。 三、排查顺序建议 先用 webpack-bundle-analyzer 定位是哪些模块占了体积；再切到生产构建确认模块是否真的被剔除（而不是仅被标记）；随后依次检查 Babel 的 modules 配置、sideEffects 声明、是否为生产模式、第三方包标注。凡是 sideEffects: false 这类激进配置，务必用「只引一个组件的最小应用 + 生产构建」验证样式与全局逻辑是否正常。","url":"https://itinterview.com.cn/question/432"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Webpack","item":"https://itinterview.com.cn/category?cat=69"},{"@type":"ListItem","position":5,"name":"Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？","item":"https://itinterview.com.cn/q/432"}]}</script>

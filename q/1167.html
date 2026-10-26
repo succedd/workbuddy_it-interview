@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？ · IT面试题库">
   <meta property="og:description" content="思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j&lt;i 且 nums[j]&lt;nums[i]）；取全局 max。 要点（O…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1167.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1167.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1167">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？ · IT面试题库">
   <meta name="twitter:description" content="思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j&lt;i 且 nums[j]&lt;nums[i]）；取全局 max。 要点（O…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1167.jpg">
+  <meta name="twitter:image:alt" content="LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1167">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？","text":"考察点：LIS 的二分优化——tails 数组（耐心排序）思想，以及状态定义的进阶（高级编程题）。","answerCount":1,"datePublished":"2026-09-15T11:50:08.811Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。 要点（O(n²) 基础）： dp[i] = 以 nums[i] 结尾的 LIS 长度，dp[i]=max(dp[j])+1（j\u003ci 且 nums[j]\u003cnums[i]）；取全局 max。 要点（O(n log n) 优化 · tails 数组）： tails[k] 表示『长度为 k+1 的递增子序列中，结尾元素的最小可能值』；tails 始终有序。 遍历 x：用二分在 tails 中找第一个 ≥ x 的位置 pos 并替换 tails[pos]=x；若 x 比所有都大则追加。tails 的最终长度即 LIS 长度。 要点：tails 数组存的不是真实子序列，只是长度与最小结尾，用于高效决策；要还原序列需额外记录前驱。","url":"https://itinterview.com.cn/question/1167"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？","item":"https://itinterview.com.cn/q/1167"}]}</script>

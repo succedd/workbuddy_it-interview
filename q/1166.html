@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="LeetCode 322 零钱兑换：用给定面额 coins 凑出金额 amount，求最少硬币数。说明这是哪种背包模型及转移。 · IT面试题库">
   <meta property="og:description" content="思路：这是『完全背包』求最小值的经典题——每种硬币可用无限次，目标凑出 amount 且硬币数最少。 要点（状态与转移）： dp[j] = 凑出金额 j 的最少硬币数；初始化 dp[0]=0，其余 inf（表示不可达）。 转移（硬币可重复选）：dp[j] = min(dp[j], dp[j - coin] + 1…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1166.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="LeetCode 322 零钱兑换：用给定面额 coins 凑出金额 amount，求最少硬币数。说明这是哪种背包模型及转移。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1166.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1166">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LeetCode 322 零钱兑换：用给定面额 coins 凑出金额 amount，求最少硬币数。说明这是哪种背包模型及转移。 · IT面试题库">
   <meta name="twitter:description" content="思路：这是『完全背包』求最小值的经典题——每种硬币可用无限次，目标凑出 amount 且硬币数最少。 要点（状态与转移）： dp[j] = 凑出金额 j 的最少硬币数；初始化 dp[0]=0，其余 inf（表示不可达）。 转移（硬币可重复选）：dp[j] = min(dp[j], dp[j - coin] + 1…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1166.jpg">
+  <meta name="twitter:image:alt" content="LeetCode 322 零钱兑换：用给定面额 coins 凑出金额 amount，求最少硬币数。说明这是哪种背包模型及转移。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1166">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"LeetCode 322 零钱兑换：用给定面额 coins 凑出金额 amount，求最少硬币数。说明这是哪种背包模型及转移。","text":"考察点：完全背包（硬币可无限用）的最值模型，以及『初始化无穷大』的细节与遍历方向。","answerCount":1,"datePublished":"2026-09-15T11:50:08.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"思路：这是『完全背包』求最小值的经典题——每种硬币可用无限次，目标凑出 amount 且硬币数最少。 要点（状态与转移）： dp[j] = 凑出金额 j 的最少硬币数；初始化 dp[0]=0，其余 inf（表示不可达）。 转移（硬币可重复选）：dp[j] = min(dp[j], dp[j - coin] + 1)，对每个 coin 遍历 j 从 coin 到 amount（顺序遍历即可，因为硬币可重复用）。 要点（注意）： 必须顺序遍历 j（完全背包），若逆序则变成 0/1 背包（每硬币最多一次）。 初始化 dp[0]=0、其余 inf 是关键，否则 min 会被 0 污染；最终不可达返回 -1。","url":"https://itinterview.com.cn/question/1166"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"LeetCode 322 零钱兑换：用给定面额 coins 凑出金额 amount，求最少硬币数。说明这是哪种背包模型及转移。","item":"https://itinterview.com.cn/q/1166"}]}</script>

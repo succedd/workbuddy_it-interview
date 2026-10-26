@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？ · IT面试题库">
   <meta property="og:description" content="要点：Unity 协程是基于迭代器（IEnumerator）的「伪并发」：它在主线程上分时执行，靠 yield return 把后续逻辑推迟到下一帧/指定时机，并不会开新线程，因此不存在线程安全问题。 要点：真正的多线程（Thread/Task）可并行利用多核做重型计算（寻路、mesh 处理），但 Unity 绝…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1583.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1583.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1583">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？ · IT面试题库">
   <meta name="twitter:description" content="要点：Unity 协程是基于迭代器（IEnumerator）的「伪并发」：它在主线程上分时执行，靠 yield return 把后续逻辑推迟到下一帧/指定时机，并不会开新线程，因此不存在线程安全问题。 要点：真正的多线程（Thread/Task）可并行利用多核做重型计算（寻路、mesh 处理），但 Unity 绝…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1583.jpg">
+  <meta name="twitter:image:alt" content="Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1583">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？","text":"考察对协程机制与 Unity 线程模型的理解。","answerCount":1,"datePublished":"2026-10-07T08:05:39.224Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：Unity 协程是基于迭代器（IEnumerator）的「伪并发」：它在主线程上分时执行，靠 yield return 把后续逻辑推迟到下一帧/指定时机，并不会开新线程，因此不存在线程安全问题。 要点：真正的多线程（Thread/Task）可并行利用多核做重型计算（寻路、mesh 处理），但 Unity 绝大多数 API（Transform、GameObject、物理）不是线程安全的，只能在主线程调用，否则会抛异常。 要点：实战取舍：需要「延时/等待几帧/分帧加载」用协程最自然；需要「和帧率无关的并行计算」才用多线程/Job System，并把结果写回放到主线程消费。","url":"https://itinterview.com.cn/question/1583"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Unity开发","item":"https://itinterview.com.cn/category?cat=233"},{"@type":"ListItem","position":4,"name":"Unity 协程（Coroutine）与多线程有什么区别？游戏逻辑为什么大多跑在主线程？","item":"https://itinterview.com.cn/q/1583"}]}</script>

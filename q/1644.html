@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？ · IT面试题库">
   <meta property="og:description" content="要点： Duplicate：保留明细，适合日志、行为流水、需要任意维度回查的数据。 Aggregate：按 Key 聚合 Value，适合报表汇总层，用预聚合换查询速度。 Unique：主键唯一，适合维表或需要更新的业务表；注意写入路径对导入性能的影响。">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1644.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1644.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1644">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="要点： Duplicate：保留明细，适合日志、行为流水、需要任意维度回查的数据。 Aggregate：按 Key 聚合 Value，适合报表汇总层，用预聚合换查询速度。 Unique：主键唯一，适合维表或需要更新的业务表；注意写入路径对导入性能的影响。">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1644.jpg">
+  <meta name="twitter:image:alt" content="Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1644">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？","text":"考察 Doris 数据建模。","answerCount":1,"datePublished":"2026-10-15T12:54:41.910Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Duplicate：保留明细，适合日志、行为流水、需要任意维度回查的数据。 Aggregate：按 Key 聚合 Value，适合报表汇总层，用预聚合换查询速度。 Unique：主键唯一，适合维表或需要更新的业务表；注意写入路径对导入性能的影响。","url":"https://itinterview.com.cn/question/1644"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Doris","item":"https://itinterview.com.cn/category?cat=170"},{"@type":"ListItem","position":4,"name":"Apache Doris 建表时 Duplicate、Aggregate 和 Unique 模型该怎么选？","item":"https://itinterview.com.cn/q/1644"}]}</script>
@@ -100,7 +106,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1644">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/711">Apache Doris 的定位与 MPP 架构特点？适合什么场景？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/711">Apache Doris 的定位与 MPP 架构特点？适合什么场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1998">Apache Doris 的整体架构由哪两类进程组成？FE 和 BE 各自负责什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1999">Doris 提供 Duplicate Key、Aggregate Key、Unique Key 三种数据模型，分别适合什么业务场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2000">用 Unique Key 模型建一张「用户订单明细」表，要求按订单 ID 支持实时更新，写出建表语句要点。</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

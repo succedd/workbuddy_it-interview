@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？ · IT面试题库">
   <meta property="og:description" content="JDK 7 实现：内部是「Segment 数组」，每个 Segment 继承 ReentrantLock，相当于把数据分成 16 段，每段独立加锁（分段锁）。写操作只锁所在段，不同段可并发。缺点：锁粒度仍较粗（默认 16 段），且 Segment 个数初始化后就固定。 JDK 8 实现：废弃 Segment，结构…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/357.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/357.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/357">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？ · IT面试题库">
   <meta name="twitter:description" content="JDK 7 实现：内部是「Segment 数组」，每个 Segment 继承 ReentrantLock，相当于把数据分成 16 段，每段独立加锁（分段锁）。写操作只锁所在段，不同段可并发。缺点：锁粒度仍较粗（默认 16 段），且 Segment 个数初始化后就固定。 JDK 8 实现：废弃 Segment，结构…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/357.jpg">
+  <meta name="twitter:image:alt" content="JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/357">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？","text":"考察点：Segment 分段锁 vs CAS+synchronized 桶锁、size() 统计实现、读操作无锁。","answerCount":1,"datePublished":"2026-08-31T08:46:22.916Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"JDK 7 实现：内部是「Segment 数组」，每个 Segment 继承 ReentrantLock，相当于把数据分成 16 段，每段独立加锁（分段锁）。写操作只锁所在段，不同段可并发。缺点：锁粒度仍较粗（默认 16 段），且 Segment 个数初始化后就固定。 JDK 8 实现：废弃 Segment，结构与 HashMap 一致（数组 + 链表 + 红黑树），并发控制改为 CAS + synchronized 锁单个桶的头节点。只有真正发生冲突写同一个桶时才加锁，锁粒度从「段」降到「桶」，并发度大幅提升。 size() 统计：JDK 7 要分段加锁累加；JDK 8 用 baseCount + CounterCell[] 分段计数，读时基本无锁，统计近似且高效。 读操作：JDK 8 的 get 全程无锁（依赖 volatile 和内存可见性），读性能极高。 为什么 1.8 更好：锁粒度更细（桶级而非段级）、读无锁、红黑树兜底极端冲突，整体吞吐在并发下明显优于 1.7。","url":"https://itinterview.com.cn/question/357"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？","item":"https://itinterview.com.cn/q/357"}]}</script>

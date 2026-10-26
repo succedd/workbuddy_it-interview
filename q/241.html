@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库">
   <meta property="og:description" content="关系型数据库索引选择 B+ 树，核心原因是它契合磁盘的块式访问特性并天然支持范围查询： 1. 矮胖的树高，减少磁盘 IO：B+ 树一个节点存很多关键字（通常一页 16KB 可放数百个），三层即可索引上千万行，而二叉搜索树高度 log2(n) 太大、随机 IO 多。 2. 所有数据在叶子节点且用链表串联：范围查询（…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/241.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/241.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/241">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库">
   <meta name="twitter:description" content="关系型数据库索引选择 B+ 树，核心原因是它契合磁盘的块式访问特性并天然支持范围查询： 1. 矮胖的树高，减少磁盘 IO：B+ 树一个节点存很多关键字（通常一页 16KB 可放数百个），三层即可索引上千万行，而二叉搜索树高度 log2(n) 太大、随机 IO 多。 2. 所有数据在叶子节点且用链表串联：范围查询（…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/241.jpg">
+  <meta name="twitter:image:alt" content="为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/241">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？","text":"从磁盘 IO、范围查询和排序等角度说明 B+ 树作为索引结构的优势。","answerCount":1,"datePublished":"2026-08-27T01:34:16.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"关系型数据库索引选择 B+ 树，核心原因是它契合磁盘的块式访问特性并天然支持范围查询： 1. 矮胖的树高，减少磁盘 IO：B+ 树一个节点存很多关键字（通常一页 16KB 可放数百个），三层即可索引上千万行，而二叉搜索树高度 log2(n) 太大、随机 IO 多。 2. 所有数据在叶子节点且用链表串联：范围查询（BETWEEN、ORDER BY）只需顺链表扫描，无需中序遍历回退，效率极高；哈希表不支持范围查询。 3. 非叶子节点只存键，扇出更大：同样空间能放更多分支，进一步降低高度。 4. 查询稳定：任何键值都要走到叶子层，IO 次数一致；哈希表虽 O(1) 但无法排序/范围，且存在哈希冲突与扩容rehash代价。 因此：等值+范围查询兼顾选 B+ 树；纯等值、对顺序无要求且追求极致命中速度时可选用哈希索引。","url":"https://itinterview.com.cn/question/241"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"为什么数据库索引大多使用 B+ 树，而不是二叉搜索树或哈希表？","item":"https://itinterview.com.cn/q/241"}]}</script>

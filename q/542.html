@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？ · IT面试题库">
   <meta property="og:description" content="I/O 多路复用：单个线程/进程同时监听多个文件描述符（fd），哪个就绪就处理哪个，避免为每个连接开一个线程带来的资源消耗，是高并发网络编程的核心。 三者对比： select / poll：每次调用都需要把全量 fd 集合从用户态拷贝到内核态，并由内核遍历所有 fd 找出就绪的（O(n)）；select 默认有 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/542.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/542.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/542">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？ · IT面试题库">
   <meta name="twitter:description" content="I/O 多路复用：单个线程/进程同时监听多个文件描述符（fd），哪个就绪就处理哪个，避免为每个连接开一个线程带来的资源消耗，是高并发网络编程的核心。 三者对比： select / poll：每次调用都需要把全量 fd 集合从用户态拷贝到内核态，并由内核遍历所有 fd 找出就绪的（O(n)）；select 默认有 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/542.jpg">
+  <meta name="twitter:image:alt" content="什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/542">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？","text":"请解释 I/O 多路复用的目的，并对比 select、poll、epoll 在性能、文件描述符数量限制上的差异，说明 epoll 的 ET/LT 模式。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"I/O 多路复用：单个线程/进程同时监听多个文件描述符（fd），哪个就绪就处理哪个，避免为每个连接开一个线程带来的资源消耗，是高并发网络编程的核心。 三者对比： select / poll：每次调用都需要把全量 fd 集合从用户态拷贝到内核态，并由内核遍历所有 fd 找出就绪的（O(n)）；select 默认有 1024 个 fd 的数量限制，poll 用链表解除限制但仍需遍历。 epoll（Linux）：内核用红黑树管理注册的 fd，就绪链表记录就绪事件；只把“就绪的 fd”返回给应用（O(1)，与监听总数无关），且无 fd 数量硬上限，支持海量并发。 触发模式： LT（水平触发，默认）：只要 fd 可读/可写就持续通知，编程简单、不易丢事件。 ET（边缘触发）：仅在状态变化时通知一次，必须一次读完/写完（循环到 EAGAIN），效率更高但编码更复杂。","url":"https://itinterview.com.cn/question/542"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"Socket编程","item":"https://itinterview.com.cn/category?cat=54"},{"@type":"ListItem","position":4,"name":"什么是 I/O 多路复用？epoll 相比 select/poll 的优势在哪里？","item":"https://itinterview.com.cn/q/542"}]}</script>

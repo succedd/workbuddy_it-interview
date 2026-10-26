@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？ · IT面试题库">
   <meta property="og:description" content="要点： 强缓存（不发请求）：响应头 Cache-Control: max-age=3600（优先级高于 Expires）告诉浏览器在有效期内直接用本地副本，不发任何请求。命中时状态码仍是 200（from disk/memory cache）。适合不常变且带版本号的静态资源。 协商缓存（发请求问服务端）：强缓存失…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/768.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/768.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/768">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="要点： 强缓存（不发请求）：响应头 Cache-Control: max-age=3600（优先级高于 Expires）告诉浏览器在有效期内直接用本地副本，不发任何请求。命中时状态码仍是 200（from disk/memory cache）。适合不常变且带版本号的静态资源。 协商缓存（发请求问服务端）：强缓存失…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/768.jpg">
+  <meta name="twitter:image:alt" content="浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/768">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？","text":"考察点：强缓存（Cache-Control / Expires / max-age）、协商缓存（Last-Modified/If-Modified-Since、ETag/If-None-Match、304），以及二者如何配合。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 强缓存（不发请求）：响应头 Cache-Control: max-age=3600（优先级高于 Expires）告诉浏览器在有效期内直接用本地副本，不发任何请求。命中时状态码仍是 200（from disk/memory cache）。适合不常变且带版本号的静态资源。 协商缓存（发请求问服务端）：强缓存失效后，浏览器带上条件请求头去问服务端「我这份还新鲜吗」：① If-Modified-Since + 响应 Last-Modified（基于修改时间，精度秒级、易误判）；② If-None-Match + 响应 ETag（基于内容哈希，更精准）。若资源未变，服务端返回 304 Not Modified，浏览器继续用缓存；变了则返回 200 与新内容。 配合策略：先用强缓存挡掉大多数请求省带宽，过期后再走协商缓存校验，尽量拿 304；更新资源时改文件名/加哈希（如 app.a1b2.js）以强制刷新。","url":"https://itinterview.com.cn/question/768"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"HTTP与HTTPS","item":"https://itinterview.com.cn/category?cat=51"},{"@type":"ListItem","position":4,"name":"浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？","item":"https://itinterview.com.cn/q/768"}]}</script>

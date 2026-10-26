@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？ · IT面试题库">
   <meta property="og:description" content="要点： Shell 变量赋值时 = 两侧不能留空格（var = 1 会被当成命令执行）；引用值含空格必须用双引号包住：name=&quot;hello world&quot;，否则赋值只取第一段。 [ $var = 1 ] 在 $var 为空或含空格时会崩：空变量变成 [ = 1 ]（参数个数不对，语法错），含空格变成 [ hell…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/875.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/875.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/875">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： Shell 变量赋值时 = 两侧不能留空格（var = 1 会被当成命令执行）；引用值含空格必须用双引号包住：name=&quot;hello world&quot;，否则赋值只取第一段。 [ $var = 1 ] 在 $var 为空或含空格时会崩：空变量变成 [ = 1 ]（参数个数不对，语法错），含空格变成 [ hell…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/875.jpg">
+  <meta name="twitter:image:alt" content="Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/875">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？","text":"考察 Shell 变量展开与单词分割（word splitting）机制，以及引用变量的正确姿势。","answerCount":1,"datePublished":"2026-09-09T02:21:53.890Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： Shell 变量赋值时 = 两侧不能留空格（var = 1 会被当成命令执行）；引用值含空格必须用双引号包住：name=\"hello world\"，否则赋值只取第一段。 [ $var = 1 ] 在 $var 为空或含空格时会崩：空变量变成 [ = 1 ]（参数个数不对，语法错），含空格变成 [ hello world = 1 ]（被拆成多个参数）。务必写成 [ \"$var\" = \"1\" ]，用双引号包住变量。 推荐用 [[ ... ]]（Bash 关键字）替代 [（外部命令）：它不会做单词分割、支持 &&/|| 和正则 =~，更不易踩坑；数值比较用 (( var == 1 ))。","url":"https://itinterview.com.cn/question/875"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？","item":"https://itinterview.com.cn/q/875"}]}</script>

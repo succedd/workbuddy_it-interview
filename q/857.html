@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库">
   <meta property="og:description" content="要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 d…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/857.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/857.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/857">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库">
   <meta name="twitter:description" content="要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 d…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/857.jpg">
+  <meta name="twitter:image:alt" content="场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/857">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？","text":"考察点：微任务的工程化价值——用 queueMicrotask 平衡同步/异步分支的执行顺序。追问：为什么不直接把同步分支改成 setTimeout(fn, 0)？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：在同步分支中用 queueMicrotask() 包裹赋值与触发逻辑，让两个分支都变成「微任务级」延迟，时序即完全一致。 问题根因：缓存命中走同步路径（数据赋值、load 事件在调用返回前就完成），未命中走 Promise（赋值发生在微任务里）。调用方在两种情况下观察到的状态不同，甚至出现「函数刚返回时 data 未设置」的竞态。 修复方式： 为什么不用 setTimeout(fn, 0)：宏任务会被事件处理、渲染、其他 timeout 插队，延迟不可控且可能晚于调用方注册的其他回调；微任务保证在「当前脚本退出后、任何下一个任务之前」执行，是最小且确定的延迟。 通用原则：任何「同一操作可能同步也可能异步完成」的 API（缓存、本地存储、幂等请求）都应统一到微任务时序，避免调用方写两套处理逻辑。","url":"https://itinterview.com.cn/question/857"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"场景题：你的图片加载函数有两条路径——缓存命中时直接赋值并触发 load 事件（同步），未命中时走 fetch().then()（异步）。QA 反馈「有时调用结束后 data 属性还没设置」。如何修复，使两条路径的时序完全一致？","item":"https://itinterview.com.cn/q/857"}]}</script>

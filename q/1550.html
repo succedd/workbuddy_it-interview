@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。 · IT面试题库">
   <meta property="og:description" content="要点： 被测函数：先用正则实现 is_valid_email(s)，规则覆盖「含且仅一个 @、域名有点的基本结构」；真实业务还要限制长度与非法字符，但示例聚焦核心逻辑。 参数化避免重复：用 @pytest.mark.parametrize 把多组（输入, 期望）一次性跑成多个用例，新增 case 只加一行数据，可…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1550.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1550.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1550">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。 · IT面试题库">
   <meta name="twitter:description" content="要点： 被测函数：先用正则实现 is_valid_email(s)，规则覆盖「含且仅一个 @、域名有点的基本结构」；真实业务还要限制长度与非法字符，但示例聚焦核心逻辑。 参数化避免重复：用 @pytest.mark.parametrize 把多组（输入, 期望）一次性跑成多个用例，新增 case 只加一行数据，可…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1550.jpg">
+  <meta name="twitter:image:alt" content="用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1550">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。","text":"考察点：测试开发的基本功——参数化测试与断言设计。","answerCount":1,"datePublished":"2026-10-05T02:30:52.429Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 被测函数：先用正则实现 is_valid_email(s)，规则覆盖「含且仅一个 @、域名有点的基本结构」；真实业务还要限制长度与非法字符，但示例聚焦核心逻辑。 参数化避免重复：用 @pytest.mark.parametrize 把多组（输入, 期望）一次性跑成多个用例，新增 case 只加一行数据，可读性与可维护性远好于复制粘贴多个函数。 断言要具体：对非法输入断言返回 False、合法输入返回 True；可再补充「异常输入（None/非字符串）应安全返回 False 而不抛异常」的边界用例。 工程补充：把用例按等价类（合法/缺@/缺域名点/None）组织便于查漏；接入 CI 后每次提交自动跑，配合覆盖率工具确保核心分支都被覆盖。","url":"https://itinterview.com.cn/question/1550"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"测试开发","item":"https://itinterview.com.cn/category?cat=111"},{"@type":"ListItem","position":4,"name":"用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。","item":"https://itinterview.com.cn/q/1550"}]}</script>
@@ -118,7 +124,7 @@ def test_email(inp, exp):
       <a class="cta" href="https://itinterview.com.cn/question/1550">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/852">测试开发工程师与普通测试工程师的核心区别是什么？需要哪些工程能力？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1551">如何在 CI 中设计分层自动化测试策略（单元/接口/UI/冒烟）？如何平衡覆盖率与执行时长？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/852">测试开发工程师与普通测试工程师的核心区别是什么？需要哪些工程能力？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1551">如何在 CI 中设计分层自动化测试策略（单元/接口/UI/冒烟）？如何平衡覆盖率与执行时长？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1754">测试架构师如何为多个业务团队设计统一的分层测试策略和质量门禁，而不是每个团队各写一套？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1755">如果让你设计一个支撑多团队的测试平台，用例管理、执行调度、环境治理、结果分析四层该如何解耦？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

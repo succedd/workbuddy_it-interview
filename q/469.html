@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？ · IT面试题库">
   <meta property="og:description" content="什么是 in-context learning 模型在推理时，把若干「输入-输出」示例拼接进 prompt，再接上待预测样本，直接生成答案——整个过程不做任何梯度更新（无微调），仅靠注意力在上下文中「类比」示例完成任务。 为什么不需要更新参数 规模带来的涌现能力：参数量与训练数据足够大时，模型在预训练阶段隐式学会…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/469.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/469.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/469">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？ · IT面试题库">
   <meta name="twitter:description" content="什么是 in-context learning 模型在推理时，把若干「输入-输出」示例拼接进 prompt，再接上待预测样本，直接生成答案——整个过程不做任何梯度更新（无微调），仅靠注意力在上下文中「类比」示例完成任务。 为什么不需要更新参数 规模带来的涌现能力：参数量与训练数据足够大时，模型在预训练阶段隐式学会…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/469.jpg">
+  <meta name="twitter:image:alt" content="GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/469">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？","text":"GPT-3 论文展示了大模型仅凭提示词里的少量示例即可泛化到新任务，而无需微调，这是大模型区别于传统监督学习的关键能力。","answerCount":1,"datePublished":"2026-09-03T01:03:34.458Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"什么是 in-context learning 模型在推理时，把若干「输入-输出」示例拼接进 prompt，再接上待预测样本，直接生成答案——整个过程不做任何梯度更新（无微调），仅靠注意力在上下文中「类比」示例完成任务。 为什么不需要更新参数 规模带来的涌现能力：参数量与训练数据足够大时，模型在预训练阶段隐式学会了「从上下文中推断模式」的元能力； 预训练分布足够多样：海量语料使模型见过大量「指令-执行」式结构，few-shot 提示只是激活了这种已具备的能力； 隐式元学习假说：有研究认为预训练等价于在大量任务上做隐式元学习，few-shot 是其在推理时的表现。 实践要点 shot 数（0/1/k）越多通常越好，但受上下文窗口限制；示例的排列、格式一致性会显著影响效果。这也是后来 RLHF、思维链（CoT）等技术的地基。","url":"https://itinterview.com.cn/question/469"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"GPT系列","item":"https://itinterview.com.cn/category?cat=190"},{"@type":"ListItem","position":5,"name":"GPT-3 提出的「上下文学习 / 少样本学习」（in-context / few-shot learning）是什么？为什么大模型能不更新参数就完成新任务？","item":"https://itinterview.com.cn/q/469"}]}</script>

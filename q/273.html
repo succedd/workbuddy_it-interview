@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库【诞生】为什么不直接把数据存成文件，非要有数据库？ · IT面试题库">
   <meta property="og:description" content="存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/273.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="数据库【诞生】为什么不直接把数据存成文件，非要有数据库？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/273.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/273">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库【诞生】为什么不直接把数据存成文件，非要有数据库？ · IT面试题库">
   <meta name="twitter:description" content="存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/273.jpg">
+  <meta name="twitter:image:alt" content="数据库【诞生】为什么不直接把数据存成文件，非要有数据库？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/273">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库【诞生】为什么不直接把数据存成文件，非要有数据库？","text":"自己写个程序把数据保存成 JSON 文件，小项目完全够用。到底是哪几个问题，把「存文件」逼成了「数据库」？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"存文件在单机小数据下没问题，但四个问题会把它逼死： 1. 并发写冲突：两个请求同时改一条记录 → 需要锁与事务； 2. 检索效率：按条件查找只能全文件扫 → 需要索引（B+ 树等）； 3. 崩溃一致性：写到一半断电，文件损坏 → 需要 WAL/redo log 保证持久性； 4. 多用户与权限：谁改了什么、谁能看什么 → 需要访问控制与审计。 数据库 = 把这四件事做对的系统。事务 ACID、索引、锁——每一章面试题都对应一个「存文件方案」的死穴。","url":"https://itinterview.com.cn/question/273"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库【诞生】为什么不直接把数据存成文件，非要有数据库？","item":"https://itinterview.com.cn/q/273"}]}</script>

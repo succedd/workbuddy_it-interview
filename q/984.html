@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？ · IT面试题库">
   <meta property="og:description" content="要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/984.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/984.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/984">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/984.jpg">
+  <meta name="twitter:image:alt" content="Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/984">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","text":"考察点：CPS 变换、Continuation、挂起点、Job 层级与取消传播。协程是 Kotlin 面试必考核心。","answerCount":1,"datePublished":"2026-09-10T07:22:44.103Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： suspend 原理＝CPS 变换：编译器把 suspend 函数改写为带 Continuation 参数的状态机（suspendCoroutineUninterceptedOrReturn），每个挂起点是状态机的一个分支。函数「挂起」时把 Continuation 保存起来交还线程，恢复时从断点继续——本质是编译器帮你写回调，但代码保持同步形态。 结构化并发：每个协程属于一个 CoroutineScope，父子 Job 形成树：父取消则全部子取消、子异常按策略向父传播、父等待全部子完成才结束——杜绝「孤儿协程」泄漏（回调时代最大的坑）。 调度器：Dispatchers.Main/IO/Default 控制执行线程；withContext 切换线程并挂起等待，天然适合「主线程发请求、IO 线程执行、回主线程刷 UI」。 对比：比线程轻量（可百万级并发）、比 RxJava 可读（同步写法）、比回调安全（异常与取消有结构化语义）。","url":"https://itinterview.com.cn/question/984"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Kotlin","item":"https://itinterview.com.cn/category?cat=224"},{"@type":"ListItem","position":5,"name":"Kotlin 协程的 suspend 关键字原理是什么？结构化并发解决了什么问题？","item":"https://itinterview.com.cn/q/984"}]}</script>

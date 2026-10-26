@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？ · IT面试题库">
   <meta property="og:description" content="要点： initramfs 是临时根：一个 cpio 归档，被内核解压到内存并挂载为早期 rootfs；它负责加载存储/网络/加密驱动，找到并挂载真正的根分区，然后 switch_root 切换到最终 rootfs。 rootfs 是最终根：通常是 ext4、UBIFS、squashfs 等持久化文件系统，存放完…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1738.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1738.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1738">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？ · IT面试题库">
   <meta name="twitter:description" content="要点： initramfs 是临时根：一个 cpio 归档，被内核解压到内存并挂载为早期 rootfs；它负责加载存储/网络/加密驱动，找到并挂载真正的根分区，然后 switch_root 切换到最终 rootfs。 rootfs 是最终根：通常是 ext4、UBIFS、squashfs 等持久化文件系统，存放完…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1738.jpg">
+  <meta name="twitter:image:alt" content="initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1738">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？","text":"考察启动早期的临时根文件系统，以及 switch_root 的时机。","answerCount":1,"datePublished":"2026-10-19T05:43:25.632Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： initramfs 是临时根：一个 cpio 归档，被内核解压到内存并挂载为早期 rootfs；它负责加载存储/网络/加密驱动，找到并挂载真正的根分区，然后 switch_root 切换到最终 rootfs。 rootfs 是最终根：通常是 ext4、UBIFS、squashfs 等持久化文件系统，存放完整的用户空间；initramfs 只放启动必需的模块与脚本，占 RAM、关机即消失。 典型场景：根分区在 LVM / RAID / 加密盘、通过网络（NFS / iSCSI）挂载、需要早期固件或图形初始化。常见坑是 initramfs 缺少驱动导致 panic、镜像过大占用内存、switch_root 前没有清理旧根。","url":"https://itinterview.com.cn/question/1738"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？","item":"https://itinterview.com.cn/q/1738"}]}</script>

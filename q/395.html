@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？ · IT面试题库">
   <meta property="og:description" content="要点： 对撞指针（左右指针）：左起右终，根据条件向中间收缩，常用于有序数组的两数之和、反转、盛水容器、回文判定。典型 while left &lt; right 循环，每步排除无效区间，复杂度 O(n)。 快慢指针：两指针同方向、速度不同。快指针探路、慢指针写/标记，常用于原地去重（升序数组去重）、链表判环（Floyd…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/395.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/395.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/395">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？ · IT面试题库">
   <meta name="twitter:description" content="要点： 对撞指针（左右指针）：左起右终，根据条件向中间收缩，常用于有序数组的两数之和、反转、盛水容器、回文判定。典型 while left &lt; right 循环，每步排除无效区间，复杂度 O(n)。 快慢指针：两指针同方向、速度不同。快指针探路、慢指针写/标记，常用于原地去重（升序数组去重）、链表判环（Floyd…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/395.jpg">
+  <meta name="twitter:image:alt" content="双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/395">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？","text":"考察点：对撞指针（首尾向中）、快慢指针（同向往右，如判环/去重）、固定间距指针；理解它们把暴力 O(n^2) 降到 O(n) 的底层逻辑。","answerCount":1,"datePublished":"2026-09-01T09:42:48.962Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 对撞指针（左右指针）：左起右终，根据条件向中间收缩，常用于有序数组的两数之和、反转、盛水容器、回文判定。典型 while left \u003c right 循环，每步排除无效区间，复杂度 O(n)。 快慢指针：两指针同方向、速度不同。快指针探路、慢指针写/标记，常用于原地去重（升序数组去重）、链表判环（Floyd 环检测）、找中点。复杂度 O(n) 且原地、O(1) 额外空间。 固定间距指针（滑动窗口雏形）：两指针保持固定距离，随窗口整体平移，用于找定长子数组的最值。 为什么高效：把“枚举所有配对”的 O(n^2) 通过单调性/有序性剪枝成 O(n)；前提是数组有序或对问题有单调性可利用，否则双指针不成立。 易错点：边界 left \u003c right 还是 \u003c=、left++/right-- 的触发条件、是否漏掉重复元素，都需要结合样例推演。","url":"https://itinterview.com.cn/question/395"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？","item":"https://itinterview.com.cn/q/395"}]}</script>

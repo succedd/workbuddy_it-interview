@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何排查慢 SQL？ · IT面试题库">
   <meta property="og:description" content="1. 定位：开启慢查询日志（slow_query_log），或用 SHOW PROCESSLIST 看长事务。 2. 分析：EXPLAIN 看执行计划，重点 type（all&lt;index&lt;range&lt;ref&lt;eq_ref&lt;const）、key（是否用索引）、rows（扫描行数）、Extra（Using files…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/35.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何排查慢 SQL？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/35.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/35">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何排查慢 SQL？ · IT面试题库">
   <meta name="twitter:description" content="1. 定位：开启慢查询日志（slow_query_log），或用 SHOW PROCESSLIST 看长事务。 2. 分析：EXPLAIN 看执行计划，重点 type（all&lt;index&lt;range&lt;ref&lt;eq_ref&lt;const）、key（是否用索引）、rows（扫描行数）、Extra（Using files…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/35.jpg">
+  <meta name="twitter:image:alt" content="如何排查慢 SQL？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/35">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何排查慢 SQL？","text":"给出从 EXPLAIN 到优化的完整思路。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 定位：开启慢查询日志（slow_query_log），或用 SHOW PROCESSLIST 看长事务。 2. 分析：EXPLAIN 看执行计划，重点 type（all\u003cindex\u003crange\u003cref\u003ceq_ref\u003cconst）、key（是否用索引）、rows（扫描行数）、Extra（Using filesort/index/where）。 3. 常见原因：缺失索引、索引失效（函数/隐式转换/%前模糊）、选错索引、大表 JOIN、返回列过多、锁等待。 4. 优化：建/调整索引、改写 SQL（避免 SELECT *、分页优化）、减少锁范围、必要时分库分表。 5. 验证：复跑 EXPLAIN 与真实耗时。","url":"https://itinterview.com.cn/question/35"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"如何排查慢 SQL？","item":"https://itinterview.com.cn/q/35"}]}</script>

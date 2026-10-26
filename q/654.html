@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路 · IT面试题库">
   <meta property="og:description" content="要点一：CNAME 是把&quot;内容调度&quot;交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/654.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/654.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/654">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路 · IT面试题库">
   <meta name="twitter:description" content="要点一：CNAME 是把&quot;内容调度&quot;交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/654.jpg">
+  <meta name="twitter:image:alt" content="【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/654">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路","text":"追问链第二环：从 DNS 过渡到 CDN 调度。考察点：CNAME 在 CDN 调度中的枢纽作用；GSLB 全局负载均衡如何按用户位置分配最佳边缘节点 IP；DNS 解析与 CDN 调度的结合点。","answerCount":1,"datePublished":"2026-09-07T13:21:58.765Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：CNAME 是把\"内容调度\"交给 CDN 的开关 假设业务源站域名为 www.test.com，接入 CDN 后在 DNS 服务商处把它 CNAME 到如 www.test.com.cdn.dnsv1.com 的调度域名。此后所有对 www.test.com 的解析都会先落到这个 CNAME，进而交给腾讯云自主研发的 GSLB 调度体系处理。 为什么要这样做：厂商需要\"截获\"解析请求才能按用户 Local DNS 的来源（地域、运营商）动态返回最合适的边缘节点 IP。静态 A 记录做不到这种按请求者的智能调度，CNAME 是实现全局负载均衡的最小侵入方式。 要点二：完整请求链路（腾讯云 CDN） 1) 用户请求 www.test.com/1.jpg，先向 Local DNS 发起域名解析； 2) Local DNS 解析时发现配置了 CNAME www.test.com.cdn.dnsv1.com，解析请求被送至 Tencent DNS（GSLB），GSLB 为该请求分配最佳节点 IP； 3) Local DNS 获取并缓存该解析 IP，返回给用户； 4) 用户向该 IP 发起对 1.jpg 的访问请求。 要点三：节点命中与未命中的分叉 若该边缘节点已缓存 1.jpg，直接把数据返回给用户，请求结束——这是 CDN 低延迟的关键路径。 若节点未缓存，节点会向业务源站发起对 1.jpg 的请求（回源），获取资源后按用户自定义的缓存策略将资源缓存至节点，再返回给用户。之后该节点的同类请求即可命中缓存。","url":"https://itinterview.com.cn/question/654"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"DNS原理","item":"https://itinterview.com.cn/category?cat=52"},{"@type":"ListItem","position":4,"name":"【场景题】接入 CDN 时为什么要把自己的域名 CNAME 到 CDN 厂商的调度域名？请以腾讯云 CDN 为例说明从用户请求到拿到资源的完整链路","item":"https://itinterview.com.cn/q/654"}]}</script>

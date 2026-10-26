@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？ · IT面试题库">
   <meta property="og:description" content="要点： 完整链路： 1. 前端 wx.login() 拿到临时 code（5 分钟有效、一次性）； 2. 前端把 code 发给自己的服务端； 3. 服务端带上 AppID + AppSecret + code 调用微信 auth.code2Session 接口； 4. 微信返回 openid（用户在本小程序内的…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1042.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1042.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1042">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？ · IT面试题库">
   <meta name="twitter:description" content="要点： 完整链路： 1. 前端 wx.login() 拿到临时 code（5 分钟有效、一次性）； 2. 前端把 code 发给自己的服务端； 3. 服务端带上 AppID + AppSecret + code 调用微信 auth.code2Session 接口； 4. 微信返回 openid（用户在本小程序内的…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1042.jpg">
+  <meta name="twitter:image:alt" content="小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1042">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？","text":"考察点：wx.login、code2Session、session_key 与安全边界。安全类必考。","answerCount":1,"datePublished":"2026-09-10T11:52:29.223Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 完整链路： 1. 前端 wx.login() 拿到临时 code（5 分钟有效、一次性）； 2. 前端把 code 发给自己的服务端； 3. 服务端带上 AppID + AppSecret + code 调用微信 auth.code2Session 接口； 4. 微信返回 openid（用户在本小程序内的唯一标识）、unionid（同一开放平台账号下跨应用统一 ID，需绑开放平台）、session_key（用于解密敏感数据）； 5. 服务端根据 openid 创建或查询用户，签发自己的登录态（JWT 或 sessionId）返回前端，前端存 storage。 为什么 code 换 openid 必须在服务端：因为一旦前端直连微信接口，就必须把 AppSecret 下发到客户端——AppSecret 是应用的最高权限凭证（可调用支付、发消息等），任何放到前端的密钥都等同于公开。这是「密钥不出服务端」原则的直接应用。 两个安全要点： session_key 绝不能下发到前端。它用于解密 encryptedData（获取手机号、头像等），必须由服务端持有并完成解密；把小程序的加解密逻辑放在客户端是最常见的越权漏洞来源； 登录流程不能替代身份校验：拿到 openid 后只能说明「这是某个微信用户」，不能直接把它当作「该用户已授权业务身份」。业务权限必须由服务端按 openid 查库决定。 稳定性细节：wx.login 的 code 只能用一次，重试要重新获取；checkSession 可判断 session_key 是否过期（过期后需重新 login）；手机号获取现在推荐用 getPhoneNumber 返回的 code 方案（服务端调 phonenumber.getPhoneNumber），比旧的 encryptedData 解密更稳。 常见错误做法：把 AppSecret 放小程序代码里（可在反编译产物中直接搜到）；用 openid 当作密码生成固定 token（应带过期时间与刷新机制）；前端缓存登录态永不过期（应支持服务端主动失效以支持踢出登录）。","url":"https://itinterview.com.cn/question/1042"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"小程序开发","item":"https://itinterview.com.cn/category?cat=76"},{"@type":"ListItem","position":4,"name":"小程序的登录流程是怎么走的？code 换 openid 为什么必须放在服务端？","item":"https://itinterview.com.cn/q/1042"}]}</script>

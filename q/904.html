@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="主键自增 ID 和 UUID 作为主键各有什么优缺点？ · IT面试题库">
   <meta property="og:description" content="自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/904.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="主键自增 ID 和 UUID 作为主键各有什么优缺点？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/904.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/904">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="主键自增 ID 和 UUID 作为主键各有什么优缺点？ · IT面试题库">
   <meta name="twitter:description" content="自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/904.jpg">
+  <meta name="twitter:image:alt" content="主键自增 ID 和 UUID 作为主键各有什么优缺点？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/904">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"主键自增 ID 和 UUID 作为主键各有什么优缺点？","text":"设计表主键时，为什么推荐自增 ID 而不是 UUID？分布式场景下雪花 ID 是如何兼顾两者的？","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"自增 ID 的优点：①占用空间小（bigint 8 字节）；②顺序插入——InnoDB 是聚簇索引，数据按主键物理有序存放，自增主键总是追加到 B+ 树最右侧，页写满才开新页，无页分裂、写入快、空间紧凑。 UUID 的问题：①36 字符太长，二级索引叶子节点都要存一份主键，整表膨胀；②无序——新记录随机插到 B+ 树中间，频繁引发页分裂（挪数据、碎片化、写放大），性能差。 UUID 的优点：全局唯一、可分布式生成、不依赖数据库。 分布式场景：雪花 ID（Snowflake）：64 位 = 时间戳 + 机器 ID + 序列号。趋势递增（保留顺序插入优点）、分布式唯一、本地生成无单点。注意时钟回拨问题需处理。 结论：单机优先自增 ID；分布式用雪花 ID 等趋势递增方案；确实需要全局随机唯一（如对外暴露的资源标识）时，可以\"内键自增 + 外部业务唯一键\"分离。","url":"https://itinterview.com.cn/question/904"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"主键自增 ID 和 UUID 作为主键各有什么优缺点？","item":"https://itinterview.com.cn/q/904"}]}</script>

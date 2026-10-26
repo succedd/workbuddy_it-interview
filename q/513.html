@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。 · IT面试题库">
   <meta property="og:description" content="无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 c…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/513.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/513.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/513">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。 · IT面试题库">
   <meta name="twitter:description" content="无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 c…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/513.jpg">
+  <meta name="twitter:image:alt" content="什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/513">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。","text":"说明无缓冲 channel 的同步语义、所有 goroutine 阻塞时的 deadlock 报错，以及 select + default/超时 的用法。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"无缓冲 channel 的发送与接收必须同时就绪，否则发送方/接收方会阻塞等待对方。 死锁场景：当所有 goroutine 都在等待 channel 通信而无人可推进时，runtime 报 fatal error: all goroutines are asleep - deadlock!。例如主协程从无缓冲 channel 收数据，但没有任何 goroutine 往里发： 避免/应对手段： 用 select 的 default 分支做非阻塞收发：select { case v := \u003c-ch: ... default: ... } 用 select + time.After / context 超时跳出等待： 给 channel 加缓冲 make(chan int, n)，让发送方先写入而不立即阻塞（但不能消除逻辑死锁）。 确保有 goroutine 负责关闭/写入，并遵循“谁发送谁关闭”、用 for range ch 在关闭后退出接收。","url":"https://itinterview.com.cn/question/513"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Go","item":"https://itinterview.com.cn/category?cat=16"},{"@type":"ListItem","position":4,"name":"什么情况下 Go 的 channel 会导致死锁？select 语句如何避免阻塞？请举例说明。","item":"https://itinterview.com.cn/q/513"}]}</script>

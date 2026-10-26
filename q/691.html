@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="游戏客户端渲染主循环（update/render）与帧率控制要点？ · IT面试题库">
   <meta property="og:description" content="主循环：典型结构为 while(running){ input(); update(dt); render(); }，update 推进逻辑（物理、AI、动画），render 提交绘制，二者依赖固定/可变时间步长。 帧率控制：用 dt（帧间隔）做与帧率无关的运动；可变步长防卡顿跳变，固定步长（如 60Hz）保证物…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/691.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="游戏客户端渲染主循环（update/render）与帧率控制要点？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/691.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/691">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="游戏客户端渲染主循环（update/render）与帧率控制要点？ · IT面试题库">
   <meta name="twitter:description" content="主循环：典型结构为 while(running){ input(); update(dt); render(); }，update 推进逻辑（物理、AI、动画），render 提交绘制，二者依赖固定/可变时间步长。 帧率控制：用 dt（帧间隔）做与帧率无关的运动；可变步长防卡顿跳变，固定步长（如 60Hz）保证物…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/691.jpg">
+  <meta name="twitter:image:alt" content="游戏客户端渲染主循环（update/render）与帧率控制要点？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/691">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"游戏客户端渲染主循环（update/render）与帧率控制要点？","text":"说明游戏主循环结构及稳定帧率的关键。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"主循环：典型结构为 while(running){ input(); update(dt); render(); }，update 推进逻辑（物理、AI、动画），render 提交绘制，二者依赖固定/可变时间步长。 帧率控制：用 dt（帧间隔）做与帧率无关的运动；可变步长防卡顿跳变，固定步长（如 60Hz）保证物理稳定。 关键：避免在主线程做重 I/O、对象池减少 GC、合批降低 Draw Call，保证不掉帧。","url":"https://itinterview.com.cn/question/691"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏客户端开发","item":"https://itinterview.com.cn/category?cat=235"},{"@type":"ListItem","position":4,"name":"游戏客户端渲染主循环（update/render）与帧率控制要点？","item":"https://itinterview.com.cn/q/691"}]}</script>

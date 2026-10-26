@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？ · IT面试题库">
   <meta property="og:description" content="要点： chainId 是链的身份：交易签名包含 chainId，可防跨链重放；DApp 必须校验钱包当前 chainId 与合约部署链一致，否则会把交易发到错误的链或调用到空地址。 切换流程：先 wallet_switchEthereumChain 请求切换，未收录的链用 wallet_addEthereumC…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1726.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1726.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1726">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？ · IT面试题库">
   <meta name="twitter:description" content="要点： chainId 是链的身份：交易签名包含 chainId，可防跨链重放；DApp 必须校验钱包当前 chainId 与合约部署链一致，否则会把交易发到错误的链或调用到空地址。 切换流程：先 wallet_switchEthereumChain 请求切换，未收录的链用 wallet_addEthereumC…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1726.jpg">
+  <meta name="twitter:image:alt" content="DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1726">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？","text":"考察多链 DApp 的链路校验、钱包交互与盲签风险。","answerCount":1,"datePublished":"2026-10-19T05:43:24.891Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： chainId 是链的身份：交易签名包含 chainId，可防跨链重放；DApp 必须校验钱包当前 chainId 与合约部署链一致，否则会把交易发到错误的链或调用到空地址。 切换流程：先 wallet_switchEthereumChain 请求切换，未收录的链用 wallet_addEthereumChain 添加；切换成功后重新初始化 provider、合约地址和后端签名域，不能复用旧链的 nonce / domain。 防钓鱼：恶意站点可伪造相似合约地址、诱导 approve 无限额度或 permit 盲签。DApp 侧要白名单合约、展示 chainId 与函数名；钱包侧要明确展示收款地址、金额与 spender，用户应拒绝无法读懂的签名请求。","url":"https://itinterview.com.cn/question/1726"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"Web3开发","item":"https://itinterview.com.cn/category?cat=260"},{"@type":"ListItem","position":4,"name":"DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？","item":"https://itinterview.com.cn/q/1726"}]}</script>

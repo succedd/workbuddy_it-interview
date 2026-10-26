@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？ · IT面试题库">
   <meta property="og:description" content="要点： 第一步：复现与初判。用生产 SourceMap + 浏览器 Performance/Profiler 录制：白屏通常是渲染抛错未被捕获（Error Boundary 缺失）或首屏 JS 崩溃；卡死则是主线程被占满。看 Console 是否有报错、是否触发了 Error Boundary。 第二步：查渲染死…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1220.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1220.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1220">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？ · IT面试题库">
   <meta name="twitter:description" content="要点： 第一步：复现与初判。用生产 SourceMap + 浏览器 Performance/Profiler 录制：白屏通常是渲染抛错未被捕获（Error Boundary 缺失）或首屏 JS 崩溃；卡死则是主线程被占满。看 Console 是否有报错、是否触发了 Error Boundary。 第二步：查渲染死…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1220.jpg">
+  <meta name="twitter:image:alt" content="【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1220">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？","text":"追问链第 5 问：把前面的 Hooks/Fiber 知识用于实战排障。","answerCount":1,"datePublished":"2026-09-21T02:22:11.424Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 第一步：复现与初判。用生产 SourceMap + 浏览器 Performance/Profiler 录制：白屏通常是渲染抛错未被捕获（Error Boundary 缺失）或首屏 JS 崩溃；卡死则是主线程被占满。看 Console 是否有报错、是否触发了 Error Boundary。 第二步：查渲染死循环/频繁更新。在 React DevTools 的 Profiler 中录制交互，看是否有同一组件以极高频率 re-render（flamegraph 一片红）；用「为何渲染」高亮确认 props/state 是否每次都变；结合 useEffect 循环经验，排查 useState 在 render 中直接调用、或 effect 依赖不稳导致的无限更新。 第三步：查内存泄漏。用 DevTools Memory 做堆快照对比，看组件卸载后 Fiber/事件监听/DOM 节点是否被闭包或全局引用持有（如 addEventListener 未在 cleanup 移除、setInterval 未清除、订阅未退订），泄漏会让页面越用越卡直至崩溃。 第四步：止血与根治。临时加 Error Boundary 兜底白屏、给大列表加虚拟滚动；长期修复 effect 依赖、补全 cleanup、用 React.memo/useMemo 减少无效渲染；用监控（Sentry）上报真实用户侧的报错与卡顿指标。","url":"https://itinterview.com.cn/question/1220"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？","item":"https://itinterview.com.cn/q/1220"}]}</script>

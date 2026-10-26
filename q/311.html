@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？ · IT面试题库">
   <meta property="og:description" content="直接连业务库的三宗罪：重查询拖垮线上事务库（分析扫全表）、数据口径混乱（各写各的 SQL，两个部门两个「GMV」）、历史不可追溯（业务库只存当前态）。 数仓的本质：为分析而重新组织数据—— 1. 分层（ODS 原样贴源 → DWD 明细 → DWS 汇总 → ADS 应用），层层复用、口径统一； 2. 建模（维度…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/311.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/311.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/311">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？ · IT面试题库">
   <meta name="twitter:description" content="直接连业务库的三宗罪：重查询拖垮线上事务库（分析扫全表）、数据口径混乱（各写各的 SQL，两个部门两个「GMV」）、历史不可追溯（业务库只存当前态）。 数仓的本质：为分析而重新组织数据—— 1. 分层（ODS 原样贴源 → DWD 明细 → DWS 汇总 → ADS 应用），层层复用、口径统一； 2. 建模（维度…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/311.jpg">
+  <meta name="twitter:image:alt" content="大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/311">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？","text":"让分析师直接连业务库跑报表会出什么事？「一张订单」在业务系统和在数仓里，是同一份数据吗？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"直接连业务库的三宗罪：重查询拖垮线上事务库（分析扫全表）、数据口径混乱（各写各的 SQL，两个部门两个「GMV」）、历史不可追溯（业务库只存当前态）。 数仓的本质：为分析而重新组织数据—— 1. 分层（ODS 原样贴源 → DWD 明细 → DWS 汇总 → ADS 应用），层层复用、口径统一； 2. 建模（维度建模：事实表 + 维度表），把「业务过程」变成可切片分析的模型； 3. 历史化：缓慢变化维保留快照，今天能查去年任意一天的状态。 「同源不同用」是理解数仓的钥匙：业务库为「事务」（快写快改）优化，数仓为「查询」（快读快算）优化——两种优化方向天然冲突，所以必须分开。","url":"https://itinterview.com.cn/question/311"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"大数据【本质】业务库明明有数据，为什么还要费劲建「数据仓库」？数仓建模到底在加工什么？","item":"https://itinterview.com.cn/q/311"}]}</script>

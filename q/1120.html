@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="本地 Spring 事务如何与分布式事务衔接，边界在哪里？ · IT面试题库">
   <meta property="og:description" content="明确边界：单库内的 ACID 用 Spring 本地事务即可；一旦跨多个数据库/服务，本地事务无能为力，必须上升为分布式事务方案。 衔接方式一（最终一致）：本地事务内写「消息表/本地事件」，提交后由异步线程或 RocketMQ 事务消息投递到下游，下游幂等消费——本地事务与消息发送绑定，避免「库落了消息却没发」。…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1120.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="本地 Spring 事务如何与分布式事务衔接，边界在哪里？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1120.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1120">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="本地 Spring 事务如何与分布式事务衔接，边界在哪里？ · IT面试题库">
   <meta name="twitter:description" content="明确边界：单库内的 ACID 用 Spring 本地事务即可；一旦跨多个数据库/服务，本地事务无能为力，必须上升为分布式事务方案。 衔接方式一（最终一致）：本地事务内写「消息表/本地事件」，提交后由异步线程或 RocketMQ 事务消息投递到下游，下游幂等消费——本地事务与消息发送绑定，避免「库落了消息却没发」。…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1120.jpg">
+  <meta name="twitter:image:alt" content="本地 Spring 事务如何与分布式事务衔接，边界在哪里？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1120">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"本地 Spring 事务如何与分布式事务衔接，边界在哪里？","text":"下单服务在本地 DB 落库后还要调用库存、积分两个远程服务，如何保证整体一致性？请说明本地事务与分布式事务的衔接点与边界。","answerCount":1,"datePublished":"2026-09-13T02:40:15.771Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"明确边界：单库内的 ACID 用 Spring 本地事务即可；一旦跨多个数据库/服务，本地事务无能为力，必须上升为分布式事务方案。 衔接方式一（最终一致）：本地事务内写「消息表/本地事件」，提交后由异步线程或 RocketMQ 事务消息投递到下游，下游幂等消费——本地事务与消息发送绑定，避免「库落了消息却没发」。 衔接方式二（强一致）：跨库强一致用 Seata AT/TCC，AT 模式对业务无侵入（基于 undo_log 反向补偿），TCC 需手写 try/confirm/cancel 三阶段。 边界原则：能用「本地事务 + 最终一致」就不要用强一致分布式事务；只有金融级强一致才上 Seata；且下游必须幂等，补偿链路必须可观测。","url":"https://itinterview.com.cn/question/1120"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"本地 Spring 事务如何与分布式事务衔接，边界在哪里？","item":"https://itinterview.com.cn/q/1120"}]}</script>

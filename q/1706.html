@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？ · IT面试题库">
   <meta property="og:description" content="要点： 两层结构：索引文件（m3u8，纯文本）描述分片清单与元信息，媒体分片（ts 或 fMP4）承载实际音视频；播放器按索引顺序拉分片播放。 直播 vs 点播：直播索引是滑动的（只保留最近若干分片、持续刷新），点播索引固定并以 #EXT-X-ENDLIST 标记结束。 关键标签：EXT-X-TARGETDURA…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1706.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1706.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1706">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 两层结构：索引文件（m3u8，纯文本）描述分片清单与元信息，媒体分片（ts 或 fMP4）承载实际音视频；播放器按索引顺序拉分片播放。 直播 vs 点播：直播索引是滑动的（只保留最近若干分片、持续刷新），点播索引固定并以 #EXT-X-ENDLIST 标记结束。 关键标签：EXT-X-TARGETDURA…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1706.jpg">
+  <meta name="twitter:image:alt" content="HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1706">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？","text":"考察 HLS 协议核心结构，要求说明索引-分片模型与关键标签语义。","answerCount":1,"datePublished":"2026-10-17T10:38:27.572Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 两层结构：索引文件（m3u8，纯文本）描述分片清单与元信息，媒体分片（ts 或 fMP4）承载实际音视频；播放器按索引顺序拉分片播放。 直播 vs 点播：直播索引是滑动的（只保留最近若干分片、持续刷新），点播索引固定并以 #EXT-X-ENDLIST 标记结束。 关键标签：EXT-X-TARGETDURATION 约定分片最大时长（影响延迟与切换粒度）；EXT-X-MEDIA-SEQUENCE 给出分片起始序号（直播定位用）；EXT-X-PLAYLIST-TYPE 区分 VOD/LIVE/EVENT；加密场景还有 EXT-X-KEY。 实践：分片时长通常 2–6 秒——切太碎索引请求频繁，切太长首帧与频道切换延迟上升；CDN 对 m3u8 必须短缓存、对 ts 长缓存。","url":"https://itinterview.com.cn/question/1706"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"流媒体协议RTMP和HLS","item":"https://itinterview.com.cn/category?cat=253"},{"@type":"ListItem","position":4,"name":"HLS 的播放列表（m3u8）与分片机制是怎样的？EXT-X-TARGETDURATION、EXT-X-ENDLIST 等关键标签各起什么作用？","item":"https://itinterview.com.cn/q/1706"}]}</script>

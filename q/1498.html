@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Flutter 常见状态管理方案有哪些？如何选型？ · IT面试题库">
   <meta property="og:description" content="自底向上：① setState——单组件私有状态，一切方案的基础；② InheritedWidget——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ Provider——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1498.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Flutter 常见状态管理方案有哪些？如何选型？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1498.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1498">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flutter 常见状态管理方案有哪些？如何选型？ · IT面试题库">
   <meta name="twitter:description" content="自底向上：① setState——单组件私有状态，一切方案的基础；② InheritedWidget——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ Provider——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1498.jpg">
+  <meta name="twitter:image:alt" content="Flutter 常见状态管理方案有哪些？如何选型？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1498">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flutter 常见状态管理方案有哪些？如何选型？","text":"对比 setState / InheritedWidget / Provider / Riverpod / Bloc / GetX 的适用场景。","answerCount":1,"datePublished":"2026-10-05T01:03:57.376Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"自底向上：① setState——单组件私有状态，一切方案的基础；② InheritedWidget——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ Provider——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），适合中小项目；④ Riverpod——Provider 作者的下一代方案，编译期安全、无需 context、天然可测试，新项目首选之一；⑤ Bloc——事件驱动的单向数据流，强约束、可追溯（transformation 日志），适合大型团队与复杂业务流，学习成本高；⑥ GetX——路由/状态/依赖一体，上手快，但魔法多、规范松，团队协作需自律。 选型：小工具 setState 即可；中等项目 Provider/Riverpod；复杂状态机、强审计需求 Bloc；判断标准是团队规模与状态复杂度，而不是框架流行度。","url":"https://itinterview.com.cn/question/1498"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Flutter","item":"https://itinterview.com.cn/category?cat=228"},{"@type":"ListItem","position":4,"name":"Flutter 常见状态管理方案有哪些？如何选型？","item":"https://itinterview.com.cn/q/1498"}]}</script>

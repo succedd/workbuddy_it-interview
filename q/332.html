@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="嵌入式【边界】为什么嵌入式没有「重启就好」？OTA 升级为什么是嵌入式最危险的环节之一？ · IT面试题库">
   <meta property="og:description" content="嵌入式设备的三条硬约束让升级成为高危操作： 1. 不可现场维护：设备在用户家/野外/车内，变砖 = 物理召回； 2. 升级即断电窗口：写入固件时断电，设备可能无法启动； 3. 安全攻击面：OTA 通道是攻击者最爱的入口（伪造固件 = 接管全网设备）。 工程对策：双分区（A/B）——新固件写另一分区，验证通过才切换…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/332.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="嵌入式【边界】为什么嵌入式没有「重启就好」？OTA 升级为什么是嵌入式最危险的环节之一？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/332.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/332">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="嵌入式【边界】为什么嵌入式没有「重启就好」？OTA 升级为什么是嵌入式最危险的环节之一？ · IT面试题库">
   <meta name="twitter:description" content="嵌入式设备的三条硬约束让升级成为高危操作： 1. 不可现场维护：设备在用户家/野外/车内，变砖 = 物理召回； 2. 升级即断电窗口：写入固件时断电，设备可能无法启动； 3. 安全攻击面：OTA 通道是攻击者最爱的入口（伪造固件 = 接管全网设备）。 工程对策：双分区（A/B）——新固件写另一分区，验证通过才切换…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/332.jpg">
+  <meta name="twitter:image:alt" content="嵌入式【边界】为什么嵌入式没有「重启就好」？OTA 升级为什么是嵌入式最危险的环节之一？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/332">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式【边界】为什么嵌入式没有「重启就好」？OTA 升级为什么是嵌入式最危险的环节之一？","text":"服务器发版失败回滚就行。一台已经装在用户家里的智能锁、跑到高速上的汽车 ECU——升级失败意味着什么？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"嵌入式设备的三条硬约束让升级成为高危操作： 1. 不可现场维护：设备在用户家/野外/车内，变砖 = 物理召回； 2. 升级即断电窗口：写入固件时断电，设备可能无法启动； 3. 安全攻击面：OTA 通道是攻击者最爱的入口（伪造固件 = 接管全网设备）。 工程对策：双分区（A/B）——新固件写另一分区，验证通过才切换，失败回退旧分区；固件签名验证防伪造；升级包断点续传 + 校验；灰度分批发布控制爆炸半径。 规律：不可现场维护的系统，一切变更都必须自带「可回退」——这条原则在服务端（蓝绿发布、金丝雀）同样成立，嵌入式只是把它推到了极致。","url":"https://itinterview.com.cn/question/332"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式【边界】为什么嵌入式没有「重启就好」？OTA 升级为什么是嵌入式最危险的环节之一？","item":"https://itinterview.com.cn/q/332"}]}</script>

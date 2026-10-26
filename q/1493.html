@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何优化 Webpack 打包体积？列举可量化收益的手段。 · IT面试题库">
   <meta property="og:description" content="先分析：webpack-bundle-analyzer 看大头，不测量不优化。 收益从大到小：① 换/删依赖：moment→dayjs（省 ~280KB），lodash 按 lodash-es 按需引入；babel-plugin-import 组件库按需加载；② Tree Shaking 生效：ESM + sid…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1493.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何优化 Webpack 打包体积？列举可量化收益的手段。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1493.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1493">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何优化 Webpack 打包体积？列举可量化收益的手段。 · IT面试题库">
   <meta name="twitter:description" content="先分析：webpack-bundle-analyzer 看大头，不测量不优化。 收益从大到小：① 换/删依赖：moment→dayjs（省 ~280KB），lodash 按 lodash-es 按需引入；babel-plugin-import 组件库按需加载；② Tree Shaking 生效：ESM + sid…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1493.jpg">
+  <meta name="twitter:image:alt" content="如何优化 Webpack 打包体积？列举可量化收益的手段。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1493">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何优化 Webpack 打包体积？列举可量化收益的手段。","text":"从「分析→删依赖→压缩→分包」给出有优先级的优化清单。","answerCount":1,"datePublished":"2026-10-05T01:03:56.611Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先分析：webpack-bundle-analyzer 看大头，不测量不优化。 收益从大到小：① 换/删依赖：moment→dayjs（省 ~280KB），lodash 按 lodash-es 按需引入；babel-plugin-import 组件库按需加载；② Tree Shaking 生效：ESM + sideEffects + 生产模式；③ 代码分割：路由懒加载、大库动态 import（echarts 等首屏无关的直接砍掉首包）；④ 压缩：Terser 多进程 + terser-options 去注释，CSS 用 css-minimizer；⑤ 图片/字体：image-webpack-loader 压缩、小图转 base64（url-loader limit）；⑥ 按环境裁剪：DefinePlugin 生产剔除开发分支；⑦ externals/CDN：超大且稳定的库（如 echarts）走 CDN，不吃进 bundle；⑧ Gzip/Brotli：compression-webpack-plugin 预压缩，传输层再砍 70%。","url":"https://itinterview.com.cn/question/1493"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Webpack","item":"https://itinterview.com.cn/category?cat=69"},{"@type":"ListItem","position":5,"name":"如何优化 Webpack 打包体积？列举可量化收益的手段。","item":"https://itinterview.com.cn/q/1493"}]}</script>

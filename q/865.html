@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="编程题：每日温度（LeetCode 739）：给定每日气温数组，对每天求「还要等几天才会升温」，没有则填 0，要求优于 O(n²)。请解释单调栈为什么能把复杂度降到 O(n)。 · IT面试题库">
   <meta property="og:description" content="要点：维护一个下标单调递减的栈（栈顶到栈底温度递增的反向），遇「更大值」时批量弹栈结算。 为什么 O(n)：每个下标最多入栈一次、出栈一次，总操作数 ≤ 2n。暴力法每个 i 向右扫到底最坏 O(n²)（全递减序列）。 存下标而非存值的原因：答案是「天数差 i - j」，需要位置信息；存值就要额外哈希回查下标，多…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/865.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="编程题：每日温度（LeetCode 739）：给定每日气温数组，对每天求「还要等几天才会升温」，没有则填 0，要求优于 O(n²)。请解释单调栈为什么能把复杂度降到 O(n)。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/865.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/865">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="编程题：每日温度（LeetCode 739）：给定每日气温数组，对每天求「还要等几天才会升温」，没有则填 0，要求优于 O(n²)。请解释单调栈为什么能把复杂度降到 O(n)。 · IT面试题库">
   <meta name="twitter:description" content="要点：维护一个下标单调递减的栈（栈顶到栈底温度递增的反向），遇「更大值」时批量弹栈结算。 为什么 O(n)：每个下标最多入栈一次、出栈一次，总操作数 ≤ 2n。暴力法每个 i 向右扫到底最坏 O(n²)（全递减序列）。 存下标而非存值的原因：答案是「天数差 i - j」，需要位置信息；存值就要额外哈希回查下标，多…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/865.jpg">
+  <meta name="twitter:image:alt" content="编程题：每日温度（LeetCode 739）：给定每日气温数组，对每天求「还要等几天才会升温」，没有则填 0，要求优于 O(n²)。请解释单调栈为什么能把复杂度降到 O(n)。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/865">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：每日温度（LeetCode 739）：给定每日气温数组，对每天求「还要等几天才会升温」，没有则填 0，要求优于 O(n²)。请解释单调栈为什么能把复杂度降到 O(n)。","text":"考察点：单调栈的核心模型——「下一个更大元素」。追问：栈里存下标还是存值？为什么？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：维护一个下标单调递减的栈（栈顶到栈底温度递增的反向），遇「更大值」时批量弹栈结算。 为什么 O(n)：每个下标最多入栈一次、出栈一次，总操作数 ≤ 2n。暴力法每个 i 向右扫到底最坏 O(n²)（全递减序列）。 存下标而非存值的原因：答案是「天数差 i - j」，需要位置信息；存值就要额外哈希回查下标，多此一举。这也是单调栈题的通用习惯——栈里放可定位的东西。 模型抽象：本题是「下一个更大元素」的裸模板；把温度换成身高（LeetCode 84/496/503）都是同一栈形，只改弹栈条件方向。理解「被弹出时结算」这一时机，比背代码重要。","url":"https://itinterview.com.cn/question/865"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"编程题：每日温度（LeetCode 739）：给定每日气温数组，对每天求「还要等几天才会升温」，没有则填 0，要求优于 O(n²)。请解释单调栈为什么能把复杂度降到 O(n)。","item":"https://itinterview.com.cn/q/865"}]}</script>
@@ -109,7 +115,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/865">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">395 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

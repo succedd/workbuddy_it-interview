@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？ · IT面试题库">
   <meta property="og:description" content="要点：MQTT 是轻量的发布/订阅协议，基于 TCP、头部极小、支持离线遗嘱（LWT）与断线重连，非常适合「带宽小、电池供电、网络不稳」的设备；HTTP 是请求/响应、头部大、需设备常做被动服务端，不适合海量设备主动上报。 要点：对比：MQTT 解耦了生产者与消费者（通过 broker 主题路由），一对多广播天然…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1600.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1600.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1600">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？ · IT面试题库">
   <meta name="twitter:description" content="要点：MQTT 是轻量的发布/订阅协议，基于 TCP、头部极小、支持离线遗嘱（LWT）与断线重连，非常适合「带宽小、电池供电、网络不稳」的设备；HTTP 是请求/响应、头部大、需设备常做被动服务端，不适合海量设备主动上报。 要点：对比：MQTT 解耦了生产者与消费者（通过 broker 主题路由），一对多广播天然…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1600.jpg">
+  <meta name="twitter:image:alt" content="MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1600">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？","text":"考察物联网通信协议。","answerCount":1,"datePublished":"2026-10-07T08:06:40.167Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：MQTT 是轻量的发布/订阅协议，基于 TCP、头部极小、支持离线遗嘱（LWT）与断线重连，非常适合「带宽小、电池供电、网络不稳」的设备；HTTP 是请求/响应、头部大、需设备常做被动服务端，不适合海量设备主动上报。 要点：对比：MQTT 解耦了生产者与消费者（通过 broker 主题路由），一对多广播天然；HTTP 每次都要建连/带完整头部，开销大、且难做服务端主动下发。缺点：MQTT 需要常驻 broker、TLS 也有握手成本。 要点：QoS：QoS0「至多一次」（fire and forget，最快但可能丢）、QoS1「至少一次」（可能重复，需去重）、QoS2「恰好一次」（握手最重，保证不丢不重）；按数据重要性选档，遥测可用 QoS0，关键指令用 QoS1/2。","url":"https://itinterview.com.cn/question/1600"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"物联网协议MQTT","item":"https://itinterview.com.cn/category?cat=246"},{"@type":"ListItem","position":4,"name":"MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？","item":"https://itinterview.com.cn/q/1600"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何使用 Redis 做限流？ · IT面试题库">
   <meta property="og:description" content="1. 固定窗口计数器：INCR + EXPIRE，超过阈值拒绝。简单但有临界突刺。 2. 滑动窗口：用 ZSet 存时间戳（score=时间），统计窗口内数量并移除过期，精确但耗内存。 3. 令牌桶：用 List/ZSet 模拟令牌补充，或 Redis-Cell 模块的 CL.THROTTLE。 4. 漏桶：匀速…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/46.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何使用 Redis 做限流？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/46.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/46">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何使用 Redis 做限流？ · IT面试题库">
   <meta name="twitter:description" content="1. 固定窗口计数器：INCR + EXPIRE，超过阈值拒绝。简单但有临界突刺。 2. 滑动窗口：用 ZSet 存时间戳（score=时间），统计窗口内数量并移除过期，精确但耗内存。 3. 令牌桶：用 List/ZSet 模拟令牌补充，或 Redis-Cell 模块的 CL.THROTTLE。 4. 漏桶：匀速…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/46.jpg">
+  <meta name="twitter:image:alt" content="如何使用 Redis 做限流？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/46">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何使用 Redis 做限流？","text":"给出计数器/滑动窗口/令牌桶的实现思路。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 固定窗口计数器：INCR + EXPIRE，超过阈值拒绝。简单但有临界突刺。 2. 滑动窗口：用 ZSet 存时间戳（score=时间），统计窗口内数量并移除过期，精确但耗内存。 3. 令牌桶：用 List/ZSet 模拟令牌补充，或 Redis-Cell 模块的 CL.THROTTLE。 4. 漏桶：匀速处理，平滑但无突发。 实践：简单接口用固定窗口即可；需要平滑用滑动窗口或令牌桶；集群环境注意多实例共享计数（集中到同一 Redis）。","url":"https://itinterview.com.cn/question/46"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何使用 Redis 做限流？","item":"https://itinterview.com.cn/q/46"}]}</script>

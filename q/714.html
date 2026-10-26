@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vue2 的响应式原理（Object.defineProperty）及局限？ · IT面试题库">
   <meta property="og:description" content="原理：Vue2 在初始化时对 data 每个属性用 Object.defineProperty 重写 getter/setter，读取时收集依赖（Watcher），赋值时通知依赖更新视图（发布订阅）。 局限：① 无法监听对象新增/删除属性（需 Vue.set）；② 数组通过重写原型方法拦截，但下标/长度修改监听不…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/714.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Vue2 的响应式原理（Object.defineProperty）及局限？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/714.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/714">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vue2 的响应式原理（Object.defineProperty）及局限？ · IT面试题库">
   <meta name="twitter:description" content="原理：Vue2 在初始化时对 data 每个属性用 Object.defineProperty 重写 getter/setter，读取时收集依赖（Watcher），赋值时通知依赖更新视图（发布订阅）。 局限：① 无法监听对象新增/删除属性（需 Vue.set）；② 数组通过重写原型方法拦截，但下标/长度修改监听不…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/714.jpg">
+  <meta name="twitter:image:alt" content="Vue2 的响应式原理（Object.defineProperty）及局限？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/714">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue2 的响应式原理（Object.defineProperty）及局限？","text":"说明 Vue2 如何实现数据驱动视图，以及其已知短板。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：Vue2 在初始化时对 data 每个属性用 Object.defineProperty 重写 getter/setter，读取时收集依赖（Watcher），赋值时通知依赖更新视图（发布订阅）。 局限：① 无法监听对象新增/删除属性（需 Vue.set）；② 数组通过重写原型方法拦截，但下标/长度修改监听不到；③ 递归劫持深对象有性能开销。 Vue3 改用 Proxy 从根本上解决了这些限制，且支持懒代理。","url":"https://itinterview.com.cn/question/714"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue2","item":"https://itinterview.com.cn/category?cat=62"},{"@type":"ListItem","position":5,"name":"Vue2 的响应式原理（Object.defineProperty）及局限？","item":"https://itinterview.com.cn/q/714"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="微服务之间应该选 REST、RPC 还是消息队列？同步调用与异步消息如何取舍？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 拆开之后，进程内调用变成网络通信 微服务把原来的本地方法调用变成一次 RPC、一次 HTTP 请求、一次消息投递或一次副本同步。同步调用要处理超时和「结果不确定」；异步消息要处理重复、顺序和最终一致性。两者不是二选一，同一系统里可以并存。 2. 三类方式对比 | 维度 | REST（HTTP/JSO…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1285.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="微服务之间应该选 REST、RPC 还是消息队列？同步调用与异步消息如何取舍？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1285.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1285">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="微服务之间应该选 REST、RPC 还是消息队列？同步调用与异步消息如何取舍？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 拆开之后，进程内调用变成网络通信 微服务把原来的本地方法调用变成一次 RPC、一次 HTTP 请求、一次消息投递或一次副本同步。同步调用要处理超时和「结果不确定」；异步消息要处理重复、顺序和最终一致性。两者不是二选一，同一系统里可以并存。 2. 三类方式对比 | 维度 | REST（HTTP/JSO…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1285.jpg">
+  <meta name="twitter:image:alt" content="微服务之间应该选 REST、RPC 还是消息队列？同步调用与异步消息如何取舍？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1285">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"微服务之间应该选 REST、RPC 还是消息队列？同步调用与异步消息如何取舍？","text":"考察点：服务间通信方式的选型依据与各自需要补齐的能力。","answerCount":1,"datePublished":"2026-09-26T02:32:22.074Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 拆开之后，进程内调用变成网络通信 微服务把原来的本地方法调用变成一次 RPC、一次 HTTP 请求、一次消息投递或一次副本同步。同步调用要处理超时和「结果不确定」；异步消息要处理重复、顺序和最终一致性。两者不是二选一，同一系统里可以并存。 2. 三类方式对比 | 维度 | REST（HTTP/JSON） | RPC（Dubbo/gRPC） | 消息队列 | | --- | --- | --- | --- | | 通信模型 | 同步请求-响应 | 同步请求-响应 | 异步生产者-消费者 | | 耦合度 | 松，跨语言友好 | 接口/IDL 强约定，耦合更紧 | 时间与空间解耦，依赖 Broker | | 性能 | 一般（文本、HTTP 头开销） | 高（二进制序列化、长连接复用） | 高吞吐，可削峰 | | 失败语义 | 超时结果不确定，需幂等 | 同左 | 至少一次投递，需幂等消费 | | 典型场景 | 对外 API、跨语言、调试方便 | 内部高频调用、强接口契约 | 通知、积分、日志、数据同步、削峰 | 3. 选型从业务时效出发 需要同步返回结果的用户查询：用同步调用（REST 或 RPC）。 发起后不关心立即结果的通知/状态同步：用消息队列，例如订单创建后的通知、积分发放、数据同步。 服务内部高频调用：优先 RPC；需要跨团队、跨语言或对外暴露时优先 REST。 不要只按团队熟悉的框架决定，要结合业务时效、失败处理和一致性要求综合判断。 4. 两条链路各自要补的能力 同步链路：必须设置超时；重试要谨慎，只适合可重试且有幂等保护的操作；同步调用链过长会放大延迟和故障，要控制链路深度。一个完整的 RPC 框架还需要注册发现、负载均衡、序列化、超时机制等配套。 异步链路：必须处理消息重复（消费幂等）、顺序（同一业务键保序或版本号）、最终一致性（重试、死信队列、对账补偿）。 5. 一句话原则 能同步拿到结果的走同步，副作用与后续流程尽量异步解耦；无论哪种，失败路径（超时、重试、幂等、补偿）都要在设计阶段定下来。","url":"https://itinterview.com.cn/question/1285"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务架构","item":"https://itinterview.com.cn/category?cat=121"},{"@type":"ListItem","position":4,"name":"微服务之间应该选 REST、RPC 还是消息队列？同步调用与异步消息如何取舍？","item":"https://itinterview.com.cn/q/1285"}]}</script>

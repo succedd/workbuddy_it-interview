@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？ · IT面试题库">
   <meta property="og:description" content="SameSite 控制浏览器在跨站请求时是否携带该 Cookie，三个取值： Strict：任何跨站请求都不带 Cookie，防护最强；但用户体验受损——用户从外部链接跳回本站会“未登录”。 Lax（多数浏览器默认值）：允许顶级 GET 导航（如点击链接跳转）携带，但拦截跨站的 POST 等写请求；可挡住大多数 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/556.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/556.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/556">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？ · IT面试题库">
   <meta name="twitter:description" content="SameSite 控制浏览器在跨站请求时是否携带该 Cookie，三个取值： Strict：任何跨站请求都不带 Cookie，防护最强；但用户体验受损——用户从外部链接跳回本站会“未登录”。 Lax（多数浏览器默认值）：允许顶级 GET 导航（如点击链接跳转）携带，但拦截跨站的 POST 等写请求；可挡住大多数 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/556.jpg">
+  <meta name="twitter:image:alt" content="Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/556">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？","text":"请说明 Strict / Lax / None 的差异、默认行为，并指出 SameSite 作为 CSRF 防御的局限。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"SameSite 控制浏览器在跨站请求时是否携带该 Cookie，三个取值： Strict：任何跨站请求都不带 Cookie，防护最强；但用户体验受损——用户从外部链接跳回本站会“未登录”。 Lax（多数浏览器默认值）：允许顶级 GET 导航（如点击链接跳转）携带，但拦截跨站的 POST 等写请求；可挡住大多数 CSRF，但对 GET 型状态变更仍可能漏。 None：跨站一律携带，但必须同时设 Secure（仅 HTTPS），无防护力。 缓解 CSRF 的机制：把认证 Cookie 设为 Strict 或 Lax，第三方站点伪造的请求就不会带上会话 Cookie。 局限（不能替代 Token）： 1. 它是纵深防御，不是完整方案； 2. “同站（scheme + 注册域）”≠“同源”，同一注册域下的子域仍可绕过（需同时信任所有子域）； 3. 旧浏览器/降级场景可能不生效。实务上仍应保留 CSRF Token。","url":"https://itinterview.com.cn/question/556"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"CSRF跨站请求伪造","item":"https://itinterview.com.cn/category?cat=206"},{"@type":"ListItem","position":4,"name":"Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？","item":"https://itinterview.com.cn/q/556"}]}</script>

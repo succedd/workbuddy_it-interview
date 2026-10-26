@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。 · IT面试题库">
   <meta property="og:description" content="要点： 自动配置类（放在独立的 autoconfigure 模块）：用 @AutoConfiguration（本身即 @Configuration）标注；配合 @ConditionalOnClass 控制『classpath 有你的库类才生效』，配合 @ConditionalOnMissingBean 让用户能覆…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1195.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1195.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1195">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。 · IT面试题库">
   <meta name="twitter:description" content="要点： 自动配置类（放在独立的 autoconfigure 模块）：用 @AutoConfiguration（本身即 @Configuration）标注；配合 @ConditionalOnClass 控制『classpath 有你的库类才生效』，配合 @ConditionalOnMissingBean 让用户能覆…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1195.jpg">
+  <meta name="twitter:image:alt" content="编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1195">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。","text":"考察点：Starter 原理落地——@AutoConfiguration + @ConditionalOnClass/@ConditionalOnMissingBean + AutoConfiguration.imports 文件三件套；要求给出可编译的骨架，并解释为什么能被 Spring Boot 自动发现。","answerCount":1,"datePublished":"2026-09-20T02:21:48.591Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 自动配置类（放在独立的 autoconfigure 模块）：用 @AutoConfiguration（本身即 @Configuration）标注；配合 @ConditionalOnClass 控制『classpath 有你的库类才生效』，配合 @ConditionalOnMissingBean 让用户能覆盖默认 Bean。 配置属性类：用 @ConfigurationProperties(\"my.service\") 绑定 application.yml 的 my.service.endpoint 等项，提供 getter/setter。 注册文件（关键！）：在 src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 中写一行全限定类名：com.example.lib.MyServiceAutoConfiguration。Spring Boot 启动时会扫描所有 jar 的这个文件并把列出的类作为自动配置候选；文件名写错（如仍用旧版 spring.factories）会导致配置静默不加载。 starter 模块：一个只依赖『autoconfigure 模块 + 你的库』的空 jar，靠它把自动配置与默认依赖一起引入；用户只需引入这个 starter 即可。 核心：Starter = 『一个带条件注解的 @AutoConfiguration 类 + 一个写对路径的 AutoConfiguration.imports 文件 + 一个聚合依赖的 starter jar』。","url":"https://itinterview.com.cn/question/1195"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring Boot","item":"https://itinterview.com.cn/category?cat=82"},{"@type":"ListItem","position":5,"name":"编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。","item":"https://itinterview.com.cn/q/1195"}]}</script>

@@ -18,7 +18,17 @@ def mergeTwoLists(l1, l2):
   # 你的实现
 ``` · IT面试题库">
   <meta property="og:description" content="要点：双指针比较取小者接尾，哑节点消除「新头结点」特判。 哑节点的价值：第一条接上的节点没有前驱，不用 dummy 就得写 if head is None 的特判；有了 dummy，所有节点一视同仁地接到 tail 后面，最后返回 dummy.next，代码少一个分支、少一处出错。 稳定性细节：相等时取 l1（&lt;…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/862.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="编程题：将两个升序链表合并为一个新的升序链表（LeetCode 21），要求拼接已有节点、不新建节点。为什么引入哑节点（dummy node）能显著简化代码？
+
+```python
+def mergeTwoLists(l1, l2):
+  # 你的实现
+``` · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/862.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/862">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
@@ -29,7 +39,13 @@ def mergeTwoLists(l1, l2):
   # 你的实现
 ``` · IT面试题库">
   <meta name="twitter:description" content="要点：双指针比较取小者接尾，哑节点消除「新头结点」特判。 哑节点的价值：第一条接上的节点没有前驱，不用 dummy 就得写 if head is None 的特判；有了 dummy，所有节点一视同仁地接到 tail 后面，最后返回 dummy.next，代码少一个分支、少一处出错。 稳定性细节：相等时取 l1（&lt;…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/862.jpg">
+  <meta name="twitter:image:alt" content="编程题：将两个升序链表合并为一个新的升序链表（LeetCode 21），要求拼接已有节点、不新建节点。为什么引入哑节点（dummy node）能显著简化代码？
+
+```python
+def mergeTwoLists(l1, l2):
+  # 你的实现
+``` · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/862">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：将两个升序链表合并为一个新的升序链表（LeetCode 21），要求拼接已有节点、不新建节点。为什么引入哑节点（dummy node）能显著简化代码？\n\n```python\ndef mergeTwoLists(l1, l2):\n  # 你的实现\n```","text":"考察点：有序结构归并 + 哑节点技巧；追问链从单链表操作过渡到双链表协作。追问：如果合并 K 个有序链表，你会怎么扩展？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：双指针比较取小者接尾，哑节点消除「新头结点」特判。 哑节点的价值：第一条接上的节点没有前驱，不用 dummy 就得写 if head is None 的特判；有了 dummy，所有节点一视同仁地接到 tail 后面，最后返回 dummy.next，代码少一个分支、少一处出错。 稳定性细节：相等时取 l1（\u003c=）保证归并稳定；循环结束后只需 tail.next = l1 or l2 一次拼上剩余段，因为剩余段本身有序。 复杂度：时间 O(m+n)，空间 O(1)（只动指针）。 扩展：K 个链表可用小顶堆维护 K 个当前头（O(N log K)），或两两分治合并，呼应归并排序结构。","url":"https://itinterview.com.cn/question/862"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"编程题：将两个升序链表合并为一个新的升序链表（LeetCode 21），要求拼接已有节点、不新建节点。为什么引入哑节点（dummy node）能显著简化代码？\n\n```python\ndef mergeTwoLists(l1, l2):\n  # 你的实现\n```","item":"https://itinterview.com.cn/q/862"}]}</script>
@@ -132,7 +148,7 @@ def mergeTwoLists(l1, l2):
       <a class="cta" href="https://itinterview.com.cn/question/862">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">395 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

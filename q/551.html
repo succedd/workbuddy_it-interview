@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 SQL 盲注？布尔盲注与时间盲注分别如何工作？ · IT面试题库">
   <meta property="og:description" content="盲注（Blind SQLi）：注入后页面不直接回显查询结果，攻击者通过“间接信号”推断数据。 1. 布尔盲注：构造 AND 条件，根据页面“真/假”两种状态差异推断。 若页面正常返回说明第一位是 &#39;a&#39;，否则不是；逐字符、逐位枚举即可拖库。 2. 时间盲注：在无法用页面内容区分时，利用数据库延时函数把“条件真假”…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/551.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 SQL 盲注？布尔盲注与时间盲注分别如何工作？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/551.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/551">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 SQL 盲注？布尔盲注与时间盲注分别如何工作？ · IT面试题库">
   <meta name="twitter:description" content="盲注（Blind SQLi）：注入后页面不直接回显查询结果，攻击者通过“间接信号”推断数据。 1. 布尔盲注：构造 AND 条件，根据页面“真/假”两种状态差异推断。 若页面正常返回说明第一位是 &#39;a&#39;，否则不是；逐字符、逐位枚举即可拖库。 2. 时间盲注：在无法用页面内容区分时，利用数据库延时函数把“条件真假”…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/551.jpg">
+  <meta name="twitter:image:alt" content="什么是 SQL 盲注？布尔盲注与时间盲注分别如何工作？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/551">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 SQL 盲注？布尔盲注与时间盲注分别如何工作？","text":"请说明在页面不回显数据库数据的情况下，攻击者如何利用布尔差异或响应时延逐位“猜解”数据的原理。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"盲注（Blind SQLi）：注入后页面不直接回显查询结果，攻击者通过“间接信号”推断数据。 1. 布尔盲注：构造 AND 条件，根据页面“真/假”两种状态差异推断。 若页面正常返回说明第一位是 'a'，否则不是；逐字符、逐位枚举即可拖库。 2. 时间盲注：在无法用页面内容区分时，利用数据库延时函数把“条件真假”转为“响应快慢”。 若响应延迟约 5 秒，说明条件成立。 两者均可用 sqlmap 等工具自动化。防御根本仍是参数化查询 + 最小权限 + 关闭冗余报错。","url":"https://itinterview.com.cn/question/551"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"SQL注入","item":"https://itinterview.com.cn/category?cat=204"},{"@type":"ListItem","position":4,"name":"什么是 SQL 盲注？布尔盲注与时间盲注分别如何工作？","item":"https://itinterview.com.cn/q/551"}]}</script>

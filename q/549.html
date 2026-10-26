@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SQL 注入的原理是什么？为什么拼接 SQL 是危险的？ · IT面试题库">
   <meta property="og:description" content="原理：当程序把用户可控输入直接拼接到 SQL 字符串、而非作为“数据”参数对待时，输入内容会被数据库当作 SQL 代码执行，从而改变原有语句的语义。 危险示例（字符串拼接）： 若用户输入 name = admin&#39; --，语句变为： -- 之后被注释，攻击者无需密码即以 admin 登录。更危险的可拼接 &#39;; D…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/549.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SQL 注入的原理是什么？为什么拼接 SQL 是危险的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/549.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/549">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SQL 注入的原理是什么？为什么拼接 SQL 是危险的？ · IT面试题库">
   <meta name="twitter:description" content="原理：当程序把用户可控输入直接拼接到 SQL 字符串、而非作为“数据”参数对待时，输入内容会被数据库当作 SQL 代码执行，从而改变原有语句的语义。 危险示例（字符串拼接）： 若用户输入 name = admin&#39; --，语句变为： -- 之后被注释，攻击者无需密码即以 admin 登录。更危险的可拼接 &#39;; D…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/549.jpg">
+  <meta name="twitter:image:alt" content="SQL 注入的原理是什么？为什么拼接 SQL 是危险的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/549">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SQL 注入的原理是什么？为什么拼接 SQL 是危险的？","text":"请结合示例说明 SQL 注入是如何发生的，以及为什么将用户输入直接拼接到 SQL 语句中会破坏“代码与数据”的边界。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：当程序把用户可控输入直接拼接到 SQL 字符串、而非作为“数据”参数对待时，输入内容会被数据库当作 SQL 代码执行，从而改变原有语句的语义。 危险示例（字符串拼接）： 若用户输入 name = admin' --，语句变为： -- 之后被注释，攻击者无需密码即以 admin 登录。更危险的可拼接 '; DROP TABLE users; -- 造成破坏。 根因：拼接混同了“SQL 指令”与“用户数据”，数据库无法区分二者。正确做法是用参数化查询把数据边界固化（见下题）。","url":"https://itinterview.com.cn/question/549"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"SQL注入","item":"https://itinterview.com.cn/category?cat=204"},{"@type":"ListItem","position":4,"name":"SQL 注入的原理是什么？为什么拼接 SQL 是危险的？","item":"https://itinterview.com.cn/q/549"}]}</script>

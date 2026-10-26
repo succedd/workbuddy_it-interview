@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vue3 的响应式原理是什么？与 Vue2 有何不同？ · IT面试题库">
   <meta property="og:description" content="Vue2：基于 Object.defineProperty 劫持属性 get/set，需递归遍历、对新增/删除属性需用 Vue.set/delete，数组通过重写方法实现。 Vue3：基于 Proxy 代理整个对象，懒代理（访问才递归），天然支持新增/删除属性、数组索引与 length 变化，性能更好、代码更简洁…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/26.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Vue3 的响应式原理是什么？与 Vue2 有何不同？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/26.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/26">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vue3 的响应式原理是什么？与 Vue2 有何不同？ · IT面试题库">
   <meta name="twitter:description" content="Vue2：基于 Object.defineProperty 劫持属性 get/set，需递归遍历、对新增/删除属性需用 Vue.set/delete，数组通过重写方法实现。 Vue3：基于 Proxy 代理整个对象，懒代理（访问才递归），天然支持新增/删除属性、数组索引与 length 变化，性能更好、代码更简洁…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/26.jpg">
+  <meta name="twitter:image:alt" content="Vue3 的响应式原理是什么？与 Vue2 有何不同？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/26">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vue3 的响应式原理是什么？与 Vue2 有何不同？","text":"说明 Proxy 与 Object.defineProperty 的差异及优势。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Vue2：基于 Object.defineProperty 劫持属性 get/set，需递归遍历、对新增/删除属性需用 Vue.set/delete，数组通过重写方法实现。 Vue3：基于 Proxy 代理整个对象，懒代理（访问才递归），天然支持新增/删除属性、数组索引与 length 变化，性能更好、代码更简洁。配合 Reflect 操作。 心智模型：reactive() 返回 Proxy，ref() 用对象包 .value（模板自动解包），effect/track/trigger 完成依赖收集与触发。","url":"https://itinterview.com.cn/question/26"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"Vue3 的响应式原理是什么？与 Vue2 有何不同？","item":"https://itinterview.com.cn/q/26"}]}</script>

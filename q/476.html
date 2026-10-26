@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？ · IT面试题库">
   <meta property="og:description" content="对称加密 vs 非对称加密的核心区别： 密钥数量：对称加密使用单一密钥，加密和解密共用同一把密钥；非对称加密使用一对密钥（公钥 + 私钥），公钥加密只能用私钥解密，私钥加密只能用公钥解密。 性能：对称加密运算快、开销小，适合加密大量数据；非对称加密数学运算复杂，速度慢，不适合直接加密大数据。 密钥分发：对称加密的…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/476.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/476.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/476">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？ · IT面试题库">
   <meta name="twitter:description" content="对称加密 vs 非对称加密的核心区别： 密钥数量：对称加密使用单一密钥，加密和解密共用同一把密钥；非对称加密使用一对密钥（公钥 + 私钥），公钥加密只能用私钥解密，私钥加密只能用公钥解密。 性能：对称加密运算快、开销小，适合加密大量数据；非对称加密数学运算复杂，速度慢，不适合直接加密大数据。 密钥分发：对称加密的…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/476.jpg">
+  <meta name="twitter:image:alt" content="对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/476">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？","text":"对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？","answerCount":1,"datePublished":"2026-09-05T06:18:10.295Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"对称加密 vs 非对称加密的核心区别： 密钥数量：对称加密使用单一密钥，加密和解密共用同一把密钥；非对称加密使用一对密钥（公钥 + 私钥），公钥加密只能用私钥解密，私钥加密只能用公钥解密。 性能：对称加密运算快、开销小，适合加密大量数据；非对称加密数学运算复杂，速度慢，不适合直接加密大数据。 密钥分发：对称加密的致命弱点是密钥必须安全地传递给对方，一旦传递过程被截获，整个通信就不安全了；非对称加密只需公开公钥，私钥自己保留，彻底解决了密钥分发问题。 典型算法：对称加密有 AES、DES、3DES；非对称加密有 RSA、ECDHE、ECDSA。 HTTPS 为何采用混合加密： 如果只用对称加密：密钥怎么安全传给对方？用明文传会被人截获，不用明文传又不知道怎么用——死循环。 如果只用非对称加密：每次通信都要做复杂的非对称运算，性能太差，无法支撑大规模 Web 流量。 混合方案：用非对称加密来安全地协商出一个「会话密钥」，后续所有 HTTP 数据都用这个会话密钥走对称加密。这样既保证了密钥交换的安全，又保证了数据传输的效率。 具体做法：客户端用服务器的公钥加密一个随机生成的会话密钥发过去，服务器用自己的私钥解密，双方都持有同一个会话密钥，之后全部改用对称加密通信。","url":"https://itinterview.com.cn/question/476"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"HTTP与HTTPS","item":"https://itinterview.com.cn/category?cat=51"},{"@type":"ListItem","position":4,"name":"对称加密与非对称加密的区别是什么？HTTPS 为什么采用混合加密而不是只用其中一种？","item":"https://itinterview.com.cn/q/476"}]}</script>

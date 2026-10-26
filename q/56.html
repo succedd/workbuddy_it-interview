@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？ · IT面试题库">
   <meta property="og:description" content="kubectl describe pod 看 Events 是关键。 Pending： 资源不足（CPU/内存 requests 超过节点剩余）→ 看 kubectl get nodes 与资源配额。 节点有 taint 但 Pod 无对应 toleration。 挂载 PVC 未绑定（StorageClass …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/56.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/56.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/56">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？ · IT面试题库">
   <meta name="twitter:description" content="kubectl describe pod 看 Events 是关键。 Pending： 资源不足（CPU/内存 requests 超过节点剩余）→ 看 kubectl get nodes 与资源配额。 节点有 taint 但 Pod 无对应 toleration。 挂载 PVC 未绑定（StorageClass …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/56.jpg">
+  <meta name="twitter:image:alt" content="K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/56">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？","text":"给出定位步骤。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"kubectl describe pod 看 Events 是关键。 Pending： 资源不足（CPU/内存 requests 超过节点剩余）→ 看 kubectl get nodes 与资源配额。 节点有 taint 但 Pod 无对应 toleration。 挂载 PVC 未绑定（StorageClass 问题）。 ImagePullBackOff： 镜像名/标签错、私有仓库未配 imagePullSecrets、仓库网络不通、节点无拉取权限。 kubectl describe 能看到 Failed to pull image ... not found / unauthorized。 CrashLoopBackOff：容器启动即退出，看 kubectl logs 与退出码（如配置错误、依赖缺失）。","url":"https://itinterview.com.cn/question/56"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"K8s 中 Pod 一直处于 Pending/ImagePullBackOff 怎么排查？","item":"https://itinterview.com.cn/q/56"}]}</script>

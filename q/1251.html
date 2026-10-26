@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？ · IT面试题库">
   <meta property="og:description" content="ZooKeeper 提供的能力 早期 Kafka 把元数据管理交给 ZooKeeper，主要做四件事： 1. Broker 注册：每个 Broker 启动时在 /brokers/ids 下创建自己的节点，写入 IP、端口等信息，ZooKeeper 借此感知 Broker 上线下线。 2. Topic 与分区元数据…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1251.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1251.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1251">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？ · IT面试题库">
   <meta name="twitter:description" content="ZooKeeper 提供的能力 早期 Kafka 把元数据管理交给 ZooKeeper，主要做四件事： 1. Broker 注册：每个 Broker 启动时在 /brokers/ids 下创建自己的节点，写入 IP、端口等信息，ZooKeeper 借此感知 Broker 上线下线。 2. Topic 与分区元数据…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1251.jpg">
+  <meta name="twitter:image:alt" content="ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1251">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？","text":"考察点：Kafka 元数据管理演进，KRaft 与 ZooKeeper 的架构差异。","answerCount":1,"datePublished":"2026-09-26T02:31:18.906Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"ZooKeeper 提供的能力 早期 Kafka 把元数据管理交给 ZooKeeper，主要做四件事： 1. Broker 注册：每个 Broker 启动时在 /brokers/ids 下创建自己的节点，写入 IP、端口等信息，ZooKeeper 借此感知 Broker 上线下线。 2. Topic 与分区元数据：某个 Topic 有哪些 Partition、Partition 分布在哪些 Broker、谁是 Leader，这些映射都由 ZooKeeper 维护，例如 /brokers/topics/my-topic/partitions/0。 3. 负载均衡：把同一 Topic 的不同 Partition 尽量分散到不同 Broker；消费时结合 Partition 数量与 Consumer 数量做动态分配。 4. 协调职责：Controller 选举、配置存储等也依赖它。 为什么要摆脱 ZooKeeper 多了一个需要独立部署、独立运维、独立调优的组件，元数据还要跨系统同步，故障域变大。 ZooKeeper 的元数据规模有上限，Partition 数量很大（十万级）时 Controller 的元数据同步会成为瓶颈。 Controller 故障切换依赖 ZooKeeper 选举，切换时间偏长，期间元数据操作受阻。 KRaft 的变化 Kafka 2.8 引入基于 Raft 协议 的 KRaft 模式（当时仅 Early Access），3.3 起对新集群标记为生产可用，Kafka 4.0 起彻底移除 ZooKeeper 模式，只支持 KRaft。 KRaft 把元数据存进 Kafka 自己的内部 Topic，用 Raft 在 Controller 之间复制，Controller 由 Quorum 选举产生，不再需要外部协调服务。元数据变更不再跨系统同步，故障切换更快，也能支撑更大规模的分区。 运维影响 集群少一个组件，部署与监控更简单。 但老集群从 ZooKeeper 模式迁移到 KRaft 不能简单改配置重启，必须按官方迁移流程执行；新集群直接按 KRaft 部署即可。","url":"https://itinterview.com.cn/question/1251"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？","item":"https://itinterview.com.cn/q/1251"}]}</script>

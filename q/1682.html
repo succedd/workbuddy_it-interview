@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何设计一套移动端线上性能监控体系（启动耗时/帧率/内存/流量），指标如何定义、采样与告警？ · IT面试题库">
   <meta property="og:description" content="要点： 指标定义：启动耗时=进程创建到首帧（冷启动 P50/P95）；流畅度用 FPS 或掉帧率（jank rate）；内存用 PSS/Java 堆峰值与 OOM 率；流量用日均上传下载与后台流量占比；还应含崩溃率、ANR 率。 采集与采样：端上打点（生命周期埋点、主线程卡顿监听、内存水位定时采样），上报采用『抽…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1682.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何设计一套移动端线上性能监控体系（启动耗时/帧率/内存/流量），指标如何定义、采样与告警？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1682.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1682">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一套移动端线上性能监控体系（启动耗时/帧率/内存/流量），指标如何定义、采样与告警？ · IT面试题库">
   <meta name="twitter:description" content="要点： 指标定义：启动耗时=进程创建到首帧（冷启动 P50/P95）；流畅度用 FPS 或掉帧率（jank rate）；内存用 PSS/Java 堆峰值与 OOM 率；流量用日均上传下载与后台流量占比；还应含崩溃率、ANR 率。 采集与采样：端上打点（生命周期埋点、主线程卡顿监听、内存水位定时采样），上报采用『抽…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1682.jpg">
+  <meta name="twitter:image:alt" content="如何设计一套移动端线上性能监控体系（启动耗时/帧率/内存/流量），指标如何定义、采样与告警？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1682">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一套移动端线上性能监控体系（启动耗时/帧率/内存/流量），指标如何定义、采样与告警？","text":"考察点：移动端可观测性与监控体系设计能力。","answerCount":1,"datePublished":"2026-10-17T04:29:50.315Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 指标定义：启动耗时=进程创建到首帧（冷启动 P50/P95）；流畅度用 FPS 或掉帧率（jank rate）；内存用 PSS/Java 堆峰值与 OOM 率；流量用日均上传下载与后台流量占比；还应含崩溃率、ANR 率。 采集与采样：端上打点（生命周期埋点、主线程卡顿监听、内存水位定时采样），上报采用『抽样+长尾全采』——大多数用户抽样上报，P95 之外的高耗时样本全量上报以定位极端机型。 传输与存储：批量压缩上报、错峰发送、失败重试与限速；后端按版本/机型/系统维度聚合，存入时序库与数仓。 告警与闭环：对核心指标设阈值与同比环比告警（如冷启动 P95 劣化 >10% 自动告警）；与发版系统打通做『性能卡口』，劣化阻断发布；建立性能基线与回归看板。","url":"https://itinterview.com.cn/question/1682"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"如何设计一套移动端线上性能监控体系（启动耗时/帧率/内存/流量），指标如何定义、采样与告警？","item":"https://itinterview.com.cn/q/1682"}]}</script>

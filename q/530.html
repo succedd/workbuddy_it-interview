@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？ · IT面试题库">
   <meta property="og:description" content="最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/530.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/530.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/530">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？ · IT面试题库">
   <meta name="twitter:description" content="最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/530.jpg">
+  <meta name="twitter:image:alt" content="什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/530">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？","text":"说明联合索引的存储顺序、最左匹配规则，以及范围查询后索引列失效的现象。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"最左前缀原则：联合索引 (a, b, c) 在 B+ 树中按 a → b → c 的字典序排序存储。查询必须从最左列开始连续匹配才能有效利用索引；一旦中间断档，后续列无法用索引定位。 为什么 a=? AND c=? 命中差：能用到索引的 a 部分做等值定位，但 b 缺失，导致 c 在索引中不是有序可定位的，于是 c 这部分只能回表后过滤（只用到了 a 前缀，c 未走索引）。 范围查询中断：WHERE a=? AND b>? AND c=? 中，a 等值、b 是范围，b 之后的 c 失效（因为 b 是范围后 c 在索引内不再有序）。等值（=）可继续向右，范围（>,\u003c,LIKE 'x%'）会截断右侧。 建议：把等值、高区分度、最常用过滤的列放联合索引左侧；查询条件的列顺序尽量与索引一致；避免对索引列做函数/运算导致失效。","url":"https://itinterview.com.cn/question/530"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"SQL基础","item":"https://itinterview.com.cn/category?cat=27"},{"@type":"ListItem","position":5,"name":"什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？","item":"https://itinterview.com.cn/q/530"}]}</script>

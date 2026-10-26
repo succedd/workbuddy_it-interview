@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="计算机的存储器层次结构是怎样的？为什么采用金字塔式分级？各层容量、速度、成本的数量级是多少？ · IT面试题库">
   <meta property="og:description" content="结论 CPU 与主存之间存在巨大的速度差，直接让 CPU 访问慢速大容量存储会严重拖慢性能。解决办法是按「速度/容量/成本」分级，越靠近 CPU 越快、越小、越贵，越远离越慢、越大、越便宜，构成金字塔。 各级数量级（典型值） 寄存器：&lt;1KB，~0.1ns，最贵；CPU 直接操作的对象。 L1 Cache：32~…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1386.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="计算机的存储器层次结构是怎样的？为什么采用金字塔式分级？各层容量、速度、成本的数量级是多少？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1386.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1386">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="计算机的存储器层次结构是怎样的？为什么采用金字塔式分级？各层容量、速度、成本的数量级是多少？ · IT面试题库">
   <meta name="twitter:description" content="结论 CPU 与主存之间存在巨大的速度差，直接让 CPU 访问慢速大容量存储会严重拖慢性能。解决办法是按「速度/容量/成本」分级，越靠近 CPU 越快、越小、越贵，越远离越慢、越大、越便宜，构成金字塔。 各级数量级（典型值） 寄存器：&lt;1KB，~0.1ns，最贵；CPU 直接操作的对象。 L1 Cache：32~…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1386.jpg">
+  <meta name="twitter:image:alt" content="计算机的存储器层次结构是怎样的？为什么采用金字塔式分级？各层容量、速度、成本的数量级是多少？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1386">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"计算机的存储器层次结构是怎样的？为什么采用金字塔式分级？各层容量、速度、成本的数量级是多少？","text":"考察金字塔式分级的动机与各级典型容量/访问时间/成本的数量级。","answerCount":1,"datePublished":"2026-09-26T11:05:10.398Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 CPU 与主存之间存在巨大的速度差，直接让 CPU 访问慢速大容量存储会严重拖慢性能。解决办法是按「速度/容量/成本」分级，越靠近 CPU 越快、越小、越贵，越远离越慢、越大、越便宜，构成金字塔。 各级数量级（典型值） 寄存器：\u003c1KB，~0.1ns，最贵；CPU 直接操作的对象。 L1 Cache：32~256KB，~1ns。 L2 Cache：256KB~8MB，~4ns。 L3 Cache：8~32MB，~10ns。 主存 DRAM：8~32GB，~60ns。 辅存 SSD/HDD：数百 GB~数 TB，SSD ~0.1ms、HDD ~5ms。 为什么分级有效 程序具有局部性原理（时间局部性：刚访问的数据很快再用；空间局部性：邻近数据很快被访问）。把最热的数据放在靠近 CPU 的小而快存储里，用「块/行」为单位在相邻层之间预取，绝大多数访问都能命中最快的几层，整体等效速度接近顶层、容量接近底层。 设计要点：相邻层之间以「块（block/line）」为单位搬运，而不是逐字节；命中率越高，平均访问时间越接近顶层速度。","url":"https://itinterview.com.cn/question/1386"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"计算机的存储器层次结构是怎样的？为什么采用金字塔式分级？各层容量、速度、成本的数量级是多少？","item":"https://itinterview.com.cn/q/1386"}]}</script>

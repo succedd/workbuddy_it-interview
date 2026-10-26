@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库">
   <meta property="og:description" content="要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/643.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/643.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/643">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/643.jpg">
+  <meta name="twitter:image:alt" content="ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/643">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？","text":"追问链过渡到线程池：日常开发最常碰的并发组件。考察点：corePoolSize/maximumPoolSize/workQueue/keepAliveTime/unit/threadFactory/handler 七参数含义；\"核心线程→入队→扩容到最大线程→拒绝\"的提交顺序。","answerCount":1,"datePublished":"2026-09-07T13:14:26.622Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：七个构造参数 corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。 maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。 workQueue：阻塞任务队列（如 ArrayBlockingQueue），存放等待执行的任务。 keepAliveTime + unit：线程数大于核心数时，多余空闲线程的存活时长，超时后被回收。 threadFactory：创建新线程的工厂，建议自定义线程名便于排查问题。 handler：拒绝策略，任务过多无法处理时触发。 要点二：任务提交流程（顺序不能背错） 1) 运行线程数 \u003c corePoolSize：直接新建核心线程执行任务（即使其他核心线程空闲）。 2) 达到核心线程数：尝试把任务放入 workQueue 排队。 3) 队列已满：继续创建非核心线程执行，直到线程数达到 maximumPoolSize。 4) 线程数已到最大且队列满：执行拒绝策略（如 CallerRunsPolicy 由提交线程自己执行，形成天然的反压降速）。 要点三：常见误区 顺序是\"先入队、后扩容\"，不是\"先扩满线程再排队\"——这也是无界队列会吞噬 maximumPoolSize 的根因（队列永远不满，非核心线程永远不会被创建）。","url":"https://itinterview.com.cn/question/643"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？","item":"https://itinterview.com.cn/q/643"}]}</script>

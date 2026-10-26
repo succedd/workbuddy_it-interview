@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TCP 主动关闭方为什么会进入 TIME_WAIT 状态？为什么需要等待 2MSL？ · IT面试题库">
   <meta property="og:description" content="主动关闭方在发送完最后一个 ACK 后进入 TIME_WAIT，持续 2MSL（MSL=报文段最大生存时间，RFC 建议 2 分钟，实际常用 30s~2min）。 存在原因： 1. 可靠终止连接：若最后那个 ACK 丢失，被动方会超时重传 FIN；主动方必须仍处于可响应状态（重发 ACK），否则对方无法关闭。 2…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/543.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TCP 主动关闭方为什么会进入 TIME_WAIT 状态？为什么需要等待 2MSL？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/543.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/543">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 主动关闭方为什么会进入 TIME_WAIT 状态？为什么需要等待 2MSL？ · IT面试题库">
   <meta name="twitter:description" content="主动关闭方在发送完最后一个 ACK 后进入 TIME_WAIT，持续 2MSL（MSL=报文段最大生存时间，RFC 建议 2 分钟，实际常用 30s~2min）。 存在原因： 1. 可靠终止连接：若最后那个 ACK 丢失，被动方会超时重传 FIN；主动方必须仍处于可响应状态（重发 ACK），否则对方无法关闭。 2…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/543.jpg">
+  <meta name="twitter:image:alt" content="TCP 主动关闭方为什么会进入 TIME_WAIT 状态？为什么需要等待 2MSL？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/543">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 主动关闭方为什么会进入 TIME_WAIT 状态？为什么需要等待 2MSL？","text":"请说明 TIME_WAIT 存在的两个主要原因、2MSL 的含义，以及它带来的副作用和常见缓解手段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"主动关闭方在发送完最后一个 ACK 后进入 TIME_WAIT，持续 2MSL（MSL=报文段最大生存时间，RFC 建议 2 分钟，实际常用 30s~2min）。 存在原因： 1. 可靠终止连接：若最后那个 ACK 丢失，被动方会超时重传 FIN；主动方必须仍处于可响应状态（重发 ACK），否则对方无法关闭。 2. 让旧报文段消失：保证本连接产生的迟到/重复报文在网络中被丢弃，避免新连接（相同四元组）误收旧数据造成混乱。 为什么是 2MSL：一个方向上未送达的报文最多存活 MSL，对方重传 FIN 再走一个 MSL，合起来 2MSL 即可覆盖最坏情况。 副作用：2MSL 内该端口（本地地址+端口）不能被复用，高并发短连接（如频繁主动关闭）下可能耗尽端口，表现为“Address already in use”。 缓解：使用 SO_REUSEADDR（允许绑定 TIME_WAIT 端口）、SO_REUSEPORT，或在 Linux 上谨慎开启 tcp_tw_reuse（客户端 outward 连接友好，需结合时间戳）；服务器尽量被动关闭以避免自身端口被占。","url":"https://itinterview.com.cn/question/543"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"Socket编程","item":"https://itinterview.com.cn/category?cat=54"},{"@type":"ListItem","position":4,"name":"TCP 主动关闭方为什么会进入 TIME_WAIT 状态？为什么需要等待 2MSL？","item":"https://itinterview.com.cn/q/543"}]}</script>

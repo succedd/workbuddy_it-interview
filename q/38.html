@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="char 与 varchar 的区别？怎么选？ · IT面试题库">
   <meta property="og:description" content="CHAR(n)：定长，不足补空格，适合长度固定的数据（如 MD5、手机号、性别码）；读取快但浪费空间。 VARCHAR(n)：变长，存 1-2 字节长度前缀 + 实际内容，适合不定长文本（用户名、地址）。 注意：VARCHAR 最大 65535 字节受行大小限制；超长用 TEXT（外部存储）。 选型：长度固定且较…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/38.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="char 与 varchar 的区别？怎么选？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/38.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/38">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="char 与 varchar 的区别？怎么选？ · IT面试题库">
   <meta name="twitter:description" content="CHAR(n)：定长，不足补空格，适合长度固定的数据（如 MD5、手机号、性别码）；读取快但浪费空间。 VARCHAR(n)：变长，存 1-2 字节长度前缀 + 实际内容，适合不定长文本（用户名、地址）。 注意：VARCHAR 最大 65535 字节受行大小限制；超长用 TEXT（外部存储）。 选型：长度固定且较…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/38.jpg">
+  <meta name="twitter:image:alt" content="char 与 varchar 的区别？怎么选？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/38">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"char 与 varchar 的区别？怎么选？","text":"从存储、性能、适用场景对比。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CHAR(n)：定长，不足补空格，适合长度固定的数据（如 MD5、手机号、性别码）；读取快但浪费空间。 VARCHAR(n)：变长，存 1-2 字节长度前缀 + 实际内容，适合不定长文本（用户名、地址）。 注意：VARCHAR 最大 65535 字节受行大小限制；超长用 TEXT（外部存储）。 选型：长度固定且较短 → CHAR；长度变化大 → VARCHAR；不要盲目给 VARCHAR(255) 撑满，合理即可（影响临时表与索引选择）。","url":"https://itinterview.com.cn/question/38"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"char 与 varchar 的区别？怎么选？","item":"https://itinterview.com.cn/q/38"}]}</script>

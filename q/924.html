@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="进程和线程有什么区别？ · IT面试题库">
   <meta property="og:description" content="资源：进程是资源分配的基本单位（独立地址空间、文件描述符等）；线程是 CPU 调度的基本单位，同进程内的线程共享堆、全局变量、代码段，只私有自己的栈、寄存器和程序计数器。 开销：进程创建/切换开销大（要切换页表、刷 TLB）；线程切换只换栈和寄存器上下文，轻量得多。 通信：进程间需要 IPC（管道、消息队列、共享…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/924.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="进程和线程有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/924.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/924">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="进程和线程有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="资源：进程是资源分配的基本单位（独立地址空间、文件描述符等）；线程是 CPU 调度的基本单位，同进程内的线程共享堆、全局变量、代码段，只私有自己的栈、寄存器和程序计数器。 开销：进程创建/切换开销大（要切换页表、刷 TLB）；线程切换只换栈和寄存器上下文，轻量得多。 通信：进程间需要 IPC（管道、消息队列、共享…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/924.jpg">
+  <meta name="twitter:image:alt" content="进程和线程有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/924">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"进程和线程有什么区别？","text":"请从资源分配、调度、通信、切换开销、崩溃影响等角度对比进程与线程。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"资源：进程是资源分配的基本单位（独立地址空间、文件描述符等）；线程是 CPU 调度的基本单位，同进程内的线程共享堆、全局变量、代码段，只私有自己的栈、寄存器和程序计数器。 开销：进程创建/切换开销大（要切换页表、刷 TLB）；线程切换只换栈和寄存器上下文，轻量得多。 通信：进程间需要 IPC（管道、消息队列、共享内存、信号量、Socket）；线程共享内存，直接读写全局变量即可（但要处理同步问题）。 健壮性：一个进程崩溃一般不影响其他进程（地址空间隔离）；一个线程崩溃可能带走整个进程（如空指针触发信号默认行为）。 并发：多进程各自独立利用多核；多线程同样可利用多核，且数据共享更方便。 选择：需要隔离、稳定性优先→多进程（Chrome 每标签一个进程、Nginx 多进程）；需要频繁共享数据、轻量并发→多线程（Java Web 容器）。","url":"https://itinterview.com.cn/question/924"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"操作系统原理","item":"https://itinterview.com.cn/category?cat=4"},{"@type":"ListItem","position":4,"name":"进程和线程有什么区别？","item":"https://itinterview.com.cn/q/924"}]}</script>

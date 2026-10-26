@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？ · IT面试题库">
   <meta property="og:description" content="要点： 单线程是设计取舍：JS 最初为浏览器脚本而生，若多线程同时操作 DOM 会引发竞态，因此引擎一次只执行一条语句，代码天然免锁。 永不阻塞靠异步回调：遇到 I/O（如 fetch、IndexedDB、定时器）时不原地等待，而是登记回调；操作完成后，由宿主环境把回调作为「任务」放入任务队列。 事件循环是调度核…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/874.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/874.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/874">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？ · IT面试题库">
   <meta name="twitter:description" content="要点： 单线程是设计取舍：JS 最初为浏览器脚本而生，若多线程同时操作 DOM 会引发竞态，因此引擎一次只执行一条语句，代码天然免锁。 永不阻塞靠异步回调：遇到 I/O（如 fetch、IndexedDB、定时器）时不原地等待，而是登记回调；操作完成后，由宿主环境把回调作为「任务」放入任务队列。 事件循环是调度核…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/874.jpg">
+  <meta name="twitter:image:alt" content="JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/874">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？","text":"考察点：对 JS 运行模型的整体认知——单线程、永不阻塞、任务队列。追问：如果没有事件循环，同步等待一个网络请求会发生什么？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 单线程是设计取舍：JS 最初为浏览器脚本而生，若多线程同时操作 DOM 会引发竞态，因此引擎一次只执行一条语句，代码天然免锁。 永不阻塞靠异步回调：遇到 I/O（如 fetch、IndexedDB、定时器）时不原地等待，而是登记回调；操作完成后，由宿主环境把回调作为「任务」放入任务队列。 事件循环是调度核心：调用栈为空时，事件循环从队列取出一个任务执行；执行完可能产生新任务排到队尾。JS 主线程由此实现「一边响应点击/滚动，一边等网络返回」的并发假象。 反例验证：alert() 和同步 XHR 是少数阻塞调用，会冻结页面直到用户响应——这也是它们被建议避免使用的原因。","url":"https://itinterview.com.cn/question/874"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？","item":"https://itinterview.com.cn/q/874"}]}</script>

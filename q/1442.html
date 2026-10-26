@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？ · IT面试题库">
   <meta property="og:description" content="两种等待的区别 | | 隐式等待（Implicit Wait） | 显式等待（WebDriverWait + expected_conditions） | |---|---|---| | 作用域 | 全局，对每次 findElement 生效 | 局部，只作用于指定元素/条件 | | 轮询逻辑 | 找不到元素就按…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1442.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1442.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1442">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？ · IT面试题库">
   <meta name="twitter:description" content="两种等待的区别 | | 隐式等待（Implicit Wait） | 显式等待（WebDriverWait + expected_conditions） | |---|---|---| | 作用域 | 全局，对每次 findElement 生效 | 局部，只作用于指定元素/条件 | | 轮询逻辑 | 找不到元素就按…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1442.jpg">
+  <meta name="twitter:image:alt" content="Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1442">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？","text":"考察 Selenium 自动化测试的等待策略：implicit wait 与 explicit wait 的机制差异、轮询原理与常见反模式。","answerCount":1,"datePublished":"2026-10-01T04:20:57.369Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"两种等待的区别 | | 隐式等待（Implicit Wait） | 显式等待（WebDriverWait + expected_conditions） | |---|---|---| | 作用域 | 全局，对每次 findElement 生效 | 局部，只作用于指定元素/条件 | | 轮询逻辑 | 找不到元素就按固定间隔轮询到超时 | 按条件（可见/可点/存在…）轮询，条件满足立即返回 | | 粒度 | 只有「元素存在」，不管可点可 | 可组合几十种条件（visibility_of_element_located、element_to_be_clickable…） | | 超时行为 | 抛 NoSuchElementException | 抛 TimeoutException（条件更明确） | 为什么 sleep + 隐式等待是反模式 1. Thread.sleep(5)：元素 0.5 秒就绪也要等满 5 秒（拖慢用例），5 秒还没好照样失败（不稳定）——两头不讨好； 2. 隐式+显式混用更糟：两者超时会叠加，可能出现「显式等 10 秒实际等了 21 秒」的诡异行为，官方文档明确不建议混用； 3. sleep 掩盖了真实业务条件——你等的其实不是「5 秒」，而是「加载指示器消失/按钮可点」这类业务可观测状态，应该让等待条件直接表达它。 正确姿势 全局只设一个很短的隐式等待（甚至 0），页面级等待用 page_load_timeout，元素级一律显式等待。 加分点 弹层遮住按钮时 element_to_be_clickable 仍可能失败——需要先等遮罩 invisible； 用显式等待写法统一封装成项目级 helper，用例里不出现裸 sleep，是自动化团队的基本功。","url":"https://itinterview.com.cn/question/1442"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"Selenium","item":"https://itinterview.com.cn/category?cat=112"},{"@type":"ListItem","position":4,"name":"Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？","item":"https://itinterview.com.cn/q/1442"}]}</script>

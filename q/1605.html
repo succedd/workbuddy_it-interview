@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。 · IT面试题库">
   <meta property="og:description" content="要点： 先定位是不是真的「模型 / 策略」问题：确认是不是流量结构变化（节假日、新渠道、大盘波动）、前端埋点 / 上报丢失、推荐位曝光入口改动等外部因素——这类往往占多数。 样本与特征侧：检查是否存在特征穿越（训练用了推理时拿不到的未来特征，如把「点击」作为特征）、特征 / ID 映射漂移、实时特征管道断流、线上…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1605.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1605.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1605">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。 · IT面试题库">
   <meta name="twitter:description" content="要点： 先定位是不是真的「模型 / 策略」问题：确认是不是流量结构变化（节假日、新渠道、大盘波动）、前端埋点 / 上报丢失、推荐位曝光入口改动等外部因素——这类往往占多数。 样本与特征侧：检查是否存在特征穿越（训练用了推理时拿不到的未来特征，如把「点击」作为特征）、特征 / ID 映射漂移、实时特征管道断流、线上…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1605.jpg">
+  <meta name="twitter:image:alt" content="某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1605">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。","text":"考察对推荐系统线上问题的排障思路，涉及数据质量、特征穿越、曝光偏差等。","answerCount":1,"datePublished":"2026-10-10T11:53:42.088Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先定位是不是真的「模型 / 策略」问题：确认是不是流量结构变化（节假日、新渠道、大盘波动）、前端埋点 / 上报丢失、推荐位曝光入口改动等外部因素——这类往往占多数。 样本与特征侧：检查是否存在特征穿越（训练用了推理时拿不到的未来特征，如把「点击」作为特征）、特征 / ID 映射漂移、实时特征管道断流、线上线下特征不一致（training-serving skew）。 偏差问题：曝光偏差 / 选择偏差——训练只看到曝光过的样本，未曝光 item 被视为负例会误导；可用负采样纠偏或 IPS（逆倾向加权）缓解。也要排查流行度偏差导致长尾被压制。 模型与评估侧：回看离线 AUC / GAUC 是否同步下跌；排查最近一次模型 / 词典 / 配置上线；用留存回放 / 在线 A/B 隔离变量。最终用「先止血（回滚 / 降级到基线）后归因」的节奏处理。","url":"https://itinterview.com.cn/question/1605"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"推荐系统","item":"https://itinterview.com.cn/category?cat=185"},{"@type":"ListItem","position":5,"name":"某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。","item":"https://itinterview.com.cn/q/1605"}]}</script>

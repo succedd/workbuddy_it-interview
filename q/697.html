@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？ · IT面试题库">
   <meta property="og:description" content="Bootloader（如 U-Boot）：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。 Kernel：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。 Rootfs：挂载真正根文件系统，提供用户空间程序与库。 Init：执行 /sbin/init（systemd/BusyBox …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/697.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/697.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/697">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="Bootloader（如 U-Boot）：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。 Kernel：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。 Rootfs：挂载真正根文件系统，提供用户空间程序与库。 Init：执行 /sbin/init（systemd/BusyBox …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/697.jpg">
+  <meta name="twitter:image:alt" content="嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/697">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？","text":"说明从加电到用户空间的启动链路。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Bootloader（如 U-Boot）：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。 Kernel：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。 Rootfs：挂载真正根文件系统，提供用户空间程序与库。 Init：执行 /sbin/init（systemd/BusyBox init），按脚本拉起服务与 shell/UI。理解流程才能做启动优化与故障定位（卡在哪一级）。","url":"https://itinterview.com.cn/question/697"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式Linux","item":"https://itinterview.com.cn/category?cat=243"},{"@type":"ListItem","position":4,"name":"嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？","item":"https://itinterview.com.cn/q/697"}]}</script>

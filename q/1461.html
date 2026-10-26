@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？ · IT面试题库">
   <meta property="og:description" content="要点： 容量瓶颈：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。 性能瓶颈：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1461.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1461.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1461">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？ · IT面试题库">
   <meta name="twitter:description" content="要点： 容量瓶颈：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。 性能瓶颈：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1461.jpg">
+  <meta name="twitter:image:alt" content="什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1461">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？","text":"从容量、性能、运维三个维度说明拆分的触发点，并说明拆分应是第几优先级的手段。","answerCount":1,"datePublished":"2026-10-02T02:45:42.153Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 容量瓶颈：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。 性能瓶颈：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主从复制延迟被放大，读扩展也救不了写。 运维瓶颈：单表过大导致备份恢复窗口过长、DDL 变更锁表时间难以接受。 决策原则：拆分是最后手段——先优化索引、SQL、加缓存、做读写分离、归档冷数据；只有这些都做到位仍顶不住时，才引入分库分表带来的分布式复杂度（全局 ID、跨片事务、跨片查询）。","url":"https://itinterview.com.cn/question/1461"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？","item":"https://itinterview.com.cn/q/1461"}]}</script>

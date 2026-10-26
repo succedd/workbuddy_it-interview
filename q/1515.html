@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何发现并清除 Webshell？如何做后续溯源与加固？ · IT面试题库">
   <meta property="og:description" content="发现：① 静态查杀：特征函数（eval/assert/system/shell_exec、$_POST[...] 动态调用）、D 盾/河马/CloudWalker 全盘扫；② 动态行为：监控 web 进程的异常子进程（php-fpm 派生 bash）、新建可执行文件、异常出网；③ 流量/日志：POST 参数中的敏…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1515.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何发现并清除 Webshell？如何做后续溯源与加固？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1515.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1515">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何发现并清除 Webshell？如何做后续溯源与加固？ · IT面试题库">
   <meta name="twitter:description" content="发现：① 静态查杀：特征函数（eval/assert/system/shell_exec、$_POST[...] 动态调用）、D 盾/河马/CloudWalker 全盘扫；② 动态行为：监控 web 进程的异常子进程（php-fpm 派生 bash）、新建可执行文件、异常出网；③ 流量/日志：POST 参数中的敏…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1515.jpg">
+  <meta name="twitter:image:alt" content="如何发现并清除 Webshell？如何做后续溯源与加固？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1515">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何发现并清除 Webshell？如何做后续溯源与加固？","text":"说明静态/动态/流量三种检测手段，以及清除后的溯源要点。","answerCount":1,"datePublished":"2026-10-05T01:03:59.400Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"发现：① 静态查杀：特征函数（eval/assert/system/shell_exec、$_POST[...] 动态调用）、D 盾/河马/CloudWalker 全盘扫；② 动态行为：监控 web 进程的异常子进程（php-fpm 派生 bash）、新建可执行文件、异常出网；③ 流量/日志：POST 参数中的敏感函数名、单 IP 高频访问非常规 URL、web 日志中状态 200 且 POST 大小异常的请求；④ 文件对比：与发布基线 diff（新增/篡改的 php/jsp 文件、最近 mtime 聚集）。 清除：隔离站点 → 备份留证 → 删除 webshell → 全量比对发布基线（shell 常不止一个，可能有不同变体）→ 重启 web 服务；必要时重发布整站代码而非手工删文件。 溯源：web 日志找 shell 首次访问/写入请求 → 反查入口（上传、文件包含、反序列化、RCE）→ 确认攻击时间线与影响；加固：入口漏洞修复、上传目录禁执行、WAF 规则、最小权限运行 web 进程、文件完整性监控（auditd/CCS）。","url":"https://itinterview.com.cn/question/1515"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"应急响应","item":"https://itinterview.com.cn/category?cat=214"},{"@type":"ListItem","position":4,"name":"如何发现并清除 Webshell？如何做后续溯源与加固？","item":"https://itinterview.com.cn/q/1515"}]}</script>

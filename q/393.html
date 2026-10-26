@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。 · IT面试题库">
   <meta property="og:description" content="要点： 核心思路：返回一个新函数，调用时用 apply 把固定的 this 和「预设参数 + 调用时参数」传给原函。 简版实现： 考虑 new 的情况（进阶）：当绑定后的函数被 new 调用时，this 应指向新实例而非 ctx。完整版需用 fBound.prototype = Object.create(sel…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/393.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/393.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/393">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 核心思路：返回一个新函数，调用时用 apply 把固定的 this 和「预设参数 + 调用时参数」传给原函。 简版实现： 考虑 new 的情况（进阶）：当绑定后的函数被 new 调用时，this 应指向新实例而非 ctx。完整版需用 fBound.prototype = Object.create(sel…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/393.jpg">
+  <meta name="twitter:image:alt" content="编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/393">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。","text":"考察点：对 this 显式绑定、柯里化（预设参数）、以及 new 调用时 bind 后的函数 this 应指向新实例（new 优先级高于 bind）的综合理解。属编程题。","answerCount":1,"datePublished":"2026-09-01T09:26:09.887Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心思路：返回一个新函数，调用时用 apply 把固定的 this 和「预设参数 + 调用时参数」传给原函。 简版实现： 考虑 new 的情况（进阶）：当绑定后的函数被 new 调用时，this 应指向新实例而非 ctx。完整版需用 fBound.prototype = Object.create(self.prototype) 并判断 this instanceof fBound。 考察点拆解：① 保存原函数（this）；② 合并预设参数与运行时参数；③ 用 apply 绑定 this；④ 新调用优先级高于 bind。 为什么考它：手写 bind 能同时验证对 this、闭包、柯里化、原型链的理解，是前端高频手写题。","url":"https://itinterview.com.cn/question/393"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。","item":"https://itinterview.com.cn/q/393"}]}</script>

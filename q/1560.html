@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Android 中 Activity 的生命周期包含哪些回调？各阶段的含义是什么？ · IT面试题库">
   <meta property="og:description" content="要点： onCreate()：Activity 首次创建时调用，完成布局加载（setContentView）、控件绑定与一次性初始化，是做准备工作的最佳位置。 onStart()→onResume()：依次进入「可见」与「可交互」状态；onResume 之后用户可操作，常在此恢复动画、注册传感器或动态广播。 on…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1560.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Android 中 Activity 的生命周期包含哪些回调？各阶段的含义是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1560.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1560">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Android 中 Activity 的生命周期包含哪些回调？各阶段的含义是什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： onCreate()：Activity 首次创建时调用，完成布局加载（setContentView）、控件绑定与一次性初始化，是做准备工作的最佳位置。 onStart()→onResume()：依次进入「可见」与「可交互」状态；onResume 之后用户可操作，常在此恢复动画、注册传感器或动态广播。 on…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1560.jpg">
+  <meta name="twitter:image:alt" content="Android 中 Activity 的生命周期包含哪些回调？各阶段的含义是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1560">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Android 中 Activity 的生命周期包含哪些回调？各阶段的含义是什么？","text":"考察点：是否掌握 Activity 从创建到销毁的完整状态流转，是 Android 岗面试的必问题，也是后续配置变更、内存、ANR 追问的基础。","answerCount":1,"datePublished":"2026-10-06T09:01:43.186Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： onCreate()：Activity 首次创建时调用，完成布局加载（setContentView）、控件绑定与一次性初始化，是做准备工作的最佳位置。 onStart()→onResume()：依次进入「可见」与「可交互」状态；onResume 之后用户可操作，常在此恢复动画、注册传感器或动态广播。 onPause()→onStop()：Activity 失去焦点（onPause）或被完全遮挡（onStop）；应在 onPause 中停止耗时操作、保存轻量状态，避免阻塞新 Activity 启动。 onRestart()→onStart()：从停止态重新回到前台时调用，介于 onStop 与 onStart 之间。 onDestroy()：Activity 被销毁前调用，释放资源（解绑广播、停止线程、释放 Bitmap）。","url":"https://itinterview.com.cn/question/1560"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android 中 Activity 的生命周期包含哪些回调？各阶段的含义是什么？","item":"https://itinterview.com.cn/q/1560"}]}</script>

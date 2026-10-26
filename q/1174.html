@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name=&#39;x&#39; 后，DevTools 里数据已变但视图不刷新。如何定位并修复？ · IT面试题库">
   <meta property="og:description" content="要点： 定位：shallowRef 与 ref 的区别在于——ref 会对 .value 做深层响应式（包 Proxy），而 shallowRef 只追踪 .value 这一层引用是否「被替换」。直接改 config.value.items[0].name 是改了内部深层属性，没有替换 .value 本身，所以 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1174.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name=&#39;x&#39; 后，DevTools 里数据已变但视图不刷新。如何定位并修复？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1174.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1174">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name=&#39;x&#39; 后，DevTools 里数据已变但视图不刷新。如何定位并修复？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定位：shallowRef 与 ref 的区别在于——ref 会对 .value 做深层响应式（包 Proxy），而 shallowRef 只追踪 .value 这一层引用是否「被替换」。直接改 config.value.items[0].name 是改了内部深层属性，没有替换 .value 本身，所以 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1174.jpg">
+  <meta name="twitter:image:alt" content="故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name=&#39;x&#39; 后，DevTools 里数据已变但视图不刷新。如何定位并修复？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1174">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name='x' 后，DevTools 里数据已变但视图不刷新。如何定位并修复？","text":"考察点：shallowRef 浅响应陷阱与调试思路。要求区分 shallowRef 与 ref 的追踪粒度，并给出整体替换 / triggerRef / 改用 ref 三种修复路径。","answerCount":1,"datePublished":"2026-09-17T02:27:46.510Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位：shallowRef 与 ref 的区别在于——ref 会对 .value 做深层响应式（包 Proxy），而 shallowRef 只追踪 .value 这一层引用是否「被替换」。直接改 config.value.items[0].name 是改了内部深层属性，没有替换 .value 本身，所以 set 拦截器根本没被触发，视图当然不更新（数据在 DevTools 里变只是因为你直接改了对象引用）。 修复一（推荐，符合 shallow 设计意图）：整体替换 .value —— config.value = { ...config.value, items: config.value.items.map((it,i)=> i===0?{...it,name:'x'}:it) }，让 .value 引用改变即可触发。 修复二（临时强制）：改完深层后调 triggerRef(config) 手动派发一次更新（适合不想改数据结构的场景）。 修复三（根本）：如果本来就需要深层响应，说明不该用 shallow，直接换成 ref(bigObj) 或 reactive(bigObj)。 经验：shallowRef 是为「大对象 + 只整体替换」场景做性能优化的，用错粒度就会出现「数据变了视图不动」的诡异 bug。","url":"https://itinterview.com.cn/question/1174"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name='x' 后，DevTools 里数据已变但视图不刷新。如何定位并修复？","item":"https://itinterview.com.cn/q/1174"}]}</script>
@@ -102,7 +108,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1174">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/126">Vue中响应式数据的原理？</a><span class="rel-n">457 次浏览</span></li><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/126">Vue中响应式数据的原理？</a><span class="rel-n">457 次浏览</span></li><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

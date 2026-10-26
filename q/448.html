@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？ · IT面试题库">
   <meta property="og:description" content="先明确前提：MQ 无法避免重复 主流消息队列提供的是 At Least Once（至少一次） 语义，而不是 Exactly-Once。重复来自三个场景： 发送时重复：消息已持久化，但应答因网络闪断或客户端宕机丢失，生产者重试，消费者收到两条内容相同、Message ID 不同的消息。 投递时重复：消费者已处理完，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/448.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/448.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/448">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？ · IT面试题库">
   <meta name="twitter:description" content="先明确前提：MQ 无法避免重复 主流消息队列提供的是 At Least Once（至少一次） 语义，而不是 Exactly-Once。重复来自三个场景： 发送时重复：消息已持久化，但应答因网络闪断或客户端宕机丢失，生产者重试，消费者收到两条内容相同、Message ID 不同的消息。 投递时重复：消费者已处理完，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/448.jpg">
+  <meta name="twitter:image:alt" content="场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/448">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？","text":"考察点：为什么 MQ 只有 At Least Once 而没有 Exactly-Once、为什么不能用 Message ID 去重、去重表的插入时序。属场景题（中级）。","answerCount":1,"datePublished":"2026-09-03T00:54:13.301Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先明确前提：MQ 无法避免重复 主流消息队列提供的是 At Least Once（至少一次） 语义，而不是 Exactly-Once。重复来自三个场景： 发送时重复：消息已持久化，但应答因网络闪断或客户端宕机丢失，生产者重试，消费者收到两条内容相同、Message ID 不同的消息。 投递时重复：消费者已处理完，但 ack 应答时网络闪断，服务端为保证至少一次会重新投递，出现两条内容和 Message ID 都相同的消息。 负载均衡时重复：Broker 重启、消费者上下线触发 Rebalance，客户端可能收到少量重复消息。 为什么不能用 Message ID 去重 Message ID 虽然全局唯一，但存在上面第一种情况——同一条业务消息可能带着两个不同的 Message ID。按 ID 去重会漏掉这部分重复。真正安全的幂等依据必须是业务唯一标识（订单号、支付流水号），通过消息 Key 携带。 消费端实现 1. 生产者发送时把订单号设为消息 Key。 2. 消费者取出 Key，向去重表插入一条记录，利用数据库唯一索引做原子判定：插入成功则执行扣款；主键/唯一键冲突说明已处理过，直接跳过并返回消费成功。 3. 必须是「先插入再判断」，不要先查再插——两个线程可能同时通过查询检查，然后都去执行扣款。靠数据库唯一约束冲突来保证原子性，天然没有竞态。 4. 去重表要有过期清理策略，避免无限膨胀；用 Redis SETNX 替代时要注意处理「业务执行成功但去重标记写失败」的一致性边界。 兜底 幂等只是最后一道防线，仍要配合消费重试、死信队列和每日对账任务，发现异常数据由人工介入。","url":"https://itinterview.com.cn/question/448"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？","item":"https://itinterview.com.cn/q/448"}]}</script>

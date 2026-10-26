@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？ · IT面试题库">
   <meta property="og:description" content="要点： 架构：Framework（数据传输框架）+ Reader/Writer Plugin（读写插件）——新增数据源只需实现插件，框架负责速率控制、断点、监控。覆盖 MySQL/Oracle/HDFS/Hive/HBase/ClickHouse/ES 等数十种。 三层调度：Job（一个数据同步作业）按表/分片切…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/992.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/992.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/992">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？ · IT面试题库">
   <meta name="twitter:description" content="要点： 架构：Framework（数据传输框架）+ Reader/Writer Plugin（读写插件）——新增数据源只需实现插件，框架负责速率控制、断点、监控。覆盖 MySQL/Oracle/HDFS/Hive/HBase/ClickHouse/ES 等数十种。 三层调度：Job（一个数据同步作业）按表/分片切…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/992.jpg">
+  <meta name="twitter:image:alt" content="DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/992">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？","text":"考察点：Framework+Plugin 架构、Job/Task/TaskGroup 三层调度、单进程多线程模型、与 Sqoop 的 MapReduce 模型对比。","answerCount":1,"datePublished":"2026-09-10T07:22:50.587Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 架构：Framework（数据传输框架）+ Reader/Writer Plugin（读写插件）——新增数据源只需实现插件，框架负责速率控制、断点、监控。覆盖 MySQL/Oracle/HDFS/Hive/HBase/ClickHouse/ES 等数十种。 三层调度：Job（一个数据同步作业）按表/分片切分为多个 Task（单线程读写对），Task 组成 TaskGroup（默认单组并发 5），由单进程内的调度器执行——DataX 是单进程多线程模型，无外部依赖，部署即用。 vs Sqoop：Sqoop 把同步翻译成 MapReduce/Spark 任务跑在 YARN 上（分布式、吃集群资源、适合超大吞吐与定时批）；DataX 单进程（部署简单、易限速、适合中小数据量与异构源），大数据量靠拆分多 Job 并行。 Sqoop 已 retired（2021），新选型多在 DataX 与 SeaTunnel/Flink CDC 之间。 速率控制：channel 并发 × record 限速（bps/tps）双维度，避免把源库打挂。","url":"https://itinterview.com.cn/question/992"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"DataX","item":"https://itinterview.com.cn/category?cat=166"},{"@type":"ListItem","position":4,"name":"DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？","item":"https://itinterview.com.cn/q/992"}]}</script>

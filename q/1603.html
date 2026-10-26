@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？ · IT面试题库">
   <meta property="og:description" content="要点： 为什么两段式：候选物品规模巨大（千万到亿级），若直接精排算力不可承受。召回层用低成本模型 / 规则从全库快速筛选到千到万级候选，排序层再用高复杂度模型精细化打分，是算力与效果权衡的必然结果。 召回的多样性诉求：单一召回源会陷入信息茧房，因此采用多路召回——如协同过滤召回、内容 / 标签召回、热门召回、地域…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1603.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1603.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1603">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？ · IT面试题库">
   <meta name="twitter:description" content="要点： 为什么两段式：候选物品规模巨大（千万到亿级），若直接精排算力不可承受。召回层用低成本模型 / 规则从全库快速筛选到千到万级候选，排序层再用高复杂度模型精细化打分，是算力与效果权衡的必然结果。 召回的多样性诉求：单一召回源会陷入信息茧房，因此采用多路召回——如协同过滤召回、内容 / 标签召回、热门召回、地域…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1603.jpg">
+  <meta name="twitter:image:alt" content="工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1603">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？","text":"考察对推荐系统整体架构的理解，以及召回层存在的必要性。","answerCount":1,"datePublished":"2026-10-10T11:53:41.674Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么两段式：候选物品规模巨大（千万到亿级），若直接精排算力不可承受。召回层用低成本模型 / 规则从全库快速筛选到千到万级候选，排序层再用高复杂度模型精细化打分，是算力与效果权衡的必然结果。 召回的多样性诉求：单一召回源会陷入信息茧房，因此采用多路召回——如协同过滤召回、内容 / 标签召回、热门召回、地域召回、向量（双塔）语义召回、关注关系召回等，各路并行取并集后去重截断。 多路召回的融合：各路分数量纲不同，常用归一化后加权，或训练一个轻量精排-召回融合模型统一排序；需配合配额（quota）防止某一路霸屏。 召回评估：离线看命中率 / 覆盖率，线上看对最终 CTR / 时长增益的贡献，避免「召回准但排序救不回来」的瓶颈。","url":"https://itinterview.com.cn/question/1603"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"AI应用方向","item":"https://itinterview.com.cn/category?cat=182"},{"@type":"ListItem","position":4,"name":"推荐系统","item":"https://itinterview.com.cn/category?cat=185"},{"@type":"ListItem","position":5,"name":"工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？","item":"https://itinterview.com.cn/q/1603"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？ · IT面试题库">
   <meta property="og:description" content="根因：消息『已被业务处理』但『位移还没提交』，一旦发生 Rebalance 或消费者重启，Broker 会把这个 offset 再次分配，导致重读重处理。 要点： 自动提交陷阱：enable.auto.commit=true 时，offset 按 auto.commit.interval.ms 周期提交，与业务处…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1151.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1151.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1151">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？ · IT面试题库">
   <meta name="twitter:description" content="根因：消息『已被业务处理』但『位移还没提交』，一旦发生 Rebalance 或消费者重启，Broker 会把这个 offset 再次分配，导致重读重处理。 要点： 自动提交陷阱：enable.auto.commit=true 时，offset 按 auto.commit.interval.ms 周期提交，与业务处…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1151.jpg">
+  <meta name="twitter:image:alt" content="消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1151">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？","text":"考察点：重复消费的成因定位（offset 提交时机 vs 业务处理时机错位、Rebalance）与幂等消费设计——典型线上故障排查。","answerCount":1,"datePublished":"2026-09-15T11:49:41.452Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：消息『已被业务处理』但『位移还没提交』，一旦发生 Rebalance 或消费者重启，Broker 会把这个 offset 再次分配，导致重读重处理。 要点： 自动提交陷阱：enable.auto.commit=true 时，offset 按 auto.commit.interval.ms 周期提交，与业务处理完成时刻无关；若处理耗时超过提交间隔，处理中崩溃就会重复。 定位步骤：① 确认是否开启自动提交；② 检查消费逻辑是否耗时/偶发异常；③ 看监控是否有频繁 Rebalance（如 max.poll.interval.ms 超时、心跳丢失）；④ 对比『已处理但 offset 未推进』的日志。 彻底避免：① 关闭自动提交，改为业务处理成功后再手动 commitSync/commitAsync；② 消费端做幂等（数据库唯一键、Redis 去重表、业务状态机），即使重复也不产生副作用——这是最稳妥的兜底。","url":"https://itinterview.com.cn/question/1151"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？","item":"https://itinterview.com.cn/q/1151"}]}</script>

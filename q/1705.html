@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？ · IT面试题库">
   <meta property="og:description" content="要点： 核心问题：N 方会议里每个发送端若只发一路全质量码流，弱网观众会被拖垮、SFU 转发压力也大，需要一次采集、多路输出。 Simulcast：同时编码多路独立流（如 1080p/540p/180p），各自完整 GOP，订阅方选一路拿；实现简单、兼容性好，代价是发送端多份编码算力与上行带宽。 SVC（可分层编…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1705.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1705.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1705">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？ · IT面试题库">
   <meta name="twitter:description" content="要点： 核心问题：N 方会议里每个发送端若只发一路全质量码流，弱网观众会被拖垮、SFU 转发压力也大，需要一次采集、多路输出。 Simulcast：同时编码多路独立流（如 1080p/540p/180p），各自完整 GOP，订阅方选一路拿；实现简单、兼容性好，代价是发送端多份编码算力与上行带宽。 SVC（可分层编…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1705.jpg">
+  <meta name="twitter:image:alt" content="多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1705">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？","text":"考察多方场景的发送端多层码流设计与服务端选层策略。","answerCount":1,"datePublished":"2026-10-17T10:38:25.412Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心问题：N 方会议里每个发送端若只发一路全质量码流，弱网观众会被拖垮、SFU 转发压力也大，需要一次采集、多路输出。 Simulcast：同时编码多路独立流（如 1080p/540p/180p），各自完整 GOP，订阅方选一路拿；实现简单、兼容性好，代价是发送端多份编码算力与上行带宽。 SVC（可分层编码）：一路码流内嵌多个层（时间/空间/质量分层），下层独立可解、上层增强；带宽效率更高，但编码复杂度与兼容性要求高（H.264 的 SFP 支持有限，VP9/AV1 更完整）。 SFU 分配策略：按订阅者的带宽估算（REMB/transport-cc）选层或选流转发；大会场优先保音频与低清视频，发言人切高清；级联 SFU 还要按级联链路带宽二次选层。 落地取舍：主流云会议产品普遍 Simulcast 兜底加 SVC 增强；自研建议先从 Simulcast 三路做起，用带宽估算驱动切换。","url":"https://itinterview.com.cn/question/1705"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"WebRTC","item":"https://itinterview.com.cn/category?cat=252"},{"@type":"ListItem","position":4,"name":"多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？","item":"https://itinterview.com.cn/q/1705"}]}</script>

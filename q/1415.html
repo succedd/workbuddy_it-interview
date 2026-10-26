@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？ · IT面试题库">
   <meta property="og:description" content="要点： 常见索引类型：单字段索引（对单个字段建索引）、复合索引（多个字段组合，如 {a:1,b:-1}）、多键索引（数组字段自动展开为每个元素建索引）、唯一索引（unique，禁止重复）、TTL 索引（按时间自动过期删除）、文本索引/地理空间索引（特殊查询）。 最左前缀原则：复合索引 (a, b, c) 能加速「…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1415.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1415.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1415">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？ · IT面试题库">
   <meta name="twitter:description" content="要点： 常见索引类型：单字段索引（对单个字段建索引）、复合索引（多个字段组合，如 {a:1,b:-1}）、多键索引（数组字段自动展开为每个元素建索引）、唯一索引（unique，禁止重复）、TTL 索引（按时间自动过期删除）、文本索引/地理空间索引（特殊查询）。 最左前缀原则：复合索引 (a, b, c) 能加速「…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1415.jpg">
+  <meta name="twitter:image:alt" content="MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1415">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？","text":"考察点：索引基础与复合索引匹配规则，以及 _id 默认索引的设计意图，是索引优化的前置追问。","answerCount":1,"datePublished":"2026-10-01T03:53:45.393Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 常见索引类型：单字段索引（对单个字段建索引）、复合索引（多个字段组合，如 {a:1,b:-1}）、多键索引（数组字段自动展开为每个元素建索引）、唯一索引（unique，禁止重复）、TTL 索引（按时间自动过期删除）、文本索引/地理空间索引（特殊查询）。 最左前缀原则：复合索引 (a, b, c) 能加速「以 a 开头」的查询——即能加速 a、a+b、a+b+c 的查询条件，但无法单独加速 b 或 b+c（跳过了最左的 a）。所以复合索引字段顺序要按「最高频等值查询字段在前、范围/排序字段在后」来排。 _id 默认索引：MongoDB 会自动为每个集合的 _id 字段创建唯一索引，因为 _id 是文档主键，所有按主键的定位、更新、删除都依赖它；若没有该索引，这些操作都得全表扫描。 ObjectId 的巧思：默认 _id 是 ObjectId，其前 4 字节是时间戳，插入近似单调递增，使新文档写入落在索引「右侧」，减少随机写、利于写吞吐分布。 验证手段：用 db.coll.find(...).explain('executionStats') 看 winningPlan 是 IXSCAN（走索引）还是 COLLSCAN（全表扫描）。","url":"https://itinterview.com.cn/question/1415"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？","item":"https://itinterview.com.cn/q/1415"}]}</script>

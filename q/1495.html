@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Vite 为什么比 Webpack 快？dev 与 build 的核心差异是什么？ · IT面试题库">
   <meta property="og:description" content="dev 快的原因：Webpack 启动要把所有模块打包成 bundle 才能起服务；Vite 走 no-bundle 路线——① 启动只做两件事：预打包依赖（esbuild 把 CJS/UMD 的 node_modules 转成 ESM 单文件，Go 编译快 10-100 倍）+ 起静态服务；② 浏览器请求哪个模…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1495.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Vite 为什么比 Webpack 快？dev 与 build 的核心差异是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1495.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1495">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Vite 为什么比 Webpack 快？dev 与 build 的核心差异是什么？ · IT面试题库">
   <meta name="twitter:description" content="dev 快的原因：Webpack 启动要把所有模块打包成 bundle 才能起服务；Vite 走 no-bundle 路线——① 启动只做两件事：预打包依赖（esbuild 把 CJS/UMD 的 node_modules 转成 ESM 单文件，Go 编译快 10-100 倍）+ 起静态服务；② 浏览器请求哪个模…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1495.jpg">
+  <meta name="twitter:image:alt" content="Vite 为什么比 Webpack 快？dev 与 build 的核心差异是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1495">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Vite 为什么比 Webpack 快？dev 与 build 的核心差异是什么？","text":"分别说明 dev 的 no-bundle 按需服务和 build 的 Rollup 路线。","answerCount":1,"datePublished":"2026-10-05T01:03:56.828Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"dev 快的原因：Webpack 启动要把所有模块打包成 bundle 才能起服务；Vite 走 no-bundle 路线——① 启动只做两件事：预打包依赖（esbuild 把 CJS/UMD 的 node_modules 转成 ESM 单文件，Go 编译快 10-100 倍）+ 起静态服务；② 浏览器请求哪个模块才按需编译哪个（基于原生 ESM import），模块多不多跟启动时间基本无关；③ HMR 粒度精确到模块，只失效一条链路，且不受项目规模影响。 build：用 Rollup 打包（生态成熟、产物 Tree Shaking 更优、代码质量高），Vite 4.x+ 提供 Rolldown/兼容层演进方向。核心差异一句话：dev 按需 ESM 服务，build 传统打包，二者由统一的插件 API（Vite 插件兼容 Rollup 插件）抹平。","url":"https://itinterview.com.cn/question/1495"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"Vite","item":"https://itinterview.com.cn/category?cat=70"},{"@type":"ListItem","position":5,"name":"Vite 为什么比 Webpack 快？dev 与 build 的核心差异是什么？","item":"https://itinterview.com.cn/q/1495"}]}</script>

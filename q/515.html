@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 goroutine 泄漏？列举几种常见泄漏场景，并说明如何排查与预防。 · IT面试题库">
   <meta property="og:description" content="定义：goroutine 因永远阻塞、无法走到结束而一直驻留内存，随时间累积导致内存上涨、调度变慢，即为 goroutine 泄漏。 常见场景： 1. channel 阻塞：向无缓冲或已满的 channel 发送，但接收方已退出；或从已无发送方的 channel 永久接收。 2. context 未传播/未取消：…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/515.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 goroutine 泄漏？列举几种常见泄漏场景，并说明如何排查与预防。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/515.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/515">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 goroutine 泄漏？列举几种常见泄漏场景，并说明如何排查与预防。 · IT面试题库">
   <meta name="twitter:description" content="定义：goroutine 因永远阻塞、无法走到结束而一直驻留内存，随时间累积导致内存上涨、调度变慢，即为 goroutine 泄漏。 常见场景： 1. channel 阻塞：向无缓冲或已满的 channel 发送，但接收方已退出；或从已无发送方的 channel 永久接收。 2. context 未传播/未取消：…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/515.jpg">
+  <meta name="twitter:image:alt" content="什么是 goroutine 泄漏？列举几种常见泄漏场景，并说明如何排查与预防。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/515">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 goroutine 泄漏？列举几种常见泄漏场景，并说明如何排查与预防。","text":"请描述 goroutine 永不退出的典型原因（channel 无人接收/发送、context 未取消、WaitGroup 误用等）及定位手段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定义：goroutine 因永远阻塞、无法走到结束而一直驻留内存，随时间累积导致内存上涨、调度变慢，即为 goroutine 泄漏。 常见场景： 1. channel 阻塞：向无缓冲或已满的 channel 发送，但接收方已退出；或从已无发送方的 channel 永久接收。 2. context 未传播/未取消：下游 goroutine 在 select { case \u003c-ctx.Done(): ...; case \u003c-ch: ...} 中若只等 ch 而 ctx 没被上层 cancel，会一直挂起。 3. WaitGroup 计数不匹配：Add 与 Done 次数不一致，导致 Wait() 永不返回，等待方卡死。 4. time.After 在循环里被 select 提前跳出，定时器未被触发而堆积（应改用 time.NewTimer 并 Stop）。 5. http/连接未设超时，读写出错时 goroutine 阻塞在 I/O。 排查手段：runtime.NumGoroutine() 观察数量只增不减；pprof 的 goroutine profile（go tool pprof + goroutine 栈）定位阻塞点。 预防措施：所有长生命周期 goroutine 都监听 ctx.Done()；明确 channel 的关闭方；限制并发（worker pool）；为网络/IO 设置超时；在测试中断言 goroutine 数回落。","url":"https://itinterview.com.cn/question/515"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Go","item":"https://itinterview.com.cn/category?cat=16"},{"@type":"ListItem","position":4,"name":"什么是 goroutine 泄漏？列举几种常见泄漏场景，并说明如何排查与预防。","item":"https://itinterview.com.cn/q/515"}]}</script>

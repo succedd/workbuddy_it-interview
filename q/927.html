@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="虚拟内存是什么？分页和分段有什么区别？ · IT面试题库">
   <meta property="og:description" content="虚拟内存：为每个进程提供独立的、比物理内存更大的虚拟地址空间，通过 MMU 把虚拟地址翻译为物理地址（查页表）。 三大作用：①隔离——进程互不越界访问，系统更安全稳定；②解耦——程序可用地址不再受物理内存限制；③按需加载与交换——暂时不用的页换出到磁盘（swap），物理内存留给活跃数据。 分页：把内存切成固定大小…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/927.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="虚拟内存是什么？分页和分段有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/927.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/927">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="虚拟内存是什么？分页和分段有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="虚拟内存：为每个进程提供独立的、比物理内存更大的虚拟地址空间，通过 MMU 把虚拟地址翻译为物理地址（查页表）。 三大作用：①隔离——进程互不越界访问，系统更安全稳定；②解耦——程序可用地址不再受物理内存限制；③按需加载与交换——暂时不用的页换出到磁盘（swap），物理内存留给活跃数据。 分页：把内存切成固定大小…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/927.jpg">
+  <meta name="twitter:image:alt" content="虚拟内存是什么？分页和分段有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/927">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"虚拟内存是什么？分页和分段有什么区别？","text":"请解释虚拟内存的作用（地址空间隔离、按需加载、交换），并对比分页与分段两种内存管理机制。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"虚拟内存：为每个进程提供独立的、比物理内存更大的虚拟地址空间，通过 MMU 把虚拟地址翻译为物理地址（查页表）。 三大作用：①隔离——进程互不越界访问，系统更安全稳定；②解耦——程序可用地址不再受物理内存限制；③按需加载与交换——暂时不用的页换出到磁盘（swap），物理内存留给活跃数据。 分页：把内存切成固定大小的页（通常 4KB），虚拟页→物理页帧通过页表映射；配合 TLB 缓存翻译结果加速；多级页表（如 x86-64 四级）减少页表本身内存占用。外部碎片没有（页大小一致），有内部碎片（最后一页不满）。 分段：按逻辑意义划分（代码段、数据段、堆栈段），段大小可变，便于共享与保护（段级权限），但会产生外部碎片，分配复杂。 现代系统：以分页为主、段为辅（x86-64 基本弱化了段），swap 与缺页中断配合实现\"内存不够硬盘凑\"。","url":"https://itinterview.com.cn/question/927"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"操作系统原理","item":"https://itinterview.com.cn/category?cat=4"},{"@type":"ListItem","position":4,"name":"虚拟内存是什么？分页和分段有什么区别？","item":"https://itinterview.com.cn/q/927"}]}</script>

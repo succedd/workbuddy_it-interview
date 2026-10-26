@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？ · IT面试题库">
   <meta property="og:description" content="RDD 最底层的弹性分布式数据集 API：用 Java/lambda 函数式算子（map/filter/reduce）操作，类型安全但无内置 Schema，绕过优化器——每个算子的执行计划由用户代码直接决定，难以全局优化。 DataFrame / Dataset 带 Schema 的结构化 API： Cataly…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/473.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/473.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/473">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？ · IT面试题库">
   <meta name="twitter:description" content="RDD 最底层的弹性分布式数据集 API：用 Java/lambda 函数式算子（map/filter/reduce）操作，类型安全但无内置 Schema，绕过优化器——每个算子的执行计划由用户代码直接决定，难以全局优化。 DataFrame / Dataset 带 Schema 的结构化 API： Cataly…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/473.jpg">
+  <meta name="twitter:image:alt" content="Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/473">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？","text":"Spark 经历了从 RDD 到 DataFrame/Dataset 的演进，理解两者差异能说明你对 Spark 执行引擎优化（Catalyst / Tungsten）的掌握。","answerCount":1,"datePublished":"2026-09-03T01:03:40.020Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RDD 最底层的弹性分布式数据集 API：用 Java/lambda 函数式算子（map/filter/reduce）操作，类型安全但无内置 Schema，绕过优化器——每个算子的执行计划由用户代码直接决定，难以全局优化。 DataFrame / Dataset 带 Schema 的结构化 API： Catalyst 优化器会把整条查询解析成逻辑计划→物理计划，自动做谓词下推、列裁剪、常量折叠等； Tungsten 引擎用堆外内存（off-heap）、全阶段代码生成（whole-stage codegen）把多个算子编译成一段 Java 字节码，减少虚函数调用与 GC； Dataset 还提供编译期类型安全（Scala/Java）。 为何更快 DataFrame 因为「有结构 + 有优化器」，Spark 能看穿整条计算图并做全局优化，而 RDD 只能逐算子执行。因此相同逻辑下 DataFrame 通常显著快于手写 RDD。","url":"https://itinterview.com.cn/question/473"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Spark","item":"https://itinterview.com.cn/category?cat=160"},{"@type":"ListItem","position":4,"name":"Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？","item":"https://itinterview.com.cn/q/473"}]}</script>

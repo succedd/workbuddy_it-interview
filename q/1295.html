@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。 · IT面试题库">
   <meta property="og:description" content="position 指定元素在文档中的定位方式，并决定 top/right/bottom/left（及逻辑属性 inset-*）是否生效。 | 取值 | 脱离文档流 | 相对谁定位 | 关键点 | |---|---|---|---| | static | 否 | — | 默认值，top/left/z-index 无…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1295.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1295.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1295">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。 · IT面试题库">
   <meta name="twitter:description" content="position 指定元素在文档中的定位方式，并决定 top/right/bottom/left（及逻辑属性 inset-*）是否生效。 | 取值 | 脱离文档流 | 相对谁定位 | 关键点 | |---|---|---|---| | static | 否 | — | 默认值，top/left/z-index 无…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1295.jpg">
+  <meta name="twitter:image:alt" content="CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1295">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。","text":"考察点：定位模型与包含块（containing block）概念，这是布局类问题的地基。","answerCount":1,"datePublished":"2026-09-26T02:32:34.833Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"position 指定元素在文档中的定位方式，并决定 top/right/bottom/left（及逻辑属性 inset-*）是否生效。 | 取值 | 脱离文档流 | 相对谁定位 | 关键点 | |---|---|---|---| | static | 否 | — | 默认值，top/left/z-index 无效 | | relative | 否 | 自身正常位置 | 偏移不影响其他元素占位；z-index≠auto 时创建层叠上下文 | | absolute | 是（不占位） | 最近的非 static 祖先，无则初始包含块（ICB） | 为其内容建立新的 BFC，外边距不与父级折叠 | | fixed | 是 | 视口（初始包含块） | 总是创建层叠上下文；祖先有 transform/filter/perspective/will-change 时改以该祖先为包含块 | | sticky | 否 | 最近滚动祖先 + 包含块 | 到达阈值后「粘住」；至少一个 inset 非 auto，否则等同 relative | 包含块：absolute 的偏移量从包含块边缘算起，包含块通常是最近定位祖先的 padding box；fixed 默认是视口，但会被祖先的 transform 等属性截胡——这是固定头部「失效」的常见原因。 sticky 的坑：父级设置 overflow:hidden/auto/scroll 会限制它的粘附范围；某个轴的两个 inset 都是 auto 时，该轴退化为 relative。 尺寸细节：宽高为 auto 的绝对定位元素按内容自适应；若同时指定 left 和 right（且 width:auto）可横向撑满，top 与 bottom 同时指定时 top 优先（left 在 ltr 下优先）。 无障碍：MDN 提醒，缩放页面时 absolute/fixed 元素不要遮挡其他内容。","url":"https://itinterview.com.cn/question/1295"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"CSS 的 position 有哪几种取值？请说明 static、relative、absolute、fixed、sticky 的行为差异，以及它们各自的「包含块」是什么。","item":"https://itinterview.com.cn/q/1295"}]}</script>

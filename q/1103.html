@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。 · IT面试题库">
   <meta property="og:description" content="根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1103.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1103.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1103">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。 · IT面试题库">
   <meta name="twitter:description" content="根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1103.jpg">
+  <meta name="twitter:image:alt" content="【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1103">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。","text":"考察点：代理机制的自我调用（self-invocation）盲区、@Transactional/@Async 失效的经典场景、三种修复方案的推荐度排序。追问链 AOP 环节的高频生产事故。","answerCount":1,"datePublished":"2026-09-11T11:56:23.566Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因定位：两个现象是同一个根因——自调用绕过了代理。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 this 引用是原始对象而不是代理，A 里调 this.B() 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明确说明：self invocation via this will bypass the advice。 原理展开（为什么代理救不了 this）：代理增强发生在「外部调用先经过代理」这一层；一旦调用已经进入目标对象内部，后续 this 调用就是普通 Java 方法调用（相当于字节码层面的直接调用），与 Spring 无关。 修复方案（按推荐度）： 首选：避免自调用（重构拆分）——把 B 拆到另一个 Bean，通过注入相互调用，让调用重新走代理；官方称为 best approach，代价是需要少量重构； 次选：注入自身引用（self injection）——把自身 Bean 注入给自己（或用 ObjectProvider 拿代理），通过自引用调 B，让调用走代理；注意可能触发循环依赖，Spring 允许这类自注入； 兜底：AopContext.currentProxy()——((XxxService) AopContext.currentProxy()).B()，需要开启 exposeProxy；官方明确「highly discouraged」——代码与 Spring AOP 强耦合，仅作最后手段。 举一反三（同类失效场景清单）：同类 this 调用、方法非 public（CGLIB/JDK 代理都无法拦截 private）、异常被 catch 吞掉不抛出、final 方法无法被 CGLIB 覆盖——排查「注解不生效」类工单时优先对照这张清单。","url":"https://itinterview.com.cn/question/1103"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。","item":"https://itinterview.com.cn/q/1103"}]}</script>

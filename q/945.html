@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="RabbitMQ 如何实现延迟队列？死信队列是什么？ · IT面试题库">
   <meta property="og:description" content="死信交换机 DLX：消息变成&quot;死信&quot;后，被重新投递到绑定的死信交换机，路由到死信队列由消费者处理。成为死信的三个条件：①消息被拒绝（basic.reject/nack 且 requeue=false）；②消息 TTL 过期；③队列达到最大长度，队首消息被挤掉。 方案一：TTL + DLX（经典组合，无需插件）： …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/945.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="RabbitMQ 如何实现延迟队列？死信队列是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/945.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/945">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RabbitMQ 如何实现延迟队列？死信队列是什么？ · IT面试题库">
   <meta name="twitter:description" content="死信交换机 DLX：消息变成&quot;死信&quot;后，被重新投递到绑定的死信交换机，路由到死信队列由消费者处理。成为死信的三个条件：①消息被拒绝（basic.reject/nack 且 requeue=false）；②消息 TTL 过期；③队列达到最大长度，队首消息被挤掉。 方案一：TTL + DLX（经典组合，无需插件）： …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/945.jpg">
+  <meta name="twitter:image:alt" content="RabbitMQ 如何实现延迟队列？死信队列是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/945">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RabbitMQ 如何实现延迟队列？死信队列是什么？","text":"请说明基于 TTL+死信交换机（DLX）与延迟插件两种方案实现延迟消息，并解释死信进入交换机的条件。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"死信交换机 DLX：消息变成\"死信\"后，被重新投递到绑定的死信交换机，路由到死信队列由消费者处理。成为死信的三个条件：①消息被拒绝（basic.reject/nack 且 requeue=false）；②消息 TTL 过期；③队列达到最大长度，队首消息被挤掉。 方案一：TTL + DLX（经典组合，无需插件）： 1. 建一个普通队列 A，不设消费者，设置消息 TTL=延迟时长，绑定死信交换机； 2. 消息投到 A，等 TTL 过期变成死信，流转到死信队列； 3. 消费者监听死信队列，此时消息已\"延迟\"到达。 缺点：队头阻塞——RabbitMQ 只检查队首消息，前面的 10 分钟消息没过期，后面的 1 分钟消息即使过期也出不来（不同延迟时长需多个队列）；配合\"多级延迟队列\"或改用插件。 方案二：rabbitmq_delayed_message_exchange 插件：声明 x-delayed-message 类型交换机，消息头带 x-delay，交换机内部定时投递——精确到每条消息的延迟，无队头阻塞，推荐。","url":"https://itinterview.com.cn/question/945"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RabbitMQ","item":"https://itinterview.com.cn/category?cat=128"},{"@type":"ListItem","position":5,"name":"RabbitMQ 如何实现延迟队列？死信队列是什么？","item":"https://itinterview.com.cn/q/945"}]}</script>

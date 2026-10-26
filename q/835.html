@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 流程（两个阶段）： 准备阶段（Prepare）：协调者向所有参与者发「可否提交」；参与者锁资源、写 undo/redo 日志，返回 Yes/No（此时未真正提交，处于准备态）。 提交阶段（Commit）：全票 Yes 则协调者发 Commit，参与者正式提交并释放锁；任一 No 则发 Rollbac…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/835.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/835.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/835">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 流程（两个阶段）： 准备阶段（Prepare）：协调者向所有参与者发「可否提交」；参与者锁资源、写 undo/redo 日志，返回 Yes/No（此时未真正提交，处于准备态）。 提交阶段（Commit）：全票 Yes 则协调者发 Commit，参与者正式提交并释放锁；任一 No 则发 Rollbac…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/835.jpg">
+  <meta name="twitter:image:alt" content="两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/835">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？","text":"考察点：2PC 准备/提交两阶段细节，以及同步阻塞、单点、数据不一致、协调者宕机等固有缺陷。追问：2PC 为什么在协调者崩溃后会卡住？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 流程（两个阶段）： 准备阶段（Prepare）：协调者向所有参与者发「可否提交」；参与者锁资源、写 undo/redo 日志，返回 Yes/No（此时未真正提交，处于准备态）。 提交阶段（Commit）：全票 Yes 则协调者发 Commit，参与者正式提交并释放锁；任一 No 则发 Rollback，全部回滚。 2. 致命缺陷： 同步阻塞：准备后参与者一直持锁等资源，期间所有访问被阻塞，性能差； 单点故障：协调者挂了，参与者无限等待（悬停），整个事务卡死； 数据不一致：提交阶段协调者只给部分参与者发了 Commit 就崩溃，恢复后部分提交、部分未提交，出现分裂； 协调者宕机难恢复：协调者重启后无法判断「自己是否发过 Commit」，参与者也无法单方面决定。 结论：2PC 能保证强一致，但用「长时间持锁 + 单点」换来了正确，吞吐低、可用性差，只适合一致性要求极高、参与方少、短事务的场景（如数据库 XA）。","url":"https://itinterview.com.cn/question/835"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式事务","item":"https://itinterview.com.cn/category?cat=119"},{"@type":"ListItem","position":4,"name":"两阶段提交（2PC）的流程是什么？它有哪些致命缺陷？","item":"https://itinterview.com.cn/q/835"}]}</script>

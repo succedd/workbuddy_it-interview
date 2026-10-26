@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="0/1 背包与完全背包的状态转移有何不同？「滚动数组」空间优化为什么要逆序/顺序遍历？ · IT面试题库">
   <meta property="og:description" content="核心答案：区别在于『同一物品能否重复装入』，这直接决定了状态压缩时容量维度的遍历方向。 要点（转移区别）： 0/1 背包（每件最多一次）：dp[j] = max(dp[j], dp[j-w] + v)，其中 dp[j] 用到的 dp[j-w] 必须是『上一轮（不含当前物品）』的值。 完全背包（每件无限）：dp[j…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1168.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="0/1 背包与完全背包的状态转移有何不同？「滚动数组」空间优化为什么要逆序/顺序遍历？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1168.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1168">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="0/1 背包与完全背包的状态转移有何不同？「滚动数组」空间优化为什么要逆序/顺序遍历？ · IT面试题库">
   <meta name="twitter:description" content="核心答案：区别在于『同一物品能否重复装入』，这直接决定了状态压缩时容量维度的遍历方向。 要点（转移区别）： 0/1 背包（每件最多一次）：dp[j] = max(dp[j], dp[j-w] + v)，其中 dp[j] 用到的 dp[j-w] 必须是『上一轮（不含当前物品）』的值。 完全背包（每件无限）：dp[j…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1168.jpg">
+  <meta name="twitter:image:alt" content="0/1 背包与完全背包的状态转移有何不同？「滚动数组」空间优化为什么要逆序/顺序遍历？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1168">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"0/1 背包与完全背包的状态转移有何不同？「滚动数组」空间优化为什么要逆序/顺序遍历？","text":"考察点：背包模型对比——物品能否重复选决定遍历方向，以及一维 DP 的降维原理。","answerCount":1,"datePublished":"2026-09-15T11:50:09.042Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心答案：区别在于『同一物品能否重复装入』，这直接决定了状态压缩时容量维度的遍历方向。 要点（转移区别）： 0/1 背包（每件最多一次）：dp[j] = max(dp[j], dp[j-w] + v)，其中 dp[j] 用到的 dp[j-w] 必须是『上一轮（不含当前物品）』的值。 完全背包（每件无限）：dp[j] = max(dp[j], dp[j-w] + v)，但允许重复用当前物品，所以要基于『本轮已更新』的 dp[j-w]。 要点（为什么遍历方向不同）： 降维成一维后，靠遍历顺序控制数据来源：0/1 背包逆序遍历容量 j（从 W 到 w），保证更新 dp[j] 时 dp[j-w] 还是旧值（没被当前物品覆盖）；完全背包顺序遍历 j（从 w 到 W），让 dp[j-w] 已是本轮更新过的，从而可重复选。 本质是『二维表里取的是上一行还是同一行』的等价实现。","url":"https://itinterview.com.cn/question/1168"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"算法","item":"https://itinterview.com.cn/category?cat=3"},{"@type":"ListItem","position":4,"name":"0/1 背包与完全背包的状态转移有何不同？「滚动数组」空间优化为什么要逆序/顺序遍历？","item":"https://itinterview.com.cn/q/1168"}]}</script>

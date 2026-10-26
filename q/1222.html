@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？ · IT面试题库">
   <meta property="og:description" content="要点： 核心原则：状态二分。① 服务端状态（接口返回、会过期、需缓存/失效/重试）——用 React Query / SWR / RTK Query 这类「服务端状态库」统一管理，它们内置缓存、去重、后台刷新、乐观更新，不要手写到 Redux；② 客户端状态（UI 状态、表单草稿、主题、权限）——用 Zustan…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1222.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1222.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1222">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？ · IT面试题库">
   <meta name="twitter:description" content="要点： 核心原则：状态二分。① 服务端状态（接口返回、会过期、需缓存/失效/重试）——用 React Query / SWR / RTK Query 这类「服务端状态库」统一管理，它们内置缓存、去重、后台刷新、乐观更新，不要手写到 Redux；② 客户端状态（UI 状态、表单草稿、主题、权限）——用 Zustan…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1222.jpg">
+  <meta name="twitter:image:alt" content="【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1222">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？","text":"追问链第 7 问（收口）：综合前面所有知识点做整体架构决策。","answerCount":1,"datePublished":"2026-09-21T02:22:12.992Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 核心原则：状态二分。① 服务端状态（接口返回、会过期、需缓存/失效/重试）——用 React Query / SWR / RTK Query 这类「服务端状态库」统一管理，它们内置缓存、去重、后台刷新、乐观更新，不要手写到 Redux；② 客户端状态（UI 状态、表单草稿、主题、权限）——用 Zustand/Context/useState 管理，仅客户端关心。混用会让 Redux 既装接口数据又装 UI 状态，难以维护。 分层架构：① UI 局部状态用 useState/useReducer；② 低频全局（主题、locale、当前用户）用 Context 或 Zustand；③ 高频/复杂共享客户端状态用 Zustand（selector 精准订阅避免全量重渲）；④ 所有接口数据交给 React Query，配置 staleTime、重试、预取；⑤ 关键写操作配合乐观更新 + 错误回滚。 工程化落地：① 用 TypeScript + 代码生成把接口 schema 映射成类型与 query hook；② 复杂异步流（多步骤表单、工作流）用 useReducer 或状态机（XState）建模；③ 性能上靠 React.memo、selector、useDeferredValue 控制重渲染范围；④ 可观测：接 Sentry 上报报错、用 React Profiler 监控重渲染热点。","url":"https://itinterview.com.cn/question/1222"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？","item":"https://itinterview.com.cn/q/1222"}]}</script>

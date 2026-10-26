@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Pod、Deployment、Service 的关系？ · IT面试题库">
   <meta property="og:description" content="Pod：最小调度单位，包含一个或多个共享网络的容器，通常一个 Pod 跑一个主容器。 Deployment：管理 Pod 副本与滚动更新，通过 ReplicaSet 维持期望副本数，支持回滚。 Service：为一组 Pod 提供稳定虚拟 IP 与负载均衡，通过 Label Selector 关联 Pod，屏蔽 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/55.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Pod、Deployment、Service 的关系？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/55.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/55">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Pod、Deployment、Service 的关系？ · IT面试题库">
   <meta name="twitter:description" content="Pod：最小调度单位，包含一个或多个共享网络的容器，通常一个 Pod 跑一个主容器。 Deployment：管理 Pod 副本与滚动更新，通过 ReplicaSet 维持期望副本数，支持回滚。 Service：为一组 Pod 提供稳定虚拟 IP 与负载均衡，通过 Label Selector 关联 Pod，屏蔽 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/55.jpg">
+  <meta name="twitter:image:alt" content="Pod、Deployment、Service 的关系？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/55">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Pod、Deployment、Service 的关系？","text":"说明三者职责与典型用法。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Pod：最小调度单位，包含一个或多个共享网络的容器，通常一个 Pod 跑一个主容器。 Deployment：管理 Pod 副本与滚动更新，通过 ReplicaSet 维持期望副本数，支持回滚。 Service：为一组 Pod 提供稳定虚拟 IP 与负载均衡，通过 Label Selector 关联 Pod，屏蔽 Pod IP 变化。 典型链路：Deployment 创建 Pod → Service 暴露 Pod → Ingress 对外路由。访问经 Service（ClusterIP）→ 轮询到某 Pod。","url":"https://itinterview.com.cn/question/55"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"Pod、Deployment、Service 的关系？","item":"https://itinterview.com.cn/q/55"}]}</script>

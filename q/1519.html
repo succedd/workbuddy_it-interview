@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="常见的密码学误用有哪些？为什么 ECB 模式和弱随机数很危险？ · IT面试题库">
   <meta property="og:description" content="高频误用：① ECB 模式——相同明文块加密出相同密文块，图案直接透出（著名的企鹅图），不隐藏结构，禁止用于超过 1 块的数据；应改 GCM/CBC+随机 IV。② 固定/可预测 IV——IV 必须每次随机，重复 IV 在 CTR/GCM 下会泄露明文关系甚至导致密钥流复用。③ 弱随机数——rand()/时间戳做…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1519.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="常见的密码学误用有哪些？为什么 ECB 模式和弱随机数很危险？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1519.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1519">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="常见的密码学误用有哪些？为什么 ECB 模式和弱随机数很危险？ · IT面试题库">
   <meta name="twitter:description" content="高频误用：① ECB 模式——相同明文块加密出相同密文块，图案直接透出（著名的企鹅图），不隐藏结构，禁止用于超过 1 块的数据；应改 GCM/CBC+随机 IV。② 固定/可预测 IV——IV 必须每次随机，重复 IV 在 CTR/GCM 下会泄露明文关系甚至导致密钥流复用。③ 弱随机数——rand()/时间戳做…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1519.jpg">
+  <meta name="twitter:image:alt" content="常见的密码学误用有哪些？为什么 ECB 模式和弱随机数很危险？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1519">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"常见的密码学误用有哪些？为什么 ECB 模式和弱随机数很危险？","text":"列举 5 类高频误用，并解释 ECB 的模式泄露与 rand() 的可预测性。","answerCount":1,"datePublished":"2026-10-05T01:03:59.871Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"高频误用：① ECB 模式——相同明文块加密出相同密文块，图案直接透出（著名的企鹅图），不隐藏结构，禁止用于超过 1 块的数据；应改 GCM/CBC+随机 IV。② 固定/可预测 IV——IV 必须每次随机，重复 IV 在 CTR/GCM 下会泄露明文关系甚至导致密钥流复用。③ 弱随机数——rand()/时间戳做密钥：C 库 rand() 是线性同余可预测，必须用 CSPRNG（/dev/urandom、crypto.getRandomValues、Java SecureRandom）；随机数弱，再强的算法也白搭。④ 自己发明加密/魔改算法——密码学不靠保密算法（Kerckhoffs 原则），自研几乎必有结构缺陷。⑤ MAC 与加密顺序错误——应 Encrypt-then-MAC 或直接用 AEAD（GCM），先 MAC 后加密或只加密不认证会遭 padding oracle/比特翻转攻击。⑥ 硬编码密钥进代码/镜像——用 KMS/密钥管理服务。","url":"https://itinterview.com.cn/question/1519"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"密码学基础","item":"https://itinterview.com.cn/category?cat=209"},{"@type":"ListItem","position":4,"name":"常见的密码学误用有哪些？为什么 ECB 模式和弱随机数很危险？","item":"https://itinterview.com.cn/q/1519"}]}</script>

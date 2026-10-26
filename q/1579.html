@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？ · IT面试题库">
   <meta property="og:description" content="要点： 数据倾斜：某 key 数据量极大导致单点长尾；用盐值（salting）打散热点 key，或对热点单独处理再合并。 广播 Join（MapJoin）：小表广播到各节点避免 Shuffle，设置 autoBroadcastJoinThreshold。 分桶/分区裁剪：按 Join key 分桶（Bucket）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1579.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1579.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1579">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？ · IT面试题库">
   <meta name="twitter:description" content="要点： 数据倾斜：某 key 数据量极大导致单点长尾；用盐值（salting）打散热点 key，或对热点单独处理再合并。 广播 Join（MapJoin）：小表广播到各节点避免 Shuffle，设置 autoBroadcastJoinThreshold。 分桶/分区裁剪：按 Join key 分桶（Bucket）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1579.jpg">
+  <meta name="twitter:image:alt" content="大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1579">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？","text":"考察点：定位 JOIN 慢的根因（数据倾斜、Shuffle），给出广播、分桶、盐值、谓词下推等工程手段。","answerCount":1,"datePublished":"2026-10-06T09:02:52.693Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 数据倾斜：某 key 数据量极大导致单点长尾；用盐值（salting）打散热点 key，或对热点单独处理再合并。 广播 Join（MapJoin）：小表广播到各节点避免 Shuffle，设置 autoBroadcastJoinThreshold。 分桶/分区裁剪：按 Join key 分桶（Bucket）使同 key 同节点，配合分区裁剪减少扫描量。 谓词下推与列裁剪：把过滤下推到存储层，只取必要列。 避免笛卡尔积与隐式类型不一致导致的重算；按引擎选合适 Join（ClickHouse 字典/Join 表，Doris Colocate Join）。","url":"https://itinterview.com.cn/question/1579"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"大表 JOIN 在数仓/OLAP 引擎中很慢，如何优化？","item":"https://itinterview.com.cn/q/1579"}]}</script>

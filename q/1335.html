@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="HTTP 和 HTTPS 有什么区别？HTTPS 一定绝对安全吗？ · IT面试题库">
   <meta property="og:description" content="结论：HTTPS = HTTP + TLS/SSL，在 HTTP 之下插入加密层，提供机密性、身份认证和完整性校验；HTTP 明文传输，易被窃听、篡改、冒充。 主要区别： 加密：HTTP 明文；HTTPS 对报文加密，防窃听。 认证：HTTPS 通过 CA 证书验证服务端身份，防中间人冒充；HTTP 无身份验证。…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1335.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="HTTP 和 HTTPS 有什么区别？HTTPS 一定绝对安全吗？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1335.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1335">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HTTP 和 HTTPS 有什么区别？HTTPS 一定绝对安全吗？ · IT面试题库">
   <meta name="twitter:description" content="结论：HTTPS = HTTP + TLS/SSL，在 HTTP 之下插入加密层，提供机密性、身份认证和完整性校验；HTTP 明文传输，易被窃听、篡改、冒充。 主要区别： 加密：HTTP 明文；HTTPS 对报文加密，防窃听。 认证：HTTPS 通过 CA 证书验证服务端身份，防中间人冒充；HTTP 无身份验证。…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1335.jpg">
+  <meta name="twitter:image:alt" content="HTTP 和 HTTPS 有什么区别？HTTPS 一定绝对安全吗？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1335">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HTTP 和 HTTPS 有什么区别？HTTPS 一定绝对安全吗？","text":"考察点：HTTP 与 HTTPS 的本质差异（加密/认证/完整性）以及 HTTPS 的局限。要求对比端口、安全性、性能与证书机制，并指出 HTTPS 不是银弹。","answerCount":1,"datePublished":"2026-09-26T05:19:36.689Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：HTTPS = HTTP + TLS/SSL，在 HTTP 之下插入加密层，提供机密性、身份认证和完整性校验；HTTP 明文传输，易被窃听、篡改、冒充。 主要区别： 加密：HTTP 明文；HTTPS 对报文加密，防窃听。 认证：HTTPS 通过 CA 证书验证服务端身份，防中间人冒充；HTTP 无身份验证。 完整性：HTTPS 带 MAC 校验，防篡改；HTTP 可被 unnoticed 修改。 端口与开销：HTTP 用 80，HTTPS 用 443，且握手有额外计算与 RTT 开销。 对比表： | 维度 | HTTP | HTTPS | | --- | --- | --- | | 端口 | 80 | 443 | | 加密 | 无 | 有（TLS） | | 身份认证 | 无 | 有（CA 证书） | | 性能 | 低延迟 | 握手略慢 | HTTPS 不是绝对安全：它只保护传输过程；若证书被伪造/私钥泄露、或客户端信任了恶意 CA、或业务层有 XSS/逻辑漏洞，仍会出问题。此外不解决服务端本身被攻破的风险。","url":"https://itinterview.com.cn/question/1335"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"HTTP与HTTPS","item":"https://itinterview.com.cn/category?cat=51"},{"@type":"ListItem","position":4,"name":"HTTP 和 HTTPS 有什么区别？HTTPS 一定绝对安全吗？","item":"https://itinterview.com.cn/q/1335"}]}</script>

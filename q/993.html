@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？ · IT面试题库">
   <meta property="og:description" content="要点： 提并发：job.setting.speed 之外，关键是 reader 的 splitPk（按主键哈希把一张表切成多个 Task 并行读）——没配 splitPk 就只有单 channel 串行，这是「很慢」的头号原因。channel 数与 splitPk 分片数匹配（一般 4~16 channel）。 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/993.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/993.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/993">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？ · IT面试题库">
   <meta name="twitter:description" content="要点： 提并发：job.setting.speed 之外，关键是 reader 的 splitPk（按主键哈希把一张表切成多个 Task 并行读）——没配 splitPk 就只有单 channel 串行，这是「很慢」的头号原因。channel 数与 splitPk 分片数匹配（一般 4~16 channel）。 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/993.jpg">
+  <meta name="twitter:image:alt" content="DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/993">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？","text":"考察点：并发切分、JVM 内存、限速参数、分库分表读取。","answerCount":1,"datePublished":"2026-09-10T07:23:00.819Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 提并发：job.setting.speed 之外，关键是 reader 的 splitPk（按主键哈希把一张表切成多个 Task 并行读）——没配 splitPk 就只有单 channel 串行，这是「很慢」的头号原因。channel 数与 splitPk 分片数匹配（一般 4~16 channel）。 JVM 调优：DataX 进程默认内存偏小，大字段/大并发会 OOM——启动脚本调 -Xms/-Xmx（如 4~8G），并控制单 channel 的 batchSize（writer 攒批条数）与 byte/record 限速，内存占用≈batchSize×行宽。 源库保护：错峰同步、只同步增量（where update_time >= ... 或用 Binlog 方案替代）、slave 库读取、querySql 精确投影字段避免 SELECT *。 写入侧：Hive writer 用 textfile 中转再 INSERT OVERWRITE 转正式表格式，或直接 orc；分区表按分区写，避免小文件爆炸（配合后续 merge）。 观测：DataX 自带流量/脏数据统计，先看瓶颈在读端还是写端再对症下药。","url":"https://itinterview.com.cn/question/993"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"DataX","item":"https://itinterview.com.cn/category?cat=166"},{"@type":"ListItem","position":4,"name":"DataX 同步 MySQL 到 Hive 任务很慢或 OOM，你怎么调优？","item":"https://itinterview.com.cn/q/993"}]}</script>

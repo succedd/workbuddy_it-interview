@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="线上服务 CPU 飙高如何排查？ · IT面试题库">
   <meta property="og:description" content="标准五步法： 1. 定位高 CPU 的 Java 进程：top（按 P 排序）找到进程 PID； 2. 定位进程内的高 CPU 线程：top -Hp 显示该进程所有线程的 CPU 占用，记录线程 ID（十进制）； 3. 转换为十六进制：printf &#39;%x&#39; ——线程栈中 nid 是十六进制； 4. 导出线程栈并…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/940.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="线上服务 CPU 飙高如何排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/940.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/940">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线上服务 CPU 飙高如何排查？ · IT面试题库">
   <meta name="twitter:description" content="标准五步法： 1. 定位高 CPU 的 Java 进程：top（按 P 排序）找到进程 PID； 2. 定位进程内的高 CPU 线程：top -Hp 显示该进程所有线程的 CPU 占用，记录线程 ID（十进制）； 3. 转换为十六进制：printf &#39;%x&#39; ——线程栈中 nid 是十六进制； 4. 导出线程栈并…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/940.jpg">
+  <meta name="twitter:image:alt" content="线上服务 CPU 飙高如何排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/940">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上服务 CPU 飙高如何排查？","text":"请描述从进程定位到线程、再到具体代码行的完整排查步骤与常用命令。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"标准五步法： 1. 定位高 CPU 的 Java 进程：top（按 P 排序）找到进程 PID； 2. 定位进程内的高 CPU 线程：top -Hp 显示该进程所有线程的 CPU 占用，记录线程 ID（十进制）； 3. 转换为十六进制：printf '%x' ——线程栈中 nid 是十六进制； 4. 导出线程栈并搜索：jstack | grep -A 30 ，查看该线程正在执行的代码栈； 5. 分析根因： 业务线程狂转 → 死循环、低效算法（如正则回溯灾难、大集合循环查询）； GC 线程（GC Thread/GC task）占满 → 频繁 GC，转查内存：jstat -gcutil 1000 看各代占用与 GC 频率，jmap -histo 看对象直方图； 大量线程在 RUNNING → 线程数失控/上下文切换过高（vmstat 看 cs 列）。 注意事项：连续多次抓栈（间隔 1~2s）对比，确认热点稳定在同一个位置；生产环境 jmap -dump 会 STW，先评估影响。jstack/jcmd 抓栈本身很轻，可放心用。","url":"https://itinterview.com.cn/question/940"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"线上服务 CPU 飙高如何排查？","item":"https://itinterview.com.cn/q/940"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 Spring MVC 写一个 HandlerInterceptor 实现「接口统一登录校验 + 接口耗时统计」。 · IT面试题库">
   <meta property="og:description" content="要点： 思路：实现 HandlerInterceptor 三个方法：preHandle（前置，做登录校验 / 计时起点）、postHandle（后置，可对 ModelAndView 加工）、afterCompletion（完成，算耗时、记录日志）。需注册到 WebMvcConfigurer.addIntercep…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1619.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 Spring MVC 写一个 HandlerInterceptor 实现「接口统一登录校验 + 接口耗时统计」。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1619.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1619">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 Spring MVC 写一个 HandlerInterceptor 实现「接口统一登录校验 + 接口耗时统计」。 · IT面试题库">
   <meta name="twitter:description" content="要点： 思路：实现 HandlerInterceptor 三个方法：preHandle（前置，做登录校验 / 计时起点）、postHandle（后置，可对 ModelAndView 加工）、afterCompletion（完成，算耗时、记录日志）。需注册到 WebMvcConfigurer.addIntercep…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1619.jpg">
+  <meta name="twitter:image:alt" content="用 Spring MVC 写一个 HandlerInterceptor 实现「接口统一登录校验 + 接口耗时统计」。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1619">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 Spring MVC 写一个 HandlerInterceptor 实现「接口统一登录校验 + 接口耗时统计」。","text":"考察拦截器实战（编程题）。","answerCount":1,"datePublished":"2026-10-10T11:54:34.810Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 思路：实现 HandlerInterceptor 三个方法：preHandle（前置，做登录校验 / 计时起点）、postHandle（后置，可对 ModelAndView 加工）、afterCompletion（完成，算耗时、记录日志）。需注册到 WebMvcConfigurer.addInterceptors。 代码骨架： 讲解：preHandle 返回 false 会中断整条处理链，适合做鉴权拦截；耗时放在 afterCompletion 是因为它无论成功异常都会执行。注意拦截器只对 DispatcherServlet 处理的请求生效，静态资源 / 过滤器层要用 Filter。","url":"https://itinterview.com.cn/question/1619"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"用 Spring MVC 写一个 HandlerInterceptor 实现「接口统一登录校验 + 接口耗时统计」。","item":"https://itinterview.com.cn/q/1619"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。 · IT面试题库">
   <meta property="og:description" content="设定（n=2 个 token，d_k=d_v=2） Q = K = [[1, 0], [0, 1]]，V = [[1, 2], [3, 4]]。 ① QKᵀ（相似度矩阵，n×n） QKᵀ = [[1·1+0·0, 1·0+0·1], [0·1+1·0, 0·0+1·1]] = [[1, 0], [0, 1]]。每…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/408.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/408.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/408">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。 · IT面试题库">
   <meta name="twitter:description" content="设定（n=2 个 token，d_k=d_v=2） Q = K = [[1, 0], [0, 1]]，V = [[1, 2], [3, 4]]。 ① QKᵀ（相似度矩阵，n×n） QKᵀ = [[1·1+0·0, 1·0+0·1], [0·1+1·0, 0·0+1·1]] = [[1, 0], [0, 1]]。每…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/408.jpg">
+  <meta name="twitter:image:alt" content="计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/408">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。","text":"考察点：把抽象公式落到一个 2×2 的具体数值例子；理解 QKᵀ、缩放、softmax 按行归一、与 V 相乘四步。属计算/推导题。","answerCount":1,"datePublished":"2026-09-01T09:51:55.861Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"设定（n=2 个 token，d_k=d_v=2） Q = K = [[1, 0], [0, 1]]，V = [[1, 2], [3, 4]]。 ① QKᵀ（相似度矩阵，n×n） QKᵀ = [[1·1+0·0, 1·0+0·1], [0·1+1·0, 0·0+1·1]] = [[1, 0], [0, 1]]。每行代表一个 query 对所有 key 的点积。 ② 缩放 ÷√d_k（d_k=2 → ÷1.414） [[0.707, 0], [0, 0.707]]。把数值拉回合理区间。 ③ softmax 按行归一（n×n，每行和为 1） 行1：exp(0.707)=2.03、exp(0)=1 → 归一后 ≈ [0.67, 0.33]；行2 同理 ≈ [0.33, 0.67]。得到注意力权重矩阵 A。 ④ A·V（加权聚合，n×d_v） 行1：0.67·[1,2] + 0.33·[3,4] ≈ [1.66, 2.66]；行2：0.33·[1,2] + 0.67·[3,4] ≈ [2.34, 3.34]。 最终输出 ≈ [[1.66, 2.66], [2.34, 3.34]]。 维度链：Q(n×d_k) × Kᵀ(d_k×n) → (n×n) → softmax → (n×n) × V(n×d_v) → (n×d_v)。多头时 d_k 拆成 h 份，最后拼接投影回 d_model。","url":"https://itinterview.com.cn/question/408"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"计算题：给定 Q、K、V 三个小矩阵，手动走一遍 Scaled Dot-Product Attention 的完整计算（softmax(QKᵀ/√d_k)V），并说明每一步的维度变化。","item":"https://itinterview.com.cn/q/408"}]}</script>

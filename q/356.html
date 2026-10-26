@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？ · IT面试题库">
   <meta property="og:description" content="线程不安全的表现： 1. 数据覆盖：多线程同时 put 且落到同一个桶，若都判断「桶里没有相同 key」，会先后插入，后写的覆盖先写的，导致丢数据。 2. size 不准：元素计数不是原子操作，并发自增会少算，size() 返回的值不可信。 3. JDK 7 扩容死循环：旧版头插法在并发 resize 时可能把链…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/356.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/356.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/356">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？ · IT面试题库">
   <meta name="twitter:description" content="线程不安全的表现： 1. 数据覆盖：多线程同时 put 且落到同一个桶，若都判断「桶里没有相同 key」，会先后插入，后写的覆盖先写的，导致丢数据。 2. size 不准：元素计数不是原子操作，并发自增会少算，size() 返回的值不可信。 3. JDK 7 扩容死循环：旧版头插法在并发 resize 时可能把链…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/356.jpg">
+  <meta name="twitter:image:alt" content="为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/356">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？","text":"考察点：并发 put 的数据覆盖、size 不准、JDK 7 扩容死循环，以及对应的线程安全替代方案。","answerCount":1,"datePublished":"2026-08-31T08:46:22.877Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"线程不安全的表现： 1. 数据覆盖：多线程同时 put 且落到同一个桶，若都判断「桶里没有相同 key」，会先后插入，后写的覆盖先写的，导致丢数据。 2. size 不准：元素计数不是原子操作，并发自增会少算，size() 返回的值不可信。 3. JDK 7 扩容死循环：旧版头插法在并发 resize 时可能把链表结成环，后续 get 触发无限循环、CPU 飙满（JDK 8 尾插法已消除死循环，但仍不保证线程安全）。 现场怎么排查：如果接口偶发返回 null、或某台机器 CPU 突然 100% 且堆栈卡在 HashMap.get，要高度怀疑并发用错集合。 正确的替代方案：需要线程安全时，用 ConcurrentHashMap（推荐，分段/细粒度锁、性能好），或对读写都不频繁的场景用 Collections.synchronizedMap 包一层（全局锁，吞吐低）。绝不要在多线程共享 HashMap。","url":"https://itinterview.com.cn/question/356"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？","item":"https://itinterview.com.cn/q/356"}]}</script>

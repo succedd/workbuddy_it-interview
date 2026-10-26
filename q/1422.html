@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CSS 的 position 有 static / relative / absolute / fixed / sticky 五种。请说明 relative、absolute、fixed 各自相对「什么」定位？absolute 的包含块如何确定？并用 sticky 实现一个滚动吸顶效果。 · IT面试题库">
   <meta property="og:description" content="要点（各定位相对谁）： relative（相对定位）：相对自身「原本在文档流中的位置」偏移，不脱离文档流，原位置仍占位。 absolute（绝对定位）：相对「最近的已定位祖先（position 非 static 的祖先）」定位；若没有这样的祖先，则相对初始包含块（视口/根）定位，并脱离文档流。 fixed（固定定…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1422.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CSS 的 position 有 static / relative / absolute / fixed / sticky 五种。请说明 relative、absolute、fixed 各自相对「什么」定位？absolute 的包含块如何确定？并用 sticky 实现一个滚动吸顶效果。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1422.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1422">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CSS 的 position 有 static / relative / absolute / fixed / sticky 五种。请说明 relative、absolute、fixed 各自相对「什么」定位？absolute 的包含块如何确定？并用 sticky 实现一个滚动吸顶效果。 · IT面试题库">
   <meta name="twitter:description" content="要点（各定位相对谁）： relative（相对定位）：相对自身「原本在文档流中的位置」偏移，不脱离文档流，原位置仍占位。 absolute（绝对定位）：相对「最近的已定位祖先（position 非 static 的祖先）」定位；若没有这样的祖先，则相对初始包含块（视口/根）定位，并脱离文档流。 fixed（固定定…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1422.jpg">
+  <meta name="twitter:image:alt" content="CSS 的 position 有 static / relative / absolute / fixed / sticky 五种。请说明 relative、absolute、fixed 各自相对「什么」定位？absolute 的包含块如何确定？并用 sticky 实现一个滚动吸顶效果。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1422">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CSS 的 position 有 static / relative / absolute / fixed / sticky 五种。请说明 relative、absolute、fixed 各自相对「什么」定位？absolute 的包含块如何确定？并用 sticky 实现一个滚动吸顶效果。","text":"考察点：定位体系的包含块（containing block）概念与 sticky 实战，是 CSS 布局进阶的必问场景题。","answerCount":1,"datePublished":"2026-10-01T03:58:54.751Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（各定位相对谁）： relative（相对定位）：相对自身「原本在文档流中的位置」偏移，不脱离文档流，原位置仍占位。 absolute（绝对定位）：相对「最近的已定位祖先（position 非 static 的祖先）」定位；若没有这样的祖先，则相对初始包含块（视口/根）定位，并脱离文档流。 fixed（固定定位）：相对「视口（viewport）」定位，滚动不随页面移动；但若祖先元素设置了 transform / filter / perspective 等非 none 值，会创建包含块，使 fixed 相对该祖先而非视口。 sticky（粘性定位）：混合 relative 与 fixed，在阈值（top/left 等）前表现为 relative，越过阈值后表现为 fixed 吸住，常用于滚动吸顶。 要点（absolute 包含块）：包含块 = 最近的非 static 定位祖先的 padding box；找不到则退回根元素（html）的初始包含块。 要点（sticky 吸顶示例）： 元素在距视口顶部 0px 时「粘」在顶部；前提是父容器有足够高度且未设 overflow:hidden（overflow 会切断 sticky 的滚动上下文）。","url":"https://itinterview.com.cn/question/1422"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"CSS 的 position 有 static / relative / absolute / fixed / sticky 五种。请说明 relative、absolute、fixed 各自相对「什么」定位？absolute 的包含块如何确定？并用 sticky 实现一个滚动吸顶效果。","item":"https://itinterview.com.cn/q/1422"}]}</script>

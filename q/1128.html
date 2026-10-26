@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？ · IT面试题库">
   <meta property="og:description" content="浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1128.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1128.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1128">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？ · IT面试题库">
   <meta name="twitter:description" content="浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1128.jpg">
+  <meta name="twitter:image:alt" content="现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1128">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？","text":"请说明浏览器多进程模型中各进程/线程的职责划分，以及多进程相比单进程解决了哪些问题（崩溃隔离、安全沙箱、性能与稳定性）。","answerCount":1,"datePublished":"2026-09-14T02:47:24.609Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"浏览器进程（主进程）：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。 网络进程：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。 渲染进程：每个标签页（同站隔离）一个独立渲染进程，负责 HTML/CSS/JS 的解析、布局、绘制与 JS 执行；它运行在沙箱里，无法直接访问磁盘与系统。 GPU 进程：专门负责图形合成（Composite）与 3D/Canvas/WebGL，把渲染进程产出的图层高效上屏。 为什么多进程：单进程时代一个标签页崩溃或脚本死循环会拖垮整个浏览器、且任何组件被攻破就等于拿到整机权限；多进程用“进程隔离 + 沙箱”把故障与安全风险限制在单个标签页内，并让多核得到更充分利用。","url":"https://itinterview.com.cn/question/1128"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？","item":"https://itinterview.com.cn/q/1128"}]}</script>

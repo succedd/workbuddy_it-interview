@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。 · IT面试题库">
   <meta property="og:description" content="为什么会热点 HBase 按_ROWKEY 字典序连续存储，Region 是按 rowkey 范围切的。若 rowkey 单调递增（时间戳、自增 ID），写入永远落在同一个 Region（的同一个 RegionServer）上——整个集群只有一台机器在写，其他节点闲着；读取同理。这就是热点。 常见成因与打散策略 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1436.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1436.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1436">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。 · IT面试题库">
   <meta name="twitter:description" content="为什么会热点 HBase 按_ROWKEY 字典序连续存储，Region 是按 rowkey 范围切的。若 rowkey 单调递增（时间戳、自增 ID），写入永远落在同一个 Region（的同一个 RegionServer）上——整个集群只有一台机器在写，其他节点闲着；读取同理。这就是热点。 常见成因与打散策略 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1436.jpg">
+  <meta name="twitter:image:alt" content="HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1436">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。","text":"考察 HBase RowKey 设计：LSM 顺序写模型下的热点问题、打散手段与各自的查询代价，是大数据面试的必考设计题。","answerCount":1,"datePublished":"2026-10-01T04:20:42.974Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么会热点 HBase 按_ROWKEY 字典序连续存储，Region 是按 rowkey 范围切的。若 rowkey 单调递增（时间戳、自增 ID），写入永远落在同一个 Region（的同一个 RegionServer）上——整个集群只有一台机器在写，其他节点闲着；读取同理。这就是热点。 常见成因与打散策略 1. 单调递增/递减键 → 加盐（Salting）：rowkey 前加一位随机/哈希前缀（如 hash(id)%16 两位十六进制），写压力摊到 16 个 Region； 2. 大客户端/大用户集中写 → 反转键：把时间戳或手机号反转（reverse(ts)），让原本相同的后缀变成不同的前缀； 3. 组合键里高基数维度排前面 → 重排列：把分散性最好的维度放最前； 4. 预分区不足 → 预建 Region：create 't', SPLITS => ['1','2',...'] 按 rowkey 分布提前切好，避免建表后分裂倾斜。 盐析的代价（必答） 盐值打散了写，但破坏了字典序与 rowkey 的语义连续性： Scan 不再能直接按原 key 范围扫，要按盐值个数发起多次并行 scan 再归并（客户端代价 ↑）； Get 需要先算盐前缀（应用层必须统一实现，否则读不到）； 盐值固定后扩容困难（盐 16 改 32 等于换 key 方案）。 设计口诀 「长度一致（建议 ≤ 32 字节且定长）、打散写、保留查」：先列出业务的主要查询模式（精确 Get / 范围 Scan），倒推 rowkey 组成，再决定用加盐、反转还是哈希——没有通用最优解，只有匹配查询模式的设计。","url":"https://itinterview.com.cn/question/1436"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"HBase","item":"https://itinterview.com.cn/category?cat=35"},{"@type":"ListItem","position":5,"name":"HBase 的 RowKey 设计为什么要防「热点」？列出至少四种常见热点成因与对应的打散策略，并说明盐析（Salting）的代价。","item":"https://itinterview.com.cn/q/1436"}]}</script>
@@ -112,7 +118,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1436">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/724">HBase 的数据模型（行键/列族/版本）与适用场景？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/724">HBase 的数据模型（行键/列族/版本）与适用场景？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1970">HBase 是什么？它和关系型数据库、HDFS 的核心区别是什么？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1971">HBase 的数据模型里，行键（RowKey）为什么这么关键？设计行键有哪些常见技巧？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1972">业务按「用户ID + 时间范围」查询，RowKey 怎么设计才能既避免热点又支持范围扫描？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

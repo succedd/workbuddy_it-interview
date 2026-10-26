@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="物模型（TSL）与规则引擎如何配合做设备数据流转？ · IT面试题库">
   <meta property="og:description" content="要点： 物模型 TSL：用属性（property，设备状态）、事件（event，告警/故障）、服务（service，远程指令）描述设备能力，平台据此做数据解析、校验、可视化和指令下发；TSL 要与设备上报的 JSON 字段、单位、枚举严格对齐。 规则引擎：订阅设备消息，按 SQL / 条件过滤、转换后转发到 Ka…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1753.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="物模型（TSL）与规则引擎如何配合做设备数据流转？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1753.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1753">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="物模型（TSL）与规则引擎如何配合做设备数据流转？ · IT面试题库">
   <meta name="twitter:description" content="要点： 物模型 TSL：用属性（property，设备状态）、事件（event，告警/故障）、服务（service，远程指令）描述设备能力，平台据此做数据解析、校验、可视化和指令下发；TSL 要与设备上报的 JSON 字段、单位、枚举严格对齐。 规则引擎：订阅设备消息，按 SQL / 条件过滤、转换后转发到 Ka…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1753.jpg">
+  <meta name="twitter:image:alt" content="物模型（TSL）与规则引擎如何配合做设备数据流转？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1753">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"物模型（TSL）与规则引擎如何配合做设备数据流转？","text":"考察属性/事件/服务建模，以及规则编排与性能边界。","answerCount":1,"datePublished":"2026-10-19T05:43:26.541Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 物模型 TSL：用属性（property，设备状态）、事件（event，告警/故障）、服务（service，远程指令）描述设备能力，平台据此做数据解析、校验、可视化和指令下发；TSL 要与设备上报的 JSON 字段、单位、枚举严格对齐。 规则引擎：订阅设备消息，按 SQL / 条件过滤、转换后转发到 Kafka、数据库、函数计算或另一个主题；支持去重、重试、死信队列，把「设备接入」与「业务处理」解耦。 坑：TSL 版本升级要兼容旧设备；海量消息下规则不要做重计算；避免规则环路（A→B→A）；对单位/精度/时间戳做统一，否则统计结果会失真。","url":"https://itinterview.com.cn/question/1753"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"IoT平台开发","item":"https://itinterview.com.cn/category?cat=248"},{"@type":"ListItem","position":4,"name":"物模型（TSL）与规则引擎如何配合做设备数据流转？","item":"https://itinterview.com.cn/q/1753"}]}</script>

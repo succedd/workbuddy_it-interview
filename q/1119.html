@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？ · IT面试题库">
   <meta property="og:description" content="声明式（@Transactional）：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。 编程式（TransactionTemplate）：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1119.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1119.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1119">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？ · IT面试题库">
   <meta name="twitter:description" content="声明式（@Transactional）：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。 编程式（TransactionTemplate）：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1119.jpg">
+  <meta name="twitter:image:alt" content="声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1119">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？","text":"在什么情况下应优先用 @Transactional 声明式事务，什么情况下应改用 TransactionTemplate 编程式事务？","answerCount":1,"datePublished":"2026-09-13T02:40:15.641Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"声明式（@Transactional）：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。 编程式（TransactionTemplate）：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务、或要在异常时决定「部分提交」的复杂逻辑。 取舍要点：声明式胜在简洁但有「自调用失效、粒度粗」的坑；编程式可控但侵入业务代码。简单场景用声明式，需要细粒度控制或避坑时用编程式。 注意：二者不要混用同一连接造成嵌套混乱；批量场景更要关注事务时长与锁占用，避免长事务拖垮数据库。","url":"https://itinterview.com.cn/question/1119"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？","item":"https://itinterview.com.cn/q/1119"}]}</script>

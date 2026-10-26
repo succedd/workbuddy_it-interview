@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库">
   <meta property="og:description" content="要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/833.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/833.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/833">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库">
   <meta name="twitter:description" content="要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/833.jpg">
+  <meta name="twitter:image:alt" content="线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/833">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法","text":"考察点：是否掌握系统化的性能排查方法论（USE），而非盲目敲命令。追问：为什么强调「先整体后局部」，而不是直接上 perf 火焰图？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。 Utilization（利用率）：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%。 Saturation（饱和度）：资源积压的额外工作量（通常表现为队列），如 CPU 运行队列长度、磁盘 await 排队；任何非零饱和度都值得警惕。 Errors（错误）：错误事件计数，如网卡 late collision、TCP 重传、磁盘 media error，非零且持续增长的必须查。 落地顺序：USE 能解决约 80% 的服务器问题、只需 5% 精力，是「先整体后局部」的抓手；定位到 CPU / 内存 / IO / 网络中的某一类瓶颈后，再上 top / perf / iostat / ss 等工具钻取。切忌一上来就 perf 火焰图——没有方向地采样既慢又难读，容易在错误资源上浪费时间。","url":"https://itinterview.com.cn/question/833"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法","item":"https://itinterview.com.cn/q/833"}]}</script>

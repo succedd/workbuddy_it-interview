@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？ · IT面试题库">
   <meta property="og:description" content="要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1225.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1225.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1225">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？ · IT面试题库">
   <meta name="twitter:description" content="要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1225.jpg">
+  <meta name="twitter:image:alt" content="【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1225">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？","text":"追问链第 3 问：故障发生时的决策——人肉切还是哨兵切。","answerCount":1,"datePublished":"2026-09-21T02:33:11.305Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 手动切换步骤：① 选数据最新的从节点（INFO replication 看 master_repl_offset 最大者）；② 对其执行 replicaof no one 提升为主；③ 让其余从节点 replicaof 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错，夜间无人时无法自愈。 不丢数据的关键：切换前确认候选从节点的复制偏移尽量贴近原主（减少数据差）；若原主可恢复，先对比 offset 再做决策；对强一致场景宁可短暂停写也别切到落后太多的从。 哨兵自动故障转移：Sentinel 持续探测，判定主客观下线后自动选主、切换并通知客户端，无需人工介入，具备自愈能力。代价是需额外维护哨兵集群、配置 quorum，且自动切换若判定有误（如网络抖动误判）可能切错。 权衡：核心业务用哨兵/Cluster 实现自动切换保可用性；对一致性极端敏感的场景，可在哨兵之上叠加 WAIT 与人工确认策略。","url":"https://itinterview.com.cn/question/1225"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？","item":"https://itinterview.com.cn/q/1225"}]}</script>

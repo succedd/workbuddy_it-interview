@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。 · IT面试题库">
   <meta property="og:description" content="运行时代码（用类型守卫/泛型约束保证 obj 为对象）： 类型层面（简化思路）：用递归条件类型 Path 将路径拆成元组，逐段到对象/数组类型中取子类型；数组用 A[number]，对象用 T[K]；最终返回该子类型（或 undefined）。配合 isObject 类型守卫，在运行时把 unknown 收窄为对…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/511.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/511.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/511">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。 · IT面试题库">
   <meta name="twitter:description" content="运行时代码（用类型守卫/泛型约束保证 obj 为对象）： 类型层面（简化思路）：用递归条件类型 Path 将路径拆成元组，逐段到对象/数组类型中取子类型；数组用 A[number]，对象用 T[K]；最终返回该子类型（或 undefined）。配合 isObject 类型守卫，在运行时把 unknown 收窄为对…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/511.jpg">
+  <meta name="twitter:image:alt" content="请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/511">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。","text":"给定 get({a:{b:[{c:1}]}}, 'a.b.0.c') 能正确推断返回值类型。请写出运行时代码，并用 TypeScript 类型体操为路径取值提供类型支持（可给出简化版类型定义）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"运行时代码（用类型守卫/泛型约束保证 obj 为对象）： 类型层面（简化思路）：用递归条件类型 Path 将路径拆成元组，逐段到对象/数组类型中取子类型；数组用 A[number]，对象用 T[K]；最终返回该子类型（或 undefined）。配合 isObject 类型守卫，在运行时把 unknown 收窄为对象，避免对任意值取属性。 关键点：泛型约束 K extends keyof T 让索引操作合法；infer 在条件类型里捕获数组元素/对象属性类型，从而实现返回值的精确推断。","url":"https://itinterview.com.cn/question/511"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"TypeScript","item":"https://itinterview.com.cn/category?cat=15"},{"@type":"ListItem","position":4,"name":"请实现一个类型安全的「按路径取值」函数 get(obj, path)，要求使用泛型约束与类型守卫保证类型正确，并说明类型层面如何实现。","item":"https://itinterview.com.cn/q/511"}]}</script>

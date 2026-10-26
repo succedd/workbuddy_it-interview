@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库">
   <meta property="og:description" content="执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、bo…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/816.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/816.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/816">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库">
   <meta name="twitter:description" content="执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、bo…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/816.jpg">
+  <meta name="twitter:image:alt" content="Express 中间件（middleware）的执行顺序与 next() 作用是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/816">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Express 中间件（middleware）的执行顺序与 next() 作用是什么？","text":"说明 Express 中间件的注册顺序、next() 的含义与典型用途。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行顺序：中间件按 app.use / 路由注册的顺序自上而下形成链条，请求依次经过。 next() 含义：调用 next() 把控制权交给下一个中间件；若忘记调用且不结束响应，请求会挂起超时。 典型用途：日志、身份认证、错误处理（错误优先中间件 (err,req,res,next)）、统一 CORS/限流、body 解析。错误中间件必须 4 个参数才能被识别。","url":"https://itinterview.com.cn/question/816"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Express","item":"https://itinterview.com.cn/category?cat=91"},{"@type":"ListItem","position":5,"name":"Express 中间件（middleware）的执行顺序与 next() 作用是什么？","item":"https://itinterview.com.cn/q/816"}]}</script>

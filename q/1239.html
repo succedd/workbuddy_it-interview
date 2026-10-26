@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。 · IT面试题库">
   <meta property="og:description" content="要点（讲解）： 懒加载核心是「先用占位、进入视口再换真实地址」，IntersectionObserver 比监听 scroll 更省性能（由浏览器异步触发、不阻塞主线程）。配套优化：① 响应式图片用 srcset + sizes 或 按 DPR/视口下发合适分辨率；② 字体用 font-display: swap…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1239.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1239.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1239">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。 · IT面试题库">
   <meta name="twitter:description" content="要点（讲解）： 懒加载核心是「先用占位、进入视口再换真实地址」，IntersectionObserver 比监听 scroll 更省性能（由浏览器异步触发、不阻塞主线程）。配套优化：① 响应式图片用 srcset + sizes 或 按 DPR/视口下发合适分辨率；② 字体用 font-display: swap…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1239.jpg">
+  <meta name="twitter:image:alt" content="请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1239">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。","text":"考察点：资源加载优化的落地实现与生态手段（懒加载/响应式图片/font-display/preload），检验工程细节，高级编程题。","answerCount":1,"datePublished":"2026-09-26T01:40:26.131Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（讲解）： 懒加载核心是「先用占位、进入视口再换真实地址」，IntersectionObserver 比监听 scroll 更省性能（由浏览器异步触发、不阻塞主线程）。配套优化：① 响应式图片用 srcset + sizes 或 按 DPR/视口下发合适分辨率；② 字体用 font-display: swap 避免 FOIT 阻塞文字；③ 首屏关键资源 preload、非关键 prefetch；④ 图片用 WebP/AVIF + CDN。 注意：现代浏览器原生支持 loading=\"lazy\"，无兼容要求可直接用；IntersectionObserver 用于需要更细控制（如淡入、占位骨架）的场景。","url":"https://itinterview.com.cn/question/1239"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端性能优化","item":"https://itinterview.com.cn/category?cat=77"},{"@type":"ListItem","position":4,"name":"请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。","item":"https://itinterview.com.cn/q/1239"}]}</script>

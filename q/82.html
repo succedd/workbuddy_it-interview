@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 消费组重平衡（rebalance）是什么？ · IT面试题库">
   <meta property="og:description" content="重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/82.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 消费组重平衡（rebalance）是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/82.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/82">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 消费组重平衡（rebalance）是什么？ · IT面试题库">
   <meta name="twitter:description" content="重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/82.jpg">
+  <meta name="twitter:image:alt" content="Kafka 消费组重平衡（rebalance）是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/82">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 消费组重平衡（rebalance）是什么？","text":"解释触发原因、stop-the-world 影响与优化。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"重平衡：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。 触发：消费者加入/离开（崩溃、超时 session.timeout、心跳 heartbeat.interval）、订阅主题分区数变化、消费者超过 max.poll.interval 未 poll。 影响：重平衡期间整个组暂停消费（stop-the-world），大 group 影响明显。 优化：合理设超时、避免在消费逻辑里做重活（超过 max.poll.interval.ms）、升级到支持增量协作重平衡（Cooperative Sticky）的版本减少停顿、控制 group 规模。","url":"https://itinterview.com.cn/question/82"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 消费组重平衡（rebalance）是什么？","item":"https://itinterview.com.cn/q/82"}]}</script>

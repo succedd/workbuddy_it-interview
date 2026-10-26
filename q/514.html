@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库">
   <meta property="og:description" content="执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/514.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/514.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/514">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库">
   <meta name="twitter:description" content="执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/514.jpg">
+  <meta name="twitter:image:alt" content="Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/514">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。","text":"解释 defer 的 LIFO 顺序、参数在 defer 语句执行时即求值、以及 defer 对命名返回值的修改效果。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"执行顺序：同一个函数里的多个 defer 按后进先出（LIFO）执行，即最后声明的 defer 最先运行。 参数求值时机：defer 后面的函数参数在 defer 语句执行那一刻就被求值并拷贝，而不是在函数 return 时才求。常见“坑”： 对命名返回值的修改：defer 在 return 赋值之后、真正返回之前运行，因此它能修改命名返回值： 但若是匿名返回值（如 func f() int），defer 修改的只是局部副本，不影响最终返回。 常见陷阱：在 for 循环里 defer file.Close() 会延迟到函数结束才执行，可能耗尽文件描述符——应在循环内显式关闭或把循环体抽成函数。","url":"https://itinterview.com.cn/question/514"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Go","item":"https://itinterview.com.cn/category?cat=16"},{"@type":"ListItem","position":4,"name":"Go 中 defer 的执行顺序、参数求值时机有哪些“坑”？请结合命名返回值说明。","item":"https://itinterview.com.cn/q/514"}]}</script>

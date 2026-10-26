@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？ · IT面试题库">
   <meta property="og:description" content="机制：PyTorch 用动态计算图——前向计算时，每个对 requires_grad=True 张量的运算都会记录成图节点（Function 对象，保存反向函数与输入输出引用）。调用 loss.backward() 时从 loss 出发反向遍历该图，按链式法则把梯度累加到各叶子张量的 .grad 上，随后图即释放…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1520.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1520.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1520">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？ · IT面试题库">
   <meta name="twitter:description" content="机制：PyTorch 用动态计算图——前向计算时，每个对 requires_grad=True 张量的运算都会记录成图节点（Function 对象，保存反向函数与输入输出引用）。调用 loss.backward() 时从 loss 出发反向遍历该图，按链式法则把梯度累加到各叶子张量的 .grad 上，随后图即释放…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1520.jpg">
+  <meta name="twitter:image:alt" content="PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1520">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？","text":"说明动态图记录、反向传播的链式计算，以及梯度控制常用手段。","answerCount":1,"datePublished":"2026-10-05T01:03:59.965Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"机制：PyTorch 用动态计算图——前向计算时，每个对 requires_grad=True 张量的运算都会记录成图节点（Function 对象，保存反向函数与输入输出引用）。调用 loss.backward() 时从 loss 出发反向遍历该图，按链式法则把梯度累加到各叶子张量的 .grad 上，随后图即释放（除非 retain_graph）。动态性：每次 forward 重新建图，控制流（if/循环）天然支持。 requires_grad：声明该张量需要梯度——叶子上决定是否追踪；参数默认 True，输入数据通常 False 省内存。detach()：从当前图摘出一份新张量（共享数据、脱离追踪），常用于：① 冻结部分网络（配合 param.requires_grad=False）；② target 计算不传梯度（如 TD target、对抗训练的固定分支）；③ 日志记录避免构建无用图。 注意：梯度默认累加，每个 batch 前要 optimizer.zero_grad()；with torch.no_grad(): 包推理，比 detach 更省心。","url":"https://itinterview.com.cn/question/1520"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？","item":"https://itinterview.com.cn/q/1520"}]}</script>

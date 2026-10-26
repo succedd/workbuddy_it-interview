@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 的 String 是如何存储的？什么是字符串常量池（String Pool）？执行 String s = new String(&quot;abc&quot;) 会创建几个对象？为什么 String 被设计成不可变（immutable）？ · IT面试题库">
   <meta property="og:description" content="要点（存储与常量池）： 字符串常量池是方法区/元空间中的一块特殊区域，用于复用字面量字符串，避免重复创建。字面量赋值 String a = &quot;abc&quot; 会先去池中查找，有则复用、无则创建并入池。 要点（new String 创建了几个对象）： String s = new String(&quot;abc&quot;) 至少会在堆上…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1428.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Java 的 String 是如何存储的？什么是字符串常量池（String Pool）？执行 String s = new String(&quot;abc&quot;) 会创建几个对象？为什么 String 被设计成不可变（immutable）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1428.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1428">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 的 String 是如何存储的？什么是字符串常量池（String Pool）？执行 String s = new String(&quot;abc&quot;) 会创建几个对象？为什么 String 被设计成不可变（immutable）？ · IT面试题库">
   <meta name="twitter:description" content="要点（存储与常量池）： 字符串常量池是方法区/元空间中的一块特殊区域，用于复用字面量字符串，避免重复创建。字面量赋值 String a = &quot;abc&quot; 会先去池中查找，有则复用、无则创建并入池。 要点（new String 创建了几个对象）： String s = new String(&quot;abc&quot;) 至少会在堆上…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1428.jpg">
+  <meta name="twitter:image:alt" content="Java 的 String 是如何存储的？什么是字符串常量池（String Pool）？执行 String s = new String(&quot;abc&quot;) 会创建几个对象？为什么 String 被设计成不可变（immutable）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1428">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 的 String 是如何存储的？什么是字符串常量池（String Pool）？执行 String s = new String(\"abc\") 会创建几个对象？为什么 String 被设计成不可变（immutable）？","text":"考察点：String 的内存模型（常量池/堆）、对象创建个数与不可变设计动机，是 Java 基础的经典追问链场景题。","answerCount":1,"datePublished":"2026-10-01T04:02:29.270Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（存储与常量池）： 字符串常量池是方法区/元空间中的一块特殊区域，用于复用字面量字符串，避免重复创建。字面量赋值 String a = \"abc\" 会先去池中查找，有则复用、无则创建并入池。 要点（new String 创建了几个对象）： String s = new String(\"abc\") 至少会在堆上 new 出一个 String 对象（s 指向它）；同时类加载/字面量解析时若池中还没有 \"abc\"，还会在常量池创建一个 \"abc\" 字面量——所以「通常 2 个」（池里 1 个 + 堆上 1 个）；若池里已存在则只新增堆上那 1 个。建议用 String s = \"abc\" 直接复用池对象。 要点（为什么不可变）： 安全：String 常作类名、网络地址、权限标识，不可变防止被篡改； 哈希缓存：hashCode 可缓存，适合做 HashMap 的键； 线程安全：不可变天然线程安全，可自由共享； 常量池基础：只有不可变才能保证池化复用安全。 代价：频繁拼接会产生大量中间对象，故大量拼接应改用 StringBuilder/StringBuffer。","url":"https://itinterview.com.cn/question/1428"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 的 String 是如何存储的？什么是字符串常量池（String Pool）？执行 String s = new String(\"abc\") 会创建几个对象？为什么 String 被设计成不可变（immutable）？","item":"https://itinterview.com.cn/q/1428"}]}</script>

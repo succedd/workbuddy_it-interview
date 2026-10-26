@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="原型与原型链是什么？如何实现继承？ · IT面试题库">
   <meta property="og:description" content="核心规则： 每个函数都有 prototype（原型对象），其 constructor 指回函数本身； 每个对象都有 __proto__（即 [[Prototype]]），指向创建它的构造函数的 prototype； 属性查找：先找自身 → 沿 __proto__ 逐级向上找 → 直到 Object.prototy…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/948.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="原型与原型链是什么？如何实现继承？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/948.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/948">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="原型与原型链是什么？如何实现继承？ · IT面试题库">
   <meta name="twitter:description" content="核心规则： 每个函数都有 prototype（原型对象），其 constructor 指回函数本身； 每个对象都有 __proto__（即 [[Prototype]]），指向创建它的构造函数的 prototype； 属性查找：先找自身 → 沿 __proto__ 逐级向上找 → 直到 Object.prototy…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/948.jpg">
+  <meta name="twitter:image:alt" content="原型与原型链是什么？如何实现继承？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/948">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"原型与原型链是什么？如何实现继承？","text":"请说明 __proto__、prototype 的关系与属性查找规则，并对比 ES6 class 前后的继承方式。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"核心规则： 每个函数都有 prototype（原型对象），其 constructor 指回函数本身； 每个对象都有 __proto__（即 [[Prototype]]），指向创建它的构造函数的 prototype； 属性查找：先找自身 → 沿 __proto__ 逐级向上找 → 直到 Object.prototype.__proto__ === null 为止，这条链就是原型链。 继承方式演进： 1. 原型链继承（Child.prototype = new Parent()）：引用类型属性共享的缺陷； 2. 借用构造函数（Parent.call(this)）：无法继承原型方法； 3. 组合继承（1+2）：调用了两次父构造函数； 4. 寄生组合式（Object.create(Parent.prototype) + call）：最优解； 5. ES6 class/extends：语法糖，底层就是寄生组合式继承，静态方法、super、new.target 语义更完整——实践直接用 class，面试讲清演进即可。","url":"https://itinterview.com.cn/question/948"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"原型与原型链是什么？如何实现继承？","item":"https://itinterview.com.cn/q/948"}]}</script>

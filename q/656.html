@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路 · IT面试题库">
   <meta property="og:description" content="要点一：先分层——&quot;看到旧内容&quot;可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清&quot;部分用户&quot;的地域/运营商分布与是否强刷（Ctrl+F…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/656.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/656.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/656">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路 · IT面试题库">
   <meta name="twitter:description" content="要点一：先分层——&quot;看到旧内容&quot;可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清&quot;部分用户&quot;的地域/运营商分布与是否强刷（Ctrl+F…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/656.jpg">
+  <meta name="twitter:image:alt" content="【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/656">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路","text":"追问链第四环：DNS 缓存与 CDN 缓存双重\"不生效\"排查。考察点：区分 DNS 层未生效与 CDN/浏览器缓存层旧内容；dig/nslookup 查 CNAME 链与 TTL；HTTP 响应头定位命中层级；缓存刷新与 TTL 收敛操作。","answerCount":1,"datePublished":"2026-09-07T13:21:58.891Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：先分层——\"看到旧内容\"可能发生在三层 层 1 DNS：用户侧/本地 DNS 仍缓存旧记录或旧 CNAME，TTL 未过期导致新解析未生效； 层 2 CDN 边缘节点：节点缓存了旧资源且未过期； 层 3 浏览器：浏览器本地缓存命中，根本没发请求。先问清\"部分用户\"的地域/运营商分布与是否强刷（Ctrl+F5）后复现，可快速缩小层次。 要点二：逐层验证手段 DNS 层：dig www.example.com（或 nslookup）观察返回的 CNAME 链与最终 IP 是否为新值；对比 dig @8.8.8.8 与 @223.5.5.5 等不同 Local DNS 的结果判断是全局未生效还是部分运营商缓存滞后；检查解析记录 TTL，TTL 越长传播越慢。 CDN 层：curl -I 查看响应头（X-Cache: HIT/MISS、Age、Etag、Last-Modified），HIT + 旧 Etag 说明节点缓存旧内容；提交 URL 级缓存刷新强制回源。 浏览器层：强刷/无痕窗口/清缓存验证，响应头 Cache-Control 是否过于宽松。 要点三：处置与预防 处置：DNS 切换提前降低 TTL（如 300 秒以内）等旧 TTL 过期后再变更；内容更新走\"新文件名 + 预热 + 旧文件刷新\"；紧急时对受影响 URL/目录全量刷新。 预防：变更 SOP 里写明\"先降 TTL→再改记录→验证 dig 多地结果→刷新 CDN→抽样验证响应头\"；发布流程默认带缓存刷新与预热步骤，避免依赖用户侧自然过期。","url":"https://itinterview.com.cn/question/656"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"DNS原理","item":"https://itinterview.com.cn/category?cat=52"},{"@type":"ListItem","position":4,"name":"【故障排查】发布新版前端后，部分用户反馈页面仍是旧版本；另有用户反馈解析刚切换的新 IP 不生效。请给出完整排查思路","item":"https://itinterview.com.cn/q/656"}]}</script>

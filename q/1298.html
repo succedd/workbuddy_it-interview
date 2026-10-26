@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="做响应式布局时，px / em / rem / vw / vh / % 该怎么选？媒体查询和 clamp() 分别适合什么场景？ · IT面试题库">
   <meta property="og:description" content="相对单位的基准不同： px：绝对像素，不随用户设置缩放，适合边框、1px 细线等； em：相对自身或父元素字号，嵌套会层层累积，容易失控； rem：相对根元素（html）字号，最可控，适合全局字号与间距； vw / vh：相对视口宽高（1vw = 视口宽度的 1%），适合随屏幕缩放的尺寸；注意移动端 vh 受地址…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1298.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="做响应式布局时，px / em / rem / vw / vh / % 该怎么选？媒体查询和 clamp() 分别适合什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1298.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1298">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="做响应式布局时，px / em / rem / vw / vh / % 该怎么选？媒体查询和 clamp() 分别适合什么场景？ · IT面试题库">
   <meta name="twitter:description" content="相对单位的基准不同： px：绝对像素，不随用户设置缩放，适合边框、1px 细线等； em：相对自身或父元素字号，嵌套会层层累积，容易失控； rem：相对根元素（html）字号，最可控，适合全局字号与间距； vw / vh：相对视口宽高（1vw = 视口宽度的 1%），适合随屏幕缩放的尺寸；注意移动端 vh 受地址…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1298.jpg">
+  <meta name="twitter:image:alt" content="做响应式布局时，px / em / rem / vw / vh / % 该怎么选？媒体查询和 clamp() 分别适合什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1298">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"做响应式布局时，px / em / rem / vw / vh / % 该怎么选？媒体查询和 clamp() 分别适合什么场景？","text":"考察点：相对单位的基准差异，以及媒体查询与流体排版的取舍。","answerCount":1,"datePublished":"2026-09-26T02:32:42.709Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"相对单位的基准不同： px：绝对像素，不随用户设置缩放，适合边框、1px 细线等； em：相对自身或父元素字号，嵌套会层层累积，容易失控； rem：相对根元素（html）字号，最可控，适合全局字号与间距； vw / vh：相对视口宽高（1vw = 视口宽度的 1%），适合随屏幕缩放的尺寸；注意移动端 vh 受地址栏影响，可用 dvh/svh/lvh； %：相对包含块的对应属性；宽度百分比基于父宽，而 padding-top 的百分比也基于父宽，这是经典坑。 媒体查询（@media）适合按设备特征/视口做结构性切换： 由可选的媒体类型（screen/print/all）+ 媒体特性（width、hover、color、orientation 等）组成，用 and / not / or / 逗号列表组合；只有「区间」类特性可加 min- / max- 前缀； 注意：即使查询为 false，挂在 上的样式表仍会下载，只是不应用——不要指望靠它省流量； Level 4 支持更简洁的 @media (30em ，否则移动端不会按设备宽度渲染。","url":"https://itinterview.com.cn/question/1298"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"做响应式布局时，px / em / rem / vw / vh / % 该怎么选？媒体查询和 clamp() 分别适合什么场景？","item":"https://itinterview.com.cn/q/1298"}]}</script>

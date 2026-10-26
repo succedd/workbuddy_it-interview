@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？ · IT面试题库">
   <meta property="og:description" content="要点： 原理：空闲时关闭周期 tick 中断，把「下一个任务到期时间」编程到低功耗定时器（RTC / LPTIM），CPU 进入深睡；唤醒后补偿丢失的 tick 计数，再重新调度。 vTaskDelay 的局限：它按 tick 计时，tick 被抑制后延时精度取决于低功耗定时器与补偿逻辑；周期任务优先用 vTas…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1741.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1741.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1741">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 原理：空闲时关闭周期 tick 中断，把「下一个任务到期时间」编程到低功耗定时器（RTC / LPTIM），CPU 进入深睡；唤醒后补偿丢失的 tick 计数，再重新调度。 vTaskDelay 的局限：它按 tick 计时，tick 被抑制后延时精度取决于低功耗定时器与补偿逻辑；周期任务优先用 vTas…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1741.jpg">
+  <meta name="twitter:image:alt" content="Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1741">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？","text":"考察 RTOS 空闲钩子、低功耗定时器与 tick 补偿。","answerCount":1,"datePublished":"2026-10-19T05:43:25.842Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原理：空闲时关闭周期 tick 中断，把「下一个任务到期时间」编程到低功耗定时器（RTC / LPTIM），CPU 进入深睡；唤醒后补偿丢失的 tick 计数，再重新调度。 vTaskDelay 的局限：它按 tick 计时，tick 被抑制后延时精度取决于低功耗定时器与补偿逻辑；周期任务优先用 vTaskDelayUntil，并确保唤醒源能覆盖最坏延迟。 工程坑：调试器连接、串口时钟、未关闭的外设都会阻止深睡；唤醒后要重建系统时钟与 Peripheral 时钟；用电流表测量各模式功耗，验证「计算—无线—休眠」占空比，而不是只看代码配置。","url":"https://itinterview.com.cn/question/1741"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"RTOS实时操作系统","item":"https://itinterview.com.cn/category?cat=244"},{"@type":"ListItem","position":4,"name":"Tickless Idle 如何降低功耗？低功耗设计里使用 vTaskDelay 要注意什么？","item":"https://itinterview.com.cn/q/1741"}]}</script>

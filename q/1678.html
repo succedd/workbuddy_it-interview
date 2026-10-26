@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="某版本上线后 OOM 崩溃率激增，如何排查内存泄漏与大对象？ · IT面试题库">
   <meta property="og:description" content="要点： 复现与采集：先稳定复现（相同页面反复进出、加载大图），抓取内存快照（Android Profiler / hprof，iOS Instruments Allocations + Leaks）；对比前后内存增量，定位异常增长的对象类型（如 Activity、Bitmap、未注销的监听器）。 常见泄漏：Act…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1678.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="某版本上线后 OOM 崩溃率激增，如何排查内存泄漏与大对象？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1678.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1678">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="某版本上线后 OOM 崩溃率激增，如何排查内存泄漏与大对象？ · IT面试题库">
   <meta name="twitter:description" content="要点： 复现与采集：先稳定复现（相同页面反复进出、加载大图），抓取内存快照（Android Profiler / hprof，iOS Instruments Allocations + Leaks）；对比前后内存增量，定位异常增长的对象类型（如 Activity、Bitmap、未注销的监听器）。 常见泄漏：Act…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1678.jpg">
+  <meta name="twitter:image:alt" content="某版本上线后 OOM 崩溃率激增，如何排查内存泄漏与大对象？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1678">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"某版本上线后 OOM 崩溃率激增，如何排查内存泄漏与大对象？","text":"考察点：内存管理与问题定位能力。要求有清晰的排查链路而非只说『用 LeakCanary』。","answerCount":1,"datePublished":"2026-10-17T04:29:49.100Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 复现与采集：先稳定复现（相同页面反复进出、加载大图），抓取内存快照（Android Profiler / hprof，iOS Instruments Allocations + Leaks）；对比前后内存增量，定位异常增长的对象类型（如 Activity、Bitmap、未注销的监听器）。 常见泄漏：Activity/Fragment 被静态引用、单例/回调持有 Context、Handler 匿名内部类、未取消的 Rx/协程、WebView/Thread 泄漏。工具：LeakCanary 自动标出引用链；MAT 分析支配树。 大对象治理：Bitmap 未按需降采样（inSampleSize）、图片缓存无上限、大集合缓存未 LRU 淘汰；移动端用 RGB_565/硬件位图减少内存，列表图片及时回收。 止血与预防：紧急发版或热修回收可疑引用；建立内存水位监控与 OOM 率告警；Code Review 卡『Context 生命周期』与『资源释放』。","url":"https://itinterview.com.cn/question/1678"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"某版本上线后 OOM 崩溃率激增，如何排查内存泄漏与大对象？","item":"https://itinterview.com.cn/q/1678"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ARP 协议的工作原理是什么？ · IT面试题库">
   <meta property="og:description" content="ARP 解决&quot;同一局域网内，已知 IP 找 MAC&quot;的问题——数据帧最终靠 MAC 地址在以太网传输。 流程： 1. 主机 A 要与同网段的 IP-B 通信，先查本机 ARP 缓存，未命中则广播 ARP 请求（目标 MAC 为 FF:FF:FF:FF:FF:FF）：&quot;谁是 IP-B？请告诉 IP-A&quot;； 2. 网…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/914.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ARP 协议的工作原理是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/914.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/914">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ARP 协议的工作原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="ARP 解决&quot;同一局域网内，已知 IP 找 MAC&quot;的问题——数据帧最终靠 MAC 地址在以太网传输。 流程： 1. 主机 A 要与同网段的 IP-B 通信，先查本机 ARP 缓存，未命中则广播 ARP 请求（目标 MAC 为 FF:FF:FF:FF:FF:FF）：&quot;谁是 IP-B？请告诉 IP-A&quot;； 2. 网…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/914.jpg">
+  <meta name="twitter:image:alt" content="ARP 协议的工作原理是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/914">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ARP 协议的工作原理是什么？","text":"请说明 ARP 如何把 IP 地址解析为 MAC 地址，以及 ARP 欺骗的基本原理。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"ARP 解决\"同一局域网内，已知 IP 找 MAC\"的问题——数据帧最终靠 MAC 地址在以太网传输。 流程： 1. 主机 A 要与同网段的 IP-B 通信，先查本机 ARP 缓存，未命中则广播 ARP 请求（目标 MAC 为 FF:FF:FF:FF:FF:FF）：\"谁是 IP-B？请告诉 IP-A\"； 2. 网段内所有主机收到，只有 IP-B 单播回复 ARP 应答（携带自己的 MAC）； 3. A 把映射写入缓存（有老化时间），后续直接使用。 跨网段时，ARP 解析的是默认网关的 MAC，数据先发到路由器，由路由器逐跳转发（每跳重新 ARP）。 ARP 欺骗：攻击者主动伪造 ARP 应答冒充网关或他人 IP，把受害者流量引到自己机器——可实现中间人窃听/断网。防范：交换机动态 ARP 检测（DAI）、静态 ARP 绑定、端口安全策略。","url":"https://itinterview.com.cn/question/914"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络基础","item":"https://itinterview.com.cn/category?cat=49"},{"@type":"ListItem","position":4,"name":"ARP 协议的工作原理是什么？","item":"https://itinterview.com.cn/q/914"}]}</script>

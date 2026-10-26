@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？ · IT面试题库">
   <meta property="og:description" content="要点一：缓存命中的判定——缓存过期配置 边缘节点按&quot;缓存过期配置&quot;决定资源缓存多久：节点收到请求后先判断本地是否缓存了该资源且未过期，未过期直接返回（命中）；已过期或未缓存则触发回源。 缓存时长可由控制台按文件类型/目录配置，也会参考源站响应头中的 Cache-Control/Expires 等标准 HTTP 缓…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/655.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/655.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/655">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？ · IT面试题库">
   <meta name="twitter:description" content="要点一：缓存命中的判定——缓存过期配置 边缘节点按&quot;缓存过期配置&quot;决定资源缓存多久：节点收到请求后先判断本地是否缓存了该资源且未过期，未过期直接返回（命中）；已过期或未缓存则触发回源。 缓存时长可由控制台按文件类型/目录配置，也会参考源站响应头中的 Cache-Control/Expires 等标准 HTTP 缓…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/655.jpg">
+  <meta name="twitter:image:alt" content="CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/655">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？","text":"追问链第三环：CDN 的缓存与回源机制。考察点：缓存过期配置（Cache-Control 与控制台缓存规则的优先关系）、回源触发条件、缓存刷新（Purge）与预热（Prefetch）的区别与使用时机。","answerCount":1,"datePublished":"2026-09-07T13:21:58.837Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：缓存命中的判定——缓存过期配置 边缘节点按\"缓存过期配置\"决定资源缓存多久：节点收到请求后先判断本地是否缓存了该资源且未过期，未过期直接返回（命中）；已过期或未缓存则触发回源。 缓存时长可由控制台按文件类型/目录配置，也会参考源站响应头中的 Cache-Control/Expires 等标准 HTTP 缓存指令；合理的分层策略是：热点静态资源设较长缓存并配版本化文件名（如 app.8f3a2.js），动态接口设不缓存或短缓存。 要点二：回源与回源压力 未命中/过期时节点向源站取资源，取回后按策略缓存并返回用户。要避免\"缓存集中过期→同一时刻大量请求同时回源\"的击穿式回源风暴：常用手段是给过期时间加随机抖动、大流量资源提前预热。 回源请求应带条件请求头（如 If-None-Match/If-Modified-Since），配合源站 304 响应减少带宽与源站负载。 要点三：源站变更后的内容一致性——刷新与预热 缓存刷新（Purge）：源站资源变更后，主动提交 URL/目录刷新，清掉各节点的旧缓存副本，下次请求触发回源拿新内容——类比\"商家主动告知仓库清理过期库存\"。 缓存预热（Prefetch）：主动把新资源提前拉到边缘节点，避免发布后第一波用户请求集中回源打挂源站。 发布最佳实践：新版本文件用新文件名发布 + 预热，旧版本文件保留一段时间；必须原地覆盖更新的资源（如 crossdomain.xml）用 URL 刷新兜底。","url":"https://itinterview.com.cn/question/655"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"DNS原理","item":"https://itinterview.com.cn/category?cat=52"},{"@type":"ListItem","position":4,"name":"CDN 节点的缓存是如何命中的？源站资源更新后，如何保证用户拿到的是新内容？","item":"https://itinterview.com.cn/q/655"}]}</script>

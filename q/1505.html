@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？ · IT面试题库">
   <meta property="og:description" content="ARC 规则：强引用 +1，作用域结束/置 nil 释放；weak 不计数且对象释放后自动置 nil（打破环专用）；unowned 假定始终有效（悬垂则 crash，性能略优）；copy 用于 NSString/block 防可变子类篡改。Swift 里闭包捕获默认强引用。 循环引用场景：① delegate——…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1505.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1505.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1505">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？ · IT面试题库">
   <meta name="twitter:description" content="ARC 规则：强引用 +1，作用域结束/置 nil 释放；weak 不计数且对象释放后自动置 nil（打破环专用）；unowned 假定始终有效（悬垂则 crash，性能略优）；copy 用于 NSString/block 防可变子类篡改。Swift 里闭包捕获默认强引用。 循环引用场景：① delegate——…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1505.jpg">
+  <meta name="twitter:image:alt" content="ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1505">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？","text":"说明引用计数与修饰符规则，列举 3 类循环引用及各自的打破手段。","answerCount":1,"datePublished":"2026-10-05T01:03:58.335Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"ARC 规则：强引用 +1，作用域结束/置 nil 释放；weak 不计数且对象释放后自动置 nil（打破环专用）；unowned 假定始终有效（悬垂则 crash，性能略优）；copy 用于 NSString/block 防可变子类篡改。Swift 里闭包捕获默认强引用。 循环引用场景：① delegate——视图与代理互持，delegate 必须 weak；② Block/闭包——self 持有 block，block 捕获 self（网络回调、动画、Timer 目标）；③ NSTimer——timer 强持有 target 且 RunLoop 持有 timer，与 self 形成环（scheduledTimer 不会随 self 释放而停）。 打破方法：闭包用 [weak self]（必要处 strongify：guard let self = self）；Timer 改用 block API + [weak self] 并在 dealloc/invalidate 中销毁，或用 GCD 定时器 + weak proxy；架构上让持有链单向化（父持子、子回调用弱引用）。","url":"https://itinterview.com.cn/question/1505"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"ARC 的内存管理规则是什么？循环引用的常见场景与打破方法？","item":"https://itinterview.com.cn/q/1505"}]}</script>

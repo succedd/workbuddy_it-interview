@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。 · IT面试题库">
   <meta property="og:description" content="要点： 老架构痛点：Bridge 基于异步、批量、JSON 序列化消息队列，JS 与 Native 互调需跨线程加序列化，无法同步调用，且大对象拷贝昂贵，导致掉帧与通信延迟。 JSI（JavaScript Interface）：用 C++ 层持有 JS 对象引用，使 JS 能直接（同步）调用 Native 方法、…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1680.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1680.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1680">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。 · IT面试题库">
   <meta name="twitter:description" content="要点： 老架构痛点：Bridge 基于异步、批量、JSON 序列化消息队列，JS 与 Native 互调需跨线程加序列化，无法同步调用，且大对象拷贝昂贵，导致掉帧与通信延迟。 JSI（JavaScript Interface）：用 C++ 层持有 JS 对象引用，使 JS 能直接（同步）调用 Native 方法、…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1680.jpg">
+  <meta name="twitter:image:alt" content="React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1680">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。","text":"考察点：对跨端框架底层通信机制与架构演进的掌握。","answerCount":1,"datePublished":"2026-10-17T04:29:49.582Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 老架构痛点：Bridge 基于异步、批量、JSON 序列化消息队列，JS 与 Native 互调需跨线程加序列化，无法同步调用，且大对象拷贝昂贵，导致掉帧与通信延迟。 JSI（JavaScript Interface）：用 C++ 层持有 JS 对象引用，使 JS 能直接（同步）调用 Native 方法、Native 也能持有 JS 引用，彻底去掉序列化与异步队列，调用变为同步且零拷贝。 Fabric（新渲染管线）：UI 渲染由 C++ 调度，支持同步、可中断的布局与挂载，减少『影子树』与主线程往返，提升列表/动画流畅度。 TurboModules：按需懒加载原生模块、用 JSI 直连，解决旧 NativeModules 启动时全量加载与通信瓶颈；Codegen 在编译期生成类型安全的桥接代码。新架构以复杂度换取性能，落地时需评估第三方库兼容性。","url":"https://itinterview.com.cn/question/1680"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"React Native","item":"https://itinterview.com.cn/category?cat=229"},{"@type":"ListItem","position":4,"name":"React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。","item":"https://itinterview.com.cn/q/1680"}]}</script>
@@ -101,7 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1680">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/256">React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1658">React Native 新架构里 Hermes、JSI、Fabric 和 TurboModules 分别解决什么问题？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/256">React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1658">React Native 新架构里 Hermes、JSI、Fabric 和 TurboModules 分别解决什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1888">React Native 长列表（FlatList）性能怎么优化？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1889">React Native 原生模块的线程模型是什么？JS 和原生怎么安全通信？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

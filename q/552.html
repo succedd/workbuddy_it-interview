@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="防御 SQL 注入的常用手段有哪些？ · IT面试题库">
   <meta property="og:description" content="根本手段： 参数化查询 / 预编译（无论 ORM 还是原生 SQL，都用占位符），这是最有效、最应该优先做的。 纵深防御： 1. 输入校验与白名单：对id、枚举、格式做严格校验（如整数范围、正则），类型强制转换。 2. ORM 框架：用其参数化 API（仍须避免 ${} 这类拼接，见下题）。 3. 最小权限数据库…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/552.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="防御 SQL 注入的常用手段有哪些？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/552.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/552">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="防御 SQL 注入的常用手段有哪些？ · IT面试题库">
   <meta name="twitter:description" content="根本手段： 参数化查询 / 预编译（无论 ORM 还是原生 SQL，都用占位符），这是最有效、最应该优先做的。 纵深防御： 1. 输入校验与白名单：对id、枚举、格式做严格校验（如整数范围、正则），类型强制转换。 2. ORM 框架：用其参数化 API（仍须避免 ${} 这类拼接，见下题）。 3. 最小权限数据库…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/552.jpg">
+  <meta name="twitter:image:alt" content="防御 SQL 注入的常用手段有哪些？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/552">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"防御 SQL 注入的常用手段有哪些？","text":"请系统性地列出防御 SQL 注入的多层措施，并指出哪一层是“根本”。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根本手段： 参数化查询 / 预编译（无论 ORM 还是原生 SQL，都用占位符），这是最有效、最应该优先做的。 纵深防御： 1. 输入校验与白名单：对id、枚举、格式做严格校验（如整数范围、正则），类型强制转换。 2. ORM 框架：用其参数化 API（仍须避免 ${} 这类拼接，见下题）。 3. 最小权限数据库账号：应用使用仅含必要权限的账号，禁用 FILE、DROP 等高危操作，限制 information_schema 暴露。 4. 存储过程：若内部仍用参数化则安全，但拼接实现照样注入，不能迷信。 5. 关闭详细报错：不向用户暴露堆栈/SQL 错误，避免给攻击者信息。 6. WAF / RASP：作为边界兜底，识别常见注入特征，但不能替代代码层修复。","url":"https://itinterview.com.cn/question/552"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"SQL注入","item":"https://itinterview.com.cn/category?cat=204"},{"@type":"ListItem","position":4,"name":"防御 SQL 注入的常用手段有哪些？","item":"https://itinterview.com.cn/q/552"}]}</script>

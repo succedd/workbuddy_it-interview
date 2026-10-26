@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？ · IT面试题库">
   <meta property="og:description" content="滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/489.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/489.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/489">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？ · IT面试题库">
   <meta name="twitter:description" content="滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/489.jpg">
+  <meta name="twitter:image:alt" content="TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/489">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？","text":"请解释滑动窗口如何实现可靠传输与流水线发送，以及流量控制（接收窗口）与拥塞控制（拥塞窗口）如何共同限制发送速率。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"滑动窗口（Sliding Window）是 TCP 实现可靠、高效传输的核心机制：发送方维护一个窗口，窗口内的序号可连续发出而无需逐个等待 ACK，从而“流水线”利用带宽。窗口随确认推进向右滑动。 三个指针： 已发送且已确认（窗口左边界左侧）； 已发送未确认（窗口内）； 可发送未发送（窗口内右侧）； 窗口右侧为暂不可发送。 流量控制 vs 拥塞控制（两者限制量不同来源）： 流量控制：通过接收方的接收窗口 rwnd（窗口通告）防止发送方淹没接收方缓冲区，纯端到端、接收方视角。 拥塞控制：通过发送方维护的拥塞窗口 cwnd 防止压垮网络，网络视角。 实际发送窗口上限 = min(cwnd, rwnd)。 可靠传输的辅助：配合累计确认（ACK 表示此前连续都收到）、超时重传与快速重传（3 个重复 ACK），丢包时窗口回退重发，保证数据不丢、不乱、不重。","url":"https://itinterview.com.cn/question/489"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机网络基础","item":"https://itinterview.com.cn/category?cat=6"},{"@type":"ListItem","position":4,"name":"TCP 的滑动窗口有什么作用？它与流量控制、拥塞控制的关系是什么？","item":"https://itinterview.com.cn/q/489"}]}</script>

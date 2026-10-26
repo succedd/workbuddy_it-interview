@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？ · IT面试题库">
   <meta property="og:description" content="要点一：正确答案是 B AtomicStampedReference.compareAndSet(expectedReference, newReference, expectedStamp, newStamp) 同时检查当前引用与当前标志（stamp）是否与预期相等，全部相等才以原子方式更新，版本号机制使&quot;A→…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/641.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/641.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/641">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？ · IT面试题库">
   <meta name="twitter:description" content="要点一：正确答案是 B AtomicStampedReference.compareAndSet(expectedReference, newReference, expectedStamp, newStamp) 同时检查当前引用与当前标志（stamp）是否与预期相等，全部相等才以原子方式更新，版本号机制使&quot;A→…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/641.jpg">
+  <meta name="twitter:image:alt" content="【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/641">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？","text":"A. CAS 操作成功就说明共享变量在整个期间从未被其他线程修改过 B. AtomicStampedReference 通过同时比较引用和版本戳（stamp）来解决 ABA 问题 C. AtomicIntegerFieldUpdater 可以保证对多个共享变量的复合操作原子性 D. CAS 竞争越激烈性能越好，因为自旋重试命中率更高 请选出正确答案并解释其余选项错误的原因。","answerCount":1,"datePublished":"2026-09-07T13:14:26.366Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：正确答案是 B AtomicStampedReference.compareAndSet(expectedReference, newReference, expectedStamp, newStamp) 同时检查当前引用与当前标志（stamp）是否与预期相等，全部相等才以原子方式更新，版本号机制使\"A→B→A\"的往返无所遁形。 要点二：错误选项分析 A 错：这正是 ABA 问题的定义——值可能在检查前被改成 B 再改回 A，CAS 无法感知，操作成功不代表\"从未被修改\"。 C 错：AtomicIntegerFieldUpdater 只是把普通 volatile int 字段包装成原子访问，针对单变量；多变量复合原子性需要 AtomicReference 封装对象或加锁。 D 错：竞争激烈时自旋长期失败，反复空转浪费 CPU（循环时间长开销大），性能反而急剧下降；CAS 更适合低中度竞争场景。","url":"https://itinterview.com.cn/question/641"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"【单选题】关于 CAS 与 ABA 问题，下列说法正确的是？","item":"https://itinterview.com.cn/q/641"}]}</script>

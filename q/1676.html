@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？ · IT面试题库">
   <meta property="og:description" content="要点： 启动类型区分：冷启动（Cold）指进程不存在，需 fork 并加载 Application/Activity 再创建首帧，耗时最长；热启动（Hot）指进程常驻、Activity 仍在栈中，仅恢复到前台；温启动介于两者之间（进程在但 Activity 已销毁）。面试常考冷启动，因为它决定用户首次打开的体感。…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1676.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1676.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1676">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？ · IT面试题库">
   <meta name="twitter:description" content="要点： 启动类型区分：冷启动（Cold）指进程不存在，需 fork 并加载 Application/Activity 再创建首帧，耗时最长；热启动（Hot）指进程常驻、Activity 仍在栈中，仅恢复到前台；温启动介于两者之间（进程在但 Activity 已销毁）。面试常考冷启动，因为它决定用户首次打开的体感。…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1676.jpg">
+  <meta name="twitter:image:alt" content="应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1676">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？","text":"考察点：对 App 启动流程与性能优化的理解。要求区分冷/热/温启动，并能给出可落地的测量与优化手段。","answerCount":1,"datePublished":"2026-10-17T04:29:48.769Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 启动类型区分：冷启动（Cold）指进程不存在，需 fork 并加载 Application/Activity 再创建首帧，耗时最长；热启动（Hot）指进程常驻、Activity 仍在栈中，仅恢复到前台；温启动介于两者之间（进程在但 Activity 已销毁）。面试常考冷启动，因为它决定用户首次打开的体感。 测量方法：Android 可用 adb shell am start -W 看 TotalTime，或用 Android Studio Profiler / Perfetto 抓启动火焰图；iOS 可用 Instruments 的 App Launch 模板，或在 didFinishLaunching 打点统计到首帧。关键是统一埋点口径（从进程创建到首帧绘制完成）。 优化手段：减少 Application/ContentProvider 的同步重活（第三方 SDK 懒加载、按需初始化）；主线程避免 IO 与锁；首屏布局扁平化、延后非必要 View；使用启动页/骨架屏掩盖；iOS 关注 +load 与 didFinishLaunching 臃肿、首屏图片解码。 进阶：Android 的 Baseline Profile 与启动器线程优化，iOS 的 dyld 预加载与 Idle 资源预取；建立线上启动耗时分位数监控，定位长尾机型。","url":"https://itinterview.com.cn/question/1676"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？","item":"https://itinterview.com.cn/q/1676"}]}</script>

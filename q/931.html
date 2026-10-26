@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="String 为什么设计成不可变的？ · IT面试题库">
   <meta property="og:description" content="实现：String 内部用 final char[]（JDK 9 后是 byte[]）存储，类本身 final 不可继承，且不提供任何修改内部数组的方法——每次&quot;修改&quot;（concat/replace 等）都返回新对象。 设计原因： 1. 字符串常量池：字面量共享同一对象，不可变才能安全共享，省内存（&quot;a&quot;==&quot;a…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/931.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="String 为什么设计成不可变的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/931.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/931">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="String 为什么设计成不可变的？ · IT面试题库">
   <meta name="twitter:description" content="实现：String 内部用 final char[]（JDK 9 后是 byte[]）存储，类本身 final 不可继承，且不提供任何修改内部数组的方法——每次&quot;修改&quot;（concat/replace 等）都返回新对象。 设计原因： 1. 字符串常量池：字面量共享同一对象，不可变才能安全共享，省内存（&quot;a&quot;==&quot;a…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/931.jpg">
+  <meta name="twitter:image:alt" content="String 为什么设计成不可变的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/931">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"String 为什么设计成不可变的？","text":"请说明 String 不可变的实现方式与设计原因（常量池、hash 缓存、线程安全、安全性）。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"实现：String 内部用 final char[]（JDK 9 后是 byte[]）存储，类本身 final 不可继承，且不提供任何修改内部数组的方法——每次\"修改\"（concat/replace 等）都返回新对象。 设计原因： 1. 字符串常量池：字面量共享同一对象，不可变才能安全共享，省内存（\"a\"==\"a\" 为 true 的前提）； 2. hashCode 缓存：hash 首次计算后缓存到成员变量，String 作 HashMap/HashSet 的 key 时重复查询极快——若可变，缓存会失效且容器里 key 会\"丢\"； 3. 线程安全：不可变对象天然线程安全，可随便共享； 4. 安全性：文件路径、URL、类名、数据库连接参数等大量以 String 传递，若可变，中途被恶意修改会引发严重安全问题；方法调用者也不必防御性拷贝。 代价：频繁拼接产生大量临时对象——循环拼字符串用 StringBuilder（非线程安全）或 StringBuffer（线程安全）替代。","url":"https://itinterview.com.cn/question/931"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"String 为什么设计成不可变的？","item":"https://itinterview.com.cn/q/931"}]}</script>

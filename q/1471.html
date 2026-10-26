@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CSRF 跨站请求伪造的原理是什么？有哪些防护手段？ · IT面试题库">
   <meta property="og:description" content="要点： 原理：攻击者诱导已登录用户在浏览器中发起一个“非本意的请求”（如转账、改密码），浏览器自动带上该域的 Cookie，服务端误认为是合法用户的操作而放行。 防护手段：① CSRF Token——服务端下发一次性随机 token，表单/请求头携带并校验，最可靠；② SameSite Cookie——设为 St…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1471.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CSRF 跨站请求伪造的原理是什么？有哪些防护手段？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1471.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1471">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CSRF 跨站请求伪造的原理是什么？有哪些防护手段？ · IT面试题库">
   <meta name="twitter:description" content="要点： 原理：攻击者诱导已登录用户在浏览器中发起一个“非本意的请求”（如转账、改密码），浏览器自动带上该域的 Cookie，服务端误认为是合法用户的操作而放行。 防护手段：① CSRF Token——服务端下发一次性随机 token，表单/请求头携带并校验，最可靠；② SameSite Cookie——设为 St…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1471.jpg">
+  <meta name="twitter:image:alt" content="CSRF 跨站请求伪造的原理是什么？有哪些防护手段？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1471">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CSRF 跨站请求伪造的原理是什么？有哪些防护手段？","text":"解释 CSRF 如何利用浏览器自动带 Cookie 的特性，并列举 Token/SameSite/二次校验等防护。","answerCount":1,"datePublished":"2026-10-02T02:45:55.858Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 原理：攻击者诱导已登录用户在浏览器中发起一个“非本意的请求”（如转账、改密码），浏览器自动带上该域的 Cookie，服务端误认为是合法用户的操作而放行。 防护手段：① CSRF Token——服务端下发一次性随机 token，表单/请求头携带并校验，最可靠；② SameSite Cookie——设为 Strict/Lax 阻止跨站请求携带 Cookie；③ 关键操作二次校验——短信/密码/验证码；④ 校验 Referer/Origin 来源；⑤ 重要写操作要求自定义请求头（如 X-Requested-With，跨站无法设置）。","url":"https://itinterview.com.cn/question/1471"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"OWASP Top 10","item":"https://itinterview.com.cn/category?cat=203"},{"@type":"ListItem","position":4,"name":"CSRF 跨站请求伪造的原理是什么？有哪些防护手段？","item":"https://itinterview.com.cn/q/1471"}]}</script>

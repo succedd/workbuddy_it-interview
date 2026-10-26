@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？ · IT面试题库">
   <meta property="og:description" content="要点（官方生命周期顺序）： 1. 中间件（Middleware） —— 最外层，只有 app.use() 注册的函数级中间件（Nest 的 NestMiddleware 也在此），此时还没有 Nest 上下文，拿不到 ExecutionContext； 2. 守卫（Guards） —— 决定「能不能进来」，在路由…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1033.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1033.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1033">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？ · IT面试题库">
   <meta name="twitter:description" content="要点（官方生命周期顺序）： 1. 中间件（Middleware） —— 最外层，只有 app.use() 注册的函数级中间件（Nest 的 NestMiddleware 也在此），此时还没有 Nest 上下文，拿不到 ExecutionContext； 2. 守卫（Guards） —— 决定「能不能进来」，在路由…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1033.jpg">
+  <meta name="twitter:image:alt" content="NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1033">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？","text":"考察点：请求生命周期、横切关注点分层。答不上顺序就无法正确设计鉴权与日志。","answerCount":1,"datePublished":"2026-09-10T11:51:27.073Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（官方生命周期顺序）： 1. 中间件（Middleware） —— 最外层，只有 app.use() 注册的函数级中间件（Nest 的 NestMiddleware 也在此），此时还没有 Nest 上下文，拿不到 ExecutionContext； 2. 守卫（Guards） —— 决定「能不能进来」，在路由处理前执行。适合鉴权、角色校验（AuthGuard、RolesGuard），返回 false 直接 403/401；全局守卫 > 控制器守卫 > 路由守卫； 3. 拦截器（Interceptors）· 前置 —— 在守卫之后、管道之前进入，包裹整个处理过程，适合统一响应包装、计时、缓存、日志。用 next.handle() 分成前后两段； 4. 管道（Pipes） —— 对路由参数/请求体做转换与校验（ValidationPipe + class-validator），失败抛 BadRequestException(400)； 5. 控制器/处理方法执行； 6. 拦截器 · 后置 —— next.handle().pipe(map(...)) 拿到返回后改写； 7. 异常过滤器（Exception Filters） —— 任何环节抛出的异常都会被就近的过滤器捕获，做统一错误体；不处理则交给全局 AllExceptionsFilter。 记忆口诀：中间件 → 守卫 → 拦截器(前) → 管道 → 处理器 → 拦截器(后) → 异常过滤器。 典型分工：鉴权放守卫（能在进处理器前就拒绝，省掉管道开销）；参数校验放管道；响应包装与耗时统计放拦截器；错误体统一放过滤器。 常见误用：① 用拦截器做鉴权——它无权中断请求（只能抛错，语义不清且晚于守卫）；② 在守卫里做数据转换——守卫不应产生副作用；③ 用管道的 transform 做业务查询——校验层不该访问 DB（重活放 service）。 加分点：拦截器可以用 RxJS 操作符做超时（timeout()）、重试、熔断，这是 Nest 相比 Express 独有的表达能力。","url":"https://itinterview.com.cn/question/1033"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"NestJS","item":"https://itinterview.com.cn/category?cat=93"},{"@type":"ListItem","position":5,"name":"NestJS 中守卫、拦截器、管道、异常过滤器分别在哪一步生效？完整请求生命周期是什么顺序？","item":"https://itinterview.com.cn/q/1033"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CSRF Token 是如何防御 CSRF 的？前端应如何传递？ · IT面试题库">
   <meta property="og:description" content="原理：服务器在渲染表单/页面时下发一个随机、不可预测、与用户会话绑定的 token；提交敏感请求时要求一并带上该 token，服务端校验其合法性。 为什么能防：第三方恶意站点无法读取/预测受害者在目标站点的 token（同源策略阻止跨域读 DOM/Cookie），因此它构造的请求缺少正确 token，被服务端拒绝…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/555.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CSRF Token 是如何防御 CSRF 的？前端应如何传递？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/555.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/555">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CSRF Token 是如何防御 CSRF 的？前端应如何传递？ · IT面试题库">
   <meta name="twitter:description" content="原理：服务器在渲染表单/页面时下发一个随机、不可预测、与用户会话绑定的 token；提交敏感请求时要求一并带上该 token，服务端校验其合法性。 为什么能防：第三方恶意站点无法读取/预测受害者在目标站点的 token（同源策略阻止跨域读 DOM/Cookie），因此它构造的请求缺少正确 token，被服务端拒绝…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/555.jpg">
+  <meta name="twitter:image:alt" content="CSRF Token 是如何防御 CSRF 的？前端应如何传递？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/555">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CSRF Token 是如何防御 CSRF 的？前端应如何传递？","text":"请说明 Token 机制为什么能阻断第三方站点伪造请求，以及 token 生成与校验的注意点。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：服务器在渲染表单/页面时下发一个随机、不可预测、与用户会话绑定的 token；提交敏感请求时要求一并带上该 token，服务端校验其合法性。 为什么能防：第三方恶意站点无法读取/预测受害者在目标站点的 token（同源策略阻止跨域读 DOM/Cookie），因此它构造的请求缺少正确 token，被服务端拒绝。 传递方式： 表单：隐藏字段 ； AJAX：自定义请求头（如 X-CSRF-Token）或请求体字段。 注意点： token 须用密码学安全随机数生成，不可为固定/可猜测值； 建议单次有效或短时效，并与会话绑定； 校验必须服务端执行，前端校验无效； 配合 SameSite Cookie 形成纵深防御（见下题）。","url":"https://itinterview.com.cn/question/555"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"CSRF跨站请求伪造","item":"https://itinterview.com.cn/category?cat=206"},{"@type":"ListItem","position":4,"name":"CSRF Token 是如何防御 CSRF 的？前端应如何传递？","item":"https://itinterview.com.cn/q/555"}]}</script>

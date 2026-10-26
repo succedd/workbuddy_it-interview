@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="求二叉树中两个节点的最近公共祖先（LCA），用递归实现并说清边界条件（节点等于 root、节点分列左右子树、空树）。 · IT面试题库">
   <meta property="og:description" content="要点： 递归思路：对当前 root，若 p 或 q 等于 root（自身即祖先），或其一在左、另一在右，则 root 就是 LCA；否则 LCA 在 p、q 所在的那一侧子树里。 边界：空树返回 null；某节点等于 p/q 直接返回该节点；左右都找到则返回 root；左右只找到一侧就返回那一侧（继续向上冒泡）。…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/966.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="求二叉树中两个节点的最近公共祖先（LCA），用递归实现并说清边界条件（节点等于 root、节点分列左右子树、空树）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/966.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/966">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="求二叉树中两个节点的最近公共祖先（LCA），用递归实现并说清边界条件（节点等于 root、节点分列左右子树、空树）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 递归思路：对当前 root，若 p 或 q 等于 root（自身即祖先），或其一在左、另一在右，则 root 就是 LCA；否则 LCA 在 p、q 所在的那一侧子树里。 边界：空树返回 null；某节点等于 p/q 直接返回该节点；左右都找到则返回 root；左右只找到一侧就返回那一侧（继续向上冒泡）。…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/966.jpg">
+  <meta name="twitter:image:alt" content="求二叉树中两个节点的最近公共祖先（LCA），用递归实现并说清边界条件（节点等于 root、节点分列左右子树、空树）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/966">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"求二叉树中两个节点的最近公共祖先（LCA），用递归实现并说清边界条件（节点等于 root、节点分列左右子树、空树）。","text":"考察点：LCA 递归剪枝写法、边界条件、复杂度。这是二叉树追问链里「综合递归 + 分治」的高阶题。","answerCount":1,"datePublished":"2026-09-10T02:29:37.260Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 递归思路：对当前 root，若 p 或 q 等于 root（自身即祖先），或其一在左、另一在右，则 root 就是 LCA；否则 LCA 在 p、q 所在的那一侧子树里。 边界：空树返回 null；某节点等于 p/q 直接返回该节点；左右都找到则返回 root；左右只找到一侧就返回那一侧（继续向上冒泡）。 前提：题目通常保证 p、q 都在树中（否则需先判断是否可达，否则可能返回误判的祖先）。 复杂度：O(n) 时间（每个节点最多访问一次，靠剪枝避免重复遍历）、O(h) 空间。 参考实现（剪枝写法，每节点只走一次）： 易错点：不要写成「先判断 p/q 是否各自在左右子树、再递归」——那样会重复遍历；上面的写法靠返回值向上汇合，天然只走一次。","url":"https://itinterview.com.cn/question/966"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"求二叉树中两个节点的最近公共祖先（LCA），用递归实现并说清边界条件（节点等于 root、节点分列左右子树、空树）。","item":"https://itinterview.com.cn/q/966"}]}</script>
@@ -110,7 +116,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/966">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">395 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

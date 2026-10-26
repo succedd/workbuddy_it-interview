@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？ · IT面试题库">
   <meta property="og:description" content="单机的墙：磁盘顺序读虽快，但 PB 级数据按 MB/s 级网络拉到一台机器集中算，光搬运就要以天计。 Hadoop 的第一性思想：移动计算比移动数据便宜——把计算代码分发到数据所在的节点并行执行，每台机器只算本地数据，最后汇总。 两大支柱由此而来： HDFS：数据分块多副本存满集群（顺便解决单盘故障）； MapR…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/309.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/309.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/309">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？ · IT面试题库">
   <meta name="twitter:description" content="单机的墙：磁盘顺序读虽快，但 PB 级数据按 MB/s 级网络拉到一台机器集中算，光搬运就要以天计。 Hadoop 的第一性思想：移动计算比移动数据便宜——把计算代码分发到数据所在的节点并行执行，每台机器只算本地数据，最后汇总。 两大支柱由此而来： HDFS：数据分块多副本存满集群（顺便解决单盘故障）； MapR…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/309.jpg">
+  <meta name="twitter:image:alt" content="大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/309">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？","text":"当数据量到 TB/PB 级、单机磁盘 IO 成了瓶颈，「移动数据到计算那边」和「移动计算到数据那边」哪个更划算？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"单机的墙：磁盘顺序读虽快，但 PB 级数据按 MB/s 级网络拉到一台机器集中算，光搬运就要以天计。 Hadoop 的第一性思想：移动计算比移动数据便宜——把计算代码分发到数据所在的节点并行执行，每台机器只算本地数据，最后汇总。 两大支柱由此而来： HDFS：数据分块多副本存满集群（顺便解决单盘故障）； MapReduce：把计算拆成 Map（局部算）+ Reduce（汇总）两阶段，失败自动重跑。 理解了「为什么计算要靠近数据」，Hadoop 生态的所有组件（Hive/Spark/HBase）在架构里的位置就一目了然。","url":"https://itinterview.com.cn/question/309"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"大数据【诞生】为什么单机数据库扛不住之后，不是「买更大的机器」，而是出现了 Hadoop？","item":"https://itinterview.com.cn/q/309"}]}</script>

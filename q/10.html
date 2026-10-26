@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一个线程安全的单例（双重检查锁）。 · IT面试题库">
   <meta property="og:description" content="volatile 的必要性：instance = new Singleton() 实际分三步（分配内存→初始化对象→赋值引用）。没有 volatile 时编译器/CPU 可能重排为 分配→赋值→初始化，导致其他线程拿到未初始化完成的对象。volatile 禁止该重排，保证可见且有序。">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/10.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="设计一个线程安全的单例（双重检查锁）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/10.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/10">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一个线程安全的单例（双重检查锁）。 · IT面试题库">
   <meta name="twitter:description" content="volatile 的必要性：instance = new Singleton() 实际分三步（分配内存→初始化对象→赋值引用）。没有 volatile 时编译器/CPU 可能重排为 分配→赋值→初始化，导致其他线程拿到未初始化完成的对象。volatile 禁止该重排，保证可见且有序。">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/10.jpg">
+  <meta name="twitter:image:alt" content="设计一个线程安全的单例（双重检查锁）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/10">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一个线程安全的单例（双重检查锁）。","text":"写出双重检查锁单例代码，并解释为什么 instance 要用 volatile。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"volatile 的必要性：instance = new Singleton() 实际分三步（分配内存→初始化对象→赋值引用）。没有 volatile 时编译器/CPU 可能重排为 分配→赋值→初始化，导致其他线程拿到未初始化完成的对象。volatile 禁止该重排，保证可见且有序。","url":"https://itinterview.com.cn/question/10"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"设计一个线程安全的单例（双重检查锁）。","item":"https://itinterview.com.cn/q/10"}]}</script>

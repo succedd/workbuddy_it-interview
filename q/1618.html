@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring MVC 接口分别返回 404、400、415，通常是什么原因？如何排查？ · IT面试题库">
   <meta property="og:description" content="要点： 404 Not Found：路径不对——@RequestMapping 的 URL 与方法 / 请求方式（GET / POST）不匹配；Controller 未被扫描（组件扫描包路径没覆盖、少了 @Controller）；上下文路径（context-path）或 DispatcherServlet 的 u…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1618.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring MVC 接口分别返回 404、400、415，通常是什么原因？如何排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1618.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1618">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 接口分别返回 404、400、415，通常是什么原因？如何排查？ · IT面试题库">
   <meta name="twitter:description" content="要点： 404 Not Found：路径不对——@RequestMapping 的 URL 与方法 / 请求方式（GET / POST）不匹配；Controller 未被扫描（组件扫描包路径没覆盖、少了 @Controller）；上下文路径（context-path）或 DispatcherServlet 的 u…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1618.jpg">
+  <meta name="twitter:image:alt" content="Spring MVC 接口分别返回 404、400、415，通常是什么原因？如何排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1618">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 接口分别返回 404、400、415，通常是什么原因？如何排查？","text":"考察常见 HTTP 状态码根因（故障排查）。","answerCount":1,"datePublished":"2026-10-10T11:54:34.524Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 404 Not Found：路径不对——@RequestMapping 的 URL 与方法 / 请求方式（GET / POST）不匹配；Controller 未被扫描（组件扫描包路径没覆盖、少了 @Controller）；上下文路径（context-path）或 DispatcherServlet 的 url-pattern 配置错。排查：看启动日志是否注册了该映射、用相同 method + path 测。 400 Bad Request：参数绑定 / 类型转换失败（如字符串转数字、日期格式不符）、必填参数缺失被校验拒绝、JSON 结构不匹配实体字段。 415 Unsupported Media Type：请求的 Content-Type 与消费端不匹配——如发 JSON 却没带 application/json，或 Controller 用 @PostMapping(consumes=\"application/json\") 但请求体不是 JSON，且缺少对应 HttpMessageConverter（如未引入 Jackson）。 通用思路：开 Spring MVC 的 debug 日志 / 看异常栈，确认是映射、绑定还是消息转换哪一层出错。","url":"https://itinterview.com.cn/question/1618"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 接口分别返回 404、400、415，通常是什么原因？如何排查？","item":"https://itinterview.com.cn/q/1618"}]}</script>

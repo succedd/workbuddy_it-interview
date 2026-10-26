@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="K8s 的 liveness 与 readiness 探针区别？ · IT面试题库">
   <meta property="og:description" content="livenessProbe（存活探针）：检测容器是否活着。失败则 kubelet 重启该容器。用于死锁、假死场景（如健康检查接口卡住）。 readinessProbe（就绪探针）：检测容器是否准备好接收流量。失败则从 Service 的 endpoints 中摘除，不接受请求，但不重启。用于启动慢、依赖未就绪（如…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/57.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="K8s 的 liveness 与 readiness 探针区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/57.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/57">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="K8s 的 liveness 与 readiness 探针区别？ · IT面试题库">
   <meta name="twitter:description" content="livenessProbe（存活探针）：检测容器是否活着。失败则 kubelet 重启该容器。用于死锁、假死场景（如健康检查接口卡住）。 readinessProbe（就绪探针）：检测容器是否准备好接收流量。失败则从 Service 的 endpoints 中摘除，不接受请求，但不重启。用于启动慢、依赖未就绪（如…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/57.jpg">
+  <meta name="twitter:image:alt" content="K8s 的 liveness 与 readiness 探针区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/57">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"K8s 的 liveness 与 readiness 探针区别？","text":"说明两种探针的作用与配置建议。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"livenessProbe（存活探针）：检测容器是否活着。失败则 kubelet 重启该容器。用于死锁、假死场景（如健康检查接口卡住）。 readinessProbe（就绪探针）：检测容器是否准备好接收流量。失败则从 Service 的 endpoints 中摘除，不接受请求，但不重启。用于启动慢、依赖未就绪（如未连上 DB）。 建议：就绪用“能处理业务”的轻量检查；存活用“进程健康”检查，避免把短暂未就绪误判为死循环而频繁重启。探针类型：httpGet / exec / tcpSocket，配 initialDelay、periodSeconds、failureThreshold。","url":"https://itinterview.com.cn/question/57"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"K8s 的 liveness 与 readiness 探针区别？","item":"https://itinterview.com.cn/q/57"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。 · IT面试题库">
   <meta property="og:description" content="要点（讲解）： 正确重写需满足 equals 的五大约定：① 自反性（x.equals(x) 为 true）；② 对称性（x.equals(y) 同 y.equals(x)）；③ 传递性；④ 一致性（对象未修改时多次调用结果一致）；⑤ 对任何非 null 的 x，x.equals(null) 返回 false。同…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1432.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1432.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1432">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。 · IT面试题库">
   <meta name="twitter:description" content="要点（讲解）： 正确重写需满足 equals 的五大约定：① 自反性（x.equals(x) 为 true）；② 对称性（x.equals(y) 同 y.equals(x)）；③ 传递性；④ 一致性（对象未修改时多次调用结果一致）；⑤ 对任何非 null 的 x，x.equals(null) 返回 false。同…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1432.jpg">
+  <meta name="twitter:image:alt" content="请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1432">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。","text":"考察点：equals/hashCode 的正确实现与五大约定，是一道检验代码功底的高级编程题，要求代码与讲解并重。","answerCount":1,"datePublished":"2026-10-01T04:02:30.966Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点（讲解）： 正确重写需满足 equals 的五大约定：① 自反性（x.equals(x) 为 true）；② 对称性（x.equals(y) 同 y.equals(x)）；③ 传递性；④ 一致性（对象未修改时多次调用结果一致）；⑤ 对任何非 null 的 x，x.equals(null) 返回 false。同时必须保证 equals 相等的对象 hashCode 相等。下面用 Objects 工具类实现，自动处理 null 与一致性。 要点（易错点）： 用 getClass() != o.getClass() 而非 instanceof 可避免子类破坏对称性（若允许子类，则需改用 instanceof + 组合校验）； 比较字段时基本类型用 ==、引用类型用 Objects.equals 以安全处理 null； hashCode 与 equals 必须用「同一组字段」计算，否则破坏哈希集合语义（见前题）。 现代替代：Java 16+ 可直接用 record User(long id, String name) 自动生成符合约定的 equals/hashCode。","url":"https://itinterview.com.cn/question/1432"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。","item":"https://itinterview.com.cn/q/1432"}]}</script>

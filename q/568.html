@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。 · IT面试题库">
   <meta property="og:description" content="代码坏味道：代码中暗示“这里可能有设计问题、需要改进”的表象，本身未必是 bug，但会增加维护成本、出错概率。由 Martin Fowler 在《重构》中系统归纳。 1. 重复代码（Duplicated Code）： 表现：相同或近乎相同的代码片段出现在多处（同一类不同方法、不同类、甚至不同模块）。 危害：改一处…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/568.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/568.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/568">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。 · IT面试题库">
   <meta name="twitter:description" content="代码坏味道：代码中暗示“这里可能有设计问题、需要改进”的表象，本身未必是 bug，但会增加维护成本、出错概率。由 Martin Fowler 在《重构》中系统归纳。 1. 重复代码（Duplicated Code）： 表现：相同或近乎相同的代码片段出现在多处（同一类不同方法、不同类、甚至不同模块）。 危害：改一处…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/568.jpg">
+  <meta name="twitter:image:alt" content="什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/568">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。","text":"重构的前提是识别坏味道。请解释代码坏味道的概念，重点说明“重复代码（Duplicated Code）”和“过长函数（Long Method）”这两种坏味道的表现、成因与危害。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"代码坏味道：代码中暗示“这里可能有设计问题、需要改进”的表象，本身未必是 bug，但会增加维护成本、出错概率。由 Martin Fowler 在《重构》中系统归纳。 1. 重复代码（Duplicated Code）： 表现：相同或近乎相同的代码片段出现在多处（同一类不同方法、不同类、甚至不同模块）。 危害：改一处要同步改多处，极易漏改导致不一致；逻辑分散，阅读成本高。 对策：提取为公共方法/工具类，或用模板方法、策略模式消除。 2. 过长函数（Long Method）： 表现：单个函数几十上百行，嵌套深、分支多、做了多件事。 危害：难以理解、难以测试、难以复用；修改时牵一发动全身。 对策：按“做一件事”的原则提取函数（Extract Function）把子步骤拆成小函数；用卫语句（guard clause）替代深层嵌套；用多态替代大段 if/else。 核心思想：坏味道不是机械指标，而是“当修改成本明显大于整理成本时”就该重构的信号。重构应小步、配合测试进行。","url":"https://itinterview.com.cn/question/568"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件工程与设计模式","item":"https://itinterview.com.cn/category?cat=96"},{"@type":"ListItem","position":3,"name":"重构技巧","item":"https://itinterview.com.cn/category?cat=101"},{"@type":"ListItem","position":4,"name":"什么是“代码坏味道（code smell）”？请列举重复代码与过长函数两种，并说明危害。","item":"https://itinterview.com.cn/q/568"}]}</script>

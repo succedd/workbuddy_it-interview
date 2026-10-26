@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？ · IT面试题库">
   <meta property="og:description" content="要点： 体验层（QoE）：首帧时间（进房到看到画面）、卡顿率（每分钟卡顿次数）、端到端延迟、音频主观 MOS 与沉默段比例、进房成功率——直接对应投诉。 传输层（QoS）：上下行码率/帧率、RTT、丢包率与抖动、NACK 与 FEC 触发次数、编码队列长度；用于区分是用户网络差还是 SDK 策略差。 设备层：CP…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1710.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1710.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1710">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？ · IT面试题库">
   <meta name="twitter:description" content="要点： 体验层（QoE）：首帧时间（进房到看到画面）、卡顿率（每分钟卡顿次数）、端到端延迟、音频主观 MOS 与沉默段比例、进房成功率——直接对应投诉。 传输层（QoS）：上下行码率/帧率、RTT、丢包率与抖动、NACK 与 FEC 触发次数、编码队列长度；用于区分是用户网络差还是 SDK 策略差。 设备层：CP…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1710.jpg">
+  <meta name="twitter:image:alt" content="上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1710">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？","text":"考察 QoS/QoE 指标体系与数据闭环，要求给出可运营的指标清单。","answerCount":1,"datePublished":"2026-10-17T10:38:31.975Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 体验层（QoE）：首帧时间（进房到看到画面）、卡顿率（每分钟卡顿次数）、端到端延迟、音频主观 MOS 与沉默段比例、进房成功率——直接对应投诉。 传输层（QoS）：上下行码率/帧率、RTT、丢包率与抖动、NACK 与 FEC 触发次数、编码队列长度；用于区分是用户网络差还是 SDK 策略差。 设备层：CPU/内存/发热、采集帧率与编码耗时、机型分布；低端机劣化靠它解释。 埋点纪律：按进房-通话-退房会话聚合，一条会话一条主记录加秒级采样明细；卡顿开始/结束、切档、重连等关键事件要带上下文（网络类型、对端 ID、房间规模），否则数据不可归因。 闭环：按房间维度看分布而非均值（长尾卡顿才是投诉源），并对进房成功率、卡顿率 P95 设分级告警。","url":"https://itinterview.com.cn/question/1710"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频SDK开发","item":"https://itinterview.com.cn/category?cat=254"},{"@type":"ListItem","position":4,"name":"上线一套实时音视频 SDK 后，你会设计哪些质量指标来衡量用户体验？埋点该怎么布？","item":"https://itinterview.com.cn/q/1710"}]}</script>

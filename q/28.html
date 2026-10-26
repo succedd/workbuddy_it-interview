@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="React 中 useEffect 的依赖数组怎么用？ · IT面试题库">
   <meta property="og:description" content="useEffect(fn, deps)： 不传 deps：每次渲染后都执行（含挂载和更新）。 空数组 []：仅挂载时执行一次（类似 componentDidMount）。 带依赖 [a,b]：a/b 变化时执行。 清理函数：return 的函数在下次执行前/卸载时调用，用于取消订阅、清除定时器，避免内存泄漏。 常…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/28.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="React 中 useEffect 的依赖数组怎么用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/28.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/28">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="React 中 useEffect 的依赖数组怎么用？ · IT面试题库">
   <meta name="twitter:description" content="useEffect(fn, deps)： 不传 deps：每次渲染后都执行（含挂载和更新）。 空数组 []：仅挂载时执行一次（类似 componentDidMount）。 带依赖 [a,b]：a/b 变化时执行。 清理函数：return 的函数在下次执行前/卸载时调用，用于取消订阅、清除定时器，避免内存泄漏。 常…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/28.jpg">
+  <meta name="twitter:image:alt" content="React 中 useEffect 的依赖数组怎么用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/28">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React 中 useEffect 的依赖数组怎么用？","text":"说明空数组、带依赖、不带依赖的区别，以及清理函数的作用。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"useEffect(fn, deps)： 不传 deps：每次渲染后都执行（含挂载和更新）。 空数组 []：仅挂载时执行一次（类似 componentDidMount）。 带依赖 [a,b]：a/b 变化时执行。 清理函数：return 的函数在下次执行前/卸载时调用，用于取消订阅、清除定时器，避免内存泄漏。 常见坑：依赖缺失导致闭包拿到旧值；解决办法是把依赖写全或用 useRef/useCallback 稳定引用。React 18 严格模式下会故意双调用 effect 以暴露副作用问题。","url":"https://itinterview.com.cn/question/28"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"React 中 useEffect 的依赖数组怎么用？","item":"https://itinterview.com.cn/q/28"}]}</script>

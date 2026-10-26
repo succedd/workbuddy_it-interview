@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="补码加减法的基本运算规则是什么？为什么计算机能用同一套加法器完成减法（即“减法变加法”）？ · IT面试题库">
   <meta property="og:description" content="一、基本运算规则 加法：[X + Y]补 = [X]补 + [Y]补（模 2^(n+1)） 减法：[X − Y]补 = [X]补 + [−Y]补 其中 [−Y]补 由 [Y]补 各位取反、末位 +1 得到（求机器负数）。 二、为何“减法变加法” 补码本质是模 2^(n+1) 的同余运算。在模意义下，−Y ≡ 2^…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1372.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="补码加减法的基本运算规则是什么？为什么计算机能用同一套加法器完成减法（即“减法变加法”）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1372.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1372">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="补码加减法的基本运算规则是什么？为什么计算机能用同一套加法器完成减法（即“减法变加法”）？ · IT面试题库">
   <meta name="twitter:description" content="一、基本运算规则 加法：[X + Y]补 = [X]补 + [Y]补（模 2^(n+1)） 减法：[X − Y]补 = [X]补 + [−Y]补 其中 [−Y]补 由 [Y]补 各位取反、末位 +1 得到（求机器负数）。 二、为何“减法变加法” 补码本质是模 2^(n+1) 的同余运算。在模意义下，−Y ≡ 2^…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1372.jpg">
+  <meta name="twitter:image:alt" content="补码加减法的基本运算规则是什么？为什么计算机能用同一套加法器完成减法（即“减法变加法”）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1372">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"补码加减法的基本运算规则是什么？为什么计算机能用同一套加法器完成减法（即“减法变加法”）？","text":"考察补码加减法的统一公式、机器负数的求法，以及补码使减法转化为加法的数学与硬件原理。","answerCount":1,"datePublished":"2026-09-26T08:59:07.371Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、基本运算规则 加法：[X + Y]补 = [X]补 + [Y]补（模 2^(n+1)） 减法：[X − Y]补 = [X]补 + [−Y]补 其中 [−Y]补 由 [Y]补 各位取反、末位 +1 得到（求机器负数）。 二、为何“减法变加法” 补码本质是模 2^(n+1) 的同余运算。在模意义下，−Y ≡ 2^(n+1) − Y，因此减去一个数等于加上它的补数，符号位与数值位可一并以二进制加法处理，无需单独的减法器。 三、运算步骤示例（8 位，X=+5, Y=−3，求 X−Y） [X]补 = 0,0000101 [Y]补 = 1,1111101 → [−Y]补 = 0,0000011 [X−Y]补 = 0,0000101 + 0,0000011 = 0,0001000 = +8 ✓ 若结果超出 [−128,127] 则溢出，需配合溢出判断。 四、工程意义 CPU 只需一个加法器即可完成加减，符号位自然参与，零唯一，大幅简化 ALU 设计与布线成本。","url":"https://itinterview.com.cn/question/1372"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"补码加减法的基本运算规则是什么？为什么计算机能用同一套加法器完成减法（即“减法变加法”）？","item":"https://itinterview.com.cn/q/1372"}]}</script>

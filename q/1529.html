@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是混合检索与标量过滤？为什么 RAG 场景需要它们？ · IT面试题库">
   <meta property="og:description" content="混合检索：向量检索（语义相似，同义改写也能召回）+ 关键词检索（BM25，专有名词、型号、代码、人名等精确匹配强）互补。纯向量检索的典型失败：查询「K8s 1.29 FeatureGate 报错」——模型名/版本号在嵌入空间不敏感，关键词检索一发入魂。融合常用 RRF（倒数排名融合）或加权分数，再接 rerank…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1529.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是混合检索与标量过滤？为什么 RAG 场景需要它们？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1529.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1529">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是混合检索与标量过滤？为什么 RAG 场景需要它们？ · IT面试题库">
   <meta name="twitter:description" content="混合检索：向量检索（语义相似，同义改写也能召回）+ 关键词检索（BM25，专有名词、型号、代码、人名等精确匹配强）互补。纯向量检索的典型失败：查询「K8s 1.29 FeatureGate 报错」——模型名/版本号在嵌入空间不敏感，关键词检索一发入魂。融合常用 RRF（倒数排名融合）或加权分数，再接 rerank…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1529.jpg">
+  <meta name="twitter:image:alt" content="什么是混合检索与标量过滤？为什么 RAG 场景需要它们？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1529">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是混合检索与标量过滤？为什么 RAG 场景需要它们？","text":"解释向量检索与关键词检索的互补性，以及元数据过滤在多租户场景的作用。","answerCount":1,"datePublished":"2026-10-05T01:04:01.274Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"混合检索：向量检索（语义相似，同义改写也能召回）+ 关键词检索（BM25，专有名词、型号、代码、人名等精确匹配强）互补。纯向量检索的典型失败：查询「K8s 1.29 FeatureGate 报错」——模型名/版本号在嵌入空间不敏感，关键词检索一发入魂。融合常用 RRF（倒数排名融合）或加权分数，再接 rerank 精排。RAG 场景混合检索通常能稳定提升召回质量 5~15 个点。 标量过滤：向量检索时附加结构化条件（tenant_id=xxx AND status=published AND date>2026-01），先过滤后检索（预过滤）或检索后过滤。为什么必需：① 多租户隔离——不过滤就是跨租户泄数据；② 时效性——RAG 常要求只查新文档；③ 权限与状态——草稿/删除内容不能进答案。工程上选型要确认引擎的过滤+向量联合性能（预过滤导致的簇稀疏问题，Milvus/Qdrant 各有优化）。 实践：知识切片时打好元数据（来源、部门、时间、权限），检索层做过滤，rerank 层做精排，三层配合。","url":"https://itinterview.com.cn/question/1529"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"向量数据库","item":"https://itinterview.com.cn/category?cat=199"},{"@type":"ListItem","position":5,"name":"什么是混合检索与标量过滤？为什么 RAG 场景需要它们？","item":"https://itinterview.com.cn/q/1529"}]}</script>

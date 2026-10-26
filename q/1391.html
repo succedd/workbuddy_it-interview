@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Booth 算法如何加速有符号乘法？用 Booth 算法逐步计算 7 × (−3)（4 位补码）。 · IT面试题库">
   <meta property="og:description" content="结论 Booth 算法对补码有符号数做乘法时，把乘数里连续的 1 串用「一次加法 + 一次减法」替代，减少部分积累加次数；核心是看 Q0（乘数最低位）与 Q−1（附加位） 的组合决定本步操作。 规则（A=累加器, Q=乘数, Q−1=0 初始, M=被乘数） Q0Q−1 = 00：仅右移（A、Q 算术右移）。 0…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1391.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Booth 算法如何加速有符号乘法？用 Booth 算法逐步计算 7 × (−3)（4 位补码）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1391.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1391">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Booth 算法如何加速有符号乘法？用 Booth 算法逐步计算 7 × (−3)（4 位补码）。 · IT面试题库">
   <meta name="twitter:description" content="结论 Booth 算法对补码有符号数做乘法时，把乘数里连续的 1 串用「一次加法 + 一次减法」替代，减少部分积累加次数；核心是看 Q0（乘数最低位）与 Q−1（附加位） 的组合决定本步操作。 规则（A=累加器, Q=乘数, Q−1=0 初始, M=被乘数） Q0Q−1 = 00：仅右移（A、Q 算术右移）。 0…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1391.jpg">
+  <meta name="twitter:image:alt" content="Booth 算法如何加速有符号乘法？用 Booth 算法逐步计算 7 × (−3)（4 位补码）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1391">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Booth 算法如何加速有符号乘法？用 Booth 算法逐步计算 7 × (−3)（4 位补码）。","text":"考察 Booth 编码规则与有符号乘法的逐步推演。","answerCount":1,"datePublished":"2026-09-26T11:05:10.961Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 Booth 算法对补码有符号数做乘法时，把乘数里连续的 1 串用「一次加法 + 一次减法」替代，减少部分积累加次数；核心是看 Q0（乘数最低位）与 Q−1（附加位） 的组合决定本步操作。 规则（A=累加器, Q=乘数, Q−1=0 初始, M=被乘数） Q0Q−1 = 00：仅右移（A、Q 算术右移）。 01：A = A + M，再右移。 10：A = A − M，再右移。 11：仅右移。 算例：7 × (−3)，均用 4 位补码 7 = 0111₂ = M；−3 = 1101₂ = Q；Q−1 初值 0。 初始 A=0000, Q=0111, Q−1=0。 | 步 | A | Q | Q−1 | 操作 | |---|---|---|---|---| | 0 | 0000 | 0111 | 0 | 初始 | | 1 | 1101 | 0011 | 1 | A−M(10)→右移 | | 2 | 1110 | 1001 | 1 | 原样(11)→右移 | | 3 | 0010 | 0100 | 1 | A+M(01)→右移 | | 4 | 0001 | 0010 | 0 | 原样(00)→右移 | 结果取 A·Q = 0001 0010。注意 4 位补码范围仅 −8~+7，7×(−3)=−21 已溢出，需扩展到 8 位才正确（−21 = 1110 1011₂）。 启示：Booth 结果位宽 = 两操作数位宽之和才能不溢出；其价值在于减少加法次数（连续 1 越多越省）。","url":"https://itinterview.com.cn/question/1391"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"Booth 算法如何加速有符号乘法？用 Booth 算法逐步计算 7 × (−3)（4 位补码）。","item":"https://itinterview.com.cn/q/1391"}]}</script>

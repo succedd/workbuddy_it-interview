@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何保证数据库与 Redis 的双写一致性？为什么推荐 Cache Aside（先更新 DB 再删缓存）？ · IT面试题库">
   <meta property="og:description" content="首选方案：Cache Aside（旁路缓存） 读流程：先查缓存，命中直接返回；未命中查 DB，再回写缓存。 写流程：先更新数据库，再删除缓存（而非更新缓存）。 为什么删除而不是更新缓存：写多读少场景下，频繁更新缓存浪费；且并发写时「更新缓存」可能产生脏数据，删除最简单可靠。 为什么「先 DB 后缓存」：若反过来「…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1350.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何保证数据库与 Redis 的双写一致性？为什么推荐 Cache Aside（先更新 DB 再删缓存）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1350.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1350">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何保证数据库与 Redis 的双写一致性？为什么推荐 Cache Aside（先更新 DB 再删缓存）？ · IT面试题库">
   <meta name="twitter:description" content="首选方案：Cache Aside（旁路缓存） 读流程：先查缓存，命中直接返回；未命中查 DB，再回写缓存。 写流程：先更新数据库，再删除缓存（而非更新缓存）。 为什么删除而不是更新缓存：写多读少场景下，频繁更新缓存浪费；且并发写时「更新缓存」可能产生脏数据，删除最简单可靠。 为什么「先 DB 后缓存」：若反过来「…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1350.jpg">
+  <meta name="twitter:image:alt" content="如何保证数据库与 Redis 的双写一致性？为什么推荐 Cache Aside（先更新 DB 再删缓存）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1350">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何保证数据库与 Redis 的双写一致性？为什么推荐 Cache Aside（先更新 DB 再删缓存）？","text":"考察缓存与数据库一致性方案选型及延迟双删等细节。","answerCount":1,"datePublished":"2026-09-26T05:19:38.225Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"首选方案：Cache Aside（旁路缓存） 读流程：先查缓存，命中直接返回；未命中查 DB，再回写缓存。 写流程：先更新数据库，再删除缓存（而非更新缓存）。 为什么删除而不是更新缓存：写多读少场景下，频繁更新缓存浪费；且并发写时「更新缓存」可能产生脏数据，删除最简单可靠。 为什么「先 DB 后缓存」：若反过来「先删缓存再更新 DB」，在并发读写窗口里，删缓存后、DB 提交前，另一请求读 DB 旧值并回填缓存，造成脏数据。先更 DB 再删缓存能把脏窗口降到最小。 进阶保证 删除缓存失败：用 MQ 重试，或 Canal 监听 binlog 异步删缓存（最终一致）。 延迟双删：删缓存 → 更新 DB → 休眠片刻 → 再删一次，抵消主从同步延迟带来的短期脏读。 强一致需求：读加共享锁、写加排他锁，或借助分布式锁，但牺牲并发性能。 结论：绝大多数业务用「先更新 DB + 删除缓存 + 重试/延迟双删」即可满足最终一致性。","url":"https://itinterview.com.cn/question/1350"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"如何保证数据库与 Redis 的双写一致性？为什么推荐 Cache Aside（先更新 DB 再删缓存）？","item":"https://itinterview.com.cn/q/1350"}]}</script>

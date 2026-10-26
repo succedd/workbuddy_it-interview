@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？ · IT面试题库">
   <meta property="og:description" content="指令周期（Instruction Cycle）指 CPU 取出并执行一条指令的过程，经典阶段： 1. 取指（IF, Instruction Fetch）：从内存按 PC 取指令。 2. 译码（ID, Decode）：解析操作码、读寄存器操作数。 3. 执行（EX, Execute）：ALU 运算或地址计算。 4.…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/485.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/485.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/485">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？ · IT面试题库">
   <meta name="twitter:description" content="指令周期（Instruction Cycle）指 CPU 取出并执行一条指令的过程，经典阶段： 1. 取指（IF, Instruction Fetch）：从内存按 PC 取指令。 2. 译码（ID, Decode）：解析操作码、读寄存器操作数。 3. 执行（EX, Execute）：ALU 运算或地址计算。 4.…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/485.jpg">
+  <meta name="twitter:image:alt" content="CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/485">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？","text":"请说明一条指令从取指到写回的典型阶段，并解释五级流水线的 CPI 与加速比原理。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"指令周期（Instruction Cycle）指 CPU 取出并执行一条指令的过程，经典阶段： 1. 取指（IF, Instruction Fetch）：从内存按 PC 取指令。 2. 译码（ID, Decode）：解析操作码、读寄存器操作数。 3. 执行（EX, Execute）：ALU 运算或地址计算。 4. 访存（MEM, Memory Access）：读/写数据内存（load/store）。 5. 写回（WB, Write Back）：结果写回寄存器。 （更细还含中断周期、间址周期等，依体系而定。） 流水线（Pipelining）原理：把一条指令分成多个阶段，不同指令的不同阶段在时间上重叠执行（类似工厂装配线）。若每阶段 1 个时钟周期，理想情况下： 非流水执行 n 条指令需 n × k 周期（k 为阶段数）； 五级流水需 k + (n-1) 周期，吞吐近似每周期 1 条，理想 CPI≈1。 注意：实际受冒险（结构/数据/控制）、冒险停顿、不均衡阶段长度影响，CPI 略大于 1；且流水线越深，控制冒险惩罚越大。加速比上限受限于最长阶段（木桶效应）。","url":"https://itinterview.com.cn/question/485"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"CPU 的指令周期包含哪些阶段？流水线是如何提升吞吐的？","item":"https://itinterview.com.cn/q/485"}]}</script>

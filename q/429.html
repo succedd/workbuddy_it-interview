@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？ · IT面试题库">
   <meta property="og:description" content="CountDownLatch（倒计时门闩） 一个线程等其他 N 个任务完成再继续（await() 等 countDown() 到 0）。不可复用（到 0 后不能重置）。 场景：主线程等所有子任务初始化/数据加载完毕再启动；并行任务汇聚。 CyclicBarrier（循环栅栏） 让一组线程都到达屏障点后再同时放行（…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/429.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/429.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/429">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？ · IT面试题库">
   <meta name="twitter:description" content="CountDownLatch（倒计时门闩） 一个线程等其他 N 个任务完成再继续（await() 等 countDown() 到 0）。不可复用（到 0 后不能重置）。 场景：主线程等所有子任务初始化/数据加载完毕再启动；并行任务汇聚。 CyclicBarrier（循环栅栏） 让一组线程都到达屏障点后再同时放行（…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/429.jpg">
+  <meta name="twitter:image:alt" content="CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/429">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？","text":"考察点：三大同步辅助类的语义差异（等待完成/同步到达/限流）、可复用性、使用场景。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:19:10.875Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CountDownLatch（倒计时门闩） 一个线程等其他 N 个任务完成再继续（await() 等 countDown() 到 0）。不可复用（到 0 后不能重置）。 场景：主线程等所有子任务初始化/数据加载完毕再启动；并行任务汇聚。 CyclicBarrier（循环栅栏） 让一组线程都到达屏障点后再同时放行（await() 互相等），可循环复用（重置后下一轮再用）。 场景：多阶段并行计算，每阶段所有线程算完再一起进下一阶段（如分治求和）。 Semaphore（信号量） 控制同时访问的许可证数（acquire/release），常用于限流/资源池（限制并发连接数）。 场景：数据库连接池、接口限流。 核心区别 目的：Latch=等别人干完；Barrier=大家到齐再走；Semaphore=限制并发数。 复用性：Latch 一次性，Barrier 可循环，Semaphore 持续限流。 角色：Latch/Barrier 区分等待方/参与方，Semaphore 是资源配额。","url":"https://itinterview.com.cn/question/429"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？","item":"https://itinterview.com.cn/q/429"}]}</script>

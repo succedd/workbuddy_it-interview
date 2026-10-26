@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="iOS App 的启动流程是怎样的？启动耗时如何优化？ · IT面试题库">
   <meta property="og:description" content="阶段：① pre-main：dyld 加载动态库 → rebase/bind（ASLR 修正与符号绑定）→ ObjC runtime 类注册、Category 挂载 → 各 initializer（+load、C++ 构造）；② main 之后：AppDelegate 的 didFinishLaunchingWi…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1507.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="iOS App 的启动流程是怎样的？启动耗时如何优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1507.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1507">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="iOS App 的启动流程是怎样的？启动耗时如何优化？ · IT面试题库">
   <meta name="twitter:description" content="阶段：① pre-main：dyld 加载动态库 → rebase/bind（ASLR 修正与符号绑定）→ ObjC runtime 类注册、Category 挂载 → 各 initializer（+load、C++ 构造）；② main 之后：AppDelegate 的 didFinishLaunchingWi…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1507.jpg">
+  <meta name="twitter:image:alt" content="iOS App 的启动流程是怎样的？启动耗时如何优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1507">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS App 的启动流程是怎样的？启动耗时如何优化？","text":"从 pre-main 到 didFinishLaunching 再到首帧渲染，给出可量化的优化点。","answerCount":1,"datePublished":"2026-10-05T01:03:58.611Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"阶段：① pre-main：dyld 加载动态库 → rebase/bind（ASLR 修正与符号绑定）→ ObjC runtime 类注册、Category 挂载 → 各 initializer（+load、C++ 构造）；② main 之后：AppDelegate 的 didFinishLaunchingWithOptions → rootViewController 创建与首屏 viewDidLoad/layout → 首帧渲染完成。 优化：① 动态库合并/减少（自定义 dyld 顺序、合并成一个，或转静态库），每减少一个动态库省 1~2ms 级启动；② 二进制重排（order file / -order_file，把启动期函数放一页减少 page fault）；③ +load 清理：改用 +initialize 懒加载；④ didFinishLaunching 异步化/延后：非首屏 SDK 初始化挪到首帧后（dispatch_async 或监听 first frame），注册/推送等延后；⑤ 首屏瘦身：viewDidLoad 少做 IO，首页接口预热并行请求；⑥ 监控：os_signpost/MetricKit 量化 cold start，分版本回归。 经验值：pre-main 每减 10% 动态库肉眼可感；didFinishLaunching 控制在 400ms 内。","url":"https://itinterview.com.cn/question/1507"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"iOS App 的启动流程是怎样的？启动耗时如何优化？","item":"https://itinterview.com.cn/q/1507"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？ · IT面试题库">
   <meta property="og:description" content="要点： 现象定位：监控各分片数据量/流量分布，对慢查询集中的分片用 SELECT 分片键, COUNT(*) 按分片统计，确认是否分布不均；同时观察写入是否集中在某个分片。 根因分析：常见原因——分片键区分度低（如性别、固定状态）、取模基数太小、按时间范围分片导致新数据全写最新分片、存在大 V 用户等热点 Key…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1465.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1465.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1465">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？ · IT面试题库">
   <meta name="twitter:description" content="要点： 现象定位：监控各分片数据量/流量分布，对慢查询集中的分片用 SELECT 分片键, COUNT(*) 按分片统计，确认是否分布不均；同时观察写入是否集中在某个分片。 根因分析：常见原因——分片键区分度低（如性别、固定状态）、取模基数太小、按时间范围分片导致新数据全写最新分片、存在大 V 用户等热点 Key…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1465.jpg">
+  <meta name="twitter:image:alt" content="分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1465">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？","text":"故障排查题：监控发现某分片磁盘与 CPU 明显高于其他分片，慢查询集中。请给出定位思路与治理手段。","answerCount":1,"datePublished":"2026-10-02T02:45:42.372Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 现象定位：监控各分片数据量/流量分布，对慢查询集中的分片用 SELECT 分片键, COUNT(*) 按分片统计，确认是否分布不均；同时观察写入是否集中在某个分片。 根因分析：常见原因——分片键区分度低（如性别、固定状态）、取模基数太小、按时间范围分片导致新数据全写最新分片、存在大 V 用户等热点 Key。 治理手段：① 重新选择高基数或组合分片键；② 对热点 Key 单独拆分或前置缓存；③ 范围分片改为“按天分表 + 哈希”组合；④ 已倾斜数据做在线 resharding（双写迁移、灰度校验、切流）。","url":"https://itinterview.com.cn/question/1465"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"分片键设计不合理导致数据倾斜/写入热点，如何排查与治理？","item":"https://itinterview.com.cn/q/1465"}]}</script>

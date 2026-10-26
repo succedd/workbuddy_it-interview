@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？ · IT面试题库">
   <meta property="og:description" content="要点一：核心差异——Read View 的生成时机 RC（读提交）：每执行一条 select 语句都会重新生成一个新的 Read View，所以别的事务提交后，本事务的下一次读取就能看到新数据——这正是&quot;不可重复读&quot;现象仍然存在的机制根源。 RR（可重复读）：启动事务时生成一个 Read View，整个事务期间一…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/646.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/646.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/646">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？ · IT面试题库">
   <meta name="twitter:description" content="要点一：核心差异——Read View 的生成时机 RC（读提交）：每执行一条 select 语句都会重新生成一个新的 Read View，所以别的事务提交后，本事务的下一次读取就能看到新数据——这正是&quot;不可重复读&quot;现象仍然存在的机制根源。 RR（可重复读）：启动事务时生成一个 Read View，整个事务期间一…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/646.jpg">
+  <meta name="twitter:image:alt" content="读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/646">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？","text":"追问链第二环：从\"知道隔离级别\"深入到\"Read View 生成时机\"。考察点：RC 每条 select 重新生成 Read View vs RR 整个事务复用首个 Read View；两种开启事务命令的启动时机差异；由此解释不可重复读的有无。","answerCount":1,"datePublished":"2026-09-07T13:18:41.581Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：核心差异——Read View 的生成时机 RC（读提交）：每执行一条 select 语句都会重新生成一个新的 Read View，所以别的事务提交后，本事务的下一次读取就能看到新数据——这正是\"不可重复读\"现象仍然存在的机制根源。 RR（可重复读）：启动事务时生成一个 Read View，整个事务期间一直复用它。即使其他事务中途修改并提交，本事务的 Read View 不变，读到的始终与事务启动时一致，从而实现\"可重复读\"。 要点二：事务的真正启动时机（进阶细节） 执行 begin/start transaction 命令并不代表事务立即启动，只有在执行第一条 select 语句时才真正启动（此时才生成 Read View）。 执行 start transaction with consistent snapshot 命令则会马上启动事务并生成 Read View。两者时间差内其他事务的提交是否被\"看见\"，取决于用哪种方式开启事务——这是实战中排查\"为什么我 begin 之后还能读到别人提交的数据\"的关键。 要点三：其他隔离级别的实现对照 读未提交（RU）：直接读取最新数据，无需 Read View。 串行化：通过读加共享锁、写加排他锁把事务串行化，也不用 MVCC。因此\"隔离性靠 MVCC\"这句话只对 RC 和 RR 成立。","url":"https://itinterview.com.cn/question/646"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"读提交（RC）和可重复读（RR）都是靠 Read View 实现的，两者的核心差异是什么？begin/start transaction 执行后事务真的立刻启动了吗？","item":"https://itinterview.com.cn/q/646"}]}</script>

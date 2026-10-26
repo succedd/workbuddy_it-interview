@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 先承认代价 分库分表是「常规优化都扛不住之后的容量扩展方案」，会同时带来事务、分布式 ID、查询、迁移与运维成本，一般还需要 DBA 参与和更多数据库服务器。 2. 典型问题与解法 | 问题 | 原因 | 解法 | | --- | --- | --- | | JOIN | 跨分片 join 需要广播…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1288.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1288.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1288">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 先承认代价 分库分表是「常规优化都扛不住之后的容量扩展方案」，会同时带来事务、分布式 ID、查询、迁移与运维成本，一般还需要 DBA 参与和更多数据库服务器。 2. 典型问题与解法 | 问题 | 原因 | 解法 | | --- | --- | --- | | JOIN | 跨分片 join 需要广播…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1288.jpg">
+  <meta name="twitter:image:alt" content="【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1288">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？","text":"考察点：分库分表带来的副作用与配套治理方案。","answerCount":1,"datePublished":"2026-09-26T02:32:26.119Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 先承认代价 分库分表是「常规优化都扛不住之后的容量扩展方案」，会同时带来事务、分布式 ID、查询、迁移与运维成本，一般还需要 DBA 参与和更多数据库服务器。 2. 典型问题与解法 | 问题 | 原因 | 解法 | | --- | --- | --- | | JOIN | 跨分片 join 需要广播、路由、中间件合并甚至笛卡尔组合 | 改为多次查询 + 业务层组装，并考虑多次查询的一致性要求；尽量让主表与明细表使用同一套路由规则（ShardingSphere 的 binding table 要求同分片规则且 SQL 带分片键） | | 事务 | 单库事务无法覆盖多个库 | 引入分布式事务（XA/2PC、TCC、Saga、事务消息等），按一致性要求选型 | | 分布式 ID | 自增主键无法全局唯一 | 引入分布式 ID（雪花、号段、Redis 号段等），并考虑趋势递增对索引的友好性 | | 全局唯一约束 | 唯一索引只在单个分片内生效 | 建全局唯一索引表、用业务注册中心预占，或调整分片键与业务约束 | | 非分片键查询 | 条件不含分片键，中间件只能广播 | 补充路由表、冗余索引表，或把后台检索交给搜索引擎/宽表/报表系统 | | 跨库聚合与分页 | group by / order by 需跨分片汇总排序 | 深分页需各分片返回前 N 页候选再由中间件合并截取，分片越多放大越严重；大结果集外置到搜索引擎/宽表 | | 动态扩缩容 | 传统 hash % N 扩容时映射全变 | 固定逻辑分片（bucket）+ bucket→物理库表映射，扩容只迁 bucket；或用一致性哈希、支持 Rebalance 的分布式数据库（如 TiDB） | 3. 迁移与回滚 迁移方案按「能接受多长停写」选择：停写后全量迁移 / 全量回灌 + CDC 增量 + 短暂停写切换 / 应用层双写。注意应用双写不会天然获得两库间的原子性，必须明确哪个库是权威数据源以及另一侧失败后如何恢复。校验不能只看行数，要按主键分块比较数量与校验和，并补业务总额、状态分布的校验。回滚要清楚：新库一旦接受业务写入，旧库就已落后，直接切回会让新数据不可见甚至被覆盖。","url":"https://itinterview.com.cn/question/1288"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"【场景】订单表分库分表后，跨库 JOIN、跨库分页、全局唯一约束和分布式事务这些问题怎么解决？","item":"https://itinterview.com.cn/q/1288"}]}</script>

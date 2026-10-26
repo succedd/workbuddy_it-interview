@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？ · IT面试题库">
   <meta property="og:description" content="要点： export 流程：读 HDFS 文件 → map 任务按 batch（默认 100 行/批）JDBC INSERT 到目标表 → 依赖目标表唯一约束时转 UPDATE（--update-key）。失败常因：类型不匹配（Hive NULL 与 \N）、字段分隔符错位、长度超限、目标表锁等待。 重复数据：e…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/997.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/997.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/997">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？ · IT面试题库">
   <meta name="twitter:description" content="要点： export 流程：读 HDFS 文件 → map 任务按 batch（默认 100 行/批）JDBC INSERT 到目标表 → 依赖目标表唯一约束时转 UPDATE（--update-key）。失败常因：类型不匹配（Hive NULL 与 \N）、字段分隔符错位、长度超限、目标表锁等待。 重复数据：e…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/997.jpg">
+  <meta name="twitter:image:alt" content="Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/997">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？","text":"考察点：export 四阶段、staging table、-m 与事务批大小、常见失败原因。","answerCount":1,"datePublished":"2026-09-10T07:23:26.967Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： export 流程：读 HDFS 文件 → map 任务按 batch（默认 100 行/批）JDBC INSERT 到目标表 → 依赖目标表唯一约束时转 UPDATE（--update-key）。失败常因：类型不匹配（Hive NULL 与 \\N）、字段分隔符错位、长度超限、目标表锁等待。 重复数据：export 中途失败重跑，已插入的部分仍在 → 用 --staging-table：先写暂存表，全部 map 成功后单事务 INSERT ... SELECT 合并，失败可安全重跑；或目标表唯一键 + --update-mode allowinsert（upsert）。 性能：-m 并行受目标库连接数与锁限制；-Dmapreduce.map.java.opts 调内存；batch 与 --batch 开启 JDBC 批量；避开目标库高峰。 定位顺序：看 map task 失败日志（通常是第几行脏数据）→ --skip-distinct... 不，用容错参数前先修分隔符/类型；脏数据多时加校验列或预处理。","url":"https://itinterview.com.cn/question/997"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Sqoop","item":"https://itinterview.com.cn/category?cat=167"},{"@type":"ListItem","position":4,"name":"Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？","item":"https://itinterview.com.cn/q/997"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？ · IT面试题库">
   <meta property="og:description" content="作用：volatile 告诉编译器「该变量可能被程序之外的因素随时修改」，因此每次访问都必须生成真实的内存读写，禁止缓存到寄存器、禁止省略或重排看似冗余的访问。 三类典型场景 1. 内存映射寄存器（外设）：#define UART_SR ((volatile uint32_t)0x4000C000)，轮询状态位时…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/602.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/602.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/602">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？ · IT面试题库">
   <meta name="twitter:description" content="作用：volatile 告诉编译器「该变量可能被程序之外的因素随时修改」，因此每次访问都必须生成真实的内存读写，禁止缓存到寄存器、禁止省略或重排看似冗余的访问。 三类典型场景 1. 内存映射寄存器（外设）：#define UART_SR ((volatile uint32_t)0x4000C000)，轮询状态位时…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/602.jpg">
+  <meta name="twitter:image:alt" content="嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/602">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？","text":"请解释 volatile 告诉编译器什么，列举三类典型使用场景，并澄清「volatile 是否保证原子性与线程安全」这一常见误解。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"作用：volatile 告诉编译器「该变量可能被程序之外的因素随时修改」，因此每次访问都必须生成真实的内存读写，禁止缓存到寄存器、禁止省略或重排看似冗余的访问。 三类典型场景 1. 内存映射寄存器（外设）：#define UART_SR ((volatile uint32_t)0x4000C000)，轮询状态位时必须用 volatile，否则编译器可能只读一次。 2. ISR 与主循环共享的标志变量：volatile uint8_t flag; 防止主循环把判断优化掉。 3. DMA / 其他总线主控修改的变量。 常见误解澄清 ❌ volatile 不保证原子性：对超过总线宽度的多字节变量（如 32 位 MCU 上的 64 位），读/写仍可能被中断在中间，产生「撕裂读」。 ❌ volatile 不提供内存顺序/线程同步：多核或线程间共享请用 std::atomic / C11 _Atomic，并在弱内存模型（ARM）上配合 __DMB() 等内存屏障。 ✅ volatile 是「防止编译器优化掉访问」的必要但非充分条件，临界区/原子操作另需显式同步。","url":"https://itinterview.com.cn/question/602"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"嵌入式 C 中 volatile 关键字的作用是什么？常见误用在哪？","item":"https://itinterview.com.cn/q/602"}]}</script>

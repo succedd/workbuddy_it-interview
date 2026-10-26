@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？ · IT面试题库">
   <meta property="og:description" content="要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/647.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/647.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/647">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？ · IT面试题库">
   <meta name="twitter:description" content="要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/647.jpg">
+  <meta name="twitter:image:alt" content="【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/647">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？","text":"追问链第三环：幻读。考察点：快照读与当前读的本质区别；RR 靠 MVCC 解决快照读幻读、靠 next-key lock 解决当前读幻读的双轨机制；为什么说 RR 只是\"很大程度避免\"而非\"彻底解决\"幻读。","answerCount":1,"datePublished":"2026-09-07T13:18:41.763Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：普通 select 是快照读，MVCC 保证两次一致 普通 select 走 MVCC 快照读：事务 A 启动时生成 Read View 并整个事务复用，事务 B 新插入并提交的行 trx_id 大于 A 的 Read View 高水位，判定不可见，沿 undo log 版本链回溯到可见旧版本。所以第二次查询\"看不到\"新插入的行，两次结果一致，快照读层面的幻读被 MVCC 解决。 要点二：select ... for update 是当前读，改走 next-key lock 机制 锁定读/更新语句（select ... for update、update、delete）是当前读：必须读最新已提交版本，快照无能为力。此时 InnoDB 在 RR 下对扫描范围加 next-key lock（记录锁 + 间隙锁），把记录本身和记录前的间隙都锁住。 事务 B 若想在该间隙内插入新行，插入操作会被阻塞（生成插入意向锁进入等待），直到 A 提交。这样当前读也\"看不到\"幻影行，幻读被锁机制解决。 要点三：为什么只是\"很大程度避免\"而非\"彻底解决\" RR 下快照读与当前读是两套机制：若事务内先快照读、后当前读（或先快照读、再 update 别人刚插入的行），两次读取可能交叉出现\"看不见又改得到\"的现象，极端时序下幻读仍可能发生。 工程启示：同一事务内对同一批数据保持一致的读取方式；需要严格防幻读的场景显式用锁定读（for update）并缩小事务范围，而不是盲目升级串行化（性能代价过大）。","url":"https://itinterview.com.cn/question/647"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"【场景题】RR 隔离级别下，事务 A 先后执行两次相同的普通 select，中间事务 B 插入了一行并提交。请回答：两次查询结果为何一致？如果第二次换成 select ... for update 又会发生什么？","item":"https://itinterview.com.cn/q/647"}]}</script>

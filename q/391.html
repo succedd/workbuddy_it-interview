@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？ · IT面试题库">
   <meta property="og:description" content="要点： 默认绑定：独立函数调用（非严格模式）this 指向全局对象（浏览器 window、Node global）；严格模式为 undefined。 隐式绑定：函数作为对象方法调用时，this 指向调用它的那个对象（谁调用指向谁）。 显式绑定：通过 call / apply / bind 手动指定 this。 n…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/391.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/391.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/391">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？ · IT面试题库">
   <meta name="twitter:description" content="要点： 默认绑定：独立函数调用（非严格模式）this 指向全局对象（浏览器 window、Node global）；严格模式为 undefined。 隐式绑定：函数作为对象方法调用时，this 指向调用它的那个对象（谁调用指向谁）。 显式绑定：通过 call / apply / bind 手动指定 this。 n…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/391.jpg">
+  <meta name="twitter:image:alt" content="JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/391">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？","text":"考察点：默认/隐式/显式/new 四种绑定，以及优先级；箭头函数没有自己的 this，捕获外层词法 this。属简答题。","answerCount":1,"datePublished":"2026-09-01T09:26:07.745Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 默认绑定：独立函数调用（非严格模式）this 指向全局对象（浏览器 window、Node global）；严格模式为 undefined。 隐式绑定：函数作为对象方法调用时，this 指向调用它的那个对象（谁调用指向谁）。 显式绑定：通过 call / apply / bind 手动指定 this。 new 绑定：new Foo() 时 this 指向新创建的实例。 优先级：new > 显式（bind 硬绑定）> 隐式 > 默认。 箭头函数例外：箭头函数没有自己的 this，它的 this 在定义时捕获自外层（词法）作用域，且不可被 call/apply/bind 改变——这正是它在回调、定时器、React 事件里好用的原因。 经典坑：把对象方法抽出来单独调用会丢失隐式绑定（this 变默认/undefined）；用箭头函数或 bind 固化 this 解决。","url":"https://itinterview.com.cn/question/391"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"JavaScript 中 this 的绑定规则有哪些？箭头函数的 this 有什么不同？","item":"https://itinterview.com.cn/q/391"}]}</script>

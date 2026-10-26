@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？ · IT面试题库">
   <meta property="og:description" content="本质区别 正常增长：随流量/缓存预热上升后趋于平稳，Full GC 能回收掉大部分，老年代水位在 GC 后明显回落。 泄漏：老年代水位单调上升、每次 Full GC 后几乎不回落，最终 OOM；对象『逻辑上不用了但仍被强引用』。 看哪些指标 老年代水位（OU）趋势：泄漏=阶梯式只增不减；正常=锯齿状（涨→GC→落…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/417.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/417.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/417">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？ · IT面试题库">
   <meta name="twitter:description" content="本质区别 正常增长：随流量/缓存预热上升后趋于平稳，Full GC 能回收掉大部分，老年代水位在 GC 后明显回落。 泄漏：老年代水位单调上升、每次 Full GC 后几乎不回落，最终 OOM；对象『逻辑上不用了但仍被强引用』。 看哪些指标 老年代水位（OU）趋势：泄漏=阶梯式只增不减；正常=锯齿状（涨→GC→落…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/417.jpg">
+  <meta name="twitter:image:alt" content="如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/417">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？","text":"考察点：泄漏与正常增长的本质区别是『是否可达且长期不释放』；用趋势型指标而非单点值判断。属场景题（初级）。","answerCount":1,"datePublished":"2026-09-01T10:09:41.285Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"本质区别 正常增长：随流量/缓存预热上升后趋于平稳，Full GC 能回收掉大部分，老年代水位在 GC 后明显回落。 泄漏：老年代水位单调上升、每次 Full GC 后几乎不回落，最终 OOM；对象『逻辑上不用了但仍被强引用』。 看哪些指标 老年代水位（OU）趋势：泄漏=阶梯式只增不减；正常=锯齿状（涨→GC→落）。 Full GC 频率与耗时（FGC/FGCT）：泄漏时 FGC 越来越频繁、单次耗时变长，回收效果却变差。 堆外/直接内存：Netty 场景要看 MaxDirectMemorySize 与 NMT，避免『堆正常但堆外炸』。 线程数：ThreadLocal 泄漏常伴随线程池/线程数只增不减（每次请求 new 线程不回收）。 Prometheus/Grafana 趋势图：关键是看曲线形状——锯齿（健康）vs 斜线（泄漏），单点采样会误判。 一句话：正常是『涨了能落』，泄漏是『涨了回不来』；用 GC 后水位是否回落来判断。","url":"https://itinterview.com.cn/question/417"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"如何区分「内存泄漏」和「正常的内存占用增长」？应该用哪些监控指标（GC 次数/耗时、老年代水位、堆外内存、线程数）来判断？","item":"https://itinterview.com.cn/q/417"}]}</script>

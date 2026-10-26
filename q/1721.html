@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？ · IT面试题库">
   <meta property="og:description" content="要点： delegatecall 语义：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，msg.sender / msg.value 保持不变；代理在 fallback 中把 calldata 转发给实现合约。 升级模式：Transparent Proxy 由 admin 管理升级、普通用户不能调…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1721.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1721.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1721">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？ · IT面试题库">
   <meta name="twitter:description" content="要点： delegatecall 语义：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，msg.sender / msg.value 保持不变；代理在 fallback 中把 calldata 转发给实现合约。 升级模式：Transparent Proxy 由 admin 管理升级、普通用户不能调…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1721.jpg">
+  <meta name="twitter:image:alt" content="delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1721">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？","text":"考察可升级合约的存储布局、函数选择器冲突与初始化陷阱。","answerCount":1,"datePublished":"2026-10-19T05:43:24.541Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： delegatecall 语义：在调用方（代理）的上下文里执行被调合约代码，读写的是代理的存储，msg.sender / msg.value 保持不变；代理在 fallback 中把 calldata 转发给实现合约。 升级模式：Transparent Proxy 由 admin 管理升级、普通用户不能调用实现合约的管理函数；UUPS 把升级逻辑放在实现合约里，省一次 delegatecall，但实现合约必须包含升级入口；Beacon 适合多代理共享实现。 关键陷阱：构造函数不会在代理上下文中运行，必须用 initialize + initializer；代理与实现的存储布局必须兼容，只能追加变量、不能重排或删除；还要防函数选择器冲突、未初始化实现合约被劫持，以及 selfdestruct 等破坏性操作。","url":"https://itinterview.com.cn/question/1721"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"delegatecall 与代理升级：为什么实现合约不能依赖构造函数和状态变量布局？","item":"https://itinterview.com.cn/q/1721"}]}</script>

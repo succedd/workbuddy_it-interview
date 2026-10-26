@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？ · IT面试题库">
   <meta property="og:description" content="结论：DNS 把域名解析成 IP，解析沿「浏览器缓存 → 系统缓存/hosts → 本地 DNS 服务器 → 根 → 顶级域 TLD → 权威 DNS」逐层进行；其中客户端到本地 DNS 通常是递归，本地 DNS 向上游是迭代。 完整流程： 先查浏览器 DNS 缓存、再查本机 hosts 与系统缓存，命中则直接返…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1337.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1337.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1337">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="结论：DNS 把域名解析成 IP，解析沿「浏览器缓存 → 系统缓存/hosts → 本地 DNS 服务器 → 根 → 顶级域 TLD → 权威 DNS」逐层进行；其中客户端到本地 DNS 通常是递归，本地 DNS 向上游是迭代。 完整流程： 先查浏览器 DNS 缓存、再查本机 hosts 与系统缓存，命中则直接返…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1337.jpg">
+  <meta name="twitter:image:alt" content="在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1337">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？","text":"考察点：DNS 解析链路与查询模式。要求说清浏览器缓存→本地 hosts→本地 DNS→根→顶级域→权威服务器的链路，并区分递归与迭代查询。","answerCount":1,"datePublished":"2026-09-26T05:19:36.907Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：DNS 把域名解析成 IP，解析沿「浏览器缓存 → 系统缓存/hosts → 本地 DNS 服务器 → 根 → 顶级域 TLD → 权威 DNS」逐层进行；其中客户端到本地 DNS 通常是递归，本地 DNS 向上游是迭代。 完整流程： 先查浏览器 DNS 缓存、再查本机 hosts 与系统缓存，命中则直接返回； 未命中则请求「本地 DNS 服务器（递归解析器）」； 本地 DNS 依次问根服务器（返回 TLD 地址）、问 .com 等 TLD 服务器（返回权威服务器地址）、问权威服务器（返回最终 A 记录）； 结果被缓存（按 TTL）后返回给浏览器。 递归 vs 迭代： 递归查询：被问方必须返回最终结果（或报错），客户端只对本地 DNS 用递归； 迭代查询：被问方若不知道答案，只返回「下一步该问谁」的线索，由请求方继续追问（本地 DNS 向上游多用迭代，减轻根/TLD 压力）。 对比： | 查询方式 | 由谁负责追到底 | 典型使用方 | | --- | --- | --- | | 递归 | 被查询的 DNS 服务器 | 客户端 → 本地 DNS | | 迭代 | 查询发起方自己 | 本地 DNS → 根/TLD/权威 |","url":"https://itinterview.com.cn/question/1337"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"DNS原理","item":"https://itinterview.com.cn/category?cat=52"},{"@type":"ListItem","position":4,"name":"在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？","item":"https://itinterview.com.cn/q/1337"}]}</script>

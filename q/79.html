@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MyBatis 中 #{} 与 ${} 的区别？ · IT面试题库">
   <meta property="og:description" content="#{}：预编译占位符，生成 ? 并由 PreparedStatement 设参，自动转义/防 SQL 注入，绝大多数场景用这个。 ${}：字符串直接拼接，不做转义，常用于动态表名/列名/排序字段（如 ORDER BY ${column}）。 风险：${} 拼接用户输入 → SQL 注入。只应在变量来自可信白名单（…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/79.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MyBatis 中 #{} 与 ${} 的区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/79.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/79">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MyBatis 中 #{} 与 ${} 的区别？ · IT面试题库">
   <meta name="twitter:description" content="#{}：预编译占位符，生成 ? 并由 PreparedStatement 设参，自动转义/防 SQL 注入，绝大多数场景用这个。 ${}：字符串直接拼接，不做转义，常用于动态表名/列名/排序字段（如 ORDER BY ${column}）。 风险：${} 拼接用户输入 → SQL 注入。只应在变量来自可信白名单（…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/79.jpg">
+  <meta name="twitter:image:alt" content="MyBatis 中 #{} 与 ${} 的区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/79">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MyBatis 中 #{} 与 ${} 的区别？","text":"说明预编译与注入风险。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"#{}：预编译占位符，生成 ? 并由 PreparedStatement 设参，自动转义/防 SQL 注入，绝大多数场景用这个。 ${}：字符串直接拼接，不做转义，常用于动态表名/列名/排序字段（如 ORDER BY ${column}）。 风险：${} 拼接用户输入 → SQL 注入。只应在变量来自可信白名单（如枚举列名）时使用，并对值进行严格校验后再使用。例如排序方向只允许 ASC/DESC，用白名单判断后再拼接，绝不接收任意用户输入。#{} 是默认且安全的写法。","url":"https://itinterview.com.cn/question/79"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"MyBatis","item":"https://itinterview.com.cn/category?cat=84"},{"@type":"ListItem","position":5,"name":"MyBatis 中 #{} 与 ${} 的区别？","item":"https://itinterview.com.cn/q/79"}]}</script>

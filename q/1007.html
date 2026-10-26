@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？ · IT面试题库">
   <meta property="og:description" content="要点： 索引类型：单字段/复合/多键（数组）/文本/地理/稀疏与部分索引——复合索引遵循 ESR：等值（Equality）字段在前、排序（Sort）其次、范围（Range）最后，顺序错了排序就得内存做（SORT 阶段超 100MB 直接报错）。 explain 三模式：queryPlanner（看计划）、exec…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1007.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1007.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1007">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？ · IT面试题库">
   <meta name="twitter:description" content="要点： 索引类型：单字段/复合/多键（数组）/文本/地理/稀疏与部分索引——复合索引遵循 ESR：等值（Equality）字段在前、排序（Sort）其次、范围（Range）最后，顺序错了排序就得内存做（SORT 阶段超 100MB 直接报错）。 explain 三模式：queryPlanner（看计划）、exec…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1007.jpg">
+  <meta name="twitter:image:alt" content="MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1007">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？","text":"考察点：B-tree 索引类型、复合索引 ESR 原则、覆盖查询、explain 输出解读。","answerCount":1,"datePublished":"2026-09-10T07:26:36.832Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 索引类型：单字段/复合/多键（数组）/文本/地理/稀疏与部分索引——复合索引遵循 ESR：等值（Equality）字段在前、排序（Sort）其次、范围（Range）最后，顺序错了排序就得内存做（SORT 阶段超 100MB 直接报错）。 explain 三模式：queryPlanner（看计划）、executionStats（看真实执行数字）、allPlansExecution。重点看：winningPlan 是否 IXSCAN（COLLSCAN 全表扫=警报）、totalDocsExamined vs nReturned（检查的文档数远大于返回数=索引选择性差）、stage: SORT（内存排序=该加排序索引）。 覆盖查询：查询与返回的字段全在索引里（projection 指定），不回表（totalDocsExamined=0），是最优形态。 实践红线：索引不是越多越好——每个索引都拖慢写入并占内存；定期 db.collection.aggregate([{$indexStats}]) 找无使用索引清理；大集合建索引用后台/滚动方式避免锁。","url":"https://itinterview.com.cn/question/1007"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"MongoDB","item":"https://itinterview.com.cn/category?cat=34"},{"@type":"ListItem","position":5,"name":"MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？","item":"https://itinterview.com.cn/q/1007"}]}</script>

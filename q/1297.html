@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库">
   <meta property="og:description" content="根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1297.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1297.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1297">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库">
   <meta name="twitter:description" content="根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1297.jpg">
+  <meta name="twitter:image:alt" content="故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1297">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。","text":"考察点：层叠上下文（stacking context）这一最容易踩坑的渲染规则。","answerCount":1,"datePublished":"2026-09-26T02:32:40.186Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因：z-index 只在同一个层叠上下文内比较。若弹窗与被盖住它的元素分属不同的层叠上下文，两个数字就不是同一维度，比大小毫无意义。MDN 用「版本号」类比很形象：DIV #4 的 z-index:6 会被 z-index:5 的 DIV #1 盖住，因为 #4 属于 z-index 更低的父级 #3（渲染次序 4.6 ； position:absolute/relative 且 z-index≠auto； position:fixed / sticky（总是创建）； flex / grid 容器的子项且 z-index≠auto； opacity \u003c 1、mix-blend-mode≠normal； transform / filter / backdrop-filter / perspective / clip-path / mask 非 none； isolation:isolate、will-change 指定了会创建层叠上下文的属性、contain:layout|paint。 排查步骤： 1. 在 DevTools 的 Layers / 3D 视图确认两者是否处于同一层叠上下文；沿祖先链向上找最近的创建层叠上下文的祖先。 2. 检查弹窗祖先链上是否有 transform、opacity、filter、will-change，或某个 position + z-index 的祖先把它「困」在低层级里。 3. 看计算样式确认 z-index 是否真的生效——static 元素上的 z-index 完全无效。 修复： 把弹窗挂到 body 下（React Portal / document.body.appendChild），彻底脱离有问题的祖先上下文； 或调整共同祖先的层叠层级（给它加 z-index 或换顺序）； 去掉祖先上不必要的 transform / opacity； 组件库统一用 z-index 分层变量（如 1000–5000），杜绝到处写 9999。 一句话：z-index 的比较单位是「层叠上下文」，不是全局数字。","url":"https://itinterview.com.cn/question/1297"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"故障排查：给弹窗设了 z-index: 9999，却仍被页面上另一个 z-index: 10 的元素盖住。请解释原因，并给出排查与修复步骤。","item":"https://itinterview.com.cn/q/1297"}]}</script>

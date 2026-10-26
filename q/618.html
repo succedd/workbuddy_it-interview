@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？ · IT面试题库">
   <meta property="og:description" content="要点： 先定切分粒度（chunk size）：太小会丢失上下文（一个概念被切碎），太大会引入噪声且浪费 token；技术手册常用 500–1000 字符、重叠 50–150 字符（overlap），让跨边界的概念在相邻块里都完整保留。 切分方式按结构选：固定长度/递归字符切分（RecursiveCharacter…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/618.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/618.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/618">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先定切分粒度（chunk size）：太小会丢失上下文（一个概念被切碎），太大会引入噪声且浪费 token；技术手册常用 500–1000 字符、重叠 50–150 字符（overlap），让跨边界的概念在相邻块里都完整保留。 切分方式按结构选：固定长度/递归字符切分（RecursiveCharacter…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/618.jpg">
+  <meta name="twitter:image:alt" content="给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/618">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？","text":"考察点：理解 RAG 索引阶段的核心工程决策——切片策略（chunk size / 切分方式 / overlap）对检索召回的影响。","answerCount":1,"datePublished":"2026-09-06T02:23:26.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先定切分粒度（chunk size）：太小会丢失上下文（一个概念被切碎），太大会引入噪声且浪费 token；技术手册常用 500–1000 字符、重叠 50–150 字符（overlap），让跨边界的概念在相邻块里都完整保留。 切分方式按结构选：固定长度/递归字符切分（RecursiveCharacterTextSplitter）按段落→句子→字符逐级切，最通用；语义切分按 embedding 相似度断句，保证每块语义内聚、召回更准但成本高易碎；结构化切分按 Markdown 标题/表格保留文档层级，最利于手册类。 向量化：选用与检索语言匹配的 embedding 模型（中文场景选 bge/m3e 等），统一归一化；把切片写入向量库（FAISS/Chroma）并建立元数据（页码、章节、来源）。 落地建议：先用递归字符切分跑通基线，再按“答非所问”的 bad case 逐步切到语义/结构切分，避免过早优化。","url":"https://itinterview.com.cn/question/618"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"RAG检索增强生成","item":"https://itinterview.com.cn/category?cat=193"},{"@type":"ListItem","position":5,"name":"给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？","item":"https://itinterview.com.cn/q/618"}]}</script>

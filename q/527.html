@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？ · IT面试题库">
   <meta property="og:description" content="悲观锁(Pessimistic Lock)：假设冲突很可能发生，访问数据前就先加锁阻止他人修改。 实现：SELECT ... FOR UPDATE（行锁/间隙锁）、UPDATE 自带排他锁；应用层可用 synchronized/分布式锁。 优点：数据一致性最强；缺点：锁持有期间并发低、易死锁、占用连接。 适用：写…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/527.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/527.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/527">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？ · IT面试题库">
   <meta name="twitter:description" content="悲观锁(Pessimistic Lock)：假设冲突很可能发生，访问数据前就先加锁阻止他人修改。 实现：SELECT ... FOR UPDATE（行锁/间隙锁）、UPDATE 自带排他锁；应用层可用 synchronized/分布式锁。 优点：数据一致性最强；缺点：锁持有期间并发低、易死锁、占用连接。 适用：写…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/527.jpg">
+  <meta name="twitter:image:alt" content="数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/527">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？","text":"说明悲观锁(select for update/行锁)与乐观锁(版本号/CAS)的机制、冲突处理与适用条件。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"悲观锁(Pessimistic Lock)：假设冲突很可能发生，访问数据前就先加锁阻止他人修改。 实现：SELECT ... FOR UPDATE（行锁/间隙锁）、UPDATE 自带排他锁；应用层可用 synchronized/分布式锁。 优点：数据一致性最强；缺点：锁持有期间并发低、易死锁、占用连接。 适用：写冲突频繁、强一致要求高的短事务（如扣减库存核心步骤）。 乐观锁(Optimistic Lock)：假设冲突很少，读取时不加锁，只在提交时校验是否被改过。 实现：加 version 字段或时间戳，更新时 UPDATE ... SET ..., version=version+1 WHERE id=? AND version=?；影响行数为 0 即冲突，重试或报错（CAS 思想）；也可基于业务字段（如 stock>0）判断。 优点：无锁、高并发、无死锁；缺点：冲突多时需重试、可能 ABA 问题（可用版本号规避）。 适用：读多写少、冲突概率低、允许重试的场景（如评论点赞、配置更新）。 对比：悲观=先锁后做，安全但慢；乐观=先做了再校验，快但需处理冲突。","url":"https://itinterview.com.cn/question/527"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"数据库的「乐观锁」与「悲观锁」有何区别？分别适用于什么场景？","item":"https://itinterview.com.cn/q/527"}]}</script>

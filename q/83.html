@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 为什么吞吐高、速度快？ · IT面试题库">
   <meta property="og:description" content="1. 顺序磁盘 I/O：消息只追加写（append-only log），远快于随机写；利用 OS 页缓存（page cache）。 2. 零拷贝（sendfile）：消费时 broker 用 sendfile 直接把文件从内核缓冲区送到 socket，省去用户态拷贝与上下文切换。 3. 批量与异步：Produce…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/83.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 为什么吞吐高、速度快？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/83.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/83">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 为什么吞吐高、速度快？ · IT面试题库">
   <meta name="twitter:description" content="1. 顺序磁盘 I/O：消息只追加写（append-only log），远快于随机写；利用 OS 页缓存（page cache）。 2. 零拷贝（sendfile）：消费时 broker 用 sendfile 直接把文件从内核缓冲区送到 socket，省去用户态拷贝与上下文切换。 3. 批量与异步：Produce…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/83.jpg">
+  <meta name="twitter:image:alt" content="Kafka 为什么吞吐高、速度快？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/83">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 为什么吞吐高、速度快？","text":"说明顺序写、零拷贝、批量与压缩。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. 顺序磁盘 I/O：消息只追加写（append-only log），远快于随机写；利用 OS 页缓存（page cache）。 2. 零拷贝（sendfile）：消费时 broker 用 sendfile 直接把文件从内核缓冲区送到 socket，省去用户态拷贝与上下文切换。 3. 批量与异步：Producer 批量发送、批量压缩（gzip/snappy/lz4），减少网络往返与体积。 4. 分区并行：多分区多磁盘多消费者并行，水平扩展。 5. 稀疏索引：用 offset 二分定位 segment，读高效。","url":"https://itinterview.com.cn/question/83"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 为什么吞吐高、速度快？","item":"https://itinterview.com.cn/q/83"}]}</script>

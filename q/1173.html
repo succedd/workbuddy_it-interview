@@ -16,7 +16,16 @@ B. ref 在模板中使用时必须写 .value
 C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
 D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
   <meta property="og:description" content="正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1173.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？
+A. reactive 可以直接用于基本类型（数字/字符串）
+B. ref 在模板中使用时必须写 .value
+C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
+D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1173.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1173">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
@@ -26,7 +35,12 @@ B. ref 在模板中使用时必须写 .value
 C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
 D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
   <meta name="twitter:description" content="正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1173.jpg">
+  <meta name="twitter:image:alt" content="单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？
+A. reactive 可以直接用于基本类型（数字/字符串）
+B. ref 在模板中使用时必须写 .value
+C. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value
+D. reactive 对象被整体重新赋值仍保持响应式 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1173">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？\nA. reactive 可以直接用于基本类型（数字/字符串）\nB. ref 在模板中使用时必须写 .value\nC. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value\nD. reactive 对象被整体重新赋值仍保持响应式","text":"考察点：ref 与 reactive 的选用规则与模板解包行为。要能判断每个选项对错并讲清理由。","answerCount":1,"datePublished":"2026-09-17T02:27:46.344Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确答案：C A 错：reactive 只接受对象/数组/Map/Set 等引用类型，传基本类型会报警告且失去响应式；基本类型必须用 ref。 B 错：ref 在 JS 逻辑里要用 .value 访问，但在模板中会自动解包，直接写 {{ count }} 即可，无需 .value。 C 对：这是官方推荐分工——基本类型用 ref、对象用 reactive；ref 在模板自动解包是编译期处理的（前提是 ref 是顶层属性，嵌套在 reactive 里也会解包）。 D 错：reactive 整体重新赋值（state = {…}）会断开原代理引用、丢失响应性；正确做法是用 Object.assign(state, newObj) 原地合并，或改用 ref 包一层用 .value 替换。 选型口诀：「基本用 ref，对象用 reactive；要替换整对象就 ref 包一层」。","url":"https://itinterview.com.cn/question/1173"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue3","item":"https://itinterview.com.cn/category?cat=63"},{"@type":"ListItem","position":5,"name":"单选题：关于 Vue3 中 ref 与 reactive 的使用，下列说法正确的是？\nA. reactive 可以直接用于基本类型（数字/字符串）\nB. ref 在模板中使用时必须写 .value\nC. ref 用于基本类型、reactive 用于对象；ref 在模板中会自动解包，无需 .value\nD. reactive 对象被整体重新赋值仍保持响应式","item":"https://itinterview.com.cn/q/1173"}]}</script>
@@ -118,7 +132,7 @@ D. reactive 对象被整体重新赋值仍保持响应式</h1>
       <a class="cta" href="https://itinterview.com.cn/question/1173">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/126">Vue中响应式数据的原理？</a><span class="rel-n">457 次浏览</span></li><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/126">Vue中响应式数据的原理？</a><span class="rel-n">457 次浏览</span></li><li><a href="https://itinterview.com.cn/q/125">Vue 3中Composition API和Options API的区别？</a><span class="rel-n">108 次浏览</span></li><li><a href="https://itinterview.com.cn/q/26">Vue3 的响应式原理是什么？与 Vue2 有何不同？</a><span class="rel-n">1 次浏览</span></li><li><a href="https://itinterview.com.cn/q/27">Vue 中 key 的作用是什么？为什么列表要用 key？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

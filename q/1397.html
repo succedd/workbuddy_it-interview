@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="中断方式与 DMA 方式在 I/O 传输中 CPU 参与度有何不同？各自适用于什么场景？ · IT面试题库">
   <meta property="og:description" content="结论 两者都是 I/O 与 CPU 并行的重要手段，但 CPU 参与数据搬运的程度不同：中断方式下每个数据单位仍经 CPU 寄存器，DMA 方式由专用控制器（DMAC）直接在外设与内存间搬运，CPU 只在两端介入。 中断方式 1. 外设就绪 → 向 CPU 发中断请求。 2. CPU 保存现场、转入中断服务程序（…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1397.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="中断方式与 DMA 方式在 I/O 传输中 CPU 参与度有何不同？各自适用于什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1397.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1397">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="中断方式与 DMA 方式在 I/O 传输中 CPU 参与度有何不同？各自适用于什么场景？ · IT面试题库">
   <meta name="twitter:description" content="结论 两者都是 I/O 与 CPU 并行的重要手段，但 CPU 参与数据搬运的程度不同：中断方式下每个数据单位仍经 CPU 寄存器，DMA 方式由专用控制器（DMAC）直接在外设与内存间搬运，CPU 只在两端介入。 中断方式 1. 外设就绪 → 向 CPU 发中断请求。 2. CPU 保存现场、转入中断服务程序（…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1397.jpg">
+  <meta name="twitter:image:alt" content="中断方式与 DMA 方式在 I/O 传输中 CPU 参与度有何不同？各自适用于什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1397">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"中断方式与 DMA 方式在 I/O 传输中 CPU 参与度有何不同？各自适用于什么场景？","text":"考察中断与 DMA 的 CPU 参与度差异及适用场景。","answerCount":1,"datePublished":"2026-09-26T11:05:11.513Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 两者都是 I/O 与 CPU 并行的重要手段，但 CPU 参与数据搬运的程度不同：中断方式下每个数据单位仍经 CPU 寄存器，DMA 方式由专用控制器（DMAC）直接在外设与内存间搬运，CPU 只在两端介入。 中断方式 1. 外设就绪 → 向 CPU 发中断请求。 2. CPU 保存现场、转入中断服务程序（ISR）。 3. ISR 用 IN/OUT 或 load/store 逐字把数据搬进内存。 4. 每个字都经过 CPU 寄存器；传完恢复现场。 → CPU 全程参与每个字节，适合少量、异步事件（键盘、网卡收包通知）。 DMA 方式 1. CPU 先把源地址、目的地址、长度告诉 DMAC，然后去干别的事。 2. DMAC 接管总线，自行把整块数据在外设↔内存间搬完。 3. 整块传完，DMAC 才发一次中断通知 CPU。 → CPU 只在开始/结束介入，适合大块数据（磁盘读、显卡帧缓冲、网卡大包）。 一句话：小数据/异步事件用中断更轻量；大数据块用 DMA 才能解放 CPU。","url":"https://itinterview.com.cn/question/1397"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"中断方式与 DMA 方式在 I/O 传输中 CPU 参与度有何不同？各自适用于什么场景？","item":"https://itinterview.com.cn/q/1397"}]}</script>

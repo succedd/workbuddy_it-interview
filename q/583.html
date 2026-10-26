@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？ · IT面试题库">
   <meta property="og:description" content="风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/583.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/583.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/583">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？ · IT面试题库">
   <meta name="twitter:description" content="风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/583.jpg">
+  <meta name="twitter:image:alt" content="释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/583">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","text":"线程 A 获取锁后业务执行超时，锁已过期；线程 B 随后拿到锁。此时 A 执行完直接 DEL 会把 B 的锁删掉。请说明风险，并给出正确的释放实现。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"风险（误删他人锁）： 1. A 获锁（TTL 30s），业务卡住超过 30s，锁自动过期； 2. B 获锁（A 不知情）； 3. A 业务结束，直接 DEL lock → 把 B 的锁删了； 4. 此时 C 又能获锁，B、C 同时进入临界区 → 互斥失效。 根因：释放时没有校验“这把锁是不是自己加的”。 正确释放（Lua 脚本原子校验）： 只有 get 到的 value 等于自己当初设的唯一随机值才删除； 用 Lua 保证“判断+删除”原子，避免判断后、删除前锁过期被别人抢走的中间态。 Redis 8.4+ 可用等价命令 DELEX key IFEQ 。 配套：加锁 value 必须是全局唯一随机串（非固定值），否则仍可能被误删。","url":"https://itinterview.com.cn/question/583"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"释放 Redis 分布式锁时直接 `DEL` 有什么风险？如何用 Lua 脚本防止误删别人的锁？","item":"https://itinterview.com.cn/q/583"}]}</script>

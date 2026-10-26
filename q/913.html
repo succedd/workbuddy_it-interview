@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="从输入 URL 到页面展示，中间发生了什么？ · IT面试题库">
   <meta property="og:description" content="1. URL 解析：补全协议、检查缓存（浏览器缓存→系统 hosts→本地 DNS）。 2. DNS 解析：浏览器缓存 → 系统缓存 → 路由器 → 本地 DNS 服务器（递归查询）→ 根/顶级域/权威服务器（迭代查询），拿到 IP。命中 CDN 时返回就近边缘节点。 3. 建立 TCP 连接：三次握手；HTTP…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/913.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="从输入 URL 到页面展示，中间发生了什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/913.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/913">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="从输入 URL 到页面展示，中间发生了什么？ · IT面试题库">
   <meta name="twitter:description" content="1. URL 解析：补全协议、检查缓存（浏览器缓存→系统 hosts→本地 DNS）。 2. DNS 解析：浏览器缓存 → 系统缓存 → 路由器 → 本地 DNS 服务器（递归查询）→ 根/顶级域/权威服务器（迭代查询），拿到 IP。命中 CDN 时返回就近边缘节点。 3. 建立 TCP 连接：三次握手；HTTP…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/913.jpg">
+  <meta name="twitter:image:alt" content="从输入 URL 到页面展示，中间发生了什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/913">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"从输入 URL 到页面展示，中间发生了什么？","text":"请完整描述浏览器输入 URL 后的 DNS 解析、TCP 连接、HTTP 请求、渲染等关键步骤。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1. URL 解析：补全协议、检查缓存（浏览器缓存→系统 hosts→本地 DNS）。 2. DNS 解析：浏览器缓存 → 系统缓存 → 路由器 → 本地 DNS 服务器（递归查询）→ 根/顶级域/权威服务器（迭代查询），拿到 IP。命中 CDN 时返回就近边缘节点。 3. 建立 TCP 连接：三次握手；HTTPS 再加 TLS 握手（协商版本/加密套件、验证证书、交换密钥，TLS 1.3 一次 RTT）。 4. 发送 HTTP 请求：浏览器构造请求行/头/体发出；服务器处理并返回状态码、响应头与 HTML。 5. 页面渲染：解析 HTML 构建 DOM 树、CSS 构建 CSSOM → 合成渲染树 → 布局（计算几何位置）→ 绘制 → 合成上屏；遇到 JS 会阻塞 DOM 解析（script 默认同步），async/defer 可优化。 6. 连接管理：HTTP/1.1 默认 keep-alive 复用连接；结束后四次挥手。 追问方向常在：DNS 递归与迭代、HTTPS 证书校验链、强缓存/协商缓存（命中缓存则不发请求）。","url":"https://itinterview.com.cn/question/913"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络基础","item":"https://itinterview.com.cn/category?cat=49"},{"@type":"ListItem","position":4,"name":"从输入 URL 到页面展示，中间发生了什么？","item":"https://itinterview.com.cn/q/913"}]}</script>

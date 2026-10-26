@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？ · IT面试题库">
   <meta property="og:description" content="要点： 父子容器：Spring MVC 常用 父子 ApplicationContext——根容器（Root WebApplicationContext）放 Service / Dao 等业务 Bean，子容器（DispatcherServlet 的 WebApplicationContext）放 Control…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1620.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1620.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1620">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？ · IT面试题库">
   <meta name="twitter:description" content="要点： 父子容器：Spring MVC 常用 父子 ApplicationContext——根容器（Root WebApplicationContext）放 Service / Dao 等业务 Bean，子容器（DispatcherServlet 的 WebApplicationContext）放 Control…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1620.jpg">
+  <meta name="twitter:image:alt" content="Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1620">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？","text":"高级，考察容器模型与 DI。","answerCount":1,"datePublished":"2026-10-10T11:54:35.185Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 父子容器：Spring MVC 常用 父子 ApplicationContext——根容器（Root WebApplicationContext）放 Service / Dao 等业务 Bean，子容器（DispatcherServlet 的 WebApplicationContext）放 Controller。子容器能访问父容器的 Bean，反之不能，因此 Controller 可注入 Service，但 Service 不应注入 Controller。扫描边界错配（把 Controller 扫进根容器）会导致 Controller 映射失效或重复创建。 @Autowired 原理：基于类型（byType）查找候选 Bean，结合 @Primary / @Qualifier 解决歧义；底层用 BeanPostProcessor（AutowiredAnnotationBeanPostProcessor）在 Bean 初始化时反射注入。 循环依赖：Spring 用三级缓存（singletonFactories / earlySingletonObjects / singletonObjects）提前暴露「半成品」Bean 解决单例 setter / 字段注入的循环依赖；但构造器注入的循环依赖无法解决（会抛 BeanCurrentlyInCreationException），需改用字段注入或 @Lazy 延迟注入拆环。","url":"https://itinterview.com.cn/question/1620"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring MVC","item":"https://itinterview.com.cn/category?cat=83"},{"@type":"ListItem","position":5,"name":"Spring MVC 的父子容器（Context）是什么？@Controller 与 @Service 的扫描边界、@Autowired 注入原理与循环依赖如何处理？","item":"https://itinterview.com.cn/q/1620"}]}</script>

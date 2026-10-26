@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库">
   <meta property="og:description" content="一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/435.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/435.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/435">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库">
   <meta name="twitter:description" content="一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/435.jpg">
+  <meta name="twitter:image:alt" content="TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/435">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？","text":"团队代码里两种写法混用，有人建议统一。请从扩展方式、同名声明冲突处理、可表达的类型范围几个角度说明差异，并给出选型建议。","answerCount":1,"datePublished":"2026-09-03T00:53:25.623Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、先说共同点 两者都能用来命名对象类型，也都支持泛型——例如描述一个盒子既可以用 interface Box ，也可以用 type Box 来写。所以选型不能停留在「能不能写」这个层面。 二、核心差异一：扩展方式不同 interface 用 extends：从其它命名类型复制成员并追加新成员，还能一次继承多个类型。 type 用交叉类型 &：把已有对象类型组合起来，再用类型别名给结果命名。 官方文档明确指出：二者的主要区别在于如何处理冲突，而这也通常是你在 interface 与交叉类型别名之间做选择的首要理由。 三、核心差异二：冲突处理与声明合并 同名 interface：TypeScript 会尝试合并；属性兼容则合并成功，属性同名但类型不兼容则直接报错。这一特性常用于给第三方库的类型做扩展补充。 交叉类型：属性类型冲突时会被自动合并、编译通过，但那个属性会变成 never——要求同时满足 string 和 number，结果往往出人意料，且错误不在声明处暴露。 这是选型时最值得权衡的一点：前者让冲突尽早暴露，后者可能把问题推迟到使用处。 四、核心差异三：可表达的范围不同 文档原话是「type aliases, unlike interfaces, can describe more than just object types」。因此： 联合类型、带 null 的辅助类型、数组/元组的简写形式（如 [string, number]、可选元素 [number, number, number?]、剩余元素、只读元组）习惯上由 type 承载； 想用 interface 表达等价的元组结构，得手工声明数字索引与字面量 length，非常别扭； 映射类型、条件类型这类类型运算更是 type 的主场。 五、选型建议 对外的对象形状、需要被他人扩展或合并声明的（如库的公开 API、DTO 结构）优先用 interface；联合、元组、函数别名、以及一切类型运算用 type。团队内统一约定比争论本身更重要——两种写法在项目里各司其职、保持风格一致即可。","url":"https://itinterview.com.cn/question/435"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"TypeScript前端","item":"https://itinterview.com.cn/category?cat=75"},{"@type":"ListItem","position":4,"name":"TypeScript 中 interface 和 type 有什么区别？项目里该如何选择？","item":"https://itinterview.com.cn/q/435"}]}</script>

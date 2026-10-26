@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TCP 和 UDP 有什么区别？分别适用什么场景？ · IT面试题库">
   <meta property="og:description" content="| 维度 | TCP | UDP | |---|---|---| | 连接 | 面向连接（三次握手） | 无连接，直接发 | | 可靠性 | 确认重传、不丢不重 | 尽力而为，可能丢包乱序 | | 有序性 | 按序交付 | 不保证 | | 速度/时延 | 较慢（握手+确认开销） | 快、时延低 | | 头部 | …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/919.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TCP 和 UDP 有什么区别？分别适用什么场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/919.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/919">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TCP 和 UDP 有什么区别？分别适用什么场景？ · IT面试题库">
   <meta name="twitter:description" content="| 维度 | TCP | UDP | |---|---|---| | 连接 | 面向连接（三次握手） | 无连接，直接发 | | 可靠性 | 确认重传、不丢不重 | 尽力而为，可能丢包乱序 | | 有序性 | 按序交付 | 不保证 | | 速度/时延 | 较慢（握手+确认开销） | 快、时延低 | | 头部 | …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/919.jpg">
+  <meta name="twitter:image:alt" content="TCP 和 UDP 有什么区别？分别适用什么场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/919">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TCP 和 UDP 有什么区别？分别适用什么场景？","text":"请从连接、可靠性、有序性、速度、头部开销等方面对比 TCP 与 UDP，并举例典型应用。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"| 维度 | TCP | UDP | |---|---|---| | 连接 | 面向连接（三次握手） | 无连接，直接发 | | 可靠性 | 确认重传、不丢不重 | 尽力而为，可能丢包乱序 | | 有序性 | 按序交付 | 不保证 | | 速度/时延 | 较慢（握手+确认开销） | 快、时延低 | | 头部 | 20 字节起 | 固定 8 字节 | | 模式 | 一对一 | 支持一对一、一对多（广播/组播） | TCP 适用：要求完整正确的场景——网页（HTTP）、文件传输（FTP）、邮件（SMTP）、数据库连接、SSH。 UDP 适用：要求实时、可容忍少量丢失的场景——音视频通话（WebRTC/RTP）、直播、DNS 查询（一问一答快速）、DHCP、游戏同步（即时回包，丢了用最新状态补偿）、QUIC（HTTP/3 底层，基于 UDP 自研可靠传输）。 一句话：TCP 拿时延换可靠，UDP 拿可靠换时延与灵活——很多\"基于 UDP 的可靠传输\"（QUIC、KCP）正是绕开内核 TCP 的局限做的应用层取舍。","url":"https://itinterview.com.cn/question/919"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TCP 和 UDP 有什么区别？分别适用什么场景？","item":"https://itinterview.com.cn/q/919"}]}</script>

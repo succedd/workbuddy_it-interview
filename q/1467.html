@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分库分表后如何保证跨库事务的一致性？ · IT面试题库">
   <meta property="og:description" content="要点： 强一致（2PC / Seata）：Seata AT 基于 undo_log 的两阶段提交，对业务侵入小；TCC 需手动编排 Try/Confirm/Cancel，性能好但侵入大。适合金额等必须强一致的核心链路。 最终一致（消息队列）：本地事务 + 事务消息（如 RocketMQ 半消息）保证“本地写成功才…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1467.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="分库分表后如何保证跨库事务的一致性？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1467.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1467">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分库分表后如何保证跨库事务的一致性？ · IT面试题库">
   <meta name="twitter:description" content="要点： 强一致（2PC / Seata）：Seata AT 基于 undo_log 的两阶段提交，对业务侵入小；TCC 需手动编排 Try/Confirm/Cancel，性能好但侵入大。适合金额等必须强一致的核心链路。 最终一致（消息队列）：本地事务 + 事务消息（如 RocketMQ 半消息）保证“本地写成功才…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1467.jpg">
+  <meta name="twitter:image:alt" content="分库分表后如何保证跨库事务的一致性？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1467">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分库分表后如何保证跨库事务的一致性？","text":"高级简答题：对比强一致方案（Seata）与最终一致方案（消息队列），并给出选型原则。","answerCount":1,"datePublished":"2026-10-02T02:45:42.494Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 强一致（2PC / Seata）：Seata AT 基于 undo_log 的两阶段提交，对业务侵入小；TCC 需手动编排 Try/Confirm/Cancel，性能好但侵入大。适合金额等必须强一致的核心链路。 最终一致（消息队列）：本地事务 + 事务消息（如 RocketMQ 半消息）保证“本地写成功才发消息”，消费方幂等消费，辅以异步对账补偿。适合可容忍短暂不一致的场景。 选型原则：首选“避免跨库事务”——把强相关数据放到同一分片（同一用户的订单与流水同库）；确需跨库时按一致性要求选方案，并配套幂等、重试、对账三件套。","url":"https://itinterview.com.cn/question/1467"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"分库分表后如何保证跨库事务的一致性？","item":"https://itinterview.com.cn/q/1467"}]}</script>

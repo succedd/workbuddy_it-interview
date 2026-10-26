@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是边界值分析（Boundary Value Analysis）？它与等价类划分如何配合？ · IT面试题库">
   <meta property="og:description" content="边界值分析：大量缺陷发生在输入/输出域的边界而非中间。该方法专门取边界及紧邻边界的值设计用例，是对等价类的补充。 规则：对闭区间 [min, max]，通常取 min-1, min, min+1, max-1, max, max+1（或 2/3 值法：刚好在边界、刚好越过边界）。 年龄 18~60 示例： 无效边…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/574.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是边界值分析（Boundary Value Analysis）？它与等价类划分如何配合？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/574.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/574">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是边界值分析（Boundary Value Analysis）？它与等价类划分如何配合？ · IT面试题库">
   <meta name="twitter:description" content="边界值分析：大量缺陷发生在输入/输出域的边界而非中间。该方法专门取边界及紧邻边界的值设计用例，是对等价类的补充。 规则：对闭区间 [min, max]，通常取 min-1, min, min+1, max-1, max, max+1（或 2/3 值法：刚好在边界、刚好越过边界）。 年龄 18~60 示例： 无效边…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/574.jpg">
+  <meta name="twitter:image:alt" content="什么是边界值分析（Boundary Value Analysis）？它与等价类划分如何配合？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/574">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是边界值分析（Boundary Value Analysis）？它与等价类划分如何配合？","text":"某输入要求年龄 18~60 岁整数。请用边界值分析法设计测试用例，并说明为什么边界附近最易出错。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"边界值分析：大量缺陷发生在输入/输出域的边界而非中间。该方法专门取边界及紧邻边界的值设计用例，是对等价类的补充。 规则：对闭区间 [min, max]，通常取 min-1, min, min+1, max-1, max, max+1（或 2/3 值法：刚好在边界、刚好越过边界）。 年龄 18~60 示例： 无效边界：17（下溢出）、61（上溢出）； 有效边界：18、19、59、60； 也可加边界外一档：0、负数、非整数（依规格）。 与等价类配合： 等价类划分先把区间分成“有效等价类（18~60）”和“无效等价类（ 60）”，每类取一个代表即可； 但等价类漏掉边界细节，所以再用边界值在每个类的边界附近补用例。二者结合 = 既省用例数、又不漏边界缺陷。 为什么边界易错：程序里 >=/>、\u003c=/\u003c 写反、off-by-one、数组下标、循环终止条件都集中在边界，是最经典的缺陷温床。","url":"https://itinterview.com.cn/question/574"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"测试理论基础","item":"https://itinterview.com.cn/category?cat=105"},{"@type":"ListItem","position":4,"name":"什么是边界值分析（Boundary Value Analysis）？它与等价类划分如何配合？","item":"https://itinterview.com.cn/q/574"}]}</script>

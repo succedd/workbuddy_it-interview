@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？ · IT面试题库">
   <meta property="og:description" content="确认 CPU 告警真实后，登录主机按以下思路定位： top 看整体：%Cpu(s) 行区分 us（用户态）/sy（内核态）/wa（IO 等待）/id（空闲）。 us 高 → 应用层计算密集：用 pidstat -u 1 或 top 按 CPU 排序找高占用进程，top -Hp 看线程栈，判断是业务高峰、死循环还是…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/343.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/343.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/343">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？ · IT面试题库">
   <meta name="twitter:description" content="确认 CPU 告警真实后，登录主机按以下思路定位： top 看整体：%Cpu(s) 行区分 us（用户态）/sy（内核态）/wa（IO 等待）/id（空闲）。 us 高 → 应用层计算密集：用 pidstat -u 1 或 top 按 CPU 排序找高占用进程，top -Hp 看线程栈，判断是业务高峰、死循环还是…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/343.jpg">
+  <meta name="twitter:image:alt" content="确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/343">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？","text":"考察用 top/pidstat 区分 CPU 消耗类型，并据此决定查应用还是查 IO，而非一上来就杀进程。","answerCount":1,"datePublished":"2026-08-31T02:48:10.408Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"确认 CPU 告警真实后，登录主机按以下思路定位： top 看整体：%Cpu(s) 行区分 us（用户态）/sy（内核态）/wa（IO 等待）/id（空闲）。 us 高 → 应用层计算密集：用 pidstat -u 1 或 top 按 CPU 排序找高占用进程，top -Hp 看线程栈，判断是业务高峰、死循环还是配置错误。 sy 高 → 内核态开销大：多因大量系统调用/上下文切换/中断，排查锁竞争、频繁短连接。 wa 高 → 不是 CPU 真忙，而是 IO 瓶颈（磁盘/网络慢）导致进程等 IO；此时应转去查磁盘 IO（iostat -x 1），而不是优化 CPU。 找出异常进程后判断性质：正常业务高峰 → 扩容/限流；死循环/配置错误 → 修复；未知高占用（如异常进程） → 隔离并上报安全。 要点：先分清 us/sy/wa，再决定查应用还是查 IO，不要盲目 kill 进程。","url":"https://itinterview.com.cn/question/343"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"华为云","item":"https://itinterview.com.cn/category?cat=152"},{"@type":"ListItem","position":4,"name":"确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？","item":"https://itinterview.com.cn/q/343"}]}</script>

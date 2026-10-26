@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？ · IT面试题库">
   <meta property="og:description" content="分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/475.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/475.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/475">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？ · IT面试题库">
   <meta name="twitter:description" content="分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/475.jpg">
+  <meta name="twitter:image:alt" content="Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/475">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？","text":"分区与消费组是 Kafka 水平扩展与广播/点对点语义的基础，再平衡机制则直接关系到消费可用性，常作为场景/故障排查题。","answerCount":1,"datePublished":"2026-09-03T01:03:44.212Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"分区与消费组的分工 partition 是并行度单位：一个 topic 分多个分区，分区内有序； 同一消费组内，一个分区在同一时刻只被一个消费者实例消费——于是「分区数 = 组内最大并行度」； 多个消费者实例分摊不同分区实现并行消费；不同消费组之间则各自独立、互不影响（可实现广播）。 再平衡（rebalance） 当消费者加入/退出（扩缩容、宕机、心跳超时、订阅变更）时，组协调器（Group Coordinator）会触发再平衡，重新分配分区归属。期间： 所有消费者暂停消费（stop-the-world），先提交已处理位移； 重新分配完成后各自从新分配的分区继续消费。 注意点 再平衡会造成短暂消费停顿；老版本「stop-the-world」式再平衡抖动大，Sticky（黏性）分配策略会尽量保留原归属、只迁移必要分区，显著减少 churn。实践中要避免频繁重平衡（如调大 session.timeout、控制每次拉取量）。","url":"https://itinterview.com.cn/question/475"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"Kafka","item":"https://itinterview.com.cn/category?cat=127"},{"@type":"ListItem","position":5,"name":"Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？","item":"https://itinterview.com.cn/q/475"}]}</script>

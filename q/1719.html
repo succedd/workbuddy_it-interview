@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？ · IT面试题库">
   <meta property="og:description" content="要点： UserOperation：一种「伪交易」结构，包含 sender、nonce、callData、签名、paymaster 等字段；它不直接上链，而是由 Bundler 打包。 EntryPoint：统一入口合约，负责校验和执行 UserOperation、管理 nonce 与保证金、结算 gas；账户合…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1719.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1719.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1719">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？ · IT面试题库">
   <meta name="twitter:description" content="要点： UserOperation：一种「伪交易」结构，包含 sender、nonce、callData、签名、paymaster 等字段；它不直接上链，而是由 Bundler 打包。 EntryPoint：统一入口合约，负责校验和执行 UserOperation、管理 nonce 与保证金、结算 gas；账户合…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1719.jpg">
+  <meta name="twitter:image:alt" content="ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1719">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？","text":"考察账户抽象的核心组件与安全边界，不要求改共识层。","answerCount":1,"datePublished":"2026-10-19T05:43:24.380Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： UserOperation：一种「伪交易」结构，包含 sender、nonce、callData、签名、paymaster 等字段；它不直接上链，而是由 Bundler 打包。 EntryPoint：统一入口合约，负责校验和执行 UserOperation、管理 nonce 与保证金、结算 gas；账户合约在 validateUserOp 中验证签名，Paymaster 可代付 gas 或收 ERC-20。 收益与风险：可实现社交恢复、批量调用、免 gas 新手体验；但 Bundler 可能中心化，Paymaster 有资金与合规风险，EntryPoint 成为高价值攻击目标。生产环境要限制 callData 白名单、校验签名域，并关注 EIP-7702 等后续方案。","url":"https://itinterview.com.cn/question/1719"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"以太坊","item":"https://itinterview.com.cn/category?cat=258"},{"@type":"ListItem","position":4,"name":"ERC-4337 账户抽象：UserOperation、EntryPoint、Bundler、Paymaster 各是什么角色？","item":"https://itinterview.com.cn/q/1719"}]}</script>

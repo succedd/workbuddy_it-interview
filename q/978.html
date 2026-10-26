@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？ · IT面试题库">
   <meta property="og:description" content="要点： 三条演化主线：① 数据量驱动：读写分离 → 分库分表（应用层路由）→ 原生分布式（TiDB/CockroachDB 把分片做进内核，Raft/Paxos 复制）；② 硬件驱动：SSD/大内存让「悲观锁+行存」长出乐观事务与列存（HTAP：同一份数据行存 OLTP + 列存 OLAP）；③ 云驱动：Serv…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/978.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/978.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/978">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？ · IT面试题库">
   <meta name="twitter:description" content="要点： 三条演化主线：① 数据量驱动：读写分离 → 分库分表（应用层路由）→ 原生分布式（TiDB/CockroachDB 把分片做进内核，Raft/Paxos 复制）；② 硬件驱动：SSD/大内存让「悲观锁+行存」长出乐观事务与列存（HTAP：同一份数据行存 OLTP + 列存 OLAP）；③ 云驱动：Serv…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/978.jpg">
+  <meta name="twitter:image:alt" content="从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/978">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？","text":"考察点：演化驱动力的判断（数据量/并发/硬件）、分库分表→中间件→原生分布式三条路线、HTAP 与 Serverless 趋势。","answerCount":1,"datePublished":"2026-09-10T06:37:26.847Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 三条演化主线：① 数据量驱动：读写分离 → 分库分表（应用层路由）→ 原生分布式（TiDB/CockroachDB 把分片做进内核，Raft/Paxos 复制）；② 硬件驱动：SSD/大内存让「悲观锁+行存」长出乐观事务与列存（HTAP：同一份数据行存 OLTP + 列存 OLAP）；③ 云驱动：Serverless 数据库（按需计费、存算分离，如 Aurora/PolarDB）把「数据库」变成「服务」。 不变的内核：关系代数 + ACID 语义始终未变——变的是「把语义做正确的物理方式」（复制协议、分布式事务、多版本 MVCC 的实现位置）。 下一代看点：存算分离彻底化、向量检索成为原生索引类型（AI 负载内嵌）、以及用 Rust/新语言重写存储引擎换性能与安全（如 Turso、SurrealDB 的尝试）。 一句话：五十年演化=不断把「单机的正确性语义」搬进「分布式的物理世界」，语义不变、实现重构。","url":"https://itinterview.com.cn/question/978"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？","item":"https://itinterview.com.cn/q/978"}]}</script>

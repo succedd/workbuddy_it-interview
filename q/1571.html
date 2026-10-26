@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？ · IT面试题库">
   <meta property="og:description" content="要点： 前向渲染：每个物体逐个做「顶点→片元→光照」完整着色，光照在片元阶段逐光源累加；光源多时复杂度 O(物体×光源) 暴涨，且透明物体难处理。 延迟渲染：分 G-buffer 几何 pass（只写位置/法线/材质到纹理）与 光照 pass（对屏幕逐像素按 G-buffer 计算光照）；复杂度降为 O(像素×光…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1571.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1571.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1571">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？ · IT面试题库">
   <meta name="twitter:description" content="要点： 前向渲染：每个物体逐个做「顶点→片元→光照」完整着色，光照在片元阶段逐光源累加；光源多时复杂度 O(物体×光源) 暴涨，且透明物体难处理。 延迟渲染：分 G-buffer 几何 pass（只写位置/法线/材质到纹理）与 光照 pass（对屏幕逐像素按 G-buffer 计算光照）；复杂度降为 O(像素×光…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1571.jpg">
+  <meta name="twitter:image:alt" content="前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1571">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？","text":"考察点：对比两种渲染架构的复杂度与带宽代价，理解「多光源场景」下为何倾向延迟渲染，属图形高级追问。","answerCount":1,"datePublished":"2026-10-06T09:02:19.472Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 前向渲染：每个物体逐个做「顶点→片元→光照」完整着色，光照在片元阶段逐光源累加；光源多时复杂度 O(物体×光源) 暴涨，且透明物体难处理。 延迟渲染：分 G-buffer 几何 pass（只写位置/法线/材质到纹理）与 光照 pass（对屏幕逐像素按 G-buffer 计算光照）；复杂度降为 O(像素×光源)，轻松支持大量动态光源。 代价与取舍：延迟渲染带宽/显存更高、不支持硬件 MSAA、不透明优先；移动端/光源少用前向，主机/PC 大场景用延迟。","url":"https://itinterview.com.cn/question/1571"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"图形学基础","item":"https://itinterview.com.cn/category?cat=238"},{"@type":"ListItem","position":4,"name":"前向渲染（Forward）与延迟渲染（Deferred）的区别与适用场景？","item":"https://itinterview.com.cn/q/1571"}]}</script>

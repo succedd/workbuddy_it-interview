@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？ · IT面试题库">
   <meta property="og:description" content="要点： 先定义稳态（Steady State）：用可观测的业务/技术指标（如成功率、P99 延迟、吞吐）描述「系统正常时长什么样」，实验的假设是「注入故障后稳态指标不应显著偏离」，否则说明系统不韧。 控制爆炸半径：从最小范围开始（单实例、单可用区、低流量时段），逐步扩大；通过标签/命名空间/流量比例精准限定受影响…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1558.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1558.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1558">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？ · IT面试题库">
   <meta name="twitter:description" content="要点： 先定义稳态（Steady State）：用可观测的业务/技术指标（如成功率、P99 延迟、吞吐）描述「系统正常时长什么样」，实验的假设是「注入故障后稳态指标不应显著偏离」，否则说明系统不韧。 控制爆炸半径：从最小范围开始（单实例、单可用区、低流量时段），逐步扩大；通过标签/命名空间/流量比例精准限定受影响…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1558.jpg">
+  <meta name="twitter:image:alt" content="落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1558">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？","text":"考察点：混沌工程的实验设计安全边界——在验证韧性同时不酿成事故。","answerCount":1,"datePublished":"2026-10-05T02:31:07.410Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 先定义稳态（Steady State）：用可观测的业务/技术指标（如成功率、P99 延迟、吞吐）描述「系统正常时长什么样」，实验的假设是「注入故障后稳态指标不应显著偏离」，否则说明系统不韧。 控制爆炸半径：从最小范围开始（单实例、单可用区、低流量时段），逐步扩大；通过标签/命名空间/流量比例精准限定受影响范围，绝不在全量流量上直接注入，防止演练变成事故。 明确中止条件与一键回滚：预设指标阈值（如错误率>1% 或延迟翻倍）作为自动中止信号，实验平台要能立即撤销注入（kill 实验进程/恢复网络）；责任人、沟通渠道与应急预案事先就位。 小步快跑、复盘沉淀：每次只验证一个假设，记录「假设—注入—观测—结论」，把发现的脆弱点转为加固项与常态化巡检；混沌工程是持续验证而非一次性破坏。","url":"https://itinterview.com.cn/question/1558"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"混沌工程","item":"https://itinterview.com.cn/category?cat=153"},{"@type":"ListItem","position":4,"name":"落地混沌工程实验时，如何定义稳态指标、控制爆炸半径（blast radius）并设置中止条件，避免演练引发真实故障？","item":"https://itinterview.com.cn/q/1558"}]}</script>
@@ -101,7 +107,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/1558">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/731">混沌工程的核心原则（实验假设、注入故障、监控稳态）？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/731">混沌工程的核心原则（实验假设、注入故障、监控稳态）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1977">什么是混沌工程？它和普通的故障演练、容灾测试有什么本质区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1978">混沌工程实验的标准流程是怎样的？如何定义「稳态指标」（Steady State）？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1979">要在生产环境对支付服务做一次「杀掉一个 Pod」的混沌实验，怎么设计才能既验证韧性又最小化影响？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Flask 的应用上下文（App Context）和请求上下文（Request Context）有什么区别？为什么要拆成两个？ · IT面试题库">
   <meta property="og:description" content="要点： 两个上下文栈：_app_ctx_stack（应用上下文）与 _request_ctx_stack（请求上下文），都是栈结构，支持嵌套（比如测试或多应用并存）。 请求上下文：包含 request（请求数据）和 session（会话）。一次 HTTP 请求进来时压栈，请求结束弹栈。 应用上下文：包含 curr…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1020.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Flask 的应用上下文（App Context）和请求上下文（Request Context）有什么区别？为什么要拆成两个？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1020.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1020">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flask 的应用上下文（App Context）和请求上下文（Request Context）有什么区别？为什么要拆成两个？ · IT面试题库">
   <meta name="twitter:description" content="要点： 两个上下文栈：_app_ctx_stack（应用上下文）与 _request_ctx_stack（请求上下文），都是栈结构，支持嵌套（比如测试或多应用并存）。 请求上下文：包含 request（请求数据）和 session（会话）。一次 HTTP 请求进来时压栈，请求结束弹栈。 应用上下文：包含 curr…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1020.jpg">
+  <meta name="twitter:image:alt" content="Flask 的应用上下文（App Context）和请求上下文（Request Context）有什么区别？为什么要拆成两个？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1020">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flask 的应用上下文（App Context）和请求上下文（Request Context）有什么区别？为什么要拆成两个？","text":"考察点：上下文栈、LocalProxy、g 对象。Flask 最核心也最容易讲糊的机制。","answerCount":1,"datePublished":"2026-09-10T11:50:51.318Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 两个上下文栈：_app_ctx_stack（应用上下文）与 _request_ctx_stack（请求上下文），都是栈结构，支持嵌套（比如测试或多应用并存）。 请求上下文：包含 request（请求数据）和 session（会话）。一次 HTTP 请求进来时压栈，请求结束弹栈。 应用上下文：包含 current_app（当前应用实例）和 g（请求生命周期内的临时存储，每次请求重开）。 为什么要拆开：因为不是所有代码都在请求里——CLI 命令、Celery 任务、定时脚本、测试里也需要 current_app.config 和 g，但没有 request。拆成两层后，with app.app_context(): 就能在无请求场景下提供应用配置访问。 为什么是全局变量却线程安全：request/g 是 LocalProxy，真实值存在 ContextVar（Flask 2.2+ 从 werkzeug.local.Local 迁移到 contextvars）里，按线程/协程隔离。所以多线程或多协程并发时不会串数据。 经典坑：不在上下文里访问 current_app 会抛 RuntimeError: Working outside of application context；在异步任务里保存 request 对象延后使用会拿到错误数据（代理已失效），正确做法是提前取出纯数据再传入任务。 加分点：g 不是缓存，请求结束即销毁；跨请求持久化要用 session 或外部存储（Redis）。","url":"https://itinterview.com.cn/question/1020"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Python后端","item":"https://itinterview.com.cn/category?cat=86"},{"@type":"ListItem","position":4,"name":"Flask","item":"https://itinterview.com.cn/category?cat=88"},{"@type":"ListItem","position":5,"name":"Flask 的应用上下文（App Context）和请求上下文（Request Context）有什么区别？为什么要拆成两个？","item":"https://itinterview.com.cn/q/1020"}]}</script>

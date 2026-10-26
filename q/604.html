@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？ · IT面试题库">
   <meta property="og:description" content="含义：数据类型应放在其大小整数倍的地址上（如 4 字节 int 放在地址能被 4 整除处）。CPU 按字/总线宽度取数，对齐访问最高效。 未对齐访问后果 部分架构（如某些 ARM 旧核、RISC）直接硬件异常/总线错误； 其余架构可访问但需多次内存操作，性能下降。 结构体填充（padding） 编译器为对齐成员插…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/604.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/604.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/604">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？ · IT面试题库">
   <meta name="twitter:description" content="含义：数据类型应放在其大小整数倍的地址上（如 4 字节 int 放在地址能被 4 整除处）。CPU 按字/总线宽度取数，对齐访问最高效。 未对齐访问后果 部分架构（如某些 ARM 旧核、RISC）直接硬件异常/总线错误； 其余架构可访问但需多次内存操作，性能下降。 结构体填充（padding） 编译器为对齐成员插…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/604.jpg">
+  <meta name="twitter:image:alt" content="什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/604">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？","text":"解释内存对齐的含义、未对齐访问的后果，以及结构体对齐/填充（padding）对结构体大小的影响，并举例 #pragma pack 的用途。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"含义：数据类型应放在其大小整数倍的地址上（如 4 字节 int 放在地址能被 4 整除处）。CPU 按字/总线宽度取数，对齐访问最高效。 未对齐访问后果 部分架构（如某些 ARM 旧核、RISC）直接硬件异常/总线错误； 其余架构可访问但需多次内存操作，性能下降。 结构体填充（padding） 编译器为对齐成员插入填充字节，导致结构体比成员之和更大。 控制对齐 #pragma pack(1) / __attribute__((packed)) 可取消填充以节省空间或匹配硬件/网络协议布局，但会引入未对齐访问风险，须权衡。 通信协议、Flash/寄存器映射结构常用 packed + volatile；性能敏感路径应保持自然对齐。 实践：用 offsetof 检查布局；DMA 缓冲需对齐到缓存行并标记 non-cacheable，避免一致性问题。","url":"https://itinterview.com.cn/question/604"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"什么是内存对齐（Memory Alignment）？为什么嵌入式中要关注？","item":"https://itinterview.com.cn/q/604"}]}</script>

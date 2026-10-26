@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？ · IT面试题库">
   <meta property="og:description" content="要点： 方向决定操作：CPU 写内存、DMA 读内存（发送）前，要对缓冲区做 clean（把 cache 写回内存）；DMA 写内存、CPU 读内存（接收）后，要对缓冲区做 invalidate（丢弃旧 cache 行），否则 CPU 可能读到旧数据。 volatile 的局限：volatile 只阻止编译器优化…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1735.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1735.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1735">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？ · IT面试题库">
   <meta name="twitter:description" content="要点： 方向决定操作：CPU 写内存、DMA 读内存（发送）前，要对缓冲区做 clean（把 cache 写回内存）；DMA 写内存、CPU 读内存（接收）后，要对缓冲区做 invalidate（丢弃旧 cache 行），否则 CPU 可能读到旧数据。 volatile 的局限：volatile 只阻止编译器优化…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1735.jpg">
+  <meta name="twitter:image:alt" content="DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1735">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？","text":"考察 Cortex-M7 等带 D-Cache 的 MCU 上，CPU 与 DMA 的一致性。","answerCount":1,"datePublished":"2026-10-19T05:43:25.402Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 方向决定操作：CPU 写内存、DMA 读内存（发送）前，要对缓冲区做 clean（把 cache 写回内存）；DMA 写内存、CPU 读内存（接收）后，要对缓冲区做 invalidate（丢弃旧 cache 行），否则 CPU 可能读到旧数据。 volatile 的局限：volatile 只阻止编译器优化掉访问，不保证 CPU 乱序、不保证 cache 一致性，也不保证原子性；跨核/跨主控场景还需要 DMB / DSB 等内存屏障。 工程做法：把 DMA 缓冲区放在非缓存区或按 cache line 对齐，避免相邻数据被误 invalidate；传输完成中断里再 invalidate，不要在半满/全满中断里对同一行反复操作；用调试器与内存窗口验证一致性。","url":"https://itinterview.com.cn/question/1735"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"嵌入式与物联网","item":"https://itinterview.com.cn/category?cat=241"},{"@type":"ListItem","position":3,"name":"嵌入式C开发","item":"https://itinterview.com.cn/category?cat=242"},{"@type":"ListItem","position":4,"name":"DMA 传输前后为什么要做 cache clean/invalidate 与内存屏障？volatile 为什么不够？","item":"https://itinterview.com.cn/q/1735"}]}</script>

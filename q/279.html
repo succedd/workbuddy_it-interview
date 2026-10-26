@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="运维【本质】性能调优为什么是「测量学」而不是「玄学」？ · IT面试题库">
   <meta property="og:description" content="调优的铁律：先测量，再动手。没有数据就改参数 = 掷骰子，还可能引入新问题。 标准动作： 1. 定指标：慢在哪一层？CPU（top）、内存（free）、磁盘 IO（iostat）、网络（sar）——先看四类资源谁在饱和； 2. 找瓶颈链路：应用慢可能是 DB 慢、DB 慢可能是 IO 满、IO 满可能是日志刷太多…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/279.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="运维【本质】性能调优为什么是「测量学」而不是「玄学」？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/279.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/279">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="运维【本质】性能调优为什么是「测量学」而不是「玄学」？ · IT面试题库">
   <meta name="twitter:description" content="调优的铁律：先测量，再动手。没有数据就改参数 = 掷骰子，还可能引入新问题。 标准动作： 1. 定指标：慢在哪一层？CPU（top）、内存（free）、磁盘 IO（iostat）、网络（sar）——先看四类资源谁在饱和； 2. 找瓶颈链路：应用慢可能是 DB 慢、DB 慢可能是 IO 满、IO 满可能是日志刷太多…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/279.jpg">
+  <meta name="twitter:image:alt" content="运维【本质】性能调优为什么是「测量学」而不是「玄学」？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/279">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"运维【本质】性能调优为什么是「测量学」而不是「玄学」？","text":"「服务器慢」三个字是运维最常见的求助。拿到这句话，你的第一步做什么？为什么不是马上重启或调参数？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"调优的铁律：先测量，再动手。没有数据就改参数 = 掷骰子，还可能引入新问题。 标准动作： 1. 定指标：慢在哪一层？CPU（top）、内存（free）、磁盘 IO（iostat）、网络（sar）——先看四类资源谁在饱和； 2. 找瓶颈链路：应用慢可能是 DB 慢、DB 慢可能是 IO 满、IO 满可能是日志刷太多——沿调用链下钻； 3. 一次改一个变量，对比前后指标，可回滚。 「CPU 高 ≠ CPU 瓶颈」（可能是 IO 等待把 load 抬高）——这类题考的就是你是否建立了「测量 → 假设 → 验证」的循环。","url":"https://itinterview.com.cn/question/279"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"运维【本质】性能调优为什么是「测量学」而不是「玄学」？","item":"https://itinterview.com.cn/q/279"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？ · IT面试题库">
   <meta property="og:description" content="三色标记法是可达性分析的一种抽象描述，把对象分成三种颜色：黑色表示自身和其引用都已扫描完；灰色表示自身已扫描、但引用还没扫完，是扫描的边界；白色表示尚未访问，标记阶段结束时仍是白色的对象就会被当作垃圾回收。扫描从 GC Roots 出发，沿着引用不断把灰色变黑、白色变灰，直到没有灰色对象为止。 为什么并发阶段会漏…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1317.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1317.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1317">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？ · IT面试题库">
   <meta name="twitter:description" content="三色标记法是可达性分析的一种抽象描述，把对象分成三种颜色：黑色表示自身和其引用都已扫描完；灰色表示自身已扫描、但引用还没扫完，是扫描的边界；白色表示尚未访问，标记阶段结束时仍是白色的对象就会被当作垃圾回收。扫描从 GC Roots 出发，沿着引用不断把灰色变黑、白色变灰，直到没有灰色对象为止。 为什么并发阶段会漏…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1317.jpg">
+  <meta name="twitter:image:alt" content="三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1317">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？","text":"三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？","answerCount":1,"datePublished":"2026-09-26T03:32:06.409Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三色标记法是可达性分析的一种抽象描述，把对象分成三种颜色：黑色表示自身和其引用都已扫描完；灰色表示自身已扫描、但引用还没扫完，是扫描的边界；白色表示尚未访问，标记阶段结束时仍是白色的对象就会被当作垃圾回收。扫描从 GC Roots 出发，沿着引用不断把灰色变黑、白色变灰，直到没有灰色对象为止。 为什么并发阶段会漏标？ CMS、G1 的并发标记阶段，用户线程还在运行并修改引用关系。当且仅当下面两个条件同时成立时，存活对象会被漏标： 1. 赋值器插入了一条或多条从黑色对象到白色对象的新引用（黑色不会再被重新扫描，这条引用永远看不到）； 2. 赋值器删除了灰色对象到该白色对象的全部直接或间接引用（白色失去了从灰色可达的路径）。 两个条件缺一不可，所以解决方案的本质就是破坏其中任意一个。 增量更新（Incremental Update）——破坏条件 1，CMS 采用：写屏障在黑色对象新增对白色对象的引用时，把这条引用记录下来；重新标记（remark）阶段以当前实际引用关系为准，把记录到的黑色对象重新变灰再扫描一遍。它的标记范围可能偏大，因此 CMS 的重新标记阶段相对更耗时，通常还要配合 STW。 原始快照（SATB，Snapshot-At-The-Beginning）——破坏条件 2，G1 采用：在标记开始时给存活对象拍一张逻辑快照，写屏障在引用被删除时记录被删除的旧引用目标；并发标记期间被删除引用的对象，按快照约定一律视为存活保留下来。代价是会产生浮动垃圾（本轮实际已死但被快照救下的对象），好处是重新标记只需处理记录队列，速度快得多，这正是 G1 停顿更可控的原因之一。 回答要点小结：先讲三色含义与扫描边界，再准确说出「黑新增白引用 + 灰删白引用」两个漏标条件，最后对比 CMS 的增量更新（关注新增、重扫黑对象）与 G1 的 SATB（关注删除、保留快照），并点出浮动垃圾的取舍。ZGC、Shenandoah 则走染色指针/读屏障路线，可以一句话带过作为延伸。","url":"https://itinterview.com.cn/question/1317"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"三色标记法的原理是什么？并发标记为什么会漏标对象？CMS 和 G1 分别如何解决？","item":"https://itinterview.com.cn/q/1317"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？ · IT面试题库">
   <meta property="og:description" content="要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEff…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1218.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1218.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1218">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEff…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1218.jpg">
+  <meta name="twitter:image:alt" content="【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1218">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","text":"追问链第 3 问：Hooks 用错依赖是常见的线上事故源。","answerCount":1,"datePublished":"2026-09-21T02:22:10.627Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位思路：① 看警告类型——「Maximum update depth exceeded」通常是状态更新触发渲染、渲染又触发状态更新的同步死循环；「请求重复发送」通常是 effect 在每次渲染都重跑；② 检查 useEffect 依赖数组：若依赖了一个每次渲染都新创建的对象/数组/函数（如 useEffect(fn,[obj]) 而 obj 是内联字面量），引用变化会让 effect 无限重跑；③ 用 React DevTools 看 props/state 变化来源，确认是哪个状态在驱动循环。 常见根因：① 依赖里放了未 memo 的对象/函数引用；② 在 effect 里 setState 但没把该 state 放进依赖，或把会变化的值遗漏；③ 父子组件互相 setState 形成环。 修复手段：① 用 useMemo/useCallback 稳定依赖引用，或只把基本类型字段放进依赖；② 把对象拆成原始值依赖；③ 一次性初始化用空依赖 []（仅挂载一次）；④ 请求用 AbortController 在 cleanup 中取消，避免竞态与泄漏；⑤ 用 eslint-plugin-react-hooks 的 exhaustive-deps 规则强制校验依赖完整性。","url":"https://itinterview.com.cn/question/1218"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"【场景】一个组件挂载后不断重复发请求、页面狂刷，控制台出现「超过最大更新深度」警告。你如何定位并修复这类 useEffect 问题？","item":"https://itinterview.com.cn/q/1218"}]}</script>

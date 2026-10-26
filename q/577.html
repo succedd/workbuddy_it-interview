@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是回归测试（Regression Testing）？它在 CI/CD 中应如何组织？ · IT面试题库">
   <meta property="og:description" content="回归测试：在修改代码（修 bug、加功能、重构）后，重新执行已有测试用例，确保改动没有破坏既有功能（“回归”= 旧问题重新出现）。 目的： 捕获“改 A 坏 B”的副作用； 保障重构/演进的安全性（尤其配合测试保护网）； 维护系统长期可交付。 CI/CD 中的组织： 1. 每次提交触发：push/MR 即跑单元 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/577.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是回归测试（Regression Testing）？它在 CI/CD 中应如何组织？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/577.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/577">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是回归测试（Regression Testing）？它在 CI/CD 中应如何组织？ · IT面试题库">
   <meta name="twitter:description" content="回归测试：在修改代码（修 bug、加功能、重构）后，重新执行已有测试用例，确保改动没有破坏既有功能（“回归”= 旧问题重新出现）。 目的： 捕获“改 A 坏 B”的副作用； 保障重构/演进的安全性（尤其配合测试保护网）； 维护系统长期可交付。 CI/CD 中的组织： 1. 每次提交触发：push/MR 即跑单元 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/577.jpg">
+  <meta name="twitter:image:alt" content="什么是回归测试（Regression Testing）？它在 CI/CD 中应如何组织？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/577">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是回归测试（Regression Testing）？它在 CI/CD 中应如何组织？","text":"修复一个 bug 后，为什么还要跑以前通过的用例？请解释回归测试的目的，并说明在持续集成中如何高效执行回归测试。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"回归测试：在修改代码（修 bug、加功能、重构）后，重新执行已有测试用例，确保改动没有破坏既有功能（“回归”= 旧问题重新出现）。 目的： 捕获“改 A 坏 B”的副作用； 保障重构/演进的安全性（尤其配合测试保护网）； 维护系统长期可交付。 CI/CD 中的组织： 1. 每次提交触发：push/MR 即跑单元 + 集成回归（快，分钟级反馈）。 2. 分层执行：单测全量快跑；E2E 回归放在稍后阶段或夜间/预发，避免拖慢主干。 3. 选择性回归（Test Impact Analysis）：按改动文件映射受影响用例，只跑相关回归，提速。 4. 自动化 + 基线：回归必须自动化，手动回归不可持续；用历史结果做基线对比。 5. 覆盖率门禁：CI 卡覆盖率/关键用例通过，否则阻断合并。 注意：回归套件会随代码膨胀，需定期清理脆弱/重复用例，否则变慢变不可信（呼应测试金字塔）。优先保证单测层回归的快速与稳定。","url":"https://itinterview.com.cn/question/577"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"测试理论基础","item":"https://itinterview.com.cn/category?cat=105"},{"@type":"ListItem","position":4,"name":"什么是回归测试（Regression Testing）？它在 CI/CD 中应如何组织？","item":"https://itinterview.com.cn/q/577"}]}</script>

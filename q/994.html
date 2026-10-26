@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？ · IT面试题库">
   <meta property="og:description" content="要点： 增量识别三种：① 时间戳列（where update_time &gt; 上次水位）——最常用，要求业务更新必刷 update_time；② 自增 ID——只适合只增不改的数据；③ Binlog（Canal/Flink CDC）——能感知删除，是实时链路的基础。 防丢防重设计：① 水位存调度系统（如 Dolph…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/994.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/994.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/994">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？ · IT面试题库">
   <meta name="twitter:description" content="要点： 增量识别三种：① 时间戳列（where update_time &gt; 上次水位）——最常用，要求业务更新必刷 update_time；② 自增 ID——只适合只增不改的数据；③ Binlog（Canal/Flink CDC）——能感知删除，是实时链路的基础。 防丢防重设计：① 水位存调度系统（如 Dolph…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/994.jpg">
+  <meta name="twitter:image:alt" content="DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/994">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？","text":"考察点：增量识别方式、幂等写、离线与实时链路的边界。","answerCount":1,"datePublished":"2026-09-10T07:23:11.078Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 增量识别三种：① 时间戳列（where update_time > 上次水位）——最常用，要求业务更新必刷 update_time；② 自增 ID——只适合只增不改的数据；③ Binlog（Canal/Flink CDC）——能感知删除，是实时链路的基础。 防丢防重设计：① 水位存调度系统（如 DolphinScheduler 补数参数）或目标表元数据表，先写水位后跑任务成功再提交（或靠幂等重跑）；② 取数窗口留重叠（如取 > T-10min）+ 幂等写（Hive 按分区 INSERT OVERWRITE / 目标库 ON DUPLICATE KEY），重叠窗口靠幂等去重；③ 每天跑一次「昨日前天对比校验」行数/主键 diff 告警。 边界：DataX 是批式工具，删除操作感知不到（时间戳方案）——需要感知删除时上 Binlog CDC（Flink CDC/SeaTunnel），或定期对账修复。","url":"https://itinterview.com.cn/question/994"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"DataX","item":"https://itinterview.com.cn/category?cat=166"},{"@type":"ListItem","position":4,"name":"DataX 如何做增量同步？全量+增量方案怎么设计才不丢数据？","item":"https://itinterview.com.cn/q/994"}]}</script>

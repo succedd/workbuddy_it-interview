@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring Bean 的作用域与生命周期？ · IT面试题库">
   <meta property="og:description" content="作用域： singleton（默认）：容器级单例； prototype：每次获取新建； request/session/application：Web 作用域； websocket。 生命周期：实例化（构造）→ 属性注入 → BeanNameAware/BeanFactoryAware 等 → BeanPostP…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/75.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring Bean 的作用域与生命周期？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/75.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/75">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring Bean 的作用域与生命周期？ · IT面试题库">
   <meta name="twitter:description" content="作用域： singleton（默认）：容器级单例； prototype：每次获取新建； request/session/application：Web 作用域； websocket。 生命周期：实例化（构造）→ 属性注入 → BeanNameAware/BeanFactoryAware 等 → BeanPostP…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/75.jpg">
+  <meta name="twitter:image:alt" content="Spring Bean 的作用域与生命周期？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/75">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring Bean 的作用域与生命周期？","text":"列出作用域并简述生命周期回调。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"作用域： singleton（默认）：容器级单例； prototype：每次获取新建； request/session/application：Web 作用域； websocket。 生命周期：实例化（构造）→ 属性注入 → BeanNameAware/BeanFactoryAware 等 → BeanPostProcessor.postProcessBeforeInitialization → @PostConstruct/InitializingBean.afterPropertiesSet → postProcessAfterInitialization（AOP 常在此织入代理）→ 使用中 → @PreDestroy/DisposableBean.destroy。 注意：prototype 销毁回调容器不负责，需手动清理。","url":"https://itinterview.com.cn/question/75"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring Bean 的作用域与生命周期？","item":"https://itinterview.com.cn/q/75"}]}</script>

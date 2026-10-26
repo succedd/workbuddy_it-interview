@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？ · IT面试题库">
   <meta property="og:description" content="key 是 Diff 算法判断节点是否可复用的身份标识。同层级对比时，Vue 优先按 key 匹配旧节点：key 相同则原地复用并打补丁，不同则当新节点创建。 用 index 作 key 的问题：列表头部/中间插入或删除时，后续所有节点的 index 都变了，Vue 会把「内容错位的旧节点」当成「同一个节点」就地…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1483.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1483.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1483">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？ · IT面试题库">
   <meta name="twitter:description" content="key 是 Diff 算法判断节点是否可复用的身份标识。同层级对比时，Vue 优先按 key 匹配旧节点：key 相同则原地复用并打补丁，不同则当新节点创建。 用 index 作 key 的问题：列表头部/中间插入或删除时，后续所有节点的 index 都变了，Vue 会把「内容错位的旧节点」当成「同一个节点」就地…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1483.jpg">
+  <meta name="twitter:image:alt" content="为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1483">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？","text":"从虚拟 DOM Diff 角度说明 key 的作用，以及 index 作 key 导致的典型 Bug。","answerCount":1,"datePublished":"2026-10-05T01:03:55.277Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"key 是 Diff 算法判断节点是否可复用的身份标识。同层级对比时，Vue 优先按 key 匹配旧节点：key 相同则原地复用并打补丁，不同则当新节点创建。 用 index 作 key 的问题：列表头部/中间插入或删除时，后续所有节点的 index 都变了，Vue 会把「内容错位的旧节点」当成「同一个节点」就地更新——① 多做无谓的 DOM 更新；② 带有内部状态的组件（输入框勾选、滚动位置、动画）状态会串位；③ 过渡动画也无法正确追踪。 正确做法：用数据的唯一业务 id 作 key，且同列表内 key 稳定唯一。","url":"https://itinterview.com.cn/question/1483"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Vue2","item":"https://itinterview.com.cn/category?cat=62"},{"@type":"ListItem","position":5,"name":"为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？","item":"https://itinterview.com.cn/q/1483"}]}</script>

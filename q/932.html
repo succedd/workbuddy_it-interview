@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Java 的异常体系是怎样的？受检异常与非受检异常的区别？ · IT面试题库">
   <meta property="og:description" content="体系：所有异常的根是 Throwable，下分： Error：严重错误，程序无法处理，不该捕获——OutOfMemoryError、StackOverflowError、NoClassDefFoundError； Exception： 受检异常（Checked）：编译器强制 try-catch 或 throws …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/932.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Java 的异常体系是怎样的？受检异常与非受检异常的区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/932.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/932">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Java 的异常体系是怎样的？受检异常与非受检异常的区别？ · IT面试题库">
   <meta name="twitter:description" content="体系：所有异常的根是 Throwable，下分： Error：严重错误，程序无法处理，不该捕获——OutOfMemoryError、StackOverflowError、NoClassDefFoundError； Exception： 受检异常（Checked）：编译器强制 try-catch 或 throws …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/932.jpg">
+  <meta name="twitter:image:alt" content="Java 的异常体系是怎样的？受检异常与非受检异常的区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/932">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Java 的异常体系是怎样的？受检异常与非受检异常的区别？","text":"请说明 Throwable→Error/Exception 的结构、checked 与 unchecked 异常的划分及实践建议。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"体系：所有异常的根是 Throwable，下分： Error：严重错误，程序无法处理，不该捕获——OutOfMemoryError、StackOverflowError、NoClassDefFoundError； Exception： 受检异常（Checked）：编译器强制 try-catch 或 throws 声明。发生在编译期可预见的外部问题——IOException、SQLException、ClassNotFoundException； 非受检异常（Unchecked，RuntimeException 及其子类）：多为程序 bug——NullPointerException、IndexOutOfBoundsException、IllegalArgumentException、ArithmeticException。不强制捕获。 实践建议： 1. 不要捕获 Throwable/Error；不要用异常做流程控制（性能差）； 2. 捕获后要么处理要么转译再抛，禁止空 catch 吞异常； 3. 自定义业务异常继承 RuntimeException，配合全局异常处理器（Spring @RestControllerAdvice）统一返回； 4. finally 中不要 return（会吞掉异常）；优先 try-with-resources 管理资源。","url":"https://itinterview.com.cn/question/932"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"Java 的异常体系是怎样的？受检异常与非受检异常的区别？","item":"https://itinterview.com.cn/q/932"}]}</script>

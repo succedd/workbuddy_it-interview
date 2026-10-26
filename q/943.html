@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="@Transactional 事务在哪些情况下会失效？ · IT面试题库">
   <meta property="og:description" content="@Transactional 基于 AOP 代理实现，一切让&quot;调用没经过代理&quot;或&quot;异常没被感知&quot;的情况都会失效： 1. 同类自调用：this.update() 内部调用带注解的方法——this 是原对象不是代理，事务不生效。最高频事故。解法：拆类、注入自身代理（AopContext.currentProxy()）…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/943.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="@Transactional 事务在哪些情况下会失效？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/943.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/943">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="@Transactional 事务在哪些情况下会失效？ · IT面试题库">
   <meta name="twitter:description" content="@Transactional 基于 AOP 代理实现，一切让&quot;调用没经过代理&quot;或&quot;异常没被感知&quot;的情况都会失效： 1. 同类自调用：this.update() 内部调用带注解的方法——this 是原对象不是代理，事务不生效。最高频事故。解法：拆类、注入自身代理（AopContext.currentProxy()）…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/943.jpg">
+  <meta name="twitter:image:alt" content="@Transactional 事务在哪些情况下会失效？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/943">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"@Transactional 事务在哪些情况下会失效？","text":"请列举自调用、方法非 public、异常被吞、传播行为设置错误等常见事务失效场景与原因。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"@Transactional 基于 AOP 代理实现，一切让\"调用没经过代理\"或\"异常没被感知\"的情况都会失效： 1. 同类自调用：this.update() 内部调用带注解的方法——this 是原对象不是代理，事务不生效。最高频事故。解法：拆类、注入自身代理（AopContext.currentProxy()）。 2. 方法非 public：代理只拦截 public 方法（CGLIB 也无法覆写 private/final）。 3. 异常被 try-catch 吞掉：代理感知不到异常就不回滚。 4. 抛受检异常但没配置：默认只对 RuntimeException 和 Error 回滚——@Transactional(rollbackFor = Exception.class) 是良好习惯。 5. 数据库引擎不支持事务：MyISAM 无事务。 6. 传播行为配错：NOT_SUPPORTED 会挂起事务、SUPPORTS 无事务时非事务运行。 7. 多线程：事务绑定 ThreadLocal 连接，子线程的数据库操作不在同一事务内。 8. 类没被 Spring 管理：没加 @Service 等，容器里根本没有代理对象。","url":"https://itinterview.com.cn/question/943"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"@Transactional 事务在哪些情况下会失效？","item":"https://itinterview.com.cn/q/943"}]}</script>

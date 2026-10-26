@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？ · IT面试题库">
   <meta property="og:description" content="1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/526.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/526.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/526">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？ · IT面试题库">
   <meta name="twitter:description" content="1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/526.jpg">
+  <meta name="twitter:image:alt" content="数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/526">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？","text":"说明每范式的约束（原子性、消除部分依赖、消除传递依赖）及反范式化的典型场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"1NF（第一范式）：字段原子不可再分，每行每列都是单一值，无重复组/多值属性。例：把“电话1,电话2”拆成多行或独立列。 2NF（第二范式）：满足 1NF，且非主键属性完全依赖于整个主键（消除“部分函数依赖”）——只针对联合主键。例：订单明细表(订单ID, 商品ID, 商品名)，商品名只依赖商品ID 而非完整主键 → 需拆分出商品表。 3NF（第三范式）：满足 2NF，且非主键属性不传递依赖于主键（消除“传递函数依赖”）。例：员工表(员工ID, 部门ID, 部门名)，部门名依赖部门ID、部门ID 依赖员工ID → 传递依赖，应把部门信息拆到部门表。 为什么要反范式化（适当冗余）：严格范式会带来大量 join，高并发读场景下性能差。常见反范式做法：在订单表冗余“用户名”避免 join；用宽表/汇总表加速报表。权衡：用写入冗余/一致性成本换取读取性能，常配合缓存。","url":"https://itinterview.com.cn/question/526"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"数据库设计的三大范式(1NF/2NF/3NF)分别要求什么？为什么要反范式化？","item":"https://itinterview.com.cn/q/526"}]}</script>

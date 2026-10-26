@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。 · IT面试题库">
   <meta property="og:description" content="要点： 同步：用 Sqoop/DataX 或 CDC（Binlog 采集）把业务库数据抽到 Hive 的 ODS（贴源层），保留原始结构，增量按时间/主键切分。 分层建模：① DWD（明细层） 做清洗、脱敏、维度退化、统一口径；② DWS（汇总层） 按主题（用户/商品/交易）轻度聚合，沉淀可复用中间结果；③ AD…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1478.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1478.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1478">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。 · IT面试题库">
   <meta name="twitter:description" content="要点： 同步：用 Sqoop/DataX 或 CDC（Binlog 采集）把业务库数据抽到 Hive 的 ODS（贴源层），保留原始结构，增量按时间/主键切分。 分层建模：① DWD（明细层） 做清洗、脱敏、维度退化、统一口径；② DWS（汇总层） 按主题（用户/商品/交易）轻度聚合，沉淀可复用中间结果；③ AD…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1478.jpg">
+  <meta name="twitter:image:alt" content="设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1478">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。","text":"场景题：从同步、分层建模到调度治理，给出完整离线数仓落地方案。","answerCount":1,"datePublished":"2026-10-02T02:46:09.752Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 同步：用 Sqoop/DataX 或 CDC（Binlog 采集）把业务库数据抽到 Hive 的 ODS（贴源层），保留原始结构，增量按时间/主键切分。 分层建模：① DWD（明细层） 做清洗、脱敏、维度退化、统一口径；② DWS（汇总层） 按主题（用户/商品/交易）轻度聚合，沉淀可复用中间结果；③ ADS（应用层） 面向报表/接口的高度聚合结果。 治理：按 dt 天分区、必要时分桶；用调度系统（Airflow/DolphinScheduler）编排任务依赖；做数据质量校验（空值/唯一性）与血缘追踪。 价值：分层解耦、结果复用、口径统一、便于问题定位。","url":"https://itinterview.com.cn/question/1478"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"Hive","item":"https://itinterview.com.cn/category?cat=159"},{"@type":"ListItem","position":4,"name":"设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。","item":"https://itinterview.com.cn/q/1478"}]}</script>

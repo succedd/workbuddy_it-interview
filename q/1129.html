@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？ · IT面试题库">
   <meta property="og:description" content="CSS 阻塞渲染：浏览器构建渲染树需要 DOM + CSSOM，所以 样式表会阻塞首次渲染（但不会阻塞 HTML 解析）；样式未就绪前不会 paint，否则会闪。 JS 阻塞解析：默认 会阻塞 HTML 解析并等待下载执行完（因为脚本可能改 DOM），这就是“脚本放在底部”的原因。 defer：下载不阻塞解析，延…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1129.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1129.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1129">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？ · IT面试题库">
   <meta name="twitter:description" content="CSS 阻塞渲染：浏览器构建渲染树需要 DOM + CSSOM，所以 样式表会阻塞首次渲染（但不会阻塞 HTML 解析）；样式未就绪前不会 paint，否则会闪。 JS 阻塞解析：默认 会阻塞 HTML 解析并等待下载执行完（因为脚本可能改 DOM），这就是“脚本放在底部”的原因。 defer：下载不阻塞解析，延…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1129.jpg">
+  <meta name="twitter:image:alt" content="为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1129">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？","text":"请解释浏览器在解析 HTML 时遇到 样式表与 脚本的阻塞行为，以及 defer / async / preload / 关键 CSS 内联 各自如何打破阻塞、适用什么场景。","answerCount":1,"datePublished":"2026-09-14T02:47:24.675Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CSS 阻塞渲染：浏览器构建渲染树需要 DOM + CSSOM，所以 样式表会阻塞首次渲染（但不会阻塞 HTML 解析）；样式未就绪前不会 paint，否则会闪。 JS 阻塞解析：默认 会阻塞 HTML 解析并等待下载执行完（因为脚本可能改 DOM），这就是“脚本放在底部”的原因。 defer：下载不阻塞解析，延迟到 DOM 解析完成、DOMContentLoaded 前按顺序执行，适合依赖 DOM 的外部脚本。 async：下载不阻塞解析，下载完立即执行、不保证顺序，适合独立无依赖的脚本（如统计 SDK）。 preload：用 提前以高优先级拉取关键资源（字体/JS/CSS），但不执行，配合 as 属性让资源更早到位。 关键 CSS 内联：把首屏必需的少量 CSS 直接内联进 ，其余非关键 CSS 异步加载，消除首屏渲染前的那一次 Render-Blocking 请求。","url":"https://itinterview.com.cn/question/1129"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？","item":"https://itinterview.com.cn/q/1129"}]}</script>

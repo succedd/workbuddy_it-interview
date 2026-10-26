@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TIME_WAIT 的作用与过多怎么办？ · IT面试题库">
   <meta property="og:description" content="TIME_WAIT（主动关闭方在发完最后 ACK 后等待 2MSL）： 1. 确保最后 ACK 到达对方（丢失则对方重发 FIN，本方还能响应）； 2. 让本连接的迟到报文在网络中消逝，避免被新连接（同四元组）误收。 过多的危害：占用端口（高并发短连接服务端），可用端口耗尽。 优化： 服务端尽量被动关闭（让客户端…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/61.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TIME_WAIT 的作用与过多怎么办？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/61.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/61">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TIME_WAIT 的作用与过多怎么办？ · IT面试题库">
   <meta name="twitter:description" content="TIME_WAIT（主动关闭方在发完最后 ACK 后等待 2MSL）： 1. 确保最后 ACK 到达对方（丢失则对方重发 FIN，本方还能响应）； 2. 让本连接的迟到报文在网络中消逝，避免被新连接（同四元组）误收。 过多的危害：占用端口（高并发短连接服务端），可用端口耗尽。 优化： 服务端尽量被动关闭（让客户端…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/61.jpg">
+  <meta name="twitter:image:alt" content="TIME_WAIT 的作用与过多怎么办？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/61">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TIME_WAIT 的作用与过多怎么办？","text":"解释为什么需要 TIME_WAIT 及优化手段。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TIME_WAIT（主动关闭方在发完最后 ACK 后等待 2MSL）： 1. 确保最后 ACK 到达对方（丢失则对方重发 FIN，本方还能响应）； 2. 让本连接的迟到报文在网络中消逝，避免被新连接（同四元组）误收。 过多的危害：占用端口（高并发短连接服务端），可用端口耗尽。 优化： 服务端尽量被动关闭（让客户端 TIME_WAIT）； 开启端口复用 net.ipv4.tcp_tw_reuse（客户端安全）； 用长连接/连接池减少频繁建连； 谨慎使用 tcp_tw_recycle（NAT 下已废弃）。","url":"https://itinterview.com.cn/question/61"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"TIME_WAIT 的作用与过多怎么办？","item":"https://itinterview.com.cn/q/61"}]}</script>

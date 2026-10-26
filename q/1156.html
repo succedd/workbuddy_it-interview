@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？ · IT面试题库">
   <meta property="og:description" content="要点： 解析 HTML → DOM：浏览器边下载边解析 HTML，生成文档对象模型 DOM 树；遇到 （无 defer/async）会暂停解析去执行脚本。 解析 CSS → CSSOM：下载并解析 CSS（外链/内联/style），生成 CSS 对象模型；CSSOM 与 DOM 构建并行，但 JS 执行会等 CS…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1156.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1156.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1156">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？ · IT面试题库">
   <meta name="twitter:description" content="要点： 解析 HTML → DOM：浏览器边下载边解析 HTML，生成文档对象模型 DOM 树；遇到 （无 defer/async）会暂停解析去执行脚本。 解析 CSS → CSSOM：下载并解析 CSS（外链/内联/style），生成 CSS 对象模型；CSSOM 与 DOM 构建并行，但 JS 执行会等 CS…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1156.jpg">
+  <meta name="twitter:image:alt" content="HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1156">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？","text":"考察点：关键渲染路径（CRP）全流程——解析、构建 DOM/CSSOM、Render Tree、Layout、Paint、Composite 的先后顺序与阻塞关系。","answerCount":1,"datePublished":"2026-09-15T11:49:54.516Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解析 HTML → DOM：浏览器边下载边解析 HTML，生成文档对象模型 DOM 树；遇到 （无 defer/async）会暂停解析去执行脚本。 解析 CSS → CSSOM：下载并解析 CSS（外链/内联/style），生成 CSS 对象模型；CSSOM 与 DOM 构建并行，但 JS 执行会等 CSSOM 就绪。 合成 Render Tree：把 DOM 与 CSSOM 合并成『可见节点 + 样式』的渲染树（display:none 的节点不进渲染树）。 Layout（重排）：计算渲染树中每个节点的几何位置与尺寸。 Paint（重绘）：按层级把节点绘制成像素（填充颜色、边框、阴影等）。 Composite（合成）：将各图层交由 GPU 合成到屏幕；现代浏览器多以『图层』为单位，仅合成可避免大面积重绘。 关键：JS 和 CSS 都可能阻塞首屏，故要控制关键资源体积与加载顺序（defer/async/preload）。","url":"https://itinterview.com.cn/question/1156"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"浏览器原理","item":"https://itinterview.com.cn/category?cat=60"},{"@type":"ListItem","position":5,"name":"HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？","item":"https://itinterview.com.cn/q/1156"}]}</script>

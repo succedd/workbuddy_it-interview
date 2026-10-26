@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？ · IT面试题库">
   <meta property="og:description" content="直接内存不属于 JVM 规范定义的运行时数据区，而是在本地内存中分配。JDK 1.4 引入 NIO 后，基于 Channel 与 Buffer 的 I/O 可以使用直接字节缓冲区：数据块通过 Unsafe 系调用分配在本机内存，Java 堆中只保留一个 DirectByteBuffer 对象作为「遥控器」，内部存…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1319.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1319.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1319">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？ · IT面试题库">
   <meta name="twitter:description" content="直接内存不属于 JVM 规范定义的运行时数据区，而是在本地内存中分配。JDK 1.4 引入 NIO 后，基于 Channel 与 Buffer 的 I/O 可以使用直接字节缓冲区：数据块通过 Unsafe 系调用分配在本机内存，Java 堆中只保留一个 DirectByteBuffer 对象作为「遥控器」，内部存…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1319.jpg">
+  <meta name="twitter:image:alt" content="堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1319">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？","text":"堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？","answerCount":1,"datePublished":"2026-09-26T03:32:27.458Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"直接内存不属于 JVM 规范定义的运行时数据区，而是在本地内存中分配。JDK 1.4 引入 NIO 后，基于 Channel 与 Buffer 的 I/O 可以使用直接字节缓冲区：数据块通过 Unsafe 系调用分配在本机内存，Java 堆中只保留一个 DirectByteBuffer 对象作为「遥控器」，内部存着堆外内存的 address 指针等字段。这样 JVM 直接在缓冲区上执行本地 I/O、省去堆内外拷贝，也是 Netty 等框架高性能的关键之一。 为什么堆内对象很小却可能 OOM？ 关键在于两者大小严重不对称：堆里的 DirectByteBuffer 对象通常只有 32-48 字节，背后却挂着可达 MB 级的堆外数据块。堆转储里看到的是一堆「很干净」的小对象，本机内存却已被吃光。堆外内存不受 -Xmx 管控，只受三重限制：-XX:MaxDirectMemorySize 设置的直接内存上限、本机总内存以及处理器寻址空间。分配时超上限抛 OutOfMemoryError: Direct buffer memory；即便不设上限也可能耗尽本机内存。 回收链路：DirectByteBuffer 分配时关联一个 Cleaner（虚引用的子类）。当 Buffer 对象不可达被 GC 回收时，虚引用机制把 Cleaner 放入 ReferenceQueue；ReferenceHandler 线程处理到该 Cleaner 后调用其 clean() 方法，最终通过 Unsafe.freeMemory(address) 释放堆外内存。注意回收依赖 GC 触发，时机不可控；堆外紧张时 JDK 会主动 System.gc() 尝试回收（留意 -XX:+DisableExplicitGC 的影响），用完未释放则会造成本机内存泄漏。 排查手段： 1. NMT（-XX:NativeMemoryTracking）查看 JVM 视角的本地内存分布； 2. pmap / smaps 观察进程 RSS 与匿名内存段； 3. JFR 的 jdk.DirectBufferStatistics 事件跟踪 DirectByteBuffer 数量与容量。 回答要点小结：先说清「堆内小引用 vs 堆外大块」的结构，再讲 Cleaner 虚引用的回收链路与时机不可控，最后落到 MaxDirectMemorySize 与三类排查工具。","url":"https://itinterview.com.cn/question/1319"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"JVM调优","item":"https://itinterview.com.cn/category?cat=85"},{"@type":"ListItem","position":5,"name":"堆外直接内存为什么会 OOM？Cleaner 是如何回收堆外内存的？如何排查堆外内存问题？","item":"https://itinterview.com.cn/q/1319"}]}</script>

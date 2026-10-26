@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="前端要系统性地防御 XSS，OWASP 的 Rule #0 到 #7 分别讲了什么？ · IT面试题库">
   <meta property="og:description" content="一、总原则 OWASP《XSS Prevention Cheat Sheet》的核心结论是：没有任何单一技术能彻底解决 XSS，必须组合使用框架自动转义、按上下文的输出编码、HTML 净化，再叠加 CSP / Trusted Types 等纵深防御控制。 二、Rule #0：不要把不可信数据放进危险上下文 以下位…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/461.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="前端要系统性地防御 XSS，OWASP 的 Rule #0 到 #7 分别讲了什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/461.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/461">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="前端要系统性地防御 XSS，OWASP 的 Rule #0 到 #7 分别讲了什么？ · IT面试题库">
   <meta name="twitter:description" content="一、总原则 OWASP《XSS Prevention Cheat Sheet》的核心结论是：没有任何单一技术能彻底解决 XSS，必须组合使用框架自动转义、按上下文的输出编码、HTML 净化，再叠加 CSP / Trusted Types 等纵深防御控制。 二、Rule #0：不要把不可信数据放进危险上下文 以下位…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/461.jpg">
+  <meta name="twitter:image:alt" content="前端要系统性地防御 XSS，OWASP 的 Rule #0 到 #7 分别讲了什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/461">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"前端要系统性地防御 XSS，OWASP 的 Rule #0 到 #7 分别讲了什么？","text":"XSS 至今仍是 Web 端最高频的漏洞之一，而很多团队的防护只停留在「过滤特殊字符」。请从输出编码、HTML 净化、安全接收器、CSP 与 Trusted Types 等角度，说明一套纵深防御方案。","answerCount":1,"datePublished":"2026-09-03T00:55:28.736Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、总原则 OWASP《XSS Prevention Cheat Sheet》的核心结论是：没有任何单一技术能彻底解决 XSS，必须组合使用框架自动转义、按上下文的输出编码、HTML 净化，再叠加 CSP / Trusted Types 等纵深防御控制。 二、Rule #0：不要把不可信数据放进危险上下文 以下位置即使做了输出编码也不安全，应直接避免： 标签内部、HTML 注释、 内部、自定义标签与自定义属性、所有 on 事件处理器（onclick、onerror、onmouseover），以及 eval()、setTimeout()、setInterval()。 三、按上下文做输出编码（Rule #1 - #5） 关键点是上下文决定编码方式，用错编码等于没防： | 上下文 | 规则 | 编码方式 | | --- | --- | --- | | HTML 正文 | Rule #1 | HTML 实体编码，\u003c → &lt;、& → &amp; | | HTML 属性 | Rule #2 | &#xHH; 形式编码，且属性值必须用引号包起来 | | JavaScript | Rule #3 | \\uXXXX 编码，且只能放进带引号的数据值里 | | CSS | Rule #4 | \\XX / \\XXXXXX 十六进制编码，且只能放进属性值 | | URL 参数 | Rule #5 | 百分号编码 %HH，只编码参数值，不编码整个 URL | 一个高频错误：URL 要放进 href / src 时，需先做 URL 编码，再做 HTML 属性编码，顺序不能反。 四、需要渲染用户 HTML 时用净化（Rule #6） 输出编码会把富文本样式一并破坏，此时应改用 HTML Sanitization，OWASP 推荐使用 DOMPurify。注意三点：先净化再改动、确认下游库不会二次修改字符串、以及必须定期升级——浏览器新特性会不断带来新的绕过方式。 五、DOM 型 XSS 专项（Rule #7） 原则是换掉危险 sink：用 textContent、setAttribute、document.createTextNode 替代 innerHTML。更进一步可开启 Trusted Types，让 innerHTML、outerHTML、document.write、script.src 等 sink 拒绝接收普通字符串，强制数据流经审查过的策略——这是少数能消除整类 DOM XSS 而不只是缓解的手段。遗留代码可配置 default policy 委托给 DOMPurify。 六、两个常见错误做法 只依赖 CSP：官方明确 CSP 只能作为纵深防御的一层，不能当主要防线；且必须按应用定制，企业级「一刀切」下发 CSP 头常会打挂遗留系统，最后只能开安全例外，反而削弱整体防护。 在 Spring 拦截器 / Servlet Filter 里统一转义：上下文无关的统一编码会造成双重编码（O'Hara 渲染成 O\\'Hara），且对纯客户端的 DOM XSS 完全无效。 七、框架是起点不是终点 优先使用框架自带的自动转义，但要避开框架的「逃逸口」：React 的 dangerouslySetInnerHTML、Vue 的 v-html、Angular 的 bypassSecurityTrustAs、Lit 的 unsafeHTML。此外 React 无法处理 javascript: / data: URL，需要单独校验。","url":"https://itinterview.com.cn/question/461"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"XSS跨站脚本","item":"https://itinterview.com.cn/category?cat=205"},{"@type":"ListItem","position":4,"name":"前端要系统性地防御 XSS，OWASP 的 Rule #0 到 #7 分别讲了什么？","item":"https://itinterview.com.cn/q/461"}]}</script>

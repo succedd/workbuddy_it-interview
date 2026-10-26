@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis 大 Key / 热 Key 如何识别与治理？ · IT面试题库">
   <meta property="og:description" content="大 Key 危害：Hash/Set/ZSet 元素过多、String 体积过大，会使删除/序列化阻塞主线程、迁移卡顿、内存倾斜；典型阈值如 String&gt;10KB、集合元素&gt;5000。 识别手段：redis-cli --bigkeys 抽样统计；DEBUG OBJECT 看 serializedlength；监控…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1125.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis 大 Key / 热 Key 如何识别与治理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1125.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1125">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 大 Key / 热 Key 如何识别与治理？ · IT面试题库">
   <meta name="twitter:description" content="大 Key 危害：Hash/Set/ZSet 元素过多、String 体积过大，会使删除/序列化阻塞主线程、迁移卡顿、内存倾斜；典型阈值如 String&gt;10KB、集合元素&gt;5000。 识别手段：redis-cli --bigkeys 抽样统计；DEBUG OBJECT 看 serializedlength；监控…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1125.jpg">
+  <meta name="twitter:image:alt" content="Redis 大 Key / 热 Key 如何识别与治理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1125">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 大 Key / 热 Key 如何识别与治理？","text":"Hash/List 存了百万级字段导致集群卡顿，或某 Key 被高频访问打满单分片。请说明识别手段与治理方案。","answerCount":1,"datePublished":"2026-09-13T02:40:24.233Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"大 Key 危害：Hash/Set/ZSet 元素过多、String 体积过大，会使删除/序列化阻塞主线程、迁移卡顿、内存倾斜；典型阈值如 String>10KB、集合元素>5000。 识别手段：redis-cli --bigkeys 抽样统计；DEBUG OBJECT 看 serializedlength；监控 slowlog 中耗时命令定位大对象。 治理方案：大 Hash 按 field 哈希拆成多个小 key（如 user:{uid}:field 分片）；大 List 用 LPUSH + LTRIM 限长；避免一次性 DEL，改用 UNLINK 异步删除或 HSCAN 分批清理。 热 Key 治理：热 Key 打满单分片——客户端本地缓存 + 多副本（key 加随机后缀分散到不同分片）+ 本地限流；读写分离/代理层合并，从架构上削峰。","url":"https://itinterview.com.cn/question/1125"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 大 Key / 热 Key 如何识别与治理？","item":"https://itinterview.com.cn/q/1125"}]}</script>

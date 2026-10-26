@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？ · IT面试题库">
   <meta property="og:description" content="要点： 为什么内置少：Koa 的设计哲学是微内核 + 中间件组合——核心只负责「请求上下文、洋葱模型、错误冒泡」，其余交给生态。好处是体积小、可替换、无历史包袱；代价是每个项目要自己搭标准，选型能力变成团队成本。 主流组合： 路由：@koa/router（原 koa-router，活跃维护的官方组织版）；旧项目里…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1031.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1031.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1031">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 为什么内置少：Koa 的设计哲学是微内核 + 中间件组合——核心只负责「请求上下文、洋葱模型、错误冒泡」，其余交给生态。好处是体积小、可替换、无历史包袱；代价是每个项目要自己搭标准，选型能力变成团队成本。 主流组合： 路由：@koa/router（原 koa-router，活跃维护的官方组织版）；旧项目里…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1031.jpg">
+  <meta name="twitter:image:alt" content="Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1031">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？","text":"考察点：微内核设计哲学、生态组合、常见安全配置。选型判断题。","answerCount":1,"datePublished":"2026-09-10T11:51:19.916Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么内置少：Koa 的设计哲学是微内核 + 中间件组合——核心只负责「请求上下文、洋葱模型、错误冒泡」，其余交给生态。好处是体积小、可替换、无历史包袱；代价是每个项目要自己搭标准，选型能力变成团队成本。 主流组合： 路由：@koa/router（原 koa-router，活跃维护的官方组织版）；旧项目里 koa-router 已停更，注意别用错包。 body 解析：koa-body（支持 multipart 文件上传，功能全）或 @koa/bodyparser（轻量，只处理 JSON/urlencoded）。文件上传才需要 koa-body，纯 JSON API 用轻量的即可。 静态资源：koa-static + koa-send，生产环境更推荐交给 Nginx/CDN。 安全头：koa-helmet；CORS：@koa/cors；压缩：koa-compress。 会话：koa-session（内存/外部 store）——多副本部署必须换 Redis store，否则登录态不共享。 日志：koa-logger（开发）/ pino-koa（生产结构化日志）。 必须注意的点： 中间件注册顺序决定一切：日志→错误处理→安全头→CORS→body 解析→路由，顺序错了会出现「OPTIONS 预检没被 CORS 中间件处理」「错误没被兜住」； koa-body 的 multipart: true 会引入 formidable 与临时文件，要显式设 maxFileSize，否则可被大文件打爆磁盘； 不要在生产开 koa-logger（同步写 stdout、性能差）； 每个中间件都要能 await next()，忘记 await 会导致洋葱链断裂（响应被提前发出）。 加分点：生态碎片化是 Koa 的主要痛点，团队应在脚手架里固化一套「黄金中间件栈」，避免每个服务各不相同。","url":"https://itinterview.com.cn/question/1031"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Node.js后端","item":"https://itinterview.com.cn/category?cat=90"},{"@type":"ListItem","position":4,"name":"Koa","item":"https://itinterview.com.cn/category?cat=92"},{"@type":"ListItem","position":5,"name":"Koa 为什么不内置路由和 body 解析？社区常用组合方案要怎么选、要注意什么？","item":"https://itinterview.com.cn/q/1031"}]}</script>

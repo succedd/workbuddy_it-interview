@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。 · IT面试题库">
   <meta property="og:description" content="RxJS 是 Angular 的异步骨架：HTTP（HttpClient 返回 Observable）、路由（params/queryParams/data 是 Observable）、表单（valueChanges）、事件（fromEvent）全都基于它。 与 Promise 的差异：Observable 是惰…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1488.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1488.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1488">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。 · IT面试题库">
   <meta name="twitter:description" content="RxJS 是 Angular 的异步骨架：HTTP（HttpClient 返回 Observable）、路由（params/queryParams/data 是 Observable）、表单（valueChanges）、事件（fromEvent）全都基于它。 与 Promise 的差异：Observable 是惰…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1488.jpg">
+  <meta name="twitter:image:alt" content="RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1488">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。","text":"说明 Observable 与 Promise 的差异，并给出 Angular 内置的 RxJS 应用点。","answerCount":1,"datePublished":"2026-10-05T01:03:55.886Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"RxJS 是 Angular 的异步骨架：HTTP（HttpClient 返回 Observable）、路由（params/queryParams/data 是 Observable）、表单（valueChanges）、事件（fromEvent）全都基于它。 与 Promise 的差异：Observable 是惰性（不订阅不执行）、多次发射、可取消（unsubscribe）、拥有丰富算子（map/filter/debounceTime/switchMap/retry）。Promise 则是一次性、立即执行、不可取消。 典型场景：① 搜索框输入用 debounceTime+distinctUntilChanged+switchMap 做防抖且自动丢弃过期请求；② 路由参数组合 combineLatest 联动查询；③ 轮询 timer(0,5000).pipe(switchMap(fetch))，离开页面取消；④ 失败重试 retry/retryWhen；⑤ 多接口并发 forkJoin。 实践：模板用 async 管道订阅，避免手动 subscribe 造成泄漏；Angular 16+ 也有 toSignal 桥接。","url":"https://itinterview.com.cn/question/1488"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Angular","item":"https://itinterview.com.cn/category?cat=65"},{"@type":"ListItem","position":5,"name":"RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。","item":"https://itinterview.com.cn/q/1488"}]}</script>

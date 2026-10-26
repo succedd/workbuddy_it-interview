@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？ · IT面试题库">
   <meta property="og:description" content="原理：用户输入被拼接进 SQL 语句，攻击者改变语句结构（引号闭合 + 注释），让数据库执行任意逻辑。 常见类型：① 联合查询（UNION SELECT 直接回显他表数据）；② 报错注入（extractvalue/updatexml 用报错带出数据）；③ 布尔盲注（页面真/假两种状态逐位猜）；④ 时间盲注（sle…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1510.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1510.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1510">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？ · IT面试题库">
   <meta name="twitter:description" content="原理：用户输入被拼接进 SQL 语句，攻击者改变语句结构（引号闭合 + 注释），让数据库执行任意逻辑。 常见类型：① 联合查询（UNION SELECT 直接回显他表数据）；② 报错注入（extractvalue/updatexml 用报错带出数据）；③ 布尔盲注（页面真/假两种状态逐位猜）；④ 时间盲注（sle…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1510.jpg">
+  <meta name="twitter:image:alt" content="SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1510">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？","text":"解释注入成因，区分联合/报错/布尔/时间/堆叠注入，并给出防御清单。","answerCount":1,"datePublished":"2026-10-05T01:03:58.942Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"原理：用户输入被拼接进 SQL 语句，攻击者改变语句结构（引号闭合 + 注释），让数据库执行任意逻辑。 常见类型：① 联合查询（UNION SELECT 直接回显他表数据）；② 报错注入（extractvalue/updatexml 用报错带出数据）；③ 布尔盲注（页面真/假两种状态逐位猜）；④ 时间盲注（sleep/if 延时判断，无回显时用）；⑤ 堆叠注入（分号执行第二条语句，取决于驱动是否 multi-statement）；⑥ 二次注入（存入时无害、他处拼接时触发）。 防御（按优先级）：① 参数化查询/预编译（PreparedStatement、ORM 的占位符）——唯一根治手段，注意表名/排序字段无法参数化时用白名单校验；② 最小权限：应用账号禁 DDL/file 权限；③ 输入校验（类型、长度）与输出转义；④ WAF 兜底但不可依赖；⑤ 关闭详细报错回显；⑥ 代码审计/SCA 定位拼接点。过滤关键字是下策，绕过手法太多。","url":"https://itinterview.com.cn/question/1510"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"渗透测试","item":"https://itinterview.com.cn/category?cat=208"},{"@type":"ListItem","position":4,"name":"SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？","item":"https://itinterview.com.cn/q/1510"}]}</script>

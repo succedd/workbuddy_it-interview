@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库">
   <meta property="og:description" content="常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/531.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/531.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/531">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库">
   <meta name="twitter:description" content="常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/531.jpg">
+  <meta name="twitter:image:alt" content="列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/531">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。","text":"说明函数/隐式转换/前导模糊/OR/!=/NULL 等导致失效的情况，并解释 EXPLAIN 的 type/key/rows/Extra 关键字段。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"常见索引失效场景： 1. 对索引列使用函数或运算：WHERE YEAR(created_at)=2024、WHERE amount+1=10 → 无法用索引。 2. 隐式类型转换：列是字符串却用数字比较 WHERE phone=13800000000（MySQL 会转字符串，致失效）。 3. 前导模糊/左右模糊：%abc 无法用 B+ 树定位（abc% 可走前缀）。 4. 不等于/范围过度：!=、\u003c> 多数情况放弃索引；NOT IN、OR 连接非索引列也会失效。 5. 违背最左前缀（见上题）。 6. 字符集/排序规则不一致 的 join 关联列导致无法用索引。 用 EXPLAIN 判断： type：访问类型，从好到差 system > const > eq_ref > ref > range > index > ALL；ALL 即全表扫描（未走索引）。 key：实际使用的索引；为 NULL 表示没用到。 rows：预估扫描行数，越大越慢。 Extra：Using index（覆盖索引，好）、Using where（回表过滤）、Using filesort/Using temporary（需优化，排序/临时表）。 优化思路：建覆盖索引、避免 SELECT *、改写函数条件为范围、调整联合索引顺序。","url":"https://itinterview.com.cn/question/531"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"SQL基础","item":"https://itinterview.com.cn/category?cat=27"},{"@type":"ListItem","position":5,"name":"列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。","item":"https://itinterview.com.cn/q/531"}]}</script>

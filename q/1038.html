@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？ · IT面试题库">
   <meta property="og:description" content="要点： 语法：T extends U ? X : Y。当 T 是裸类型参数（union）时会发生分布式条件类型（Distributive Conditional Types）——A | B 会被拆开逐个判断再合并： 避免分布式：用 [T] extends [U] 把两侧包成元组。 infer：在 extends …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1038.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1038.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1038">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？ · IT面试题库">
   <meta name="twitter:description" content="要点： 语法：T extends U ? X : Y。当 T 是裸类型参数（union）时会发生分布式条件类型（Distributive Conditional Types）——A | B 会被拆开逐个判断再合并： 避免分布式：用 [T] extends [U] 把两侧包成元组。 infer：在 extends …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1038.jpg">
+  <meta name="twitter:image:alt" content="TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1038">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？","text":"考察点：类型编程、infer 推断、分布式条件类型。TS 从「会用」到「精通」的分水岭。","answerCount":1,"datePublished":"2026-09-10T11:52:17.193Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 语法：T extends U ? X : Y。当 T 是裸类型参数（union）时会发生分布式条件类型（Distributive Conditional Types）——A | B 会被拆开逐个判断再合并： 避免分布式：用 [T] extends [U] 把两侧包成元组。 infer：在 extends 条件里声明一个待推断的类型变量，由编译器反推。经典应用： 类型安全的 get 实现：用泛型约束把 key 限定为 K extends keyof T，返回值直接用索引访问类型，编译器自动推导： 如果 key 是运行时变量，就需要 K extends keyof T + 调用处显式标注，或返回 T[K] | undefined 配合类型守卫收窄。 进阶工具：as const 让字面量收窄，从而让 keyof 只包含真实存在的键；satisfies（TS 4.9）做「校验但不拓宽类型」——const cfg = {...} satisfies Config 既校验了结构，又保留了字面量类型，是替代 as 的更安全写法。 实践建议：类型编程要有预算——超过三层的嵌套条件类型会严重损害可读性与编译速度，能用简单泛型+重载解决就别炫技。","url":"https://itinterview.com.cn/question/1038"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"TypeScript前端","item":"https://itinterview.com.cn/category?cat=75"},{"@type":"ListItem","position":4,"name":"TypeScript 的条件类型（Conditional Types）和 infer 是怎么用的？如何实现一个类型安全的 get 函数？","item":"https://itinterview.com.cn/q/1038"}]}</script>

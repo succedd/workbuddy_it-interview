@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring 中 Bean 的生命周期是怎样的？ · IT面试题库">
   <meta property="og:description" content="实例化：容器通过构造器创建 Bean 对象（反射）。 属性填充（DI）：调用 setter / 字段注入依赖（@Autowired 等）。 Aware 接口：若实现 BeanNameAware/BeanFactoryAware 等，注入对应运行时对象。 初始化：调用 @PostConstruct、Initiali…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/797.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring 中 Bean 的生命周期是怎样的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/797.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/797">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 中 Bean 的生命周期是怎样的？ · IT面试题库">
   <meta name="twitter:description" content="实例化：容器通过构造器创建 Bean 对象（反射）。 属性填充（DI）：调用 setter / 字段注入依赖（@Autowired 等）。 Aware 接口：若实现 BeanNameAware/BeanFactoryAware 等，注入对应运行时对象。 初始化：调用 @PostConstruct、Initiali…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/797.jpg">
+  <meta name="twitter:image:alt" content="Spring 中 Bean 的生命周期是怎样的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/797">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 中 Bean 的生命周期是怎样的？","text":"描述从实例化到销毁的 Bean 生命周期关键阶段与扩展点。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"实例化：容器通过构造器创建 Bean 对象（反射）。 属性填充（DI）：调用 setter / 字段注入依赖（@Autowired 等）。 Aware 接口：若实现 BeanNameAware/BeanFactoryAware 等，注入对应运行时对象。 初始化：调用 @PostConstruct、InitializingBean.afterPropertiesSet()、自定义 init-method。 就绪使用：Bean 进入容器单例池供业务调用。 销毁：容器关闭时触发 @PreDestroy、DisposableBean.destroy()、destroy-method。整个流程可通过 BeanPostProcessor 在前后做统一增强（如 AOP 代理）。","url":"https://itinterview.com.cn/question/797"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring 中 Bean 的生命周期是怎样的？","item":"https://itinterview.com.cn/q/797"}]}</script>

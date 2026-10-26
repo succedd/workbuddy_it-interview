@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？ · IT面试题库">
   <meta property="og:description" content="要点：恒定乘积公式 x·y=k：交易对的两个储备金乘积恒定，买入一种资产会推高另一种价格，价格沿双曲线连续变化；流动性提供者（LP）注入两种资产，按份额分享手续费，公式保证「只要有储备就永远可交易、且不会归零」。 要点：滑点来源：单笔交易量相对池子越大，价格偏离越远、成交均价越差；缓解手段包括增大池深（TVL）、…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1594.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1594.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1594">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？ · IT面试题库">
   <meta name="twitter:description" content="要点：恒定乘积公式 x·y=k：交易对的两个储备金乘积恒定，买入一种资产会推高另一种价格，价格沿双曲线连续变化；流动性提供者（LP）注入两种资产，按份额分享手续费，公式保证「只要有储备就永远可交易、且不会归零」。 要点：滑点来源：单笔交易量相对池子越大，价格偏离越远、成交均价越差；缓解手段包括增大池深（TVL）、…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1594.jpg">
+  <meta name="twitter:image:alt" content="设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1594">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？","text":"考察 DeFi/AMM 设计。","answerCount":1,"datePublished":"2026-10-07T08:06:15.879Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：恒定乘积公式 x·y=k：交易对的两个储备金乘积恒定，买入一种资产会推高另一种价格，价格沿双曲线连续变化；流动性提供者（LP）注入两种资产，按份额分享手续费，公式保证「只要有储备就永远可交易、且不会归零」。 要点：滑点来源：单笔交易量相对池子越大，价格偏离越远、成交均价越差；缓解手段包括增大池深（TVL）、拆单、设置滑点容忍阈值（slippage tolerance），以及用集中流动性（只在价格区间做市）提升资金效率。 要点：工程要点：合约需在每笔交易后重算 k 并校验（防闪电贷操纵）、对价格用累计时间加权（TWAP）喂价抗操纵、LP 需承担「无常损失（impermanent loss）」——价格偏离越大、撤出时相对持有原资产的损失越大。","url":"https://itinterview.com.cn/question/1594"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"设计一个基于恒定乘积（x·y=k）的 AMM 自动做市商：流动性如何保证？滑点如何产生、如何缓解？","item":"https://itinterview.com.cn/q/1594"}]}</script>

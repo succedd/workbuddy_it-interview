@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。 · IT面试题库">
   <meta property="og:description" content="要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mod…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/970.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/970.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/970">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。 · IT面试题库">
   <meta name="twitter:description" content="要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mod…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/970.jpg">
+  <meta name="twitter:image:alt" content="在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/970">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。","text":"考察点：结构化输出约束的工程落地（JSON mode / Structured Outputs / 函数调用），以及代码侧兜底解析。这是把 LLM 接入系统的关键。","answerCount":1,"datePublished":"2026-09-10T02:30:02.141Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 为什么约束格式：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。 Prompt 层：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。 厂商能力层（优先）：直接用 Structured Outputs / JSON mode（如 OpenAI structured outputs 按 schema 强制约束）或 函数调用（tool use）——把要抽取的结构定义为工具参数 schema，让模型以「调用函数」形式返回，比纯文本 JSON 可靠得多。 代码兜底层：去掉 `json 标记、捕获解析异常、字段缺失时重试或要求模型修正；校验字段类型与必填；设足 max_tokens 防止截断。 经验：不要只靠 prompt 说「请输出 JSON」就信任结果，必须「厂商 schema 约束 + 代码校验」双保险。","url":"https://itinterview.com.cn/question/970"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Prompt Engineering","item":"https://itinterview.com.cn/category?cat=192"},{"@type":"ListItem","position":5,"name":"在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。","item":"https://itinterview.com.cn/q/970"}]}</script>

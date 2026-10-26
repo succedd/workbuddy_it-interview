@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？ · IT面试题库">
   <meta property="og:description" content="要点： 切分策略直接影响召回精度：切得太碎会丢失上下文、让向量只代表局部语义；切得太长则一个 chunk 含多主题，向量「四不像」、检索噪声大。固定长度简单但易切断句子；滑动窗口能缓解边界丢失但增加冗余；语义切分（按标题/段落/模型分句）最贴合人类语义单元。 检索阶段要兼顾相关性与多样性：先用 Embedding…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1541.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1541.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1541">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？ · IT面试题库">
   <meta name="twitter:description" content="要点： 切分策略直接影响召回精度：切得太碎会丢失上下文、让向量只代表局部语义；切得太长则一个 chunk 含多主题，向量「四不像」、检索噪声大。固定长度简单但易切断句子；滑动窗口能缓解边界丢失但增加冗余；语义切分（按标题/段落/模型分句）最贴合人类语义单元。 检索阶段要兼顾相关性与多样性：先用 Embedding…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1541.jpg">
+  <meta name="twitter:image:alt" content="构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1541">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？","text":"考察点：RAG（检索增强生成）落地的两个关键环节——文档切片与向量召回，及其对最终答案准确性的影响。","answerCount":1,"datePublished":"2026-10-05T02:30:36.313Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 切分策略直接影响召回精度：切得太碎会丢失上下文、让向量只代表局部语义；切得太长则一个 chunk 含多主题，向量「四不像」、检索噪声大。固定长度简单但易切断句子；滑动窗口能缓解边界丢失但增加冗余；语义切分（按标题/段落/模型分句）最贴合人类语义单元。 检索阶段要兼顾相关性与多样性：先用 Embedding 做 ANN 近邻检索（如 HNSW/FAISS），再可选重排（rerank）提升 top-k 精度；查询也要做同样的向量化，且最好做查询改写/扩展以弥补用户问法与文档表述的用词鸿沟。 缓解幻觉的关键在「检索质量 + 引用约束」：只把检索到的片段作为上下文喂给大模型，并在 prompt 中要求「仅依据给定资料作答、标注出处」；同时设定相似度阈值，低于阈值就回答「知识库无相关信息」，避免强行编造。 工程落地要点：切片与索引要可回溯（记录来源文档与页码），定期对 Embedding 模型与索引做评估（用召回率/答案准确率），数据更新时增量重建索引而非全量。","url":"https://itinterview.com.cn/question/1541"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"MLOps","item":"https://itinterview.com.cn/category?cat=198"},{"@type":"ListItem","position":5,"name":"构建企业知识库 RAG 系统时，文档切分策略（固定长度/滑动窗口/语义切分）与向量检索如何共同决定召回质量？","item":"https://itinterview.com.cn/q/1541"}]}</script>

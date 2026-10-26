@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="威胁情报里的 IOC 与 IOA 有什么区别？情报如何从「生产」走到「在 SOC 里用起来」？ · IT面试题库">
   <meta property="og:description" content="IOC vs IOA IOC（Indicator of Compromise，失陷指标）：事后可观测的痕迹——恶意域名、C2 IP、文件哈希、互斥量名、注册表键。特点是精确可自动化匹配，但易过期、易绕过（攻击者换 IP/改一字节哈希就变）； IOA（Indicator of Attack，攻击指标）：行为链层面的…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1457.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="威胁情报里的 IOC 与 IOA 有什么区别？情报如何从「生产」走到「在 SOC 里用起来」？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1457.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1457">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="威胁情报里的 IOC 与 IOA 有什么区别？情报如何从「生产」走到「在 SOC 里用起来」？ · IT面试题库">
   <meta name="twitter:description" content="IOC vs IOA IOC（Indicator of Compromise，失陷指标）：事后可观测的痕迹——恶意域名、C2 IP、文件哈希、互斥量名、注册表键。特点是精确可自动化匹配，但易过期、易绕过（攻击者换 IP/改一字节哈希就变）； IOA（Indicator of Attack，攻击指标）：行为链层面的…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1457.jpg">
+  <meta name="twitter:image:alt" content="威胁情报里的 IOC 与 IOA 有什么区别？情报如何从「生产」走到「在 SOC 里用起来」？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1457">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"威胁情报里的 IOC 与 IOA 有什么区别？情报如何从「生产」走到「在 SOC 里用起来」？","text":"考察威胁情报的落地运营：IOC/IOA 概念对比、情报生命周期、与 ATT&CK/TIP/SIEM 的集成，偏向运营实操而非概念分类。","answerCount":1,"datePublished":"2026-10-01T05:33:38.468Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"IOC vs IOA IOC（Indicator of Compromise，失陷指标）：事后可观测的痕迹——恶意域名、C2 IP、文件哈希、互斥量名、注册表键。特点是精确可自动化匹配，但易过期、易绕过（攻击者换 IP/改一字节哈希就变）； IOA（Indicator of Attack，攻击指标）：行为链层面的意图证据——如「Office 进程拉起 powershell 且带 -enc 参数」「修改注册表 Run 键实现持久化」。它描述的是战术与技术（TTP），比 IOC 更难绕过（换基础设施不难换行为习惯），但检测规则更难写。 成熟的安全运营是 IOC 做兜底自动化、IOA/TTP 做深度检测的组合。 情报生命周期（生产→消费闭环） 1. 规划：明确要防谁——按业务资产与威胁画像选情报源（APT 组织、勒索家族、行业针对性攻击）； 2. 收集：商业 feed、OSINT（开源情报）、ISAC 行业共享、自有蜜罐与沙箱； 3. 加工：去重、归一化（STIX/TAXII 标准格式）、置信度打分与有效期（IOC 必须带 TTL，过期即撤）； 4. 消费（SOC 落地）： 查得快：IOC 进 TIP（威胁情报平台），与 SIEM/EDR 联动做实时匹配与历史回溯（hunting：新 IOC 回查过去 30 天日志）； 联得动：高置信 IOC 自动封禁（SOAR 播放器），中置信进告警富化（给告警附上「该 IP 关联勒索家族 X」上下文，提升分诊效率）； 看得懂：攻击者用 ATT&CK 技术编号（如 T1059 命令解释器）归类，评估自家覆盖矩阵的空白； 5. 反馈：误报率、命中统计回流给情报源评分，淘汰低质量源。 面试加分点 情报的价值不在「多」而在「对得起本行业的对手」：给游戏公司买金融 APT 情报是浪费预算； IOC 的两个关键元数据：置信度与有效期——没有这两样的 feed 会把 SOC 淹没在过期误报里； ATT&CK 不是情报源，是行为分类框架，把对抗从「IP 黑名单竞赛」升级到 TTP 层面对抗。","url":"https://itinterview.com.cn/question/1457"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"威胁情报","item":"https://itinterview.com.cn/category?cat=215"},{"@type":"ListItem","position":4,"name":"威胁情报里的 IOC 与 IOA 有什么区别？情报如何从「生产」走到「在 SOC 里用起来」？","item":"https://itinterview.com.cn/q/1457"}]}</script>

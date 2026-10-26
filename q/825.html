@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库">
   <meta property="og:description" content="排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/825.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/825.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/825">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库">
   <meta name="twitter:description" content="排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/825.jpg">
+  <meta name="twitter:image:alt" content="某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/825">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？","text":"考察点：CPU 火焰图的完整排查链路（top→mpstat→pidstat→perf→火焰图），以及 on-CPU 与 off-CPU 的区别。追问：如果 CPU 利用率不高但进程依然很慢，该怎么查？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查链路（on-CPU 热点）： 1. top -H 或 top 找到高 CPU 的进程 / 线程 PID、TID； 2. mpstat -P ALL 1 确认是单核还是多核打满，排除「平均低但单核 100%」的假象； 3. pidstat -u -p 1 看该进程用户态 / 内核态拆分； 4. perf top -F 49 -p 实时看热点符号； 5. 抓样本：perf record -F 99 -a -g -- sleep 30 再 perf report； 6. 生成火焰图：perf script | ./stackcollapse-perf.pl > out.folded && ./flamegraph.pl out.folded > cpu.svg，纵向找最宽的栈帧即热点函数。 关键区分： on-CPU 高（us / sy 高）→ 用上面链路找计算热点； off-CPU 高（进程在等锁 / IO / 网络，CPU 不高却慢）→ 用 off-CPU 火焰图（perf sched / 调度延迟），此时只看 CPU 利用率会误判为「CPU 没问题」。 注意：容器里 top 可能显示宿主机核数导致误读，应结合 cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us 或 cgroup 视角确认配额后再下结论。","url":"https://itinterview.com.cn/question/825"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"系统调优","item":"https://itinterview.com.cn/category?cat=46"},{"@type":"ListItem","position":4,"name":"某进程 CPU 使用率突然飙到 100%+，如何一步步定位到具体热点函数？","item":"https://itinterview.com.cn/q/825"}]}</script>

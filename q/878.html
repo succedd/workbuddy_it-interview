@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。 · IT面试题库">
   <meta property="og:description" content="脚本骨架： [[ ]] vs [ ] 区别： [ 是外部命令（test），受单词分割影响，变量必须加引号；[[ 是 Bash 关键字，内部自动不分割、不展开通配符。 [[ ]] 原生支持 =~ 正则、== 模式匹配（glob）、&amp;&amp;/|| 逻辑，而 [ 需要 -a/-o 且不支持正则。 复杂条件优先用 [[ ]]…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/878.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/878.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/878">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。 · IT面试题库">
   <meta name="twitter:description" content="脚本骨架： [[ ]] vs [ ] 区别： [ 是外部命令（test），受单词分割影响，变量必须加引号；[[ 是 Bash 关键字，内部自动不分割、不展开通配符。 [[ ]] 原生支持 =~ 正则、== 模式匹配（glob）、&amp;&amp;/|| 逻辑，而 [ 需要 -a/-o 且不支持正则。 复杂条件优先用 [[ ]]…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/878.jpg">
+  <meta name="twitter:image:alt" content="用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/878">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。","text":"考察流程控制与正则匹配的工程化写法。","answerCount":1,"datePublished":"2026-09-09T02:22:06.140Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"脚本骨架： [[ ]] vs [ ] 区别： [ 是外部命令（test），受单词分割影响，变量必须加引号；[[ 是 Bash 关键字，内部自动不分割、不展开通配符。 [[ ]] 原生支持 =~ 正则、== 模式匹配（glob）、&&/|| 逻辑，而 [ 需要 -a/-o 且不支持正则。 复杂条件优先用 [[ ]]，简单 POSIX 兼容场景才用 [ ]。","url":"https://itinterview.com.cn/question/878"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"用 `if/elif/case` 配合 `[[ =~ ]]` 正则，写一段「根据文件后缀分发不同处理逻辑」的脚本骨架，并说明 `[[ ]]` 与 `[ ]` 的关键区别。","item":"https://itinterview.com.cn/q/878"}]}</script>

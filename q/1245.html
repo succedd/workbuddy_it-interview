@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。 · IT面试题库">
   <meta property="og:description" content="要点： 四大可拦截对象：Executor（执行器，可拦截 update/query 做分页/缓存）、StatementHandler（SQL 执行前后，可改 SQL/打印慢 SQL）、ParameterHandler（参数设置，可做脱敏/加密）、ResultSetHandler（结果处理，可做脱敏/脱敏输出）。 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1245.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1245.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1245">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。 · IT面试题库">
   <meta name="twitter:description" content="要点： 四大可拦截对象：Executor（执行器，可拦截 update/query 做分页/缓存）、StatementHandler（SQL 执行前后，可改 SQL/打印慢 SQL）、ParameterHandler（参数设置，可做脱敏/加密）、ResultSetHandler（结果处理，可做脱敏/脱敏输出）。 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1245.jpg">
+  <meta name="twitter:image:alt" content="如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1245">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。","text":"考察点：MyBatis 插件扩展机制（拦截器）的原理与落地，是 MyBatis 进阶与框架定制能力的体现，高级场景题。","answerCount":1,"datePublished":"2026-09-26T01:40:37.091Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四大可拦截对象：Executor（执行器，可拦截 update/query 做分页/缓存）、StatementHandler（SQL 执行前后，可改 SQL/打印慢 SQL）、ParameterHandler（参数设置，可做脱敏/加密）、ResultSetHandler（结果处理，可做脱敏/脱敏输出）。 自定义拦截器：实现 Interceptor 接口，用 @Intercepts({@Signature(type=..., method=..., args=...)}) 声明要拦截的「对象+方法+参数签名」；@Override intercept(Invocation) 里 invocation.proceed() 前后织入逻辑。 代理原理：MyBatis 用 Plugin.wrap(target, interceptor) 对目标对象做 JDK 动态代理，InvocationHandler 就是 Plugin 自身；调用方法时先匹配 @Signature，命中才走 intercept，否则直接 proceed()。所以是「责任链 + 动态代理」，可多层包裹。 实战例子：① 慢 SQL：在 StatementHandler 拦截，记录 SQL 执行耗时，超阈值打日志；② 分页：在 Executor.query 前改写 SQL 加 LIMIT（如 PageHelper 思路）；③ 脱敏：在 ResultSetHandler 结果映射后对某些字段打码。 注意：拦截器顺序、对性能的影响、避免在拦截器里做重操作。","url":"https://itinterview.com.cn/question/1245"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"MyBatis","item":"https://itinterview.com.cn/category?cat=84"},{"@type":"ListItem","position":5,"name":"如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。","item":"https://itinterview.com.cn/q/1245"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MySQL 死锁是怎么产生的？如何避免？ · IT面试题库">
   <meta property="og:description" content="死锁：两个事务互相持有对方需要的锁并等待，形成循环等待。InnoDB 用等待图检测，发现死锁后回滚代价较小的事务并报错 1213。 常见原因：不同事务以不同顺序更新多行（T1 先 A 后 B，T2 先 B 后 A）。 避免： 约定统一的加锁顺序； 缩小事务、尽快提交，减少锁持有时间； 降低隔离级别（RC 减少间隙…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/36.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MySQL 死锁是怎么产生的？如何避免？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/36.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/36">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MySQL 死锁是怎么产生的？如何避免？ · IT面试题库">
   <meta name="twitter:description" content="死锁：两个事务互相持有对方需要的锁并等待，形成循环等待。InnoDB 用等待图检测，发现死锁后回滚代价较小的事务并报错 1213。 常见原因：不同事务以不同顺序更新多行（T1 先 A 后 B，T2 先 B 后 A）。 避免： 约定统一的加锁顺序； 缩小事务、尽快提交，减少锁持有时间； 降低隔离级别（RC 减少间隙…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/36.jpg">
+  <meta name="twitter:image:alt" content="MySQL 死锁是怎么产生的？如何避免？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/36">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MySQL 死锁是怎么产生的？如何避免？","text":"解释死锁条件、MySQL 的处理机制与预防策略。","answerCount":1,"datePublished":"2026-08-22T12:47:38.021Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"死锁：两个事务互相持有对方需要的锁并等待，形成循环等待。InnoDB 用等待图检测，发现死锁后回滚代价较小的事务并报错 1213。 常见原因：不同事务以不同顺序更新多行（T1 先 A 后 B，T2 先 B 后 A）。 避免： 约定统一的加锁顺序； 缩小事务、尽快提交，减少锁持有时间； 降低隔离级别（RC 减少间隙锁）； 为更新加合理索引，避免锁升级为表锁； 应用层捕获 1213 重试。","url":"https://itinterview.com.cn/question/36"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"MySQL 死锁是怎么产生的？如何避免？","item":"https://itinterview.com.cn/q/36"}]}</script>

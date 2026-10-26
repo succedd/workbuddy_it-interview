@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 为什么慢 for 循环里每条 insert 都是一次独立 SQL 发送加一次提交，十万条就是十万次网络往返与 SQL 解析开销，耗时主要花在网络 I/O 与往返次数上。 2. 手段一：SQL 层面合并（ 批量插入） 把 N 条数据拼成一条多值 insert ... values (...),(...…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1290.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1290.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1290">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 为什么慢 for 循环里每条 insert 都是一次独立 SQL 发送加一次提交，十万条就是十万次网络往返与 SQL 解析开销，耗时主要花在网络 I/O 与往返次数上。 2. 手段一：SQL 层面合并（ 批量插入） 把 N 条数据拼成一条多值 insert ... values (...),(...…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1290.jpg">
+  <meta name="twitter:image:alt" content="MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1290">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？","text":"考察点：批量写入的两种手段与 ExecutorType 的取舍。","answerCount":1,"datePublished":"2026-09-26T02:32:26.243Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 为什么慢 for 循环里每条 insert 都是一次独立 SQL 发送加一次提交，十万条就是十万次网络往返与 SQL 解析开销，耗时主要花在网络 I/O 与往返次数上。 2. 手段一：SQL 层面合并（ 批量插入） 把 N 条数据拼成一条多值 insert ... values (...),(...)，用 生成多组占位符，把 N 次往返压成 1 次。 用 #{} 而不是 ${}，让 MyBatis 生成 PreparedStatement 占位符，避免 SQL 注入和重复解析开销。 一次拼的行数受 max_allowed_packet 与 SQL 长度上限约束，通常按 500～1000 条分批提交，而不是一次拼十万行。 3. 手段二：会话层面用 BATCH 执行器 MyBatis 的 ExecutorType 有三种：SIMPLE（默认，每次新建 PreparedStatement）、REUSE（复用 PreparedStatement）、BATCH（把 update 语句攒起来，遇到 SELECT 或显式 flush/commit 才发送，对应 JDBC 的 addBatch()/executeBatch()）。 用 openSession(ExecutorType.BATCH) 拿到会话后循环 insert，最后必须 commit() 才落库。注意： BATCH 模式下不显式 commit 就不会写入，这是最常见的坑。 BATCH 模式下 insert 返回的受影响行数不可靠；需要主键时要配合 selectKey 或改用 。 4. 选型建议 十万级批量导入：优先 分批（每批 500～1000）+ MySQL 驱动 rewriteBatchedStatements=true，吞吐最高。 混合读写、需要逐条反馈：用 ExecutorType.BATCH。 无论哪种都要分批提交、避免超长事务（否则加剧主从延迟、放大锁范围）。","url":"https://itinterview.com.cn/question/1290"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"MyBatis","item":"https://itinterview.com.cn/category?cat=84"},{"@type":"ListItem","position":5,"name":"MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？","item":"https://itinterview.com.cn/q/1290"}]}</script>

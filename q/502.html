@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是野指针和内存泄漏？如何避免？ · IT面试题库">
   <meta property="og:description" content="野指针（Dangling Pointer）：指向已释放或无效内存的指针，解引用会导致未定义行为/崩溃。 常见成因： free(p) 后未将 p 置 NULL，再次使用； 返回函数内局部变量的地址（函数返回后栈帧失效）； 指针越界、数组下标错误。 内存泄漏（Memory Leak）：动态分配的内存（堆）不再使用却未…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/502.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是野指针和内存泄漏？如何避免？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/502.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/502">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是野指针和内存泄漏？如何避免？ · IT面试题库">
   <meta name="twitter:description" content="野指针（Dangling Pointer）：指向已释放或无效内存的指针，解引用会导致未定义行为/崩溃。 常见成因： free(p) 后未将 p 置 NULL，再次使用； 返回函数内局部变量的地址（函数返回后栈帧失效）； 指针越界、数组下标错误。 内存泄漏（Memory Leak）：动态分配的内存（堆）不再使用却未…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/502.jpg">
+  <meta name="twitter:image:alt" content="什么是野指针和内存泄漏？如何避免？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/502">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是野指针和内存泄漏？如何避免？","text":"请解释野指针的成因（如 free 后未置空、返回局部变量地址、越界）与内存泄漏的成因，并给出防御性编码建议。附带一段示例代码。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"野指针（Dangling Pointer）：指向已释放或无效内存的指针，解引用会导致未定义行为/崩溃。 常见成因： free(p) 后未将 p 置 NULL，再次使用； 返回函数内局部变量的地址（函数返回后栈帧失效）； 指针越界、数组下标错误。 内存泄漏（Memory Leak）：动态分配的内存（堆）不再使用却未 free，程序持续占用直至结束。长期运行服务会逐渐耗光内存。 常见成因：分配后遗漏 free、提前 return/异常路径跳过 free、指针被覆盖导致原地址丢失。 防御建议： 1. free(p) 后紧跟 p = NULL;（解引用 NULL 至少可稳定崩溃便于排查）。 2. 谁分配谁释放，遵循单一所有权；用 valgrind/ASan 检测。 3. 优先在作用域出口统一释放，避免多出口遗漏（或用 goto cleanup 模式）。 4. 禁止返回局部变量地址；需要跨函数传递时用 malloc + 调用方释放。 5. C++ 中优先用智能指针/容器代替裸指针。","url":"https://itinterview.com.cn/question/502"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C语言","item":"https://itinterview.com.cn/category?cat=10"},{"@type":"ListItem","position":4,"name":"什么是野指针和内存泄漏？如何避免？","item":"https://itinterview.com.cn/q/502"}]}</script>

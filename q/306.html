@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？ · IT面试题库">
   <meta property="og:description" content="K8s 解决容器规模化后的编排问题：调度（放哪台机器）、自愈（挂了重拉）、扩缩容、服务发现、滚动发布。 核心设计：声明式 API + 控制器循环： 1. 你提交的不是「命令」（启动 3 个实例），而是「期望状态」（永远保持 3 个健康实例）； 2. 控制器持续对比期望 vs 实际，有偏差自动收敛。 这个设计的深远…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/306.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/306.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/306">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？ · IT面试题库">
   <meta name="twitter:description" content="K8s 解决容器规模化后的编排问题：调度（放哪台机器）、自愈（挂了重拉）、扩缩容、服务发现、滚动发布。 核心设计：声明式 API + 控制器循环： 1. 你提交的不是「命令」（启动 3 个实例），而是「期望状态」（永远保持 3 个健康实例）； 2. 控制器持续对比期望 vs 实际，有偏差自动收敛。 这个设计的深远…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/306.jpg">
+  <meta name="twitter:image:alt" content="云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/306">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？","text":"容器一多（几百上千个）谁来决定放哪、挂了谁拉起、流量给谁？把「运维动作」和「期望状态」分开想——K8s 的循环里，人的角色变成了什么？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"K8s 解决容器规模化后的编排问题：调度（放哪台机器）、自愈（挂了重拉）、扩缩容、服务发现、滚动发布。 核心设计：声明式 API + 控制器循环： 1. 你提交的不是「命令」（启动 3 个实例），而是「期望状态」（永远保持 3 个健康实例）； 2. 控制器持续对比期望 vs 实际，有偏差自动收敛。 这个设计的深远之处：系统自愈不依赖人在线——机器宕机、进程崩溃、配置误删，都会被循环自动修复。人从「操作员」变成「声明规则的作者」。面试里的 Pod/Deployment/Service 探针，全是为这个循环服务的零件。","url":"https://itinterview.com.cn/question/306"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"云原生【本质】Kubernetes 到底在解决什么问题？「声明式 API + 控制器循环」为什么是天才设计？","item":"https://itinterview.com.cn/q/306"}]}</script>

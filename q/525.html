@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？ · IT面试题库">
   <meta property="og:description" content="为什么用 B+ 树： 二叉树（如 AVL/红黑）在海量数据下层级过深，每次比较都对应一次磁盘 IO，深度大=IO 多=慢。 B+ 树是“多路平衡树”，一个节点可放很多键（与磁盘页 16KB 对齐），树高通常仅 3~4 层，几次数 IO 即可定位，极大减少磁盘访问。 B+ 树结构特点： 1. 非叶子节点只存键+指针…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/525.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/525.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/525">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？ · IT面试题库">
   <meta name="twitter:description" content="为什么用 B+ 树： 二叉树（如 AVL/红黑）在海量数据下层级过深，每次比较都对应一次磁盘 IO，深度大=IO 多=慢。 B+ 树是“多路平衡树”，一个节点可放很多键（与磁盘页 16KB 对齐），树高通常仅 3~4 层，几次数 IO 即可定位，极大减少磁盘访问。 B+ 树结构特点： 1. 非叶子节点只存键+指针…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/525.jpg">
+  <meta name="twitter:image:alt" content="为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/525">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？","text":"说明 B+ 树多路平衡、叶子链表、非叶子仅存索引、与磁盘页/IO 的关系，以及哈希索引的局限。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么用 B+ 树： 二叉树（如 AVL/红黑）在海量数据下层级过深，每次比较都对应一次磁盘 IO，深度大=IO 多=慢。 B+ 树是“多路平衡树”，一个节点可放很多键（与磁盘页 16KB 对齐），树高通常仅 3~4 层，几次数 IO 即可定位，极大减少磁盘访问。 B+ 树结构特点： 1. 非叶子节点只存键+指针，不存数据，单节点能容纳更多键 → 更矮。 2. 所有数据都在叶子节点，且叶子节点之间用双向链表相连 → 范围查询（BETWEEN、>）、全表遍历极快，只需顺链表走。 3. 所有查询都落到叶子层，路径长度一致（稳定）。 对比哈希索引：哈希只能等值（=）且不支持范围/排序/前缀匹配，且存在哈希冲突；B+ 树支持范围、有序、最左前缀，是默认索引结构。Memory 引擎等才常用哈希。 补充：聚簇索引（InnoDB）叶子节点存整行数据，二级索引叶子存主键值再回表。","url":"https://itinterview.com.cn/question/525"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"为什么关系型数据库索引常用 B+ 树而不是二叉搜索树或哈希？B+ 树的结构特点是什么？","item":"https://itinterview.com.cn/q/525"}]}</script>

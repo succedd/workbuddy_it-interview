@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。 · IT面试题库">
   <meta property="og:description" content="Partial ：把 T 的所有属性变为可选。type Partial = { [K in keyof T]?: T[K] } Pick ：从 T 中挑选一组属性 K 组成新类型。type Pick = { [P in K]: T[P] } Omit ：排除 T 中指定的属性 K。type Omit = Pick…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/509.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/509.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/509">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。 · IT面试题库">
   <meta name="twitter:description" content="Partial ：把 T 的所有属性变为可选。type Partial = { [K in keyof T]?: T[K] } Pick ：从 T 中挑选一组属性 K 组成新类型。type Pick = { [P in K]: T[P] } Omit ：排除 T 中指定的属性 K。type Omit = Pick…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/509.jpg">
+  <meta name="twitter:image:alt" content="简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/509">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。","text":"请分别说明这些内置工具类型的语义，并用条件类型/映射类型展示其实现思路。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Partial ：把 T 的所有属性变为可选。type Partial = { [K in keyof T]?: T[K] } Pick ：从 T 中挑选一组属性 K 组成新类型。type Pick = { [P in K]: T[P] } Omit ：排除 T 中指定的属性 K。type Omit = Pick > Record ：构造一个键为 K、值为 V 的对象类型。type Record = { [P in K]: T } ReturnType ：提取函数类型 F 的返回值类型。type ReturnType any> = F extends (...args:any)=>infer R ? R : any（借助 infer 条件类型捕获返回值）。 原理共性：均基于「映射类型」（[K in keyof T]）与「条件类型 + infer」实现；keyof、Exclude、extends 等关键字配合完成键的增删与值的提取。","url":"https://itinterview.com.cn/question/509"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"TypeScript","item":"https://itinterview.com.cn/category?cat=15"},{"@type":"ListItem","position":4,"name":"简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。","item":"https://itinterview.com.cn/q/509"}]}</script>

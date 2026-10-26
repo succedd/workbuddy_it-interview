@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="API 网关的核心职责是什么？它和 Nginx、BFF、Service Mesh 的边界在哪里？ · IT面试题库">
   <meta property="og:description" content="要点： 1. 网关是什么 API 网关是位于客户端与后端服务之间的统一入口：所有客户端请求先经过网关，再由网关路由到目标服务。它的核心价值在于把安全认证、流量控制、日志、监控等每个服务都需要的横切能力收敛到一处，避免每个服务重复实现，导致代码重复、管理分散、维护成本高。 2. 两类核心职责 | 职责 | 说明 |…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1284.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="API 网关的核心职责是什么？它和 Nginx、BFF、Service Mesh 的边界在哪里？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1284.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1284">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="API 网关的核心职责是什么？它和 Nginx、BFF、Service Mesh 的边界在哪里？ · IT面试题库">
   <meta name="twitter:description" content="要点： 1. 网关是什么 API 网关是位于客户端与后端服务之间的统一入口：所有客户端请求先经过网关，再由网关路由到目标服务。它的核心价值在于把安全认证、流量控制、日志、监控等每个服务都需要的横切能力收敛到一处，避免每个服务重复实现，导致代码重复、管理分散、维护成本高。 2. 两类核心职责 | 职责 | 说明 |…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1284.jpg">
+  <meta name="twitter:image:alt" content="API 网关的核心职责是什么？它和 Nginx、BFF、Service Mesh 的边界在哪里？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1284">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"API 网关的核心职责是什么？它和 Nginx、BFF、Service Mesh 的边界在哪里？","text":"考察点：网关的能力边界与「巨石网关」风险。","answerCount":1,"datePublished":"2026-09-26T02:32:20.379Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 1. 网关是什么 API 网关是位于客户端与后端服务之间的统一入口：所有客户端请求先经过网关，再由网关路由到目标服务。它的核心价值在于把安全认证、流量控制、日志、监控等每个服务都需要的横切能力收敛到一处，避免每个服务重复实现，导致代码重复、管理分散、维护成本高。 2. 两类核心职责 | 职责 | 说明 | 典型功能 | | --- | --- | --- | | 请求转发 | 把请求路由到正确的目标服务 | 动态路由、负载均衡、协议转换 | | 请求过滤 | 在请求到达服务前/后拦截处理 | 身份认证、权限校验、限流熔断、日志记录 | 具体能力通常包括：请求转发、负载均衡、安全认证、参数校验、日志与监控告警、流量控制、熔断降级、响应缓存、响应聚合、灰度发布、异常处理、API 文档、协议转换与证书管理。 3. 边界：网关不该做什么 网关适合做协议级、通用型、跨服务的能力。强业务规则校验、复杂字段映射、长事务、长连接业务逻辑、细粒度业务授权，应回到业务服务；复杂响应聚合更推荐放在 BFF（Backend For Frontend） 或 GraphQL 层，避免把业务编排逻辑沉淀到基础设施层，否则会演化成难以维护的「巨石网关」。 4. 与其它组件的分工 Nginx / 负载均衡器：偏基础设施，做四/七层转发、SSL 终止、静态资源、全局限流。网关自身也需要外层 Nginx 做负载以实现高可用。 BFF：面向特定端（如 Web/App）做接口聚合与裁剪，属于业务编排层。 Service Mesh：把服务间通信治理（熔断、重试、mTLS）下沉到 Sidecar；网关主要承担南北向（外部→内部）流量，Mesh 负责东西向（服务↔服务）流量。 双层网关：边缘层用 Kong/APISIX/Envoy 做 SSL、WAF、全局限流、IP 黑白名单，内网用 Spring Cloud Gateway/ShenYu 做微服务路由、细粒度鉴权与灰度路由。 5. 别忽略新增风险：引入网关多一次网络转发，也引入新单点，因此必须多实例部署并前置负载均衡。","url":"https://itinterview.com.cn/question/1284"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"API网关","item":"https://itinterview.com.cn/category?cat=131"},{"@type":"ListItem","position":4,"name":"API 网关的核心职责是什么？它和 Nginx、BFF、Service Mesh 的边界在哪里？","item":"https://itinterview.com.cn/q/1284"}]}</script>

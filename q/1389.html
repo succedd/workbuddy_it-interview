@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="主存地址在直接映射（Direct-Mapped）Cache 中如何划分为 标记/行索引/块内偏移？给出具体地址的算例。 · IT面试题库">
   <meta property="og:description" content="结论 直接映射把主存按「块」映射到 Cache 中唯一固定的一行：主存地址从高位到低位被切成 Tag（标记）+ Index（行索引）+ Offset（块内偏移） 三段。 字段计算方法（示例参数） 块大小 16B → Offset 位数 = log₂16 = 4 位（块内字节 0~15）。 Cache 64 行 →…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1389.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="主存地址在直接映射（Direct-Mapped）Cache 中如何划分为 标记/行索引/块内偏移？给出具体地址的算例。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1389.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1389">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="主存地址在直接映射（Direct-Mapped）Cache 中如何划分为 标记/行索引/块内偏移？给出具体地址的算例。 · IT面试题库">
   <meta name="twitter:description" content="结论 直接映射把主存按「块」映射到 Cache 中唯一固定的一行：主存地址从高位到低位被切成 Tag（标记）+ Index（行索引）+ Offset（块内偏移） 三段。 字段计算方法（示例参数） 块大小 16B → Offset 位数 = log₂16 = 4 位（块内字节 0~15）。 Cache 64 行 →…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1389.jpg">
+  <meta name="twitter:image:alt" content="主存地址在直接映射（Direct-Mapped）Cache 中如何划分为 标记/行索引/块内偏移？给出具体地址的算例。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1389">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"主存地址在直接映射（Direct-Mapped）Cache 中如何划分为 标记/行索引/块内偏移？给出具体地址的算例。","text":"考察直接映射的地址字段划分与具体数值计算。","answerCount":1,"datePublished":"2026-09-26T11:05:10.714Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 直接映射把主存按「块」映射到 Cache 中唯一固定的一行：主存地址从高位到低位被切成 Tag（标记）+ Index（行索引）+ Offset（块内偏移） 三段。 字段计算方法（示例参数） 块大小 16B → Offset 位数 = log₂16 = 4 位（块内字节 0~15）。 Cache 64 行 → Index 位数 = log₂64 = 6 位（每行一一对应）。 32 位地址 → Tag 位数 = 32 − 6 − 4 = 22 位。 具体算例：主存地址 0x1234 0x1234 = 0001 0010 0011 0100₂（按位分段）： Offset = 低 4 位 = 0100₂ = 4（块内第 4 字节）。 Index = 次低 6 位 = 110011₂ = 51（映射到 Cache 第 51 行）。 Tag = 高 22 位 = 0x48（去掉低 10 位后的值）。 命中判断：仅当「第 51 行有效位=1」且「该行 Tag 字段 == 0x48」时命中；否则从主存把整个 16B 块调入该行。 直接映射电路最简单，但容易冲突失效（抖动）：多个映射到同一行的主存块会互相挤掉。","url":"https://itinterview.com.cn/question/1389"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"主存地址在直接映射（Direct-Mapped）Cache 中如何划分为 标记/行索引/块内偏移？给出具体地址的算例。","item":"https://itinterview.com.cn/q/1389"}]}</script>

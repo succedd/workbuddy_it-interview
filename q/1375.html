@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="计算机中有哪几类移位运算（算术/逻辑/循环）？补码算术移位有什么特点，为什么负数右移要补符号位？ · IT面试题库">
   <meta property="og:description" content="一、移位分类 逻辑移位：无符号数，左右移均补 0（左移=×2，右移=÷2 向下取整）。 算术移位：有符号数，左移补 0；右移保持符号位（补符号位，即“算术右移/符号扩展”），左移可能溢出。 循环移位：移出的位回到另一端（可分带/不带进位位 CY 两种）。 二、补码算术移位要点 正数：算术移位等同逻辑移位（符号位为…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1375.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="计算机中有哪几类移位运算（算术/逻辑/循环）？补码算术移位有什么特点，为什么负数右移要补符号位？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1375.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1375">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="计算机中有哪几类移位运算（算术/逻辑/循环）？补码算术移位有什么特点，为什么负数右移要补符号位？ · IT面试题库">
   <meta name="twitter:description" content="一、移位分类 逻辑移位：无符号数，左右移均补 0（左移=×2，右移=÷2 向下取整）。 算术移位：有符号数，左移补 0；右移保持符号位（补符号位，即“算术右移/符号扩展”），左移可能溢出。 循环移位：移出的位回到另一端（可分带/不带进位位 CY 两种）。 二、补码算术移位要点 正数：算术移位等同逻辑移位（符号位为…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1375.jpg">
+  <meta name="twitter:image:alt" content="计算机中有哪几类移位运算（算术/逻辑/循环）？补码算术移位有什么特点，为什么负数右移要补符号位？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1375">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"计算机中有哪几类移位运算（算术/逻辑/循环）？补码算术移位有什么特点，为什么负数右移要补符号位？","text":"考察三种移位语义差异、补码算术移位的符号扩展规则，以及移位与乘除、溢出的关系。","answerCount":1,"datePublished":"2026-09-26T08:59:07.530Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、移位分类 逻辑移位：无符号数，左右移均补 0（左移=×2，右移=÷2 向下取整）。 算术移位：有符号数，左移补 0；右移保持符号位（补符号位，即“算术右移/符号扩展”），左移可能溢出。 循环移位：移出的位回到另一端（可分带/不带进位位 CY 两种）。 二、补码算术移位要点 正数：算术移位等同逻辑移位（符号位为 0）。 负数补码：左移补 0、右移补 1（符号扩展），保证值正确 ×2 / ÷2（负数除法向下取整）。 例：[−4]补 = 11100，算术右移一位 = 11110 = [−2]补 ✓；若左移导致符号位由 1 变 0 则溢出。 三、与其他考点的联系 移位常与原码/补码、溢出结合考查，例如“补码左移一位是否溢出”要看符号位是否改变；乘法器也以“加法+移位”迭代实现。 四、常见编码回顾 BCD 码：4 位二进制表示 1 位十进制，8421 码有权、余3码无权且对 9 自补，加法结果需“加 6 修正”。 ASCII：7 位字符编码，'A'~'Z' 为 41H~5AH，'a'~'z' 为 61H~7AH。","url":"https://itinterview.com.cn/question/1375"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"计算机中有哪几类移位运算（算术/逻辑/循环）？补码算术移位有什么特点，为什么负数右移要补符号位？","item":"https://itinterview.com.cn/q/1375"}]}</script>

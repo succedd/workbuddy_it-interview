@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="下面这段代码，正确描述的是哪一项？（考察 let/const 的 TDZ 与块级作用域） · IT面试题库">
   <meta property="og:description" content="代码： 正确选项：C —— ① 抛 ReferenceError（TDZ），② 输出 2，③ 输出 1，④ 正常执行（b.x 可改）。 要点： ① 报错原因：let a 在执行到声明语句前处于暂时性死区，提前访问直接抛 ReferenceError，而不是像 var 那样输出 undefined。 ② 与 ③：i…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/955.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="下面这段代码，正确描述的是哪一项？（考察 let/const 的 TDZ 与块级作用域） · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/955.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/955">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="下面这段代码，正确描述的是哪一项？（考察 let/const 的 TDZ 与块级作用域） · IT面试题库">
   <meta name="twitter:description" content="代码： 正确选项：C —— ① 抛 ReferenceError（TDZ），② 输出 2，③ 输出 1，④ 正常执行（b.x 可改）。 要点： ① 报错原因：let a 在执行到声明语句前处于暂时性死区，提前访问直接抛 ReferenceError，而不是像 var 那样输出 undefined。 ② 与 ③：i…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/955.jpg">
+  <meta name="twitter:image:alt" content="下面这段代码，正确描述的是哪一项？（考察 let/const 的 TDZ 与块级作用域） · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/955">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"下面这段代码，正确描述的是哪一项？（考察 let/const 的 TDZ 与块级作用域）","text":"考察点：TDZ 触发时机、块级作用域的独立性、const 声明对象后属性是否可变。给出四选一，要求解释每个选项对错原因。","answerCount":1,"datePublished":"2026-09-10T02:28:36.853Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"代码： 正确选项：C —— ① 抛 ReferenceError（TDZ），② 输出 2，③ 输出 1，④ 正常执行（b.x 可改）。 要点： ① 报错原因：let a 在执行到声明语句前处于暂时性死区，提前访问直接抛 ReferenceError，而不是像 var 那样输出 undefined。 ② 与 ③：if 块内的 let a = 2 是独立块级绑定，不影响外层的 a，所以 ②=2、③=1。 ④ 不报错：const 只禁止「重新赋值」，对象 b 的属性仍可增改，所以 b.x = 1 合法。 干扰项排除：A 错在认为 ① 输出 undefined（那是 var 的行为）；B/D 错在认为 ④ 报错或 ③ 输出 2。","url":"https://itinterview.com.cn/question/955"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"下面这段代码，正确描述的是哪一项？（考察 let/const 的 TDZ 与块级作用域）","item":"https://itinterview.com.cn/q/955"}]}</script>

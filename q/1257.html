@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？ · IT面试题库">
   <meta property="og:description" content="刷盘策略（单机维度：消息是否落到本机磁盘） 同步刷盘（SYNC_FLUSH）：Broker 必须等到刷盘成功的 ACK 才给生产者返回成功。可靠性高，但每次写都要等磁盘落盘，性能有明显损耗，适合金融等对数据敏感的场景。 异步刷盘（ASYNC_FLUSH）：后台线程异步刷盘，消息写入 Page Cache 即返回，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1257.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1257.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1257">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？ · IT面试题库">
   <meta name="twitter:description" content="刷盘策略（单机维度：消息是否落到本机磁盘） 同步刷盘（SYNC_FLUSH）：Broker 必须等到刷盘成功的 ACK 才给生产者返回成功。可靠性高，但每次写都要等磁盘落盘，性能有明显损耗，适合金融等对数据敏感的场景。 异步刷盘（ASYNC_FLUSH）：后台线程异步刷盘，消息写入 Page Cache 即返回，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1257.jpg">
+  <meta name="twitter:image:alt" content="RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1257">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？","text":"考察点：刷盘与复制两层可靠性机制的取舍，以及多数派复制方案。","answerCount":1,"datePublished":"2026-09-26T02:31:20.575Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"刷盘策略（单机维度：消息是否落到本机磁盘） 同步刷盘（SYNC_FLUSH）：Broker 必须等到刷盘成功的 ACK 才给生产者返回成功。可靠性高，但每次写都要等磁盘落盘，性能有明显损耗，适合金融等对数据敏感的场景。 异步刷盘（ASYNC_FLUSH）：后台线程异步刷盘，消息写入 Page Cache 即返回，降低读写延迟、提升吞吐，适合验证码这类可靠性要求不高的业务。 风险边界：异步刷盘只在 Broker 意外宕机时可能丢失尚未落盘的数据。通过 Broker 参数 FlushDiskType（ASYNC_FLUSH / SYNC_FLUSH）切换。 复制策略（主从维度：消息是否已同步到副本） 同步复制（同步双写）：消息必须同时写入主节点和从节点才返回成功，可靠性更高、延迟更大。 异步复制：消息写入主节点即返回成功，主从之间异步同步，吞吐更好。 关键结论：异步复制影响的不只是可用性，也影响可靠性。主节点已向生产者返回成功，但消息还没复制到从节点；若此时主节点发生不可逆故障（数据丢失而非短暂不可用），从节点就可能永远缺这部分消息。 所以对可靠性要求高的链路通常组合使用同步刷盘 + 同步复制；但两者叠加会明显抬高写入延迟，需要按业务分级选择，而不是全集群一刀切。 DLedger 解决什么 单主从架构下主节点挂掉后系统不能再写入（slave 只提供消费），可用性差；而多主多从又无法保证严格顺序——同一订单的一组消息原本固定在主节点 A，A 挂了以后新消息写到别的节点，顺序就断了。 DLedger 基于 Raft 提供多数派复制：消息至少复制到半数以上节点才返回写入成功，并支持自动选举动态切换主节点，在保持顺序的前提下提升可用性。 代价与限制：选举期间无法提供服务；至少需要 3 个节点；多数节点同时挂掉依然不可用；写入效率相比直接异步复制仍有差距。它不是万能方案，只是把单点主节点的风险降到「大多数派」级别。","url":"https://itinterview.com.cn/question/1257"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RocketMQ","item":"https://itinterview.com.cn/category?cat=129"},{"@type":"ListItem","position":5,"name":"RocketMQ 的同步刷盘与异步刷盘、同步复制与异步复制分别影响什么？DLedger 又解决了主从架构的什么问题？","item":"https://itinterview.com.cn/q/1257"}]}</script>

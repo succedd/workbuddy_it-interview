@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？ · IT面试题库">
   <meta property="og:description" content="规则作用对象：可按整个桶、指定前缀（如 logs/）或标签筛选对象，避免误伤热数据；本例用前缀 logs/ 精确命中日志。 沉降动作（Transition）：配置两条转换——第 30 天转为低频存储、第 365 天转为归档存储；注意低频/归档都有最小存储时长，过早转换反而更贵。 过期删除（Expiration）：…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1109.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1109.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1109">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？ · IT面试题库">
   <meta name="twitter:description" content="规则作用对象：可按整个桶、指定前缀（如 logs/）或标签筛选对象，避免误伤热数据；本例用前缀 logs/ 精确命中日志。 沉降动作（Transition）：配置两条转换——第 30 天转为低频存储、第 365 天转为归档存储；注意低频/归档都有最小存储时长，过早转换反而更贵。 过期删除（Expiration）：…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1109.jpg">
+  <meta name="twitter:image:alt" content="如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1109">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？","text":"运营中希望 30 天前的日志自动转低频、365 天后转归档、两年后彻底删除。请给出生命周期规则的设计思路与关键配置项。","answerCount":1,"datePublished":"2026-09-13T02:40:01.292Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"规则作用对象：可按整个桶、指定前缀（如 logs/）或标签筛选对象，避免误伤热数据；本例用前缀 logs/ 精确命中日志。 沉降动作（Transition）：配置两条转换——第 30 天转为低频存储、第 365 天转为归档存储；注意低频/归档都有最小存储时长，过早转换反而更贵。 过期删除（Expiration）：配置第 730 天删除对象；若开启了版本控制，还需配置「过期删除标记清理」与「历史版本过期（NoncurrentVersionExpiration）」避免历史版本无限堆积。 生效与回滚：规则保存后按天扫描执行，T+1 起生效；上线前建议先用测试前缀灰度验证动作与成本，再全量放开。","url":"https://itinterview.com.cn/question/1109"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？","item":"https://itinterview.com.cn/q/1109"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。 · IT面试题库">
   <meta property="og:description" content="传出结果的几种方式： 命令替换：函数把结果 echo 到 stdout，调用方用 result=$(myfunc) 捕获（最常用，干净）。 全局/局部变量：函数内给一个全局变量赋值，调用后直接读取（适合返回多个值）。 子 Shell 陷阱：result=$(func) 中 func 里对全局变量的修改不会传回父 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/879.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/879.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/879">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。 · IT面试题库">
   <meta name="twitter:description" content="传出结果的几种方式： 命令替换：函数把结果 echo 到 stdout，调用方用 result=$(myfunc) 捕获（最常用，干净）。 全局/局部变量：函数内给一个全局变量赋值，调用后直接读取（适合返回多个值）。 子 Shell 陷阱：result=$(func) 中 func 里对全局变量的修改不会传回父 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/879.jpg">
+  <meta name="twitter:image:alt" content="Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/879">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。","text":"考察 Shell 函数返回值限制与数据传出模式。","answerCount":1,"datePublished":"2026-09-09T02:22:06.206Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"传出结果的几种方式： 命令替换：函数把结果 echo 到 stdout，调用方用 result=$(myfunc) 捕获（最常用，干净）。 全局/局部变量：函数内给一个全局变量赋值，调用后直接读取（适合返回多个值）。 子 Shell 陷阱：result=$(func) 中 func 里对全局变量的修改不会传回父 Shell——这是常见坑，多值场景要用全局变量而非命令替换。 可复用日志函数示例： 把日志输出到 stderr（>&2）避免污染 stdout 的数据通道，是函数「既产出日志又不干扰返回值」的标准做法。","url":"https://itinterview.com.cn/question/879"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"Shell 函数只能 `return 0-255` 的状态码，无法返回字符串/多值。如果要从函数「返回」计算结果，有哪些可靠方式？写一个可复用的日志函数示范。","item":"https://itinterview.com.cn/q/879"}]}</script>

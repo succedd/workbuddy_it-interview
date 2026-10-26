@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？ · IT面试题库">
   <meta property="og:description" content="CDN（内容分发网络）是分布在不同地理位置的边缘节点服务器群组成的分布式网络，核心思想是：把源站的静态资源（图片、JS、CSS、视频等）缓存到离用户最近的节点上，用户就近取资源，避免长途网络传输和源站集中受压。 第一阶段：DNS/CNAME 智能调度。接入 CDN 后，加速域名的解析记录从 A 记录改为 CNAM…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1314.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1314.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1314">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？ · IT面试题库">
   <meta name="twitter:description" content="CDN（内容分发网络）是分布在不同地理位置的边缘节点服务器群组成的分布式网络，核心思想是：把源站的静态资源（图片、JS、CSS、视频等）缓存到离用户最近的节点上，用户就近取资源，避免长途网络传输和源站集中受压。 第一阶段：DNS/CNAME 智能调度。接入 CDN 后，加速域名的解析记录从 A 记录改为 CNAM…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1314.jpg">
+  <meta name="twitter:image:alt" content="CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1314">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？","text":"CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？","answerCount":1,"datePublished":"2026-09-26T03:31:41.157Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CDN（内容分发网络）是分布在不同地理位置的边缘节点服务器群组成的分布式网络，核心思想是：把源站的静态资源（图片、JS、CSS、视频等）缓存到离用户最近的节点上，用户就近取资源，避免长途网络传输和源站集中受压。 第一阶段：DNS/CNAME 智能调度。接入 CDN 后，加速域名的解析记录从 A 记录改为 CNAME，指向 CDN 提供的专属域名。用户请求域名时的完整链路： 1. 用户先问 Local DNS（本地 DNS）要 IP，Local DNS 先查自己的缓存，没有就向网站授权 DNS 发起解析； 2. 授权 DNS 返回的是 CNAME 别名； 3. Local DNS 拿着这个别名去问 CDN 的 DNS 调度系统； 4. 调度系统根据 Local DNS 所属区域、节点负载等，分配离用户最近的边缘节点 IP 返回。 之后用户直接向该边缘节点发起资源请求。副作用是公网解析返回的是边缘节点 IP 而非源站真实 IP，顺带隐藏了源站地址；但 Local DNS 会按 TTL 缓存解析结果，调度调整要等缓存过期才生效。 第二阶段：边缘节点的命中与回源： 1. 缓存命中：节点已缓存该资源且未过期，直接返回，请求结束——这是理想路径，不用回源； 2. 缓存未命中或已过期：节点向源站发起回源请求，取回资源后按配置的缓存策略（Cache-Control、缓存过期时间等）存入节点并返回用户。后续其他用户的请求就能命中了。 衡量加速效果的关键指标是缓存命中率：命中比例越高，回源越少、源站压力越小、用户延迟越低。所以缓存过期时间的设置是核心权衡——过长导致内容更新不及时，过短导致命中率下降、回源暴涨。 缓存刷新与穿透： 1. 缓存刷新：资源已更新但节点上还是旧版本时，向 CDN 提交 URL 或目录刷新请求，主动清掉节点的旧缓存，强制下次请求回源拉取最新内容；刷新是异步的，提交后到全网生效有延迟； 2. 刷新前的窗口期用户可能读到旧版本，发布静态资源时的常见做法是「文件名带 hash/版本号」，让新版本天然是新的 URL，绕开刷新时效问题； 3. 缓存穿透（回源放大）：请求的 URL 带了大量随机参数、或请求本身不存在于缓存，每个请求都击穿到源站，命中率趋近于零，源站被打爆。可通过过滤参数配置（忽略 URL 中 ？ 之后的参数）、缓存空结果等手段缓解。 回答要点小结：先一句话概括「就近缓存」，再讲 CNAME 调度和命中/回源两条路径，最后落到刷新与穿透两个工程细节，能提到「文件名带 hash 发布」和「命中率」是加分项。","url":"https://itinterview.com.cn/question/1314"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络基础","item":"https://itinterview.com.cn/category?cat=49"},{"@type":"ListItem","position":4,"name":"CDN 的加速原理是什么？边缘节点如何处理缓存命中与回源？缓存刷新与穿透是怎么回事？","item":"https://itinterview.com.cn/q/1314"}]}</script>

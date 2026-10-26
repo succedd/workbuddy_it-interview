@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？ · IT面试题库">
   <meta property="og:description" content="前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1110.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1110.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1110">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？ · IT面试题库">
   <meta name="twitter:description" content="前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1110.jpg">
+  <meta name="twitter:image:alt" content="配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1110">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？","text":"源桶已开启跨地域复制，目标地域却看不到新对象。请按顺序列出排查链路，并说明该机制的一致性前提。","answerCount":1,"datePublished":"2026-09-13T02:40:01.457Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"前置条件：源桶必须开启版本控制，目标桶也必须开启版本控制，否则复制任务直接不生效——这是最高频的漏配点。 复制角色与权限：控制台会要求授权一个复制角色（CAM），若角色被删/策略被改，复制静默失败；需在 CAM 确认角色仍存在且拥有源读、目标写权限。 规则与目标：检查复制规则的目标桶、存储类型、前缀是否匹配；对象因前缀不匹配或命中排除规则而不会复制。 一致性模型：CRR 是异步最终一致，通常秒级到分钟级；新对象立即可见是误区。复制保留元数据与版本 ID，删除标记也会复制（除非单独关闭删除复制），因此目标桶不能作为「防误删」的唯一手段。","url":"https://itinterview.com.cn/question/1110"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"腾讯云","item":"https://itinterview.com.cn/category?cat=151"},{"@type":"ListItem","position":4,"name":"配置了跨地域复制（CRR）但对象没有同步到目标桶，如何系统性排查？","item":"https://itinterview.com.cn/q/1110"}]}</script>

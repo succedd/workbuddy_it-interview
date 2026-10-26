@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案 · IT面试题库">
   <meta property="og:description" content="要点一：根因定位——MDL 写锁被长事务卡住引发连锁阻塞 MDL 不需要显式申请：表上的 CRUD 自动加 MDL 读锁，表结构变更（DDL）自动加 MDL 写锁；MDL 在事务提交后才释放，事务执行期间一直持有。 事故链：某个长事务先执行了 select（持有 MDL 读锁一直不提交）→ ALTER 申请 MD…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/649.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/649.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/649">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案 · IT面试题库">
   <meta name="twitter:description" content="要点一：根因定位——MDL 写锁被长事务卡住引发连锁阻塞 MDL 不需要显式申请：表上的 CRUD 自动加 MDL 读锁，表结构变更（DDL）自动加 MDL 写锁；MDL 在事务提交后才释放，事务执行期间一直持有。 事故链：某个长事务先执行了 select（持有 MDL 读锁一直不提交）→ ALTER 申请 MD…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/649.jpg">
+  <meta name="twitter:image:alt" content="【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/649">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案","text":"追问链第五环：从行锁走向表级的元数据锁（MDL）线上事故。考察点：MDL 读/写锁的自动加锁规则与释放时机；\"MDL 写锁等待会阻塞后续所有读\"的队列优先级机制；长事务是元凶；安全执行 DDL 的操作规程。","answerCount":1,"datePublished":"2026-09-07T13:18:42.100Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：根因定位——MDL 写锁被长事务卡住引发连锁阻塞 MDL 不需要显式申请：表上的 CRUD 自动加 MDL 读锁，表结构变更（DDL）自动加 MDL 写锁；MDL 在事务提交后才释放，事务执行期间一直持有。 事故链：某个长事务先执行了 select（持有 MDL 读锁一直不提交）→ ALTER 申请 MDL 写锁被阻塞 → 由于申请 MDL 锁的队列中写锁优先级高于读锁，后续所有该表的 CRUD（申请读锁）都被堵在写锁之后 → 查询堆积、连接池打满、连接数飙升。\"改表卡住 + 全表查询堵死\"的组合是 MDL 事故的典型指纹。 要点二：处置步骤 先止血：查 performance_schema.metadata_locks / information_schema.innodb_trx 定位持有 MDL 读锁的长事务会话，kill 掉长事务（或让其尽快提交），ALTER 即可拿到写锁放行；必要时先 kill 掉堆积的查询防连接耗尽。 再观察：确认 DDL 完成后连接数、QPS 恢复正常；复盘该长事务的来源（未提交的手工会话、忘提交的代码事务、监控脚本等）。 要点三：预防方案 变更前检查：执行 DDL 前先查 information_schema.innodb_trx 中是否有长事务，有则先处理。 使用 online DDL / gh-ost 等工具：ALTER 时设置 lock=none 或用无锁变更工具，缩短 MDL 写锁持有窗口；仍要在低峰期执行。 代码规范：应用侧禁止开启事务后空等（长事务），设置 innodb 锁等待与事务超时；把\"大表 DDL 前必须检查长事务\"写进变更 checklist。","url":"https://itinterview.com.cn/question/649"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"MySQL","item":"https://itinterview.com.cn/category?cat=28"},{"@type":"ListItem","position":5,"name":"【故障排查】线上执行 ALTER TABLE 加字段长时间无响应，随后该表所有 select 也全部堵死、连接数飙升。请定位根因并给出处置与预防方案","item":"https://itinterview.com.cn/q/649"}]}</script>

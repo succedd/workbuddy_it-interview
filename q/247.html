@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库事务的四种隔离级别分别解决了哪些并发问题？ · IT面试题库">
   <meta property="og:description" content="ANSI 定义四种隔离级别，逐步增强： 读未提交 Read Uncommitted：最低，可能脏读（读到未提交就被回滚的数据），三种异常都不防。 读已提交 Read Committed：防脏读；但同一事务内两次读可能结果不同（不可重复读）。 可重复读 Repeatable Read：防脏读 + 不可重复读；Inn…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/247.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="数据库事务的四种隔离级别分别解决了哪些并发问题？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/247.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/247">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库事务的四种隔离级别分别解决了哪些并发问题？ · IT面试题库">
   <meta name="twitter:description" content="ANSI 定义四种隔离级别，逐步增强： 读未提交 Read Uncommitted：最低，可能脏读（读到未提交就被回滚的数据），三种异常都不防。 读已提交 Read Committed：防脏读；但同一事务内两次读可能结果不同（不可重复读）。 可重复读 Repeatable Read：防脏读 + 不可重复读；Inn…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/247.jpg">
+  <meta name="twitter:image:alt" content="数据库事务的四种隔离级别分别解决了哪些并发问题？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/247">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库事务的四种隔离级别分别解决了哪些并发问题？","text":"说明读未提交、读已提交、可重复读、串行化各自能避免脏读、不可重复读、幻读中的哪些。","answerCount":1,"datePublished":"2026-08-27T01:34:16.298Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"ANSI 定义四种隔离级别，逐步增强： 读未提交 Read Uncommitted：最低，可能脏读（读到未提交就被回滚的数据），三种异常都不防。 读已提交 Read Committed：防脏读；但同一事务内两次读可能结果不同（不可重复读）。 可重复读 Repeatable Read：防脏读 + 不可重复读；InnoDB 通过 MVCC + 间隙锁还防幻读。 串行化 Serializable：最高，事务串行执行，防全部异常，但并发性能最差。 对应异常：脏读（读未提交数据）、不可重复读（同事务内同行的两次读值不同，侧重 UPDATE）、幻读（同查询条件两次返回的行集不同，侧重 INSERT/DELETE）。MySQL InnoDB 默认隔离级别为可重复读。","url":"https://itinterview.com.cn/question/247"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库设计与调优","item":"https://itinterview.com.cn/category?cat=41"},{"@type":"ListItem","position":4,"name":"数据库事务的四种隔离级别分别解决了哪些并发问题？","item":"https://itinterview.com.cn/q/247"}]}</script>

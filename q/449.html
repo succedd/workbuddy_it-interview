@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？ · IT面试题库">
   <meta property="og:description" content="第一步：看清积压的形态 用 rabbitmqctl list_queues 或管理界面观察 messages_ready 与 message_bytes_ready。关键是要区分 ready（待投递） 与 unacked（已投递未确认） 两类：只有 ready 状态的消息才计入队列长度限制。如果 unacked …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/449.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/449.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/449">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？ · IT面试题库">
   <meta name="twitter:description" content="第一步：看清积压的形态 用 rabbitmqctl list_queues 或管理界面观察 messages_ready 与 message_bytes_ready。关键是要区分 ready（待投递） 与 unacked（已投递未确认） 两类：只有 ready 状态的消息才计入队列长度限制。如果 unacked …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/449.jpg">
+  <meta name="twitter:image:alt" content="线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/449">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？","text":"考察点：ready 与 unacked 的区分、max-length 与 max-length-bytes 的配置方式、两种溢出行为的语义差异与业务选型。属故障排查题（高级）。","answerCount":1,"datePublished":"2026-09-03T00:54:14.749Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"第一步：看清积压的形态 用 rabbitmqctl list_queues 或管理界面观察 messages_ready 与 message_bytes_ready。关键是要区分 ready（待投递） 与 unacked（已投递未确认） 两类：只有 ready 状态的消息才计入队列长度限制。如果 unacked 长期居高不下，说明瓶颈在消费者处理能力或 prefetch 配置，而不是队列容量本身。 第二步：给队列加上长度上限 通过 policy 设置 max-length（条数）和/或 max-length-bytes（字节数），也可以用声明参数 x-max-length / x-max-length-bytes。 两个限制同时设置时，先命中的那个先生效。 未确认（unacked）的消息不计入上限，这一点在做容量估算时容易踩坑。 第三步：选对溢出行为 overflow drop-head（默认值）：队列满时从队头丢弃或死信化最旧的消息，给新消息腾位置。适合监控数据、行情、日志这类「新数据才有价值」的实时场景；用在订单/支付上会造成静默丢消息。 reject-publish / reject-publish-dlx：反过来拒绝最新投递的消息，保住已在队列里的旧消息。开启 publisher confirm 时，生产者会收到 basic.nack 感知被拒，从而可以做重试或回退本地落库；-dlx 版本还会把被拒消息一并死信化，便于事后补偿。 结论：交易、订单类业务应选 reject-publish，并配合发送端 confirm + 本地落库重试，宁可让生产者感知失败也不要丢单。 配套动作 水平扩容消费者、调小 prefetch 让消息更均匀地分发出去；已经影响线上业务时，可临时把积压消息转存到「修复队列」离线慢慢消费。长期看要给队列配置上限 + 死信 + 积压告警，而不是等磁盘告警才处理。","url":"https://itinterview.com.cn/question/449"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"消息队列","item":"https://itinterview.com.cn/category?cat=126"},{"@type":"ListItem","position":4,"name":"RabbitMQ","item":"https://itinterview.com.cn/category?cat=128"},{"@type":"ListItem","position":5,"name":"线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？","item":"https://itinterview.com.cn/q/449"}]}</script>

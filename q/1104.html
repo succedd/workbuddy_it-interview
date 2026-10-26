@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库">
   <meta property="og:description" content="选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTran…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1104.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1104.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1104">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库">
   <meta name="twitter:description" content="选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTran…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1104.jpg">
+  <meta name="twitter:image:alt" content="Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1104">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？","text":"考察点：两种代理机制的选型逻辑（接口 vs 子类）、final/private/package-private 方法的代理限制、Spring Boot 的默认代理策略差异。承接上一题「自调用」，补全代理机制的知识面。","answerCount":1,"datePublished":"2026-09-11T11:56:25.756Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"选型逻辑： 目标对象实现了至少一个接口→ 使用 JDK 动态代理（JDK 内置，基于接口，代理实现目标类型的所有接口）； 目标对象没有实现任何接口→ 使用 CGLIB（运行时生成目标类的子类并覆盖方法织入增强）； 可强制统一走 CGLIB（proxy-target-class=true / @EnableTransactionManagement(proxyTargetClass=true) 等），用于「想代理目标类的所有方法而不只是接口方法」的场景；注意配置会合并取「最强」设置。核心框架默认建议接口代理，Spring Boot 可能按配置属性默认启用类代理（CGLIB）。 CGLIB 模式下注定无法增强的方法（高频考点）： final 类无法被代理——无法被继承； final 方法无法被增强——无法被覆盖重写； private 方法无法被增强——子类不可见，无法覆盖； 跨包父类的 package-private 方法同理不可见、不可增强。 补充要点： CGLIB 代理实例通过 Objenesis 创建，正常情况下目标对象构造器不会被调用两次（若 JVM 不允许绕过构造器，可能出现双调用与相应日志）； 模块化部署下不能为 java.lang 包的类创建 CGLIB 代理（需 --add-opens 引导参数）； 实践含义：Service 类尽量别用 final 修饰、增强目标方法别设为 private/final，否则事务、缓存、异步等注解全部静默失效——这类「注解不生效」问题要从代理机制层面理解，而不是盲目换注解。","url":"https://itinterview.com.cn/question/1104"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？","item":"https://itinterview.com.cn/q/1104"}]}</script>

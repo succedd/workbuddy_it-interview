@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？ · IT面试题库">
   <meta property="og:description" content="正确做法（原子加锁）： NX：仅当 key 不存在才设置 → 保证互斥。 PX 30000：30 秒自动过期 → 防止客户端崩溃后锁永不过期（死锁）。 value 用全局唯一随机值（如 UUID）：用于安全释放时校验“这把锁是我的”。 为什么不用 SETNX + 单独 EXPIRE： 这是两步非原子操作——若客户…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/582.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/582.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/582">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？ · IT面试题库">
   <meta name="twitter:description" content="正确做法（原子加锁）： NX：仅当 key 不存在才设置 → 保证互斥。 PX 30000：30 秒自动过期 → 防止客户端崩溃后锁永不过期（死锁）。 value 用全局唯一随机值（如 UUID）：用于安全释放时校验“这把锁是我的”。 为什么不用 SETNX + 单独 EXPIRE： 这是两步非原子操作——若客户…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/582.jpg">
+  <meta name="twitter:image:alt" content="如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/582">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？","text":"多实例要互斥执行一段逻辑。请用 Redis 实现一个分布式锁，说明 SET NX PX 的作用，并指出“先 SETNX 再单独 EXPIRE”在崩溃时会导致什么问题（死锁）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"正确做法（原子加锁）： NX：仅当 key 不存在才设置 → 保证互斥。 PX 30000：30 秒自动过期 → 防止客户端崩溃后锁永不过期（死锁）。 value 用全局唯一随机值（如 UUID）：用于安全释放时校验“这把锁是我的”。 为什么不用 SETNX + 单独 EXPIRE： 这是两步非原子操作——若客户端在步骤1成功后、步骤2前崩溃，锁已存在但没有过期时间，后续任何人都无法再获取 → 死锁。所以必须用 SET ... NX PX 一条命令原子完成。 释放锁：不能用裸 DEL（会误删别人的锁），需校验 value 一致再删。Redis 8.4+ 可用 DELEX key IFEQ ；否则用 Lua 脚本原子判断+删除（见“误删防护”题）。 注意：单实例 Redis 主从异步复制下仍存在安全性缺口（主宕机未同步时另一客户端可获锁），高安全要求用 Redlock 或 etcd/ZK。","url":"https://itinterview.com.cn/question/582"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式锁","item":"https://itinterview.com.cn/category?cat=134"},{"@type":"ListItem","position":4,"name":"如何用 Redis 实现分布式锁？为什么推荐用 `SET key value NX PX` 而不是先 SETNX 再 EXPIRE？","item":"https://itinterview.com.cn/q/582"}]}</script>

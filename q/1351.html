@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Redis 的 Key 过期删除策略和内存淘汰策略分别有哪些？生产环境推荐哪种淘汰策略？ · IT面试题库">
   <meta property="og:description" content="一、过期删除策略（Key 到期怎么删）——采用「惰性删除 + 定期删除」组合： 惰性删除：访问 Key 时才检查是否过期，过期则删除。CPU 友好但内存不友好（过期 Key 不访问就一直占内存）。 定期删除：每 100ms 随机抽查部分 Key，删除其中过期的，限制执行时长和频率，平衡 CPU 与内存。 二、内存…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1351.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Redis 的 Key 过期删除策略和内存淘汰策略分别有哪些？生产环境推荐哪种淘汰策略？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1351.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1351">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Redis 的 Key 过期删除策略和内存淘汰策略分别有哪些？生产环境推荐哪种淘汰策略？ · IT面试题库">
   <meta name="twitter:description" content="一、过期删除策略（Key 到期怎么删）——采用「惰性删除 + 定期删除」组合： 惰性删除：访问 Key 时才检查是否过期，过期则删除。CPU 友好但内存不友好（过期 Key 不访问就一直占内存）。 定期删除：每 100ms 随机抽查部分 Key，删除其中过期的，限制执行时长和频率，平衡 CPU 与内存。 二、内存…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1351.jpg">
+  <meta name="twitter:image:alt" content="Redis 的 Key 过期删除策略和内存淘汰策略分别有哪些？生产环境推荐哪种淘汰策略？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1351">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Redis 的 Key 过期删除策略和内存淘汰策略分别有哪些？生产环境推荐哪种淘汰策略？","text":"考察过期键清理与内存耗尽时的淘汰算法。","answerCount":1,"datePublished":"2026-09-26T05:19:38.353Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"一、过期删除策略（Key 到期怎么删）——采用「惰性删除 + 定期删除」组合： 惰性删除：访问 Key 时才检查是否过期，过期则删除。CPU 友好但内存不友好（过期 Key 不访问就一直占内存）。 定期删除：每 100ms 随机抽查部分 Key，删除其中过期的，限制执行时长和频率，平衡 CPU 与内存。 二、内存淘汰策略（内存达 maxmemory 时怎么逐）： noeviction（默认）：不淘汰，写操作直接报错——生产必须改。 allkeys-lru：所有 Key 中淘汰最久未使用的——生产最常用。 volatile-lru：仅过期 Key 中淘汰 LRU。 allkeys-lfu / volatile-lfu：按访问频率（LFU）淘汰。 allkeys-random / volatile-random：随机淘汰。 volatile-ttl：优先淘汰剩余 TTL 最短的。 对比表 | 维度 | 过期删除 | 内存淘汰 | | --- | --- | --- | | 触发条件 | Key 到达过期时间 | 内存达到 maxmemory | | 机制 | 惰性 + 定期 | LRU/LFU/随机/TTL | | 推荐 | 组合使用 | allkeys-lru / allkeys-lfu | 生产建议：设置 maxmemory，并将淘汰策略设为 allkeys-lru（或 allkeys-lfu 应对有明显冷热区分场景），避免默认 noeviction 导致写失败。","url":"https://itinterview.com.cn/question/1351"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"非关系型数据库","item":"https://itinterview.com.cn/category?cat=32"},{"@type":"ListItem","position":4,"name":"Redis","item":"https://itinterview.com.cn/category?cat=33"},{"@type":"ListItem","position":5,"name":"Redis 的 Key 过期删除策略和内存淘汰策略分别有哪些？生产环境推荐哪种淘汰策略？","item":"https://itinterview.com.cn/q/1351"}]}</script>

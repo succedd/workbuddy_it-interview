@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="synchronized 的锁升级全过程（无锁 → 偏向锁 → 轻量级锁 → 重量级锁）是怎样的？什么情况会触发升级或撤销，各自的开销如何？ · IT面试题库">
   <meta property="og:description" content="对象头 Mark Word 与锁状态 锁状态存在对象头的 Mark Word 中，随竞争升级，且通常只能升级不能降级（批量重偏向属例外）。 升级链路 ① 无锁：初始状态。 ② 偏向锁：第一个线程进入同步块时把线程 ID 记入 Mark Word，之后该线程进出同步块几乎零开销（只校验 ID），适合『总由同一线程持…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/426.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="synchronized 的锁升级全过程（无锁 → 偏向锁 → 轻量级锁 → 重量级锁）是怎样的？什么情况会触发升级或撤销，各自的开销如何？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/426.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/426">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="synchronized 的锁升级全过程（无锁 → 偏向锁 → 轻量级锁 → 重量级锁）是怎样的？什么情况会触发升级或撤销，各自的开销如何？ · IT面试题库">
   <meta name="twitter:description" content="对象头 Mark Word 与锁状态 锁状态存在对象头的 Mark Word 中，随竞争升级，且通常只能升级不能降级（批量重偏向属例外）。 升级链路 ① 无锁：初始状态。 ② 偏向锁：第一个线程进入同步块时把线程 ID 记入 Mark Word，之后该线程进出同步块几乎零开销（只校验 ID），适合『总由同一线程持…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/426.jpg">
+  <meta name="twitter:image:alt" content="synchronized 的锁升级全过程（无锁 → 偏向锁 → 轻量级锁 → 重量级锁）是怎样的？什么情况会触发升级或撤销，各自的开销如何？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/426">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"synchronized 的锁升级全过程（无锁 → 偏向锁 → 轻量级锁 → 重量级锁）是怎样的？什么情况会触发升级或撤销，各自的开销如何？","text":"考察点：JDK 6 后 synchronized 的优化（偏向/轻量/重量）、对象头 Mark Word、升级触发条件。属场景题。","answerCount":1,"datePublished":"2026-09-01T10:19:02.140Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"对象头 Mark Word 与锁状态 锁状态存在对象头的 Mark Word 中，随竞争升级，且通常只能升级不能降级（批量重偏向属例外）。 升级链路 ① 无锁：初始状态。 ② 偏向锁：第一个线程进入同步块时把线程 ID 记入 Mark Word，之后该线程进出同步块几乎零开销（只校验 ID），适合『总由同一线程持有』。 ③ 轻量级锁：出现第二个线程竞争但尚不激烈时，JVM 用 CAS 自旋尝试获取，避免直接挂起线程（以 CPU 自旋换响应）。 ④ 重量级锁：自旋失败/竞争激烈时膨胀为 OS 互斥量（monitor），竞争线程阻塞挂起由 OS 调度，开销最大但释放 CPU。 触发与撤销 偏向锁遇到其他线程竞争即撤销（有 STW 成本）升级为轻量级。 轻量级自旋超阈值/线程多，升级为重量级。 高并发下偏向锁撤销反而拖累，故新版 JDK 默认延迟开启甚至关闭偏向锁。 选型：理解即可，业务层无需干预；高并发短临界区 synchronized 已够用，不必一律换 Lock。","url":"https://itinterview.com.cn/question/426"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"synchronized 的锁升级全过程（无锁 → 偏向锁 → 轻量级锁 → 重量级锁）是怎样的？什么情况会触发升级或撤销，各自的开销如何？","item":"https://itinterview.com.cn/q/426"}]}</script>

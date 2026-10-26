@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="PostgreSQL 的流复制（物理 / 逻辑）原理是什么？同步复制与异步复制如何取舍？故障切换要注意什么？ · IT面试题库">
   <meta property="og:description" content="要点： 流复制原理：主库 WAL（预写日志）产生后即流式发送到备库重放，备库几乎实时跟随。①物理流复制：块级复制整个集群，备库与主库字节一致，可作为只读副本 / 故障切换目标；②逻辑复制：基于发布 / 订阅按表 / 行级复制数据变更，跨大版本、跨实例选择性同步。 同步 vs 异步：synchronous_comm…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1613.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="PostgreSQL 的流复制（物理 / 逻辑）原理是什么？同步复制与异步复制如何取舍？故障切换要注意什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1613.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1613">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 的流复制（物理 / 逻辑）原理是什么？同步复制与异步复制如何取舍？故障切换要注意什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 流复制原理：主库 WAL（预写日志）产生后即流式发送到备库重放，备库几乎实时跟随。①物理流复制：块级复制整个集群，备库与主库字节一致，可作为只读副本 / 故障切换目标；②逻辑复制：基于发布 / 订阅按表 / 行级复制数据变更，跨大版本、跨实例选择性同步。 同步 vs 异步：synchronous_comm…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1613.jpg">
+  <meta name="twitter:image:alt" content="PostgreSQL 的流复制（物理 / 逻辑）原理是什么？同步复制与异步复制如何取舍？故障切换要注意什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1613">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 的流复制（物理 / 逻辑）原理是什么？同步复制与异步复制如何取舍？故障切换要注意什么？","text":"高级，考察复制与高可用。","answerCount":1,"datePublished":"2026-10-10T11:54:13.984Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 流复制原理：主库 WAL（预写日志）产生后即流式发送到备库重放，备库几乎实时跟随。①物理流复制：块级复制整个集群，备库与主库字节一致，可作为只读副本 / 故障切换目标；②逻辑复制：基于发布 / 订阅按表 / 行级复制数据变更，跨大版本、跨实例选择性同步。 同步 vs 异步：synchronous_commit 控制——同步要求至少一个同步备库确认落盘才返回提交成功，零数据丢失但写延迟高、依赖备库存活；异步主库提交即返回，性能高但故障可能丢最近事务。金融等强一致场景用同步（或 quorum 多备），一般场景异步 + 兜底。 故障切换：需 failover 机制（Patroni / Repmgr / Pgpool）自动选主、避免脑裂（fencing）；切换后注意旧主恢复为备（rewind）、客户端连接重定向、以及复制延迟导致的只读脏数据。","url":"https://itinterview.com.cn/question/1613"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 的流复制（物理 / 逻辑）原理是什么？同步复制与异步复制如何取舍？故障切换要注意什么？","item":"https://itinterview.com.cn/q/1613"}]}</script>

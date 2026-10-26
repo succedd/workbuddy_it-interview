@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Flutter 界面卡顿如何定位与优化？ · IT面试题库">
   <meta property="og:description" content="定位：① DevTools → Performance 视图录一段交互，看 UI/GPU/Raster 线程帧耗时：UI 线程超 16ms 是逻辑/重建问题，Raster（GPU）线程超时是绘制问题（Shader 编译、大图层、saveLayer）；② 用 Widget rebuild stats（debugPr…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1500.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Flutter 界面卡顿如何定位与优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1500.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1500">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flutter 界面卡顿如何定位与优化？ · IT面试题库">
   <meta name="twitter:description" content="定位：① DevTools → Performance 视图录一段交互，看 UI/GPU/Raster 线程帧耗时：UI 线程超 16ms 是逻辑/重建问题，Raster（GPU）线程超时是绘制问题（Shader 编译、大图层、saveLayer）；② 用 Widget rebuild stats（debugPr…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1500.jpg">
+  <meta name="twitter:image:alt" content="Flutter 界面卡顿如何定位与优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1500">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Flutter 界面卡顿如何定位与优化？","text":"给出从 DevTools 发现掉帧到定位重建风暴/重绘的排查路径与常用手段。","answerCount":1,"datePublished":"2026-10-05T01:03:57.664Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位：① DevTools → Performance 视图录一段交互，看 UI/GPU/Raster 线程帧耗时：UI 线程超 16ms 是逻辑/重建问题，Raster（GPU）线程超时是绘制问题（Shader 编译、大图层、saveLayer）；② 用 Widget rebuild stats（debugProfileBuildsEnabled / rebuild counts）找重建风暴；③ 长列表用 Timeline/trace-events 确认是否 jank 与 GC 相关。 常见优化：① 缩小 setState 范围，细粒度拆 Consumer/ValueListenableBuilder；② 列表三件套：ListView.builder 懒加载 + itemExtent（省布局）+ 合理 cacheExtent；③ 静态子树提取为 const Widget，别把整页放 build 里重建；④ RepaintBoundary 隔离高频重绘区（如动画），避免整页重绘；⑤ 首帧/动画期间 Shader 卡顿：开启 SkSL warm-up 或 Impeller 渲染器；⑥ 图片按分辨率缓存（cacheWidth），避免解码超大图。","url":"https://itinterview.com.cn/question/1500"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Flutter","item":"https://itinterview.com.cn/category?cat=228"},{"@type":"ListItem","position":4,"name":"Flutter 界面卡顿如何定位与优化？","item":"https://itinterview.com.cn/q/1500"}]}</script>

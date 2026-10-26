@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="预编译（参数化查询 / PreparedStatement）为什么能防注入？ · IT面试题库">
   <meta property="og:description" content="机制：参数化查询先把带占位符（? 或 :name）的 SQL 模板发给数据库预编译，生成执行计划；随后把用户输入作为参数值单独传入。数据库明确区分“指令结构”与“数据”，输入无论含什么字符（如 &#39; OR 1=1）都只被当作字符串值处理，无法改变语法树。 正确示例： 关键误区：必须在编写阶段就用占位符，而非先拼接字…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/550.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="预编译（参数化查询 / PreparedStatement）为什么能防注入？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/550.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/550">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="预编译（参数化查询 / PreparedStatement）为什么能防注入？ · IT面试题库">
   <meta name="twitter:description" content="机制：参数化查询先把带占位符（? 或 :name）的 SQL 模板发给数据库预编译，生成执行计划；随后把用户输入作为参数值单独传入。数据库明确区分“指令结构”与“数据”，输入无论含什么字符（如 &#39; OR 1=1）都只被当作字符串值处理，无法改变语法树。 正确示例： 关键误区：必须在编写阶段就用占位符，而非先拼接字…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/550.jpg">
+  <meta name="twitter:image:alt" content="预编译（参数化查询 / PreparedStatement）为什么能防注入？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/550">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"预编译（参数化查询 / PreparedStatement）为什么能防注入？","text":"请解释参数化查询的工作机制，并强调一个常见误区：把拼接好的字符串再“prepare”为什么仍然无效。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"机制：参数化查询先把带占位符（? 或 :name）的 SQL 模板发给数据库预编译，生成执行计划；随后把用户输入作为参数值单独传入。数据库明确区分“指令结构”与“数据”，输入无论含什么字符（如 ' OR 1=1）都只被当作字符串值处理，无法改变语法树。 正确示例： 关键误区：必须在编写阶段就用占位符，而非先拼接字符串再 prepare： 只有“结构固定、数据分离”的写法才是安全的。","url":"https://itinterview.com.cn/question/550"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"SQL注入","item":"https://itinterview.com.cn/category?cat=204"},{"@type":"ListItem","position":4,"name":"预编译（参数化查询 / PreparedStatement）为什么能防注入？","item":"https://itinterview.com.cn/q/550"}]}</script>

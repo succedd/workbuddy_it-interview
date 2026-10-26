@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？ · IT面试题库">
   <meta property="og:description" content="要点： 四条主线：① 发布节奏：Java 9 起半年一版 + LTS 隔年化，特性以「孵化→预览→转正」三段式渐进落地；② 平台模块化（JPMS，JDK 9）：JDK 自身拆模块 + jlink 裁剪运行时；③ GC 代际更替：G1（JDK 9 默认）→ ZGC/Shenandoah（亚毫秒停顿，大堆服务端）；④…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/982.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/982.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/982">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？ · IT面试题库">
   <meta name="twitter:description" content="要点： 四条主线：① 发布节奏：Java 9 起半年一版 + LTS 隔年化，特性以「孵化→预览→转正」三段式渐进落地；② 平台模块化（JPMS，JDK 9）：JDK 自身拆模块 + jlink 裁剪运行时；③ GC 代际更替：G1（JDK 9 默认）→ ZGC/Shenandoah（亚毫秒停顿，大堆服务端）；④…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/982.jpg">
+  <meta name="twitter:image:alt" content="从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/982">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？","text":"考察点：版本节奏变化（半年一版）、模块化、GC 演化（G1→ZGC）、虚拟线程 Project Loom、Valhalla 值类型展望。","answerCount":1,"datePublished":"2026-09-10T06:37:49.297Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 四条主线：① 发布节奏：Java 9 起半年一版 + LTS 隔年化，特性以「孵化→预览→转正」三段式渐进落地；② 平台模块化（JPMS，JDK 9）：JDK 自身拆模块 + jlink 裁剪运行时；③ GC 代际更替：G1（JDK 9 默认）→ ZGC/Shenandoah（亚毫秒停顿，大堆服务端）；④ 并发模型：虚拟线程（JDK 21 转正）。 为什么虚拟线程是范式转变：过去十年为绕开「线程贵」，生态全面倒向响应式（Reactor/RxJava），代价是调试栈断裂、代码复杂；虚拟线程让同步阻塞写法天然 scalable，JDBC/Servlet 等阻塞 API 无需重写即可享受——并发模型从「线程池配额」回到「按任务开线程」。 配套落地：结构化并发（StructuredTaskScope）+ 作用域值（ScopedValue）构成新一代并发三件套。 下一站：Valhalla 值类型（扁平化内存布局，减少指针间接）、Panama FFI（替代 JNI）、Amber 语法简化（模式匹配/记录）。 一句话：主线=「让 Java 适配硬件与负载的变迁」：模块化适应云、新 GC 适应大内存、虚拟线程适应高并发 IO——语义稳定、运行时重构。","url":"https://itinterview.com.cn/question/982"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？","item":"https://itinterview.com.cn/q/982"}]}</script>

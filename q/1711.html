@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？ · IT面试题库">
   <meta property="og:description" content="要点： 分层：C++ 内核（采集调度、3A 前处理、编解码、传输与拥塞控制、会话管理）加平台适配层（系统摄像头/麦克风/屏幕 API、OpenGL/Metal/Vulkan 渲染、线程与权限），再往外是各语言薄封装（ObjC/Java/C#）。 为什么采集编码传输在内核：三端行为必须一致，且编码参数、码控策略、抗…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1711.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1711.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1711">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？ · IT面试题库">
   <meta name="twitter:description" content="要点： 分层：C++ 内核（采集调度、3A 前处理、编解码、传输与拥塞控制、会话管理）加平台适配层（系统摄像头/麦克风/屏幕 API、OpenGL/Metal/Vulkan 渲染、线程与权限），再往外是各语言薄封装（ObjC/Java/C#）。 为什么采集编码传输在内核：三端行为必须一致，且编码参数、码控策略、抗…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1711.jpg">
+  <meta name="twitter:image:alt" content="设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1711">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？","text":"考察跨平台 SDK 架构，要求给出分层边界与接口稳定性论证。","answerCount":1,"datePublished":"2026-10-17T10:38:32.727Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 分层：C++ 内核（采集调度、3A 前处理、编解码、传输与拥塞控制、会话管理）加平台适配层（系统摄像头/麦克风/屏幕 API、OpenGL/Metal/Vulkan 渲染、线程与权限），再往外是各语言薄封装（ObjC/Java/C#）。 为什么采集编码传输在内核：三端行为必须一致，且编码参数、码控策略、抗弱网逻辑是 SDK 最核心、最需跨端统一的部分；放进平台层会出现「同样网络 iOS 卡 Android 不卡」的分裂问题。 接口纪律：对外 API 按能力加事件设计（进房/推流/订阅/回调），内核通过抽象接口反向依赖平台能力（摄像头、渲染器），平台实现可替换。 工程要点：内核产出多 ABI 静态库减少分支；平台层吸收权限、后台采集、耳返等系统差异；ABI 稳定期用适配层扛系统升级，避免内核频繁重建。","url":"https://itinterview.com.cn/question/1711"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"音视频SDK开发","item":"https://itinterview.com.cn/category?cat=254"},{"@type":"ListItem","position":4,"name":"设计一套跨 iOS/Android/Windows 的音视频 SDK，内核与平台层应该怎么分层？采集、编码、传输为什么必须放进内核？","item":"https://itinterview.com.cn/q/1711"}]}</script>

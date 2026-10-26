@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库">
   <meta property="og:description" content="要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/854.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/854.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/854">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库">
   <meta name="twitter:description" content="要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/854.jpg">
+  <meta name="twitter:image:alt" content="开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/854">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。","text":"考察点：从具体题上升到题型方法论——识别「两侧最近更小/更大元素」信号，并用哨兵简化边界。追问：为什么最大矩形题要在末尾加一个高度为 0 的哨兵柱？","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点：单调栈的通用画像是「对每个元素，求两侧第一个比它小（或大）的元素位置」；84 题把每个柱子当作「决定高度的那根」，用一次遍历同时确定左右边界。 题型识别信号：题目要求与「最近一侧的更大/更小元素」相关——接雨水（42）、每日温度（739）、最大矩形（85 循环调用 84）、移除 K 位数字使最小（402）都共享同一栈形。 84 题模型：对每根柱 i，其能构成的最大矩形宽度 = 右侧第一个更矮柱的位置 − 左侧第一个更矮柱的位置 − 1，高度 = heights[i]。单调递增栈让「弹栈瞬间」恰好同时知道两侧边界：弹出的柱 j，其右侧更矮柱是当前 i，左侧更矮柱是新栈顶。 哨兵作用：在数组末尾追加高度 0（开头也可加 -1），保证所有柱子最终都会被弹出结算，否则遍历结束栈里还剩一段递增序列没算；同时免去「栈是否为空」的特判。这是单调栈题的标准收尾技巧。 复杂度：O(n) 时间、O(n) 空间；暴力双重循环为 O(n²)，在 10⁴ 规模即超时。","url":"https://itinterview.com.cn/question/854"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"数据结构","item":"https://itinterview.com.cn/category?cat=2"},{"@type":"ListItem","position":4,"name":"开放讨论：单调栈能解的题有什么共同画像？请以「柱状图中最大的矩形」（LeetCode 84）为例，说明单调栈如何在一次遍历中确定每个柱子的左右边界，以及哨兵技巧的作用。","item":"https://itinterview.com.cn/q/854"}]}</script>
@@ -113,7 +119,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/854">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">394 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/168">什么是哈希表？如何解决哈希冲突？</a><span class="rel-n">395 次浏览</span></li><li><a href="https://itinterview.com.cn/q/171">栈和队列的特点及应用场景？</a><span class="rel-n">379 次浏览</span></li><li><a href="https://itinterview.com.cn/q/166">二叉树的遍历方式有哪些？</a><span class="rel-n">63 次浏览</span></li><li><a href="https://itinterview.com.cn/q/165">数组和链表的区别及优缺点？</a><span class="rel-n">19 次浏览</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

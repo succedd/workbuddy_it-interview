@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？ · IT面试题库">
   <meta property="og:description" content="TCP 的复杂度 = 在不可靠信道上重建可靠性的全套机制： 1. 确认与重传：每字节有序号，收不到 ACK 就重发——解决「丢没丢、顺序对不对」； 2. 滑动窗口：流量控制（对方处理不过来就减速）+ 拥塞控制（网络堵了全网一起退让）——解决「发多快才不压垮路径」； 3. 连接管理：三次握手（同步双方初始序号、确认…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/282.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/282.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/282">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？ · IT面试题库">
   <meta name="twitter:description" content="TCP 的复杂度 = 在不可靠信道上重建可靠性的全套机制： 1. 确认与重传：每字节有序号，收不到 ACK 就重发——解决「丢没丢、顺序对不对」； 2. 滑动窗口：流量控制（对方处理不过来就减速）+ 拥塞控制（网络堵了全网一起退让）——解决「发多快才不压垮路径」； 3. 连接管理：三次握手（同步双方初始序号、确认…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/282.jpg">
+  <meta name="twitter:image:alt" content="网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/282">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？","text":"底层网线会丢包、乱序、重复。TCP 收到数据凭什么敢说「可靠」？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TCP 的复杂度 = 在不可靠信道上重建可靠性的全套机制： 1. 确认与重传：每字节有序号，收不到 ACK 就重发——解决「丢没丢、顺序对不对」； 2. 滑动窗口：流量控制（对方处理不过来就减速）+ 拥塞控制（网络堵了全网一起退让）——解决「发多快才不压垮路径」； 3. 连接管理：三次握手（同步双方初始序号、确认双向通路）四次挥手（双向各自关闭）。 为什么握手三次不可两次：防止历史失效连接请求突然到达造成资源错配。所有可靠传输类问题（秒传、断点续传、消息不丢）本质都在重造这套机制。","url":"https://itinterview.com.cn/question/282"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"网络【本质】TCP 为什么这么复杂？在一根「不可靠的线缆」上造可靠通道，需要哪三类机制？","item":"https://itinterview.com.cn/q/282"}]}</script>

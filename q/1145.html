@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？ · IT面试题库">
   <meta property="og:description" content="环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1145.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1145.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1145">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？ · IT面试题库">
   <meta name="twitter:description" content="环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1145.jpg">
+  <meta name="twitter:image:alt" content="如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1145">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？","text":"请说明用 GitLab CI 的 environment 与 manual job 做环境晋级（promotion）的做法，以及为什么 prod 这步必须有人工确认或自动门禁。","answerCount":1,"datePublished":"2026-09-14T02:47:34.757Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"环境晋级模型：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。 手动卡点（manual job）：prod 的 deploy job 设 when: manual，流水线跑到这步停下来等人在 GitLab 界面点“play”才执行；这把“是否真的上线”的最终决定权留给人类，避免流水线自动推生产。 自动门禁：在 manual 之外加自动检查（冒烟测试结果、安全扫描通过、审批工单状态），不满足则自动拦下，比纯人工更可靠。 为什么 prod 必须卡点：自动推生产一旦出错就是全量事故；人工/自动门禁用极小成本换取“最后一次确认”，并与回滚预案、监控告警联动，是发布可靠性的底线。","url":"https://itinterview.com.cn/question/1145"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"GitLab CI/CD","item":"https://itinterview.com.cn/category?cat=140"},{"@type":"ListItem","position":4,"name":"如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？","item":"https://itinterview.com.cn/q/1145"}]}</script>

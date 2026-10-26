@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 TCP 粘包/拆包？如何解决？ · IT面试题库">
   <meta property="og:description" content="本质：TCP 是字节流协议，没有消息边界——发送方两次 write 的数据可能被 Nagle 算法合并、或在接收缓冲区被一次 read 全读走（粘包）；一条大消息也可能被 MTU/缓冲区拆成多段（拆包）。这不是 TCP 的缺陷，而是&quot;流&quot;语义的必然；UDP 有天然消息边界，不存在此问题。 解决方案（应用层自定义边…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/922.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 TCP 粘包/拆包？如何解决？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/922.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/922">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 TCP 粘包/拆包？如何解决？ · IT面试题库">
   <meta name="twitter:description" content="本质：TCP 是字节流协议，没有消息边界——发送方两次 write 的数据可能被 Nagle 算法合并、或在接收缓冲区被一次 read 全读走（粘包）；一条大消息也可能被 MTU/缓冲区拆成多段（拆包）。这不是 TCP 的缺陷，而是&quot;流&quot;语义的必然；UDP 有天然消息边界，不存在此问题。 解决方案（应用层自定义边…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/922.jpg">
+  <meta name="twitter:image:alt" content="什么是 TCP 粘包/拆包？如何解决？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/922">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 TCP 粘包/拆包？如何解决？","text":"请解释 TCP 字节流特性导致的粘包与拆包现象，并列举应用层常用的消息边界方案。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"本质：TCP 是字节流协议，没有消息边界——发送方两次 write 的数据可能被 Nagle 算法合并、或在接收缓冲区被一次 read 全读走（粘包）；一条大消息也可能被 MTU/缓冲区拆成多段（拆包）。这不是 TCP 的缺陷，而是\"流\"语义的必然；UDP 有天然消息边界，不存在此问题。 解决方案（应用层自定义边界）： 1. 定长消息：不足补齐。简单但浪费带宽； 2. 分隔符：如 \\r\\n（Redis RESP、HTTP header），需对内容转义防止误切； 3. 长度前缀（主流）：消息头固定字节声明 body 长度（如 4 字节 int），先读头再按长度读体——Netty 的 LengthFieldBasedFrameDecoder 即此； 4. 应用层协议：HTTP 用 Content-Length/分块编码；gRPC/Protobuf 自带封装。 Netty/Netty-like 框架提供了现成的解码器；自研协议时首选长度前缀。","url":"https://itinterview.com.cn/question/922"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"TCP/IP协议","item":"https://itinterview.com.cn/category?cat=50"},{"@type":"ListItem","position":4,"name":"什么是 TCP 粘包/拆包？如何解决？","item":"https://itinterview.com.cn/q/922"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。 · IT面试题库">
   <meta property="og:description" content="要点： 单机令牌桶：每个资源维护 capacity、tokens、lastRefillTs；请求时按 elapsed 时间补充令牌（tokens += rate*elapsed，上限 capacity），足够则扣减放行。用 AtomicLong/LongAdder 或 CAS 保证线程安全，无需锁。 集群限流：把…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1232.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1232.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1232">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。 · IT面试题库">
   <meta name="twitter:description" content="要点： 单机令牌桶：每个资源维护 capacity、tokens、lastRefillTs；请求时按 elapsed 时间补充令牌（tokens += rate*elapsed，上限 capacity），足够则扣减放行。用 AtomicLong/LongAdder 或 CAS 保证线程安全，无需锁。 集群限流：把…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1232.jpg">
+  <meta name="twitter:image:alt" content="设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1232">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。","text":"考察点：分布式限流架构设计能力，涵盖单机算法、集群原子扣减、热点参数隔离，以及一致性与性能权衡，高级系统设计题。","answerCount":1,"datePublished":"2026-09-26T01:40:01.472Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 单机令牌桶：每个资源维护 capacity、tokens、lastRefillTs；请求时按 elapsed 时间补充令牌（tokens += rate*elapsed，上限 capacity），足够则扣减放行。用 AtomicLong/LongAdder 或 CAS 保证线程安全，无需锁。 集群限流：把令牌计数放到 Redis，用 Lua 脚本原子完成「计算补充 + 扣减 + 返回剩余」，避免「先 GET 再 SET」的竞态；key 设计为 ratelimit:{resource}:{window}。为降延迟可加本地令牌桶做「预支+异步对账」的两级限流。 热点参数限流：对 userId/productId 等维度单独建限流桶（如「参数值→令牌桶」），防止单个热点 key 占满全局配额；Sentinel 的「热点参数限流」即此思路，可对特定参数值设例外阈值。 一致性与权衡：集群强一致限流有 Redis RT 开销，通常用「时间窗+滑动计数」近似；允许少量超卖换性能是业界共识。失败兜底策略：Redis 不可用时降级为单机限流，保证可用性优先。 扩展：规则热更新、监控埋点、按 App/资源维度多租户隔离。","url":"https://itinterview.com.cn/question/1232"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"服务治理","item":"https://itinterview.com.cn/category?cat=132"},{"@type":"ListItem","position":4,"name":"设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。","item":"https://itinterview.com.cn/q/1232"}]}</script>

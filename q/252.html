@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？ · IT面试题库">
   <meta property="og:description" content="结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/252.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/252.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/252">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？ · IT面试题库">
   <meta name="twitter:description" content="结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/252.jpg">
+  <meta name="twitter:image:alt" content="iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/252">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","text":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","answerCount":1,"datePublished":"2026-08-28T06:18:20.509Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 ARC（Automatic Reference Counting，自动引用计数）是 Swift/ObjC 的自动内存管理机制，只对引用类型（class）生效。它在编译期自动插入 retain/release，当对象引用计数降为 0 时立即释放——比 GC 更可预测（无停顿）。 strong（默认）：持有对象、引用计数 +1；只要还有一个 strong 引用存在，对象就不会释放。适用于“拥有”关系，如 ViewController 持有 ViewModel。 weak：不增加引用计数；当对象只剩 weak 引用时被释放，且所有 weak 引用自动置为 nil。必须声明为可选。常用于代理（delegate）、打破循环引用。 unowned：同样不增加计数，但假设引用对象生命周期一定不短于自己、不会自动置 nil；若对象已释放仍访问会崩溃。适用于非可选、生命周期确定的关系（如 Card 必有 owner）。 循环引用（retain cycle）：两个对象互相 strong 引用，计数永不为 0 → 内存泄漏。解决：把其中一方改为 weak 或 unowned；闭包捕获 self 时也应使用 [weak self]。","url":"https://itinterview.com.cn/question/252"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"iOS 的 ARC 是什么？strong / weak / unowned 有什么区别？","item":"https://itinterview.com.cn/q/252"}]}</script>

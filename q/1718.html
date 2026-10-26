@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？ · IT面试题库">
   <meta property="og:description" content="要点： 费用拆分：交易费 = base fee（协议按区块拥堵自动调整，直接销毁）+ priority fee（给验证者的小费）。用户设置 maxFeePerGas 与 maxPriorityFeePerGas，实际支付不超过上限。 base fee 调整：每个区块根据 gas 使用率相对目标值的偏差调整，单块最…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1718.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1718.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1718">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？ · IT面试题库">
   <meta name="twitter:description" content="要点： 费用拆分：交易费 = base fee（协议按区块拥堵自动调整，直接销毁）+ priority fee（给验证者的小费）。用户设置 maxFeePerGas 与 maxPriorityFeePerGas，实际支付不超过上限。 base fee 调整：每个区块根据 gas 使用率相对目标值的偏差调整，单块最…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1718.jpg">
+  <meta name="twitter:image:alt" content="EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1718">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？","text":"考察以太坊手续费市场改革，以及钱包如何估算 maxFeePerGas / maxPriorityFeePerGas。","answerCount":1,"datePublished":"2026-10-19T05:43:24.301Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 费用拆分：交易费 = base fee（协议按区块拥堵自动调整，直接销毁）+ priority fee（给验证者的小费）。用户设置 maxFeePerGas 与 maxPriorityFeePerGas，实际支付不超过上限。 base fee 调整：每个区块根据 gas 使用率相对目标值的偏差调整，单块最大变化约 12.5%；拥堵时 base fee 上升抑制需求，空闲时下降。销毁 base fee 让 ETH 供应随使用量收缩，也避免验证者通过打包自己交易瓜分基础费。 钱包实践：估算 maxFee ≈ 2 × baseFee + tip，替换卡住的交易时保持同一 nonce 并提高小费；注意 base fee 不以验证者意志转移，出价过低的交易在拥堵时会被持续推迟。","url":"https://itinterview.com.cn/question/1718"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"以太坊","item":"https://itinterview.com.cn/category?cat=258"},{"@type":"ListItem","position":4,"name":"EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？","item":"https://itinterview.com.cn/q/1718"}]}</script>

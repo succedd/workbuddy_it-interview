@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？ · IT面试题库">
   <meta property="og:description" content="要点： 本质：量化是把模型权重/激活从 FP16/BF16 映射到 INT8/INT4 等低比特表示，用「缩放因子+零点」做实数↔整数的线性映射，推理时用整数运算（或反量化回低精度）替代大部分浮点运算。 三类收益：①显存骤降——参数量几乎按比特数等比缩小，INT4 比 FP16 省约 4 倍，7B 模型 FP16…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1177.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1177.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1177">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？ · IT面试题库">
   <meta name="twitter:description" content="要点： 本质：量化是把模型权重/激活从 FP16/BF16 映射到 INT8/INT4 等低比特表示，用「缩放因子+零点」做实数↔整数的线性映射，推理时用整数运算（或反量化回低精度）替代大部分浮点运算。 三类收益：①显存骤降——参数量几乎按比特数等比缩小，INT4 比 FP16 省约 4 倍，7B 模型 FP16…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1177.jpg">
+  <meta name="twitter:image:alt" content="大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1177">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？","text":"考察点：量化基本概念与权衡。要求说清量化的本质（低精度表示权重/激活）、三类收益（显存、带宽、吞吐），以及代价（精度损失、部分算子不支持、校准成本）。","answerCount":1,"datePublished":"2026-09-17T02:35:52.363Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 本质：量化是把模型权重/激活从 FP16/BF16 映射到 INT8/INT4 等低比特表示，用「缩放因子+零点」做实数↔整数的线性映射，推理时用整数运算（或反量化回低精度）替代大部分浮点运算。 三类收益：①显存骤降——参数量几乎按比特数等比缩小，INT4 比 FP16 省约 4 倍，7B 模型 FP16 约 14GB、INT4 仅约 4GB，可直接塞进消费级显卡；②带宽压力下降——解码每 token 要搬权重，带宽瓶颈下低精度直接提吞吐；③算力利用率更高——现代 GPU 的 INT8/INT4 Tensor Core 峰值算力远高于 FP16。 代价：①精度损失——低比特丢信息，需校准（calibration）或微调（QAT）缓解，极端 INT2/INT3 会明显退化；②算子支持不全——并非所有算子都有低精度 kernel，出入口常需反量化；③工程复杂度——要配套量化工具链与精度验收。 一句话：量化是「用一点精度换显存、带宽、吞吐」的部署第一杠杆。","url":"https://itinterview.com.cn/question/1177"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"模型部署优化","item":"https://itinterview.com.cn/category?cat=197"},{"@type":"ListItem","position":5,"name":"大模型部署里常说的「量化」到底是什么？INT8 / INT4 量化相比 FP16 能带来哪些收益，又要付出什么代价？","item":"https://itinterview.com.cn/q/1177"}]}</script>

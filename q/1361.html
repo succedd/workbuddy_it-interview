@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？ · IT面试题库">
   <meta property="og:description" content="结论：@Transactional 基于 AOP（JDK 动态代理 / CGLIB）实现；传播行为解决“方法互相调用时事务如何边界”的问题；自调用、异常被吞、非 public 方法等都会导致失效。 七种传播行为（重点记 3 个） REQUIRED（默认）：有事务则加入，无则新建；内外同属一个事务，任一回滚整体回滚…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1361.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1361.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1361">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？ · IT面试题库">
   <meta name="twitter:description" content="结论：@Transactional 基于 AOP（JDK 动态代理 / CGLIB）实现；传播行为解决“方法互相调用时事务如何边界”的问题；自调用、异常被吞、非 public 方法等都会导致失效。 七种传播行为（重点记 3 个） REQUIRED（默认）：有事务则加入，无则新建；内外同属一个事务，任一回滚整体回滚…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1361.jpg">
+  <meta name="twitter:image:alt" content="Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1361">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？","text":"考察 Spring 声明式事务的传播行为语义，以及 @Transactional 不生效/不回滚的典型坑。","answerCount":1,"datePublished":"2026-09-26T05:19:39.320Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：@Transactional 基于 AOP（JDK 动态代理 / CGLIB）实现；传播行为解决“方法互相调用时事务如何边界”的问题；自调用、异常被吞、非 public 方法等都会导致失效。 七种传播行为（重点记 3 个） REQUIRED（默认）：有事务则加入，无则新建；内外同属一个事务，任一回滚整体回滚。 REQUIRES_NEW：总是新建事务，挂起外层；内外相互独立。 NESTED：有事务则开嵌套（父子），父回滚子必回滚，子可独立回滚。 其余：SUPPORTS（有则加入否则非事务）、MANDATORY（必须有事务否则抛异常）、NOT_SUPPORTED（非事务并挂起）、NEVER（非事务，有事务抛异常）。 常见失效场景 1. 自调用：同类方法 A 调 @Transactional 方法 B，代理未拦截，事务失效（可用 AopContext.currentProxy() 获取代理调用）。 2. 异常被 catch 吃掉：未重新抛出，拦截器感知不到，不回滚。 3. 非 public 方法：早期 Spring 仅代理 public 方法（Spring 6 类代理放宽但仍受限制）。 4. 数据库引擎不支持：如 MySQL myisam 根本不支持事务。 5. 未配置 rollbackFor：默认只对 RuntimeException/Error 回滚，Checked 异常需显式 rollbackFor。 6. Bean 未被 Spring 管理或方法 final/static 导致无法代理。 对比 | 失效原因 | 本质 | | :--- | :--- | | 自调用 | AOP 代理未生效 | | 吞异常 | 拦截器无感知 | | myisam | 底层不支持事务 |","url":"https://itinterview.com.cn/question/1361"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring 事务的七种传播行为是什么？@Transactional 常见的失效场景有哪些？","item":"https://itinterview.com.cn/q/1361"}]}</script>

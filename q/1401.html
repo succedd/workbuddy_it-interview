@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？ · IT面试题库">
   <meta property="og:description" content="结论 SSO（Single Sign-On）：在统一认证中心（IdP）登录一次，接入的各应用（SP/RP）都可信地获得登录态。核心是把认证从各应用收拢到 IdP，应用只消费 IdP 颁发的凭证。主流协议：CAS、SAML（企业级）、OAuth 2.0（授权）+ OIDC（其上的认证层）。 OIDC 授权码流程 1…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1401.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1401.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1401">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？ · IT面试题库">
   <meta name="twitter:description" content="结论 SSO（Single Sign-On）：在统一认证中心（IdP）登录一次，接入的各应用（SP/RP）都可信地获得登录态。核心是把认证从各应用收拢到 IdP，应用只消费 IdP 颁发的凭证。主流协议：CAS、SAML（企业级）、OAuth 2.0（授权）+ OIDC（其上的认证层）。 OIDC 授权码流程 1…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1401.jpg">
+  <meta name="twitter:image:alt" content="什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1401">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？","text":"考察 SSO 原理、OIDC 授权码流程与安全参数。","answerCount":1,"datePublished":"2026-09-29T13:30:12.625Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 SSO（Single Sign-On）：在统一认证中心（IdP）登录一次，接入的各应用（SP/RP）都可信地获得登录态。核心是把认证从各应用收拢到 IdP，应用只消费 IdP 颁发的凭证。主流协议：CAS、SAML（企业级）、OAuth 2.0（授权）+ OIDC（其上的认证层）。 OIDC 授权码流程 1. 用户访问应用 A，未登录 → 302 到 IdP 授权端点，带 client_id / redirect_uri / scope=openid / state / nonce； 2. IdP 检查自己域下的会话 Cookie：已登录直接发授权码，未登录先展示登录页； 3. IdP 带 code 回跳应用 A 回调地址； 4. 应用 A 后端用 code + client_secret 换 ID Token（JWT，即身份凭证） + Access Token； 5. 验签 ID Token（iss/aud/exp/nonce），建立应用 A 本地会话。 为什么这就是「单点」 应用 B 再接入时走同样流程，IdP 的会话 Cookie 仍然有效 → 用户无感通过跳转拿到 B 的登录态。所有应用都不碰密码，密码只出现在 IdP。 关键安全点 state：随机回传值，防授权码回调被 CSRF 伪造； nonce：绑定 ID Token 与本次请求，防 token 重放； code 换 token 必须在后端（client_secret 不落前端）； 登出（SLO）是难点：要 IdP 通知各应用销毁本地会话（front/back-channel logout），只清 IdP 会话会出现「登出了 A，B 还在线」。 经典误用：OAuth 2.0 是授权协议，裸把 access_token 当「登录成功」用是错的——认证必须走 OIDC 的 ID Token。","url":"https://itinterview.com.cn/question/1401"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"API设计与RESTful规范","item":"https://itinterview.com.cn/category?cat=94"},{"@type":"ListItem","position":4,"name":"什么是单点登录（SSO）？基于 OAuth 2.0 / OIDC 的授权码流程是怎样完成「一次登录、处处可信」的？","item":"https://itinterview.com.cn/q/1401"}]}</script>

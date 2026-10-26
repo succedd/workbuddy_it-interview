@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。 · IT面试题库">
   <meta property="og:description" content="要点： KV Cache 是吞吐基石：自回归生成时每一步都要重算历史 Key/Value，代价极高。把每层的 K/V 缓存起来，后续步直接复用，把复杂度从 O(n²) 降到接近 O(n)。代价是显存随序列数与长度线性增长，需要分页/分块管理（如 PagedAttention）避免碎片。 连续批处理（continu…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1544.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1544.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1544">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。 · IT面试题库">
   <meta name="twitter:description" content="要点： KV Cache 是吞吐基石：自回归生成时每一步都要重算历史 Key/Value，代价极高。把每层的 K/V 缓存起来，后续步直接复用，把复杂度从 O(n²) 降到接近 O(n)。代价是显存随序列数与长度线性增长，需要分页/分块管理（如 PagedAttention）避免碎片。 连续批处理（continu…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1544.jpg">
+  <meta name="twitter:image:alt" content="如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1544">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。","text":"考察点：LLM 推理服务的系统工程能力——吞吐、延迟、显存三者之间的权衡。","answerCount":1,"datePublished":"2026-10-05T02:30:36.597Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： KV Cache 是吞吐基石：自回归生成时每一步都要重算历史 Key/Value，代价极高。把每层的 K/V 缓存起来，后续步直接复用，把复杂度从 O(n²) 降到接近 O(n)。代价是显存随序列数与长度线性增长，需要分页/分块管理（如 PagedAttention）避免碎片。 连续批处理（continuous batching）：传统静态批处理要等同批所有请求都生成完才能释放，短请求被长请求拖死。连续批处理在 token 级别调度，谁先结束谁先让出显存、新请求随时插入，GPU 利用率显著提升（vLLM/TGI 的核心优化）。 量化压缩显存与带宽：FP16→INT8/INT4（如 GPTQ、AWQ）能把显存占用与访存带宽砍半甚至更多，从而塞下更大模型或更大 batch；代价是精度略有损失，关键业务需做精度回归评测。 显存与延迟权衡：用张量并行/流水线并行把大模型切到多卡；用前缀缓存（prefix cache）复用相同系统提示；对外用流式输出降低首字延迟（TTFT）感知。监控 P99 延迟与显存水位，按 SLA 限流与 autoscale。","url":"https://itinterview.com.cn/question/1544"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"MLOps","item":"https://itinterview.com.cn/category?cat=198"},{"@type":"ListItem","position":5,"name":"如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。","item":"https://itinterview.com.cn/q/1544"}]}</script>

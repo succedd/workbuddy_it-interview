@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？ · IT面试题库">
   <meta property="og:description" content="TorchScript：torch.jit.trace（喂样例输入记录执行路径，快但分支固定）或 torch.jit.script（解析代码保留控制流）；产物自包含，PyTorch/C++ LibTorch 可跑，适合纯 PyTorch 栈。 ONNX：torch.onnx.export 转 ONNX，之后可用 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1523.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1523.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1523">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？ · IT面试题库">
   <meta name="twitter:description" content="TorchScript：torch.jit.trace（喂样例输入记录执行路径，快但分支固定）或 torch.jit.script（解析代码保留控制流）；产物自包含，PyTorch/C++ LibTorch 可跑，适合纯 PyTorch 栈。 ONNX：torch.onnx.export 转 ONNX，之后可用 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1523.jpg">
+  <meta name="twitter:image:alt" content="训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1523">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？","text":"对比两种导出方式与常见坑（动态轴、算子支持、数值一致性）。","answerCount":1,"datePublished":"2026-10-05T01:04:00.403Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"TorchScript：torch.jit.trace（喂样例输入记录执行路径，快但分支固定）或 torch.jit.script（解析代码保留控制流）；产物自包含，PyTorch/C++ LibTorch 可跑，适合纯 PyTorch 栈。 ONNX：torch.onnx.export 转 ONNX，之后可用 ONNX Runtime / TensorRT / OpenVINO 推理，跨框架跨硬件，工程上最常用。 注意事项：① 动态轴：batch/序列长度要显式声明 dynamic_axes，否则 shape 写死；② 算子支持：导出前查 opset 覆盖，不支持的自定义算子要注册或改写（如部分 attention/自定义 CUDA op）；③ 控制流与动态结构：trace 会固化分支，含 if/循环的模型用 script 或拆分导出；④ 数值一致性：导出后用多组输入对比 PyTorch 输出（atol/rtol），注意 AMP 模型导出精度；⑤ 预处理/后处理随模型一起固化或明确文档化，避免训练-服务偏移；⑥ 部署前做性能基线（latency/throughput/QPS）与精度回归（离线指标对齐），纳入 CI。","url":"https://itinterview.com.cn/question/1523"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？","item":"https://itinterview.com.cn/q/1523"}]}</script>

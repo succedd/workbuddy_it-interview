@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="CSS Grid 相比 Flex 多了哪些能力？请用 grid-template-columns、minmax()、repeat() 说明如何实现一个不需要媒体查询的自适应卡片网格。 · IT面试题库">
   <meta property="og:description" content="定位差异：Flex 是一维布局（沿一行或一列排布），Grid 是二维布局，能同时按行和列对齐元素，甚至让子项重叠、像定位元素那样分层。 核心概念（MDN 术语表）：网格线（grid lines）、网格轨道（grid tracks）、网格单元格（grid cell）、网格区域（grid areas）、间隙（gutt…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1296.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="CSS Grid 相比 Flex 多了哪些能力？请用 grid-template-columns、minmax()、repeat() 说明如何实现一个不需要媒体查询的自适应卡片网格。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1296.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1296">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CSS Grid 相比 Flex 多了哪些能力？请用 grid-template-columns、minmax()、repeat() 说明如何实现一个不需要媒体查询的自适应卡片网格。 · IT面试题库">
   <meta name="twitter:description" content="定位差异：Flex 是一维布局（沿一行或一列排布），Grid 是二维布局，能同时按行和列对齐元素，甚至让子项重叠、像定位元素那样分层。 核心概念（MDN 术语表）：网格线（grid lines）、网格轨道（grid tracks）、网格单元格（grid cell）、网格区域（grid areas）、间隙（gutt…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1296.jpg">
+  <meta name="twitter:image:alt" content="CSS Grid 相比 Flex 多了哪些能力？请用 grid-template-columns、minmax()、repeat() 说明如何实现一个不需要媒体查询的自适应卡片网格。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1296">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"CSS Grid 相比 Flex 多了哪些能力？请用 grid-template-columns、minmax()、repeat() 说明如何实现一个不需要媒体查询的自适应卡片网格。","text":"考察点：一维/二维布局的选型，以及 Grid 核心语法的实际运用。","answerCount":1,"datePublished":"2026-09-26T02:32:37.531Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定位差异：Flex 是一维布局（沿一行或一列排布），Grid 是二维布局，能同时按行和列对齐元素，甚至让子项重叠、像定位元素那样分层。 核心概念（MDN 术语表）：网格线（grid lines）、网格轨道（grid tracks）、网格单元格（grid cell）、网格区域（grid areas）、间隙（gutters）。 基础写法： repeat(3,1fr) 生成 3 条等宽轨道，1fr 表示平分剩余空间； minmax(100px,auto) 给出行高下限与自适应上限，fit-content() 让轨道按内容收缩； 子项用 grid-column / grid-row 按网格线区间定位，可跨行跨列。 自适应卡片网格（强烈推荐）： auto-fill / auto-fit 会根据容器宽度自动决定列数，每列不小于 240px、再等分剩余空间——一行代码实现响应式，不需要媒体查询。 选型经验：整页骨架、二维卡片墙、需要行列同时对齐时用 Grid；单行导航条、工具栏、按内容伸缩的一维排列用 Flex。两者可自由嵌套：Grid 容器的子项本身也可以是 Flex 容器。","url":"https://itinterview.com.cn/question/1296"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"CSS","item":"https://itinterview.com.cn/category?cat=58"},{"@type":"ListItem","position":5,"name":"CSS Grid 相比 Flex 多了哪些能力？请用 grid-template-columns、minmax()、repeat() 说明如何实现一个不需要媒体查询的自适应卡片网格。","item":"https://itinterview.com.cn/q/1296"}]}</script>

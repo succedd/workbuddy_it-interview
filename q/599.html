@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="凸优化中的凸函数、梯度与最优性条件是什么？ · IT面试题库">
   <meta property="og:description" content="凸函数定义：定义域 D 为凸集，对任意 $x,y\in D$ 与 $t\in[0,1]$： $$f(tx+(1-t)y)\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/599.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="凸优化中的凸函数、梯度与最优性条件是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/599.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/599">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="凸优化中的凸函数、梯度与最优性条件是什么？ · IT面试题库">
   <meta name="twitter:description" content="凸函数定义：定义域 D 为凸集，对任意 $x,y\in D$ 与 $t\in[0,1]$： $$f(tx+(1-t)y)\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/599.jpg">
+  <meta name="twitter:image:alt" content="凸优化中的凸函数、梯度与最优性条件是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/599">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"凸优化中的凸函数、梯度与最优性条件是什么？","text":"请说明凸函数的定义与「局部极小即全局极小」的性质，并给出可微凸函数的最优点条件，联系梯度下降为何适用于凸问题。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"凸函数定义：定义域 D 为凸集，对任意 $x,y\\in D$ 与 $t\\in[0,1]$： $$f(tx+(1-t)y)\\le t f(x)+(1-t)f(y)$$ 几何上：函数图像上任意两点连线都在图像之上（碗形）。 关键性质 凸函数的任何局部极小值都是全局极小值——这是凸优化「好解」的根本原因。 严格凸时全局极小唯一。 一阶最优性条件（可微凸函数） $x^$ 为全局最小 $\\iff \\nabla f(x^)=0$（无约束）。 等价地，$f(y)\\ge f(x)+\\nabla f(x)^T(y-x)$ 对所有 y 成立。 与梯度下降 梯度 $\\nabla f(x)$ 指向上升最快方向，故沿 $-\\nabla f(x)$ 下降。对凸函数，只要梯度为 0 即达全局最优，因此梯度下降能稳定收敛（配合合适学习率/步长）。 非凸问题则只能保证收敛到局部极小，这也是深度学习难以保证全局最优的原因。 二阶导数判别：二阶可导时 $f''(x)\\ge0$（一元）或 Hessian 半正定（多元）即为凸。","url":"https://itinterview.com.cn/question/599"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"数学基础","item":"https://itinterview.com.cn/category?cat=175"},{"@type":"ListItem","position":5,"name":"凸优化中的凸函数、梯度与最优性条件是什么？","item":"https://itinterview.com.cn/q/599"}]}</script>

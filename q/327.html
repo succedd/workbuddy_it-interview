@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？ · IT面试题库">
   <meta property="og:description" content="60Hz 下每帧只有 16.6ms：渲染 + 物理 + 游戏逻辑 + UI 全部要在这段时间内完成。超预算 → 帧被跳过 → 肉眼可见的卡顿（掉帧）。 所以优化的第一性是砍掉不必要的工作，其次才是加速： 1. 算得少：视锥剔除（看不见不画）、LOD（远处低模）、对象池（不反复创建销毁）； 2. 算得匀：把重活分帧…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/327.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/327.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/327">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？ · IT面试题库">
   <meta name="twitter:description" content="60Hz 下每帧只有 16.6ms：渲染 + 物理 + 游戏逻辑 + UI 全部要在这段时间内完成。超预算 → 帧被跳过 → 肉眼可见的卡顿（掉帧）。 所以优化的第一性是砍掉不必要的工作，其次才是加速： 1. 算得少：视锥剔除（看不见不画）、LOD（远处低模）、对象池（不反复创建销毁）； 2. 算得匀：把重活分帧…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/327.jpg">
+  <meta name="twitter:image:alt" content="游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/327">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？","text":"60Hz 屏幕每 16.6ms 必须交出一帧。渲染、物理、逻辑、UI 共用这个预算——超了会发生什么？为什么说优化的第一性是「砍工作」？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"60Hz 下每帧只有 16.6ms：渲染 + 物理 + 游戏逻辑 + UI 全部要在这段时间内完成。超预算 → 帧被跳过 → 肉眼可见的卡顿（掉帧）。 所以优化的第一性是砍掉不必要的工作，其次才是加速： 1. 算得少：视锥剔除（看不见不画）、LOD（远处低模）、对象池（不反复创建销毁）； 2. 算得匀：把重活分帧、异步加载，避免单帧尖峰； 3. 算得快：Shader 优化、合批减少 draw call。 这与 Web 前端的 16.6ms 帧预算异曲同工——「实时性系统」的优化哲学是一致的：先砍量，再提速。面试聊性能，能给出「预算分解」比报一堆优化名词高一个层级。","url":"https://itinterview.com.cn/question/327"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"游戏开发【边界】为什么游戏优化的核心是「16.6ms 预算」？掉一帧背后发生了什么？","item":"https://itinterview.com.cn/q/327"}]}</script>

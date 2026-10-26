@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？ · IT面试题库">
   <meta property="og:description" content="路由懒加载原理：把组件写成动态 import（component: () =&gt; import(&#39;./Foo.vue&#39;)），打包器据此把该模块切到独立 chunk；运行时路由匹配到才通过 JSONP/ 注入加载 chunk，再执行回调渲染。首屏只拉主包，页面按需加载。 分割维度：① 路由级（收益最大）；② 大型三方…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1491.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1491.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1491">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？ · IT面试题库">
   <meta name="twitter:description" content="路由懒加载原理：把组件写成动态 import（component: () =&gt; import(&#39;./Foo.vue&#39;)），打包器据此把该模块切到独立 chunk；运行时路由匹配到才通过 JSONP/ 注入加载 chunk，再执行回调渲染。首屏只拉主包，页面按需加载。 分割维度：① 路由级（收益最大）；② 大型三方…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1491.jpg">
+  <meta name="twitter:image:alt" content="生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1491">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？","text":"说明 splitChunks 策略、动态 import 的运行时机制，以及常见分割维度。","answerCount":1,"datePublished":"2026-10-05T01:03:56.335Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"路由懒加载原理：把组件写成动态 import（component: () => import('./Foo.vue')），打包器据此把该模块切到独立 chunk；运行时路由匹配到才通过 JSONP/ 注入加载 chunk，再执行回调渲染。首屏只拉主包，页面按需加载。 分割维度：① 路由级（收益最大）；② 大型三方库（echarts/xlsx/编辑器）改为触发时 import；③ splitChunks 把 node_modules 公共依赖拆 vendor、被多入口共享的模块拆 common，配合 maxSize/maxAsyncRequests 平衡请求数与缓存命中。 配套优化：manifest/vendor 与业务代码分离以长缓存；预加载提示 缓解点击延迟；骨架屏/loading 兜底懒加载体验；避免过度分割导致请求数爆炸。","url":"https://itinterview.com.cn/question/1491"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端工程化","item":"https://itinterview.com.cn/category?cat=68"},{"@type":"ListItem","position":4,"name":"生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？","item":"https://itinterview.com.cn/q/1491"}]}</script>

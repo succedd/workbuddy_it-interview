@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？ · IT面试题库">
   <meta property="og:description" content="要点： 工作原理：useState 在组件内部保存状态，每次渲染都是独立闭包，返回当前渲染对应的 state 快照与 setter；useEffect 在渲染提交到 DOM 后异步执行副作用，依赖数组决定何时重跑；useMemo/useCallback 用于缓存计算结果与函数引用。Hooks 调用顺序在每次渲染中…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1217.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1217.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1217">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？ · IT面试题库">
   <meta name="twitter:description" content="要点： 工作原理：useState 在组件内部保存状态，每次渲染都是独立闭包，返回当前渲染对应的 state 快照与 setter；useEffect 在渲染提交到 DOM 后异步执行副作用，依赖数组决定何时重跑；useMemo/useCallback 用于缓存计算结果与函数引用。Hooks 调用顺序在每次渲染中…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1217.jpg">
+  <meta name="twitter:image:alt" content="React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1217">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？","text":"追问链第 2 问：函数组件用 Hooks 管理状态与副作用，但闭包陷阱是高频坑。","answerCount":1,"datePublished":"2026-09-21T02:22:09.902Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 工作原理：useState 在组件内部保存状态，每次渲染都是独立闭包，返回当前渲染对应的 state 快照与 setter；useEffect 在渲染提交到 DOM 后异步执行副作用，依赖数组决定何时重跑；useMemo/useCallback 用于缓存计算结果与函数引用。Hooks 调用顺序在每次渲染中必须一致（不能在条件/循环中调用）。 闭包陷阱（Stale Closure）：effect 或回调捕获的是定义时那次渲染的 state 值，若依赖数组未正确声明，定时器或事件回调里读到的可能是旧值，导致「状态不更新」的错觉。例如 setInterval(() => setCount(count+1), 1000) 中 count 永远是初始值。 避免手段：① 写全依赖数组，让 effect 在依赖变化后重新订阅；② 用函数式更新 setCount(c => c+1) 读取最新值而非闭包里的旧值；③ 需要「最新值但不想触发重渲染」时用 useRef 保存可变引用；④ 复杂场景用 useReducer 或状态管理库集中管理。","url":"https://itinterview.com.cn/question/1217"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"React","item":"https://itinterview.com.cn/category?cat=64"},{"@type":"ListItem","position":5,"name":"React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？","item":"https://itinterview.com.cn/q/1217"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="在真实业务里，解构赋值常用来做什么？举几个容易踩坑的例子（嵌套默认值、重命名、剩余元素）。 · IT面试题库">
   <meta property="og:description" content="要点： 对象解构 + 重命名 + 默认值：const { name: userName = &#39;匿名&#39; } = user 解决「后端字段名与前端命名不一致」「字段缺失兜底」两类问题。 嵌套解构：const { profile: { age } } = user 直接取深层字段；配合默认值（profile: { ag…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/956.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="在真实业务里，解构赋值常用来做什么？举几个容易踩坑的例子（嵌套默认值、重命名、剩余元素）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/956.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/956">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在真实业务里，解构赋值常用来做什么？举几个容易踩坑的例子（嵌套默认值、重命名、剩余元素）。 · IT面试题库">
   <meta name="twitter:description" content="要点： 对象解构 + 重命名 + 默认值：const { name: userName = &#39;匿名&#39; } = user 解决「后端字段名与前端命名不一致」「字段缺失兜底」两类问题。 嵌套解构：const { profile: { age } } = user 直接取深层字段；配合默认值（profile: { ag…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/956.jpg">
+  <meta name="twitter:image:alt" content="在真实业务里，解构赋值常用来做什么？举几个容易踩坑的例子（嵌套默认值、重命名、剩余元素）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/956">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"在真实业务里，解构赋值常用来做什么？举几个容易踩坑的例子（嵌套默认值、重命名、剩余元素）。","text":"考察点：对象/数组解构的实战用法与常见坑。这是 ES6 在日常联调后端接口、函数参数处理中最常用的特性，顺接箭头函数与函数式写法。","answerCount":1,"datePublished":"2026-09-10T02:28:37.990Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 对象解构 + 重命名 + 默认值：const { name: userName = '匿名' } = user 解决「后端字段名与前端命名不一致」「字段缺失兜底」两类问题。 嵌套解构：const { profile: { age } } = user 直接取深层字段；配合默认值（profile: { age } = {}）可避免读到 undefined 的子属性而报错。 数组解构 + 剩余：const [first, ...rest] = list 取首项、其余归集；const [a, , c] = arr 用空位跳过元素；const [a, b] = [b, a] 一行实现变量交换。 函数参数解构：function sum({ a, b = 0 } = {}) {} 让调用方传对象更直观，默认参数防止解构 undefined 报错。 常见坑： 解构 undefined / null 会直接抛 TypeError（不能对「非对象」解构），参数解构务必给整体默认值 = {}。 默认值只在「严格等于 undefined」时生效，null 不会触发默认；重命名后默认值是跟在「新名字」后面（{ name: userName = 'x' }）。","url":"https://itinterview.com.cn/question/956"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"JavaScript基础","item":"https://itinterview.com.cn/category?cat=59"},{"@type":"ListItem","position":5,"name":"在真实业务里，解构赋值常用来做什么？举几个容易踩坑的例子（嵌套默认值、重命名、剩余元素）。","item":"https://itinterview.com.cn/q/956"}]}</script>

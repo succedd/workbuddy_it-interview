@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是点击劫持（Clickjacking）？如何防护？ · IT面试题库">
   <meta property="og:description" content="点击劫持：攻击者把目标网站嵌入一个透明/半透明的 iframe 覆盖在自己的诱饵页面之上，并诱使用户在“看似无害”的按钮上点击，实际触发了 iframe 内已登录站点上的敏感操作（如关注、转账）。 防护手段： X-Frame-Options：DENY（禁止任何嵌套）/ SAMEORIGIN（仅同源可嵌）； 现代推…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/546.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是点击劫持（Clickjacking）？如何防护？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/546.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/546">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是点击劫持（Clickjacking）？如何防护？ · IT面试题库">
   <meta name="twitter:description" content="点击劫持：攻击者把目标网站嵌入一个透明/半透明的 iframe 覆盖在自己的诱饵页面之上，并诱使用户在“看似无害”的按钮上点击，实际触发了 iframe 内已登录站点上的敏感操作（如关注、转账）。 防护手段： X-Frame-Options：DENY（禁止任何嵌套）/ SAMEORIGIN（仅同源可嵌）； 现代推…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/546.jpg">
+  <meta name="twitter:image:alt" content="什么是点击劫持（Clickjacking）？如何防护？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/546">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是点击劫持（Clickjacking）？如何防护？","text":"请说明点击劫持的攻击手法，并给出服务端最有效的防护响应头。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"点击劫持：攻击者把目标网站嵌入一个透明/半透明的 iframe 覆盖在自己的诱饵页面之上，并诱使用户在“看似无害”的按钮上点击，实际触发了 iframe 内已登录站点上的敏感操作（如关注、转账）。 防护手段： X-Frame-Options：DENY（禁止任何嵌套）/ SAMEORIGIN（仅同源可嵌）； 现代推荐用 CSP 的 frame-ancestors：frame-ancestors 'none'（完全禁止被嵌）或 'self'； 前端可用 JS 的 frame-busting 兜底，但可被绕过，仍应以响应头为准。 注意：X-Frame-Options 正逐步被 frame-ancestors 取代，二者可同时设置以兼容旧浏览器。","url":"https://itinterview.com.cn/question/546"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"Web安全","item":"https://itinterview.com.cn/category?cat=202"},{"@type":"ListItem","position":4,"name":"什么是点击劫持（Clickjacking）？如何防护？","item":"https://itinterview.com.cn/q/546"}]}</script>

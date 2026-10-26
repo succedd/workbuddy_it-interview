@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？ · IT面试题库">
   <meta property="og:description" content="要点： 锁排查：通过系统视图 pg_locks 结合 pg_stat_activity 看谁持锁、谁等待；死锁 PG 会自动检测并回滚其中一个事务（报 deadlock detected），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 LOCK 粒度（表锁 / 行锁 / 意向锁）与 ACCESS EXCLU…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1614.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1614.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1614">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？ · IT面试题库">
   <meta name="twitter:description" content="要点： 锁排查：通过系统视图 pg_locks 结合 pg_stat_activity 看谁持锁、谁等待；死锁 PG 会自动检测并回滚其中一个事务（报 deadlock detected），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 LOCK 粒度（表锁 / 行锁 / 意向锁）与 ACCESS EXCLU…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1614.jpg">
+  <meta name="twitter:image:alt" content="PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1614">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？","text":"高级，考察并发与维护。","answerCount":1,"datePublished":"2026-10-10T11:54:14.379Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 锁排查：通过系统视图 pg_locks 结合 pg_stat_activity 看谁持锁、谁等待；死锁 PG 会自动检测并回滚其中一个事务（报 deadlock detected），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 LOCK 粒度（表锁 / 行锁 / 意向锁）与 ACCESS EXCLUSIVE（DDL / TRUNCATE）会阻塞读写。 表膨胀（bloat）：MVCC 产生死元组，若 AUTOVACUUM 跟不上（长事务、高频更新、默认阈值保守）会堆积，导致表 / 索引变大、顺序扫描变慢。治理：VACUUM（回收空间标记复用）/ VACUUM FULL（真正收缩，但锁表），调 autovacuum_vacuum_scale_factor 等，定期监控 pgstattuple。 长事务危害：长事务持有旧快照，使所有被它之后更新行的旧版本都无法被 VACUUM 回收 → 放大膨胀；还可能长期持锁、阻塞 vacuum、撑大 pg_xact。治理：避免大事务、设 idle_in_transaction_session_timeout、监控 pg_stat_activity 中长时间 idle in transaction。","url":"https://itinterview.com.cn/question/1614"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"关系型数据库","item":"https://itinterview.com.cn/category?cat=26"},{"@type":"ListItem","position":4,"name":"PostgreSQL","item":"https://itinterview.com.cn/category?cat=29"},{"@type":"ListItem","position":5,"name":"PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？","item":"https://itinterview.com.cn/q/1614"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Spring IOC 和 AOP 的理解与实现原理？ · IT面试题库">
   <meta property="og:description" content="IOC（控制反转）：对象的创建与依赖关系的管理交给 Spring 容器，我们只声明需要什么（@Autowired），不用自己 new——控制权从程序员&quot;反转&quot;给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。 实现：容器启动时扫描 BeanDefinition → 实例化 → …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/941.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Spring IOC 和 AOP 的理解与实现原理？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/941.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/941">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Spring IOC 和 AOP 的理解与实现原理？ · IT面试题库">
   <meta name="twitter:description" content="IOC（控制反转）：对象的创建与依赖关系的管理交给 Spring 容器，我们只声明需要什么（@Autowired），不用自己 new——控制权从程序员&quot;反转&quot;给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。 实现：容器启动时扫描 BeanDefinition → 实例化 → …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/941.jpg">
+  <meta name="twitter:image:alt" content="Spring IOC 和 AOP 的理解与实现原理？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/941">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Spring IOC 和 AOP 的理解与实现原理？","text":"请说明控制反转/依赖注入的设计思想与 Bean 生命周期，以及 AOP 动态代理的实现方式。","answerCount":1,"datePublished":"2026-09-09T13:49:58.435Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"IOC（控制反转）：对象的创建与依赖关系的管理交给 Spring 容器，我们只声明需要什么（@Autowired），不用自己 new——控制权从程序员\"反转\"给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。 实现：容器启动时扫描 BeanDefinition → 实例化 → 依赖注入（反射按类型/名称装配）→ 初始化（Aware、BeanPostProcessor 前置、InitializingBean/@PostConstruct、后置）→ 使用 → 销毁回调。 AOP（面向切面编程）：把日志、事务、权限等横切逻辑从业务代码中抽离，通过动态代理织入目标方法前后。核心概念：切点 Pointcut（在哪里切）、通知 Advice（做什么：@Before/@After/@Around）、切面 Aspect。 实现方式：运行期动态代理——目标实现了接口用 JDK 动态代理（Proxy+InvocationHandler，基于反射实现接口）；无接口用 CGLIB（生成目标类的子类字节码，方法拦截）。Spring Boot 默认全用 CGLIB。 注意：自调用（同类内 this.method()）不走代理，@Transactional/@Async 失效的经典原因。","url":"https://itinterview.com.cn/question/941"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"后端开发与服务端框架","item":"https://itinterview.com.cn/category?cat=79"},{"@type":"ListItem","position":3,"name":"Java后端","item":"https://itinterview.com.cn/category?cat=80"},{"@type":"ListItem","position":4,"name":"Spring","item":"https://itinterview.com.cn/category?cat=81"},{"@type":"ListItem","position":5,"name":"Spring IOC 和 AOP 的理解与实现原理？","item":"https://itinterview.com.cn/q/941"}]}</script>

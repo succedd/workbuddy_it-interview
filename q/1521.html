@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？ · IT面试题库">
   <meta property="og:description" content="省显存：① 混合精度 AMP（autocast + GradScaler）：激活与权重半精度，显存近半、速度随 tensor core 提升；② 梯度检查点（torch.utils.checkpoint）：以重算换显存，激活省 60%+；③ 减 batch + 梯度累积：小 batch 跑多次再 step，等效大…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1521.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1521.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1521">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？ · IT面试题库">
   <meta name="twitter:description" content="省显存：① 混合精度 AMP（autocast + GradScaler）：激活与权重半精度，显存近半、速度随 tensor core 提升；② 梯度检查点（torch.utils.checkpoint）：以重算换显存，激活省 60%+；③ 减 batch + 梯度累积：小 batch 跑多次再 step，等效大…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1521.jpg">
+  <meta name="twitter:image:alt" content="训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1521">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？","text":"按「显存 → 吞吐 → 多卡」给出可落地的手段与注意点。","answerCount":1,"datePublished":"2026-10-05T01:04:00.157Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"省显存：① 混合精度 AMP（autocast + GradScaler）：激活与权重半精度，显存近半、速度随 tensor core 提升；② 梯度检查点（torch.utils.checkpoint）：以重算换显存，激活省 60%+；③ 减 batch + 梯度累积：小 batch 跑多次再 step，等效大 batch；④ zero_grad(set_to_none=True)、及时 detach、避免保留中间变量；⑤ 优化器选 8-bit（bitsandbytes）或分片。 提吞吐：① DataLoader：num_workers=CPU 核数的一半起步、pin_memory=True、prefetch_factor 调优，确保数据管道不饿 GPU；② cudnn.benchmark=True（输入尺寸固定时）；③ 算子融合/编译：torch.compile；④ 尽量少 .item()/.cpu() 同步点。 多卡：① DDP（DistributedDataParallel）：每卡完整模型 + 数据并行，AllReduce 同步梯度，多机也可用，是默认起点；② FSDP/ZeRO：模型太大时分片参数/优化器状态；③ 吞吐基准用 samples/s 衡量，先排除 IO 瓶颈再谈并行。","url":"https://itinterview.com.cn/question/1521"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"深度学习","item":"https://itinterview.com.cn/category?cat=178"},{"@type":"ListItem","position":4,"name":"PyTorch","item":"https://itinterview.com.cn/category?cat=180"},{"@type":"ListItem","position":5,"name":"训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？","item":"https://itinterview.com.cn/q/1521"}]}</script>

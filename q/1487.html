@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？ · IT面试题库">
   <meta property="og:description" content="Angular 启动时通过 Zone.js 给所有异步 API（setTimeout、Promise、DOM 事件、XHR…）打补丁（monkey-patch）。任何异步回调执行完，Zone 通知 NgZone → 触发 ApplicationRef.tick() → 从根组件开始执行变更检测：对比模板绑定表达式…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1487.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1487.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1487">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？ · IT面试题库">
   <meta name="twitter:description" content="Angular 启动时通过 Zone.js 给所有异步 API（setTimeout、Promise、DOM 事件、XHR…）打补丁（monkey-patch）。任何异步回调执行完，Zone 通知 NgZone → 触发 ApplicationRef.tick() → 从根组件开始执行变更检测：对比模板绑定表达式…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1487.jpg">
+  <meta name="twitter:image:alt" content="什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1487">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？","text":"说明 monkey-patch 异步 API → 触发 tick → 组件树检测的链路，以及 OnPush 优化。","answerCount":1,"datePublished":"2026-10-05T01:03:55.761Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"Angular 启动时通过 Zone.js 给所有异步 API（setTimeout、Promise、DOM 事件、XHR…）打补丁（monkey-patch）。任何异步回调执行完，Zone 通知 NgZone → 触发 ApplicationRef.tick() → 从根组件开始执行变更检测：对比模板绑定表达式与上次值，有差异才更新 DOM（默认每分钟万次级检查依然很快，但大应用会累积开销）。 优化：① 组件改 ChangeDetectionStrategy.OnPush——只在输入引用变化、事件、markForCheck 时才检测该子树；② 搭配不可变数据/纯组件改造；③ 频繁异步回调（鼠标移动、滚动）用 runOutsideAngular 包裹，避免无意义触发 tick；④ Angular 16+ 可用 Signals 精确订阅替代全树检查。","url":"https://itinterview.com.cn/question/1487"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端框架","item":"https://itinterview.com.cn/category?cat=61"},{"@type":"ListItem","position":4,"name":"Angular","item":"https://itinterview.com.cn/category?cat=65"},{"@type":"ListItem","position":5,"name":"什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？","item":"https://itinterview.com.cn/q/1487"}]}</script>

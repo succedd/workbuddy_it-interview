@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？ · IT面试题库">
   <meta property="og:description" content="要点： 定位：确认注入点（评论内容/昵称/URL 参数），在浏览器查看响应里恶意脚本是否原样回显、是否被转义；区分是存储型（已入库）还是反射/DOM 型。 修复：① 服务端对所有输出做 HTML 实体转义；② 富文本场景用白名单净化（DOMPurify）而非黑名单；③ 下发 CSP 头 Content-Secur…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1470.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1470.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1470">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？ · IT面试题库">
   <meta name="twitter:description" content="要点： 定位：确认注入点（评论内容/昵称/URL 参数），在浏览器查看响应里恶意脚本是否原样回显、是否被转义；区分是存储型（已入库）还是反射/DOM 型。 修复：① 服务端对所有输出做 HTML 实体转义；② 富文本场景用白名单净化（DOMPurify）而非黑名单；③ 下发 CSP 头 Content-Secur…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1470.jpg">
+  <meta name="twitter:image:alt" content="留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1470">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？","text":"场景题：线上留言板出现存储型 XSS。请给出排查步骤与修复方案，并说明如何不破坏富文本排版。","answerCount":1,"datePublished":"2026-10-02T02:45:55.763Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 定位：确认注入点（评论内容/昵称/URL 参数），在浏览器查看响应里恶意脚本是否原样回显、是否被转义；区分是存储型（已入库）还是反射/DOM 型。 修复：① 服务端对所有输出做 HTML 实体转义；② 富文本场景用白名单净化（DOMPurify）而非黑名单；③ 下发 CSP 头 Content-Security-Policy: default-src 'self' 阻断外域脚本；④ 入库前做长度与格式校验。 保留富文本：用“白名单 + 净化库”放行 等安全标签，并强制校验 href（禁止 javascript: 协议），从而既满足排版需求又阻断 与 onerror 等事件属性。","url":"https://itinterview.com.cn/question/1470"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"信息安全与网络安全","item":"https://itinterview.com.cn/category?cat=200"},{"@type":"ListItem","position":3,"name":"XSS跨站脚本","item":"https://itinterview.com.cn/category?cat=205"},{"@type":"ListItem","position":4,"name":"留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？","item":"https://itinterview.com.cn/q/1470"}]}</script>

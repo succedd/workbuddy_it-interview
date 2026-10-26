@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？ · IT面试题库">
   <meta property="og:description" content="范式差异：UIKit 是命令式（手动创建、更新、移除视图）；SwiftUI 是声明式（用代码描述“界面应该是什么样”，框架据状态自动更新视图）。 @State：标记视图私有可变状态，变化触发视图重绘。 @Binding：子视图对父状态的可写引用，实现双向数据流动而不拷贝。 优势：减少样板、状态驱动 UI 更不易出…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/756.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/756.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/756">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？ · IT面试题库">
   <meta name="twitter:description" content="范式差异：UIKit 是命令式（手动创建、更新、移除视图）；SwiftUI 是声明式（用代码描述“界面应该是什么样”，框架据状态自动更新视图）。 @State：标记视图私有可变状态，变化触发视图重绘。 @Binding：子视图对父状态的可写引用，实现双向数据流动而不拷贝。 优势：减少样板、状态驱动 UI 更不易出…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/756.jpg">
+  <meta name="twitter:image:alt" content="SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/756">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？","text":"对比两种 UI 范式，并解释 SwiftUI 的状态绑定机制。","answerCount":1,"datePublished":"2026-09-08T14:04:08.273Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"范式差异：UIKit 是命令式（手动创建、更新、移除视图）；SwiftUI 是声明式（用代码描述“界面应该是什么样”，框架据状态自动更新视图）。 @State：标记视图私有可变状态，变化触发视图重绘。 @Binding：子视图对父状态的可写引用，实现双向数据流动而不拷贝。 优势：减少样板、状态驱动 UI 更不易出错；局限是复杂动效/底层控件仍需 UIKit 桥接（UIViewRepresentable）。","url":"https://itinterview.com.cn/question/756"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"iOS开发","item":"https://itinterview.com.cn/category?cat=218"},{"@type":"ListItem","position":4,"name":"SwiftUI","item":"https://itinterview.com.cn/category?cat=222"},{"@type":"ListItem","position":5,"name":"SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？","item":"https://itinterview.com.cn/q/756"}]}</script>
@@ -98,7 +104,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/756">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1654">SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1654">SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1935">SwiftUI 是什么？它和传统的 UIKit 命令式编程有什么本质区别？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1936">SwiftUI 中 @State、@Binding、@StateObject、@ObservedObject、@EnvironmentObject 各自解决什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1937">SwiftUI 的视图生命周期是怎样的？onAppear、onDisappear 与 .task 修饰符分别何时调用？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

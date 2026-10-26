@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？ · IT面试题库">
   <meta property="og:description" content="CAP 的物理根源：分区发生时，两台机器无法通信，各自收到的写请求没法互相同步——要么拒绝其中一方（保 C：一致），要么都接受（保 A：可用，但数据分叉）。 落地形态： 金融支付：宁可报错不可算错 → 选 C（ZooKeeper/etcd）； 社交feed/购物车：晚几秒看到新消息无所谓 → 选 A（Eureka…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/303.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/303.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/303">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？ · IT面试题库">
   <meta name="twitter:description" content="CAP 的物理根源：分区发生时，两台机器无法通信，各自收到的写请求没法互相同步——要么拒绝其中一方（保 C：一致），要么都接受（保 A：可用，但数据分叉）。 落地形态： 金融支付：宁可报错不可算错 → 选 C（ZooKeeper/etcd）； 社交feed/购物车：晚几秒看到新消息无所谓 → 选 A（Eureka…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/303.jpg">
+  <meta name="twitter:image:alt" content="微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/303">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？","text":"网络分区（两台机器之间断了）是必然发生的。分区发生的那一刻，系统只能二选一：拒绝服务保一致，或继续服务冒不一致的风险——你自己的项目会选哪个？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"CAP 的物理根源：分区发生时，两台机器无法通信，各自收到的写请求没法互相同步——要么拒绝其中一方（保 C：一致），要么都接受（保 A：可用，但数据分叉）。 落地形态： 金融支付：宁可报错不可算错 → 选 C（ZooKeeper/etcd）； 社交feed/购物车：晚几秒看到新消息无所谓 → 选 A（Eureka/Cassandra 最终一致）； 注册中心选型之争（Eureka vs ZooKeeper）本质就是这道选择题。 注意 CAP 只在分区发生时强制二选一；无分区时 C 和 A 可以兼得。P 不是选项而是必然发生的前提。面试答 CAP 的层次：能画出「分区时刻的两个机房」胜过背一百遍定义。","url":"https://itinterview.com.cn/question/303"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务【边界】CAP 定理为什么是分布式绕不开的紧箍咒？「选 C 还是选 A」在实际系统里长什么样？","item":"https://itinterview.com.cn/q/303"}]}</script>

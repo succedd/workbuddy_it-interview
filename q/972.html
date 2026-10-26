@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。 · IT面试题库">
   <meta property="og:description" content="现象：模型产出看似合理但虚构的事实、引用、函数名，甚至把不存在的论文当证据。 要点（提示词 + 架构两层）： 提示词层：① 强制引用——「所有事实必须来自提供的上下文，并在句末标注来源编号，禁止编造」；② 知识边界约束——「仅基于给定资料回答，资料中没有就明确说不知道」；③ 自检一致性——「回答前先列出支撑依据，…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/972.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/972.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/972">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。 · IT面试题库">
   <meta name="twitter:description" content="现象：模型产出看似合理但虚构的事实、引用、函数名，甚至把不存在的论文当证据。 要点（提示词 + 架构两层）： 提示词层：① 强制引用——「所有事实必须来自提供的上下文，并在句末标注来源编号，禁止编造」；② 知识边界约束——「仅基于给定资料回答，资料中没有就明确说不知道」；③ 自检一致性——「回答前先列出支撑依据，…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/972.jpg">
+  <meta name="twitter:image:alt" content="用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/972">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。","text":"考察点：幻觉的工程化抑制（提示词约束 + RAG/溯源/自检），故障排查视角。是 Prompt Engineering 追问链里最贴近生产的硬骨头。","answerCount":1,"datePublished":"2026-09-10T02:30:13.844Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"现象：模型产出看似合理但虚构的事实、引用、函数名，甚至把不存在的论文当证据。 要点（提示词 + 架构两层）： 提示词层：① 强制引用——「所有事实必须来自提供的上下文，并在句末标注来源编号，禁止编造」；② 知识边界约束——「仅基于给定资料回答，资料中没有就明确说不知道」；③ 自检一致性——「回答前先列出支撑依据，依据不足则降级为不确定」；④ 约束角色与输出格式，压缩自由发挥空间。 架构层：① RAG 检索兜底：先检索权威文档再生成，把「凭记忆编」变成「依据上下文答」；② 引文/溯源校验：生成后做一次「引用是否真存在于上下文」的校验，失效则拒答或重生成；③ Self-Consistency / 多轮抽样投票降低偶发编造；④ 关键场景加人工审核或高置信度门槛。 为什么有效：幻觉根因是「模型按概率续写、缺乏真值约束」；上述手段要么提供真值（RAG）、要么用约束压缩编造空间、要么用校验兜住。","url":"https://itinterview.com.cn/question/972"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Prompt Engineering","item":"https://itinterview.com.cn/category?cat=192"},{"@type":"ListItem","position":5,"name":"用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。","item":"https://itinterview.com.cn/q/972"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="C 语言中指针和数组的区别是什么？ · IT面试题库">
   <meta property="og:description" content="本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&amp;arr 以及用字符串字面量初始化 char s[…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/499.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="C 语言中指针和数组的区别是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/499.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/499">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="C 语言中指针和数组的区别是什么？ · IT面试题库">
   <meta name="twitter:description" content="本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&amp;arr 以及用字符串字面量初始化 char s[…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/499.jpg">
+  <meta name="twitter:image:alt" content="C 语言中指针和数组的区别是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/499">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"C 语言中指针和数组的区别是什么？","text":"为什么 sizeof(arr) 和 sizeof(p) 结果不同？数组名在哪些情况下会退化为指针？函数参数里的数组实际上是什么？","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"本质区别： 数组是一段连续内存空间，数组名 arr 在大多数表达式中会退化为指向首元素的指针常量（类型 T，不可被赋值/自增）。 指针是一个独立变量，存的是地址，本身占 sizeof(void)（通常 4/8 字节）。 关键现象： 只有在 sizeof(arr)、&arr 以及用字符串字面量初始化 char s[]=\"abc\" 时，数组名不退化；其余（如赋值、算术、函数传参）均退化为指针。 函数参数：void f(int a[10]) 等价于 void f(int a)——数组形参一律退化为指针，因此函数内 sizeof(a) 得到指针大小，无法获知原数组长度（常需额外传长度参数）。 访问方式：arr[i] 与 p[i] 语义相同（都按 基址+isizeof(T) 寻址），但数组越界访问更隐蔽；指针可重新指向别处，数组名不能。","url":"https://itinterview.com.cn/question/499"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"C语言","item":"https://itinterview.com.cn/category?cat=10"},{"@type":"ListItem","position":4,"name":"C 语言中指针和数组的区别是什么？","item":"https://itinterview.com.cn/q/499"}]}</script>

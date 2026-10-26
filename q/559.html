@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。 · IT面试题库">
   <meta property="og:description" content="输出顺序：1 5 3 4 2。 机制：JS 运行时是单线程，由事件循环（Event Loop）驱动。任务分为两类队列： 宏任务（macrotask / task）：整段脚本、setTimeout/setInterval 回调、I/O、UI 渲染等，进入任务队列。 微任务（microtask）：Promise.th…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/559.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/559.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/559">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。 · IT面试题库">
   <meta name="twitter:description" content="输出顺序：1 5 3 4 2。 机制：JS 运行时是单线程，由事件循环（Event Loop）驱动。任务分为两类队列： 宏任务（macrotask / task）：整段脚本、setTimeout/setInterval 回调、I/O、UI 渲染等，进入任务队列。 微任务（microtask）：Promise.th…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/559.jpg">
+  <meta name="twitter:image:alt" content="请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/559">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。","text":"问最终打印结果是什么？为什么是这个顺序？","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"输出顺序：1 5 3 4 2。 机制：JS 运行时是单线程，由事件循环（Event Loop）驱动。任务分为两类队列： 宏任务（macrotask / task）：整段脚本、setTimeout/setInterval 回调、I/O、UI 渲染等，进入任务队列。 微任务（microtask）：Promise.then/catch/finally、queueMicrotask、MutationObserver 回调，进入微任务队列。 每一轮循环的规则： 1. 先执行当前宏任务（这里是整段 同步代码）→ 打印 1、5。 2. 同步代码执行完、调用栈清空后，一次性清空所有微任务 → 打印 3（Promise）、4（queueMicrotask）。 3. 微任务清空后，浏览器可择机渲染，再取下一个宏任务 → 打印 2（setTimeout）。 关键点：微任务总是在下一个宏任务之前执行；微任务中新增的微任务也会在本次循环里继续清空（可能造成“饥饿”，需谨慎递归）。因此 Promise/queueMicrotask 的回调早于 setTimeout(0)。","url":"https://itinterview.com.cn/question/559"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"请说出下面代码的输出顺序，并解释事件循环中宏任务与微任务的执行机制。","item":"https://itinterview.com.cn/q/559"}]}</script>

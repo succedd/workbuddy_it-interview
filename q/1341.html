@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="I/O 多路复用中 select、poll、epoll 有什么区别？epoll 的 LT 与 ET 模式分别是什么？ · IT面试题库">
   <meta property="og:description" content="结论：select/poll 监听大量 FD 时需轮询、效率随 FD 数线性下降；epoll 用内核事件表回调通知，复杂度 O(1)，是高并发网络编程首选。 三者区别： select：用固定大小的 fd_set（通常 1024 上限），每次调用都要把全量 FD 从用户态拷贝到内核态并轮询，返回后还要遍历找出就绪 …">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1341.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="I/O 多路复用中 select、poll、epoll 有什么区别？epoll 的 LT 与 ET 模式分别是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1341.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1341">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="I/O 多路复用中 select、poll、epoll 有什么区别？epoll 的 LT 与 ET 模式分别是什么？ · IT面试题库">
   <meta name="twitter:description" content="结论：select/poll 监听大量 FD 时需轮询、效率随 FD 数线性下降；epoll 用内核事件表回调通知，复杂度 O(1)，是高并发网络编程首选。 三者区别： select：用固定大小的 fd_set（通常 1024 上限），每次调用都要把全量 FD 从用户态拷贝到内核态并轮询，返回后还要遍历找出就绪 …">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1341.jpg">
+  <meta name="twitter:image:alt" content="I/O 多路复用中 select、poll、epoll 有什么区别？epoll 的 LT 与 ET 模式分别是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1341">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"I/O 多路复用中 select、poll、epoll 有什么区别？epoll 的 LT 与 ET 模式分别是什么？","text":"考察点：I/O 多路复用模型对比与 epoll 工作模式。要求说清三者 FD 集合/性能差异、水平触发与边缘触发语义，并指出 epoll 适合高并发。","answerCount":1,"datePublished":"2026-09-26T05:19:37.366Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：select/poll 监听大量 FD 时需轮询、效率随 FD 数线性下降；epoll 用内核事件表回调通知，复杂度 O(1)，是高并发网络编程首选。 三者区别： select：用固定大小的 fd_set（通常 1024 上限），每次调用都要把全量 FD 从用户态拷贝到内核态并轮询，返回后还要遍历找出就绪 FD。 poll：用动态数组去掉了 1024 限制，但同样每次全量拷贝+轮询，FD 多了仍慢。 epoll：内核用红黑树维护监听 FD、用就绪链表记录事件；epoll_wait 只返回就绪 FD，无需遍历全部，支持边缘触发 ET。 LT 与 ET（epoll 工作模式）： LT 水平触发（默认）：只要 FD 处于就绪状态就持续通知，没读完下次还会报，编程容错好。 ET 边缘触发：仅在状态从不就绪变为就绪时通知一次，必须一次读/写到 EAGAIN，效率更高但易漏处理。 对比： | 模型 | FD 上限 | 时间复杂度 | 触发方式 | | --- | --- | --- | --- | | select | 1024 | O(n) 轮询 | 水平 | | poll | 无硬限 | O(n) 轮询 | 水平 | | epoll | 很大 | O(1) | LT/ET |","url":"https://itinterview.com.cn/question/1341"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Linux操作系统","item":"https://itinterview.com.cn/category?cat=43"},{"@type":"ListItem","position":4,"name":"I/O 多路复用中 select、poll、epoll 有什么区别？epoll 的 LT 与 ET 模式分别是什么？","item":"https://itinterview.com.cn/q/1341"}]}</script>

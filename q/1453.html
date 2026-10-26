@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？ · IT面试题库">
   <meta property="og:description" content="转码管线 对应命令要素：ffmpeg -i in.mp4 -vf scale=1280:-2 -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k out.mp4。-c copy（转封装）跳过中间三步所以秒级完成，但改不了编码格式。 三个核心参数 1. CR…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1453.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1453.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1453">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？ · IT面试题库">
   <meta name="twitter:description" content="转码管线 对应命令要素：ffmpeg -i in.mp4 -vf scale=1280:-2 -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k out.mp4。-c copy（转封装）跳过中间三步所以秒级完成，但改不了编码格式。 三个核心参数 1. CR…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1453.jpg">
+  <meta name="twitter:image:alt" content="FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1453">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？","text":"考察 FFmpeg 转码管线（解封装→解码→滤镜→编码→封装）与核心参数的量化取舍，是音视频岗高频实操题。","answerCount":1,"datePublished":"2026-10-01T05:33:30.918Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"转码管线 对应命令要素：ffmpeg -i in.mp4 -vf scale=1280:-2 -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k out.mp4。-c copy（转封装）跳过中间三步所以秒级完成，但改不了编码格式。 三个核心参数 1. CRF（恒定质量，x264/x265）：0–51，越小质量越高。x264 默认 23（肉眼无损约 18）。CRF 是「质量恒定、码率随内容浮动」——动作片码率高、静态画面码率低，同一 CRF 不同片源体积不可比； 2. preset：ultrafast→placebo 十档，控制编码器搜索的穷举程度。越慢 = 同质量体积越小，但编码耗时指数上升。点播压制用 slow 附近，实时转码只能 veryfast； 3. 码率（-b:v）：与 CRF 二选一。直播/带宽受限场景用「码率封顶」模式（-maxrate -bufsize），体积可预估但质量随内容波动。 选型口诀：点播存档 → CRF + slow；带宽受限/直播 → 码率封顶 + 快 preset；要控制总体积 → 两遍编码（2-pass）逼近目标码率。 画质相关的其他关键点 分辨率与码率要匹配：1080p 给 500kbps 必然糊，压不动先降分辨率（720p）而不是硬降码率； x265 同画质比 x264 省约 30–40% 体积，但编码慢 3–5 倍、部分老设备解码不支持； -g（GOP）与关键帧间隔影响 seek 精度与 HLS 切片：直播 GOP 通常 2×帧率； 音频 -b:a 128k AAC 对大多数场景足够，音乐内容 192k+。 追问：为什么有的视频「拖动进度条卡」？——关键帧间隔太大，seek 只能跳到最近关键帧再快进解码。","url":"https://itinterview.com.cn/question/1453"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"音视频与流媒体","item":"https://itinterview.com.cn/category?cat=249"},{"@type":"ListItem","position":3,"name":"FFmpeg","item":"https://itinterview.com.cn/category?cat=251"},{"@type":"ListItem","position":4,"name":"FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？","item":"https://itinterview.com.cn/q/1453"}]}</script>

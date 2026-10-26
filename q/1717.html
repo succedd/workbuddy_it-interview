@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？ · IT面试题库">
   <meta property="og:description" content="要点： 验证路径：轻客户端只下载区块头（含 Merkle Root），向全节点请求目标交易的 Merkle 路径；把交易哈希与路径上的兄弟哈希逐层计算，最终结果等于区块头中的 Root，即证明该交易被包含在这个区块里。 安全边界：Merkle Proof 只证明「包含」，不证明「所在链最长、交易未被双花」。轻客户…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1717.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1717.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1717">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？ · IT面试题库">
   <meta name="twitter:description" content="要点： 验证路径：轻客户端只下载区块头（含 Merkle Root），向全节点请求目标交易的 Merkle 路径；把交易哈希与路径上的兄弟哈希逐层计算，最终结果等于区块头中的 Root，即证明该交易被包含在这个区块里。 安全边界：Merkle Proof 只证明「包含」，不证明「所在链最长、交易未被双花」。轻客户…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1717.jpg">
+  <meta name="twitter:image:alt" content="轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1717">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？","text":"考察轻节点 / SPV 钱包的验证路径，以及它相比全节点的信任假设。","answerCount":1,"datePublished":"2026-10-19T05:43:24.241Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 验证路径：轻客户端只下载区块头（含 Merkle Root），向全节点请求目标交易的 Merkle 路径；把交易哈希与路径上的兄弟哈希逐层计算，最终结果等于区块头中的 Root，即证明该交易被包含在这个区块里。 安全边界：Merkle Proof 只证明「包含」，不证明「所在链最长、交易未被双花」。轻客户端还要跟随最长链 / 最终性检查，并对多个全节点做抽样，防止被单个作恶节点用陈旧或分叉链头欺骗。 工程代价：轻客户端查询会泄露地址与交易偏好；全节点可能拒绝服务或返回旧数据。大额收款仍建议使用全节点或可信检查点，SPV 更适合资源受限的钱包与移动端。","url":"https://itinterview.com.cn/question/1717"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"区块链基础","item":"https://itinterview.com.cn/category?cat=257"},{"@type":"ListItem","position":4,"name":"轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？","item":"https://itinterview.com.cn/q/1717"}]}</script>

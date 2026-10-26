@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="移动端 App 冷启动与热启动有什么区别？如何优化冷启动？ · IT面试题库">
   <meta property="og:description" content="结论 冷启动：应用进程不存在，需从零创建（Zygote fork、类加载、Application/首屏 Activity 初始化），耗时最长；过快会触发用户流失。 热启动：进程仍在后台，重新回到前台只需恢复 Activity，瓶颈在恢复路径与内存保留。 冷启动优化方向： 1. 异步/延迟初始化：把非关键 SDK、…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/257.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="移动端 App 冷启动与热启动有什么区别？如何优化冷启动？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/257.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/257">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="移动端 App 冷启动与热启动有什么区别？如何优化冷启动？ · IT面试题库">
   <meta name="twitter:description" content="结论 冷启动：应用进程不存在，需从零创建（Zygote fork、类加载、Application/首屏 Activity 初始化），耗时最长；过快会触发用户流失。 热启动：进程仍在后台，重新回到前台只需恢复 Activity，瓶颈在恢复路径与内存保留。 冷启动优化方向： 1. 异步/延迟初始化：把非关键 SDK、…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/257.jpg">
+  <meta name="twitter:image:alt" content="移动端 App 冷启动与热启动有什么区别？如何优化冷启动？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/257">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","text":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","answerCount":1,"datePublished":"2026-08-28T06:18:20.849Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 冷启动：应用进程不存在，需从零创建（Zygote fork、类加载、Application/首屏 Activity 初始化），耗时最长；过快会触发用户流失。 热启动：进程仍在后台，重新回到前台只需恢复 Activity，瓶颈在恢复路径与内存保留。 冷启动优化方向： 1. 异步/延迟初始化：把非关键 SDK、日志等移出主线程（postDelayed / IdleHandler / 协程），避免阻塞。 2. 布局与类加载：减少布局层级（ConstraintLayout）、减小 Dex 数量、用 R8/ProGuard 优化。 3. 主题预览：用启动主题（windowBackground）消除白屏。 4. 监控：线上采集 TTID/TTFD 的 P50/P90/P99，用 Android Vitals / MetricKit 设性能预算并做 CI 门禁。","url":"https://itinterview.com.cn/question/257"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"移动端性能优化","item":"https://itinterview.com.cn/category?cat=231"},{"@type":"ListItem","position":4,"name":"移动端 App 冷启动与热启动有什么区别？如何优化冷启动？","item":"https://itinterview.com.cn/q/257"}]}</script>

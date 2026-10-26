@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="交叉验证（Cross Validation）的作用与常见策略？ · IT面试题库">
   <meta property="og:description" content="动机 单次划分的评估结果依赖随机切分，方差大；若用同一测试集反复调参会数据泄露/过拟合测试集。交叉验证用多次划分取平均，更稳定地估计泛化能力。 k 折交叉验证 1. 将训练集分成 k 个大小相近的折； 2. 轮流用 k-1 折训练、1 折验证，得到 k 个分数； 3. 报告平均与标准差作为性能估计。 scikit…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/596.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="交叉验证（Cross Validation）的作用与常见策略？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/596.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/596">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="交叉验证（Cross Validation）的作用与常见策略？ · IT面试题库">
   <meta name="twitter:description" content="动机 单次划分的评估结果依赖随机切分，方差大；若用同一测试集反复调参会数据泄露/过拟合测试集。交叉验证用多次划分取平均，更稳定地估计泛化能力。 k 折交叉验证 1. 将训练集分成 k 个大小相近的折； 2. 轮流用 k-1 折训练、1 折验证，得到 k 个分数； 3. 报告平均与标准差作为性能估计。 scikit…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/596.jpg">
+  <meta name="twitter:image:alt" content="交叉验证（Cross Validation）的作用与常见策略？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/596">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"交叉验证（Cross Validation）的作用与常见策略？","text":"为什么不能只用一次 train/test 划分来评估模型？请说明 k 折交叉验证原理，以及分类任务中为何常用 StratifiedKFold。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"动机 单次划分的评估结果依赖随机切分，方差大；若用同一测试集反复调参会数据泄露/过拟合测试集。交叉验证用多次划分取平均，更稳定地估计泛化能力。 k 折交叉验证 1. 将训练集分成 k 个大小相近的折； 2. 轮流用 k-1 折训练、1 折验证，得到 k 个分数； 3. 报告平均与标准差作为性能估计。 scikit-learn：cross_val_score(clf, X, y, cv=5)。 常见策略 KFold：均分，回归默认； StratifiedKFold：每折保持类别比例与原数据一致，分类任务默认（避免某折某类缺失）； Leave-One-Out（LOO）：k=n，样本极少时用； ShuffleSplit / TimeSeriesSplit：时间序列须按时间顺序滚动切分，禁止随机打乱未来信息。 注意：交叉验证用于选模型/调超参；最终仍应保留一个从未参与的测试集做最终评估。预处理（如标准化）须在每折的「训练部分」拟合并应用到验证部分，避免泄露。","url":"https://itinterview.com.cn/question/596"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"ML基础","item":"https://itinterview.com.cn/category?cat=173"},{"@type":"ListItem","position":4,"name":"机器学习基础","item":"https://itinterview.com.cn/category?cat=174"},{"@type":"ListItem","position":5,"name":"交叉验证（Cross Validation）的作用与常见策略？","item":"https://itinterview.com.cn/q/596"}]}</script>

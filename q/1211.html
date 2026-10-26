@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。 · IT面试题库">
   <meta property="og:description" content="要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1211.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1211.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1211">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。 · IT面试题库">
   <meta name="twitter:description" content="要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1211.jpg">
+  <meta name="twitter:image:alt" content="服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1211">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"服务注册与发现（Service Registry & Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。","text":"追问链第 2 问：服务多了之后，调用方如何知道被调方地址？硬编码 IP 为什么不行？","answerCount":1,"datePublished":"2026-09-21T02:16:33.806Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 解决的核心问题：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址注册进去，调用方通过发现拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸缩。 核心机制：① 服务注册——实例启动后向注册中心发送注册请求（含服务名、IP、端口、元数据）；② 心跳/健康检查——实例定期发心跳，注册中心在超时未收到时将其剔除（Nacos 临时实例用心跳、永久实例用主动探测）；③ 服务发现——调用方拉取或订阅（长连接推送）服务列表并本地缓存；④ 一致性权衡——Eureka 用 AP（自我保护，网络分区时不剔除），Consul/Nacos(CP 模式) 用 Raft 保证强一致，选型要在可用性与一致性间取舍。 三者关系：注册发现解决「找谁」，网关解决「统一入口与路由」，配置中心解决「运行时参数动态调整」，它们是微服务基础设施的「三件套」。","url":"https://itinterview.com.cn/question/1211"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"微服务架构","item":"https://itinterview.com.cn/category?cat=121"},{"@type":"ListItem","position":4,"name":"服务注册与发现（Service Registry & Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。","item":"https://itinterview.com.cn/q/1211"}]}</script>

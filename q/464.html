@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？ · IT面试题库">
   <meta property="og:description" content="排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/464.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/464.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/464">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？ · IT面试题库">
   <meta name="twitter:description" content="排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/464.jpg">
+  <meta name="twitter:image:alt" content="用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/464">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？","text":"这是性能测试中最典型的「压不上去」场景。很多人第一反应是被测系统到了容量上限，实际未必。请给出一套分层排查思路，先分清瓶颈在压力机、网络还是被测系统。","answerCount":1,"datePublished":"2026-09-03T00:55:34.104Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"排查的核心原则是先证伪压力机，再谈被测系统。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。 第一步：确认 JMeter 自身有没有成为瓶颈 必须用 CLI（非 GUI）模式执行：jmeter -n -t test.jmx -l test.jtl。GUI 模式只用于调试脚本，绝不能用来跑正式压测。 压测时禁用或删除所有 Listener，尤其是 View Results Tree 和 View Results in Table——它们会在内存中累积每一个样本，直接拖垮压测机；用了 -l 落盘后监听器可以全部删掉。 降低资源占用：输出用 CSV 而不是 XML、只保存需要的字段、关闭 functional mode、尽量少用断言、脚本语言选性能最好的（见 JSR223 章节）。 检查压力机自身的 CPU、内存、网络与文件句柄；可用 JavaTest Sampler（不产生网络访问）测出该平台大致的吞吐上限作为基线。 第二步：确认线程数是否合理（警惕协调遗漏） 线程数取决于硬件能力与测试计划设计，也受服务端响应速度影响（服务端越快，JMeter 反而越忙）。线程数没有正确测算会遇到 Coordinated Omission 问题，得到错误或失真的结果。正确做法是逐步加压找拐点，而不是一上来就堆几千线程。 第三步：分层判断瓶颈在哪 在 TPS 停滞的同时，观察下面几组信号的组合： 压力机资源打满、服务端还很闲 → 压测端瓶颈，加机器 服务端 CPU 打满 → 应用计算或 GC 瓶颈 CPU 不高但响应时间持续上涨 → 锁竞争、线程池排队、慢 SQL、外部依赖等待 网络带宽或连接池打满 → 基础设施瓶颈 错误率随并发上升 → 多半是连接池、超时或限流配置 第四步：单机顶不住就横向扩展 需要大规模负载时，用分布式模式在多个节点跑 CLI 实例，由 Controller 汇总结果；也可以跑多个自治实例，最后合并 JTL 统一分析。注意此时 Controller 的结果汇总与网络传输本身也可能成为新的瓶颈。 脚本设计层面也常是元凶 需要大量随机数据时应提前生成到文件，用 CSV Data Set 读取，避免运行时现算。 少用大量相似 sampler，改用同一 sampler 循环 + 变量参数化。 一个常见误区 看到「TPS 不涨、响应时间变长」就下结论说系统到达容量上限。其实先确认三件事——压测机有没有顶满、是不是 GUI 模式、有没有开监听器——往往就能解决一半的问题。","url":"https://itinterview.com.cn/question/464"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"软件测试","item":"https://itinterview.com.cn/category?cat=104"},{"@type":"ListItem","position":3,"name":"性能测试","item":"https://itinterview.com.cn/category?cat=109"},{"@type":"ListItem","position":4,"name":"用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？","item":"https://itinterview.com.cn/q/464"}]}</script>
@@ -122,7 +128,7 @@
       <a class="cta" href="https://itinterview.com.cn/question/464">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
     </div>
-    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1404">QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1549">服务响应变慢时，如何用 Arthas、火焰图与分布式链路追踪定位是 CPU、锁竞争还是慢 SQL 导致的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1552">性能测试按目标可分为哪几类（负载/压力/稳定性/基准）？分别回答什么问题？</a><span class="rel-n">新题</span></li></ul></div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/1404">QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？</a><span class="rel-n">2 次浏览</span></li><li><a href="https://itinterview.com.cn/q/1549">服务响应变慢时，如何用 Arthas、火焰图与分布式链路追踪定位是 CPU、锁竞争还是慢 SQL 导致的？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1552">性能测试按目标可分为哪几类（负载/压力/稳定性/基准）？分别回答什么问题？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/1759">全链路压测该如何设计？生产影子流量、数据隔离、容量评估和熔断预案分别要注意什么？</a><span class="rel-n">新题</span></li></ul></div>
     <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
   </div>
   <div class="guide" id="guide">

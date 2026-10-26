@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？ · IT面试题库">
   <meta property="og:description" content="定义： 重排（reflow / 回流）：元素几何属性（宽高、位置、布局）发生变化，浏览器需要重新计算渲染树中所有受影响节点的几何信息。开销最大。 重绘（repaint）：元素外观变化（颜色、背景、visibility 等）但不影响布局，浏览器只需重新绘制像素。比重排轻，但仍消耗 CPU/GPU。 触发条件： 重排…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/560.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/560.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/560">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？ · IT面试题库">
   <meta name="twitter:description" content="定义： 重排（reflow / 回流）：元素几何属性（宽高、位置、布局）发生变化，浏览器需要重新计算渲染树中所有受影响节点的几何信息。开销最大。 重绘（repaint）：元素外观变化（颜色、背景、visibility 等）但不影响布局，浏览器只需重新绘制像素。比重排轻，但仍消耗 CPU/GPU。 触发条件： 重排…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/560.jpg">
+  <meta name="twitter:image:alt" content="什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/560">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？","text":"前端常提到“避免频繁重排/重绘”。请解释重排与重绘的定义、触发条件、性能代价差异，以及常见的优化手段（批量读写、脱离文档流、使用 transform 等）。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定义： 重排（reflow / 回流）：元素几何属性（宽高、位置、布局）发生变化，浏览器需要重新计算渲染树中所有受影响节点的几何信息。开销最大。 重绘（repaint）：元素外观变化（颜色、背景、visibility 等）但不影响布局，浏览器只需重新绘制像素。比重排轻，但仍消耗 CPU/GPU。 触发条件： 重排：改 width/height/top/left、增删 DOM、改 display、offsetWidth 等几何读取迫使刷新、字体变化、窗口 resize。 重绘：改 color/background/border-style/visibility、box-shadow 等仅在绘制层生效的属性。 注意：重排一定会触发重绘，重绘不一定触发重排。 优化手段： 1. 批量读写：先集中读（offsetTop 等会强制同步布局），再集中写，避免“读-写-读-写”反复触发重排。 2. 合并样式修改：用 class 一次性切换，而非逐条改 style。 3. 脱离文档流：用 position:absolute/fixed 或临时 display:none 后再改，缩小重排范围。 4. 使用合成层属性：动画优先用 transform/opacity/will-change，这些通常只触发合成，不重排/重绘。","url":"https://itinterview.com.cn/question/560"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"Web前端开发","item":"https://itinterview.com.cn/category?cat=55"},{"@type":"ListItem","position":3,"name":"前端基础","item":"https://itinterview.com.cn/category?cat=56"},{"@type":"ListItem","position":4,"name":"什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？","item":"https://itinterview.com.cn/q/560"}]}</script>

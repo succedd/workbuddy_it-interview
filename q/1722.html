@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？ · IT面试题库">
   <meta property="og:description" content="要点： 默认检查：Solidity 0.8 起对 +、-、* 做溢出/下溢检查，失败直接 revert；unchecked { ... } 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。 可安全使用的场景：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1722.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1722.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1722">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？ · IT面试题库">
   <meta name="twitter:description" content="要点： 默认检查：Solidity 0.8 起对 +、-、* 做溢出/下溢检查，失败直接 revert；unchecked { ... } 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。 可安全使用的场景：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1722.jpg">
+  <meta name="twitter:image:alt" content="Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1722">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？","text":"考察整数安全、Gas 优化与 0.7→0.8 升级审计。","answerCount":1,"datePublished":"2026-10-19T05:43:24.602Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 默认检查：Solidity 0.8 起对 +、-、* 做溢出/下溢检查，失败直接 revert；unchecked { ... } 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。 可安全使用的场景：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码；前提是有注释和测试支撑，而不是「为了省 Gas」全局关闭。 注意：unchecked 不关闭除零检查；升级旧合约时要逐处审计算术，尤其是 for 循环上限、代币精度换算和数组长度计算。即使使用 unchecked，也建议在边界处用 require 兜底。","url":"https://itinterview.com.cn/question/1722"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"区块链与Web3","item":"https://itinterview.com.cn/category?cat=256"},{"@type":"ListItem","position":3,"name":"智能合约Solidity","item":"https://itinterview.com.cn/category?cat=259"},{"@type":"ListItem","position":4,"name":"Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？","item":"https://itinterview.com.cn/q/1722"}]}</script>

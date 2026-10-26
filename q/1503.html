@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="Android View 的事件分发机制是什么？滑动冲突如何解决？ · IT面试题库">
   <meta property="og:description" content="三方法：dispatchTouchEvent（分发入口）、onInterceptTouchEvent（ViewGroup 询问是否拦截）、onTouchEvent（消费）。顺序：父 → 子逐层 dispatch（外层先问拦截，不拦则传给子），子不消费再逆序回传给父级 onTouchEvent——整体呈 U 型。触…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1503.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="Android View 的事件分发机制是什么？滑动冲突如何解决？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1503.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1503">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Android View 的事件分发机制是什么？滑动冲突如何解决？ · IT面试题库">
   <meta name="twitter:description" content="三方法：dispatchTouchEvent（分发入口）、onInterceptTouchEvent（ViewGroup 询问是否拦截）、onTouchEvent（消费）。顺序：父 → 子逐层 dispatch（外层先问拦截，不拦则传给子），子不消费再逆序回传给父级 onTouchEvent——整体呈 U 型。触…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1503.jpg">
+  <meta name="twitter:image:alt" content="Android View 的事件分发机制是什么？滑动冲突如何解决？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1503">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"Android View 的事件分发机制是什么？滑动冲突如何解决？","text":"描述 dispatch→intercept→touch 三方法的职责与 U 型返回路径，给出冲突处理模板。","answerCount":1,"datePublished":"2026-10-05T01:03:58.056Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"三方法：dispatchTouchEvent（分发入口）、onInterceptTouchEvent（ViewGroup 询问是否拦截）、onTouchEvent（消费）。顺序：父 → 子逐层 dispatch（外层先问拦截，不拦则传给子），子不消费再逆序回传给父级 onTouchEvent——整体呈 U 型。触摸序列里一旦某层消费了 down（返回 true），后续 move/up 直达它；父层在序列中拦截后子层会收到 ACTION_CANCEL。 滑动冲突两类：① 同向（嵌套 ScrollView、Banner 内 ListView）：重写 onInterceptTouchEvent 按滑动方向/距离阈值判断谁消费，或用 NestedScrolling 机制；② 异向（ViewPager 内横向 item 里嵌竖向列表）：外层拦截横向、内层消费竖向，ViewPager 已内置方向判定，自定义容器需自己算 dx/dy 竞争。 模板：onInterceptTouchEvent 里记录 down 坐标，move 超过 touchSlop 时比较方向——该自己滑就 return true 拦截，否则放行子 View。","url":"https://itinterview.com.cn/question/1503"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"移动端与跨平台开发","item":"https://itinterview.com.cn/category?cat=217"},{"@type":"ListItem","position":3,"name":"Android开发","item":"https://itinterview.com.cn/category?cat=223"},{"@type":"ListItem","position":4,"name":"Android View 的事件分发机制是什么？滑动冲突如何解决？","item":"https://itinterview.com.cn/q/1503"}]}</script>

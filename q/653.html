@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？ · IT面试题库">
   <meta property="og:description" content="要点一：正确答案是 B 客户端侧的查询顺序是：先看浏览器自身对该域名的缓存；没有则问操作系统（操作系统缓存，再到 hosts 文件）；都没有才去问本地 DNS 服务器。本地 DNS 若缓存命中直接返回，未命中才逐级问根、顶级、权威服务器，并把结果缓存后返回。 要点二：错误选项分析 A 错：DNS 设计的核心就是用…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/653.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/653.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/653">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？ · IT面试题库">
   <meta name="twitter:description" content="要点一：正确答案是 B 客户端侧的查询顺序是：先看浏览器自身对该域名的缓存；没有则问操作系统（操作系统缓存，再到 hosts 文件）；都没有才去问本地 DNS 服务器。本地 DNS 若缓存命中直接返回，未命中才逐级问根、顶级、权威服务器，并把结果缓存后返回。 要点二：错误选项分析 A 错：DNS 设计的核心就是用…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/653.jpg">
+  <meta name="twitter:image:alt" content="【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/653">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？","text":"A. 浏览器发起域名解析时，会直接跳过一切缓存先请求根 DNS 服务器 B. 正确的查询顺序大致是：浏览器缓存 → 操作系统缓存与 hosts 文件 → 本地 DNS 服务器缓存 → 根/顶级/权威逐级查询 C. DNS 记录一旦写入缓存就永久有效，除非手动清理 D. 本地 DNS 服务器不缓存任何解析结果，每次都完整走一遍逐级查询 请选出正确答案并解释其余选项错误的原因。","answerCount":1,"datePublished":"2026-09-07T13:21:58.731Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点一：正确答案是 B 客户端侧的查询顺序是：先看浏览器自身对该域名的缓存；没有则问操作系统（操作系统缓存，再到 hosts 文件）；都没有才去问本地 DNS 服务器。本地 DNS 若缓存命中直接返回，未命中才逐级问根、顶级、权威服务器，并把结果缓存后返回。 要点二：错误选项分析 A 错：DNS 设计的核心就是用多级缓存减少逐级查询，绝大多数解析在前几层缓存就命中，只有完全未命中才会触发对根服务器的查询。 C 错：每条 DNS 记录都有 TTL（生存时间），缓存到期即失效并需要重新解析；TTL 正是权衡\"解析速度\"与\"记录变更生效速度\"的旋钮。 D 错：本地 DNS 恰恰是缓存层级中最重要的一层，运营商/公共 DNS 服务的缓存命中率极高，未命中的结果也会被它缓存，供后续请求复用。 要点三：工程启示 调试 DNS 问题时应自上而下排查缓存层：浏览器缓存→操作系统（ipconfig /flushdns 或 systemctl restart nscd）→用 dig/nslookup 直接指定权威服务器绕过中间缓存对比结果。","url":"https://itinterview.com.cn/question/653"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机网络与协议","item":"https://itinterview.com.cn/category?cat=48"},{"@type":"ListItem","position":3,"name":"DNS原理","item":"https://itinterview.com.cn/category?cat=52"},{"@type":"ListItem","position":4,"name":"【单选题】关于 DNS 解析的缓存层级，下列说法正确的是？","item":"https://itinterview.com.cn/q/653"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="缓慢变化维（SCD）的常用处理方式有哪些？ · IT面试题库">
   <meta property="og:description" content="维度属性会随时间变化（客户改地址、商品调类目），如何记录历史是 SCD 问题： SCD1（覆盖）：直接 update 旧值，不留历史。适合无关紧要或只关心最新值的属性（电话号码），实现最简单。 SCD2（拉链/版本行）：变化时插入新行，旧行标记失效（有效时间区间 effective_from/to 或 is_cu…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1536.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="缓慢变化维（SCD）的常用处理方式有哪些？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1536.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1536">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="缓慢变化维（SCD）的常用处理方式有哪些？ · IT面试题库">
   <meta name="twitter:description" content="维度属性会随时间变化（客户改地址、商品调类目），如何记录历史是 SCD 问题： SCD1（覆盖）：直接 update 旧值，不留历史。适合无关紧要或只关心最新值的属性（电话号码），实现最简单。 SCD2（拉链/版本行）：变化时插入新行，旧行标记失效（有效时间区间 effective_from/to 或 is_cu…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1536.jpg">
+  <meta name="twitter:image:alt" content="缓慢变化维（SCD）的常用处理方式有哪些？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1536">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"缓慢变化维（SCD）的常用处理方式有哪些？","text":"覆盖覆盖型、拉链表、微型维度等方案及选型。","answerCount":1,"datePublished":"2026-10-05T01:04:02.230Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"维度属性会随时间变化（客户改地址、商品调类目），如何记录历史是 SCD 问题： SCD1（覆盖）：直接 update 旧值，不留历史。适合无关紧要或只关心最新值的属性（电话号码），实现最简单。 SCD2（拉链/版本行）：变化时插入新行，旧行标记失效（有效时间区间 effective_from/to 或 is_current 标记），事实表通过时间点关联到当时正确的版本。分析首选——能回答「当时他的分区是什么」。代价：维度表膨胀、查询要加时间条件。数仓里常以拉链表实现（dw_start_date/dw_end_date）。 SCD3（加列）：加「上一版本值」列，只记一次变化，实用场景少。 其他：微型维度——把变化快的属性独立成小维度（客户分层），事实表多挂一个外键；junk dimension——一堆低基数标志位合并。 选型：默认 SCD1；需要历史归因（财务、绩效、回溯分析）的属性用 SCD2；变化极快的高基数属性别塞维度，考虑挪到事实或微型维度。","url":"https://itinterview.com.cn/question/1536"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"大数据与数据工程","item":"https://itinterview.com.cn/category?cat=155"},{"@type":"ListItem","position":3,"name":"数仓建模理论","item":"https://itinterview.com.cn/category?cat=163"},{"@type":"ListItem","position":4,"name":"缓慢变化维（SCD）的常用处理方式有哪些？","item":"https://itinterview.com.cn/q/1536"}]}</script>

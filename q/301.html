@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？ · IT面试题库">
   <meta property="og:description" content="单体撞墙的信号：算力到顶（垂直扩容有价格与物理极限）、可用性风险（一挂全挂）、发布耦合（任何人发布都要全量回归）。 拆成分布式换来：水平伸缩、故障隔离、独立发布。 但拆开那一刻，一张隐藏账单立刻生效： 1. 网络不可靠：本地调用变远程调用，超时、重试、雪崩是新问题； 2. 没有全局事务：跨机数据一致性成了独立难题…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/301.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/301.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/301">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？ · IT面试题库">
   <meta name="twitter:description" content="单体撞墙的信号：算力到顶（垂直扩容有价格与物理极限）、可用性风险（一挂全挂）、发布耦合（任何人发布都要全量回归）。 拆成分布式换来：水平伸缩、故障隔离、独立发布。 但拆开那一刻，一张隐藏账单立刻生效： 1. 网络不可靠：本地调用变远程调用，超时、重试、雪崩是新问题； 2. 没有全局事务：跨机数据一致性成了独立难题…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/301.jpg">
+  <meta name="twitter:image:alt" content="分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/301">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？","text":"单机应用的性能与可用性有物理天花板（CPU 核数、宕机概率）。把一个应用拆到多台机器上，得到了什么、又第一次遇到了什么？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"单体撞墙的信号：算力到顶（垂直扩容有价格与物理极限）、可用性风险（一挂全挂）、发布耦合（任何人发布都要全量回归）。 拆成分布式换来：水平伸缩、故障隔离、独立发布。 但拆开那一刻，一张隐藏账单立刻生效： 1. 网络不可靠：本地调用变远程调用，超时、重试、雪崩是新问题； 2. 没有全局事务：跨机数据一致性成了独立难题； 3. 没有全局时钟：判断「谁先发生」都要新机制（逻辑时钟/版本号）。 分布式的所有「深水区面试题」（CAP、分布式事务、一致性哈希）都始于「网络不可靠 + 没有共享内存」这两条物理事实。","url":"https://itinterview.com.cn/question/301"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"分布式系统与微服务","item":"https://itinterview.com.cn/category?cat=116"},{"@type":"ListItem","position":3,"name":"分布式【诞生】单体好好的，为什么非要拆成分布式？拆开的「隐藏账单」是什么？","item":"https://itinterview.com.cn/q/301"}]}</script>

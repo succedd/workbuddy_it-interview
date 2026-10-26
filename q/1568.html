@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？ · IT面试题库">
   <meta property="og:description" content="要点： 顶点着色器：对每个顶点执行一次，核心是把顶点位置从模型空间变换到裁剪空间（MVP 矩阵），并可输出 UV、法线等 varying 给后续阶段；不决定像素颜色。 片元着色器：对每个「片元」（潜在像素）执行一次，根据插值后的 varying、纹理、光照模型计算最终 RGBA 颜色。 区别：粒度不同（顶点级 v…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1568.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1568.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1568">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？ · IT面试题库">
   <meta name="twitter:description" content="要点： 顶点着色器：对每个顶点执行一次，核心是把顶点位置从模型空间变换到裁剪空间（MVP 矩阵），并可输出 UV、法线等 varying 给后续阶段；不决定像素颜色。 片元着色器：对每个「片元」（潜在像素）执行一次，根据插值后的 varying、纹理、光照模型计算最终 RGBA 颜色。 区别：粒度不同（顶点级 v…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1568.jpg">
+  <meta name="twitter:image:alt" content="顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1568">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？","text":"考察点：区分两种着色器的粒度与职责（几何变换 vs 逐像素着色），理解 varying 在两者间的插值传递。","answerCount":1,"datePublished":"2026-10-06T09:02:18.855Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"要点： 顶点着色器：对每个顶点执行一次，核心是把顶点位置从模型空间变换到裁剪空间（MVP 矩阵），并可输出 UV、法线等 varying 给后续阶段；不决定像素颜色。 片元着色器：对每个「片元」（潜在像素）执行一次，根据插值后的 varying、纹理、光照模型计算最终 RGBA 颜色。 区别：粒度不同（顶点级 vs 像素级），执行次数差异巨大；顶点着色器负责几何变换，片元着色器负责着色与光照。","url":"https://itinterview.com.cn/question/1568"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"游戏开发与图形图像","item":"https://itinterview.com.cn/category?cat=232"},{"@type":"ListItem","position":3,"name":"Shader编程","item":"https://itinterview.com.cn/category?cat=239"},{"@type":"ListItem","position":4,"name":"顶点着色器（Vertex Shader）与片元着色器（Fragment Shader）分别做什么？","item":"https://itinterview.com.cn/q/1568"}]}</script>

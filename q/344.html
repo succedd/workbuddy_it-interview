@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="磁盘使用率 100% 导致服务不可用时，如何应急止血并定位根因（含已删未释放文件与日志轮转失效）？ · IT面试题库">
   <meta property="og:description" content="磁盘使用率 100% 常导致写失败、服务崩溃。处理分两步： 一、应急止血（先恢复服务） df -h 看哪个挂载点满；du -sh /* 逐级定位大目录；清理大日志/临时文件（/tmp、应用日志、core dump）。 已删除但仍被进程占用的文件不会释放空间：用 lsof | grep deleted 找到占用进程…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/344.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="磁盘使用率 100% 导致服务不可用时，如何应急止血并定位根因（含已删未释放文件与日志轮转失效）？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/344.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/344">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="磁盘使用率 100% 导致服务不可用时，如何应急止血并定位根因（含已删未释放文件与日志轮转失效）？ · IT面试题库">
   <meta name="twitter:description" content="磁盘使用率 100% 常导致写失败、服务崩溃。处理分两步： 一、应急止血（先恢复服务） df -h 看哪个挂载点满；du -sh /* 逐级定位大目录；清理大日志/临时文件（/tmp、应用日志、core dump）。 已删除但仍被进程占用的文件不会释放空间：用 lsof | grep deleted 找到占用进程…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/344.jpg">
+  <meta name="twitter:image:alt" content="磁盘使用率 100% 导致服务不可用时，如何应急止血并定位根因（含已删未释放文件与日志轮转失效）？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/344">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"磁盘使用率 100% 导致服务不可用时，如何应急止血并定位根因（含已删未释放文件与日志轮转失效）？","text":"考察磁盘满的应急止血（清空而非删除占用中文件）与根因定位（轮转失效/临时文件堆积）。","answerCount":1,"datePublished":"2026-08-31T02:48:10.423Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"磁盘使用率 100% 常导致写失败、服务崩溃。处理分两步： 一、应急止血（先恢复服务） df -h 看哪个挂载点满；du -sh /* 逐级定位大目录；清理大日志/临时文件（/tmp、应用日志、core dump）。 已删除但仍被进程占用的文件不会释放空间：用 lsof | grep deleted 找到占用进程，清空文件（如 > bigfile.log）而非 rm，或重启该进程即可回收空间（rm 后空间不释放是因为文件描述符仍被持有）。 紧急可临时在线扩容云硬盘或挂新盘缓释。 二、根因定位（防复发） 日志轮转是否失效（logrotate 配置/权限/被改名的文件）； 是否有定时任务或缓存无清理堆积； 是否应把日志/数据迁到独立数据盘或对象存储。 止血优先于根因；清理占用中文件用『清空』而非『删除』。","url":"https://itinterview.com.cn/question/344"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"华为云","item":"https://itinterview.com.cn/category?cat=152"},{"@type":"ListItem","position":4,"name":"磁盘使用率 100% 导致服务不可用时，如何应急止血并定位根因（含已删未释放文件与日志轮转失效）？","item":"https://itinterview.com.cn/q/344"}]}</script>

@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？ · IT面试题库">
   <meta property="og:description" content="定义：TypeScript 基于「控制流分析」在代码的不同分支里把变量的类型从「宽类型」收窄到「更具体的类型」，从而允许在该分支安全地调用更具体类型的成员。 常见收窄方式： typeof：用于区分原始类型（string/number/boolean/symbol/function 等）。 in：检查对象是否拥有某…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/508.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/508.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/508">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？ · IT面试题库">
   <meta name="twitter:description" content="定义：TypeScript 基于「控制流分析」在代码的不同分支里把变量的类型从「宽类型」收窄到「更具体的类型」，从而允许在该分支安全地调用更具体类型的成员。 常见收窄方式： typeof：用于区分原始类型（string/number/boolean/symbol/function 等）。 in：检查对象是否拥有某…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/508.jpg">
+  <meta name="twitter:image:alt" content="TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/508">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？","text":"请解释类型收窄的含义，并列举 typeof、in、instanceof、字面量相等判断、类型谓词(predicate) 等收窄手段及其适用场景。","answerCount":1,"datePublished":"2026-09-05T14:16:58.532Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"定义：TypeScript 基于「控制流分析」在代码的不同分支里把变量的类型从「宽类型」收窄到「更具体的类型」，从而允许在该分支安全地调用更具体类型的成员。 常见收窄方式： typeof：用于区分原始类型（string/number/boolean/symbol/function 等）。 in：检查对象是否拥有某属性，用于区分联合类型中的不同成员。 instanceof：基于原型链判断对象是否为某类的实例。 字面量相等（=== null / === 'a'）：收窄字面量类型或排除 null/undefined。 类型谓词函数 function isFish(p: Pet): p is Fish：自定义收窄，调用后在该分支中类型被收窄为 Fish。 断言函数 asserts x is T：运行时不满足则抛错，之后类型被收窄。 注意：typeof 无法区分对象类型（都返回 'object'），对象类型收窄用 in 或 instanceof；TS 5.5 引入「推断类型谓词」，让返回布尔值的函数自动被当作类型守卫。 示例：","url":"https://itinterview.com.cn/question/508"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"TypeScript","item":"https://itinterview.com.cn/category?cat=15"},{"@type":"ListItem","position":4,"name":"TypeScript 中的「类型收窄(type narrowing)」是什么？有哪些常见的收窄方式？","item":"https://itinterview.com.cn/q/508"}]}</script>

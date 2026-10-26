@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="为什么说 Java 中只有值传递，没有引用传递？ · IT面试题库">
   <meta property="og:description" content="结论：Java 只有值传递（pass-by-value）。无论是基本类型还是对象引用，方法接收的都是调用方值的副本。 原理分析 基本类型：形参是实参值的拷贝，方法内修改形参不影响原变量。 引用类型：传递的是“引用（对象地址）的值的拷贝”，即形参和实参指向同一个对象。 为什么对象看起来像引用传递？ 通过形参修改对象…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1352.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="为什么说 Java 中只有值传递，没有引用传递？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1352.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1352">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="为什么说 Java 中只有值传递，没有引用传递？ · IT面试题库">
   <meta name="twitter:description" content="结论：Java 只有值传递（pass-by-value）。无论是基本类型还是对象引用，方法接收的都是调用方值的副本。 原理分析 基本类型：形参是实参值的拷贝，方法内修改形参不影响原变量。 引用类型：传递的是“引用（对象地址）的值的拷贝”，即形参和实参指向同一个对象。 为什么对象看起来像引用传递？ 通过形参修改对象…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1352.jpg">
+  <meta name="twitter:image:alt" content="为什么说 Java 中只有值传递，没有引用传递？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1352">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"为什么说 Java 中只有值传递，没有引用传递？","text":"考察对 Java 方法参数求值策略的理解，以及如何解释对象参数“看起来像引用传递”的现象。","answerCount":1,"datePublished":"2026-09-26T05:19:38.460Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论：Java 只有值传递（pass-by-value）。无论是基本类型还是对象引用，方法接收的都是调用方值的副本。 原理分析 基本类型：形参是实参值的拷贝，方法内修改形参不影响原变量。 引用类型：传递的是“引用（对象地址）的值的拷贝”，即形参和实参指向同一个对象。 为什么对象看起来像引用传递？ 通过形参修改对象内部字段（如 obj.setName(...)）会影响原对象，因为二者指向同一堆内对象。 但若在方法内让形参重新指向新对象（obj = new Object()），原引用不会变，这正说明传的是引用值的副本，而非引用本身。 对比 | 传递方式 | 传递内容 | 能否改变调用方变量本身 | | :--- | :--- | :--- | | 值传递（Java 实际行为） | 值的副本 | 不能 | | 引用传递（如 C++ &） | 变量别名 | 能 | 面试要点：区分“改变对象状态”和“改变引用绑定”，前者不证明引用传递。","url":"https://itinterview.com.cn/question/1352"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"编程语言与编程基础","item":"https://itinterview.com.cn/category?cat=9"},{"@type":"ListItem","position":3,"name":"Java","item":"https://itinterview.com.cn/category?cat=12"},{"@type":"ListItem","position":4,"name":"为什么说 Java 中只有值传递，没有引用传递？","item":"https://itinterview.com.cn/q/1352"}]}</script>

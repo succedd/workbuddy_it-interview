@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。 · IT面试题库">
   <meta property="og:description" content="为什么有效 全局、恒定路径的感受野：任意两 token 一步可达，长程依赖不再被距离衰减，配合残差/层归一化，深层也能保留远端信号。 高度可并行：序列维度完全解耦，千亿参数可在超大规模语料上高效预训练，吃到规模定律（scaling law）红利。 注意力可解释：注意力权重可被可视化、探查模型在看哪，便于分析与对齐…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/412.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/412.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/412">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。 · IT面试题库">
   <meta name="twitter:description" content="为什么有效 全局、恒定路径的感受野：任意两 token 一步可达，长程依赖不再被距离衰减，配合残差/层归一化，深层也能保留远端信号。 高度可并行：序列维度完全解耦，千亿参数可在超大规模语料上高效预训练，吃到规模定律（scaling law）红利。 注意力可解释：注意力权重可被可视化、探查模型在看哪，便于分析与对齐…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/412.jpg">
+  <meta name="twitter:image:alt" content="高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/412">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。","text":"考察点：综合解释 Transformer 的成功原因，并能批判性指出其局限与改进方向（线性注意力、RoPE、长上下文）。属高级开放题。","answerCount":1,"datePublished":"2026-09-01T09:52:00.579Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"为什么有效 全局、恒定路径的感受野：任意两 token 一步可达，长程依赖不再被距离衰减，配合残差/层归一化，深层也能保留远端信号。 高度可并行：序列维度完全解耦，千亿参数可在超大规模语料上高效预训练，吃到规模定律（scaling law）红利。 注意力可解释：注意力权重可被可视化、探查模型在看哪，便于分析与对齐。 架构通用：同一套注意力可处理文本/图像/语音（把 patch/帧当作 token），迁移性强。 固有局限 二次复杂度 O(n²)：长文档/高分辨率图像下显存与算力爆炸，催生 FlashAttention、稀疏/线性注意力（如 Performer、RWKV）。 长度外推差：训练时见过的上下文有限，推理超长时位置编码失效；改进有 RoPE 的旋转扩展、ALiBi、NTK-aware 缩放、位置插值（PI）。 无归纳偏置：小数据下不如 CNN/RNN，需要大数据与正则。 注意力稀疏性 / 内容无关：标准 softmax 注意力对全体 token 加权，存在注意力沉没现象，后续有用门控/混合专家（MoE）优化。 一句话：Transformer 用全局并联的注意力 + 海量数据预训练换来了前所未有的表达力，代价是复杂度与长度外推，这两点正是当前大模型研究的主攻方向。","url":"https://itinterview.com.cn/question/412"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"人工智能与机器学习","item":"https://itinterview.com.cn/category?cat=172"},{"@type":"ListItem","position":3,"name":"大模型","item":"https://itinterview.com.cn/category?cat=187"},{"@type":"ListItem","position":4,"name":"Transformer架构","item":"https://itinterview.com.cn/category?cat=188"},{"@type":"ListItem","position":5,"name":"高级：为什么 Transformer 在海量数据上『有效』？请从全局感受野、并行训练、注意力可解释性出发论述，并指出它的固有局限（二次复杂度、长度外推）。","item":"https://itinterview.com.cn/q/412"}]}</script>

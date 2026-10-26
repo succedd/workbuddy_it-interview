@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？ · IT面试题库">
   <meta property="og:description" content="根因几乎都在「环境差异」： PATH 不同：cron 的 PATH 通常只有 /usr/bin:/bin，脚本里调用的 python3、java 等需写绝对路径，或在脚本开头 export PATH=...。 家目录/环境变量缺失：cron 以最小环境运行，~、.bashrc 不会加载，依赖 HOME、JAVA_…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/880.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/880.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/880">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？ · IT面试题库">
   <meta name="twitter:description" content="根因几乎都在「环境差异」： PATH 不同：cron 的 PATH 通常只有 /usr/bin:/bin，脚本里调用的 python3、java 等需写绝对路径，或在脚本开头 export PATH=...。 家目录/环境变量缺失：cron 以最小环境运行，~、.bashrc 不会加载，依赖 HOME、JAVA_…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/880.jpg">
+  <meta name="twitter:image:alt" content="crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/880">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？","text":"考察 cron 环境与交互式 Shell 环境的差异。","answerCount":1,"datePublished":"2026-09-09T02:22:06.299Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"根因几乎都在「环境差异」： PATH 不同：cron 的 PATH 通常只有 /usr/bin:/bin，脚本里调用的 python3、java 等需写绝对路径，或在脚本开头 export PATH=...。 家目录/环境变量缺失：cron 以最小环境运行，~、.bashrc 不会加载，依赖 HOME、JAVA_HOME 的程序要到脚本里显式 export。 无输出重定向：cron 默认把 stdout/stderr 邮件发送，没配邮件就「看起来没输出」；务必 >> /var/log/xxx.log 2>&1。 权限/工作目录：cron 在 $HOME 或 / 下执行，相对路径会找不到文件，脚本应 cd 到目标目录或用绝对路径。 排查步骤：把脚本输出全部重定向到日志 → 在 crontab 里加 SHELL=/bin/bash 和完整 PATH → 用 echo $PATH 对比手动与 cron 的差异定位缺失项。","url":"https://itinterview.com.cn/question/880"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"操作系统与系统运维","item":"https://itinterview.com.cn/category?cat=42"},{"@type":"ListItem","position":3,"name":"Shell脚本","item":"https://itinterview.com.cn/category?cat=45"},{"@type":"ListItem","position":4,"name":"crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？","item":"https://itinterview.com.cn/q/880"}]}</script>

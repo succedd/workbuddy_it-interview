@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="DRAM 为什么需要刷新？集中式、分散式、异步式刷新各自的刷新周期与总线占用有何不同？ · IT面试题库">
   <meta property="og:description" content="结论 DRAM 用电容存储电荷表示比特，电容会漏电，必须在电荷流失到无法辨认前定期回写（刷新），否则数据丢失；SRAM 用双稳态锁存则无需刷新。 三种刷新方式 集中式刷新：在一个刷新周期内集中安排一段「死区」把所有行刷完。实现简单但死区期间不能访存，实时性差。 分散式刷新：把刷新操作分散插入每个存储周期（每周期刷…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/1396.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="DRAM 为什么需要刷新？集中式、分散式、异步式刷新各自的刷新周期与总线占用有何不同？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/1396.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/1396">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DRAM 为什么需要刷新？集中式、分散式、异步式刷新各自的刷新周期与总线占用有何不同？ · IT面试题库">
   <meta name="twitter:description" content="结论 DRAM 用电容存储电荷表示比特，电容会漏电，必须在电荷流失到无法辨认前定期回写（刷新），否则数据丢失；SRAM 用双稳态锁存则无需刷新。 三种刷新方式 集中式刷新：在一个刷新周期内集中安排一段「死区」把所有行刷完。实现简单但死区期间不能访存，实时性差。 分散式刷新：把刷新操作分散插入每个存储周期（每周期刷…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/1396.jpg">
+  <meta name="twitter:image:alt" content="DRAM 为什么需要刷新？集中式、分散式、异步式刷新各自的刷新周期与总线占用有何不同？ · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/1396">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"DRAM 为什么需要刷新？集中式、分散式、异步式刷新各自的刷新周期与总线占用有何不同？","text":"考察 DRAM 电荷泄漏与三种刷新策略的定量权衡。","answerCount":1,"datePublished":"2026-09-26T11:05:11.418Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"结论 DRAM 用电容存储电荷表示比特，电容会漏电，必须在电荷流失到无法辨认前定期回写（刷新），否则数据丢失；SRAM 用双稳态锁存则无需刷新。 三种刷新方式 集中式刷新：在一个刷新周期内集中安排一段「死区」把所有行刷完。实现简单但死区期间不能访存，实时性差。 分散式刷新：把刷新操作分散插入每个存储周期（每周期刷一行），无死区，但会拖慢每次访问。 异步式刷新（最常用）：利用 CPU 不访存的空隙刷行，既无长死区、又不显著拖慢访存，是实际 DRAM 的标准做法。 定量 标准刷新周期 64ms（工业规范），若芯片共 N 行，则相邻两行刷新间隔 = 64ms / N。 例 N=4096 行：间隔 ≈ 15.6μs；每行刷新占 1 个周期，总线占用 ≈ 1/4096 ≈ 0.024%，几乎可忽略。 刷新是「读后写回」整行（无需 CPU 参与数据），由 DRAM 内部刷新计数器自动遍历行地址。","url":"https://itinterview.com.cn/question/1396"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"计算机科学基础","item":"https://itinterview.com.cn/category?cat=1"},{"@type":"ListItem","position":3,"name":"计算机组成原理","item":"https://itinterview.com.cn/category?cat=5"},{"@type":"ListItem","position":4,"name":"DRAM 为什么需要刷新？集中式、分散式、异步式刷新各自的刷新周期与总线占用有何不同？","item":"https://itinterview.com.cn/q/1396"}]}</script>

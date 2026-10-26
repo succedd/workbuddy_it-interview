@@ -8,13 +8,19 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。 · IT面试题库">
   <meta property="og:description" content="索引偷的是写性能与空间：每次 INSERT/UPDATE 都要同步维护所有相关索引（写放大），索引越多写越慢；还有存储成本与优化器选错索引的风险。 推广到整个存储世界，一切都是权衡： 缓存用「一致性风险」换读速度； 副本用「同步延迟」换可用性与读扩展； 分库分表用「跨库事务/查询复杂度」换写入扩展。 面试里问索引…">
-  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/276.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。 · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/276.jpg">
   <meta property="og:url" content="https://itinterview.com.cn/q/276">
   <meta property="og:site_name" content="IT面试题库">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。 · IT面试题库">
   <meta name="twitter:description" content="索引偷的是写性能与空间：每次 INSERT/UPDATE 都要同步维护所有相关索引（写放大），索引越多写越慢；还有存储成本与优化器选错索引的风险。 推广到整个存储世界，一切都是权衡： 缓存用「一致性风险」换读速度； 副本用「同步延迟」换可用性与读扩展； 分库分表用「跨库事务/查询复杂度」换写入扩展。 面试里问索引…">
-  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/276.jpg">
+  <meta name="twitter:image:alt" content="数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。 · IT面试题库">
   <link rel="canonical" href="https://itinterview.com.cn/q/276">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。","text":"索引是白吃的午餐吗？加一个索引，系统里有什么东西在悄悄变差？由此推广：缓存、副本分别又在偷什么？","answerCount":1,"datePublished":"2026-08-30T08:58:54.026Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"索引偷的是写性能与空间：每次 INSERT/UPDATE 都要同步维护所有相关索引（写放大），索引越多写越慢；还有存储成本与优化器选错索引的风险。 推广到整个存储世界，一切都是权衡： 缓存用「一致性风险」换读速度； 副本用「同步延迟」换可用性与读扩展； 分库分表用「跨库事务/查询复杂度」换写入扩展。 面试里问索引、缓存、主从，本质都在考你是否理解「收益的另一面是代价」，以及你的场景更在乎哪一面。","url":"https://itinterview.com.cn/question/276"}}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"数据库与数据存储","item":"https://itinterview.com.cn/category?cat=25"},{"@type":"ListItem","position":3,"name":"数据库【演化】「索引加速了读，那它偷走了什么？」——从这条问题出发，谈谈你对存储权衡的理解。","item":"https://itinterview.com.cn/q/276"}]}</script>
