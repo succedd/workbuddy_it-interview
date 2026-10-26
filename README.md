@@ -211,6 +211,9 @@
 | 2026-10-25 | 2026-10-25-a | HBase 追问链（非关系型数据库：数据模型 / RowKey 设计 / 写入读取路径 / RegionServer GC 排查 / Region Split·Compaction / HBase vs Cassandra 选型） | +7 |
 | 2026-10-25 | 2026-10-25-b | 混沌工程追问链（云原生与 DevOps：定义 / 稳态指标 / 生产 PodKill 实验 / 雪崩复盘 / Chaos Mesh·Gremlin·Litmus / SLO 融入 / 平台架构） | +7 |
 | 2026-10-25 | 2026-10-25-c | 数据治理追问链（大数据与数据工程：定义 / 核心域 / 口径统一 / 质量 NULL 止血 / 数据血缘 / 分级分类与合规 / 治理平台） | +7 |
+| 2026-10-26 | 2026-10-26-a | GitHub Actions CI/CD 持续集成追问链（云原生与 DevOps：workflow/job/step/action / 触发与并发 / 依赖缓存 / runner 选型 / 故障排查 / monorepo 增量 / reusable+OIDC） | +7 |
+| 2026-10-26 | 2026-10-26-b | Apache Doris MPP 数仓追问链（大数据与数据工程：FE/BE 架构 / 三种数据模型 / Unique Key 建表 / 导入方式选型 / 查询引擎 / 慢查询定位 / 高可用与负载均衡） | +7 |
+| 2026-10-26 | 2026-10-26-c | Dart 语言与 Flutter 基础追问链（编程语言：空安全 / final·const / 异步超时恢复 / 集合链式 / extension / Isolate 并发 / 重建优化） | +7 |
 
 ## 部署与自定义域名
 
