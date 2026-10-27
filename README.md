@@ -214,6 +214,9 @@
 | 2026-10-26 | 2026-10-26-a | GitHub Actions CI/CD 持续集成追问链（云原生与 DevOps：workflow/job/step/action / 触发与并发 / 依赖缓存 / runner 选型 / 故障排查 / monorepo 增量 / reusable+OIDC） | +7 |
 | 2026-10-26 | 2026-10-26-b | Apache Doris MPP 数仓追问链（大数据与数据工程：FE/BE 架构 / 三种数据模型 / Unique Key 建表 / 导入方式选型 / 查询引擎 / 慢查询定位 / 高可用与负载均衡） | +7 |
 | 2026-10-26 | 2026-10-26-c | Dart 语言与 Flutter 基础追问链（编程语言：空安全 / final·const / 异步超时恢复 / 集合链式 / extension / Isolate 并发 / 重建优化） | +7 |
+| 2026-10-27 | 2026-10-27-a | Dubbo RPC 框架追问链（分布式系统与微服务） | +7 |
+| 2026-10-27 | 2026-10-27-b | Cassandra 宽列数据库追问链（非关系型数据库） | +7 |
+| 2026-10-27 | 2026-10-27-c | ELK 日志体系追问链（云原生与DevOps） | +7 |
 
 ## 部署与自定义域名
 
