@@ -96,7 +96,7 @@
     <h1>Kafka 消费组重平衡（rebalance）是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">大数据工程师</span><span class="chip tag">Kafka</span><span class="chip tag">重平衡</span><span class="chip tag">消费组</span></div>
     <div class="card"><h2>题目</h2><p>解释触发原因、stop-the-world 影响与优化。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>重平衡</strong>：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>重平衡</strong>：Consumer Group 内成员变化时，重新分配分区给消费者的过程（基于协调者 + 组协议）。</p>
 <p><strong>触发</strong>：消费者加入/离开（崩溃、超时 <code>session.timeout</code>、心跳 <code>heartbeat.interval</code>）、订阅主题分区数变化、消费者超过 <code>max.poll.interval</code> 未 poll。</p>
 <p><strong>影响</strong>：重平衡期间<strong>整个组暂停消费</strong>（stop-the-world），大 group 影响明显。</p>
 <p><strong>优化</strong>：合理设超时、避免在消费逻辑里做重活（超过 <code>max.poll.interval.ms</code>）、升级到支持<strong>增量协作重平衡</strong>（Cooperative Sticky）的版本减少停顿、控制 group 规模。</p></div>

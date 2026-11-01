@@ -96,7 +96,7 @@
     <h1>系统设计题：Grafana 如何从 Prometheus 取数并搭建监控看板？一条典型的生产看板应包含哪些核心面板（结合 RED / USE 方法）？告警与看板如何配合？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">DevOps工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">Prometheus</span><span class="chip tag">Grafana</span><span class="chip tag">RED方法</span><span class="chip tag">USE方法</span><span class="chip tag">监控看板</span></div>
     <div class="card"><h2>题目</h2><p>考察点：监控可视化与告警的分工——Grafana 作为 Prometheus 的可视化层，如何用 RED（服务）/USE（资源）方法组织面板，以及看板（事后定位）与告警（事中通知）的互补关系。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>取数链路</strong>：Grafana 添加 Prometheus 为 Data Source（填其 URL），看板 Panel 用 PromQL 查询从 Prometheus 拉时序并渲染。Grafana 只负责可视化与（可选）告警通知，存储与计算都在 Prometheus；也可在 Grafana 侧直接基于 Panel 查询配 alerting。</li>
 <li><strong>RED 方法（请求类服务）</strong>：Rate（每秒请求数 QPS）、Errors（错误率）、Duration（请求耗时分布/分位数）。对应面板：QPS 曲线、5xx 错误率、P50/P95/P99 延迟。</li>

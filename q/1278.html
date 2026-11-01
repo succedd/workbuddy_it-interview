@@ -96,7 +96,7 @@
     <h1>Agent 应用的评测为什么比 RAG 更难？任务完成率、工具调用精确率与召回率、轨迹准确率、错误恢复率分别该怎么定义？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">AI Agent开发工程师</span><span class="chip">算法工程师</span><span class="chip tag">Agent评测</span><span class="chip tag">任务完成率</span><span class="chip tag">轨迹准确率</span><span class="chip tag">错误恢复率</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Agent 评测体系的设计能力，尤其是 Outcome 与 Transcript 分离的思维。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：Agent 评测比 RAG 更难。RAG 通常还能拆成“检索”和“生成”两段，Agent 会在多轮里调用工具、修改状态、读取反馈，<strong>前一步的小错可能在后面被放大</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Agent 评测比 RAG 更难。RAG 通常还能拆成“检索”和“生成”两段，Agent 会在多轮里调用工具、修改状态、读取反馈，<strong>前一步的小错可能在后面被放大</strong>。</p>
 <p><strong>第一步：把 Outcome 和 Transcript 分开看</strong></p>
 <ul>
 <li><strong>Outcome</strong> 是任务结束后的真实状态：订单有没有退款成功、代码测试有没有通过、文件有没有按要求改好。</li>

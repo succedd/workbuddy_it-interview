@@ -96,7 +96,7 @@
     <h1>如何设计一套对象存储的备份容灾架构（兼顾成本与 RTO/RPO）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">COS</span><span class="chip tag">备份容灾</span><span class="chip tag">3-2-1</span><span class="chip tag">架构设计</span></div>
     <div class="card"><h2>题目</h2><p>为生产系统的非结构化数据设计备份容灾方案，要求防误删、抗地域级故障、且成本可控。请给出一个可落地的架构设计与关键决策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>3-2-1 基线</strong>：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>3-2-1 基线</strong>：3 份数据、2 种介质、1 份异地；映射到 COS 即「线上桶 + 同地域低频副本 + 跨地域版本化副本」三层。</p>
 <p><strong>防误删层</strong>：源桶强制开启版本控制 + 回收站，并配置一条「不复制删除标记」的跨地域复制，避免误删被同步放大；关键桶加 MFA 删除保护。</p>
 <p><strong>抗地域故障层</strong>：用 CRR 将版本化对象复制到异地桶，RPO 取决于复制延迟（分钟级），RTO 取决于是否需跨地域拉取；极端合规场景可再加云外归档。</p>
 <p><strong>成本与演练</strong>：热数据标准、温数据低频、冷数据归档，配合生命周期自动沉降；每季度做一次真实恢复演练量化 RTO/RPO，并监控碎片与历史版本容量，防止隐性成本膨胀。</p></div>

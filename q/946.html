@@ -96,7 +96,7 @@
     <h1>JavaScript 的事件循环（Event Loop）机制是什么？宏任务与微任务的区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">JavaScript</span><span class="chip tag">事件循环</span><span class="chip tag">Promise</span></div>
     <div class="card"><h2>题目</h2><p>请说明 JS 单线程下的任务调度顺序：同步代码、微任务（Promise.then）、宏任务（setTimeout）的执行优先级。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>背景</strong>：JS 是单线程语言，耗时任务会阻塞页面。事件循环让 JS 实现&quot;异步非阻塞&quot;——同步任务在调用栈直接执行，异步任务回调进入任务队列等待。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>背景</strong>：JS 是单线程语言，耗时任务会阻塞页面。事件循环让 JS 实现&quot;异步非阻塞&quot;——同步任务在调用栈直接执行，异步任务回调进入任务队列等待。</p>
 <p><strong>一轮循环的顺序</strong>：</p>
 <ol>
 <li>执行<strong>同步代码</strong>（调用栈清空）；</li>

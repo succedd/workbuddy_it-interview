@@ -96,7 +96,7 @@
     <h1>MQTT 的遗嘱消息（LWT）、保留消息（Retained）与 Clean Session 如何配合做设备在线状态管理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">IoT开发工程师</span><span class="chip">嵌入式软件工程师</span><span class="chip">边缘计算工程师</span><span class="chip tag">MQTT</span><span class="chip tag">遗嘱消息</span><span class="chip tag">保留消息</span><span class="chip tag">CleanSession</span></div>
     <div class="card"><h2>题目</h2><p>考察 MQTT 三个会话特性的组合应用：设备掉线感知、状态同步与离线消息，是 IoT 平台设计的核心题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>三个特性各自做什么</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>三个特性各自做什么</h3>
 <ol>
 <li><strong>遗嘱消息（Last Will &amp; Testament）</strong>：客户端<strong>连接时预先登记</strong>一条消息（topic + payload + QoS），Broker 检测到「非正常断开」（TCP 死亡、Keep Alive 超时、协议错误）时<strong>代为发布</strong>。用途：<code>will topic = device/123/status</code>，payload=<code>offline</code>；</li>
 <li><strong>保留消息（Retained）</strong>：Broker 为某 topic <strong>保留最后一条</strong>消息，任何新订阅者 SUBSCRIBE 后<strong>立刻收到</strong>它，不用等下一次发布。用途：设备每次上线发布 <code>online</code>（retain=1），监控端任何时候订阅都能马上知道当前状态；</li>

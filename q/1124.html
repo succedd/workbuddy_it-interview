@@ -96,7 +96,7 @@
     <h1>如何基于 Redis 数据结构实现排行榜、计数器与集合运算等典型场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">排行榜</span><span class="chip tag">限流</span><span class="chip tag">集合运算</span><span class="chip tag">实战</span></div>
     <div class="card"><h2>题目</h2><p>请结合具体数据类型，给出排行榜、热点计数、共同好友/标签、滑动窗口限流四类场景的实现选型和命令。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>排行榜</strong>：用 ZSet，ZINCRBY 加分、ZREVRANGE 取 TopN、ZRANK 取名次；按小时/天用不同 key 做时段榜。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>排行榜</strong>：用 ZSet，ZINCRBY 加分、ZREVRANGE 取 TopN、ZRANK 取名次；按小时/天用不同 key 做时段榜。</p>
 <p><strong>计数器</strong>：用 String 的 INCR/INCRBY，配合 EXPIRE 做限流计数；多维度计数可 Hash 的 HINCRBY 分字段累加。</p>
 <p><strong>集合运算</strong>：用 Set 的 SINTER（共同关注/共同标签）、SUNION、SDIFF（差集做推荐）；抽奖用 SRANDMEMBER/SPOP 去重抽取。</p>
 <p><strong>滑动窗口限流</strong>：用 ZSet 以时间戳为 score、请求 ID 为 member，窗口外成员 ZREMRANGEBYSCORE 清理后 ZCARD 计数判是否超阈值；或 List + LPUSH/LTRIM 固定长度窗口。选型关键：要排序排名用 ZSet，要去重用 Set，要计数用 String。</p></div>

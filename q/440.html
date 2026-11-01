@@ -96,7 +96,7 @@
     <h1>GitHub Actions 里如何安全地使用 GITHUB_TOKEN 与 Secrets？为什么 fork 仓库的 PR 可能窃取密钥？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">CI/CD工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">GitHub Actions</span><span class="chip tag">供应链安全</span><span class="chip tag">Secrets管理</span></div>
     <div class="card"><h2>题目</h2><p>仓库给 CI 配置了云厂商密钥与发布 Token。请说明最小权限该如何落地，<code>pull_request_target</code> 这类特权触发器有哪些风险，以及第三方 Action 与自托管 Runner 需要注意什么。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、GITHUB_TOKEN 的最小权限</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、GITHUB_TOKEN 的最小权限</h3>
 <p>工作流通过 <code>github.token</code> 上下文使用 <code>GITHUB_TOKEN</code>。推荐做法是把它的<strong>默认权限设为对仓库内容只读</strong>，再在具体 job 内按需提升。任何对仓库有写权限的用户都能读取仓库里配置的全部 Secrets，因此「凭证只拥有完成任务所必需的最小权限」必须落到每个 job，而不是全局放开。</p>
 <h3>二、<code>pull_request_target</code> 为什么危险</h3>
 <p><code>pull_request_target</code> 与 <code>workflow_run</code> 属于<strong>特权触发器</strong>：它们与其它特权触发器共享主分支的缓存，并可能拥有仓库写权限和被引用 Secrets 的访问权。若这类工作流再检出不受信任的 Pull Request 代码（来自 fork 或不受控仓库），攻击者就能借此<strong>接管整个仓库</strong>、拿到 Secrets。</p>

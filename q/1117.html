@@ -96,7 +96,7 @@
     <h1>哪些常见场景会导致 @Transactional 事务失效？请系统归类。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">事务失效</span><span class="chip tag">rollbackFor</span><span class="chip tag">避坑</span></div>
     <div class="card"><h2>题目</h2><p>生产环境发现异常抛出后数据却没有回滚。请列出导致声明式事务失效的典型场景，并说明每类该如何规避。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>访问修饰符</strong>：@Transactional 默认只对 public 方法生效，private/protected 方法上的注解被忽略——改 public 或改用编程式事务。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>访问修饰符</strong>：@Transactional 默认只对 public 方法生效，private/protected 方法上的注解被忽略——改 public 或改用编程式事务。</p>
 <p><strong>异常被吞</strong>：方法内 catch 了异常未重新抛出，事务拦截器感知不到，自然不回滚；要么抛出、要么手动 setRollbackOnly。</p>
 <p><strong>异常类型不匹配</strong>：默认只回滚 RuntimeException/Error，受检异常（Exception）不回滚；用 rollbackFor=Exception.class 显式声明。</p>
 <p><strong>非代理调用</strong>：自调用（见上一题）或对象未经 Spring 管理（new 出来的对象）都不会织入事务。</p>

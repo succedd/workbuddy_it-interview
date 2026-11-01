@@ -96,7 +96,7 @@
     <h1>分布式链路追踪中 Span 上下文如何在服务间传播（如 W3C traceparent/baggage）？高并发下采样率该如何权衡？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">链路追踪</span><span class="chip tag">Trace</span><span class="chip tag">Span</span><span class="chip tag">W3C</span><span class="chip tag">采样</span></div>
     <div class="card"><h2>题目</h2><p>考察点：链路追踪的上下文传播机制与采样策略的工程取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Trace 与 Span</strong>：一次请求对应一个 Trace，由若干 Span 组成，每个 Span 记录一个服务/方法的起止、耗时与状态；父子 Span 通过 parent span id 串联成调用树。</li>
 <li><strong>上下文传播</strong>：跨进程调用时，必须把 TraceId/SpanId 等上下文放进请求头透传，业界标准是 W3C 的 traceparent（含版本/trace-id/parent-id/flag）与 baggage（透传业务键值）；SDK 在客户端注入、服务端提取，保证链路不断。</li>

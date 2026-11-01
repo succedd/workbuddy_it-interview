@@ -96,7 +96,7 @@
     <h1>MySQL 的 count(*)、count(1)、count(列名) 有什么区别？哪个性能最好？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Jetpack</span><span class="chip tag">ViewModel</span><span class="chip tag">LiveData</span></div>
     <div class="card"><h2>题目</h2><p>追问链起点。考察点：三者语义差异（是否忽略 NULL）；InnoDB 下 count(*) 的优化（选最小的二级索引树扫描）；MyISAM 与 InnoDB 的差异；大表计数的工程方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：语义区别（最关键）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：语义区别（最关键）</strong></p>
 <ul>
 <li><code>count(*)</code> 和 <code>count(1)</code>：<strong>统计所有行数</strong>，包括列值为 NULL 的行。两者在语义上<strong>完全等价</strong>。</li>
 <li><code>count(列名)</code>：只统计<strong>该列值不为 NULL</strong> 的行，NULL 行被忽略。</li>

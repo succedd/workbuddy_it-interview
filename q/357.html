@@ -96,7 +96,7 @@
     <h1>JDK 7 和 JDK 8 的 ConcurrentHashMap 实现有什么本质区别？为什么说 1.8 性能更好？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">ConcurrentHashMap</span><span class="chip tag">JDK8</span><span class="chip tag">并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Segment 分段锁 vs CAS+synchronized 桶锁、size() 统计实现、读操作无锁。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>JDK 7 实现</strong>：内部是「Segment 数组」，每个 Segment 继承 ReentrantLock，相当于把数据分成 16 段，每段独立加锁（分段锁）。写操作只锁所在段，不同段可并发。<strong>缺点</strong>：锁粒度仍较粗（默认 16 段），且 Segment 个数初始化后就固定。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>JDK 7 实现</strong>：内部是「Segment 数组」，每个 Segment 继承 ReentrantLock，相当于把数据分成 16 段，每段独立加锁（分段锁）。写操作只锁所在段，不同段可并发。<strong>缺点</strong>：锁粒度仍较粗（默认 16 段），且 Segment 个数初始化后就固定。</p>
 <p><strong>JDK 8 实现</strong>：废弃 Segment，结构与 HashMap 一致（数组 + 链表 + 红黑树），并发控制改为 <strong>CAS + synchronized 锁单个桶的头节点</strong>。只有真正发生冲突写同一个桶时才加锁，锁粒度从「段」降到「桶」，并发度大幅提升。</p>
 <p><strong>size() 统计</strong>：JDK 7 要分段加锁累加；JDK 8 用 <code>baseCount</code> + <code>CounterCell[]</code> 分段计数，读时基本无锁，统计近似且高效。</p>
 <p><strong>读操作</strong>：JDK 8 的 get 全程无锁（依赖 volatile 和内存可见性），读性能极高。</p>

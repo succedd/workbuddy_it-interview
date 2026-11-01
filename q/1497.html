@@ -96,7 +96,7 @@
     <h1>Vite 插件机制与 Rollup 插件是什么关系？生产构建为什么用 Rollup？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Vite</span><span class="chip tag">Rollup</span><span class="chip tag">插件</span></div>
     <div class="card"><h2>题目</h2><p>说明插件 API 的兼容设计与 dev/build 双引擎的统一方式。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>关系</strong>：Vite 插件是 <strong>Rollup 插件 API 的超集</strong>——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服务 dev（esbuild/原生 ESM 管道）和 build（Rollup 管道），Vite 内部按环境过滤钩子执行。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>关系</strong>：Vite 插件是 <strong>Rollup 插件 API 的超集</strong>——兼容绝大多数 Rollup 插件（transform、resolveId、load 等钩子），并额外扩展了 dev 专属钩子（configureServer、transformIndexHtml、handleHotUpdate）。所以一份插件可以同时服务 dev（esbuild/原生 ESM 管道）和 build（Rollup 管道），Vite 内部按环境过滤钩子执行。</p>
 <p><strong>build 选 Rollup 的原因</strong>：① 生产要的是<strong>最优产物</strong>而非构建速度——Rollup 的 Tree Shaking 基于更彻底的 ESM 静态分析，产物体积与可读性优于 Webpack；② 无运行时模块加载代码（Webpack 的 runtime/jsonp chunk 加载器），ESM 输出更干净；③ 代码分割算法成熟，适合多入口/多 chunk。</p>
 <p><strong>取舍</strong>：esbuild 负责依赖预构建与 TS/JSX 转译（快），Rollup 负责最终打包（优），二者职责互补。</p></div>
     <div class="cta-row">

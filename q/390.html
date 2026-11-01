@@ -96,7 +96,7 @@
     <h1>请解释 JavaScript 的原型链（prototype chain）？属性查找是怎样的？__proto__ 和 prototype 有何区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">原型链</span><span class="chip tag">prototype</span><span class="chip tag">__proto__</span><span class="chip tag">属性查找</span></div>
     <div class="card"><h2>题目</h2><p>考察点：每个对象有隐式原型 __proto__ 指向其构造函数的 prototype；属性沿原型链向上查找；__proto__（实例侧）与 prototype（构造函数侧）的对应关系。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>原型对象</strong>：每个函数（构造函数）都有 <code>prototype</code> 属性，指向一个对象；用 <code>new</code> 创建实例时，实例的隐式原型 <code>__proto__</code> 会指向构造函数的 <code>prototype</code>。</li>
 <li><strong>原型链与属性查找</strong>：访问 <code>obj.x</code> 时，先在自身找，找不到就沿 <code>__proto__</code> 向上（父原型）查找，直至 <code>Object.prototype</code>（顶端为 <code>null</code>），这条链即“原型链”；找到即返回，全程未找到返回 <code>undefined</code>。</li>

@@ -143,6 +143,25 @@ function breadcrumbLd(q, ctx) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+/* 答案质量维度提示（20261101）：生成纯文本元信息，与 SPA 详情页维度一致 */
+function answerQualityMeta(q) {
+  const ans = String(q.answer || "").trim();
+  const len = ans.length;
+  const hasCode = ans.indexOf("```") >= 0 || /\n\s{4}\S/.test(ans);
+  const days = q.updatedAt ? Math.max(0, Math.round((Date.now() - q.updatedAt) / 86400000)) : null;
+  const src = String(q.source || "").trim();
+
+  const depth = len >= 800 ? "详细" : len >= 300 ? "适中" : len >= 150 ? "基础" : "简略";
+  const srcLabel = /^https?:\/\//i.test(src) ? "外部链接" : src === "ai" ? "AI 生成" : src === "manual" ? "官方整理" : src === "web" ? "网络整理" : src === "seed" ? "种子题库" : "其他来源";
+  const review = q.reviewedAt ? "已复核" : "未复核";
+  const fresh = days !== null ? (days <= 7 ? "近 7 天更新" : days + " 天前更新") : "";
+
+  const parts = [`内容深度：${depth}`, hasCode ? "含示例/代码" : "无代码示例", `来源：${srcLabel}`, review];
+  if (fresh) parts.push(fresh);
+  if (days !== null && days > 30 && !q.reviewedAt) parts.push("技术内容可能随版本变化，建议结合官方文档理解");
+  return parts.join(" · ");
+}
+
 function page(q, ctx) {
   const title = esc(`${q.title} · IT面试题库`);
   const desc = esc(excerpt(q));
@@ -153,6 +172,8 @@ function page(q, ctx) {
   const ogImage = `${SITE}/assets/og/q/${q.id}.jpg`;
   const bodyHtml = q.body ? mdToHtml(q.body) : "";
   const answerHtml = q.answer ? mdToHtml(q.answer) : "";
+  /* 答案质量维度提示（20261101）：与 SPA 详情页一致，但纯文本无 JS */
+  const aq = answerQualityMeta(q);
   /* 同分类高频题内链（20261005a）：按浏览量取同分类其它 4 题，站内互链强化 SEO 抓取，
      也给读完本题的用户「接着看什么」的路径 */
   const related = ((ctx && ctx.relatedOf) ? ctx.relatedOf(q) : []);
@@ -263,7 +284,7 @@ function page(q, ctx) {
     <h1>${esc(q.title)}</h1>
     <div class="chips">${metaChips(q)}</div>
     ${bodyHtml ? `<div class="card"><h2>题目</h2>${bodyHtml}</div>` : ""}
-    ${answerHtml ? `<div class="card"><h2>参考答案</h2>${answerHtml}</div>` : ""}
+    ${answerHtml ? `<div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">${esc(aq)}</div>${answerHtml}</div>` : ""}
     <div class="cta-row">
       <a class="cta" href="${appUrl}">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>
@@ -448,7 +469,7 @@ async function main() {
     { loc: `${SITE}/questions`, priority: "0.8", freq: "daily" },
     { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
     { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
-    /* 隐私政策 / 用户协议（20261101a）：由 tools/gen-legal-pages.js 生成静态页，
+    /* 隐私政策 / 用户协议（20261101b）：由 tools/gen-legal-pages.js 生成静态页，
        信任类页面必须可被直接抓取，这里同步进 sitemap。 */
     { loc: `${SITE}/privacy.html`, priority: "0.4", freq: "monthly" },
     { loc: `${SITE}/terms.html`, priority: "0.4", freq: "monthly" },

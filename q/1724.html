@@ -96,7 +96,7 @@
     <h1>DApp 的 RPC Provider 是什么？eth_call、eth_sendRawTransaction 与 nonce 管理如何配合？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Web3开发工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">JSON-RPC</span><span class="chip tag">Provider</span><span class="chip tag">nonce</span></div>
     <div class="card"><h2>题目</h2><p>考察 Web3 前端与节点交互的完整链路，以及常见卡交易问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Provider 是 DApp 与节点之间的 JSON-RPC 通道</strong>（HTTP / WebSocket / IPC）。读操作走 <code>eth_call</code>、<code>eth_getBalance</code>、<code>eth_getLogs</code>，不广播、不花 Gas；写操作先 <code>eth_estimateGas</code> 估算，再由钱包签名，最后 <code>eth_sendRawTransaction</code> 广播。</li>
 <li><strong>nonce 管理</strong>：用 <code>eth_getTransactionCount(address, &quot;pending&quot;)</code> 取下一个 nonce；同一账户并发发交易要在本地排队，nonce 断档会让后续交易一直 pending；替换交易必须复用同一 nonce 并提高小费。</li>

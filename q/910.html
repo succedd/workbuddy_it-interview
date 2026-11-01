@@ -96,7 +96,7 @@
     <h1>如何保证缓存与数据库的数据一致性？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存一致性</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>先更新数据库再删缓存为什么是主流方案？延迟双删、订阅 binlog 又解决了什么问题？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先排除两种反模式</strong>：先删缓存再更新库（并发下旧值被重新写入缓存的概率高）；更新缓存而非删除（并发写乱序+写放大，基本不用）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先排除两种反模式</strong>：先删缓存再更新库（并发下旧值被重新写入缓存的概率高）；更新缓存而非删除（并发写乱序+写放大，基本不用）。</p>
 <p><strong>主流：Cache Aside + 先更新数据库、再删除缓存（推荐）</strong>。不一致窗口极小，仅在&quot;读请求恰好在写前查了旧值、写完成后才回写缓存&quot;这一罕见交错时出现，且自愈（下次写修复）。</p>
 <p><strong>残余问题与进阶</strong>：</p>
 <ol>

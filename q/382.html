@@ -96,7 +96,7 @@
     <h1>在 CI 中如何设计 Docker 镜像构建与缓存策略，兼顾构建速度、可复现性与安全？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">CI</span><span class="chip tag">构建缓存</span><span class="chip tag">BuildKit</span><span class="chip tag">镜像安全</span></div>
     <div class="card"><h2>题目</h2><p>考察点：构建缓存在 CI 的失效问题、远程缓存（registry cache / BuildKit cache）、多阶段与最小化攻击面、镜像签名与漏洞扫描、固定基础镜像版本。属高级题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>缓存失效痛点</strong>：CI 每次是干净机器，本地构建缓存无效，全量重建很慢。解决：用 BuildKit 的<strong>远程缓存</strong>（<code>--cache-from</code> 拉取上一镜像层、或 <code>--cache-to=type=registry</code> 把中间层推到仓库），让“依赖层”命中缓存。</li>
 <li><strong>层顺序优化</strong>：依赖清单（package.json/pom.xml）先 COPY 并安装，源码后 COPY，使依赖层稳定可缓存；代码改动只重建上层。</li>

@@ -96,7 +96,7 @@
     <h1>Service Worker 是什么？它的生命周期如何运转，又是怎样实现离线可用的？请说明它与浏览器 HTTP 缓存的分工。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip">Web全栈工程师</span><span class="chip tag">浏览器原理</span><span class="chip tag">Service Worker</span><span class="chip tag">PWA</span><span class="chip tag">离线缓存</span><span class="chip tag">生命周期</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Service Worker 的定位、生命周期与 PWA 缓存分层。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>定位</strong>：Service Worker 本质上是 Web 应用与浏览器、网络之间的<strong>代理服务器</strong>，是注册在<strong>指定源和路径</strong>下的<strong>事件驱动 worker</strong>：它能<strong>拦截并修改</strong>页面与资源请求、细粒度缓存资源，并决定断网时的表现。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>定位</strong>：Service Worker 本质上是 Web 应用与浏览器、网络之间的<strong>代理服务器</strong>，是注册在<strong>指定源和路径</strong>下的<strong>事件驱动 worker</strong>：它能<strong>拦截并修改</strong>页面与资源请求、细粒度缓存资源，并决定断网时的表现。</p>
 <p><strong>关键特性</strong>：</p>
 <ul>
 <li>运行在 <strong>worker 上下文</strong>：<strong>无法访问 DOM</strong>，不阻塞主线程，完全异步；因此<strong>同步 XHR 与 Web Storage（localStorage）都不可用</strong>（应改用 Cache API / IndexedDB）；</li>

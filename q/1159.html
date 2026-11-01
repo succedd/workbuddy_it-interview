@@ -96,7 +96,7 @@
     <h1>前端调用 fetch(&#39;https://api.other.com/data&#39;) 被浏览器拦截报 CORS 错误，应如何排查并解决？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">浏览器</span><span class="chip tag">跨域</span><span class="chip tag">CORS</span><span class="chip tag">同源策略</span></div>
     <div class="card"><h2>题目</h2><p>考察点：同源策略与跨域——CORS 预检、常见响应头、开发/生产环境的不同解法（场景题）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>思路</strong>：CORS 错误是浏览器基于『同源策略』拦截了跨源响应，根因在<strong>服务端响应头缺失</strong>，前端单改代码通常无效。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>思路</strong>：CORS 错误是浏览器基于『同源策略』拦截了跨源响应，根因在<strong>服务端响应头缺失</strong>，前端单改代码通常无效。</p>
 <p><strong>要点（先定位）</strong>：</p>
 <ul>
 <li>看报错是『简单请求被拦』还是『预检 OPTIONS 失败』：带自定义头/非简单方法会先发 <code>OPTIONS</code> 预检，预检不过直接失败。</li>

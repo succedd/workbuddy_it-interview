@@ -96,7 +96,7 @@
     <h1>React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">React Native开发工程师</span><span class="chip tag">React Native</span><span class="chip tag">新架构</span><span class="chip tag">JSI</span><span class="chip tag">Fabric</span></div>
     <div class="card"><h2>题目</h2><p>React Native 的新架构（JSI / Fabric / TurboModules）相比旧 Bridge 解决了什么问题？</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 65 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>旧架构通过 <strong>Bridge</strong> 用 JSON 序列化异步传递 JS 与原生通信，存在序列化开销、只能异步、模块启动时全量加载等问题。新架构（RN 0.76 起默认，0.82 起移除旧 Bridge）引入：</p>
 <ul>
 <li><strong>JSI（JavaScript Interface）</strong>：C++ 层，JS 可直接持有原生对象引用，支持同步调用，无需序列化。</li>

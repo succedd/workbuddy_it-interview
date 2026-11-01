@@ -1,0 +1,257 @@
+/* Tablet */
+@media (max-width: 980px) {
+  .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .editor-split { grid-template-columns: 1fr; }
+  /* 顶栏文字入口在平板宽度会挤爆搜索框：收紧间距与内边距（20260923f） */
+  .topbar-actions { gap: 2px; }
+  .topbar-actions .top-link { padding: 0 7px; font-size: 12px; }
+}
+
+/* 桌面端与平板：抽屉遮罩一律不参与布局（移动端的显示规则见下方媒体查询） */
+.drawer-mask { display: none; }
+
+/* 窄桌面 / 平板横屏（721–1024px）：顶栏文字入口放不下 —— 实测 900px 会撑出横向滚动条
+   （顶栏 5 个文字入口 + 搜索框 + 主题键 + 登录 + 管理员 + 访问计数 总宽 ≈ 1100px）。
+   这段宽度统一收起文字入口、放出抽屉按钮，改由抽屉导航抵达（20260923f）。 */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .topbar-actions .top-link { display: none; }
+  .menu-toggle { display: grid !important; }
+  .topbar-search { max-width: 340px; }
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar {
+    position: fixed; top: var(--topbar-h); left: 0; bottom: 0; width: 260px; z-index: 80;
+    transform: translateX(-100%); transition: transform .25s ease; height: auto;
+  }
+  body.drawer-open .sidebar { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  /* 遮罩：只有抽屉打开时才出现（原先 HTML 上写死了 hidden，导致点了没反应） */
+  .drawer-mask { position: fixed; inset: var(--topbar-h) 0 0 0; background: rgba(15,23,42,.45); z-index: 70; display: none; }
+  body.drawer-open .drawer-mask { display: block; }
+  body.drawer-open { overflow: hidden; }   /* 抽屉打开时锁住背景滚动，避免内容在抽屉下面乱滑 */
+  .main { padding: 16px 14px 50px; }
+  .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-auto { grid-template-columns: minmax(0, 1fr); }
+  /* 顶栏空间有限：搜索入口移入抽屉，本机访问计数隐藏 */
+  .topbar-search { display: none; }
+  .drawer-search { display: block; }
+  .vis-chip.vis-stats { display: none; }
+  .hero h1 { font-size: 22px; }
+  .menu-toggle { display: grid !important; }
+  .desktop-only { display: none !important; }
+  .modal { max-width: 100%; border-radius: var(--radius) var(--radius) 0 0; align-self: flex-end; }
+  .modal-mask { padding: 0; align-items: flex-end; }
+}
+
+/* 键盘快捷键提示 —— 只在「有能悬浮的指针」（鼠标/触控板）的设备上显示。
+   判据与 `U.canHover()` 一致，这里是**双保险**：即便将来有人新增提示、忘了走 JS 判据，
+   只要挂上 `.kbd-hint` 类也能被兜住。
+   为什么必须藏：① 触屏没有实体键盘，文案是纯噪音；② 触屏的 `:hover` 会「粘住」→
+   `[data-tooltip]:hover::after` 那行「空格键：展开/收起答案」会一直挂在按钮上不消失
+   （用户 2026-09-19 反馈）。 */
+@media (hover: none), (pointer: coarse) {
+  .kbd-hint { display: none !important; }
+  [data-tooltip-kbd]::after { display: none !important; }
+  /* 触屏没有 hover → 所有 data-tooltip 气泡都没有意义（点一下就会「粘住」）。
+     而且它们是 `white-space: nowrap` 的长文本 + 居中定位，实测首页统计卡上那 4 个
+     提示把页面撑宽 92px，造成整页可横向拖动 —— 这正是顶栏修好后暴露出来的第二处溢出源。
+     `U.tooltip()` 只绑 mouseenter（本身就是桌面机制）、且另有 .js-tooltip 浮层，
+     所以这里整个隐藏不会丢功能。 */
+  [data-tooltip]::after { display: none !important; }
+}
+
+/* 窄视口一律隐藏 data-tooltip 浮层 —— 补「粗指针」判据的漏网之鱼。
+   原规则只在 `(hover: none)/(pointer: coarse)`（真触屏）下隐藏；但**窄窗口**
+   （桌面浏览器拖到很窄、或用鼠标的设备模拟手机尺寸）指针仍是 fine，浮层照样渲染。
+   而浮层是 `position:absolute; white-space:nowrap` 的长文本、且以元素中心左右撑开，
+   一旦靠近窄屏右缘就会把页面撑宽。实测 390px 下首页统计卡那 4 个提示把
+   documentElement.scrollWidth 顶到 471（=375+96），整页可横向拖动。
+   教训：用「元素 rect.right > clientWidth」扫溢出**抓不到伪元素**，必须同时看
+   `documentElement.scrollWidth`，否则会误判「横向溢出为 0」。 */
+@media (max-width: 720px) {
+  [data-tooltip]::after { display: none !important; }
+}
+
+.menu-toggle { display: none; }
+@media (min-width: 721px) { .menu-toggle { display: none; } }
+
+/* ============ iOS 安全区（viewport-fit=cover 后生效） ============ */
+/* 底部：home 条不遮内容（移动端主内容与底部弹窗） */
+@media (max-width: 720px) {
+  /* 底部 tab 栏固定占 52px（安全区另算）：主内容、Toast、新版本胶囊都必须让开，否则被压住 */
+  /* 2026-09-24：tab 栏高度提成变量 —— 原先 .main 的 102px 是「52 + 50」硬编码，
+     而 #footer 在 .layout 之外、只有 20px padding-bottom，于是页脚被 tab 栏压住 53px
+     （实测 footer bottom 829 > tabbar top 776，「开源仓库」整条点不到）。
+     统一用 --tabbar-h 表达，改高度只需动这一处。 */
+  :root { --tabbar-h: 54px; }
+  .main { padding-bottom: calc(var(--tabbar-h) + 48px + env(safe-area-inset-bottom, 0px)); }
+  .modal { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body.drawer-open .sidebar { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .toast-root { top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); }
+  /* 底部 tab 栏启用；抽屉展开时隐藏，避免叠在遮罩下层产生「半灰可点」的错觉 */
+  .tabbar { display: flex; }
+  body.drawer-open .tabbar { display: none; }
+  /* index.html 内联样式对 #sw-update-pill 有 640px 断点规则，此处提特异性覆盖，抬到 tab 栏之上 */
+  html body #sw-update-pill { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+/* 顶部：仅 PWA 独立窗口（安装到主屏幕）时页面顶到屏幕最上沿，需给顶栏让出刘海 */
+@media (display-mode: standalone) {
+  #topbar { height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)); padding-top: env(safe-area-inset-top, 0px); }
+  .layout { min-height: calc(100vh - var(--topbar-h) - env(safe-area-inset-top, 0px)); }
+  .sidebar { top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)); height: calc(100vh - var(--topbar-h) - env(safe-area-inset-top, 0px)); }
+  .drawer-mask { top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)); }
+}
+
+/* 离线徽章（顶栏，亮暗主题通用琥珀色） */
+.vis-chip.net-off { background: rgba(217,119,6,.12); border-color: rgba(217,119,6,.35); color: #b45309; }
+html[data-theme="dark"] .vis-chip.net-off { background: rgba(251,191,36,.12); border-color: rgba(251,191,36,.3); color: #fbbf24; }
+
+/* Toast 移动端改底部居中（拇指区，不遮标题），进出场改上/下滑 */
+@media (max-width: 720px) {
+  .toast-root { top: auto; left: 16px; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); align-items: center; max-width: none; }
+  .toast { animation-name: toast-in-up; }
+  .toast.out { animation-name: toast-out-down; }
+}
+
+/* 窄屏：周报三列数字收窄防换行拥挤 */
+@media (max-width: 480px) {
+  .wk-num { font-size: 19px; gap: 4px; }
+  .wk-trend { font-size: 10px; padding: 0 5px; }
+  .wk-stat { padding: 0 4px; }
+}
+
+/* =========================================================================
+ * 触屏可用性（2026-09-19 移动端实测体检后补）
+ * ========================================================================= */
+
+/* 仅移动端显示的入口（抽屉专属：管理后台 / 管理员登录）。
+   这里用**反向断点**实现——桌面端隐藏、移动端完全不动 display，
+   避免破坏 .side-nav-item 自身的 flex 布局（那样会把图标与文字挤成两行）。 */
+@media (min-width: 721px) { .mobile-only { display: none !important; } }
+
+@media (max-width: 720px) {
+  /* ① 点击区不小于 44×44（Apple HIG）。实测：#menu-toggle 仅 28×36、
+        #theme-btn 36×36、抽屉项高 39px、登录键高 30px —— 手机上容易点空。
+        ⚠️ 只限顶栏/抽屉范围：`.icon-btn` 在管理表格、弹窗关闭等处也大量使用，
+        全局放大 44px 会把那些密集布局撑坏。 */
+  #menu-toggle,
+  .topbar-actions .icon-btn { width: 44px; height: 44px; }
+  .topbar-actions .btn-sm { min-height: 44px; }
+  .side-nav-item { min-height: 44px; }
+  .drawer-search input { height: 44px; }
+  .modal-head .icon-btn { width: 40px; height: 40px; }
+
+  /* ② 输入控件字号提到 16px。iOS Safari 聚焦 <16px 的输入框会**把整页放大且不缩回**。
+        实测：抽屉搜索 14px、首页搜索 15px、题库搜索 13.3px、三个筛选下拉 13px。
+        这里用 !important 是刻意的：`.select-mini`（0,1,0）这类类选择器特异性高于
+        元素选择器（0,0,1），不写 !important 就会被压回去（首轮就是这样漏掉了 3 个下拉）。 */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select, textarea { font-size: 16px !important; }
+
+  /* ③ 正文表格：保持自然列宽 + 横向滚动，杜绝窄列「一个汉字一行」
+        （容器由 js/utils.js#U.md 的 .md-table-wrap 提供；桌面端不加 nowrap，
+         让长句照常换行，不受影响）。 */
+  .md-table-wrap > table { width: auto; min-width: 100%; }
+  .md-table-wrap th, .md-table-wrap td { white-space: nowrap; }
+
+  /* ④ 顶栏帐号昵称限宽：登录后昵称最长 10 字，不限制会重新把顶栏撑爆 */
+  .topbar-actions .acct-name { max-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ⑤ Hero 搜索行：原本是「输入框 + 搜索 + 随机一题 + 技术教程」4 个元素挤一行且不换行，
+        手机放不下 —— 实测 390px 溢出 45px，且输入框被压到只剩 26px 宽。
+        改为：输入框独占一行，3 个按钮在下一行，放不下自然换行（wrap 兜底，不会再溢出）。 */
+  .hero-search { flex-wrap: wrap; }
+  .hero-search input { flex: 1 1 100%; min-width: 0; }
+  .hero-search .btn { flex: 1 1 auto; padding: 0 12px; }
+
+  /* ⑥ 次级点击区：顶栏品牌与 .btn-sm（30 → 36，与 .btn 默认一致）、热门标签 */
+  #topbar .brand { min-height: 44px; }
+  .btn-sm { height: 36px; }
+  .hot-tags .tag { padding: 6px 12px; font-size: 13px; }
+
+  /* 400px 以下防横向溢出：品牌文字保留在链接里，但视觉只露出方形 logo。
+     溢出来源是「汉堡 + 品牌全名 + 搜索 + 主题 + 登录」，在 375px 约需 396px。 */
+  @media (max-width: 400px) {
+    #topbar { padding: 0 12px; gap: 10px; overflow: hidden; }
+    #topbar .brand { flex: 0 0 32px; width: 32px; overflow: hidden; }
+    .topbar-actions { gap: 4px; min-width: 0; }
+    .topbar-actions .btn-sm { padding: 0 10px; }
+  }
+}
+
+/* =========================================================================
+ * 2026-09-24 布局与体验整改 —— 移动端规则
+ * （对应《布局体验评审报告》P0-1/2/3、P1-5/6/9、P2-13/16/18/19）
+ * 统一集中在这里而不是散进上面几个 720px 块，方便整体审查与回滚。
+ * ========================================================================= */
+@media (max-width: 720px) {
+
+  /* ---------- P0-1 页脚让开底部 tab 栏 ----------
+     实测：footer 底边 y=829 > tab 栏顶边 y=776（压住 53px），页脚末行「开源仓库」
+     整条落在覆盖区内、程序判定不可点。与 .main 用同一常量补齐。 */
+  #footer { padding-bottom: calc(20px + var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+
+  /* ---------- P2-16 面包屑收紧 ----------
+     移动端纵向空间宝贵（原占约 40px），缩小字号与下边距，但保留导航能力
+     （详情页的分类路径仍可点回分类页）。 */
+  .breadcrumb { font-size: 12px; margin-bottom: 8px; gap: 4px; line-height: 1.5; }
+
+  /* ---------- P0-2 详情页操作按钮 ----------
+     实测 7 个按钮全部 36px 高（低于 44px 的 Apple HIG）。
+     「查看答案」提为主按钮、撑满整行并加高到 48px；四个次要动作两列等宽、最小 44px。 */
+  .q-actions { align-items: stretch; }
+  .q-actions-main { width: 100%; height: 48px; justify-content: center; font-size: 15px; font-weight: 600; }
+  .q-actions-sub { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .q-actions-sub .btn, .q-actions-sub .btn.btn-sm { height: auto; min-height: 44px; justify-content: center; padding: 0 10px; }
+  .q-actions-sub .tag { grid-column: 1 / -1; justify-content: center; padding: 8px 12px; }
+
+  /* ---------- P1-9 翻页按钮同样进触控标准 ---------- */
+  .qd-pager .btn { flex: 1 1 0; min-width: 0; height: auto; min-height: 44px; }
+
+  /* ---------- P1-6 筛选区默认折叠 ----------
+     原先 4 个筛选控件纵排占约 250px，题目要到 470px 之后才出现；
+     折叠后首屏只剩「筛选按钮 + 排序段控」，题目提前约 220px。
+     ⚠️ 只作用于题目列表的 .toolbar.collapsible，不动其它页面里的 .toolbar。 */
+  .filter-toggle { display: inline-flex; }
+  .toolbar.collapsible { display: none; }
+  .toolbar.collapsible.open { display: flex; }
+  .list-tools { gap: 8px; margin-bottom: 10px; }
+  .list-tools .seg { margin-left: auto; }
+  .list-tools .seg button { padding: 7px 10px; font-size: 12.5px; }
+
+  /* ---------- P1-5 表单页（刷题练习 / 模拟面试）单列堆叠 ---------- */
+  .page-form { gap: 14px; }
+  .page-form-side .card { padding: 14px 16px; }
+
+  /* ---------- P2-19 Hero 关键词 chips 收成两行 ---------- */
+  .hot-tags { gap: 6px; margin-top: 12px; }
+  .hot-tags .tag { padding: 5px 11px; font-size: 12.5px; }
+
+  /* ---------- P2-18 学习周报标题不再被挤成竖排 ---------- */
+  .wk-head { gap: 6px; }
+
+  /* ---------- P2-13 空状态 ---------- */
+  .empty { padding: 44px 18px; }
+  .empty .empty-cta .btn { height: auto; min-height: 44px; }
+
+  /* ---------- P1-8 首页瘦身 ----------
+     移动端首页原本长达 10171px（约 12 屏）：技术体系 21 张卡纵向排开约 4200px，
+     下面还叠着岗位体系十几个时代分组 —— 真正有内容的「最新题目／精选题目」被推到第 10 屏。
+     这里移动端只留前 6 个分类 / 前 4 个时代（section 标题旁的「查看全部 →」仍指向完整页）。 */
+  .home-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .home-cats > *:nth-child(n+7) { display: none; }
+  .home-stages > *:nth-child(n+5) { display: none; }
+
+  /* ---------- P2-19 Hero 关键词 chips 只留两行 ----------
+     12 个词在 390px 下排成 3 行约 150px，把搜索框和下方内容往下推。
+     保留前 8 个高频道，其余交给搜索。 */
+  .hot-tags .tag:nth-child(n+9) { display: none; }
+
+  body.keyboard-open .modal {
+    max-height: calc(100vh - var(--keyboard-inset, 180px) - 32px);
+    overflow: auto;
+  }
+}

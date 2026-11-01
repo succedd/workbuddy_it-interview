@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 500">
+  <rect width="680" height="500" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-vt1" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-vt1g" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#059669"/>
+    </marker>
+    <marker id="arw-vt1r" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="3">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">虚拟线程调度 vs Pinning</text>
+
+  <!-- 左半：正常调度 -->
+  <rect x="30" y="52" width="300" height="30" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="180" y="72" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">正常：可挂载 / 可卸载</text>
+
+  <rect x="70" y="96" width="220" height="48" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="180" y="116" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">JDK 调度器</text>
+  <text x="180" y="134" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">专用 ForkJoinPool（FIFO 模式）</text>
+
+  <line x1="120" y1="144" x2="100" y2="172" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-vt1)"/>
+  <line x1="240" y1="144" x2="260" y2="172" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-vt1)"/>
+
+  <rect x="40" y="176" width="130" height="56" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="105" y="199" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">载体线程 A</text>
+  <text x="105" y="218" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">平台线程 1:1 OS 线程</text>
+
+  <rect x="190" y="176" width="130" height="56" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="255" y="199" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">载体线程 B</text>
+  <text x="255" y="218" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">OS 只调度平台线程</text>
+
+  <line x1="105" y1="232" x2="105" y2="258" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-vt1g)"/>
+  <text x="112" y="251" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">mount</text>
+
+  <rect x="40" y="262" width="130" height="48" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="105" y="282" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">虚拟线程 1</text>
+  <text x="105" y="300" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">正在执行 Java 代码</text>
+
+  <line x1="255" y1="232" x2="255" y2="258" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-vt1g)"/>
+  <text x="262" y="251" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">mount</text>
+
+  <rect x="190" y="262" width="130" height="48" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2"/>
+  <text x="255" y="282" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">虚拟线程 2</text>
+  <text x="255" y="300" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">正在执行 Java 代码</text>
+
+  <line x1="105" y1="310" x2="105" y2="336" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-vt1g)"/>
+  <text x="112" y="329" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">阻塞 I/O → unmount</text>
+
+  <rect x="40" y="340" width="280" height="48" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="180" y="360" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">虚拟线程 1 已挂起</text>
+  <text x="180" y="378" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">栈被保存到堆，载体 A 释放去跑其他虚拟线程</text>
+
+  <!-- 右半：Pinning -->
+  <rect x="350" y="52" width="300" height="30" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
+  <text x="500" y="72" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#dc2626">Pinning：被钉在载体线程上</text>
+
+  <rect x="390" y="96" width="220" height="48" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="500" y="116" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">触发场景</text>
+  <text x="500" y="134" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">synchronized 块内阻塞 / native 方法</text>
+
+  <line x1="500" y1="144" x2="500" y2="172" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-vt1r)"/>
+
+  <rect x="380" y="176" width="240" height="56" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="500" y="199" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">载体线程（唯一）</text>
+  <text x="500" y="218" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">JDK 21-23：synchronized 监视器持有</text>
+
+  <line x1="500" y1="232" x2="500" y2="258" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-vt1r)"/>
+  <text x="507" y="251" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">卡死：无法卸载</text>
+
+  <rect x="380" y="262" width="240" height="48" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
+  <text x="500" y="282" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#1f2937">虚拟线程持锁阻塞 I/O</text>
+  <text x="500" y="300" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">载体线程与 OS 线程被连带占住</text>
+
+  <rect x="370" y="330" width="280" height="110" rx="8" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="385" y="352" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#059669">排查与规避</text>
+  <text x="385" y="374" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">JFR 事件：jdk.VirtualThreadPinned</text>
+  <text x="385" y="392" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">-Djdk.tracePinnedThreads=full</text>
+  <text x="385" y="410" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">synchronized 内不做慢 I/O，改用 ReentrantLock</text>
+  <text x="385" y="428" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">JDK 24 JEP 491 后 synchronized 基本不再 pin</text>
+</svg>

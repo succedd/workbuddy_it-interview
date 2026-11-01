@@ -96,7 +96,7 @@
     <h1>【场景】Redis 主节点突然宕机，业务不能中断。你如何在「尽量不丢数据」的前提下完成主从切换？手动切换与哨兵自动故障转移各有什么利弊？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip">后端架构师</span><span class="chip tag">Redis</span><span class="chip tag">主从切换</span><span class="chip tag">故障转移</span><span class="chip tag">哨兵</span><span class="chip tag">高可用</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 3 问：故障发生时的决策——人肉切还是哨兵切。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>手动切换步骤</strong>：① 选数据最新的从节点（<code>INFO replication</code> 看 <code>master_repl_offset</code> 最大者）；② 对其执行 <code>replicaof no one</code> 提升为主；③ 让其余从节点 <code>replicaof</code> 指向新主；④ 业务侧更新连接配置（或靠 VIP/Proxy 切换）。手动可控但慢、易错，夜间无人时无法自愈。</li>
 <li><strong>不丢数据的关键</strong>：切换前确认候选从节点的复制偏移尽量贴近原主（减少数据差）；若原主可恢复，先对比 offset 再做决策；对强一致场景宁可短暂停写也别切到落后太多的从。</li>

@@ -96,7 +96,7 @@
     <h1>进程间通信（IPC）有哪些方式？各自适用场景与优缺点是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">IPC</span><span class="chip tag">进程间通信</span><span class="chip tag">共享内存</span><span class="chip tag">管道</span><span class="chip tag">消息队列</span></div>
     <div class="card"><h2>题目</h2><p>考察点：IPC 方式全景。要求列举管道、消息队列、共享内存、信号、信号量、Socket，并对比速度与复杂度、是否需内核中转。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：常见 IPC 包括管道、命名管道(FIFO)、消息队列、共享内存、信号/信号量、Socket；取舍主要在「速度、是否需要内核中转、是否跨主机」之间。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：常见 IPC 包括管道、命名管道(FIFO)、消息队列、共享内存、信号/信号量、Socket；取舍主要在「速度、是否需要内核中转、是否跨主机」之间。</p>
 <p><strong>主要方式</strong>：</p>
 <ul>
 <li><strong>匿名管道 pipe</strong>：父子进程间单向字节流，简单但有血缘限制、内核缓冲中转。</li>

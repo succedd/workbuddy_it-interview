@@ -96,7 +96,7 @@
     <h1>STM32 串口不定长接收：DMA + IDLE 中断与半满/全满中断该怎么配合？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">嵌入式软件工程师</span><span class="chip">驱动开发工程师</span><span class="chip tag">STM32</span><span class="chip tag">DMA</span><span class="chip tag">UART</span><span class="chip tag">IDLE</span></div>
     <div class="card"><h2>题目</h2><p>考察环形缓冲区、DMA 计数与错误恢复。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>IDLE + DMA</strong>：DMA 以循环模式把串口数据写入缓冲区，检测到总线空闲（IDLE）时读一次 SR/DR 清标志，用「缓冲区长度 − DMA 剩余计数」算出一帧长度；半满/全满中断用于批量处理，避免每字节进中断。</li>
 <li><strong>环形缓冲区</strong>：DMA 写指针由硬件推进，消费者读指针由软件维护；用临界区保护指针，处理「回绕」与「生产超过消费」；高吞吐场景用双缓冲或链表描述符。</li>

@@ -96,7 +96,7 @@
     <h1>什么是前缀和（Prefix Sum）？如何用它 O(1) 求出任意区间的和？一维与二维有何区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">前缀和</span><span class="chip tag">区间求和</span><span class="chip tag">二维前缀和</span><span class="chip tag">差分</span></div>
     <div class="card"><h2>题目</h2><p>考察点：前缀和数组 <code>pre[i]=arr[0..i-1]</code> 的构造与查询 <code>sum(l,r)=pre[r+1]-pre[l]</code>；把每次区间求和从 O(n) 降到 O(1)；二维前缀和的容斥公式。属简答题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>一维定义</strong>：<code>pre[0]=0</code>，<code>pre[i]=pre[i-1]+arr[i-1]</code>；则区间 <code>[l, r]</code> 的和 = <code>pre[r+1] - pre[l]</code>。构造 O(n)，单次查询 <strong>O(1)</strong>，适合「多次区间求和」场景。</li>
 <li><strong>直观理解</strong>：前缀和把“累加”预计算好，查询时做一次减法即可，用 O(n) 预处理换每次 O(1)。</li>

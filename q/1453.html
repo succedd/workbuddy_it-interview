@@ -96,7 +96,7 @@
     <h1>FFmpeg 转码的内部流程是怎样的？CRF、preset、码率三者如何影响质量与体积？压制视频该怎么选参数？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">音视频开发工程师</span><span class="chip">流媒体架构师</span><span class="chip">WebRTC工程师</span><span class="chip tag">FFmpeg</span><span class="chip tag">CRF</span><span class="chip tag">preset</span><span class="chip tag">转码</span></div>
     <div class="card"><h2>题目</h2><p>考察 FFmpeg 转码管线（解封装→解码→滤镜→编码→封装）与核心参数的量化取舍，是音视频岗高频实操题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>转码管线</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>转码管线</h3>
 <pre><code>输入文件 → 解封装(demux) → 解码(decode) → 滤镜链(filter: 缩放/水印/字幕)
         → 编码(encode) → 封装(mux) → 输出文件</code></pre>
 <p>对应命令要素：<code>ffmpeg -i in.mp4 -vf scale=1280:-2 -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k out.mp4</code>。<code>-c copy</code>（转封装）跳过中间三步所以秒级完成，但改不了编码格式。</p>

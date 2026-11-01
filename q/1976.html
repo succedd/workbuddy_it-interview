@@ -96,7 +96,7 @@
     <h1>HBase 与 Cassandra 都是宽表 NoSQL，选型时你怎么权衡？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">Cassandra</span><span class="chip tag">NoSQL选型</span><span class="chip tag">CAP</span><span class="chip tag">一致性</span></div>
     <div class="card"><h2>题目</h2><p>系统设计题：收尾把 HBase 放进选型坐标系。同样是列族/宽表模型，HBase 和 Cassandra 在一致性、部署、生态上的差异如何决定选型？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>一致性模型是根本分歧</strong>：HBase 基于 HDFS + ZooKeeper，偏向 <strong>CP（强一致、单点 RegionServer 负责写入）</strong>，写路径依赖 WAL 与 HDFS 三副本，读总能拿到已提交的最新值；Cassandra 采用 <strong>AP 倾向的最终一致（可调一致性级别 ONE/QUORUM/ALL）</strong>，无主架构、多副本对等写入，<strong>可用性/分区容忍更强、跨机房多活更自然</strong>，代价是需处理最终一致与冲突修复（LWW/CRDT）。</li>
 <li><strong>部署与运维复杂度</strong>：HBase 强依赖 ZooKeeper + HDFS，组件多、运维重，但和 Hadoop 生态（Hive/Spark/Phoenix 二级索引）无缝；Cassandra 自身即存储与协调，无外部强依赖，<strong>线性扩展与运维相对轻</strong>，适合写多读少、全球分布。</li>

@@ -96,7 +96,7 @@
     <h1>Seata 的 AT 模式是怎么工作的？它为什么被称为「对业务无侵入」的分布式事务方案？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">分布式事务</span><span class="chip tag">Seata</span><span class="chip tag">AT模式</span></div>
     <div class="card"><h2>题目</h2><p>考察点：AT 模式一阶段/二阶段各自做了什么、undo_log 回滚日志、全局锁与隔离级别。与 TCC 需要手写三个接口形成对比。属简答题（高级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>前提与整体机制</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>前提与整体机制</strong></p>
 <p>AT 模式是两阶段提交协议的演变，前提是：基于支持本地 ACID 事务的关系型数据库，且 Java 应用通过 JDBC 访问数据库。</p>
 <p><strong>一阶段</strong></p>
 <ul>

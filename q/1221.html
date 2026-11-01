@@ -96,7 +96,7 @@
     <h1>React 状态管理方案繁多（Context、Redux、Zustand、Jotai、Redux Toolkit），各自的适用场景与权衡是什么？如何选？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">状态管理</span><span class="chip tag">Redux</span><span class="chip tag">Zustand</span><span class="chip tag">Jotai</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 6 问：状态管理的本质是把状态放在哪里、怎么更新、谁该订阅。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>分层视角</strong>：① <strong>组件局部状态</strong>——<code>useState/useReducer</code>，仅自己用，最简单优先；② <strong>跨组件共享但低频</strong>——React Context，避免逐层透传 props，但 Context 值变化会让所有消费组件重渲染，不适合高频更新；③ <strong>全局/复杂状态</strong>——引入状态库。</li>
 <li><strong>主流方案权衡</strong>：① <strong>Redux Toolkit（RTK）</strong>——强约束、可预测、DevTools 时间旅行、适合大型团队与复杂业务流，但样板代码多、概念重；② <strong>Zustand</strong>——极简、基于 selector 精准订阅、无 Provider 嵌套、心智负担小，中小到中大型都适用；③ <strong>Jotai</strong>——原子化（atom）状态，自动按原子粒度订阅、组合灵活，适合细粒度派生状态；④ <strong>Context</strong>——仅适合主题、登录用户等低频全局值。</li>

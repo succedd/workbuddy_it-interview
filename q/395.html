@@ -96,7 +96,7 @@
     <h1>双指针有哪几种常见形态？各自适合解决什么问题？时间复杂度如何？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">双指针</span><span class="chip tag">对撞指针</span><span class="chip tag">快慢指针</span><span class="chip tag">复杂度</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对撞指针（首尾向中）、快慢指针（同向往右，如判环/去重）、固定间距指针；理解它们把暴力 O(n^2) 降到 O(n) 的底层逻辑。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>对撞指针（左右指针）</strong>：左起右终，根据条件向中间收缩，常用于<strong>有序数组</strong>的两数之和、反转、盛水容器、回文判定。典型 <code>while left &lt; right</code> 循环，每步排除无效区间，复杂度 <strong>O(n)</strong>。</li>
 <li><strong>快慢指针</strong>：两指针同方向、速度不同。快指针探路、慢指针写/标记，常用于<strong>原地去重</strong>（升序数组去重）、链表判环（Floyd 环检测）、找中点。复杂度 <strong>O(n)</strong> 且<strong>原地、O(1) 额外空间</strong>。</li>

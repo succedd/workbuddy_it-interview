@@ -96,7 +96,7 @@
     <h1>STM32 的时钟树：HSE/HSI、PLL、AHB/APB 分频如何决定外设时钟？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式硬件工程师</span><span class="chip tag">STM32</span><span class="chip tag">时钟树</span><span class="chip tag">PLL</span></div>
     <div class="card"><h2>题目</h2><p>考察时钟源选择、PLL 配置、Flash 等待周期与外设时钟使能。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>时钟路径</strong>：HSE（外部晶振）或 HSI（内部 RC）经 PLL 倍频得到 SYSCLK，再经 AHB 预分频得到 HCLK，APB1/APB2 预分频得到外设时钟；每个外设还有独立的 RCC 时钟使能位，不开时钟寄存器写入无效。</li>
 <li><strong>配置顺序</strong>：开 HSE 并等待稳定 → 配 PLL 的 M/N/P/Q → 切换 SYSCLK 到 PLL → 配 AHB/APB 分频 → 开外设时钟；主频提高后要同步增加 Flash latency，否则取指失败。</li>

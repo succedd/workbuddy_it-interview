@@ -96,7 +96,7 @@
     <h1>Spring 是如何解决循环依赖的？为什么需要三级缓存，构造器循环依赖为何无法解决？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Spring</span><span class="chip tag">循环依赖</span><span class="chip tag">三级缓存</span><span class="chip tag">Bean生命周期</span><span class="chip tag">AOP代理</span></div>
     <div class="card"><h2>题目</h2><p>考察 Spring 三级缓存机制、早期引用（半成品 Bean）以及循环依赖的边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：Spring 通过<strong>三级缓存 + 提前暴露半成品 Bean（早期引用）</strong>解决单例、Setter/字段注入的循环依赖；但构造器注入和原型（prototype）作用域的循环依赖无法解决。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：Spring 通过<strong>三级缓存 + 提前暴露半成品 Bean（早期引用）</strong>解决单例、Setter/字段注入的循环依赖；但构造器注入和原型（prototype）作用域的循环依赖无法解决。</p>
 <h4>三级缓存</h4>
 <ul>
 <li><strong>singletonObjects（一级）</strong>：存放完全初始化好的单例 Bean。</li>

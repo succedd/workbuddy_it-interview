@@ -96,7 +96,7 @@
     <h1>Webpack HMR 热更新的原理是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Webpack</span><span class="chip tag">HMR</span><span class="chip tag">热更新</span></div>
     <div class="card"><h2>题目</h2><p>描述从文件变化到界面无刷新更新的完整链路，以及为什么状态能保留。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>链路</strong>：① watch 检测到文件变化，增量重新编译该模块，生成 <strong>hash 标识的补丁 manifest 与更新 chunk</strong>，保留在内存（不写盘）；② dev-server 通过 <strong>WebSocket</strong> 推送新 hash 给浏览器；③ 客户端 HMR runtime 发起请求拿 manifest，对比后按需拉取更新模块；④ <code>module.hot.accept</code> 注册的回调处理新模块：<strong>删除旧模块缓存 → 执行新模块代码 → 沿引用向上传播</strong>；⑤ 若向上传播到入口都没人 accept，就退化为 <strong>liveReload 整页刷新</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>链路</strong>：① watch 检测到文件变化，增量重新编译该模块，生成 <strong>hash 标识的补丁 manifest 与更新 chunk</strong>，保留在内存（不写盘）；② dev-server 通过 <strong>WebSocket</strong> 推送新 hash 给浏览器；③ 客户端 HMR runtime 发起请求拿 manifest，对比后按需拉取更新模块；④ <code>module.hot.accept</code> 注册的回调处理新模块：<strong>删除旧模块缓存 → 执行新模块代码 → 沿引用向上传播</strong>；⑤ 若向上传播到入口都没人 accept，就退化为 <strong>liveReload 整页刷新</strong>。</p>
 <p><strong>状态保留</strong>：因为只替换了模块代码、<strong>不刷新页面</strong>——组件实例、Vuex store、表单输入都还在内存里。框架 loader（vue-loader/react-refresh）内置了 accept 逻辑，把重渲染包装好，所以业务代码通常感知不到。</p>
 <p><strong>注意</strong>：样式文件 HMR 只是替换 style 标签，成本最低；改 webpack 配置/入口依赖结构仍需整页刷新。</p></div>
     <div class="cta-row">

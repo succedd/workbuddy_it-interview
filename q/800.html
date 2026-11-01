@@ -96,7 +96,7 @@
     <h1>如何排查与调优 JVM 内存溢出（OOM）？常用诊断工具有哪些？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">OOM</span><span class="chip tag">调优</span><span class="chip tag">Arthas</span></div>
     <div class="card"><h2>题目</h2><p>说明 OOM 的常见类型、定位思路和主要诊断工具。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>常见 OOM</strong>：Heap OOM（堆内存不足，对象过多/泄漏）、Metaspace OOM（类元数据爆炸）、StackOverflow（递归过深）、Direct Buffer OOM。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>常见 OOM</strong>：Heap OOM（堆内存不足，对象过多/泄漏）、Metaspace OOM（类元数据爆炸）、StackOverflow（递归过深）、Direct Buffer OOM。</p>
 <p><strong>排查思路</strong>：先加 <code>-XX:+HeapDumpOnOutOfMemoryError</code> 导出堆转储，再用 MAT 分析占用最大的对象与引用链，定位泄漏点；结合 GC 日志看回收效率。</p>
 <p><strong>工具</strong>：jstack（线程栈/死锁）、jmap（堆直方图/转储）、jstat（GC 统计）、Arthas（线上诊断无需重启）、VisualVM。调优核心是合理设堆大小、选合适 GC、减少不必要的对象持有。</p></div>
     <div class="cta-row">

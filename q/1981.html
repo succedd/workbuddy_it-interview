@@ -96,7 +96,7 @@
     <h1>常用的混沌工程工具（如 Chaos Mesh、Gremlin、Litmus）各自适合什么场景？能注入哪些故障类型？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">混沌工程</span><span class="chip tag">Chaos Mesh</span><span class="chip tag">Gremlin</span><span class="chip tag">Litmus</span><span class="chip tag">故障注入</span></div>
     <div class="card"><h2>题目</h2><p>上一题讲理念，这题落到工具选型。请对比主流工具并列举它们能注入的故障类型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Chaos Mesh</strong>（CNCF 毕业项目，Kubernetes 原生、开源）：通过 CustomResource 定义实验，覆盖<strong>Pod 级别的 kill/delete/pod-failure、网络延迟/丢包/分区（NetworkChaos）、DNS 故障、IO 故障、CPU/内存/磁盘压力、内核级故障（借助 chaos-daemon）</strong>，适合<strong>深度、可编程、K8s 内全生命周期</strong>的混沌实验，常与 CI 集成。</li>
 <li><strong>Gremlin</strong>（商业、跨平台）：提供<strong>图形化 UI 与丰富故障库</strong>（关机、进程 kill、资源压力、网络、状态/场景实验），强调<strong>安全护栏（自动停止、最小爆炸半径）</strong>，适合希望低门槛、强合规护栏的团队，但闭源付费。</li>

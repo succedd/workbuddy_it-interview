@@ -96,7 +96,7 @@
     <h1>SQL 注入的原理是什么？预编译（PreparedStatement）为什么能防注入？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">SQL注入</span><span class="chip tag">预编译</span><span class="chip tag">参数化</span></div>
     <div class="card"><h2>题目</h2><p>说明注入如何改变 SQL 语义，并解释参数化查询从根源上阻断“数据变代码”。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>原理</strong>：把用户输入直接拼接到 SQL 语句中，改变了原 SQL 的语义（如 <code>&#39; OR &#39;1&#39;=&#39;1&#39;</code>），可实现越权查询、绕过鉴权、拖库删库。</li>
 <li><strong>预编译为什么能防</strong>：<code>PreparedStatement</code> 先把带 <code>?</code> 占位符的 SQL 模板发给数据库<strong>编译执行计划</strong>，之后传入的参数只作为“数据”绑定，不会被当作 SQL 代码解析——从根本上切断“数据变代码”的通道。</li>

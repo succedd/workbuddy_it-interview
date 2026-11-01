@@ -96,7 +96,7 @@
     <h1>如何用流水线实现“多环境逐级发布（dev→staging→prod）”与发布卡点？为什么生产发布前要有手动/自动门禁（manual job / environment）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip tag">多环境</span><span class="chip tag">晋级</span><span class="chip tag">manual job</span><span class="chip tag">environment</span><span class="chip tag">发布卡点</span></div>
     <div class="card"><h2>题目</h2><p>请说明用 GitLab CI 的 environment 与 manual job 做环境晋级（promotion）的做法，以及为什么 prod 这步必须有人工确认或自动门禁。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>环境晋级模型</strong>：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>环境晋级模型</strong>：用 stages 划分 build→test→deploy-dev→deploy-staging→deploy-prod，每个 deploy-* 绑定一个 environment（如 staging/prod），下一环境 job 只有在前一环境成功后才进入，形成“逐级晋级”。</p>
 <p><strong>手动卡点（manual job）</strong>：prod 的 deploy job 设 <code>when: manual</code>，流水线跑到这步停下来等人在 GitLab 界面点“play”才执行；这把“是否真的上线”的最终决定权留给人类，避免流水线自动推生产。</p>
 <p><strong>自动门禁</strong>：在 manual 之外加自动检查（冒烟测试结果、安全扫描通过、审批工单状态），不满足则自动拦下，比纯人工更可靠。</p>
 <p><strong>为什么 prod 必须卡点</strong>：自动推生产一旦出错就是全量事故；人工/自动门禁用极小成本换取“最后一次确认”，并与回滚预案、监控告警联动，是发布可靠性的底线。</p></div>

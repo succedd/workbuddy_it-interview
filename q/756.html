@@ -96,7 +96,7 @@
     <h1>SwiftUI 的声明式 UI 与 UIKit 命令式有何不同？@State/@Binding 作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">SwiftUI</span><span class="chip tag">声明式</span><span class="chip tag">状态绑定</span></div>
     <div class="card"><h2>题目</h2><p>对比两种 UI 范式，并解释 SwiftUI 的状态绑定机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>范式差异</strong>：UIKit 是命令式（手动创建、更新、移除视图）；SwiftUI 是声明式（用代码描述“界面应该是什么样”，框架据状态自动更新视图）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>范式差异</strong>：UIKit 是命令式（手动创建、更新、移除视图）；SwiftUI 是声明式（用代码描述“界面应该是什么样”，框架据状态自动更新视图）。</p>
 <p><strong>@State</strong>：标记视图私有可变状态，变化触发视图重绘。</p>
 <p><strong>@Binding</strong>：子视图对父状态的可写引用，实现双向数据流动而不拷贝。</p>
 <p><strong>优势</strong>：减少样板、状态驱动 UI 更不易出错；局限是复杂动效/底层控件仍需 UIKit 桥接（UIViewRepresentable）。</p></div>

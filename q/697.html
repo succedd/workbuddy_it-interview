@@ -96,7 +96,7 @@
     <h1>嵌入式 Linux 启动流程（bootloader→kernel→rootfs→init）是怎样的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">嵌入式Linux</span><span class="chip tag">启动流程</span><span class="chip tag">Bootloader</span></div>
     <div class="card"><h2>题目</h2><p>说明从加电到用户空间的启动链路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Bootloader（如 U-Boot）</strong>：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>Bootloader（如 U-Boot）</strong>：上电先运行，初始化最小硬件、加载内核镜像到内存并跳转。</p>
 <p><strong>Kernel</strong>：解压/启动，探测硬件、挂载早期根（initramfs）、启动第一个进程。</p>
 <p><strong>Rootfs</strong>：挂载真正根文件系统，提供用户空间程序与库。</p>
 <p><strong>Init</strong>：执行 <code>/sbin/init</code>（systemd/BusyBox init），按脚本拉起服务与 shell/UI。理解流程才能做启动优化与故障定位（卡在哪一级）。</p></div>

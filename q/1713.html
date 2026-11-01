@@ -96,7 +96,7 @@
     <h1>直播连麦的三种实现路线（端上合流、服务端合流、MCU 混流）有什么区别？各自适合什么场景？</h1>
     <div class="chips"><span class="chip diff">专家</span><span class="chip">系统设计题</span><span class="chip">流媒体架构师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">连麦</span><span class="chip tag">MCU</span><span class="chip tag">SFU</span><span class="chip tag">直播架构</span></div>
     <div class="card"><h2>题目</h2><p>考察连麦架构选型，要求对比三条路线的成本、延迟与画质取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>端上合流</strong>：连麦各方在本地把多路流合成一路再推出，服务端只转发；实现最轻，但移动端算力与发热压力大、布局不可服务端控制。</li>
 <li><strong>服务端合流（SFU 订阅）</strong>：SFU 转发多路流，各端只订阅需要的几路自行解码渲染；画质无损、延迟低、灵活性最高，是 WebRTC 连麦的主流。</li>

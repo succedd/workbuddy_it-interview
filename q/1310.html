@@ -96,7 +96,7 @@
     <h1>什么是 SYN Flood 攻击？syncookies 是如何防御的？</h1>
     <div class="chips"><span class="chip diff">中</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">三次握手</span><span class="chip tag">SYN Flood</span><span class="chip tag">syncookies</span><span class="chip tag">网络安全</span></div>
     <div class="card"><h2>题目</h2><p>什么是 SYN Flood 攻击？syncookies 是如何防御的？</p></div>
-    <div class="card"><h2>参考答案</h2><p>要理解 SYN Flood，先理解服务端维护的两个队列：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>要理解 SYN Flood，先理解服务端维护的两个队列：</p>
 <p><strong>半连接队列（SYN Queue）</strong>：保存「握手未完成」的请求。服务端收到 SYN 并回复 SYN+ACK 后，连接进入 SYN_RCVD 状态，等待客户端的最终 ACK；收不到 ACK 时内核会重传 SYN+ACK，最终超时清理。容量受 net.ipv4.tcp_max_syn_backlog 控制。</p>
 <p><strong>全连接队列（Accept Queue）</strong>：保存「握手已完成但应用还没 accept」的连接，状态为 ESTABLISHED，容量受 listen(fd, backlog) 与 net.core.somaxconn 共同影响。</p>
 <p><img src="/assets/q/fig-tcp-synflood.svg" alt="图：正常握手两次入队流程 vs SYN Flood 打满半连接队列与 syncookies 绕过" loading="lazy"></p>

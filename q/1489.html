@@ -96,7 +96,7 @@
     <h1>什么是 Tree Shaking？怎样才能让 Tree Shaking 真正生效？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Tree Shaking</span><span class="chip tag">ESM</span><span class="chip tag">打包优化</span></div>
     <div class="card"><h2>题目</h2><p>从 ESM 静态分析讲起，说明 sideEffects 配置与常见失效场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p>Tree Shaking 依赖 <strong>ESM 的静态结构</strong>（import/export 在编译期确定），打包器从入口做模块级+声明级的<strong>可达性分析</strong>，删掉未被引用的 export。CommonJS 因 require 动态执行无法可靠分析，基本摇不掉。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p>Tree Shaking 依赖 <strong>ESM 的静态结构</strong>（import/export 在编译期确定），打包器从入口做模块级+声明级的<strong>可达性分析</strong>，删掉未被引用的 export。CommonJS 因 require 动态执行无法可靠分析，基本摇不掉。</p>
 <p><strong>生效条件</strong>：① 使用 ESM 语法（<code>import/export</code>）；② <code>package.json</code> 声明 <code>&quot;sideEffects&quot;: false</code>（或列出有副作用的文件），否则 bundler 不敢删「看似未用」的模块（如 import &#39;./polyfill&#39;）；③ production 模式（TerserPlugin 负责最终删除 + <code>usedExports</code> 标记）；④ Babel 配置 <code>modules: false</code>，防止转译成 CJS。</p>
 <p><strong>常见失效</strong>：① 引入了 UMD/CJS 版本的包；② <code>import * as</code> 全量引入；③ 类的方法（可能被反射调用，Terser 默认不删）；④ 无 sideEffects 声明的第三方库。可用 <code>webpack-bundle-analyzer</code> 验证。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>EF Core 的跟踪查询和 NoTracking 怎么选？如何避免 N+1？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">.NET开发工程师</span><span class="chip tag">EF Core</span><span class="chip tag">NoTracking</span><span class="chip tag">N+1</span><span class="chip tag">Include</span></div>
     <div class="card"><h2>题目</h2><p>考察 ORM 查询跟踪、性能和加载策略。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>跟踪</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>跟踪</strong></p>
 <ul>
 <li>默认跟踪实体，变更保存方便；只读查询用 <code>AsNoTracking()</code> 减少内存/快照开销，尤其大列表。</li>
 <li>更新少量实体可用跟踪；批量更新考虑 ExecuteUpdate/原生 SQL。</li>

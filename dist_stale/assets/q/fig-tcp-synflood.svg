@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 480">
+  <rect width="680" height="480" fill="#ffffff"/>
+  <defs>
+    <marker id="arw-syn1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#9ca3af"/>
+    </marker>
+    <marker id="arw-syn2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+    </marker>
+    <marker id="arw-syn3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+    </marker>
+  </defs>
+  <text x="16" y="30" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">TCP 半连接/全连接队列与 SYN Flood 攻击、syncookies 防御</text>
+
+  <!-- 左栏:正常握手入队 -->
+  <rect x="10" y="46" width="320" height="404" rx="8" fill="#eff6ff" stroke="#9ca3af" stroke-width="1"/>
+  <text x="170" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#2563eb">正常握手:两次入队</text>
+
+  <rect x="40" y="90" width="90" height="34" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="85" y="111" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">客户端</text>
+  <rect x="220" y="90" width="90" height="34" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="265" y="105" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#1f2937">服务端内核</text>
+  <text x="265" y="119" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#6b7280">SYN_RCVD → ESTABLISHED</text>
+
+  <line x1="85" y1="140" x2="220" y2="140" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-syn1)"/>
+  <text x="152" y="134" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">① SYN</text>
+  <line x1="220" y1="162" x2="85" y2="162" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-syn1)"/>
+  <text x="152" y="156" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">② SYN+ACK</text>
+  <line x1="85" y1="184" x2="220" y2="184" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-syn1)"/>
+  <text x="152" y="178" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">③ ACK</text>
+
+  <rect x="40" y="206" width="270" height="52" rx="6" fill="#fefce8"/>
+  <text x="175" y="226" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#b45309">半连接队列(SYN queue)</text>
+  <text x="175" y="244" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">存 SYN_RCVD,收 ACK 后移出,受 tcp_max_syn_backlog 限制</text>
+
+  <rect x="40" y="276" width="270" height="52" rx="6" fill="#f0fdf4"/>
+  <text x="175" y="296" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">全连接队列(Accept queue)</text>
+  <text x="175" y="314" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">存 ESTABLISHED,等应用 accept() 取走,受 min(backlog, somaxconn) 限制</text>
+
+  <line x1="175" y1="258" x2="175" y2="276" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-syn3)"/>
+  <text x="262" y="272" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#059669">收到 ACK 完成握手</text>
+  <line x1="175" y1="328" x2="175" y2="348" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-syn3)"/>
+  <text x="185" y="342" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#059669">accept()</text>
+
+  <rect x="40" y="356" width="270" height="40" rx="6" fill="#f0fdf4"/>
+  <text x="175" y="374" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">排查:ss -ltn 看 Recv-Q / Send-Q</text>
+  <text x="175" y="390" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">Recv-Q 接近 Send-Q 说明 accept 不及时</text>
+
+  <text x="170" y="428" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">半连接存「握手未完成」,全连接存「待 accept」</text>
+
+  <!-- 右栏:SYN Flood + syncookies -->
+  <rect x="350" y="46" width="320" height="404" rx="8" fill="#fef2f2" stroke="#9ca3af" stroke-width="1"/>
+  <text x="510" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="14" font-weight="bold" fill="#dc2626">SYN Flood 攻击与 syncookies</text>
+
+  <rect x="380" y="88" width="110" height="34" rx="8" fill="#ffffff" stroke="#dc2626"/>
+  <text x="435" y="103" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#dc2626">攻击者</text>
+  <text x="435" y="117" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" fill="#6b7280">伪造源 IP</text>
+
+  <line x1="380" y1="140" x2="600" y2="140" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-syn2)"/>
+  <text x="490" y="134" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">海量伪造 SYN(源 IP 不可达)</text>
+
+  <rect x="380" y="156" width="220" height="46" rx="6" fill="#ffffff" stroke="#dc2626"/>
+  <text x="490" y="174" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#dc2626">半连接队列被塞满</text>
+  <text x="490" y="192" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">SYN+ACK 重传无人应答,条目堆积</text>
+
+  <line x1="380" y1="216" x2="600" y2="216" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-syn2)"/>
+  <text x="490" y="210" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#dc2626">正常用户的 SYN 被丢弃,无法建连</text>
+
+  <rect x="370" y="232" width="280" height="88" rx="6" fill="#ffffff" stroke="#059669"/>
+  <text x="510" y="252" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" font-weight="bold" fill="#059669">syncookies=1:绕过队列</text>
+  <text x="510" y="272" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">把连接信息编码进 SYN+ACK 的</text>
+  <text x="510" y="288" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">序列号返回,不在半连接队列存状态</text>
+  <text x="510" y="306" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#059669">收到合法 ACK 校验 cookie 后重建连接</text>
+
+  <rect x="370" y="334" width="280" height="70" rx="6" fill="#fefce8"/>
+  <text x="510" y="354" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#b45309">注意:syncookies 是防护不是扩容</text>
+  <text x="510" y="372" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#b45309">消耗 CPU,部分 TCP 扩展能力受限;</text>
+  <text x="510" y="390" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#b45309">攻击打满带宽时无法从根本上恢复</text>
+
+  <text x="510" y="428" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#6b7280">本质:只发包不回 ACK,耗尽服务端半连接资源</text>
+
+  <!-- 底部总结 -->
+  <rect x="10" y="456" width="660" height="18" rx="4" fill="#eff6ff"/>
+  <text x="340" y="470" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" fill="#1f2937">应用层配合:调大 backlog、缩短 SYN+ACK 重试次数、接入清洗设备对抗大流量攻击</text>
+</svg>

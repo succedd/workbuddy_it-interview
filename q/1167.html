@@ -96,7 +96,7 @@
     <h1>LeetCode 300 最长递增子序列（LIS）：求数组的最长严格递增子序列长度，如何做到 O(n log n)？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip tag">动态规划</span><span class="chip tag">LIS</span><span class="chip tag">二分优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：LIS 的二分优化——tails 数组（耐心排序）思想，以及状态定义的进阶（高级编程题）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>思路</strong>：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>思路</strong>：朴素 DP 为 O(n²)；用『维护各长度递增子序列的最小结尾』可将决策降到二分，整体 O(n log n)。</p>
 <p><strong>要点（O(n²) 基础）</strong>：</p>
 <ul>
 <li><code>dp[i]</code> = 以 <code>nums[i]</code> 结尾的 LIS 长度，<code>dp[i]=max(dp[j])+1</code>（j&lt;i 且 nums[j]&lt;nums[i]）；取全局 max。</li>

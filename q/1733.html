@@ -96,7 +96,7 @@
     <h1>const、static、extern 在嵌入式 C 中的存储位置与链接属性有什么不同？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">C语言</span><span class="chip tag">static</span><span class="chip tag">const</span><span class="chip tag">链接属性</span></div>
     <div class="card"><h2>题目</h2><p>考察存储期、链接属性、Flash/RAM 布局，以及头文件中的常见误用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>static</strong>：文件作用域的 <code>static</code> 把符号限制为内部链接，避免多文件重名；函数内的 <code>static</code> 变量具有静态存储期，放在 <code>.data</code> / <code>.bss</code>，生命周期贯穿整个程序，但作用域仍限于函数。</li>
 <li><strong>extern</strong>：只是声明「别处有定义」，不分配存储；头文件里写 <code>extern</code>、在一个 <code>.c</code> 中定义，才能避免多重定义。未初始化的全局/static 进 <code>.bss</code>（启动清零），有初值进 <code>.data</code>（启动时从 Flash 拷贝到 RAM）。</li>

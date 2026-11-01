@@ -96,7 +96,7 @@
     <h1>TypeScript 装饰器（Decorator）的原理是什么？为什么它必须依赖反射元数据？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip">Node.js工程师</span><span class="chip tag">TypeScript</span><span class="chip tag">装饰器</span><span class="chip tag">reflect-metadata</span><span class="chip tag">依赖注入</span></div>
     <div class="card"><h2>题目</h2><p>考察点：装饰器语义、元数据反射、与 DI 框架的关系。理解 NestJS/Angular 的前置知识。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>本质</strong>：装饰器是<strong>在编译期被改写成函数调用</strong>的语法糖。<code>@log class A {}</code> 实际编译为 <code>A = log(A) || A</code>，即<strong>把类/方法传进函数、用返回值替换原定义</strong>。所以装饰器能做的所有事情，本质都是「在定义阶段修改目标对象」。</li>
 <li><strong>五种形态</strong>：类装饰器、方法装饰器、属性装饰器、访问器装饰器、参数装饰器。方法装饰器签名 <code>(target, propertyKey, descriptor)</code>，返回的 descriptor 会替换原描述符——这是实现<strong>拦截、缓存、日志</strong>的入口。</li>

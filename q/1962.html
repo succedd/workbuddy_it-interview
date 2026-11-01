@@ -96,7 +96,7 @@
     <h1>ClickHouse 与 Doris / 传统 OLAP（如 Vertica）在架构与适用场景上如何选型？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">大数据架构师</span><span class="chip tag">ClickHouse</span><span class="chip tag">Doris</span><span class="chip tag">OLAP选型</span></div>
     <div class="card"><h2>题目</h2><p>考察在实时数仓选型时对生态、写入模式、运维成本的权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>ClickHouse 定位</strong>：极致单表聚合性能、写入append-friendly、运维相对轻（无强依赖外部协调器早期），适合日志/埋点/时序等「写多读聚合」场景；但 JOIN 能力弱、更新删除不便、多表关联需谨慎。</li>
 <li><strong>Apache Doris 定位</strong>：兼容 MySQL 协议、MPP 架构、明细+聚合兼顾，JOIN 与实时更新（Unique Key 模型）更强，生态偏「替代 Impala/Kylin」的分析服务，BI 即席查询体验好。</li>

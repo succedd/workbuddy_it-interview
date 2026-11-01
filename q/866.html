@@ -96,7 +96,7 @@
     <h1>Git 的「工作区 → 暂存区 → 版本库」三层模型是什么？git add 和 git commit 分别在三层之间做了什么？为什么 Git 要设计暂存区？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">Git</span><span class="chip tag">暂存区</span><span class="chip tag">工作区</span><span class="chip tag">基础概念</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Git 数据模型的底层认知——这是 Git 追问链的地基，分支、冲突、rebase 都建立在这上面。追问：git commit -a 跳过了哪一层，为什么团队规范常禁止它？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：Git 把文件状态分为三个区域，add 负责「工作区 → 暂存区」，commit 负责「暂存区 → 版本库」。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Git 把文件状态分为三个区域，add 负责「工作区 → 暂存区」，commit 负责「暂存区 → 版本库」。</p>
 <ul>
 <li><strong>工作区（working directory）</strong>：磁盘上你正在编辑的文件；<strong>暂存区（staging area / index）</strong>：下一次提交的内容清单，保存在 .git/index；<strong>版本库（repository）</strong>：commit 后 permanently 存进对象数据库的快照。</li>
 <li><strong>暂存区的价值</strong>：它让提交变成「精心组织的快照」而非「当前目录的大杂烩」——你可以改了 10 个文件，但只把其中逻辑相关的 3 个 add 后提交，保持每个 commit 单一职责。这是 SVN 等没有的能力。</li>

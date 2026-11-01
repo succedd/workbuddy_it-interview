@@ -96,7 +96,7 @@
     <h1>TiDB 的分布式事务是怎么提交的？乐观事务和悲观事务该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端架构师</span><span class="chip tag">TiDB</span><span class="chip tag">分布式事务</span><span class="chip tag">两阶段提交</span></div>
     <div class="card"><h2>题目</h2><p>TiDB 兼容 MySQL 协议但底层是分布式 KV。请说明一次写事务从 BEGIN 到 COMMIT 的完整流程、冲突在哪里检测，以及两种事务模式的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>提交流程（Percolator 风格两阶段提交）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>提交流程（Percolator 风格两阶段提交）</strong></p>
 <ol>
 <li><code>BEGIN</code> 时 TiDB 向 <strong>PD</strong> 取一个全局唯一、单调递增的时间戳 <code>start_ts</code>，它既是事务 ID，也是本次事务读取的快照版本（TiDB 的 MVCC 快照）。注意与 MySQL 不同：TiDB 在 <code>BEGIN</code> 时就取快照，MySQL 是在事务内第一条读 InnoDB 的 <code>SELECT</code> 时才取。</li>
 <li>读请求：TiDB 先从 PD 拿 Region 路由信息，再从 TiKV 读取 <code>start_ts</code> 版本的数据。</li>

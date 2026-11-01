@@ -96,7 +96,7 @@
     <h1>HBase 写入变慢、RegionServer 频繁 Full GC，你会怎么排查？常见原因有哪些？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">GC</span><span class="chip tag">MemStore</span><span class="chip tag">Compaction</span><span class="chip tag">性能调优</span></div>
     <div class="card"><h2>题目</h2><p>故障排查题：线上 RegionServer 响应飙升、GC 时间占比高。作为负责人，你的排查思路和最可能的根因是什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先看写入路径瓶颈</strong>：写入先写 WAL（顺序写，受磁盘/副本影响）再写 MemStore。若 MemStore 持续不刷写或刷写太慢，会逼近 <code>hbase.hregion.memstore.flush.size</code> 触发<strong>阻塞写（Region 级写阻塞甚至全局阻塞）</strong>；同时 MemStore 过大又会让老年代膨胀触发 Full GC。</li>
 <li><strong>GC 根因多为内存与 Compaction</strong>：① Region 过多/过大导致 MemStore 总内存超阈值；② <strong>Major Compaction 风暴</strong>在业务高峰合并大 HFile，吃满 IO 与 CPU；③ BlockCache 配置过大挤压 MemStore 堆空间；④ 大 Cell / 宽行导致单 KeyValue 巨大。</li>

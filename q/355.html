@@ -96,7 +96,7 @@
     <h1>HashMap 扩容（resize）机制是怎样的？为什么负载因子默认是 0.75？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HashMap</span><span class="chip tag">扩容</span><span class="chip tag">负载因子</span></div>
     <div class="card"><h2>题目</h2><p>考察点：默认容量、负载因子、扩容阈值、2 倍扩容与 rehash、容量为何是 2 的幂。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>默认参数</strong>：初始容量 16，负载因子 0.75，扩容阈值 = 容量 × 负载因子 = 12。元素个数超过阈值时触发扩容。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>默认参数</strong>：初始容量 16，负载因子 0.75，扩容阈值 = 容量 × 负载因子 = 12。元素个数超过阈值时触发扩容。</p>
 <p><strong>扩容过程</strong>：新建一个容量为原来 2 倍的新数组，然后把旧数组的所有节点重新计算位置搬过去（rehash）。JDK 8 做了优化：因为容量始终 2 的幂，扩容后节点要么留在原桶、要么移到「原下标 + 旧容量」的桶，用 <code>e.hash &amp; oldCap</code> 判断高位即可，无需重新算完整哈希。</p>
 <p><strong>容量为什么是 2 的幂</strong>：这样 <code>(n - 1) &amp; hash</code> 才能等价于取模且位运算更快，同时扩容时 rehash 只需看一位，效率更高。</p>
 <p><strong>负载因子为什么 0.75</strong>：这是时间与空间的折中。太小（如 0.5）冲突少、查询快，但数组空闲多、浪费内存且扩容频繁；太大（如 0.95）空间利用率高，但冲突剧烈、链表变长、查询退化。0.75 是在「冲突概率」和「空间利用率」之间取的经验最优值（泊松分布下冲突概率已较低）。</p></div>

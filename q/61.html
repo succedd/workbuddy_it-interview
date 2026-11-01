@@ -96,7 +96,7 @@
     <h1>TIME_WAIT 的作用与过多怎么办？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">网络架构师</span><span class="chip tag">TIME_WAIT</span><span class="chip tag">TCP</span><span class="chip tag">网络</span></div>
     <div class="card"><h2>题目</h2><p>解释为什么需要 TIME_WAIT 及优化手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>TIME_WAIT</strong>（主动关闭方在发完最后 ACK 后等待 2MSL）：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>TIME_WAIT</strong>（主动关闭方在发完最后 ACK 后等待 2MSL）：</p>
 <ol>
 <li>确保最后 ACK 到达对方（丢失则对方重发 FIN，本方还能响应）；</li>
 <li>让本连接的迟到报文在网络中消逝，避免被新连接（同四元组）误收。</li>

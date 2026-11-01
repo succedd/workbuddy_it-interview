@@ -96,7 +96,7 @@
     <h1>企业知识库已经上线，文档每天都在改，用户投诉「回答还停留在旧版本」「删掉的制度还能被搜到」。请设计一套可持续的知识库更新链路。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">RAG工程师</span><span class="chip">平台工程师</span><span class="chip tag">知识库更新</span><span class="chip tag">增量索引</span><span class="chip tag">Embedding一致性</span><span class="chip tag">灰度切换</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RAG 系统上线后的数据与索引一致性治理能力，包括增量同步、重建时机和灰度回滚。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：更新要同时满足五个目标——<strong>动态性</strong>（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、<strong>准确性</strong>（召回内容与当前文档一致）、<strong>一致性</strong>（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、<strong>可回滚</strong>、<strong>可观测</strong>。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：更新要同时满足五个目标——<strong>动态性</strong>（文档变了索引要跟上，内部制度库可天级，客服和合规条款要求更快）、<strong>准确性</strong>（召回内容与当前文档一致）、<strong>一致性</strong>（向量库、元数据库、全文索引任一端漏写或延迟都会出问题）、<strong>可回滚</strong>、<strong>可观测</strong>。很多项目只做了“更新”这一步，结果文档改了十版回答还停在第一版、删了敏感文档几个月后还能被召回。</p>
 <p><strong>第一件事：Embedding 模型必须保持一致</strong></p>
 <p>索引时和查询时必须用同一个 Embedding 模型。不同模型的向量空间不通用：维度不同通常无法放进同一索引，维度相同但模型不同则相似度分数不可比，排序基础已经被破坏。最容易忽视的两个场景是<strong>模型升级</strong>（3-small 切 3-large，历史数据必须重新编码）和<strong>本地模型与 API 模型混用</strong>（测试用 sentence-transformers、生产用 OpenAI API，上线后召回率腰斩）。做法是把 <code>embedding_model</code>、<code>embedding_model_version</code>、<code>embedding_dimension</code> 写进元数据，查询时校验，不匹配就拒绝或降级并告警。</p>
 <p><strong>第二件事：元数据是增量更新和回滚的前提</strong></p>

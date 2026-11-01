@@ -96,7 +96,7 @@
     <h1>NFT 的 tokenURI 与元数据该存哪里？链上、IPFS、Arweave 各有什么取舍？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">智能合约开发工程师</span><span class="chip">Web3开发工程师</span><span class="chip tag">NFT</span><span class="chip tag">tokenURI</span><span class="chip tag">IPFS</span><span class="chip tag">Arweave</span></div>
     <div class="card"><h2>题目</h2><p>考察 NFT 元数据持久性、成本与可变性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>tokenURI 返回什么</strong>：通常是一段 JSON，包含 name、image、attributes 等；合约保存 baseURI 或逐 token 的 URI，市场按 URI 拉取元数据。</li>
 <li><strong>存储方案对比</strong>：链上 <code>data:</code> URI 最永久但最贵，适合小图/纯文本；IPFS 内容寻址、便宜，但需要 pin 服务持续托管，否则可能丢失；Arweave 一次付费、长期存储，适合图片与元数据；中心化 HTTPS 最便宜但可改、可下线，违背 NFT 的不可篡改预期。</li>

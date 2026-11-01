@@ -96,7 +96,7 @@
     <h1>故障排查：线上大模型推理服务显存周期性 OOM，监控显示 KV Cache 占用随并发持续上涨且不释放。如何定位根因并优化？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">算法工程师</span><span class="chip tag">OOM</span><span class="chip tag">KV Cache</span><span class="chip tag">显存优化</span><span class="chip tag">vLLM</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：显存 OOM 排查与调优。要求给出从监控定位到具体参数的完整链路，区分「碎片」与「并发上限」两类问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定位</strong>：KV Cache 随并发只涨不落，先确认是否用了连续批处理框架——若没用，请求结束前整批 KV 都被占着（「静态批处理」天然吃显存）；用了 vLLM 类框架则 PagedAttention 已消除碎片，问题通常是<strong>并发上限 <code>max_num_seqs</code> 设太高</strong>或<strong>单个请求上下文过长</strong>把 block 占满。</li>
 <li><strong>优化一（限并发/限长）</strong>：调小 <code>max_num_seqs</code>、收紧 <code>max_model_len</code>，让「并发×平均长度」落在显存预算内；对超长请求做截断或拒绝。</li>

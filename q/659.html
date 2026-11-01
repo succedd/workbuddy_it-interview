@@ -96,7 +96,7 @@
     <h1>什么是双亲委派模型？它解决了什么问题？如何打破双亲委派？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">PyTorch</span><span class="chip tag">Tensor</span><span class="chip tag">autograd</span></div>
     <div class="card"><h2>题目</h2><p>追问链第二问。考察点：三层类加载器与委派顺序；委派带来的「类的唯一性/安全性」收益；打破双亲委派的三种典型方式（重写 loadClass、线程上下文类加载器、OSGi/模块化）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：模型定义与委派顺序</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：模型定义与委派顺序</strong></p>
 <ul>
 <li>类加载器之间存在<strong>父子关系</strong>（一般是组合关系而非继承）：启动类加载器（Bootstrap，C++ 实现，加载 <code>JAVA_HOME/lib</code>）→ 扩展类加载器（Extension / JDK9 后为 Platform）→ 应用程序类加载器（AppClassLoader，加载 classpath）→ 自定义类加载器。</li>
 <li><strong>工作过程</strong>：一个类加载器收到加载请求时，<strong>先不自己加载</strong>，而是把请求逐级委派给父加载器；只有父加载器反馈「自己无法完成」（搜索范围内找不到该类）时，子加载器才尝试自己加载。</li>

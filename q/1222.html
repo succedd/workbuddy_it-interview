@@ -96,7 +96,7 @@
     <h1>【系统设计】设计一个大型中后台前端应用的状态管理架构：如何区分服务端状态与客户端状态，并合理选型组合？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">状态管理架构</span><span class="chip tag">ReactQuery</span><span class="chip tag">服务端状态</span><span class="chip tag">中后台</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 7 问（收口）：综合前面所有知识点做整体架构决策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>核心原则：状态二分</strong>。① <strong>服务端状态</strong>（接口返回、会过期、需缓存/失效/重试）——用 <strong>React Query / SWR / RTK Query</strong> 这类「服务端状态库」统一管理，它们内置缓存、去重、后台刷新、乐观更新，不要手写到 Redux；② <strong>客户端状态</strong>（UI 状态、表单草稿、主题、权限）——用 <strong>Zustand/Context/useState</strong> 管理，仅客户端关心。混用会让 Redux 既装接口数据又装 UI 状态，难以维护。</li>
 <li><strong>分层架构</strong>：① UI 局部状态用 <code>useState/useReducer</code>；② 低频全局（主题、locale、当前用户）用 Context 或 Zustand；③ 高频/复杂共享客户端状态用 Zustand（selector 精准订阅避免全量重渲）；④ 所有接口数据交给 React Query，配置 <code>staleTime</code>、重试、预取；⑤ 关键写操作配合乐观更新 + 错误回滚。</li>

@@ -96,7 +96,7 @@
     <h1>如何设计一个“可靠开机自启 + 故障自愈”的 systemd 服务？请综合 Restart、资源限制、看门狗与依赖排序说明，并指出它与容器/K8s 编排的关系。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">系统运维工程师</span><span class="chip tag">systemd</span><span class="chip tag">故障自愈</span><span class="chip tag">资源限制</span><span class="chip tag">Watchdog</span><span class="chip tag">cgroup</span></div>
     <div class="card"><h2>题目</h2><p>请给出一个生产级服务单元的配置要点：崩溃自拉起、资源配额防雪崩、看门狗防假死、正确的依赖顺序，并对比容器编排的做法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>崩溃自愈</strong>：Restart=on-failure + RestartSec=2s，进程非 0 退出后自动拉起；配合 StartLimitInterval/StartLimitBurst 防止重启风暴把机器打挂。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>崩溃自愈</strong>：Restart=on-failure + RestartSec=2s，进程非 0 退出后自动拉起；配合 StartLimitInterval/StartLimitBurst 防止重启风暴把机器打挂。</p>
 <p><strong>资源配额防雪崩</strong>：在 [Service] 用 MemoryMax=（或 MemoryLimit）、CPUQuota=200%（限 2 核）、TasksMax= 限制线程数，基于 cgroup 硬隔离，避免一个服务内存泄漏拖垮整机——这正是 systemd 深度集成 cgroup 的优势。</p>
 <p><strong>看门狗防假死</strong>：服务周期性调用 sd_notify 上报 WATCHDOG=1，单元配 WatchdogSec=30，若 30s 内没收到心跳，systemd 直接 SIGABRT 杀掉并按 Restart 重启，解决“进程在但已死锁”的假活。</p>
 <p><strong>依赖排序</strong>：After=network-online.target、Wants=network-online.target 确保网络真通后再起；Requires= 表示强依赖（对方起不来本服务也失败），After= 只排顺序不保证成功。</p>

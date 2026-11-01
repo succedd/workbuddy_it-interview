@@ -96,7 +96,7 @@
     <h1>编程语言【边界】内存管理为什么是语言设计的分水岭？手动、GC、所有权三种方案各付出了什么代价？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">软件开发工程师(通用)</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">编程语言与编程基础</span></div>
     <div class="card"><h2>题目</h2><p>C 的崩溃与泄漏、Java 的 GC 停顿、Rust 的借用检查学习曲线——三种内存方案分别用痛苦换来了什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p>内存管理的三种哲学，各用一种代价换一种保证：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：其他来源 · 未复核 · 63 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>内存管理的三种哲学，各用一种代价换一种保证：</p>
 <ol>
 <li><strong>手动管理（C/C++）</strong>：控制力极强、零运行时开销 → 代价是泄漏、野指针、UAF（安全问题的重灾区）；</li>
 <li><strong>GC（Java/Go/Python）</strong>：安全省心 → 代价是运行时负担与<strong>停顿不可预期</strong>（实时/极致性能场景是硬伤）；</li>

@@ -96,7 +96,7 @@
     <h1>HBase 是什么？它和关系型数据库、HDFS 的核心区别是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">NoSQL</span><span class="chip tag">BigTable</span><span class="chip tag">列式存储</span></div>
     <div class="card"><h2>题目</h2><p>追问链起点：先厘清 HBase 的定位——它既不是传统关系型数据库，也不是单纯的 HDFS 文件，而是建立在 HDFS 之上的列式、稀疏、多维 Map。请说清它解决什么痛点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>HBase 是一个构建在 HDFS 之上的<strong>分布式、面向列、可伸缩的 NoSQL 数据库</strong>，本质是 Google BigTable 的开源实现，提供对海量数据（十亿行×百万列）的<strong>随机、实时读写</strong>能力，而非 HDFS 擅长的批处理顺序读。</li>
 <li>数据模型是<strong>稀疏的多维有序 Map</strong>：<code>(行键 RowKey, 列族:列限定符, 时间戳) → 值</code>。表按 RowKey 字典序水平切分为 Region，按列族物理聚簇存储（列族内多列存一起），空列不占空间（稀疏），天然适合半结构化、宽表场景。</li>

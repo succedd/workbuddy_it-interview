@@ -96,7 +96,7 @@
     <h1>实现一个「水平垂直居中」的弹窗，你能写出哪几种方案？各自的适用场景和坑点是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">页面重构工程师</span><span class="chip tag">CSS</span><span class="chip tag">居中</span><span class="chip tag">Flex</span><span class="chip tag">transform</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 flex / grid / 绝对定位 / transform 等居中手段的掌握程度与选型判断。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：现代项目首选 flex 或 grid，一行搞定；需要脱离文档流或子元素尺寸未知时再用绝对定位 + transform。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：现代项目首选 flex 或 grid，一行搞定；需要脱离文档流或子元素尺寸未知时再用绝对定位 + transform。</p>
 <p><strong>1. Flex（首选）</strong></p>
 <pre><code class="language-css">.parent{display:flex;justify-content:center;align-items:center}</code></pre>
 <p><code>justify-content</code> 控制主轴、<code>align-items</code> 控制交叉轴。MDN 特别提示：对齐之所以生效是因为还有剩余空间，若容器中存在 <code>flex-grow</code> 不为 0 的子项、主轴已被占满，对齐就不会生效。</p>

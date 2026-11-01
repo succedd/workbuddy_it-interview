@@ -96,7 +96,7 @@
     <h1>日志采集选型：Flume、Filebeat+Kafka、Flink CDC 各适合什么场景？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">大数据架构师</span><span class="chip">大数据开发工程师</span><span class="chip tag">Flume</span><span class="chip tag">Filebeat</span><span class="chip tag">Kafka</span><span class="chip tag">Flink CDC</span><span class="chip tag">选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：采集链路选型维度（吞吐/可靠性/转换能力/生态）、典型架构。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Flume</strong>：JVM 生态、HDFS Sink 成熟、拦截器可做轻量 ETL——<strong>传统离线数仓</strong>日志落 HDFS 的老搭档；缺点：单 agent 吞吐一般、调优参数多、社区趋缓。</li>
 <li><strong>Filebeat+Kafka</strong>：Filebeat（Go，资源占用极低，registry 断点）采集 → <strong>Kafka 削峰解耦</strong> → 消费端（落 HDFS/ES/Flink 实时计算）。<strong>互联网公司主流</strong>：Kafka 的一份数据同时喂离线与实时，扩展性最好。</li>

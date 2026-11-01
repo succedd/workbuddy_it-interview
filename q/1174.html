@@ -96,7 +96,7 @@
     <h1>故障排查：用 shallowRef 包裹一个大型配置对象 config，修改 config.value.items[0].name=&#39;x&#39; 后，DevTools 里数据已变但视图不刷新。如何定位并修复？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vue3</span><span class="chip tag">shallowRef</span><span class="chip tag">triggerRef</span><span class="chip tag">响应式排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：shallowRef 浅响应陷阱与调试思路。要求区分 shallowRef 与 ref 的追踪粒度，并给出整体替换 / triggerRef / 改用 ref 三种修复路径。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定位</strong>：<code>shallowRef</code> 与 <code>ref</code> 的区别在于——<code>ref</code> 会对 <code>.value</code> 做<strong>深层响应式</strong>（包 Proxy），而 <code>shallowRef</code> 只追踪 <code>.value</code> 这一层引用是否「被替换」。直接改 <code>config.value.items[0].name</code> 是改了内部深层属性，没有替换 <code>.value</code> 本身，所以 set 拦截器根本没被触发，视图当然不更新（数据在 DevTools 里变只是因为你直接改了对象引用）。</li>
 <li><strong>修复一（推荐，符合 shallow 设计意图）</strong>：整体替换 <code>.value</code> —— <code>config.value = { ...config.value, items: config.value.items.map((it,i)=&gt; i===0?{...it,name:&#39;x&#39;}:it) }</code>，让 <code>.value</code> 引用改变即可触发。</li>

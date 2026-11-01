@@ -96,7 +96,7 @@
     <h1>HTTP/1.0 与 HTTP/1.1 的主要区别是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">HTTP1.0</span><span class="chip tag">HTTP1.1</span><span class="chip tag">协议演进</span></div>
     <div class="card"><h2>题目</h2><p>考察点：持久连接、Host 头、管线化、分块传输、缓存控制头的演进。面试官常借此确认候选人对协议版本演进的基本认知。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>持久连接（Keep-Alive）</strong>：HTTP/1.0 默认每个请求/响应后关闭 TCP 连接，开销大；HTTP/1.1 默认 <code>Connection: keep-alive</code>，复用同一条 TCP 连接处理多个请求，减少握手开销。</li>
 <li><strong>Host 请求头</strong>：HTTP/1.1 强制要求 <code>Host</code> 头，使一台服务器能用虚拟主机托管多个域名；1.0 没有该要求。</li>

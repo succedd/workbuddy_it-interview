@@ -96,7 +96,7 @@
     <h1>MCP（Model Context Protocol）解决什么问题？它和 Function Calling、普通 HTTP API 的区别是什么？Tools、Resources、Prompts 三类原语分别做什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">AI Agent开发工程师</span><span class="chip">AI应用开发工程师</span><span class="chip tag">MCP</span><span class="chip tag">工具接入</span><span class="chip tag">JSON-RPC</span><span class="chip tag">Function Calling</span></div>
     <div class="card"><h2>题目</h2><p>考察点：工具接入层的协议认知，以及 Function Calling、MCP、Agent 的职责边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：MCP（Model Context Protocol，模型上下文协议）是 <strong>MCP Client 与 MCP Server 之间的通信协议</strong>，解决的是外部工具和数据源的<strong>接入</strong>问题，常被类比成 AI 领域的“USB-C 接口”。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：MCP（Model Context Protocol，模型上下文协议）是 <strong>MCP Client 与 MCP Server 之间的通信协议</strong>，解决的是外部工具和数据源的<strong>接入</strong>问题，常被类比成 AI 领域的“USB-C 接口”。</p>
 <p><strong>它要解决的痛点</strong>：同一个 Git 工具接到 Claude Desktop、Cursor 和自建 Agent 时，往往要各写一层适配；工具参数、鉴权方式或版本一变，接入它的多个客户端都得跟着改。MCP 把协议适配集中在 Server 一侧，支持该协议的 Host 通过 Client 发现并调用能力，Agent 只需理解用户问题、选择工具并组织结果。</p>
 <p><strong>角色划分</strong></p>
 <ul>

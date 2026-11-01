@@ -120,7 +120,7 @@ C. graphical.target 与 multi-user.target 互不依赖，谁先谁后完全随�
 D. 想禁止某服务开机自启，应执行 systemctl stop &lt;svc&gt;。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">系统运维工程师</span><span class="chip tag">systemd</span><span class="chip tag">target</span><span class="chip tag">enable</span><span class="chip tag">开机自启</span><span class="chip tag">disable</span></div>
     <div class="card"><h2>题目</h2><p>考查 systemd 的 target 概念、enable/start 区别与禁用方法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确答案：B</strong>。WantedBy=multi-user.target 写在 [Install] 段，enable 时会在 multi-user.target.wants/ 下建立软链接，系统进入该 target（无图形界面的多用户模式）时就会拉起这个服务。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确答案：B</strong>。WantedBy=multi-user.target 写在 [Install] 段，enable 时会在 multi-user.target.wants/ 下建立软链接，系统进入该 target（无图形界面的多用户模式）时就会拉起这个服务。</p>
 <p><strong>A 错误</strong>：enable 只是“登记开机自启”（建软链），并不立即启动；要现在就跑需 start（常连用 enable --now）。</p>
 <p><strong>C 错误</strong>：graphical.target 通过 Wants/Requires 依赖 multi-user.target，所以它其实是 multi-user 的“超集”、启动时晚于并包含多用户模式，二者有明确依赖，并非随机先后。</p>
 <p><strong>D 错误</strong>：stop 只是“停止当前运行”，下次开机仍会自启；正确禁用是 <code>systemctl disable &lt;svc&gt;</code>（删除软链），必要时再 mask 彻底锁死。</p></div>

@@ -96,7 +96,7 @@
     <h1>Flutter 与 React Native 的渲染原理有什么本质区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">移动端开发工程师</span><span class="chip tag">Flutter</span><span class="chip tag">React Native</span><span class="chip tag">跨平台</span><span class="chip tag">渲染</span></div>
     <div class="card"><h2>题目</h2><p>考察点：从渲染架构层面比较两大跨端方案（自绘引擎 vs 原生桥接），理解性能与生态取舍，是移动端跨平台追问的收口题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 26 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>Flutter（自绘引擎）：Dart 写 UI，通过 Skia/Impeller 直接绘制到 Canvas，不依赖原生控件；跨平台视觉一致、性能接近原生，但包体较大、原生能力需 Platform Channel。</li>
 <li>React Native（原生桥接）：JS 描述 UI，经 Bridge（新架构 Fabric/JSI）映射为<strong>原生组件</strong>渲染；视觉更接近系统原生控件，但 Bridge 序列化有开销，复杂动画/高频更新易卡顿。</li>

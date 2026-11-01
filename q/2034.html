@@ -96,7 +96,7 @@
     <h1>什么是 @Composable 函数？它和普通 Kotlin 函数有哪些约定？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">Android开发工程师</span><span class="chip tag">Jetpack Compose</span><span class="chip tag">@Composable</span><span class="chip tag">编译器</span><span class="chip tag">组合</span></div>
     <div class="card"><h2>题目</h2><p>说明 Composable 的语义约束：为什么它没有返回值、为何可组合、以及编译器为它做了什么。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>无返回值</strong>：Composable 函数通常返回 <code>Unit</code>，它的作用是「发出(emits) UI」，而不是返回控件对象。例如 <code>Text(&quot;hi&quot;)</code> 是把一个文本节点加入到组合树，而不是返回一个 TextView。</li>
 <li><strong>可被组合</strong>：Composable 可以调用其他 Composable，形成组合树；它描述界面结构，而非持有可变控件引用。</li>

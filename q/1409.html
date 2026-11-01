@@ -96,7 +96,7 @@
     <h1>LoRA 微调的原理是什么？低秩旁路为什么能省下绝大部分显存？与全参微调、P-Tuning 如何选型？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip">MLOps工程师</span><span class="chip tag">LoRA</span><span class="chip tag">微调</span><span class="chip tag">低秩</span><span class="chip tag">显存优化</span></div>
     <div class="card"><h2>题目</h2><p>考察 LoRA 低秩分解原理、显存账本与选型。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 33 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>LoRA（Low-Rank Adaptation）：<strong>冻结原模型全部权重</strong>，在目标层（通常是注意力的线性投影 W）旁挂两个低秩矩阵 A(d×r) 与 B(r×d)，前向变为 h = Wx + (B·A)x，秩 r 通常取 4~64，远小于 d（4096 级）。只训练 A、B，可训练参数量下降 3~4 个数量级。</p>
 <h3>显存账本：省在哪</h3>
 <p>微调显存大头不是权重，而是<strong>梯度和 Adam 优化器状态（每个可训练参数两份 fp32 动量）</strong>：</p>

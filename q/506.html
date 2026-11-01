@@ -96,7 +96,7 @@
     <h1>为什么基类析构函数通常要声明为 virtual（虚析构函数）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">C++</span><span class="chip tag">虚析构</span><span class="chip tag">多态</span></div>
     <div class="card"><h2>题目</h2><p>请说明通过基类指针 delete 派生类对象时，若基类析构非虚会发生什么，并解释必要性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>问题场景</strong>：通过基类指针删除派生类对象时，若基类析构<strong>不是虚函数</strong>，则发生<strong>未定义行为</strong>——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>问题场景</strong>：通过基类指针删除派生类对象时，若基类析构<strong>不是虚函数</strong>，则发生<strong>未定义行为</strong>——通常只调用基类析构，派生类部分（及其成员、资源）不被释放，造成资源泄漏与对象不完整销毁。</p>
 <pre><code class="language-cpp">Base* p = new Derived();
 delete p; // 若 ~Base() 非虚 → 只调 ~Base()，Derived 部分泄漏！</code></pre>
 <p><strong>解决</strong>：将基类析构声明为 <code>virtual</code>，使 <code>delete</code> 通过 vtable 动态绑定，先调用派生类析构再调用基类析构（析构本身从派生向基类逆序执行），完整释放整个对象。</p>

@@ -96,7 +96,7 @@
     <h1>数据库与缓存一致性：为什么 Cache-Aside 推荐『先更新数据库，再删除缓存』，而不是『更新缓存』？先删缓存再更新库、与先更新库再删缓存，哪种并发问题更小？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存一致性</span><span class="chip tag">Cache-Aside</span><span class="chip tag">延迟双删</span></div>
     <div class="card"><h2>题目</h2><p>考察点：缓存一致性的核心权衡——为什么不『更新缓存』而『删缓存』，以及两种删除顺序的并发分析。要求讲清『先更新库再删缓存』不一致概率更低的原因，以及删失败如何补偿。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>为什么不更新缓存（而删除）</strong>：若采用『先更新 DB 再更新缓存』或反过来，两个并发写请求 A、B 更新同一条数据时，可能出现『A 更新 DB → B 更新 DB → B 更新缓存 → A 更新缓存』，最终 DB 是 B 的值、缓存却是 A 的值，产生不一致。删缓存把『双写』变成『单写 DB + 失效』，读时再回填，冲突面更小。</li>
 <li><strong>Cache-Aside 写策略（推荐）</strong>：更新数据库 → 删除缓存。读策略：命中缓存直接返回，miss 则查 DB 并写回缓存。</li>

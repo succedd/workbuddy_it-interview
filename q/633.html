@@ -96,7 +96,7 @@
     <h1>腾讯云 CAM（访问管理）中用户、子账号、角色、策略是什么关系？最小权限原则与 AK/SK 泄露如何应急？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">云安全</span><span class="chip tag">CAM</span><span class="chip tag">访问管理</span><span class="chip tag">最小权限</span><span class="chip tag">密钥</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解云上身份与权限模型，能讲清最小权限与密钥泄露处置。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>概念关系</strong>：主账号拥有全部资源；子账号是主账号下创建的操作实体，通过「绑定策略」获得权限；角色(Role)是可扮演的临时身份，适合跨账号/服务间授权（如 CVM 扮演角色访问 COS）；策略(Policy)是描述 action/resource 的权限 JSON。</li>
 <li><strong>最小权限</strong>：默认子账号无任何权限，按需授权（按岗位建用户组、绑定最小策略），杜绝直接给 AdministratorAccess。</li>

@@ -96,7 +96,7 @@
     <h1>什么是副本因子（RF）与一致性级别（ONE / QUORUM / ALL）？如何权衡一致性与可用性？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Cassandra</span><span class="chip tag">一致性级别</span><span class="chip tag">副本因子</span><span class="chip tag">QUORUM</span><span class="chip tag">CAP</span></div>
     <div class="card"><h2>题目</h2><p>什么是副本因子（RF）与一致性级别（ONE / QUORUM / ALL）？如何权衡一致性与可用性？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>副本因子 RF</strong>：数据在集群中被复制的份数（如 RF=3 表示每行的数据存 3 个节点）。RF 越高，容错越强但存储与写放大也越大。</li>
 <li><strong>一致性级别（Consistency Level, CL）</strong>：读写时『需要确认多少个副本』才算成功。常见：① <code>ONE</code>：只需 1 个副本响应，延迟最低、可用性最高，但可能读到旧值；② <code>QUORUM</code>：需要多数派（<code>(RF/2)+1</code>）确认，在读和写上用同一 CL 即可保证强一致（线性izable 读）；③ <code>ALL</code>：全部副本确认，最强一致但任一副本宕机即不可写/读，可用性最差。</li>

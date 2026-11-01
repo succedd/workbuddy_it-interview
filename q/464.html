@@ -96,7 +96,7 @@
     <h1>用 JMeter 压测时并发一加上去 TPS 就卡住不动、响应时间却持续变长，如何排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">性能测试工程师</span><span class="chip">测试开发工程师</span><span class="chip tag">JMeter</span><span class="chip tag">TPS瓶颈</span><span class="chip tag">压测排查</span></div>
     <div class="card"><h2>题目</h2><p>这是性能测试中最典型的「压不上去」场景。很多人第一反应是被测系统到了容量上限，实际未必。请给出一套分层排查思路，先分清瓶颈在压力机、网络还是被测系统。</p></div>
-    <div class="card"><h2>参考答案</h2><p>排查的核心原则是<strong>先证伪压力机，再谈被测系统</strong>。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>排查的核心原则是<strong>先证伪压力机，再谈被测系统</strong>。相当比例的「性能瓶颈」其实是压测端自己先顶不住了。</p>
 <h3>第一步：确认 JMeter 自身有没有成为瓶颈</h3>
 <ul>
 <li><strong>必须用 CLI（非 GUI）模式执行</strong>：<code>jmeter -n -t test.jmx -l test.jtl</code>。GUI 模式只用于调试脚本，绝不能用来跑正式压测。</li>

@@ -96,7 +96,7 @@
     <h1>做系统设计时如何做权衡与取舍？给出一套可复用的评估框架（一致性/可用性/成本/演进）。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">系统设计</span><span class="chip tag">权衡</span><span class="chip tag">CAP</span><span class="chip tag">架构演进</span></div>
     <div class="card"><h2>题目</h2><p>考察点：建立系统设计的权衡意识而非背方案；能用框架化思路回答开放题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先锚定需求与非功能目标</strong>：明确 QPS、数据量、延迟、可用性 SLA（如 99.9%）、一致性要求（强一致还是最终一致），避免一上来堆组件。</li>
 <li><strong>用 CAP/取舍三角做取舍</strong>：分区容忍(P)必需，于是在 C 与 A 间选：金融/库存偏 CP，社交/feed 偏 AP 用最终一致；按「读多写少/写多读少」选缓存与队列。</li>

@@ -120,7 +120,7 @@ C. 开启会话保持后，流量一定会在所有后端服务器间完全均�
 D. 四层会话保持是「同一子网的所有请求」转发到同一台服务器，七层是「同一源 IP 的所有请求」转发到同一台服务器。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">CLB</span><span class="chip tag">会话保持</span><span class="chip tag">Cookie</span><span class="chip tag">单选</span><span class="chip tag">四层</span></div>
     <div class="card"><h2>题目</h2><p>考察点：四层 IP 会话保持与七层 Cookie 会话保持的机制辨析、会话保持与流量均衡的矛盾。承接健康检查题，进入 CLB 配置类高频考点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确答案</strong>：B。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确答案</strong>：B。</p>
 <p><strong>逐项辨析</strong>：</p>
 <ul>
 <li><strong>A 错误</strong>：四层没有应用层概念，无法读写 Cookie。四层会话保持基于<strong>源 IP</strong>：CLB 以请求源地址（子网）作为会话关联依据，把同一 IP（子网）的请求转发到同一台后端；</li>

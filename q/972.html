@@ -96,7 +96,7 @@
     <h1>用户反馈大模型「一本正经地编造引用、日期、API 名」，请从提示词与系统架构两个层面给出抑制幻觉的落地清单。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Prompt Engineering</span><span class="chip tag">幻觉</span><span class="chip tag">hallucination</span><span class="chip tag">RAG</span><span class="chip tag">溯源</span><span class="chip tag">提示约束</span></div>
     <div class="card"><h2>题目</h2><p>考察点：幻觉的工程化抑制（提示词约束 + RAG/溯源/自检），故障排查视角。是 Prompt Engineering 追问链里最贴近生产的硬骨头。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>现象</strong>：模型产出看似合理但虚构的事实、引用、函数名，甚至把不存在的论文当证据。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>现象</strong>：模型产出看似合理但虚构的事实、引用、函数名，甚至把不存在的论文当证据。</p>
 <p><strong>要点（提示词 + 架构两层）</strong>：</p>
 <ul>
 <li><strong>提示词层</strong>：① 强制引用——「所有事实必须来自提供的上下文，并在句末标注来源编号，禁止编造」；② 知识边界约束——「仅基于给定资料回答，资料中没有就明确说不知道」；③ 自检一致性——「回答前先列出支撑依据，依据不足则降级为不确定」；④ 约束角色与输出格式，压缩自由发挥空间。</li>

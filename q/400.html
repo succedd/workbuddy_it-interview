@@ -96,7 +96,7 @@
     <h1>高级：面对一道数组/字符串题，如何系统性地判断该用双指针、滑动窗口还是前缀和？并给出复杂度分析框架。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">算法选型</span><span class="chip tag">复杂度分析</span><span class="chip tag">双指针</span><span class="chip tag">滑动窗口</span><span class="chip tag">前缀和</span></div>
     <div class="card"><h2>题目</h2><p>考察点：从「是否有序/是否求子数组和/是否需多次区间查询/数据是否单调」等特征反推算法；复杂度（时间×空间）的严谨推导；面试中展示结构化思维。属高级开放题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>决策树</strong>：①数组<strong>有序</strong>且求配对/边界 → 双指针（对撞）；②需<strong>原地</strong>去重/判环/找中点 → 快慢指针；③求「满足条件的<strong>连续子数组/子串</strong>」→ 滑动窗口；④需<strong>多次区间和</strong>或「子数组和等于 K」→ 前缀和（+哈希）；⑤子矩阵 → 二维前缀和。</li>
 <li><strong>单调性是关键</strong>：双指针/滑动窗口能降复杂度，前提是「扩张与收缩方向确定、无回头」；若数据无序或无单调（如含负数的和），窗口法可能失效，要改前缀和/哈希。</li>

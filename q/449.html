@@ -96,7 +96,7 @@
     <h1>线上 RabbitMQ 队列消息大量积压，如何用队列长度上限与溢出策略防止 Broker 被打垮？drop-head 和 reject-publish 该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">RabbitMQ</span><span class="chip tag">消息积压</span><span class="chip tag">队列限流</span></div>
     <div class="card"><h2>题目</h2><p>考察点：ready 与 unacked 的区分、max-length 与 max-length-bytes 的配置方式、两种溢出行为的语义差异与业务选型。属故障排查题（高级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>第一步：看清积压的形态</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>第一步：看清积压的形态</strong></p>
 <p>用 <code>rabbitmqctl list_queues</code> 或管理界面观察 <code>messages_ready</code> 与 <code>message_bytes_ready</code>。关键是要区分 <strong>ready（待投递）</strong> 与 <strong>unacked（已投递未确认）</strong> 两类：只有 ready 状态的消息才计入队列长度限制。如果 unacked 长期居高不下，说明瓶颈在消费者处理能力或 prefetch 配置，而不是队列容量本身。</p>
 <p><strong>第二步：给队列加上长度上限</strong></p>
 <ul>

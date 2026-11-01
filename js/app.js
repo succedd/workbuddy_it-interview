@@ -268,7 +268,7 @@
         if (!window.Account) return deferredPage("我的反馈");
         return pageFeedback();
       case "about": return pageAbout();
-      /* 隐私政策 / 用户协议（20261101a）：正文在 js/legal.js（extra bundle），
+      /* 隐私政策 / 用户协议（20261101b）：正文在 js/legal.js（extra bundle），
          与静态页 privacy.html / terms.html 共用同一份数据，避免两处口径不一致。 */
       case "privacy":
         if (typeof window.pagePrivacy !== "function") { App.ensureExtra("隐私政策"); return deferredPage("隐私政策"); }
@@ -735,6 +735,58 @@
     if (!/^https?:\/\//i.test(v)) return "";
     try { return new URL(v).hostname.replace(/^www\./i, ""); } catch (e) { return ""; }
   }
+
+  /* 答案质量维度面板（20261101）：把单一 AI 参考分拆成可解释的客观维度。
+     维度：内容深度（字数）、示例/代码、来源可信度、人工复核、时效性。
+     只做提示，不替代内容本身。 */
+  function answerQualityPanel(q) {
+    const ans = (q.answer || "").trim();
+    const len = ans.length;
+    const hasCode = ans.indexOf("```") >= 0 || /\n\s{4}\S/.test(ans);
+    const hasReview = !!q.reviewedAt;
+    const days = q.updatedAt ? Math.max(0, Math.round((Date.now() - q.updatedAt) / 86400000)) : null;
+
+    let depth, depthCls;
+    if (len >= 800) { depth = "详细"; depthCls = "aq-good"; }
+    else if (len >= 300) { depth = "适中"; depthCls = "aq-good"; }
+    else if (len >= 150) { depth = "基础"; depthCls = "aq-warn"; }
+    else { depth = "简略"; depthCls = "aq-bad"; }
+
+    const src = String(q.source || "").trim();
+    let srcLabel2 = "其他来源", srcCls = "";
+    if (/^https?:\/\//i.test(src)) {
+      srcLabel2 = "外部链接";
+      srcCls = "aq-good";
+    } else if (src === "seed") { srcLabel2 = "种子题库"; srcCls = ""; }
+    else if (src === "ai") { srcLabel2 = "AI 生成"; srcCls = "aq-warn"; }
+    else if (src === "manual") { srcLabel2 = "官方整理"; srcCls = "aq-good"; }
+    else if (src === "web") { srcLabel2 = "网络整理"; srcCls = ""; }
+
+    let fresh = "", freshCls = "";
+    if (days !== null) {
+      if (days <= 7) { fresh = "近 7 天更新"; freshCls = "aq-good"; }
+      else if (days <= 30) { fresh = days + " 天前更新"; freshCls = "aq-good"; }
+      else if (days <= 90) { fresh = days + " 天前更新"; freshCls = "aq-warn"; }
+      else { fresh = days + " 天前更新"; freshCls = "aq-bad"; }
+    }
+
+    const items = [];
+    items.push(`<span class="aq-item"><span class="aq-dot ${depthCls}"></span>内容深度：${depth}</span>`);
+    items.push(`<span class="aq-item"><span class="aq-dot ${hasCode ? "aq-good" : "aq-warn"}"></span>${hasCode ? "含示例/代码" : "无代码示例"}</span>`);
+    items.push(`<span class="aq-item"><span class="aq-dot ${srcCls}"></span>来源：${U.esc(srcLabel2)}</span>`);
+    items.push(`<span class="aq-item"><span class="aq-dot ${hasReview ? "aq-good" : "aq-warn"}"></span>${hasReview ? "已人工复核" : "未人工复核"}</span>`);
+    if (fresh) items.push(`<span class="aq-item"><span class="aq-dot ${freshCls}"></span>${fresh}</span>`);
+
+    let tip = "";
+    if (days !== null && days > 30 && !hasReview) {
+      tip = `<div class="aq-tip">该答案已 ${days} 天未更新且未人工复核，技术内容可能随版本变化，建议结合官方文档理解。</div>`;
+    } else if (!hasReview) {
+      tip = `<div class="aq-tip">本答案尚未人工复核，仅供参考；如发现错误请点下方「报错」。</div>`;
+    }
+
+    return `<div class="aq-panel"><span class="aq-title">答案质量参考</span>${items.join("")}${tip}</div>`;
+  }
+
   function qCard(q, matches) {
     const hl = (t, k) => matches ? Search.highlight(t, matches, k) : U.esc(t);
     const diffCls = "diff-" + q.difficulty;
@@ -2900,6 +2952,7 @@
           <button class="btn btn-sm" id="qd-font-reset" type="button" aria-label="恢复默认字号">A</button>
           <button class="btn btn-sm" id="qd-font-inc" type="button" aria-label="放大答案字号">A+</button>
         </div>
+        ${answerQualityPanel(q)}
         ${noteQuote}${(q.answer || "").trim()
         ? U.md(q.answer)
         : '<div class="muted" style="padding:8px 0">答案正在从云端载入…（首访只会先取题目清单，答案按需补上，通常几秒内完成）</div>'}</div>

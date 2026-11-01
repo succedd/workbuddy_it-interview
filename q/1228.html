@@ -96,7 +96,7 @@
     <h1>【系统设计】Redis 主从+哨兵 与 Redis Cluster 两种高可用方案该如何选型？Cluster 的槽路由（MOVED/ASK 重定向）、gossip 与槽迁移（resharding）又是如何工作的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip">后端架构师</span><span class="chip tag">Redis</span><span class="chip tag">Cluster</span><span class="chip tag">哨兵</span><span class="chip tag">槽路由</span><span class="chip tag">resharding</span><span class="chip tag">技术选型</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 6 问（收口）：把主从、哨兵、集群串起来做架构决策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>主从+哨兵适用场景</strong>：数据量单节点内存可承载（通常十几到几十 GB）、需要自动故障转移但<strong>不需横向分片</strong>的场景。哨兵负责高可用，读写分离靠客户端/Proxy。优点是架构简单、运维心智负担低；缺点是不能突破单机内存上限、写仍是单点。</li>
 <li><strong>Redis Cluster 适用场景</strong>：数据量超过单节点容量、需要<strong>自动分片与横向扩展</strong>的场景。Cluster 把数据按 16384 个槽（slot）分布到多个主节点，每个主可挂从做高可用。优点是无中心、可扩缩容；缺点是客户端需支持 cluster 协议、多 key 事务/Lua 受限（需在同一槽，用 hash tag 约束）、运维更复杂。</li>

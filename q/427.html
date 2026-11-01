@@ -96,7 +96,7 @@
     <h1>什么是 CAS？AtomicInteger 等原子类如何基于 CAS 实现无锁线程安全？CAS 有哪些缺陷（ABA 问题、自旋开销、只能保单个变量），如何应对？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">CAS</span><span class="chip tag">原子类</span><span class="chip tag">ABA</span><span class="chip tag">LongAdder</span><span class="chip tag">Java并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CAS 原理（比较并交换）、原子类实现、ABA 与自旋问题、解决方案（版本号/AtomicStampedReference/LongAdder）。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>CAS 原理</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>CAS 原理</strong></p>
 <ul>
 <li>Compare-And-Swap：给定内存位置 V、期望值 A、新值 B；仅当 V 当前值 == A 时原子更新为 B，返回是否成功。底层是一条 CPU 原子指令（如 x86 的 cmpxchg）。</li>
 <li>原子类（AtomicInteger 等）的读-改-写（如 incrementAndGet）即『循环 CAS 直到成功』，避免加锁。</li>

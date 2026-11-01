@@ -96,7 +96,7 @@
     <h1>Selenium 的隐式等待和显式等待有什么区别？为什么官方明确警告不要混用？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试工程师</span><span class="chip tag">Selenium</span><span class="chip tag">显式等待</span><span class="chip tag">用例稳定性</span></div>
     <div class="card"><h2>题目</h2><p>元素还没渲染出来就去操作，是 UI 自动化用例不稳定的头号原因。请说明两种等待机制的原理与适用场景，并解释混用会造成什么后果。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、为什么需要等待</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、为什么需要等待</h3>
 <p>导航命令只会等待页面的 <code>readyState</code>（默认等 <code>complete</code>），而它只关心 HTML 中定义的资源是否加载完毕。SPA 应用中元素往往由 JS 动态创建或改变可见性，<code>readyState</code> 完成时目标元素可能还不在页面上。而 Selenium 要求元素<strong>同时存在且可见</strong>才能交互，于是代码执行与浏览器状态形成竞态——这正是 flaky test 的主要来源。</p>
 <h3>二、隐式等待（Implicit Wait）</h3>
 <ul>

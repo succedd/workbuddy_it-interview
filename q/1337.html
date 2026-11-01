@@ -96,7 +96,7 @@
     <h1>在浏览器输入域名到解析出 IP，DNS 的完整解析流程是怎样的？递归查询与迭代查询有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">DNS</span><span class="chip tag">域名解析</span><span class="chip tag">递归查询</span><span class="chip tag">迭代查询</span></div>
     <div class="card"><h2>题目</h2><p>考察点：DNS 解析链路与查询模式。要求说清浏览器缓存→本地 hosts→本地 DNS→根→顶级域→权威服务器的链路，并区分递归与迭代查询。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：DNS 把域名解析成 IP，解析沿「浏览器缓存 → 系统缓存/hosts → 本地 DNS 服务器 → 根 → 顶级域 TLD → 权威 DNS」逐层进行；其中客户端到本地 DNS 通常是递归，本地 DNS 向上游是迭代。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：DNS 把域名解析成 IP，解析沿「浏览器缓存 → 系统缓存/hosts → 本地 DNS 服务器 → 根 → 顶级域 TLD → 权威 DNS」逐层进行；其中客户端到本地 DNS 通常是递归，本地 DNS 向上游是迭代。</p>
 <p><strong>完整流程</strong>：</p>
 <ul>
 <li>先查浏览器 DNS 缓存、再查本机 hosts 与系统缓存，命中则直接返回；</li>

@@ -96,7 +96,7 @@
     <h1>ClickHouse 为什么分析查询这么快？它的架构与适用边界是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据仓库工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">ClickHouse</span><span class="chip tag">列式存储</span><span class="chip tag">MergeTree</span><span class="chip tag">OLAP</span></div>
     <div class="card"><h2>题目</h2><p>考察点：列式存储、向量化执行、MergeTree 引擎族、主键稀疏索引、弱事务边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>快在四个设计</strong>：① <strong>列式存储</strong>——分析只读需要的列，IO 缩小一个量级+列压缩比高；② <strong>向量化执行</strong>——按批（batch）对整列做 SIMD 计算，而非逐行解释；③ <strong>MergeTree 引擎</strong>——数据按主键排序存储 + <strong>稀疏索引</strong>（每 8192 行一个索引项，常驻内存定位 granule）+ 分区裁剪；④ 多核并行 + 物化视图/预聚合配合。</li>
 <li><strong>代价（边界）</strong>：① <strong>弱事务</strong>——不提供完整 ACID，不适合账务主库；② <strong>更新/删除重</strong>——ALTER UPDATE 是异步 mutation（重写 part），高频更新用 CollapsingMergeTree/ReplacingMergeTree 的版本合并思路或 ReplacingMergeTree + FINAL 查询；③ <strong>点查一般</strong>——不是给 OLTP 用的；④ join 能力偏弱（大表 join 需字典/distributed 方案设计）。</li>

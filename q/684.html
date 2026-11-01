@@ -96,7 +96,7 @@
     <h1>FFmpeg 常见命令：转码、截取、抽帧、转封装分别怎么写？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">音视频开发工程师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">FFmpeg</span><span class="chip tag">转码</span><span class="chip tag">抽帧</span><span class="chip tag">转封装</span></div>
     <div class="card"><h2>题目</h2><p>给出四类高频 FFmpeg 操作的典型命令示例。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>转码</strong>：<code>ffmpeg -i in.mp4 -c:v libx264 -c:a aac out.mp4</code>（重编码视频/音频）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>转码</strong>：<code>ffmpeg -i in.mp4 -c:v libx264 -c:a aac out.mp4</code>（重编码视频/音频）。</p>
 <p><strong>截取</strong>：<code>ffmpeg -i in.mp4 -ss 00:01:00 -t 10 -c copy clip.mp4</code>（-ss 起点、-t 时长，-c copy 不重编码更快）。</p>
 <p><strong>抽帧</strong>：<code>ffmpeg -i in.mp4 -r 1 -q:v 2 frame_%03d.jpg</code>（每秒 1 帧导出图片）。</p>
 <p><strong>转封装</strong>：<code>ffmpeg -i in.flv -c copy out.mp4</code>（只改容器不改编码，极快）。掌握这些可覆盖绝大多数离线处理需求。</p></div>

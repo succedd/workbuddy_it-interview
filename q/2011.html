@@ -96,7 +96,7 @@
     <h1>Flutter 应用出现「setState 后 UI 不刷新」或「build 被频繁调用引发重建风暴」，如何定位与优化？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">移动端开发工程师</span><span class="chip">Flutter开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Dart</span><span class="chip tag">Flutter</span><span class="chip tag">重建优化</span><span class="chip tag">状态管理</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>故障排查题（高级）：结合 Dart const 与状态管理，定位 Flutter 重建类问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>setState 不刷新</strong>：先确认是否在 <code>build</code> 之外错误地直接改了字段却没包在 <code>setState(() {})</code> 里；其次检查是否是 <code>const</code> 子 Widget——<code>const</code> 实例 <code>identical</code> 相等，框架会跳过其 rebuild，若你期望它随状态变，就<strong>不该标 const</strong>；再看状态是否真的变了（对象引用没变、只是内部字段变，且用了 Equatable/== 比较时会认为「没变」）。</li>
 <li><strong>重建风暴（build 被狂调）</strong>：常见原因——① 在 <code>build</code> 里做耗时计算或新建大对象，导致每次都重算；② 把 <code>setState</code> 放在了高频回调（滚动/动画）里；③ 状态提升过高，父 Widget 一变、整棵子树全 rebuild。</li>

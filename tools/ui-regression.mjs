@@ -152,6 +152,13 @@ try {
   if (canonical !== "https://itinterview.com.cn/q/1") throw new Error("question canonical mismatch: " + canonical);
   console.log("  ok   question canonical");
 
+  /* 20261101b：答案质量维度面板（展开答案后应显示） */
+  await page.click("#show-answer");
+  await expectVisible(page, ".aq-panel", "answer quality panel");
+  const aqText = await page.textContent(".aq-panel");
+  if (!aqText.includes("内容深度") || !aqText.includes("人工复核")) throw new Error("answer quality panel missing dimensions: " + aqText);
+  console.log("  ok   answer quality dimensions");
+
   await page.goto(BASE + "/#/position/42");
   await expectVisible(page, ".skill-card", "position skill cards");
   const badDepthStars = await page.$$eval(".skill-card", cards => cards.filter(card => {

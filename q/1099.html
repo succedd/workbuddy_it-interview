@@ -96,7 +96,7 @@
     <h1>CLB 支持哪些负载均衡调度算法？后端服务器权重有什么用？权重不均时该怎么调整？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">CLB</span><span class="chip tag">调度算法</span><span class="chip tag">权重</span><span class="chip tag">WRR</span><span class="chip tag">WLC</span></div>
     <div class="card"><h2>题目</h2><p>考察点：加权轮询/加权最小连接/IP Hash 三种调度算法、权重与后端规格的匹配、会话保持对分布的干扰。CLB 配置类基础题，与场景题的负载不均排查互为呼应。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>调度算法</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>调度算法</strong>：</p>
 <ul>
 <li><strong>加权轮询（WRR）</strong>：按顺序把请求依次分给各后端，权重高的分到更多请求——通用默认选择；</li>
 <li><strong>加权最小连接（WLC）</strong>：优先把请求分给当前连接数最少的后端，适合各请求<strong>处理时长差异大</strong>的场景（长连接、文件传输）；</li>

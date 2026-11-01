@@ -96,7 +96,7 @@
     <h1>直播用 CDN 分发，调度层是怎么把观众分配到边缘节点的？「部分地区用户黑屏或卡顿」按什么顺序排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">流媒体架构师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">CDN</span><span class="chip tag">直播架构</span><span class="chip tag">调度</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察 CDN 直播链路与分区故障排查，要求给出可操作的定位顺序。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>调度原理</strong>：观众请求经 DNS/HTTP DNS 调度，按地理位置、运营商、节点负载与健康度分配就近且健康的边缘节点；推流端同样被调度到上行质量最优的边缘。</li>
 <li><strong>链路顺序</strong>：推流端到边缘接入、中转/回源、转码、CDN 分发、播放器；任何一段劣化都会表现为观众侧花屏或卡顿。</li>

@@ -96,7 +96,7 @@
     <h1>@Transactional 失效的常见场景？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">事务</span><span class="chip tag">失效</span><span class="chip tag">Spring</span></div>
     <div class="card"><h2>题目</h2><p>列举并解释原因。</p></div>
-    <div class="card"><h2>参考答案</h2><ol>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ol>
 <li><strong>自调用</strong>：同类方法 A 调 B（@Transactional），因走 this 而非代理，事务不生效 → 抽 Service 或用 AopContext/注入自身代理。</li>
 <li><strong>非 public 方法</strong>：Spring AOP 默认只对 public 代理（CGLIB 可绕过但规范上不建议）。</li>
 <li><strong>异常被吞</strong>：catch 后未抛出，或抛出受检异常未配 <code>rollbackFor</code> → 不回滚。</li>

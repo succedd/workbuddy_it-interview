@@ -96,7 +96,7 @@
     <h1>应用冷启动与热启动有什么区别？如何测量并优化 Android/iOS 冷启动耗时？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">Android开发工程师</span><span class="chip tag">启动优化</span><span class="chip tag">冷启动</span><span class="chip tag">性能</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 App 启动流程与性能优化的理解。要求区分冷/热/温启动，并能给出可落地的测量与优化手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>启动类型区分：冷启动（Cold）指进程不存在，需 fork 并加载 Application/Activity 再创建首帧，耗时最长；热启动（Hot）指进程常驻、Activity 仍在栈中，仅恢复到前台；温启动介于两者之间（进程在但 Activity 已销毁）。面试常考冷启动，因为它决定用户首次打开的体感。</li>
 <li>测量方法：Android 可用 <code>adb shell am start -W</code> 看 TotalTime，或用 Android Studio Profiler / Perfetto 抓启动火焰图；iOS 可用 Instruments 的 App Launch 模板，或在 <code>didFinishLaunching</code> 打点统计到首帧。关键是统一埋点口径（从进程创建到首帧绘制完成）。</li>

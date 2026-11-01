@@ -96,7 +96,7 @@
     <h1>【配置】用 Nacos 作为配置中心时，如何区分 dev/test/prod 多套环境配置，并在不重启服务的前提下动态生效？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">配置题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">Nacos</span><span class="chip tag">配置中心</span><span class="chip tag">多环境</span><span class="chip tag">动态刷新</span><span class="chip tag">RefreshScope</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 5 问：配置中心解决「配置外置与动态化」，落地时要解决环境与热更新。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>多环境隔离方案</strong>：Nacos 用 <strong>Namespace + Group + Data ID</strong> 三维定位配置。常见做法：① 用 <strong>Namespace</strong> 区分环境（dev/test/prod 各一个命名空间，彻底隔离）；② 用 <strong>Group</strong> 区分应用或业务组；③ <strong>Data ID</strong> 采用 <code>应用名-环境.后缀</code>（如 <code>order-service-prod.yaml</code>）。服务启动时通过 <code>spring.cloud.nacos.config.namespace</code> 指定环境，避免一套配置误用于多环境。</li>
 <li><strong>动态刷新的实现</strong>：Nacos 客户端会<strong>长轮询/监听</strong>配置变更，服务端推送后客户端拉取最新值并发布 <code>RefreshEvent</code>。Spring Cloud 中：① 在需要热更新的类上加 <strong><code>@RefreshScope</code></strong>，使该类在配置变更时重建 Bean 并注入新值；② 用 <code>@ConfigurationProperties</code> 绑定的 Bean 默认随环境刷新；③ 非 Spring 托管的值可监听 <code>RefreshEvent</code> 手动更新。</li>

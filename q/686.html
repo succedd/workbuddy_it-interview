@@ -96,7 +96,7 @@
     <h1>RTMP 与 HLS 协议的区别与适用场景？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">流媒体架构师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">RTMP</span><span class="chip tag">HLS</span><span class="chip tag">直播协议</span></div>
     <div class="card"><h2>题目</h2><p>对比两种主流流媒体协议的延迟、兼容性与用途。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>RTMP</strong>：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>RTMP</strong>：基于 TCP 的 Adobe 协议，延迟低（1–3 秒），曾是直播推流标准；但浏览器/H5 已不支持，现多用于“推流→服务端”这一段。</p>
 <p><strong>HLS（HTTP 切段）</strong>：把流切成 .ts/.m4s 小片段 + m3u8 索引，走 HTTP 分发，兼容性极好（iOS/Andro/H5 全支持），但切片导致延迟高（通常 5–30 秒）。</p>
 <p><strong>取舍</strong>：低延迟互动用 RTMP/SRT/WebRTC 推流，广覆盖播放用 HLS/FLV；常见架构是 RTMP 推流 + 服务端转 HLS/FLV 分发。</p></div>
     <div class="cta-row">

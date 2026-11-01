@@ -96,7 +96,7 @@
     <h1>单例模式有哪些实现方式？如何兼顾线程安全与懒加载？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">单例模式</span><span class="chip tag">设计模式</span><span class="chip tag">线程安全</span></div>
     <div class="card"><h2>题目</h2><p>请对比饿汉式、懒汉式、双重检查锁与静态内部类/枚举等实现的优劣。</p></div>
-    <div class="card"><h2>参考答案</h2><p>单例模式确保一个类只有一个实例并提供全局访问点。常见实现：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 66 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>单例模式确保一个类只有一个实例并提供全局访问点。常见实现：</p>
 <ol>
 <li><strong>饿汉式</strong>：类加载即创建，简单、线程安全，但浪费资源（未用到也创建）。</li>
 <li><strong>懒汉式（非同步）</strong>：首次调用才创建，但多线程下会创建多个实例，不安全。</li>

@@ -96,7 +96,7 @@
     <h1>Terraform 的 state 文件里存了什么？为什么官方强烈反对手改/手删 state？多人协作时如何避免 state 冲突？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">云资源运维工程师</span><span class="chip">云架构师</span><span class="chip tag">Terraform</span><span class="chip tag">State</span><span class="chip tag">IaC</span><span class="chip tag">StateLocking</span></div>
     <div class="card"><h2>题目</h2><p>考察 Terraform 状态管理：state 的作用、漂移检测、remote state 与 state locking，是 IaC 面试的核心题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>state 里存了什么</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>state 里存了什么</h3>
 <p><code>terraform.tfstate</code> 是 Terraform 的「<strong>真实世界资源 ↔ 配置代码</strong>」映射表：每条 resource 的实例 ID、属性快照、依赖关系、敏感字段（base64，明文敏感！）。<code>plan</code> 的本质 = <strong>配置文件 diff state diff 真实云上资源</strong>。</p>
 <h3>为什么不能手改手删</h3>
 <ul>

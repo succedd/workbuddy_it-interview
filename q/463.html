@@ -96,7 +96,7 @@
     <h1>业务需要支持用户上传头像和简历附件，请从设计上说明如何保证文件上传功能的安全？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">安全开发工程师</span><span class="chip">安全架构师</span><span class="chip tag">文件上传</span><span class="chip tag">纵深防御</span><span class="chip tag">安全设计</span></div>
     <div class="card"><h2>题目</h2><p>文件上传是 Web 应用中最容易被低估的风险入口：只校验扩展名几乎必被绕过。请给出一套完整的防护设计，涵盖类型校验、文件命名、存储位置、权限控制与内容校验。</p></div>
-    <div class="card"><h2>参考答案</h2><p>OWASP 的核心立场是：文件上传<strong>没有银弹</strong>，必须纵深防御，任何单一校验都能被绕过。可按以下层次设计。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>OWASP 的核心立场是：文件上传<strong>没有银弹</strong>，必须纵深防御，任何单一校验都能被绕过。可按以下层次设计。</p>
 <h3>一、扩展名：只做白名单，且在解码之后校验</h3>
 <ul>
 <li>只允许业务真正需要的扩展名：头像只用一种图片格式，简历只放 pdf 和 docx，其余一律不开。</li>

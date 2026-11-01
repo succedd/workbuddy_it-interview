@@ -96,7 +96,7 @@
     <h1>什么是 BSON？MongoDB 为什么使用 BSON 而不是纯 JSON 作为底层存储格式？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">BSON</span><span class="chip tag">JSON</span><span class="chip tag">存储格式</span><span class="chip tag">MongoDB</span></div>
     <div class="card"><h2>题目</h2><p>考察点：BSON 的本质与相比 JSON 的优势，理解存储格式的选型动机，是深入 MongoDB 存储层的第一个追问。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>BSON 是什么</strong>：BSON（Binary JSON）是 JSON 的二进制序列化扩展，字段以「类型标签 + 长度前缀 + 内容」编码，是机器可读的紧凑二进制格式，而非给人看的文本。</li>
 <li><strong>类型更丰富</strong>：JSON 只有字符串/数字/布尔/数组/对象/null；BSON 额外支持 Date（毫秒时间戳）、int32/int64、Decimal128（精确小数，适合金融）、Binary（二进制大对象）、ObjectId、Regex、Timestamp 等，覆盖数据库所需的全部基础类型。</li>

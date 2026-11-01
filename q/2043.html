@@ -96,7 +96,7 @@
     <h1>UI 自动化常见的「不稳定(flaky)」根因有哪些（除等待策略外）？iframe、动态 id、弹窗、环境差异如何应对？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">测试工程师</span><span class="chip">自动化测试工程师</span><span class="chip tag">Selenium</span><span class="chip tag">flaky</span><span class="chip tag">iframe</span><span class="chip tag">稳定性</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>围绕非等待类 flaky 根因与应对手段作答，区别于隐式/显式等待的对比。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Flaky 的常见非等待根因</strong>：① <strong>iframe</strong>：元素在 iframe 内，未 <code>switchTo().frame()</code> 就找，必失败；② <strong>动态属性</strong>：id/class 每次刷新随机生成，定位器失效；③ <strong>弹窗/广告/遮罩</strong>：新元素覆盖导致点击被拦截(<code>ElementClickInterceptedException</code>)；④ <strong>环境/时序差异</strong>：本地稳、CI 慢导致加载超时；⑤ <strong>动画未结束</strong>就断言。</li>
 <li><strong>应对</strong>：iframe 必须先 <code>driver.switchTo().frame(elm)</code> 并在操作后切回 <code>defaultContent()</code>；动态元素改用稳定文本或相对定位，或对动态前缀用 <code>starts-with</code>/<code>contains</code>；弹窗/遮罩先显式等待其消失(<code>ExpectedConditions.invisibilityOf</code>)；对偶发点击拦截加重试（用 JS 点击或 <code>Actions</code>）。</li>

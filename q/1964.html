@@ -96,7 +96,7 @@
     <h1>数值特征如何处理？归一化/标准化、分桶（binning）、幂次/对数变换分别适用什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">推荐算法工程师</span><span class="chip tag">特征工程</span><span class="chip tag">数值特征</span><span class="chip tag">归一化</span><span class="chip tag">分桶</span></div>
     <div class="card"><h2>题目</h2><p>考察对连续型特征常用变换手段及其适用性的掌握。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>标准化（StandardScaler, z-score）</strong>：减均值除标准差，使特征均值0方差1，适合假设「特征尺度相近」的模型（LR、SVM、KNN、神经网络）；对异常值敏感。</li>
 <li><strong>归一化（MinMaxScaler 到 [0,1]）</strong>：保相对位置、不破坏分布形状，常用于神经网络输入或需固定区间的场景；同样受异常值影响。</li>

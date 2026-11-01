@@ -96,7 +96,7 @@
     <h1>npm 的 package.json 中 dependencies 与 devDependencies 区别？语义化版本 ^ ~ 含义？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Node.js工程师</span><span class="chip tag">npm</span><span class="chip tag">dependencies</span><span class="chip tag">语义化版本</span></div>
     <div class="card"><h2>题目</h2><p>解释依赖分类与版本号规则。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>dependencies vs devDependencies</strong>：前者是运行时也需要的包（如框架、库）；后者仅开发/构建期需要（如 ESLint、Webpack、测试框架），生产安装可忽略以减小体积。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>dependencies vs devDependencies</strong>：前者是运行时也需要的包（如框架、库）；后者仅开发/构建期需要（如 ESLint、Webpack、测试框架），生产安装可忽略以减小体积。</p>
 <p><strong>语义化版本</strong>：<code>^1.2.3</code> 允许更新到兼容的最新（&lt;2.0.0）；<code>~1.2.3</code> 只允许补丁级（&lt;1.3.0）；<code>1.2.3</code> 锁定精确。</p>
 <p><code>package-lock.json</code> 锁定实际解析树，保证团队与生产环境安装一致、可复现。</p></div>
     <div class="cta-row">

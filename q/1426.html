@@ -120,7 +120,7 @@ C. String 类没有重写 equals()，因此 String 的 equals() 也是比较地�
 D. 只要两个字符串的字面量相同，用 == 比较就必然返回 true</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">单选题</span><span class="chip">Java后端工程师</span><span class="chip tag">Java</span><span class="chip tag">==</span><span class="chip tag">equals</span><span class="chip tag">引用类型</span><span class="chip tag">基本类型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：== 与 equals 的语义差异，以及 Object/String 的默认行为，是 Java 基础的第一道分水岭题，用单选题快速确认。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>正确答案：A</strong>。== 对基本类型比较「值」是否相等；对引用类型比较「引用（内存地址）」是否指向同一个对象，与内容无关。</li>
 <li><strong>B 错误</strong>：Object.equals() 的默认实现就是 <code>return (this == obj)</code>，即比较地址；只有子类重写后才可能比较内容。</li>

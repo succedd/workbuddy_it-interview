@@ -96,7 +96,7 @@
     <h1>MyBatis 的 Mapper 接口没有实现类，为什么直接调用就能执行 SQL？底层做了什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MyBatis</span><span class="chip tag">动态代理</span><span class="chip tag">MapperProxy</span><span class="chip tag">源码</span></div>
     <div class="card"><h2>题目</h2><p>考察点：JDK 动态代理、MapperProxy、MapperMethod。这是「会用但说不清」的典型题，考察是否真的读过框架源码。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>核心答案：JDK 动态代理</strong>。<code>SqlSession.getMapper(XxxMapper.class)</code> 内部调用 <code>MapperRegistry#getMapper</code>，从 <code>knownMappers</code> 拿到对应 <code>MapperProxyFactory</code>，再 <code>newInstance(sqlSession)</code> 生成一个实现了该接口的<strong>动态代理对象</strong>返回。</li>
 <li><strong>调用链</strong>：代理对象的 <code>invoke</code> 由 <code>MapperProxy</code> 处理 → 先封装成 <code>MapperMethod</code> 并放入 <code>methodCache</code>（避免每次反射解析）→ 由 <code>MapperMethod#execute</code> 按注解/XML 判断语句类型（SELECT/INSERT/UPDATE/DELETE），最终走 <code>SqlSession</code> 的 <code>selectOne</code>/<code>selectList</code>/<code>insert</code> 等方法。</li>

@@ -96,7 +96,7 @@
     <h1>缓慢变化维（SCD）的常用处理方式有哪些？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据工程师</span><span class="chip">数据仓库工程师</span><span class="chip tag">数仓</span><span class="chip tag">SCD</span><span class="chip tag">拉链表</span></div>
     <div class="card"><h2>题目</h2><p>覆盖覆盖型、拉链表、微型维度等方案及选型。</p></div>
-    <div class="card"><h2>参考答案</h2><p>维度属性会随时间变化（客户改地址、商品调类目），如何记录历史是 SCD 问题：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p>维度属性会随时间变化（客户改地址、商品调类目），如何记录历史是 SCD 问题：</p>
 <p><strong>SCD1（覆盖）</strong>：直接 update 旧值，<strong>不留历史</strong>。适合无关紧要或只关心最新值的属性（电话号码），实现最简单。</p>
 <p><strong>SCD2（拉链/版本行）</strong>：变化时<strong>插入新行</strong>，旧行标记失效（有效时间区间 effective_from/to 或 is_current 标记），事实表通过时间点关联到<strong>当时正确</strong>的版本。<strong>分析首选</strong>——能回答「当时他的分区是什么」。代价：维度表膨胀、查询要加时间条件。数仓里常以<strong>拉链表</strong>实现（dw_start_date/dw_end_date）。</p>
 <p><strong>SCD3（加列）</strong>：加「上一版本值」列，只记一次变化，实用场景少。</p>

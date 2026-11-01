@@ -96,7 +96,7 @@
     <h1>单周期 CPU 的数据通路（Data Path）是如何连接的？以 add $t0,$t1,$t2 为例说明一条指令流经哪些部件。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">硬件工程师</span><span class="chip tag">数据通路</span><span class="chip tag">CPU</span><span class="chip tag">单周期</span></div>
     <div class="card"><h2>题目</h2><p>考察取指与各执行阶段在部件间的流向。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>单周期 CPU 把所有部件（PC、指令存储器、寄存器堆、ALU、数据存储器）用总线/连线固定连成一条<strong>数据通路</strong>，每条指令都在<strong>一个完整时钟周期</strong>内走完「取指→译码→执行→写回」。</p>
 <p><img src="/assets/q/fig-comporg-datapath.svg" alt="单周期 CPU 数据通路" loading="lazy"></p>
 <h3>add $t0,$t1,$t2 的流向</h3>

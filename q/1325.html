@@ -96,7 +96,7 @@
     <h1>Redis Cluster 节点间如何通过 gossip 协议交换状态？主观下线（PFail）到客观下线（Fail）、再到从节点选举的完整流程是怎样的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">DBA数据库管理员</span><span class="chip">数据库架构师</span><span class="chip tag">Redis</span><span class="chip tag">Redis Cluster</span><span class="chip tag">gossip</span><span class="chip tag">故障转移</span><span class="chip tag">高可用</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 Redis Cluster 去中心化通信机制与故障转移流程的完整掌握，注意与哨兵机制区分。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>gossip：去中心化的状态传播</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>gossip：去中心化的状态传播</strong></p>
 <p><img src="/assets/q/fig-gossip.svg" alt="图：左侧为 gossip 网状传播，右侧为主观下线到客观下线再到选举的故障转移流程" loading="lazy"></p>
 <p>Cluster 节点间通过专门的<strong>集群总线</strong>通信（端口 = 业务端口 + 10000，如 6379 对应 16379），消息主要有四种：</p>
 <ul>

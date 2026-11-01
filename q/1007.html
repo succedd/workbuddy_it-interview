@@ -96,7 +96,7 @@
     <h1>MongoDB 的索引机制与慢查询优化怎么做？explain 怎么看？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DBA数据库管理员</span><span class="chip">后端开发工程师</span><span class="chip tag">MongoDB</span><span class="chip tag">索引</span><span class="chip tag">explain</span><span class="chip tag">ESR原则</span></div>
     <div class="card"><h2>题目</h2><p>考察点：B-tree 索引类型、复合索引 ESR 原则、覆盖查询、explain 输出解读。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>索引类型</strong>：单字段/复合/多键（数组）/文本/地理/稀疏与部分索引——复合索引遵循 <strong>ESR</strong>：等值（Equality）字段在前、排序（Sort）其次、范围（Range）最后，顺序错了排序就得内存做（SORT 阶段超 100MB 直接报错）。</li>
 <li><strong>explain 三模式</strong>：<code>queryPlanner</code>（看计划）、<code>executionStats</code>（看真实执行数字）、<code>allPlansExecution</code>。重点看：<strong>winningPlan 是否 IXSCAN</strong>（COLLSCAN 全表扫=警报）、<code>totalDocsExamined vs nReturned</code>（检查的文档数远大于返回数=索引选择性差）、<code>stage: SORT</code>（内存排序=该加排序索引）。</li>

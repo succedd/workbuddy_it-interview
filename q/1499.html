@@ -96,7 +96,7 @@
     <h1>Dart 的事件循环模型是什么？Isolate 与线程的区别？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Flutter开发工程师</span><span class="chip tag">Dart</span><span class="chip tag">Isolate</span><span class="chip tag">事件循环</span></div>
     <div class="card"><h2>题目</h2><p>说明微任务/事件队列的调度顺序，以及 Isolate 不共享内存的设计意图。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>事件循环</strong>：Dart 单线程执行，两个队列——<strong>微任务队列</strong>（scheduleMicrotask、Future 同步完成的回调）优先清空，然后才处理<strong>事件队列</strong>（I/O、定时器、手势、<code>Future.delayed</code>）。所以同步代码里 `Future(...)  Even 微任务先于事件任务执行；<strong>滥用微任务会饿死 UI 渲染</strong>（绘制事件也在事件队列）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>事件循环</strong>：Dart 单线程执行，两个队列——<strong>微任务队列</strong>（scheduleMicrotask、Future 同步完成的回调）优先清空，然后才处理<strong>事件队列</strong>（I/O、定时器、手势、<code>Future.delayed</code>）。所以同步代码里 `Future(...)  Even 微任务先于事件任务执行；<strong>滥用微任务会饿死 UI 渲染</strong>（绘制事件也在事件队列）。</p>
 <p><strong>Isolate</strong>：Dart 的并发单元。与 OS 线程的区别——<strong>不共享内存</strong>，每个 Isolate 有独立堆与事件循环，靠消息传递（SendPort/ReceivePort）通信。好处：<strong>没有数据竞争，无需锁</strong>，GC 各自独立不互相暂停。代价：跨 Isolate 传大数据需拷贝（可用 TransferableTypedData 零拷贝、或 Isolate.run + compute 封装）。</p>
 <p><strong>实践</strong>：UI 全在主 Isolate；&gt;16ms 的重计算（大 JSON 解析、图片处理）丢到后台 Isolate，避免掉帧。</p></div>
     <div class="cta-row">

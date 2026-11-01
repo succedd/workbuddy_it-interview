@@ -96,7 +96,7 @@
     <h1>Prometheus 告警频繁误报、值班同学已经麻木，告警风暴时该如何快速定位根因并重设告警规则？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">Prometheus</span><span class="chip tag">Alertmanager</span><span class="chip tag">告警治理</span></div>
     <div class="card"><h2>题目</h2><p>团队反馈监控「又吵又没用」：一次网络小抖动会刷出上百条告警，真正的故障反而被淹没在消息里。请说明你的排查路径，以及重新设计告警规则时应遵循哪些原则。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、告警风暴的排查路径</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、告警风暴的排查路径</h3>
 <p><strong>1. 先做元监控（metamonitoring）自检</strong>。确认 Prometheus、Alertmanager、PushGateway 与通知通道本身是否存活。外部黑盒监控（例如一条从 PushGateway → Prometheus → Alertmanager → 邮件的端到端探测）能发现白盒监控看不到的问题，也能在内网监控系统整体失效时兜底。</p>
 <p><strong>2. 判断是「一条根因刷出多条告警」还是「真的多点故障」</strong>。用 Alertmanager 的分组与抑制（inhibition）把同源告警合并：底层组件慢但用户侧延迟正常时，不应单独呼叫人。</p>
 <p><strong>3. 判断阈值是否过紧</strong>。没有 <code>for</code> 持续时长、直接对瞬时值告警，是毛刺刷屏的最常见原因；应先看原始曲线再决定是改阈值还是改持续时间。</p>

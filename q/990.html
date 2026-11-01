@@ -96,7 +96,7 @@
     <h1>上云后一台 ECS 频繁 CPU 飙高，你的完整排查思路是什么？阿里云哪些工具能用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">云资源运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">阿里云</span><span class="chip tag">ECS</span><span class="chip tag">CPU排查</span><span class="chip tag">云监控</span></div>
     <div class="card"><h2>题目</h2><p>考察点：系统层排查方法论、监控告警链路、云助手与 Operations 场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先看面再看点</strong>：CloudMonitor（云监控）确认 CPU 曲线形态——持续性（容量不足/死循环）vs 尖刺型（定时任务/流量突发）vs 波动跟随流量（正常扩容需求）。</li>
 <li><strong>系统内定位</strong>：<code>top</code> 找进程 → <code>top -Hp &lt;pid&gt;</code> 找线程 → <code>printf &#39;%x&#39; tid</code> 转十六进制 → Java 用 <code>jstack</code> 对照 nid 定位代码行；非 Java 用 <code>perf top -p</code> / <code>strace -p</code> 看系统调用。重点排除：挖矿木马（异常进程名/陌生定时任务/<code>/tmp</code> 可执行文件——公网弱口令是主要入侵途径）。</li>

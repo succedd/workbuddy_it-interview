@@ -96,7 +96,7 @@
     <h1>LangChain 应用落地生产环境有哪些常见痛点与对策？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">AI应用开发工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip tag">LangChain</span><span class="chip tag">LLM应用</span><span class="chip tag">工程化</span></div>
     <div class="card"><h2>题目</h2><p>从延迟成本、稳定性、评测监控三方面总结工程化对策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>延迟与成本</strong>：Agent 多轮循环慢且贵——能 Chain 不 Agent、减少工具数、用小模型做路由/草稿 + 大模型做终稿、流式输出改善体感、缓存（语义缓存命中相似问题）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>延迟与成本</strong>：Agent 多轮循环慢且贵——能 Chain 不 Agent、减少工具数、用小模型做路由/草稿 + 大模型做终稿、流式输出改善体感、缓存（语义缓存命中相似问题）。</p>
 <p><strong>稳定性</strong>：① 模型/网络抖动——超时、重试（指数退避）、fallback 链（主模型挂了切备用）；② <strong>输出不可控</strong>——结构化输出 parser + 校验失败自动重试，Prompt 加 few-shot 与明确格式约束；③ 幻觉——RAG 化（答案要求带引用），检索不足时宁说不知道；④ 长上下文溢出——分段摘要、记忆窗口、上下文裁剪策略。</p>
 <p><strong>评测与监控</strong>：① 离线评测集（golden set）跑准确率/相关性，每次改 Prompt 回归——不评测就上线的 Prompt 迟早翻车；② 在线追踪 <strong>LangSmith/Langfuse</strong>：trace 每次调用的 Prompt、工具、token、延迟，定位坏 case；③ 收集用户反馈（点赞/纠错）做数据飞轮；④ 密钥与注入防护：用户输入与检索内容当<strong>不可信数据</strong>处理，防 Prompt 注入越权调工具。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>ThreadLocal 的底层实现原理是什么？为什么会发生内存泄漏，如何避免？</h1>
     <div class="chips"><span class="chip diff">中</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">ThreadLocal</span><span class="chip tag">ThreadLocalMap</span><span class="chip tag">弱引用</span><span class="chip tag">内存泄漏</span></div>
     <div class="card"><h2>题目</h2><p>ThreadLocal 的底层实现原理是什么？为什么会发生内存泄漏，如何避免？</p></div>
-    <div class="card"><h2>参考答案</h2><p>每个 Thread 对象内部都有一个类型为 ThreadLocal.ThreadLocalMap 的实例变量 threadLocals，这就是线程本地变量的存储容器。ThreadLocalMap 是一个类似 HashMap 的散列表，但底层只有数组、没有链表，采用开放地址法（线性探测）解决哈希冲突；它的 Entry 继承自 WeakReference，key 是对 ThreadLocal 对象的弱引用，value 才是真正放入的值。读写时以 ThreadLocal 自身为 key 到当前线程的 map 里查找，实现线程隔离。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>每个 Thread 对象内部都有一个类型为 ThreadLocal.ThreadLocalMap 的实例变量 threadLocals，这就是线程本地变量的存储容器。ThreadLocalMap 是一个类似 HashMap 的散列表，但底层只有数组、没有链表，采用开放地址法（线性探测）解决哈希冲突；它的 Entry 继承自 WeakReference，key 是对 ThreadLocal 对象的弱引用，value 才是真正放入的值。读写时以 ThreadLocal 自身为 key 到当前线程的 map 里查找，实现线程隔离。</p>
 <p><img src="/assets/q/fig-threadlocal-map.svg" alt="图：ThreadLocal 内存结构与泄漏路径" loading="lazy"></p>
 <p><strong>为什么 key 用弱引用？</strong> 如果 key 是强引用，只要线程不死，即使外部代码已经不再使用某个 ThreadLocal，Entry 也会把它一直强引用着，造成对象无法回收。改成弱引用后，外部强引用消失时 GC 即可回收 ThreadLocal 对象，Entry 的 key 变为 null，成为过期槽位。注意：一次 GC 并不保证立刻处理所有弱可达对象，要结合实际回收情况判断。</p>
 <p><strong>内存泄漏的根源</strong>：key 被 GC 置为 null 后，Entry 仍然通过强引用持有 value，而 Thread → ThreadLocalMap → Entry 这条强引用链还在。线程池里工作线程长期存活，key=null 的 value 无法访问也难以回收，随任务数增加不断累积。</p>

@@ -96,7 +96,7 @@
     <h1>为什么 TCP 一定要三次握手，而不是两次？两次握手会引发什么问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">网络运维工程师</span><span class="chip tag">TCP</span><span class="chip tag">三次握手</span><span class="chip tag">SYN洪泛</span><span class="chip tag">历史连接</span></div>
     <div class="card"><h2>题目</h2><p>考察点：三次握手的三个真实动机——阻止历史重复连接、同步双方初始序列号、避免资源浪费；以及两次握手下“被动方无法阻止历史连接、可能为伪造连接分配资源（SYN 洪泛隐患）”的后果。属于典型场景/追问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>阻止历史重复连接（首要原因）</strong>：网络拥堵时旧 SYN 可能比新 SYN 先到。三次握手中客户端收到 SYN+ACK 后可根据上下文（序列号过期/超时）判断为历史连接并回 RST 中止；两次握手下被动方收到 SYN 即进入 ESTABLISHED 并可能分配资源、发送数据，造成资源浪费。</li>
 <li><strong>同步初始序列号</strong>：双方都需要确认对方收到的 ISN，三次交互才能完成双向序列号同步；两次只能单向确认。</li>

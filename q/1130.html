@@ -96,7 +96,7 @@
     <h1>用户二次访问某页面仍然白屏数秒，如何用 DevTools 的 Network / Performance 面板判断是“强缓存未命中”“协商缓存 304 往返”“重定向链过长”还是“首屏 JS 过重”？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">技术经理</span><span class="chip tag">首屏优化</span><span class="chip tag">DevTools</span><span class="chip tag">缓存命中</span><span class="chip tag">重定向</span><span class="chip tag">性能排查</span></div>
     <div class="card"><h2>题目</h2><p>运营反馈“同一页面第二次打开还是很慢”。请给出用浏览器开发者工具逐一定位上面四类瓶颈的具体步骤与判断依据。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>看 Network 的 Size 列</strong>：命中强缓存会显示 memory cache / disk cache 且 Waterfall 极短、不发请求；若显示具体体积且带 (304) 则是协商缓存，仍有一次 RTT 往返。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>看 Network 的 Size 列</strong>：命中强缓存会显示 memory cache / disk cache 且 Waterfall 极短、不发请求；若显示具体体积且带 (304) 则是协商缓存，仍有一次 RTT 往返。</p>
 <p><strong>看 Waterfall 各阶段</strong>：某资源耗在 Initial connection / SSL 说明建连慢；耗在 Waiting(TTFB) 说明源站/后端慢；耗在 Content Download 说明传输体积大。</p>
 <p><strong>查重定向链</strong>：在 Network 里按域名筛选，若同一资源经历多个 301/302 才到终态，Waterfall 上会串起多条短请求，重定向链过长是典型元凶（常见于 http→https、带/不带 www、CDN 回源）。</p>
 <p><strong>用 Performance 抓主线程</strong>：录制一次加载，若 Long Task 大量集中在脚本求值（Script Evaluation）且 Main 线程长条发紫，说明首屏 JS 过重；反之若大量时间花在 Parse/Compile 与布局，则是解析与样式成本。结合 Coverage 面板还能看出多少 JS/CSS 根本没被执行。</p></div>

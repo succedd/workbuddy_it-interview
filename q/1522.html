@@ -96,7 +96,7 @@
     <h1>DataLoader 的 num_workers 与 pin_memory 如何影响训练吞吐？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">机器学习工程师</span><span class="chip">深度学习工程师</span><span class="chip tag">PyTorch</span><span class="chip tag">DataLoader</span><span class="chip tag">训练吞吐</span></div>
     <div class="card"><h2>题目</h2><p>解释数据加载流水线与锁页内存的作用，给出调参建议。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>num_workers</strong>：DataLoader 默认在<strong>主进程</strong>同步读数据，GPU 等数据就空转。设为 N 后开 N 个<strong>子进程</strong>并行做「读盘→解码→增强→collate」，与 GPU 计算重叠成流水线。N 太小喂不饱 GPU（GPU util 波动大），太大则进程启动/IPC 开销与内存暴涨，还可能互相抢 IO。<strong>调法</strong>：从 CPU 物理核数的一半开始翻倍试，观察 GPU util 与每 epoch 时间拐点；数据小到内存放得下时直接缓存/内存盘更彻底。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>num_workers</strong>：DataLoader 默认在<strong>主进程</strong>同步读数据，GPU 等数据就空转。设为 N 后开 N 个<strong>子进程</strong>并行做「读盘→解码→增强→collate」，与 GPU 计算重叠成流水线。N 太小喂不饱 GPU（GPU util 波动大），太大则进程启动/IPC 开销与内存暴涨，还可能互相抢 IO。<strong>调法</strong>：从 CPU 物理核数的一半开始翻倍试，观察 GPU util 与每 epoch 时间拐点；数据小到内存放得下时直接缓存/内存盘更彻底。</p>
 <p><strong>pin_memory=True</strong>：把 batch 预拷到<strong>锁页内存</strong>（不可被 OS 换出的物理页），GPU 可用 DMA 直接异步搬运，配合 <code>non_blocking=True</code> 让 H2D 拷贝与计算重叠；代价是锁页内存占用高、不可换出。CPU 训练则无用。</p>
 <p><strong>排查口诀</strong>：先看 GPU util——低于 70% 且波动大，多半是数据管道瓶颈：加大 workers / pin_memory / prefetch_factor，检查是否 decode（如 PIL/JPEG）过重，必要时上 DALI/WebDataset。</p></div>
     <div class="cta-row">

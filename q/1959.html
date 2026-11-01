@@ -96,7 +96,7 @@
     <h1>如何用 Distributed 表引擎做分片与分布式查询？ReplicatedMergeTree 如何保证副本高可用？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">ClickHouse</span><span class="chip tag">Distributed</span><span class="chip tag">副本</span><span class="chip tag">分片</span></div>
     <div class="card"><h2>题目</h2><p>考察 ClickHouse 分布式架构：本地表 + 分布式表的分层，以及副本一致性机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>本地表 + 分布式表分层</strong>：真正存数据的是各节点的 <code>MergeTree</code>（或 <code>ReplicatedMergeTree</code>）本地表；<code>Distributed</code> 表是「逻辑视图」不存数据，只记录分片/副本拓扑，把查询路由到各分片并汇总结果。</li>
 <li><strong>分片（sharding）</strong>：按 <code>sharding_key</code>（如 <code>rand()</code> 或 <code>sipHash(user_id)</code>）把数据打散到不同分片，提升写入与存储水平扩展；分布式查询由 initiator 节点把 SQL 下发各分片、再做合并（Gather/Merge）。</li>

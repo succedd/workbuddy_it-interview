@@ -1,0 +1,277 @@
+/* =========================================================================
+ *  js/guide.js — 站内使用指南（#/help）：从 app.js 拆出的第一块（模块化第一步）
+ *  依赖：运行时全局 U / Services / App（由 app.js 提供）；路由仍走 app.js 的 pageHelp()
+ * ========================================================================= */
+(function () {
+  "use strict";
+  const $ = U.qs;
+  const $$ = U.qsa;   // 与 app.js 内部别名一致
+async function pageHelp() {
+  document.title = "使用指南 · IT面试题库";
+  const toc = [
+    ["quick", "🚀 快速上手"], ["find", "🔍 找题与浏览"], ["panorama", "🌐 题库全景图"],
+    ["roadmap", "🗺️ 刷题计划"], ["docs", "📘 技术教程"],
+    ["daily", "📚 日常学习"], ["review", "🔁 复习与错题"], ["mock", "🎙️ 模拟面试"],
+    ["account", "👤 账号与数据"], ["share", "📤 分享"], ["submit", "📥 投稿与审核"], ["admin", "🛠️ 管理员"],
+    ["faq", "❓ 常见问题"],
+  ];
+  const sec = (id, title, body) => `<div class="card g-sec" id="help-${id}" style="margin-top:14px"><h2 style="font-size:16px;margin-bottom:10px">${title}</h2>${body}</div>`;
+  const NB = `<span style="flex:none;margin-left:6px;font-size:10px;line-height:1;padding:2px 6px;border-radius:99px;background:#fee2e2;color:#dc2626;font-weight:700;letter-spacing:.03em" title="20261005a 新增功能">NEW</span>`;
+  const li = (t, d, isNew) => `<div class="g-li" style="display:flex;gap:8px;padding:5px 0;line-height:1.65"><span style="flex:none">•</span><span><b>${t}</b>${isNew ? NB : ""}${d ? `<span class="muted"> —— ${d}</span>` : ""}</span></div>`;
+  /* —— 动图演示（20261005b）：纯 CSS 逐步高亮动画，零图片资源、离线可用 —— */
+  const demo = (caption, steps, period) => {
+    const n = steps.length, cls = n <= 3 ? "g-dstep3" : "g-dstep5";
+    const pills = steps.map((s, i) =>
+      `<span class="g-dstep ${cls}" style="animation-delay:${(i * period / n).toFixed(2)}s">${i + 1}. ${U.esc(s)}</span>`).join("");
+    return `<div style="margin:10px 0 4px;padding:12px 12px 10px;border:1px dashed var(--border,#cbd5e1);border-radius:10px;background:var(--bg,#f8fafc)">
+      <div style="font-size:11px;font-weight:600;color:var(--muted,#64748b);letter-spacing:.06em;margin-bottom:8px">▶ 动图演示 · ${U.esc(caption)}（自动循环播放）</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${pills}</div>
+      <div style="height:3px;border-radius:99px;background:var(--border,#e2e8f0);margin-top:10px;overflow:hidden"><div class="g-dbar" style="--gperiod:${period}s"></div></div>
+    </div>`;
+  };
+  /* 分类数 / 岗位数与前台共用同一份运行时数据：以后增删分类或岗位，
+     帮助页不必再手改，也就不会出现「帮助页写 276、关于页写 281」这种口径打架。 */
+  const catCount = (Services.categories || []).length;
+  const posCount = (Services.positions || []).length;
+  const rootCatCount = (Services.categories || []).filter(c => !c.parentId).length;
+  /* 教程方向数与篇数从 window.DOCS 实时计算：以后增删章节不必再手改这段文案 */
+  const docsCover = (() => {
+    const dirs = ((window.DOCS || {}).dirs || []).filter(Boolean);
+    if (!dirs.length) return "按「技术方向 × 初级 / 中级 / 高级」组织的成套教程";
+    const cnt = (d) => (d.levels || []).reduce((a, l) => a + (l.chapters || []).length, 0);
+    const total = dirs.reduce((a, d) => a + cnt(d), 0);
+    const lvCount = (dirs[0].levels || []).length;
+    const parts = dirs.map((d) => `${d.name}（${cnt(d)}）`).join("、");
+    return `已上线 ${dirs.length} 个技术方向、共 ${total} 篇成套教程：${parts}；每个方向按 ${lvCount} 个级别（初级 → 中级 → 高级）组织，从第一章连续读到最后一章就是一条完整成长路线`;
+  })();
+  setMain(`
+    <style>
+      /* 指南内搜索：无匹配行隐藏，区块内全部无匹配时整块隐藏 */
+      .g-li.g-hide { display: none !important; }
+      .g-sec.g-hide { display: none !important; }
+      /* 动图演示：步骤胶囊按周期轮流点亮。注意 @keyframes 选择器不能用 var()，
+         故按步骤数预置两套静态关键帧（5 步 / 3 步），时长与错峰由内联动画属性控制 */
+      .g-dstep { display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;border:1px solid var(--border,#cbd5e1);
+        background:var(--bg-elevated,#fff);font-size:12px;font-weight:600;color:var(--muted,#64748b); }
+      .g-dstep5 { animation: gStep5 var(--gperiod,12s) infinite; }
+      .g-dstep3 { animation: gStep3 var(--gperiod,12s) infinite; }
+      @keyframes gStep5 {
+        0% { color:#fff; background:#2563eb; border-color:#2563eb; box-shadow:0 2px 8px rgba(37,99,235,.35); transform:translateY(-1px); }
+        20% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+        100% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+      }
+      @keyframes gStep3 {
+        0% { color:#fff; background:#10b981; border-color:#10b981; box-shadow:0 2px 8px rgba(16,185,129,.35); transform:translateY(-1px); }
+        33.3% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+        100% { color:var(--muted,#64748b); background:var(--bg-elevated,#fff); border-color:var(--border,#cbd5e1); box-shadow:none; transform:none; }
+      }
+      .g-dbar { width:0; background:linear-gradient(90deg,#2563eb,#10b981); animation: gBarRun var(--gperiod,12s) linear infinite; }
+      @keyframes gBarRun { from { width:0 } to { width:100% } }
+      @media (prefers-reduced-motion: reduce) { .g-dstep, .g-dbar { animation: none } .g-dbar { width:100% } }
+      /* 指南反馈 */
+      .g-fb button { cursor:pointer; border:1px solid var(--border,#cbd5e1); background:var(--bg-elevated,#fff);
+        border-radius:99px; padding:4px 14px; font-size:13px; }
+      .g-fb button:hover { border-color:#2563eb; color:#2563eb; }
+    </style>
+    <div class="hero" style="padding:28px 16px 20px">
+      <h1 style="font-size:22px">📖 使用指南</h1>
+      <p>5 分钟了解全部功能。数据存于本机浏览器，登录后云端同步，支持离线使用。</p>
+      <div class="hot-tags">${toc.map(([id, label]) => `<span class="tag" style="cursor:pointer" data-go="help-${id}">${label}</span>`).join("")}</div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;max-width:420px">
+        <input id="g-search" type="search" placeholder="🔍 搜索指南：复习、导出、密码…"
+          style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border,#cbd5e1);background:var(--bg-elevated,#fff);color:var(--text,#0f172a);font-size:13px;outline:none" />
+      </div>
+      <div id="g-search-hint" class="muted" style="font-size:12px;margin-top:6px;display:none"></div>
+    </div>
+    ${sec("quick", "🚀 快速上手", `
+      ${li("打开就能用", "无需注册登录，首次打开自动加载题库，直接刷题")}
+      ${li("三种开始方式", "顶部搜索框直接搜 · 「技术体系 / 岗位体系」分类浏览 · 「随机一题」随缘学习")}
+      ${li("数据在哪", "学习记录默认存在本机浏览器；注册登录后自动云端同步，换设备不丢")}
+      ${li("装到手机桌面", "浏览器菜单选「添加到主屏幕」，之后像 App 一样打开，断网也能刷题；页面右下角的「安装应用」胶囊点右侧 × 可关闭，关闭后不再提示")}
+      ${li("站点信息在哪", "「关于本站」页有站点与站长介绍、联系入口，以及<b>本机访问计数</b>（只统计你这台设备打开过多少次，不是全站流量）。这类本机统计原先挂在顶栏，现已移到关于页，顶栏更清爽；想看全站访问量请到后台「数据」页")}
+      ${li("侧栏分区可折叠", "左侧栏的每个分区标题（投稿 / 导航 / 管理 / 审核 / 站点）都能点击收起或展开；管理、审核、站点默认收起，点标题即可展开，你的选择会自动记住。当前所在页面的分区会被自动展开，不会把自己藏丢")}
+    `)}
+    ${sec("find", "🔍 找题与浏览", `
+      ${li("搜索", "顶栏 / 首页搜索框支持标题、标签、岗位、分类名；输入框聚焦会弹出最近搜索和热门词，边输入还会实时弹出最多 8 条联想建议（带所属分类，点选直达）。手机上顶栏也保留一个放大镜入口，点它直接展开搜索，不必先拉出侧栏", true)}
+      ${li("技术体系", `${catCount} 个分类的树状目录，逐层展开找题；树顶新增分类搜索框，输入关键词即时过滤（Redis、Kubernetes 这类小分类也能直接搜到）；搜索时数字显示匹配题数，清空后恢复分类总题数。点开任一分类有「技术全景图」：顶部「架构图 / 分支树」两个按钮可来回切换视图——架构图：重点域配有人工分层架构图，节点与分支树末级均可点击直达分类，薄弱分类橙色标记；分支树：该分类及全部子分类的题量分布树，点节点直达题目列表`)}
+      ${li("第一性原理必读", "每个技术域的题目列表最前面有一组置顶必读题：这门技术为什么诞生、核心思想是什么、边界在哪——先懂根子再刷细节")}
+      ${li("岗位体系", `${posCount} 个岗位及细分方向，岗位页展示技术栈、难度分布、精选题单和热门题`)}
+      ${li("题目列表筛选", "按难度、题型、来源筛选，可按最新 / 最热 / AI 评分排序。手机上筛选条件默认收起成一颗「筛选」按钮，点开才展开，让题目更早出现在首屏")}
+      ${li("「考到过」标记", "题目详情页有「🎯 考到过」按钮：这场面试真考到这道题就点一下，帮后来的同学判断重点；同一台设备对同一题只计一次，点完按钮变绿显示累计人次", true)}
+      ${li("来源可追溯", "题目详情页的「来源」显示真实域名（如 ethereum.org、learn.microsoft.com），点一下直达原文；发现内容有误点「报错」，填问题描述后站内提交，会显示反馈编号")}
+      ${li("复制题目 / 答案", "展开答案后，答案区顶部有「复制答案」「复制题目」和 A- / A+ 字号按钮；复制内容是 Markdown，适合贴到笔记、微信或文档里")}
+      ${li("长尾分类", "技术体系树里题量极少（不足 3 题）的细分分类不再单独占行，题目并入父分类列表；父分类展开处会有一行「🔒 另有 N 个小分类」提示", true)}
+    `)}
+    ${sec("panorama", "🌐 题库全景图", `
+      ${li("首页数字可点", `首页的「技术域 / 题目总数 / 覆盖岗位」三个统计卡都能点，分别跳转到对应全景视图（技术域卡可继续展开 ${catCount} 个分类）`)}
+      ${li("总览 · 旭日图", `「题目总数」视图用旭日图展示所有题目分布：内圈是 ${rootCatCount} 个一级技术体系，外圈是细分技术点，色块大小代表题目数量；点击任意色块直达该分类的题目列表`)}
+      ${li("技术分类 · 思维导图", `「技术分类」视图把 ${catCount} 个分类按层级展开成树，支持展开/折叠/只看有题目的分类；点击节点查看该分类（含子分类）全部题目`)}
+      ${li("覆盖岗位 · 岗位树", "「覆盖岗位」视图按「阶段 → 岗位族 → 具体岗位」三级展开，点岗位进岗位题库，快速看清每个方向的题量")}
+      ${li("AI 生成题 · 来源透视", "「AI 生成题」视图先看全库来源构成（AI / 人工 / 种子 / 原理整理 / 外部文档 / 其他），再看 AI 生成题按技术分类归组的完整清单")}
+    `)}
+    ${sec("roadmap", "🗺️ 刷题计划", `
+      ${li("这是什么", "侧栏「刷题计划」把每个岗位的题库自动拆成一份 4～8 周的学习计划：先易后难排周次，每周给出要刷的题量、预计小时数和主攻技术点，不用自己规划「先看什么、后看什么」")}
+      ${li("怎么用", "挑一个目标岗位（如「Java 后端开发工程师」）点进去，从第 1 周开始按顺序刷。每周都有「▶ 开始本周练习」按钮，直接进入该周的题目池，答完自动记进度")}
+      ${li("进度怎么算", "在计划里勾选、或在题目详情页点「已掌握」、或在练习中标记掌握，三处进度实时同步；刷新页面、换设备都不会丢")}
+      ${li("每周自检", "每周卡片显示「已掌握 x/y」和进度条；全部掌握后周标题会打勾。一轮走完可以「重置进度」重新开始")}
+      ${li("题量不足的岗位", "题库里题量过少（< 20 题）的岗位不会生成计划，避免排不出有意义的周计划；这类岗位建议先按分类浏览")}
+    `)}
+    ${sec("docs", "📘 技术教程（「学」版块）", `
+      ${li("这是什么", "按「技术方向 × 初级 / 中级 / 高级」组织的成套技术教程：一个方向一套教程，从初级第一章按顺序读到高级最后一章，就是一条完整的成长路线。与「刷题计划」的区别是——教程负责「系统地学」，题库和计划负责「练和面」")}
+      ${li("怎么进", "侧栏「📘 技术教程」→ 选方向（如「运维 / SRE」）→ 选级别 → 点章节开始读")}
+      ${li("顺序阅读", "每章底部有「上一章 / 下一章」，跨级别连续（初级最后一章的下一章就是中级第一章）；读完点「标记本章已学完」，左侧目录会打勾、方向页进度条实时更新")}
+      ${li("每篇文档的结构", "开篇「官方文档基线」给出本篇对齐的官方文档（OWASP / RFC / 官方手册等）→ 原理讲解 → 实战案例与代码 → ⚠ 踩坑与经验 → ✅ 自检 / 排障清单（可勾选）→ 📚 延伸阅读。目录骨架取自官方文档，正文按官方目录逐节展开，读完即可与官方文档无缝衔接")}
+      ${li("时效提示", "每篇标注「更新 / 适用」版本（如「适用 K8s 1.24+」）。技术文档会过时，请以适用版本为准并结合官方文档核对")}
+      ${li("章末挂题", "文档最下方会自动列出本章知识点的练习题，点进去直接刷——学完立刻巩固，不用自己去找题")}
+      ${li("进度存在哪", "学习进度记录在本机浏览器（换设备不同步），清除浏览器数据会一并清掉")}
+      ${li("内容覆盖", docsCover)}
+    `)}
+    ${sec("daily", "📚 日常学习", `
+      ${li("刷题练习", "选分类 / 岗位 / 难度开一局，支持随机与顺序两种模式")}
+      ${li("限时小测", "可直接选择目标岗位、难度与 10 / 20 / 30 / 50 题；默认全库随机，岗位页进入时会自动带入当前岗位。题目变化后会重新计算可用题数与时长")}
+      ${li("答案质量信息", "「AI 质量参考分」由质检模型生成，只作内容质量参考，不等同于人工复核；请结合来源与「已人工复核」标记一起判断")}
+      ${li("手机滑动切题", "手机上看题时，右滑回上一题、左滑去下一题（题目详情页与刷题练习页都支持），不用去够底部按钮；手指落在输入框或代码块上时不响应，纵向滚动也不会误触")}
+      ${li("底部快捷导航", "手机上屏幕底部固定一排「首页 / 题库 / 刷题 / 错题 / 收藏」，单手就能切换；「错题」上的红色数字角标就是今天到期待复习的题量")}
+      ${li("我的批注", "题目详情页可以写下自己的批注（想法、踩过的坑、面试时打算怎么讲）。展开答案时，你自己的话会显示在标准答案上方；错题重练页的复习卡片也会带一行批注摘要。批注只存在你自己的设备上，不会上传到公共题库")}
+      ${li("AI 变式训练", "题目详情页点「✨ AI 变式」，AI 把原题改写成 3 道同考点变式（换场景 / 改条件 / 加深追问），先自己答再看参考答案；「没答上」会自动把原题加进错题重练。同一道题全站只生成一次，之后再点秒开（需登录，每天 20 次）")}
+      ${li("AI 改卷", "题目详情页点「✍️ AI 改卷」，不看答案写下自己的回答，AI 面试官按正确性 / 完整性 / 表达打 0–100 分，指出缺失点并给一段可背诵的改进版；改完可以再交一次看分数变化（需登录，每天 20 次，作答只存本机）")}
+      ${li("键盘快捷键", "电脑上：详情页 ← → 切换上下一题，空格展开 / 收起答案，S 收藏")}
+      ${li("今日 5 题", "每天固定 5 道题，做完自动打勾；打开「温故知新」还会混入 3 天前看过但没掌握的题")}
+      ${li("学习打卡", "打开网站即打卡，热力图展示最近 35 天；7×5 格子自适应填满卡片宽度、圆角 5px 与卡片风格统一；连续天数看着数字涨很有成就感")}
+      ${li("学习周报", "首页底部的周报统计本周刷题数、完成 5 题天数、新增薄弱，带上周环比、每日柱状图和近 8 周对比；薄弱分类可直接点击去刷；达成周目标有彩带庆祝；点「历史」可回看近 26 周的历史周报（存于本机）")}
+      ${li("分享周报", "点周报卡片上的「📸 分享周报」生成精美周报图：手机长按发给朋友，电脑复制图片后到微信聊天框 Ctrl+V 粘贴")}
+      ${li("首页每日一句", "首页顶部横幅每天自动换一条中文名言（实时来自 Hitokoto，配 LoremFlickr 意境图），当天稳定不跳动；横幅底色与点缀色每天按日历轮换不同配色（靛蓝 / 松石绿 / 紫罗兰 / 玫瑰红等 8 套，分享卡片图同色）；鼠标悬停名言卡片背景图自动放大、移开还原（带过渡动画，系统开启「减少动画」时自动禁用），点「🎲 换一条」随机换一句，点「🖼️ 分享图片」生成带名言的卡片图（下载 / 复制到剪贴板）；接口不可达时自动降级为兜底名言")}
+    `)}
+    ${sec("review", "🔁 复习与错题（艾宾浩斯记忆曲线）", `
+      ${li("怎么进错题本", "刷题或模拟面试中点「不太会 / 不会」，或在题目详情页点「不太会」按钮")}
+      ${li("复习节奏", "系统按记忆曲线安排：5 分钟 → 30 分钟 → 12 小时 → 1 天 → 2 天 → 4 天 → 7 天 → 15 天，到期自动提醒")}
+      ${li("错题重练页", "「📌 待复习」放到期题，「🕒 已排程」看未来安排；答对点「会了」顺延间隔，答错重新来；点「⚡ AI 闯关」先答 3 道 AI 变式——全对才顺延间隔，任一没答上间隔重置 5 分钟后重来，检验是真会了还是只是眼熟")}
+      ${demo("AI 闯关验证真掌握", ["原题自测", "答 AI 变式 ×3", "全对 → 间隔顺延 / 没答上 → 5 分钟后再来"], 12)}
+      ${li("复习打卡", "错题重练页顶部有「今日复习进度」条（今天已完成 / 当日任务量），每答一次「会了」（含 AI 闯关成功）记 1 格；右侧 🔥 连续复习 N 天帮你保持节奏，中断一天清零", true)}
+      ${li("浏览历史", "按今天 / 昨天 / 本周分组，支持单条删除、关键词搜索；「看过 N 次」多的题往往就是没吃透的题；顶部「重刷历史」一键把看过的题再刷一遍")}
+      ${li("状态角标", "历史卡片上的 📅 复习中 = 已在错题本，★ = 已收藏，帮你区分看懂的和没看懂的")}
+    `)}
+    ${sec("mock", "🎙️ 模拟面试", `
+      ${demo("模拟面试完整流程", ["选岗位 + 年限", "系统抽题提问", "自评 掌握/不熟悉/不会", "逐题推进", "生成报告 + 存云端"], 15)}
+      ${li("流程", "选岗位 + 工作年限 → 系统抽题逐题提问 → 每题自评「掌握 / 不熟悉 / 不会」→ 生成报告")}
+      ${li("报告内容", "掌握率、用时、技术覆盖度；登录后自动存云端，并可看历次成绩趋势对比")}
+      ${li("与错题本联动", "标「不熟悉 / 不会」的题自动进错题本，按记忆曲线安排复习")}
+    `)}
+    ${sec("account", "👤 账号与数据", `
+      ${li("注册 / 登录", "邮箱 + 密码即可；密码在服务端经「加盐 + PBKDF2-SHA256」单向派生后保存，服务器不保存明文密码（登录时把明文与盐重算一遍做比对）。登录后收藏、浏览历史、错题本、今日打卡、面试报告全部云端同步")}
+      ${li("修改自己的密码", "「站点 → 账号」页有「修改密码」：填旧密码 + 新密码 + 确认即可。改完本机保持登录，只把其它设备上的登录踢下线")}
+      ${li("人机验证", "注册、登录、投稿三个入口会做人机验证（Cloudflare Turnstile）用于挡批量注册与机器人刷稿。正常情况下组件是<b>隐形</b>的、不需要任何点击；只有风控认为可疑时才会浮出一个确认框。若提示「人机验证组件加载失败」，多是网络拦截了验证组件，刷新页面或换网络重试即可；表单里写好的内容不会丢")}
+      ${li("换设备", "新设备登录同一账号，学习记录自动合并恢复")}
+      ${li("我的反馈", "题目报错提交后，在「站点 → 账号 → 我的反馈」或 /feedback 查看处理进度；匿名用户凭本机保存的查询码也能看。管理员标记已修复 / 未通过后会更新")}
+      ${li("关闭页面也不丢", "关闭标签页时自动兜底上传一次，最大程度保护学习数据")}
+      ${li("加密备份", "系统设置里可开启备份密码，本机配置（Token、AI Key 等）加密后存云端，凭密码一键恢复")}
+      ${li("导出 / 清空 / 注销", "「我的帐号 → 数据与隐私」可以：把收藏、历史、错题与面试报告<b>导出成 JSON</b>；<b>清空云端学习数据</b>（保留账号）；<b>注销账号</b>（永久删除账号与云端数据，不可撤销，建议先导出）。注销前会让你输入邮箱二次确认")}
+      ${li("隐私政策与用户协议", "<a href=\"/privacy\" style=\"color:var(--c-primary,#2563eb)\">隐私政策</a>说明我们收集什么、AI 功能会送出什么内容、保存多久；<a href=\"/terms\" style=\"color:var(--c-primary,#2563eb)\">用户协议</a>说明投稿授权与免责范围")}
+      <div style="margin-top:10px;padding-left:10px;border-left:3px solid #94a3b8;line-height:1.75">
+        <div style="font-weight:600">📱 登录提示「邮箱或密码错误」？先用一分钟分清是哪一种</div>
+        <div class="muted" style="margin-top:4px">
+          注意：<b>「另一台设备能登进去」并不能证明密码是对的</b>。登录成功后浏览器会保存约 30 天的登录凭证，只要没退出，那台设备一直是拿着旧凭证进门、<b>根本没再核对过密码</b>；换成新设备（手机 / 平板）才第一次真正把密码发去比对，问题在这里才暴露。<br>
+          ① 在<b>已经能登录的那台电脑</b>上开一个<b>无痕 / 隐私窗口</b>（不会带上已保存的凭证），用同样的邮箱和密码再登一次；<br>
+          ② 若<b>无痕窗口同样报错</b> → 说明<b>数据库里存的密码和你正在敲的不是同一个</b>（常见于密码被改过、而自己记的是旧密码）。这种情况反复重打没有用：到「站点 → 账号」页用「修改密码」重设，或请管理员在「帐号管理」里重置；<br>
+          ③ 若<b>无痕窗口可以登进去</b> → 那才是输入层面的问题：先删掉系统里本站保存的旧密码（iOS：设置 → 密码；安卓：设置 → 自动填充与密码），再切<b>英文键盘</b>逐字重打，并留意<b>末尾空格</b>与<b>中文全角字符</b>（全角 ａ ≠ 半角 a）；<br>
+          ④ 任何情况都先刷新一次页面（右下角出现「有新版本」就点一下）再试，避免旧标签页还跑着旧代码。
+        </div>
+      </div>
+    `)}
+    ${sec("share", "📤 分享", `
+      ${li("分享卡片", "题目详情页点「分享」，自动生成精美卡片图（标题 + 标签 + 分层答案摘要 + 二维码），排版清晰适合转发；分享前会自动匹配线上题号，避免本地重复题 id 不同导致卡片标题与打开页面不一致")}
+      ${li("微信里分享", "微信内点图片放大后长按 → 「发送给朋友」；每道题都有独立分享页：扫码或点开链接直接读完整题目与答案（单步直达），读完后页面底部可一键进入刷题模式")}
+        ${li("内容纠错", "发现某题答案有误？详情页点「⚠ 报错」会弹出反馈表单：可先复制内容发给我，或直接打开 GitHub 提交，不会再出现「点了没反应」")}
+      ${li("电脑上分享", "点「复制图片」→ 到微信聊天框 Ctrl+V 粘贴发送；或「保存图片」下载卡片后发给朋友。系统分享面板不可用时会自动降级为保存，不会空手而归")}
+      ${li("复制链接", "桌面端可直接复制题目链接发给同学同事")}
+    `)}
+    ${sec("submit", "📥 投稿与审核", `
+      ${li("投稿题目", "登录后侧栏「投稿 → 投稿题目」即可向题库投稿：每帐号每天 5 条，先过 AI 质检（判断是否属于本站技术体系 + 质量打分），再由管理员 / 专家人工审核；与 IT 无关的内容累计 3 次会永久禁用投稿，质量类意见只作参考、不记违规")}
+      ${li("投稿前查重", "提交时会先在本机比对题库，疑似重复的既有题会一并列给 AI 参考，重复内容不容易过审")}
+      ${li("我的投稿", "侧栏「投稿 → 我的投稿」随时查看每条投稿的状态与当日剩余机会；<b>待审核</b>的投稿可以自己点「撤回」收回（一旦有审核者开始处理，状态变成「审核中」就撤不回了，撤回后当日投稿次数不退还）")}
+      ${li("审核与入库（管理员 / 专家）", "侧栏「审核 → 投稿审核」处理待审投稿：可以直接改题（原文留档）、查看 AI 质检报告与五维评分；审核通过后进入「站点 → 待入库」，由管理员一键收录进题库（可仅存草稿或直接发布），收录错了还能在「已入库」里撤销")}
+      ${li("不能审自己的投稿", "为了避免「自己给自己放行」，审核队列里的<span class=\"kbd\">自己的投稿</span>默认不可操作（专家账号一律如此）。<b>服务器管理员例外</b>：管理员可以审自己的投稿 —— 因为全站可能只有唯一一个管理员，否则其投稿会永久卡在待审队列里没人能处理")}
+    `)}
+    ${sec("admin", "🛠️ 管理员（可选）", `
+      ${li("本地管理员密码", "首次进入管理页设置密码，只保存在当前浏览器，换浏览器需重设；访客完全不需要管这个")}
+      ${li("题目管理", "增删改查、直接粘贴截图进题干和答案、标题查重提示")}
+      ${li("AI 出题", "配置 API Key 后按分类 / 岗位 / 难度批量生成题目")}
+      ${li("批量导入 / 备份", "支持 Excel / CSV / JSON / Markdown 导入；本地数据可加密备份到云端")}
+      ${li("发布", "配置 GitHub Token 后，题目改动 10 秒自动发布到线上题库，所有访客同步更新")}
+      ${li("帐号管理（服务器端）", "登录后侧栏「站点 → 帐号管理」可查看全部用户、启用 / 禁用，以及给他人重置密码。注意：「重置密码」会清空该用户所有登录状态（用于忘记密码的救急），因此不能对自己使用——系统会拦下并提示你改自己密码请去「账号」页")}
+      ${li("报错反馈", "侧栏「站点 → 报错反馈」集中处理用户提交的题目纠错：可看题目、问题描述、联系方式、AI 相关性判定，标记「已修复 / 已驳回 / 重新打开」并写处理备注；待处理数量会显示在侧栏角标上")}
+    `)}
+    ${sec("faq", "❓ 常见问题", `
+      ${li("需要注册吗？", "不需要，打开就能刷；注册只是为了多设备同步学习记录")}
+      ${li("别人访问要设管理员密码吗？", "不用，管理员是本地概念，只管「你这个人」能不能编辑题库")}
+      ${li("换电脑 / 浏览器数据还在吗？", "登录用户自动恢复；未登录用户的数据只在本机浏览器里，建议注册或用备份功能")}
+      ${li("离线能用吗？", "能。安装到主屏幕后断网照常刷题（联网时会自动同步数据）")}
+      ${li("页面显示异常 / 数据不对？", "先强制刷新（电脑 Ctrl+Shift+R，手机清一下浏览器缓存）；仍有问题联系管理员")}
+      ${li("右下角弹出「有新版本，点击刷新」？", "点一下那个胶囊即可切到最新版，不需要手动清缓存。页面每隔几分钟会自动检查一次更新，看到提示点它就行")}
+      ${li("点登录报「连不上服务器」？", "报错里会标注当前页面版本。先按提示刷新一次页面（Ctrl+F5）再试——长时间开着的旧标签页可能还跑着旧代码；仍不行则到「设置 → Cloudflare Worker」点「自动选择可用入口」")}
+      ${li("手机端登录总提示「邮箱或密码错误」？", "先别反复重打：见上方「👤 账号与数据」末尾的一分钟判断法——另一台设备「能登」可能只是旧凭证在撑，用无痕窗口即可分清是「密码本身对不上」还是「输入被改了」")}
+      ${li("提示「需要管理员权限」？", "说明当前的登录状态已失效（例如密码被重置、账号被禁用，或换了设备）。重新登录一次即可；若反复出现请联系管理员")}
+      ${li("题目答案有误？", "题目详情页点「报错」填写问题描述即可站内提交；AI 会先检查是否与本题相关，无关内容会被拒绝。提交成功会显示反馈编号，可在「我的反馈」看处理进度")}
+      ${li("首页题目总数怎么一直在涨？", "题库由自动化流水线持续补题（每周对薄弱分类扩充并全库质检），总数增长属正常；你本地题库会在打开网站时自动同步，无需任何操作")}
+      ${li("「考到过」点错了能撤销吗？", "目前不能撤销；同一台设备对同一题只计一次，误点一次对整体参考价值影响极小，可以忽略")}
+    `)}
+    <div class="g-fb" id="g-feedback" style="margin-top:22px;text-align:center"></div>
+    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-11-01 · 更详细的开发文档见 GitHub 仓库 README</div>
+  `);
+  $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
+    const el = document.getElementById(t.dataset.go);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  /* —— 指南内搜索（20261005b）：过滤条目行，区块内全部隐藏时整块收起 —— */
+  const norm = s => String(s || "").toLowerCase().replace(/[\s\p{P}\p{S}_]+/gu, "");
+  const gInput = $("#g-search"), gHint = $("#g-search-hint");
+  if (gInput) {
+    let tmr = null;
+    gInput.addEventListener("input", () => {
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        const q = norm(gInput.value);
+        const secs = $$("#main .g-sec");
+        if (!q) {
+          secs.forEach(s => { s.classList.remove("g-hide"); s.querySelectorAll(".g-li").forEach(r => r.classList.remove("g-hide")); });
+          gHint.style.display = "none";
+          return;
+        }
+        let hits = 0;
+        secs.forEach(s => {
+          let inSec = 0;
+          s.querySelectorAll(".g-li").forEach(r => {
+            const ok = norm(r.textContent).indexOf(q) >= 0;
+            r.classList.toggle("g-hide", !ok);
+            if (ok) inSec++;
+          });
+          s.classList.toggle("g-hide", inSec === 0);
+          hits += inSec;
+        });
+        gHint.textContent = hits ? `共 ${hits} 条匹配` : "没有匹配的条目，换个词试试（支持标题和正文）";
+        gHint.style.display = "block";
+      }, 140);
+    });
+  }
+  /* —— 「这篇有帮助吗」（20261005b）：localStorage 记一次，避免重复打扰 —— */
+  const fbBox = $("#g-feedback");
+  if (fbBox) {
+    let saved = null;
+    try { saved = localStorage.getItem("guide_fb"); } catch (e) {}
+    if (saved === "up" || saved === "down") {
+      fbBox.innerHTML = `<span class="muted" style="font-size:13px">${saved === "up" ? "🎉 谢谢反馈！祝面试顺利" : "🙏 收到，我们会持续改进指南"}</span>`;
+    } else {
+      fbBox.innerHTML = `<span style="font-size:13px;margin-right:10px">这篇指南有帮助吗？</span>
+        <button data-fb="up" style="margin-right:8px">👍 有帮助</button><button data-fb="down">🙋 没找到想要的</button>`;
+      fbBox.querySelectorAll("button").forEach(b => b.onclick = () => {
+        try { localStorage.setItem("guide_fb", b.dataset.fb); } catch (e) {}
+        fbBox.innerHTML = `<span class="muted" style="font-size:13px">${b.dataset.fb === "up" ? "🎉 谢谢反馈！祝面试顺利" : "🙏 收到，我们会持续改进指南"}</span>`;
+      });
+    }
+  }
+}
+
+/* ============================ 刷题练习 ============================ */
+
+  window.pageHelp = pageHelp;
+})();

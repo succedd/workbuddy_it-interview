@@ -96,7 +96,7 @@
     <h1>你处理过最复杂的客户故障是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip">IT运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">项目经验</span><span class="chip tag">实战</span></div>
     <div class="card"><h2>题目</h2><p>你处理过最复杂的客户故障是什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p>回答框架（用1034单里最复杂的一单）：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：官方整理 · 未复核 · 68 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>回答框架（用1034单里最复杂的一单）：</p>
 <p>故障背景：某金融行业客户核心业务数据库突然无法连接，影响交易流水入账。</p>
 <p>客户状态：客户当时很焦急，已经准备投诉。我第一时间安抚客户，说明正在排查，每15分钟同步一次进展。</p>
 <p>排查路径（讲思路不讲命令）：分层定位——先网络层ping/telnet确认连通性；再服务层检查数据库进程状态发现连接数爆满；再资源层查看磁盘I/O打满；再应用层分析慢查询日志定位到全表扫描SQL；根因是客户新业务上线导致查询量激增，数据库没有建立合适索引。</p>

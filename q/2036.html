@@ -96,7 +96,7 @@
     <h1>Compose 的 State 与重组如何联动？mutableStateOf / remember / rememberSaveable 各自解决什么？为什么 Composable 内直接声明 var 不会触发重组？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">移动端开发工程师</span><span class="chip">Android开发工程师</span><span class="chip tag">Jetpack Compose</span><span class="chip tag">State</span><span class="chip tag">remember</span><span class="chip tag">重组</span><span class="chip tag">状态管理</span></div>
     <div class="card"><h2>题目</h2><p>解释 State 作为重组触发器的机制，以及三种状态 API 的分工。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>State 是重组触发器</strong>：<code>mutableStateOf(x)</code> 返回 <code>MutableState&lt;T&gt;</code>，Compose 在读取它（如 <code>state.value</code>）时会把当前 Composable 登记为该状态的订阅者；当 <code>value</code> 改变，框架标记并重跑该重组作用域。</li>
 <li><strong>mutableStateOf</strong>：创建可被观察的状态容器本身。</li>

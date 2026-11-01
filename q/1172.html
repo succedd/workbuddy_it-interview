@@ -96,7 +96,7 @@
     <h1>场景题：setup 里 const state = reactive({count:0})，模板写为 const { count } = state 后 &lt;button @click=&quot;count++&quot;&gt;，点击后视图为什么不更新？怎么改？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vue3</span><span class="chip tag">reactive</span><span class="chip tag">toRefs</span><span class="chip tag">响应式陷阱</span></div>
     <div class="card"><h2>题目</h2><p>考察点：解构导致响应式丢失这一高频陷阱。要求定位「解构得到的是普通原始值、脱离了 Proxy 引用」这一根因，并给出至少两种正确写法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>根因</strong>：<code>const { count } = state</code> 是把 <code>state.count</code> 当时的数值（原始类型）拷贝到一个普通局部变量 <code>count</code> 里，这个 <code>count</code> 和 <code>reactive</code> 代理对象已经没有任何引用关系；<code>@click=&quot;count++&quot;</code> 只是改了普通变量，不会触发 Proxy 的 <code>set</code> 拦截器，自然没有 track/trigger，视图不更新。</li>
 <li><strong>改法一（最直观）</strong>：模板里直接写 <code>state.count</code>，不要解构——<code>state</code> 仍是 Proxy，<code>state.count++</code> 会正常走 set→trigger。</li>

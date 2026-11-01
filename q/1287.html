@@ -96,7 +96,7 @@
     <h1>分库分表的垂直拆分与水平拆分分别解决什么问题？分片键应该怎么选？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">数据库架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">分库分表</span><span class="chip tag">分片键</span><span class="chip tag">哈希分片</span><span class="chip tag">水平拆分</span></div>
     <div class="card"><h2>题目</h2><p>考察点：拆分维度、分片算法与分片键选择。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <p><strong>1. 先明确分库分表不是第一步</strong></p>
 <p>读写分离解决的是<strong>读并发</strong>，不解决存储问题；分库分表主要解决<strong>存储与容量</strong>问题。决定前要先确认：慢 SQL、索引、分页、缓存、读写分离是否已优化；单表数据量、单库容量、连接数、写入 QPS 是否真的接近瓶颈；核心查询能否被一个稳定的分片键覆盖。常见触发条件是单表数据量到千万级、备份时间越来越长。</p>
 <p><strong>2. 四个概念</strong></p>

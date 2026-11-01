@@ -96,7 +96,7 @@
     <h1>LINQ 的延迟执行怎么理解？IEnumerable 和 IQueryable 有什么区别？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">.NET开发工程师</span><span class="chip tag">LINQ</span><span class="chip tag">延迟执行</span><span class="chip tag">IQueryable</span><span class="chip tag">表达式树</span></div>
     <div class="card"><h2>题目</h2><p>考察 LINQ 执行模型、表达式树和数据库查询。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>延迟执行</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>延迟执行</strong></p>
 <ul>
 <li>多数 LINQ 运算符返回可枚举对象，直到 foreach/ToList/Count 才执行；每次枚举会重新执行，可能重复查询。</li>
 <li>闭包变量在执行时读取；在循环里创建查询要注意变量捕获。</li>

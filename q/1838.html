@@ -96,7 +96,7 @@
     <h1>B 端产品如何设计多租户和数据隔离边界？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">B端产品经理</span><span class="chip tag">多租户</span><span class="chip tag">数据隔离</span><span class="chip tag">SaaS</span><span class="chip tag">权限</span></div>
     <div class="card"><h2>题目</h2><p>考察 SaaS 多租户模型、隔离级别和产品边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先定隔离级别</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>先定隔离级别</strong></p>
 <ul>
 <li>共享库表 + tenant_id 行级隔离：成本低、运维简单，适合中小客户；独立 schema/独立库：隔离更强、成本高，适合大客户/合规要求。</li>
 <li>无论哪种，租户 ID 必须贯穿数据、缓存、文件、日志、任务队列；禁止跨租户查询。</li>

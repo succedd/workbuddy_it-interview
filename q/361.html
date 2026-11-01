@@ -96,7 +96,7 @@
     <h1>TCP 四次挥手的过程是什么？为什么需要 TIME_WAIT 状态，并且要等待 2MSL 才关闭？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">网络运维工程师</span><span class="chip">网络工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">TCP</span><span class="chip tag">四次挥手</span><span class="chip tag">TIME_WAIT</span><span class="chip tag">2MSL</span></div>
     <div class="card"><h2>题目</h2><p>考察点：全双工连接的双向关闭流程与各状态（FIN_WAIT_1 / FIN_WAIT_2 / TIME_WAIT / CLOSE_WAIT / LAST_ACK）；TIME_WAIT 的两个作用与 2MSL 的语义，是“高级”难度追问点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>四次挥手流程</strong>：①客户端发 FIN，进入 FIN_WAIT_1；②服务端回 ACK，进入 CLOSE_WAIT，客户端进 FIN_WAIT_2；③服务端数据发完后发 FIN，进入 LAST_ACK；④客户端回 ACK，进入 TIME_WAIT，服务端进 CLOSED；客户端等待 2MSL 后进入 CLOSED。</li>
 <li><strong>为什么是四次</strong>：TCP 全双工，关闭需双向独立确认。服务端收到 FIN 时可能还有数据未发完，必须先回 ACK 确认、等数据发完再发 FIN，两步不能合并，故比握手多一次。</li>

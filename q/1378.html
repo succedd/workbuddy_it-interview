@@ -96,7 +96,7 @@
     <h1>如何计算 Cache 的平均访问时间？写直写（Write-Through）与写回（Write-Back）、写分配与非写分配有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Cache</span><span class="chip tag">命中率</span><span class="chip tag">平均访问时间</span><span class="chip tag">写直写</span><span class="chip tag">写回</span><span class="chip tag">写分配</span></div>
     <div class="card"><h2>题目</h2><p>考察命中率/平均访问时间公式（含串行与并行两种访问模型），以及 Cache 与主存一致性的写策略选择与组合。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>一、平均访问时间</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、平均访问时间</strong></p>
 <p>设命中率 <code>H</code>、Cache 访问时间 <code>Tc</code>、主存访问时间 <code>Tm</code>。题目分两种模型，务必看清题意：</p>
 <ul>
 <li><strong>串行模型</strong>（先查 Cache，未命中再访存）：<code>T_avg = H×Tc + (1-H)×(Tc + Tm)</code>，未命中时额外耗费一次 Cache 访问 + 主存访问。</li>

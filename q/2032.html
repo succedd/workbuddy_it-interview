@@ -96,7 +96,7 @@
     <h1>大规模日志场景下 ELK 的成本与瓶颈在哪里？有哪些替代/增强方案（如 ClickHouse、Loki、冷热分层）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">后端开发工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">ELK</span><span class="chip tag">成本优化</span><span class="chip tag">Loki</span><span class="chip tag">ClickHouse</span><span class="chip tag">冷热分层</span><span class="chip tag">ILM</span></div>
     <div class="card"><h2>题目</h2><p>大规模日志场景下 ELK 的成本与瓶颈在哪里？有哪些替代/增强方案（如 ClickHouse、Loki、冷热分层）？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>ELK 的成本与瓶颈</strong>：ES 为保证近实时检索，索引常驻内存 + 多副本，机器成本随日志量线性飙升；『写多、查少、留存久』的场景下，大量冷数据仍占用昂贵的热节点资源，成本效益差。</li>
 <li><strong>增强方案——冷热分层（Hot-Warm-Cold）</strong>：用 ILM（索引生命周期管理）把新数据放 SSD 热节点、旧数据自动迁移到机械盘温/冷节点甚至对象存储（Searchable Snapshots/ Frozen tier），大幅降成本。</li>

@@ -96,7 +96,7 @@
     <h1>Kubernetes资源限制和HPA自动扩缩容？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip tag">Kubernetes</span><span class="chip tag">HPA</span></div>
     <div class="card"><h2>题目</h2><p>请解释requests/limits和HPA原理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>资源限制</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>资源限制</strong></p>
 <ul>
 <li>requests 用于调度（保证最少资源），limits 限制上限；CPU 超限被节流，内存超限 OOMKill。</li>
 <li>设置合理 requests/limits；QoS：Guaranteed（requests=limits）、Burstable、BestEffort；关键服务用 Guaranteed/PDB。</li>

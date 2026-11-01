@@ -96,7 +96,7 @@
     <h1>大文件上传频繁失败或超时，如何用分块上传与断点续传排查？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">COS</span><span class="chip tag">分块上传</span><span class="chip tag">断点续传</span></div>
     <div class="card"><h2>题目</h2><p>一个 5GB 视频通过控制台/SDK 上传总是中断。请给出分块上传（Multipart Upload）的机制与排错思路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>为什么用分块上传</strong>：大于 100 MB 的对象强烈建议分块，单对象上限 48.8 TB；分块后可并行上传、失败仅重传单个块，避免整文件重来。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>为什么用分块上传</strong>：大于 100 MB 的对象强烈建议分块，单对象上限 48.8 TB；分块后可并行上传、失败仅重传单个块，避免整文件重来。</p>
 <p><strong>分块流程</strong>：InitiateMultipartUpload 拿到 UploadId → 按 1~5 GB 分块并发 UploadPart（每片带 PartNumber）→ 全部完成后 CompleteMultipartUpload 合并；任一片失败只重传该 PartNumber。</p>
 <p><strong>断点续传实现</strong>：客户端持久化 UploadId 与已完成的 PartNumber 列表，中断后用 ListParts 查询已传分片，仅补传缺失部分，实现断点续传。</p>
 <p><strong>常见失败点</strong>：未调用 Complete 会留下碎片（占用容量且计费），需定时 Abort 过期 UploadId；网络抖动时调大重试与并发、缩小单块大小；命中 5 GB 上限需进一步拆分。</p></div>

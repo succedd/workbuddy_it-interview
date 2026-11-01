@@ -96,7 +96,7 @@
     <h1>REQUIRED 与 REQUIRES_NEW 在「外层已开启事务」时行为差异，描述正确的是？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">事务传播</span><span class="chip tag">REQUIRES_NEW</span><span class="chip tag">单选</span></div>
     <div class="card"><h2>题目</h2><p>（单选题）外层方法 A 已开启 REQUIRED 事务并调用内层方法 B，B 标注为 REQUIRES_NEW。关于两者的事务边界，哪一项正确？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确答案</strong>：B 会挂起 A 的事务，开启一个全新的独立物理事务；B 提交后 A 继续执行，A 后续回滚不会影响 B 已提交的结果。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确答案</strong>：B 会挂起 A 的事务，开启一个全新的独立物理事务；B 提交后 A 继续执行，A 后续回滚不会影响 B 已提交的结果。</p>
 <p><strong>关键辨析</strong>： REQUIRED 是「加入同一事务」（共享连接与回滚），而 REQUIRES_NEW 是「新建独立事务」（不同连接、各自提交回滚互不牵连）。</p>
 <p><strong>常见考点</strong>：若误以为 REQUIRES_NEW 也会随外层回滚，就会在审计/计费等需要「必落库」的场景用错，导致外层异常时重要记录也被撤销。</p>
 <p><strong>使用建议</strong>：需要「无论外层成败都必须落地」的动作（如操作日志、风控埋点）才用 REQUIRES_NEW；否则优先 REQUIRED 以保持原子性。</p></div>

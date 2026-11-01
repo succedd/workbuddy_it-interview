@@ -96,7 +96,7 @@
     <h1>MongoDB 索引有哪些常见类型？复合索引的「最左前缀」原则是什么？为什么每个集合的 _id 字段默认就有索引？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">索引</span><span class="chip tag">复合索引</span><span class="chip tag">最左前缀</span><span class="chip tag">ObjectId</span><span class="chip tag">explain</span></div>
     <div class="card"><h2>题目</h2><p>考察点：索引基础与复合索引匹配规则，以及 _id 默认索引的设计意图，是索引优化的前置追问。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>常见索引类型</strong>：单字段索引（对单个字段建索引）、复合索引（多个字段组合，如 {a:1,b:-1}）、多键索引（数组字段自动展开为每个元素建索引）、唯一索引（unique，禁止重复）、TTL 索引（按时间自动过期删除）、文本索引/地理空间索引（特殊查询）。</li>
 <li><strong>最左前缀原则</strong>：复合索引 (a, b, c) 能加速「以 a 开头」的查询——即能加速 a、a+b、a+b+c 的查询条件，但无法单独加速 b 或 b+c（跳过了最左的 a）。所以复合索引字段顺序要按「最高频等值查询字段在前、范围/排序字段在后」来排。</li>

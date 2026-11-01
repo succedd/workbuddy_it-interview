@@ -96,7 +96,7 @@
     <h1>rebase 和 merge 都能整合分支，二者在提交历史上有什么本质区别？为什么说「对已推送到公共分支的提交执行 rebase」是团队协作大忌？团队实践中如何取舍？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">rebase</span><span class="chip tag">merge</span><span class="chip tag">黄金法则</span><span class="chip tag">历史重写</span></div>
     <div class="card"><h2>题目</h2><p>考察点：rebase 的「重放/重写」本质与黄金法则，这是 Git 面试的经典分水岭。追问：rebase 之后提交的 SHA 为什么会变？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：merge 生成合并提交、保留真实分叉历史；rebase 把你的提交摘下来「重放」到目标基线上，得到一条直线历史——但重放的提交是内容相同、SHA 全新的新提交。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：merge 生成合并提交、保留真实分叉历史；rebase 把你的提交摘下来「重放」到目标基线上，得到一条直线历史——但重放的提交是内容相同、SHA 全新的新提交。</p>
 <ul>
 <li><strong>SHA 变化的原因</strong>：Git 提交对象的内容包含父提交指针，基底变了、父指针变了，即使补丁一样，整个 commit 的校验和必然不同。所以 rebase 的实质是<strong>丢弃旧提交、新建新提交</strong>。</li>
 <li><strong>黄金法则</strong>：Pro Git 原文——「如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基」。同事本地还基于旧提交 C4 开发，你 force push 重写为 C4&#39; 后，他一 pull 就会把两个「内容相同的提交」都混进历史，出现重复提交、反复冲突的灾难现场。</li>

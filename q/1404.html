@@ -96,7 +96,7 @@
     <h1>QPS、TPS、响应时间（RT）与并发数之间的定量关系是什么？如何据此做容量估算？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">计算题</span><span class="chip">性能测试工程师</span><span class="chip">测试工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">QPS</span><span class="chip tag">利特尔法则</span><span class="chip tag">容量规划</span><span class="chip tag">压测</span></div>
     <div class="card"><h2>题目</h2><p>考察利特尔法则与容量估算的定量计算。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 33 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>三者由<strong>利特尔法则（Little&#39;s Law）</strong>串起来：<strong>并发数 C = QPS × RT</strong>（RT 用秒）。QPS/TPS 描述吞吐，RT 描述耗时，并发数描述「同时正在处理中的请求数」——知道任意两个可推第三个，线程池/连接池容量都应按它来配。</p>
 <h3>换算与算例</h3>
 <ul>

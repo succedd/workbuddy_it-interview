@@ -96,7 +96,7 @@
     <h1>SSRF 的原理与常见利用面有哪些？如何防御？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">渗透测试工程师</span><span class="chip">信息安全工程师</span><span class="chip tag">SSRF</span><span class="chip tag">Web安全</span><span class="chip tag">内网</span></div>
     <div class="card"><h2>题目</h2><p>解释服务端伪造请求的成因，列举内网攻击面，并给出多层防御。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>原理</strong>：服务端根据<strong>用户可控的 URL</strong> 发起请求（抓取网页、预览图片、webhook、导入文件），攻击者让服务器替他访问任意地址——利用的是服务器<strong>在内网</strong>的信任位置。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>原理</strong>：服务端根据<strong>用户可控的 URL</strong> 发起请求（抓取网页、预览图片、webhook、导入文件），攻击者让服务器替他访问任意地址——利用的是服务器<strong>在内网</strong>的信任位置。</p>
 <p><strong>利用面</strong>：① 探测内网（http://192.168.x.x、云元数据 <code>http://169.254.169.254</code> 拿 AK/SK，云上危害最大）；② 打内网未鉴权服务（Redis 未授权写 SSH key/计划任务、ES、管理后台）；③ 结合 file:// 协议读本地文件（<code>file:///etc/passwd</code>）；④ gopher/dict 协议扩展攻击面。</p>
 <p><strong>防御</strong>：① <strong>白名单域名/协议</strong>（只允许 https 且域名在列表内），禁止 file/gopher/dict/ftp；② <strong>禁止解析内网地址</strong>：URL 解析后校验 IP 是否为私网/环回/链路本地（注意 DNS rebinding——<strong>解析两次或用解析后的 IP 直连</strong>）；③ 禁跟随重定向或每跳都校验；④ 出网走代理并做 ACL，服务器最小网络权限；⑤ 元数据服务加固（IMDSv2 要 token 头）；⑥ 代码层避免把原始 URL 交给通用 HTTP 库直接请求。</p></div>
     <div class="cta-row">

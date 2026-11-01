@@ -96,7 +96,7 @@
     <h1>特征工程中编码、归一化/标准化、缺失值处理的常见做法及意义？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">机器学习工程师</span><span class="chip">数据分析师</span><span class="chip">数据科学家</span><span class="chip tag">特征工程</span><span class="chip tag">归一化</span><span class="chip tag">OneHot</span><span class="chip tag">缺失值</span></div>
     <div class="card"><h2>题目</h2><p>说明类别编码、数值缩放与缺失值处理的主流方法与目的。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>类别编码</strong>：One-Hot 编码把无序类别转成 0/1 向量；Ordinal/Label 编码保留顺序但易引入虚假大小关系，树模型可用。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>类别编码</strong>：One-Hot 编码把无序类别转成 0/1 向量；Ordinal/Label 编码保留顺序但易引入虚假大小关系，树模型可用。</p>
 <p><strong>归一化/标准化</strong>：Min-Max 把数值缩到 [0,1]；Z-Score 把均值归零、方差归一。目的是消除量纲差异、加速梯度下降收敛（对距离/梯度敏感模型必需）。</p>
 <p><strong>缺失值</strong>：删除样本/特征、均值/中位数/众数填充、模型预测填充（如 KNN）；缺失本身也可作为特征（是否缺失）。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>工业推荐系统为什么普遍采用「召回 → 排序」两段式架构？多路召回一般怎么设计？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">推荐系统</span><span class="chip tag">召回</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>考察对推荐系统整体架构的理解，以及召回层存在的必要性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 22 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>为什么两段式</strong>：候选物品规模巨大（千万到亿级），若直接精排算力不可承受。召回层用<strong>低成本模型 / 规则</strong>从全库快速筛选到千到万级候选，排序层再用<strong>高复杂度模型</strong>精细化打分，是<strong>算力与效果权衡</strong>的必然结果。</li>
 <li><strong>召回的多样性诉求</strong>：单一召回源会陷入信息茧房，因此采用<strong>多路召回</strong>——如协同过滤召回、内容 / 标签召回、热门召回、地域召回、向量（双塔）语义召回、关注关系召回等，各路并行取并集后去重截断。</li>

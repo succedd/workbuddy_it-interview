@@ -96,7 +96,7 @@
     <h1>某表出现读延迟飙升、SSTable 数量膨胀，怀疑是墓碑（tombstone）堆积或大分区导致，应如何定位与治理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Cassandra</span><span class="chip tag">tombstone</span><span class="chip tag">大分区</span><span class="chip tag">Compaction</span><span class="chip tag">排障</span></div>
     <div class="card"><h2>题目</h2><p>某表出现读延迟飙升、SSTable 数量膨胀，怀疑是墓碑（tombstone）堆积或大分区导致，应如何定位与治理？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定位墓碑堆积</strong>：大量 <code>DELETE</code>/TTL 过期会产生 tombstone，Compaction 未及时清理时，读请求会扫描大量带墓碑的 cell 并触发 ReadRepair。用 <code>nodetool tablestats</code> 看 <code>tombstones</code> 数、<code>nodetool cfstats</code>，并在日志中关注 <code>Read 1000 tombstones</code> 类告警；也可 <code>SELECT</code> 配合 <code>TTL</code>/<code>writetime</code> 排查。</li>
 <li><strong>定位大分区</strong>：<code>nodetool cfstats</code> 的 <code>Compacted partition maximum bytes</code> 或 <code>sstablemetadata</code> 查看单分区大小；大分区会让单条读拖垮节点。</li>

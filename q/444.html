@@ -96,7 +96,7 @@
     <h1>Jenkins 流水线里如何安全地管理密钥等凭据？有哪些类型和作用域，怎样防止密钥泄露到构建日志？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">CI/CD工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">Jenkins</span><span class="chip tag">凭据管理</span><span class="chip tag">流水线安全</span></div>
     <div class="card"><h2>题目</h2><p>流水线需要拉取私有仓库、推送镜像、发布制品，必然要用到各类密钥。请说明 Jenkins 凭据的存储方式、作用域区别，以及在 Pipeline 中使用的正确姿势与防泄露要点。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、凭据由谁提供、存在哪</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、凭据由谁提供、存在哪</h3>
 <p>Jenkins 的凭据能力由 <strong>Credentials Binding 插件</strong>提供。为了最大化安全性，凭据在 <strong>controller 上以加密形式存储</strong>（用 Jenkins controller ID 加密），在 Pipeline 中<strong>只通过凭据 ID 引用</strong>，这样既降低了真实凭据暴露给普通用户的可能，也阻止了把可用凭据从一个 controller 复制到另一个。</p>
 <h3>二、支持的凭据类型</h3>
 <ul>

@@ -96,7 +96,7 @@
     <h1>场景题：要在生产环境搭一个高并发大模型 API 服务，vLLM、TensorRT-LLM、Ollama 三家推理框架分别适合什么场景？给出选型建议与理由。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip tag">推理框架</span><span class="chip tag">vLLM</span><span class="chip tag">TensorRT-LLM</span><span class="chip tag">Ollama</span><span class="chip tag">选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：推理框架对比与选型。要求说清三者定位差异（高并发生产 vs 极致延迟 vs 本地快速试用），并落到具体建议。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>vLLM</strong>：定位「高吞吐生产服务」，核心卖点是 PagedAttention + 连续批处理 + 开放生态，对主流开源模型支持好、易水平扩展，<strong>最适合对外高并发 API</strong>。缺点是对最新模型/定制算子的支持略滞后。</li>
 <li><strong>TensorRT-LLM（Triton）</strong>：NVIDIA 官方、在固定模型上把 kernel 融合/量化做到极致，<strong>单请求延迟和能效最优</strong>，但编译部署重、迭代慢、强绑定 NVIDIA 卡，<strong>适合延迟/成本极致且模型固定的场景</strong>。</li>

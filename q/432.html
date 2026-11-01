@@ -96,7 +96,7 @@
     <h1>Webpack 项目里明明开了 Tree Shaking，打包体积却没变小，可能是什么原因？怎么排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Webpack</span><span class="chip tag">Tree Shaking</span><span class="chip tag">构建优化</span></div>
     <div class="card"><h2>题目</h2><p>按文档配了 sideEffects 与生产模式，构建后 bundle 依旧很大，甚至出现组件能渲染但样式全丢的情况。请给出系统性的排查思路。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、先确认三个前置条件</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、先确认三个前置条件</h3>
 <p>Tree Shaking 是<strong>死代码消除</strong>，依赖 ESM 的静态结构生效，缺一不可：</p>
 <ol>
 <li><strong>源码必须保持 ESM</strong>：一旦编译器（如 Babel 的 preset-env）把 import/export 转成 CommonJS，静态结构就丢失了，webpack 无法分析，Tree Shaking 直接失效。</li>

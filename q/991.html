@@ -96,7 +96,7 @@
     <h1>OSS 对象存储的 ACL、STS 临时凭证与签名 URL 各适合什么场景？前端直传怎么设计？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">云资源运维工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">阿里云</span><span class="chip tag">OSS</span><span class="chip tag">STS</span><span class="chip tag">签名URL</span><span class="chip tag">安全</span></div>
     <div class="card"><h2>题目</h2><p>考察点：权限模型分层、AK 泄漏风险、服务端签名直传方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>权限分层</strong>：① <strong>Bucket/对象 ACL</strong>——粗粒度（私有/公共读/公共读写），公共读写的桶是数据泄露重灾区，生产一律私有；② <strong>RAM Policy</strong>——按用户/角色授权到具体 action+资源路径，最小权限；③ <strong>STS 临时凭证</strong>——下发短期（分钟~小时）凭据，适合移动端/前端上传，泄漏了也有限期内失效；④ <strong>签名 URL</strong>——服务端对单个对象生成带过期时间的签名链接，适合私有文件临时分享/下载。</li>
 <li><strong>前端直传标准方案</strong>：客户端先调自己后端 → 后端用 RAM 角色生成 <strong>PostObject 的签名（Policy + Signature）或 STS 凭证</strong>返回 → 前端直传 OSS → 回调（Callback）通知后端落库。AK 永远不出服务端。</li>

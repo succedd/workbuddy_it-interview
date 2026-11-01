@@ -96,7 +96,7 @@
     <h1>【场景】Nuxt 的 useFetch / useAsyncData 在服务端和客户端行为有何不同？如何避免重复请求与 hydration 问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Nuxt</span><span class="chip tag">useFetch</span><span class="chip tag">hydration</span><span class="chip tag">数据获取</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Nuxt data fetching、服务端预取与客户端去重、hydration 一致性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>执行时机</strong>：<code>useAsyncData</code>/<code>useFetch</code> 默认<strong>在服务端渲染阶段就执行数据获取</strong>，把结果序列化进 HTML payload；客户端 hydration 时直接<strong>复用该 payload 而不重复请求</strong>——这是 Nuxt 性能优势的关键。</li>
 <li><strong>去重机制</strong>：同一个 <code>key</code> 的请求在客户端会被复用；务必给 <code>useFetch</code> 显式或稳定 <code>key</code>，避免每次渲染生成不同 key 导致重复拉取。</li>

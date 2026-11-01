@@ -96,7 +96,7 @@
     <h1>Filebeat 到 Logstash 的日志突然大量堆积、Kibana 查不到最新日志，如何定位堵点并治理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">Logstash</span><span class="chip tag">Filebeat</span><span class="chip tag">背压与队列</span></div>
     <div class="card"><h2>题目</h2><p>日志链路是 Filebeat → Logstash → Elasticsearch。业务高峰后日志延迟越来越大，Filebeat 端出现阻塞。请说明你的排查思路、Logstash 内部的处理模型，以及持久化队列的容量与持久化参数该如何配置。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、先定位堵在哪一段</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、先定位堵在哪一段</h3>
 <p>Logstash 内部模型是 <strong>input → queue → filter + output</strong>。输入把事件写入队列后即可向数据源回 ACK；而队列内的事件只有在 <strong>filters 和 outputs 全部处理完成</strong>后才被 ACK。因此：</p>
 <ul>
 <li><strong>队列在涨、下游无新数据</strong> → 堵在 filter+output，常见原因是 Elasticsearch 写入变慢/拒绝、grok 等 filter 过重、批量与 worker 配置不合理。</li>

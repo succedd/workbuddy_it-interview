@@ -96,7 +96,7 @@
     <h1>Redis 的 ZSet 为什么用跳表而不用红黑树或 B+ 树？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">跳表</span><span class="chip tag">数据结构</span></div>
     <div class="card"><h2>题目</h2><p>请解释跳表的结构与复杂度，以及相比红黑树在 Redis 场景下的优势。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>跳表</strong>：多层有序链表，底层包含全部元素，上层是下层的&quot;快速通道&quot;索引；节点以随机概率（Redis 中每层晋升概率 1/4，最高 32 层）决定层高。查找/插入/删除均 <strong>O(logN)</strong>（从顶层往下逐层缩小范围），范围查询沿底层链表顺序走。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>跳表</strong>：多层有序链表，底层包含全部元素，上层是下层的&quot;快速通道&quot;索引；节点以随机概率（Redis 中每层晋升概率 1/4，最高 32 层）决定层高。查找/插入/删除均 <strong>O(logN)</strong>（从顶层往下逐层缩小范围），范围查询沿底层链表顺序走。</p>
 <p><strong>相比红黑树</strong>：</p>
 <ol>
 <li><strong>实现简单得多</strong>——无旋转变色，插入删除只改前后指针；</li>

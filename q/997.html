@@ -96,7 +96,7 @@
     <h1>Sqoop 导出到 MySQL 报大量数据倾斜或失败重试导致重复数据，怎么分析和避免？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip tag">Sqoop</span><span class="chip tag">export</span><span class="chip tag">staging-table</span><span class="chip tag">数据倾斜</span></div>
     <div class="card"><h2>题目</h2><p>考察点：export 四阶段、staging table、-m 与事务批大小、常见失败原因。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>export 流程</strong>：读 HDFS 文件 → map 任务按 <strong>batch（默认 100 行/批）JDBC INSERT</strong> 到目标表 → 依赖目标表唯一约束时转 UPDATE（<code>--update-key</code>）。失败常因：类型不匹配（Hive NULL 与 \N）、字段分隔符错位、长度超限、目标表锁等待。</li>
 <li><strong>重复数据</strong>：export 中途失败重跑，已插入的部分仍在 → 用 <strong><code>--staging-table</code></strong>：先写暂存表，全部 map 成功后单事务 <code>INSERT ... SELECT</code> 合并，失败可安全重跑；或目标表唯一键 + <code>--update-mode allowinsert</code>（upsert）。</li>

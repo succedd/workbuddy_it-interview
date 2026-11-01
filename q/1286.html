@@ -96,7 +96,7 @@
     <h1>Saga 的两种实现方式——编排（Orchestration）与协同（Choreography）有什么区别？长流程该选哪种？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">Java后端工程师</span><span class="chip tag">Saga</span><span class="chip tag">编排</span><span class="chip tag">协同</span><span class="chip tag">分布式事务</span><span class="chip tag">幂等</span></div>
     <div class="card"><h2>题目</h2><p>考察点：集中式编排与事件驱动协同的权衡，以及 Saga 的落地约束。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <p><strong>1. 背景</strong></p>
 <p>微服务通常「每个服务独享数据库」：每个服务封装自己的数据、可独立选型和扩容，但跨服务的数据一致性变复杂，ACID 不再适用。Saga 通过把事务分解为一系列<strong>本地事务</strong>来管理：每个本地事务在单个服务内原子完成、更新自己的库、并通过事件或消息触发下一步；某步失败则执行一系列<strong>补偿事务</strong>撤销已完成步骤的更改。</p>
 <p><strong>2. 三个关键概念</strong></p>

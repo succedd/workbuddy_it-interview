@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>IT 面试题库 · 刷题 / 模拟面试</title>
+  <meta name="description" content="IT 各岗位面试题库：在线刷题、收藏与错题间隔复习、模拟面试与学习周报，支持离线使用与云端同步。" />
+  <link rel="canonical" href="https://itinterview.com.cn/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="IT 面试题库 · 刷题 / 模拟面试" />
+  <meta property="og:description" content="覆盖完整技术体系与岗位体系的面试题库：刷题、收藏、错题复习、模拟面试与云端同步。" />
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og-cover.png" />
+  <meta property="og:url" content="https://itinterview.com.cn/" />
+  <meta property="og:site_name" content="IT面试题库" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="IT 面试题库 · 刷题 / 模拟面试" />
+  <meta name="twitter:description" content="覆盖完整技术体系与岗位体系的面试题库：刷题、收藏、错题复习、模拟面试与云端同步。" />
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og-cover.png" />
+  <meta name="theme-color" content="#2563EB" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0F172A" />
+  <link rel="manifest" href="/manifest.json?v=20261101a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563EB'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='monospace' font-weight='bold'%3EI%3C/text%3E%3C/svg%3E" />
+  <!-- iOS 添加到主屏幕图标（apple-touch-icon 不支持 SVG data URI，需真实 PNG） -->
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <!-- highlight.js theme (light + dark, toggled by theme) -->
+  <link id="hljs-light" rel="stylesheet" href="/vendor/github.min.css" />
+  <link id="hljs-dark" rel="stylesheet" href="/vendor/github-dark.min.css" disabled />
+  <!-- App styles -->
+  <!-- 首屏 CSS 合并为 1 个请求（2026-10-22 性能优化；源文件仍保留） -->
+  <link rel="stylesheet" href="/css/bundle.css?v=20261101a" fetchpriority="high" />
+  <!-- 注：百度统计已于 2026-09-23 按用户要求整体移除（含 hm.js 上报脚本与后台配置入口）。
+       站内访问统计仍由「本地计数（localStorage）+ Cloudflare Worker」两条通道提供，未受影响。 -->
+  <link rel="preload" href="/data/manifest.json" as="fetch" crossorigin="anonymous" fetchpriority="high">
+  <link rel="preconnect" href="https://iti-api.netlify.app" crossorigin>
+  <!-- 2026-10-23 布局热修：不依赖 bundle.css 的加载/缓存顺序，直接约束学习进度区宽度。
+       13 寸 / 125% 缩放（innerWidth≈1261）下也能把「学习打卡」「今日 5 题」限制在容器内。 -->
+  <style id="layout-hotfix">
+    .home-learning { width:100%; max-width:100%; min-width:0; }
+    .home-learning > .grid.grid-cols-2 { width:100%; max-width:100%; min-width:0; grid-template-columns:minmax(0,1fr) !important; }
+    .home-learning > .grid.grid-cols-2 > * { width:100%; max-width:100%; min-width:0; }
+    .home-learning .card { width:100%; max-width:100%; min-width:0; overflow:hidden; }
+    .home-learning .heat-grid { width:100%; max-width:100%; grid-template-columns:repeat(7,minmax(0,1fr)) !important; }
+    .container { max-width:min(1180px,100%); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main" onclick="event.preventDefault();var m=document.getElementById('main');if(m){m.focus();m.scrollIntoView();}">跳到主要内容</a>
+  <!-- 首次进入加载动效 -->
+  <div id="boot-loader">
+    <canvas id="boot-rain"></canvas>
+    <div id="boot-names"></div>
+    <div class="boot-center">
+      <div class="boot-logo"><span class="logo">I</span> IT面试题库</div>
+      <div class="boot-title">IT 面试题库 · 正在加载中<span class="boot-caret"></span></div>
+      <div class="boot-bar"><div class="boot-bar-fill" id="boot-bar-fill" data-v="0"></div></div>
+      <div class="boot-pct" id="boot-pct">0%</div>
+      <div class="boot-status" id="boot-status">初始化本地数据库…</div>
+      <div class="boot-skip" id="boot-skip">点击任意处可跳过</div>
+    </div>
+  </div>
+  <!-- App root -->
+  <div id="app">
+    <!-- Header -->
+    <header id="topbar" role="banner"></header>
+    <!-- Side drawer (mobile) -->
+    <div id="drawer-mask" class="drawer-mask" aria-hidden="true"></div>
+    <!-- Main layout -->
+    <div id="layout" class="layout">
+      <aside id="sidebar" class="sidebar" role="navigation" aria-label="主导航"></aside>
+      <main id="main" class="main" role="main" tabindex="-1"></main>
+    </div>
+    <!-- Footer -->
+    <footer id="footer"></footer>
+    <!-- 底部 tab 栏（仅移动端显示，桌面端 CSS 隐藏）：把最高频的 5 个入口放到拇指区 -->
+    <nav id="tabbar" class="tabbar" role="navigation" aria-label="快捷导航"></nav>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-root" class="toast-root" role="status" aria-live="polite" aria-atomic="true"></div>
+  <!-- Modal root -->
+  <div id="modal-root"></div>
+
+  <!-- Third-party libraries（本地 vendor，随 Service Worker 离线缓存；
+       echarts / xlsx 大库不再首屏加载，按需加载见 utils.js 的 loadScript） -->
+    <!-- ⚠️ 脚本加载器（内联，本身不产生请求 —— 这是关键）
+       ============================================================
+       为什么不用 <script defer src>：实测 Cloudflare 到中国大陆的链路上
+       **约有一半请求会卡死到超时**（同一文件连续 6 次测试，3 次 0 B/s 完全超时，
+       成功的 3 次速度相差 6 倍：16 / 17 / 97 KB/s）。
+       而浏览器对 <script> 的网络超时极其漫长（数分钟），页面就一直白着 ——
+       更糟的是**卡住的 defer 脚本会连 DOMContentLoaded 和 load 都不触发**，
+       所以「等 load 再补救」这条路根本不成立。
+
+       改成：内联脚本（不会遭遇网络问题）动态加载这 27 个文件，
+       每个都带 8 秒超时 + 最多 2 次重试。
+         · el.async = false 保证「按插入顺序执行」（依赖顺序不变），
+           同时仍然并行下载 —— 不牺牲速度。
+         · 超时后把元素移除，再重新拉一次；重复执行由各脚本的幂等防护挡住。
+         · 某个文件最终仍失败也不阻断其余文件与整页初始化。
+       ============================================================ -->
+  <script>
+  /* 版本号必须在这里自己定义一份：原本它写在下面的 SW 注册脚本里，
+     而那个脚本执行得更晚，加载器等不到；何况它还被包在 `if ("serviceWorker" in navigator)`
+     里面 —— 浏览器不支持 SW 时根本不会定义。bump-version.py 会连带这里一起替换。 */
+  window.PAGE_VER = window.PAGE_VER || "20261101a";
+  (function () {
+    var V = window.PAGE_VER || "";
+    /* 27 个源文件已合并为 4 个 bundle（tools/bundle-js.py 生成）。
+       前 3 个走关键路径；extra 那一组全是路由/交互才用到的，等关键路径出齐再拉。 */
+    var CRITICAL = [
+      "/js/bundle/bundle-vendor.js",
+      "/js/bundle/bundle-core.js",
+      "/js/bundle/bundle-app.js"
+    ];
+    var DEFERRED = ["/js/bundle/bundle-extra.js"];
+    var TIMEOUT = 8000, TRIES = 4;
+    function loadOne(src) {
+      var url = src + "?v=" + V;
+      return new Promise(function (resolve) {
+        var n = 0;
+        function attempt() {
+          var settled = false;
+          var el = document.createElement("script");
+          el.async = false;                 /* 保持执行顺序，但仍并行下载 */
+          var timer = setTimeout(function () {
+            if (settled) return; settled = true;
+            try { el.onload = el.onerror = null; el.remove(); } catch (e) {}
+            retry();
+          }, TIMEOUT);
+          function retry() {
+            n++;
+            if (n <= TRIES) setTimeout(attempt, 300 * n);
+            else resolve(false);            /* 放弃这一个，但不影响其它脚本 */
+          }
+          el.onload = function () { if (settled) return; settled = true; clearTimeout(timer); resolve(true); };
+          el.onerror = function () { if (settled) return; settled = true; clearTimeout(timer); retry(); };
+          /* 加 r= 参数绕开可能已经坏掉的缓存条目（首次请求不加，保持 URL 干净） */
+          el.src = n ? (url + "&r=" + n) : url;
+          document.head.appendChild(el);
+        }
+        attempt();
+      });
+    }
+    /* ⚠️ 必须并行「发起」：写成 `chain = chain.then(loadOne)` 那种串行等待，
+       就等于等上一个下载完才发下一个 —— 27 个文件 × 每次往返，首屏会被拖成几十秒。
+       这里一次性把 27 个请求都发出去（并行下载），
+       靠 el.async = false 保证它们**按插入顺序执行**，依赖顺序不受影响。 */
+    var all = CRITICAL.map(function (s) { return loadOne(s); });
+    Promise.all(all).then(function (results) {
+      try {
+        var failed = [];
+        for (var i = 0; i < results.length; i++) if (!results[i]) failed.push(CRITICAL[i]);
+        if (failed.length) console.warn("[boot] 关键脚本重试后仍未加载成功:", failed.join(", "));
+        performance.mark("boot:scripts-loaded");
+      } catch (e) {}
+      /* 关键路径出齐（或已放弃）之后再拉非首屏那一组。
+         刻意放在这里而不是与之并行：慢窗口下带宽有限，
+         让它抢在前面只会拖慢首屏真正需要的那 3 个。 */
+      var loadDeferred = function () {
+        Promise.all(DEFERRED.map(loadOne)).then(function () {
+          window.__extraReady = true;
+          try { if (window.App && window.App.deferredReady) window.App.deferredReady(); } catch (e) {}
+        });
+      };
+      window.__itiLoadExtra = loadDeferred;
+      /* 非首屏模块延后到空闲；避免 390KB 的 extra 与首屏数据/渲染抢带宽 */
+      if ("requestIdleCallback" in window) requestIdleCallback(loadDeferred, { timeout: 2200 });
+      else setTimeout(loadDeferred, 1800);
+    });
+  })();
+  </script>
+  <!-- PWA：离线可用（注册 Service Worker，失败静默不影响正常使用） -->
+  <!-- 新版本提示：检测到新 SW 后显示胶囊，用户点击才刷新（不打断阅读/答题） -->
+  <style>
+    #sw-update-pill{position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#111827;color:#fff;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.28);font-family:inherit;border:none;line-height:1}
+    #sw-update-pill:hover{transform:translateY(-1px)}
+    #sw-update-pill:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}
+    #sw-update-pill .sw-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25);flex:none}
+    @media (max-width:640px){#sw-update-pill{right:12px;bottom:12px;font-size:12px;padding:9px 14px}}
+    #pwa-install-pill{position:fixed;right:16px;bottom:64px;z-index:9998;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#2563EB;color:#fff;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.24);font-family:inherit;border:none;line-height:1;max-width:calc(100vw - 24px)}
+    #pwa-install-pill:focus-visible{outline:2px solid #93c5fd;outline-offset:2px}
+    #pwa-install-pill .pwa-x{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.2);font-size:14px;line-height:1;margin-left:2px}
+    @media (max-width:640px){#pwa-install-pill{right:12px;bottom:calc(68px + env(safe-area-inset-bottom,0px));font-size:12px;padding:9px 12px}}
+  </style>
+  <script>
+    (function () {
+      if (!window.matchMedia || window.matchMedia("(display-mode: standalone)").matches) return;
+      try { if (localStorage.getItem("iti_pwa_install_dismissed") === "1") return; } catch (e) {}
+      var prompt = null;
+      function isHome() {
+        var h = location.hash || "";
+        return h === "" || h === "#/" || h === "#/home";
+      }
+      function mountPill() {
+        if (!prompt || !isHome() || document.getElementById("pwa-install-pill")) return;
+        try { if (localStorage.getItem("iti_pwa_install_dismissed") === "1") return; } catch (e) {}
+        var pill = document.createElement("button");
+        pill.id = "pwa-install-pill";
+        pill.type = "button";
+        pill.setAttribute("aria-label", "安装到主屏幕，离线继续刷题；点 × 可关闭提示");
+        pill.title = "安装到主屏幕，离线继续刷题";
+        pill.innerHTML = '<span>安装应用</span><span class="pwa-x" aria-hidden="true">×</span>';
+        pill.addEventListener("click", function (event) {
+          if (event.target && event.target.classList && event.target.classList.contains("pwa-x")) {
+            try { localStorage.setItem("iti_pwa_install_dismissed", "1"); } catch (e) {}
+            pill.remove();
+            return;
+          }
+          if (!prompt) return;
+          prompt.prompt();
+          prompt.userChoice.then(function () { prompt = null; pill.remove(); }).catch(function () {});
+        });
+        document.body.appendChild(pill);
+      }
+      function syncPill() {
+        var pill = document.getElementById("pwa-install-pill");
+        if (!isHome()) { if (pill) pill.remove(); return; }
+        mountPill();
+      }
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        prompt = e;
+        mountPill();
+      });
+      window.addEventListener("hashchange", syncPill);
+    })();
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.PAGE_VER = "20261101a";   // 本页构建版本：报错文案带上它，远程诊断一眼定位旧标签页
+      window.addEventListener("load", function () {
+        var SWV = "20261101a";
+        function showUpdatePill(onClick) {
+          if (document.getElementById("sw-update-pill")) return;
+          var pill = document.createElement("button");
+          pill.id = "sw-update-pill";
+          pill.type = "button";
+          pill.setAttribute("aria-label", "发现新版本，点击刷新页面");
+          pill.innerHTML = '<span class="sw-dot"></span><span>有新版本，点击刷新</span>';
+          pill.addEventListener("click", onClick);
+          document.body.appendChild(pill);
+        }
+        navigator.serviceWorker.register("/sw.js?v=" + SWV).then(function (reg) {
+          if (!reg) return;
+          function watch(worker) {
+            /* 仅在「已有旧控制器」时提示：首次安装不打扰 */
+            if (worker && worker.state === "installed" && navigator.serviceWorker.controller) {
+              showUpdatePill(function () {
+                try { worker.postMessage({ type: "SKIP_WAITING" }); } catch (_) {}
+                try { window.location.reload(); } catch (_) { window.location.href = window.location.href; }
+              });
+            }
+          }
+          if (reg.installing) watch(reg.installing);
+          reg.addEventListener("updatefound", function () {
+            var w = reg.installing;
+            if (!w) return;
+            w.addEventListener("statechange", function () { watch(w); });
+          });
+          /* SPA 哈希路由不触发导航，浏览器不会自动复查 sw.js —— 每小时主动查一次 */
+          setInterval(function () { try { reg.update(); } catch (_) {} }, 3600000);
+        }).catch(function () {});
+        /* 旧标签页自愈（20260913h）：SPA 哈希路由永不整页刷新，页面 JS 会困在当天早上的
+           旧版（典型症状：明明已发新版修复，用户开着旧标签页反复报同样的错）。
+           每 5 分钟拉一次 sw.js（绕 HTTP 缓存）比对 VERSION，发现不一致立即弹更新胶囊——
+           比仅靠每小时 reg.update() 快 12 倍，且不依赖 SW 安装事件。 */
+        setInterval(function () {
+          try {
+            fetch("/sw.js", { cache: "reload" }).then(function (r) { return r.text(); }).then(function (t) {
+              var m = t.match(/VERSION\s*=\s*"([^"]+)"/);
+              if (m && m[1] && m[1] !== window.PAGE_VER) {
+                showUpdatePill(function () { window.location.reload(); });
+              }
+            }).catch(function () {});
+          } catch (_) {}
+        }, 300000);
+      });
+    }
+  </script>
+  <script>
+    /* 2026-10-24：普通窗口加载异常时的自助修复入口（只清 SW/Cache，不清 IndexedDB）。
+       打开 /?resetCache=1 会注销 Service Worker、清空同源 CacheStorage，再带新版本参数重开。 */
+    (function () {
+      try {
+        if (!/[?&]resetCache=1/.test(location.search)) return;
+        var jobs = [];
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+          jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }));
+        }
+        if (window.caches && caches.keys) {
+          jobs.push(caches.keys().then(function (keys) { return Promise.all(keys.map(function (k) { return caches.delete(k); })); }));
+        }
+        Promise.all(jobs).then(function () {
+          var u = new URL(location.href);
+          u.searchParams.delete("resetCache");
+          u.searchParams.set("v", String(Date.now()));
+          location.replace(u.toString());
+        }).catch(function () { location.reload(); });
+      } catch (_) {}
+    })();
+    /* 鼠标悬停「技术教程」时预取教程数据；点开指南时提前催 extra，减少点击后的等待。 */
+    document.addEventListener("pointerover", function (e) {
+      var a = e.target && e.target.closest && e.target.closest('a[href="/docs"]');
+      if (a && window.DocsLoader && window.DocsLoader.load) { try { window.DocsLoader.load(); } catch (_) {} }
+      var h = e.target && e.target.closest && e.target.closest('a[href="/help"]');
+      if (h && typeof window.pageHelp !== "function" && window.__itiLoadExtra) { try { window.__itiLoadExtra(); } catch (_) {} }
+    }, { passive: true });
+  </script>
+</body>
+</html>

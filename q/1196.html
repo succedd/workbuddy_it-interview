@@ -96,7 +96,7 @@
     <h1>故障排查题：应用启动很慢，或某个你预期的自动配置没生效（/actuator 里看不到对应 Bean）。你有哪些手段快速定位自动配置的加载情况？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">自动配置</span><span class="chip tag">故障排查</span><span class="chip tag">ConditionEvaluationReport</span></div>
     <div class="card"><h2>题目</h2><p>考察点：自动配置调试手段——ConditionEvaluationReport（--debug / debug=true）、/actuator/conditions 端点、以及排除/覆盖对诊断的影响。要求给出至少两种可操作手段并说明各自看什么。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>手段 1：--debug 或配置 debug=true</strong>。启动时 Spring Boot 会打印 ConditionEvaluationReport，分 Positive matches（生效的自动配置 + 命中条件）和 Negative matches（未生效 + 具体未命中的条件原因，如 @ConditionalOnClass 找不到某类）。这是排查『为什么 X 没加载』的第一抓手。</li>
 <li><strong>手段 2：Actuator 的 /actuator/conditions 端点</strong>。先暴露端点（management.endpoints.web.exposure.include=conditions），访问后返回结构化 JSON，列出每个自动配置类的 matched/notMatched 及原因，比日志更适合长期观测和脚本解析。</li>

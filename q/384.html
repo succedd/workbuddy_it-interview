@@ -96,7 +96,7 @@
     <h1>在分布式系统里 CAP 应如何取舍？CP 系统和 AP 系统分别适合什么业务场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CP</span><span class="chip tag">AP</span><span class="chip tag">取舍</span><span class="chip tag">ZooKeeper</span><span class="chip tag">Eureka</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CP（强一致、牺牲可用，如 ZooKeeper/etcd/分布式锁/金融账务）与 AP（高可用、最终一致，如 Eureka/Cassandra/购物车/feed）的取舍逻辑与实例。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>CP 取向（保一致、弃部分可用）</strong>：当数据不准代价极高时选 CP。例如分布式锁、选主、金融转账对账——宁可在分区时拒绝服务，也不能让两个节点给出矛盾的“成功”。代表：ZooKeeper、etcd（保证强一致，分区时少数派不可写）。</li>
 <li><strong>AP 取向（保可用、接受最终一致）</strong>：当“不能停服”比“瞬时绝对一致”更重要时选 AP。例如商品评论、社交 feed、购物车——用户容忍短暂不一致，但系统必须始终可写可读。代表：Eureka（注册中心优先可用）、Cassandra、DynamoDB。</li>

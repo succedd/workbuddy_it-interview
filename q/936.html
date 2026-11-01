@@ -96,7 +96,7 @@
     <h1>如何判断对象可以被回收？哪些对象可以作为 GC Roots？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">GC</span><span class="chip tag">可达性分析</span></div>
     <div class="card"><h2>题目</h2><p>请对比引用计数法与可达性分析，并列举 GC Roots 的常见来源。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>引用计数法</strong>：对象被引用+1、失效-1，为 0 即回收。实现简单，但<strong>无法解决循环引用</strong>（A↔B 互相引用但都不再使用），主流 JVM 不采用。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>引用计数法</strong>：对象被引用+1、失效-1，为 0 即回收。实现简单，但<strong>无法解决循环引用</strong>（A↔B 互相引用但都不再使用），主流 JVM 不采用。</p>
 <p><strong>可达性分析（JVM 实际采用）</strong>：从 <strong>GC Roots</strong> 出发沿引用链遍历，<strong>不可达</strong>的对象即可回收。为修正&quot;对象正在使用中却恰好无引用&quot;的误判，还有<strong>三次标记</strong>机制（finalize 自救已被废弃，不必深究）。</p>
 <p><strong>GC Roots 常见来源</strong>：</p>
 <ol>

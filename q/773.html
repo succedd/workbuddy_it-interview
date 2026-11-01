@@ -96,7 +96,7 @@
     <h1>索引不是越多越好。请谈谈索引设计的权衡：什么时候不应该建索引？如何判断一列是否值得建索引？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">索引设计</span><span class="chip tag">选择性</span><span class="chip tag">性能权衡</span></div>
     <div class="card"><h2>题目</h2><p>考察点：写入代价、索引选择性/Cardinality、索引维护成本、空间占用、读多写少原则。开放讨论，看候选人对索引成本与收益的整体权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>不该建索引的场景</strong>：① 写多读少、频繁 UPDATE/INSERT/DELETE 的表——每写一行都要同步维护所有相关索引 B+ 树，写入放大明显；② 区分度极低的列（性别、状态位、布尔值）——Cardinality 小，过滤性差，优化器往往放弃走索引，建了几乎没用还占空间；③ 小表（几百行内）——全表扫描本身很快，索引维护与回表开销反而可能更慢；④ 很少出现在 WHERE/ORDER BY/JOIN 的列——没有查询利用它，纯浪费。</li>
 <li><strong>判断是否值得建</strong>：看列的<strong>选择性（distinct 值 / 总行数）</strong>，越接近 1 越值得；优先在 WHERE、JOIN、ORDER BY、GROUP BY 高频且高区分度的列上建；联合索引遵循最左前缀、把高区分度列放左；同时权衡空间与写放大，定期用慢查询日志和 <code>EXPLAIN</code> 复盘并清理冗余/无效索引。</li>

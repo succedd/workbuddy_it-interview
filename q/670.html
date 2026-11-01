@@ -96,7 +96,7 @@
     <h1>MySQL 主从复制是怎么实现的？它依赖哪种日志？主库宕机后从库数据一定完整吗？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">UIKit</span><span class="chip tag">生命周期</span><span class="chip tag">UIViewController</span></div>
     <div class="card"><h2>题目</h2><p>追问链第三问。考察点：binlog + 三个线程（dump / I/O / SQL）的协作；异步复制默认不保证零丢失；半同步与 GTID 的作用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：复制依赖 binlog</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点一：复制依赖 binlog</strong></p>
 <ul>
 <li>主库把数据变更写进 <strong>binlog</strong>；从库把主库的 binlog 拉过来<strong>重放（replay）</strong>，从而保持一致。</li>
 <li>因为 binlog 是 Server 层日志且<strong>追加写不覆盖</strong>，天然适合作为复制的传输介质；而 redo log 循环写会覆盖，无法用于复制。</li>

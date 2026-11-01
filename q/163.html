@@ -96,7 +96,7 @@
     <h1>DNS解析的完整过程？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数字电路工程师</span><span class="chip">功能测试工程师</span><span class="chip tag">DNS</span><span class="chip tag">域名解析</span></div>
     <div class="card"><h2>题目</h2><p>考察 DNS 递归/迭代解析、缓存和记录类型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>流程</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 10 天前更新</div><p><strong>流程</strong></p>
 <ul>
 <li>浏览器/OS 缓存 → 本地 DNS 递归解析器（ISP/公共 DNS）→ 根服务器（返回 TLD）→ 顶级域服务器（返回权威 NS）→ 权威服务器（返回 A/AAAA）→ 递归器缓存并返回。</li>
 <li>递归器负责替客户端迭代查询；TTL 决定缓存时长，负缓存也会缓存 NXDOMAIN。</li>

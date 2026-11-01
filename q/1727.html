@@ -96,7 +96,7 @@
     <h1>借贷协议的清算机制：LTV、健康因子、清算罚金与预言机价格如何联动？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">DeFi</span><span class="chip tag">清算</span><span class="chip tag">健康因子</span><span class="chip tag">预言机</span></div>
     <div class="card"><h2>题目</h2><p>考察 DeFi 借贷风控，以及级联清算与坏账的成因。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>LTV 与健康因子</strong>：存款人把抵押品按 <code>liquidationThreshold</code> 折算为可清算价值，借款人的健康因子 <code>HF = Σ(抵押品 × 价格 × 阈值) / 债务</code>；HF &lt; 1 时任何人可触发清算。</li>
 <li><strong>清算流程</strong>：清算人代还部分债务，按 <code>liquidationBonus</code> 折扣获得抵押品，协议收取罚金；折扣太高会伤害借款人，太低则清算人没有动力，可能积累坏账。</li>

@@ -96,7 +96,7 @@
     <h1>声明式事务与编程式事务（TransactionTemplate）各自适用什么场景？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">编程式事务</span><span class="chip tag">TransactionTemplate</span><span class="chip tag">声明式事务</span></div>
     <div class="card"><h2>题目</h2><p>在什么情况下应优先用 @Transactional 声明式事务，什么情况下应改用 TransactionTemplate 编程式事务？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>声明式（@Transactional）</strong>：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>声明式（@Transactional）</strong>：用 AOP 注解驱动，代码零侵入、可读性高，适合事务边界清晰、无需在方法内精细控制提交/回滚的绝大多数 CRUD 与业务方法。</p>
 <p><strong>编程式（TransactionTemplate）</strong>：在代码里显式定义事务边界与回调，能在循环/分支中按需开启、手动控制回滚，适合批量处理、需局部事务、或要在异常时决定「部分提交」的复杂逻辑。</p>
 <p><strong>取舍要点</strong>：声明式胜在简洁但有「自调用失效、粒度粗」的坑；编程式可控但侵入业务代码。简单场景用声明式，需要细粒度控制或避坑时用编程式。</p>
 <p><strong>注意</strong>：二者不要混用同一连接造成嵌套混乱；批量场景更要关注事务时长与锁占用，避免长事务拖垮数据库。</p></div>

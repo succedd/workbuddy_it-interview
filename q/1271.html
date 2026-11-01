@@ -96,7 +96,7 @@
     <h1>Agent Loop 的完整流程是什么？最大迭代轮次通常怎么设？为什么 Agent 跑长任务会「失忆」和跑偏？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">AI Agent开发工程师</span><span class="chip">AI应用开发工程师</span><span class="chip tag">Agent Loop</span><span class="chip tag">Agent架构</span><span class="chip tag">工具描述</span><span class="chip tag">上下文</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Agent 运行循环的基础机制，以及上下文膨胀带来的稳定性问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：AI Agent 是能感知环境、决策并执行动作的软件系统。与只生成回复的聊天机器人相比，它会在任务过程中持续观察和调整，直到结束条件满足。常用的拆分方式是 <strong>Agent = LLM + Planning + Memory + Tools</strong>——LLM 处理意图和决策，工具执行外部操作，记忆保存当前任务和历史信息。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：AI Agent 是能感知环境、决策并执行动作的软件系统。与只生成回复的聊天机器人相比，它会在任务过程中持续观察和调整，直到结束条件满足。常用的拆分方式是 <strong>Agent = LLM + Planning + Memory + Tools</strong>——LLM 处理意图和决策，工具执行外部操作，记忆保存当前任务和历史信息。</p>
 <p><strong>Agent Loop 的流程</strong></p>
 <ol>
 <li><strong>初始化</strong>：载入 System Prompt、工具列表和用户请求；</li>

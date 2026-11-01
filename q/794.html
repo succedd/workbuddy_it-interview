@@ -96,7 +96,7 @@
     <h1>神经网络反向传播（BP）的基本思想是什么？梯度消失/爆炸怎么缓解？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">反向传播</span><span class="chip tag">梯度消失</span><span class="chip tag">残差</span></div>
     <div class="card"><h2>题目</h2><p>解释 BP 算法原理，并说明梯度问题的成因与对策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>BP 思想</strong>：前向算出损失，再用链式法则从输出层向输入层逐层求损失对各参数的梯度，配合梯度下降更新权重。核心是“误差沿网络反向传播”。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>BP 思想</strong>：前向算出损失，再用链式法则从输出层向输入层逐层求损失对各参数的梯度，配合梯度下降更新权重。核心是“误差沿网络反向传播”。</p>
 <p><strong>梯度消失</strong>：深层网络激活导数连乘趋零，前层学不动。缓解：用 ReLU 类激活、批量归一化（BN）、残差连接（ResNet）、合理初始化（He/Xavier）。</p>
 <p><strong>梯度爆炸</strong>：连乘放大致参数发散。缓解：梯度裁剪、正则与归一化。</p></div>
     <div class="cta-row">

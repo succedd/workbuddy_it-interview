@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470">
+  <defs>
+    <marker id="arw-cb" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arw-cbg" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+    </marker>
+    <marker id="arw-cbr" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect width="680" height="470" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="28" y="32" font-size="14" font-weight="bold" fill="#2563eb">InnoDB Change Buffer：非唯一二级索引的写优化</text>
+
+    <!-- 顶部入口 -->
+    <rect x="180" y="52" width="320" height="38" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="340" y="76" font-size="12" fill="#1f2937" text-anchor="middle">二级索引页的 DML（INSERT / UPDATE / DELETE）</text>
+
+    <line x1="260" y1="90" x2="180" y2="130" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-cb)"/>
+    <line x1="420" y1="90" x2="500" y2="130" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-cb)"/>
+
+    <!-- 左：Change Buffer 路径 -->
+    <text x="175" y="150" font-size="12" font-weight="bold" fill="#059669" text-anchor="middle">目标页不在 Buffer Pool</text>
+    <text x="175" y="167" font-size="11" fill="#6b7280" text-anchor="middle">（非唯一二级索引可缓冲）</text>
+    <rect x="55" y="180" width="240" height="58" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="175" y="203" font-size="12" fill="#1f2937" text-anchor="middle">先记入 Change Buffer</text>
+    <text x="175" y="223" font-size="11" fill="#6b7280" text-anchor="middle">内存占 Buffer Pool，落盘于系统表空间</text>
+
+    <line x1="175" y1="238" x2="175" y2="286" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-cbg)"/>
+    <rect x="55" y="290" width="240" height="52" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="175" y="311" font-size="12" fill="#1f2937" text-anchor="middle">merge：该页被读入 Buffer Pool 时</text>
+    <text x="175" y="330" font-size="11" fill="#6b7280" text-anchor="middle">把缓冲的变更合并到索引页</text>
+
+    <line x1="175" y1="342" x2="175" y2="382" stroke="#059669" stroke-width="1.5" marker-end="url(#arw-cbg)"/>
+    <rect x="55" y="386" width="240" height="48" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="175" y="406" font-size="12" fill="#1f2937" text-anchor="middle">主线程空闲或慢关闭时刷盘</text>
+    <text x="175" y="424" font-size="11" fill="#6b7280" text-anchor="middle">按索引值顺序写，磁盘 IO 更少</text>
+
+    <!-- 右：普通路径 -->
+    <text x="505" y="150" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">无 Change Buffer 时</text>
+    <text x="505" y="167" font-size="11" fill="#6b7280" text-anchor="middle">（或唯一索引无法缓冲）</text>
+    <rect x="390" y="180" width="230" height="58" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="505" y="203" font-size="12" fill="#dc2626" text-anchor="middle">立即从磁盘读入索引页</text>
+    <text x="505" y="223" font-size="11" fill="#6b7280" text-anchor="middle">二级索引插入点随机 → 随机读 IO</text>
+
+    <line x1="505" y1="238" x2="505" y2="286" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arw-cbr)"/>
+    <rect x="390" y="290" width="230" height="52" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="505" y="311" font-size="12" fill="#dc2626" text-anchor="middle">读页 → 改页 → 标记脏页</text>
+    <text x="505" y="330" font-size="11" fill="#6b7280" text-anchor="middle">写密集负载下 IO 开销显著</text>
+
+    <rect x="390" y="386" width="230" height="48" rx="8" fill="#f9fafb" stroke="#9ca3af"/>
+    <text x="505" y="406" font-size="11" fill="#1f2937" text-anchor="middle">唯一索引用不了：</text>
+    <text x="505" y="424" font-size="11" fill="#1f2937" text-anchor="middle">插入必须先读页校验唯一性</text>
+
+    <text x="340" y="456" font-size="11" fill="#6b7280" text-anchor="middle">受 innodb_change_buffering 控制；工作集几乎全在内存或二级索引很少时，收益有限</text>
+  </g>
+</svg>

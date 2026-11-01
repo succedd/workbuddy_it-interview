@@ -96,7 +96,7 @@
     <h1>如何用迭代法反转单向链表？说明指针操作、复杂度并给出代码</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">链表</span><span class="chip tag">反转链表</span><span class="chip tag">双指针</span></div>
     <div class="card"><h2>题目</h2><p>考察双指针操作与边界处理</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>思路</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>思路</strong></p>
 <ul>
 <li>用 prev、cur 双指针：每次把 cur.next 指向 prev，再整体前移，直到 cur 为 null，此时 prev 即新头。</li>
 <li>关键是用临时变量 next 保存后继，否则改指向后会丢失后续节点。</li>

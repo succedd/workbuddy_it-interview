@@ -96,7 +96,7 @@
     <h1>如何在 CI 中设计分层自动化测试策略（单元/接口/UI/冒烟）？如何平衡覆盖率与执行时长？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">测试工程师</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">测试金字塔</span><span class="chip tag">CI</span><span class="chip tag">测试分层</span><span class="chip tag">冒烟</span><span class="chip tag">覆盖率</span></div>
     <div class="card"><h2>题目</h2><p>考察点：测试体系的分层设计与持续集成中的执行效率权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>分层遵循「测试金字塔」</strong>：底层是量大、快、廉价的单元测试（隔离逻辑），中层是接口/集成测试（验证服务间契约），顶层是少量端到端/UI 测试（验证关键用户路径）。避免「冰淇淋反模式」——UI 测试过多导致慢且脆。</li>
 <li><strong>CI 分阶段的门禁</strong>：提交即跑单元测试（秒级、必须全绿）；合并前跑接口与契约测试；每日或发布前跑 UI/端到端。用「快反馈在前、慢验证在后」减少开发等待。</li>

@@ -96,7 +96,7 @@
     <h1>如何配置 COS 生命周期规则，让热数据自动沉降为低频/归档并在到期后删除？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">COS</span><span class="chip tag">生命周期</span><span class="chip tag">成本优化</span></div>
     <div class="card"><h2>题目</h2><p>运营中希望 30 天前的日志自动转低频、365 天后转归档、两年后彻底删除。请给出生命周期规则的设计思路与关键配置项。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>规则作用对象</strong>：可按整个桶、指定前缀（如 logs/）或标签筛选对象，避免误伤热数据；本例用前缀 logs/ 精确命中日志。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>规则作用对象</strong>：可按整个桶、指定前缀（如 logs/）或标签筛选对象，避免误伤热数据；本例用前缀 logs/ 精确命中日志。</p>
 <p><strong>沉降动作（Transition）</strong>：配置两条转换——第 30 天转为低频存储、第 365 天转为归档存储；注意低频/归档都有最小存储时长，过早转换反而更贵。</p>
 <p><strong>过期删除（Expiration）</strong>：配置第 730 天删除对象；若开启了版本控制，还需配置「过期删除标记清理」与「历史版本过期（NoncurrentVersionExpiration）」避免历史版本无限堆积。</p>
 <p><strong>生效与回滚</strong>：规则保存后按天扫描执行，T+1 起生效；上线前建议先用测试前缀灰度验证动作与成本，再全量放开。</p></div>

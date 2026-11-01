@@ -96,7 +96,7 @@
     <h1>项目里遇到 MyBatis「查出来字段全是 null / 部分字段没映射上」「列表查询特别慢（N+1）」「枚举/特殊类型映射报错」三类问题，分别怎么定位与解决？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">MyBatis</span><span class="chip tag">ResultMap</span><span class="chip tag">N+1</span><span class="chip tag">驼峰映射</span><span class="chip tag">TypeHandler</span></div>
     <div class="card"><h2>题目</h2><p>考察点：MyBatis 映射与关联查询的真实排障能力（驼峰、ResultMap、N+1、TypeHandler），高级故障排查题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>字段全 null / 部分没映射</strong>：90% 是「列名 ≠ 属性名」。先开 <code>mapUnderscoreToCamelCase=true</code> 解决下划线↔驼峰；个别不一致用 <code>&lt;resultMap&gt;</code> 显式 <code>&lt;result column=&quot;col&quot; property=&quot;prop&quot;/&gt;</code>；确认 SQL 别名与 ResultMap 一致、实体是标准 getter/setter。</li>
 <li><strong>N+1 查询慢</strong>：嵌套关联（<code>association</code>/<code>collection</code>）默认 <code>select</code> 方式是「查主表 N 条，再每条发 1 条子查询」= N+1。解法：① 用 <code>fetchType=eager</code> + <code>&lt;collection ... select=...&gt;</code> 仍可能 N+1，正确做法是 <code>resultMap</code> 的<strong>嵌套结果（join 一次查出）</strong>配 <code>columnPrefix</code>；② 或业务上用单条 JOIN + 结果映射；③ 批量 ID 查（<code>WHERE id IN (...)</code>）替代循环单查。</li>

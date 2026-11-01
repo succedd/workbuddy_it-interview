@@ -96,7 +96,7 @@
     <h1>高级：给定一个『高并发计数器 / 本地缓存』场景，如何在 synchronized、volatile、Atomic 原子类、StampedLock 之间做线程安全选型权衡？并说明如何用压测 + 静态分析验证『无并发 bug』。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">线程安全</span><span class="chip tag">选型权衡</span><span class="chip tag">StampedLock</span><span class="chip tag">并发验证</span><span class="chip tag">高级</span></div>
     <div class="card"><h2>题目</h2><p>考察点：同步方案选型逻辑（读多写少/写多/需原子复合操作）、各类适用边界，以及并发正确性的验证方法。属高级开放题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>选型权衡（先看读写特征）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>选型权衡（先看读写特征）</strong></p>
 <ul>
 <li>单纯计数/状态标记且低-中竞争：<code>AtomicInteger</code> / <code>AtomicLong</code>（CAS 无锁，最轻）。</li>
 <li>高竞争计数：<code>LongAdder</code>（分段累加，冲突更小）。</li>

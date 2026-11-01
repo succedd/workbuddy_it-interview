@@ -96,7 +96,7 @@
     <h1>一段 `for f in $(ls)` 遍历文件名时，遇到带空格的文件就「把一个文件拆成多个」导致漏处理，根因是什么？如何改写？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">Shell</span><span class="chip tag">单词分割</span><span class="chip tag">for循环</span><span class="chip tag">通配符</span></div>
     <div class="card"><h2>题目</h2><p>考察命令替换 + 单词分割 + 文件名含空格导致的经典故障。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>根因</strong>：<code>$(ls)</code> 的结果只是纯文本，Shell 会按 IFS（默认空格/Tab/换行）做<strong>单词分割（word splitting）</strong>，于是 <code>my photo.jpg</code> 被拆成 <code>my</code> 和 <code>photo.jpg</code> 两个元素；<code>ls</code> 本身也会把多文件拼成一行。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>根因</strong>：<code>$(ls)</code> 的结果只是纯文本，Shell 会按 IFS（默认空格/Tab/换行）做<strong>单词分割（word splitting）</strong>，于是 <code>my photo.jpg</code> 被拆成 <code>my</code> 和 <code>photo.jpg</code> 两个元素；<code>ls</code> 本身也会把多文件拼成一行。</p>
 <p><strong>正确写法</strong>：</p>
 <ul>
 <li>直接遍历通配符，让 Shell 自己按文件名切分：<code>for f in *.jpg; do ...; done</code>（glob 结果天然按文件，不二次分割）。</li>

@@ -96,7 +96,7 @@
     <h1>TCP 三次握手的过程是怎样的？各阶段客户端/服务端分别处于什么状态？为什么第三次握手可以携带数据而前两次不行？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">网络运维工程师</span><span class="chip tag">TCP</span><span class="chip tag">三次握手</span><span class="chip tag">连接建立</span></div>
     <div class="card"><h2>题目</h2><p>考察点：建立连接的完整流程与状态变迁（SYN_SENT / SYN_RCVD / ESTABLISHED）；面试官常追问“第三次握手能否带数据”，考查对连接建立与数据发送边界的理解。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>第一次握手（SYN）</strong>：客户端随机初始化 ISN（client_isn），SYN=1，进入 SYN_SENT 状态；服务端收到后进入 SYN_RCVD。</li>
 <li><strong>第二次握手（SYN+ACK）</strong>：服务端随机初始化 ISN（server_isn），确认号填 client_isn+1，SYN=1、ACK=1，仍不携带应用层数据。</li>

@@ -96,7 +96,7 @@
     <h1>故障排查题：执行 git merge feature 后提示 CONFLICT（content）: Merge conflict in src/api.js。请完整说明：冲突为什么会发生、标准解决流程、以及合并中途想放弃该怎么办。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">Git</span><span class="chip tag">合并冲突</span><span class="chip tag">三方合并</span><span class="chip tag">mergetool</span></div>
     <div class="card"><h2>题目</h2><p>考察点：冲突的成因与工程化处理流程，而不是只背「改文件再 commit」。追问：&lt;&lt;&lt;&lt;&lt;&lt;&lt; 标记里 HEAD 与 feature 两段各代表什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：冲突发生在「两个分支改了同一区域且 Git 无法自动三方合并」时；流程是识别标记 → 改成最终形态 → add → commit。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：冲突发生在「两个分支改了同一区域且 Git 无法自动三方合并」时；流程是识别标记 → 改成最终形态 → add → commit。</p>
 <ul>
 <li><strong>成因</strong>：merge 做三方合并（共同祖先 + 双方最新快照）。同一文件的同一行为被双方都修改，或一边删一边改，Git 无法替你抉择，就标记冲突并停在 MERGING 状态。</li>
 <li><strong>标准流程</strong>：</li>

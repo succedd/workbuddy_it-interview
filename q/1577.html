@@ -96,7 +96,7 @@
     <h1>ClickHouse 为什么查询这么快？核心设计有哪些？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">大数据架构师</span><span class="chip tag">ClickHouse</span><span class="chip tag">列存</span><span class="chip tag">向量化</span><span class="chip tag">OLAP</span></div>
     <div class="card"><h2>题目</h2><p>考察点：从列存、向量化、稀疏索引、MPP 四方面解释 OLAP 引擎的性能来源，并能指出其适用边界，属高级追问。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 26 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>列存（Columnar）：按列存储，查询只读取所需列，压缩比高、IO 少。</li>
 <li>向量化执行：利用 SIMD 批处理数据，减少函数调用与分支开销。</li>

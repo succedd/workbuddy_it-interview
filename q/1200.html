@@ -96,7 +96,7 @@
     <h1>什么是缓存雪崩？它的两个主要诱因分别是什么？各自对应的应对手段有哪些？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存雪崩</span><span class="chip tag">高可用</span><span class="chip tag">熔断限流</span></div>
     <div class="card"><h2>题目</h2><p>考察点：雪崩的两种诱因（大量 key 同时过期 / Redis 故障宕机）应对思路完全不同——前者是过期时间策略与构建缓存的并发控制，后者是高可用与熔断限流。要求分因施策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定义</strong>：缓存雪崩指『大量缓存数据在同一时间过期（失效）』，或『Redis 实例故障宕机』时，大量用户请求都无法在缓存中处理，全部直达数据库，导致数据库压力骤增甚至宕机，引发系统连锁崩溃。</li>
 <li><strong>诱因一：大量数据同时过期</strong>。应对：① 均匀设置过期时间——给 TTL 加随机扰动，避免同一时刻集体失效；② 互斥锁——保证同一时间只有一个请求构建缓存；③ 双 key 策略——主 key 设过期、备 key 永久，主 key miss 时返回备 key 内容；④ 后台更新缓存——缓存不设有效期，由后台线程定时/消息通知更新（适合缓存预热）。</li>

@@ -96,7 +96,7 @@
     <h1>SwiftUI 的视图身份（identity）如何影响 diff 与状态恢复？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">SwiftUI</span><span class="chip tag">视图身份</span><span class="chip tag">状态</span></div>
     <div class="card"><h2>题目</h2><p>考察 SwiftUI 核心语义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 17 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>结构化身份</strong>：视图树位置与显式 <code>.id</code> 决定身份；身份变化会让系统视为销毁旧视图并创建新视图。</li>
 <li><strong>状态生命周期</strong>：<code>@State</code> 绑定到视图身份；在 ForEach 中使用不稳定 ID 会导致状态丢失或异常刷新。</li>

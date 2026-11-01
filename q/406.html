@@ -96,7 +96,7 @@
     <h1>高级：设计模式有哪些常见误用与反模式？单例、抽象工厂、继承滥用分别会带来什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">反模式</span><span class="chip tag">过度设计</span><span class="chip tag">组合优于继承</span><span class="chip tag">全局状态</span></div>
     <div class="card"><h2>题目</h2><p>考察点：认识到模式不是银弹——全局可变状态、类爆炸、继承地狱、为了模式而模式都是真实代价；考查工程权衡能力。属高级题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>单例变全局变量</strong>：可全局访问 + 可变状态 → 隐式依赖、难测试（无法隔离）、并发下需额外同步；很多时候只是需要一个普通 Bean（Spring 单例由容器管理，比手写单例安全）。</li>
 <li><strong>抽象工厂/接口爆炸</strong>：为「也许未来要扩展」预设过多抽象层，类数量暴涨、阅读成本高；YAGNI 优先，等真实第二族需求出现再抽象。</li>

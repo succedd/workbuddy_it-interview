@@ -96,7 +96,7 @@
     <h1>线上服务变慢，Linux 性能排查的第一步该看什么？请说明 USE 方法</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">USE方法</span><span class="chip tag">性能排查</span><span class="chip tag">Linux</span><span class="chip tag">方法论</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否掌握系统化的性能排查方法论（USE），而非盲目敲命令。追问：为什么强调「先整体后局部」，而不是直接上 perf 火焰图？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：先用 USE 方法（Utilization / Saturation / Errors）对每一个资源做「利用率 / 饱和度 / 错误」三件套体检，定位到可疑资源后再钻取热点。</p>
 <ul>
 <li><strong>Utilization（利用率）</strong>：资源忙于干活的时间占比，如 CPU 90% 表示接近瓶颈；长期平均 70% 也可能藏瞬时 100%。</li>
 <li><strong>Saturation（饱和度）</strong>：资源积压的额外工作量（通常表现为队列），如 CPU 运行队列长度、磁盘 await 排队；任何非零饱和度都值得警惕。</li>

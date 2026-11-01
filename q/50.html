@@ -96,7 +96,7 @@
     <h1>grep / awk / sed 的常见用法？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Linux运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">grep</span><span class="chip tag">awk</span><span class="chip tag">sed</span><span class="chip tag">Shell</span></div>
     <div class="card"><h2>题目</h2><p>各举一个实用例子。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><strong>grep</strong>：<code>grep -rn &quot;error&quot; /var/log --include=*.log</code> 递归按关键字查；<code>-v</code> 反选，<code>-i</code> 忽略大小写，<code>-C3</code> 上下文。</li>
 <li><strong>awk</strong>：<code>awk -F&#39;,&#39; &#39;{sum+=$3} END{print sum}&#39; data.csv</code> 按列求和；<code>awk &#39;$1&gt;100&#39; access.log</code> 过滤。</li>
 <li><strong>sed</strong>：<code>sed -i &#39;s/old/new/g&#39; file</code> 替换；<code>sed -n &#39;10,20p&#39;</code> 取行；流编辑不改源（去掉 -i）。</li>

@@ -96,7 +96,7 @@
     <h1>Redis 的持久化机制 RDB 和 AOF 有什么区别？如何选择？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">持久化</span><span class="chip tag">RDB</span><span class="chip tag">AOF</span></div>
     <div class="card"><h2>题目</h2><p>考察两种持久化方式的原理、优缺点及生产配置选择。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>RDB（快照持久化）</strong>：在指定间隔对内存数据做全量快照，保存为二进制文件。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 近 7 天更新</div><p><strong>RDB（快照持久化）</strong>：在指定间隔对内存数据做全量快照，保存为二进制文件。</p>
 <ul>
 <li>优点：文件紧凑、恢复速度快、对性能影响小（fork 子进程写，copy-on-write）。</li>
 <li>缺点：两次快照间宕机会丢失最近数据；数据量大时 fork 可能阻塞。</li>

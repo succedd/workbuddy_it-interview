@@ -96,7 +96,7 @@
     <h1>浏览器的 HTTP 缓存机制是怎样的？强缓存与协商缓存有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">缓存</span><span class="chip tag">Cache-Control</span><span class="chip tag">ETag</span><span class="chip tag">304</span></div>
     <div class="card"><h2>题目</h2><p>考察点：强缓存（Cache-Control / Expires / max-age）、协商缓存（Last-Modified/If-Modified-Since、ETag/If-None-Match、304），以及二者如何配合。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>强缓存（不发请求）</strong>：响应头 <code>Cache-Control: max-age=3600</code>（优先级高于 <code>Expires</code>）告诉浏览器在有效期内直接用本地副本，<strong>不发任何请求</strong>。命中时状态码仍是 200（from disk/memory cache）。适合不常变且带版本号的静态资源。</li>
 <li><strong>协商缓存（发请求问服务端）</strong>：强缓存失效后，浏览器带上条件请求头去问服务端「我这份还新鲜吗」：① <code>If-Modified-Since</code> + 响应 <code>Last-Modified</code>（基于修改时间，精度秒级、易误判）；② <code>If-None-Match</code> + 响应 <code>ETag</code>（基于内容哈希，更精准）。若资源未变，服务端返回 <strong>304 Not Modified</strong>，浏览器继续用缓存；变了则返回 200 与新内容。</li>

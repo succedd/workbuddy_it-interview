@@ -96,7 +96,7 @@
     <h1>关于 `$*`、`$@`、`${var:-default}`、`${var:=default}`、`$(cmd)` 与 `` `cmd` ``，下列说法正确的是？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">Shell</span><span class="chip tag">特殊参数</span><span class="chip tag">参数展开</span><span class="chip tag">命令替换</span></div>
     <div class="card"><h2>题目</h2><p>考察特殊参数与参数展开语法，做成单选题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确答案要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确答案要点</strong>：</p>
 <ul>
 <li><code>&quot;$@&quot;</code> 会把每个参数当作独立、完整的单词（保留空格），是遍历参数的<strong>唯一安全写法</strong>；<code>&quot;$*&quot;</code> 则把所有参数拼成一个字符串（默认用空格连接），会破坏含空格的参数。</li>
 <li><code>${var:-default}</code>：<strong>变量为空或未设</strong>时才用默认值，但不修改变量本身；<code>${var:=default}</code> 会用默认值<strong>赋值回</strong>该变量（常用于设置缺省配置）。</li>

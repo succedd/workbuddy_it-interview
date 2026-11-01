@@ -120,7 +120,7 @@ C. 只要用了 INT4 量化，KV Cache 就不再是显存瓶颈
 D. PagedAttention 通过把所有请求的 KV Cache 预分配成最大长度来避免碎片</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">算法工程师</span><span class="chip tag">KV Cache</span><span class="chip tag">显存</span><span class="chip tag">PagedAttention</span><span class="chip tag">单选题</span></div>
     <div class="card"><h2>题目</h2><p>考察点：KV Cache 与显存优化原理。要能判断每个选项对错，讲清 KV Cache 的线性增长特性与 PagedAttention 的真实做法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确答案：B</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确答案：B</strong></p>
 <ul>
 <li><strong>A 错</strong>：KV Cache 是每层的 Key/Value 矩阵随 token 累加缓存，占用 ≈ <code>2 × 层数 × 隐藏维 × seq_len × batch</code>，<strong>与序列长度近似线性</strong>，长上下文时急剧膨胀。</li>
 <li><strong>B 对</strong>：这是显存随并发/上下文上涨的根本原因，也是部署里必须重点管理的对象（长文本 + 高并发 = 显存杀手）。</li>

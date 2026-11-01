@@ -96,7 +96,7 @@
     <h1>嵌入式 Linux 里进程间通信（IPC）有哪些方式？共享内存和消息队列各适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">IPC</span><span class="chip tag">共享内存</span><span class="chip tag">消息队列</span></div>
     <div class="card"><h2>题目</h2><p>考察 IPC 选型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：常见 IPC：管道/命名管道、消息队列（System V / POSIX）、共享内存、信号量、信号、socket（本地域）。选择取决于数据量、实时性、是否需要内核介入。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：常见 IPC：管道/命名管道、消息队列（System V / POSIX）、共享内存、信号量、信号、socket（本地域）。选择取决于数据量、实时性、是否需要内核介入。</p>
 <p><strong>要点</strong>：共享内存：映射同一段物理内存，进程零拷贝直接读写，速度最快，适合「大数据量、高频」传输（如音视频帧、传感器流）；缺点是需额外同步（信号量/锁）防止竞态。</p>
 <p><strong>要点</strong>：消息队列：内核帮你在进程间排队传递带类型的消息，自带同步与边界，使用简单、不易出错，适合「小消息、需要解耦与异步」的控制指令；代价是每次有内核拷贝开销、容量受限。综合看：要吞吐用共享内存+信号量，要省心用消息队列。</p></div>
     <div class="cta-row">

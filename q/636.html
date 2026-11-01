@@ -96,7 +96,7 @@
     <h1>用腾讯云 SDK 批量拉取账号下所有安全组规则，筛出「来源 0.0.0.0/0 且放通高危端口」的条目，写出脚本并讲解。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">云安全</span><span class="chip tag">安全组</span><span class="chip tag">SDK</span><span class="chip tag">自动化巡检</span><span class="chip tag">Python</span></div>
     <div class="card"><h2>题目</h2><p>考察点：掌握用云 API/SDK 做安全治理自动化，能批量发现风险放通。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>拉取全量安全组</strong>：调用 <code>DescribeSecurityGroups</code> 与 <code>DescribeSecurityGroupPolicies</code> 拿到每个安全组的入站规则（CidrBlock / Port / Action）。</li>
 <li><strong>筛选规则</strong>：入站规则中 <code>CidrBlock == 0.0.0.0/0</code> 且 <code>Action == ACCEPT</code> 且端口命中高危集合（22,3389,3306,6379,27017,1433,1521）即风险项。</li>

@@ -96,7 +96,7 @@
     <h1>场景题：你加入一个 20 人团队，主仓库同时存在 Git Flow（feature/release/hotfix 多长命分支）和 trunk-based（主干开发 + 短命分支）两种提案。请对比两种分支策略的适用场景，并给出你的选型建议。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">分支策略</span><span class="chip tag">GitFlow</span><span class="chip tag">TrunkBased</span><span class="chip tag">CI/CD</span><span class="chip tag">协作</span></div>
     <div class="card"><h2>题目</h2><p>考察点：分支策略是团队协作与 CI/CD 效率的核心权衡。追问：如果团队要求「随时可发布」，两种策略分别靠什么机制保证？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：分支策略的本质权衡是「发布节奏的隔离需求」与「集成成本」，没有绝对最优，取决于发布频率与团队规模。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：分支策略的本质权衡是「发布节奏的隔离需求」与「集成成本」，没有绝对最优，取决于发布频率与团队规模。</p>
 <ul>
 <li><strong>Git Flow</strong>：master + develop 双主干，feature/release/hotfix 支撑「多版本并行维护」。适合<strong>发布周期长、多版本并存</strong>的产品（App 发版、SDK、私有化部署），隔离清晰但分支多、合并成本高、集成晚，容易攒出大冲突。</li>
 <li><strong>Trunk-based</strong>：所有人向主干提交，分支存活通常 &lt; 2 天，靠 feature flag 控制未完成功能。适合<strong>持续部署</strong>的互联网服务：集成早、冲突小、主干始终可发布；代价是必须配套自动化测试、CI 门禁和 feature flag 基础设施。</li>

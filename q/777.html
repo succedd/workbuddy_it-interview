@@ -96,7 +96,7 @@
     <h1>为什么 MySQL 采用 B+ 树作为索引？请对比二叉搜索树、B 树和 Hash 索引说明。</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">索引</span><span class="chip tag">B+树</span><span class="chip tag">数据结构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：索引结构选型的核心考量（磁盘 I/O 次数、范围查询能力）。要求从 B+ 树 vs 二叉树 / B 树 / Hash 三个维度说明其优势。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>B+ 树 vs 二叉树</strong>：二叉树每个节点最多 2 个子节点，N 个叶子时树高约 log₂N，千万级数据树高可达几十层，每次查找都要几十次磁盘 I/O；B+ 树一个节点可容纳 100+ 个子节点（d&gt;100），同样数据只需 3~4 层，查询最多 3~4 次磁盘 I/O。</li>
 <li><strong>B+ 树 vs B 树</strong>：B 树非叶子节点也存数据，单节点能容纳的索引键更少，树更高、I/O 更多；B+ 树只在叶子节点存数据，非叶子节点只存索引键，扇出更大更「瘦」；且叶子节点用双向链表串联，天然支持范围查询，B 树做不到顺序遍历。</li>

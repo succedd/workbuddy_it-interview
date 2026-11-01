@@ -96,7 +96,7 @@
     <h1>用 Sentinel 给一个「下单接口」配置 QPS 限流 + 慢调用比例熔断 + 热点参数限流，并说明规则如何持久化到 Nacos，避免应用重启后丢失。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">Sentinel</span><span class="chip tag">流控规则</span><span class="chip tag">熔断规则</span><span class="chip tag">热点参数限流</span><span class="chip tag">Nacos持久化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Sentinel 在真实项目中的落地实战——流控/熔断/热点规则配置，以及规则持久化（动态数据源）这一高频踩坑点，高级场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>QPS 流控</strong>：给 <code>/order/create</code> 配 FlowRule，<code>grade=FLOW_GRADE_QPS</code>、<code>count=200</code>、<code>controlBehavior=流速均摊(冷启动/排队)</code>；超阈值直接 Blocked（走 <code>BlockException</code> 兜底返回「繁忙」）。</li>
 <li><strong>慢调用比例熔断</strong>：配 DegradeRule，<code>grade=SLOW_REQUEST_RATIO</code>，<code>slowRtMs=500</code>、<code>count(比例)=0.5</code>、<code>timeWindow=10s</code>、<code>minRequestAmount=5</code>；当慢调用比例超 50% 且请求数达标即跳闸 10s，期间快速失败，半开探测恢复。</li>

@@ -96,7 +96,7 @@
     <h1>论文复现时，数据泄漏、随机种子和评估协议分别该怎么处理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">研究科学家</span><span class="chip tag">论文复现</span><span class="chip tag">数据泄漏</span><span class="chip tag">随机种子</span><span class="chip tag">评估协议</span></div>
     <div class="card"><h2>题目</h2><p>考察研究科学家/算法工程师的复现与实验严谨性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>数据泄漏</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 11 天前更新</div><p><strong>数据泄漏</strong></p>
 <ul>
 <li>划分前先检查重复样本、同一用户/同一文档跨训练测试、时间序列未来信息、预处理（归一化/特征选择）在划分前用了全量数据。</li>
 <li>用 group split/时间切分，确保训练、验证、测试在实体或时间上隔离；目标编码/缺失值填充等统计量只能从训练集计算。</li>

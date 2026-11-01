@@ -96,7 +96,7 @@
     <h1>TCP Keepalive 是如何工作的？「半打开连接」是怎么产生的，如何清理？RST 报文一般出现在哪些场景？</h1>
     <div class="chips"><span class="chip diff">初</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">TCP</span><span class="chip tag">Keepalive</span><span class="chip tag">RST</span><span class="chip tag">半打开连接</span><span class="chip tag">应用层心跳</span></div>
     <div class="card"><h2>题目</h2><p>TCP Keepalive 是如何工作的？「半打开连接」是怎么产生的，如何清理？RST 报文一般出现在哪些场景？</p></div>
-    <div class="card"><h2>参考答案</h2><p>TCP Keepalive 解决的问题是：连接长时间没有数据往来时，怎么判断对端还在不在，要不要回收资源。注意它与 HTTP 的 Keep-Alive 完全不是一回事——后者是应用层机制，管的是「一个 TCP 连接能不能被多个 HTTP 请求复用」。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>TCP Keepalive 解决的问题是：连接长时间没有数据往来时，怎么判断对端还在不在，要不要回收资源。注意它与 HTTP 的 Keep-Alive 完全不是一回事——后者是应用层机制，管的是「一个 TCP 连接能不能被多个 HTTP 请求复用」。</p>
 <p><strong>工作流程与三参数</strong>：连接空闲超过 tcp_keepalive_time（Linux 默认 7200 秒）后，内核自动发探测报文；对端在线则回 ACK，计时器重置；对端无响应则每隔 tcp_keepalive_intvl（默认 75 秒）重发一次，最多 tcp_keepalive_probes（默认 9）次；仍无响应就判定连接已死，关闭并释放资源。按默认值，从空闲到判死最长约 7200 + 75×9 ≈ 7875 秒。特别要注意：Keepalive 默认是关闭的，应用必须通过 SO_KEEPALIVE 显式开启。</p>
 <p><img src="/assets/q/fig-tcp-keepalive.svg" alt="图：Keepalive 三参数时序与半打开连接的清理路径" loading="lazy"></p>
 <p><strong>半打开连接如何产生</strong>：客户端突然断电、网线被拔、进程崩溃，服务端毫不知情——TCP 没有「忙音」，这条连接在服务端看来还是 ESTABLISHED，实际对端已经没了，这就是半打开（Half-Open）连接。它白白占用内存中的 TCB 资源，堆积多了会耗尽连接资源。</p>

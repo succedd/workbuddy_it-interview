@@ -96,7 +96,7 @@
     <h1>一次大模型 API 调用要经过哪些环节？哪些错误可以重试、哪些必须直接失败？为什么重试必须配幂等 Key？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">平台工程师</span><span class="chip tag">大模型API</span><span class="chip tag">重试策略</span><span class="chip tag">幂等</span><span class="chip tag">限流</span></div>
     <div class="card"><h2>题目</h2><p>考察点：大模型调用链路的工程化能力，尤其是重试边界与幂等设计的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：大模型 API 的响应时间、计费方式和错误类型都与普通业务接口不同，重试和幂等必须一起设计。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：大模型 API 的响应时间、计费方式和错误类型都与普通业务接口不同，重试和幂等必须一起设计。</p>
 <p><strong>一次生产级调用的环节</strong>：接入鉴权 → Prompt/上下文组装 → 参数与 Schema 校验 → 限流配额检查 → 调用模型（同步或流式）→ 流式增量转发 → 结构化解析与校验 → 日志、计费与落库。</p>
 <p><strong>大模型重试的两个特殊点</strong></p>
 <ul>

@@ -96,7 +96,7 @@
     <h1>区块链的基本结构是什么？为什么说它「不可篡改」？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">Web3开发工程师</span><span class="chip tag">区块链</span><span class="chip tag">哈希链</span><span class="chip tag">不可篡改</span></div>
     <div class="card"><h2>题目</h2><p>考察链式结构与哈希链原理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：区块链由按时间顺序相连的「区块」组成，每个区块包含区块头（前一区块哈希 prevHash、时间戳、Merkle 根、随机数 Nonce 等）和交易数据；头里的 prevHash 把区块串成链。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：区块链由按时间顺序相连的「区块」组成，每个区块包含区块头（前一区块哈希 prevHash、时间戳、Merkle 根、随机数 Nonce 等）和交易数据；头里的 prevHash 把区块串成链。</p>
 <p><strong>要点</strong>：不可篡改性来自哈希链：改动任意历史区块的交易，其哈希就变，导致后续所有区块的 prevHash 失配、整条链失效，必须重新计算全网算力才能伪造——成本极高。</p>
 <p><strong>要点</strong>：配合「分布式账本 + 共识机制」，账本在多节点冗余存储，单点篡改无法被多数节点认可，因此实现了去信任下的数据可信。</p></div>
     <div class="cta-row">

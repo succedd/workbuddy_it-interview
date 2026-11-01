@@ -96,7 +96,7 @@
     <h1>训练太慢或显存不足，有哪些工程优化手段（AMP、梯度累积、DDP）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">机器学习工程师</span><span class="chip">MLOps工程师</span><span class="chip tag">PyTorch</span><span class="chip tag">AMP</span><span class="chip tag">DDP</span><span class="chip tag">训练优化</span></div>
     <div class="card"><h2>题目</h2><p>按「显存 → 吞吐 → 多卡」给出可落地的手段与注意点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>省显存</strong>：① <strong>混合精度 AMP</strong>（autocast + GradScaler）：激活与权重半精度，显存近半、速度随 tensor core 提升；② <strong>梯度检查点</strong>（torch.utils.checkpoint）：以重算换显存，激活省 60%+；③ 减 batch + <strong>梯度累积</strong>：小 batch 跑多次再 step，等效大 batch；④ <code>zero_grad(set_to_none=True)</code>、及时 detach、避免保留中间变量；⑤ 优化器选 8-bit（bitsandbytes）或分片。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>省显存</strong>：① <strong>混合精度 AMP</strong>（autocast + GradScaler）：激活与权重半精度，显存近半、速度随 tensor core 提升；② <strong>梯度检查点</strong>（torch.utils.checkpoint）：以重算换显存，激活省 60%+；③ 减 batch + <strong>梯度累积</strong>：小 batch 跑多次再 step，等效大 batch；④ <code>zero_grad(set_to_none=True)</code>、及时 detach、避免保留中间变量；⑤ 优化器选 8-bit（bitsandbytes）或分片。</p>
 <p><strong>提吞吐</strong>：① <strong>DataLoader</strong>：num_workers=CPU 核数的一半起步、pin_memory=True、prefetch_factor 调优，确保数据管道不饿 GPU；② cudnn.benchmark=True（输入尺寸固定时）；③ 算子融合/编译：<code>torch.compile</code>；④ 尽量少 <code>.item()/.cpu()</code> 同步点。</p>
 <p><strong>多卡</strong>：① <strong>DDP</strong>（DistributedDataParallel）：每卡完整模型 + 数据并行，AllReduce 同步梯度，多机也可用，是默认起点；② FSDP/ZeRO：模型太大时分片参数/优化器状态；③ 吞吐基准用 <code>samples/s</code> 衡量，先排除 IO 瓶颈再谈并行。</p></div>
     <div class="cta-row">

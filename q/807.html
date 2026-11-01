@@ -96,7 +96,7 @@
     <h1>JVM 垃圾回收器 G1 的工作原理与适用场景？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">G1</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>解释 G1 的分区（Region）思路、可预测停顿模型与适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心设计</strong>：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>核心设计</strong>：G1 把堆划分为多个大小相等的 Region，逻辑上分代但物理不连续，优先回收垃圾最多的 Region（Garbage-First）。</p>
 <p><strong>可预测停顿</strong>：通过 <code>-XX:MaxGCPauseMillis</code> 设定目标停顿时间，回收器据历史数据权衡每次回收的 Region 数量，尽量在预算内完成。</p>
 <p><strong>适用场景</strong>：大堆（数 GB 到数十 GB）、对停顿敏感的服务端应用；JDK 9+ 后成为默认收集器。相比 CMS，它避免了内存碎片导致的 Full GC，并发标记用 SATB 算法。</p></div>
     <div class="cta-row">

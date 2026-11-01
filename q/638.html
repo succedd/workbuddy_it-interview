@@ -96,7 +96,7 @@
     <h1>【场景题】如何优雅地停止一个正在运行的 Java 线程？为什么 volatile 状态标志位能可靠工作？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">G1</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>追问链起点：从一个最常用的 volatile 实战场景切入。考察点：Thread.stop() 被废弃的原因；volatile 状态标志位的可见性依据（happens-before 传递性）；与 interrupt() 机制的配合与选型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：stop() 为什么被废弃</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 55 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：stop() 为什么被废弃</strong></p>
 <ul>
 <li>Thread.stop() 会立即终止线程并释放其持有的所有锁，被终止线程正在保护的共享数据可能处于&quot;改了一半&quot;的不一致状态，且调用方无从感知，问题难以排查，因此 JDK 早已将其标记为废弃。</li>
 <li>正确思路是&quot;协作式终止&quot;：由目标线程自己在安全检查点检测停止信号并主动退出。</li>

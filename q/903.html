@@ -96,7 +96,7 @@
     <h1>InnoDB 有哪些锁？行锁、间隙锁、临键锁分别锁什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库架构师</span><span class="chip">DBA数据库管理员</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">锁</span><span class="chip tag">InnoDB</span><span class="chip tag">事务</span></div>
     <div class="card"><h2>题目</h2><p>请介绍 MySQL 的表级锁与行级锁，重点说明 InnoDB 记录锁、间隙锁、临键锁的锁定范围与作用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>按粒度</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>按粒度</strong>：</p>
 <ul>
 <li><strong>表级锁</strong>：表锁、元数据锁 MDL（防 DDL 与查询/事务冲突）、<strong>意向锁</strong>（IS/IX，表明&quot;表内有行被锁&quot;，让表锁判断不用逐行检查）、AUTO-INC 锁。</li>
 <li><strong>行级锁（InnoDB，加在索引记录上）</strong>：</li>

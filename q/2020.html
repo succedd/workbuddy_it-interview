@@ -96,7 +96,7 @@
     <h1>Cassandra 写入为什么快？请描述 LSM-Tree 的写路径（CommitLog / Memtable / SSTable）。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Cassandra</span><span class="chip tag">LSM</span><span class="chip tag">SSTable</span><span class="chip tag">写入路径</span><span class="chip tag">Compaction</span></div>
     <div class="card"><h2>题目</h2><p>Cassandra 写入为什么快？请描述 LSM-Tree 的写路径（CommitLog / Memtable / SSTable）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>写入只做顺序追加，几乎不随机写盘</strong>：客户端写请求先记入 <strong>CommitLog（预写日志，顺序写，用于崩溃恢复）</strong>，再写入内存中的 <strong>Memtable（按主键排序的内存结构）</strong>。只要这两步完成即返回成功，没有随机磁盘写，所以写入极快。</li>
 <li><strong>Flush 成 SSTable</strong>：当 Memtable 达到阈值，被刷写到磁盘成为不可变的 <strong>SSTable（Sorted String Table）</strong>；SSTable 按主键有序、只追加生成，因此写盘也是顺序 I/O。</li>

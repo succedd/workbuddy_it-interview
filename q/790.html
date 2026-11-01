@@ -96,7 +96,7 @@
     <h1>搜索引擎的召回与排序（粗排/精排）两阶段架构是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">搜索算法工程师</span><span class="chip">算法工程师</span><span class="chip">推荐算法工程师</span><span class="chip tag">搜索</span><span class="chip tag">召回</span><span class="chip tag">精排</span><span class="chip tag">召回排序</span></div>
     <div class="card"><h2>题目</h2><p>解释搜索系统中从海量候选到最终结果的漏斗式架构。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>召回（Recall）</strong>：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>召回（Recall）</strong>：从全量候选中用低成本方法（倒排索引、向量检索、协同过滤）快速选出千级相关候选，重“全”。</p>
 <p><strong>粗排（Pre-Rank）</strong>：轻量模型对召回结果打分截断到百级，平衡效率与效果。</p>
 <p><strong>精排（Rank）</strong>：复杂模型（如深度排序）对百级候选精细打分，重“准”。</p>
 <p><strong>重排（Re-Rank）</strong>：结合业务规则、多样性、去重做最终调整。整体呈漏斗，逐级缩减并保证效果。</p></div>

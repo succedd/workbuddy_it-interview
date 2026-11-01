@@ -96,7 +96,7 @@
     <h1>【故障排查】Flink 作业频繁 Full GC / OOM 或数据倾斜，如何排查与调优？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Flink</span><span class="chip tag">OOM</span><span class="chip tag">数据倾斜</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>考察点：内存模型、状态膨胀、数据倾斜定位与解决。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>OOM / GC 排查</strong>：先看 TaskManager 日志的 GC 日志与 <code>Status.JVM.Memory</code> 指标，区分是堆内（HashMapStateBackend 大状态）还是堆外/网络缓冲溢出；Flink 内存分框架堆、任务堆、托管内存（RocksDB）、网络缓冲，需按角色调 <code>taskmanager.memory.*</code>。</li>
 <li><strong>状态膨胀</strong>：大 keyed state / 未设 TTL 的 ValueState/MapState 会无限增长；应给状态设 <code>StateTtlConfig</code> 过期清理，或改用 RocksDB + 增量 checkpoint。</li>

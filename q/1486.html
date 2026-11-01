@@ -96,7 +96,7 @@
     <h1>Angular 的依赖注入（DI）机制是如何工作的？Provider 有哪些注册方式？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Angular</span><span class="chip tag">依赖注入</span><span class="chip tag">DI</span></div>
     <div class="card"><h2>题目</h2><p>说明 Injector 层级与查找规则，以及 @Injectable、providers、Module、forRoot 的区别。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>机制</strong>：Angular 每个 Module/组件/指令都有 Injector，形成<strong>层级注入器</strong>。实例化时按「组件树从下往上 → 模块注入器 → root」查找 token：<strong>就近优先</strong>，子级 provider 会遮蔽父级，实现按组件树隔离（如路由级服务每个 lazy module 一份）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>机制</strong>：Angular 每个 Module/组件/指令都有 Injector，形成<strong>层级注入器</strong>。实例化时按「组件树从下往上 → 模块注入器 → root」查找 token：<strong>就近优先</strong>，子级 provider 会遮蔽父级，实现按组件树隔离（如路由级服务每个 lazy module 一份）。</p>
 <p><strong>注册方式</strong>：① 类上 <code>@Injectable({providedIn: &#39;root&#39;})</code>——tree-shakable，最推荐；② Module/组件 <code>providers: [{provide, useClass/useValue/useFactory/useExisting}]</code>——控制作用域与多实现替换；③ 路由级 <code>providers</code>——进入路由才创建；④ 懒加载模块 <code>forRoot()/forChild()</code> 避免 root 重复实例化。</p>
 <p><strong>注意</strong>：<code>providedIn:&#39;root&#39;</code> 是全局单例；组件级 provider 每个组件实例各一份；<code>@SkipSelf/@Optional/@Self</code> 修饰查找行为。</p></div>
     <div class="cta-row">

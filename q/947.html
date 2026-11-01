@@ -96,7 +96,7 @@
     <h1>什么是闭包？有什么应用场景和问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">JavaScript</span><span class="chip tag">闭包</span><span class="chip tag">作用域</span></div>
     <div class="card"><h2>题目</h2><p>请解释闭包的定义与形成条件，列举防抖节流、私有变量等应用，并说明内存泄漏风险。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>定义</strong>：函数与其创建时所处<strong>词法作用域</strong>的组合——内层函数引用了外层函数的变量，且内层函数在外层执行结束后仍然可达，这些变量就&quot;活&quot;了下来，别人无法直接访问。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>定义</strong>：函数与其创建时所处<strong>词法作用域</strong>的组合——内层函数引用了外层函数的变量，且内层函数在外层执行结束后仍然可达，这些变量就&quot;活&quot;了下来，别人无法直接访问。</p>
 <pre><code class="language-js">function counter() {
   let count = 0;               // 被 inner 闭包持有
   return () =&gt; ++count;

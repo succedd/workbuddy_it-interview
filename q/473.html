@@ -96,7 +96,7 @@
     <h1>Spark 的 RDD 与 DataFrame / Dataset 有什么区别？为什么 DataFrame 通常执行更高效？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">大数据工程师</span><span class="chip tag">Spark</span><span class="chip tag">RDD</span><span class="chip tag">DataFrame</span></div>
     <div class="card"><h2>题目</h2><p>Spark 经历了从 RDD 到 DataFrame/Dataset 的演进，理解两者差异能说明你对 Spark 执行引擎优化（Catalyst / Tungsten）的掌握。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>RDD</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>RDD</h3>
 <p>最底层的弹性分布式数据集 API：用 Java/lambda 函数式算子（map/filter/reduce）操作，类型安全但<strong>无内置 Schema</strong>，<strong>绕过优化器</strong>——每个算子的执行计划由用户代码直接决定，难以全局优化。</p>
 <h3>DataFrame / Dataset</h3>
 <p>带 Schema 的结构化 API：</p>

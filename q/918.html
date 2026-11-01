@@ -96,7 +96,7 @@
     <h1>TCP 如何保证可靠传输？滑动窗口和拥塞控制是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">网络工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">可靠传输</span><span class="chip tag">拥塞控制</span><span class="chip tag">滑动窗口</span></div>
     <div class="card"><h2>题目</h2><p>请说明 TCP 可靠传输的核心机制，以及流量控制（滑动窗口）与拥塞控制（四大算法）的区别。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>可靠传输核心机制</strong>：①<strong>序列号+确认应答</strong>（累计确认）；②<strong>超时重传</strong>（RTO 自适应）与<strong>快速重传</strong>（收到 3 个重复 ACK 立即重发，不必等超时）；③<strong>校验和</strong>检错；④<strong>去重与排序</strong>；⑤流量控制+拥塞控制。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>可靠传输核心机制</strong>：①<strong>序列号+确认应答</strong>（累计确认）；②<strong>超时重传</strong>（RTO 自适应）与<strong>快速重传</strong>（收到 3 个重复 ACK 立即重发，不必等超时）；③<strong>校验和</strong>检错；④<strong>去重与排序</strong>；⑤流量控制+拥塞控制。</p>
 <p><strong>流量控制（滑动窗口）</strong>——保护<strong>接收方</strong>：接收方通过 TCP 头的<strong>窗口字段</strong>通告剩余缓冲区大小（rwnd），发送方未确认的在途数据不能超过它，防止接收方被打爆。接收方处理不过来时窗口收缩甚至为 0（零窗口需窗口探测恢复）。</p>
 <p><strong>拥塞控制</strong>——保护<strong>网络</strong>，四大算法：</p>
 <ol>

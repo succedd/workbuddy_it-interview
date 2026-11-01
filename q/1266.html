@@ -96,7 +96,7 @@
     <h1>Temperature、Top-p、Top-k 分别控制什么？生产环境该怎么设置？为什么 Temperature 设为 0，输出仍然可能不完全一致？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">LLM应用开发工程师</span><span class="chip">算法工程师</span><span class="chip tag">采样参数</span><span class="chip tag">Temperature</span><span class="chip tag">Top-p</span><span class="chip tag">输出稳定性</span></div>
     <div class="card"><h2>题目</h2><p>考察点：解码参数的作用机制，以及输出稳定性问题的归因能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：模型每一步会给词表中<strong>每个</strong>候选 Token 打一个分数（logits），分数越高说明越可能出现在这里。原始分数经过 <strong>softmax</strong> 得到概率分布，再通过采样决定输出哪个 Token。解码参数就是在这个“打分 → 概率 → 抽签”的过程中施加控制。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：模型每一步会给词表中<strong>每个</strong>候选 Token 打一个分数（logits），分数越高说明越可能出现在这里。原始分数经过 <strong>softmax</strong> 得到概率分布，再通过采样决定输出哪个 Token。解码参数就是在这个“打分 → 概率 → 抽签”的过程中施加控制。</p>
 <p><strong>Temperature 调分布形状</strong>：在 softmax 之前把分数除以温度值 T，即 <code>p(t) = softmax(z_t / T)</code>。以“今天天气真___”为例：T=0.2 时分布变尖，“好”约 99.99%；T=1.0 保持原始分布，“好”约 81.21%、“不错”约 13.42%；T=1.5 时分布变平，“好”约 66.85%、“不错”约 20.14%、“棒”约 9.67%。<strong>温度越低输出越确定，越高越随机。</strong></p>
 <p><strong>Top-p / Top-k 砍候选池</strong>：<code>Top-k = 3</code> 固定保留概率最高的 3 个候选；<code>Top-p = 0.9</code> 从高到低累加概率，候选数量随分布变化（示例中“好 + 不错”已达 94.63%，候选集只保留这两个；如果第一名自身超过 90%，就只留一个）。</p>
 <p><strong>Penalty 系列</strong>用来缓解复读：Repetition Penalty 降低所有已出现 Token 的概率，Presence Penalty 只要出现过就扣分，Frequency Penalty 出现次数越多扣分越重。注意 JSON 对象里 <code>&quot;name&quot;</code>、<code>&quot;score&quot;</code> 等必要重复字段会被误伤；RAG 问答开 Presence Penalty 会让模型倾向引入检索内容之外的新词，削弱对证据的忠实度。没有明确调参依据时保留默认值。</p>

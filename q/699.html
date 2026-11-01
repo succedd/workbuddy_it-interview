@@ -96,7 +96,7 @@
     <h1>STM32 的中断机制与 NVIC？GPIO 与外部中断基本用法？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">STM32</span><span class="chip tag">NVIC</span><span class="chip tag">中断</span><span class="chip tag">GPIO</span></div>
     <div class="card"><h2>题目</h2><p>说明 STM32 中断控制器与 GPIO 中断配置思路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>NVIC（嵌套向量中断控制器）</strong>：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>NVIC（嵌套向量中断控制器）</strong>：管理所有外设中断的优先级与嵌套，支持抢占与子优先级，决定哪个中断先响应。</p>
 <p><strong>GPIO 中断</strong>：把引脚配置为输入并绑定到外部中断线（EXTI），设置触发边沿（上升/下降/双边沿），在对应 ISR 中处理（如按键、电平变化）。</p>
 <p><strong>要点</strong>：ISR 尽量短、不在中断里做耗时操作；用标志位/队列把工作交回主循环或任务；注意清中断标志防重复触发。</p></div>
     <div class="cta-row">

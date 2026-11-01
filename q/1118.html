@@ -96,7 +96,7 @@
     <h1>Spring 事务隔离级别有哪些，分别解决脏读、不可重复读、幻读？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">事务隔离级别</span><span class="chip tag">MVCC</span><span class="chip tag">并发</span></div>
     <div class="card"><h2>题目</h2><p>请说明 DEFAULT/READ_UNCOMMITTED/READ_COMMITTED/REPEATABLE_READ/SERIALIZABLE 各级别能防止的问题与性能代价。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>READ_UNCOMMITTED</strong>：能读到未提交数据，三种并发问题都不防，几乎不用。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>READ_UNCOMMITTED</strong>：能读到未提交数据，三种并发问题都不防，几乎不用。</p>
 <p><strong>READ_COMMITTED</strong>：防脏读（只读到已提交），但可能出现不可重复读与幻读；Oracle 默认级别。</p>
 <p><strong>REPEATABLE_READ</strong>：防脏读与不可重复读（事务内多次读一致），仍可能有幻读；MySQL InnoDB 默认级别，靠 MVCC 与间隙锁抑制幻读。</p>
 <p><strong>SERIALIZABLE</strong>：完全串行化，防所有并发问题但并发度最低，仅极端一致性场景使用。</p>

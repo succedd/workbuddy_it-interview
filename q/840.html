@@ -96,7 +96,7 @@
     <h1>域环境内网渗透中，域控制器、黄金票据与白银票据分别是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">渗透测试工程师</span><span class="chip">安全运营工程师SOC</span><span class="chip tag">内网渗透</span><span class="chip tag">Kerberos</span><span class="chip tag">黄金票据</span><span class="chip tag">AD</span></div>
     <div class="card"><h2>题目</h2><p>解释 Active Directory 域环境中 DC、Golden Ticket、Silver Ticket 的概念与危害。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>域控制器（DC）</strong>：存储域内所有账号与策略的服务器，掌握 krbtgt 账户，是域安全的核心。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>域控制器（DC）</strong>：存储域内所有账号与策略的服务器，掌握 krbtgt 账户，是域安全的核心。</p>
 <p><strong>黄金票据（Golden Ticket）</strong>：利用 krbtgt 账户的哈希伪造任意用户的 TGT（票据授予票据），因 krbtgt 密钥长期不变，可在域內长期免认证横行，危害极大。</p>
 <p><strong>白银票据（Silver Ticket）</strong>：伪造特定服务（如 CIFS、MSSQL）的 ST（服务票据），只影响单一服务、不留域控日志，更隐蔽。防御靠监控异常登录、定期重置 krbtgt 密码、最小权限委派。</p></div>
     <div class="cta-row">

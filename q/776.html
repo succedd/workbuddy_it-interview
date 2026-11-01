@@ -96,7 +96,7 @@
     <h1>什么是缺页中断（page fault）？发生缺页时操作系统如何处理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip tag">操作系统</span><span class="chip tag">缺页中断</span><span class="chip tag">请求分页</span><span class="chip tag">swap</span></div>
     <div class="card"><h2>题目</h2><p>考察点：请求分页（按需调页）、缺页的处理流程、 minor/major page fault 的区别。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定义</strong>：当进程访问的虚拟页尚未装入物理内存（页表项有效位为 0，或页在磁盘交换区）时，MMU 触发缺页中断，由 OS 的缺页处理程序介入。</li>
 <li><strong>处理流程</strong>：① 保护现场并查页表，判断缺页原因（未分配 / 在交换区 / 文件映射未读入）；② 若非法访问（如越界、无权限）则发 SIGSEGV 终止进程；③ 若合法，找一个空闲页框，必要时按页面置换算法换出一页；④ 从磁盘（可执行文件/交换区）把该页读入页框；⑤ 更新页表（填物理页框号、置有效位）；⑥ 恢复现场，重新执行引发缺页的指令。</li>

@@ -96,7 +96,7 @@
     <h1>Raft 集群做成员变更（扩缩容）时，为什么官方建议一次只变更一个成员？一次同时变更多个节点会有什么后果？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">Java后端工程师</span><span class="chip tag">Raft</span><span class="chip tag">成员变更</span><span class="chip tag">多数派</span></div>
     <div class="card"><h2>题目</h2><p>考察点：多数派（quorum）是相对当前配置计算的，新老配置的多数派必须有交集才能保证同一任期只选出一个 Leader。属简答题（高级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>根本原因：多数派是按「当前配置」计算的</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>根本原因：多数派是按「当前配置」计算的</strong></p>
 <p>成员变更本身也是一条需要达成共识的日志。如果一次性把配置从旧集合直接切到新集合，新旧两个集合的多数派可能<strong>互不重叠</strong>，就会出现旧配置里选出一个 Leader、新配置里又选出一个 Leader 的脑裂（双主）情况，已提交的日志可能被覆盖。</p>
 <p><strong>为什么一次变一个是安全的</strong></p>
 <p>以 n → n+1 为例：旧多数派是 n/2+1，新多数派是 (n+1)/2+1，两者之和必然大于 n+1，因此一定有交集节点，交集节点在一个任期里只能投出一票，不可能形成双主。</p>

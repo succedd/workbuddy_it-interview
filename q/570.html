@@ -96,7 +96,7 @@
     <h1>为什么重构强调“先有测试保护网”？在没有测试覆盖的旧代码上重构要注意什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">后端开发工程师</span><span class="chip">应用架构师</span><span class="chip tag">测试保护网</span><span class="chip tag">遗留代码</span><span class="chip tag">特征测试</span></div>
     <div class="card"><h2>题目</h2><p>团队要对一段没有单元测试的遗留代码做重构。有人说“先写测试再重构”，为什么？若暂时无法补全测试，有哪些降低风险的做法？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>为什么先建测试保护网</strong>：重构的定义（Fowler）是“<strong>在不改变外部行为的前提下改善内部结构</strong>”。测试就是验证“行为不变”的安全网——小步修改后一跑测试，立刻知道是否改坏。没有测试，重构就是盲改，极易引入回归 bug。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>为什么先建测试保护网</strong>：重构的定义（Fowler）是“<strong>在不改变外部行为的前提下改善内部结构</strong>”。测试就是验证“行为不变”的安全网——小步修改后一跑测试，立刻知道是否改坏。没有测试，重构就是盲改，极易引入回归 bug。</p>
 <p><strong>落地做法（遗留代码）</strong>：</p>
 <ol>
 <li>先给要改的函数补<strong> Characterization Test（特征测试）</strong>：用现有输入跑出实际输出并锁定，作为“当前行为基线”，即使行为不优雅也先保住不破坏。</li>

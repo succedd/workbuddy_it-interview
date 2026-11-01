@@ -96,7 +96,7 @@
     <h1>Transformer 为什么取代了 RNN 成为 NLP 的主流架构？Self-Attention 的本质是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">自然语言处理工程师NLP</span><span class="chip">算法工程师</span><span class="chip tag">NLP</span><span class="chip tag">Transformer</span><span class="chip tag">Self-Attention</span><span class="chip tag">BERT</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RNN 的串行瓶颈与长程依赖、QKV 机制、位置编码、复杂度权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>RNN 的两个死穴</strong>：① 串行计算（t 依赖 t-1）无法并行，训练慢；② 长程依赖衰减（梯度消失/信息稀释），LSTM/GRU 只是缓解。</li>
 <li><strong>Self-Attention 本质</strong>：每个词的表示 = 全序列词表示的<strong>加权求和</strong>，权重由相似度决定——Query·Key 算相关性 → softmax 归一化 → 加权 Value。任意两词<strong>一步直达</strong>（路径长度 O(1)），长程依赖不再是问题；全序列并行计算。</li>

@@ -96,7 +96,7 @@
     <h1>RxJS 在 Angular 中扮演什么角色？举出典型的 Observable 使用场景。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Angular</span><span class="chip tag">RxJS</span><span class="chip tag">Observable</span></div>
     <div class="card"><h2>题目</h2><p>说明 Observable 与 Promise 的差异，并给出 Angular 内置的 RxJS 应用点。</p></div>
-    <div class="card"><h2>参考答案</h2><p>RxJS 是 Angular 的<strong>异步骨架</strong>：HTTP（HttpClient 返回 Observable）、路由（params/queryParams/data 是 Observable）、表单（valueChanges）、事件（fromEvent）全都基于它。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p>RxJS 是 Angular 的<strong>异步骨架</strong>：HTTP（HttpClient 返回 Observable）、路由（params/queryParams/data 是 Observable）、表单（valueChanges）、事件（fromEvent）全都基于它。</p>
 <p><strong>与 Promise 的差异</strong>：Observable 是<strong>惰性</strong>（不订阅不执行）、<strong>多次发射</strong>、<strong>可取消</strong>（unsubscribe）、拥有丰富算子（map/filter/debounceTime/switchMap/retry）。Promise 则是一次性、立即执行、不可取消。</p>
 <p><strong>典型场景</strong>：① 搜索框输入用 <code>debounceTime+distinctUntilChanged+switchMap</code> 做防抖且自动丢弃过期请求；② 路由参数组合 <code>combineLatest</code> 联动查询；③ 轮询 <code>timer(0,5000).pipe(switchMap(fetch))</code>，离开页面取消；④ 失败重试 <code>retry/retryWhen</code>；⑤ 多接口并发 <code>forkJoin</code>。</p>
 <p><strong>实践</strong>：模板用 <code>async</code> 管道订阅，避免手动 subscribe 造成泄漏；Angular 16+ 也有 toSignal 桥接。</p></div>

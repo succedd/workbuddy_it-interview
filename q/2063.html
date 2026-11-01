@@ -96,7 +96,7 @@
     <h1>列表（UITableView / UICollectionView）滑动卡顿、掉帧，如何定位与优化？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">UIKit</span><span class="chip tag">UITableView</span><span class="chip tag">UICollectionView</span><span class="chip tag">性能优化</span><span class="chip tag">掉帧</span></div>
     <div class="card"><h2>题目</h2><p>考察点：用 Instruments 定位主线程阻塞，掌握 cell 复用、离屏渲染、图片解码等高频优化手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>先用 Instruments 的 Core Animation / Time Profiler 抓帧，看是否主线程阻塞：cell 里做网络请求、图片解码或复杂计算会直接掉帧，应移到后台线程。</li>
 <li>复用机制：确认 dequeueReusableCell(withIdentifier:) 正确复用，避免在 cellForRow 里创建新视图或重建约束；提前 register cell。</li>

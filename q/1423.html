@@ -96,7 +96,7 @@
     <h1>一个弹窗用 position: fixed 定位，希望相对视口居中，结果它「没有相对视口，而是跟着某个祖先元素跑，而且只在该祖先范围内移动」。排查发现该祖先加了 transform: translateZ(0)（为了开启 GPU 加速）。请解释原因并给出排查与修复思路。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip tag">CSS</span><span class="chip tag">position fixed</span><span class="chip tag">transform</span><span class="chip tag">包含块</span><span class="chip tag">渲染陷阱</span></div>
     <div class="card"><h2>题目</h2><p>考察点：fixed 定位的包含块陷阱（transform 导致 fixed 失锚），典型的 CSS 故障排查题，检验是否真正理解渲染包含块规则。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（根因）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（根因）：</strong></p>
 <ul>
 <li>按规范，当元素的祖先设置了 <code>transform</code>、<code>filter</code>、<code>perspective</code>、<code>will-change: transform</code> 等非 none 值时，该祖先会成为 fixed 子元素的「包含块」。于是本应相对视口的 fixed 元素，改为相对这个祖先定位——这正是「弹窗跟着祖先跑」的原因。</li>
 <li>此外该祖先若尺寸/溢出受限，fixed 子元素的活动范围也被限制在祖先内，看起来像「只在祖先范围内移动」。</li>

@@ -96,7 +96,7 @@
     <h1>现代浏览器采用多进程架构，一次“输入 URL→页面展示”的导航涉及浏览器进程、网络进程、渲染进程、GPU 进程，它们各自负责什么？为什么要从单进程演进到多进程？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">技术经理</span><span class="chip tag">浏览器架构</span><span class="chip tag">多进程</span><span class="chip tag">渲染进程</span><span class="chip tag">沙箱</span></div>
     <div class="card"><h2>题目</h2><p>请说明浏览器多进程模型中各进程/线程的职责划分，以及多进程相比单进程解决了哪些问题（崩溃隔离、安全沙箱、性能与稳定性）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>浏览器进程（主进程）</strong>：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>浏览器进程（主进程）</strong>：负责地址栏、书签、前进后退、管理其他进程的生命周期，并作为“调度中心”协调导航流程；它本身不做渲染。</p>
 <p><strong>网络进程</strong>：独立负责 DNS 解析、TCP/TLS 建连、资源下载，与渲染解耦，避免一个慢请求拖垮整个页面；现代 Chrome 还把网络进程进一步做安全沙箱化。</p>
 <p><strong>渲染进程</strong>：每个标签页（同站隔离）一个独立渲染进程，负责 HTML/CSS/JS 的解析、布局、绘制与 JS 执行；它运行在沙箱里，无法直接访问磁盘与系统。</p>
 <p><strong>GPU 进程</strong>：专门负责图形合成（Composite）与 3D/Canvas/WebGL，把渲染进程产出的图层高效上屏。</p>

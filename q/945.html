@@ -96,7 +96,7 @@
     <h1>RabbitMQ 如何实现延迟队列？死信队列是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">RabbitMQ</span><span class="chip tag">延迟队列</span><span class="chip tag">死信队列</span></div>
     <div class="card"><h2>题目</h2><p>请说明基于 TTL+死信交换机（DLX）与延迟插件两种方案实现延迟消息，并解释死信进入交换机的条件。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>死信交换机 DLX</strong>：消息变成&quot;死信&quot;后，被重新投递到绑定的死信交换机，路由到死信队列由消费者处理。成为死信的三个条件：①消息被<strong>拒绝</strong>（basic.reject/nack 且 requeue=false）；②消息 <strong>TTL 过期</strong>；③队列达到<strong>最大长度</strong>，队首消息被挤掉。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>死信交换机 DLX</strong>：消息变成&quot;死信&quot;后，被重新投递到绑定的死信交换机，路由到死信队列由消费者处理。成为死信的三个条件：①消息被<strong>拒绝</strong>（basic.reject/nack 且 requeue=false）；②消息 <strong>TTL 过期</strong>；③队列达到<strong>最大长度</strong>，队首消息被挤掉。</p>
 <p><strong>方案一：TTL + DLX（经典组合，无需插件）</strong>：</p>
 <ol>
 <li>建一个普通队列 A，<strong>不设消费者</strong>，设置消息 TTL=延迟时长，绑定死信交换机；</li>

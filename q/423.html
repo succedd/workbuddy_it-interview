@@ -96,7 +96,7 @@
     <h1>CVM 密钥对（SSH Key）登录的原理是什么？相比密码登录有什么优劣？密钥丢失或想从密钥登录改回密码登录该如何处理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">密钥对</span><span class="chip tag">SSH</span><span class="chip tag">登录</span><span class="chip tag">安全</span><span class="chip tag">腾讯云</span></div>
     <div class="card"><h2>题目</h2><p>考察点：非对称加密登录原理、密钥 vs 密码取舍、密钥丢失应急、密钥↔密码切换。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>原理</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>原理</strong></p>
 <ul>
 <li>密钥对 = 公钥（服务器 <code>~/.ssh/authorized_keys</code>）+ 私钥（本地）。登录时服务端用公钥挑战、客户端用私钥应答，无需传输密码，杜绝暴力破解与窃听。</li>
 </ul>

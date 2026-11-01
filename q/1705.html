@@ -96,7 +96,7 @@
     <h1>多人视频会议里 Simulcast 和 SVC 分别解决什么问题？SFU 该如何按订阅方带宽分配码流？</h1>
     <div class="chips"><span class="chip diff">专家</span><span class="chip">系统设计题</span><span class="chip">WebRTC工程师</span><span class="chip">流媒体架构师</span><span class="chip tag">WebRTC</span><span class="chip tag">Simulcast</span><span class="chip tag">SVC</span><span class="chip tag">多人会议</span><span class="chip tag">SFU</span></div>
     <div class="card"><h2>题目</h2><p>考察多方场景的发送端多层码流设计与服务端选层策略。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>核心问题</strong>：N 方会议里每个发送端若只发一路全质量码流，弱网观众会被拖垮、SFU 转发压力也大，需要一次采集、多路输出。</li>
 <li><strong>Simulcast</strong>：同时编码多路独立流（如 1080p/540p/180p），各自完整 GOP，订阅方选一路拿；实现简单、兼容性好，代价是发送端多份编码算力与上行带宽。</li>

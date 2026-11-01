@@ -96,7 +96,7 @@
     <h1>前端安全：XSS 分哪几类、各自怎么防？CSRF 的攻击前提是什么，防御为什么要「组合拳」？请说清两者「谁的问题、在哪一层解决」。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">前端架构师</span><span class="chip tag">安全</span><span class="chip tag">XSS</span><span class="chip tag">CSRF</span><span class="chip tag">CSP</span><span class="chip tag">SameSite</span></div>
     <div class="card"><h2>题目</h2><p>考察点：XSS 与 CSRF 的成因差异及分层防御意识。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>一、XSS（跨站脚本）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、XSS（跨站脚本）</strong></p>
 <p>定义：攻击者向页面注入恶意客户端代码，由受害者浏览器执行，从而绕过访问控制、冒充用户。MDN 指出其成因是「不可信数据进入应用」或「动态内容未经验证就输出给用户」。分三类：</p>
 <ul>
 <li><strong>存储型</strong>：恶意脚本被<strong>永久存到服务器</strong>（评论、昵称等），其他用户加载页面即中招，危害最大；</li>

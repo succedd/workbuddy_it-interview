@@ -96,7 +96,7 @@
     <h1>线上接口偶发 502 / 503 / 504，分别意味着什么？请给出排查思路。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP</span><span class="chip tag">状态码</span><span class="chip tag">502</span><span class="chip tag">503</span><span class="chip tag">504</span><span class="chip tag">网关</span></div>
     <div class="card"><h2>题目</h2><p>考察点：5xx 网关/代理类状态码语义差异，以及与 HTTP 演进、反向代理、超时、限流的关联。高阶故障排查。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>502 Bad Gateway</strong>：网关/代理收到来自上游（应用、后端）的<strong>无效响应</strong>（如后端进程崩溃、返回了非 HTTP 报文、Nginx 连不上后端）。排查：检查上游服务是否存活、端口/健康检查、后端是否 OOM、反向代理的 upstream 配置。</li>
 <li><strong>503 Service Unavailable</strong>：服务端<strong>暂时无法处理</strong>（维护中、被限流/熔断、连接池耗尽、过载保护触发）。排查：看是否发布了维护页、限流阈值是否过低、依赖的 DB/缓存是否打满、线程池/连接池是否耗尽。</li>

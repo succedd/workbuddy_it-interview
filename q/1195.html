@@ -96,7 +96,7 @@
     <h1>编程/设计题：请手写一个最小可用的自定义 Spring Boot Starter —— 给出一个『自动配置类』与『AutoConfiguration.imports 注册文件』的核心结构，并说明关键注解的作用。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">Starter</span><span class="chip tag">自动配置</span><span class="chip tag">自定义starter</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Starter 原理落地——@AutoConfiguration + @ConditionalOnClass/@ConditionalOnMissingBean + AutoConfiguration.imports 文件三件套；要求给出可编译的骨架，并解释为什么能被 Spring Boot 自动发现。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>自动配置类（放在独立的 autoconfigure 模块）</strong>：用 @AutoConfiguration（本身即 @Configuration）标注；配合 @ConditionalOnClass 控制『classpath 有你的库类才生效』，配合 @ConditionalOnMissingBean 让用户能覆盖默认 Bean。</li>
 </ul>

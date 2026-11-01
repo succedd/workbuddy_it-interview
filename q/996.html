@@ -96,7 +96,7 @@
     <h1>Sqoop 增量导入的 --incremental append 与 lastmodified 模式有什么区别？各有什么坑？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip tag">Sqoop</span><span class="chip tag">增量导入</span><span class="chip tag">lastmodified</span><span class="chip tag">merge-key</span></div>
     <div class="card"><h2>题目</h2><p>考察点：增量模式语义、check-column 水位、append 与 merge-keys 的适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>append 模式</strong>：针对<strong>只增不改</strong>的数据（日志、订单流水），check-column 用自增 ID，每次只导 <code>id &gt; last-value</code> 的新行，追加到目标目录。坑：<code>last-value</code> 要自己记录并回填（脚本维护）；源库删数据感知不到。</li>
 <li><strong>lastmodified 模式</strong>：针对<strong>会更新</strong>的数据，check-column 用 update_time，导出 <code>&gt;= last-value</code> 的行。坑：① 老数据更新后<strong>旧文件里的行没删</strong>，HDFS 上会有重复——需配 <code>--merge-key</code>（主键）在合并 job 里去重（老记录+新记录按 key 取新）；② 时间边界取 <code>&gt;</code> 还是 <code>&gt;=</code> 要与水位管理一致，避免边界行丢/重。</li>

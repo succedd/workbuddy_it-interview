@@ -96,7 +96,7 @@
     <h1>什么时候需要做分库分表？单表数据量到什么量级就该考虑拆分？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">分库分表</span><span class="chip tag">MySQL</span><span class="chip tag">容量规划</span></div>
     <div class="card"><h2>题目</h2><p>从容量、性能、运维三个维度说明拆分的触发点，并说明拆分应是第几优先级的手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>容量瓶颈</strong>：单表行数达到千万级（经验值 500万~2000万）后，B+ 树层级变深、索引维护成本高，写入与范围查询明显变慢；同时单机磁盘容量与 MySQL 默认连接数（max_connections）都会成为硬上限。</li>
 <li><strong>性能瓶颈</strong>：热点行/大事务导致锁竞争加剧、慢 SQL 增多，QPS/TPS 触达单机极限，主从复制延迟被放大，读扩展也救不了写。</li>

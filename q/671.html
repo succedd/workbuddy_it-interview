@@ -96,7 +96,7 @@
     <h1>MySQL 主从延迟是怎么产生的？如何监控并缓解？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">SwiftUI</span><span class="chip tag">声明式</span><span class="chip tag">状态绑定</span></div>
     <div class="card"><h2>题目</h2><p>追问链第四问。考察点：从库单线程重放、大事务、锁等待、硬件差异等成因；Seconds_Behind_Master 的局限；并行复制（MTS）与拆大事务等缓解手段；延迟时应如何路由读请求。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：延迟的本质</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点一：延迟的本质</strong></p>
 <ul>
 <li>主从延迟 = 主库执行完事务的时刻，与从库重放完该事务的时刻之差。</li>
 <li>链路是串行的：主库写 binlog → 网络传输 → 从库写 relay log → 从库 SQL 线程重放，<strong>任何一环变慢都会累积成延迟</strong>。</li>

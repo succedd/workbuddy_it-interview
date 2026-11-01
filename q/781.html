@@ -96,7 +96,7 @@
     <h1>PyTorch 中张量（Tensor）与自动求导（autograd）机制是怎样的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">PyTorch</span><span class="chip tag">Tensor</span><span class="chip tag">autograd</span></div>
     <div class="card"><h2>题目</h2><p>说明 Tensor 的数据结构与反向传播所需的梯度记录机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Tensor</strong>：是带 GPU 加速支持的多维数组，类似 NumPy 但可在计算图上记录操作。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>Tensor</strong>：是带 GPU 加速支持的多维数组，类似 NumPy 但可在计算图上记录操作。</p>
 <p><strong>autograd</strong>：设置 <code>requires_grad=True</code> 的张量，其上的运算会被动态记录成计算图；调用 <code>loss.backward()</code> 后，PyTorch 自动沿图反向传播，算出各参数的 <code>.grad</code>（梯度）。</p>
 <p><strong>动态图优势</strong>：每次前向即时建图，控制流（if/for）灵活，调试直观；训练时常用 <code>optimizer.zero_grad()</code> 清空梯度再反传更新。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>如何用 jstack / Arthas 定位 Java 死锁？请给出一个『两个线程互相等待对方持有的锁』的实际排查步骤；死锁的四个必要条件与常见避免手段是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">死锁</span><span class="chip tag">jstack</span><span class="chip tag">Arthas</span><span class="chip tag">加锁顺序</span><span class="chip tag">Java并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：死锁定位工具（jstack 直接报 deadlock、Arthas thread -b）、死锁四要件、预防（顺序加锁/超时/检测）。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>排查步骤</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>排查步骤</strong></p>
 <ul>
 <li>① 抓线程栈：<code>jstack &lt;pid&gt;</code>，输出末尾 JVM 会<strong>直接打印『Found one Java-level deadlock』</strong>并指出互相等待的线程与锁；或 Arthas <code>thread -b</code> 直接列出阻塞源。</li>
 <li>② 看锁持有链：找到线程 A 持有 lock1 等 lock2、线程 B 持有 lock2 等 lock1 的成环关系，确认死锁。</li>

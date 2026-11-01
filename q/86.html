@@ -96,7 +96,7 @@
     <h1>什么是 RAG（检索增强生成）？典型流程？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">算法工程师</span><span class="chip tag">RAG</span><span class="chip tag">检索</span><span class="chip tag">向量库</span></div>
     <div class="card"><h2>题目</h2><p>说明为什么需要 RAG 及其关键组件。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>RAG</strong> = Retrieval-Augmented Generation：先<strong>检索</strong>外部知识，再让 LLM 基于检索内容<strong>生成</strong>答案，缓解幻觉、注入私有/实时知识。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>RAG</strong> = Retrieval-Augmented Generation：先<strong>检索</strong>外部知识，再让 LLM 基于检索内容<strong>生成</strong>答案，缓解幻觉、注入私有/实时知识。</p>
 <p><strong>离线（建库）</strong>：文档切片 → 向量化（Embedding 模型）→ 存入<strong>向量数据库</strong>。</p>
 <p><strong>在线（问答）</strong>：用户问题向量化 → 向量库<strong>相似检索</strong> Top-K 片段 → 拼进 Prompt（上下文）→ LLM 生成带引用的回答。</p>
 <p><strong>关键</strong>：切片策略、Embedding 质量、检索召回率、重排（rerank）、上下文裁剪、引用溯源。RAG 适合企业知识库、客服、合规问答。</p></div>

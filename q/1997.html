@@ -96,7 +96,7 @@
     <h1>如何用 reusable workflows 与 OIDC，实现跨仓库安全地复用流水线并避免把云凭证明文写进仓库？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CI/CD</span><span class="chip tag">reusable workflows</span><span class="chip tag">OIDC</span><span class="chip tag">安全</span></div>
     <div class="card"><h2>题目</h2><p>场景题：考察企业级 CI 复用与 Secrets 安全管理（零明文凭证）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>reusable workflows（可复用工作流）</strong>：把通用步骤（构建+测试+部署）抽到独立仓库的 <code>workflow.yml</code>，用 <code>workflow_call</code> 作为触发器；业务仓库通过 <code>uses: org/ci-repo/.github/workflows/deploy.yml@main</code> 引用。这样「流水线即代码」集中维护，避免每个仓库复制粘贴。</li>
 <li><strong>OIDC 免密钥取云凭证</strong>：在云厂商（AWS/Azure/GCP）配置一个信任 GitHub 的 OIDC 身份提供商，GitHub Actions 运行时自动签发一个短期令牌（Federated Token），部署 job 用 <code>actions/github-script</code> 或官方登录 action 换取临时云凭证。<strong>凭证从不落盘、不进 Secrets、几分钟即失效</strong>，从根本上消除明文 Secret 泄露风险。</li>

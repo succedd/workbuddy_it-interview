@@ -96,7 +96,7 @@
     <h1>Django ORM 中 select_related 和 prefetch_related 有什么区别？线上出现 N+1 查询怎么定位和修？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Django</span><span class="chip tag">ORM</span><span class="chip tag">N+1</span><span class="chip tag">prefetch_related</span><span class="chip tag">性能优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：JOIN vs 二次查询、N+1 问题排查。ORM 性能问题最高频的一道。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>select_related</strong>：对 <strong>外键 / 一对一</strong>，生成一条带 <strong>SQL JOIN</strong> 的查询，一次把关联对象取回来。适合「正向、单值」关系。</li>
 <li><strong>prefetch_related</strong>：对 <strong>多对多 / 一对多 / 反向外键</strong>，先查主表，再用 <strong>IN 查询</strong>把关联数据一次性批量取回，在 Python 层完成「拼装」。适合「多值、结果集可能很大」的关系，避免 JOIN 导致的行数爆炸。</li>

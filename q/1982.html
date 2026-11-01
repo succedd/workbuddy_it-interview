@@ -96,7 +96,7 @@
     <h1>如何把混沌工程融入 CI/CD 和 SLO 体系，让它成为常态化工程实践而非一次性活动？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">混沌工程</span><span class="chip tag">CI/CD</span><span class="chip tag">SLO</span><span class="chip tag">GameDay</span><span class="chip tag">韧性工程</span></div>
     <div class="card"><h2>题目</h2><p>高级：混沌工程最怕「热闹一阵就荒废」。请讲清怎样把实验沉淀进研发流程，并用 SLO 做护栏与度量。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>融入 CI/CD 与发布</strong>：在预发/金丝雀阶段把<strong>轻量混沌实验作为发布门禁</strong>（如每次发布自动跑「杀一个副本 + 网络延迟」验证自愈），用 Chaos Mesh/Litmus 以声明式实验随流水线触发；生产侧则以<strong>常态化 GameDay + 定时实验</strong>替代一次性活动。</li>
 <li><strong>用 SLO 做护栏与判定</strong>：把稳态指标直接映射到 <strong>SLO/Error Budget</strong>——实验期间若 Error Budget 消耗速率异常或 SLI 跌破目标，<strong>自动终止实验并告警</strong>；用 SLO 把「韧性」从主观感觉变成可度量目标，脆弱点以「消耗预算」量化优先级。</li>

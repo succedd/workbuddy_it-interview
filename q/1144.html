@@ -96,7 +96,7 @@
     <h1>流水线里单元测试偶发失败（flaky test）卡住合入，如何区分“真 bug”与“不稳定测试”，并给出重试、隔离与 quarantine 的处理策略？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip tag">flaky test</span><span class="chip tag">CI</span><span class="chip tag">quarantine</span><span class="chip tag">重试</span><span class="chip tag">测试稳定性</span></div>
     <div class="card"><h2>题目</h2><p>请给出一个可复现的排查与治理流程：先判断是真失败还是 flaky，再用重试/quarantine/修复三种手段分级处理，避免“一红就重跑”掩盖真问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先判断性质</strong>：单看一次红无法定论，看“同一 commit 在多次流水线/不同 runner 上是否稳定复现”——只在特定时序/并发/环境下偶红、重跑就绿，多半是 flaky；固定必红通常是真 bug 或环境不一致。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先判断性质</strong>：单看一次红无法定论，看“同一 commit 在多次流水线/不同 runner 上是否稳定复现”——只在特定时序/并发/环境下偶红、重跑就绿，多半是 flaky；固定必红通常是真 bug 或环境不一致。</p>
 <p><strong>临时止血用重试</strong>：对公认偶发的 stage 加有限次重试（如 retry: 2），但要“只重试 flaky 严重的 job”而非全量，否则会把真失败也重试掉。</p>
 <p><strong>隔离与 quarantine</strong>：把高 flaky 用例移出主干必跑集、单独放“已知不稳定”分组或打 quarantine 标记，不让它阻塞合入，同时登记工单限期修复——核心是“不掩盖但要可控”。</p>
 <p><strong>根治才是目的</strong>：flaky 根因常是测试间共享状态/全局单例、时间/随机数依赖、异步未 await、测试顺序耦合；修复方向是让用例独立、确定、幂等，而非长期靠重试续命。</p></div>

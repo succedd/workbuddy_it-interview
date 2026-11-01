@@ -512,7 +512,7 @@ function ensureWeakCols(db) {
   return weakColsPromise;
 }
 
-/* ==================== 数据删除（20261101a） ====================
+/* ==================== 数据删除（20261101b） ====================
  * 隐私政策承诺了「导出 / 清空 / 注销」三项能力，这里提供后两项：
  *   DELETE /me/data    清学习数据（收藏/历史/错题/打卡/面试报告），保留账号
  *   POST   /auth/delete 注销：上面全部 + 会话/重置令牌/投稿/反馈 + 账号行本身
@@ -2099,7 +2099,7 @@ export default {
         if (p === "/auth/reset" && request.method === "POST") return await handleResetPassword(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "GET") return await handleGetMyData(env, request, corsOrigin);
         if (p === "/me/data" && request.method === "PUT") return await handlePutMyData(env, request, corsOrigin);
-        /* 清空学习数据 / 注销账号（20261101a，对应隐私政策第七条） */
+        /* 清空学习数据 / 注销账号（20261101b，对应隐私政策第七条） */
         if (p === "/me/data" && request.method === "DELETE") return await handleDeleteMyData(env, request, corsOrigin);
         if (p === "/auth/delete" && request.method === "POST") return await handleDeleteAccount(env, request, corsOrigin);
         if (p === "/me/reports" && request.method === "GET") return await handleGetReports(env, request, corsOrigin);

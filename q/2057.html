@@ -96,7 +96,7 @@
     <h1>构建产物里可选链 a?.b 没被转译，导致旧浏览器 SyntaxError，可能原因与排查思路是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Babel</span><span class="chip tag">browserslist</span><span class="chip tag">可选链</span><span class="chip tag">配置优先级</span><span class="chip tag">排障</span></div>
     <div class="card"><h2>题目</h2><p>考察点：定位 preset-env 未转译新语法的根因（browserslist / 配置优先级 / 链路），以及用 BABEL_SHOW_CONFIG_FOR 等工具排查。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>最可能原因：browserslist 目标环境声明过新（如包含已原生支持可选链的浏览器），preset-env 据此「认为」目标环境已支持而跳过转译；检查 .browserslistrc 或 package.json 的 browserslist 字段是否被误配。</li>
 <li>配置来源冲突：Babel 配置优先级为 babel.config.js（项目级）&gt; .babelrc / package.json(babel)（文件相对）&gt; 文件内联；若多处声明 targets，可能被高优先级的覆盖。可用 <code>BABEL_SHOW_CONFIG_FOR=path/to/file.js babel file.js</code> 打印某文件生效配置来定位。</li>

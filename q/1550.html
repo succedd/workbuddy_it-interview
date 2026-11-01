@@ -96,7 +96,7 @@
     <h1>用 Python + pytest 写一个参数化单元测试，验证邮箱格式校验函数对合法/非法输入的处理。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">测试工程师</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">pytest</span><span class="chip tag">参数化</span><span class="chip tag">单元测试</span><span class="chip tag">测试开发</span><span class="chip tag">Python</span></div>
     <div class="card"><h2>题目</h2><p>考察点：测试开发的基本功——参数化测试与断言设计。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>被测函数</strong>：先用正则实现 is_valid_email(s)，规则覆盖「含且仅一个 @、域名有点的基本结构」；真实业务还要限制长度与非法字符，但示例聚焦核心逻辑。</li>
 <li><strong>参数化避免重复</strong>：用 @pytest.mark.parametrize 把多组（输入, 期望）一次性跑成多个用例，新增 case 只加一行数据，可读性与可维护性远好于复制粘贴多个函数。</li>

@@ -96,7 +96,7 @@
     <h1>HTML、CSS、JS 在浏览器里是怎样一步步变成首屏像素的？JS 和 CSS 分别会在哪一步阻塞渲染？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">浏览器</span><span class="chip tag">CRP</span><span class="chip tag">渲染</span></div>
     <div class="card"><h2>题目</h2><p>考察点：关键渲染路径（CRP）全流程——解析、构建 DOM/CSSOM、Render Tree、Layout、Paint、Composite 的先后顺序与阻塞关系。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>解析 HTML → DOM</strong>：浏览器边下载边解析 HTML，生成文档对象模型 DOM 树；遇到 <code>&lt;script&gt;</code>（无 defer/async）会暂停解析去执行脚本。</li>
 <li><strong>解析 CSS → CSSOM</strong>：下载并解析 CSS（外链/内联/style），生成 CSS 对象模型；CSSOM 与 DOM 构建并行，但 JS 执行会等 CSSOM 就绪。</li>

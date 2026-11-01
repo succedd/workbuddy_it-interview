@@ -96,7 +96,7 @@
     <h1>为什么 v-for 列表一定要绑定 key？用 index 做 key 有什么问题？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vue2</span><span class="chip tag">虚拟DOM</span><span class="chip tag">key</span></div>
     <div class="card"><h2>题目</h2><p>从虚拟 DOM Diff 角度说明 key 的作用，以及 index 作 key 导致的典型 Bug。</p></div>
-    <div class="card"><h2>参考答案</h2><p>key 是 Diff 算法判断<strong>节点是否可复用</strong>的身份标识。同层级对比时，Vue 优先按 key 匹配旧节点：key 相同则原地复用并打补丁，不同则当新节点创建。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p>key 是 Diff 算法判断<strong>节点是否可复用</strong>的身份标识。同层级对比时，Vue 优先按 key 匹配旧节点：key 相同则原地复用并打补丁，不同则当新节点创建。</p>
 <p><strong>用 index 作 key 的问题</strong>：列表<strong>头部/中间插入或删除</strong>时，后续所有节点的 index 都变了，Vue 会把「内容错位的旧节点」当成「同一个节点」就地更新——① 多做无谓的 DOM 更新；② 带有<strong>内部状态的组件</strong>（输入框勾选、滚动位置、动画）状态会串位；③ 过渡动画也无法正确追踪。</p>
 <p><strong>正确做法</strong>：用数据的唯一业务 id 作 key，且同列表内 key 稳定唯一。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>请详细说明 Go 的 GMP 调度模型：G、M、P 各自是什么，数量如何决定，调度时如何取任务？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Go开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip tag">GMP</span><span class="chip tag">并发调度</span><span class="chip tag">Goroutine</span></div>
     <div class="card"><h2>题目</h2><p>解释 GMP 三要素、GOMAXPROCS 的含义、工作窃取(Work Stealing)与本地/全局队列，以及为什么需要 P。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><strong>G (Goroutine)</strong>：用户态协程，承载一段并发工作；初始栈仅约 2KB，可动态扩容，切换在用户态（约 100ns），可存在数百万个。</li>
 <li><strong>M (Machine)</strong>：操作系统线程，真正执行 G 的物理载体；一个 M 必须绑定 P 才能运行 Go 代码；系统调用阻塞时 M 与 P 解绑。</li>
 <li><strong>P (Processor)</strong>：逻辑处理器/调度上下文，持有本地运行队列（容量 256）、mcache 等；数量由 <code>GOMAXPROCS</code> 决定，默认等于 CPU 核数——即同一时刻最多 <code>GOMAXPROCS</code> 个 G 真正并行。</li>

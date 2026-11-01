@@ -96,7 +96,7 @@
     <h1>为什么需要虚拟内存？虚拟内存解决了什么问题，逻辑地址是如何转换成物理地址的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">虚拟内存</span><span class="chip tag">页表</span><span class="chip tag">MMU</span><span class="chip tag">地址转换</span><span class="chip tag">缺页</span></div>
     <div class="card"><h2>题目</h2><p>考察点：虚拟内存的价值与地址转换。要求说清内存扩展、进程隔离、内存保护，并解释页表/MMU 把虚拟地址映射成物理地址的过程。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：虚拟内存为每个进程提供独立的、连续的虚拟地址空间，通过页表+MMU 映射到物理内存（或磁盘交换区），从而突破物理内存上限、实现进程隔离与保护。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：虚拟内存为每个进程提供独立的、连续的虚拟地址空间，通过页表+MMU 映射到物理内存（或磁盘交换区），从而突破物理内存上限、实现进程隔离与保护。</p>
 <p><strong>解决的核心问题</strong>：</p>
 <ul>
 <li><strong>内存扩展</strong>：程序可用远超物理 RAM 的地址空间，暂时不用的页换出到磁盘，需要时再换入。</li>

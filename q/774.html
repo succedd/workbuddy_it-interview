@@ -96,7 +96,7 @@
     <h1>什么是分页？逻辑地址是如何映射到物理地址的（页表、MMU、TLB）？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip tag">操作系统</span><span class="chip tag">分页</span><span class="chip tag">页表</span><span class="chip tag">MMU</span><span class="chip tag">TLB</span></div>
     <div class="card"><h2>题目</h2><p>考察点：分页机制、逻辑地址的页号+页内偏移结构、页表与 MMU 转换、TLB 快表的作用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>分页</strong>：把虚拟和物理内存都切成固定大小的「页/页框」（如 4KB），通过页表记录「虚拟页号 → 物理页框号」的映射，进程连续的逻辑地址在物理上可离散存放。</li>
 <li><strong>地址转换过程</strong>：逻辑地址拆分为「页号 + 页内偏移」；MMU 用页号查页表得到物理页框号，再拼接页内偏移形成物理地址。若页不在内存（有效位为 0）则触发缺页中断。</li>

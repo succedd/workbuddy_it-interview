@@ -96,7 +96,7 @@
     <h1>某推荐场景线上 CTR 突然暴跌、时长下滑，你会如何系统排查？请结合特征 / 样本 / 偏差分析。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">推荐系统</span><span class="chip tag">故障排查</span><span class="chip tag">偏差</span><span class="chip tag">特征穿越</span></div>
     <div class="card"><h2>题目</h2><p>考察对推荐系统线上问题的排障思路，涉及数据质量、特征穿越、曝光偏差等。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 22 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先定位是不是真的「模型 / 策略」问题</strong>：确认是不是流量结构变化（节假日、新渠道、大盘波动）、前端埋点 / 上报丢失、推荐位曝光入口改动等外部因素——这类往往占多数。</li>
 <li><strong>样本与特征侧</strong>：检查是否存在<strong>特征穿越</strong>（训练用了推理时拿不到的未来特征，如把「点击」作为特征）、特征 / ID 映射漂移、实时特征管道断流、线上线下特征不一致（training-serving skew）。</li>

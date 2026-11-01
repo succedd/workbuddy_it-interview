@@ -96,7 +96,7 @@
     <h1>Redis 的文件事件处理器（Reactor 模型）由哪四个部分组成？Redis 6.0 的多线程做了什么，命令执行为什么仍是单线程？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">数据库工程师</span><span class="chip tag">Redis</span><span class="chip tag">Reactor</span><span class="chip tag">IO多路复用</span><span class="chip tag">多线程</span><span class="chip tag">网络模型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 Redis 网络模型四大组成与事件驱动流程的掌握，以及 6.0 多线程 IO 的准确边界（只做网络 IO、不执行命令）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>文件事件处理器的四个组成部分</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>文件事件处理器的四个组成部分</strong></p>
 <p><img src="/assets/q/fig-redis-reactor.svg" alt="图：Reactor 事件驱动模型：多路复用程序监听套接字，分派器路由到三种事件处理器" loading="lazy"></p>
 <ol>
 <li><strong>套接字</strong>：客户端连接，产生连接、读、写等文件事件；</li>

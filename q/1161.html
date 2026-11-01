@@ -96,7 +96,7 @@
     <h1>Cookie 与 localStorage 最容易被混淆的一点是什么？从「是否随请求发送、生命周期、容量」三个维度讲清二者差异。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">前端开发工程师</span><span class="chip tag">浏览器</span><span class="chip tag">存储</span><span class="chip tag">localStorage</span><span class="chip tag">Cookie</span></div>
     <div class="card"><h2>题目</h2><p>考察点：浏览器存储方案对比——容量、生命周期、作用域、是否随请求发送，避免把敏感 token 误存（单选题）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确认知</strong>：两者最易被混淆的是『是否自动随请求发送』，选错会带来安全或性能问题。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确认知</strong>：两者最易被混淆的是『是否自动随请求发送』，选错会带来安全或性能问题。</p>
 <p><strong>要点</strong>：</p>
 <ul>
 <li><strong>是否随请求发送</strong>：Cookie 约 4KB，<strong>每次同源 HTTP 请求自动携带</strong>（含给后端的请求），可设 <code>HttpOnly</code>/<code>Secure</code>/<code>SameSite</code>；Web Storage（localStorage/sessionStorage）<strong>不随请求发送</strong>，纯客户端。</li>

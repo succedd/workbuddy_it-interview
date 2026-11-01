@@ -96,7 +96,7 @@
     <h1>如何基于 BERT 做下游任务微调？文本分类、NER、句子对匹配的输入构造与输出层有何差异？为什么通常在 [CLS] 上接分类头？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip tag">BERT</span><span class="chip tag">微调</span><span class="chip tag">fine-tuning</span><span class="chip tag">NER</span><span class="chip tag">分类头</span></div>
     <div class="card"><h2>题目</h2><p>说明 BERT 微调的统一范式及不同任务头的差异。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>统一范式</strong>：在预训练 BERT 之上加一个轻量任务头，用下游标注数据<strong>端到端微调</strong>所有参数（或只调部分），成本低、效果好。</li>
 <li><strong>文本分类</strong>：输入为 <code>[CLS] 文本 [SEP]</code>，取 <strong>[CLS] 的最终隐状态</strong>接一个全连接加 softmax 分类。选 [CLS] 是因为预训练时它就是「聚合整句」的专用向量，且经过 NSP 训练。</li>

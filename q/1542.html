@@ -96,7 +96,7 @@
     <h1>用 LoRA 微调大模型时出现灾难性遗忘与过拟合，如何诊断并缓解？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">LoRA</span><span class="chip tag">微调</span><span class="chip tag">灾难性遗忘</span><span class="chip tag">过拟合</span><span class="chip tag">PEFT</span></div>
     <div class="card"><h2>题目</h2><p>考察点：参数高效微调（PEFT）中的典型风险——灾难性遗忘与过拟合，以及对应的诊断与缓解手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先诊断再下药</strong>：灾难性遗忘表现为通用能力（如指令遵循、其他任务）在微调后明显下降，可用一组「保留集」评测前后差异定位；过拟合则表现为训练集 loss 持续下降、但验证集/下游任务指标先升后降，或对新样本泛化差。两者要分开看，不能混为一谈。</li>
 <li><strong>缓解灾难性遗忘</strong>：LoRA 只训练低秩适配矩阵、冻结主干，本身已大幅降低遗忘面；必要时加入 replay（混合一小部分通用/预训练数据共同训练）、降低学习率、缩小可训练秩 r，或在正则上约束 ΔW 偏离主干的幅度。</li>

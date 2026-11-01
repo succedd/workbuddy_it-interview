@@ -96,7 +96,7 @@
     <h1>物模型（TSL）与规则引擎如何配合做设备数据流转？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">IoT开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">物模型</span><span class="chip tag">TSL</span><span class="chip tag">规则引擎</span></div>
     <div class="card"><h2>题目</h2><p>考察属性/事件/服务建模，以及规则编排与性能边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>物模型 TSL</strong>：用属性（property，设备状态）、事件（event，告警/故障）、服务（service，远程指令）描述设备能力，平台据此做数据解析、校验、可视化和指令下发；TSL 要与设备上报的 JSON 字段、单位、枚举严格对齐。</li>
 <li><strong>规则引擎</strong>：订阅设备消息，按 SQL / 条件过滤、转换后转发到 Kafka、数据库、函数计算或另一个主题；支持去重、重试、死信队列，把「设备接入」与「业务处理」解耦。</li>

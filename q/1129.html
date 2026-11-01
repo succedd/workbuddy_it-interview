@@ -96,7 +96,7 @@
     <h1>为什么 CSS 会阻塞渲染、JavaScript 会阻塞 HTML 解析？defer、async、preload、关键 CSS 内联分别如何缓解渲染阻塞？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">技术经理</span><span class="chip tag">渲染阻塞</span><span class="chip tag">defer</span><span class="chip tag">async</span><span class="chip tag">preload</span><span class="chip tag">关键CSS</span></div>
     <div class="card"><h2>题目</h2><p>请解释浏览器在解析 HTML 时遇到 &lt;link&gt; 样式表与 &lt;script&gt; 脚本的阻塞行为，以及 defer / async / preload / 关键 CSS 内联 各自如何打破阻塞、适用什么场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>CSS 阻塞渲染</strong>：浏览器构建渲染树需要 DOM + CSSOM，所以 &lt;link&gt; 样式表会阻塞首次渲染（但不会阻塞 HTML 解析）；样式未就绪前不会 paint，否则会闪。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>CSS 阻塞渲染</strong>：浏览器构建渲染树需要 DOM + CSSOM，所以 &lt;link&gt; 样式表会阻塞首次渲染（但不会阻塞 HTML 解析）；样式未就绪前不会 paint，否则会闪。</p>
 <p><strong>JS 阻塞解析</strong>：默认 &lt;script&gt; 会阻塞 HTML 解析并等待下载执行完（因为脚本可能改 DOM），这就是“脚本放在底部”的原因。</p>
 <p><strong>defer</strong>：下载不阻塞解析，延迟到 DOM 解析完成、DOMContentLoaded 前按顺序执行，适合依赖 DOM 的外部脚本。</p>
 <p><strong>async</strong>：下载不阻塞解析，下载完立即执行、不保证顺序，适合独立无依赖的脚本（如统计 SDK）。</p>

@@ -96,7 +96,7 @@
     <h1>Git 创建分支为什么几乎是零成本的？分支和 HEAD 在 Git 内部到底是什么？这与 SVN 等集中式系统的分支有何本质区别？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">Git</span><span class="chip tag">分支</span><span class="chip tag">HEAD</span><span class="chip tag">提交图</span></div>
     <div class="card"><h2>题目</h2><p>考察点：分支的底层实现——引用（ref）与提交图。追问：detached HEAD 状态是怎么产生的，在它上面提交会发生什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：Git 分支只是一个指向某个 commit 的 41 字节可变指针（引用），创建分支 = 写一个 .git/refs/heads/&lt;name&gt; 文件，所以是 O(1) 操作。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Git 分支只是一个指向某个 commit 的 41 字节可变指针（引用），创建分支 = 写一个 .git/refs/heads/&lt;name&gt; 文件，所以是 O(1) 操作。</p>
 <ul>
 <li><strong>底层结构</strong>：Git 存的是提交对象构成的有向无环图（DAG），每个提交指向父提交和一棵目录树快照。分支不是「一份文件副本」，只是图上某个节点的书签；默认分支 master/main 和新分支初始指向同一提交，各自信件向前移动。</li>
 <li><strong>HEAD</strong>：指向「当前所在分支」的引用（通常内容是 <code>ref: refs/heads/main</code>）；提交时 HEAD 所指的分支引用前移一格。这就是「分支自动跟踪最新提交」的机制。</li>

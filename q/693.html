@@ -96,7 +96,7 @@
     <h1>OpenGL 渲染管线的主要阶段（顶点→光栅化→片元）是怎样的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">游戏引擎工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">OpenGL</span><span class="chip tag">渲染管线</span><span class="chip tag">光栅化</span></div>
     <div class="card"><h2>题目</h2><p>描述从提交顶点到屏幕像素经过的关键阶段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>顶点处理</strong>：顶点着色器变换坐标（模型→视图→投影），输出裁剪空间坐标。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>顶点处理</strong>：顶点着色器变换坐标（模型→视图→投影），输出裁剪空间坐标。</p>
 <p><strong>图元装配与裁剪</strong>：把顶点连成三角形，裁剪掉视锥外部分，做透视除法得 NDC。</p>
 <p><strong>光栅化</strong>：把三角形离散为屏幕上的片元（候选像素）。</p>
 <p><strong>片元处理</strong>：片元着色器计算每个片元颜色，再做深度/模板测试、混合，写入帧缓冲。理解管线才能定位性能瓶颈（顶点重/填充率重）。</p></div>

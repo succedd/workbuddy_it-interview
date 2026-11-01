@@ -96,7 +96,7 @@
     <h1>MongoDB 文档建模时，「内嵌（Embedded）」和「引用（Reference）」该如何取舍？请以 1:1、1:N、N:N 三种关系举例说明。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">文档建模</span><span class="chip tag">内嵌</span><span class="chip tag">引用</span><span class="chip tag">反范式化</span><span class="chip tag">MongoDB</span></div>
     <div class="card"><h2>题目</h2><p>考察点：MongoDB 反范式化建模的核心决策——内嵌还是引用，能否结合具体关系给出合理方案，是区分「会用」和「用得好」的关键场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>内嵌（Embedded）</strong>：把关联数据作为子文档/数组直接放进父文档。优点是不需要 JOIN、一次查询即可拿到完整数据、可原子更新；适合「强关联、一起读写、规模可控」的关系。例：1:1 的用户与用户资料、1:N 的订单与订单项（订单项数组内嵌在订单里）。</li>
 <li><strong>引用（Reference）</strong>：在文档里只存对方文档的 _id（必要时加 dbref），靠应用层或 $lookup 再去取。适合「会被独立访问」「规模会无限增长」「多对多」的场景。例：N:N 的用户与课程，用单独的中间集合或双方维护 id 数组；1:N 中「N 会无限膨胀」的评论列表（内嵌会导致文档超 16MB 上限）应改为引用+单独集合。</li>

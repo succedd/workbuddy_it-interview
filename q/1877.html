@@ -96,7 +96,7 @@
     <h1>Unreal Engine 的网络同步：RPC 和属性复制怎么配合？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Unreal Engine开发工程师</span><span class="chip tag">UE网络</span><span class="chip tag">RPC</span><span class="chip tag">属性复制</span><span class="chip tag">服务器权威</span></div>
     <div class="card"><h2>题目</h2><p>考察 UE 客户端-服务器模型、RPC 和复制规则。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>模型</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>模型</strong></p>
 <ul>
 <li>UE 采用服务器权威；客户端把输入发给服务器，服务器更新状态再复制给客户端。</li>
 <li>Actor 复制需要 <code>bReplicates</code>，属性用 <code>Replicated</code>/<code>ReplicatedUsing</code>；只在服务器改，客户端收到回调。</li>

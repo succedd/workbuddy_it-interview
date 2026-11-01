@@ -96,7 +96,7 @@
     <h1>React 18 的 Fiber 架构与并发渲染（Concurrent Rendering）解决了什么问题？可中断渲染、优先级调度是如何实现的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">Fiber</span><span class="chip tag">并发渲染</span><span class="chip tag">优先级调度</span><span class="chip tag">Suspense</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 4 问：从虚拟 DOM 的协调进一步到 Fiber——React 的渲染引擎重构。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>解决的核心问题</strong>：旧版 Stack Reconciler 是<strong>同步递归</strong>遍历虚拟 DOM，一旦开始就无法打断，组件树很大时主线程被长时间占用，导致输入卡顿、动画掉帧。Fiber 把渲染拆成<strong>可中断、可恢复的小任务单元</strong>，让 React 在浏览器空闲时分段工作，并在高优先级任务（如用户输入）到来时暂停低优先级渲染。</li>
 <li><strong>Fiber 是什么</strong>：React 16 引入的<strong>新协调引擎</strong>，把组件树重构为一串「Fiber 节点」链表。每个 Fiber 记录组件类型、状态、副作用与指向父子/兄弟的指针，使遍历可增量进行、随时挂起与恢复。</li>

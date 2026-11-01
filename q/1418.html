@@ -96,7 +96,7 @@
     <h1>MongoDB 4.0+ 支持多文档 ACID 事务，它与关系型数据库事务有何异同？在业务建模时，应该优先用事务来保证一致性，还是优先用「内嵌文档」来规避跨文档问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">事务</span><span class="chip tag">ACID</span><span class="chip tag">多文档事务</span><span class="chip tag">内嵌</span><span class="chip tag">建模权衡</span></div>
     <div class="card"><h2>题目</h2><p>考察点：多文档事务的能力边界与成本，以及「事务 vs 内嵌」的建模权衡，是 MongoDB 进阶面试的高频高级题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（与关系型事务的异同）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（与关系型事务的异同）：</strong></p>
 <ul>
 <li><strong>同</strong>：提供 ACID——原子性（all-or-nothing）、一致性、隔离性（快照隔离/snapshot，读已提交快照）、持久性（写复制到多数节点才提交）。</li>
 <li><strong>异</strong>：MongoDB 多文档事务默认有 60 秒执行超时（maxTransactionLockRequestTimeoutMillis），且事务内操作会被记录到 oplog 造成「写放大」；并非所有操作都支持（如部分 DDL、某些聚合阶段受限）；跨分片事务开销更大、延迟更高。</li>

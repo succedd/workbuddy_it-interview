@@ -96,7 +96,7 @@
     <h1>应用日志大量出现「Connection is not available, request timed out after 30000ms」，结合 HikariCP 的工作原理与关键参数，说说你的排查思路？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景排查题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">连接池</span><span class="chip tag">HikariCP</span><span class="chip tag">连接泄漏</span><span class="chip tag">数据库调优</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对连接池借还模型、核心参数与常见故障（池耗尽、连接泄漏、慢 SQL 占用）的综合排查能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先讲清楚连接池的工作原理</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先讲清楚连接池的工作原理</strong></p>
 <p><img src="/assets/q/fig-conn-pool.svg" alt="图：应用线程从连接池借出/归还连接，池维护空闲队列、借出集合与等待队列" loading="lazy"></p>
 <p>连接池在应用与数据库之间维护一批长连接：应用线程通过 <code>getConnection()</code> 从池中<strong>借出</strong>连接，用完调用 <code>close()</code> 并不是真关闭，而是<strong>归还</strong>回池。池内部维护三部分：空闲连接队列（可立即借出）、借出连接集合（正在使用）、等待队列（拿不到连接的线程排队，最多等 <code>connectionTimeout</code>，HikariCP 默认 30000ms）。报错里的 30000ms 正是排队超时——说明<strong>池里的连接全部被占用了</strong>。</p>
 <p><strong>排查步骤</strong></p>

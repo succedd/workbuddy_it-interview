@@ -96,7 +96,7 @@
     <h1>留言板被发现可以注入恶意脚本，如何定位并修复，同时保留用户发富文本的能力？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">信息安全工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">XSS</span><span class="chip tag">DOMPurify</span><span class="chip tag">CSP</span><span class="chip tag">富文本</span></div>
     <div class="card"><h2>题目</h2><p>场景题：线上留言板出现存储型 XSS。请给出排查步骤与修复方案，并说明如何不破坏富文本排版。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定位</strong>：确认注入点（评论内容/昵称/URL 参数），在浏览器查看响应里恶意脚本是否原样回显、是否被转义；区分是存储型（已入库）还是反射/DOM 型。</li>
 <li><strong>修复</strong>：① 服务端对所有输出做 HTML 实体转义；② 富文本场景用白名单净化（DOMPurify）而非黑名单；③ 下发 CSP 头 <code>Content-Security-Policy: default-src &#39;self&#39;</code> 阻断外域脚本；④ 入库前做长度与格式校验。</li>

@@ -96,7 +96,7 @@
     <h1>什么是缓存穿透？它通常发生在什么场景？为什么它会把压力直接打到数据库？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">缓存穿透</span><span class="chip tag">缓存异常</span><span class="chip tag">高并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对缓存穿透本质的理解——与『雪崩/击穿』最关键的区别是『请求的数据在缓存和数据库里都不存在』。要求讲清发生场景与危害链路，而不是和击穿混为一谈。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定义</strong>：缓存穿透指用户访问的数据『既不在 Redis 缓存中，也不在数据库（如 MySQL）中』。因为数据库也查不到，所以永远无法把结果回填进缓存，后续每一次相同请求都会穿过缓存直达数据库。</li>
 <li><strong>发生场景</strong>：① 黑客恶意攻击，用脚本批量请求不存在的数据（如 id=-1、超大随机 id）；② 业务误操作，把缓存和数据库里的数据一起误删；③ 业务 bug，入参校验缺失导致非法 key 进入查询链路。</li>

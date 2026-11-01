@@ -96,7 +96,7 @@
     <h1>Swift 相比 Objective-C 有哪些核心改进？苹果为什么在 2014 年推出新语言？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Swift</span><span class="chip tag">iOS</span><span class="chip tag">ARC</span><span class="chip tag">可选类型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Swift 诞生动机、安全性与表达力、与 OC 互操作。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>诞生动</strong>机：Objective-C 的动态消息机制灵活但错误发现晚（nil 消息静默失败、指针错误运行时才崩）、语法冗长、内存管理心智负担大。苹果需要一门<strong>安全、现代、快</strong>的语言重写开发体验。</li>
 <li><strong>安全三件套</strong>：① 可选类型（<code>Optional</code>）强制显式处理 nil，<code>?</code>/<code>!</code>/<code>guard let</code> 让空值路径一目了然；② 自动引用计数（ARC）编译期插入retain/release，无需手动管理也无需 GC 停顿；③ 强类型+值类型优先（struct/enum 拷贝语义），减少共享可变状态。</li>

@@ -96,7 +96,7 @@
     <h1>Java 中 == 和 equals() 的区别是什么？为什么在重写 equals() 时通常必须同时重写 hashCode()？如果不重写会有什么后果？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Java</span><span class="chip tag">equals</span><span class="chip tag">hashCode</span><span class="chip tag">哈希集合</span><span class="chip tag">约定</span></div>
     <div class="card"><h2>题目</h2><p>考察点：equals/hashCode 契约与哈希集合正确性，是 Java 基础中区分「背过」和「真懂」的核心简答题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（== 与 equals 区别）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（== 与 equals 区别）：</strong></p>
 <ul>
 <li>== 比较地址（基本类型比值）；equals 是方法，默认比地址，业务类通常重写为比较「业务字段」是否相等。</li>
 <li>比较内容应优先用 equals，且字符串比较务必用 equals 而非 ==。</li>

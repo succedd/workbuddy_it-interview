@@ -96,7 +96,7 @@
     <h1>什么是优先级反转？优先级继承如何解决它？FreeRTOS 的互斥量和二值信号量为什么不通用？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">固件工程师</span><span class="chip">IoT开发工程师</span><span class="chip tag">优先级反转</span><span class="chip tag">优先级继承</span><span class="chip tag">FreeRTOS</span><span class="chip tag">互斥量</span></div>
     <div class="card"><h2>题目</h2><p>考察 RTOS 经典并发问题：优先级反转的成因（火星探路者案例）、优先级继承与天花板协议、互斥量与信号量的语义差异。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>优先级反转的成因</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>优先级反转的成因</h3>
 <p>三个任务共享一把锁：<strong>低优先级任务 L 持锁 → 高优先级任务 H 来抢锁被阻塞 → 中优先级任务 M 抢不到 H 的 CPU 却能一直跑</strong>（H 被 L「间接」卡住，而 L 又被 M 压着）。结果 H 的响应时间取决于 M 什么时候让出 CPU——<strong>高优先级被中优先级反向压制</strong>，这就叫优先级反转。</p>
 <p>经典案例：1997 年<strong>火星探路者</strong>号在火星上反复重启，就是 VxWorks 里一个互斥锁保护的数据被低优先级气象任务持锁、被中优先级通信任务抢占导致高优先级总线管理任务超时看门狗复位，NASA 远程开启优先级继承才救回来。</p>
 <h3>解决方案</h3>

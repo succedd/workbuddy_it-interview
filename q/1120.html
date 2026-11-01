@@ -96,7 +96,7 @@
     <h1>本地 Spring 事务如何与分布式事务衔接，边界在哪里？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">分布式事务</span><span class="chip tag">Seata</span><span class="chip tag">本地消息表</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>下单服务在本地 DB 落库后还要调用库存、积分两个远程服务，如何保证整体一致性？请说明本地事务与分布式事务的衔接点与边界。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>明确边界</strong>：单库内的 ACID 用 Spring 本地事务即可；一旦跨多个数据库/服务，本地事务无能为力，必须上升为分布式事务方案。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>明确边界</strong>：单库内的 ACID 用 Spring 本地事务即可；一旦跨多个数据库/服务，本地事务无能为力，必须上升为分布式事务方案。</p>
 <p><strong>衔接方式一（最终一致）</strong>：本地事务内写「消息表/本地事件」，提交后由异步线程或 RocketMQ 事务消息投递到下游，下游幂等消费——本地事务与消息发送绑定，避免「库落了消息却没发」。</p>
 <p><strong>衔接方式二（强一致）</strong>：跨库强一致用 Seata AT/TCC，AT 模式对业务无侵入（基于 undo_log 反向补偿），TCC 需手写 try/confirm/cancel 三阶段。</p>
 <p><strong>边界原则</strong>：能用「本地事务 + 最终一致」就不要用强一致分布式事务；只有金融级强一致才上 Seata；且下游必须幂等，补偿链路必须可观测。</p></div>

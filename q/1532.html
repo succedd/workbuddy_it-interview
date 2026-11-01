@@ -96,7 +96,7 @@
     <h1>Terraform 的 state 文件起什么作用？为什么必须远程化并加锁？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">云解决方案架构师</span><span class="chip tag">Terraform</span><span class="chip tag">IaC</span><span class="chip tag">state</span></div>
     <div class="card"><h2>题目</h2><p>说明 state 记录的资源映射与漂移检测基础，以及远程后端的并发安全。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>state 的作用</strong>：Terraform 是声明式的，但真正执行要靠 <strong>state</strong> 里记录的「资源地址 → 真实云资源 ID」映射：① plan 时对比「配置 ↔ state ↔ 实际云上状态」三者算 diff；② 销毁时知道删哪个；③ 依赖图、敏感值缓存都在其中。<strong>没有 state，Terraform 就不知道自己管过什么</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>state 的作用</strong>：Terraform 是声明式的，但真正执行要靠 <strong>state</strong> 里记录的「资源地址 → 真实云资源 ID」映射：① plan 时对比「配置 ↔ state ↔ 实际云上状态」三者算 diff；② 销毁时知道删哪个；③ 依赖图、敏感值缓存都在其中。<strong>没有 state，Terraform 就不知道自己管过什么</strong>。</p>
 <p><strong>为什么远程化</strong>：state 默认本地文件——① 团队协作各自一份会<strong>互相覆盖</strong>；② CI 上没有 state 就会重复创建资源。远程后端（S3+DynamoDB / OSS / Terraform Cloud）集中存储。</p>
 <p><strong>为什么必须加锁</strong>：两人（或两条流水线）同时 apply 会基于同一份 state 并发变更，产生<strong>竞态与重复资源</strong>。S3 后端用 DynamoDB 锁、Terraform Cloud 内置锁，apply 期间持锁，异常退出需 <code>terraform force-unlock</code>。</p>
 <p><strong>补充</strong>：state 含敏感值（需加密存储 + 最小权限访问）；手工改云资源会造成<strong>漂移</strong>，用 <code>terraform plan -refresh-only</code> 检测、<code>import</code> 收编或恢复配置。</p></div>

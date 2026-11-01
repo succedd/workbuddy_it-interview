@@ -96,7 +96,7 @@
     <h1>故障排查：SPA 长期打开后标签页内存持续上涨、最终卡死。请说明 JS 的垃圾回收原理，并给出定位内存泄漏的步骤与常见泄漏源。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">浏览器原理</span><span class="chip tag">垃圾回收</span><span class="chip tag">内存泄漏</span><span class="chip tag">WeakMap</span><span class="chip tag">DevTools</span></div>
     <div class="card"><h2>题目</h2><p>考察点：垃圾回收算法演进与内存泄漏的实战排查方法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>回收原理</strong>：JavaScript 在创建对象时自动分配内存、不再使用时自动释放（垃圾回收）。早期「<strong>引用计数</strong>」只需看有没有引用，但<strong>无法处理循环引用</strong>——两个对象互相引用，函数返回后本应回收却因各自仍有引用而泄漏；现代引擎统一采用<strong>标记清除（mark-and-sweep）</strong>：从<strong>根（全局对象）</strong>出发标记所有<strong>可达</strong>对象，回收不可达者，因此循环引用不再是问题。近年的「分代 / 增量 / 并发 / 并行」都是该算法的<strong>实现优化</strong>，并非换算法，且 JS 无法编程式触发 GC。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>回收原理</strong>：JavaScript 在创建对象时自动分配内存、不再使用时自动释放（垃圾回收）。早期「<strong>引用计数</strong>」只需看有没有引用，但<strong>无法处理循环引用</strong>——两个对象互相引用，函数返回后本应回收却因各自仍有引用而泄漏；现代引擎统一采用<strong>标记清除（mark-and-sweep）</strong>：从<strong>根（全局对象）</strong>出发标记所有<strong>可达</strong>对象，回收不可达者，因此循环引用不再是问题。近年的「分代 / 增量 / 并发 / 并行」都是该算法的<strong>实现优化</strong>，并非换算法，且 JS 无法编程式触发 GC。</p>
 <p><strong>排查步骤</strong>：</p>
 <ol>
 <li><strong>先确认是不是真泄漏</strong>：在 DevTools 的 Memory 面板反复执行「操作 → 手动 GC → 拍堆快照」，比较多次快照的 retained size 是否阶梯式上涨；Performance 面板的 Memory 曲线是否「只涨不落」。</li>

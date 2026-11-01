@@ -96,7 +96,7 @@
     <h1>场景题：列表滚动时的入场动画在低端机上卡顿掉帧。为什么把动画从 left/top 改成 transform/opacity 就顺了？请据此给出优化清单。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">UI/UX设计师</span><span class="chip tag">CSS</span><span class="chip tag">动画性能</span><span class="chip tag">transform</span><span class="chip tag">will-change</span><span class="chip tag">合成</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把「渲染瀑布」理论落到 CSS 动画优化上的能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>关键在渲染瀑布</strong>。MDN 把浏览器把属性变化画到屏幕上的过程称为「渲染瀑布」，依次是：<strong>Recalculate Style → Layout → Paint → Composition（合成）</strong>。整条链路必须在一帧内跑完；追求 60fps 意味着每帧只有 <strong>16.7ms</strong> 用来执行脚本、重算样式、布局与绘制。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>关键在渲染瀑布</strong>。MDN 把浏览器把属性变化画到屏幕上的过程称为「渲染瀑布」，依次是：<strong>Recalculate Style → Layout → Paint → Composition（合成）</strong>。整条链路必须在一帧内跑完；追求 60fps 意味着每帧只有 <strong>16.7ms</strong> 用来执行脚本、重算样式、布局与绘制。</p>
 <p><strong>不同属性的代价不同</strong>（MDN 分类）：</p>
 <ul>
 <li>影响几何或位置的属性（<code>left</code>、<code>margin-left</code>、<code>width</code>、<code>font-size</code>…）触发 <strong>样式重算 + Layout（重排）+ Paint</strong>，最贵；</li>

@@ -96,7 +96,7 @@
     <h1>编程题：给定正整数数组与一个目标值 s，求「和 ≥ s 的最短连续子数组」长度（LeetCode 209）。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">滑动窗口</span><span class="chip tag">子数组</span><span class="chip tag">前缀和</span><span class="chip tag">LeetCode209</span></div>
     <div class="card"><h2>题目</h2><p>考察点：滑动窗口在「子数组求和」场景的应用；窗口何时扩张、何时收缩；与前缀和+二分两种解法的对比。属编程题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>滑动窗口法（推荐）</strong>：右指针扩张把元素加进窗口和 <code>win</code>；当 <code>win &gt;= s</code> 时记录长度并尝试收缩左指针（减掉 <code>nums[left]</code> 后若仍 <code>&gt;= s</code> 继续缩），直到不满足。每次收缩都更新最小长度。</li>
 </ul>

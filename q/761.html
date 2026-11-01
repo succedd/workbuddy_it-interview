@@ -96,7 +96,7 @@
     <h1>什么是零拷贝（zero-copy）？mmap、sendfile、splice 分别是如何减少拷贝的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip">Go后端工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">操作系统</span><span class="chip tag">零拷贝</span><span class="chip tag">mmap</span><span class="chip tag">sendfile</span><span class="chip tag">splice</span></div>
     <div class="card"><h2>题目</h2><p>考察点：传统 I/O 的多次拷贝与上下文切换、零拷贝的优化思路，以及 mmap / sendfile / splice 的适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>传统 I/O 的代价</strong>：<code>read()</code> + <code>write()</code> 把磁盘文件发到网络，会在「磁盘→内核页缓存→用户缓冲区→socket 缓冲区→网卡」间多次拷贝，并伴随多次用户态/内核态切换；其中「内核→用户→内核」这两次拷贝纯属多余。</li>
 <li><strong>mmap + write</strong>：用 <code>mmap</code> 把文件映射进用户虚拟地址空间，省掉「内核→用户」那次拷贝，<code>write</code> 时直接由内核从映射区读；仍有「内核→socket」拷贝。</li>

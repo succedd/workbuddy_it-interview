@@ -96,7 +96,7 @@
     <h1>用 sentence-transformers 把文本转成向量并写入 FAISS，再按相似度检索 top-k，请写出可运行代码并讲解关键参数。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">RAG</span><span class="chip tag">Embedding</span><span class="chip tag">sentence-transformers</span><span class="chip tag">FAISS</span><span class="chip tag">向量检索</span></div>
     <div class="card"><h2>题目</h2><p>考察点：掌握 embedding 生成与向量检索的最小可运行实现，理解 model、normalize_embeddings、index 选型等关键参数。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>生成向量</strong>：用 sentence-transformers 的 <code>encode</code>，开启 <code>normalize_embeddings=True</code> 让余弦相似度等价于内积，检索更稳定；中英文选多语言模型（如 <code>paraphrase-multilingual-MiniLM</code> 或 bge 系列）。</li>
 <li><strong>建库与检索</strong>：FAISS 的 <code>IndexFlatIP</code>（内积）配合归一化向量即余弦检索，简单场景够用；量大再换 IVF/PQ 近似索引降延迟。</li>

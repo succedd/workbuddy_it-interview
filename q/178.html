@@ -96,7 +96,7 @@
     <h1>Spring Boot如何实现异步处理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">异步</span></div>
     <div class="card"><h2>题目</h2><p>考察 @Async 代理、线程池和异常处理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>启用</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>启用</strong></p>
 <ul>
 <li>启动类/配置类加 <code>@EnableAsync</code>；<code>@Async</code> 方法由代理调用才生效，同类内部 <code>this.method()</code> 自调用不经过代理，会同步执行。</li>
 <li>方法返回 <code>void</code>/<code>Future</code>/<code>CompletableFuture</code>；<code>void</code> 异常需 <code>AsyncUncaughtExceptionHandler</code>。</li>

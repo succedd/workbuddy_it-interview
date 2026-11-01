@@ -96,7 +96,7 @@
     <h1>编程题：请手写一个 bind 函数（实现 Function.prototype.bind 的核心功能：绑定 this 与预设参数）。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">前端开发工程师</span><span class="chip tag">bind</span><span class="chip tag">手写</span><span class="chip tag">this</span><span class="chip tag">柯里化</span><span class="chip tag">闭包</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 this 显式绑定、柯里化（预设参数）、以及 new 调用时 bind 后的函数 this 应指向新实例（new 优先级高于 bind）的综合理解。属编程题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>核心思路</strong>：返回一个新函数，调用时用 <code>apply</code> 把固定的 <code>this</code> 和「预设参数 + 调用时参数」传给原函。</li>
 <li><strong>简版实现</strong>：</li>

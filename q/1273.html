@@ -96,7 +96,7 @@
     <h1>客服 Agent 上线后用户反馈「上一轮说过的事下一轮就忘」「换个会话就要重新说偏好」「偶尔还引用三年前的老政策」。请从记忆层设计给出排查与改进方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">AI Agent开发工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip tag">Memory</span><span class="chip tag">长期记忆</span><span class="chip tag">记忆遗忘</span><span class="chip tag">检索Trace</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Agent 记忆系统的分层设计、写入生命周期与检索排障能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：先分层。<strong>短期记忆</strong>是 Session 级的，服务当前任务（用户提问、每轮回复、工具 Observation），直接进入当轮 Prompt，主要依托上下文窗口。<strong>长期记忆</strong>放在 Session 外部，负责沉淀用户偏好、历史决策、过往经验，新 Session 只按当前问题取回相关条目。两者物理和逻辑上都应分开。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：先分层。<strong>短期记忆</strong>是 Session 级的，服务当前任务（用户提问、每轮回复、工具 Observation），直接进入当轮 Prompt，主要依托上下文窗口。<strong>长期记忆</strong>放在 Session 外部，负责沉淀用户偏好、历史决策、过往经验，新 Session 只按当前问题取回相关条目。两者物理和逻辑上都应分开。</p>
 <p><strong>按存储形式分三类</strong>：Token 级（向量库文本块）、参数化（LoRA、SFT）、潜在记忆（KV Cache）。按功能分事实、经验和工作记忆；按内容分情景记忆（What happened）、语义记忆（What it means）和程序记忆。</p>
 <p><strong>记忆生命周期</strong>：<code>编码 → 存储 → 提取 → 巩固 → 反思 → 遗忘</code>。写入通常放在对话结束后，由后台异步任务做语义提纯。写入链路按 <strong>Best-Effort</strong> 设计：抽取可能漏事实，也可能把假设性陈述误写成偏好；幂等 Key 更适合基于<strong>源消息 ID + 抽取批次 ID</strong>，而不是抽取结果文本（语义可能相同但字面不同）；多端并发合并要引入乐观锁或 MVCC。</p>
 <p><strong>三类用户反馈对应三处故障</strong></p>

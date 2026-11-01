@@ -96,7 +96,7 @@
     <h1>Spring IOC 和 AOP 的理解与实现原理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">IOC</span><span class="chip tag">AOP</span><span class="chip tag">动态代理</span></div>
     <div class="card"><h2>题目</h2><p>请说明控制反转/依赖注入的设计思想与 Bean 生命周期，以及 AOP 动态代理的实现方式。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>IOC（控制反转）</strong>：对象的创建与依赖关系的管理交给 Spring 容器，我们只<strong>声明</strong>需要什么（@Autowired），不用自己 new——控制权从程序员&quot;反转&quot;给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>IOC（控制反转）</strong>：对象的创建与依赖关系的管理交给 Spring 容器，我们只<strong>声明</strong>需要什么（@Autowired），不用自己 new——控制权从程序员&quot;反转&quot;给了容器。好处：解耦（依赖面向接口）、便于单测（可注入 Mock）、统一管理生命周期。</p>
 <p><strong>实现</strong>：容器启动时扫描 BeanDefinition → 实例化 → <strong>依赖注入</strong>（反射按类型/名称装配）→ 初始化（Aware、BeanPostProcessor 前置、InitializingBean/@PostConstruct、后置）→ 使用 → 销毁回调。</p>
 <p><strong>AOP（面向切面编程）</strong>：把日志、事务、权限等<strong>横切逻辑</strong>从业务代码中抽离，通过动态代理织入目标方法前后。核心概念：切点 Pointcut（在哪里切）、通知 Advice（做什么：@Before/@After/@Around）、切面 Aspect。</p>
 <p><strong>实现方式</strong>：运行期动态代理——目标实现了接口用 <strong>JDK 动态代理</strong>（Proxy+InvocationHandler，基于反射实现接口）；无接口用 <strong>CGLIB</strong>（生成目标类的子类字节码，方法拦截）。Spring Boot 默认全用 CGLIB。</p>

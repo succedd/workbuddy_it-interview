@@ -96,7 +96,7 @@
     <h1>分布式一致性协议 2PC（两阶段提交）是怎么工作的？它有什么优缺点？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">2PC</span><span class="chip tag">两阶段提交</span><span class="chip tag">分布式事务</span><span class="chip tag">一致性协议</span></div>
     <div class="card"><h2>题目</h2><p>考察点：2PC 的“准备阶段 + 提交阶段”流程、协调者与参与者角色；同步阻塞、单点故障、数据不一致等固有缺陷，引出对 3PC/Paxos 的需求。属高级题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>阶段一（准备/投票）</strong>：协调者向所有参与者发 prepare，参与者执行事务但不提交，写 undo/redo 日志并锁定资源，返回“同意”或“中止”。</li>
 <li><strong>阶段二（提交/回滚）</strong>：若全部同意，协调者发 commit，参与者正式提交并释放锁；只要有一个中止或超时，则统一发 rollback。</li>

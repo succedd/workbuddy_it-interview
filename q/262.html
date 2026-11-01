@@ -96,7 +96,7 @@
     <h1>排查发现 CPU 利用率过高导致无法登录，如何区分业务负载与异常进程并处理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">CPU</span><span class="chip tag">ECS</span><span class="chip tag">挖矿</span><span class="chip tag">云监控</span><span class="chip tag">安全加固</span></div>
     <div class="card"><h2>题目</h2><p>通过 VNC 登录后确认 ECS 可登录但 SSH 极慢，云监控显示 CPU 利用率持续 100%。如何区分是正常业务负载还是异常进程（如挖矿、入侵）？应急恢复和长期手段分别有哪些？</p></div>
-    <div class="card"><h2>参考答案</h2><h3>区分与处理</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 63 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>区分与处理</h3>
 <ol>
 <li><strong>定位高占用进程</strong>：用 top/htop 按 CPU 排序找到占用最高的进程；用 ps -ef 查看进程的启动方式与所属用户；结合监控中 CPU 飙高的时间点与客户业务高峰对比，并与客户确认进程是否属于已知业务。</li>
 <li><strong>异常进程特征</strong>：进程名陌生或伪装（如随机字符串）、异常外联（netstat/ss 发现大量向境外地址的连接）、文件或配置被替换、crontab 被植入可疑定时任务、主机安全服务 HSS 有入侵告警——高度疑似挖矿或入侵，应建议立即隔离：收紧安全组入方向、修改密码/轮换密钥、封禁可疑外联 IP，并保留现场证据（进程快照、日志）备查。</li>

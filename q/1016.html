@@ -96,7 +96,7 @@
     <h1>MyBatis 分页为什么必须用物理分页？PageHelper 的实现原理和潜在坑是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MyBatis</span><span class="chip tag">分页</span><span class="chip tag">PageHelper</span><span class="chip tag">拦截器</span><span class="chip tag">深分页</span></div>
     <div class="card"><h2>题目</h2><p>考察点：逻辑分页 vs 物理分页、拦截器机制、深分页。这是最容易在生产翻车的点之一。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>逻辑分页</strong>：<code>SqlSession.selectList(query, rowBounds)</code> 或在内存里 <code>List.subList</code>。做法是<strong>把全表数据查出来再截取</strong>，数据量一大就是 OOM。性能随总量线性恶化，深分页尤其灾难。</li>
 <li><strong>物理分页</strong>：改写 SQL 加上 <code>LIMIT ?, ?</code>（MySQL）/ <code>OFFSET ... FETCH NEXT</code>（SQL Server）/ <code>ROWNUM</code>（Oracle），把分页交给数据库，只传输需要的那一页。</li>

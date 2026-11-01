@@ -96,7 +96,7 @@
     <h1>Optimistic Rollup 与 ZK Rollup 的核心差异？EIP-4844 的 blob 解决了什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">Rollup</span><span class="chip tag">EIP-4844</span><span class="chip tag">L2</span></div>
     <div class="card"><h2>题目</h2><p>考察 L2 扩容路线的取舍，以及数据可用性成本对 Rollup 的影响。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Optimistic Rollup</strong>：默认乐观执行，先提交状态根，留挑战期（常见 7 天）接受欺诈证明；EVM 兼容好、实现简单，但提款慢，安全性依赖至少一个诚实验证者。</li>
 <li><strong>ZK Rollup</strong>：每批交易生成有效性证明（zk-SNARK / zk-STARK），L1 验证通过即最终确定，提款快；代价是证明生成成本高、EVM 等价性更难，通用电路与开发工具更复杂。</li>

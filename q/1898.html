@@ -96,7 +96,7 @@
     <h1>.NET 依赖注入的 Singleton、Scoped、Transient 生命周期怎么选？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">.NET开发工程师</span><span class="chip tag">依赖注入</span><span class="chip tag">Singleton</span><span class="chip tag">Scoped</span><span class="chip tag">Transient</span></div>
     <div class="card"><h2>题目</h2><p>考察 DI 生命周期、并发和资源释放。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>生命周期</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>生命周期</strong></p>
 <ul>
 <li>Singleton：整个应用一个实例，适合无状态配置/缓存/连接池；不要持有 Scoped/请求数据，注意线程安全。</li>
 <li>Scoped：每个请求/作用域一个实例，适合 DbContext/请求上下文；在后台线程/单例里解析 Scoped 会捕获错误作用域。</li>

@@ -96,7 +96,7 @@
     <h1>G1 垃圾收集器的工作原理与特点是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip">系统运维工程师</span><span class="chip tag">JVM</span><span class="chip tag">G1</span><span class="chip tag">垃圾回收器</span></div>
     <div class="card"><h2>题目</h2><p>请说明 G1 的 Region 划分、回收价值优先、Mixed GC 与停顿预测模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>定位</strong>：JDK 9 起的默认收集器，面向<strong>大堆（数 GB~数十 GB）+ 可预测停顿</strong>，目标是在吞吐与延迟间取得平衡。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>定位</strong>：JDK 9 起的默认收集器，面向<strong>大堆（数 GB~数十 GB）+ 可预测停顿</strong>，目标是在吞吐与延迟间取得平衡。</p>
 <p><strong>核心设计</strong>：</p>
 <ol>
 <li><strong>Region 化布局</strong>：堆划分为 2048 个左右等大 Region（1~32MB），每个 Region 动态扮演 Eden/Survivor/Old/Humongous（大对象）角色——<strong>不再物理连续分代</strong>，物理碎片化但逻辑分代。</li>

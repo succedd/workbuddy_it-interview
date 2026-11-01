@@ -96,7 +96,7 @@
     <h1>Flink 有哪三种时间语义？Watermark 解决了什么问题，常见窗口类型有哪些？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Flink</span><span class="chip tag">EventTime</span><span class="chip tag">Watermark</span><span class="chip tag">窗口</span></div>
     <div class="card"><h2>题目</h2><p>考察点：流处理中的时间概念、乱序处理机制（Watermark）与窗口聚合模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>三种时间语义</strong>：EventTime（事件产生时间，最准确、抗处理延迟，但需 watermark）、IngestionTime（进入 Flink 源的时间）、ProcessingTime（算子处理时的机器时钟，延迟最低但结果不确定）。</li>
 <li><strong>Watermark（水位线）</strong>：用于衡量事件时间进展的单调不减时间戳，告诉系统“早于该时间的事件大概率已到齐”。它解决了<strong>乱序数据</strong>导致的窗口无法触发的问题，是 EventTime 窗口正确关闭的依据。</li>

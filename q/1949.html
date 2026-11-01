@@ -96,7 +96,7 @@
     <h1>什么是 GitOps？它与传统 CI/CD（命令式部署）的核心区别是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">GitOps</span><span class="chip tag">ArgoCD</span><span class="chip tag">持续交付</span></div>
     <div class="card"><h2>题目</h2><p>考察 GitOps 理念与 CI/CD 的差异，以及为什么它适合云原生多集群场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Git 是唯一事实源（Single Source of Truth）</strong>：期望状态（K8s 清单、Helm/Kustomize）全部以声明式文件存于 Git 仓库，集群状态由 Git 推导，而非人工在集群里 kubectl apply。</li>
 <li><strong>声明式 + 自动 reconcilliation</strong>：GitOps 工具（ArgoCD/Flux）持续对比「Git 期望态」与「集群实际态」，发现漂移（drift）后自动或人工同步拉平，这是与「CI 跑完脚本 push 到集群」的本质区别。</li>

@@ -96,7 +96,7 @@
     <h1>服务不可用类告警（端口不通/健康检查失败/5xx 突增），如何用最小动作判定是主机、网络还是应用层问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">服务不可用</span><span class="chip tag">健康检查</span><span class="chip tag">安全组</span><span class="chip tag">分层排查</span></div>
     <div class="card"><h2>题目</h2><p>考察端口不通/ELB 健康检查异常/5xx 时按主机-网络-应用分层定位，避免乱改扩大故障。</p></div>
-    <div class="card"><h2>参考答案</h2><p>服务不可用类告警用<strong>最小动作分层定位</strong>，逐步缩小故障域：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>服务不可用类告警用<strong>最小动作分层定位</strong>，逐步缩小故障域：</p>
 <ul>
 <li><strong>主机层</strong>：进程是否存活（<code>systemctl</code>/<code>ps</code>）、资源是否打满（CPU/内存/连接数）；服务是否监听在正确地址（<code>ss -lntp</code> 看是否 <code>0.0.0.0</code> 而非 <code>127.0.0.1</code>）。</li>
 <li><strong>网络层</strong>：安全组/网络 ACL 是否放通业务端口与 <strong>ELB 健康检查源网段</strong>；ELB 健康检查异常优先查后端安全组是否放行 ELB 后端子网 VPC 网段、路由/<code>hosts.deny</code>/防火墙是否拦截；跨网段需默认路由指向网关。</li>

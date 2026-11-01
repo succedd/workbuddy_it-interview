@@ -96,7 +96,7 @@
     <h1>Kotlin 的密封类（sealed class）如何优雅表达有限状态机？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kotlin</span><span class="chip tag">sealed class</span><span class="chip tag">状态机</span></div>
     <div class="card"><h2>题目</h2><p>说明 sealed class 在建模固定状态集合时的价值。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>密封类</strong>：用 <code>sealed class</code> 把一族有限的子类限定在同一文件内，编译器可知其所有子类型。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>密封类</strong>：用 <code>sealed class</code> 把一族有限的子类限定在同一文件内，编译器可知其所有子类型。</p>
 <p><strong>配合 when</strong>：对 sealed 类做 <code>when</code> 分支时，若覆盖全部子类编译器不要求 else，且新增子类未处理会编译报错，避免遗漏。</p>
 <p><strong>价值</strong>：非常适合表达结果（Success/Error）、UI 状态（Loading/Empty/Loaded）、协议消息等“有限且封闭”的模型；相比普通枚举更灵活（可带不同数据）。</p></div>
     <div class="cta-row">

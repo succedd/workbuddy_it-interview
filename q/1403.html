@@ -96,7 +96,7 @@
     <h1>Basic Paxos 的两阶段（Prepare/Promise、Accept/Accepted）是如何达成共识的？Multi-Paxos 又优化了什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">Paxos</span><span class="chip tag">共识</span><span class="chip tag">Multi-Paxos</span><span class="chip tag">分布式</span></div>
     <div class="card"><h2>题目</h2><p>考察 Paxos 两阶段语义、已接受值保护与 Multi-Paxos 演进。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 33 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>Basic Paxos 解决「对单个值」达成共识，两阶段四类消息，靠<strong>全局递增的提案编号 + 多数派交集</strong>保证：最多一个值被选定，且一旦选定就不会改变。</p>
 <h3>两阶段</h3>
 <ul>

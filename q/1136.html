@@ -96,7 +96,7 @@
     <h1>如何编写一个最小可用的 systemd .service 单元？请解释 [Unit] / [Service] / [Install] 三段，以及 WantedBy、Restart 等常见字段。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip tag">systemd</span><span class="chip tag">service单元</span><span class="chip tag">WantedBy</span><span class="chip tag">Restart</span><span class="chip tag">开机自启</span></div>
     <div class="card"><h2>题目</h2><p>给出一个能开机自启、崩溃自拉起的服务单元示例，并解释三个段落的职责与关键字段含义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>三段结构</strong>：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开机进入多用户模式时拉起）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>三段结构</strong>：[Unit] 描述元数据与依赖排序（Description、After=、Requires=）；[Service] 定义如何启动进程（ExecStart=、Type=、Restart=、User=）；[Install] 定义“启用时如何安装”（WantedBy=multi-user.target 表示开机进入多用户模式时拉起）。</p>
 <p><strong>最小示例</strong>：<code>[Unit] Description=myapp  After=network.target  [Service] ExecStart=/usr/bin/python3 /opt/myapp.py  Restart=on-failure  User=app  [Install] WantedBy=multi-user.target</code>，写好后 <code>systemctl daemon-reload &amp;&amp; systemctl enable --now myapp</code> 即开机自启并立即启动。</p>
 <p><strong>关键字段</strong>：Type=simple（默认，ExecStart 即主进程）/forking（后台 fork 需指定 PIDFile）；Restart=no/on-success/on-failure/always 决定退出后是否重启；WantedBy 决定挂在哪个 target 下，enable 实质是在 target.wants 目录建软链。</p>
 <p><strong>enable 与 start 的区别</strong>：enable 是“登记开机自启（建软链）”，start 是“现在就跑一次”；二者独立，常一起用。</p></div>

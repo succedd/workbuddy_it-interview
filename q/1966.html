@@ -96,7 +96,7 @@
     <h1>如何用 sklearn 做特征交叉（PolynomialFeatures / 自定义交叉）来捕捉组合非线性关系？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">推荐算法工程师</span><span class="chip tag">特征工程</span><span class="chip tag">特征交叉</span><span class="chip tag">PolynomialFeatures</span></div>
     <div class="card"><h2>题目</h2><p>考察通过特征交叉引入组合特征、提升模型表达力的实操。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>PolynomialFeatures</strong>：<code>sklearn.preprocessing.PolynomialFeatures(degree=2, interaction_only=True)</code> 可自动生成两两特征的乘积项（交互项），让线性模型具备拟合非线性组合的能力（如 <code>x1*x2</code> 表示两个因素共同作用的效应）。</li>
 <li><strong>interaction_only 省维度</strong>：只保留交互项、去掉高阶幂次，避免 <code>x1^2</code> 这类对线性模型意义不大的项，特征数从 O(d^2) 降到组合数。</li>

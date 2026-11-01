@@ -96,7 +96,7 @@
     <h1>分库分表后如何保证跨库事务的一致性？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">分布式事务</span><span class="chip tag">Seata</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>高级简答题：对比强一致方案（Seata）与最终一致方案（消息队列），并给出选型原则。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>强一致（2PC / Seata）</strong>：Seata AT 基于 undo_log 的两阶段提交，对业务侵入小；TCC 需手动编排 Try/Confirm/Cancel，性能好但侵入大。适合金额等必须强一致的核心链路。</li>
 <li><strong>最终一致（消息队列）</strong>：本地事务 + 事务消息（如 RocketMQ 半消息）保证“本地写成功才发消息”，消费方幂等消费，辅以异步对账补偿。适合可容忍短暂不一致的场景。</li>

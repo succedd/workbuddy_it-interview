@@ -96,7 +96,7 @@
     <h1>设计一个「混沌工程平台」的核心架构：要支持多集群、多故障类型、自动编排与结果判定，你怎么落地？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">混沌工程</span><span class="chip tag">平台架构</span><span class="chip tag">编排</span><span class="chip tag">SLO</span><span class="chip tag">多集群</span></div>
     <div class="card"><h2>题目</h2><p>系统设计题：收尾。把混沌能力产品化——一个企业级混沌平台需要哪些核心模块，模块间如何协作完成「编排—注入—观测—判定—回滚」？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>分层架构</strong>：① <strong>实验编排层</strong>（API/控制台）负责定义实验（目标集群、故障类型、注入参数、护栏阈值）、版本管理与审批；② <strong>执行/注入层</strong>对接底层故障能力——K8s 用 Chaos Mesh/Litmus 的 CRD，物理机/云用 Gremlin Agent 或自研 agent，统一抽象为「故障动作」；③ <strong>观测/采集层</strong>拉取 Prometheus/SLI、日志、链路追踪，作为稳态判定输入。</li>
 <li><strong>护栏与判定</strong>：内置<strong>爆炸半径控制</strong>（仅选指定 Pod/命名空间）、<strong>自动停止规则</strong>（SLI 跌破阈值即回滚注入）、<strong>实验窗口与审批流</strong>；结果判定模块对比实验组/对照组稳态、结合 SLO Error Budget 输出「通过/暴露脆弱点」报告。</li>

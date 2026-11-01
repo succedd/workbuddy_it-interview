@@ -96,7 +96,7 @@
     <h1>数仓建模中星型模型（Star Schema）与雪花模型（Snowflake）的区别是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip tag">星型模型</span><span class="chip tag">雪花模型</span><span class="chip tag">维度建模</span><span class="chip tag">数仓</span></div>
     <div class="card"><h2>题目</h2><p>考察点：掌握维度建模两种基本结构，理解冗余与查询性能的取舍，是维度建模追问的起点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 26 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>星型模型：事实表居中，直接连接若干非规范化的「维度表」（扁平、有冗余），结构像星；查询 JOIN 少、性能好，最常用。</li>
 <li>雪花模型：维度表进一步规范化拆成多张子表（如 地区→省→市），减少冗余但增加 JOIN 层数、查询更慢。</li>

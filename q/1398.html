@@ -96,7 +96,7 @@
     <h1>为什么计算机能用同一套加法器完成减法（即“减法变加法”）？用补码模运算圆环说明。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">硬件工程师</span><span class="chip tag">补码</span><span class="chip tag">模运算</span><span class="chip tag">减法变加法</span></div>
     <div class="card"><h2>题目</h2><p>考察补码把减法转为加法的数学本质（模运算）。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>在 n 位补码中，运算天然工作在模 2ⁿ 的环上：<strong>减去一个数 ≡ 加上它的补数</strong>。因此 ALU 只需一个加法器，减法通过「加负数的补码」实现，符号位自然参与，无需额外判断。</p>
 <p><img src="/assets/q/fig-comporg-twos-ring.svg" alt="补码模运算圆环" loading="lazy"></p>
 <h3>用 mod 8 圆环说明</h3>

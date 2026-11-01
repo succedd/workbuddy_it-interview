@@ -96,7 +96,7 @@
     <h1>【场景】某微服务实例进程已崩溃，但注册中心里它的注册信息还在，导致网关仍把流量转发到这个「死节点」，请求大面积报错。这是什么现象？如何从根本上解决？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">注册中心</span><span class="chip tag">健康检查</span><span class="chip tag">自我保护</span><span class="chip tag">服务剔除</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 3 问：注册中心不是注册了就万事大吉，还要能「发现死亡并剔除」。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>现象定位</strong>：这是「注册信息未及时摘除」导致的<strong>脏实例/僵尸节点</strong>问题。根因通常是：① 实例非正常退出（kill -9、容器被 OOM 杀掉、宕机）没机会发注销请求；② 注册中心依赖心跳超时剔除，但超时阈值过长（如 30s+），期间请求仍被路由过去；③ Eureka 开启<strong>自我保护模式</strong>后，网络抖动导致心跳大面积丢失时会停止剔除任何实例，反而加剧问题。</li>
 <li><strong>根治手段（分层）</strong>：① <strong>缩短心跳与剔除时间</strong>——Nacos 临时实例把心跳间隔与超时调小（如 5s/15s），让故障快速暴露；② <strong>客户端兜底</strong>——调用方集成熔断+重试+故障实例熔断（如 Resilience4J/Sentinel），探测到某实例连续失败直接拉黑并刷新本地服务列表；③ <strong>主动下线</strong>——发布/缩容时先调用注册中心下线接口（deregister）再停进程，配合优雅停机；④ <strong>关闭或收窄自我保护</strong>——实例数可控、网络稳定的内网可关闭 Eureka 自我保护，或改用 Nacos 临时实例机制。</li>

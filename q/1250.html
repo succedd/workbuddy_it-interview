@@ -96,7 +96,7 @@
     <h1>故障排查：某个 Kafka Topic 有几条消息一直消费失败，日志里反复出现同一条记录。默认会重试几次？重试耗尽后如何保证消息不被丢掉？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Kafka</span><span class="chip tag">重试机制</span><span class="chip tag">死信队列</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Spring Kafka 默认错误处理与重试机制、死信队列的落地方式。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先看清默认行为</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先看清默认行为</strong></p>
 <p>在 Spring Kafka 默认配置下（<code>DefaultErrorHandler</code> + <code>SeekUtils.DEFAULT_BACK_OFF</code>）：</p>
 <ul>
 <li>消费抛异常会重试，<strong>默认最多重试 10 次，每次间隔 0 毫秒</strong>，也就是几乎立即重试。</li>

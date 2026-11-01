@@ -96,7 +96,7 @@
     <h1>多人游戏里客户端预测（Client-side Prediction）与插值（Interpolation）分别解决什么问题？为什么缺一不可？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">游戏服务端工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">客户端预测</span><span class="chip tag">插值</span><span class="chip tag">延迟掩盖</span></div>
     <div class="card"><h2>题目</h2><p>考察延迟掩盖技术。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：客户端预测解决「操作延迟感」：玩家按键后本地立即按输入模拟结果（无需等服务器回包），让操作零延迟响应；若服务器返回的状态与本地预测不一致，再做「和解（reconciliation）」回滚重放后续输入。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：客户端预测解决「操作延迟感」：玩家按键后本地立即按输入模拟结果（无需等服务器回包），让操作零延迟响应；若服务器返回的状态与本地预测不一致，再做「和解（reconciliation）」回滚重放后续输入。</p>
 <p><strong>要点</strong>：插值解决「其他玩家抖动」：服务器发来的远端状态是低频（如 10~20Hz）且不连续的，若直接硬设位置会一跳一跳；客户端把「过去一小段时间前的状态」做插值播放，用时间缓冲把离散状态变成平滑移动。</p>
 <p><strong>要点</strong>：两者缺一不可：只有预测没有插值→自己跟手但别人抽搐；只有插值没有预测→别人平滑但自己操作要等网络往返，手感黏滞。时间缓冲（延迟约 100ms）是两者共同的前提。</p></div>
     <div class="cta-row">

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460">
+  <defs>
+    <marker id="arw-cl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+  <rect width="680" height="460" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#2563eb">浏览器的合成层与 GPU 加速</text>
+
+    <rect x="24" y="60" width="140" height="52" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="94" y="82" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">DOM / RenderObject</text>
+    <text x="94" y="100" text-anchor="middle" font-size="10" fill="#6b7280">样式计算后生成</text>
+    <line x1="164" y1="86" x2="192" y2="86" stroke="#9ca3af" marker-end="url(#arw-cl)"/>
+    <rect x="196" y="60" width="140" height="52" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="266" y="82" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">RenderLayer</text>
+    <text x="266" y="100" text-anchor="middle" font-size="10" fill="#6b7280">常规渲染层</text>
+    <line x1="336" y1="86" x2="364" y2="86" stroke="#9ca3af" marker-end="url(#arw-cl)"/>
+    <rect x="368" y="60" width="140" height="52" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="438" y="82" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">合成层 GraphicsLayer</text>
+    <text x="438" y="100" text-anchor="middle" font-size="10" fill="#6b7280">拥有独立纹理</text>
+    <line x1="508" y1="86" x2="536" y2="86" stroke="#9ca3af" marker-end="url(#arw-cl)"/>
+    <rect x="540" y="60" width="116" height="52" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="598" y="82" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">GPU 合成</text>
+    <text x="598" y="100" text-anchor="middle" font-size="10" fill="#6b7280">合成器线程执行</text>
+
+    <rect x="24" y="140" width="300" height="150" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="40" y="162" font-size="12" font-weight="bold" fill="#059669">常见「提升为合成层」的条件</text>
+    <text x="40" y="184" font-size="11" fill="#1f2937">3D transform：translateZ / rotate3d</text>
+    <text x="40" y="202" font-size="11" fill="#1f2937">will-change: transform / opacity</text>
+    <text x="40" y="220" font-size="11" fill="#1f2937">position: fixed 元素</text>
+    <text x="40" y="238" font-size="11" fill="#1f2937">&lt;video&gt; / &lt;canvas&gt; / &lt;iframe&gt;</text>
+    <text x="40" y="256" font-size="11" fill="#1f2937">transform / opacity 过渡动画</text>
+    <text x="40" y="274" font-size="11" fill="#1f2937">显式 z-index 的层叠上下文等</text>
+
+    <rect x="356" y="140" width="300" height="150" rx="8" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="372" y="162" font-size="12" font-weight="bold" fill="#dc2626">层爆炸（Layer Explosion）</text>
+    <text x="372" y="184" font-size="11" fill="#1f2937">大量元素同时提升 → 纹理数量暴涨</text>
+    <text x="372" y="202" font-size="11" fill="#1f2937">每个合成层占用独立显存</text>
+    <text x="372" y="220" font-size="11" fill="#1f2937">纹理上传 / 管理 / 合成开销增大</text>
+    <text x="372" y="238" font-size="11" fill="#1f2937">移动端：内存溢出、掉帧、崩溃</text>
+    <text x="372" y="256" font-size="11" fill="#1f2937">避免：控制提升数量、去掉多余的</text>
+    <text x="372" y="274" font-size="11" fill="#1f2937">translateZ(0) 与无效的 will-change</text>
+
+    <rect x="24" y="310" width="632" height="118" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="44" y="332" font-size="12" font-weight="bold" fill="#2563eb">will-change 的正确用法</text>
+    <text x="44" y="352" font-size="11" fill="#1f2937">只加给少量关键动画元素，禁止加在 body 或大容器上（会连带整个子树一起优化）</text>
+    <text x="44" y="370" font-size="11" fill="#1f2937">动画开始前用 JS 设置、结束后改回 auto，让浏览器及时回收优化与显存</text>
+    <text x="44" y="388" font-size="11" fill="#1f2937">它会提前创建层叠上下文，可能改变元素的视觉层级，样式回归时注意验证</text>
+    <text x="44" y="406" font-size="11" fill="#1f2937">定位：解决「已存在」性能问题的最后手段，不做预防性优化；已在动画中的属性无需再声明</text>
+  </g>
+</svg>

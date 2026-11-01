@@ -96,7 +96,7 @@
     <h1>什么是 MVCC？InnoDB 是如何实现的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">数据库架构师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">InnoDB</span><span class="chip tag">MVCC</span><span class="chip tag">事务</span></div>
     <div class="card"><h2>题目</h2><p>请解释多版本并发控制（MVCC）的核心思想，并结合 InnoDB 的隐藏列、undo log 版本链和 ReadView 说明其实现机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>MVCC（多版本并发控制）</strong>：通过保留数据的多个历史版本，让读写不互相阻塞——读不加锁、读写并发，从而提升并发性能，并支撑 RC/RR 隔离级别的快照读。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>MVCC（多版本并发控制）</strong>：通过保留数据的多个历史版本，让读写不互相阻塞——读不加锁、读写并发，从而提升并发性能，并支撑 RC/RR 隔离级别的快照读。</p>
 <p><strong>InnoDB 实现三要素</strong>：</p>
 <ol>
 <li><strong>隐藏列</strong>：每行记录有 <code>DB_TRX_ID</code>（最后修改的事务 ID）和 <code>DB_ROLL_PTR</code>（回滚指针，指向 undo log 中的上一版本）。</li>

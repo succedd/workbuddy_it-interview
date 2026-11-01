@@ -96,7 +96,7 @@
     <h1>边缘计算节点在断网情况下如何保证数据不丢失？请设计一个「本地缓存→联网补传→去重」的方案，并说明低功耗优化思路。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">边缘计算工程师</span><span class="chip">IoT开发工程师</span><span class="chip tag">边缘计算</span><span class="chip tag">断网缓存</span><span class="chip tag">低功耗</span></div>
     <div class="card"><h2>题目</h2><p>考察边缘可靠传输与低功耗。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：断网不丢数据：边缘节点在本地用持久化队列（SQLite/文件环形缓冲）缓存待上报数据，打上本地时间戳与单调递增 seq；联网恢复后按序补传，broker 侧用 seq/去重键做幂等消费，避免重复。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：断网不丢数据：边缘节点在本地用持久化队列（SQLite/文件环形缓冲）缓存待上报数据，打上本地时间戳与单调递增 seq；联网恢复后按序补传，broker 侧用 seq/去重键做幂等消费，避免重复。</p>
 <p><strong>要点</strong>：去重与可靠：每条消息带唯一 messageId，云端用「已处理集合/去重表」判重；补传采用「确认+重试」（ACK + 指数退避），失败保留在队首重发，成功才出队；对大体积数据可做本地压缩/聚合再上传。</p>
 <p><strong>要点</strong>：低功耗：① 通信按需唤醒（间断连接、批量上报而非每条都连）；② 用 MQTT 的 QoS0 + 遗嘱减少握手；③ 边缘侧先做过滤/聚合，只传有价值数据；④ 调度上「计算-无线-休眠」三段式，空闲即深度休眠，把无线与 CPU 活跃时间压到最短。</p></div>
     <div class="cta-row">

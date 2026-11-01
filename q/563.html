@@ -96,7 +96,7 @@
     <h1>git rebase 和 git merge 有什么区别？各自适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">rebase</span><span class="chip tag">merge</span><span class="chip tag">提交历史</span><span class="chip tag">GitFlow</span></div>
     <div class="card"><h2>题目</h2><p>团队中有人用 rebase、有人用 merge，请说明二者对提交历史的差异：rebase 是否会改写提交，merge 会产生什么，分别在什么场景下推荐使用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>本质区别</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>本质区别</strong>：</p>
 <ul>
 <li><code>git merge</code>：把两条分支的末端合并，生成一个<strong>新的合并提交（merge commit）</strong>，保留完整分支拓扑，不改动已有提交。</li>
 <li><code>git rebase</code>：把当前分支的提交“<strong>移植</strong>”到目标分支顶端，逐个<strong>重新生成新的提交对象（新 hash）</strong>，形成线性历史，不保留原 merge 结构。</li>

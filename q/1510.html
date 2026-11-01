@@ -96,7 +96,7 @@
     <h1>SQL 注入的原理与常见类型有哪些？如何在代码层面彻底防御？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">渗透测试工程师</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">SQL注入</span><span class="chip tag">Web安全</span><span class="chip tag">参数化查询</span></div>
     <div class="card"><h2>题目</h2><p>解释注入成因，区分联合/报错/布尔/时间/堆叠注入，并给出防御清单。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>原理</strong>：用户输入被拼接进 SQL 语句，攻击者<strong>改变语句结构</strong>（引号闭合 + 注释），让数据库执行任意逻辑。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>原理</strong>：用户输入被拼接进 SQL 语句，攻击者<strong>改变语句结构</strong>（引号闭合 + 注释），让数据库执行任意逻辑。</p>
 <p><strong>常见类型</strong>：① <strong>联合查询</strong>（UNION SELECT 直接回显他表数据）；② <strong>报错注入</strong>（extractvalue/updatexml 用报错带出数据）；③ <strong>布尔盲注</strong>（页面真/假两种状态逐位猜）；④ <strong>时间盲注</strong>（sleep/if 延时判断，无回显时用）；⑤ <strong>堆叠注入</strong>（分号执行第二条语句，取决于驱动是否 multi-statement）；⑥ 二次注入（存入时无害、他处拼接时触发）。</p>
 <p><strong>防御（按优先级）</strong>：① <strong>参数化查询/预编译</strong>（PreparedStatement、ORM 的占位符）——唯一根治手段，注意表名/排序字段无法参数化时用<strong>白名单校验</strong>；② 最小权限：应用账号禁 DDL/file 权限；③ 输入校验（类型、长度）与输出转义；④ WAF 兜底但<strong>不可依赖</strong>；⑤ 关闭详细报错回显；⑥ 代码审计/SCA 定位拼接点。<strong>过滤关键字是下策</strong>，绕过手法太多。</p></div>
     <div class="cta-row">

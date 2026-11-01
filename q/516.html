@@ -96,7 +96,7 @@
     <h1>请解释 Rust 的所有权(ownership)、借用(borrowing)与生命周期(lifetime)三大核心规则。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统软件工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">新兴方向工程师</span><span class="chip tag">所有权</span><span class="chip tag">借用</span><span class="chip tag">生命周期</span></div>
     <div class="card"><h2>题目</h2><p>说明 Move 语义、同一时刻可变/不可变借用的约束、以及 &#39;a 生命周期标注解决什么问题。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><strong>所有权(Ownership)</strong>：每个值有唯一的所有者（owner）；离开作用域时自动调用 <code>drop</code> 释放资源；把值赋给另一个变量或传入函数会触发 <strong>Move</strong>（非 Copy 类型），原绑定失效——从而无需 GC 即保证内存安全。</li>
 <li><strong>借用(Borrowing)</strong>：通过 <code>&amp;T</code>（不可变引用）或 <code>&amp;mut T</code>（可变引用）在不转移所有权的前提下访问值。核心约束：<strong>同一时刻，要么有多个不可变借用，要么有唯一一个可变借用</strong>（不可二者共存），彻底杜绝数据竞争。</li>
 <li><strong>生命周期(Lifetime)</strong>：引用必须比它所指向的数据活得更久，否则产生悬垂指针。编译器用生命周期标注（如 <code>fn longest&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str</code>）来推导引用有效期，确保返回的引用不会比输入活得更久；多数情况编译器能<strong>自动省略（elision）</strong>标注。</li>

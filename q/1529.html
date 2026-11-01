@@ -96,7 +96,7 @@
     <h1>什么是混合检索与标量过滤？为什么 RAG 场景需要它们？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">RAG工程师</span><span class="chip">搜索算法工程师</span><span class="chip tag">向量数据库</span><span class="chip tag">混合检索</span><span class="chip tag">RAG</span></div>
     <div class="card"><h2>题目</h2><p>解释向量检索与关键词检索的互补性，以及元数据过滤在多租户场景的作用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>混合检索</strong>：向量检索（语义相似，同义改写也能召回）+ 关键词检索（BM25，<strong>专有名词、型号、代码、人名等精确匹配强</strong>）互补。纯向量检索的典型失败：查询「K8s 1.29 FeatureGate 报错」——模型名/版本号在嵌入空间不敏感，关键词检索一发入魂。融合常用 <strong>RRF（倒数排名融合）</strong>或加权分数，再接 rerank 精排。RAG 场景混合检索通常能稳定提升召回质量 5~15 个点。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>混合检索</strong>：向量检索（语义相似，同义改写也能召回）+ 关键词检索（BM25，<strong>专有名词、型号、代码、人名等精确匹配强</strong>）互补。纯向量检索的典型失败：查询「K8s 1.29 FeatureGate 报错」——模型名/版本号在嵌入空间不敏感，关键词检索一发入魂。融合常用 <strong>RRF（倒数排名融合）</strong>或加权分数，再接 rerank 精排。RAG 场景混合检索通常能稳定提升召回质量 5~15 个点。</p>
 <p><strong>标量过滤</strong>：向量检索时附加结构化条件（<code>tenant_id=xxx AND status=published AND date&gt;2026-01</code>），先过滤后检索（预过滤）或检索后过滤。<strong>为什么必需</strong>：① <strong>多租户隔离</strong>——不过滤就是跨租户泄数据；② 时效性——RAG 常要求只查新文档；③ 权限与状态——草稿/删除内容不能进答案。工程上选型要确认引擎的<strong>过滤+向量联合性能</strong>（预过滤导致的簇稀疏问题，Milvus/Qdrant 各有优化）。</p>
 <p><strong>实践</strong>：知识切片时打好元数据（来源、部门、时间、权限），检索层做过滤，rerank 层做精排，三层配合。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>设计一个支持单机与集群维度的限流中间件：① 单机用令牌桶；② 集群维度用 Redis + Lua 原子扣减；③ 支持热点参数限流。请说明核心数据结构、并发安全与一致性权衡。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">Java后端工程师</span><span class="chip tag">分布式限流</span><span class="chip tag">令牌桶</span><span class="chip tag">Redis</span><span class="chip tag">Lua</span><span class="chip tag">热点参数限流</span></div>
     <div class="card"><h2>题目</h2><p>考察点：分布式限流架构设计能力，涵盖单机算法、集群原子扣减、热点参数隔离，以及一致性与性能权衡，高级系统设计题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>单机令牌桶</strong>：每个资源维护 <code>capacity</code>、<code>tokens</code>、<code>lastRefillTs</code>；请求时按 elapsed 时间补充令牌（<code>tokens += rate*elapsed</code>，上限 capacity），足够则扣减放行。用 <code>AtomicLong</code>/<code>LongAdder</code> 或 CAS 保证线程安全，无需锁。</li>
 <li><strong>集群限流</strong>：把令牌计数放到 Redis，用 <strong>Lua 脚本</strong>原子完成「计算补充 + 扣减 + 返回剩余」，避免「先 GET 再 SET」的竞态；key 设计为 <code>ratelimit:{resource}:{window}</code>。为降延迟可加本地令牌桶做「预支+异步对账」的两级限流。</li>

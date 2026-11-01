@@ -1,0 +1,264 @@
+.home-roles {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.home-role {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  text-decoration: none;
+}
+
+.home-role-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  grid-row: 1 / span 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--c-primary);
+  background: rgba(37, 99, 235, .08);
+}
+
+.home-role-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.home-role b {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.home-role span {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-role:hover {
+  border-color: var(--c-primary);
+  background: rgba(37, 99, 235, .06);
+}
+
+.home-sample {
+  margin-top: 20px;
+  padding: 18px;
+}
+
+.home-sample h3 {
+  margin: 12px 0 8px;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.home-sample .q-excerpt {
+  max-width: 780px;
+  line-height: 1.7;
+}
+.home-sample .q-excerpt ul { margin: 4px 0 0; padding-left: 20px; }
+.home-sample .q-excerpt li { margin: 2px 0; }
+.home-sample .q-excerpt p { margin: 0 0 4px; }
+
+.home-sample .q-meta {
+  margin-top: 12px;
+}
+
+.home-sample .note {
+  margin-top: 12px;
+}
+
+.home-learning {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.home-pos-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .home-roles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-pos-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .home-roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .home-role {
+    padding: 10px 11px;
+  }
+
+  .home-role span {
+    white-space: normal;
+  }
+}
+
+.quiz-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.quiz-result {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 14px;
+}
+
+.quiz-result a {
+  color: var(--c-primary);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.state-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.state-quick button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.state-quick button:hover,
+.state-quick button.active {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+.quiz-answer textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.quiz-pager {
+  position: sticky;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 5;
+  background: var(--bg, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+body.keyboard-open .quiz-pager {
+  bottom: calc(10px + var(--keyboard-inset, 180px));
+  max-width: 100%;
+}
+
+.answer-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.answer-trust span {
+  background: rgba(37, 99, 235, .06);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+@media (max-width: 620px) {
+  .quiz-pager {
+    border-radius: 0 0 10px 10px;
+  }
+
+  .quiz-head {
+    position: sticky;
+    top: var(--topbar-h, 60px);
+    z-index: 5;
+    background: var(--bg, #f8fafc);
+    padding: 6px 0;
+  }
+}
+
+/* 2026-10-22：13 寸/125% 缩放下首页两列学习卡会把「今日 5 题」挤出可视区。
+   在 1280px 以下改为单列，并把首页快捷入口降为 3 列；大屏仍保留双列。 */
+@media (max-width: 1280px) {
+  .home-learning > .grid.grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-roles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .home-pos-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 2026-10-23：学习进度区在部分 Chrome 缩放/超宽窗口下仍会被内部 grid 的 min-content 撑开。
+   这里给学习区所有直接卡片加硬约束：宽度只跟随容器，内容超出的部分由卡片自身裁剪，
+   不再把「今日 5 题」/热力图推到屏幕外。 */
+.home-learning {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+@media (max-width: 1440px) {
+  .home-learning > .grid.grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.home-learning > .grid.grid-cols-2 {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.home-learning > .grid.grid-cols-2 > * {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.home-learning .card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.home-learning .heat-grid {
+  width: 100%;
+  max-width: 100%;
+}

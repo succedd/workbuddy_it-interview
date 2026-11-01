@@ -96,7 +96,7 @@
     <h1>客户反馈 Linux 云服务器 SSH 无法登录，按概率排序的排查路径是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">ECS</span><span class="chip tag">SSH</span><span class="chip tag">安全组</span><span class="chip tag">VNC</span><span class="chip tag">故障定位</span></div>
     <div class="card"><h2>题目</h2><p>客户在工单中反馈：某台 Linux ECS 突然 SSH 连不上，业务中断。请给出从云平台侧到系统内部的排查路径，并说明如何用 VNC 登录做第一层隔离。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>排查路径</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 63 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>排查路径</h3>
 <ol>
 <li><strong>先查资源状态</strong>：控制台确认 ECS 是否为「运行中」（被冻结、关机都会导致无法登录）；确认是否绑定弹性公网 IP（未绑定 EIP 则无法公网 SSH 登录，也影响 RDP/MSTSC 方式）。</li>
 <li><strong>用 VNC 做第一层隔离</strong>：通过控制台「远程登录」（VNC 方式）测试。VNC 能进 → 云平台网络链路基本正常，故障集中在安全组/防火墙/OS 内部/客户端网络；VNC 也进不去 → 优先怀疑平台侧资源状态或平台故障，记录资源 ID 与故障时间后提单。</li>

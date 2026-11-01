@@ -96,7 +96,7 @@
     <h1>如何设计一个支撑高并发的大模型推理服务？请说明 KV Cache、连续批处理（continuous batching）、量化与显存管理的取舍。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">算法工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip">后端开发工程师</span><span class="chip">云架构师</span><span class="chip tag">推理服务</span><span class="chip tag">KV Cache</span><span class="chip tag">批处理</span><span class="chip tag">量化</span><span class="chip tag">显存</span><span class="chip tag">LLM Serving</span></div>
     <div class="card"><h2>题目</h2><p>考察点：LLM 推理服务的系统工程能力——吞吐、延迟、显存三者之间的权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>KV Cache 是吞吐基石</strong>：自回归生成时每一步都要重算历史 Key/Value，代价极高。把每层的 K/V 缓存起来，后续步直接复用，把复杂度从 O(n²) 降到接近 O(n)。代价是显存随序列数与长度线性增长，需要分页/分块管理（如 PagedAttention）避免碎片。</li>
 <li><strong>连续批处理（continuous batching）</strong>：传统静态批处理要等同批所有请求都生成完才能释放，短请求被长请求拖死。连续批处理在 token 级别调度，谁先结束谁先让出显存、新请求随时插入，GPU 利用率显著提升（vLLM/TGI 的核心优化）。</li>

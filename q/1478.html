@@ -96,7 +96,7 @@
     <h1>设计一条离线 ETL：把业务库数据同步到 Hive 数仓并做 ODS/DWD/DWS/ADS 分层。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Hive</span><span class="chip tag">数仓分层</span><span class="chip tag">ETL</span><span class="chip tag">ODS</span></div>
     <div class="card"><h2>题目</h2><p>场景题：从同步、分层建模到调度治理，给出完整离线数仓落地方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>同步</strong>：用 Sqoop/DataX 或 CDC（Binlog 采集）把业务库数据抽到 Hive 的 <strong>ODS（贴源层）</strong>，保留原始结构，增量按时间/主键切分。</li>
 <li><strong>分层建模</strong>：① <strong>DWD（明细层）</strong> 做清洗、脱敏、维度退化、统一口径；② <strong>DWS（汇总层）</strong> 按主题（用户/商品/交易）轻度聚合，沉淀可复用中间结果；③ <strong>ADS（应用层）</strong> 面向报表/接口的高度聚合结果。</li>

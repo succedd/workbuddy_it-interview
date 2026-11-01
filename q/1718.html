@@ -96,7 +96,7 @@
     <h1>EIP-1559 的 base fee 与 priority fee 如何工作？为什么 base fee 要销毁？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">智能合约开发工程师</span><span class="chip tag">EIP-1559</span><span class="chip tag">Gas</span><span class="chip tag">base fee</span></div>
     <div class="card"><h2>题目</h2><p>考察以太坊手续费市场改革，以及钱包如何估算 maxFeePerGas / maxPriorityFeePerGas。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>费用拆分</strong>：交易费 = <strong>base fee</strong>（协议按区块拥堵自动调整，直接销毁）+ <strong>priority fee</strong>（给验证者的小费）。用户设置 <code>maxFeePerGas</code> 与 <code>maxPriorityFeePerGas</code>，实际支付不超过上限。</li>
 <li><strong>base fee 调整</strong>：每个区块根据 gas 使用率相对目标值的偏差调整，单块最大变化约 12.5%；拥堵时 base fee 上升抑制需求，空闲时下降。销毁 base fee 让 ETH 供应随使用量收缩，也避免验证者通过打包自己交易瓜分基础费。</li>

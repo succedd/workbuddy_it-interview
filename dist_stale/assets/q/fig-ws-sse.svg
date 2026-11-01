@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460">
+  <defs>
+    <marker id="arw-ws" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+  <rect width="680" height="460" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#2563eb">WebSocket 握手升级原理与 SSE 对比</text>
+
+    <rect x="24" y="60" width="300" height="30" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="174" y="80" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">客户端（浏览器）</text>
+    <line x1="174" y1="90" x2="174" y2="100" stroke="#9ca3af" marker-end="url(#arw-ws)"/>
+    <rect x="24" y="104" width="300" height="92" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="40" y="122" font-size="10" fill="#1f2937">GET /chat HTTP/1.1</text>
+    <text x="40" y="138" font-size="10" fill="#1f2937">Upgrade: websocket</text>
+    <text x="40" y="154" font-size="10" fill="#1f2937">Connection: Upgrade</text>
+    <text x="40" y="170" font-size="10" fill="#1f2937">Sec-WebSocket-Key: dGhlIHNhbXBsZQ==</text>
+    <text x="40" y="186" font-size="10" fill="#1f2937">Sec-WebSocket-Version: 13</text>
+    <line x1="174" y1="196" x2="174" y2="206" stroke="#9ca3af" marker-end="url(#arw-ws)"/>
+    <rect x="24" y="210" width="300" height="30" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="174" y="230" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">服务端</text>
+    <line x1="174" y1="240" x2="174" y2="250" stroke="#9ca3af" marker-end="url(#arw-ws)"/>
+    <rect x="24" y="254" width="300" height="76" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="40" y="272" font-size="10" fill="#1f2937">HTTP/1.1 101 Switching Protocols</text>
+    <text x="40" y="288" font-size="10" fill="#1f2937">Upgrade: websocket</text>
+    <text x="40" y="304" font-size="10" fill="#1f2937">Sec-WebSocket-Accept = base64(SHA-1(</text>
+    <text x="40" y="320" font-size="10" fill="#1f2937">  Key + 258EAFA5-…-C5AB0DC85B11 ))</text>
+    <line x1="174" y1="330" x2="174" y2="340" stroke="#9ca3af" marker-end="url(#arw-ws)"/>
+    <rect x="24" y="344" width="300" height="44" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="174" y="362" text-anchor="middle" font-size="11" font-weight="bold" fill="#059669">握手完成：协议切换为 WebSocket</text>
+    <text x="174" y="378" text-anchor="middle" font-size="10" fill="#1f2937">此后是全双工帧通信（不再是 HTTP）</text>
+
+    <rect x="356" y="60" width="84" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <rect x="440" y="60" width="108" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <rect x="548" y="60" width="108" height="28" fill="#eff6ff" stroke="#9ca3af"/>
+    <text x="398" y="79" text-anchor="middle" font-size="11" font-weight="bold" fill="#2563eb">维度</text>
+    <text x="494" y="79" text-anchor="middle" font-size="11" font-weight="bold" fill="#2563eb">WebSocket</text>
+    <text x="602" y="79" text-anchor="middle" font-size="11" font-weight="bold" fill="#2563eb">SSE</text>
+
+    <rect x="356" y="88" width="84" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="440" y="88" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="548" y="88" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="398" y="115" text-anchor="middle" font-size="11" fill="#1f2937">通信方向</text>
+    <text x="494" y="115" text-anchor="middle" font-size="11" fill="#1f2937">双向全双工</text>
+    <text x="602" y="104" text-anchor="middle" font-size="11" fill="#1f2937">服务器→客户端</text>
+    <text x="602" y="120" text-anchor="middle" font-size="11" fill="#1f2937">单向推送</text>
+
+    <rect x="356" y="132" width="84" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="440" y="132" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="548" y="132" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="398" y="159" text-anchor="middle" font-size="11" fill="#1f2937">底层协议</text>
+    <text x="494" y="159" text-anchor="middle" font-size="11" fill="#1f2937">独立帧协议</text>
+    <text x="602" y="159" text-anchor="middle" font-size="11" fill="#1f2937">纯 HTTP 长连接</text>
+
+    <rect x="356" y="176" width="84" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="440" y="176" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="548" y="176" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="398" y="203" text-anchor="middle" font-size="11" fill="#1f2937">数据格式</text>
+    <text x="494" y="203" text-anchor="middle" font-size="11" fill="#1f2937">文本 + 二进制</text>
+    <text x="602" y="203" text-anchor="middle" font-size="11" fill="#1f2937">仅文本</text>
+
+    <rect x="356" y="220" width="84" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="440" y="220" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="548" y="220" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="398" y="247" text-anchor="middle" font-size="11" fill="#1f2937">断线重连</text>
+    <text x="494" y="247" text-anchor="middle" font-size="11" fill="#1f2937">需自行实现</text>
+    <text x="602" y="247" text-anchor="middle" font-size="11" fill="#1f2937">浏览器自动重连</text>
+
+    <rect x="356" y="264" width="84" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="440" y="264" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="548" y="264" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="398" y="291" text-anchor="middle" font-size="11" fill="#1f2937">网关要求</text>
+    <text x="494" y="291" text-anchor="middle" font-size="11" fill="#1f2937">需支持 Upgrade</text>
+    <text x="602" y="291" text-anchor="middle" font-size="11" fill="#1f2937">普通 HTTP 即可</text>
+
+    <rect x="356" y="308" width="84" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="440" y="308" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <rect x="548" y="308" width="108" height="44" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="398" y="335" text-anchor="middle" font-size="11" fill="#1f2937">典型场景</text>
+    <text x="494" y="335" text-anchor="middle" font-size="11" fill="#1f2937">聊天 / 协同编辑</text>
+    <text x="602" y="335" text-anchor="middle" font-size="11" fill="#1f2937">通知 / 行情推送</text>
+
+    <rect x="24" y="404" width="632" height="44" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="44" y="422" font-size="11" fill="#1f2937">选型建议：只需服务器单向推送（通知、行情、日志流）→ SSE 更轻，EventSource 自带重连与 last-event-id 续传；</text>
+    <text x="44" y="440" font-size="11" fill="#1f2937">需要双向实时（聊天、协同编辑、游戏）→ WebSocket。</text>
+  </g>
+</svg>

@@ -96,7 +96,7 @@
     <h1>UTXO 与账户模型有什么区别？各自如何表达余额、如何防双花？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">UTXO</span><span class="chip tag">账户模型</span><span class="chip tag">双花</span></div>
     <div class="card"><h2>题目</h2><p>考察比特币与以太坊两种账本模型的差异，以及它们对钱包、隐私和智能合约的影响。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>UTXO（未花费交易输出）</strong>：余额不是存在某个账户里，而是「属于你的所有 UTXO 之和」。每笔交易显式引用若干输入，并生成新的输出（找零给自己）；一个 UTXO 只能被花费一次，节点验证输入未被花费即可防双花。</li>
 <li><strong>账户模型</strong>：全局状态维护 <code>address → balance / nonce / code / storage</code>，交易只写 from、to、value，余额直接加减；<code>nonce</code> 严格递增，既防重放也决定交易顺序，合约账户另有代码与存储。</li>

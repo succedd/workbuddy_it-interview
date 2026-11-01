@@ -96,7 +96,7 @@
     <h1>【故障排查】Spring Cloud Gateway 网关突然出现大量 HTTP 503，用户侧大面积不可用。请给出系统化定位思路，区分是注册中心、下游服务还是网关自身的问题。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">网关</span><span class="chip tag">SpringCloudGateway</span><span class="chip tag">503</span><span class="chip tag">故障排查</span><span class="chip tag">全链路追踪</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 4 问：网关是统一入口，503 是「上游不可用」信号，但要锁定真正责任人。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>第一步：界定 503 含义与范围</strong>。Gateway 的 503 通常来自后端路由失败（no available instance）或转发超时/连接拒绝。先确认是<strong>全量接口</strong>还是<strong>特定服务</strong> 503：全量→网关或注册中心层面的共性问题；特定→某个下游服务故障。同时看是否伴随 504（超时）还是纯 503（无可用实例）。</li>
 <li><strong>第二步：查注册中心</strong>。登录 Nacos/Eureka 控制台，看目标服务实例列表是否为空、健康状态、最后心跳时间。若实例数骤降或为 0，说明是<strong>注册中心侧</strong>问题（实例被误剔除、健康探测失败、或注册中心自身不可用导致列表未刷新）；同时检查网关本地缓存的服务列表是否过期。</li>

@@ -96,7 +96,7 @@
     <h1>Solidity 中 view/pure、modifier、event 的作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">智能合约开发工程师</span><span class="chip">区块链工程师</span><span class="chip tag">Solidity</span><span class="chip tag">modifier</span><span class="chip tag">event</span><span class="chip tag">view</span></div>
     <div class="card"><h2>题目</h2><p>解释 Solidity 三个常用关键字/机制的语义与用途。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>view / pure</strong>：标记函数不修改（view 可读状态）或完全不读不改链上状态（pure），调用这类函数不消耗 Gas、可离线估算。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>view / pure</strong>：标记函数不修改（view 可读状态）或完全不读不改链上状态（pure），调用这类函数不消耗 Gas、可离线估算。</p>
 <p><strong>modifier（修饰器）</strong>：复用函数前置检查逻辑（如 <code>onlyOwner</code>），执行时先跑修饰器再进函数体，类似 AOP。</p>
 <p><strong>event（事件）</strong>：合约向外部发出的日志，链下（前端/后端）可订阅监听；是 DApp 感知链上变化、做前端更新的主要通道，且比存链上状态廉价。</p></div>
     <div class="cta-row">

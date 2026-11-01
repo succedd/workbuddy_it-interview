@@ -96,7 +96,7 @@
     <h1>轻客户端如何用 Merkle Proof 验证一笔交易？SPV 的安全边界在哪里？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">Web3开发工程师</span><span class="chip tag">轻客户端</span><span class="chip tag">SPV</span><span class="chip tag">Merkle Proof</span></div>
     <div class="card"><h2>题目</h2><p>考察轻节点 / SPV 钱包的验证路径，以及它相比全节点的信任假设。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>验证路径</strong>：轻客户端只下载区块头（含 Merkle Root），向全节点请求目标交易的 Merkle 路径；把交易哈希与路径上的兄弟哈希逐层计算，最终结果等于区块头中的 Root，即证明该交易被包含在这个区块里。</li>
 <li><strong>安全边界</strong>：Merkle Proof 只证明「包含」，不证明「所在链最长、交易未被双花」。轻客户端还要跟随最长链 / 最终性检查，并对多个全节点做抽样，防止被单个作恶节点用陈旧或分叉链头欺骗。</li>

@@ -96,7 +96,7 @@
     <h1>RunLoop 是什么？如何利用 RunLoop 监控主线程卡顿？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip tag">iOS</span><span class="chip tag">RunLoop</span><span class="chip tag">卡顿监控</span></div>
     <div class="card"><h2>题目</h2><p>说明 RunLoop 的循环结构与休眠机制，以及基于 beforeWaiting/afterWaiting 的卡顿检测方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>RunLoop</strong>：线程的「事件循环保活器」——让常驻线程在<strong>有事处理事件、无事休眠</strong>（内核态 mach_msg 阻塞，不耗 CPU）。iOS 主线程的 RunLoop 由系统启动，驱动：source0（App 内部事件，如 touch 处理）、source1（mach port，系统间）、timer、observer 触发 autoreleasepool 与渲染。流程：beforeSources → 处理 source/timer → beforeWaiting（休眠）→ 被事件唤醒 → afterWaiting → 循环。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>RunLoop</strong>：线程的「事件循环保活器」——让常驻线程在<strong>有事处理事件、无事休眠</strong>（内核态 mach_msg 阻塞，不耗 CPU）。iOS 主线程的 RunLoop 由系统启动，驱动：source0（App 内部事件，如 touch 处理）、source1（mach port，系统间）、timer、observer 触发 autoreleasepool 与渲染。流程：beforeSources → 处理 source/timer → beforeWaiting（休眠）→ 被事件唤醒 → afterWaiting → 循环。</p>
 <p><strong>卡顿监控方案</strong>：主线程一次完整的事件处理应在<strong>两个 observer 状态之间</strong>快速完成。做法：① 在主 RunLoop 注册 <code>kCFRunLoopBeforeSources</code> 与 <code>kCFRunLoopAfterWaiting</code> 两个 observer；② 每次状态变化记录时间戳，<strong>子线程定时（如每 50ms）检查</strong>主 RunLoop 是否长时间停留在同一状态（超过阈值如 100~400ms）；③ 超时即判定卡顿，<strong>回捞主线程堆栈</strong>（getFrameSymbols / backtrace）上报。</p>
 <p><strong>注意</strong>：休眠（beforeWaiting 后）不算卡顿，需区分；阈值结合 P95/P99 调优，避免误报。</p></div>
     <div class="cta-row">

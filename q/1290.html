@@ -96,7 +96,7 @@
     <h1>MyBatis 用 for 循环单条 insert 插入十万条数据非常慢，如何优化？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MyBatis</span><span class="chip tag">批量插入</span><span class="chip tag">ExecutorType</span><span class="chip tag">foreach</span></div>
     <div class="card"><h2>题目</h2><p>考察点：批量写入的两种手段与 ExecutorType 的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <p><strong>1. 为什么慢</strong></p>
 <p>for 循环里每条 <code>insert</code> 都是一次独立 SQL 发送加一次提交，十万条就是十万次网络往返与 SQL 解析开销，耗时主要花在<strong>网络 I/O 与往返次数</strong>上。</p>
 <p><strong>2. 手段一：SQL 层面合并（<code>&lt;foreach&gt;</code> 批量插入）</strong></p>

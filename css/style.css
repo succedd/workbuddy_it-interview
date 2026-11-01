@@ -492,6 +492,15 @@ body.modal-open { overflow: hidden; scrollbar-gutter: stable; }
 .qd-answer { background: var(--c-primary-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-top: 14px; }
 .answer-trust a { color: var(--c-primary); text-decoration: none; }
 .answer-trust a:hover { text-decoration: underline; }
+/* 答案质量维度面板（20261101）：把单一 AI 参考分拆成可解释的客观维度 */
+.aq-panel { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 10px 12px; margin: 10px 0 14px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; color: var(--text-secondary); }
+.aq-panel .aq-title { font-weight: 600; color: var(--text-primary); font-size: 12px; margin-right: 4px; }
+.aq-panel .aq-item { display: inline-flex; align-items: center; gap: 4px; }
+.aq-panel .aq-good { color: var(--c-success, #16a34a); }
+.aq-panel .aq-warn { color: var(--c-warning, #d97706); }
+.aq-panel .aq-bad { color: var(--c-danger, #dc2626); }
+.aq-panel .aq-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+.aq-panel .aq-tip { flex-basis: 100%; margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-secondary); }
 /* 题目详情底部低频操作：桌面直接展开，手机默认收进「更多」 */
 #q-more-btn { display: none; }
 .q-actions-more { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }

@@ -96,7 +96,7 @@
     <h1>列举常见的「索引失效」场景，并说明如何用 `EXPLAIN` 执行计划判断一条 SQL 是否走了索引。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">数据库工程师</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">索引失效</span><span class="chip tag">EXPLAIN</span><span class="chip tag">执行计划</span><span class="chip tag">SQL优化</span></div>
     <div class="card"><h2>题目</h2><p>说明函数/隐式转换/前导模糊/OR/!=/NULL 等导致失效的情况，并解释 EXPLAIN 的 type/key/rows/Extra 关键字段。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><strong>常见索引失效场景</strong>：</li>
 </ul>
 <p>  1. 对索引列使用<strong>函数或运算</strong>：<code>WHERE YEAR(created_at)=2024</code>、<code>WHERE amount+1=10</code> → 无法用索引。</p>

@@ -96,7 +96,7 @@
     <h1>移动 App 逆向分析时，如何判断关键逻辑是在 Java/Kotlin 层还是 Native 层？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">逆向</span><span class="chip tag">JNI</span><span class="chip tag">移动安全</span></div>
     <div class="card"><h2>题目</h2><p>考察逆向分析基础方法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 17 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>静态定位</strong>：先反编译查看 Java/Kotlin 调用图、字符串和关键类；发现 <code>JNI</code>/<code>native</code> 方法即进入 so 层。</li>
 <li><strong>动态验证</strong>：在关键函数下断点，观察输入输出；hook Java 层无效果时，检查 Native 注册函数和符号。</li>

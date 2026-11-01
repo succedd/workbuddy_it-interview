@@ -96,7 +96,7 @@
     <h1>为一个日增千万条的订单集合搭建 MongoDB 分片集群，分片键应该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">数据库架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">MongoDB</span><span class="chip tag">分片键</span><span class="chip tag">水平扩展</span></div>
     <div class="card"><h2>题目</h2><p>分片键决定了文档在分片间的分布，也决定了查询是定向路由还是全分片广播。请结合基数、频率、单调性和查询模式给出选型思路与反面案例。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先看三个维度：基数、频率、单调性</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先看三个维度：基数、频率、单调性</strong></p>
 <ul>
 <li><strong>基数（cardinality）</strong>决定 balancer 最多能切出多少个 chunk：每个唯一分片键值同一时刻只能落在一个 chunk 内。用 <code>continent</code> 分片，基数只有 7，集群最多 7 个 chunk、加再多分片也没用。低基数字段必须组成<strong>复合分片键</strong>提高基数。</li>
 <li><strong>频率（frequency）</strong>指某个分片键值出现得多频繁：如果大部分文档集中在少数几个值上，对应 chunk 会持续膨胀，最终变成无法再切分的 <strong>jumbo chunk</strong>，水平扩展直接失效。此时用唯一值或低频值组成复合键。</li>

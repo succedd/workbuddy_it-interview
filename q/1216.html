@@ -96,7 +96,7 @@
     <h1>虚拟 DOM 是什么？React 为什么用虚拟 DOM，其 Diff 算法的核心思想是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">虚拟DOM</span><span class="chip tag">Diff算法</span><span class="chip tag">协调</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 1 问：React 渲染机制的起点是虚拟 DOM 与协调（Reconciliation）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>虚拟 DOM 本质</strong>：用 JS 对象（轻量描述 UI 结构的树）表示真实 DOM。状态变化时，React 先在内存中生成新的虚拟 DOM 树，与旧树对比，只把<strong>差异</strong>应用到真实 DOM，避免全量重绘，从而降低昂贵的 DOM 操作次数。</li>
 <li><strong>为什么需要它</strong>：直接操作真实 DOM 成本高且频繁；虚拟 DOM 把「计算差异」放在 JS 层（快），只对必要的最小 DOM 节点做真实修改，兼顾开发体验与性能。它不是「永远比原生快」，而是用可预测的批量更新换取可维护性。</li>

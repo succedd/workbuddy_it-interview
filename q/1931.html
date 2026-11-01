@@ -96,7 +96,7 @@
     <h1>【场景】Flink 作业出现反压（背压），从现象到定位再到缓解，你怎么做？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Flink</span><span class="chip tag">反压</span><span class="chip tag">背压</span><span class="chip tag">调优</span></div>
     <div class="card"><h2>题目</h2><p>考察点：反压原理、Web UI 定位手段、常见根因与调优策略。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>现象与原理</strong>：反压是下游处理速度跟不上上游，压力沿数据流向上游传递，最终源头限速。Flink 基于网络缓冲（credit-based）自然背压，无需外部协调组件。</li>
 <li><strong>定位手段</strong>：Flink Web UI 的 <strong>BackPressure 页</strong>采样线程栈判断哪个算子处于反压；或在 Metrics 中看 <code>outPoolUsage</code>/<code>inPoolUsage</code>、各算子 busyTime。从 Sink 端往上游找第一个反压算子，即为瓶颈。</li>

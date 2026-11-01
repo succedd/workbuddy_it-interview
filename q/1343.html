@@ -96,7 +96,7 @@
     <h1>什么是回表？什么是覆盖索引？如何通过索引设计避免回表？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">回表</span><span class="chip tag">覆盖索引</span><span class="chip tag">联合索引</span></div>
     <div class="card"><h2>题目</h2><p>考察二级索引查询的代价与覆盖索引优化手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心概念</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>核心概念</strong>：</p>
 <ul>
 <li><strong>回表</strong>：InnoDB 二级索引的叶子节点只存「索引列值 + 主键值」，而非整行数据。当查询需要的列不在二级索引中时，必须先通过二级索引拿到主键，再用主键去聚簇索引查整行，这个「再用主键查一次」的过程就叫<strong>回表</strong>，会带来额外 IO。</li>
 <li><strong>覆盖索引</strong>：如果一个索引已经包含了查询所需的所有列（SELECT、WHERE、ORDER BY 用到的列都在索引里），则只需遍历二级索引即可拿到结果，<strong>不需要回表</strong>。</li>

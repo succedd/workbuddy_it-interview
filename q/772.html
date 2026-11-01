@@ -96,7 +96,7 @@
     <h1>HTTP/2 相比 HTTP/1.1 做了哪些核心改进？它解决了 1.1 的什么问题？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP2</span><span class="chip tag">多路复用</span><span class="chip tag">HPACK</span><span class="chip tag">队头阻塞</span></div>
     <div class="card"><h2>题目</h2><p>考察点：二进制分帧、多路复用、头部压缩 HPACK、服务器推送，以及它们如何解决 HTTP/1.1 的队头阻塞与连接数限制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>二进制分帧层</strong>：HTTP/2 把报文拆成二进制帧（HEADERS、DATA 等），不再是 1.1 的纯文本，解析更高效、不易出错。</li>
 <li><strong>多路复用（Multiplexing）</strong>：在单个 TCP 连接上并发多个请求/响应流（Stream），帧带流 ID 可乱序收发、在另一端重组，彻底解决了 HTTP/1.1 应用层的队头阻塞，也避免浏览器对同域 6 个连接的限制。</li>

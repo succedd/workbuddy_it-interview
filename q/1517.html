@@ -96,7 +96,7 @@
     <h1>为什么口令存储要用哈希加盐？bcrypt/Argon2 比普通哈希好在哪里？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">密码学</span><span class="chip tag">口令存储</span><span class="chip tag">bcrypt</span></div>
     <div class="card"><h2>题目</h2><p>说明彩虹表与并行破解的威胁，解释慢哈希的设计目的。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>只存明文</strong>：库泄露即全灭。<strong>只存 MD5/SHA256</strong>：① <strong>彩虹表</strong>——常见口令的哈希已提前算好，反查秒破；② 用户习惯差，弱口令组合穷举极快；③ GPU 一张卡每秒算 MD5 数百亿次。<strong>加盐</strong>：每用户随机盐拼进口令再哈希，相同口令哈希值也不同，彩虹表整体作废（盐无需保密，存库里即可）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>只存明文</strong>：库泄露即全灭。<strong>只存 MD5/SHA256</strong>：① <strong>彩虹表</strong>——常见口令的哈希已提前算好，反查秒破；② 用户习惯差，弱口令组合穷举极快；③ GPU 一张卡每秒算 MD5 数百亿次。<strong>加盐</strong>：每用户随机盐拼进口令再哈希，相同口令哈希值也不同，彩虹表整体作废（盐无需保密，存库里即可）。</p>
 <p><strong>但快哈希加盐仍不够</strong>——攻击者拿到库后可离线高速穷举。所以用<strong>慢哈希</strong>：bcrypt/Argon2/scrypt/PBKDF2 刻意设计成<strong>慢且费内存</strong>：① 内置盐；② <strong>cost factor 可调</strong>（bcrypt 的 rounds，硬件升级后调参即可）；③ bcrypt/scrypt/Argon2 抗 GPU/ASIC（Argon2id 还吃内存，让并行破解成本暴涨）。</p>
 <p><strong>实践</strong>：Argon2id 优先，其次 bcrypt(cost≥10)；MD5/SHA 系直接用于口令 = 设计错误；<strong>不要在客户端哈希代替服务端处理</strong>，应走 HTTPS 传输；登录失败统一报错防枚举。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>redo log 和 binlog 有什么区别？为什么需要两阶段提交来保证两者一致？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">Swift</span><span class="chip tag">ObjectiveC</span><span class="chip tag">iOS</span></div>
     <div class="card"><h2>题目</h2><p>追问链第二问。考察点：物理日志 vs 逻辑日志、循环写 vs 追加写；两阶段提交的 prepare→binlog→commit 三步；崩恢复时如何判定事务该提交还是回滚。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：四项核心区别</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点一：四项核心区别</strong></p>
 <ul>
 <li><strong>归属层次</strong>：redo log 是 InnoDB 引擎层日志；binlog 是 MySQL Server 层日志，<strong>所有引擎都能产生</strong>。</li>
 <li><strong>日志类型</strong>：redo log 是<strong>物理日志</strong>（记录某数据页某偏移处的修改，如「把第 100 号页偏移 20 处改成 1」）；binlog 是<strong>逻辑日志</strong>（记录语句原始逻辑，STATEMENT 记 SQL，ROW 记行的前后镜像）。</li>

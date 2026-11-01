@@ -96,7 +96,7 @@
     <h1>请用 Java 手写一个简单令牌桶限流器（支持 tryAcquire），并解释关键参数与线程安全做法。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">Java后端工程师</span><span class="chip tag">令牌桶</span><span class="chip tag">限流</span><span class="chip tag">Java</span><span class="chip tag">并发安全</span><span class="chip tag">CAS</span></div>
     <div class="card"><h2>题目</h2><p>考察点：令牌桶的编码实现与并发安全细节，检验是否真正理解限流算法的工程落地，编程题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（讲解）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（讲解）：</strong></p>
 <p>令牌桶核心是「惰性补充」——不在定时任务里续令牌，而在每次请求时按当前时间补够令牌，再用 CAS/原子变量扣减，避免锁竞争。关键参数：<code>capacity</code>（桶容量，决定可突发量）、<code>rate</code>（每秒补充速率=限流 QPS）、<code>tokens</code>（当前可用令牌）、<code>lastTs</code>（上次补充时间）。线程安全用 <code>AtomicLong</code> 存 tokens 与 lastTs，按「先算补充→再 CAS 扣减」的顺序重试即可，无需 synchronized。</p>
 <pre><code class="language-java">public class TokenBucket {
     private final long capacity;      // 桶容量（可突发上限）

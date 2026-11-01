@@ -96,7 +96,7 @@
     <h1>【系统设计题·高级】一家业务要求数据库与 Web 接入层全年可用性不低于 99.99%，业务部署在单地域。请你设计基于 CLB 的高可用接入层：从集群架构、可用区容灾、后端部署、DNS 层兜底四个维度说明方案与理由，并指出仅靠单个标准 CLB 实例的 SLA 差距。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">CLB</span><span class="chip tag">高可用</span><span class="chip tag">主备可用区</span><span class="chip tag">域名化CLB</span><span class="chip tag">DNS调度</span><span class="chip tag">SLA</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CLB 集群高可用（TGW/STGW 集群部署）、主备可用区容灾、域名化 CLB 与多 CLB + DNS 调度的取舍、后端服务跨可用区部署与健康检查联动。考察把产品机制组合成架构方案的能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先算 SLA 账（方案的起点）</strong>：非域名化公网 CLB 以 VIP 形式服务，官方 SLA 为 <strong>99.95%</strong>（年停机预算约 4.4 小时）——达不到 99.99%，必须在架构上叠加容灾能力。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先算 SLA 账（方案的起点）</strong>：非域名化公网 CLB 以 VIP 形式服务，官方 SLA 为 <strong>99.95%</strong>（年停机预算约 4.4 小时）——达不到 99.99%，必须在架构上叠加容灾能力。</p>
 <p><strong>维度一：接入集群</strong>：</p>
 <ul>
 <li>CLB 本身是<strong>集群部署</strong>（四层 TGW、七层 STGW，支持会话同步），单集群内无单点，这部分是平台默认能力，不用额外设计；</li>

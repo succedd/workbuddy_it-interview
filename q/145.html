@@ -96,7 +96,7 @@
     <h1>Redis如何实现分布式Session？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DBA数据库管理员</span><span class="chip tag">Redis</span><span class="chip tag">Session</span></div>
     <div class="card"><h2>题目</h2><p>请解释Redis统一管理Session方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>做法</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>做法</strong></p>
 <ul>
 <li>登录后生成 sessionId，把用户会话写入 Redis（key <code>session:&lt;id&gt;</code>，TTL 与登录有效期一致）；Cookie 只存 sessionId（HttpOnly/Secure/SameSite）。</li>
 <li>多实例共享 Redis，任意节点可读；更新/退出删除 key；续期 TTL。</li>

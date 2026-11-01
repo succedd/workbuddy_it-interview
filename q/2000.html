@@ -96,7 +96,7 @@
     <h1>用 Unique Key 模型建一张「用户订单明细」表，要求按订单 ID 支持实时更新，写出建表语句要点。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Doris</span><span class="chip tag">建表</span><span class="chip tag">Unique Key</span></div>
     <div class="card"><h2>题目</h2><p>编程题：要求写出 Doris CREATE TABLE 的关键结构（模型、分桶、副本）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>指定模型</strong>：<code>PROPERTIES (&quot;replication_num&quot; = &quot;3&quot;)</code> 设副本；建表时在列定义后用 <code>UNIQUE KEY(order_id, user_id)</code> 声明唯一键（排序列必须包含唯一键前缀）。</li>
 <li><strong>分桶（Distribution）</strong>：用 <code>DISTRIBUTED BY HASH(order_id) BUCKETS 16</code> 把数据打散到多 BE，分桶键选高基数的订单 ID 以保证数据均匀、JOIN/聚合本地化。</li>

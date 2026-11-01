@@ -96,7 +96,7 @@
     <h1>Dart 中 final 与 const 的区别是什么？为什么 Flutter 中大量推荐用 const 构造？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">Flutter开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Dart</span><span class="chip tag">final</span><span class="chip tag">const</span><span class="chip tag">Flutter优化</span></div>
     <div class="card"><h2>题目</h2><p>简答题：考察 Dart 常量的两种语义及其在 Flutter 性能上的意义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>final</strong>：表示「运行期只赋值一次、之后不可变」，值在<strong>运行时</strong>确定（可以依赖运行时计算的结果，如 <code>final x = DateTime.now()</code>）。</li>
 <li><strong>const</strong>：表示「编译期常量」，值在<strong>编译期</strong>就完全确定，且 const 变量指向的对象是不可变的（深度不可变）。const 还能修饰构造（<code>const MyWidget()</code>），声明该 Widget 实例是编译期可固化的。</li>

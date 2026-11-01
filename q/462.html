@@ -96,7 +96,7 @@
     <h1>用户密码在数据库里应该怎么存？为什么不能直接用 MD5 或 SHA-256？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">密码存储</span><span class="chip tag">哈希算法</span><span class="chip tag">加盐</span></div>
     <div class="card"><h2>题目</h2><p>仍有不少老系统在使用 MD5 或加盐 SHA-256 存储密码。请说明这种做法的风险，以及现代应用应该采用的口令哈希算法、参数与升级策略。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、为什么不能用 MD5 / SHA-256</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、为什么不能用 MD5 / SHA-256</h3>
 <p>这类算法的设计目标是<strong>快</strong>，而口令哈希恰恰需要<strong>慢</strong>。攻击者拿到库后会用候选密码、撞库字典、规则化词表或暴力枚举去撞哈希，配合 GPU 和云算力，快速哈希意味着单位时间能尝试的密码数量极大，破解成本极低。它们还缺少工作因子与内存硬度，无法通过调参跟上硬件演进；不加盐时还会直接被彩虹表命中。</p>
 <h3>二、正确做法：慢哈希 + 每用户唯一 salt</h3>
 <p>OWASP 的推荐优先级：</p>

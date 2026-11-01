@@ -96,7 +96,7 @@
     <h1>MySQL 的 undo log、redo log、binlog 分别解决什么问题？各自保证了 ACID 的哪一性？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">LLM应用开发工程师</span><span class="chip">AI应用开发工程师</span><span class="chip">RAG工程师</span><span class="chip">数据库工程师</span><span class="chip tag">LLM</span><span class="chip tag">RAG</span><span class="chip tag">微调</span><span class="chip tag">Agent</span></div>
     <div class="card"><h2>题目</h2><p>追问链起点。考察点：三种日志所属层次（InnoDB 层 vs Server 层）；undo 保证原子性、redo 保证持久性、binlog 用于归档与主从复制；一条 UPDATE 语句的完整日志链路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：三种日志的定位与层次</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点一：三种日志的定位与层次</strong></p>
 <ul>
 <li><strong>undo log（回滚日志）</strong>：由 <strong>InnoDB 存储引擎层</strong>生成，保证事务的<strong>原子性（Atomicity）</strong>，用于<strong>事务回滚和 MVCC</strong>。</li>
 <li><strong>redo log（重做日志）</strong>：同样由 <strong>InnoDB 层</strong>生成，保证事务的<strong>持久性（Durability）</strong>，用于<strong>掉电等故障后的崩溃恢复</strong>。</li>

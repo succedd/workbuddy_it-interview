@@ -96,7 +96,7 @@
     <h1>select、poll、epoll 的区别是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">Go后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">IO多路复用</span><span class="chip tag">epoll</span><span class="chip tag">网络编程</span></div>
     <div class="card"><h2>题目</h2><p>请从文件描述符数量、拷贝与遍历开销、触发方式等角度对比三种 IO 多路复用机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p>三者都是 <strong>IO 多路复用</strong>：单线程同时监听多个 socket，就绪了再处理，避免每连接一线程的开销。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>三者都是 <strong>IO 多路复用</strong>：单线程同时监听多个 socket，就绪了再处理，避免每连接一线程的开销。</p>
 <p><strong>select</strong>：把 fd 集合从用户态<strong>全量拷贝</strong>到内核，内核<strong>线性扫描</strong>所有 fd；返回后用户还要再遍历找出就绪的。限制 <strong>FD_SETSIZE=1024</strong>，连接数一多效率急剧下降。</p>
 <p><strong>poll</strong>：用 pollfd 数组去掉 1024 限制，其他（全量拷贝+全量遍历）依旧。</p>
 <p><strong>epoll</strong>（Linux）：</p>

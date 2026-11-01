@@ -96,7 +96,7 @@
     <h1>Doris 集群如何配置多 FE Follower + Observer 实现高可用？查询热点又该如何靠负载均衡缓解？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Doris</span><span class="chip tag">高可用</span><span class="chip tag">负载均衡</span><span class="chip tag">部署</span></div>
     <div class="card"><h2>题目</h2><p>场景题（高级）：考察 Doris 高可用部署与查询流量治理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>FE 高可用</strong>：部署 <strong>1 个 Leader（由 Follower 选举产生）+ 2~N 个 Follower</strong>（奇数，如 3/5），元数据通过类 Paxos 在 Follower 间一致复制，Leader 挂掉后自动选主，写元数据不中断；再加若干 <strong>Observer</strong> 只同步元数据、分担读压力（不参与选举，因此可更多）。注意：Follower 数必须奇数以保证多数派。</li>
 <li><strong>BE 多副本</strong>：表默认 3 副本，单 BE 宕机数据不丢、查询自动路由到其他副本。</li>

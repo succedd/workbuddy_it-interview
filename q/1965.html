@@ -96,7 +96,7 @@
     <h1>类别特征有哪些编码方式（One-Hot、Label、Target/均值编码、Embedding）？各自的优缺点与高基数风险？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">推荐算法工程师</span><span class="chip tag">特征工程</span><span class="chip tag">类别编码</span><span class="chip tag">Target编码</span><span class="chip tag">Embedding</span></div>
     <div class="card"><h2>题目</h2><p>考察类别特征编码的取舍，特别是高基数与泄露风险。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>One-Hot</strong>：每个取值变一列 0/1，无大小关系、树/线性模型都友好；但<strong>高基数灾难</strong>——取值上千时维度爆炸、稀疏，且类别新增会维度漂移。</li>
 <li><strong>Label/Ordinal 编码</strong>：映射成整数，省空间但强行引入「大小顺序」，对树模型可接受、对 LR/距离模型有害（误以为 3&gt;2）。</li>

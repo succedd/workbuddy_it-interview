@@ -96,7 +96,7 @@
     <h1>当 Pod 异常时，标准排查顺序是 `kubectl get pod → describe → logs → exec`，每一步分别看什么关键信息？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Kubernetes</span><span class="chip tag">排障</span><span class="chip tag">kubectl</span><span class="chip tag">Pod</span></div>
     <div class="card"><h2>题目</h2><p>考察 K8s 排障的标准方法论。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>四步法要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>四步法要点</strong>：</p>
 <ul>
 <li><code>get pod -o wide</code>：先看<strong>状态/重启次数/节点/IP</strong>，<code>Ready</code> 列与 <code>STATUS</code>（Pending/ImagePullBackOff/CrashLoopBackOff）直接定位大类。</li>
 <li><code>describe pod</code>：看 <strong>Events</strong>（FailedScheduling、拉镜像失败、探针失败）、<code>State</code>、<code>Last State</code>、<code>Conditions</code>，以及资源 requests/limits 是否被节点满足。</li>

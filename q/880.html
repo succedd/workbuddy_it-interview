@@ -96,7 +96,7 @@
     <h1>crontab 里的脚本「手动 bash xxx.sh 能跑，定时任务却静默失败/没输出」，如何系统性排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">Shell</span><span class="chip tag">crontab</span><span class="chip tag">环境变量</span><span class="chip tag">定时任务</span></div>
     <div class="card"><h2>题目</h2><p>考察 cron 环境与交互式 Shell 环境的差异。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>根因几乎都在「环境差异」</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>根因几乎都在「环境差异」</strong>：</p>
 <ul>
 <li><strong>PATH 不同</strong>：cron 的 PATH 通常只有 <code>/usr/bin:/bin</code>，脚本里调用的 <code>python3</code>、<code>java</code> 等需写<strong>绝对路径</strong>，或在脚本开头 <code>export PATH=...</code>。</li>
 <li><strong>家目录/环境变量缺失</strong>：cron 以最小环境运行，<code>~</code>、<code>.bashrc</code> 不会加载，依赖 <code>HOME</code>、<code>JAVA_HOME</code> 的程序要到脚本里显式 export。</li>

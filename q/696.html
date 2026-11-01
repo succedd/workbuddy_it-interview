@@ -96,7 +96,7 @@
     <h1>游戏物理引擎如何做碰撞检测与刚体模拟（AABB/冲量）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">游戏引擎工程师</span><span class="chip">游戏客户端工程师</span><span class="chip tag">物理引擎</span><span class="chip tag">碰撞检测</span><span class="chip tag">刚体</span><span class="chip tag">冲量</span></div>
     <div class="card"><h2>题目</h2><p>说明物理引擎中碰撞检测与响应的基本原理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>碰撞检测</strong>：先宽相位（Broad Phase）用 AABB/包围球或空间划分（网格/树）快速排除不相交对，再窄相位（Narrow Phase）精确求交（如 SAT、GJK）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>碰撞检测</strong>：先宽相位（Broad Phase）用 AABB/包围球或空间划分（网格/树）快速排除不相交对，再窄相位（Narrow Phase）精确求交（如 SAT、GJK）。</p>
 <p><strong>刚体模拟</strong>：用位置、速度、质量、转动惯量描述物体，按重力等外力积分更新。</p>
 <p><strong>碰撞响应</strong>：用冲量法（Impulse）按恢复系数与摩擦计算分离速度，消解穿透（位置修正），避免抖动与隧穿（连续碰撞检测 CCD）。</p></div>
     <div class="cta-row">

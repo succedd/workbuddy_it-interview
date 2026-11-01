@@ -96,7 +96,7 @@
     <h1>Appium 实现移动端 UI 自动化的原理是什么？为何能跨 iOS/Android？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Appium</span><span class="chip tag">UI自动化</span><span class="chip tag">移动测试</span></div>
     <div class="card"><h2>题目</h2><p>解释 Appium 的架构设计与跨平台能力来源。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>架构</strong>：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>架构</strong>：Appium 基于 C/S 架构，测试脚本通过 WebDriver 协议（HTTP JSON）向 Appium Server 发命令，Server 再转发给各平台底层自动化引擎。</p>
 <p><strong>跨平台原理</strong>：它封装了系统原生框架——Android 走 UIAutomator2，iOS 走 XCUITest，对上层暴露统一的 WebDriver API，因此同一套脚本语言（Python/Java）可驱动两端。</p>
 <p><strong>优势</strong>：开源、支持多语言、无需改被测 App 源码；局限是依赖各平台框架版本与真机/模拟器环境。</p></div>
     <div class="cta-row">

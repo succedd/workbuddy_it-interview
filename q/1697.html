@@ -96,7 +96,7 @@
     <h1>为什么视频编码普遍采用 YUV（尤其是 4:2:0）而不是 RGB？4:2:0 相比 RGB 节省多少数据量？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">音视频开发工程师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">YUV</span><span class="chip tag">色彩空间</span><span class="chip tag">色度抽样</span><span class="chip tag">视频编码</span></div>
     <div class="card"><h2>题目</h2><p>考察色彩空间与色度抽样的原理，要求说明人眼特性、抽样比与兼容性实践。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>人眼对亮度敏感、对色度不敏感</strong>：YUV 把亮度（Y）与色度（U/V）分离后，可以只降低色度分辨率而人眼几乎无感，这是一切视频压缩的出发点。</li>
 <li><strong>4:2:0 的含义</strong>：每 2×2 像素块共享一组色度值，色度数据降为 1/4，加上亮度后整体数据量约为 RGB 全分辨率的 1/2；对色度要求高的场景（合成、调色）才会评估 4:2:2 或 4:4:4。</li>

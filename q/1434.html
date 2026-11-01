@@ -96,7 +96,7 @@
     <h1>Oracle 里一条 SQL 变慢了，你会怎么排查？请说清执行计划的获取方式与基线（SQL Plan Baseline）的作用。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">DBA数据库管理员</span><span class="chip">数据库开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">Oracle</span><span class="chip tag">SQL调优</span><span class="chip tag">执行计划</span><span class="chip tag">SQL Plan Baseline</span></div>
     <div class="card"><h2>题目</h2><p>考察 Oracle SQL 调优方法论：执行计划获取、统计信息、绑定变量窥探与 SQL Plan Baseline 固化。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>排查路径（自上而下）</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>排查路径（自上而下）</h3>
 <ol>
 <li><strong>定位 SQL</strong>：AWR（<code>DBA_HIST_SNAPSHOT</code> / <code>dba_hist_sqlstat</code>）按 elapsed time / CPU / logical reads 排 Top SQL；实时问题直接查 <code>v$session</code> + <code>v$sql</code>；</li>
 <li><strong>拿执行计划</strong>：<code>EXPLAIN PLAN FOR</code> + <code>dbms_xplan.display</code>（注意它不绑定真实值，可能有窥探偏差）；生产更可信的是 <code>dbms_xplan.display_cursor(sql_id, null, &#39;ALLSTATS LAST&#39;)</code>——看 <strong>A-Rows 与 E-Rows 的偏差</strong>，偏差大 = 统计信息过期或优化器估算失真；</li>

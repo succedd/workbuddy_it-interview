@@ -96,7 +96,7 @@
     <h1>Redis主从复制和哨兵模式的原理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">DBA数据库管理员</span><span class="chip tag">Redis</span><span class="chip tag">主从复制</span></div>
     <div class="card"><h2>题目</h2><p>请解释Redis高可用方案。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>主从复制</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：简略 · 无代码示例 · 来源：官方整理 · 未复核 · 近 7 天更新</div><h3>主从复制</h3>
 <p><strong>全量同步</strong>: bgsave生成RDB→发送给从节点→加载RDB→增量同步</p>
 <p><strong>增量复制</strong>: 复制积压缓冲区</p>
 <h3>哨兵模式</h3>

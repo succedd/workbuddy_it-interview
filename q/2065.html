@@ -96,7 +96,7 @@
     <h1>什么是 Run Loop？它和 UIKit 的事件响应、滑动流畅度有什么关系？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">UIKit</span><span class="chip tag">Run Loop</span><span class="chip tag">事件循环</span><span class="chip tag">主线程</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解主线程事件循环如何驱动 UI 渲染，以及为什么主线程阻塞会掉帧。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>Run Loop（NSRunLoop/CFRunLoop）是线程的事件循环，主线程 Run Loop 不断处理输入源（touch、timer、网络回调），驱动 UI 渲染与事件分发。</li>
 <li>滑动时系统以屏幕刷新率（如 60/120Hz）向主 Run Loop 投递绘制任务，若某次循环耗时过长（主线程被阻塞），就会跳过帧 → 卡顿。</li>

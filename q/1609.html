@@ -96,7 +96,7 @@
     <h1>PostgreSQL 的 MVCC 多版本并发控制是如何实现的？它与 MySQL InnoDB 的 MVCC 有何本质区别？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">PostgreSQL</span><span class="chip tag">MVCC</span><span class="chip tag">事务</span></div>
     <div class="card"><h2>题目</h2><p>考察 PG 核心并发机制与事务可见性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 22 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>实现</strong>：PG 每行有隐藏字段 <code>xmin</code>（插入该版本的事务 ID）、<code>xmax</code>（删除 / 更新该版本的事务 ID）。每个事务开始时拿一个<strong>快照（snapshot）</strong>记录当前活跃事务区间；判断某行版本是否对当前事务可见，依据 <code>xmin/xmax</code> 与快照的<strong>可见性规则</strong>——已提交且在快照之前、且未被后续事务删除的版本才可见。更新即<strong>写新版本 + 标记旧版本 xmax</strong>，旧版本成为「死元组（dead tuple）」。</li>
 <li><strong>与 InnoDB 区别</strong>：InnoDB 用 <strong>undo log + 事务 ID + 回滚指针</strong>在聚簇索引上构造历史版本，读取时按需回溯；PG 则是<strong>行上直接保留多版本</strong>，历史版本就在表 / 堆里。</li>

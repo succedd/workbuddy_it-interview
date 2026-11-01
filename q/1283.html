@@ -96,7 +96,7 @@
     <h1>【场景】服务发布时用户请求出现零星报错，如何设计优雅停机与无损上下线？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">平台工程师</span><span class="chip tag">优雅停机</span><span class="chip tag">无损发布</span><span class="chip tag">健康检查</span><span class="chip tag">流量摘除</span></div>
     <div class="card"><h2>题目</h2><p>考察点：流量摘除、连接排空与健康探针的协同设计。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <p><strong>1. 为什么一发布就报错</strong></p>
 <p>实例被直接杀掉时仍有在途请求、连接未排空、注册中心里实例状态还没更新，调用方和网关就会把流量打到正在下线的节点上，出现零星 5xx 或连接重置。</p>
 <p><strong>2. 优雅停机的正确顺序</strong></p>

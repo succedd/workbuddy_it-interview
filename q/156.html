@@ -96,7 +96,7 @@
     <h1>Kubernetes滚动更新和回滚？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip tag">Kubernetes</span><span class="chip tag">滚动更新</span></div>
     <div class="card"><h2>题目</h2><p>请解释Deployment的更新策略。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>滚动更新</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>滚动更新</strong></p>
 <ul>
 <li>Deployment 用 <code>strategy.rollingUpdate</code>（maxUnavailable/maxSurge）逐步替换 Pod；readinessProbe 通过才接流量，避免 502。</li>
 <li><code>kubectl rollout status</code> 看进度；<code>kubectl set image</code> 或改 manifest 触发；revisionHistoryLimit 保留历史。</li>

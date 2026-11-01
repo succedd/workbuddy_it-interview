@@ -96,7 +96,7 @@
     <h1>GitHub-hosted runner 与 self-hosted runner 有什么区别？如何安全地使用 self-hosted runner？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CI/CD</span><span class="chip tag">runner</span><span class="chip tag">安全</span></div>
     <div class="card"><h2>题目</h2><p>简答题：考察两种 runner 的取舍与安全边界，尤其自建 runner 的风险点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>GitHub-hosted runner</strong>：由 GitHub 提供的临时虚拟机（每次运行全新、用完即销毁），无需运维、干净隔离，但受限于规格、并发配额与单 job 6 小时上限，且处于公网。</li>
 <li><strong>self-hosted runner</strong>：跑在你自己机器/集群上的 agent，适合需要内部网络、特定硬件（GPU、数据库）、私有依赖或更大资源的场景，但<strong>复用同一台机器会残留文件/环境变量</strong>，隔离性弱。</li>

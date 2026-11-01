@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470">
+  <defs>
+    <marker id="arw-rr" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arw-rrg" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#059669"/>
+    </marker>
+    <marker id="arw-rrgy" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+  <rect width="680" height="470" fill="#ffffff"/>
+  <g font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+    <text x="28" y="32" font-size="14" font-weight="bold" fill="#2563eb">Redis 文件事件处理器（Reactor 模式）</text>
+
+    <!-- 客户端套接字 -->
+    <rect x="36" y="96" width="128" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="100" y="119" font-size="12" fill="#1f2937" text-anchor="middle">客户端 Socket 1</text>
+    <rect x="36" y="156" width="128" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="100" y="179" font-size="12" fill="#1f2937" text-anchor="middle">客户端 Socket 2</text>
+    <rect x="36" y="216" width="128" height="36" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="100" y="239" font-size="12" fill="#1f2937" text-anchor="middle">客户端 Socket 3</text>
+    <text x="100" y="286" font-size="11" fill="#6b7280" text-anchor="middle">产生读写 / 连接事件</text>
+
+    <line x1="164" y1="114" x2="206" y2="150" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-rr)"/>
+    <line x1="164" y1="174" x2="206" y2="184" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-rr)"/>
+    <line x1="164" y1="234" x2="206" y2="214" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-rr)"/>
+
+    <!-- 多路复用 -->
+    <rect x="210" y="96" width="170" height="158" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="295" y="152" font-size="12" fill="#1f2937" text-anchor="middle">I/O 多路复用程序</text>
+    <text x="295" y="174" font-size="11" fill="#6b7280" text-anchor="middle">epoll / select / kqueue</text>
+    <text x="295" y="196" font-size="11" fill="#6b7280" text-anchor="middle">监听多个套接字</text>
+    <text x="295" y="216" font-size="11" fill="#6b7280" text-anchor="middle">单线程看护大量连接</text>
+
+    <line x1="380" y1="175" x2="422" y2="175" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arw-rr)"/>
+
+    <!-- 分派器 -->
+    <rect x="426" y="145" width="110" height="60" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="481" y="170" font-size="12" fill="#1f2937" text-anchor="middle">文件事件</text>
+    <text x="481" y="190" font-size="12" fill="#1f2937" text-anchor="middle">分派器</text>
+
+    <line x1="536" y1="158" x2="566" y2="118" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rrgy)"/>
+    <line x1="536" y1="175" x2="566" y2="185" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rrgy)"/>
+    <line x1="536" y1="192" x2="566" y2="248" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arw-rrgy)"/>
+
+    <!-- 事件处理器 -->
+    <rect x="570" y="90" width="90" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="615" y="114" font-size="11" fill="#1f2937" text-anchor="middle">连接应答处理器</text>
+    <rect x="570" y="164" width="90" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="615" y="188" font-size="11" fill="#1f2937" text-anchor="middle">命令请求处理器</text>
+    <rect x="570" y="238" width="90" height="40" rx="6" fill="#f0fdf4" stroke="#059669"/>
+    <text x="615" y="262" font-size="11" fill="#1f2937" text-anchor="middle">命令回复处理器</text>
+
+    <!-- 回复虚线 -->
+    <path d="M 615 278 L 615 320 L 100 320 L 100 254" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arw-rrg)"/>
+    <text x="360" y="314" font-size="11" fill="#059669" text-anchor="middle">执行结果写回客户端（命令回复处理器）</text>
+
+    <!-- 6.0 说明 -->
+    <rect x="36" y="344" width="300" height="94" rx="8" fill="#f0fdf4" stroke="#059669"/>
+    <text x="52" y="368" font-size="12" font-weight="bold" fill="#059669">Redis 6.0 多线程 I/O 的边界</text>
+    <text x="52" y="390" font-size="11" fill="#1f2937">仅并行处理网络读写（io-threads）</text>
+    <text x="52" y="410" font-size="11" fill="#1f2937">默认只对「写回复」多线程，读需开</text>
+    <text x="52" y="430" font-size="11" fill="#1f2937">io-threads-do-reads yes</text>
+    <rect x="348" y="344" width="296" height="94" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+    <text x="364" y="368" font-size="12" font-weight="bold" fill="#2563eb">命令执行为什么仍单线程</text>
+    <text x="364" y="390" font-size="11" fill="#1f2937">内存操作 + 高效结构，CPU 不是瓶颈</text>
+    <text x="364" y="410" font-size="11" fill="#1f2937">单线程无并发竞争：免锁、免切换</text>
+    <text x="364" y="430" font-size="11" fill="#1f2937">保证命令原子性语义</text>
+
+    <text x="340" y="458" font-size="11" fill="#6b7280" text-anchor="middle">四大组成：套接字、I/O 多路复用程序、文件事件分派器、事件处理器</text>
+  </g>
+</svg>

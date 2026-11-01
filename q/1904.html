@@ -96,7 +96,7 @@
     <h1>CDC（Debezium/Canal）如何做到不丢不重？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">数据采集工程师</span><span class="chip tag">CDC</span><span class="chip tag">Debezium</span><span class="chip tag">Canal</span><span class="chip tag">幂等</span></div>
     <div class="card"><h2>题目</h2><p>考察变更数据捕获、位点和 exactly-once。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>原理</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>原理</strong></p>
 <ul>
 <li>读数据库 binlog/WAL，解析 insert/update/delete 事件，按事务顺序发送到 Kafka/下游；记录 binlog 位点。</li>
 <li>全量+增量：先快照加锁/一致性位点，再从该位点追增量，避免中间变更丢失。</li>

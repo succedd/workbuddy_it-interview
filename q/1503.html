@@ -96,7 +96,7 @@
     <h1>Android View 的事件分发机制是什么？滑动冲突如何解决？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip tag">Android</span><span class="chip tag">事件分发</span><span class="chip tag">滑动冲突</span></div>
     <div class="card"><h2>题目</h2><p>描述 dispatch→intercept→touch 三方法的职责与 U 型返回路径，给出冲突处理模板。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>三方法</strong>：<code>dispatchTouchEvent</code>（分发入口）、<code>onInterceptTouchEvent</code>（ViewGroup 询问是否拦截）、<code>onTouchEvent</code>（消费）。<strong>顺序</strong>：父 → 子逐层 dispatch（外层先问拦截，不拦则传给子），子不消费再<strong>逆序回传</strong>给父级 onTouchEvent——整体呈 U 型。触摸序列里一旦某层消费了 down（返回 true），后续 move/up 直达它；父层在序列中<strong>拦截后</strong>子层会收到 <code>ACTION_CANCEL</code>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>三方法</strong>：<code>dispatchTouchEvent</code>（分发入口）、<code>onInterceptTouchEvent</code>（ViewGroup 询问是否拦截）、<code>onTouchEvent</code>（消费）。<strong>顺序</strong>：父 → 子逐层 dispatch（外层先问拦截，不拦则传给子），子不消费再<strong>逆序回传</strong>给父级 onTouchEvent——整体呈 U 型。触摸序列里一旦某层消费了 down（返回 true），后续 move/up 直达它；父层在序列中<strong>拦截后</strong>子层会收到 <code>ACTION_CANCEL</code>。</p>
 <p><strong>滑动冲突两类</strong>：① <strong>同向</strong>（嵌套 ScrollView、Banner 内 ListView）：重写 <code>onInterceptTouchEvent</code> 按滑动方向/距离阈值判断谁消费，或用 <code>NestedScrolling</code> 机制；② <strong>异向</strong>（ViewPager 内横向 item 里嵌竖向列表）：外层拦截横向、内层消费竖向，ViewPager 已内置方向判定，自定义容器需自己算 <code>dx/dy</code> 竞争。</p>
 <p><strong>模板</strong>：<code>onInterceptTouchEvent</code> 里记录 down 坐标，move 超过 touchSlop 时比较方向——该自己滑就 return true 拦截，否则放行子 View。</p></div>
     <div class="cta-row">

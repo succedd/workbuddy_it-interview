@@ -96,7 +96,7 @@
     <h1>PHP OPcache 和 JIT 分别解决什么问题？生产怎么配？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">PHP后端工程师</span><span class="chip tag">OPcache</span><span class="chip tag">JIT</span><span class="chip tag">字节码</span><span class="chip tag">性能</span></div>
     <div class="card"><h2>题目</h2><p>考察 PHP 字节码缓存、JIT 和部署注意事项。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>OPcache</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>OPcache</strong></p>
 <ul>
 <li>缓存编译后的字节码，避免每个请求重复解析/编译；大幅降低 CPU、提高吞吐。生产开启，开发关闭以及时生效。</li>
 <li>关键配置：<code>opcache.memory_consumption</code>、<code>max_accelerated_files</code>、<code>validate_timestamps</code>（生产可关，发布后 reload）。</li>

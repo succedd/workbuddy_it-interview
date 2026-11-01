@@ -96,7 +96,7 @@
     <h1>外部用户从域名访问你的服务，请求链路是 域名→Ingress→Service→Pod，如何逐跳画清并在每跳给出排错点？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">云计算工程师</span><span class="chip tag">端到端</span><span class="chip tag">Ingress</span><span class="chip tag">Service</span><span class="chip tag">Pod</span><span class="chip tag">网络链路</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是把 K8s 网络四件套串成端到端心智模型，而非孤立记忆。追问：某一跳延迟高，怎么判断瓶颈在 Ingress、Service 还是 Pod？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>端到端链路与每跳排错点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>端到端链路与每跳排错点</strong>：</p>
 <ol>
 <li><strong>DNS / 域名层</strong>：域名解析到 Ingress Controller 的 LB 地址（ADDRESS）；解析错或 TTL 问题 → 客户端直接连错 IP。</li>
 <li><strong>Ingress 层</strong>（LB→Ingress Controller→按 host/path 匹配→转发到后端 Service）：</li>

@@ -96,7 +96,7 @@
     <h1>@Transactional 方法自调用（同类内 this.xxx()）为何不生效，如何排查与修复？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">事务失效</span><span class="chip tag">自调用</span><span class="chip tag">AOP代理</span></div>
     <div class="card"><h2>题目</h2><p>Service 内方法 A 调用同类的 @Transactional 方法 B，B 抛异常却未回滚。请定位根因并给出修复方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>根因：代理失效</strong>：Spring 事务靠 AOP 代理实现，自调用是 this 直接调用目标对象而非代理，绕过了事务拦截器，@Transactional 完全不生效。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>根因：代理失效</strong>：Spring 事务靠 AOP 代理实现，自调用是 this 直接调用目标对象而非代理，绕过了事务拦截器，@Transactional 完全不生效。</p>
 <p><strong>排查步骤</strong>：①确认是否同类内调用；②确认 Bean 是否经 Spring 代理（CGLIB/JDK）、方法是否为 public；③看日志是否出现事务开启（TransactionManager 未打印即未代理）。</p>
 <p><strong>修复方案 A</strong>：把 B 抽到另一个 Service 中，通过依赖注入的代理调用，让事务拦截器介入。</p>
 <p><strong>修复方案 B</strong>：同类中自注入（@Autowired 自己）或暴露 AopContext.currentProxy() 后通过代理调用；也可将方法提到父类/独立组件。核心是「让调用经过代理」而非 this 直连。</p></div>

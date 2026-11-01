@@ -96,7 +96,7 @@
     <h1>ArgoCD 中声明式配置应用有哪几种方式？Application CRD、App of Apps、ApplicationSet 分别适合什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">平台工程师</span><span class="chip tag">ArgoCD</span><span class="chip tag">App of Apps</span><span class="chip tag">ApplicationSet</span></div>
     <div class="card"><h2>题目</h2><p>考察规模化管理大量应用的模式选择。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Application CRD 单应用</strong>：最基础，一个 YAML 描述一个应用；适合少量、手工维护的应用，缺点是无法「用代码生成代码」。</li>
 <li><strong>App of Apps</strong>：用一个「父 Application」指向一个 Git 目录，目录里全是子 Application 的 YAML，父应用把子应用全部同步出来——用 ArgoCD 管理 ArgoCD 自己，分层清晰，适合几十到上百个应用。</li>

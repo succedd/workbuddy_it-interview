@@ -96,7 +96,7 @@
     <h1>抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">抓包</span><span class="chip tag">Fiddler</span><span class="chip tag">Charles</span><span class="chip tag">Burp</span><span class="chip tag">中间人</span></div>
     <div class="card"><h2>题目</h2><p>抓包工具（Fiddler / Charles / Burp Suite）为什么能解密 HTTPS 流量？原理是什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心原理：抓包工具把自己扮演成了「受信任的中间人 CA」</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>核心原理：抓包工具把自己扮演成了「受信任的中间人 CA」</strong></p>
 <p>HTTPS 默认不允许第三方看到明文内容，但抓包工具通过一个巧妙的方式绕过：它让自己成为客户端和服务器之间的<strong>透明代理</strong>，分别建立两条独立的 HTTPS 连接。</p>
 <p><strong>具体流程：</strong></p>
 <ol>

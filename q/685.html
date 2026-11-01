@@ -96,7 +96,7 @@
     <h1>WebRTC 实现浏览器实时音视频通话的核心流程（信令/SDP/ICE）是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">WebRTC工程师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">WebRTC</span><span class="chip tag">SDP</span><span class="chip tag">ICE</span><span class="chip tag">信令</span></div>
     <div class="card"><h2>题目</h2><p>解释 WebRTC 建立 P2P 媒体连接的三个关键环节。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>信令（Signaling）</strong>：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>信令（Signaling）</strong>：浏览器间交换元数据的通道（自建 WebSocket 等），不在 WebRTC 标准内，用于协商能力与交换 SDP/ICE。</p>
 <p><strong>SDP 协商</strong>：双方通过 Offer/Answer 交换 Session Description（编解码、分辨率等），达成一致媒体参数。</p>
 <p><strong>ICE 候选</strong>：收集主机/反射/中继（TURN）候选地址，两两连通性检查选出可用路径，穿透 NAT 建立 P2P；失败回退 TURN 中继。此后用 SRTP 传输加密媒体流。</p></div>
     <div class="cta-row">

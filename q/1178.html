@@ -96,7 +96,7 @@
     <h1>GPTQ 和 AWQ 这两种主流权重量化算法，思路上有什么本质区别？分别适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip tag">GPTQ</span><span class="chip tag">AWQ</span><span class="chip tag">权重量化</span><span class="chip tag">大模型部署</span></div>
     <div class="card"><h2>题目</h2><p>考察点：量化算法原理对比。要求讲清 GPTQ 用二阶信息逐层量化+补偿、AWQ 保护「显著权重」两条路线，以及各自适用面。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>GPTQ（基于二阶信息）</strong>：量化时利用 Hessian（权重对应的二阶信息）衡量每个权重的重要性，逐层、逐列地做量化，并对量化误差做<strong>层内补偿</strong>——把当前权重的量化误差通过逆 Hessian 补偿到同层其他权重上，从而把 INT4 的精度损失压到很低。特点是「离线一次量化、推理零额外开销」，适合对精度要求高、能接受量化耗时的场景。</li>
 <li><strong>AWQ（Activation-aware Weight Quantization）</strong>：核心观察是「少量显著性权重（对激活影响大）决定性能」。它<strong>不量化这些显著权重、只量化其余权重</strong>，并按激活大小给权重乘一个可学习的缩放 protection 系数，等价于用激活分布指导量化。特点是「不依赖昂贵反量化补偿、对校准集敏感低、部署简单」，常作为 LLM 推理框架的默认 INT4 方案（如 4-bit AWQ）。</li>

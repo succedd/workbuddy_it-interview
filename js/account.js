@@ -404,7 +404,7 @@
   A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
   /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
   A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
-  /* ---- 隐私政策第七条承诺的三项能力（20261101a） ----
+  /* ---- 隐私政策第七条承诺的三项能力（20261101b） ----
      后端接口：DELETE /me/data（清学习数据）、POST /auth/delete（注销，需邮箱二次确认）。
      旧版 Worker 没有这两个接口时会返回 404，前端按此给提示，不让用户以为删了其实没删。 */
   A.clearCloudData = () => call("DELETE", "/me/data");
@@ -584,7 +584,7 @@
           out.style.color = "#DC2626"; out.textContent = e.message;
         } finally { btn.disabled = false; }
       };
-      /* ---- 数据与隐私：导出 / 清空 / 注销（20261101a）---- */
+      /* ---- 数据与隐私：导出 / 清空 / 注销（20261101b）---- */
       $("#acc-export").onclick = async () => {
         const out = $("#acc-out");
         out.style.color = "#64748B"; out.textContent = "正在导出…";

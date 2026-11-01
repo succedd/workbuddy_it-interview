@@ -96,7 +96,7 @@
     <h1>SpringApplication.run() 的整体启动流程可以拆成哪几个主要阶段？refreshContext 处于什么位置、负责什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">启动流程</span><span class="chip tag">SpringApplication</span><span class="chip tag">refreshContext</span></div>
     <div class="card"><h2>题目</h2><p>考察点：启动主流程的阶段划分（环境准备→上下文创建→刷新→运行），以及 refreshContext 作为『容器完整初始化』核心阶段的作用，尤其内嵌 Web 服务器在 onRefresh 阶段启动这一点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>前期准备阶段</strong>：① 记录启动计时；② 通过 SpringApplicationRunListeners 发布 starting 事件；③ prepareEnvironment 准备并组装 Environment（读取 profile、命令行参数、配置文件）；④ printBanner 打印 Banner；⑤ createApplicationContext 根据 webApplicationType 创建对应上下文（SERVLET 用 AnnotationConfigServletWebServerApplicationContext）。</li>
 <li><strong>上下文预处理</strong>：prepareContext 把主配置类（primarySources）注册进容器，执行 ApplicationContextInitializer，准备 BeanFactory。</li>

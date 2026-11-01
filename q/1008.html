@@ -96,7 +96,7 @@
     <h1>Elasticsearch 的倒排索引原理是什么？写入与近实时搜索（NRT）的流程是怎样的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">搜索算法工程师</span><span class="chip tag">Elasticsearch</span><span class="chip tag">倒排索引</span><span class="chip tag">segment</span><span class="chip tag">NRT</span></div>
     <div class="card"><h2>题目</h2><p>考察点：倒排索引、分词、Lucene segment、refresh/flush/translog、近实时语义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>倒排索引</strong>：正排是「文档→词」，倒排是「<strong>词→文档列表</strong>（含词频/位置）」——搜索时先分词查词典定位 posting list，再求交集/并集。这正是搜索引擎快的根源，也是 ES 不擅长频繁更新（倒排重建代价）的原因。</li>
 <li><strong>写入流程</strong>：文档先写 <strong>memory buffer + translog</strong>（事务日志防丢）→ 默认每 1 秒 <strong>refresh</strong> 生成新 <strong>segment</strong>（此时可搜——所以叫<strong>近实时</strong> NRT，不是实时）→ 周期性 <strong>flush</strong> 把 segment 落盘并清 translog。</li>

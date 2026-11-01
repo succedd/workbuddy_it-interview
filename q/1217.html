@@ -96,7 +96,7 @@
     <h1>React Hooks（useState/useEffect）的工作原理是什么？为什么会出现「闭包陷阱」，如何避免？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">Hooks</span><span class="chip tag">useState</span><span class="chip tag">useEffect</span><span class="chip tag">闭包陷阱</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 2 问：函数组件用 Hooks 管理状态与副作用，但闭包陷阱是高频坑。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>工作原理</strong>：<code>useState</code> 在组件内部保存状态，每次渲染都是独立闭包，返回当前渲染对应的 state 快照与 setter；<code>useEffect</code> 在渲染提交到 DOM 后异步执行副作用，依赖数组决定何时重跑；<code>useMemo/useCallback</code> 用于缓存计算结果与函数引用。Hooks 调用顺序在每次渲染中必须一致（不能在条件/循环中调用）。</li>
 <li><strong>闭包陷阱（Stale Closure）</strong>：effect 或回调捕获的是<strong>定义时那次渲染的 state 值</strong>，若依赖数组未正确声明，定时器或事件回调里读到的可能是旧值，导致「状态不更新」的错觉。例如 <code>setInterval(() =&gt; setCount(count+1), 1000)</code> 中 count 永远是初始值。</li>

@@ -96,7 +96,7 @@
     <h1>2PC 协调者崩溃后参与者会卡住，三阶段提交（3PC）是怎么改进的？它真的解决了吗？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">3PC</span><span class="chip tag">2PC</span><span class="chip tag">超时</span><span class="chip tag">脑裂</span><span class="chip tag">分布式理论</span></div>
     <div class="card"><h2>题目</h2><p>考察点：3PC 在 2PC 基础上增加 canCommit 与超时机制的设计动机，以及它为何仍不完美。追问：网络分区下 3PC 还会数据不一致吗？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ol>
 <li><strong>2PC 卡住的根因</strong>：参与者在准备后没有「单方面超时退出」的能力，只能等协调者；协调者一挂就永久悬停。</li>
 <li><strong>3PC 的改进（三个阶段）</strong>：</li>

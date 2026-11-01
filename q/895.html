@@ -120,7 +120,7 @@ C. 无论哪种锁，释放都必须用 Lua/事务保证「校验归属+删除�
 D. 以上都正确</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">单选题</span><span class="chip">Java后端工程师</span><span class="chip tag">分布式锁</span><span class="chip tag">Redlock</span><span class="chip tag">ZooKeeper</span><span class="chip tag">选型</span></div>
     <div class="card"><h2>题目</h2><p>考察分布式锁方案认知（综合延伸题）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>正确答案：D（以上都正确）</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>正确答案：D（以上都正确）</strong>。</p>
 <ul>
 <li>A：Redis 异步复制下，master 加锁后崩溃且锁未同步到 replica，故障转移后新 master 不知道这把锁，另一客户端可再拿到→<strong>锁失效</strong>；Redlock 用 N 个独立实例「多数派（≥N/2+1）加锁成功才算持有」降低概率，但 Kleppmann 指出其依赖的「近似一致时钟」假设在真实网络下仍有争议。</li>
 <li>B：ZK/etcd 的<strong>临时节点</strong>在客户端会话断开后由服务端自动删除，天然解决「进程崩溃不释放」；顺序临时节点还能实现公平锁与 watch 通知。</li>

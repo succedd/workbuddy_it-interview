@@ -96,7 +96,7 @@
     <h1>React Native 的 JS↔Native Bridge 异步序列化存在性能瓶颈，新架构（JSI / Fabric / TurboModules）如何从根本上解决？简述设计。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">React Native开发工程师</span><span class="chip tag">React Native</span><span class="chip tag">JSI</span><span class="chip tag">新架构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对跨端框架底层通信机制与架构演进的掌握。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>老架构痛点：Bridge 基于异步、批量、JSON 序列化消息队列，JS 与 Native 互调需跨线程加序列化，无法同步调用，且大对象拷贝昂贵，导致掉帧与通信延迟。</li>
 <li>JSI（JavaScript Interface）：用 C++ 层持有 JS 对象引用，使 JS 能直接（同步）调用 Native 方法、Native 也能持有 JS 引用，彻底去掉序列化与异步队列，调用变为同步且零拷贝。</li>

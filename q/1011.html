@@ -96,7 +96,7 @@
     <h1>ClickHouse 的 MergeTree 为什么会出现「最终一致」？ReplacingMergeTree 与 FINAL 的正确用法是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">数据仓库工程师</span><span class="chip">数据库架构师</span><span class="chip tag">ClickHouse</span><span class="chip tag">ReplacingMergeTree</span><span class="chip tag">FINAL</span><span class="chip tag">argMax</span></div>
     <div class="card"><h2>题目</h2><p>考察点：part 合并机制、ReplacingMergeTree 版本列、FINAL 的代价、查询端去重方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>背景</strong>：MergeTree 写入是「攒 part、后台异步合并」——同一主键的多版本在合并（merge）完成前<strong>同时存在</strong>，所以是<strong>最终一致</strong>：写入立即可见但可能重复。</li>
 <li><strong>ReplacingMergeTree</strong>：后台合并时按主键保留版本列（ver）最新的一行——但<strong>合并时机不可控</strong>（可能几分钟后），不能依赖它实时去重。</li>

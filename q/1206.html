@@ -96,7 +96,7 @@
     <h1>Prometheus 的时间序列由什么构成？PromQL 里 rate()、irate()、increase() 三个函数有什么区别，分别适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">Prometheus</span><span class="chip tag">数据模型</span><span class="chip tag">PromQL</span><span class="chip tag">rate</span><span class="chip tag">irate</span></div>
     <div class="card"><h2>题目</h2><p>考察点：数据模型（metric name + labels）与三个最易混淆的 PromQL 速率函数的适用边界。要求强调『rate/irate 只能用于 Counter』，并讲清平均 vs 瞬时 vs 总量。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>时间序列构成</strong>：每条序列 = 一个 metric name + 一组 labels（键值对） + 时间戳 + 样本值（float64）。label 用于维度切分与过滤（如 method=&quot;POST&quot;、status=&quot;500&quot;）；相同 name 不同 label 组合是不同的序列。</li>
 <li><strong>rate(range)</strong>：计算窗口内 Counter 的『每秒平均增长率』，自动处理 Counter 重启归零。适合看平滑的平均 QPS/错误率，窗口通常 ≥ 2 个 scrape interval，如 <code>rate(http_requests_total[5m])</code>。</li>

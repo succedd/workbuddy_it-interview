@@ -96,7 +96,7 @@
     <h1>Playwright 的「自动等待」和 Trace Viewer 分别解决了什么问题？相比 Selenium 它为什么更快更稳？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip tag">Playwright</span><span class="chip tag">自动等待</span><span class="chip tag">Trace Viewer</span><span class="chip tag">E2E测试</span></div>
     <div class="card"><h2>题目</h2><p>考察 Playwright 核心机制：actionability 自动等待、trace 调试回放、与 Selenium 架构差异（WebSocket 直连 vs HTTP 轮询）。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>自动等待（Actionability Check）</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>自动等待（Actionability Check）</h3>
 <p>Playwright 在每次点击/输入前自动做一系列检查，<strong>全部通过才执行动作</strong>：元素可见（有非空包围盒且非 <code>visibility:hidden</code>）、稳定（连续两帧位置不变，等动画结束）、可交互（不在遮挡层下、不在 disabled 状态）、可接收事件（命中测试目标是元素本身或其子元素）。</p>
 <p>开发者因此<strong>几乎不需要手写等待</strong>——Selenium 需要显式 WebDriverWait 表达的「等按钮可点」，Playwright 的 <code>click()</code> 内置了。等待上限由 <code>actionTimeout</code> 控制，超时抛错并给出失败在哪一步检查。</p>
 <h3>Trace Viewer</h3>

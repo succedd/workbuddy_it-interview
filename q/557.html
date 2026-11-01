@@ -96,7 +96,7 @@
     <h1>双重 Cookie 校验与 Referer 校验能防 CSRF 吗？有什么局限？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">CSRF</span><span class="chip tag">双重Cookie</span><span class="chip tag">Referer</span><span class="chip tag">Web安全</span></div>
     <div class="card"><h2>题目</h2><p>请说明双重提交 Cookie（double-submit cookie）与 Referer 来源校验的原理，并指出它们在安全性与可靠性上的不足。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>双重提交 Cookie（Double Submit Cookie）</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>双重提交 Cookie（Double Submit Cookie）</strong>：</p>
 <ul>
 <li>服务器把随机 token 同时写入 Cookie 和页面（前端 JS 可读到 Cookie）；提交请求时，前端把该值放进自定义请求头/参数；服务端比对“Cookie 里的 token”与“请求体里的 token”是否一致。</li>
 <li><strong>为什么能防</strong>：第三方站点<strong>无法读取</strong>受害者的 Cookie，也就无法在请求中放入匹配的 token。</li>

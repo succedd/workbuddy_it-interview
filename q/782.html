@@ -96,7 +96,7 @@
     <h1>TensorFlow 的静态图（Graph）与 Eager Execution 有何不同？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">TensorFlow</span><span class="chip tag">Eager</span><span class="chip tag">计算图</span></div>
     <div class="card"><h2>题目</h2><p>对比两种执行模式的特点与适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>静态图（Graph）</strong>：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>静态图（Graph）</strong>：先定义完整计算图再会话执行（TF1 风格），便于图优化、部署与跨平台（SavedModel→Serve/Lite），但调试不直观、写法繁琐。</p>
 <p><strong>Eager Execution</strong>：TF2 默认开启，操作立即执行、像普通 Python 一样调试，贴近 PyTorch 体验；需要时再用 <code>@tf.function</code> 把函数编译成图以获得性能与可部署性。</p>
 <p>实际工程：用 Eager 开发调试，用 tf.function/ SavedModel 做生产化。</p></div>
     <div class="cta-row">

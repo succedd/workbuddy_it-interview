@@ -96,7 +96,7 @@
     <h1>微服务【本质】微服务拆的是什么？「按业务能力拆」为什么比「按技术层拆」更合理？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">云架构师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">分布式系统与微服务</span></div>
     <div class="card"><h2>题目</h2><p>同一个系统，可以拆成「前端服务+逻辑服务+DB 服务」（按技术），也可以拆成「订单服务+用户服务+库存服务」（按业务）。两种拆法的团队协作与变更成本差在哪？</p></div>
-    <div class="card"><h2>参考答案</h2><p>微服务拆的本质是<strong>把「变更原因不同的代码」分给不同的团队独立演进</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：其他来源 · 未复核 · 63 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>微服务拆的本质是<strong>把「变更原因不同的代码」分给不同的团队独立演进</strong>。</p>
 <p>按技术层拆的病：任何一个业务需求都要横跨三个服务改一遍 → <strong>改一个需求，跨三个团队排期</strong>——分布式单体，耦合没消失只是变成了网络调用。</p>
 <p>按业务能力拆（订单/用户/库存）：需求通常落在单个服务内 → <strong>独立开发、测试、发布、扩容</strong>；数据也随业务自治（每个服务自己的库，禁止跨库直连）。</p>
 <p><strong>康威定律</strong>：系统结构必然长成组织沟通结构的形状——所以拆服务的正确顺序是先想清楚组织与业务边界。<strong>面试聊「怎么拆服务」，核心是聊边界与变更频率，不是聊技术栈</strong>。</p></div>

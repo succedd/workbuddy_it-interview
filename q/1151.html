@@ -96,7 +96,7 @@
     <h1>消费者出现「重复消费」（同一条消息被处理多次），最可能的原因是什么？如何彻底避免？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kafka</span><span class="chip tag">重复消费</span><span class="chip tag">offset</span><span class="chip tag">幂等</span></div>
     <div class="card"><h2>题目</h2><p>考察点：重复消费的成因定位（offset 提交时机 vs 业务处理时机错位、Rebalance）与幂等消费设计——典型线上故障排查。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>根因</strong>：消息『已被业务处理』但『位移还没提交』，一旦发生 Rebalance 或消费者重启，Broker 会把这个 offset 再次分配，导致重读重处理。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>根因</strong>：消息『已被业务处理』但『位移还没提交』，一旦发生 Rebalance 或消费者重启，Broker 会把这个 offset 再次分配，导致重读重处理。</p>
 <p><strong>要点</strong>：</p>
 <ul>
 <li><strong>自动提交陷阱</strong>：<code>enable.auto.commit=true</code> 时，offset 按 <code>auto.commit.interval.ms</code> 周期提交，与业务处理完成时刻无关；若处理耗时超过提交间隔，处理中崩溃就会重复。</li>

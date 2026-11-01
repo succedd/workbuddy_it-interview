@@ -96,7 +96,7 @@
     <h1>Linux CFS 调度器如何用 vruntime 和红黑树选择下一个进程？nice 值如何影响权重？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Linux运维工程师</span><span class="chip">系统运维工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CFS</span><span class="chip tag">vruntime</span><span class="chip tag">nice</span><span class="chip tag">进程调度</span></div>
     <div class="card"><h2>题目</h2><p>考察 CFS 的核心机制：没有固定时间片，用虚拟运行时间做公平调度。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>CFS 的核心思想</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 11 天前更新</div><p><strong>CFS 的核心思想</strong></p>
 <ul>
 <li>每个可运行任务维护 <code>vruntime</code>（虚拟运行时间）：实际运行时间按权重折算，权重越高，vruntime 增长越慢，获得 CPU 越多。</li>
 <li>调度器用红黑树按 vruntime 排序，每次选 vruntime 最小的任务；任务运行一段时间后 vruntime 增加，重新插入树中。</li>

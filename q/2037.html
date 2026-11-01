@@ -96,7 +96,7 @@
     <h1>Compose 中副作用(Side Effect)如何处理？LaunchedEffect / DisposableEffect / rememberCoroutineScope 各自适用什么场景，用错会有什么后果？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">移动端开发工程师</span><span class="chip">Android开发工程师</span><span class="chip tag">Jetpack Compose</span><span class="chip tag">副作用</span><span class="chip tag">LaunchedEffect</span><span class="chip tag">协程</span><span class="chip tag">生命周期</span></div>
     <div class="card"><h2>题目</h2><p>说明 Compose 中副作用的语义，以及三个常用 API 的分工与误用后果。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>什么是副作用</strong>：指重组之外、改变外部世界或有时间维度的操作，如发网络请求、订阅、启动协程、写文件。Composable 应是纯函数，副作用必须交给专用 API，否则重组（可能多次或并发执行）会重复触发，造成请求风暴。</li>
 <li><strong>LaunchedEffect(key)</strong>：进入组合时启动一个协程，key 变化或离开组合时自动取消。适合「某状态变化才执行一次」的效果（如 key 变化触发一次接口拉取）。误用：key 用常量且放在高频重组处，可能只在首次执行一次而错过后续状态。</li>

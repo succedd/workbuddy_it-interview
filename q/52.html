@@ -96,7 +96,7 @@
     <h1>Docker 镜像与容器的区别？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">Java后端工程师</span><span class="chip">Go后端工程师</span><span class="chip tag">Docker</span><span class="chip tag">镜像</span><span class="chip tag">容器</span></div>
     <div class="card"><h2>题目</h2><p>解释 Image/Container 关系及分层机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>镜像（Image）</strong> 是只读模板，由多层只读层（Layer）叠加而成（COPY、RUN 等指令各生成一层），通过联合文件系统（overlayfs）呈现统一视图。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：种子题库 · 未复核 · 近 7 天更新</div><p><strong>镜像（Image）</strong> 是只读模板，由多层只读层（Layer）叠加而成（COPY、RUN 等指令各生成一层），通过联合文件系统（overlayfs）呈现统一视图。</p>
 <p><strong>容器（Container）</strong> 是镜像的运行实例：在镜像层之上加一层<strong>可写层</strong>（容器层），所有修改发生在此层；删除容器后该层丢失（除非 commit 成新镜像/用 volume 持久化）。</p>
 <p><strong>分层优势</strong>：共享基础层、节省空间、构建缓存加速。</p>
 <p>镜像存仓库（Registry），容器由 <code>docker run</code> 基于镜像启动。</p></div>

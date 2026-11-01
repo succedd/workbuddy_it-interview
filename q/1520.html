@@ -96,7 +96,7 @@
     <h1>PyTorch 的 autograd 机制是如何工作的？requires_grad 与 detach 各起什么作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">机器学习工程师</span><span class="chip">深度学习工程师</span><span class="chip">算法工程师</span><span class="chip tag">PyTorch</span><span class="chip tag">autograd</span><span class="chip tag">反向传播</span></div>
     <div class="card"><h2>题目</h2><p>说明动态图记录、反向传播的链式计算，以及梯度控制常用手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>机制</strong>：PyTorch 用<strong>动态计算图</strong>——前向计算时，每个对 requires_grad=True 张量的运算都会记录成图节点（Function 对象，保存反向函数与输入输出引用）。调用 <code>loss.backward()</code> 时从 loss 出发<strong>反向遍历</strong>该图，按链式法则把梯度累加到各叶子张量的 <code>.grad</code> 上，随后图即释放（除非 retain_graph）。动态性：每次 forward 重新建图，控制流（if/循环）天然支持。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>机制</strong>：PyTorch 用<strong>动态计算图</strong>——前向计算时，每个对 requires_grad=True 张量的运算都会记录成图节点（Function 对象，保存反向函数与输入输出引用）。调用 <code>loss.backward()</code> 时从 loss 出发<strong>反向遍历</strong>该图，按链式法则把梯度累加到各叶子张量的 <code>.grad</code> 上，随后图即释放（除非 retain_graph）。动态性：每次 forward 重新建图，控制流（if/循环）天然支持。</p>
 <p><strong>requires_grad</strong>：声明该张量需要梯度——叶子上决定是否追踪；参数默认 True，输入数据通常 False 省内存。<strong>detach()</strong>：从当前图<strong>摘出一份新张量</strong>（共享数据、脱离追踪），常用于：① 冻结部分网络（配合 <code>param.requires_grad=False</code>）；② target 计算不传梯度（如 TD target、对抗训练的固定分支）；③ 日志记录避免构建无用图。</p>
 <p><strong>注意</strong>：梯度默认<strong>累加</strong>，每个 batch 前要 <code>optimizer.zero_grad()</code>；<code>with torch.no_grad():</code> 包推理，比 detach 更省心。</p></div>
     <div class="cta-row">

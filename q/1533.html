@@ -96,7 +96,7 @@
     <h1>terraform plan/apply 的执行流程是怎样的？如何在 CI/CD 中安全使用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">CI/CD工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">Terraform</span><span class="chip tag">IaC</span><span class="chip tag">CI/CD</span></div>
     <div class="card"><h2>题目</h2><p>描述 refresh→diff→apply 的三态对比，并给出流水线实践要点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>plan 流程</strong>：① <strong>refresh</strong>：读取云上实际状态，更新 state（配置里删了但云上还有的资源会提示）；② <strong>diff</strong>：三层对比——HCL 配置（期望）vs state（上次已知）vs 实际云状态（现状），输出 will be created/updated/destroyed 清单；③ 人工审阅 plan。<strong>apply</strong>：按依赖图并行执行变更，先做依赖排序（如先建 VPC 再建子网），每步失败即停（部分资源已变更，需重新 plan 处理）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>plan 流程</strong>：① <strong>refresh</strong>：读取云上实际状态，更新 state（配置里删了但云上还有的资源会提示）；② <strong>diff</strong>：三层对比——HCL 配置（期望）vs state（上次已知）vs 实际云状态（现状），输出 will be created/updated/destroyed 清单；③ 人工审阅 plan。<strong>apply</strong>：按依赖图并行执行变更，先做依赖排序（如先建 VPC 再建子网），每步失败即停（部分资源已变更，需重新 plan 处理）。</p>
 <p><strong>CI/CD 安全实践</strong>：① <strong>MR 阶段自动跑 <code>fmt + validate + plan</code></strong>，plan 结果贴到 PR 作为评审依据；② <strong>apply 只允许主分支触发</strong>，且需要人工 approve（尤其 destroy：加 <code>prevent_destroy</code> 生命周期保护 + 双人审批）；③ plan 输出可能含敏感值，注意日志脱敏；④ 用<strong>独立工作区/目录</strong>隔离环境（dev/staging/prod 各自 state），避免 blast radius；⑤ apply 前再次 plan 确认无漂移（两次 plan 之间云可能被人改过）；⑥ 记录变更审计：谁在何时 apply 了什么（plan 文件归档）。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1533">练这道题</a>

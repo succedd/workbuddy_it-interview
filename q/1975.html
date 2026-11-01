@@ -96,7 +96,7 @@
     <h1>HBase 的 Region 分裂（Split）与合并（Compaction）机制是怎样的？对线上读写有什么影响？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">Region Split</span><span class="chip tag">Compaction</span><span class="chip tag">major compaction</span><span class="chip tag">性能</span></div>
     <div class="card"><h2>题目</h2><p>高级：上一题提到 Split/Compaction 是后台核心机制。请深入讲清触发条件、两类 Compaction 的区别，以及它们对线上性能/一致性的实际影响与应对。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Region Split</strong>：当某个 Region 的大小超过 <code>hbase.hregion.max.filesize</code>（默认约 10GB）或按策略（如 IncreasingToUpperBound）增长时，RegionServer 在 Region 内按 RowKey 中点把它<strong>一分为二</strong>，父 Region 下线、两个子 Region 上线并负载均衡。Split 瞬间会有短暂 Region 不可用与元数据更新开销，频繁 Split 会造成抖动；<strong>预分区（建表指定 Split Keys）</strong>可在大数据量导入前铺好 Region，避免导入期疯狂分裂。</li>
 <li><strong>Compaction</strong>：HFile 只增不改，需后台合并。① <strong>Minor Compaction</strong>：合并若干相邻小 HFile，轻量、频繁，减少文件数；② <strong>Major Compaction</strong>：把一个 Region 下某列族的所有 HFile 合并成一个，<strong>清理被删除/过期版本（墓碑真正生效）</strong>、减少读放大，但 IO 与磁盘压力大，默认约 7 天一次或手动触发。</li>

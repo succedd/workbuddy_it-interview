@@ -96,7 +96,7 @@
     <h1>gRPC 与 HTTP/JSON 生态怎么共存？grpc-gateway 解决什么问题、代价是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">后端开发工程师</span><span class="chip">架构师</span><span class="chip tag">gRPC</span><span class="chip tag">grpc-gateway</span><span class="chip tag">REST</span><span class="chip tag">契约</span><span class="chip tag">BFF</span></div>
     <div class="card"><h2>题目</h2><p>考察点：内外协议分离、网关转换开销、接口定义单一来源。架构设计题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>为什么需要共存</strong>：微服务<strong>内部</strong>用 gRPC（强类型、高性能、流式、代码生成）很合适，但<strong>外部</strong>（浏览器、第三方、移动端、命令行调试）需要 <strong>HTTP/JSON</strong>——浏览器不能直接说 gRPC（HTTP/2 帧不可控，<strong>gRPC-Web 也只是子集</strong>），第三方也不愿意装 Protobuf 工具链。</li>
 <li><strong>grpc-gateway 的定位</strong>：一个<strong>反向代理生成器</strong>——通过 Protobuf 文件里的 <code>google.api.http</code> 注解（如 <code>option (google.api.http) = { get: &quot;/v1/users/{id}&quot; }</code>），<strong>自动生成一个把 REST/JSON 请求转成 gRPC 调用的网关</strong>。核心价值：<strong>接口定义只有一份（.proto）</strong>，gRPC 服务、REST 网关、客户端 SDK、文档全部从它生成，<strong>避免「REST 一份、gRPC 一份」的契约漂移</strong>。</li>

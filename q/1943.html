@@ -96,7 +96,7 @@
     <h1>Nuxt 的约定式目录结构是怎么工作的？pages、components、app.vue、composables 各自作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Nuxt</span><span class="chip tag">目录结构</span><span class="chip tag">自动导入</span><span class="chip tag">路由</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Nuxt 文件约定、自动路由与自动导入机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>pages/</strong>：目录下的 <code>.vue</code> 文件按路径<strong>自动生成路由</strong>（如 <code>pages/about.vue</code> → <code>/about</code>），无需手写 router 配置；<code>app.vue</code> 是应用根组件，通常放 <code>&lt;NuxtPage /&gt;</code> 出口。</li>
 <li><strong>components/</strong>：组件<strong>自动导入</strong>，无需 import 即可在模板使用（如 <code>components/MyCard.vue</code> → <code>&lt;MyCard /&gt;</code>）；支持按目录前缀分组。</li>

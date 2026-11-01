@@ -96,7 +96,7 @@
     <h1>常见的分布式组件（如 ZooKeeper、Eureka、Redis、MySQL、HBase、Elasticsearch）应如何按 CAP 归类？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CAP归类</span><span class="chip tag">ZooKeeper</span><span class="chip tag">Redis</span><span class="chip tag">MySQL</span><span class="chip tag">组件选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把抽象理论与具体中间件对应起来，判断每个组件偏向 CP 还是 AP，以及它的适用边界。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>CP 阵营</strong>：ZooKeeper / etcd（强一致协调服务、选主、分布式锁）；HBase（依赖 HDFS 与 ZK，写入强一致）；传统单主 MySQL 主从（异步复制下从库可能滞后，但主库写入是强一致，整体更偏 CP）。</li>
 <li><strong>AP 阵营</strong>：Eureka（注册中心设计上优先可用，节点间数据最终一致）；Cassandra / DynamoDB（可调一致性，默认 AP、可配 Quorum 提升）；Redis（集群异步复制，主节点写入成功即返回，故障切换可能丢数据，偏 AP）。</li>

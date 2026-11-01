@@ -96,7 +96,7 @@
     <h1>箭头函数和普通函数有哪些关键区别？为什么它不能作为构造函数、不适合做对象方法？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">ES6</span><span class="chip tag">JavaScript</span><span class="chip tag">箭头函数</span><span class="chip tag">this</span></div>
     <div class="card"><h2>题目</h2><p>考察点：箭头函数的 this 词法绑定、缺少 prototype/arguments、构造函数限制，以及「何时不该用箭头函数」。这是 this 追问链的关键一环。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>this 词法绑定</strong>：箭头函数没有自己的 this，继承定义时所在外层作用域的 this，且无法被 call/apply/bind 改变；普通函数的 this 由调用方式（谁调用、new、call/apply）决定。</li>
 <li><strong>不能作为构造函数</strong>：箭头函数没有 <code>[[Construct]]</code> 内部方法，<code>new 箭头函数()</code> 直接抛 TypeError；因此它也没有 prototype 属性，不能挂方法到 <code>.prototype</code>。</li>

@@ -96,7 +96,7 @@
     <h1>InnoDB 为什么选择 B+ 树作为索引结构？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip">Java开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">InnoDB</span><span class="chip tag">B+树</span><span class="chip tag">索引</span></div>
     <div class="card"><h2>题目</h2><p>对比哈希表、二叉/红黑树、B 树、B+ 树，说明 InnoDB 选择 B+ 树的原因。</p></div>
-    <div class="card"><h2>参考答案</h2><p>从&quot;磁盘 IO 次数&quot;这个核心约束出发逐个排除：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>从&quot;磁盘 IO 次数&quot;这个核心约束出发逐个排除：</p>
 <ul>
 <li><strong>哈希表</strong>：等值查询 O(1) 很快，但<strong>不支持范围查询与排序</strong>（数据无序），而范围查询是数据库最高频需求之一。</li>
 <li><strong>二叉搜索树/红黑树</strong>：树高 = log₂N，100 万数据约 20 层，每层一次磁盘 IO，且数据量大时树会越来越高；二叉结构每节点只存 1 个键，浪费磁盘页空间。</li>

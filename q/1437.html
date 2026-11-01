@@ -96,7 +96,7 @@
     <h1>Flink 的 Watermark 是怎么处理乱序数据的？event time 与 processing time 的取舍是什么？TwoPhaseCommitSink 如何实现 Exactly-Once？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">实时计算工程师</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Flink</span><span class="chip tag">Watermark</span><span class="chip tag">乱序</span><span class="chip tag">Exactly-Once</span></div>
     <div class="card"><h2>题目</h2><p>考察 Flink 时间语义、Watermark 乱序容忍机制与两阶段提交 Sink 的 Exactly-Once 端到端保证，是实时计算面试的核心题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Watermark 机制</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>Watermark 机制</h3>
 <ul>
 <li><strong>问题</strong>：数据乱序到达，窗口不知道「什么时候才算所有 event time ≤ T 的数据都到齐了」；</li>
 <li><strong>Watermark(w)</strong> 是一个单调递增的时间戳断言：「event time ≤ w 的数据应该都到齐了」。窗口在其 <code>maxEventTime - 允许乱序度</code> 达到窗口右边界时触发计算；</li>

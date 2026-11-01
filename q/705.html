@@ -96,7 +96,7 @@
     <h1>MapReduce 的 map→shuffle→reduce 过程是怎样的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">大数据工程师</span><span class="chip tag">MapReduce</span><span class="chip tag">shuffle</span><span class="chip tag">map</span><span class="chip tag">reduce</span></div>
     <div class="card"><h2>题目</h2><p>描述一次 MapReduce 作业的数据流与关键阶段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Map</strong>：各 split 由 map 任务读入，输出 <code>&lt;key,value&gt;</code> 中间结果。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>Map</strong>：各 split 由 map 任务读入，输出 <code>&lt;key,value&gt;</code> 中间结果。</p>
 <p><strong>Shuffle（最核心）</strong>：框架按 key 分区、排序、溢写合并，并通过网络把同 key 的数据拉到对应 reduce 节点（combiner 可在 map 端预聚合减负）。</p>
 <p><strong>Reduce</strong>：对同一 key 的 value 分组后调用 reduce 汇总输出。</p>
 <p>理解 shuffle 的磁盘/网络开销，是调优（合并、压缩、合理分区数）的关键。</p></div>

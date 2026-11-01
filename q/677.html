@@ -96,7 +96,7 @@
     <h1>什么是前缀索引？使用前缀索引有什么代价，什么时候该用？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">区块链</span><span class="chip tag">哈希</span><span class="chip tag">默克尔树</span></div>
     <div class="card"><h2>题目</h2><p>追问链终点。考察点：对长字符串列只索引前 N 个字符以减小索引体积；如何确定合适的前缀长度（区分度计算）；前缀索引导致无法覆盖索引、无法用于 order by/group by 的代价。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：什么是前缀索引</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：什么是前缀索引</strong></p>
 <ul>
 <li>对 <code>CHAR</code>、<code>VARCHAR</code>、<code>TEXT</code>、<code>BLOB</code> 这类<strong>长字符串列</strong>建索引时，可以只把字符串<strong>前 N 个字符</strong>纳入索引：<code>ALTER TABLE t ADD INDEX idx_name(name(10));</code></li>
 <li>目的：<strong>大幅减小索引体积</strong>——索引项变短后，单个索引页能放下更多记录，B+ 树层级更浅，缓存命中率更高，检索更快。</li>

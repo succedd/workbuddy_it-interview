@@ -96,7 +96,7 @@
     <h1>什么是 SQL 注入？如何在代码层面从根本上防范？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">安全开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">Python后端工程师</span><span class="chip tag">SQL注入</span><span class="chip tag">预编译</span><span class="chip tag">OWASP</span><span class="chip tag">安全编码</span></div>
     <div class="card"><h2>题目</h2><p>解释 SQL 注入成因，并给出至少三种有效的代码级防御手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>原理</strong>：程序把用户输入直接拼接进 SQL 语句，攻击者构造特殊输入改变语义（如 <code>&#39; OR &#39;1&#39;=&#39;1</code>），从而绕过鉴权或窃取数据，是 OWASP Top 10 长期头号风险。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>原理</strong>：程序把用户输入直接拼接进 SQL 语句，攻击者构造特殊输入改变语义（如 <code>&#39; OR &#39;1&#39;=&#39;1</code>），从而绕过鉴权或窃取数据，是 OWASP Top 10 长期头号风险。</p>
 <p><strong>根本防御</strong>：</p>
 <ul>
 <li><strong>参数化查询 / 预编译语句</strong>（Prepared Statement）：用占位符传参，输入永远当作数据而非代码，是最有效的手段。</li>

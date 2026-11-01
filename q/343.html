@@ -96,7 +96,7 @@
     <h1>确认 CPU 告警真实后，如何用 top/pidstat 区分用户态、内核态与 IO 等待来定位飙高根因？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">CPU飙高</span><span class="chip tag">top</span><span class="chip tag">pidstat</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察用 top/pidstat 区分 CPU 消耗类型，并据此决定查应用还是查 IO，而非一上来就杀进程。</p></div>
-    <div class="card"><h2>参考答案</h2><p>确认 CPU 告警真实后，登录主机按以下思路定位：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>确认 CPU 告警真实后，登录主机按以下思路定位：</p>
 <ul>
 <li><code>top</code> 看整体：<code>%Cpu(s)</code> 行区分 <strong>us（用户态）/sy（内核态）/wa（IO 等待）/id（空闲）</strong>。</li>
 </ul>

@@ -96,7 +96,7 @@
     <h1>【故障排查】SwiftUI 视图不刷新或状态更新“看似生效”却不重绘，常见原因与排查方法？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">移动端开发工程师</span><span class="chip">iOS开发工程师</span><span class="chip tag">SwiftUI</span><span class="chip tag">不刷新</span><span class="chip tag">状态</span><span class="chip tag">调试</span></div>
     <div class="card"><h2>题目</h2><p>考察点：状态属性包装器误用、引用类型陷阱、视图身份与 Equatable。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>@State 套 ObservableObject 误用</strong>：把 <code>@ObservedObject</code> 当 <code>@StateObject</code> 在视图结构体里创建，视图重建时实例被重置导致“更新丢失”——应改用 <code>@StateObject</code> 拥有实例。</li>
 <li><strong>引用类型没发通知</strong>：<code>ObservableObject</code> 的属性若不是用 <code>@Published</code> 修饰，或手动改值未触发 <code>objectWillChange</code>，视图不会刷新。</li>

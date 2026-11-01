@@ -96,7 +96,7 @@
     <h1>Spring Boot 的自动配置（Auto-configuration）核心机制是什么？AutoConfigurationImportSelector 是如何找到并加载候选配置类的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring Boot</span><span class="chip tag">自动配置</span><span class="chip tag">AutoConfigurationImportSelector</span><span class="chip tag">条件注解</span></div>
     <div class="card"><h2>题目</h2><p>考察点：自动配置加载全流程，以及 spring.factories 与 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 的版本差异。要求讲清『扫描清单 → 条件过滤 → 注册 Bean』三步。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 42 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>入口</strong>：@EnableAutoConfiguration 通过 @Import 引入 AutoConfigurationImportSelector（它实现 DeferredImportSelector，延迟到普通配置类处理完再执行）。其 selectImports() 读取候选配置类清单。</li>
 <li><strong>清单来源（版本差异）</strong>：Spring Boot 2.7 之前扫描各 jar 的 <code>META-INF/spring.factories</code> 中 <code>EnableAutoConfiguration</code> 键；2.7 起废弃 spring.factories，改为扫描 <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>（每行一个全限定类名）。spring-boot-autoconfigure 自带一份数百个内置配置类清单。</li>

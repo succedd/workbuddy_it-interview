@@ -96,7 +96,7 @@
     <h1>GraphQL 真的「不需要版本」吗？Schema 该怎么演进才能不破坏现有客户端？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">后端架构师</span><span class="chip">后端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">GraphQL</span><span class="chip tag">Schema演进</span><span class="chip tag">兼容性</span><span class="chip tag">deprecated</span><span class="chip tag">API设计</span></div>
     <div class="card"><h2>题目</h2><p>考察点：无版本化理念的边界、schema 演进纪律、破坏性变更识别。设计类题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>理念来源</strong>：GraphQL 的设计是「<strong>按字段按需获取</strong>」，客户端只声明自己要什么字段。所以新增字段不会影响任何老客户端（它不请求就收不到，也不会有多余数据）——<strong>加字段天然向后兼容</strong>，这是「无版本」这一说法的底气。REST 里加字段也可能影响反序列化严格的客户端，GraphQL 从协议层规避了。</li>
 <li><strong>但「无版本」≠ 可以随便改</strong>。以下都是<strong>破坏性变更（breaking change）</strong>：删除字段/类型/枚举值、字段类型变更（如 <code>String</code> → <code>Int</code>）、非空性收紧（<code>String</code> → <code>String!</code>，会让老查询因缺值直接报错）、把字段设为必填参数、参数类型变更、改字段语义但保留名字（<strong>最危险</strong>，客户端不会报错却拿到错误含义的数据）。</li>

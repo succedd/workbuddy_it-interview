@@ -96,7 +96,7 @@
     <h1>哨兵（Sentinel）是如何判定主节点故障并完成主从切换的？主观下线、客观下线、quorum、Sentinel leader 选举分别是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip">后端架构师</span><span class="chip tag">Redis</span><span class="chip tag">哨兵</span><span class="chip tag">Sentinel</span><span class="chip tag">SDOWN</span><span class="chip tag">ODOWN</span><span class="chip tag">quorum</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 4 问：把第 3 问的「自动切换」拆开看哨兵内部机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>主观下线（SDOWN）</strong>：单个哨兵在 <code>down-after-milliseconds</code> 内没收到主节点有效回复（PING 无 PONG），就认为它「主观」下线——只是这一个哨兵的看法，可能因网络抖动误判。</li>
 <li><strong>客观下线（ODOWN）</strong>：当「足够数量」（达到 <code>quorum</code>）的哨兵都认定主节点 SDOWN，才升级为「客观下线」，即达成共识确认主真的挂了，避免单哨兵误判触发切换。</li>

@@ -96,7 +96,7 @@
     <h1>initramfs 与 rootfs 有什么区别？什么场景需要在嵌入式 Linux 中使用 initramfs？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">驱动开发工程师</span><span class="chip tag">initramfs</span><span class="chip tag">rootfs</span><span class="chip tag">启动</span></div>
     <div class="card"><h2>题目</h2><p>考察启动早期的临时根文件系统，以及 switch_root 的时机。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>initramfs 是临时根</strong>：一个 cpio 归档，被内核解压到内存并挂载为早期 rootfs；它负责加载存储/网络/加密驱动，找到并挂载真正的根分区，然后 <code>switch_root</code> 切换到最终 rootfs。</li>
 <li><strong>rootfs 是最终根</strong>：通常是 ext4、UBIFS、squashfs 等持久化文件系统，存放完整的用户空间；initramfs 只放启动必需的模块与脚本，占 RAM、关机即消失。</li>

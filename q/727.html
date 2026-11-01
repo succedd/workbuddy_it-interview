@@ -96,7 +96,7 @@
     <h1>GitLab CI 的 pipeline/stage/job 与 .gitlab-ci.yml 基本结构？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">CI/CD工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">GitLabCI</span><span class="chip tag">pipeline</span><span class="chip tag">CI/CD</span></div>
     <div class="card"><h2>题目</h2><p>说明 GitLab CI 的核心概念与配置写法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Job</strong>：最小执行单元，定义“做什么”（脚本、镜像、产物）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>Job</strong>：最小执行单元，定义“做什么”（脚本、镜像、产物）。</p>
 <p><strong>Stage</strong>：阶段，用于给 job 分组并控制顺序（如 build→test→deploy，前一阶段全过才进下一阶段）。</p>
 <p><strong>Pipeline</strong>：一次提交触发的、跨所有 stage 的 job 集合。</p>
 <p><strong>配置</strong>：在仓库根 <code>.gitlab-ci.yml</code> 里声明 stages 与各 job（指定 stage、script、only/extends、cache/artifacts），推代码即自动编排执行。</p></div>

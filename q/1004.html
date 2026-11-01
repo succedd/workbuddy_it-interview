@@ -96,7 +96,7 @@
     <h1>Objective-C 的消息发送机制是什么？objc_msgSend 的查找流程是怎样的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Objective-C</span><span class="chip tag">Runtime</span><span class="chip tag">objc_msgSend</span><span class="chip tag">消息转发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：动态消息派发、isa 与方法查找、消息转发三步、Runtime 的本质。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>本质</strong>：OC 的方法调用 <code>[obj foo]</code> 编译为 <code>objc_msgSend(obj, @selector(foo))</code>——<strong>消息传递</strong>而非函数调用，方法在运行时才解析，这是 Runtime 动态性的根源（Category、Method Swizzling、KVO 都建立在此）。</li>
 <li><strong>查找流程</strong>：① 从对象的 <strong>isa</strong> 找到类，查<strong>类的方法缓存</strong>（哈希表，命中即调）→ ② 未命中，沿<strong>类的方法列表</strong>二分/线性查找 → ③ 沿 <strong>superclass 链</strong>向上重复 ①② → ④ 仍无 → 进入<strong>消息转发</strong>。</li>

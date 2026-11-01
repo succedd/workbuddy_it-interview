@@ -96,7 +96,7 @@
     <h1>MySQL 的三大日志 redo log、binlog、undo log 各自的作用是什么？有什么区别？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">redo log</span><span class="chip tag">binlog</span><span class="chip tag">undo log</span></div>
     <div class="card"><h2>题目</h2><p>考察 InnoDB 崩溃恢复、主从复制与回滚/ MVCC 的日志支撑。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>三大日志分工不同</strong>，共同保障 MySQL 的持久性、一致性与主从复制。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>三大日志分工不同</strong>，共同保障 MySQL 的持久性、一致性与主从复制。</p>
 <h4>作用</h4>
 <ul>
 <li><strong>redo log（重做日志，InnoDB 引擎层）</strong>：记录「数据页的物理修改」，用于崩溃恢复。事务提交时先写 redo log（WAL 预写日志），保证即使脏页未刷盘，重启也能重放恢复，避免每次修改都随机刷盘。</li>

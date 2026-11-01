@@ -96,7 +96,7 @@
     <h1>生产环境出现『No provider available for the service xxx』，应如何逐步排查？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Dubbo</span><span class="chip tag">排障</span><span class="chip tag">注册中心</span><span class="chip tag">服务发现</span></div>
     <div class="card"><h2>题目</h2><p>生产环境出现『No provider available for the service xxx』，应如何逐步排查？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>第一步：确认 Provider 是否真的注册成功</strong>。登录注册中心（如 Nacos/Zookeeper）查看该服务接口下是否有可用实例；若为空，说明 Provider 没起来或没注册（检查 Provider 是否启动、是否配置了正确的 <code>registry</code> 地址、应用名/分组是否匹配）。</li>
 <li><strong>第二步：检查 Consumer 与 Provider 的『契约』是否一致</strong>。接口全限定名、version、group 三者必须完全匹配；常见坑是两端 version 不一致、或 Consumer 指定了 group 而 Provider 没配。</li>

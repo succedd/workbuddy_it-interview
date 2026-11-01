@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#7c3aed"/></marker></defs>
+  <rect width="900" height="430" fill="#f8fafc"/>
+  <text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">ZGC：着色指针 + 读屏障</text>
+  <text x="40" y="64" font-size="15" fill="#64748b">把标记信息放进指针低位，靠读屏障在访问对象时修正引用，减少 STW</text>
+  <rect x="55" y="105" width="480" height="170" rx="14" fill="#f5f3ff" stroke="#c4b5fd"/>
+  <text x="80" y="137" font-size="16" font-weight="700" fill="#5b21b6">堆内存（Region 化）</text>
+  <g fill="#ede9fe" stroke="#a78bfa">
+    <rect x="85" y="160" width="90" height="60" rx="6"/><rect x="190" y="160" width="90" height="60" rx="6"/><rect x="295" y="160" width="90" height="60" rx="6"/><rect x="400" y="160" width="90" height="60" rx="6"/>
+  </g>
+  <text x="105" y="198" font-size="12" fill="#5b21b6">G / R / M</text><text x="210" y="198" font-size="12" fill="#5b21b6">G / R / M</text><text x="315" y="198" font-size="12" fill="#5b21b6">G / R / M</text><text x="420" y="198" font-size="12" fill="#5b21b6">G / R / M</text>
+  <rect x="55" y="310" width="230" height="70" rx="12" fill="#fff" stroke="#cbd5e1"/>
+  <text x="75" y="340" font-size="14" font-weight="700" fill="#0f172a">着色指针（低位标记）</text>
+  <text x="75" y="364" font-size="12" fill="#64748b">Marked0 / Marked1 / Remapped / Finalizable</text>
+  <rect x="315" y="310" width="220" height="70" rx="12" fill="#fff" stroke="#cbd5e1"/>
+  <text x="335" y="340" font-size="14" font-weight="700" fill="#0f172a">读屏障</text>
+  <text x="335" y="364" font-size="12" fill="#64748b">每次读取引用时检查并修正</text>
+  <line x1="285" y1="345" x2="305" y2="345" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#a)"/>
+  <text x="580" y="130" font-size="14" font-weight="700" fill="#0f172a">并发阶段</text>
+  <text x="580" y="158" font-size="13" fill="#334155">并发标记 → 并发重定位</text>
+  <text x="580" y="182" font-size="13" fill="#334155">应用线程与 GC 线程同时跑</text>
+  <text x="580" y="206" font-size="13" fill="#334155">STW 只用于根扫描等短步骤</text>
+  <text x="580" y="240" font-size="13" fill="#64748b">目标：停顿 &lt; 1ms，适合大堆</text>
+  <text x="580" y="290" font-size="13" fill="#b45309">代价：读屏障增加 CPU 开销</text>
+  <text x="580" y="314" font-size="13" fill="#b45309">需要更高内存/适配新版本</text>
+  <text x="55" y="405" font-size="12" fill="#64748b">注：ZGC 的指针标记与 Region 细节随 JDK 版本演进，面试回答应说明具体 JDK 版本。</text>
+</svg>

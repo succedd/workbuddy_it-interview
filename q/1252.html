@@ -96,7 +96,7 @@
     <h1>Kafka 生产者调用 send() 之后就算发送成功了吗？如何用回调、retries、delivery.timeout.ms 处理发送失败？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kafka</span><span class="chip tag">生产者</span><span class="chip tag">重试</span><span class="chip tag">发送可靠性</span></div>
     <div class="card"><h2>题目</h2><p>考察点：生产者异步发送语义、重试参数配合与失败兜底。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>send() 是异步的，不能默认成功</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>send() 是异步的，不能默认成功</strong></p>
 <p><code>KafkaProducer.send()</code> 把消息放进缓冲区后立即返回一个 Future，此时消息可能因为网络问题或 Broker 不可用而根本没送达。</p>
 <p><strong>两种拿到结果的方式</strong></p>
 <ul>

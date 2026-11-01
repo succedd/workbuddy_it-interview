@@ -96,7 +96,7 @@
     <h1>Shell 变量赋值与引用有哪些常见坑？为什么变量含空格时 `[ $var = 1 ]` 会报错，正确写法是什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">Shell</span><span class="chip tag">变量</span><span class="chip tag">引号</span><span class="chip tag">单词分割</span></div>
     <div class="card"><h2>题目</h2><p>考察 Shell 变量展开与单词分割（word splitting）机制，以及引用变量的正确姿势。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li>Shell 变量赋值时 <code>=</code> 两侧<strong>不能留空格</strong>（<code>var = 1</code> 会被当成命令执行）；引用值含空格必须用双引号包住：<code>name=&quot;hello world&quot;</code>，否则赋值只取第一段。</li>
 <li><code>[ $var = 1 ]</code> 在 <code>$var</code> 为空或含空格时会崩：空变量变成 <code>[ = 1 ]</code>（参数个数不对，语法错），含空格变成 <code>[ hello world = 1 ]</code>（被拆成多个参数）。<strong>务必写成 <code>[ &quot;$var&quot; = &quot;1&quot; ]</code>，用双引号包住变量</strong>。</li>

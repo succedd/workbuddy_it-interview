@@ -96,7 +96,7 @@
     <h1>PostgreSQL 支持 B-tree、Hash、GiST、SP-GiST、GIN、BRIN 多种索引，它们各自适用于什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">PostgreSQL</span><span class="chip tag">索引类型</span><span class="chip tag">GIN</span></div>
     <div class="card"><h2>题目</h2><p>默认的 CREATE INDEX 建的是 B-tree。实际业务中遇到数组/JSONB 包含查询、全文检索、地理位置检索和海量时序数据范围扫描时，应该选哪种索引？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>B-tree（默认，覆盖绝大多数场景）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>B-tree（默认，覆盖绝大多数场景）</strong></p>
 <ul>
 <li>支持 <code>&lt;</code>、<code>&lt;=</code>、<code>=</code>、<code>&gt;=</code>、<code>&gt;</code> 五种比较，等价的 <code>BETWEEN</code>、<code>IN</code> 以及 <code>IS NULL</code> 也能走索引，还能直接按索引顺序返回有序结果、省掉排序。</li>
 <li>对模式匹配只在<strong>前缀锚定</strong>时有效：<code>col LIKE &#39;foo%&#39;</code>、<code>col ~ &#39;^foo&#39;</code> 可以，<code>col LIKE &#39;%bar&#39;</code> 不行。若数据库不是 C locale，需要额外指定 operator class 才能支持这类查询。</li>

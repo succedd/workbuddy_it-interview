@@ -96,7 +96,7 @@
     <h1>Token 是什么？为什么中文、英文、代码消耗的 Token 不一样？Token 和上下文窗口怎样共同决定成本与效果？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">算法工程师</span><span class="chip tag">Token</span><span class="chip tag">上下文窗口</span><span class="chip tag">Token预算</span><span class="chip tag">成本核算</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 LLM 运行机制的基础理解，以及把 Token 换算到容量规划和成本核算的能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：Token 是模型每一步“补”的文本碎片。一次调用从 Token 化开始，模型每生成一个 Token 就把它加入上下文并预测下一个，这个过程叫<strong>自回归生成（Autoregressive Generation）</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Token 是模型每一步“补”的文本碎片。一次调用从 Token 化开始，模型每生成一个 Token 就把它加入上下文并预测下一个，这个过程叫<strong>自回归生成（Autoregressive Generation）</strong>。</p>
 <p><strong>为什么不同内容的 Token 数不一样</strong></p>
 <p>如果固定按字切，词表小但序列会变长；固定按词切能缩短序列，但中文词组数量会让词表快速膨胀。BPE、Unigram 等<strong>子词切分算法</strong>在两者之间取舍：高频片段尽量作为整体保留，低频词继续拆小。所以 Token 和字、词都没有固定的一一对应关系——英文单词可能占多个 Token，中文也可能一词多 Token，或多字合成一个 Token。代码里的缩进、符号、运算符和变量名更容易被单独切分，压缩率通常低于自然语言。</p>
 <p><strong>经验换算值</strong>（只用于预算，不能用于结算）</p>

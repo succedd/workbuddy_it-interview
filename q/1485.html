@@ -96,7 +96,7 @@
     <h1>Vuex 的核心概念有哪些？什么情况下其实不需要 Vuex？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vuex</span><span class="chip tag">状态管理</span><span class="chip tag">单向数据流</span></div>
     <div class="card"><h2>题目</h2><p>说明 state/getter/mutation/action 的分工与单向数据流，以及「过度使用 Vuex」的判断。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心概念</strong>：<code>state</code> 存数据；<code>getter</code> 派生计算（缓存）；<code>mutation</code> 是<strong>同步</strong>修改 state 的唯一入口（便于 DevTools 回溯）；<code>action</code> 负责<strong>异步/副作用</strong>，完成后 commit mutation；<code>module</code> 做命名空间拆分。数据流：组件 dispatch action → commit mutation → 修改 state → 响应式更新组件。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>核心概念</strong>：<code>state</code> 存数据；<code>getter</code> 派生计算（缓存）；<code>mutation</code> 是<strong>同步</strong>修改 state 的唯一入口（便于 DevTools 回溯）；<code>action</code> 负责<strong>异步/副作用</strong>，完成后 commit mutation；<code>module</code> 做命名空间拆分。数据流：组件 dispatch action → commit mutation → 修改 state → 响应式更新组件。</p>
 <p><strong>不需要 Vuex 的情况</strong>：① 状态只在一个组件（或父子链）内用——props/emit 足够；② 只做简单的跨组件共享（如一个全局开关）——<code>Vue.observable</code> / 组合式 store 更轻；③ 表单等高频输入——每敲一个字符都走 mutation 很啰嗦，可用 v-model 绑本地再提交。</p>
 <p><strong>判断标准</strong>：多个<strong>不相关页面/组件</strong>要共享、且需要随时间可追踪的状态，才值得进 Vuex。</p></div>
     <div class="cta-row">

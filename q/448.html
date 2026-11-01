@@ -96,7 +96,7 @@
     <h1>场景题：支付系统用消息队列异步扣款，如何设计消费端幂等，避免用户被重复扣款？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">幂等</span><span class="chip tag">重复消费</span><span class="chip tag">消息可靠性</span></div>
     <div class="card"><h2>题目</h2><p>考察点：为什么 MQ 只有 At Least Once 而没有 Exactly-Once、为什么不能用 Message ID 去重、去重表的插入时序。属场景题（中级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先明确前提：MQ 无法避免重复</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先明确前提：MQ 无法避免重复</strong></p>
 <p>主流消息队列提供的是 <strong>At Least Once（至少一次）</strong> 语义，而不是 Exactly-Once。重复来自三个场景：</p>
 <ul>
 <li><strong>发送时重复</strong>：消息已持久化，但应答因网络闪断或客户端宕机丢失，生产者重试，消费者收到两条<strong>内容相同、Message ID 不同</strong>的消息。</li>

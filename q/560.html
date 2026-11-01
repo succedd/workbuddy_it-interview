@@ -96,7 +96,7 @@
     <h1>什么是重排（reflow）和重绘（repaint）？二者有何区别，如何减少它们带来的性能开销？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">页面重构工程师</span><span class="chip tag">重排</span><span class="chip tag">重绘</span><span class="chip tag">渲染性能</span><span class="chip tag">reflow</span></div>
     <div class="card"><h2>题目</h2><p>前端常提到“避免频繁重排/重绘”。请解释重排与重绘的定义、触发条件、性能代价差异，以及常见的优化手段（批量读写、脱离文档流、使用 transform 等）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>定义</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>定义</strong>：</p>
 <ul>
 <li><strong>重排（reflow / 回流）</strong>：元素几何属性（宽高、位置、布局）发生变化，浏览器需要重新计算渲染树中所有受影响节点的几何信息。开销最大。</li>
 <li><strong>重绘（repaint）</strong>：元素外观变化（颜色、背景、visibility 等）但不影响布局，浏览器只需重新绘制像素。比重排轻，但仍消耗 CPU/GPU。</li>

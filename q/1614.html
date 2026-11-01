@@ -96,7 +96,7 @@
     <h1>PostgreSQL 出现死锁或表膨胀（bloat），应如何排查与治理？长事务有什么危害？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">PostgreSQL</span><span class="chip tag">锁</span><span class="chip tag">膨胀</span><span class="chip tag">VACUUM</span></div>
     <div class="card"><h2>题目</h2><p>高级，考察并发与维护。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 22 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>锁排查</strong>：通过系统视图 <code>pg_locks</code> 结合 <code>pg_stat_activity</code> 看谁持锁、谁等待；死锁 PG 会<strong>自动检测并回滚其中一个事务</strong>（报 <code>deadlock detected</code>），但应优化事务顺序 / 缩短持锁时间从根上避免。注意 <code>LOCK</code> 粒度（表锁 / 行锁 / 意向锁）与 <code>ACCESS EXCLUSIVE</code>（DDL / TRUNCATE）会阻塞读写。</li>
 <li><strong>表膨胀（bloat）</strong>：MVCC 产生死元组，若 <strong>AUTOVACUUM 跟不上</strong>（长事务、高频更新、默认阈值保守）会堆积，导致表 / 索引变大、顺序扫描变慢。治理：<code>VACUUM</code>（回收空间标记复用）/ <code>VACUUM FULL</code>（真正收缩，但锁表），调 <code>autovacuum_vacuum_scale_factor</code> 等，定期监控 <code>pgstattuple</code>。</li>

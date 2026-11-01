@@ -96,7 +96,7 @@
     <h1>Ansible 的 playbook/role/inventory 是什么？为何无需 agent？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">云资源运维工程师</span><span class="chip tag">Ansible</span><span class="chip tag">playbook</span><span class="chip tag">运维自动化</span></div>
     <div class="card"><h2>题目</h2><p>解释 Ansible 的核心概念与免 agent 原理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>Inventory</strong>：定义被管主机的清单与分组（可含变量）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>Inventory</strong>：定义被管主机的清单与分组（可含变量）。</p>
 <p><strong>Playbook</strong>：用 YAML 描述“在哪些主机上做哪些任务”的剧本，幂等执行。</p>
 <p><strong>Role</strong>：把 playbook 按职责（如 nginx、mysql）模板化复用，结构清晰。</p>
 <p><strong>免 agent</strong>：Ansible 通过 SSH（Windows 用 WinRM）推送模块到目标机临时执行并返回结果，目标机无需常驻 agent，部署简单、易于审计。</p></div>

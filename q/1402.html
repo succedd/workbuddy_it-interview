@@ -96,7 +96,7 @@
     <h1>Raft 的领导人选举是怎么工作的？任期（term）、随机超时与投票规则如何共同防止脑裂？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端架构师</span><span class="chip">架构师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">Raft</span><span class="chip tag">选主</span><span class="chip tag">脑裂</span><span class="chip tag">共识</span></div>
     <div class="card"><h2>题目</h2><p>考察 Raft 选举流程与安全性论证。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 33 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>Raft 把共识拆成「领导人选举 + 日志复制」。节点三种角色：Follower / Candidate / Leader，一切以<strong>任期（term）</strong>为逻辑时钟，term 单调递增。</p>
 <h3>选举流程</h3>
 <ol>

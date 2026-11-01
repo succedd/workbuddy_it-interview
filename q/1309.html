@@ -96,7 +96,7 @@
     <h1>TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？</h1>
     <div class="chips"><span class="chip diff">中</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">网络工程师</span><span class="chip tag">TCP</span><span class="chip tag">重传</span><span class="chip tag">RTO</span><span class="chip tag">快速重传</span><span class="chip tag">SACK</span></div>
     <div class="card"><h2>题目</h2><p>TCP 的三种重传机制：超时重传、快速重传、SACK 各自解决什么问题？</p></div>
-    <div class="card"><h2>参考答案</h2><p>TCP 的重传不是只有一种触发方式，三者是一个逐步演进的组合：超时重传是兜底，快速重传让恢复更早发生，SACK 则补足累积确认的信息盲区。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>TCP 的重传不是只有一种触发方式，三者是一个逐步演进的组合：超时重传是兜底，快速重传让恢复更早发生，SACK 则补足累积确认的信息盲区。</p>
 <p><strong>1. 超时重传（RTO）</strong>：发送数据后启动定时器，超过 RTO 仍未收到 ACK 就认为数据可能丢失并重传，是所有场景下最基础的兜底方案。RTO 的取值很关键：不能直接用某一次 RTT 样本，现代 TCP 按 RFC 6298 用 RTT 样本维护平滑往返时间 SRTT 和波动 RTTVAR，RTO ≈ SRTT + 抖动余量；RTO 太小会造成不必要的重传，太大则延迟高。对已重传过的报文，其 ACK 不用于 RTT 采样（Karn 算法），避免「ACK 对应原始包还是重传包」的歧义；连续超时还会指数退避，避免在拥塞时继续加重负担。</p>
 <p><img src="/assets/q/fig-tcp-retransmit.svg" alt="图：三种重传机制的报文时序与触发条件对比" loading="lazy"></p>
 <p><strong>2. 快速重传</strong>：解决「只能干等超时、恢复太慢」的问题。TCP 使用累积确认，接收方收到乱序数据时不会推进 ACK 号，而是重复回复同一个旧 ACK（duplicate ACK）。发送方连续收到 3 个 duplicate ACK，就认为该段大概率丢失，不等 RTO 直接重传。之所以要 3 个而不是 1 个，是因为短暂乱序也可能造成重复 ACK，3 个是「尽快恢复」与「避免误判乱序」之间的折中。</p>

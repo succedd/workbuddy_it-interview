@@ -96,7 +96,7 @@
     <h1>推荐系统如何做评估？离线 AUC / GAUC、线上 A/B 与无偏评估（IPS 纠偏）各自解决什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">推荐系统</span><span class="chip tag">评估</span><span class="chip tag">GAUC</span><span class="chip tag">IPS</span></div>
     <div class="card"><h2>题目</h2><p>考察评估体系的层次，以及无偏评估的动机（高级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 22 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>离线评估</strong>：用历史日志算 AUC、Precision / Recall、NDCG、MAP 等。但推荐是<strong>用户级序列决策</strong>，普通 AUC 把不同用户样本混在一起，不能反映「同一用户内排序好坏」，因此引入 <strong>GAUC（按用户分组算 AUC 再按曝光加权）</strong>，更贴合业务。</li>
 <li><strong>线上评估</strong>：离线好 ≠ 线上好，必须用 <strong>A/B 实验</strong>看 CTR、人均时长、留存、GMV 等<strong>业务指标</strong>；注意新模型可能损害长期留存而短期 CTR 上涨，需多看留存。</li>

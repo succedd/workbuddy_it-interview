@@ -96,7 +96,7 @@
     <h1>CI/CD 流水线通常包含 lint→build→test→package→deploy 等阶段，各阶段的“门禁（gate）”有什么作用？为什么要在早期阶段就拦截问题？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip tag">CI/CD</span><span class="chip tag">流水线</span><span class="chip tag">门禁</span><span class="chip tag">左移</span><span class="chip tag">持续集成</span></div>
     <div class="card"><h2>题目</h2><p>请说明一次提交如何流经流水线各阶段，每个阶段失败会怎样阻断后续，以及“越早发现越便宜”在 CI 里的工程含义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>阶段划分与门禁</strong>：lint 做静态检查（风格/语法/安全扫描），build 编译打包，test 跑单元/集成测试，package 产出可部署制品，deploy 推到目标环境；每个阶段都是一道“门禁”，只有上一道通过才进入下一道。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>阶段划分与门禁</strong>：lint 做静态检查（风格/语法/安全扫描），build 编译打包，test 跑单元/集成测试，package 产出可部署制品，deploy 推到目标环境；每个阶段都是一道“门禁”，只有上一道通过才进入下一道。</p>
 <p><strong>失败即阻断</strong>：任意阶段非零退出，流水线变红、后续阶段跳过、合入被卡；这把“能不能交付”的判定权交给自动化，而不是靠人肉 review 兜底。</p>
 <p><strong>早期拦截最划算</strong>：一个 bug 在 lint/compile 阶段被发现，成本是秒级；漏到生产环境，成本是用户受影响 + 回滚 + 排查，差几个数量级；所以静态检查、编译、单测要尽量左移（shift-left）到最早阶段。</p>
 <p><strong>门禁不是越多越好</strong>：stage 太多、每阶段都拉全量环境会变慢，反而让人绕过 CI；要在“拦截力”与“反馈速度”间权衡，重活（端到端、性能）放在后面或定时跑。</p></div>

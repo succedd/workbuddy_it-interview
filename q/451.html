@@ -96,7 +96,7 @@
     <h1>Spring Cloud Gateway 处理一个请求的完整流程是怎样的？断言（Predicate）和过滤器（Filter）分别在哪个阶段生效？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Spring Cloud Gateway</span><span class="chip tag">API网关</span><span class="chip tag">过滤器链</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Handler Mapping → Web Handler → 过滤器链的三段流程，pre/post 过滤器以代理请求为分界线。属简答题（中级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>完整处理流程</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>完整处理流程</strong></p>
 <ol>
 <li>客户端向 Spring Cloud Gateway 发起请求。</li>
 <li><strong>Gateway Handler Mapping</strong> 用路由断言判断请求是否匹配某条 Route；没有匹配的路由就直接返回 404。</li>

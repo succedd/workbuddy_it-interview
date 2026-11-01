@@ -96,7 +96,7 @@
     <h1>DataX 的架构与执行流程是什么？它和 Sqoop 相比设计差异在哪？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据采集工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">DataX</span><span class="chip tag">数据同步</span><span class="chip tag">离线数仓</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Framework+Plugin 架构、Job/Task/TaskGroup 三层调度、单进程多线程模型、与 Sqoop 的 MapReduce 模型对比。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>架构</strong>：<code>Framework（数据传输框架）+ Reader/Writer Plugin（读写插件）</code>——新增数据源只需实现插件，框架负责速率控制、断点、监控。覆盖 MySQL/Oracle/HDFS/Hive/HBase/ClickHouse/ES 等数十种。</li>
 <li><strong>三层调度</strong>：Job（一个数据同步作业）按表/分片切分为多个 <strong>Task</strong>（单线程读写对），Task 组成 <strong>TaskGroup</strong>（默认单组并发 5），由单进程内的调度器执行——<strong>DataX 是单进程多线程模型</strong>，无外部依赖，部署即用。</li>

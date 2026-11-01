@@ -96,7 +96,7 @@
     <h1>深度分页（LIMIT 1000000, 10）为什么慢？如何优化？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">深度分页</span><span class="chip tag">SQL优化</span></div>
     <div class="card"><h2>题目</h2><p>请解释 LIMIT 大偏移量下 MySQL 的执行过程与性能瓶颈，并给出几种可行的优化方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>慢的原因</strong>：<code>LIMIT 1000000,10</code> 并不是直接跳到第 1000001 行——存储引擎仍要按索引顺序<strong>取出并丢弃前 100 万条</strong>记录（Server 层逐条判断、回表后再丢弃），实际只返回 10 条。偏移量越大，无效工作量越大。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>慢的原因</strong>：<code>LIMIT 1000000,10</code> 并不是直接跳到第 1000001 行——存储引擎仍要按索引顺序<strong>取出并丢弃前 100 万条</strong>记录（Server 层逐条判断、回表后再丢弃），实际只返回 10 条。偏移量越大，无效工作量越大。</p>
 <p><strong>优化方案</strong>：</p>
 <ol>
 <li><strong>游标/续页法（最优）</strong>：记录上一页最后一条的排序键，下页改为</li>

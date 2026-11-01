@@ -100,7 +100,7 @@
 <p>C. 记录的 trx_id 介于 min_trx_id 与 max_trx_id 之间时，该版本对当前事务一定可见</p>
 <p>D. m_ids 中必须包含创建 Read View 的事务自身的 id，否则可见性判断会出错</p>
 <p>请选出正确答案，并解释其余选项错误的原因。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：正确答案是 B</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 55 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：正确答案是 B</strong></p>
 <ul>
 <li>max_trx_id 是创建 Read View 时&quot;下一个将要分配给新事务的事务 id&quot;（全局事务 id 计数器当前值），并非 m_ids 的最大值。trx_id &gt;= max_trx_id 意味着生成该版本的事务在 Read View 创建之后才启动，对当前事务不可见。</li>
 </ul>

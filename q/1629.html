@@ -96,7 +96,7 @@
     <h1>Nuxt 项目首屏接口很慢，你会怎么拆分服务端与客户端渲染路径来定位？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Nuxt</span><span class="chip tag">SSR</span><span class="chip tag">性能优化</span></div>
     <div class="card"><h2>题目</h2><p>考察 SSR 应用性能定位方法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 17 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>区分渲染与数据</strong>：看 <code>asyncData</code>/<code>serverMiddleware</code> 的耗时；接口慢优先做服务端接口聚合、并行请求与缓存，而不是优化组件。</li>
 <li><strong>组件级定位</strong>：减少服务端不必要的组件渲染，对非首屏组件用客户端组件，避免在服务端执行浏览器专属代码。</li>

@@ -96,7 +96,7 @@
     <h1>什么是混合检索（稀疏 BM25 + 稠密向量）与重排序（rerank）？它们各自解决什么问题，何时必须上？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">RAG</span><span class="chip tag">混合检索</span><span class="chip tag">BM25</span><span class="chip tag">重排序</span><span class="chip tag">Rerank</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解单路向量检索的短板，以及混合检索与 rerank 的互补关系与适用时机。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>单路向量检索的盲区</strong>：稠密向量擅长语义匹配，但对精确关键词、型号、ID、专有名词（如错误码 OOMKilled）不敏感；而 BM25 这类稀疏检索正好擅长精确词面匹配。</li>
 <li><strong>混合检索（Hybrid）</strong>：把 BM25 与向量检索的得分归一化后融合（如 RRF 倒数排名融合），兼顾“字面命中”与“语义相关”，召回率显著提升。</li>

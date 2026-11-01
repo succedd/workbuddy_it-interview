@@ -96,7 +96,7 @@
     <h1>特征选择与降维（VarianceThreshold、SelectKBest、PCA）怎么用，如何平衡过拟合与信息丢失？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">数据科学家</span><span class="chip tag">特征工程</span><span class="chip tag">特征选择</span><span class="chip tag">PCA</span><span class="chip tag">降维</span></div>
     <div class="card"><h2>题目</h2><p>考察在特征冗余/维度高时如何瘦身，避免维度灾难。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>过滤法（VarianceThreshold / SelectKBest）</strong>：按统计指标筛选——<code>VarianceThreshold</code> 删掉方差近 0（几乎不变的常量特征）；<code>SelectKBest</code> 按卡方/互信息/F 值挑 top-K 最相关的特征，计算快但忽略特征间冗余。</li>
 <li><strong>包裹/嵌入法</strong>：用模型自身选特征（LR 的 L1 正则、树模型的 feature_importances_、XGBoost 的 gain），能考虑特征组合效应，更贴合最终模型。</li>

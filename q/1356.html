@@ -96,7 +96,7 @@
     <h1>什么是 CAS？它存在什么缺陷（ABA 问题），AQS 又是如何基于 CAS 工作的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CAS</span><span class="chip tag">ABA问题</span><span class="chip tag">AQS</span><span class="chip tag">乐观锁</span><span class="chip tag">Unsafe</span></div>
     <div class="card"><h2>题目</h2><p>考察乐观锁 CAS 的原理、ABA 问题及解决，以及 AQS 作为 J.U.C 核心的同步思想。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：CAS（Compare-And-Swap）是一种无锁原子指令，是乐观并发的基础；它存在 ABA 隐患可用版本戳解决；AQS 以 CAS + 等待队列实现了 J.U.C 大部分同步器。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：CAS（Compare-And-Swap）是一种无锁原子指令，是乐观并发的基础；它存在 ABA 隐患可用版本戳解决；AQS 以 CAS + 等待队列实现了 J.U.C 大部分同步器。</p>
 <h4>CAS 原理</h4>
 <ul>
 <li>三个操作数：内存地址 V、预期旧值 A、新值 B。仅当 V == A 时才把 V 更新为 B，否则不操作，返回失败。</li>

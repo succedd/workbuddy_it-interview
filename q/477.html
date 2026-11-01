@@ -96,7 +96,7 @@
     <h1>TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">TLS</span><span class="chip tag">握手</span><span class="chip tag">ClientHello</span><span class="chip tag">ServerHello</span><span class="chip tag">密钥协商</span></div>
     <div class="card"><h2>题目</h2><p>TLS 握手（HTTPS 连接建立）的完整流程是怎样的？每步在解决什么问题？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>TLS 握手的目标</strong>：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>TLS 握手的目标</strong>：防窃听（加密）、防篡改（完整性）、防冒充（证书认证）。整个过程大致需要 2 个 RTT，经历 4 次消息交互。</p>
 <p><strong>第一次握手 — ClientHello（客户端打招呼）：</strong></p>
 <ul>
 <li>客户端发送支持的 TLS 版本、密码套件列表（包含密钥交换算法、签名算法、对称加密算法、摘要算法的组合，如 <code>TLS_RSA_WITH_AES_128_GCM_SHA256</code>），以及一个随机数 <code>Client Random</code>。</li>

@@ -96,7 +96,7 @@
     <h1>简述 TypeScript 常用工具类型 Partial、Pick、Omit、Record、ReturnType 的作用，并说明其内部实现原理。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">工具类型</span><span class="chip tag">映射类型</span><span class="chip tag">条件类型</span></div>
     <div class="card"><h2>题目</h2><p>请分别说明这些内置工具类型的语义，并用条件类型/映射类型展示其实现思路。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><code>Partial&lt;T&gt;</code>：把 T 的所有属性变为可选。<code>type Partial&lt;T&gt; = { [K in keyof T]?: T[K] }</code></li>
 <li><code>Pick&lt;T, K&gt;</code>：从 T 中挑选一组属性 K 组成新类型。<code>type Pick&lt;T, K extends keyof T&gt; = { [P in K]: T[P] }</code></li>
 <li><code>Omit&lt;T, K&gt;</code>：排除 T 中指定的属性 K。<code>type Omit&lt;T, K extends keyof any&gt; = Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;</code></li>

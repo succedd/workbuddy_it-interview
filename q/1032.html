@@ -96,7 +96,7 @@
     <h1>NestJS 的模块（Module）、提供者（Provider）与依赖注入容器是如何协作的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">NestJS</span><span class="chip tag">依赖注入</span><span class="chip tag">Module</span><span class="chip tag">IoC</span><span class="chip tag">作用域</span></div>
     <div class="card"><h2>题目</h2><p>考察点：IoC 容器、模块作用域、@Injectable 与反射元数据。NestJS 的地基。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>三者关系</strong>：<code>@Module()</code> 是<strong>组织边界</strong>，声明 <code>providers</code>（可被注入的对象）、<code>controllers</code>（路由入口）、<code>imports</code>（引入别的模块）、<code>exports</code>（对外暴露哪些 provider）。Nest 启动时扫描所有装饰器元数据，构建出<strong>应用依赖图</strong>，再由 <strong>IoC 容器</strong>实例化并注入。</li>
 <li><strong>@Injectable() 的作用</strong>：通过 <code>reflect-metadata</code> 把构造函数的<strong>参数类型</strong>写成元数据，容器据此知道「要注入什么」。所以 Nest 依赖 <strong>TypeScript 的 <code>emitDecoratorMetadata</code></strong>（tsconfig 必开）。</li>

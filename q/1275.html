@@ -96,7 +96,7 @@
     <h1>一个需要读代码、跑测试、改文件、写报告的 Agent 跑到第 30 轮时上下文接近窗口上限，开始出现「忘记初始约束」「重复做过的事」。请给出上下文治理方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">AI Agent开发工程师</span><span class="chip">Prompt工程师</span><span class="chip tag">Compaction</span><span class="chip tag">Note-taking</span><span class="chip tag">Sub-agent</span><span class="chip tag">Token预算</span></div>
     <div class="card"><h2>题目</h2><p>考察点：长任务上下文持久化手段的取舍，以及 Token 预算与信息保真的平衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：三种手段分别解决不同层面的问题，实际项目里通常组合使用。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：三种手段分别解决不同层面的问题，实际项目里通常组合使用。</p>
 <p><strong>1. Compaction：窗口快满时压缩历史</strong></p>
 <p>连续多轮任务会把早期判断、工具结果和当前目标同时留在消息历史里，接近窗口上限时把历史压缩成摘要，再以摘要和新消息继续执行，从而实现跨窗口衔接。Anthropic 介绍过 Claude Code 的一种实现思路：<strong>摘要保留架构决策、未解决 Bug 和关键实现细节</strong>，冗余工具结果被移除，压缩后的上下文再配合最近访问的文件恢复任务状态。</p>
 <p>难点在取舍——保留太多压缩没意义，保留太少关键上下文又丢了。比较实际的做法是拿复杂 Agent 轨迹反复调压缩 Prompt，先保证重要信息别漏，再逐步删掉冗余内容；这不是一次能写准的。</p>

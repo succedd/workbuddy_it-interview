@@ -96,7 +96,7 @@
     <h1>训练好的 PyTorch 模型如何导出部署（ONNX/TorchScript）？有哪些注意事项？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">深度学习工程师</span><span class="chip">模型部署工程师</span><span class="chip">MLOps工程师</span><span class="chip tag">PyTorch</span><span class="chip tag">ONNX</span><span class="chip tag">模型部署</span></div>
     <div class="card"><h2>题目</h2><p>对比两种导出方式与常见坑（动态轴、算子支持、数值一致性）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>TorchScript</strong>：<code>torch.jit.trace</code>（喂样例输入记录执行路径，快但分支固定）或 <code>torch.jit.script</code>（解析代码保留控制流）；产物自包含，PyTorch/C++ LibTorch 可跑，适合纯 PyTorch 栈。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>TorchScript</strong>：<code>torch.jit.trace</code>（喂样例输入记录执行路径，快但分支固定）或 <code>torch.jit.script</code>（解析代码保留控制流）；产物自包含，PyTorch/C++ LibTorch 可跑，适合纯 PyTorch 栈。</p>
 <p><strong>ONNX</strong>：<code>torch.onnx.export</code> 转 ONNX，之后可用 <strong>ONNX Runtime / TensorRT / OpenVINO</strong> 推理，跨框架跨硬件，工程上最常用。</p>
 <p><strong>注意事项</strong>：① <strong>动态轴</strong>：batch/序列长度要显式声明 dynamic_axes，否则 shape 写死；② <strong>算子支持</strong>：导出前查 opset 覆盖，不支持的自定义算子要注册或改写（如部分 attention/自定义 CUDA op）；③ <strong>控制流与动态结构</strong>：trace 会固化分支，含 if/循环的模型用 script 或拆分导出；④ <strong>数值一致性</strong>：导出后用多组输入对比 PyTorch 输出（atol/rtol），注意 AMP 模型导出精度；⑤ 预处理/后处理随模型一起固化或明确文档化，避免训练-服务偏移；⑥ 部署前做性能基线（latency/throughput/QPS）与精度回归（离线指标对齐），纳入 CI。</p></div>
     <div class="cta-row">

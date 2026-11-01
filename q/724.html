@@ -96,7 +96,7 @@
     <h1>HBase 的数据模型（行键/列族/版本）与适用场景？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">RowKey</span><span class="chip tag">列式存储</span></div>
     <div class="card"><h2>题目</h2><p>说明 HBase 的列式存储模型与典型用途。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>数据模型</strong>：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 <code>行键+列族:列+版本时间戳</code> 定位，可存多版本。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>数据模型</strong>：表由行键（RowKey）唯一标识，列按列族（Column Family）分组，单元格由 <code>行键+列族:列+版本时间戳</code> 定位，可存多版本。</p>
 <p><strong>特点</strong>：基于 HDFS、按 RowKey 有序、LSM 写放大优化，适合海量稀疏数据、高吞吐随机读写（按 RowKey）。</p>
 <p><strong>适用</strong>：时序/日志/画像等写多读少、单键查询场景；不支持复杂 join 与二级索引（需额外方案），不适合事务型关系查询。</p></div>
     <div class="cta-row">

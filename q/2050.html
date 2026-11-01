@@ -96,7 +96,7 @@
     <h1>BERT 的预训练任务 MLM / NSP 训练了什么能力？后续 RoBERTa 等为何反思甚至去掉 NSP？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip tag">BERT</span><span class="chip tag">MLM</span><span class="chip tag">NSP</span><span class="chip tag">预训练任务</span><span class="chip tag">RoBERTa</span></div>
     <div class="card"><h2>题目</h2><p>解释 MLM 与 NSP 的训练目标，以及后续模型对 NSP 的质疑。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>MLM(掩码语言模型)</strong>：随机遮盖约 15% 的 token，让模型根据<strong>左右双向上下文</strong>预测被盖住的词。它训练的是「深层双向语境理解」能力，是 BERT 双向性的来源。为避免预训练与微调不一致，15% 中 80% 换成 [MASK]、10% 随机词、10% 原词。</li>
 <li><strong>NSP(下一句预测)</strong>：构造句对，让模型判断 B 是否紧接 A（二分类），训练<strong>句子间关系/连贯性</strong>理解，服务句对任务。</li>

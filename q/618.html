@@ -96,7 +96,7 @@
     <h1>给定一份 200 页技术手册，如何设计切片与向量化索引流程？固定长度、递归字符、语义切分各怎么选？overlap 有什么用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">RAG</span><span class="chip tag">切片</span><span class="chip tag">Chunk</span><span class="chip tag">向量化</span><span class="chip tag">索引</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解 RAG 索引阶段的核心工程决策——切片策略（chunk size / 切分方式 / overlap）对检索召回的影响。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先定切分粒度（chunk size）</strong>：太小会丢失上下文（一个概念被切碎），太大会引入噪声且浪费 token；技术手册常用 500–1000 字符、重叠 50–150 字符（overlap），让跨边界的概念在相邻块里都完整保留。</li>
 <li><strong>切分方式按结构选</strong>：固定长度/递归字符切分（RecursiveCharacterTextSplitter）按段落→句子→字符逐级切，最通用；语义切分按 embedding 相似度断句，保证每块语义内聚、召回更准但成本高易碎；结构化切分按 Markdown 标题/表格保留文档层级，最利于手册类。</li>

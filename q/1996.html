@@ -96,7 +96,7 @@
     <h1>在 monorepo（多模块）场景下，如何设计 CI 流水线实现「仅受影响模块」的增量构建与部署？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CI/CD</span><span class="chip tag">monorepo</span><span class="chip tag">增量构建</span></div>
     <div class="card"><h2>题目</h2><p>系统设计题：考察大仓 CI 的可扩展性设计，避免每次全量构建拖慢反馈。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>变更影响分析（affected）</strong>：在 CI 第一步用工具（Nx / Turborepo / Bazel / 自研脚本）根据 <code>git diff</code> 与目标分支对比，算出本次改动「直接影响 + 依赖链传递影响」的模块集合，输出一个模块列表。</li>
 <li><strong>路径/文件过滤触发</strong>：GitHub Actions 可用 <code>on.push.paths</code> 或第三方的 path-filter 动作，只对改动路径对应的 job 置 <code>true</code>，其余 skip；或更稳妥地由第一步的 affected 结果驱动 matrix 动态生成需要跑的模块。</li>

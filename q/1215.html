@@ -96,7 +96,7 @@
     <h1>【系统设计】如果从零搭建一套微服务基础设施，你会如何为「注册中心、网关、配置中心」选型和组合？给出关键权衡。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip">云架构师</span><span class="chip tag">技术选型</span><span class="chip tag">微服务</span><span class="chip tag">Nacos</span><span class="chip tag">Gateway</span><span class="chip tag">Apollo</span><span class="chip tag">高可用</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 6 问（收口）：把前面几问串起来，做一个整体技术选型决策。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>注册中心选型权衡</strong>：① <strong>Nacos</strong>（推荐 Spring Cloud Alibaba 体系）——同时支持 CP+AP 模式切换、自带配置中心、国内生态好、可视化强，中小团队一站式；② <strong>Eureka</strong>——纯 AP、自我保护适合对一致性要求不高的内网，但已停更；③ <strong>Consul</strong>——基于 Raft 强一致 + 多数据中心 + 健康检查强大，但运维偏重；④ <strong>etcd/ZooKeeper</strong>——CP 强一致，适合 Kubernetes 生态（K8s 本身用 etcd 做服务发现）。建议：K8s 环境优先用 Service+etcd；非 K8s 的 Spring 体系优先 Nacos。</li>
 <li><strong>网关选型</strong>：① <strong>Spring Cloud Gateway</strong>（WebFlux 响应式、Predicate+Filter 链、与 Spring 生态无缝，适合 Java 团队）；② <strong>Kong</strong>（基于 Nginx+Lua，性能好、插件丰富、与语言无关）；③ <strong>APISIX</strong>（云原生、etcd 存储、动态路由强）。网关要承载鉴权、限流、灰度、日志、跨域等横切关注点，选型看团队栈与性能诉求。</li>

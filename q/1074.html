@@ -96,7 +96,7 @@
     <h1>Spring Cloud 的断路器从 Hystrix 演进到 Sentinel / Resilience4j，该怎么选？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">SpringCloud</span><span class="chip tag">Hystrix</span><span class="chip tag">Sentinel</span><span class="chip tag">Resilience4j</span><span class="chip tag">熔断</span></div>
     <div class="card"><h2>题目</h2><p>考察点：组件演进脉络、模型差异（线程池隔离 vs 信号量）、选型依据。Java 微服务高频题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>演进脉络</strong>：<strong>Hystrix（Netflix，2011）→ 停止新特性开发（2018）→ 官方推荐 Resilience4j（社区）/ Sentinel（阿里）</strong>。Spring Cloud Netflix 系列（Hystrix/Ribbon/Zuul/Eureka）在 <strong>Spring Cloud 2020.x 起被整体移除</strong>，迁移是硬性的（不是可选项）。</li>
 <li><strong>Hystrix 的核心设计与问题</strong>：</li>

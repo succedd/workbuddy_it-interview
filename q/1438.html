@@ -96,7 +96,7 @@
     <h1>Hive 里一张分区表 join 时数据倾斜导致个别 reducer 跑几个小时，你有哪些处理手段？内外部表（managed/external）的区别是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据仓库工程师</span><span class="chip">大数据开发工程师</span><span class="chip">数据分析师</span><span class="chip tag">Hive</span><span class="chip tag">数据倾斜</span><span class="chip tag">分区表</span><span class="chip tag">外部表</span></div>
     <div class="card"><h2>题目</h2><p>考察 Hive 数据倾斜的成因与解法（map join/ skew join / 两阶段聚合）、分区裁剪以及内外部表语义差异。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>数据倾斜的成因</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>数据倾斜的成因</h3>
 <p>某个 join key（如 null、默认值、超大 VUser）占了绝大多数行，shuffle 后该 key 的所有数据进同一个 reducer → 长尾任务拖死整个 job。</p>
 <h3>处理手段（按优先级）</h3>
 <ol>

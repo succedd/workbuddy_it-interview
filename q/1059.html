@@ -96,7 +96,7 @@
     <h1>浏览器事件循环中宏任务与微任务的执行顺序是怎样的？Node.js 的有什么不同？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">前端架构师</span><span class="chip tag">浏览器</span><span class="chip tag">事件循环</span><span class="chip tag">微任务</span><span class="chip tag">EventLoop</span><span class="chip tag">Node.js</span></div>
     <div class="card"><h2>题目</h2><p>考察点：任务队列、渲染时机、Node 的阶段模型。异步基础题里的高分题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>浏览器的一次事件循环</strong>：从<strong>宏任务（task）队列</strong>取一个任务执行 → 该任务产生的所有<strong>微任务（microtask）</strong>在本轮内<strong>全部清空</strong>（<code>queueMicrotask</code>、<code>Promise.then</code>、<code>MutationObserver</code>）→ 可能需要<strong>渲染更新</strong>（样式/布局/绘制，通常对齐屏幕刷新率 60fps≈16.6ms）→ 进入下一轮。</li>
 <li><strong>两条铁律</strong>：① <strong>每个宏任务之间会清空微任务队列</strong>；② <strong>微任务执行期间新产生的微任务会在同一轮继续执行</strong>（所以「微任务里递归 Promise」会<strong>饿死渲染</strong>，页面卡死）。</li>

@@ -96,7 +96,7 @@
     <h1>虚拟内存是什么？分页和分段有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">嵌入式软件工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">操作系统</span><span class="chip tag">虚拟内存</span><span class="chip tag">分页</span></div>
     <div class="card"><h2>题目</h2><p>请解释虚拟内存的作用（地址空间隔离、按需加载、交换），并对比分页与分段两种内存管理机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>虚拟内存</strong>：为每个进程提供独立的、比物理内存更大的虚拟地址空间，通过 MMU 把虚拟地址翻译为物理地址（查页表）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>虚拟内存</strong>：为每个进程提供独立的、比物理内存更大的虚拟地址空间，通过 MMU 把虚拟地址翻译为物理地址（查页表）。</p>
 <p><strong>三大作用</strong>：①<strong>隔离</strong>——进程互不越界访问，系统更安全稳定；②<strong>解耦</strong>——程序可用地址不再受物理内存限制；③<strong>按需加载与交换</strong>——暂时不用的页换出到磁盘（swap），物理内存留给活跃数据。</p>
 <p><strong>分页</strong>：把内存切成固定大小的<strong>页</strong>（通常 4KB），虚拟页→物理页帧通过页表映射；配合 <strong>TLB 缓存翻译结果</strong>加速；多级页表（如 x86-64 四级）减少页表本身内存占用。外部碎片没有（页大小一致），有内部碎片（最后一页不满）。</p>
 <p><strong>分段</strong>：按<strong>逻辑意义</strong>划分（代码段、数据段、堆栈段），段大小可变，便于共享与保护（段级权限），但会产生<strong>外部碎片</strong>，分配复杂。</p>

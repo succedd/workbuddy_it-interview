@@ -96,7 +96,7 @@
     <h1>OpenGL 里 VBO / VAO / EBO 各存什么？为什么移动端 DrawCall 次数比三角形数量更影响性能？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">游戏客户端工程师</span><span class="chip">游戏引擎工程师</span><span class="chip">Unity游戏开发工程师</span><span class="chip">AR/VR开发工程师</span><span class="chip tag">OpenGL</span><span class="chip tag">VBO</span><span class="chip tag">VAO</span><span class="chip tag">DrawCall</span><span class="chip tag">合批</span></div>
     <div class="card"><h2>题目</h2><p>考察顶点数据组织（VBO/VAO/EBO）与 DrawCall 开销的本质：CPU 侧状态切换与驱动的提交成本。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>三个缓冲对象各存什么</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>三个缓冲对象各存什么</h3>
 <ul>
 <li><strong>VBO（Vertex Buffer Object）</strong>：显存里的<strong>顶点原始数据</strong>（位置/法线/UV 交错打包的二进制块）；</li>
 <li><strong>VAO（Vertex Array Object）</strong>：「<strong>如何解读 VBO</strong>」的状态集合——每个属性的 stride/偏移/数据类型/是否归一化，配合 <code>glVertexAttribPointer</code> 一次记录，之后绘制只需绑定 VAO；</li>

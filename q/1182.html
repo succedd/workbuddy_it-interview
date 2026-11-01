@@ -96,7 +96,7 @@
     <h1>开放讨论：大模型推理服务的成本怎么估算与权衡？说明「小模型+量化」和「大模型+高并发」的成本拐点一般怎么算。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip tag">成本权衡</span><span class="chip tag">推理成本</span><span class="chip tag">量化</span><span class="chip tag">吞吐</span></div>
     <div class="card"><h2>题目</h2><p>考察点：成本建模与权衡。要求把成本拆成「显存→实例数→吞吐→单价」的链路，并给出可操作的拐点判断，而非空谈「越大越好」。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>成本拆解公式</strong>：单实例成本 ≈ 显卡单价 × 卡数；总吞吐 ≈ 单实例 QPS × 实例数；单请求成本 ≈ 实例成本 / 总吞吐。而「能塞几张卡」由<strong>权重+KV Cache 显存</strong>决定，所以量化直接决定实例密度（显存减半≈同卡多开一倍实例）。</li>
 <li><strong>「小模型+量化」路线</strong>：INT4 小模型显存小、单卡可开多实例、单价低，适合<strong>量大、延迟敏感、质量门槛不高</strong>的通用场景（客服、摘要），边际成本随量化线性下降。</li>

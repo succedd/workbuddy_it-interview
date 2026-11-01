@@ -96,7 +96,7 @@
     <h1>【场景题·高级】某服务的方法 A（无 @Transactional）内部调用同类的方法 B（有 @Transactional），B 里的数据库操作抛异常后事务没有回滚；另一个 @Async 方法被同类调用后也变成了同步执行。请定位根因、解释原理，并给出修复方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">AOP</span><span class="chip tag">自调用</span><span class="chip tag">事务失效</span><span class="chip tag">@Async</span><span class="chip tag">代理</span></div>
     <div class="card"><h2>题目</h2><p>考察点：代理机制的自我调用（self-invocation）盲区、@Transactional/@Async 失效的经典场景、三种修复方案的推荐度排序。追问链 AOP 环节的高频生产事故。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>根因定位</strong>：两个现象是同一个根因——<strong>自调用绕过了代理</strong>。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 <code>this</code> 引用是<strong>原始对象</strong>而不是代理，A 里调 <code>this.B()</code> 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明确说明：self invocation via this will bypass the advice。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>根因定位</strong>：两个现象是同一个根因——<strong>自调用绕过了代理</strong>。Spring 事务和 @Async 都是基于代理的 AOP 实现：调用方持有的是代理对象，代理在方法前后织入事务/异步逻辑；但目标对象内部的 <code>this</code> 引用是<strong>原始对象</strong>而不是代理，A 里调 <code>this.B()</code> 直接打在原始对象上，切面逻辑根本没有执行机会。官方文档明确说明：self invocation via this will bypass the advice。</p>
 <p><strong>原理展开（为什么代理救不了 this）</strong>：代理增强发生在「外部调用先经过代理」这一层；一旦调用已经进入目标对象内部，后续 this 调用就是普通 Java 方法调用（相当于字节码层面的直接调用），与 Spring 无关。</p>
 <p><strong>修复方案（按推荐度）</strong>：</p>
 <ul>

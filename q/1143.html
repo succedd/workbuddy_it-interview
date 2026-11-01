@@ -96,7 +96,7 @@
     <h1>什么是 CI 里的“制品（artifact）”？为什么构建产物要“不可变、一次构建多处部署”？GitLab CI 中 artifacts 与 cache 有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip tag">制品</span><span class="chip tag">不可变</span><span class="chip tag">artifacts</span><span class="chip tag">cache</span><span class="chip tag">一次构建多处部署</span></div>
     <div class="card"><h2>题目</h2><p>请解释不可变制品原则、一次构建多处部署的好处，并区分流水线 artifacts（产物传递）与 cache（依赖加速）的用途与生命周期。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>制品是什么</strong>：artifacts 是 job 产出的、需要跨 job/跨流水线传递的文件（jar、docker image、压缩包），本质是“这次构建交付的东西”。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 48 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>制品是什么</strong>：artifacts 是 job 产出的、需要跨 job/跨流水线传递的文件（jar、docker image、压缩包），本质是“这次构建交付的东西”。</p>
 <p><strong>不可变原则</strong>：同一份源码只构建一次，产出的制品打上版本/哈希后“只读”，dev/staging/prod 都用这同一个产物；否则“测试过的”和“上线的”可能不是同一份，问题无法复现。</p>
 <p><strong>artifacts vs cache</strong>：artifacts 是“构建结果”，默认随流水线存档、可在后续 stage 用 dependencies 取回、有明确过期时间；cache 是“加速用的依赖”（node_modules、maven 仓库），存的是可重建的中间件、命中则省去下载，不保证每次一致。</p>
 <p><strong>常见坑</strong>：把本该 cache 的依赖塞进 artifacts 会膨胀存储；把本该 artifacts 的产物只放 cache 会随 runner 漂移丢失；二者生命周期与用途要分清。</p></div>

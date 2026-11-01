@@ -96,7 +96,7 @@
     <h1>多线程共享同一进程内存，多个线程同时写同一个变量会发生什么问题？如何保证线程安全？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">线程安全</span><span class="chip tag">竞态条件</span><span class="chip tag">互斥锁</span><span class="chip tag">CAS</span></div>
     <div class="card"><h2>题目</h2><p>考察点：竞态条件（race condition）、原子性/可见性/有序性三要素；常见同步手段（互斥锁、自旋锁、CAS、ThreadLocal 等）及其适用差异。属场景/追问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>问题本质——竞态条件</strong>：i++ 这类操作在汇编层是“读-改-写”三步，多线程并发时指令交错会导致更新丢失、结果不确定，即线程不安全（破坏原子性）。</li>
 <li><strong>可见性</strong>：一个线程的修改可能被缓存在自己的工作内存/寄存器，其他线程看不到（如 Java 未 volatile 的可见性问题）。</li>

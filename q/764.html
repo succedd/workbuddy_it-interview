@@ -96,7 +96,7 @@
     <h1>为什么真实系统很少用「精确 LRU」而多用近似算法？请结合工作集模型与 Clock 谈谈工程权衡。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">后端开发工程师</span><span class="chip tag">操作系统</span><span class="chip tag">LRU</span><span class="chip tag">Clock</span><span class="chip tag">工作集</span><span class="chip tag">内存管理</span></div>
     <div class="card"><h2>题目</h2><p>考察点：精确 LRU 的实现成本、工作集模型对「分配多少页」的指导、近似 LRU（Clock 及其改进）的工程取舍。开放讨论。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>精确 LRU 的代价</strong>：要维护所有页的严格访问时序（时间戳或链表），每次访存都需更新，且需硬件支持完整历史；在多核/大内存下开销不可接受，因此硬件通常只提供「引用位」这类粗粒度信息。</li>
 <li><strong>近似方案（Clock）</strong>：只用引用位做环形扫描，O(1) 摊销、无需全局排序，是性能与实现的折中；<strong>改进型 Clock</strong> 再结合「修改位」优先淘汰干净页，避免无谓的写回。很多系统（如 Linux 的 2Q/LRU 双链、MySQL/Redis 的近似 LRU）都用变种近似算法。</li>

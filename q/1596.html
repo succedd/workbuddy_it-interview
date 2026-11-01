@@ -96,7 +96,7 @@
     <h1>RTOS 里抢占式调度与协作式调度有什么区别？各有什么坑？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">抢占式</span><span class="chip tag">协作式</span><span class="chip tag">任务调度</span></div>
     <div class="card"><h2>题目</h2><p>考察任务调度模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：抢占式：高优先级任务就绪时立即打断低优先级任务（内核在 tick/系统调用时做上下文切换），实时性好、响应确定；坑是优先级反转——高优任务被中优占有的锁阻塞、反而等低优，需用优先级继承/天花板协议。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：抢占式：高优先级任务就绪时立即打断低优先级任务（内核在 tick/系统调用时做上下文切换），实时性好、响应确定；坑是优先级反转——高优任务被中优占有的锁阻塞、反而等低优，需用优先级继承/天花板协议。</p>
 <p><strong>要点</strong>：协作式：任务主动 yield 才让出 CPU，不会被迫打断，共享数据无需锁；坑是「一个任务死循环/忘了 yield 就饿死所有其他任务」，系统健壮性差。</p>
 <p><strong>要点</strong>：主流 RTOS（如 FreeRTOS）默认抢占式 + 时间片；要点是合理划分优先级、关键段尽量短、避免在中断里做重活，才能既实时又稳定。</p></div>
     <div class="cta-row">

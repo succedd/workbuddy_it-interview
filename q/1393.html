@@ -96,7 +96,7 @@
     <h1>海明码（Hamming Code）如何安排校验位与数据位？对 4 位数据 1011 编码，并说明如何定位单比特错误。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">计算题</span><span class="chip">后端开发工程师</span><span class="chip">硬件工程师</span><span class="chip tag">海明码</span><span class="chip tag">纠错</span><span class="chip tag">校验位</span></div>
     <div class="card"><h2>题目</h2><p>考察校验位位置、覆盖关系与单错定位（syndrome）。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>海明码把校验位放在 <strong>2^k</strong> 的位置（1,2,4,8…），每个校验位负责一组「其位置二进制表示中第 k 位为 1」的数据位，形成偶（或奇）校验，从而能<strong>定位并纠正 1 位错误</strong>。</p>
 <p><img src="/assets/q/fig-comporg-hamming.svg" alt="海明码编码与单错定位" loading="lazy"></p>
 <h3>4 位数据 D=1011（位 3,5,6,7）的编码（偶校验）</h3>

@@ -96,7 +96,7 @@
     <h1>客户 CVM 被挖矿/勒索（CPU 飙高、异常外联、可疑进程），售后如何定位与处置？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">云安全</span><span class="chip tag">主机安全</span><span class="chip tag">挖矿</span><span class="chip tag">勒索</span><span class="chip tag">应急响应</span></div>
     <div class="card"><h2>题目</h2><p>考察点：具备主机安全事件响应能力——从现象到根因到止血的闭环。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先止血隔离</strong>：确认现象（CPU 异常、crontab 异常、外联境外 IP、出现勒索信/文件被加密）；先隔离实例（安全组禁出站/断开公网）防止扩散与继续外联。</li>
 <li><strong>定位根因</strong>：查高危端口是否 0.0.0.0/0 放通导致暴破；查弱口令/Redis 未授权/应用漏洞；用主机安全（云镜）查木马进程、异常启动项、隐藏账户。</li>

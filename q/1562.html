@@ -96,7 +96,7 @@
     <h1>Android 中常见的内存泄漏场景有哪些？如何定位与修复？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">移动端开发工程师</span><span class="chip tag">内存泄漏</span><span class="chip tag">LeakCanary</span><span class="chip tag">性能优化</span><span class="chip tag">Android</span></div>
     <div class="card"><h2>题目</h2><p>考察点：识别典型泄漏来源（静态引用、内部类、未反注册），并能用 LeakCanary/Profiler 定位，是移动端性能优化的高频追问。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 26 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>静态变量持有 Activity Context：静态单例或集合长期持有 Activity 引用，导致其无法回收；修复用 <code>Application</code> Context 或弱引用。</li>
 <li>非静态内部类/匿名类：Handler、Thread、AsyncTask 隐式持有外部 Activity；修复改为静态内部类 + <code>WeakReference</code>，并及时 <code>removeCallbacks</code>/<code>quit</code>。</li>

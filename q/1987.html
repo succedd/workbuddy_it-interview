@@ -96,7 +96,7 @@
     <h1>数据质量监控发现某核心宽表近 7 天有 12% 的 NULL 率突增，你如何定位根因并止血？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">数据治理</span><span class="chip tag">数据质量</span><span class="chip tag">NULL率</span><span class="chip tag">血缘</span><span class="chip tag">补数</span></div>
     <div class="card"><h2>题目</h2><p>故障排查题：治理的价值在「发现问题并止血」。监控告警某个字段 NULL 率异常升高，你作为数据负责人如何快速定位并恢复？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先止血与止损</strong>：立即<strong>通知下游并暂停/标注受影响的报表/模型</strong>，避免错误结论扩散；对关键场景用<strong>最近一个健康快照或兜底默认值</strong>临时接住，保证业务不中断。</li>
 <li><strong>定位根因（沿数据血缘向上游追）</strong>：① 查该字段的<strong>数据血缘</strong>，确认是源端埋点缺失、ETL 转换逻辑变更、还是上游表结构/接口改动；② 看<strong>近期变更</strong>（上线记录、DDL、任务重跑）找时间拐点；③ 抽样核对源数据与落库数据，定位是采集丢字段还是加工写错。</li>

@@ -96,7 +96,7 @@
     <h1>HBase 的数据模型里，行键（RowKey）为什么这么关键？设计行键有哪些常见技巧？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">RowKey</span><span class="chip tag">热点</span><span class="chip tag">数据建模</span></div>
     <div class="card"><h2>题目</h2><p>上一题说了表按 RowKey 字典序切分 Region。接着追问：为什么 RowKey 是 HBase 设计里最重要的一环，常见反模式和优化技巧有哪些？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>RowKey 决定<strong>数据分布与访问局部性</strong>：Region 是依据 RowKey 范围划分的，所有读写都先定位 RowKey 对应的 Region。RowKey 设计直接决定是否存在<strong>热点（某一 Region 承担绝大部分流量）</strong>、是否能高效做范围扫描、以及单行查询是否够快。</li>
 <li>常见技巧：① <strong>避免单调递增</strong>（如时间戳/自增 ID 直接当前缀）否则新写入永远落在最后一个 Region，造成写入热点；② <strong>散列打散</strong>：在高基数且需打散时，用 <code>hash(userId) 前 N 位 + 原键</code> 作前缀，让写入均匀分布；③ <strong>长度控制</strong>：RowKey 会被每个 KeyValue 重复存储，过长浪费内存与 IO，建议越短越好且定长；④ <strong>组合字段把高频查询维度放前面</strong>，使最常用的范围扫描或前缀 Get 能命中连续 Region；⑤ 需要按时间范围取最新时，可把<strong>时间戳反转（Long.MAX - ts）</strong>放在末尾，让最新数据相邻。</li>

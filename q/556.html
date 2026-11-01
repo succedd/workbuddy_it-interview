@@ -96,7 +96,7 @@
     <h1>Cookie 的 SameSite 属性有哪几个值？它如何缓解 CSRF？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip">信息安全工程师</span><span class="chip">安全开发工程师</span><span class="chip tag">CSRF</span><span class="chip tag">SameSite</span><span class="chip tag">Cookie</span><span class="chip tag">Web安全</span></div>
     <div class="card"><h2>题目</h2><p>请说明 Strict / Lax / None 的差异、默认行为，并指出 SameSite 作为 CSRF 防御的局限。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>SameSite</strong> 控制浏览器在<strong>跨站请求</strong>时是否携带该 Cookie，三个取值：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>SameSite</strong> 控制浏览器在<strong>跨站请求</strong>时是否携带该 Cookie，三个取值：</p>
 <ul>
 <li><strong>Strict</strong>：任何跨站请求都不带 Cookie，防护最强；但用户体验受损——用户从外部链接跳回本站会“未登录”。</li>
 <li><strong>Lax（多数浏览器默认值）</strong>：允许<strong>顶级 GET 导航</strong>（如点击链接跳转）携带，但<strong>拦截跨站的 POST 等写请求</strong>；可挡住大多数 CSRF，但对 GET 型状态变更仍可能漏。</li>

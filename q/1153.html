@@ -96,7 +96,7 @@
     <h1>Kafka 吞吐量为什么能远高于传统消息队列？从顺序磁盘 IO、页缓存、零拷贝三个层面说明。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kafka</span><span class="chip tag">高性能</span><span class="chip tag">零拷贝</span><span class="chip tag">顺序IO</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Kafka 高性能设计原理——顺序 IO、OS 页缓存、零拷贝、批量与压缩，对比 RabbitMQ 等随机写模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心答案</strong>：Kafka 把『磁盘很慢』的常识反过来用——以<strong>顺序写 + 顺序读 + OS 页缓存 + 零拷贝</strong>逼近内存速度。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>核心答案</strong>：Kafka 把『磁盘很慢』的常识反过来用——以<strong>顺序写 + 顺序读 + OS 页缓存 + 零拷贝</strong>逼近内存速度。</p>
 <p><strong>要点（磁盘/存储层）</strong>：</p>
 <ul>
 <li><strong>顺序追加写</strong>：消息只 append 到 Partition 日志末尾，顺序磁盘 IO 远快于随机写，甚至比内存随机写还快；磁盘像『无限大的顺序缓冲区』。</li>

@@ -96,7 +96,7 @@
     <h1>XSS 跨站脚本攻击有哪几类？各自的防御手段是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">XSS</span><span class="chip tag">CSP</span><span class="chip tag">Web安全</span></div>
     <div class="card"><h2>题目</h2><p>区分存储型、反射型、DOM 型 XSS，并说明输入/输出双保险与 CSP 的防御思路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>三类</strong>：① 存储型——恶意脚本存入数据库，他人访问页面时执行，危害最大；② 反射型——脚本拼在 URL 参数里，诱导用户点击触发；③ DOM 型——前端 JS 把不可信数据拼进 DOM，不经过服务端即可执行。</li>
 <li><strong>防御（输入+输出双保险）</strong>：① 输出编码——按 HTML/属性/JS/URL 不同上下文做对应转义，禁止用 innerHTML 拼接未过滤内容；② 输入校验与白名单——富文本用 DOMPurify 等净化库保留安全标签；③ 内容安全策略 CSP 限制脚本来源；④ 给 Cookie 设 HttpOnly 防窃取，SameSite 降低跨站携带。</li>

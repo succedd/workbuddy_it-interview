@@ -96,7 +96,7 @@
     <h1>Kotlin 的 inline、reified 与扩展函数分别解决什么问题？各有什么陷阱？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Android开发工程师</span><span class="chip tag">Kotlin</span><span class="chip tag">inline</span><span class="chip tag">reified</span><span class="chip tag">扩展函数</span></div>
     <div class="card"><h2>题目</h2><p>考察点：内联函数消除 lambda 对象开销、reified 具体化泛型、扩展函数的静态解析本质。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>inline</strong>：把 lambda 体直接内联到调用处，消除 <code>Function</code> 对象分配与调用开销——高频路径（如集合操作）的性能手段；同时让 lambda 里可以 <code>return</code>（非局部返回）。陷阱：内联大函数会膨胀字节码；<code>noinline</code>/<code>crossinline</code> 用于控制个别参数不内联。</li>
 <li><strong>reified</strong>：JVM 泛型运行时擦除，但 inline 函数的字节码在调用处展开，<code>reified T</code> 可以在函数体内拿到真实 Class（<code>T::class</code>），免去传 <code>Class&lt;T&gt;</code> 参数——Gson/Retrofit 的 <code>fromJson&lt;Foo&gt;()</code> 就靠它。</li>

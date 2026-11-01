@@ -96,7 +96,7 @@
     <h1>什么是数据血缘（Data Lineage）？它对治理和排障有什么价值？实现血缘的常用手段有哪些？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">数据治理</span><span class="chip tag">数据血缘</span><span class="chip tag">Lineage</span><span class="chip tag">影响分析</span><span class="chip tag">DataHub</span></div>
     <div class="card"><h2>题目</h2><p>上一题排障靠血缘向上游追。请系统讲清血缘是什么、为什么是治理基石，以及工程上怎么采集。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>数据血缘是<strong>描述数据从源头到消费端逐层流转关系的有向图</strong>（表级/字段级），回答「这张表的数据从哪来、被谁用了、某字段由哪些上游字段算出」。分为表级（A→B）与字段级（col_x → col_y），字段级更精细但更难采集。</li>
 <li>价值：① <strong>排障与影响分析</strong>——某源异常时，沿血缘快速定位受影响的所有下游报表与模型（上一题就是典型）；② <strong>变更管控</strong>——改一张表前先看清下游影响面；③ <strong>合规审计</strong>——追踪敏感字段流向，支撑个保法/GDPR 的数据流向举证；④ <strong>资产理解</strong>——配合数据目录帮助用户理解数据来历、提升信任。</li>

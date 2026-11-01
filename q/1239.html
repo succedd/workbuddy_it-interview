@@ -96,7 +96,7 @@
     <h1>请手写一个基于 IntersectionObserver 的图片懒加载（进入视口才加载真实 src），并说明响应式图片、字体与预加载的配套优化手段。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">前端开发工程师</span><span class="chip tag">懒加载</span><span class="chip tag">IntersectionObserver</span><span class="chip tag">响应式图片</span><span class="chip tag">font-display</span><span class="chip tag">资源优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：资源加载优化的落地实现与生态手段（懒加载/响应式图片/font-display/preload），检验工程细节，高级编程题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（讲解）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（讲解）：</strong></p>
 <p>懒加载核心是「先用占位、进入视口再换真实地址」，IntersectionObserver 比监听 scroll 更省性能（由浏览器异步触发、不阻塞主线程）。配套优化：① 响应式图片用 <code>srcset</code> + <code>sizes</code> 或 <code>&lt;picture&gt;</code> 按 DPR/视口下发合适分辨率；② 字体用 <code>font-display: swap</code> 避免 FOIT 阻塞文字；③ 首屏关键资源 <code>preload</code>、非关键 <code>prefetch</code>；④ 图片用 WebP/AVIF + CDN。</p>
 <pre><code class="language-html">&lt;img class=&quot;lazy&quot; data-src=&quot;/real.jpg&quot; src=&quot;data:image/svg+xml,%3Csvg%20xmlns=&#39;http://www.w3.org/2000/svg&#39;/%3E&quot; alt=&quot;&quot;&gt;</code></pre>
 <pre><code class="language-js">const io = new IntersectionObserver((entries) =&gt; {

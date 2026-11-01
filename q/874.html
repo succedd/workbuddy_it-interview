@@ -96,7 +96,7 @@
     <h1>JavaScript 是单线程语言，为什么它还能处理大量异步任务？事件循环在其中扮演什么角色？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">事件循环</span><span class="chip tag">单线程</span><span class="chip tag">异步</span><span class="chip tag">运行模型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 JS 运行模型的整体认知——单线程、永不阻塞、任务队列。追问：如果没有事件循环，同步等待一个网络请求会发生什么？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>单线程是设计取舍</strong>：JS 最初为浏览器脚本而生，若多线程同时操作 DOM 会引发竞态，因此引擎一次只执行一条语句，代码天然免锁。</li>
 <li><strong>永不阻塞靠异步回调</strong>：遇到 I/O（如 fetch、IndexedDB、定时器）时不原地等待，而是登记回调；操作完成后，由宿主环境把回调作为「任务」放入任务队列。</li>

@@ -96,7 +96,7 @@
     <h1>服务频繁 Full GC 甚至抛出 OutOfMemoryError，如何区分是「堆溢出」「元空间溢出」还是「直接内存/堆外溢出」？各自的排查手段是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">OOM</span><span class="chip tag">FullGC</span><span class="chip tag">元空间</span><span class="chip tag">直接内存</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：不同 OOM 的异常信息（Java heap space / Metaspace / Direct buffer memory）对应不同区域；排查工具与启动参数各异。属故障排查题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>看异常信息一眼区分</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>看异常信息一眼区分</strong></p>
 <ul>
 <li><code>java.lang.OutOfMemoryError: Java heap space</code> → 堆（对象太多/太大，GC 回收不掉）。</li>
 <li><code>...: Metaspace</code>（或 PermGen）→ 类元数据区，常因动态生成类（CGLIB、Groovy、反射、ClassLoader 泄漏）撑爆。</li>

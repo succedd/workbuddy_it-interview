@@ -96,7 +96,7 @@
     <h1>K8s 的 liveness 与 readiness 探针区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">K8s</span><span class="chip tag">探针</span><span class="chip tag">liveness</span></div>
     <div class="card"><h2>题目</h2><p>说明两种探针的作用与配置建议。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><strong>livenessProbe（存活探针）</strong>：检测容器是否<strong>活着</strong>。失败则 kubelet 重启该容器。用于死锁、假死场景（如健康检查接口卡住）。</li>
 <li><strong>readinessProbe（就绪探针）</strong>：检测容器是否<strong>准备好接收流量</strong>。失败则从 Service 的 endpoints 中摘除，不接受请求，但<strong>不重启</strong>。用于启动慢、依赖未就绪（如未连上 DB）。</li>
 </ul>

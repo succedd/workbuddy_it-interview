@@ -96,7 +96,7 @@
     <h1>【故障排查】下游接口偶发超时，上游加上重试后请求量飙升、下游彻底被打垮。问题出在哪，怎么改？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">重试风暴</span><span class="chip tag">超时</span><span class="chip tag">重试预算</span><span class="chip tag">幂等</span></div>
     <div class="card"><h2>题目</h2><p>考察点：超时/重试参数设计与重试风暴的治理。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <p><strong>1. 先定性：这是典型的「重试风暴 + 雪崩」</strong></p>
 <p>重试本身是应对瞬态故障的手段，但当故障率升高或大量客户端同时重试时，重试流量会叠加到已经变慢的下游上，形成正反馈：下游越慢 → 越多超时 → 越多重试 → 下游更慢。多层服务同时重试时，还会沿调用链逐级放大。</p>
 <p><strong>2. 根因复盘清单</strong></p>

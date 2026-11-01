@@ -96,7 +96,7 @@
     <h1>前端框架为何需要虚拟 DOM？Diff 算法的作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">虚拟DOM</span><span class="chip tag">Diff</span><span class="chip tag">前端框架</span></div>
     <div class="card"><h2>题目</h2><p>解释虚拟 DOM 的引入动机与差异化更新的价值。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>动机</strong>：直接操作真实 DOM 昂贵且频繁触发重排，批量手动操作易出错。虚拟 DOM 用 JS 对象描述 UI 树，避免每次都与真实 DOM 直接交互。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>动机</strong>：直接操作真实 DOM 昂贵且频繁触发重排，批量手动操作易出错。虚拟 DOM 用 JS 对象描述 UI 树，避免每次都与真实 DOM 直接交互。</p>
 <p><strong>Diff 过程</strong>：状态变化后生成新 vnode 树，与旧树对比（同层比较、key 复用），算出最小变更集，再一次性 patch 到真实 DOM。</p>
 <p><strong>收益</strong>：把“频繁细小的 DOM 操作”收敛为“一次最小更新”，提升性能与可维护性；代价是多了 vnode 构建与 diff 开销，极端场景可用手动优化绕过。</p></div>
     <div class="cta-row">

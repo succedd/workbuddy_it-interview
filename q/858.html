@@ -96,7 +96,7 @@
     <h1>async/await 被称为「Promise 的语法糖」，它到底糖在哪里？await 表达式之后的代码是被如何调度的？请说明 async 函数的返回值规则。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">async/await</span><span class="chip tag">Promise</span><span class="chip tag">微任务</span><span class="chip tag">语法糖</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 async/await 底层调度语义的掌握——这是事件循环追问链的收口。追问：<code>await</code> 一个普通值和 <code>await</code> 一个 Promise，产生的微任务数量一样吗？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>糖在三处</strong>：① async 函数内部可以像同步代码一样书写顺序逻辑，替代 then 链的嵌套；② 错误处理回归 try/catch，替代 .catch；③ await 自动解包 Promise 结果。</li>
 <li><strong>返回值规则</strong>：async 函数<strong>总是返回一个 Promise</strong>——return 非 Promise 值 v 等价于 <code>Promise.resolve(v)</code>；抛出异常等价于返回 rejected Promise。所以 <code>await fn()</code> 拿到的永远是解包后的值。</li>

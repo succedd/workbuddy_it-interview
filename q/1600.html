@@ -96,7 +96,7 @@
     <h1>MQTT 协议为什么适合物联网？和 HTTP 相比有什么优缺点？QoS 等级分别是什么含义？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">IoT开发工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">MQTT</span><span class="chip tag">物联网</span><span class="chip tag">QoS</span></div>
     <div class="card"><h2>题目</h2><p>考察物联网通信协议。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：MQTT 是轻量的发布/订阅协议，基于 TCP、头部极小、支持离线遗嘱（LWT）与断线重连，非常适合「带宽小、电池供电、网络不稳」的设备；HTTP 是请求/响应、头部大、需设备常做被动服务端，不适合海量设备主动上报。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：MQTT 是轻量的发布/订阅协议，基于 TCP、头部极小、支持离线遗嘱（LWT）与断线重连，非常适合「带宽小、电池供电、网络不稳」的设备；HTTP 是请求/响应、头部大、需设备常做被动服务端，不适合海量设备主动上报。</p>
 <p><strong>要点</strong>：对比：MQTT 解耦了生产者与消费者（通过 broker 主题路由），一对多广播天然；HTTP 每次都要建连/带完整头部，开销大、且难做服务端主动下发。缺点：MQTT 需要常驻 broker、TLS 也有握手成本。</p>
 <p><strong>要点</strong>：QoS：QoS0「至多一次」（fire and forget，最快但可能丢）、QoS1「至少一次」（可能重复，需去重）、QoS2「恰好一次」（握手最重，保证不丢不重）；按数据重要性选档，遥测可用 QoS0，关键指令用 QoS1/2。</p></div>
     <div class="cta-row">

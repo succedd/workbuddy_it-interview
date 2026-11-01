@@ -96,7 +96,7 @@
     <h1>如何用 MyBatis 拦截器（Plugin）实现「慢 SQL 打印 / 自动分页 / 数据脱敏」？请说明四大可拦截对象、@Intercepts 注解与 Plugin.wrap 的代理原理。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">MyBatis</span><span class="chip tag">拦截器</span><span class="chip tag">Plugin</span><span class="chip tag">动态代理</span><span class="chip tag">扩展</span></div>
     <div class="card"><h2>题目</h2><p>考察点：MyBatis 插件扩展机制（拦截器）的原理与落地，是 MyBatis 进阶与框架定制能力的体现，高级场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>四大可拦截对象</strong>：<code>Executor</code>（执行器，可拦截 update/query 做分页/缓存）、<code>StatementHandler</code>（SQL 执行前后，可改 SQL/打印慢 SQL）、<code>ParameterHandler</code>（参数设置，可做脱敏/加密）、<code>ResultSetHandler</code>（结果处理，可做脱敏/脱敏输出）。</li>
 <li><strong>自定义拦截器</strong>：实现 <code>Interceptor</code> 接口，用 <code>@Intercepts({@Signature(type=..., method=..., args=...)})</code> 声明要拦截的「对象+方法+参数签名」；<code>@Override intercept(Invocation)</code> 里 <code>invocation.proceed()</code> 前后织入逻辑。</li>

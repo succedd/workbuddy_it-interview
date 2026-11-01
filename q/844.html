@@ -96,7 +96,7 @@
     <h1>JMeter 做接口性能测试时，线程组、断言、监听器各自的作用是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">性能测试工程师</span><span class="chip">测试工程师</span><span class="chip tag">JMeter</span><span class="chip tag">性能测试</span><span class="chip tag">压测</span></div>
     <div class="card"><h2>题目</h2><p>说明 JMeter 核心组件线程组、断言、监听器的职责与典型配置。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>线程组（Thread Group）</strong>：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>线程组（Thread Group）</strong>：定义并发模型——线程数（虚拟用户数）、ramp-up 启动时间、循环次数，决定压测强度。</p>
 <p><strong>断言（Assertion）</strong>：对采样响应做校验（响应码、包含文本、JSON 字段、耗时），判断请求“业务上是否成功”，而非仅网络通。</p>
 <p><strong>监听器（Listener）</strong>：收集并展示结果，如查看结果树、聚合报告（吞吐量、平均/99 线耗时、错误率）。生产压测常用聚合报告+图形，避免结果树拖慢性能。</p></div>
     <div class="cta-row">

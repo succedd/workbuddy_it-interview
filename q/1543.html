@@ -96,7 +96,7 @@
     <h1>如何用 Python/NumPy 手写 Scaled Dot-Product Attention 的前向计算，并正确处理变长序列的 padding 与因果掩码？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">自然语言处理工程师NLP</span><span class="chip">后端开发工程师</span><span class="chip tag">Attention</span><span class="chip tag">NumPy</span><span class="chip tag">掩码</span><span class="chip tag">Transformer</span><span class="chip tag">实现</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把注意力公式落地的工程能力，以及变长序列下 padding 掩码（含因果掩码）对 softmax 的影响。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>核心公式</strong>：Attention(Q,K,V)=softmax(QKᵀ/√d_k)V。先算 QKᵀ 得到注意力分数矩阵，除以 √d_k 做缩放防止点积过大导致 softmax 梯度消失，再对最后一维做 softmax 得到注意力权重，最后与 V 相乘聚合。</li>
 <li><strong>padding 掩码</strong>：变长序列用 0 补齐后，必须在 softmax 前把这些位置的分数为 -inf（或加一个极大负数），否则补齐位会参与加权、污染结果。因果掩码（decoder 用）则是上三角置 -inf，保证第 i 个位置只能看到 ≤i 的位置。</li>

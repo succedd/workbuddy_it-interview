@@ -96,7 +96,7 @@
     <h1>在工程里如何让大模型稳定输出可解析的 JSON（结构化输出）？请说明 Prompt 约束、厂商能力与代码兜底三层做法。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Prompt Engineering</span><span class="chip tag">结构化输出</span><span class="chip tag">JSON</span><span class="chip tag">函数调用</span><span class="chip tag">tool use</span></div>
     <div class="card"><h2>题目</h2><p>考察点：结构化输出约束的工程落地（JSON mode / Structured Outputs / 函数调用），以及代码侧兜底解析。这是把 LLM 接入系统的关键。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>为什么约束格式</strong>：下游系统只认可解析结果（分类、抽取、工具调用），自由文本难解析；用 JSON / 固定 schema 最稳。</li>
 <li><strong>Prompt 层</strong>：明确「只返回 JSON，字段为 {…}」，给出示例，禁止输出多余解释文字。</li>

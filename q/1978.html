@@ -96,7 +96,7 @@
     <h1>混沌工程实验的标准流程是怎样的？如何定义「稳态指标」（Steady State）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">混沌工程</span><span class="chip tag">稳态指标</span><span class="chip tag">实验流程</span><span class="chip tag">Steady State</span></div>
     <div class="card"><h2>题目</h2><p>上一题定义了混沌工程是科学实验。接着追问：一次合格的混沌实验分哪几步，以及「稳态」到底怎么量化？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>标准流程（Principles of Chaos 的 4 步 + 工程化扩展）：① <strong>定义稳态假设</strong>——先描述系统正常工作时长什么样（如「错误率 &lt; 0.1% 且 P99 &lt; 200ms」）；② <strong>建立对照组</strong>——在实验组注入故障、对照组不注入，比较稳态差异；③ <strong>注入真实变量</strong>——如杀 Pod、加网络延迟、压 CPU；④ <strong>观察并验证假设</strong>——若稳态被破坏则假设证伪、记录脆弱点；⑤ <strong>缩小爆炸半径并复盘改进</strong>。</li>
 <li><strong>稳态指标（Steady State）</strong>要可度量、与用户体验强相关：优先选<strong>业务/黄金指标</strong>（错误率、时延、吞吐、饱和度、关键转化）而非只看 CPU；用<strong>比率/阈值</strong>而非绝对值描述（如「成功率不低于 99.9%」）。稳态应是「系统对外表现」而非「内部资源」——因为混沌工程关心用户是否无感。</li>

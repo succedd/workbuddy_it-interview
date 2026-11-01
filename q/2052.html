@@ -96,7 +96,7 @@
     <h1>BERT 有哪些已知局限？RoBERTa、ALBERT、ELECTRA 等改进各自针对什么痛点？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip tag">BERT</span><span class="chip tag">RoBERTa</span><span class="chip tag">ALBERT</span><span class="chip tag">ELECTRA</span><span class="chip tag">模型改进</span></div>
     <div class="card"><h2>题目</h2><p>对比主流 BERT 衍生模型的改进动机与手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>BERT 的局限</strong>：① 预训练用静态掩码，每个 epoch 见到的掩码一致，数据利用不充分；② NSP 收益弱（见上）；③ 参数量大、训练与推理贵；④ 以字或子词为单位、对生成与长文档弱。</li>
 <li><strong>RoBERTa</strong>：针对「训练不充分/NSP 鸡肋」——去掉 NSP、动态掩码、更大批量、更长训练、更多数据，纯 MLM 大幅提分。</li>

@@ -96,7 +96,7 @@
     <h1>接口测试用例设计要覆盖哪些维度？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">测试工程师</span><span class="chip">功能测试工程师</span><span class="chip">自动化测试工程师</span><span class="chip tag">接口测试</span><span class="chip tag">用例设计</span><span class="chip tag">测试</span></div>
     <div class="card"><h2>题目</h2><p>从功能、参数、异常、安全、性能五个维度列出设计要点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>功能正向</strong>：标准入参→预期出参；业务主流程串联（下单→支付→发货）；状态机流转。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>功能正向</strong>：标准入参→预期出参；业务主流程串联（下单→支付→发货）；状态机流转。</p>
 <p><strong>参数维度</strong>：① 必填缺失、类型错误（字符串传数字）；② <strong>边界值</strong>（长度 0/1/max/max+1、金额 0/0.01/超大值、分页 page=0/-1/极大）；③ 枚举外的非法值；④ 字段组合（互斥参数同时传）。</p>
 <p><strong>异常与健壮性</strong>：重复提交（幂等）、并发竞争（库存超卖）、接口超时与重试、<strong>事务回滚</strong>（中途失败后数据一致性）。</p>
 <p><strong>鉴权与安全</strong>：① 未登录/过期 token/伪造 token → 401/403；② <strong>越权</strong>（改 userId/orderId 访问他人资源——水平；普通用户调管理接口——垂直）；③ 敏感字段泄露（响应里的密码哈希、身份证）；④ 注入类（SQL/脚本）；⑤ 频控限流是否生效。</p>

@@ -96,7 +96,7 @@
     <h1>上下文切换的成本体现在哪里？为什么频繁切换（进程/线程/协程）会拖慢性能？如何减少切换？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">上下文切换</span><span class="chip tag">TLB</span><span class="chip tag">缓存失效</span><span class="chip tag">性能</span></div>
     <div class="card"><h2>题目</h2><p>考察点：上下文切换要保存/恢复寄存器、刷 TLB/缓存，带来直接 CPU 开销与间接缓存失效；对比进程/线程（内核态）与协程（用户态）切换成本量级，以及减少切换的工程手段。属高级题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>直接成本</strong>：切换时要保存当前执行流的寄存器上下文、程序计数器等，并加载下一执行流的上下文；进程切换还要切换页表（CR3）与刷新 TLB，开销明显大于线程切换。</li>
 <li><strong>间接成本（更隐蔽）</strong>：新执行流上 CPU 缓存（L1/L2）、分支预测器、TLB 都是“冷”的，会触发大量缓存缺失（cache miss），导致后续一段时间执行变慢。</li>

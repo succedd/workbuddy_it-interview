@@ -96,7 +96,7 @@
     <h1>HTTPS / TLS 是如何保证通信安全的？RSA 与 ECDHE 握手有何区别？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">网络规划工程师</span><span class="chip">网络架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTPS</span><span class="chip tag">TLS</span><span class="chip tag">加密</span><span class="chip tag">证书</span></div>
     <div class="card"><h2>题目</h2><p>HTTPS 如何解决明文传输的窃听、篡改、冒充三大风险？请说明混合加密、摘要/签名、数字证书的作用，并对比 RSA 与 ECDHE 密钥交换。</p></div>
-    <div class="card"><h2>参考答案</h2><p>HTTPS = HTTP over TLS，在 TCP 与应用层间加安全层，提供<strong>机密性、完整性、身份认证</strong>三保障。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>HTTPS = HTTP over TLS，在 TCP 与应用层间加安全层，提供<strong>机密性、完整性、身份认证</strong>三保障。</p>
 <p><strong>1. 混合加密（解决窃听）</strong>：握手阶段用非对称加密交换“会话密钥”，之后全程用对称加密（如 AES-GCM）传输数据。对称加密快，非对称仅用于协商密钥。</p>
 <p><strong>2. 摘要 + 数字签名（解决篡改与冒充）</strong>：对内容做哈希得到“指纹”，服务端用私钥对指纹加密即数字签名；客户端用公钥解密比对，既验证完整性又证明来源。</p>
 <p><strong>3. 数字证书（解决公钥可信）</strong>：服务器公钥由 CA 签发证书（含域名、公钥、CA 签名）。客户端用内置 CA 根公钥验证证书链，确认公钥确实属于该域名，防中间人伪造。</p>

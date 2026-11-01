@@ -96,7 +96,7 @@
     <h1>组相联（Set-Associative）Cache 的地址如何划分？与直接映射、全相联在定量上有何关系？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">硬件工程师</span><span class="chip tag">Cache</span><span class="chip tag">组相联</span><span class="chip tag">全相联</span></div>
     <div class="card"><h2>题目</h2><p>考察组相联地址字段与三种映射方式的定量关系。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>组相联是「直接映射」与「全相联」的折中：先把 Cache 分成若干<strong>组（set）</strong>，组内再放多行（路 way）。地址切成 <strong>Tag + SetIndex + Offset</strong>。</p>
 <p><img src="/assets/q/fig-comporg-cache-setassoc.svg" alt="组相联地址划分" loading="lazy"></p>
 <h3>定量关系</h3>

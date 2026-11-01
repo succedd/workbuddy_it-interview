@@ -96,7 +96,7 @@
     <h1>CountDownLatch、CyclicBarrier、Semaphore 分别解决什么多线程协作问题？各自的使用场景与核心区别是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">CountDownLatch</span><span class="chip tag">CyclicBarrier</span><span class="chip tag">Semaphore</span><span class="chip tag">同步辅助类</span><span class="chip tag">Java并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：三大同步辅助类的语义差异（等待完成/同步到达/限流）、可复用性、使用场景。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>CountDownLatch（倒计时门闩）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>CountDownLatch（倒计时门闩）</strong></p>
 <ul>
 <li>一个线程等<strong>其他 N 个任务完成</strong>再继续（<code>await()</code> 等 <code>countDown()</code> 到 0）。<strong>不可复用</strong>（到 0 后不能重置）。</li>
 <li>场景：主线程等所有子任务初始化/数据加载完毕再启动；并行任务汇聚。</li>

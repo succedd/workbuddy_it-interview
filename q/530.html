@@ -96,7 +96,7 @@
     <h1>什么是联合索引的「最左前缀原则」？为什么 `WHERE a=? AND c=?` 可能无法命中 `(a,b,c)` 索引？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">数据库开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">最左前缀</span><span class="chip tag">联合索引</span><span class="chip tag">索引优化</span></div>
     <div class="card"><h2>题目</h2><p>说明联合索引的存储顺序、最左匹配规则，以及范围查询后索引列失效的现象。</p></div>
-    <div class="card"><h2>参考答案</h2><ul>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ul>
 <li><strong>最左前缀原则</strong>：联合索引 <code>(a, b, c)</code> 在 B+ 树中按 <strong>a → b → c</strong> 的字典序排序存储。查询必须<strong>从最左列开始连续匹配</strong>才能有效利用索引；一旦中间断档，后续列无法用索引定位。</li>
 <li><strong>为什么 <code>a=? AND c=?</code> 命中差</strong>：能用到索引的 <strong>a</strong> 部分做等值定位，但 <strong>b 缺失</strong>，导致 c 在索引中不是有序可定位的，于是 c 这部分只能回表后过滤（<strong>只用到了 a 前缀</strong>，c 未走索引）。</li>
 <li><strong>范围查询中断</strong>：<code>WHERE a=? AND b&gt;? AND c=?</code> 中，a 等值、b 是范围，b 之后的 <strong>c 失效</strong>（因为 b 是范围后 c 在索引内不再有序）。等值（<code>=</code>）可继续向右，范围（<code>&gt;</code>,<code>&lt;</code>,<code>LIKE &#39;x%&#39;</code>）会截断右侧。</li>

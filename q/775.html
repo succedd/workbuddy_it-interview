@@ -96,7 +96,7 @@
     <h1>HTTP/3 为什么基于 QUIC/UDP 而不是 TCP？它解决了 HTTP/2 的什么遗留问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HTTP3</span><span class="chip tag">QUIC</span><span class="chip tag">UDP</span><span class="chip tag">队头阻塞</span></div>
     <div class="card"><h2>题目</h2><p>考察点：QUIC 基于 UDP、0-RTT/1-RTT 建连、TCP 队头阻塞、连接迁移（网络切换不中断）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>规避 TCP 队头阻塞</strong>：HTTP/2 的多路复用共用一条 TCP 连接，任一报文丢失都要等重传，会阻塞该连接上所有流；QUIC 在 UDP 之上为每个流独立管理可靠性与顺序，单个流丢包不影响其他流。</li>
 <li><strong>更快的建连与恢复</strong>：QUIC 握手可合并传输层与加密层，支持 0-RTT（恢复连接时）和 1-RTT 建连，比 TCP+TLS 的三次握手+TLS 协商更快。</li>

@@ -96,7 +96,7 @@
     <h1>业务按「用户ID + 时间范围」查询，RowKey 怎么设计才能既避免热点又支持范围扫描？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">RowKey设计</span><span class="chip tag">热点</span><span class="chip tag">预分区</span></div>
     <div class="card"><h2>题目</h2><p>场景题：把前面 RowKey 原则落到具体业务。用户量上亿，既要避免写入热点，又要能按某用户的时间区间拉取记录（范围扫描），怎么设计？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>推荐组合键：<code>RowKey = hash(userId)取前 2~4 字节 + userId + (Long.MAX - timestamp)</code>。前面的 hash 前缀把上亿用户<strong>均匀打散到不同 Region</strong>，写入不再集中；中间保留 userId 便于按用户定位；末尾用<strong>反转时间戳</strong>使同一用户的最新数据在物理上相邻，按 <code>(userId, ts)</code> 做范围扫描即可高效取某时间窗。</li>
 <li>热点权衡：纯 hash 前缀利于写入均衡但不支持跨用户的全局有序；若业务以「单用户时间线」为主，这种「hash 前缀 + 用户 + 反转时间」是平衡写入与查询的经典方案。要避免直接用 <code>userId + ts</code>（大 V 用户形成读热点）或直接 <code>ts + userId</code>（写入全压最后一个 Region）。</li>

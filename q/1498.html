@@ -96,7 +96,7 @@
     <h1>Flutter 常见状态管理方案有哪些？如何选型？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Flutter开发工程师</span><span class="chip tag">Flutter</span><span class="chip tag">状态管理</span><span class="chip tag">Bloc</span></div>
     <div class="card"><h2>题目</h2><p>对比 setState / InheritedWidget / Provider / Riverpod / Bloc / GetX 的适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>自底向上</strong>：① <code>setState</code>——单组件私有状态，一切方案的基础；② <code>InheritedWidget</code>——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ <strong>Provider</strong>——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），适合中小项目；④ <strong>Riverpod</strong>——Provider 作者的下一代方案，编译期安全、无需 context、天然可测试，新项目首选之一；⑤ <strong>Bloc</strong>——事件驱动的单向数据流，强约束、可追溯（transformation 日志），适合大型团队与复杂业务流，学习成本高；⑥ <strong>GetX</strong>——路由/状态/依赖一体，上手快，但魔法多、规范松，团队协作需自律。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>自底向上</strong>：① <code>setState</code>——单组件私有状态，一切方案的基础；② <code>InheritedWidget</code>——框架原生的向下共享（Theme/MediaQuery 就基于它），但要手写订阅样板；③ <strong>Provider</strong>——InheritedWidget 的封装，简单依赖注入 + 局部刷新（Consumer/select），适合中小项目；④ <strong>Riverpod</strong>——Provider 作者的下一代方案，编译期安全、无需 context、天然可测试，新项目首选之一；⑤ <strong>Bloc</strong>——事件驱动的单向数据流，强约束、可追溯（transformation 日志），适合大型团队与复杂业务流，学习成本高；⑥ <strong>GetX</strong>——路由/状态/依赖一体，上手快，但魔法多、规范松，团队协作需自律。</p>
 <p><strong>选型</strong>：小工具 setState 即可；中等项目 Provider/Riverpod；复杂状态机、强审计需求 Bloc；判断标准是<strong>团队规模与状态复杂度</strong>，而不是框架流行度。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1498">练这道题</a>

@@ -96,7 +96,7 @@
     <h1>GraphQL 接口怎么防止恶意深度查询和复杂度攻击？有哪些可落地的限流手段？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip">安全开发工程师</span><span class="chip tag">GraphQL</span><span class="chip tag">安全</span><span class="chip tag">复杂度分析</span><span class="chip tag">深度限制</span><span class="chip tag">持久化查询</span></div>
     <div class="card"><h2>题目</h2><p>考察点：查询复杂度分析、深度限制、超时与持久化查询。安全类必考。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>攻击面为什么比 REST 大</strong>：单个 endpoint 的<strong>响应体积和计算量不可预估</strong>——客户端可以自由组合嵌套、别名、循环查询。典型攻击：① <strong>深度嵌套</strong>（<code>user { friends { friends { ... } } }</code>）；② <strong>别名炸弹</strong>：同一字段用不同别名重复请求上百次，绕过「字段级」限制；③ <strong>批量爆破</strong>：用 alias 在<strong>一个请求里</strong>尝试多个登录组合，绕过基于请求数的限流；④ 高代价字段（聚合、模糊搜索、大文件导出）被低成本组合调用。</li>
 <li><strong>可落地的五道防线</strong>：</li>

@@ -96,7 +96,7 @@
     <h1>PHP-FPM 的进程模型是怎样的？master 和 worker 各负责什么？pm = static / dynamic / ondemand 三种模式如何选型？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">PHP后端工程师</span><span class="chip">后端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip">Linux运维工程师</span><span class="chip tag">PHP</span><span class="chip tag">PHP-FPM</span><span class="chip tag">进程模型</span><span class="chip tag">性能调优</span></div>
     <div class="card"><h2>题目</h2><p>考察 PHP-FPM 进程模型、master/worker 职责划分与三种进程管理模式的选型依据，是 PHP 后端面试的性能调优高频题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>PHP-FPM（FastCGI Process Manager）是一个<strong>常驻的进程池管理器</strong>，负责把 Nginx 等前端转发来的 FastCGI 请求分发给 PHP worker 进程执行。它解决了 PHP「一次请求一次进程」的 CGI 模式性能问题。</p>
 <h3>进程模型</h3>
 <ul>

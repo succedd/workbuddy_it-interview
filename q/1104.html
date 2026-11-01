@@ -96,7 +96,7 @@
     <h1>Spring AOP 什么时候用 JDK 动态代理，什么时候用 CGLIB？CGLIB 模式下哪些方法注定无法被增强？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">AOP</span><span class="chip tag">JDK动态代理</span><span class="chip tag">CGLIB</span><span class="chip tag">final</span></div>
     <div class="card"><h2>题目</h2><p>考察点：两种代理机制的选型逻辑（接口 vs 子类）、final/private/package-private 方法的代理限制、Spring Boot 的默认代理策略差异。承接上一题「自调用」，补全代理机制的知识面。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>选型逻辑</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>选型逻辑</strong>：</p>
 <ul>
 <li>目标对象<strong>实现了至少一个接口</strong>→ 使用 <strong>JDK 动态代理</strong>（JDK 内置，基于接口，代理实现目标类型的所有接口）；</li>
 <li>目标对象<strong>没有实现任何接口</strong>→ 使用 <strong>CGLIB</strong>（运行时生成目标类的子类并覆盖方法织入增强）；</li>

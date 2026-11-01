@@ -96,7 +96,7 @@
     <h1>Docker 有哪些常见网络模式（bridge/host/none/container）？分别适用什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Docker网络</span><span class="chip tag">bridge</span><span class="chip tag">host</span><span class="chip tag">容器网络</span></div>
     <div class="card"><h2>题目</h2><p>考察点：四种网络驱动的差异与适用；默认 bridge 的 NAT 隔离、host 的高性能零隔离、none 的完全隔离、container 的共享网络栈。属简答题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>bridge（默认）</strong>：Docker 为容器创建虚拟网桥 docker0，容器通过 veth 对连入并做 NAT 出网；容器间通过 IP/自定义网络互访。适合大多数<strong>独立服务</strong>，需 <code>-p</code> 做端口映射对外暴露。</li>
 <li><strong>host</strong>：容器直接使用宿主机网络栈，无 NAT、无独立 IP，网络性能最好、延迟最低；代价是<strong>失去网络隔离</strong>（端口直接占用宿主机）。适合对网络性能极度敏感、且单实例运行的场景（如高性能网络工具）。</li>

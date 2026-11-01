@@ -96,7 +96,7 @@
     <h1>接口自动化中如何处理登录态与测试数据（Mock / 数据构造）？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">测试工程师</span><span class="chip tag">接口测试</span><span class="chip tag">自动化测试</span><span class="chip tag">Mock</span></div>
     <div class="card"><h2>题目</h2><p>说明会话复用、Mock 策略与测试数据治理的实践。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>登录态处理</strong>：① 登录接口本身只测一次，token <strong>全局共享</strong>：fixture/conftest 里做单例缓存（未过期直接复用，过期自动刷新）；② 多角色用例用<strong>账号池</strong>（admin/普通/被禁用各若干），按 tag 取用；③ 长链路不依赖真实登录的环境可用签发短期测试 token（需要后端提供测试通道），避免验证码/短信依赖。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>登录态处理</strong>：① 登录接口本身只测一次，token <strong>全局共享</strong>：fixture/conftest 里做单例缓存（未过期直接复用，过期自动刷新）；② 多角色用例用<strong>账号池</strong>（admin/普通/被禁用各若干），按 tag 取用；③ 长链路不依赖真实登录的环境可用签发短期测试 token（需要后端提供测试通道），避免验证码/短信依赖。</p>
 <p><strong>Mock 策略</strong>：① <strong>外部依赖必须 Mock</strong>（三方支付、短信、风控）——用契约 mock（录制的响应 schema）保证稳定性，联调期再切真实；② 被测服务内部模块用桩（返回固定异常码验证降级）；③ Mock 平台化（YApi/Har 录制回放），避免用例里散落硬编码。</p>
 <p><strong>测试数据</strong>：① <strong>API 造数优先</strong>——调注册/开通接口构造前置数据，比 SQL 直插更接近真实且不破坏约束；② 数据隔离：每条用例自建自清理（teardown），或用唯一前缀+定时清扫；③ 环境数据快照（DB 备份还原）用于不可逆流程；④ 敏感配置走环境变量/配置中心，不进代码库。</p></div>
     <div class="cta-row">

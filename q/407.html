@@ -96,7 +96,7 @@
     <h1>缩放点积注意力（Scaled Dot-Product Attention）里为什么要除以 √d_k？不缩放会有什么问题？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip tag">注意力</span><span class="chip tag">缩放点积</span><span class="chip tag">Transformer</span><span class="chip tag">大模型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：点积的方差随维度增长而放大，导致 softmax 进入梯度极小的饱和区；√d_k 把方差拉回 1 附近。属原理探究题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>为什么要缩放</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>为什么要缩放</strong></p>
 <ul>
 <li>设 Q、K 各分量独立同分布、均值 0、方差 1，则点积 q·k = Σ q_i k_i 的均值为 0、方差为 d_k（维度越高方差越大）。</li>
 <li>方差大 → 点积的绝对值普遍很大 → 喂进 softmax 后分布在饱和区，梯度趋近 0，训练难以更新。</li>

@@ -96,7 +96,7 @@
     <h1>深度缓冲（Z-Buffer）如何解决遮挡？为什么透明物体要排序，不透明却不用？Early-Z 是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">游戏客户端工程师</span><span class="chip">游戏引擎工程师</span><span class="chip">AR/VR开发工程师</span><span class="chip tag">深度测试</span><span class="chip tag">Z-Buffer</span><span class="chip tag">透明排序</span><span class="chip tag">Early-Z</span></div>
     <div class="card"><h2>题目</h2><p>考察深度测试原理、透明渲染的画家算法困境与 Early-Z 优化，是图形学面试的高频基础题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>Z-Buffer 原理</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>Z-Buffer 原理</h3>
 <p>每像素存一个「当前离相机最近的深度值」。片元通过深度测试的条件通常是 <code>depth &lt; zbuffer</code>（越近越小）→ 通过则<strong>同时更新颜色与深度</strong>。它是逐像素的、与绘制顺序无关的遮挡方案——这是硬件光栅化能随手画对不透明物体遮挡的根本原因。</p>
 <h3>为什么透明必须排序</h3>
 <p>透明物体走 <strong>alpha 混合（blend）</strong>：<code>final = src <em> alpha + dst </em> (1-alpha)</code>，混合要拿「已经画好的背景色」，即<strong>顺序敏感</strong>——先画远的再画近的（画家算法，从后往前）。而 Z-Buffer 是「覆写」语义，天然不适合「叠加」语义。所以引擎的渲染队列规则是：</p>

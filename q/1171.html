@@ -96,7 +96,7 @@
     <h1>Vue3 中 reactive() 对象的依赖是怎么被收集和触发的？track 与 trigger 分别在什么时机发生？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Vue3</span><span class="chip tag">响应式</span><span class="chip tag">依赖收集</span><span class="chip tag">track</span><span class="chip tag">trigger</span></div>
     <div class="card"><h2>题目</h2><p>考察点：响应式核心机制（副作用函数 / 依赖收集 / 派发更新）。要能讲清「读时收集、写时派发」的闭环，以及 activeEffect 和 target-&gt;key-&gt;effectSet 三层依赖结构。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>依赖收集（track）</strong>：组件渲染或 <code>watch</code>/<code>computed</code> 会先把自己包装成「副作用函数」并标记为 <code>activeEffect</code>，然后执行函数体触发对被代理对象的 <code>get</code>。get 拦截器里调用 <code>track(target, key)</code>，把当前 <code>activeEffect</code> 存入「<code>target</code> → <code>key</code> → <code>Set&lt;effect&gt;</code>」的三层依赖映射中。</li>
 <li><strong>派发更新（trigger）</strong>：当代码修改属性触发 <code>set</code> 拦截器，调用 <code>trigger(target, key)</code>，从依赖映射里取出该 key 对应的所有 effect 并依次执行（组件 effect 触发重新渲染，computed/watch 触发回调）。</li>

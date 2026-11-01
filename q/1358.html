@@ -96,7 +96,7 @@
     <h1>如何判断对象是否可被回收？分代收集与 G1 收集器的工作原理是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">GC</span><span class="chip tag">可达性分析</span><span class="chip tag">GC Roots</span><span class="chip tag">分代收集</span><span class="chip tag">G1</span></div>
     <div class="card"><h2>题目</h2><p>考察可达性分析、GC Roots、分代收集算法及 G1 的特点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：Java 用<strong>可达性分析</strong>（以 GC Roots 为根）判定对象生死，采用<strong>分代收集</strong>；G1 以 Region 化布局和“可预测停顿”成为现代服务端主流收集器。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：Java 用<strong>可达性分析</strong>（以 GC Roots 为根）判定对象生死，采用<strong>分代收集</strong>；G1 以 Region 化布局和“可预测停顿”成为现代服务端主流收集器。</p>
 <h4>对象可回收判定</h4>
 <ul>
 <li>不使用引用计数（无法解决循环引用）。</li>

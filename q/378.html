@@ -96,7 +96,7 @@
     <h1>容器（Container）和传统虚拟机（VM）有什么区别？各自适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">容器</span><span class="chip tag">虚拟机</span><span class="chip tag">隔离</span><span class="chip tag">架构选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：容器共享宿主机内核、轻量快速；VM 带完整 Guest OS、隔离强但重；据此判断“何时用容器、何时用 VM”。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>隔离层级不同</strong>：VM 通过 Hypervisor 虚拟化硬件，每个 VM 跑一套<strong>完整 Guest OS</strong>，隔离性最强（内核级隔离）；容器共享宿主机<strong>同一个内核</strong>，仅靠 Namespace/Cgroup 做资源与视图隔离，隔离弱于 VM 但足够进程级安全。</li>
 <li><strong>资源与启动</strong>：容器无 Guest OS 开销，镜像通常几十 MB，启动秒级；VM 需启动整操作系统，GB 级、分钟级。同等硬件下容器密度远高于 VM。</li>

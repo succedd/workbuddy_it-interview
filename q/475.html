@@ -96,7 +96,7 @@
     <h1>Kafka 的分区（partition）和消费者组（consumer group）如何配合实现并行消费？发生再平衡（rebalance）时会发生什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Kafka</span><span class="chip tag">分区</span><span class="chip tag">消费者组</span></div>
     <div class="card"><h2>题目</h2><p>分区与消费组是 Kafka 水平扩展与广播/点对点语义的基础，再平衡机制则直接关系到消费可用性，常作为场景/故障排查题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>分区与消费组的分工</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>分区与消费组的分工</h3>
 <ul>
 <li><strong>partition 是并行度单位</strong>：一个 topic 分多个分区，分区内有序；</li>
 <li><strong>同一消费组内，一个分区在同一时刻只被一个消费者实例消费</strong>——于是「分区数 = 组内最大并行度」；</li>

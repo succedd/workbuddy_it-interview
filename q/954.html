@@ -96,7 +96,7 @@
     <h1>let 和 const 相比 var 有哪些核心区别？什么是暂时性死区（TDZ）？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">ES6</span><span class="chip tag">JavaScript</span><span class="chip tag">let</span><span class="chip tag">const</span><span class="chip tag">TDZ</span></div>
     <div class="card"><h2>题目</h2><p>考察点：块级作用域、暂时性死区（TDZ）、重复声明、const 的语义（绑定不可变 vs 值不可变）。这是 ES6 变量声明的面试起点题，承接到后续解构/箭头函数中对作用域的正确理解。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>块级作用域</strong>：let/const 声明的变量只在所在的 <code>{}</code> 块（if / for / 函数 / 任意代码块）内有效；var 是函数作用域（或全局）。典型例子：<code>for (let i...) </code> 每次迭代的 i 是独立绑定，var 会共享同一个 i。</li>
 <li><strong>暂时性死区（TDZ）</strong>：let/const 在声明语句执行之前处于「死区」，访问会抛 <code>ReferenceError</code>；var 有变量提升且被初始化为 undefined。TDZ 还意味着 <code>typeof</code> 一个尚未声明的 let 变量也会报错（不再是安全的 undefined）。</li>

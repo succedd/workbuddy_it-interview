@@ -96,7 +96,7 @@
     <h1>前端监听合约事件时，为什么要处理区块重组与确认数？eth_getLogs 有哪些坑？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Web3开发工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">事件</span><span class="chip tag">reorg</span><span class="chip tag">eth_getLogs</span></div>
     <div class="card"><h2>题目</h2><p>考察事件索引、确认策略与 reorg 回滚。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>事件与日志</strong>：合约 <code>event</code> 写入交易日志，前端可用 <code>eth_getLogs</code> 按 address / topics / 区块范围查询，或通过 WebSocket <code>eth_subscribe</code> 订阅 logs；日志是链下索引的主要数据源。</li>
 <li><strong>reorg 的影响</strong>：已看到的日志可能因链重组而消失或换到另一个 blockHash。入账前应等待 N 个确认，记录 blockNumber / blockHash，发现链头变化时按块回滚并重放，不能只用 txHash 做幂等。</li>

@@ -96,7 +96,7 @@
     <h1>如何在 Kibana 基于日志字段创建可视化（如按 status_code 统计错误率），并组装成监控仪表盘？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">后端开发工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">ELK</span><span class="chip tag">Kibana</span><span class="chip tag">可视化</span><span class="chip tag">Dashboard</span><span class="chip tag">告警</span></div>
     <div class="card"><h2>题目</h2><p>如何在 Kibana 基于日志字段创建可视化（如按 status_code 统计错误率），并组装成监控仪表盘？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>步骤一：确认字段可用</strong>：先确保日志已被解析出结构化字段（如 <code>nginx.access.response</code> 或自定义 <code>status</code>），在 Discover 中能搜到该字段。</li>
 <li><strong>步骤二：建 Visualization</strong>：在 Kibana 的 Visualize 里选 Lens（推荐）或 TSVB，选索引、把 <code>status</code> 作聚合维度、<code>Count</code> 作指标；要算『错误率』可用 <strong>TSVB 的 Math 聚合</strong>（4xx+5xx 总数 / 总数），或用 Lens 公式 <code>count(filter(where status &gt;= 400)) / count()</code>。</li>

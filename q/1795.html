@@ -96,7 +96,7 @@
     <h1>接雨水（LeetCode 42）的双指针解法为什么正确？请写出代码并说明复杂度。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">接雨水</span><span class="chip tag">双指针</span><span class="chip tag">单调栈</span><span class="chip tag">LeetCode 42</span></div>
     <div class="card"><h2>题目</h2><p>考察经典算法题的推导与证明，而不是背代码。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心公式</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 11 天前更新</div><p><strong>核心公式</strong></p>
 <ul>
 <li>每个位置 <code>i</code> 的存水量 = <code>max(0, min(leftMax[i], rightMax[i]) - height[i])</code>，其中 leftMax/rightMax 是 i 左右两侧的最高柱。</li>
 <li>双指针：维护 <code>leftMax</code>、<code>rightMax</code>，每次移动较矮的一侧。如果 <code>height[l] &lt; height[r]</code>，则 <code>leftMax</code> 是左侧确定的上界，<code>min(leftMax,rightMax)=leftMax</code>，可以安全计算 l 处水量并右移 l；否则对称处理 r。</li>

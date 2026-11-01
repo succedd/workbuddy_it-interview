@@ -96,7 +96,7 @@
     <h1>如何配置云监控告警规则才能既灵敏又不引发『告警疲劳』？阈值、持续周期、触发条件、恢复通知与重复等待怎么设？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip tag">告警规则</span><span class="chip tag">降噪</span><span class="chip tag">误报</span><span class="chip tag">告警疲劳</span></div>
     <div class="card"><h2>题目</h2><p>考察通过合理配置告警规则（阈值/持续周期/恢复通知/重复等待/静默）减少误报与噪声的设计思路。</p></div>
-    <div class="card"><h2>参考答案</h2><p>配置告警规则要在『灵敏』与『不疲劳』间平衡，关键参数：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>配置告警规则要在『灵敏』与『不疲劳』间平衡，关键参数：</p>
 <ul>
 <li><strong>阈值</strong>：别太紧（正常毛刺就告警）也别太松（真故障漏报）；对波动大的指标可用<strong>动态基线/同比环比</strong>替代固定阈值。</li>
 <li><strong>持续周期（连续触发次数）</strong>：设『连续 N 个周期满足才触发』，过滤瞬时抖动，是最有效的降噪手段之一。</li>

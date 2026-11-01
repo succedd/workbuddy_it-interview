@@ -96,7 +96,7 @@
     <h1>Transformer 为什么能取代 RNN/LSTM？位置编码与自注意力并行机制解决了序列模型的哪些根本瓶颈？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip">机器学习工程师</span><span class="chip">自然语言处理工程师NLP</span><span class="chip">LLM应用开发工程师</span><span class="chip tag">Transformer</span><span class="chip tag">注意力机制</span><span class="chip tag">位置编码</span><span class="chip tag">序列建模</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 Transformer 相对循环神经网络的结构性优势的理解，以及位置编码的必要性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>并行计算</strong>：RNN/LSTM 必须按时间步顺序展开，第 t 步依赖 t-1 的隐状态，无法并行；Transformer 的自注意力一次性看到整条序列，所有位置可同时计算，训练速度随序列长度呈线性（而非串行）提升，能充分利用 GPU。</li>
 <li><strong>长程依赖</strong>：RNN 的信息需经多步传递，间隔越远衰减越严重（梯度消失）；自注意力任意两位置直接相连，路径长度恒为 O(1)，长句/长文档的远距离依赖更容易学到。</li>

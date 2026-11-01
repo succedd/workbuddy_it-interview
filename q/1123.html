@@ -96,7 +96,7 @@
     <h1>ZSet 的底层编码是什么，为什么用跳表而不是平衡树？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">ZSet</span><span class="chip tag">跳表</span><span class="chip tag">skiplist</span><span class="chip tag">底层编码</span></div>
     <div class="card"><h2>题目</h2><p>有序集合既要按 score 排序又要按成员查找，Redis 为何选择「跳表 + 哈希表（或 listpack）」的组合，而不是红黑树？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>编码组成</strong>：元素少且小时用 listpack（紧凑）；元素多时升级为「跳表 skiplist + 字典」双结构——字典以 member 查 score（O(1)），跳表维护有序以支持范围遍历。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>编码组成</strong>：元素少且小时用 listpack（紧凑）；元素多时升级为「跳表 skiplist + 字典」双结构——字典以 member 查 score（O(1)），跳表维护有序以支持范围遍历。</p>
 <p><strong>为何不用平衡树</strong>：跳表的 range 操作（ZRANGEBYSCORE、排名）只需顺着前向指针走，实现简单、范围扫描效率高；红黑树做区间遍历需中序且缓存局部性更差。</p>
 <p><strong>范围与排名优势</strong>：跳表每层是链表，按 score 区间取 TopN、计算排名（ZRANK）非常自然，平均 O(log n)；且插入/删除不需像平衡树那样频繁旋转，代码更直观。</p>
 <p><strong>代价</strong>：跳表平均空间略高于平衡树（多级指针），但工程收益（范围查询 + 实现简单）明显占优，因此成为 ZSet 主选。</p></div>

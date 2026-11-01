@@ -96,7 +96,7 @@
     <h1>服务器出现内存「抖动/颠簸（thrashing）」与 OOM Killer 杀进程，应如何排查与定位根因？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip tag">操作系统</span><span class="chip tag">内存抖动</span><span class="chip tag">thrashing</span><span class="chip tag">OOM</span><span class="chip tag">swap</span></div>
     <div class="card"><h2>题目</h2><p>考察点：工作集超过物理内存导致频繁缺页/换页、swap 颠簸，以及 OOM 的成因与排查链路。高阶故障排查。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>抖动（thrashing）成因</strong>：进程<strong>工作集（同时活跃需要的页集合）</strong>超过可用物理内存，导致几乎每次访问都缺页，系统把大量时间花在「换入/换出」而不是真正干活，CPU 利用率虚高、吞吐骤降。常见于并发过高、单进程吃内存过大、或 swappiness 设置不当频繁换页。</li>
 <li><strong>排查手段</strong>：看 <code>vmstat</code>（si/so 换入换出是否持续高）、<code>free -h</code>/<code>top</code>（内存与 swap 占用）、<code>sar -B</code>（pgfault/pgmajfault 缺页率）、<code>/proc/&lt;pid&gt;/status</code> 的 VmRSS/VmSize、以及 <code>dmesg</code> 中 OOM Killer 日志（会打印被杀进程的 score 与内存占用）。</li>

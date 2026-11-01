@@ -96,7 +96,7 @@
     <h1>JMeter 压测脚本里的参数化、关联、思考时间分别解决什么问题？为什么说「固定参数 + 零思考时间的压测结果不可信」？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">性能测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">自动化测试工程师</span><span class="chip tag">JMeter</span><span class="chip tag">参数化</span><span class="chip tag">关联</span><span class="chip tag">思考时间</span></div>
     <div class="card"><h2>题目</h2><p>考察性能测试脚本的真实性设计：CSV 参数化、正则/JSON 提取关联、思考时间建模与集合点。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>三个机制各自解决什么</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>三个机制各自解决什么</h3>
 <ol>
 <li><strong>参数化（CSV Data Set Config / __Random 等）</strong>：让每个虚拟用户用<strong>不同的输入</strong>（账号、商品ID、搜索词）。作用一是模拟真实流量的多样性，二是避免「同一参数反复请求」被缓存/幂等设计短路——登录接口用同一账号压测，可能在 session 复用后测的完全是另一条代码路径；</li>
 <li><strong>关联（正则提取器 / JSON Extractor）</strong>：把上一个响应的动态值（token、orderId）提取出来喂给下一个请求。没有关联的多步场景<strong>根本走不通</strong>（第二步全 401），或者走通了但测的是错误处理路径；</li>

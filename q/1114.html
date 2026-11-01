@@ -96,7 +96,7 @@
     <h1>Spring 事务的 7 种传播行为分别是什么，各自语义为何？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">Spring</span><span class="chip tag">事务传播</span><span class="chip tag">Propagation</span></div>
     <div class="card"><h2>题目</h2><p>请梳理 REQUIRED、SUPPORTS、MANDATORY、REQUIRES_NEW、NOT_SUPPORTED、NEVER、NESTED 七种传播行为的语义与典型适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>REQUIRED（默认）</strong>：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>REQUIRED（默认）</strong>：当前有事务就加入，没有就新建；绝大多数业务方法用此，保证同一线程内逻辑在同一事务中。</p>
 <p><strong>SUPPORTS / MANDATORY</strong>：SUPPORTS 有则加入、无则非事务执行；MANDATORY 要求必须已存在事务，否则抛异常——用于「必须运行在事务中」的底层方法。</p>
 <p><strong>REQUIRES_NEW</strong>：挂起外层事务，新建独立事务，内层提交/回滚与外层互不影响——适合写审计日志、内部独立记账。</p>
 <p><strong>NOT_SUPPORTED / NEVER</strong>：NOT_SUPPORTED 挂起外层以非事务执行；NEVER 若已存在事务直接抛异常。</p>

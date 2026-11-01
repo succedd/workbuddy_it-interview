@@ -96,7 +96,7 @@
     <h1>设计高并发库存扣减：用 Redisson 锁保证互斥，用号段模式批量取 ID 保证性能。说明如何避免「锁粒度粗导致吞吐瓶颈」。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">分布式锁</span><span class="chip tag">Redisson</span><span class="chip tag">号段模式</span><span class="chip tag">高并发</span></div>
     <div class="card"><h2>题目</h2><p>考察锁优化与 ID 方案组合设计。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>组合设计要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>组合设计要点</strong>：</p>
 <ul>
 <li><strong>库存扣减用 Redisson 锁</strong>保证「查库存→扣减→写回」原子，避免超卖；但<strong>不要锁整个商品表</strong>。</li>
 <li><strong>避免粗粒度</strong>：按 <code>商品ID</code> 分段/分桶加锁（如 <code>lock:stock:{skuId}</code>），甚至对热点 sku 用「库存分片 + 多锁并行扣减」，把热点打散；读多写少用 Redis 原子 <code>DECR</code> 预扣 + 异步落库，仅在临界区用锁。</li>

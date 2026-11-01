@@ -96,7 +96,7 @@
     <h1>本地消息表 / RocketMQ 事务消息是如何实现「最终一致」的？半消息与回查起什么作用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip tag">本地消息表</span><span class="chip tag">RocketMQ</span><span class="chip tag">事务消息</span><span class="chip tag">最终一致</span><span class="chip tag">半消息</span></div>
     <div class="card"><h2>题目</h2><p>考察点：基于消息的最终一致方案，本地事务与消息发送的原子性，半消息、回查、消费端幂等。追问：如果本地事务成功但消息发送失败怎么办？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ol>
 <li><strong>核心思路</strong>：把「本地业务 + 发消息」通过一张<strong>本地消息表</strong>做成原子操作，再用异步消息驱动下游，下游消费后回执，最终两边一致（不要求同时成功，只要求最终一致）。</li>
 <li><strong>本地消息表做法</strong>：</li>

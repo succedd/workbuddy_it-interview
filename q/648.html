@@ -96,7 +96,7 @@
     <h1>InnoDB 的行级锁有哪三种？next-key lock 是如何防止当前读幻读的？间隙锁之间为什么互相兼容？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">GraphQL</span><span class="chip tag">REST</span><span class="chip tag">API</span></div>
     <div class="card"><h2>题目</h2><p>追问链第四环：从&quot;幻读靠锁解决&quot;深入到锁的具体形态。考察点：Record Lock / Gap Lock / Next-Key Lock 的定义与锁对象差异；间隙锁只防插入不防读的设计意图；间隙锁兼容性反而容易引发死锁的细节。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：三种行级锁</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 55 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：三种行级锁</strong></p>
 <ul>
 <li>Record Lock（记录锁）：仅锁住一条记录本身，分 S 型与 X 型，遵循 S-S 兼容、S-X/X-X 互斥。</li>
 <li>Gap Lock（间隙锁）：锁定一个开区间范围但不包含记录本身，只在 RR 与串行化级别下存在，目的是防止其他事务向间隙插入&quot;幻影记录&quot;。</li>

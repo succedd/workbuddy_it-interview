@@ -96,7 +96,7 @@
     <h1>如何用 ArgoCD 的 Projects 和 RBAC 实现多环境、多团队的隔离？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">配置题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">平台工程师</span><span class="chip tag">ArgoCD</span><span class="chip tag">RBAC</span><span class="chip tag">多租户</span></div>
     <div class="card"><h2>题目</h2><p>考察多租户治理能力：Project 作为「应用分组」边界，配合 RBAC 限制可见集群与可同步的 Git 源。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>AppProject 是隔离边界</strong>：每个 Project 限定「可部署的集群+namespace 白名单」「可引用的 Git 源仓库」「允许的资源 Kind/仓库」，越权会被拒绝，从机制上防止 A 团队误改 B 环境。</li>
 <li><strong>RBAC 映射身份到角色</strong>：ArgoCD 的 RBAC 把 <code>subjects</code>（SSO 组/OIDC/本地账号）绑到 <code>role</code>，role 规定对 Project 内资源的 <code>get/create/update/delete/sync</code> 权限；例如「prod-project 只读 + sync，dev-project 全权限」。</li>

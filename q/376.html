@@ -96,7 +96,7 @@
     <h1>磁盘明明还有几十 G 空间，却无法创建新文件/写入数据，可能是什么原因？如何排查？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">inode耗尽</span><span class="chip tag">df -i</span><span class="chip tag">小文件</span><span class="chip tag">磁盘排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：区分“空间满”与“inode 耗尽”——小文件极多时会把 inode 用光，即使数据块还剩很多也无法新建文件；考查 df -i 与 find 排查手段。属高级故障排查题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>现象与根因</strong>：ext4/xfs 等文件系统每个文件/目录都占用一个 inode。如果存在海量<strong>极小文件</strong>（如缓存碎片、会话文件、邮件队列），会先把 inode 耗尽；此时数据块还有剩余，<code>df -h</code> 显示空间充足，但 <code>touch</code> 新建文件会报 <code>No space left on device</code>。</li>
 <li><strong>第一步区分</strong>：<code>df -h</code> 看空间剩余，再 <code>df -i</code> 看 inode 使用率——若后者接近 100% 而前者充裕，即可确认是 inode 耗尽。</li>

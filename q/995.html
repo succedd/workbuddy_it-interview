@@ -96,7 +96,7 @@
     <h1>Sqoop 的工作原理是什么？import 时 map 数与 --split-by 怎么影响性能？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">数据采集工程师</span><span class="chip tag">Sqoop</span><span class="chip tag">MapReduce</span><span class="chip tag">数据同步</span><span class="chip tag">split-by</span></div>
     <div class="card"><h2>题目</h2><p>考察点：JDBC 元数据、MapReduce 作业生成、split 切片与边界查询、并行度与源库压力的权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>原理</strong>：Sqoop 只生成并提交 MapReduce 作业——先通过 JDBC 读源库元数据（表结构、min/max of split 列），生成 split 切片，每个 <strong>Map task 用 JDBC 并行拉取一段数据</strong>（<code>WHERE split_col &gt;= x AND &lt; y</code>）直接写到 HDFS/Hive。没有 Reduce（纯 map 作业）。</li>
 <li><strong>map 数与 --split-by</strong>：<code>-m N</code> 决定并行 map 数；split 列选<strong>分布均匀且有索引</strong>的列（主键最常见），数据倾斜时切片不均→个别 map 慢拖死整体；无合适 split 列时 <code>-m 1</code> 单线程（慢）或用 <code>--boundary-query</code> 自定义边界。无主键表用 <code>--split-by</code> 显式指定。</li>

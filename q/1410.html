@@ -96,7 +96,7 @@
     <h1>大模型推理时的 KV Cache 是什么？为什么上下文越长推理越贵？请估算 7B 模型 8K 上下文的 KV 显存。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">计算题</span><span class="chip">LLM应用开发工程师</span><span class="chip">算法工程师</span><span class="chip">模型部署工程师</span><span class="chip tag">KV Cache</span><span class="chip tag">推理优化</span><span class="chip tag">显存估算</span><span class="chip tag">GQA</span></div>
     <div class="card"><h2>题目</h2><p>考察自回归推理的缓存机制与显存定量估算。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 33 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>自回归生成每一步都要对「全部历史 token」做注意力。为避免重复计算，把每层每个头的 <strong>K、V 向量缓存</strong>下来，每步只算新 token 的 q/k/v 并追加——用显存换算力。代价是 KV Cache 随序列长度<strong>线性增长</strong>，长上下文场景它就是显存与带宽的第一瓶颈。</p>
 <h3>为什么要缓存</h3>
 <ul>

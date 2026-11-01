@@ -96,7 +96,7 @@
     <h1>高级：给定一个完整的「接口变慢 → CPU 高 → OOM」线上故障，请给出一套标准化的应急排查 SOP（监控告警、保留现场、定位、止血、根因、复盘），并说明每一步的注意点。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">故障应急</span><span class="chip tag">SOP</span><span class="chip tag">OOM</span><span class="chip tag">复盘</span><span class="chip tag">高级</span></div>
     <div class="card"><h2>题目</h2><p>考察点：综合故障应急全流程，既要能止血也要能根治，且强调『先保现场再重启』的工程纪律。属高级开放题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>① 监控告警（先确认现象）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>① 监控告警（先确认现象）</strong></p>
 <ul>
 <li>从 APM/监控确认：RT 变慢、CPU 曲线、GC 频率、错误率、堆内存——避免被单点指标误导（CPU 高可能是 GC 而非业务）。</li>
 <li>确认影响面：单实例还是全集群、是否核心链路。</li>

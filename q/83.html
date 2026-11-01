@@ -96,7 +96,7 @@
     <h1>Kafka 为什么吞吐高、速度快？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">大数据工程师</span><span class="chip tag">Kafka</span><span class="chip tag">性能</span><span class="chip tag">零拷贝</span></div>
     <div class="card"><h2>题目</h2><p>说明顺序写、零拷贝、批量与压缩。</p></div>
-    <div class="card"><h2>参考答案</h2><ol>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ol>
 <li><strong>顺序磁盘 I/O</strong>：消息只追加写（append-only log），远快于随机写；利用 OS 页缓存（page cache）。</li>
 <li><strong>零拷贝（sendfile）</strong>：消费时 broker 用 <code>sendfile</code> 直接把文件从内核缓冲区送到 socket，省去用户态拷贝与上下文切换。</li>
 <li><strong>批量与异步</strong>：Producer 批量发送、批量压缩（gzip/snappy/lz4），减少网络往返与体积。</li>

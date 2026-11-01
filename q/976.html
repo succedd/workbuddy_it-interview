@@ -96,7 +96,7 @@
     <h1>关系模型的本质抽象是什么？为什么说 ACID 和 SQL 都是它的「外围建筑」？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">关系代数</span><span class="chip tag">ACID</span><span class="chip tag">谓词</span></div>
     <div class="card"><h2>题目</h2><p>考察点：关系＝集合、域与谓词、关系代数五算子、事务与约束的分层关系。抓住本质后，SQL 方言、索引、事务隔离都只是实现层的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>关系＝集合的集合</strong>：一张表是「元组的集合」，元组是「属性域笛卡尔积的子集」。集合论保证了两个关键性质：<strong>无序</strong>（行的物理顺序无意义）与<strong>无重复</strong>（靠主键/约束兜底去重）。</li>
 <li><strong>操作封闭性</strong>：关系代数（选择σ、投影π、连接⋈、并、差）的输入输出都是关系——<strong>封闭性</strong>使任意复杂查询可以组合、化简、优化，这是 SQL 可声明式的数学根基。</li>

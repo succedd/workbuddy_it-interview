@@ -96,7 +96,7 @@
     <h1>Linux “文本三剑客” grep、sed、awk 各自的定位是什么？能举一个典型用法吗？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">grep</span><span class="chip tag">sed</span><span class="chip tag">awk</span><span class="chip tag">文本处理</span></div>
     <div class="card"><h2>题目</h2><p>考察点：三者的职责分工——grep 负责“过滤/查找”、sed 负责“流编辑/替换”、awk 负责“按列处理/统计”；是否理解它们常通过管道组合使用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>grep</strong>：文本搜索过滤器，按正则匹配行并输出。<code>grep -i &#39;error&#39; app.log</code> 忽略大小写找出所有 error 行；<code>-r</code> 递归目录，<code>-n</code> 显示行号，<code>-v</code> 反选。</li>
 <li><strong>sed</strong>：流编辑器，擅长按行做替换/删除/插入。<code>sed &#39;s/old/new/g&#39; file</code> 全局替换；<code>sed -i</code> 直接改文件；<code>sed -n &#39;10,20p&#39;</code> 打印指定行范围。</li>

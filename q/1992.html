@@ -96,7 +96,7 @@
     <h1>如何配置一个 workflow，仅在推送到 main 分支、以及对 main 的 PR 时触发，并限制并发避免重复运行？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CI/CD</span><span class="chip tag">触发器</span><span class="chip tag">并发控制</span></div>
     <div class="card"><h2>题目</h2><p>场景题：考察事件过滤、分支过滤与 concurrency 控制的组合用法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>事件与分支过滤</strong>：用 <code>on.push.branches</code> 限定仅 main 推送触发；用 <code>on.pull_request.branches</code> 限定仅目标分支为 main 的 PR 触发。两者并列即可覆盖「push main」和「PR 到 main」两类场景。</li>
 <li><strong>并发控制（concurrency）</strong>：声明一个并发组（如 <code>concurrency: ci-main</code>），并设 <code>cancel-in-progress: true</code>。这样同一并发组内的新运行会取消仍在进行的旧运行，避免同一个分支的多次 push 排队堆积、重复构建。</li>

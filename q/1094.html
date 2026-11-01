@@ -96,7 +96,7 @@
     <h1>CLB 的健康检查是怎么工作的？为什么配置了「间隔 5 秒、阈值 3 次」，后端故障后要过约十几秒流量才切走？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">CLB</span><span class="chip tag">健康检查</span><span class="chip tag">时间窗</span><span class="chip tag">TCP</span><span class="chip tag">HTTP</span></div>
     <div class="card"><h2>题目</h2><p>考察点：健康检查的探测协议（TCP SYN / HTTP 状态码）、健康检查时间窗的计算、检测灵敏度与误判的权衡。承接上一题的四层/七层区分，进入 CLB 可用性的核心机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>探测机制（按监听器协议）</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>探测机制（按监听器协议）</strong>：</p>
 <ul>
 <li><strong>TCP 健康检查</strong>：CLB 向「后端内网 IP + 健康检查端口」发 SYN 包，收到 SYN+ACK 即判定健康，随后发 RST 中断连接；超时未收到则判定失败；</li>
 <li><strong>HTTP 健康检查</strong>：CLB 向「IP + 端口 + 检查路径」发 HTTP 请求，在响应超时时间内收到与配置匹配的 HTTP 状态码即判定健康；也可用 HEAD 方法降低后端开销；</li>

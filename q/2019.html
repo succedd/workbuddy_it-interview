@@ -96,7 +96,7 @@
     <h1>Cassandra 的数据模型（宽行/列族）是怎样的？和关系型数据库表有什么区别？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Cassandra</span><span class="chip tag">数据模型</span><span class="chip tag">宽列存储</span><span class="chip tag">NoSQL</span></div>
     <div class="card"><h2>题目</h2><p>Cassandra 的数据模型（宽行/列族）是怎样的？和关系型数据库表有什么区别？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>核心概念</strong>：Cassandra 是『宽列存储（Wide-Column Store）』，以 <strong>Keyspace（库）→ Table（表）→ Partition（按分区键分片）→ Row（行，由分区键唯一确定）→ 静态/动态列</strong> 组织。一张表的『行』可以非常宽（百万级列），列本身可以带时间戳（cell timestamp）。</li>
 <li><strong>与关系型的核心区别</strong>：① 没有 Join、没有外键、事务只保证单行（Partition）内线性一致；数据建模是『面向查询』的，常把本该 Join 的多个实体『反范式合并』进一张宽表。② 模式（Schema）虽需预定义主键，但可自由增删列。③ 写入模型为追加（LSM），专为『高写入吞吐、水平扩展、多数据中心复制』而生。</li>

@@ -96,7 +96,7 @@
     <h1>String 为什么设计成不可变的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Java</span><span class="chip tag">String</span><span class="chip tag">不可变</span></div>
     <div class="card"><h2>题目</h2><p>请说明 String 不可变的实现方式与设计原因（常量池、hash 缓存、线程安全、安全性）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>实现</strong>：String 内部用 <code>final char[]</code>（JDK 9 后是 byte[]）存储，类本身 final 不可继承，且不提供任何修改内部数组的方法——每次&quot;修改&quot;（concat/replace 等）都返回新对象。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>实现</strong>：String 内部用 <code>final char[]</code>（JDK 9 后是 byte[]）存储，类本身 final 不可继承，且不提供任何修改内部数组的方法——每次&quot;修改&quot;（concat/replace 等）都返回新对象。</p>
 <p><strong>设计原因</strong>：</p>
 <ol>
 <li><strong>字符串常量池</strong>：字面量共享同一对象，不可变才能安全共享，省内存（<code>&quot;a&quot;==&quot;a&quot;</code> 为 true 的前提）；</li>

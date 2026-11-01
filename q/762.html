@@ -96,7 +96,7 @@
     <h1>线上一条查询越来越慢，EXPLAIN 显示 type=ALL、Extra 出现 Using filesort 和 Using temporary。请分析原因并给出优化方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MySQL</span><span class="chip tag">EXPLAIN</span><span class="chip tag">性能优化</span><span class="chip tag">filesort</span></div>
     <div class="card"><h2>题目</h2><p>考察点：EXPLAIN 关键字段解读（type 等级、key、rows、Extra）、filesort/temporary 的成因，以及索引调优与排序优化。高阶故障排查实战。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>现象解读</strong>：<code>type=ALL</code> 为全表扫描，未用到任何索引，是访问类型中最差的一档，应争取到 ref/range/const；<code>Using filesort</code> 表示 ORDER BY 的列无法利用索引有序性，MySQL 需在内存/磁盘额外排序，数据量大时极慢，通常由排序字段无索引或最左前缀被打破导致；<code>Using temporary</code> 表示需建临时表，常见于 GROUP BY 非索引列、DISTINCT、UNION 等，开销大。</li>
 <li><strong>优化方案</strong>：① 为 WHERE 高频列建联合索引，并把 ORDER BY / GROUP BY 的列纳入索引且保持与索引顺序一致的「最左」连续区间，使排序可复用索引有序性，消除 filesort/temporary；② 缩小扫描行数，用等价改写（如 <code>id &gt; ?</code> 代替深分页 <code>limit offset</code>）或只查必要列走覆盖索引；③ 检查统计信息是否过期（<code>ANALYZE TABLE</code>）导致优化器选错索引，必要时 <code>FORCE INDEX</code> 兜底（不推荐长期依赖）；④ 单表过大时考虑分库分表或归档冷数据。</li>

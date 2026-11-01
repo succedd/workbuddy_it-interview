@@ -96,7 +96,7 @@
     <h1>ZooKeeper 在 Kafka 中承担哪些职责？Kafka 4.0 为什么只支持 KRaft 模式，这对运维有什么影响？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip">系统运维工程师</span><span class="chip tag">Kafka</span><span class="chip tag">ZooKeeper</span><span class="chip tag">KRaft</span><span class="chip tag">元数据</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Kafka 元数据管理演进，KRaft 与 ZooKeeper 的架构差异。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>ZooKeeper 提供的能力</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>ZooKeeper 提供的能力</strong></p>
 <p>早期 Kafka 把元数据管理交给 ZooKeeper，主要做四件事：</p>
 <ol>
 <li><strong>Broker 注册</strong>：每个 Broker 启动时在 <code>/brokers/ids</code> 下创建自己的节点，写入 IP、端口等信息，ZooKeeper 借此感知 Broker 上线下线。</li>

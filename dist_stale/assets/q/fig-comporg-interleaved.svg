@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 300" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<text x="340" y="26" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">低位交叉 vs 高位交叉编址</text>
+<rect x="60" y="60" width="240" height="40" rx="6" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/>
+<text x="180" y="83.0" font-size="13" fill="#202124" text-anchor="middle">M0</text>
+<rect x="360" y="60" width="240" height="40" rx="6" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/>
+<text x="480" y="83.0" font-size="13" fill="#202124" text-anchor="middle">M1</text>
+<text x="190" y="130" font-size="12" fill="#1a73e8" text-anchor="middle" font-weight="bold">高位交叉（模块号=高位）</text>
+<text x="190" y="150" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">块0~N在M0，块N+1~在M1 → 连续访问只命中一个模块，无带宽提升</text>
+<text x="490" y="130" font-size="12" fill="#0f9d58" text-anchor="middle" font-weight="bold">低位交叉（模块号=低位）</text>
+<text x="490" y="150" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">地址 0→M0,1→M1,2→M0,3→M1… 连续字轮流分布</text>
+<rect x="60" y="180" width="560" height="90" rx="8" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="72" y="202" font-size="12" fill="#1a73e8" text-anchor="start" font-weight="bold">定量：m 个模块低位交叉，总线每个存储周期启动一个新模块</text>
+<text x="72" y="228" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">连续访问 m 个字的总时间 ≈ 1 个存储周期（流水线式），</text>
+<text x="72" y="250" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">带宽提升约 m 倍；前提是模块独立、可并行。</text>
+</svg>

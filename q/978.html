@@ -96,7 +96,7 @@
     <h1>从单机 MySQL 到分布式 NewSQL，关系型数据库五十年的演化主线是什么？下一步往哪走？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">NewSQL</span><span class="chip tag">HTAP</span><span class="chip tag">存算分离</span></div>
     <div class="card"><h2>题目</h2><p>考察点：演化驱动力的判断（数据量/并发/硬件）、分库分表→中间件→原生分布式三条路线、HTAP 与 Serverless 趋势。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>三条演化主线</strong>：① 数据量驱动：读写分离 → 分库分表（应用层路由）→ 原生分布式（TiDB/CockroachDB 把分片做进内核，Raft/Paxos 复制）；② 硬件驱动：SSD/大内存让「悲观锁+行存」长出乐观事务与列存（HTAP：同一份数据行存 OLTP + 列存 OLAP）；③ 云驱动：Serverless 数据库（按需计费、存算分离，如 Aurora/PolarDB）把「数据库」变成「服务」。</li>
 <li><strong>不变的内核</strong>：关系代数 + ACID 语义始终未变——变的是「把语义做正确的物理方式」（复制协议、分布式事务、多版本 MVCC 的实现位置）。</li>

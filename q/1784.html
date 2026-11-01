@@ -96,7 +96,7 @@
     <h1>低代码平台的 DSL、渲染器和物料体系该如何分层？如何避免「配置一时爽，扩展火葬场」？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">低代码平台开发工程师</span><span class="chip tag">低代码</span><span class="chip tag">DSL</span><span class="chip tag">渲染器</span><span class="chip tag">物料体系</span></div>
     <div class="card"><h2>题目</h2><p>考察低代码平台开发工程师的架构设计能力：配置化与可扩展性如何平衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>分层设计</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 11 天前更新</div><p><strong>分层设计</strong></p>
 <ul>
 <li><strong>DSL/Schema 层</strong>：用声明式 JSON 描述页面结构、属性、数据源、事件和样式；Schema 要有版本、校验和迁移机制，避免字段随意膨胀。</li>
 <li><strong>渲染器层</strong>：把 Schema 转成 React/Vue 组件树；渲染器不关心业务，只负责解析、数据绑定、表达式和生命周期；服务端渲染/设计器预览共用一套协议。</li>

@@ -96,7 +96,7 @@
     <h1>求二叉树的最大深度，请用递归和层序遍历（BFS）两种思路实现，并说明复杂度。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">二叉树</span><span class="chip tag">最大深度</span><span class="chip tag">递归</span><span class="chip tag">BFS</span><span class="chip tag">层序</span></div>
     <div class="card"><h2>题目</h2><p>考察点：递归（自底向上/后序）与 BFS（按层计数）两种解法的转换，复杂度分析。顺接遍历之后进入「深度」维度。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>递归（自底向上）</strong>：<code>maxDepth(root) = root ? 1 + max(maxDepth(left), maxDepth(right)) : 0</code>，本质是后序遍历——先求左右子树深度再 +1。</li>
 <li><strong>层序 BFS</strong>：用队列逐层扩展，每处理完「一整层」就 <code>depth++</code>，直到队列空；层与层之间用「先记录当前队列长度 len，只处理这 len 个节点」来隔离。</li>

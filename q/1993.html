@@ -96,7 +96,7 @@
     <h1>如何在 GitHub Actions 中缓存依赖（npm / yarn / pip / maven）以显著加速构建？写出关键步骤。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">CI/CD</span><span class="chip tag">缓存</span><span class="chip tag">构建加速</span></div>
     <div class="card"><h2>题目</h2><p>编程题：要求写出缓存依赖的 YAML 步骤，并说明缓存命中与失效机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>用 <code>actions/cache</code> 显式缓存</strong>：通过 <code>path</code>（依赖目录）与 <code>key</code>（含操作系统 + 包管理器 + 锁文件哈希）确定缓存键；命中则直接还原，未命中则生成新缓存。</li>
 <li><strong>优先用 setup 动作的內建 cache</strong>：<code>actions/setup-node</code> 的 <code>cache: npm|yarn|pnpm</code>、<code>actions/setup-python</code> 的 <code>cache: pip</code> 可直接基于锁文件自动缓存 <code>${GITHUB_REF}</code> 对应目录，代码量更少。</li>

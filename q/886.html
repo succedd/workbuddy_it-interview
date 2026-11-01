@@ -96,7 +96,7 @@
     <h1>某节点 CPU 被一个 Pod 打满，同节点其他 Pod 被「饿死」。如何用 requests/limits + 命名空间 ResourceQuota + PriorityClass 兜底？说明 requests 与 limits 对调度和 throttle 的不同影响。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Kubernetes</span><span class="chip tag">资源限制</span><span class="chip tag">ResourceQuota</span><span class="chip tag">PriorityClass</span></div>
     <div class="card"><h2>题目</h2><p>考察资源 QoS 与隔离。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>分层隔离要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>分层隔离要点</strong>：</p>
 <ul>
 <li><strong>requests/limits</strong>：<code>requests.cpu</code> 决定调度器把 Pod 放到「空闲 CPU ≥ requests」的节点，并作为<strong>可压缩资源的保障下限</strong>；<code>limits.cpu</code> 是硬上限，超出被 <strong>throttle（限流）</strong> 而非杀死。内存 requests 影响调度，limits 超出则 OOMKill。</li>
 <li><strong>ResourceQuota</strong>（命名空间级）：限制该 ns 的总 CPU/内存/Pod 数，防止一个团队吃光集群；配合 <strong>LimitRange</strong> 给未声明资源的 Pod 设默认 requests/limits。</li>

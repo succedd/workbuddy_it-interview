@@ -96,7 +96,7 @@
     <h1>Dart 的 Isolate 并发模型与 Flutter 的关系？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Flutter开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Dart</span><span class="chip tag">Isolate</span><span class="chip tag">并发</span><span class="chip tag">Flutter</span></div>
     <div class="card"><h2>题目</h2><p>解释 Dart 单线程+Isolate 的并发思路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>单线程事件循环</strong>：Dart 默认单线程跑事件循环，类似 JS，UI 流畅靠非阻塞异步（async/await）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>单线程事件循环</strong>：Dart 默认单线程跑事件循环，类似 JS，UI 流畅靠非阻塞异步（async/await）。</p>
 <p><strong>Isolate</strong>：Dart 的“线程”叫 Isolate，各自有独立内存堆、不共享状态，靠消息传递（SendPort/ReceivePort）通信，从根本上避免共享内存的锁问题。</p>
 <p><strong>与 Flutter</strong>：Flutter UI 跑在主 Isolate；耗时计算可 spawn 新 Isolate 在后台跑，结果回传，避免阻塞界面掉帧（如 JSON 解析用 compute）。</p></div>
     <div class="cta-row">

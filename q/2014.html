@@ -96,7 +96,7 @@
     <h1>Dubbo 的 SPI（Service Provider Interface）扩展机制是什么？相比 JDK 原生 SPI 有什么改进？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Dubbo</span><span class="chip tag">SPI</span><span class="chip tag">扩展机制</span></div>
     <div class="card"><h2>题目</h2><p>Dubbo 的 SPI（Service Provider Interface）扩展机制是什么？相比 JDK 原生 SPI 有什么改进？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>SPI 是一种『面向接口、由第三方实现、运行时按需加载』的扩展机制。Dubbo 几乎所有组件（协议、注册中心、负载均衡、Filter）都定义为扩展点（@SPI 注解的接口），用户可实现自己的扩展类并通过配置启用。</li>
 <li><strong>相比 JDK 原生 SPI 的改进</strong>：① JDK SPI 一次性加载 META-INF/services 下所有实现，无法按需、无法按 key 选择；Dubbo 用 <code>META-INF/dubbo/</code> 下的 <code>接口全限定名</code> 文件，内容为 <code>name=实现类</code>，支持按 <code>name</code> 精确获取某一个实现。② 引入 <strong>IoC 与 AOP</strong>：扩展点可通过 <code>@Adaptive</code> 生成自适应代理，按 URL 参数在运行时动态决定走哪个实现；并支持 <code>Wrapper</code> 自动包装（类似装饰器链）。③ 支持依赖注入（@Inject 注入其他扩展点）。</li>

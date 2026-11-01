@@ -96,7 +96,7 @@
     <h1>微服务架构下，服务拆分应该按什么维度进行？拆分过细会带来哪些问题？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">微服务</span><span class="chip tag">DDD</span><span class="chip tag">服务拆分</span><span class="chip tag">康威定律</span></div>
     <div class="card"><h2>题目</h2><p>面试官追问链第 1 问：从单体走向微服务，第一步是「怎么拆」。请说明常见的拆分维度，并分析拆得太细的代价。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>常见拆分维度</strong>：① 按业务域/子域拆分——DDD 的限界上下文（Bounded Context）是最主流依据，每个上下文对应一个高内聚、低耦合的服务；② 按团队组织拆分——康威定律指出系统结构会映射团队沟通结构，一个「两个披萨团队」负责一个服务；③ 按变更频率/部署独立性拆分——把稳定模块与高频迭代模块隔离，降低发布耦合。实际项目通常以业务域为主、团队为辅。</li>
 <li><strong>拆分过细的代价（反模式）</strong>：① 分布式复杂度飙升——进程内方法调用变成跨网络 RPC，引入序列化、超时、重试、链路追踪等成本；② 数据一致性难题——原本一个本地事务能搞定的事，拆开后要用 Saga/TCC/最终一致性，开发与运维成本翻倍；③ 运维与治理成本——服务数指数增长，注册中心、配置中心、网关、监控、灰度发布都要配套，小团队难以承受；④ 排障困难——一次请求横跨十几个服务，必须依赖全链路追踪才能定位。</li>

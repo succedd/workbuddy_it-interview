@@ -96,7 +96,7 @@
     <h1>HashMap 的底层数据结构是什么？为什么 JDK 8 要在链表长度到 8 时转成红黑树？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Java集合</span><span class="chip tag">HashMap</span><span class="chip tag">数据结构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：JDK 7 与 JDK 8 的底层差异、数组+链表+红黑树的设计权衡、树化与退化的阈值。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>JDK 8 之前</strong>：HashMap 底层是「数组 + 链表」，数组（桶）存放每个哈希槽的头节点，冲突时以链表挂在桶后。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>JDK 8 之前</strong>：HashMap 底层是「数组 + 链表」，数组（桶）存放每个哈希槽的头节点，冲突时以链表挂在桶后。</p>
 <p><strong>JDK 8 及之后</strong>：底层是「数组 + 链表 + 红黑树」。链表长度 &lt; 8 时仍是链表；当某桶链表长度 ≥ 8 <strong>且</strong> 数组容量 ≥ 64 时，链表转为红黑树；当树节点数 ≤ 6 时又退化为链表。</p>
 <p><strong>为什么转红黑树</strong>：链表查询是 O(n)，在哈希冲突严重、某个桶挂了很多元素时性能会退化；红黑树查询是 O(log n)，能把极端情况下的查找从线性降为对数级。</p>
 <p><strong>为什么默认阈值 8、退化 6</strong>：泊松分布下单个桶挂到 8 个的概率极低（约千万分之六），说明大概率是哈希质量差或恶意构造，此时转树保底；设 6 而不是 8 做退化，是为了在链表/树之间留一个「滞回区间」，避免元素在阈值附近频繁插入删除时反复树化/退化造成性能抖动。</p></div>

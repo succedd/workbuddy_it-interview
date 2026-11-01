@@ -96,7 +96,7 @@
     <h1>Sentinel 的熔断降级有哪些策略？熔断之后是如何从 OPEN 状态恢复的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">Sentinel</span><span class="chip tag">熔断降级</span><span class="chip tag">高可用</span></div>
     <div class="card"><h2>题目</h2><p>考察点：熔断与限流的定位差异、慢调用比例/异常比例/异常数三种策略、HALF-OPEN 探测恢复机制。属简答题（中级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>为什么需要熔断</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>为什么需要熔断</strong></p>
 <p>微服务都是分布式的，服务之间层层调用。某个被依赖的弱依赖（远程服务、数据库、第三方 API）响应变长时，调用方的响应也会变长，线程开始堆积，最终可能耗尽自身线程池；这种不稳定会沿调用链被逐级放大，最终整条链路雪崩。熔断的本质是<strong>在客户端（调用端）主动切断不稳定调用</strong>，配合降级兜底保护自己。</p>
 <p><strong>三种熔断策略（Sentinel 1.8.0+）</strong></p>
 <ul>

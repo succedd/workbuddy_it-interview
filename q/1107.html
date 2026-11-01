@@ -96,7 +96,7 @@
     <h1>对象存储 COS 的核心概念：存储桶、对象、地域、可用区分别指什么？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">对象存储</span><span class="chip tag">COS</span><span class="chip tag">存储桶</span><span class="chip tag">地域</span></div>
     <div class="card"><h2>题目</h2><p>请解释 COS 的基本组成单元（存储桶 Bucket / 对象 Object / 地域 Region / 可用区 AZ），以及它们在设计存储架构时各自承担的作用。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>存储桶（Bucket）</strong>：是 COS 中存放对象的最小容器，全局唯一命名，所有对象都必须隶属于某个桶；桶还承载访问权限、生命周期、跨地域复制等配置。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>存储桶（Bucket）</strong>：是 COS 中存放对象的最小容器，全局唯一命名，所有对象都必须隶属于某个桶；桶还承载访问权限、生命周期、跨地域复制等配置。</p>
 <p><strong>对象（Object）</strong>：是存储的基本单元，由 Key（对象键/路径）、Value（数据体）、metadata（元数据）和版本 ID 组成，单个对象最大支持 48.8 TB。</p>
 <p><strong>地域（Region）</strong>：指数据存储的物理地理区域（如广州、上海），创建后不可更改；不同地域间网络隔离、访问延迟不同，选型要靠近用户与业务。</p>
 <p><strong>可用区（AZ）</strong>：地域内隔离的故障域，COS 默认将数据多副本打散在不同 AZ 实现高可靠；跨 AZ 容灾是对象存储默认能力。</p></div>

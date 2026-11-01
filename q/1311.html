@@ -96,7 +96,7 @@
     <h1>Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？</h1>
     <div class="chips"><span class="chip diff">高</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">TCP</span><span class="chip tag">Nagle</span><span class="chip tag">延迟确认</span><span class="chip tag">TCP_NODELAY</span><span class="chip tag">性能优化</span></div>
     <div class="card"><h2>题目</h2><p>Nagle 算法与延迟确认同时开启时，为什么小包传输会卡 40ms？什么时候该开 TCP_NODELAY？</p></div>
-    <div class="card"><h2>参考答案</h2><p>这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>这是典型的「两个各自合理的优化叠加后互相拖死」的场景，排查线上 RPC 偶现 40ms 左右的延迟毛刺时经常命中。</p>
 <p><strong>Nagle 算法</strong>（默认开启）的目的：减少网络中的小包。TCP+IP 头至少 40 字节，发几个字节的数据效率极低。它的规则是：满足其一才发送——① 攒到窗口大小 ≥ MSS 且数据 ≥ MSS；② 之前发出的数据已收到 ACK。两个条件都不满足时，数据先囤在发送缓冲区。</p>
 <p><strong>延迟确认</strong>（接收方机制）的目的：减少纯 ACK 包。纯 ACK 只有 40 字节头部没有数据，很浪费。策略是：有响应数据要发时，ACK 捎带一起发；没有响应数据时，ACK 延迟一段时间再发；等待期间对方的下一个报文到了，就立刻确认。Linux 内核里由 HZ 计算得出：最大延迟 200ms（HZ/5），最短 40ms（HZ/25）。</p>
 <p><img src="/assets/q/fig-tcp-nagle.svg" alt="图：Nagle × 延迟确认的 40ms 死等时序" loading="lazy"></p>

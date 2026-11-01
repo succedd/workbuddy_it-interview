@@ -96,7 +96,7 @@
     <h1>场景题：同一订单的「创建→支付→发货→完成」状态变更必须严格按顺序被下游处理，用 RocketMQ 如何保证顺序？消息组（MessageGroup）怎么用？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">RocketMQ</span><span class="chip tag">顺序消息</span><span class="chip tag">消息组</span><span class="chip tag">FIFO</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RocketMQ 顺序消息的生产顺序性与消费顺序性、消息组划分。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>前提</strong>：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足<strong>生产顺序性</strong>与<strong>消费顺序性</strong>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>前提</strong>：RocketMQ 只在队列层面有序，Topic 层无序；要保证顺序，必须同时满足<strong>生产顺序性</strong>与<strong>消费顺序性</strong>。</p>
 <p><strong>生产顺序性的两个条件</strong></p>
 <ol>
 <li><strong>单一生产者</strong>：消息生产的顺序性仅支持单一生产者，多个生产者并发写同一队列无法判定先后。</li>

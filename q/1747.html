@@ -96,7 +96,7 @@
     <h1>百万连接的 MQTT Broker 如何做集群与会话保持？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">IoT开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">MQTT</span><span class="chip tag">集群</span><span class="chip tag">会话保持</span></div>
     <div class="card"><h2>题目</h2><p>考察接入层、路由、会话存储与容量规划。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>接入层</strong>：多节点 + 负载均衡（DNS / L4 LB），单节点用 epoll / IO 多路复用承载大量空闲连接；连接状态分片，避免全局锁；TLS 卸载与心跳参数要按设备网络质量调优。</li>
 <li><strong>集群路由</strong>：节点间维护订阅路由表，消息按主题转发到持有订阅者的节点；会话、离线消息、保留消息需要共享存储或分区副本，避免节点故障丢会话。</li>

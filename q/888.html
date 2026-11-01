@@ -96,7 +96,7 @@
     <h1>Pod 状态卡在 Terminating 很久不退出，可能有哪些原因？如何排查与处理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">Kubernetes</span><span class="chip tag">Terminating</span><span class="chip tag">finalizer</span><span class="chip tag">优雅退出</span></div>
     <div class="card"><h2>题目</h2><p>考察 Pod 删除流程与 finalizer/graceful 阻塞。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>常见卡住原因</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>常见卡住原因</strong>：</p>
 <ul>
 <li><strong>graceful 宽限期</strong>：默认 30s，Pod 收到 <code>SIGTERM</code> 后未在 <code>terminationGracePeriodSeconds</code> 内退出，会再被 <code>SIGKILL</code>；应用没实现优雅退出就会拖满 30s。</li>
 <li><strong>finalizer 阻塞</strong>：Pod 上有 <code>finalizers</code>（如被某些控制器/存储卷占用），API 对象无法真正删除，状态停在 Terminating。</li>

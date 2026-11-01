@@ -96,7 +96,7 @@
     <h1>如何发现并清除 Webshell？如何做后续溯源与加固？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">应急响应工程师</span><span class="chip">安全运营工程师SOC</span><span class="chip">渗透测试工程师</span><span class="chip tag">Webshell</span><span class="chip tag">应急响应</span><span class="chip tag">溯源</span></div>
     <div class="card"><h2>题目</h2><p>说明静态/动态/流量三种检测手段，以及清除后的溯源要点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>发现</strong>：① <strong>静态查杀</strong>：特征函数（eval/assert/system/shell_exec、<code>$_POST[...]</code> 动态调用）、D 盾/河马/CloudWalker 全盘扫；② <strong>动态行为</strong>：监控 web 进程的异常子进程（php-fpm 派生 bash）、新建可执行文件、异常出网；③ <strong>流量/日志</strong>：POST 参数中的敏感函数名、单 IP 高频访问非常规 URL、web 日志中状态 200 且 POST 大小异常的请求；④ <strong>文件对比</strong>：与发布基线 diff（新增/篡改的 php/jsp 文件、最近 mtime 聚集）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>发现</strong>：① <strong>静态查杀</strong>：特征函数（eval/assert/system/shell_exec、<code>$_POST[...]</code> 动态调用）、D 盾/河马/CloudWalker 全盘扫；② <strong>动态行为</strong>：监控 web 进程的异常子进程（php-fpm 派生 bash）、新建可执行文件、异常出网；③ <strong>流量/日志</strong>：POST 参数中的敏感函数名、单 IP 高频访问非常规 URL、web 日志中状态 200 且 POST 大小异常的请求；④ <strong>文件对比</strong>：与发布基线 diff（新增/篡改的 php/jsp 文件、最近 mtime 聚集）。</p>
 <p><strong>清除</strong>：隔离站点 → 备份留证 → 删除 webshell → <strong>全量比对发布基线</strong>（shell 常不止一个，可能有不同变体）→ 重启 web 服务；必要时重发布整站代码而非手工删文件。</p>
 <p><strong>溯源</strong>：web 日志找 shell 首次访问/写入请求 → 反查入口（上传、文件包含、反序列化、RCE）→ 确认攻击时间线与影响；<strong>加固</strong>：入口漏洞修复、上传目录禁执行、WAF 规则、最小权限运行 web 进程、文件完整性监控（auditd/CCS）。</p></div>
     <div class="cta-row">

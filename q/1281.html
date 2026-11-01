@@ -96,7 +96,7 @@
     <h1>什么是接口幂等？分布式系统里保证幂等有哪些常见方案，如何选型？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">幂等</span><span class="chip tag">唯一索引</span><span class="chip tag">去重表</span><span class="chip tag">状态机</span></div>
     <div class="card"><h2>题目</h2><p>考察点：幂等的定义、触发来源与工程化落地手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <p><strong>1. 什么是幂等</strong></p>
 <p>幂等（idempotency）源自数学：一个操作执行一次和执行多次，对服务端资源产生的效果相同。接口语义上指多次相同请求对资源的影响与执行一次一致，资金类接口通常还要求返回稳定的业务结果。注意区分：<strong>去重是防止重复执行，幂等是允许重复请求到达但保证结果一致</strong>，两者常配合使用。</p>
 <p><strong>2. 重复请求从哪来</strong></p>

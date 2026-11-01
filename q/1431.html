@@ -96,7 +96,7 @@
     <h1>Java 中接口（interface）与抽象类（abstract class）有什么区别？什么场景该用接口、什么场景该用抽象类？Java 8 引入 default / static 方法后，二者边界是否被模糊了？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">Java</span><span class="chip tag">接口</span><span class="chip tag">抽象类</span><span class="chip tag">default方法</span><span class="chip tag">面向对象</span></div>
     <div class="card"><h2>题目</h2><p>考察点：接口与抽象类的设计取舍，以及 Java 8 default 方法带来的演进，是 Java 面向对象段位的高级场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（核心区别）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（核心区别）：</strong></p>
 <ul>
 <li><strong>继承 vs 实现</strong>：类只能单继承抽象类（extends），但可实现多个接口（implements），接口弥补了 Java 的单继承局限；</li>
 <li><strong>成员能力</strong>：抽象类可有普通字段、构造器、非抽象方法、各种访问修饰符；接口（Java 8 前）只能有常量（public static final）和抽象方法，Java 8+ 才支持 default/static 方法，Java 9+ 支持 private 方法，但仍不能有实例字段与构造器；</li>

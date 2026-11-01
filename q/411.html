@@ -96,7 +96,7 @@
     <h1>相比 RNN 与 CNN，Transformer 在并行性、长距离依赖、归纳偏置上各有什么优劣？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">算法工程师</span><span class="chip tag">RNN</span><span class="chip tag">CNN</span><span class="chip tag">Transformer对比</span><span class="chip tag">归纳偏置</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RNN 串行、梯度易消失；CNN 局部感受野需堆叠才能看远处；Transformer 全局、可并行但缺归纳偏置、数据饥渴。属对比题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>并行性</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>并行性</strong></p>
 <ul>
 <li>RNN 必须按时间步串行，难以并行；Transformer 一层内所有位置同时算注意力，GPU 利用率高，训练快。</li>
 <li>CNN 可并行但受卷积核局部性限制。</li>

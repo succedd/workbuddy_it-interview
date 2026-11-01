@@ -96,7 +96,7 @@
     <h1>什么是协程（Coroutine）？它和线程有什么区别？为什么 Go/Python 的协程能支撑高并发？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">后端开发工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">协程</span><span class="chip tag">goroutine</span><span class="chip tag">用户态调度</span><span class="chip tag">并发模型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：协程是“用户态轻量级线程”，由程序（运行时）调度而非内核调度；对比线程的内核态切换成本，理解协程如何在单线程上容纳海量并发连接。属高级开放讨论题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>定义</strong>：协程是<strong>用户态</strong>的轻量级执行单元，可在单个线程内被“协作式”挂起与恢复；它不被操作系统内核调度，而是由其语言运行时（如 Go runtime、Python asyncio event loop）调度。</li>
 <li><strong>与线程的核心区别</strong>：线程的切换由内核完成（陷入内核、保存/恢复完整上下文，开销大，栈通常 MB 级）；协程切换在用户态完成，只保存少量寄存器，栈可动态伸缩（KB 级），成本极低。</li>

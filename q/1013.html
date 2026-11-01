@@ -96,7 +96,7 @@
     <h1>什么场景该把 MySQL 换成 TiDB？迁移时热写入热点问题怎么处理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">数据库架构师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">TiDB</span><span class="chip tag">技术选型</span><span class="chip tag">热点</span><span class="chip tag">AUTO_RANDOM</span><span class="chip tag">迁移</span></div>
     <div class="card"><h2>题目</h2><p>考察点：选型判断标准、热点 Region 原因、AUTO_RANDOM/SHARD_ROW_ID_BITS、迁移路径。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>该换的信号</strong>：① 单表数据量到<strong>亿级</strong>、分库分表带来的跨片查询/扩容痛苦（ShardingSphere 改造成本高）；② 写入量持续增长需要<strong>在线水平扩容</strong>；③ 需要 HTAP（TP 库+实时分析一份数据，TiFlash 列存副本）；④ 多写多活/强一致容灾诉求。<strong>不该换</strong>：小数据量、重度依赖存储过程/外键、预算敏感（至少 3 副本起步资源要求高）。</li>
 <li><strong>热点问题</strong>：单调递增主键（自增/时间）导致写入全打在最后一个 Region——<strong>写热点</strong>。处理：<code>AUTO_RANDOM</code> 主键（打散）、<code>SHARD_ROW_ID_BITS</code> 打散行、业务键加哈希前缀；索引热点用 <code>ADD INDEX ... INVISIBLE</code> 逐步 + Hot Region 调度。</li>

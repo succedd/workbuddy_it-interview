@@ -96,7 +96,7 @@
     <h1>定点数运算中如何判断溢出？请分别说明单符号位法、进位判别法和双符号位（变形补码）法。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">C/C++开发工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">系统软件工程师</span><span class="chip tag">溢出</span><span class="chip tag">双符号位</span><span class="chip tag">进位判别</span></div>
     <div class="card"><h2>题目</h2><p>考察溢出的概念与三种主流硬件判别方法，重点掌握双符号位法及其溢出方向判定。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>一、溢出概念</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、溢出概念</strong></p>
 <p>定点运算结果超出字长可表示范围即溢出。两正数相加得负、两负数相加得正，必溢出；一正一负相加<strong>不会</strong>溢出。</p>
 <p><strong>二、方法一：单符号位（符号比较法）</strong></p>
 <p>设操作数符号 <code>Xf,Yf</code>，结果符号 <code>Sf</code>。逻辑 <code>V = Xf·Yf·Sf&#39; + Xf&#39;·Yf&#39;·Sf</code>（同号操作数结果异号则溢出）。简单但只判溢出、不给方向。</p>

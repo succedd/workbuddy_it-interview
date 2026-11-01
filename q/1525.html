@@ -96,7 +96,7 @@
     <h1>LangChain Agent 的工具调用原理是什么？ReAct 模式是怎样的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip">AI Agent开发工程师</span><span class="chip tag">LangChain</span><span class="chip tag">Agent</span><span class="chip tag">ReAct</span><span class="chip tag">function calling</span></div>
     <div class="card"><h2>题目</h2><p>描述工具注册、模型决策、执行回填的循环，以及 ReAct 的推理-行动交替。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>工具调用循环</strong>：① 注册工具：每个工具声明<strong>名称、描述、参数 JSON Schema</strong>（描述写得准不准直接决定模型会不会用、用对没有）；② 模型收到「问题 + 工具清单」，输出结构化的工具调用意图（老式 ReAct 是文本解析，现代路径是<strong>原生 function calling</strong>，更稳）；③ 框架在本地<strong>执行</strong>该工具，把结果作为观察值回填对话；④ 模型继续：再调工具或输出最终答案；⑤ 循环由 <code>max_iterations</code> 与提前停止条件兜底，防死循环烧钱。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>工具调用循环</strong>：① 注册工具：每个工具声明<strong>名称、描述、参数 JSON Schema</strong>（描述写得准不准直接决定模型会不会用、用对没有）；② 模型收到「问题 + 工具清单」，输出结构化的工具调用意图（老式 ReAct 是文本解析，现代路径是<strong>原生 function calling</strong>，更稳）；③ 框架在本地<strong>执行</strong>该工具，把结果作为观察值回填对话；④ 模型继续：再调工具或输出最终答案；⑤ 循环由 <code>max_iterations</code> 与提前停止条件兜底，防死循环烧钱。</p>
 <p><strong>ReAct 模式</strong>：让模型交替输出 <strong>Thought（推理）→ Action（选工具+参数）→ Observation（工具结果）</strong>，循环至 Final Answer。核心价值：把「推理」显式化，模型基于观察修正计划，比直接回答准确率高得多；也便于日志追踪失败在哪一步。</p>
 <p><strong>工程要点</strong>：工具粒度别太细（选择空间爆炸）、返回结果要简明（截断长输出）、给工具写「什么时候用/不要用」的描述、关键工具加人工确认。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>从 Java 8 到 Java 21，语言与 JVM 的演化主线是什么？为什么说虚拟线程是十年来最大的范式转变？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">虚拟线程</span><span class="chip tag">ZGC</span><span class="chip tag">Project Loom</span></div>
     <div class="card"><h2>题目</h2><p>考察点：版本节奏变化（半年一版）、模块化、GC 演化（G1→ZGC）、虚拟线程 Project Loom、Valhalla 值类型展望。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>四条主线</strong>：① <strong>发布节奏</strong>：Java 9 起半年一版 + LTS 隔年化，特性以「孵化→预览→转正」三段式渐进落地；② <strong>平台模块化</strong>（JPMS，JDK 9）：JDK 自身拆模块 + jlink 裁剪运行时；③ <strong>GC 代际更替</strong>：G1（JDK 9 默认）→ ZGC/Shenandoah（亚毫秒停顿，大堆服务端）；④ <strong>并发模型</strong>：虚拟线程（JDK 21 转正）。</li>
 <li><strong>为什么虚拟线程是范式转变</strong>：过去十年为绕开「线程贵」，生态全面倒向响应式（Reactor/RxJava），代价是调试栈断裂、代码复杂；虚拟线程让<strong>同步阻塞写法天然 scalable</strong>，JDBC/Servlet 等阻塞 API 无需重写即可享受——并发模型从「线程池配额」回到「按任务开线程」。</li>

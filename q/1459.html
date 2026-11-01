@@ -96,7 +96,7 @@
     <h1>Hudi、Iceberg、Delta Lake 三大湖表格式各自解决什么？ACID、时间旅行、Schema 演进是怎么实现的？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">大数据架构师</span><span class="chip">数据仓库工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">Iceberg</span><span class="chip tag">Hudi</span><span class="chip tag">Delta Lake</span><span class="chip tag">湖表格式</span></div>
     <div class="card"><h2>题目</h2><p>考察开源湖表格式（Open Table Format）：在对象存储上补齐事务与元数据管理的原理与三格式对比，是湖仓架构面试的进阶题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>为什么需要「表格式」这层</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>为什么需要「表格式」这层</h3>
 <p>对象存储（S3/OSS/HDFS）只有文件，没有事务、没有快照、更新一行要重写整个文件——数据湖直接裸奔会遇到「读一半写一半」「并发写互相覆盖」「无法回滚」。<strong>表格式 = 在文件之上补一层元数据与事务协议</strong>：记录「当前快照由哪些数据文件组成」，写操作生成新快照、原子替换指针。</p>
 <h3>三个核心能力的实现原理</h3>
 <ol>

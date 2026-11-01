@@ -96,7 +96,7 @@
     <h1>指令系统中常见的寻址方式有哪些？请对比七种以上基本寻址方式，并说明指令格式中操作码与地址码的作用及扩展操作码设计</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">系统软件工程师</span><span class="chip tag">指令系统</span><span class="chip tag">寻址方式</span><span class="chip tag">指令格式</span><span class="chip tag">扩展操作码</span></div>
     <div class="card"><h2>题目</h2><p>考察指令格式（操作码+地址码）、定长/扩展操作码，以及立即/直接/间接/寄存器/基址/变址/相对/堆栈等寻址方式的原理与适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>一、指令格式</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、指令格式</strong></p>
 <p>一条机器指令由「操作码 + 地址码」两部分组成：操作码（OP）指明要做什么操作（如加、转移、存），地址码（A）给出操作数的地址或寄存器编号。按地址码个数可分为零地址、一地址、二地址、三地址指令；操作码长度可以是定长（n 位最多表示 2^n 条指令，译码快）或可变长。</p>
 <p><strong>二、扩展操作码</strong></p>
 <p>为在指令字长固定下兼顾「指令条数」与「地址码位数」，常采用扩展操作码：用短操作码表示常用指令，把剩余编码空间让给地址码；用长操作码表示不常用指令。例如 4 位操作码可设计为 15 条三地址 + 15 条二地址 + 15 条一地址 + 16 条零地址（即 1111 作为扩展标志）。</p>

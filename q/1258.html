@@ -96,7 +96,7 @@
     <h1>场景题：电商下单后 30 分钟未支付要自动关单，发货后 7 天要自动确认收货。用 RocketMQ 的延时消息怎么设计？有哪些坑？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip">Go后端工程师</span><span class="chip tag">RocketMQ</span><span class="chip tag">延时消息</span><span class="chip tag">定时消息</span><span class="chip tag">订单超时</span></div>
     <div class="card"><h2>题目</h2><p>考察点：延时消息的使用方式、版本差异与业务状态校验的必要性。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>方案：用定时/延时消息替代数据库轮询</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>方案：用定时/延时消息替代数据库轮询</strong></p>
 <ul>
 <li>RocketMQ 的<strong>定时消息与延时消息本质相同</strong>：服务端在指定时刻才把消息投递给消费者。订单创建成功后发送一条延时消息，消费者收到后检查订单状态，未支付则关单。</li>
 <li>相比「定时扫库」方案：数据库扫描在分布式场景下实现复杂、需要频繁调用接口扫描、性能容易成为瓶颈；RocketMQ 延时消息具备高并发与水平扩展能力，精度更灵活、开发门槛更低。</li>

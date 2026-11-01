@@ -96,7 +96,7 @@
     <h1>Redis 的 mem_fragmentation_ratio 多大算健康？内存碎片是怎么产生的，activedefrag 主动碎片整理又是如何工作的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">DBA数据库管理员</span><span class="chip">系统运维工程师</span><span class="chip tag">Redis</span><span class="chip tag">内存碎片</span><span class="chip tag">activedefrag</span><span class="chip tag">jemalloc</span><span class="chip tag">运维</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 Redis 内存碎片成因、监控指标健康区间与 4.0+ 主动碎片整理机制的掌握。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>什么是内存碎片</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>什么是内存碎片</strong></p>
 <p>碎片就是「分配了但没法再利用」的空闲内存。例如申请 32 字节只用 24 字节，多出的 8 字节放不下别的数据，就成了碎片。碎片不影响性能，但增加内存消耗。</p>
 <p><strong>碎片怎么来的</strong></p>
 <ul>

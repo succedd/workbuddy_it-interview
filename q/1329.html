@@ -96,7 +96,7 @@
     <h1>Cookie 的 SameSite=Strict / Lax / None 有什么区别？它和 CSRF 是什么关系？第三方 Cookie 为什么被迫迁移？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">Cookie</span><span class="chip tag">SameSite</span><span class="chip tag">CSRF</span><span class="chip tag">安全</span><span class="chip tag">HTTP</span></div>
     <div class="card"><h2>题目</h2><p>考察点：SameSite 三种取值在跨站场景下的精确行为差异，及其在 CSRF 防御与第三方 Cookie 生态中的位置。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>SameSite 控制跨站请求是否携带 Cookie</strong>（「站」按注册域名 eTLD+1 + scheme 划分，即 schemeful site）。MDN 定义三种取值：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>SameSite 控制跨站请求是否携带 Cookie</strong>（「站」按注册域名 eTLD+1 + scheme 划分，即 schemeful site）。MDN 定义三种取值：</p>
 <ul>
 <li><strong>Strict</strong>：只有同站请求携带，最严格；</li>
 <li><strong>Lax</strong>：同站携带；跨站时仅「<strong>顶级导航</strong> + <strong>安全方法（GET 等）</strong>」同时满足才携带；</li>

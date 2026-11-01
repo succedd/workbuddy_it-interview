@@ -105,7 +105,7 @@ queueMicrotask(() =&gt; console.log(&#39;4&#39;));
 
 console.log(&#39;5&#39;);</code></pre>
 <p>问最终打印结果是什么？为什么是这个顺序？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>输出顺序</strong>：<code>1 5 3 4 2</code>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>输出顺序</strong>：<code>1 5 3 4 2</code>。</p>
 <p><strong>机制</strong>：JS 运行时是单线程，由<strong>事件循环（Event Loop）</strong>驱动。任务分为两类队列：</p>
 <ul>
 <li><strong>宏任务（macrotask / task）</strong>：整段脚本、<code>setTimeout</code>/<code>setInterval</code> 回调、I/O、UI 渲染等，进入任务队列。</li>

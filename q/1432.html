@@ -96,7 +96,7 @@
     <h1>请手写一个正确重写 equals() 与 hashCode() 的 User 类（基于 id 与 name 两个字段判断相等），并说明 equals 必须满足哪些约定。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">编程题</span><span class="chip">Java后端工程师</span><span class="chip tag">Java</span><span class="chip tag">equals</span><span class="chip tag">hashCode</span><span class="chip tag">重写</span><span class="chip tag">契约</span></div>
     <div class="card"><h2>题目</h2><p>考察点：equals/hashCode 的正确实现与五大约定，是一道检验代码功底的高级编程题，要求代码与讲解并重。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点（讲解）：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点（讲解）：</strong></p>
 <p>正确重写需满足 equals 的五大约定：① 自反性（x.equals(x) 为 true）；② 对称性（x.equals(y) 同 y.equals(x)）；③ 传递性；④ 一致性（对象未修改时多次调用结果一致）；⑤ 对任何非 null 的 x，x.equals(null) 返回 false。同时必须保证 equals 相等的对象 hashCode 相等。下面用 Objects 工具类实现，自动处理 null 与一致性。</p>
 <pre><code class="language-java">import java.util.Objects;
 

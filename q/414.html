@@ -96,7 +96,7 @@
     <h1>Java 应用出现内存泄漏（堆内存持续上涨、老年代回收不掉），如何用 jstat / jmap / MAT 定位泄漏对象和引用链？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip tag">内存泄漏</span><span class="chip tag">jmap</span><span class="chip tag">MAT</span><span class="chip tag">GC</span><span class="chip tag">故障排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：先用 jstat 看 GC 趋势确认泄漏，再用 jmap 抓堆转储，最后用 MAT 找支配树/疑似泄漏点（Dominator Tree、Path to GC Roots）。属故障排查题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>① 先用 jstat 确认趋势（不阻断服务）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>① 先用 jstat 确认趋势（不阻断服务）</strong></p>
 <ul>
 <li><code>jstat -gcutil &lt;pid&gt; 1000</code> 持续观察：若老年代（OU）只增不减、Full GC 后回收极少、FGC 次数飙升，基本可判定泄漏。</li>
 <li>对比多次 dump 的老年代水位，单调递增即泄漏信号。</li>

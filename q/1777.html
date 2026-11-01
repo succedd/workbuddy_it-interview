@@ -96,7 +96,7 @@
     <h1>用 SQL 做漏斗和留存分析时，窗口函数和自连接各适合什么场景？如何避免重复计数？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">业务数据分析师</span><span class="chip tag">SQL</span><span class="chip tag">窗口函数</span><span class="chip tag">漏斗分析</span><span class="chip tag">留存分析</span></div>
     <div class="card"><h2>题目</h2><p>考察业务数据分析师的 SQL 实战：同一业务问题有多种写法，选错会导致口径错误或性能问题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>窗口函数适合</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 11 天前更新</div><p><strong>窗口函数适合</strong></p>
 <ul>
 <li>去重取首次/末次行为：<code>ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY ts)</code> 取每个用户的第一步；<code>LAG/LEAD</code> 看相邻事件时间差。</li>
 <li>留存：按用户首次活跃日期分组，用 <code>DATEDIFF</code> 标记后续活跃日，再按 cohort 聚合；避免多次自连接。</li>

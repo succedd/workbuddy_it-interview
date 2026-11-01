@@ -96,7 +96,7 @@
     <h1>FastAPI 中同步 def 与 async def 路由混用会出什么问题？什么情况下反而该用同步？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">FastAPI</span><span class="chip tag">异步</span><span class="chip tag">事件循环</span><span class="chip tag">阻塞</span><span class="chip tag">线程池</span></div>
     <div class="card"><h2>题目</h2><p>考察点：事件循环阻塞、线程池调度、异步陷阱。这是异步框架最致命的坑。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>FastAPI 的调度规则</strong>：<code>async def</code> 路由<strong>直接在事件循环里跑</strong>；<code>def</code>（同步）路由被自动丢到 <strong>ThreadPool（默认 anyio 的 40 个线程）</strong>里跑。所以两者混用本身不会报错。</li>
 <li><strong>致命错误：在 async def 里调用阻塞代码</strong>。例如 <code>requests.get()</code>、<code>time.sleep()</code>、同步的 <code>pymysql</code>/<code>psycopg2</code> 查询、CPU 密集的 pandas。这些会<strong>阻塞整个事件循环</strong>，导致<strong>所有并发请求一起卡住</strong>——表现是「并发数上来后所有请求都变慢，但 CPU 不高」，非常难排查。</li>

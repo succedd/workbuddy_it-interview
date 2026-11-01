@@ -96,7 +96,7 @@
     <h1>生产环境 ArgoCD 自身如何高可用部署？API Server / Controller 崩溃、Git 不可达等常见故障如何治理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">平台工程师</span><span class="chip tag">ArgoCD</span><span class="chip tag">高可用</span><span class="chip tag">SRE</span></div>
     <div class="card"><h2>题目</h2><p>考察 ArgoCD 控制面的可靠性设计，属于平台/SRE 必答题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 8 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>高可用部署</strong>：ArgoCD 官方提供 HA 清单——多个 API Server 副本（无状态，前置 LB/Ingress）、多个 Application Controller 副本（通过 <code>--kubectl-parallelism-limit</code> 与 leader 选举分担调谐），Redis 用哨兵/集群模式避免单点（它缓存 Git 渲染结果）。</li>
 <li><strong>Git 不可达</strong>：Repository Server 拉取失败会让所有应用 <code>Unknown</code>；治理手段是配置多个 Git 源/镜像、给 Git 加健康探针告警，并把渲染结果缓存到 Redis，短期 Git 抖动不至于全站失联。</li>

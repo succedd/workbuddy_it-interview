@@ -96,7 +96,7 @@
     <h1>常听说 TCP 有“粘包/拆包”问题，这是 TCP 协议本身的缺陷吗？应如何从应用层解决？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">后端开发工程师</span><span class="chip">网络运维工程师</span><span class="chip tag">TCP</span><span class="chip tag">字节流</span><span class="chip tag">粘包</span><span class="chip tag">拆包</span><span class="chip tag">应用层封帧</span></div>
     <div class="card"><h2>题目</h2><p>考察点：澄清“粘包”是应用层视角而非 TCP 缺陷——TCP 是面向字节流的可靠协议，本身没有消息边界；解释粘包/拆包的成因，以及应用层常见的封帧（framing）方案。属故障排查/概念纠错题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>本质澄清</strong>：TCP 是“面向字节流”协议，只保证字节按序、可靠到达，不保留消息边界。所谓“粘包/拆包”并不是 TCP 的 bug，而是应用层把“多个写”误当成“多条独立消息”导致的现象。</li>
 <li><strong>成因</strong>：发送端 Nagle 算法合并小包、接收端一次 read 读到多个包（粘包）或半个包（拆包），都会让应用层一次拿到的字节流跨越消息边界。</li>

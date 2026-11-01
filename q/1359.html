@@ -96,7 +96,7 @@
     <h1>类加载过程包含哪几个阶段？双亲委派模型是什么，有什么好处？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">类加载</span><span class="chip tag">双亲委派</span><span class="chip tag">ClassLoader</span><span class="chip tag">GC Roots</span></div>
     <div class="card"><h2>题目</h2><p>考察类生命周期中的加载过程，以及双亲委派模型的工作机制与安全性意义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>结论</strong>：类加载严格经历“加载→验证→准备→解析→初始化”五步；<strong>双亲委派模型</strong>让类随加载器具备层次优先级，保障核心类库唯一与安全。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>结论</strong>：类加载严格经历“加载→验证→准备→解析→初始化”五步；<strong>双亲委派模型</strong>让类随加载器具备层次优先级，保障核心类库唯一与安全。</p>
 <h4>五个阶段</h4>
 <ol>
 <li><strong>加载</strong>：通过全限定名获取字节流，转为方法区运行时结构，生成 <code>Class</code> 对象。</li>

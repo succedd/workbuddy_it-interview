@@ -96,7 +96,7 @@
     <h1>强引用、软引用、弱引用、虚引用有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">引用类型</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>请说明四种引用类型的回收时机与典型应用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><ol>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ol>
 <li><strong>强引用</strong>（<code>Object o = new Object()</code>）：普通赋值。<strong>只要强引用存在，GC 绝不回收</strong>——哪怕 OOM 也不回收，宁可抛异常。内存泄漏多因&quot;该断的强引用没断&quot;（如静态 Map 一直往里塞）。</li>
 <li><strong>软引用 SoftReference</strong>：内存<strong>不足时</strong>才回收（GC 后内存仍不够则回收）。适合<strong>内存敏感的缓存</strong>——图片缓存、网页缓存；回收前会尽量保留，OOM 前的最后防线。</li>
 <li><strong>弱引用 WeakReference</strong>：下次 GC <strong>必然回收</strong>（无论内存是否充足）。典型：<code>ThreadLocalMap</code> 的 Entry 的 key 就是弱引用（线程存活时 key 可被回收防止泄漏，value 需手动 remove）；WeakHashMap。</li>

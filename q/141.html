@@ -96,7 +96,7 @@
     <h1>Redis分布式锁的实现方式？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">DBA数据库管理员</span><span class="chip tag">Redis</span><span class="chip tag">分布式锁</span></div>
     <div class="card"><h2>题目</h2><p>请解释SETNX和Redlock算法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>基本做法</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>基本做法</strong></p>
 <ul>
 <li><code>SET lock_key unique_value NX PX 30000</code> 原子加锁；value 用随机 token，释放时用 Lua 比对 token 再删，防误删。</li>
 <li>锁过期要大于业务执行时间；看门狗/续期（Redisson）解决长任务；重试要有退避/超时。</li>

@@ -96,7 +96,7 @@
     <h1>服务注册与发现（Service Registry &amp; Discovery）解决了什么问题？以 Eureka/Nacos/Consul 为例说明核心机制。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip">后端架构师</span><span class="chip tag">服务注册</span><span class="chip tag">服务发现</span><span class="chip tag">Eureka</span><span class="chip tag">Nacos</span><span class="chip tag">Consul</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 2 问：服务多了之后，调用方如何知道被调方地址？硬编码 IP 为什么不行？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>解决的核心问题</strong>：微服务实例的 IP/端口是动态变化的（扩缩容、容器调度、故障迁移），调用方无法靠静态配置感知。注册中心充当「通讯录」：服务启动时把地址<strong>注册</strong>进去，调用方通过<strong>发现</strong>拿到可用实例列表再做客户端负载均衡（如 Ribbon/Spring Cloud LoadBalancer），从而实现位置解耦与弹性伸缩。</li>
 <li><strong>核心机制</strong>：① <strong>服务注册</strong>——实例启动后向注册中心发送注册请求（含服务名、IP、端口、元数据）；② <strong>心跳/健康检查</strong>——实例定期发心跳，注册中心在超时未收到时将其<strong>剔除</strong>（Nacos 临时实例用心跳、永久实例用主动探测）；③ <strong>服务发现</strong>——调用方拉取或订阅（长连接推送）服务列表并本地缓存；④ <strong>一致性权衡</strong>——Eureka 用 AP（自我保护，网络分区时不剔除），Consul/Nacos(CP 模式) 用 Raft 保证强一致，选型要在可用性与一致性间取舍。</li>

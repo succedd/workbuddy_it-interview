@@ -96,7 +96,7 @@
     <h1>Redis 主从复制（replication）的工作原理是什么？全量同步与增量同步（psync/复制积压缓冲区）如何工作？异步复制会带来什么风险？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">系统运维工程师</span><span class="chip">后端架构师</span><span class="chip tag">Redis</span><span class="chip tag">主从复制</span><span class="chip tag">psync</span><span class="chip tag">repl_backlog</span><span class="chip tag">异步复制</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 2 问：持久化解决「单点恢复」，主从解决「读扩展与热备」。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>复制流程</strong>：从节点执行 <code>replicaof</code> 后与主建立连接、发送 <code>PSYNC</code>；主节点 <code>bgsave</code> 生成 RDB 传给从节点（全量），从节点清空旧数据加载 RDB，之后主节点把复制缓冲区的写命令持续发给从节点（增量），保持同步。</li>
 <li><strong>全量 vs 增量（psync）</strong>：Redis 2.8+ 用 <code>PSYNC replicationid offset</code> 实现部分重同步。主节点维护<strong>复制积压缓冲区（repl_backlog）</strong>，从节点断线重连时若 <code>offset</code> 仍在 backlog 范围内就只补传增量（部分同步），否则触发全量同步。合理调大 backlog 可减少主从切换/网络抖动后的全量同步开销。</li>

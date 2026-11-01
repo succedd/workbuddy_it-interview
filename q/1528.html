@@ -96,7 +96,7 @@
     <h1>如何权衡向量检索的召回率与性能？HNSW 的关键参数怎么调？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">AI应用开发工程师</span><span class="chip">RAG工程师</span><span class="chip tag">向量数据库</span><span class="chip tag">HNSW</span><span class="chip tag">召回率</span></div>
     <div class="card"><h2>题目</h2><p>说明评测方法（recall@k）与 ef_construction / ef / M 的调参思路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先会测</strong>：准备一批查询与人工标注的真近邻，计算 <strong>recall@k</strong>（引擎返回 Top-K 与真实 Top-K 的重合率），同时记录 P99 延迟与 QPS——三个指标画帕累托曲线，按业务要召回还是要延迟来选点。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>先会测</strong>：准备一批查询与人工标注的真近邻，计算 <strong>recall@k</strong>（引擎返回 Top-K 与真实 Top-K 的重合率），同时记录 P99 延迟与 QPS——三个指标画帕累托曲线，按业务要召回还是要延迟来选点。</p>
 <p><strong>HNSW 关键参数</strong>：① <strong>M</strong>（每节点连接数）：越大图越稠密、召回越高、内存越大（每向量内存 ≈ M×2×4 字节×层数因子）。常规 16~48，推荐召回要求高取 32+。② <strong>ef_construction</strong>（建图时候选队列长度）：影响图质量，越大建得越慢但图越好，建议 ≥ 2×M，200 起步，建库一次成本可接受。③ <strong>ef（查询时候选队列）</strong>：<strong>运行时主旋钮</strong>——越大召回越高延迟越大；经验：ef 从 k+32 起调，要 95%+ 召回通常 ef 取 100~256；ef 必须 ≥ k。</p>
 <p><strong>调参顺序</strong>：先定 M 与 ef_construction（构建期），再在线调 ef 平衡召回与 P99；仍不够时上重排（向量粗召回 + 精排 rerank）两阶段方案。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>Django 生产部署时数据库连接该怎么管理？CONN_MAX_AGE 和连接池分别解决什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Python后端工程师</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Django</span><span class="chip tag">连接池</span><span class="chip tag">CONN_MAX_AGE</span><span class="chip tag">PgBouncer</span><span class="chip tag">部署</span></div>
     <div class="card"><h2>题目</h2><p>考察点：连接复用、连接泄漏、与 PgBouncer 的配合。属于「上线才暴露」的工程题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>默认行为</strong>：Django 每个请求结束就 <code>close()</code> 连接，等于<strong>每请求一次 TCP + 认证握手</strong>。在 PostgreSQL 上这个开销（尤其 TLS + SCRAM 认证）会直接吃掉可观的比例。</li>
 <li><strong>CONN_MAX_AGE</strong>：设置连接存活秒数，实现<strong>持久连接（persistent connections）</strong>。<code>0</code> 表示请求结束即关（默认），<code>None</code> 表示永不主动关闭。配合 <code>CONN_HEALTH_CHECKS = True</code>（Django 4.1+）在复用前做可用性探测，避免拿到已被服务端断开的死连接报 <code>OperationalError</code>。</li>

@@ -96,7 +96,7 @@
     <h1>什么是 SSRF（服务端请求伪造）？为什么云环境下它特别危险？如何分层防御？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">信息安全工程师</span><span class="chip">渗透测试工程师</span><span class="chip">安全开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">SSRF</span><span class="chip tag">云安全</span><span class="chip tag">元数据</span><span class="chip tag">纵深防御</span></div>
     <div class="card"><h2>题目</h2><p>考察 SSRF 的成因、云元数据凭证泄露风险与纵深防御。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>结论</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 33 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>SSRF（Server-Side Request Forgery）：攻击者利用服务端的出网能力（URL 预览、webhook、文件导入、图片拉取等），让<strong>服务器向攻击者指定的任意地址</strong>发起请求。本质是「服务端把用户输入当成了请求目标却没有校验」。</p>
 <h3>典型攻击面</h3>
 <ul>

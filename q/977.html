@@ -96,7 +96,7 @@
     <h1>哪些场景是关系型数据库的能力边界？为什么「什么都往 MySQL 里塞」迟早出事？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">Java后端工程师</span><span class="chip tag">第一性原理</span><span class="chip tag">必读</span><span class="chip tag">NewSQL</span><span class="chip tag">分库分表</span><span class="chip tag">技术选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：CAP 与单机写瓶颈、schema 灵活性、全文检索/图/时序等专用负载、反范式化的代价。会判断边界比会写 SQL 更值钱。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>写入扩展性边界</strong>：传统单机关系库的强一致依赖单点协调，水平分片后跨片事务/跨片连接代价陡增——这是 NewSQL（TiDB/CockroachDB 用 Percolator 类协议）要解的题，也是分库分表中间件复杂的根源。</li>
 <li><strong>schema 边界</strong>：强 schema 是优点也是枷锁——字段高频变更、稀疏属性多的场景（用户画像、IoT 上报）下 DDL 变更成本高，文档模型更合适。</li>

@@ -96,7 +96,7 @@
     <h1>信息流（feed）系统的推模式（fan-out）与拉模式（fan-in）各有什么优劣？什么场景用推拉结合？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">系统设计</span><span class="chip tag">feed流</span><span class="chip tag">推模式</span><span class="chip tag">拉模式</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：理解 feed 流两种分发架构的取舍，能按「关注数/实时性/成本」选型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>推模式（写扩散）</strong>：用户发帖时主动推送给所有粉丝的时间线（写时 fan-out）；读速度快（直接读自己 timeline），但大 V 发一条要写海量粉丝，写放大严重。</li>
 <li><strong>拉模式（读扩散）</strong>：读自己 feed 时实时拉取所关注人的最新动态聚合；写无压力，但粉丝多的人读取慢、聚合成本高。</li>

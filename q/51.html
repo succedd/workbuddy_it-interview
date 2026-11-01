@@ -96,7 +96,7 @@
     <h1>如何用 crontab 定时执行脚本？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Linux运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">crontab</span><span class="chip tag">定时任务</span><span class="chip tag">Shell</span></div>
     <div class="card"><h2>题目</h2><p>写一条每天凌晨备份的示例并说明注意点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>格式</strong>：<code>分 时 日 月 周 命令</code>。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 含示例/代码 · 来源：种子题库 · 未复核 · 71 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>格式</strong>：<code>分 时 日 月 周 命令</code>。</p>
 <p>示例（每天 2:30 执行备份）：</p>
 <pre><code class="language-bash">30 2 * * * /opt/backup.sh &gt;&gt; /var/log/backup.log 2&gt;&amp;1</code></pre>
 <p><strong>注意点</strong>：</p>

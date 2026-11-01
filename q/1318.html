@@ -96,7 +96,7 @@
     <h1>JIT 即时编译是如何工作的？分层编译有哪几个层级？逃逸分析能带来哪些优化？</h1>
     <div class="chips"><span class="chip diff">中</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">JIT</span><span class="chip tag">分层编译</span><span class="chip tag">热点探测</span><span class="chip tag">方法内联</span><span class="chip tag">逃逸分析</span></div>
     <div class="card"><h2>题目</h2><p>JIT 即时编译是如何工作的？分层编译有哪几个层级？逃逸分析能带来哪些优化？</p></div>
-    <div class="card"><h2>参考答案</h2><p>Java 代码最初由解释器逐条解释执行字节码，启动快但速度有限。当某些代码被反复执行成为「热点」后，JVM 会把它提交给即时编译器编译成本地机器码，编译后的代码存放在独立的 Code Cache 中，之后直接执行机器码，这就是 JIT 的基本思想——边解释边编译，兼顾启动速度与峰值性能。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>Java 代码最初由解释器逐条解释执行字节码，启动快但速度有限。当某些代码被反复执行成为「热点」后，JVM 会把它提交给即时编译器编译成本地机器码，编译后的代码存放在独立的 Code Cache 中，之后直接执行机器码，这就是 JIT 的基本思想——边解释边编译，兼顾启动速度与峰值性能。</p>
 <p><strong>热点探测</strong>：HotSpot 基于计数器的探测，包括方法调用计数器和回边计数器（回边对应循环体），两者之和超过阈值就触发 JIT 编译。阈值可通过 -XX:CompileThreshold 调整；在分层编译模式下阈值判定还结合采样频率。编译在后台线程完成，编译期间照常解释执行，避免等待。</p>
 <p><strong>分层编译</strong>（默认开启，-XX:+TieredCompilation）把编译分成五个层级：L0 是纯解释执行；L1 是 C1 编译且不带 profiling；L2 是 C1 编译带少量计数 profiling；L3 是 C1 编译带完整 profiling，用于收集分支、类型等统计信息；L4 是 C2 编译，基于 L3 收集的信息做深度优化。最常见路径是解释器 → L3 → L4：先用 C1 快速出代码，再在热点足够热时交给 C2 深度优化；L1、L2 则在 C2 忙碌或方法只热一阵等场景中充当过渡层。C1 追求编译速度，C2 追求代码质量，两者配合实现「快启动 + 高峰值」。</p>
 <p><img src="/assets/q/fig-jit-tiered.svg" alt="图：JIT 分层编译与逃逸分析优化" loading="lazy"></p>

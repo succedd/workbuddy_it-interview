@@ -96,7 +96,7 @@
     <h1>一个类承担了过多职责且与其他模块高度耦合，如何用“提取类（Extract Class）”重构？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">软件开发工程师(通用)</span><span class="chip">后端开发工程师</span><span class="chip">应用架构师</span><span class="chip tag">提取类</span><span class="chip tag">ExtractClass</span><span class="chip tag">职责单一</span><span class="chip tag">解耦</span></div>
     <div class="card"><h2>题目</h2><p>某 <code>User</code> 类既管用户信息，又管地址格式化、又管权限判断、还管持久化。请说明 Extract Class 的适用信号、重构步骤，以及它如何缓解冗余耦合。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>适用信号（坏味道）</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>适用信号（坏味道）</strong>：</p>
 <ul>
 <li>一个类做了多件不相关的事（职责过多）；</li>
 <li>类中一部分字段/方法总是一起变化、一起被另一处使用；</li>

@@ -96,7 +96,7 @@
     <h1>【故障排查题·高级】应用启动直接失败，日志报 BeanCurrentlyInCreationException，提示依赖形成循环。团队已知 Spring 有三级缓存能解决循环依赖，为什么这次没救回来？请解释机制边界、给出排查路径与解决方案。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">循环依赖</span><span class="chip tag">构造器注入</span><span class="chip tag">BeanCurrentlyInCreationException</span><span class="chip tag">三级缓存</span></div>
     <div class="card"><h2>题目</h2><p>考察点：循环依赖的解决边界（构造器注入/prototype 无法用三级缓存解决）、BeanCurrentlyInCreationException 的成因、依赖图梳理与重构方案。追问链收尾：从「三级缓存是什么」深入到「什么时候三级缓存也无能为力」。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>机制边界（为什么这次救不回来）</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>机制边界（为什么这次救不回来）</strong>：</p>
 <ul>
 <li>三级缓存解决循环依赖的前提是「<strong>先实例化、后注入</strong>」：A 实例化（构造器已执行完）后可以先把早期引用暴露出去，让 B 先拿半成品 A 用，A 稍后再补完初始化；</li>
 <li><strong>构造器注入打破了这个前提</strong>：A 还没构造出来就依赖 B，B 又要在构造器里拿到 A——「先有鸡还是先有蛋」无法暴露任何早期引用，Spring 官方文档明确： predominantly constructor injection 可能造成不可解决的循环依赖，运行期检测到后直接抛 BeanCurrentlyInCreationException；</li>

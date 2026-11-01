@@ -96,7 +96,7 @@
     <h1>MySQL中MVCC的原理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip tag">MySQL</span><span class="chip tag">MVCC</span></div>
     <div class="card"><h2>题目</h2><p>考察 MVCC、Undo Log、Read View 和隔离级别。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>核心</strong></p>
 <ul>
 <li>InnoDB 每行有隐藏事务 ID/回滚指针，修改旧版本写入 Undo Log，形成版本链；读时按 Read View 判断哪个版本可见。</li>
 </ul>

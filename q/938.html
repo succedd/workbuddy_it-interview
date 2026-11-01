@@ -96,7 +96,7 @@
     <h1>常见的垃圾回收算法有哪些？各有什么优缺点？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">JVM</span><span class="chip tag">GC算法</span><span class="chip tag">垃圾回收</span></div>
     <div class="card"><h2>题目</h2><p>请说明标记-清除、标记-复制、标记-整理三种算法的原理与取舍，以及分代收集的组合策略。</p></div>
-    <div class="card"><h2>参考答案</h2><ol>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 53 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><ol>
 <li><strong>标记-清除</strong>：先标记存活对象，再清除垃圾。缺点：①标记/清除效率都不高；②产生<strong>内存碎片</strong>——大对象放不下连续空间会提前触发 GC。CMS 的底层算法。</li>
 <li><strong>标记-复制</strong>：内存分两块，只用一块；GC 时把存活对象<strong>整体复制</strong>到另一块再一次性清空。优点：无碎片、分配快（指针碰撞）；缺点：<strong>浪费一半空间</strong>、存活对象多时复制开销大。适合<strong>朝生夕死的新生代</strong>（HotSpot 优化为 Eden:Survivor=8:1:1，只浪费 10%）。</li>
 <li><strong>标记-整理</strong>：标记后把存活对象<strong>向一端移动</strong>，再清理边界外内存。无碎片、不浪费空间，但移动对象要<strong>停顿（STW）</strong>并更新引用，成本高。适合<strong>存活率高的老年代</strong>。</li>

@@ -96,7 +96,7 @@
     <h1>生产环境如何做代码分割与按需加载？路由懒加载的原理是什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">代码分割</span><span class="chip tag">懒加载</span><span class="chip tag">splitChunks</span></div>
     <div class="card"><h2>题目</h2><p>说明 splitChunks 策略、动态 import 的运行时机制，以及常见分割维度。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>路由懒加载原理</strong>：把组件写成动态 import（<code>component: () =&gt; import(&#39;./Foo.vue&#39;)</code>），打包器据此把该模块切到<strong>独立 chunk</strong>；运行时路由匹配到才通过 JSONP/<code>&lt;script&gt;</code> 注入加载 chunk，再执行回调渲染。首屏只拉主包，页面按需加载。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>路由懒加载原理</strong>：把组件写成动态 import（<code>component: () =&gt; import(&#39;./Foo.vue&#39;)</code>），打包器据此把该模块切到<strong>独立 chunk</strong>；运行时路由匹配到才通过 JSONP/<code>&lt;script&gt;</code> 注入加载 chunk，再执行回调渲染。首屏只拉主包，页面按需加载。</p>
 <p><strong>分割维度</strong>：① 路由级（收益最大）；② 大型三方库（echarts/xlsx/编辑器）改为触发时 import；③ <code>splitChunks</code> 把 node_modules 公共依赖拆 vendor、被多入口共享的模块拆 common，配合 <code>maxSize/maxAsyncRequests</code> 平衡请求数与缓存命中。</p>
 <p><strong>配套优化</strong>：manifest/vendor 与业务代码分离以长缓存；预加载提示 <code>&lt;link rel=prefetch&gt;</code> 缓解点击延迟；骨架屏/loading 兜底懒加载体验；避免过度分割导致请求数爆炸。</p></div>
     <div class="cta-row">

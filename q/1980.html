@@ -96,7 +96,7 @@
     <h1>引入混沌工程后，某次实验引发了雪崩（连锁故障），复盘时该从哪些维度归因？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">混沌工程</span><span class="chip tag">雪崩</span><span class="chip tag">连锁故障</span><span class="chip tag">熔断</span><span class="chip tag">复盘</span></div>
     <div class="card"><h2>题目</h2><p>故障排查题：混沌本是为了发现脆弱点，结果把服务打挂了。作为复盘主持人，你从哪些维度定位为什么会发生连锁故障？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>依赖与调用链维度</strong>：连锁故障往往源于<strong>同步调用扇出 + 无超时/无熔断</strong>。检查被注入服务的下游依赖是否同步阻塞、重试是否放大流量（重试风暴）、是否缺熔断/降级，导致一个节点变慢拖垮整条链路。</li>
 <li><strong>容量与资源维度</strong>：故障节点下线后，剩余节点流量陡增是否<strong>超过容量上限</strong>触发级联超时；线程池/连接池是否被打满；是否存在<strong>缓存击穿</strong>把压力传到数据库。</li>

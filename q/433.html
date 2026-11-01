@@ -96,7 +96,7 @@
     <h1>@babel/preset-env 是如何「按需」决定转译哪些语法的？modules 与 useBuiltIns 该怎么配？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">Babel</span><span class="chip tag">preset-env</span><span class="chip tag">浏览器兼容</span></div>
     <div class="card"><h2>题目</h2><p>项目需要兼容一批老浏览器，但又不希望把每一行现代语法都降级、导致产物膨胀。请说明 preset-env 的工作机制与关键选项的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、它是什么</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、它是什么</h3>
 <p>@babel/preset-env 是一个「智能预设」：根据你声明的<strong>目标环境</strong>，自动推导出需要的语法转换插件（以及可选的浏览器 polyfill），不再需要手工维护一长串插件列表，产物也因此更小。</p>
 <h3>二、工作原理</h3>
 <p>它依托 browserslist、compat-table、electron-to-chromium 等数据源，维护着「语法/特性 → 各目标环境支持版本 → Babel 转换插件与 core-js polyfill」的映射关系。拿到 targets 后查出一份插件清单，交给 Babel 执行。</p>

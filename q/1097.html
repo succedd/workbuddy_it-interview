@@ -96,7 +96,7 @@
     <h1>【故障排查题·高级】CLB 控制台显示后端健康检查「异常」，但用户部分访问正常、部分 502；改小不健康阈值后异常更频繁。请给出系统的排查步骤，并解释为什么「健康检查异常但业务时好时坏」。最后说明：线上要摘除一台后端做维护，「权重置 0」和「直接解绑」该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">系统运维工程师</span><span class="chip">云计算工程师</span><span class="chip tag">CLB</span><span class="chip tag">健康检查异常</span><span class="chip tag">探测频率</span><span class="chip tag">权重置0</span><span class="chip tag">灰度下线</span></div>
     <div class="card"><h2>题目</h2><p>考察点：健康检查异常的标准排查清单（直连验证/端口/防火墙/检查参数/iptables）、健康检查按探测节点独立判定导致的「部分可用」现象、权重置 0 与解绑的差异及灰度下线实践。CLB 售后高阶综合题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>排查步骤（自底向上逐层验证）</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>排查步骤（自底向上逐层验证）</strong>：</p>
 <ul>
 <li><strong>绕过 CLB 直连验证</strong>：从内网直接访问「后端 IP + 业务端口」，确认应用本身可服务；</li>
 <li><strong>查端口与进程</strong>：确认后端服务在健康检查端口上监听（netstat/ss），不是只绑在 127.0.0.1；</li>

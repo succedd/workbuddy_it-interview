@@ -96,7 +96,7 @@
     <h1>大型 iOS 项目里，如何设计可复用的 UI 组件层与主题体系，保证多业务线一致？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">iOS开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">UIKit</span><span class="chip tag">组件化</span><span class="chip tag">Design Token</span><span class="chip tag">主题</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：组件分层、Design Token、UIAppearance、Coordinator 模式等工程化设计能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>组件分层：基础原子组件（Button/Label）→ 业务无关复合组件 → 业务组件，统一通过内部 Pod/SPM 包沉淀，避免各业务重复造轮子。</li>
 <li>主题体系：把颜色/字体/间距抽象成 Design Token（如 Asset Catalog + 语义化颜色），通过 UIAppearance 或统一样式协议下发，支持暗黑模式与品牌切换。</li>

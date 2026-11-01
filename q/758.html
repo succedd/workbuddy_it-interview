@@ -96,7 +96,7 @@
     <h1>区块链的基本结构（区块、哈希、默克尔树）与不可篡改原理？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">区块链工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">区块链</span><span class="chip tag">哈希</span><span class="chip tag">默克尔树</span></div>
     <div class="card"><h2>题目</h2><p>解释区块链的数据结构与防篡改机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>基本结构</strong>：区块链由按时间顺序链接的“区块”组成；每个区块含区块头（前一区块哈希、时间戳、默克尔根、随机数）与交易数据。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>基本结构</strong>：区块链由按时间顺序链接的“区块”组成；每个区块含区块头（前一区块哈希、时间戳、默克尔根、随机数）与交易数据。</p>
 <p><strong>哈希链</strong>：每区块记录父区块哈希，改任一历史区块都会使其后所有哈希失配，立即可被发现。</p>
 <p><strong>默克尔树</strong>：用树状哈希把大量交易汇总成根哈希，既能高效验证某笔交易存在，又压缩了头部体积。结合分布式共识（PoW/PoS），单点篡改无法被多数节点认可，从而实现不可篡改。</p></div>
     <div class="cta-row">

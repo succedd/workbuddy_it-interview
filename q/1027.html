@@ -96,7 +96,7 @@
     <h1>Node.js 单进程只能用一个 CPU 核心，Express 服务该怎么用满多核？cluster 有哪些坑？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Express</span><span class="chip tag">cluster</span><span class="chip tag">多核</span><span class="chip tag">优雅重启</span><span class="chip tag">Node.js</span></div>
     <div class="card"><h2>题目</h2><p>考察点：多进程模型、cluster 负载均衡、共享状态、优雅重启。Node 生产部署必考。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>问题本质</strong>：Node 的 JS 执行是<strong>单线程</strong>的，一个进程只能吃满一个核。8 核机器上单进程 Express 只能用到约 1/8 的算力，且<strong>一个致命错误会带走整个服务</strong>。</li>
 <li><strong>cluster 模块</strong>：主进程（primary）用 <code>cluster.fork()</code> 派生多个 worker，<strong>共享同一个监听端口</strong>。默认策略是 <strong>Round-Robin</strong>（<code>cluster.SCHED_RR</code>，由主进程分发连接），在 Linux 上比交由内核抢占（<code>SCHED_NONE</code>）更均衡，能缓解「连接分布不均导致某些 worker 忙死」。</li>

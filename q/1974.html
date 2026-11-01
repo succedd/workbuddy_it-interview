@@ -96,7 +96,7 @@
     <h1>说一下 HBase 的写入路径和读取路径（WAL、MemStore、HFile、BlockCache）。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">后端开发工程师</span><span class="chip">大数据开发工程师</span><span class="chip tag">HBase</span><span class="chip tag">写入路径</span><span class="chip tag">读取路径</span><span class="chip tag">WAL</span><span class="chip tag">HFile</span></div>
     <div class="card"><h2>题目</h2><p>回到原理：前面排查涉及 MemStore/Compaction/BlockCache，请完整串起一次写入和一次读取在 HBase 内部经过了哪些组件。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>写入路径</strong>：Client 先根据 RowKey 定位 Region 所在 RegionServer → 数据写入<strong>WAL（HLog，预写日志，保证宕机可恢复）</strong>→ 写入内存中的 <strong>MemStore</strong>（按列族隔离，有序）后返回客户端；MemStore 达到阈值被<strong>刷写为 HDFS 上的 HFile</strong>（有序的列式存储文件）。注意 HBase 把随机写转成「WAL 顺序写 + 内存写」，HFile 才是落盘实体。</li>
 <li><strong>读取路径</strong>：Client 定位 Region → 先查 <strong>BlockCache（读缓存，缓存热点 HFile Block）</strong>，未命中再查 <strong>MemStore（最新未刷写数据）</strong>，最后读 <strong>HFile</strong>（借助 BloomFilter 与 RowKey 索引跳过无关 Block）。三者结果合并（同 Key 取最大时间戳）返回，保证读到最新一致值。</li>

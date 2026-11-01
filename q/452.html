@@ -96,7 +96,7 @@
     <h1>Nacos 中临时服务与持久服务有什么区别？它们各自对应 AP 还是 CP，为什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端架构师</span><span class="chip tag">Nacos</span><span class="chip tag">服务注册发现</span><span class="chip tag">AP/CP</span></div>
     <div class="card"><h2>题目</h2><p>考察点：两种服务类型的存活判定与摘除方式、分别走 Distro（AP）与持久化（CP）一致性路径、ephemeral 在 2.x 是 Service 级语义。属简答题（中级）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>两种服务类型</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>两种服务类型</strong></p>
 <p>Nacos 里每个 Service 都有服务类型，它决定实例状态由哪条一致性路径维护：</p>
 <ul>
 <li><strong>临时服务（Ephemeral）</strong>：实例由存活的客户端持有，靠心跳（2.x 是 gRPC 长连接）保活；客户端断开、心跳过期或连接释放后，实例会被直接<strong>移除</strong>。偏 AP，主要状态路径是运行时 client state + <strong>Distro</strong> 协议同步。</li>

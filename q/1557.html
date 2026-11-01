@@ -96,7 +96,7 @@
     <h1>用 Python 写一个带超时与重试的微服务探活（health probe）脚本，并说明它如何对应 K8s 的存活/就绪探针。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">DevOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">云计算工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">健康检查</span><span class="chip tag">Kubernetes</span><span class="chip tag">探针</span><span class="chip tag">重试</span><span class="chip tag">Python</span></div>
     <div class="card"><h2>题目</h2><p>考察点：健康检查脚本的健壮性设计，以及探针语义的对应关系。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>探针语义</strong>：K8s 的 liveness 探针失败会重启容器（判定「死了」），readiness 失败会把 Pod 移出服务负载（判定「暂不能接流量」），startup 探针保护启动慢的容器。探活脚本的退出码（0=健康/非0=不健康）直接驱动这些动作。</li>
 <li><strong>健壮性要点</strong>：必须设超时（避免探针本身挂死拖垮判定）、做有限次重试（容忍瞬时抖动）、区分「依赖不可用」与「自身不可用」（依赖坏应返回 readiness 而非 liveness 失败，避免误重启）。</li>

@@ -96,7 +96,7 @@
     <h1>Vite 开发时用原生 ESM，为什么生产构建还要换回 Rollup？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">Vite</span><span class="chip tag">Rollup</span><span class="chip tag">esbuild</span><span class="chip tag">构建</span><span class="chip tag">TreeShaking</span></div>
     <div class="card"><h2>题目</h2><p>考察点：dev 与 build 的取舍、ESM 的请求风暴、Rollup 的产物质量。理解 Vite 的设计权衡。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>dev 为什么能用原生 ESM</strong>：省掉打包步骤，<strong>按需编译</strong>——浏览器请求哪个模块才编译哪个，所以<strong>冷启动与 HMR 都是毫秒级</strong>（不与项目规模成正比，这是相对 Webpack 的最大优势）。配合 <code>esbuild</code> 做 TS/JSX 转换（Go 实现，比 babel 快一到两个数量级）与<strong>依赖预构建</strong>（把 CJS 依赖转成 ESM，并把 <code>lodash-es</code> 那种「几百个小文件」的包合并成单文件，避免请求风暴）。</li>
 <li><strong>为什么生产不能这样交付</strong>：</li>

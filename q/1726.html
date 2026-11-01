@@ -96,7 +96,7 @@
     <h1>DApp 多链切换为什么要校验 chainId？wallet_switchEthereumChain 与签名钓鱼如何防？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Web3开发工程师</span><span class="chip">智能合约开发工程师</span><span class="chip tag">chainId</span><span class="chip tag">多链</span><span class="chip tag">签名钓鱼</span></div>
     <div class="card"><h2>题目</h2><p>考察多链 DApp 的链路校验、钱包交互与盲签风险。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>chainId 是链的身份</strong>：交易签名包含 chainId，可防跨链重放；DApp 必须校验钱包当前 chainId 与合约部署链一致，否则会把交易发到错误的链或调用到空地址。</li>
 <li><strong>切换流程</strong>：先 <code>wallet_switchEthereumChain</code> 请求切换，未收录的链用 <code>wallet_addEthereumChain</code> 添加；切换成功后重新初始化 provider、合约地址和后端签名域，不能复用旧链的 nonce / domain。</li>

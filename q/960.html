@@ -96,7 +96,7 @@
     <h1>用 Proxy 给配置对象加「只读 + 访问日志」拦截时遇到四个诡异问题（JSON.stringify 没进 get 陷阱、proxy 与 target 判等不等、revoke 后访问报错、代理 Map 失败），请逐一分析成因并修复。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip tag">ES6</span><span class="chip tag">JavaScript</span><span class="chip tag">Proxy</span><span class="chip tag">元编程</span><span class="chip tag">revocable</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Proxy 的代理身份、this 绑定陷阱、Proxy.revocable、对内置对象（Map/Set）代理的坑。这是 ES6 元编程的集大成追问，综合前面对象/函数知识。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>现象</strong>：套了 Proxy 做只读+日志后，① <code>JSON.stringify(proxy)</code> 似乎没走 get 陷阱；② <code>proxy === target</code> 为 false；③ 调 <code>revoke()</code> 后再访问代理直接抛 TypeError；④ 代理一个 <code>Map</code> 报错。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>现象</strong>：套了 Proxy 做只读+日志后，① <code>JSON.stringify(proxy)</code> 似乎没走 get 陷阱；② <code>proxy === target</code> 为 false；③ 调 <code>revoke()</code> 后再访问代理直接抛 TypeError；④ 代理一个 <code>Map</code> 报错。</p>
 <p><strong>要点与修复</strong>：</p>
 <ul>
 <li><strong>Proxy 是「另一个对象」</strong>：它不是 target 的壳，而是拥有独立身份的代理，所以 <code>proxy === target</code> 永远为 false；<code>JSON.stringify</code> 确实会对代理调用 get / ownKeys / getOwnPropertyDescriptor 等陷阱——若你只拦了 get 而没在 <code>ownKeys</code> / <code>getOwnPropertyDescriptor</code> 里正确转发，序列化就「看起来没进陷阱」。统一用 <code>Reflect.*</code> 在陷阱里转发可避免遗漏。</li>

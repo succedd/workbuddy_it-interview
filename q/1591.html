@@ -96,7 +96,7 @@
     <h1>用 Solidity 写一个最小可运行的「所有权（Ownable）」合约：含 onlyOwner 修饰符和转移 owner 的函数，并说明如何防范重入风险。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">智能合约开发工程师</span><span class="chip">Web3开发工程师</span><span class="chip tag">Solidity</span><span class="chip tag">Ownable</span><span class="chip tag">重入</span></div>
     <div class="card"><h2>题目</h2><p>考察 Solidity 基础与合约安全。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：最小 Ownable 实现（借鉴 OpenZeppelin 思路）：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：最小 Ownable 实现（借鉴 OpenZeppelin 思路）：</p>
 <pre><code class="language-solidity">contract Ownable {
     address public owner;
     constructor() { owner = msg.sender; }

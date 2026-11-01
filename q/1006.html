@@ -96,7 +96,7 @@
     <h1>MongoDB 的文档模型（BSON）适合什么场景？什么情况下不该用 MongoDB？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">DBA数据库管理员</span><span class="chip tag">MongoDB</span><span class="chip tag">文档模型</span><span class="chip tag">BSON</span><span class="chip tag">分片</span></div>
     <div class="card"><h2>题目</h2><p>考察点：文档模型与关系模型差异、嵌入 vs 引用、schema 灵活性的代价。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>文档模型</strong>：BSON（二进制 JSON）把关联数据<strong>内嵌在一个文档</strong>里——一次读拿到完整业务对象，无需 JOIN；字段可灵活增减，不同文档结构可不同，天然适合商品详情、用户画像、内容 CMS 这类「属性因对象而异」的场景。</li>
 <li><strong>建模核心抉择：嵌入 vs 引用</strong>——「一起读写的数据嵌进去」（一对一、一对少量），「独立增长/多对多的用引用+$lookup」。反范式是有意设计而非偷懒，但引用层级过深会把 JOIN 问题换个形式带回来。</li>

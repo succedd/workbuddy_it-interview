@@ -96,7 +96,7 @@
     <h1>为什么分布式系统需要分布式事务？CAP 与 BASE 理论如何解释「强一致 vs 最终一致」的取舍？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip tag">分布式事务</span><span class="chip tag">CAP</span><span class="chip tag">BASE</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否理解单机 ACID 在分布式下失效的根因，以及 CAP/BASE 给出的工程权衡。追问：为什么大多数互联网系统选择最终一致而不是强一致？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ol>
 <li><strong>为什么需要</strong>：单体库里一个本地事务就能保证 ACID；但下单、扣库存、扣余额分散在多个服务/库后，一次操作跨多个资源，本地事务管不到全局，必须用分布式事务保证跨服务的业务正确性。</li>
 <li><strong>CAP 定理</strong>：一致性（C）、可用性（A）、分区容错（P）三者最多取二；分布式系统必然有网络分区（P 必选），所以实际是在 <strong>CP（强一致、牺牲可用）</strong> 与 <strong>AP（高可用、牺牲强一致）</strong> 之间选。</li>

@@ -96,7 +96,7 @@
     <h1>垂直拆分和水平拆分有什么区别？分别适用于什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">分库分表</span><span class="chip tag">垂直拆分</span><span class="chip tag">水平拆分</span></div>
     <div class="card"><h2>题目</h2><p>请区分垂直分库、垂直分表与水平分库分表，并说明各自的取舍。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>垂直拆分（按业务/列）</strong>：① 垂直分库——把耦合度低的业务表拆到不同库（订单库、用户库），解耦并降低单库连接压力；② 垂直分表——把大表的“热点字段”与“扩展字段”拆开，减少单行宽度、提升缓冲池命中率。适用于业务边界清晰、或宽表冷热字段分明的场景。</li>
 <li><strong>水平拆分（分库分表，按行）</strong>：按分片规则（取模、范围、哈希）把同一张表的数据分散到多库多表，表结构完全一致，真正解决单表数据量过大的问题。</li>

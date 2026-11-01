@@ -96,7 +96,7 @@
     <h1>要在生产环境对支付服务做一次「杀掉一个 Pod」的混沌实验，怎么设计才能既验证韧性又最小化影响？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">后端开发工程师</span><span class="chip">云计算工程师</span><span class="chip tag">混沌工程</span><span class="chip tag">PodKill</span><span class="chip tag">GameDay</span><span class="chip tag">爆炸半径</span><span class="chip tag">回滚</span></div>
     <div class="card"><h2>题目</h2><p>场景题：把流程落到真实操作。你是 SRE，老板要求验证支付服务某个无状态实例挂掉用户无感，但绝不能真出资损。怎么设计？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先算爆炸半径与前置条件</strong>：确认该 Pod 是无状态、多副本（≥3）、有健康探针与就绪探针、流量经负载均衡能自动摘流；确认下游（数据库/缓存/第三方支付网关）有冗余与熔断；准备好<strong>一键回滚/停止开关</strong>。</li>
 <li><strong>实验设计</strong>：选低峰期；只杀<strong>单个 Pod</strong>（而非全部），用 Chaos Mesh 的 PodChaos kill 或 <code>kubectl delete pod</code> 模拟节点/容器失效；注入后立刻观察稳态指标（支付成功率、P99、订单创建成功率）是否在阈值内自愈。</li>

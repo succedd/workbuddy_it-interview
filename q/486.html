@@ -96,7 +96,7 @@
     <h1>TCP 为什么需要三次握手建立连接、四次挥手释放连接？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">网络规划工程师</span><span class="chip">网络架构师</span><span class="chip">后端开发工程师</span><span class="chip tag">TCP</span><span class="chip tag">三次握手</span><span class="chip tag">四次挥手</span></div>
     <div class="card"><h2>题目</h2><p>请描述 TCP 三次握手与四次挥手的过程，并解释为什么建立是三次、释放是四次。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>三次握手（建立连接）</strong>——确认双方收发能力：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>三次握手（建立连接）</strong>——确认双方收发能力：</p>
 <ol>
 <li>客户端 <code>SYN=1, seq=x</code> → 服务器（进入 SYN_SENT）。</li>
 <li>服务器 <code>SYN=1, ACK=1, seq=y, ack=x+1</code> → 客户端（进入 SYN_RCVD）。</li>

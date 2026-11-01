@@ -96,7 +96,7 @@
     <h1>Jenkins 共享库（Shared Library）该怎么设计？什么时候值得抽？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">CI/CD工程师</span><span class="chip">技术经理</span><span class="chip tag">Jenkins</span><span class="chip tag">SharedLibrary</span><span class="chip tag">流水线复用</span><span class="chip tag">CI/CD</span><span class="chip tag">工程化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：流水线复用、版本管理、约定优于配置。规模化 CI 的核心手段。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>解决什么问题</strong>：多条流水线会<strong>重复同样的构建/部署/通知逻辑</strong>（几百行 Jenkinsfile 复制粘贴），改动一次要改几十个仓库。共享库把<strong>公共逻辑抽成可版本化的代码</strong>，让 Jenkinsfile 只表达「这个项目要干什么」。</li>
 <li><strong>目录结构与加载方式</strong>：</li>

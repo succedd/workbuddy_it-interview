@@ -96,7 +96,7 @@
     <h1>JavaScript 如何实现继承？ES5 原型继承与 ES6 class extends 有什么区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">继承</span><span class="chip tag">原型继承</span><span class="chip tag">class</span><span class="chip tag">寄生组合继承</span></div>
     <div class="card"><h2>题目</h2><p>考察点：ES5 用原型链 + 构造函数（组合继承/寄生组合继承）实现复用；ES6 class 是语法糖，本质仍是原型；面试常让手写继承或手写 new。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>ES5 组合继承</strong>：子构造函数里 <code>Parent.call(this, ...)</code> 继承实例属性，再把 <code>Child.prototype = Object.create(Parent.prototype)</code> 继承方法，并修正 <code>constructor</code>。这是“组合继承”，也是最常用写法。</li>
 <li><strong>寄生组合继承（更优）</strong>：用 <code>Object.create</code> 只继承原型、不重复调用父类构造函数，避免父实例属性被建两次，是 ES5 下的最优解。</li>

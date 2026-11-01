@@ -96,7 +96,7 @@
     <h1>现代前端工程里，Babel 与 SWC / esbuild 等新工具该如何选型与组合？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">前端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Babel</span><span class="chip tag">SWC</span><span class="chip tag">esbuild</span><span class="chip tag">构建工具</span><span class="chip tag">选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：从速度、生态、兼容性三个维度权衡 Babel 与 Rust/Go 系新工具，给出可落地的组合策略。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>定位差异：Babel 生态最成熟（插件最多、兼容最稳），但用 JS 实现、速度慢；SWC（Rust）、esbuild（Go）以速度见长（快 10~100 倍），适合 dev 热更新与大型项目构建提速。</li>
 <li>组合策略：常见做法是用 SWC/esbuild 承担「语法降级 + 打包提速」这条快路径，仅在需要精细语法或自定义转换（如组件库按需、私有语法糖）时保留 Babel 作为兼容层，二者并存。</li>

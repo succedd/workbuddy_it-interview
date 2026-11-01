@@ -96,7 +96,7 @@
     <h1>MQTT 的发布/订阅模型、QoS 等级（0/1/2）与适用场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">IoT开发工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">MQTT</span><span class="chip tag">发布订阅</span><span class="chip tag">QoS</span><span class="chip tag">IoT</span></div>
     <div class="card"><h2>题目</h2><p>解释 MQTT 的消息模型与三种服务质量区别。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>发布/订阅</strong>：客户端通过 Broker 解耦，按 Topic 发布/订阅，无需知道对方地址，适合海量设备。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>发布/订阅</strong>：客户端通过 Broker 解耦，按 Topic 发布/订阅，无需知道对方地址，适合海量设备。</p>
 <p><strong>QoS 0（最多一次）</strong>：发就完，可能丢，开销最小，适合高频遥测。</p>
 <p><strong>QoS 1（至少一次）</strong>：确认重传，可能重复，适合不能丢的命令。</p>
 <p><strong>QoS 2（恰好一次）</strong>：四次握手保证不丢不重，开销最大，适合计费/关键指令。另有 Last Will、保留消息等机制增强可靠性。</p></div>

@@ -96,7 +96,7 @@
     <h1>实战：下单同时要扣减库存，如何设计既不超卖又不阻塞用户请求？请用最终一致方案说明。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip tag">下单扣库存</span><span class="chip tag">最终一致</span><span class="chip tag">超卖</span><span class="chip tag">补偿</span><span class="chip tag">高并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：把分布式事务方案落到真实业务（下单扣库存），权衡一致性与性能，给出设计与补偿。追问：如果扣库存失败，订单怎么处理？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ol>
 <li><strong>选型</strong>：下单扣库存是「高并发、可短暂不一致、需可补偿」的场景，<strong>不适合 2PC（阻塞）</strong>，适合「TCC 或 消息最终一致」。</li>
 <li><strong>消息最终一致方案</strong>：</li>

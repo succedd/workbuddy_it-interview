@@ -96,7 +96,7 @@
     <h1>Kubernetes 里 Pod 到底是什么？为什么不直接用容器，而要在外面包一层 Pod？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">云计算工程师</span><span class="chip tag">Pod</span><span class="chip tag">容器</span><span class="chip tag">Kubernetes</span><span class="chip tag">调度</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否理解 Pod 作为最小调度单元的设计语义（共享网络/存储命名空间、逻辑主机）。追问：一个 Pod 里放多个容器适合什么场景？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Pod 是 Kubernetes 中最小的可部署计算单元，是「逻辑主机」的建模，而不是单纯的一个容器。</p>
 <ul>
 <li><strong>为什么需要 Pod</strong>：容器运行时（Docker/containerd）只管单个容器；但应用常需要「一组紧密协作、共享资源的进程」。Pod 把多个容器打包成一个并置、同调度的单元，让它们像在同一台机器上一样协作。</li>
 <li><strong>共享什么</strong>：Pod 内所有容器共享同一个网络命名空间（同一 IP + 端口空间，用 <code>localhost</code> 互访）和共享存储卷；不同 Pod 默认各有独立 IP，跨 Pod 通信走集群网络。</li>

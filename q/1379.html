@@ -96,7 +96,7 @@
     <h1>页式、段式、段页式虚拟存储器有什么区别？快表 TLB 与缺页中断是如何工作的？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">操作系统开发工程师</span><span class="chip">系统软件工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">虚拟存储器</span><span class="chip tag">页式</span><span class="chip tag">段式</span><span class="chip tag">段页式</span><span class="chip tag">TLB</span><span class="chip tag">缺页中断</span></div>
     <div class="card"><h2>题目</h2><p>考察三种虚拟存储管理方式的划分依据、碎片特性，以及虚实地址转换中 TLB 加速与缺页中断调页流程（常结合 CSAPP / 408 考点）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>一、三种管理方式对比</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、三种管理方式对比</strong></p>
 <ul>
 <li><strong>页式</strong>：把虚拟/物理空间都划分为固定大小页面（如 4KB），虚拟地址 = 页号 + 页内偏移，经页表映射到物理页框。会产生<strong>内部碎片</strong>（整页未用完），但无外部碎片，管理简单，现代系统主流。</li>
 <li><strong>段式</strong>：按程序逻辑结构（代码段、数据段、堆栈段）划分，段长可变，虚拟地址 = 段号 + 段内偏移，经段表映射到基址。符合程序逻辑、便于共享保护，但段大小不一会产生<strong>外部碎片</strong>。</li>

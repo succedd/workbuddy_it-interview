@@ -96,7 +96,7 @@
     <h1>PostgreSQL 有哪些索引类型？B-Tree、Hash、GIN、GiST 分别适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">后端开发工程师</span><span class="chip">数据库工程师</span><span class="chip tag">PostgreSQL</span><span class="chip tag">索引</span><span class="chip tag">B-Tree</span><span class="chip tag">GIN</span></div>
     <div class="card"><h2>题目</h2><p>考察索引选型的场景化判断。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 22 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>B-Tree（默认）</strong>：适合等值、范围、排序、前缀查询，最通用；绝大多数场景用它即可。</li>
 <li><strong>Hash</strong>：只支持等值查询，且 PG 中 B-Tree 已能覆盖等值，Hash 索引使用场景极少（历史上不支持 WAL 复制，现已支持但仍非首选）。</li>

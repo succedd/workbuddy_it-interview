@@ -96,7 +96,7 @@
     <h1>一笔交易 gas 费异常高、或一直停留在 pending 不打包，可能原因有哪些？如何排查？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">区块链工程师</span><span class="chip">智能合约开发工程师</span><span class="chip tag">gas</span><span class="chip tag">pending</span><span class="chip tag">交易排查</span></div>
     <div class="card"><h2>题目</h2><p>考察链上交易排查。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：Gas 费异常高：通常是网络拥堵导致 base fee 上涨，或手动设置的 gasPrice/maxFeePerGas 过高；也可能是合约逻辑复杂（循环、大量存储写入）本身就很贵。排查时先看区块浏览器上的 gas 均价，再用 ETH 单位换算确认不是单位写错（wei/gwei 混淆）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：Gas 费异常高：通常是网络拥堵导致 base fee 上涨，或手动设置的 gasPrice/maxFeePerGas 过高；也可能是合约逻辑复杂（循环、大量存储写入）本身就很贵。排查时先看区块浏览器上的 gas 均价，再用 ETH 单位换算确认不是单位写错（wei/gwei 混淆）。</p>
 <p><strong>要点</strong>：一直 pending：最常见是 gas 出价低于当前 base fee 没人打包，或 nonce 不连续（上一笔同地址交易卡住，后续全部排队）；也可能是节点未广播成功、或设置了过远的 maxPriorityFee。</p>
 <p><strong>要点</strong>：排查清单：① 核对 nonce 是否连续；② 对比当前网络 gas 水平重新提速（speed up/replace-by-fee）；③ 用区块浏览器查交易状态与失败 reason；④ 重发时务必复用同一 nonce 并提高 fee，避免双花。</p></div>
     <div class="cta-row">

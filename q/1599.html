@@ -96,7 +96,7 @@
     <h1>用 C 和 POSIX 信号量实现一个 bounded-buffer 生产者-消费者：说明 P/V 操作如何保证互斥与同步。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">信号量</span><span class="chip tag">生产者消费者</span><span class="chip tag">POSIX</span></div>
     <div class="card"><h2>题目</h2><p>考察并发原语与同步。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：用三个信号量建模：sem_mutex（初值1，互斥访问缓冲区）、sem_empty（初值=N，空位数量）、sem_full（初值=0，已填充数量）；生产者/消费者各用一个循环。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：用三个信号量建模：sem_mutex（初值1，互斥访问缓冲区）、sem_empty（初值=N，空位数量）、sem_full（初值=0，已填充数量）；生产者/消费者各用一个循环。</p>
 <p><strong>要点</strong>：参考骨架：</p>
 <pre><code class="language-c">// 生产者
 sem_wait(&amp;empty); sem_wait(&amp;mutex);

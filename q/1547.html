@@ -96,7 +96,7 @@
     <h1>如何为前端登录流程设计一条端到端自动化测试？请说明元素定位、等待策略与测试数据清理。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">测试工程师</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">E2E</span><span class="chip tag">自动化测试</span><span class="chip tag">登录流程</span><span class="chip tag">等待策略</span><span class="chip tag">测试数据</span></div>
     <div class="card"><h2>题目</h2><p>考察点：端到端（E2E）自动化测试用例的工程设计能力。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>用例拆解</strong>：把登录拆成正常路径（正确账号密码→跳转首页）、异常路径（错误密码提示、空输入校验、验证码/限流）与边界（超长输入），每类一个独立用例，单一职责、可独立运行。</li>
 <li><strong>元素定位要稳定</strong>：优先用 data-testid 或稳定的 id，避免依赖易变的 class 与层级 XPath；把定位表达式集中到 Page Object，页面结构变动只改一处。</li>

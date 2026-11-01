@@ -96,7 +96,7 @@
     <h1>Node.js 的事件循环（Event Loop）机制是怎样的？为什么适合高并发 I/O？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Node.js</span><span class="chip tag">事件循环</span><span class="chip tag">非阻塞IO</span></div>
     <div class="card"><h2>题目</h2><p>解释事件循环的阶段划分与非阻塞 I/O 模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>模型本质</strong>：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>模型本质</strong>：Node 是单线程 + 事件循环 + 非阻塞 I/O。遇到 I/O（网络/文件）时不阻塞等待，而是注册回调继续处理其他请求，I/O 完成后由事件循环调度回调执行。</p>
 <p><strong>循环阶段</strong>：timers（setTimeout）→ pending callbacks → idle/prepare → poll（取 I/O 事件）→ check（setImmediate）→ close。每阶段有专属 FIFO 队列。</p>
 <p><strong>优势</strong>：用少量线程处理海量并发连接，特别适合聊天、网关、API 聚合等 I/O 密集场景；CPU 密集任务会阻塞循环，应交给 Worker 线程或子进程。</p></div>
     <div class="cta-row">

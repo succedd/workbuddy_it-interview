@@ -96,7 +96,7 @@
     <h1>Cassandra 的一致性级别（ONE/QUORUM/ALL）与最终一致性？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据库工程师</span><span class="chip">数据库架构师</span><span class="chip tag">Cassandra</span><span class="chip tag">一致性级别</span><span class="chip tag">最终一致</span></div>
     <div class="card"><h2>题目</h2><p>解释 Cassandra 可调一致性与 AP 取向。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>一致性级别</strong>：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一致性级别</strong>：读/写时可指定需多少副本确认——ONE（1 个即可，最快但最终一致）、QUORUM（过半副本，平衡）、ALL（全部，最强但慢且脆弱）。</p>
 <p><strong>可调一致</strong>：写与读级别独立配置，应用可在性能与一致性间权衡（如 QUORUM 写+QUORUM 读得强一致）。</p>
 <p><strong>最终一致性</strong>：Cassandra 属 AP 系统（CAP 中优先可用与分区容忍），副本间异步修复（read repair/hinted handoff），短暂不一致会收敛。适合写入极高、可容忍短暂不一致的场景。</p></div>
     <div class="cta-row">

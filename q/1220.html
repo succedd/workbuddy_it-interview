@@ -96,7 +96,7 @@
     <h1>【故障排查】生产环境一个 React 页面白屏或长时间卡死无响应，你如何系统化定位是渲染死循环、状态频繁更新还是内存泄漏？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">React</span><span class="chip tag">白屏</span><span class="chip tag">卡死</span><span class="chip tag">内存泄漏</span><span class="chip tag">性能排查</span></div>
     <div class="card"><h2>题目</h2><p>追问链第 5 问：把前面的 Hooks/Fiber 知识用于实战排障。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 41 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>第一步：复现与初判</strong>。用生产 SourceMap + 浏览器 Performance/Profiler 录制：白屏通常是<strong>渲染抛错未被捕获</strong>（Error Boundary 缺失）或首屏 JS 崩溃；卡死则是主线程被占满。看 Console 是否有报错、是否触发了 Error Boundary。</li>
 <li><strong>第二步：查渲染死循环/频繁更新</strong>。在 React DevTools 的 Profiler 中录制交互，看是否有<strong>同一组件以极高频率 re-render</strong>（flamegraph 一片红）；用「为何渲染」高亮确认 props/state 是否每次都变；结合 useEffect 循环经验，排查 <code>useState</code> 在 render 中直接调用、或 effect 依赖不稳导致的无限更新。</li>

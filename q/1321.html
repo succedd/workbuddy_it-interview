@@ -96,7 +96,7 @@
     <h1>InnoDB 的 Buffer Pool 为什么要对 LRU 链表做 young/old 分区？新页为什么先插到链表 5/8 处而不是头部？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">DBA数据库管理员</span><span class="chip">数据库工程师</span><span class="chip tag">MySQL</span><span class="chip tag">InnoDB</span><span class="chip tag">Buffer Pool</span><span class="chip tag">LRU</span><span class="chip tag">缓存管理</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对 InnoDB 缓存管理的理解深度，能否讲清楚预读失效与 Buffer Pool 污染两个问题及对应的解决机制。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>先看简单 LRU 的两个问题</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先看简单 LRU 的两个问题</strong></p>
 <ul>
 <li><strong>预读失效</strong>：InnoDB 加载数据页时会按局部性原理把相邻页一并预读进来，但这些页可能根本不会被访问。若直接插到 LRU 头部，反而把真正热的页往后挤，降低缓存命中率。</li>
 <li><strong>Buffer Pool 污染</strong>：一次全表扫描（哪怕结果集很小，比如 <code>where name like &#39;%xx%&#39;</code> 索引失效）会把大量只访问一次的页逐个插到 LRU 头部，把 young 区的热点数据全部替换出去，热数据再被访问时就要重新走磁盘 IO。</li>

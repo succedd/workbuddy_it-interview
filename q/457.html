@@ -96,7 +96,7 @@
     <h1>ClickHouse MergeTree 表的 ORDER BY 该怎么设计？为什么按第二主键列过滤时索引几乎不起作用？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">大数据开发工程师</span><span class="chip">数据仓库工程师</span><span class="chip tag">ClickHouse</span><span class="chip tag">MergeTree</span><span class="chip tag">稀疏索引</span></div>
     <div class="card"><h2>题目</h2><p>一张几千万行的用户行为表，按 (UserID, URL) 排序后查 UserID 极快、查 URL 却几乎全表扫描。请解释稀疏索引的工作原理并给出建表与优化建议。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>稀疏索引的原理</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>稀疏索引的原理</strong></p>
 <ul>
 <li>MergeTree <strong>不为每一行建索引</strong>。数据按排序键在磁盘上物理有序存放，每 <strong><code>index_granularity</code>（默认 8192 行）</strong>行构成一个 <strong>granule</strong>，主索引 <code>primary.idx</code> 为每个 granule 只记一个 <strong>mark</strong>（该 granule 第一行的主键列值）。千万行表的索引通常只有几百 KB，可完全常驻内存。</li>
 <li>查询分两步：①在内存里对 mark 数组做<strong>二分查找</strong>选出可能命中的 granule；②通过 <strong>mark 文件</strong>（记录压缩块偏移 + granule 偏移）定位，只把这些 granule 整块解压读入。实测 8.87M 行的表，命中首列时只选 1/1083 个 granule、读 8.19K 行。</li>

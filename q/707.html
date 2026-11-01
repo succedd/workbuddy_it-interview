@@ -96,7 +96,7 @@
     <h1>维度建模中星型与雪花模型区别？事实表与维度表？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">数据仓库工程师</span><span class="chip">大数据架构师</span><span class="chip tag">维度建模</span><span class="chip tag">星型模型</span><span class="chip tag">事实表</span><span class="chip tag">维度表</span></div>
     <div class="card"><h2>题目</h2><p>解释数据仓库维度建模的核心概念。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>事实表</strong>：存业务过程的可度量数值（销售额、订单量）与外键，是分析的核心，行多列少。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>事实表</strong>：存业务过程的可度量数值（销售额、订单量）与外键，是分析的核心，行多列少。</p>
 <p><strong>维度表</strong>：描述业务视角（时间、地区、商品、用户），提供分析“怎么切”。</p>
 <p><strong>星型模型</strong>：事实表直接连多个未规范化的维度表，查询简单、性能好，最常用。</p>
 <p><strong>雪花模型</strong>：维度再规范化拆成多级小表，省存储但 join 多、查询复杂。实际多倾向星型以换性能。</p></div>

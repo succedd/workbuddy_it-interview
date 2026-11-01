@@ -96,7 +96,7 @@
     <h1>iOS App 的启动流程是怎样的？启动耗时如何优化？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">iOS开发工程师</span><span class="chip tag">iOS</span><span class="chip tag">启动优化</span><span class="chip tag">dyld</span></div>
     <div class="card"><h2>题目</h2><p>从 pre-main 到 didFinishLaunching 再到首帧渲染，给出可量化的优化点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>阶段</strong>：① <strong>pre-main</strong>：dyld 加载动态库 → rebase/bind（ASLR 修正与符号绑定）→ ObjC runtime 类注册、Category 挂载 → 各 initializer（+load、C++ 构造）；② <strong>main 之后</strong>：AppDelegate 的 <code>didFinishLaunchingWithOptions</code> → rootViewController 创建与首屏 viewDidLoad/layout → 首帧渲染完成。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p><strong>阶段</strong>：① <strong>pre-main</strong>：dyld 加载动态库 → rebase/bind（ASLR 修正与符号绑定）→ ObjC runtime 类注册、Category 挂载 → 各 initializer（+load、C++ 构造）；② <strong>main 之后</strong>：AppDelegate 的 <code>didFinishLaunchingWithOptions</code> → rootViewController 创建与首屏 viewDidLoad/layout → 首帧渲染完成。</p>
 <p><strong>优化</strong>：① 动态库<strong>合并/减少</strong>（自定义 dyld 顺序、合并成一个，或转静态库），每减少一个动态库省 1~2ms 级启动；② 二进制重排（order file / <code>-order_file</code>，把启动期函数放一页减少 page fault）；③ <strong>+load 清理</strong>：改用 +initialize 懒加载；④ didFinishLaunching <strong>异步化/延后</strong>：非首屏 SDK 初始化挪到首帧后（dispatch_async 或监听 first frame），注册/推送等延后；⑤ 首屏<strong>瘦身</strong>：viewDidLoad 少做 IO，首页接口预热并行请求；⑥ 监控：<code>os_signpost</code>/MetricKit 量化 cold start，分版本回归。</p>
 <p><strong>经验值</strong>：pre-main 每减 10% 动态库肉眼可感；didFinishLaunching 控制在 400ms 内。</p></div>
     <div class="cta-row">

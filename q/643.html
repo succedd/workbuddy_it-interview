@@ -96,7 +96,7 @@
     <h1>ThreadPoolExecutor 的七个构造参数分别是什么？任务提交后线程池的处理流程是怎样的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Node.js</span><span class="chip tag">事件循环</span><span class="chip tag">非阻塞IO</span></div>
     <div class="card"><h2>题目</h2><p>追问链过渡到线程池：日常开发最常碰的并发组件。考察点：corePoolSize/maximumPoolSize/workQueue/keepAliveTime/unit/threadFactory/handler 七参数含义；&quot;核心线程→入队→扩容到最大线程→拒绝&quot;的提交顺序。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点一：七个构造参数</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 55 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点一：七个构造参数</strong></p>
 <ul>
 <li>corePoolSize：核心线程数，线程池优先维持的工作线程数量；默认线程按需创建，工作线程数达到该值后新任务通常先入队。</li>
 <li>maximumPoolSize：最大线程数，当任务队列已满时，允许同时运行的线程数量上限。</li>

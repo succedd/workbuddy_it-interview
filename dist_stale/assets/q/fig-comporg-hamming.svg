@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 330" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<text x="340" y="26" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">海明码（4 位数据 1011 编码 + 单错定位）</text>
+<rect x="50" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="83" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位1</text>
+<text x="83" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">P1</text>
+<rect x="122" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="155" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位2</text>
+<text x="155" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">P2</text>
+<rect x="194" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="227" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位3</text>
+<text x="227" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">D3</text>
+<rect x="266" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="299" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位4</text>
+<text x="299" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">P4</text>
+<rect x="338" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="371" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位5</text>
+<text x="371" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">D5</text>
+<rect x="410" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="443" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位6</text>
+<text x="443" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">D6</text>
+<rect x="482" y="70" width="66" height="44" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="515" y="88" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">位7</text>
+<text x="515" y="106" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">D7</text>
+<text x="83" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">?</text>
+<text x="155" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">?</text>
+<text x="227" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">1</text>
+<text x="299" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">?</text>
+<text x="371" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">0</text>
+<text x="443" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">1</text>
+<text x="515" y="140" font-size="13" fill="#1a73e8" text-anchor="middle" font-weight="bold">1</text>
+<text x="340" y="160" font-size="12" fill="#1a73e8" text-anchor="middle" font-weight="bold">奇偶校验位覆盖（P 在 2^k 位，覆盖其补码对应的数据位）</text>
+<rect x="50" y="180" width="580" height="120" rx="8" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="62" y="204" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">P1(位1) 覆盖位 1,3,5,7 → D3,D5,D7 = 1,0,1 → 偶校验 P1=0</text>
+<text x="62" y="223" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">P2(位2) 覆盖位 2,3,6,7 → D3,D6,D7 = 1,1,1 → 偶校验 P2=1</text>
+<text x="62" y="242" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">P4(位4) 覆盖位 4,5,6,7 → D5,D6,D7 = 0,1,1 → 偶校验 P4=0</text>
+<text x="62" y="261" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">编码后：P1P2 D3 P4 D5 D6 D7 = 0 1 1 0 0 1 1 → 0110011</text>
+<text x="62" y="280" font-size="12" fill="#202124" text-anchor="start" font-weight="normal">单错定位：收到码按三位校验分组重算，错在哪组就在对应位翻转（ syndrome 直接给出错误位号）。</text>
+</svg>

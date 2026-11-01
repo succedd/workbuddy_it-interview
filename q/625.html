@@ -96,7 +96,7 @@
     <h1>设计一个短链系统（如 TinyURL）：短码如何生成？如何保证不冲突？301 还是 302？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">系统设计</span><span class="chip tag">短链</span><span class="chip tag">Base62</span><span class="chip tag">重定向</span></div>
     <div class="card"><h2>题目</h2><p>考察点：掌握短链系统核心——发号器/哈希短码、冲突处理、重定向语义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>短码生成两类方案</strong>：① 分布式发号器（雪花/Leaf）拿到自增 ID 再做 Base62 编码，绝对不冲突、长度可控；② 对长 URL 取哈希（MD5/Murmur）再截断+Base62，简单但需处理哈希冲突（冲突则加盐重试）。</li>
 <li><strong>不冲突的关键</strong>：发号器方案天然唯一；哈希方案用「长 URL→短码」表去重，冲突时追加盐或走发号器兜底。</li>

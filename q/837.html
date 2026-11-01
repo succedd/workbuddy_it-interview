@@ -96,7 +96,7 @@
     <h1>top 里的 load average 和 %CPU 怎么读？load 很高但 CPU 空闲说明什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">系统运维工程师</span><span class="chip">DevOps工程师</span><span class="chip tag">top</span><span class="chip tag">load average</span><span class="chip tag">vmstat</span><span class="chip tag">性能排查</span></div>
     <div class="card"><h2>题目</h2><p>考察点：是否真正理解 load average 含义（含 D 状态不可中断睡眠），以及 us / sy / wa 的区分。追问：load 高但 %id 也高，该往哪个方向查？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：load average 是「可运行 + 不可中断睡眠」进程数的指数滑动平均，不只反映 CPU。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：load average 是「可运行 + 不可中断睡眠」进程数的指数滑动平均，不只反映 CPU。</p>
 <ul>
 <li><strong>%us / %sy / %wa</strong>：us=用户态、sy=内核态、wa=CPU 等待 IO 的时间（计入 idle 前的等待）；sy 异常高往往意味着系统调用 / 锁 / 中断过多。</li>
 <li><strong>load 高但 CPU 空闲</strong>：典型是大量进程卡在 <strong>D 状态（不可中断睡眠，通常等 IO / 锁 / 网络存储）</strong>，它们不占 CPU 却塞满运行队列，于是 load 飙升而 %id 很高；也可能是 CPU 运行队列（r 列）排队、或进程数远超核数。</li>

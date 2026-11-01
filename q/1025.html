@@ -96,7 +96,7 @@
     <h1>Pydantic 在 FastAPI 里承担什么角色？从 v1 升级到 v2 有哪些必须注意的变化？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Python后端工程师</span><span class="chip">Python开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">FastAPI</span><span class="chip tag">Pydantic</span><span class="chip tag">数据校验</span><span class="chip tag">v2迁移</span><span class="chip tag">OpenAPI</span></div>
     <div class="card"><h2>题目</h2><p>考察点：数据校验/序列化、模型驱动开发、v1→v2 迁移。框架选型与升级实操。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>角色（三层）</strong>：① <strong>请求校验</strong>——把 JSON body 反序列化成模型，类型不符自动返回 422 与结构化错误；② <strong>响应序列化</strong>——<code>response_model</code> 决定对外暴露哪些字段（可裁掉密码等敏感字段）、并做类型转换；③ <strong>自动文档</strong>——Pydantic 的字段定义/<code>Field(description=...)</code> 直接生成 OpenAPI Schema，Swagger 就是这么来的。此外还用于<strong>配置管理</strong>（<code>pydantic-settings</code>）与内部 DTO。</li>
 <li><strong>v2 的核心变化</strong>：</li>

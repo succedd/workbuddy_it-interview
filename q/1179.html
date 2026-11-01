@@ -96,7 +96,7 @@
     <h1>场景题：要把一个 7B 模型部署到单张 24G 显卡对外提供 API，FP16 权重约 14GB 显存不够留余量，怎么做选型让它既能跑、延迟又可接受？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">算法工程师</span><span class="chip tag">部署选型</span><span class="chip tag">INT4</span><span class="chip tag">vLLM</span><span class="chip tag">连续批处理</span><span class="chip tag">显存</span></div>
     <div class="card"><h2>题目</h2><p>考察点：量化+推理框架的落地选型。要求给出「量化精度选择 → 框架选择 → 显存账」的完整决策，而不是只说「用量化」。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 45 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>先算显存账</strong>：FP16 权重 ~14GB，加上 KV Cache、激活、框架开销，24G 卡余量紧张甚至会 OOM。7B 用 <strong>INT4（AWQ/GPTQ）</strong> 权重降到 ~4GB，显存立刻宽裕，这是最关键的一步。</li>
 <li><strong>框架选型</strong>：选支持<strong>连续批处理（continuous batching）</strong>和 <strong>PagedAttention</strong> 的推理框架（如 vLLM），而非朴素逐请求推理——连续批处理把多个请求拼到同一 batch 解码，GPU 利用率从「等最长请求」变成「来一个进一个」，吞吐可数倍提升；PagedAttention 把 KV Cache 像虚拟内存一样分页，消除碎片、按需分配。</li>

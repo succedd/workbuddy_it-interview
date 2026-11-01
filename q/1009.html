@@ -96,7 +96,7 @@
     <h1>Elasticsearch 深分页为什么慢？from+size、scroll、search_after 三种方案怎么选？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">搜索算法工程师</span><span class="chip tag">Elasticsearch</span><span class="chip tag">深分页</span><span class="chip tag">search_after</span><span class="chip tag">scroll</span></div>
     <div class="card"><h2>题目</h2><p>考察点：协调节点 fan-out 排序成本、深分页限制 10000、游标与 search_after 的适用场景。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>from+size 为什么深了就崩</strong>：ES 是分片的——取第 10000 页需<strong>每个分片都返回前 10010 条</strong>到协调节点全局排序后再丢弃，内存与网络开销随页深线性放大。ES 默认限制 <code>from+size ≤ 10000</code> 就是保护。</li>
 <li><strong>scroll</strong>：生成快照游标逐批拉取，快照不受新写入影响——适合<strong>全量导出/离线遍历</strong>，不适合实时翻页（快照过期、占资源、官方已建议用 point-in-time 替代）。</li>

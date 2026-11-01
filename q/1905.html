@@ -96,7 +96,7 @@
     <h1>Kafka Connect 的架构是什么？Source/Sink Connector 怎么保证伸缩和容错？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">数据采集工程师</span><span class="chip tag">Kafka Connect</span><span class="chip tag">Source</span><span class="chip tag">Sink</span><span class="chip tag">Rebalance</span></div>
     <div class="card"><h2>题目</h2><p>考察 Kafka Connect 集群、任务分配和 offset。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>架构</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 10 天前更新</div><p><strong>架构</strong></p>
 <ul>
 <li>Worker 进程组成集群，Connector 描述数据源/目标，Task 是并行执行单元；Converter 处理序列化，SMT 做轻量转换。</li>
 <li>Source 把外部数据写入 Kafka；Sink 从 Kafka 读出写外部系统。</li>

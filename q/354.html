@@ -96,7 +96,7 @@
     <h1>HashMap 的 put 方法是怎么执行的？JDK 7 和 JDK 8 在插入方式上有什么关键区别？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HashMap</span><span class="chip tag">put流程</span><span class="chip tag">源码</span></div>
     <div class="card"><h2>题目</h2><p>考察点：hash 扰动、定位桶、key 存在与否的处理、头插 vs 尾插，以及这对并发安全的含义。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>put 大致流程</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>put 大致流程</strong>：</p>
 <ol>
 <li>计算 key 的哈希：<code>h = key.hashCode()</code>，再做一次扰动 <code>hash = h ^ (h &gt;&gt;&gt; 16)</code>，把高位也混入低位，减少碰撞。</li>
 <li>定位桶下标：<code>(n - 1) &amp; hash</code>，n 是数组容量（2 的幂，所以用位运算代替取模）。</li>

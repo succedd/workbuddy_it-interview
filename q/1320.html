@@ -96,7 +96,7 @@
     <h1>Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？</h1>
     <div class="chips"><span class="chip diff">初</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">对象内存布局</span><span class="chip tag">对象头</span><span class="chip tag">Mark Word</span><span class="chip tag">对齐填充</span><span class="chip tag">压缩指针</span></div>
     <div class="card"><h2>题目</h2><p>Java 对象在内存中由哪几部分组成？对象头里存了什么？压缩指针起什么作用？</p></div>
-    <div class="card"><h2>参考答案</h2><p>在 HotSpot 虚拟机中，对象在内存中的布局分为三块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>在 HotSpot 虚拟机中，对象在内存中的布局分为三块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。</p>
 <p><strong>对象头</strong>包括两部分：</p>
 <ol>
 <li>Mark Word（标记字段）：存储对象自身的运行时数据，如哈希码（HashCode）、GC 分代年龄、锁状态标志等。它被设计成随锁状态复用位段的动态结构——无锁、轻量级锁、重量级锁等不同状态下，同一串二进制位表示不同含义，这是理解 synchronized 锁升级的基础。分代年龄就占其中 4 位，最大值 15，这正是对象晋升老年代的默认年龄阈值是 15 的原因。旧版 HotSpot 中偏向线程 ID、偏向时间戳也放在这里，但偏向锁自 JDK 15 起默认禁用，相关实现后来已被移除。</li>

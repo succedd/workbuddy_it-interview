@@ -96,7 +96,7 @@
     <h1>现代浏览器为什么采用「多进程架构」？它如何提升稳定性与安全性（崩溃隔离、沙箱、站点隔离）？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放题</span><span class="chip">前端开发工程师</span><span class="chip tag">浏览器</span><span class="chip tag">多进程</span><span class="chip tag">沙箱</span><span class="chip tag">架构</span></div>
     <div class="card"><h2>题目</h2><p>考察点：浏览器架构设计——进程隔离、沙箱、站点隔离（Site Isolation）的安全收益（高级开放题）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心答案</strong>：用『进程边界』做故障与安全的隔离单元，一个标签页/站点的异常尽量不波及其他。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 47 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>核心答案</strong>：用『进程边界』做故障与安全的隔离单元，一个标签页/站点的异常尽量不波及其他。</p>
 <p><strong>要点（稳定性）</strong>：</p>
 <ul>
 <li><strong>崩溃隔离</strong>：渲染进程、插件进程、GPU 进程彼此独立；某网页崩溃或卡死，只杀掉对应渲染进程，主进程和其他标签页照常工作，不会整页白屏。</li>

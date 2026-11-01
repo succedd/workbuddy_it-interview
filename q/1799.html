@@ -96,7 +96,7 @@
     <h1>ZGC 的着色指针和读屏障如何做到低停顿？它与 G1 的核心区别是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">ZGC</span><span class="chip tag">着色指针</span><span class="chip tag">读屏障</span><span class="chip tag">低延迟GC</span></div>
     <div class="card"><h2>题目</h2><p>考察现代 JVM 低延迟收集器的设计：并发标记/重定位与屏障开销。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>ZGC 的目标</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 11 天前更新</div><p><strong>ZGC 的目标</strong></p>
 <ul>
 <li>面向大堆、低延迟：把 STW 停顿控制在毫秒级（官方目标 &lt;1ms，具体随 JDK/堆/负载变化），大部分标记、重定位、重映射与应用线程并发执行。</li>
 </ul>

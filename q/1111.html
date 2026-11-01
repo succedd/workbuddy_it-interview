@@ -96,7 +96,7 @@
     <h1>对象被误删或误覆盖，如何设计一套可演练的恢复方案？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">公有云售后技术支持</span><span class="chip">云计算工程师</span><span class="chip tag">COS</span><span class="chip tag">容灾演练</span><span class="chip tag">版本控制</span><span class="chip tag">误删恢复</span></div>
     <div class="card"><h2>题目</h2><p>客户反馈关键文件被覆盖，要求最短时间找回历史版本。请结合版本控制、回收站、跨地域复制设计恢复链路并说明演练要点。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>版本控制是第一道防线</strong>：开启后每次覆盖生成新版本、删除产生删除标记，旧版本可逐个恢复；恢复时「删除删除标记」即可让历史版本重新可见，或把指定版本复制为最新版本。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>版本控制是第一道防线</strong>：开启后每次覆盖生成新版本、删除产生删除标记，旧版本可逐个恢复；恢复时「删除删除标记」即可让历史版本重新可见，或把指定版本复制为最新版本。</p>
 <p><strong>回收站兜底</strong>：部分场景提供回收站保留期，误删对象先入回收站，期内可一键还原，弥补未开版本控制时的盲区。</p>
 <p><strong>跨地域复制做地理冗余</strong>：将版本化对象复制到异地桶，单地域灾难时仍有副本；但注意 CRR 会复制删除标记，需配套「不复制删除」策略或目标桶独立保护，避免误删被放大。</p>
 <p><strong>定期恢复演练</strong>：每季度做一次盲演——随机标记一个对象为「被破坏」，计时用版本控制+回收站恢复，验证 RTO/RPO 与权限链路；只配置不演练等于没配置。</p></div>

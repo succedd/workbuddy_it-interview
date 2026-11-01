@@ -96,7 +96,7 @@
     <h1>有一个几个 GB 的访问日志 access.log，如何快速统计出访问量最高的前 10 个 IP，以及某个关键词出现的总次数？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">系统运维工程师</span><span class="chip">公有云售后技术支持</span><span class="chip tag">日志分析</span><span class="chip tag">sort</span><span class="chip tag">uniq</span><span class="chip tag">awk</span><span class="chip tag">shell</span></div>
     <div class="card"><h2>题目</h2><p>考察点：不写程序、纯用命令行组合完成日志统计的工程能力；考查 sort/uniq/awk/head 的管道编排与性能意识（大文件不能一次性 load 进内存）。属场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>Top10 IP</strong>：<code>awk &#39;{print $1}&#39; access.log | sort | uniq -c | sort -nr | head -10</code>。思路：awk 取首列（客户端 IP）→ sort 让相同 IP 相邻 → uniq -c 计数 → 按次数倒序 → 取前 10。</li>
 <li><strong>关键词出现次数</strong>：<code>grep -o &#39;keyword&#39; access.log | wc -l</code>（<code>-o</code> 每匹配一行，适合关键词在一行多次出现）；或 <code>grep -c &#39;keyword&#39; access.log</code>（按行计数）。</li>

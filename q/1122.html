@@ -96,7 +96,7 @@
     <h1>Redis 的 String 底层 SDS 相比 C 原生字符串好在哪里？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">SDS</span><span class="chip tag">底层编码</span><span class="chip tag">字符串</span></div>
     <div class="card"><h2>题目</h2><p>为什么 Redis 不用 C 的 char* 而自己实现 SDS（Simple Dynamic String）？请从二进制安全、长度获取、扩容等角度说明。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>二进制安全</strong>：C 字符串以 \0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>二进制安全</strong>：C 字符串以 \0 结尾，无法存含 0 字节的数据；SDS 用 len 记录长度、 buf 可存任意二进制，图片/序列化对象都能直接存。</p>
 <p><strong>长度 O(1)</strong>：C 字符串求长需遍历到 \0（O(n)）；SDS 直接读 len 字段，strlen 为 O(1)，且据此杜绝缓冲区溢出。</p>
 <p><strong>空间预分配与惰性释放</strong>：SDS 扩容时按需多分配「空闲空间」减少再分配次数；缩短时不立即回收，记录 free 复用，降低内存操作开销。</p>
 <p><strong>兼容 C 函数</strong>：SDS 末尾仍保留 \0，可复用部分 C 字符串函数；同时携带 alloc/flags 等元信息支持多种编码（embstr/raw）。</p></div>

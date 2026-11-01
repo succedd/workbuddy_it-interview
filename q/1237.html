@@ -96,7 +96,7 @@
     <h1>页面滚动或交互时掉帧卡顿，如何判断是「重排/重绘」还是「主线程长任务（JS 执行）」导致的？分别给出优化手段。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">前端开发工程师</span><span class="chip tag">重排</span><span class="chip tag">重绘</span><span class="chip tag">合成层</span><span class="chip tag">长任务</span><span class="chip tag">渲染优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：浏览器渲染机制（重排/重绘/合成）与 JS 长任务的区分，以及减少主线程阻塞的实操手段，典型渲染优化场景题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点：</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点：</strong></p>
 <ul>
 <li><strong>判定方法</strong>：Performance 面板看「Rendering」里 Layout/Recalculate Style 是否耗时高（重排重绘），或看 Main 线程是否有长任务（&gt;50ms 的 JS 执行）。肉眼抖动 + Layout 紫条 = 重排；长任务黄块 = JS 阻塞。</li>
 <li><strong>重排（Reflow）/重绘（Repaint）优化</strong>：避免逐帧读写 <code>offsetTop</code> 等触发强制同步布局（读写分离、批量改样式）；用 <code>transform</code>/<code>opacity</code> 走合成层（只合成不重排重绘）；动画用 <code>will-change</code> 提层；减少 DOM 数量与嵌套。</li>

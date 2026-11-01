@@ -96,7 +96,7 @@
     <h1>为什么说 HashMap 是线程不安全的？并发场景下具体会发生什么问题？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">HashMap</span><span class="chip tag">线程安全</span><span class="chip tag">并发</span></div>
     <div class="card"><h2>题目</h2><p>考察点：并发 put 的数据覆盖、size 不准、JDK 7 扩容死循环，以及对应的线程安全替代方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>线程不安全的表现</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>线程不安全的表现</strong>：</p>
 <ol>
 <li><strong>数据覆盖</strong>：多线程同时 put 且落到同一个桶，若都判断「桶里没有相同 key」，会先后插入，后写的覆盖先写的，导致丢数据。</li>
 <li><strong>size 不准</strong>：元素计数不是原子操作，并发自增会少算，size() 返回的值不可信。</li>

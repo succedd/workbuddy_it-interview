@@ -96,7 +96,7 @@
     <h1>Redis 大 Key / 热 Key 如何识别与治理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Redis</span><span class="chip tag">大Key</span><span class="chip tag">热Key</span><span class="chip tag">性能治理</span></div>
     <div class="card"><h2>题目</h2><p>Hash/List 存了百万级字段导致集群卡顿，或某 Key 被高频访问打满单分片。请说明识别手段与治理方案。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>大 Key 危害</strong>：Hash/Set/ZSet 元素过多、String 体积过大，会使删除/序列化阻塞主线程、迁移卡顿、内存倾斜；典型阈值如 String&gt;10KB、集合元素&gt;5000。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 49 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>大 Key 危害</strong>：Hash/Set/ZSet 元素过多、String 体积过大，会使删除/序列化阻塞主线程、迁移卡顿、内存倾斜；典型阈值如 String&gt;10KB、集合元素&gt;5000。</p>
 <p><strong>识别手段</strong>：redis-cli --bigkeys 抽样统计；DEBUG OBJECT 看 serializedlength；监控 slowlog 中耗时命令定位大对象。</p>
 <p><strong>治理方案</strong>：大 Hash 按 field 哈希拆成多个小 key（如 user:{uid}:field 分片）；大 List 用 LPUSH + LTRIM 限长；避免一次性 DEL，改用 UNLINK 异步删除或 HSCAN 分批清理。</p>
 <p><strong>热 Key 治理</strong>：热 Key 打满单分片——客户端本地缓存 + 多副本（key 加随机后缀分散到不同分片）+ 本地限流；读写分离/代理层合并，从架构上削峰。</p></div>

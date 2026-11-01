@@ -96,7 +96,7 @@
     <h1>嵌入式 Linux 的启动流程是怎样的？Bootloader、内核、根文件系统各自负责什么？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">嵌入式与物联网工程师</span><span class="chip tag">启动流程</span><span class="chip tag">Bootloader</span><span class="chip tag">根文件系统</span></div>
     <div class="card"><h2>题目</h2><p>考察系统启动链路。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：上电后 ROM 代码（固化）跑起来，交给 Bootloader（如 U-Boot）：初始化时钟/内存/串口，把内核镜像从存储（eMMC/SD/NOR）搬进 RAM 并跳转；Bootloader 还负责传设备树（DTB）和启动参数。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：上电后 ROM 代码（固化）跑起来，交给 Bootloader（如 U-Boot）：初始化时钟/内存/串口，把内核镜像从存储（eMMC/SD/NOR）搬进 RAM 并跳转；Bootloader 还负责传设备树（DTB）和启动参数。</p>
 <p><strong>要点</strong>：内核启动：解压、初始化体系结构/驱动、挂载根文件系统（rootfs，可以是 initramfs 或真实分区），然后启动第一个用户态进程（通常是 /init 或 systemd）；内核负责进程、内存、设备与网络管理。</p>
 <p><strong>要点</strong>：用户空间：init 按脚本拉起服务与应用程序。调试启动失败时，常用串口看 Bootloader 与内核日志，确认是「搬不起来」「内核 panic」还是「找不到/挂载不了 rootfs」三类典型问题。</p></div>
     <div class="cta-row">

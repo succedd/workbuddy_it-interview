@@ -96,7 +96,7 @@
     <h1>搜索系统为什么要分召回和排序两个阶段？如果召回层漏掉目标结果，排序层还能补救吗？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">搜索算法工程师</span><span class="chip">推荐算法工程师</span><span class="chip tag">搜索</span><span class="chip tag">召回</span><span class="chip tag">排序</span></div>
     <div class="card"><h2>题目</h2><p>考察搜索系统架构理解。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 17 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>架构动机</strong>：全库精排计算成本高，先由召回从海量文档中拿回高相关候选，再由粗排/精排做精细打分。</li>
 <li><strong>排序无法补救</strong>：排序只能在召回集合内重排，漏召回无法恢复；需优化倒排、向量、多路召回和 query 改写。</li>

@@ -96,7 +96,7 @@
     <h1>线上大量用户反馈『首页列表滑动明显掉帧、卡顿』，请描述你的定位与优化思路。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">场景题</span><span class="chip">移动端开发工程师</span><span class="chip tag">卡顿</span><span class="chip tag">掉帧</span><span class="chip tag">渲染优化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：性能问题排查方法论与渲染原理。希望候选人先量化再定位，而非盲目优化。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li>先量化：用帧率（FPS）/ 掉帧数（jank）、主线程耗时（CPU Profiler / Systrace / Instruments）确认是渲染线程还是主线程瓶颈，区分『CPU 满载』还是『布局/绘制过复杂』。</li>
 <li>定位主因：滑动卡顿常见根因有——onBindViewHolder 里做耗时操作（图片解码、JSON 解析）、过度绘制（overdraw）、嵌套滚动冲突、大图未降采样、频繁 requestLayout。Android 用 Layout Inspector 看层级与 Overdraw，iOS 用 Core Animation 调试。</li>

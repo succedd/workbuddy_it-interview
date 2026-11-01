@@ -96,7 +96,7 @@
     <h1>用 Module Federation 落地微前端时，多个独立构建之间是如何共享依赖的？共享模块被提前消费会怎样？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">系统设计题</span><span class="chip">前端架构师</span><span class="chip">前端开发工程师</span><span class="chip tag">微前端</span><span class="chip tag">Module Federation</span><span class="chip tag">依赖共享</span></div>
     <div class="card"><h2>题目</h2><p>几个团队各自独立部署的子应用要拼成一个整体，且 react 等公共库只能加载一份。请说明其工作机制、shared 的语义，以及常见的运行期报错与解法。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>一、基本模型</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 59 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>一、基本模型</h3>
 <p>Module Federation 的出发点是：<strong>多个独立构建组成一个应用</strong>。每个构建既是一个<strong>容器（container）</strong>，又能消费其它容器暴露的模块。</p>
 <ul>
 <li>本地模块属于当前构建；远程模块不在当前构建中，在运行时从远程容器加载。</li>

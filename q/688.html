@@ -96,7 +96,7 @@
     <h1>移动端音视频 SDK 开发的关键点（采集、编码、渲染、弱网对抗）有哪些？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">音视频开发工程师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">音视频SDK</span><span class="chip tag">采集</span><span class="chip tag">弱网对抗</span><span class="chip tag">渲染</span></div>
     <div class="card"><h2>题目</h2><p>说明自研或封装音视频 SDK 时需处理的核心环节。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>采集</strong>：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>采集</strong>：调用系统相机/麦克风 API 拿到原始帧与 PCM，注意权限与格式。</p>
 <p><strong>编码</strong>：用硬编码（MediaCodec/VideoToolbox）压成 H.264/AAC，控制码率与分辨率。</p>
 <p><strong>渲染</strong>：用 SurfaceView/OpenGL 或 Metal 高效上屏，音画同步靠时钟对齐。</p>
 <p><strong>弱网对抗</strong>：自适应码率（ABR）、抖动缓冲（Jitter Buffer）、丢帧/丢包重传（NACK/FEC）、QoS 上报；移动端还需处理前后台切换、旋转与功耗。</p></div>

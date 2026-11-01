@@ -96,7 +96,7 @@
     <h1>Service 的 ClusterIP / NodePort / LoadBalancer 三种类型有什么区别？kube-proxy 怎么实现负载均衡？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">DevOps工程师</span><span class="chip">云计算工程师</span><span class="chip tag">Service</span><span class="chip tag">ClusterIP</span><span class="chip tag">NodePort</span><span class="chip tag">LoadBalancer</span><span class="chip tag">kube-proxy</span></div>
     <div class="card"><h2>题目</h2><p>考察点：Service 抽象的本质、三种类型适用场景、kube-proxy（iptables/ipvs）与 EndpointSlice。追问：ExternalName 适合什么场景？</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 54 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ol>
 <li><strong>Service 解决什么问题</strong>：Pod IP 会变、会扩缩，Service 用稳定虚拟 IP + 选择算符把一组 Pod 抽象成一个固定访问端点，后端变化由控制器持续刷新 EndpointSlice，客户端无需感知。</li>
 <li><strong>三种类型（层层递进）</strong>：</li>

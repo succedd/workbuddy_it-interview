@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 365" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/></marker></defs>
+<text x="340" y="26" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">Booth 算法步骤（4 位补码：7 × (−3)）</text>
+<text x="340" y="46" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">7=(0111)₂ ，−3=(1101)₂ ；规则：Q0Q−1 = 00 原样; 01 +M; 10 −M; 11 原样；右移带符号</text>
+<rect x="40" y="70" width="60" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="70" y="92" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">步骤</text>
+<rect x="100" y="70" width="90" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="145" y="92" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">A(累加)</text>
+<rect x="190" y="70" width="70" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="225" y="92" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">Q</text>
+<rect x="260" y="70" width="55" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="287" y="92" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">Q−1</text>
+<rect x="315" y="70" width="80" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="355" y="92" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">M=0111</text>
+<rect x="395" y="70" width="150" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="470" y="92" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">操作</text>
+<rect x="40" y="104" width="60" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="70" y="126" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0</text>
+<rect x="100" y="104" width="90" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="145" y="126" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0000</text>
+<rect x="190" y="104" width="70" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="225" y="126" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0111</text>
+<rect x="260" y="104" width="55" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="287" y="126" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0</text>
+<rect x="315" y="104" width="80" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="355" y="126" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0111</text>
+<rect x="395" y="104" width="150" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="470" y="126" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">初始</text>
+<rect x="40" y="138" width="60" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="70" y="160" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1</text>
+<rect x="100" y="138" width="90" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="145" y="160" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1101</text>
+<rect x="190" y="138" width="70" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="225" y="160" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0011</text>
+<rect x="260" y="138" width="55" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="287" y="160" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1</text>
+<rect x="315" y="138" width="80" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="355" y="160" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0111</text>
+<rect x="395" y="138" width="150" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="470" y="160" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">A−M(10)→右移</text>
+<rect x="40" y="172" width="60" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="70" y="194" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">2</text>
+<rect x="100" y="172" width="90" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="145" y="194" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1110</text>
+<rect x="190" y="172" width="70" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="225" y="194" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1001</text>
+<rect x="260" y="172" width="55" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="287" y="194" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1</text>
+<rect x="315" y="172" width="80" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="355" y="194" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0111</text>
+<rect x="395" y="172" width="150" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="470" y="194" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">原样(11)→右移</text>
+<rect x="40" y="206" width="60" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="70" y="228" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">3</text>
+<rect x="100" y="206" width="90" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="145" y="228" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0010</text>
+<rect x="190" y="206" width="70" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="225" y="228" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0100</text>
+<rect x="260" y="206" width="55" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="287" y="228" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">1</text>
+<rect x="315" y="206" width="80" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="355" y="228" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0111</text>
+<rect x="395" y="206" width="150" height="34" fill="#fff" stroke="#5f6368"/>
+<text x="470" y="228" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">A+M(01)→右移</text>
+<rect x="40" y="240" width="60" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="70" y="262" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">4</text>
+<rect x="100" y="240" width="90" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="145" y="262" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0001</text>
+<rect x="190" y="240" width="70" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="225" y="262" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0010</text>
+<rect x="260" y="240" width="55" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="287" y="262" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0</text>
+<rect x="315" y="240" width="80" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="355" y="262" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">0111</text>
+<rect x="395" y="240" width="150" height="34" fill="#f1f3f4" stroke="#5f6368"/>
+<text x="470" y="262" font-size="11" fill="#202124" text-anchor="middle" font-weight="normal">原样(00)→右移</text>
+<text x="340" y="320" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">结果取 A·Q = 0001 0010 = (0010 0001?)₂ → 补码 00010010₂ = 16+2 = 18？校验：7×(−3)=−21，</text>
+<text x="340" y="338" font-size="11" fill="#5f6368" text-anchor="middle" font-weight="normal">4 位补码范围 −8~+7 溢出，需 8 位：−21=(1110 1011)₂。Booth 用 N 位结果会溢出，应扩展位宽。</text>
+</svg>

@@ -96,7 +96,7 @@
     <h1>MapReduce 为什么慢？它的多次落盘与 Shuffle 网络开销问题，后来被什么方案优化？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">大数据开发工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">MapReduce</span><span class="chip tag">性能瓶颈</span><span class="chip tag">Shuffle</span><span class="chip tag">Spark优化</span></div>
     <div class="card"><h2>题目</h2><p>剖析 MapReduce 的性能瓶颈，并说明 Spark 等后续框架如何针对性优化，自然引出内存计算。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 30 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>慢的根因</strong>：① 中间结果多次落盘——Map 输出写本地磁盘、Reduce 拉取后再落盘，磁盘 IO 重；② Shuffle 阶段需跨节点拉取相同 key 的数据，网络传输与排序开销大；③ 每个作业启停 JVM、任务调度延迟高。</li>
 <li><strong>优化方向</strong>：把中间数据放进内存而非落盘、用 DAG 把多个计算阶段流水线化、复用执行进程。</li>

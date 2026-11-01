@@ -96,7 +96,7 @@
     <h1>对象池（Object Pool）在游戏里解决什么问题？请描述子弹/敌人对象池的实现思路。</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">场景题</span><span class="chip">游戏开发工程师</span><span class="chip">Unity游戏开发工程师</span><span class="chip tag">对象池</span><span class="chip tag">性能优化</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>考察性能优化与 GC 意识。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：频繁 new/销毁子弹、特效、敌人会触发 GC 卡顿（掉帧、毛刺）。对象池预先创建一批可复用对象，用完后「回收」而非销毁，再次需要时直接「取出」，把内存分配从运行时转移到初始化阶段。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 25 天前更新</div><p><strong>要点</strong>：频繁 new/销毁子弹、特效、敌人会触发 GC 卡顿（掉帧、毛刺）。对象池预先创建一批可复用对象，用完后「回收」而非销毁，再次需要时直接「取出」，把内存分配从运行时转移到初始化阶段。</p>
 <p><strong>要点</strong>：实现思路：① 维护一个空闲列表（Stack/Queue）；② 取对象时若池空则新建，否则弹出；③ 用完后调用回收方法（重置状态、设为不可见）放回池；④ 可设上限防止无限增长。</p>
 <p><strong>要点</strong>：进阶做法：按类型分池、配合对象初始容量预热、对象复用前必须重置关键字段（位置/血量/状态机），否则会残留上一次使用的状态导致 bug。</p></div>
     <div class="cta-row">

@@ -96,7 +96,7 @@
     <h1>Dart 的 isolate 与线程模型是怎样的？为什么 UI 卡顿要把重计算放到 compute / Isolate 后台执行？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">移动端开发工程师</span><span class="chip">Flutter开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">Dart</span><span class="chip tag">Isolate</span><span class="chip tag">并发</span><span class="chip tag">Event Loop</span></div>
     <div class="card"><h2>题目</h2><p>简答题（高级）：考察 Dart 单线程 Event Loop + Isolate 并发模型。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>单线程 + Event Loop</strong>：Dart 默认在<strong>一个 isolate（隔离区）</strong>里运行，拥有自己的内存堆和单条执行线程，通过 Event Loop 处理微任务（microtask）与事件（I/O、timer、UI 事件）。因为不共享内存，所以<strong>没有传统多线程的数据竞争/锁问题</strong>。</li>
 <li><strong>async/await 不并行</strong>：<code>await</code> 只是把后续代码挂起、让出线程去处理别的事件，<strong>CPU 密集计算仍会阻塞 Event Loop</strong>，导致掉帧/卡顿。</li>

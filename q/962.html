@@ -96,7 +96,7 @@
     <h1>用递归和非递归（显式栈）分别实现二叉树的前序、中序、后序遍历，并说明非递归写法中节点入栈/出栈的时机。</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">编程题</span><span class="chip">算法工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">二叉树</span><span class="chip tag">遍历</span><span class="chip tag">递归</span><span class="chip tag">非递归</span><span class="chip tag">栈</span></div>
     <div class="card"><h2>题目</h2><p>考察点：递归与迭代两种思维、显式栈模拟调用栈、三种遍历在非递归下的差异（尤其后序的经典写法）。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>递归本质</strong>：三种遍历只差 <code>print(root)</code> 在 <code>traverse(left)</code> / <code>traverse(right)</code> 之间的位置（前：根左右；中：左根右；后：左右根），递归隐式用了调用栈。</li>
 <li><strong>非递归前序</strong>：根先入栈；循环弹栈 → 访问 → 先把右孩子入栈、再把左孩子入栈（因为栈是后进先出，左后入先出）。</li>

@@ -96,7 +96,7 @@
     <h1>如何设计并实现一个 O(1) 的 LRU 缓存？说明数据结构与淘汰策略</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">前端开发工程师</span><span class="chip tag">LRU</span><span class="chip tag">哈希表</span><span class="chip tag">双向链表</span></div>
     <div class="card"><h2>题目</h2><p>考察哈希表与双向链表组合、容量淘汰策略</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>核心结构</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 含示例/代码 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>核心结构</strong></p>
 <ul>
 <li>用哈希表做 O(1) 定位节点，用双向链表维护使用顺序（头=最近使用，尾=最久未用）。</li>
 <li>访问或插入节点时移到表头；超过容量时删除表尾节点，并从哈希表移除。</li>

@@ -96,7 +96,7 @@
     <h1>Solidity 0.8 的溢出检查与 unchecked：哪些场景可以安全使用 unchecked？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">智能合约开发工程师</span><span class="chip">区块链后端工程师</span><span class="chip tag">Solidity</span><span class="chip tag">溢出</span><span class="chip tag">unchecked</span></div>
     <div class="card"><h2>题目</h2><p>考察整数安全、Gas 优化与 0.7→0.8 升级审计。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 13 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>默认检查</strong>：Solidity 0.8 起对 <code>+</code>、<code>-</code>、<code>*</code> 做溢出/下溢检查，失败直接 revert；<code>unchecked { ... }</code> 关闭该检查，让运算按 2^256 回绕，能省一些 Gas。</li>
 <li><strong>可安全使用的场景</strong>：已用数学证明不会越界的循环计数器、位运算与掩码、模运算、哈希/椭圆曲线等本来就需要回绕语义的代码；前提是有注释和测试支撑，而不是「为了省 Gas」全局关闭。</li>

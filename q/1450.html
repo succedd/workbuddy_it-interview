@@ -96,7 +96,7 @@
     <h1>Linux 内核的设备树（Device Tree）是干什么的？没有它之前是什么局面？驱动和设备如何通过 compatible 匹配？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">嵌入式软件工程师</span><span class="chip">固件工程师</span><span class="chip">系统软件工程师</span><span class="chip tag">设备树</span><span class="chip tag">DTS</span><span class="chip tag">compatible</span><span class="chip tag">嵌入式Linux</span></div>
     <div class="card"><h2>题目</h2><p>考察设备树机制：描述与代码分离、DTS/DTB 编译链、compatible 匹配规则，是嵌入式 Linux 面试核心题。</p></div>
-    <div class="card"><h2>参考答案</h2><h3>解决什么问题</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 31 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>解决什么问题</h3>
 <p>ARM 生态早年每个板子都在内核源码里硬编码一个 <code>arch/arm/mach-xxx/board-xxx.c</code>，把内存布局、GPIO、I2C 挂了什么器件全部写死在 C 里——换个板子改一次内核，产生海量重复的板级代码。设备树把「<strong>硬件有什么</strong>」从内核 C 代码里抽出来，变成一份<strong>数据描述文件</strong>：内核代码只保留「<strong>怎么驱动</strong>」，启动时读入描述即可适配不同硬件。</p>
 <h3>编译与传递链</h3>
 <pre><code>.dts（板级源文件，可 include .dtsi 公共部分）

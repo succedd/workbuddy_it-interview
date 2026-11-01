@@ -96,7 +96,7 @@
     <h1>Koa 的 ctx 是怎么实现的？delegates 做了什么？为什么它比 Express 的 req/res 更好用？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Node.js工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Koa</span><span class="chip tag">ctx</span><span class="chip tag">delegates</span><span class="chip tag">设计模式</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对象委托、原型代理、API 设计取舍。考察对「框架设计美学」的理解。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 52 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>ctx 的本质</strong>：Koa 用 <code>Object.create(context)</code> 创建 context 对象，再把 <code>request</code> 与 <code>response</code> 两个对象挂上去（<code>ctx.request</code>、<code>ctx.response</code>），三者互相持有引用（<code>ctx.request.ctx === ctx</code>）。<strong>每个请求一个全新的 ctx</strong>，天然隔离，不会有 Express 那种「给 req 加属性可能串到别的请求」的心智负担。</li>
 <li><strong>delegates 的作用</strong>：一个<strong>属性委托工具</strong>，把 <code>ctx.request</code>/<code>ctx.response</code> 上的属性「搬运」到 ctx 上，支持三种形式：</li>

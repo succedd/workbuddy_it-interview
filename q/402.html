@@ -96,7 +96,7 @@
     <h1>简单工厂、工厂方法、抽象工厂三者的区别是什么？各自适合什么场景？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Java后端工程师</span><span class="chip">技术经理</span><span class="chip tag">工厂模式</span><span class="chip tag">工厂方法</span><span class="chip tag">抽象工厂</span><span class="chip tag">解耦</span></div>
     <div class="card"><h2>题目</h2><p>考察点：三种工厂模式的抽象层级与适用边界；把「对象的创建」与「使用」解耦；何时该用工厂而非直接 new。属简答题。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>简单工厂</strong>：一个工厂类根据参数返回不同产品（如 <code>if/else</code> 分支），<strong>不算 GoF 23 种之一</strong>；优点是调用方无需知道具体类，缺点是新增产品要改工厂类、违反开闭原则。适合产品种类少、变化不频繁。</li>
 <li><strong>工厂方法</strong>：定义「创建对象的接口」由子类决定实例化哪个类（如 <code>Factory.create()</code> 由具体工厂覆写）。新增产品只需新增工厂子类，<strong>符合开闭原则</strong>；适合一个产品等级、多系列变体。</li>

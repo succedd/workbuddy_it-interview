@@ -96,7 +96,7 @@
     <h1>Java GC垃圾回收机制的工作原理？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip tag">Java</span><span class="chip tag">JVM</span><span class="chip tag">GC</span></div>
     <div class="card"><h2>题目</h2><p>请解释JVM中GC的基本原理，包括如何判断对象是否存活、垃圾收集算法。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>分代</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 已复核 · 近 7 天更新</div><p><strong>分代</strong></p>
 <ul>
 <li>堆分年轻代（Eden/Survivor）和老年代；新对象在 Eden，Minor GC 复制存活对象到 Survivor/老年代；老年代满触发 Major/Full GC。</li>
 <li>对象年龄/大对象直接晋升；不同收集器（G1/ZGC）实现不同。</li>

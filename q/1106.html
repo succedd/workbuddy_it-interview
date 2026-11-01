@@ -96,7 +96,7 @@
     <h1>【开放讨论·高级】既然二级缓存（半成品 earlySingletonObjects）已经能让 B 拿到 A 的早期引用，为什么 Spring 还要设计第三级缓存（singletonFactories 存 ObjectFactory）？请从「AOP 代理与早期引用的冲突」角度论证这个设计的必要性。</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论</span><span class="chip">Java后端工程师</span><span class="chip">Java开发工程师</span><span class="chip">后端架构师</span><span class="chip tag">Spring</span><span class="chip tag">三级缓存</span><span class="chip tag">ObjectFactory</span><span class="chip tag">AOP代理</span><span class="chip tag">循环依赖</span></div>
     <div class="card"><h2>题目</h2><p>考察点：三级缓存中第三级的真正作用（延迟决定暴露原始对象还是代理对象）、提前生成代理对 Bean 生命周期语义的破坏、设计与兼容性权衡。追问链压轴题，检验对循环依赖机制的理解深度。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>问题背景</strong>：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 <strong>ObjectFactory</strong>（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 51 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>问题背景</strong>：一级缓存放成品，二级缓存放半成品（实例化完、未注入完）——如果所有 Bean 都不需要 AOP 代理，二级缓存确实够用。第三级缓存存的是 <strong>ObjectFactory</strong>（singletonFactories），它的存在是为了解决「循环依赖 + AOP 代理」的组合问题。</p>
 <p><strong>核心矛盾</strong>：</p>
 <ul>
 <li>正常生命周期里，AOP 代理在<strong>初始化完成之后</strong>由 BeanPostProcessor（postProcessAfterInitialization）生成——即 Bean 要先走完填充、初始化才生成代理；</li>

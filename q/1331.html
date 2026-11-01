@@ -96,7 +96,7 @@
     <h1>ES Module 是怎么处理循环依赖的？「构造-实例化-求值」三阶段为什么让循环依赖变得可用？和 CommonJS 的处理差在哪？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">前端架构师</span><span class="chip tag">ESM</span><span class="chip tag">循环依赖</span><span class="chip tag">live binding</span><span class="chip tag">CommonJS</span><span class="chip tag">模块化</span></div>
     <div class="card"><h2>题目</h2><p>考察点：ESM 三阶段加载模型与 live binding 机制，循环依赖下 a/b 的执行顺序与踩坑，不泛谈模块系统区别。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>三阶段模型</strong>（Mozilla Hacks 的经典拆解）：ESM 加载分 <strong>Construction（构造：找到、下载并解析全部文件，建立模块图）→ Instantiation（实例化：为所有导出分配内存，把 export/import 链接到同一内存位置）→ Evaluation（求值：执行代码填入真实值）</strong>。三个阶段可以分开进行——构造阶段先把整张模块图建好（这正是 ESM 静态、可异步的原因），而 CommonJS 是「加载-实例化-求值」一气呵成的同步过程。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 36 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>三阶段模型</strong>（Mozilla Hacks 的经典拆解）：ESM 加载分 <strong>Construction（构造：找到、下载并解析全部文件，建立模块图）→ Instantiation（实例化：为所有导出分配内存，把 export/import 链接到同一内存位置）→ Evaluation（求值：执行代码填入真实值）</strong>。三个阶段可以分开进行——构造阶段先把整张模块图建好（这正是 ESM 静态、可异步的原因），而 CommonJS 是「加载-实例化-求值」一气呵成的同步过程。</p>
 <p><strong>循环依赖下的执行顺序</strong>（main → a → b，b 又 import a）：求值按<strong>深度优先后序</strong>遍历，b 在依赖链最深处<strong>先求值完成</strong>，随后 a 求值完成。</p>
 <p><img src="/assets/q/fig-esm-cycle.svg" alt="图：a/b 循环 import 的三阶段执行顺序" loading="lazy"></p>
 <p><strong>为什么 ESM 下循环依赖大多能用</strong>：</p>

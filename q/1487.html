@@ -96,7 +96,7 @@
     <h1>什么是 Zone.js？Angular 变更检测是如何触发的？如何优化？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip tag">Angular</span><span class="chip tag">Zone.js</span><span class="chip tag">变更检测</span></div>
     <div class="card"><h2>题目</h2><p>说明 monkey-patch 异步 API → 触发 tick → 组件树检测的链路，以及 OnPush 优化。</p></div>
-    <div class="card"><h2>参考答案</h2><p>Angular 启动时通过 <strong>Zone.js</strong> 给所有异步 API（setTimeout、Promise、DOM 事件、XHR…）打补丁（monkey-patch）。任何异步回调执行完，Zone 通知 NgZone → 触发 <code>ApplicationRef.tick()</code> → 从根组件开始执行<strong>变更检测</strong>：对比模板绑定表达式与上次值，有差异才更新 DOM（默认每分钟万次级检查依然很快，但大应用会累积开销）。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 27 天前更新</div><p>Angular 启动时通过 <strong>Zone.js</strong> 给所有异步 API（setTimeout、Promise、DOM 事件、XHR…）打补丁（monkey-patch）。任何异步回调执行完，Zone 通知 NgZone → 触发 <code>ApplicationRef.tick()</code> → 从根组件开始执行<strong>变更检测</strong>：对比模板绑定表达式与上次值，有差异才更新 DOM（默认每分钟万次级检查依然很快，但大应用会累积开销）。</p>
 <p><strong>优化</strong>：① 组件改 <code>ChangeDetectionStrategy.OnPush</code>——只在输入引用变化、事件、<code>markForCheck</code> 时才检测该子树；② 搭配<strong>不可变数据/纯组件</strong>改造；③ 频繁异步回调（鼠标移动、滚动）用 <code>runOutsideAngular</code> 包裹，避免无意义触发 tick；④ Angular 16+ 可用 Signals 精确订阅替代全树检查。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1487">练这道题</a>

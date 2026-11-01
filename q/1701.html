@@ -96,7 +96,7 @@
     <h1>MP4 的 moov atom 放在文件头和文件尾有什么区别？-movflags +faststart 做了什么？FLV 与 MP4 封装的核心差异是什么？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">简答题</span><span class="chip">音视频开发工程师</span><span class="chip">音视频与流媒体工程师</span><span class="chip tag">MP4</span><span class="chip tag">moov</span><span class="chip tag">faststart</span><span class="chip tag">FLV</span><span class="chip tag">封装格式</span></div>
     <div class="card"><h2>题目</h2><p>考察封装格式与秒开的关系，要求说明 moov 作用与两种封装的定位差异。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 15 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>moov 是索引</strong>：记录每个 sample 的位置、时长与音视频轨信息，播放器必须先拿到 moov 才能起播。</li>
 <li><strong>默认在尾部</strong>：边编码边落盘时 moov 只能最后写入，播放器几乎要下载完整个文件才能开始播放，点播首帧慢。</li>

@@ -96,7 +96,7 @@
     <h1>Dart 的 async/await 与 Future 链式调用有什么区别？为什么 async 函数不会阻塞主 Isolate？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Flutter开发工程师</span><span class="chip">移动端开发工程师</span><span class="chip tag">Dart</span><span class="chip tag">异步</span><span class="chip tag">Future</span></div>
     <div class="card"><h2>题目</h2><p>考察 Dart 异步编程。要求说明事件队列、微任务队列与 Future 的关系。</p></div>
-    <div class="card"><h2>参考答案</h2><p><strong>要点</strong>：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：外部链接 · 未复核 · 17 天前更新</div><p><strong>要点</strong>：</p>
 <ul>
 <li><strong>async/await 是语法糖</strong>：<code>await future</code> 会让当前函数暂停在逻辑上，但不会阻塞 Isolate；事件循环继续处理 UI 事件和其他任务，结果可用后再恢复执行。</li>
 <li><strong>执行顺序</strong>：普通事件进入事件队列，<code>Future.microtask</code>/<code>scheduleMicrotask</code> 进入微任务队列；每次事件处理后，Dart 先清空微任务，再执行下一个事件。</li>
