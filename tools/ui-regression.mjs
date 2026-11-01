@@ -34,16 +34,20 @@ function startServer() {
   return new Promise((resolve, reject) => {
     const fail = () => reject(new Error("local HTTP server failed to start"));
     child.once("exit", fail);
-    child.stderr.once("data", chunk => {
-      if (String(chunk).includes("Serving HTTP")) {
-        child.off("exit", fail);
-        resolve(child);
-      }
-    });
-    setTimeout(() => {
-      child.off("exit", fail);
-      resolve(child);
-    }, 1200);
+    /* 20261101：Python 3.13 的 http.server 启动横幅不再打到 stderr，
+       改为直接探活端口（最多 15s），避免横幅缺失导致过早返回。 */
+    child.stderr.on("data", chunk => { if (process.env.UI_DEBUG) process.stdout.write("  [py-err] " + String(chunk).slice(0, 120) + "\n"); });
+    /* 20261101：Python 3.13 的 http.server 启动横幅不再打到 stderr，
+       改为直接探活端口（最多 30s），避免横幅缺失导致过早返回。 */
+    const probe = async (left) => {
+      if (left <= 0) { child.off("exit", fail); reject(new Error("local HTTP server did not become ready in 30s")); return; }
+      try {
+        const r = await fetch(BASE + "/index.html");
+        if (r.ok) { child.off("exit", fail); resolve(child); return; }
+      } catch (e) { if (process.env.UI_DEBUG) console.log("  [probe-err]", left, e.cause ? e.cause.code : e.message); /* not ready yet */ }
+      setTimeout(() => probe(left - 1), 500);
+    };
+    probe(60);
   });
 }
 
@@ -113,6 +117,16 @@ try {
   console.log("  ok   deferred roadmap route");
   passed++;
 
+  await page.goto(BASE + "/#/quiz");
+  await expectVisible(page, "#quiz-pos", "quiz position config");
+  await expectVisible(page, "#quiz-diff", "quiz difficulty config");
+  await expectVisible(page, "#quiz-count", "quiz count config");
+  await page.selectOption("#quiz-count", "10");
+  await page.waitForFunction(() => document.querySelector("#quiz-count") && document.querySelector("#quiz-count").value === "10");
+  await page.selectOption("#quiz-diff", "初级");
+  await page.waitForFunction(() => document.querySelector("#quiz-diff") && document.querySelector("#quiz-diff").value === "初级");
+  console.log("  ok   quiz position/difficulty/count controls");
+
   await page.goto(BASE + "/#/quiz?n=5");
   await expectVisible(page, "#quiz-start", "quiz start");
   await page.click("#quiz-start");
@@ -134,6 +148,20 @@ try {
 
   await page.goto(BASE + "/#/question/1");
   await expectVisible(page, "#show-answer", "question deep link");
+  const canonical = await page.$eval('link[rel="canonical"]', el => el.href);
+  if (canonical !== "https://itinterview.com.cn/q/1") throw new Error("question canonical mismatch: " + canonical);
+  console.log("  ok   question canonical");
+
+  await page.goto(BASE + "/#/position/42");
+  await expectVisible(page, ".skill-card", "position skill cards");
+  const badDepthStars = await page.$$eval(".skill-card", cards => cards.filter(card => {
+    const m = card.textContent.match(/掌握深度：(了解|熟悉|精通)/);
+    if (!m) return false;
+    const expectedOff = { "了解": 2, "熟悉": 1, "精通": 0 }[m[1]];
+    return card.querySelectorAll(".stars .off").length !== expectedOff;
+  }).length);
+  if (badDepthStars) throw new Error("position depth stars mismatch: " + badDepthStars);
+  console.log("  ok   position depth stars");
   passed++;
 
   await page.evaluate(() => {

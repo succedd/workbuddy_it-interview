@@ -306,7 +306,7 @@ function collectionPage(kind, id, name, intro, questions, canonical, appUrl, noi
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(name)}面试题 · IT面试题库</title>
   <meta name="description" content="${esc(stripMd(intro).slice(0, 155))}">
-  ${noindex ? '<meta name="robots" content="noindex,follow">' : ""}
+${noindex ? '<meta name="robots" content="noindex,follow">' : ""}
   <link rel="canonical" href="${canonical}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${esc(name)}面试题 · IT面试题库">
@@ -448,7 +448,7 @@ async function main() {
     { loc: `${SITE}/questions`, priority: "0.8", freq: "daily" },
     { loc: `${SITE}/quiz`, priority: "0.7", freq: "weekly" },
     { loc: `${SITE}/help`, priority: "0.6", freq: "weekly" },
-    /* 隐私政策 / 用户协议（20261026b）：由 tools/gen-legal-pages.js 生成静态页，
+    /* 隐私政策 / 用户协议（20261101a）：由 tools/gen-legal-pages.js 生成静态页，
        信任类页面必须可被直接抓取，这里同步进 sitemap。 */
     { loc: `${SITE}/privacy.html`, priority: "0.4", freq: "monthly" },
     { loc: `${SITE}/terms.html`, priority: "0.4", freq: "monthly" },

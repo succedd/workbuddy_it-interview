@@ -1253,10 +1253,23 @@
     U.toast("「" + label + "」模块加载失败，请刷新重试", "warn", 9000);
   };
 
+  /* SPA 详情页与静态 SEO 页共用内容时，canonical 必须指向唯一的静态地址。
+     每次路由先恢复首页，题目详情再覆盖为 /q/<id>，避免切换页面后残留旧 canonical。 */
+  function setCanonical(path) {
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      document.head.appendChild(link);
+    }
+    link.setAttribute("href", "https://itinterview.com.cn" + path);
+  }
+
   async function route() {
     clearCharts();
     setPageKeys(null);
     const r = parseHash();
+    setCanonical("/");
     renderSidebar(r);
     bindSwipeNav();          // 手势监听挂在 #main 上，幂等绑定（路由切换只需确保已挂）
     /* 动态 document.title：浏览器标签/历史/收藏可区分页面（404 与详情页会再覆盖） */
@@ -1334,7 +1347,7 @@
         if (!window.Account) return deferredPage("我的反馈");
         return pageFeedback();
       case "about": return pageAbout();
-      /* 隐私政策 / 用户协议（20261026b）：正文在 js/legal.js（extra bundle），
+      /* 隐私政策 / 用户协议（20261101a）：正文在 js/legal.js（extra bundle），
          与静态页 privacy.html / terms.html 共用同一份数据，避免两处口径不一致。 */
       case "privacy":
         if (typeof window.pagePrivacy !== "function") { App.ensureExtra("隐私政策"); return deferredPage("隐私政策"); }
@@ -2934,10 +2947,14 @@
       const relatedCount = Services.questions.filter(q => catIds
         ? catIds.has(q.categoryId)
         : (q.tags || []).indexOf(s.techName) >= 0 || q.catName === s.techName).length;
+      /* 旧数据里的 stars 多数统一写成 5，直接展示会把「了解」也显示成五星。
+         岗位页这里的星级改为表达掌握深度；后台技术栈的重要度字段保持不动。 */
+      const depthStars = { "了解": 3, "熟悉": 4, "精通": 5 };
+      const starCount = depthStars[s.depth] || Math.min(5, Math.max(1, parseInt(s.stars, 10) || 3));
       return `<div class="skill-card ${s.required ? "" : "bonus"}" style="cursor:pointer" ${onClick}>
         <div class="sk-name">${U.esc(s.techName)} ${s.required ? "" : '<span class="tag tag-ai" style="font-size:10px">加分</span>'}</div>
         <div class="sk-depth">掌握深度：${U.esc(s.depth)}</div>
-        <div>${U.stars(s.stars)}</div>
+        <div title="掌握深度 ${starCount}/5" aria-label="掌握深度 ${starCount}/5">${U.stars(starCount)}</div>
         <div class="muted" style="font-size:12px;margin-top:4px">题库相关题：${relatedCount}</div>
       </div>`;
     };
@@ -3646,26 +3663,10 @@
   /* ============================ 限时小测 ============================ */
   async function pageQuiz(q) {
     document.title = "限时小测 · IT面试题库";
-    let pool = Services.questions.filter(x => x.status === "published");
-    let scopeName = "全库";
-    if (q.posid) {
-      const pos = Services.getPosition(parseInt(q.posid));
-      if (pos) { pool = pool.filter(x => Services.matchPosition(x, pos)); scopeName = Services.posFullName(pos); }
-    }
-    if (q.cat) {
-      const id = parseInt(q.cat);
-      const ids = [id].concat(Services.descendantIds(id));
-      pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0);
-      scopeName = Services.catName(id) || scopeName;
-    }
-    if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
-    if (pool.length < 5) {
-      setMain(`<div class="empty">该范围可用题目不足 5 道，暂不能生成小测。<a class="btn" href="/practice">去自由刷题</a></div>`);
-      return;
-    }
-    const total = Math.min(Math.max(parseInt(q.n, 10) || 20, 5), 50, pool.length);
-    const minutes = Math.max(1, Math.round(total * 1.5));
-    const stateKey = ["quiz", q.posid || "", q.cat || "", q.diff || "", total].join("|");
+    const published = Services.questions.filter(x => x.status === "published");
+    const quizPositions = Services.positions.filter(p => !Services.isHiddenPosition(p) && Services.questionCountForPosition(p) >= 5)
+      .slice().sort((a, b) => Services.posFullName(a).localeCompare(Services.posFullName(b), "zh-CN"));
+    let pool = [], scopeName = "全库", total = 20, minutes = 30, stateKey = "", saved = null;
     const loadSaved = () => {
       try {
         const s = JSON.parse(localStorage.getItem("iti_quiz_state") || "null");
@@ -3675,12 +3676,43 @@
     };
     const saveState = (s) => { try { localStorage.setItem("iti_quiz_state", JSON.stringify(s)); } catch (e) {} };
     const clearState = () => { try { localStorage.removeItem("iti_quiz_state"); } catch (e) {} };
-    const saved = loadSaved();
+    const configure = () => {
+      pool = published.slice();
+      scopeName = "全库";
+      if (q.posid) {
+        const pos = Services.getPosition(parseInt(q.posid));
+        if (pos) { pool = pool.filter(x => Services.matchPosition(x, pos)); scopeName = Services.posFullName(pos); }
+      }
+      if (q.cat) {
+        const id = parseInt(q.cat);
+        const ids = [id].concat(Services.descendantIds(id));
+        pool = pool.filter(x => ids.indexOf(x.categoryId) >= 0);
+        scopeName = Services.catName(id) || scopeName;
+      }
+      if (q.diff) pool = pool.filter(x => x.difficulty === q.diff);
+      total = Math.min(Math.max(parseInt(q.n, 10) || 20, 5), 50, pool.length);
+      minutes = Math.max(1, Math.round(total * 1.5));
+      stateKey = ["quiz", q.posid || "", q.cat || "", q.diff || "", total].join("|");
+      saved = loadSaved();
+    };
+    configure();
 
     const renderIntro = () => setMain(`
       <div class="breadcrumb"><a href="/">首页</a><span class="sep">/</span><span>限时小测</span></div>
       <h1>限时小测</h1>
-      <div class="card" style="max-width:680px">
+      <div class="card" style="max-width:760px">
+        <div class="grid grid-cols-3" style="margin-bottom:14px">
+          <label class="field"><span>目标岗位</span><select id="quiz-pos">
+            <option value="">全库随机</option>
+            ${quizPositions.map(p => `<option value="${p.id}" ${String(q.posid || "") === String(p.id) ? "selected" : ""}>${U.esc(Services.posFullName(p))}</option>`).join("")}
+          </select></label>
+          <label class="field"><span>难度</span><select id="quiz-diff">
+            ${[["", "全部难度"], ["初级", "初级"], ["中级", "中级"], ["高级", "高级"], ["专家", "专家"]].map(x => `<option value="${x[0]}" ${(q.diff || "") === x[0] ? "selected" : ""}>${x[1]}</option>`).join("")}
+          </select></label>
+          <label class="field"><span>入卷题数</span><select id="quiz-count">
+            ${[10, 20, 30, 50].map(n => `<option value="${n}" ${(parseInt(q.n, 10) || 20) === n ? "selected" : ""}>${n} 题</option>`).join("")}
+          </select></label>
+        </div>
         <div class="pill-row" style="margin:0 0 12px">
           <span class="tag tag-primary">${U.esc(scopeName)}</span>
           <span class="tag">${pool.length} 题可用</span>
@@ -3688,15 +3720,26 @@
           <span class="tag">${minutes} 分钟</span>
         </div>
         <p class="secondary">题目随机抽取。先写下你的答案，再对照参考答案自评「已掌握」或「不会」；结束后错题会自动进入错题重练，学习周报也会记录这轮小测。</p>
+        ${pool.length < 5 ? `<div class="note" style="margin-bottom:12px">当前范围可用题目不足 5 道，请更换岗位或难度。</div>` : ""}
         <div class="pill-row">
           ${saved ? `<button class="btn" id="quiz-resume">继续上次（第 ${saved.i + 1}/${saved.ids.length} 题）</button>` : ""}
-          <button class="btn btn-primary" id="quiz-start">${U.icon("play")} 开始小测</button>
+          <button class="btn btn-primary" id="quiz-start" ${pool.length < 5 ? "disabled" : ""}>${U.icon("play")} 开始小测</button>
           <a class="btn" href="/practice">${U.icon("refresh")} 自由刷题</a>
         </div>
       </div>`, () => {
+        const onConfig = () => {
+          q.posid = $("#quiz-pos").value;
+          q.diff = $("#quiz-diff").value;
+          q.n = $("#quiz-count").value;
+          /* 从分类页带入的范围，在用户主动选岗位后让位给新岗位。 */
+          if (q.posid) delete q.cat;
+          configure();
+          renderIntro();
+        };
+        ["#quiz-pos", "#quiz-diff", "#quiz-count"].forEach(id => { $(id).onchange = onConfig; });
         const r = $("#quiz-resume");
         if (r) r.onclick = () => { Stats.recordAction("quiz_resume", scopeName); start(pool.filter(x => saved.ids.indexOf(x.id) >= 0), saved); };
-        $("#quiz-start").onclick = () => { Stats.recordAction("quiz_start", scopeName); start(); };
+        $("#quiz-start").onclick = () => { if (pool.length >= 5) { Stats.recordAction("quiz_start", scopeName); start(); } };
       });
 
     const start = (resumePool, resume) => {
@@ -3840,6 +3883,7 @@
     }
     if (!q) { setMain(`<div class="empty">未找到该题目</div>`); return; }
     document.title = q.title + " · IT面试题库";   // 详情页 title 用题目标题
+    setCanonical("/q/" + q.id);
     await Services.incViews(q.id); await Services.reload();
     await Services.addHistory(q.id);   // 必须用数字 id：路由里的字符串 id 写进 IndexedDB 后类型不匹配，读取永远查不到
     Stats.recordView(id);
@@ -3891,7 +3935,7 @@
           ${sourceUrl
             ? `<span>来源：<a href="${U.esc(sourceUrl)}" target="_blank" rel="noopener nofollow">${U.esc(sourceHost || srcLabel(q.source))} ↗</a></span>`
             : (srcLabel(q.source) ? `<span>来源：${U.esc(srcLabel(q.source))}</span>` : "")}
-          ${(q.aiScore || 0) > 0 ? `<span>质量分 ${q.aiScore}</span>` : ""}
+          ${(q.aiScore || 0) > 0 ? `<span title="由 AI 质检模型给出，仅供内容质量参考，不等同于人工复核">AI 质量参考分 ${q.aiScore}</span>` : ""}
           ${q.reviewedAt ? `<span>已人工复核 · ${U.fmtDate(q.reviewedAt)}</span>` : ""}
         </div>
       </div>

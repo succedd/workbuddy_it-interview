@@ -1850,7 +1850,7 @@ return He}()
   A.adminResetPassword = (id, password) => call("POST", "/admin/users/" + id + "/reset", { password });
   /* 自助改密码（20260914i）：需旧密码，改完当前会话保留，不把自己踢下线 */
   A.changePassword = (oldPassword, newPassword) => call("POST", "/auth/password", { oldPassword, newPassword });
-  /* ---- 隐私政策第七条承诺的三项能力（20261026b） ----
+  /* ---- 隐私政策第七条承诺的三项能力（20261101a） ----
      后端接口：DELETE /me/data（清学习数据）、POST /auth/delete（注销，需邮箱二次确认）。
      旧版 Worker 没有这两个接口时会返回 404，前端按此给提示，不让用户以为删了其实没删。 */
   A.clearCloudData = () => call("DELETE", "/me/data");
@@ -2030,7 +2030,7 @@ return He}()
           out.style.color = "#DC2626"; out.textContent = e.message;
         } finally { btn.disabled = false; }
       };
-      /* ---- 数据与隐私：导出 / 清空 / 注销（20261026b）---- */
+      /* ---- 数据与隐私：导出 / 清空 / 注销（20261101a）---- */
       $("#acc-export").onclick = async () => {
         const out = $("#acc-out");
         out.style.color = "#64748B"; out.textContent = "正在导出…";
@@ -4803,6 +4803,8 @@ async function pageHelp() {
     `)}
     ${sec("daily", "📚 日常学习", `
       ${li("刷题练习", "选分类 / 岗位 / 难度开一局，支持随机与顺序两种模式")}
+      ${li("限时小测", "可直接选择目标岗位、难度与 10 / 20 / 30 / 50 题；默认全库随机，岗位页进入时会自动带入当前岗位。题目变化后会重新计算可用题数与时长")}
+      ${li("答案质量信息", "「AI 质量参考分」由质检模型生成，只作内容质量参考，不等同于人工复核；请结合来源与「已人工复核」标记一起判断")}
       ${li("手机滑动切题", "手机上看题时，右滑回上一题、左滑去下一题（题目详情页与刷题练习页都支持），不用去够底部按钮；手指落在输入框或代码块上时不响应，纵向滚动也不会误触")}
       ${li("底部快捷导航", "手机上屏幕底部固定一排「首页 / 题库 / 刷题 / 错题 / 收藏」，单手就能切换；「错题」上的红色数字角标就是今天到期待复习的题量")}
       ${li("我的批注", "题目详情页可以写下自己的批注（想法、踩过的坑、面试时打算怎么讲）。展开答案时，你自己的话会显示在标准答案上方；错题重练页的复习卡片也会带一行批注摘要。批注只存在你自己的设备上，不会上传到公共题库")}
@@ -4889,7 +4891,7 @@ async function pageHelp() {
       ${li("「考到过」点错了能撤销吗？", "目前不能撤销；同一台设备对同一题只计一次，误点一次对整体参考价值影响极小，可以忽略")}
     `)}
     <div class="g-fb" id="g-feedback" style="margin-top:22px;text-align:center"></div>
-    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-10-19 · 更详细的开发文档见 GitHub 仓库 README</div>
+    <div class="muted" style="text-align:center;font-size:12px;margin-top:18px">文档最近更新：2026-11-01 · 更详细的开发文档见 GitHub 仓库 README</div>
   `);
   $$("#main .hot-tags .tag").forEach(t => t.onclick = () => {
     const el = document.getElementById(t.dataset.go);
