@@ -216,7 +216,7 @@ function page(q, ctx) {
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
     body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
-    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
     .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
     .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
     h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
@@ -259,7 +259,6 @@ function page(q, ctx) {
     .guide .g-btn:active { background:#1d4ed8; }
     .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
     .guide .g-x:active { color:#475569; }
-    .guide-on .wrap { padding-bottom:120px; }
     @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
     @media (prefers-color-scheme: dark) {
       :root { color-scheme: dark; }

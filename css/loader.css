@@ -131,6 +131,7 @@
 @keyframes bootBlink { 50% { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
+  #boot-rain { display: none; }
   .boot-name { animation: none; opacity: .25 !important; }
   .boot-caret { animation: none; }
 }

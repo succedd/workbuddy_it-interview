@@ -105,6 +105,13 @@
 
 ## 6. 当前状态（⚠️ 实时更新区，每次开发后刷新）
 
+**分支 `fix/perf-seo`（未合入 release、未上线）｜缓存版本 `20261101b → 20261101c`｜数据 version `44` / 2032 题｜更新时间：2026-11-18 (+08)**
+
+- **加载屏 5 秒上限**：`Boot.start()` 显示加载屏后 5 秒强制 `reveal()`；提前撤屏时若 `#main` 为空先放 `.skeleton` 占位，`route()` 渲染时覆盖。代码雨约 20fps，`prefers-reduced-motion` 下不绘制（`loader.css` 同步隐藏 `#boot-rain`）。
+- **内联脚本加载器**：超时 `TIMEOUTS=[15000,20000,30000,30000,30000]`，重试仍 4 次。没有改成并行重试：`async=false` 按插入顺序执行，卡住的元素不移除会挡住后面的 bundle。
+- **分享页**：`gen-share-pages.js` 的 `.wrap` 底部固定预留 `calc(120px + env(safe-area-inset-bottom))`，删去 `.guide-on .wrap`。注意：本地重跑生成器会顺带改 sitemap 和题目正文，本次只提交了这两行 CSS 的变化。
+- **待用户决定**：`robots.txt` / `_worker.js` 屏蔽 AI 爬虫的策略、线上 sitemap 条数复核、大陆 CDN/备案、「未复核」答案的复核。
+
 **最新 release commit：见 git log（feat: 重复题合并 + 岗位星级 + 小测配置 + SEO 修复；晚间追加答案质量维度面板）｜缓存版本 `20261026b → 20261101a → 20261101b`｜数据 version `44` / 2032 题｜更新时间：2026-11-01 19:30 (+08)**
 **晚间追加（缓存 20261101b）**
 

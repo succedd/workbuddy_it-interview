@@ -7121,7 +7121,7 @@
   /* ============================ 启动 ============================ */
   /* ============================ 首次进入加载动效 ============================ */
   const Boot = (() => {
-    let started = 0, target = 0, raf = 0, rainRaf = 0, finished = false, readyResolve;
+    let started = 0, target = 0, raf = 0, rainRaf = 0, finished = false, revealed = false, capTimer = 0, readyResolve;
     const ready = new Promise(r => readyResolve = r);
     const el = id => document.getElementById(id);
     const NAMES = ["前端工程师","后端工程师","全栈工程师","测试工程师","测试开发工程师","运维工程师","SRE工程师","DevOps工程师","数据分析师","算法工程师","机器学习工程师","深度学习工程师","数据科学家","产品经理","网络安全工程师","渗透测试工程师","大数据开发工程师","云架构师","解决方案架构师","数据库管理员","人工智能工程师","移动端开发","iOS开发","Android开发","游戏开发工程师","嵌入式工程师","区块链工程师","爬虫工程师","推荐算法工程师","搜索算法工程师","音视频开发","性能测试工程师","自动化测试工程师","UI设计师","交互设计师","售前工程师","技术项目经理","视觉算法工程师","鸿蒙开发工程师","Go开发工程师","Java开发工程师","Python开发工程师","C++开发工程师","前端架构师","后端架构师","数据工程师","ETL工程师","BI工程师","运维开发工程师","大模型应用工程师","AIGC工程师"];
@@ -7147,8 +7147,13 @@
       }
       try { sessionStorage.setItem("iti_boot_seen", "1"); } catch (_) {}
       ov.style.display = "flex"; started = Date.now();
-      try { initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
+      let reduced = false;
+      try { reduced = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
+      try { if (!reduced) initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
       loop();
+      /* 弱网下初始化可能要几十秒：最多挡 5s，之后先撤掉加载屏，数据就绪后 route() 再渲染正文 */
+      capTimer = setTimeout(reveal, 5000);
+      ov.addEventListener("click", reveal);
     }
     function initRain() {
       const c = el("boot-rain"); if (!c) return;
@@ -7160,7 +7165,11 @@
       let drops = [];
       const reset = () => { const cols = Math.floor(c.width / fontSize); drops = new Array(cols).fill(1); };
       reset();
-      const draw = () => {
+      let last = 0;
+      const draw = (ts) => {
+        rainRaf = requestAnimationFrame(draw);
+        if (ts && ts - last < 50) return; // 约 20fps，够用且省电
+        last = ts || 0;
         ctx.fillStyle = "rgba(6,10,16,0.10)"; ctx.fillRect(0, 0, c.width, c.height);
         ctx.fillStyle = "#1fae74"; ctx.font = fontSize + "px monospace";
         for (let i = 0; i < drops.length; i++) {
@@ -7169,7 +7178,6 @@
           if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
           drops[i]++;
         }
-        rainRaf = requestAnimationFrame(draw);
       };
       draw();
       addEventListener("resize", reset);
@@ -7201,9 +7209,27 @@
       if (pctEl) pctEl.textContent = Math.round(next) + "%";
       raf = requestAnimationFrame(loop);
     }
+    function reveal() {
+      if (revealed) return; revealed = true;
+      finished = true;
+      clearTimeout(capTimer);
+      /* 提前撤屏（5s 上限 / 点击跳过）时正文可能还没渲染，先放个占位，route() 会覆盖 */
+      const main = el("main");
+      if (main && !main.innerHTML.trim()) {
+        main.innerHTML = '<div class="container"><div class="skeleton" style="height:120px"></div></div>';
+      }
+      target = 100;
+      setTimeout(() => {
+        const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
+        if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
+        const o = el("boot-loader");
+        cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
+        if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 600); }
+        if (readyResolve) readyResolve();
+      }, 520);
+    }
     function finish() {
       if (finished) return; finished = true;
-      const ov = el("boot-loader");
       const skip = el("boot-skip"); if (skip) skip.style.opacity = "1";
       const elapsed = Date.now() - started;
       /* 2026-10-07（用户拍板）：开场动画从强制 3.2s 缩到 0.8s。
@@ -7214,21 +7240,7 @@
       const MIN = 800;
       const wait = Math.max(0, MIN - elapsed);
       target = Math.min(target, 92); // 加载期间进度停在 ~92%，结束瞬间补满，避免早早钉在 100%
-      let revealed = false;
-      const reveal = () => {
-        if (revealed) return; revealed = true;
-        target = 100;
-        setTimeout(() => {
-          const fill = el("boot-bar-fill"); const pctEl = el("boot-pct");
-          if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
-          const o = el("boot-loader");
-          cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
-          if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 600); }
-          if (readyResolve) readyResolve();
-        }, 520);
-      };
       setTimeout(reveal, wait);
-      if (ov) ov.addEventListener("click", reveal);
     }
     return { start, set, finish, ready };
   })();

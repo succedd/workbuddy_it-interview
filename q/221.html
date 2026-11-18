@@ -28,7 +28,7 @@
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
     body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
-    .wrap { max-width:760px;margin:0 auto;padding:20px 16px 48px; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
     .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
     .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
     h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
@@ -71,7 +71,6 @@
     .guide .g-btn:active { background:#1d4ed8; }
     .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
     .guide .g-x:active { color:#475569; }
-    .guide-on .wrap { padding-bottom:120px; }
     @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
     @media (prefers-color-scheme: dark) {
       :root { color-scheme: dark; }
@@ -96,7 +95,7 @@
     <h1>你处理过最复杂的一次故障是什么？（没经验怎么答）</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">软件开发工程师(通用)</span><span class="chip">系统运维工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">云服务器</span><span class="chip tag">GPU</span><span class="chip tag">监控</span><span class="chip tag">告警</span></div>
     
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：官方整理 · 未复核 · 70 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>答案模板（没有实际经验版）：</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：基础 · 无代码示例 · 来源：官方整理 · 未复核 · 87 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>答案模板（没有实际经验版）：</p>
 <p>&quot;我目前实际工作经验有限，但我在学习过程中模拟/了解过这样一个场景：</p>
 <p>一台云服务器突然无法SSH登录，监控显示CPU使用率100%。</p>
 <p>我的思路是：先通过云控制台VNC进入，发现是某个Python进程占满了CPU，查日志发现是定时任务出现了死循环，kill掉进程后服务恢复，随后联系研发修复代码逻辑，并建议增加定时任务的超时保护机制。</p>
