@@ -22,7 +22,7 @@ Cloudflare Pages 免费版就支持：私有仓库部署 + 高级模式 Worker�
 | 文件 | 作用 |
 | --- | --- |
 | `_worker.js` | 高级模式 Worker，全部反爬逻辑（五道闸门，见文件头注释） |
-| （仓库根）`robots.txt` | 明确拒绝 AI 训练 / SEO 采集工具的声明式兜底 |
+| （仓库根）`robots.txt` | 明确拒绝 SEO 采集工具的声明式兜底（AI 爬虫 2026-11-19 起放行公开页面） |
 | （仓库根）`404.html` | 自定义 404（Pages 会把未命中的路径交给它） |
 | `tools/build-pages.mjs` | 组装发布目录 `dist/`（白名单拷贝 + 放置 `_worker.js`） |
 
@@ -152,7 +152,7 @@ Worker 调用；这些端口的**缓存是关闭的**，请求必然穿透到源
 | # | 闸门 | 位置 | 作用 |
 | --- | --- | --- | --- |
 | ① | 仓库内部文件 | `INTERNAL_RE` | `tools/` `cloudflare/` `HANDOVER.md` … 一律 404，不出面 |
-| ② | UA 识别 | `classifyUa` | 脚本 / 爬虫 / AI 训练抓取 / 伪造搜索引擎 UA → 全站 403 |
+| ② | UA 识别 | `classifyUa` | 脚本 / SEO 采集工具 / 伪造搜索引擎 UA → 全站 403 |
 | ③ | 浏览器信号 | `isData` 分支 | `/data/*` 需 `Sec-Fetch-Site: same-origin` 或同源 Referer |
 | ④ | 传输层加固 | `harden()` + 301 | http→https、HSTS、nosniff、frame-ancestors、Referrer-Policy |
 | ⑤ | 端口闸门 | fetch 开头 | 非 80/443 一律 404，堵掉 5 个备用 HTTPS 端口的重复暴露 |
@@ -160,7 +160,7 @@ Worker 调用；这些端口的**缓存是关闭的**，请求必然穿透到源
 ## 诚实的边界
 
 这是**应用层**防护：能挡掉绝大多数随意采集（`curl` 一把梭、现成爬虫框架、
-AI 训练抓取），但挡不住「会改请求头 + 肯租代理池」的定向攻击 ——
+现成 SEO 采集工具），但挡不住「会改请求头 + 肯租代理池」的定向攻击 ——
 伪造 UA、手工补 `Sec-Fetch-Site` 仍能拿到数据。
 
 想再进一步只有两条路：

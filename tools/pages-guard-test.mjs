@@ -70,7 +70,7 @@ const CASES = [
   ["data · 空 UA", { p: "/data/published.json", ua: "" }, 403, "empty-ua"],
   ["data · python-requests", { p: "/data/published.json", ua: "python-requests/2.31.0" }, 403, "bot-ua"],
   ["data · Scrapy", { p: "/data/published.json", ua: "Scrapy/2.11 (+https://scrapy.org)" }, 403, "bot-ua"],
-  ["data · GPTBot", { p: "/data/published.json", ua: "GPTBot/1.2" }, 403, "bot-ua"],
+  ["data · GPTBot（AI 爬虫放行页面，但原始数据仍要浏览器信号）", { p: "/data/published.json", ua: "GPTBot/1.2" }, 403, "missing-browser-signal"],
   ["data · Wget", { p: "/data/published.json", ua: "Wget/1.21.4" }, 403, "bot-ua"],
   ["data · 无头 Chrome", { p: "/data/published.json", ua: "Mozilla/5.0 HeadlessChrome/152.0.0.0 Safari/537.36" }, 403, "bot-ua"],
 
@@ -96,10 +96,12 @@ const CASES = [
   ["share · 伪造 Googlebot（VPS ASN）", { p: "/q/1.html", ua: GOOGLEBOT_UA, cf: DO_CF }, 403, "spoofed-search-bot-ua"],
   ["share · 伪造 Bingbot（VPS ASN）", { p: "/q/1.html", ua: "Mozilla/5.0 (compatible; bingbot/2.0)", cf: DO_CF }, 403, "spoofed-search-bot-ua"],
 
-  // ---- AI 厂商变体必须先于白名单判定 ----
-  ["share · Applebot-Extended（含 Applebot 子串）", { p: "/q/1.html", ua: "Mozilla/5.0 AppleWebKit/605.1.15; compatible; Applebot-Extended/1.0", cf: APPLE_CF }, 403, "ai-variant-ua"],
-  ["share · Google-Extended", { p: "/q/1.html", ua: "Mozilla/5.0 (compatible; Google-Extended/1.0)", cf: GOOGLE_CF }, 403, "ai-variant-ua"],
-  ["share · Meta-ExternalAgent", { p: "/q/1.html", ua: "meta-externalagent/1.1", cf: { asn: 32934, asOrganization: "Meta Platforms, Inc." } }, 403, "ai-variant-ua"],
+  // ---- AI 爬虫（2026-11-19 起放行公开页面） ----
+  ["share · Applebot-Extended（含 Applebot 子串）", { p: "/q/1.html", ua: "Mozilla/5.0 AppleWebKit/605.1.15; compatible; Applebot-Extended/1.0", cf: APPLE_CF }, 200],
+  ["share · Google-Extended", { p: "/q/1.html", ua: "Mozilla/5.0 (compatible; Google-Extended/1.0)", cf: GOOGLE_CF }, 200],
+  ["share · Meta-ExternalAgent", { p: "/q/1.html", ua: "meta-externalagent/1.1", cf: { asn: 32934, asOrganization: "Meta Platforms, Inc." } }, 200],
+  ["share · GPTBot", { p: "/q/1.html", ua: "Mozilla/5.0 (compatible; GPTBot/1.2; +https://openai.com/gptbot)" }, 200],
+  ["share · ClaudeBot", { p: "/q/1.html", ua: "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" }, 200],
 
   // ---- 全站：脚本 / SEO 采集工具 ----
   ["root · Scrapy", { p: "/", ua: "Scrapy/2.11" }, 403, "bot-ua"],

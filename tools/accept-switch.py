@@ -9,7 +9,7 @@
   5  robots.txt 可达 + Sitemap 指向新域名
   6  分享页 /q/<某题>.html 可达 + canonical 新域名
   7  题库 published.json 同源信号 200 / 无信号 403
-  8  反爬：裸 curl 403、GPTBot 403、敏感文件 404
+  8  反爬：裸 curl 403、AhrefsBot 403、敏感文件 404
   9  旧域名 is-a.dev 零残留（页面源码中）
  10  www 子域可达
 
@@ -149,12 +149,12 @@ def main():
         f"bare={c_bare} sameorigin={c_ok} version={ver_q} questions={n_q}")
 
     # 8 反爬 + 敏感文件
-    c_gpt, _, _ = curl(SITE + "/q/1.html", ua="GPTBot/1.2")
+    c_gpt, _, _ = curl(SITE + "/q/1.html", ua="Mozilla/5.0 (compatible; AhrefsBot/7.0)")
     c_h, _, _ = curl(SITE + "/HANDOVER.md", ua=BROWSER_UA)
     c_b, _, _ = curl(SITE + "/tools/build-pages.mjs", ua=BROWSER_UA)
-    rec(8, "反爬：GPTBot 403 + 敏感文件 404",
+    rec(8, "反爬：AhrefsBot 403 + 敏感文件 404",
         c_gpt == "403" and c_h == "404" and c_b == "404",
-        f"gptbot={c_gpt} HANDOVER={c_h} build-pages={c_b}")
+        f"ahrefsbot={c_gpt} HANDOVER={c_h} build-pages={c_b}")
 
     # 9 旧域名零残留
     leftovers = []

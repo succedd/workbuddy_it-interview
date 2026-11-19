@@ -14,11 +14,11 @@
 //   ① 仓库内部文件（tools/ cloudflare/ netlify/ HANDOVER.md …）→ 404，不出面
 //   ② /data/*  → 必须先过 UA 过滤，再要求「浏览器信号」
 //                （Sec-Fetch-Site: same-origin/same-site 或同源 Referer）
-//   ③ /q/*    → 放行搜索引擎（保 SEO），拦 AI 训练爬虫与批量采集工具
+//   ③ /q/*    → 放行搜索引擎（保 SEO），拦批量采集工具与脚本（AI 爬虫 2026-11-19 起放行）
 //
 // ⚠️ 诚实边界（别高估这层防护）：
 //   这是「应用层」防护，能挡掉 99% 的随意采集（curl 一把梭、现成爬虫框架、
-//   AI 训练抓取），但挡不住「自己会改请求头、还肯花钱租代理池」的定向攻击——
+//   现成 SEO 采集工具），但挡不住「自己会改请求头、还肯花钱租代理池」的定向攻击——
 //   伪造 UA + 手工补 Sec-Fetch-Site 仍可拿到 data/published.json。
 //   ✅ 2026-09-21 起域名换为自购的 itinterview.com.cn，zone 就在本账号下
 //   （id 48961f3585fdc652af950bd2163c0382），**因此现在可以叠加 Zone 级防护**：
@@ -53,25 +53,6 @@
 
 const BOT_RE = new RegExp(
   [
-    // AI / 训练型爬虫
-    "GPTBot",
-    "ChatGPT-User",
-    "OAI-SearchBot",
-    "ClaudeBot",
-    "Claude-Web",
-    "Claude-User",
-    "anthropic-ai",
-    "CCBot",
-    "Amazonbot",
-    "PerplexityBot",
-    "Perplexity-User",
-    "FacebookBot",
-    "Diffbot",
-    "Omgilibot",
-    "ImagesiftBot",
-    "YouBot",
-    "Timpibot",
-    "cohere-ai",
     // SEO / 批量采集工具
     "MJ12bot",
     "AhrefsBot",
@@ -102,18 +83,6 @@ const BOT_RE = new RegExp(
     "Selenium",
     "Playwright",
     "Puppeteer"
-  ].join("|"),
-  "i"
-);
-
-// AI 厂商的「扩展 / 训练」变体必须先于搜索引擎白名单判断，
-// 否则 Applebot-Extended 会被 Applebot 的子串匹配误放行（这个坑真的踩过）。
-const AI_EXCLUSION_RE = new RegExp(
-  [
-    "Applebot-Extended",
-    "Google-Extended",
-    "Meta-ExternalAgent",
-    "cohere-training-data-crawler"
   ].join("|"),
   "i"
 );
@@ -195,7 +164,6 @@ const SPA_ROUTE_RE =
 
 function isCrawlerBlocked(ua) {
   if (!ua) return "empty-ua";
-  if (AI_EXCLUSION_RE.test(ua)) return "ai-variant-ua";
   if (BOT_RE.test(ua)) return "bot-ua";
   return null;
 }
@@ -209,7 +177,7 @@ function isCrawlerBlocked(ua) {
  * 避免把「环境缺数据」误判成「伪造」而伤到真实收录。
  */
 function classifyUa(ua, cf) {
-  const claimsSearch = SEARCH_BOTS.test(ua) && !AI_EXCLUSION_RE.test(ua);
+  const claimsSearch = SEARCH_BOTS.test(ua);
   const reason = isCrawlerBlocked(ua);
 
   if (!claimsSearch) return { search: false, spoof: false, reason: reason };
@@ -415,7 +383,7 @@ export default {
        "链接有标题但分享卡片没有预览图"。图片本身就是公开资源，允许直取。 */
     const isAsset = path.indexOf("/assets/") === 0;
 
-    // ② 先认人：脚本 / 爬虫 / 无头浏览器、AI 训练抓取，以及
+    // ② 先认人：脚本 / 爬虫 / 无头浏览器、SEO 采集工具，以及
     //    「UA 自称搜索引擎但来源网络完全对不上」的伪装者 —— 全站一律拒绝。
     //    这里放行的是：真实搜索引擎（白名单 UA + 来源 ASN 对得上）与普通浏览器。
     //    注意微信 / 微博 / QQ 的链接预览抓取器都不在 BOT_RE 里，所以分享卡片不受影响。

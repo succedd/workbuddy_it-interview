@@ -318,6 +318,10 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-11-19 · chore: 放开 AI 爬虫 + 删除空岗位 133（缓存 20261119c → 20261119d，数据 version 47）
+
+> **本轮**：①**爬虫**——`robots.txt` 删除各 AI 爬虫的 `Disallow: /` 段，`_worker.js` 的 `BOT_RE` 去掉 AI 爬虫名单并删除 `AI_EXCLUSION_RE`；SEO 批量抓取工具（Ahrefs、Semrush、MJ12 等）、脚本与无头客户端仍拦截，`/data/` 对所有爬虫仍关闭。②**岗位**——删除 0 题岗位 133「数字孪生开发工程师」（`data/published.json` 138 → 137 个岗位、`data/seed.js` 同步），重跑 `split-published.py` 生成分片与 `version.json`。验证：pages-guard 53/53、smoke、build-pages 通过。
+
 ### 2026-11-19 · docs(教程): 目录按主题重命名 + 36 张原理配图（缓存 20261119b → 20261119c）
 
 > **本轮**：①**目录**——运维 9 章、Java 初级 5 章、网络 13 章、DBA 17 章（共 44 章）原先统一的「一、原理与底层机制 / 二、规范与标准 / 三、实战 / 四、覆盖广度」改为各章具体主题（如「一、B+ 树：聚集索引与二级索引」「三、动手实践：dig +trace 逐级排查」），「五/六/七」统一为「⚠ 常见误区 / ✅ 自检清单 / 📚 延伸阅读」，与前端、安全、DevOps 及 Java 中高级章节一致。②**配图**——新增 `assets/diagrams/docs/` 36 张 SVG（TCP 握手、拥塞控制、TLS 1.3、DNS 解析、epoll、虚拟内存、B+ 树、MVCC、主从复制、PITR、JVM 内存、线程池、Bean 生命周期、事件循环、渲染管线、K8s 架构、OAuth PKCE、STRIDE 等），由 `tools/gen-doc-diagrams.py` 生成，插在对应小节首段之后；教程正文容器 `.doc-body` 补图片圆角边框与暗色反色规则（原规则只覆盖 `.md`），已重建 css/bundle.css。③涉及章节 `updated` 改为 2026-11-19。验证：check-escapes 0 问题、36 个图片引用全部存在、pages-guard / build-pages 通过。
