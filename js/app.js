@@ -297,8 +297,8 @@
     document.title = "页面不存在 · IT面试题库";
     setMain(`<div class="empty" style="padding:60px 0">
       <div style="font-size:56px;font-weight:700;color:var(--c-primary);opacity:.25">404</div>
-      <h2>页面不存在</h2>
-      <p class="secondary">访问的地址 <code>${U.esc("#/" + (path || ""))}</code> 不存在或已被移动。</p>
+      <h1 style="font-size:22px">页面不存在</h1>
+      <p class="secondary">访问的地址 <code>${U.esc("/" + (path || ""))}</code> 不存在或已被移动。</p>
       <div class="pill-row" style="justify-content:center;margin-top:16px">
         <a class="btn btn-primary" href="/">${U.icon("home")} 返回首页</a>
         <a class="btn" href="/questions">${U.icon("layers")} 浏览题目</a>

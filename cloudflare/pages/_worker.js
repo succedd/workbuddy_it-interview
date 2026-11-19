@@ -160,7 +160,7 @@ const INTERNAL_RE =
 
 // SPA history 路由：这些路径没有对应静态文件，资源 404 时回退到首页壳。
 const SPA_ROUTE_RE =
-  /^\/(home|category|position|roadmap|docs|questions|question|quiz|favorites|history|help|about|practice|review|mock|panorama|submit|me|account)(\/|$)/i;
+  /^\/(home|category|position|roadmap|docs|questions|question|quiz|favorites|history|help|feedback|about|practice|review|random|mock|panorama|submit|me|account)(\/|$)/i;
 
 function isCrawlerBlocked(ua) {
   if (!ua) return "empty-ua";

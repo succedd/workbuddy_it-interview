@@ -214,6 +214,27 @@ for (const [name, opts, wantStatus, wantReason] of CASES) {
   }
 }
 
+// 额外：SPA 路由直开时，静态资源 404 要回退到首页壳
+{
+  const envSpa = {
+    ASSETS: {
+      fetch: async (req) => new URL(req.url).pathname === "/"
+        ? new Response(ASSET, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } })
+        : new Response("nf", { status: 404 })
+    }
+  };
+  for (const [p, want] of [["/feedback", 200], ["/random", 200], ["/practice", 200], ["/no-such-page", 404]]) {
+    const res = await worker.fetch(makeRequest(p, { ua: CHROME }), envSpa);
+    if (res.status === want) {
+      pass += 1;
+      console.log("  ok   SPA 回退 " + p + " → " + want);
+    } else {
+      fails.push("SPA 回退 " + p + " 期望 " + want + " 实际 " + res.status);
+      console.log("  FAIL SPA 回退 " + p + " → " + res.status);
+    }
+  }
+}
+
 // 额外：ASSETS 返回 304（协商缓存命中）时不得抛错
 {
   const env304 = { ASSETS: { fetch: async () => new Response(null, { status: 304 }) } };
@@ -233,7 +254,7 @@ for (const [name, opts, wantStatus, wantReason] of CASES) {
 }
 
 console.log("");
-console.log(`PAGES_GUARD_TEST: ${pass}/${CASES.length + 4} 通过`);
+console.log(`PAGES_GUARD_TEST: ${pass}/${CASES.length + 8} 通过`);
 if (fails.length) {
   console.log("失败明细：");
   for (const f of fails) console.log("  - " + f);

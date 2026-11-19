@@ -318,6 +318,10 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-11-19 · fix: /feedback、/random 直接打开不再 404（缓存 20261119d → 20261119e）
+
+> **本轮**：①`_worker.js` 的 `SPA_ROUTE_RE` 补上 `feedback`、`random`（前端有这两个路由，但直接打开或刷新时 Pages 找不到静态文件返回 404）；pages-guard 新增 4 个 SPA 回退用例。②404 页标题由 `h2` 改为 `h1`，地址显示由 `#/xxx` 改为 `/xxx`（站点已是 history 路由）。验证：pages-guard 57/57、smoke 26/26、ui-regression 7/7、build-pages 通过。
+
 ### 2026-11-19 · chore: 放开 AI 爬虫 + 删除空岗位 133（缓存 20261119c → 20261119d，数据 version 47）
 
 > **本轮**：①**爬虫**——`robots.txt` 删除各 AI 爬虫的 `Disallow: /` 段，`_worker.js` 的 `BOT_RE` 去掉 AI 爬虫名单并删除 `AI_EXCLUSION_RE`；SEO 批量抓取工具（Ahrefs、Semrush、MJ12 等）、脚本与无头客户端仍拦截，`/data/` 对所有爬虫仍关闭。②**岗位**——删除 0 题岗位 133「数字孪生开发工程师」（`data/published.json` 138 → 137 个岗位、`data/seed.js` 同步），重跑 `split-published.py` 生成分片与 `version.json`。验证：pages-guard 53/53、smoke、build-pages 通过。
