@@ -142,22 +142,7 @@
     isReady: function () { return !!(window.DOCS && Array.isArray(window.DOCS.dirs)); }
   };
 
-  /* 首屏空闲时静默预热。用 requestIdleCallback 是因为此刻主线程空闲，
-     下载与解析不与首屏渲染抢带宽；不支持时退回 setTimeout(…, 1200)。 */
-  function warmup() {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(function (idle) {
-        if (idle && idle.timeRemaining && idle.timeRemaining < 8) {
-          setTimeout(warmup, 1500);      /* 剩余时间太少，留到下一轮 */
-          return;
-        }
-        load(false);                     /* 非强制：失败后进入静默期，不反复重试 */
-      }, { timeout: 3000 });
-    } else {
-      setTimeout(function () { load(false); }, 1200);
-    }
-  }
-
-  if (document.readyState === "complete") warmup();
-  else window.addEventListener("load", warmup);
+  /* 2026-11-19：去掉首屏空闲自动预热。它让每个首页访客多下载约 1.3MB 教程数据，
+     而多数人不进教程页。现在只在进入教程页（docs.js）或悬停/触摸「技术教程」
+     链接（index.html）时才加载。 */
 })();

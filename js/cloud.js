@@ -198,11 +198,19 @@
   const SHARD_TIMEOUT = 12000;
   C._shardCache = {};        /* 分片名 -> questions数组（内存，供同片多题复用） */
   C._shardFailed = {};       /* 分片名 -> true，本次会话内不再重试（避免反复超时拖慢） */
+  C._shardInflight = {};     /* 分片名 -> 进行中的 Promise：首页懒加载与后台补齐同时要同一片时只下载一次 */
 
   /* 取一片答案正文。失败返回 null，调用方负责降级。 */
-  C.fetchShard = async function (name) {
-    if (!name) return null;
-    if (C._shardCache[name]) return C._shardCache[name];
+  C.fetchShard = function (name) {
+    if (!name) return Promise.resolve(null);
+    if (C._shardCache[name]) return Promise.resolve(C._shardCache[name]);
+    if (C._shardInflight[name]) return C._shardInflight[name];
+    const p = fetchShardOnce(name);
+    C._shardInflight[name] = p;
+    p.then(() => { delete C._shardInflight[name]; });
+    return p;
+  };
+  async function fetchShardOnce(name) {
     if (C._shardFailed[name]) return null;
     try {
       const r = await fetchT(SHARD_PATH + name + ".json", { cache: "no-cache" }, SHARD_TIMEOUT);
@@ -215,7 +223,7 @@
       C._shardFailed[name] = true;
       return null;
     }
-  };
+  }
 
   /* 按题号取出该题：先看分片缓存，miss 则拉整片。取不到返回 null。
      分片号来源有三个层次（可靠性递减）：

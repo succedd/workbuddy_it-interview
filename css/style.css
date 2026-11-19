@@ -407,7 +407,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--c
 /* ============ Section heading ============ */
 .section-head { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 14px; }
 .section-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
-.section-head .more { font-size: 13px; }
+.section-head .more { font-size: 13px; display: inline-flex; align-items: center; min-height: 32px; padding: 0 2px; } /* 点击区 21px → 32px */
 
 /* ============ Filters bar ============ */
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; padding: 12px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); }
@@ -459,7 +459,7 @@ body.modal-open { overflow: hidden; scrollbar-gutter: stable; }
 .toast.warn .t-ic { color: var(--c-warning); }
 .toast.error .t-ic { color: var(--c-danger); }
 .toast .t-msg { font-size: 13px; color: var(--text); }
-.toast .t-close { margin-left: auto; color: var(--text-muted); cursor: pointer; }
+.toast .t-close { display: grid; place-items: center; width: 32px; height: 32px; margin: -7px -8px -7px auto; border-radius: 6px; flex-shrink: 0; color: var(--text-muted); cursor: pointer; } /* 点击区 16×22 → 32×32，负外边距不撑高 toast */
 /* 带操作按钮的 toast（2026-09-13：弱网题库重试提示） */
 .toast .t-act { flex-shrink: 0; margin-left: auto; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--c-primary); background: transparent; color: var(--c-primary); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .toast .t-act:hover { background: var(--c-primary); color: #fff; }

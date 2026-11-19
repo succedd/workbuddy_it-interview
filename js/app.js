@@ -1112,7 +1112,7 @@
         <div class="daily-list">${rows}</div>
         ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="/question/${fiveLeft[0]}">开始刷题 →</a>`
                           : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
-        <label style="margin-top:10px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
+        <label style="margin-top:10px;min-height:32px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" style="width:16px;height:16px;margin:0" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
       </div>`;
     }
     const sk = streakInfo();
@@ -6072,8 +6072,8 @@
       try { reduced = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
       try { if (!reduced) initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
       loop();
-      /* 弱网下初始化可能要几十秒：最多挡 5s，之后先撤掉加载屏，数据就绪后 route() 再渲染正文 */
-      capTimer = setTimeout(reveal, 5000);
+      /* 弱网下初始化可能要几十秒：最多挡 3s（2026-11-19 由 5s 缩短），之后先撤掉加载屏，数据就绪后 route() 再渲染正文 */
+      capTimer = setTimeout(reveal, 3000);
       ov.addEventListener("click", reveal);
     }
     function initRain() {
@@ -6134,7 +6134,7 @@
       if (revealed) return; revealed = true;
       finished = true;
       clearTimeout(capTimer);
-      /* 提前撤屏（5s 上限 / 点击跳过）时正文可能还没渲染，先放个占位，route() 会覆盖 */
+      /* 提前撤屏（3s 上限 / 点击跳过）时正文可能还没渲染，先放个占位，route() 会覆盖 */
       const main = el("main");
       if (main && !main.innerHTML.trim()) {
         main.innerHTML = '<div class="container"><div class="skeleton" style="height:120px"></div></div>';
@@ -6145,9 +6145,9 @@
         if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
         const o = el("boot-loader");
         cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
-        if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 600); }
+        if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 360); }
         if (readyResolve) readyResolve();
-      }, 520);
+      }, 200);
     }
     function finish() {
       if (finished) return; finished = true;

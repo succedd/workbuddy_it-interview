@@ -684,24 +684,9 @@
     isReady: function () { return !!(window.DOCS && Array.isArray(window.DOCS.dirs)); }
   };
 
-  /* 首屏空闲时静默预热。用 requestIdleCallback 是因为此刻主线程空闲，
-     下载与解析不与首屏渲染抢带宽；不支持时退回 setTimeout(…, 1200)。 */
-  function warmup() {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(function (idle) {
-        if (idle && idle.timeRemaining && idle.timeRemaining < 8) {
-          setTimeout(warmup, 1500);      /* 剩余时间太少，留到下一轮 */
-          return;
-        }
-        load(false);                     /* 非强制：失败后进入静默期，不反复重试 */
-      }, { timeout: 3000 });
-    } else {
-      setTimeout(function () { load(false); }, 1200);
-    }
-  }
-
-  if (document.readyState === "complete") warmup();
-  else window.addEventListener("load", warmup);
+  /* 2026-11-19：去掉首屏空闲自动预热。它让每个首页访客多下载约 1.3MB 教程数据，
+     而多数人不进教程页。现在只在进入教程页（docs.js）或悬停/触摸「技术教程」
+     链接（index.html）时才加载。 */
 })();
 
 ;/* ===== << js/docs-loader.js ===== */
@@ -2191,7 +2176,7 @@
         <div class="daily-list">${rows}</div>
         ${fiveLeft.length ? `<a class="btn btn-primary btn-sm" style="margin-top:10px" href="/question/${fiveLeft[0]}">开始刷题 →</a>`
                           : `<div class="note" style="margin-top:10px;background:rgba(16,185,129,.08)">🎉 今日 5 题已完成，明天见！</div>`}
-        <label style="margin-top:10px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
+        <label style="margin-top:10px;min-height:32px;font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;gap:6px;align-items:center"><input type="checkbox" id="stale-toggle" style="width:16px;height:16px;margin:0" ${localStorage.getItem("review_stale") === "1" ? "checked" : ""}> 温故知新：把 3 天前浏览过的题混进来</label>
       </div>`;
     }
     const sk = streakInfo();
@@ -7151,8 +7136,8 @@
       try { reduced = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
       try { if (!reduced) initRain(); initNames(); } catch (e) { console.warn("boot fx", e); }
       loop();
-      /* 弱网下初始化可能要几十秒：最多挡 5s，之后先撤掉加载屏，数据就绪后 route() 再渲染正文 */
-      capTimer = setTimeout(reveal, 5000);
+      /* 弱网下初始化可能要几十秒：最多挡 3s（2026-11-19 由 5s 缩短），之后先撤掉加载屏，数据就绪后 route() 再渲染正文 */
+      capTimer = setTimeout(reveal, 3000);
       ov.addEventListener("click", reveal);
     }
     function initRain() {
@@ -7213,7 +7198,7 @@
       if (revealed) return; revealed = true;
       finished = true;
       clearTimeout(capTimer);
-      /* 提前撤屏（5s 上限 / 点击跳过）时正文可能还没渲染，先放个占位，route() 会覆盖 */
+      /* 提前撤屏（3s 上限 / 点击跳过）时正文可能还没渲染，先放个占位，route() 会覆盖 */
       const main = el("main");
       if (main && !main.innerHTML.trim()) {
         main.innerHTML = '<div class="container"><div class="skeleton" style="height:120px"></div></div>';
@@ -7224,9 +7209,9 @@
         if (fill) fill.style.width = "100%"; if (pctEl) pctEl.textContent = "100%";
         const o = el("boot-loader");
         cancelAnimationFrame(raf); cancelAnimationFrame(rainRaf);
-        if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 600); }
+        if (o) { o.classList.add("done"); setTimeout(() => { o.style.display = "none"; }, 360); }
         if (readyResolve) readyResolve();
-      }, 520);
+      }, 200);
     }
     function finish() {
       if (finished) return; finished = true;
