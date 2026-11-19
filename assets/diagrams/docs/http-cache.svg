@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 286" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="286" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">HTTP 缓存判断流程</text>
+<text x="40" y="64" font-size="15" fill="#64748b">先看强缓存（不发请求），再走协商缓存（发请求问一句）</text>
+<rect x="40.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="121.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">有缓存且未过期？</text>
+<text x="121.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">Cache-Control:</text>
+<text x="121.5" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">max-age / Expires</text>
+<rect x="259.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="340.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">强缓存命中</text>
+<text x="340.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">直接用本地副本</text>
+<text x="340.5" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">不发请求</text>
+<line x1="206.0" y1="145.0" x2="256.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="231.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">是</text>
+<rect x="478.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="559.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">带条件请求</text>
+<text x="559.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">If-None-Match</text>
+<text x="559.5" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">If-Modified-Since</text>
+<line x1="425.0" y1="145.0" x2="475.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">过期</text>
+<rect x="697.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="778.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">304 或 200</text>
+<text x="778.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">没变返回 304</text>
+<text x="778.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">用本地副本；变了返回</text>
+<text x="778.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">200 + 新内容</text>
+<line x1="644.0" y1="145.0" x2="694.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="669.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">比对</text>
+<text x="40.0" y="232.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">最佳实践：HTML 用 no-cache（每次协商），带哈希的 JS/CSS 用 max-age=31536000, immutable。no-store</text>
+<text x="40.0" y="252.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">才是完全不缓存；no-cache 是「可以缓存但用前要验证」。</text>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 527" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="527" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">InnoDB 索引：聚簇索引与二级索引</text>
+<text x="40" y="64" font-size="15" fill="#64748b">二级索引叶子只存主键，查其他列要「回表」</text>
+<rect x="260.0" y="92.0" width="380.0" height="70.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="450.0" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">根节点（非叶子页）</text>
+<text x="450.0" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">只存键值 + 子页指针，一页 16KB 能放上千个指针</text>
+<line x1="450.0" y1="162.0" x2="450.0" y2="184.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="171.3" y1="184.0" x2="728.7" y2="184.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="171.3" y1="184.0" x2="171.3" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40.0" y="208.0" width="262.7" height="69.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="171.3" y="236.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">聚簇索引（主键）</text>
+<text x="171.3" y="259.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">叶子节点存整行数据</text>
+<line x1="171.3" y1="277.0" x2="171.3" y2="289.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="289.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="315.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">id=1 · 张三 · 25 · 北京</text>
+<line x1="171.3" y1="332.0" x2="171.3" y2="344.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="344.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="370.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">id=2 · 李四 · 30 · 上海</text>
+<line x1="171.3" y1="387.0" x2="171.3" y2="399.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="399.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="425.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">叶子之间双向链表 → 范围扫描快</text>
+<line x1="450.0" y1="184.0" x2="450.0" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="318.7" y="208.0" width="262.7" height="69.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="450.0" y="236.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">二级索引 idx_name</text>
+<text x="450.0" y="259.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">叶子节点存「索引列 + 主键」</text>
+<line x1="450.0" y1="277.0" x2="450.0" y2="289.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="326.7" y="289.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="315.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">李四 → id=2</text>
+<line x1="450.0" y1="332.0" x2="450.0" y2="344.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="326.7" y="344.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="370.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">张三 → id=1</text>
+<line x1="450.0" y1="387.0" x2="450.0" y2="399.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="326.7" y="399.0" width="246.7" height="60.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="425.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">要 age 列？拿 id</text>
+<text x="450.0" y="442.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">回聚簇索引再查一次</text>
+<line x1="728.7" y1="184.0" x2="728.7" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="597.3" y="208.0" width="262.7" height="69.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="728.7" y="236.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">覆盖索引</text>
+<text x="728.7" y="259.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">查询列都在索引里</text>
+<line x1="728.7" y1="277.0" x2="728.7" y2="289.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="605.3" y="289.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="315.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">SELECT id,name WHERE name=?</text>
+<line x1="728.7" y1="332.0" x2="728.7" y2="344.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="605.3" y="344.0" width="246.7" height="60.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="370.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">不回表，EXPLAIN 显示 Using</text>
+<text x="728.7" y="387.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">index</text>
+<text x="40.0" y="493.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">三层 B+ 树就能存约 2000 万行，所以主键查询一般只要 1~3 次磁盘 IO。主键用自增整数可以避免页分裂；二级索引越多，写入越慢。</text>
+</svg>

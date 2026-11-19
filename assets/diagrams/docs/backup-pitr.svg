@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 266" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="266" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">全量备份 + binlog = 恢复到任意时间点（PITR）</text>
+<text x="40" y="64" font-size="15" fill="#64748b">例：周日全备，周三 14:05 误删表，恢复到 14:04:59</text>
+<rect x="40.0" y="92.0" width="169.0" height="106.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="124.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">还原全量备份</text>
+<text x="124.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">周日 02:00 的</text>
+<text x="124.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">xtrabackup /</text>
+<text x="124.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">mysqldump</text>
+<rect x="257.0" y="92.0" width="169.0" height="106.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="341.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">找到备份位点</text>
+<text x="341.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">备份文件里记录的</text>
+<text x="341.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">binlog 文件名 + 位置</text>
+<text x="341.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">/ GTID</text>
+<line x1="212.0" y1="145.0" x2="254.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="474.0" y="92.0" width="169.0" height="106.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="558.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">重放 binlog</text>
+<text x="558.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">mysqlbinlog</text>
+<text x="558.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">--stop-datetime</text>
+<text x="558.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">截到误操作前</text>
+<line x1="429.0" y1="145.0" x2="471.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="691.0" y="92.0" width="169.0" height="106.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="775.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">校验后切换</text>
+<text x="775.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">核对行数与关键数据，再</text>
+<text x="775.5" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">让业务接入</text>
+<line x1="646.0" y1="145.0" x2="688.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="232.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">没有连续的 binlog，就只能恢复到全备那一刻。备份必须定期做恢复演练：「备份成功」不代表「能恢复」。</text>
+</svg>

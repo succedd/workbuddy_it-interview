@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 266" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="266" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">TCP 拥塞控制四个阶段</text>
+<text x="40" y="64" font-size="15" fill="#64748b">cwnd（拥塞窗口）决定一次最多能发多少未确认数据</text>
+<rect x="40.0" y="92.0" width="157.0" height="106.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="118.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">慢启动</text>
+<text x="118.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">cwnd 从 10 个 MSS</text>
+<text x="118.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">起步，每个 RTT</text>
+<text x="118.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">翻倍（指数增长）</text>
+<rect x="261.0" y="92.0" width="157.0" height="106.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="339.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">拥塞避免</text>
+<text x="339.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">超过 ssthresh</text>
+<text x="339.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">后每个 RTT 只加 1</text>
+<text x="339.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">个 MSS（线性增长）</text>
+<line x1="200.0" y1="145.0" x2="258.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="229.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">到阈值</text>
+<rect x="482.0" y="92.0" width="157.0" height="106.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="560.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">快速重传</text>
+<text x="560.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">收到 3 个重复</text>
+<text x="560.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">ACK，不等超时立即重</text>
+<text x="560.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">传丢失段</text>
+<line x1="421.0" y1="145.0" x2="479.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">丢包</text>
+<rect x="703.0" y="92.0" width="157.0" height="106.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="781.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">快速恢复</text>
+<text x="781.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">ssthresh =</text>
+<text x="781.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">cwnd/2，cwnd</text>
+<text x="781.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">减半后继续线性增长</text>
+<line x1="642.0" y1="145.0" x2="700.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="671.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">重传后</text>
+<text x="40.0" y="232.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">如果是超时（RTO）才发现丢包，说明网络很差：cwnd 直接降到 1，重新慢启动。Linux 默认算法是 CUBIC，生产上也常换成 BBR。</text>
+</svg>

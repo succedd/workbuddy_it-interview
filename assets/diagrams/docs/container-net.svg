@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 685" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="685" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">容器网络：netns + veth + 网桥 + NAT</text>
+<text x="40" y="64" font-size="15" fill="#64748b">Docker 默认 bridge 模式的数据路径</text>
+<rect x="40.0" y="92.0" width="250.0" height="150.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="165.0" y="152.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">容器 A（netns）</text>
+<text x="165.0" y="175.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">eth0  172.17.0.2</text>
+<text x="165.0" y="193.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">独立的网卡、路由表和防火墙规则</text>
+<rect x="610.0" y="92.0" width="250.0" height="150.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="735.0" y="152.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">容器 B（netns）</text>
+<text x="735.0" y="175.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">eth0  172.17.0.3</text>
+<text x="735.0" y="193.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">同样独立的网络栈</text>
+<rect x="300.0" y="322.0" width="300.0" height="70.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="450.0" y="351.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">docker0 网桥  172.17.0.1</text>
+<text x="450.0" y="374.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">二层交换机，连接所有 veth</text>
+<rect x="300.0" y="452.0" width="300.0" height="70.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="450.0" y="481.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">宿主机 eth0  10.0.0.5</text>
+<text x="450.0" y="504.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">iptables MASQUERADE 做 SNAT 出网</text>
+<rect x="330.0" y="132.0" width="240.0" height="70.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="450.0" y="152.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">veth pair</text>
+<text x="450.0" y="175.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">一对虚拟网线：一端在容器，一端插</text>
+<text x="450.0" y="193.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">网桥</text>
+<path d="M165 242 V357 H300" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<path d="M735 242 V357 H600" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<line x1="450.0" y1="392.0" x2="450.0" y2="449.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<line x1="450.0" y1="522.0" x2="450.0" y2="572.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="592.0" font-size="14" fill="#0f766e" text-anchor="middle" font-weight="700">外部网络</text>
+<text x="470.0" y="432.0" font-size="12" fill="#0f766e" text-anchor="start" font-weight="400">NAT</text>
+<text x="40.0" y="631.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">同一网桥上的容器直接二层互通；访问外网时源地址被改写为宿主机 IP；-p 8080:80 本质是一条 DNAT 规则。Kubernetes 的 CNI</text>
+<text x="40.0" y="651.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">插件把这套模型扩展到跨主机。</text>
+</svg>

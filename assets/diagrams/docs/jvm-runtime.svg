@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 504" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="504" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">JVM 运行时数据区</text>
+<text x="40" y="64" font-size="15" fill="#64748b">按 JVM 规范划分：线程私有 vs 线程共享</text>
+<rect x="40.0" y="92.0" width="670.0" height="56.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<line x1="230.0" y1="102.0" x2="230.0" y2="138.0" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="135.0" y="125.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">程序计数器</text>
+<text x="248.0" y="124.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">线程私有。记录当前执行到哪条字节码，唯一不会 OOM 的区域</text>
+<rect x="40.0" y="156.0" width="670.0" height="62.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<line x1="230.0" y1="166.0" x2="230.0" y2="208.0" stroke="#93c5fd" stroke-width="1.2"/>
+<text x="135.0" y="192.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">虚拟机栈</text>
+<text x="248.0" y="182.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">线程私有。每次方法调用压一个栈帧：局部变量表、操作数栈、返回地址；递</text>
+<text x="248.0" y="200.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">归太深 → StackOverflowError</text>
+<rect x="40.0" y="226.0" width="670.0" height="56.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<line x1="230.0" y1="236.0" x2="230.0" y2="272.0" stroke="#93c5fd" stroke-width="1.2"/>
+<text x="135.0" y="259.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">本地方法栈</text>
+<text x="248.0" y="258.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">线程私有。服务 native 方法（HotSpot 与虚拟机栈合并实现）</text>
+<rect x="40.0" y="290.0" width="670.0" height="62.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<line x1="230.0" y1="300.0" x2="230.0" y2="342.0" stroke="#6ee7b7" stroke-width="1.2"/>
+<text x="135.0" y="326.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">堆 Heap</text>
+<text x="248.0" y="316.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">线程共享。几乎所有对象都在这里；分新生代（Eden + 2 个</text>
+<text x="248.0" y="334.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">Survivor）和老年代，GC 的主战场</text>
+<rect x="40.0" y="360.0" width="670.0" height="56.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<line x1="230.0" y1="370.0" x2="230.0" y2="406.0" stroke="#fdba74" stroke-width="1.2"/>
+<text x="135.0" y="393.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">元空间 Metaspace</text>
+<text x="248.0" y="392.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">线程共享。类的元数据、方法信息，JDK 8 起放在本地内存，取代永久代</text>
+<path d="M720.0 98.0 H734.0 V276.0 H720.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="746.0" y="183.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">线程私有，随线程</text>
+<text x="746.0" y="201.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">生灭</text>
+<path d="M720.0 296.0 H734.0 V410.0 H720.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="746.0" y="349.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">线程共享，需要</text>
+<text x="746.0" y="367.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">GC</text>
+<text x="40.0" y="450.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">常见 OOM 对应关系：Java heap space → 堆；Metaspace → 类太多（动态代理 / 热部署）；unable to create native thread →</text>
+<text x="40.0" y="470.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">线程数或系统限制。</text>
+</svg>

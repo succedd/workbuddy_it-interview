@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 376" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="376" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">Maven default 生命周期（常用阶段）</text>
+<text x="40" y="64" font-size="15" fill="#64748b">执行某个阶段时，它之前的所有阶段都会先执行</text>
+<rect x="40.0" y="92.0" width="178.0" height="78.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="129.0" y="125.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">validate</text>
+<text x="129.0" y="148.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">检查 pom 是否正确</text>
+<rect x="254.0" y="92.0" width="178.0" height="78.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="343.0" y="125.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">compile</text>
+<text x="343.0" y="148.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">编译 src/main/java</text>
+<line x1="221.0" y1="131.0" x2="251.0" y2="131.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="468.0" y="92.0" width="178.0" height="78.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="557.0" y="125.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">test</text>
+<text x="557.0" y="148.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">运行单元测试</text>
+<line x1="435.0" y1="131.0" x2="465.0" y2="131.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="682.0" y="92.0" width="178.0" height="78.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="771.0" y="125.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">package</text>
+<text x="771.0" y="148.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">打成 jar / war</text>
+<line x1="649.0" y1="131.0" x2="679.0" y2="131.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40.0" y="210.0" width="178.0" height="78.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="129.0" y="243.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">verify</text>
+<text x="129.0" y="266.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">集成测试、质量检查</text>
+<path d="M771.0 172.0 V188.0 H129.0 V207.0" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="254.0" y="210.0" width="178.0" height="78.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="343.0" y="243.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">install</text>
+<text x="343.0" y="266.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">装进本地仓库 ~/.m2</text>
+<line x1="221.0" y1="249.0" x2="251.0" y2="249.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="468.0" y="210.0" width="178.0" height="78.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="557.0" y="243.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">deploy</text>
+<text x="557.0" y="266.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">上传到远程私服 Nexus</text>
+<line x1="435.0" y1="249.0" x2="465.0" y2="249.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="322.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">mvn package 会自动跑 compile 和 test；-DskipTests 跳过运行测试。依赖冲突用 mvn dependency:tree 查看，Maven</text>
+<text x="40.0" y="342.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">默认「最短路径优先，同长度先声明优先」。</text>
+</svg>

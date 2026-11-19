@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="560" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">CSS 盒模型</text>
+<text x="40" y="64" font-size="15" fill="#64748b">每个元素都是一个矩形盒子，从外到内四层</text>
+<rect x="120.0" y="92.0" width="660.0" height="380.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="134.0" y="118.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">margin 外边距</text>
+<rect x="170.0" y="132.0" width="560.0" height="300.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="184.0" y="158.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">border 边框</text>
+<rect x="220.0" y="172.0" width="460.0" height="220.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="234.0" y="198.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">padding 内边距</text>
+<rect x="270.0" y="212.0" width="360.0" height="140.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="450.0" y="278.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">content 内容</text>
+<text x="450.0" y="300.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">width × height（content-box 时）</text>
+<text x="40.0" y="506.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">box-sizing: content-box（默认）时 width 只算内容；border-box 时 width 包含 padding 和</text>
+<text x="40.0" y="526.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">border，布局更好算，所以大多数项目全局设 *{box-sizing:border-box}。上下相邻块的 margin 会合并（取较大值）。</text>
+</svg>

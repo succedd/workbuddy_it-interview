@@ -1632,7 +1632,7 @@ ${F}
             id: "devops-mid-2",
             title: "CI/CD 流水线设计：阶段、门禁与可复用编排",
             minutes: 28,
-            updated: "2026-09-16",
+            updated: "2026-11-19",
             applies: "GitHub Actions / GitLab CI",
             tags: ["CI/CD", "流水线", "DORA"],
             terms: ["CI/CD", "流水线设计", "门禁", "部署"],
@@ -1654,6 +1654,8 @@ ${F}
 ## 二、流水线的阶段划分（这是本节的核心设计）
 
 把流水线想象成**一条由快到慢、由便宜到昂贵的漏斗**：让最便宜、最容易失败的检查先跑，尽早淘汰。
+
+![CI/CD 流水线典型阶段](/assets/diagrams/docs/cicd-stages.svg)
 
 ${F}text
 ① 静态检查（秒级）    lint / format / type-check / commit-lint

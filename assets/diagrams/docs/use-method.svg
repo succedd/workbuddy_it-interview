@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="480" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">USE 方法：对每种资源问三个问题</text>
+<text x="40" y="64" font-size="15" fill="#64748b">Brendan Gregg 提出，适合快速定位性能瓶颈</text>
+<rect x="40.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="136.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">CPU</text>
+<rect x="40.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">使用率</text>
+<text x="136.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">top、mpstat -P ALL</text>
+<rect x="40.0" y="231.0" width="193.0" height="84.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">饱和度</text>
+<text x="136.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">load average、vmstat r</text>
+<text x="136.5" y="297.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">列</text>
+<rect x="40.0" y="325.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="352.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">错误</text>
+<text x="136.5" y="374.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">dmesg 看 MCE</text>
+<rect x="249.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="345.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">内存</text>
+<rect x="249.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">使用率</text>
+<text x="345.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">free -h 看 available</text>
+<rect x="249.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">饱和度</text>
+<text x="345.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">vmstat si/so 换页</text>
+<rect x="249.0" y="308.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">错误</text>
+<text x="345.5" y="357.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">dmesg 看 OOM killer</text>
+<rect x="458.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="554.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">磁盘</text>
+<rect x="458.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">使用率</text>
+<text x="554.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">iostat -x 看 %util</text>
+<rect x="458.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">饱和度</text>
+<text x="554.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">aqsize / await</text>
+<rect x="458.0" y="308.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">错误</text>
+<text x="554.5" y="357.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">smartctl、dmesg</text>
+<rect x="667.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="763.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">网络</text>
+<rect x="667.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">使用率</text>
+<text x="763.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">sar -n DEV 带宽</text>
+<rect x="667.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">饱和度</text>
+<text x="763.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">ss -s、重传、丢包</text>
+<rect x="667.0" y="308.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">错误</text>
+<text x="763.5" y="357.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">ip -s link 看 errors</text>
+<text x="40.0" y="426.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">U = Utilization 忙的时间占比，S = Saturation 排队等待的程度，E = Errors</text>
+<text x="40.0" y="446.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">出错次数。先把四类资源过一遍，再深入看可疑的那一项。</text>
+</svg>

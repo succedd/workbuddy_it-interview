@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 608" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="608" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">DNS 解析全过程</text>
+<text x="40" y="64" font-size="15" fill="#64748b">浏览器问一次，递归解析器替你跑完整条链</text>
+<rect x="50.0" y="92.0" width="144.0" height="46.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="122.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">浏览器 / 系统</text>
+<rect x="214.0" y="92.0" width="144.0" height="46.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="286.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">递归解析器</text>
+<rect x="378.0" y="92.0" width="144.0" height="46.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="450.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">根服务器</text>
+<rect x="542.0" y="92.0" width="144.0" height="46.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="614.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">.com 顶级域</text>
+<rect x="706.0" y="92.0" width="144.0" height="46.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="778.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">权威服务器</text>
+<line x1="122.0" y1="138.0" x2="122.0" y2="520.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="286.0" y1="138.0" x2="286.0" y2="520.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="450.0" y1="138.0" x2="450.0" y2="520.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="614.0" y1="138.0" x2="614.0" y2="520.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="778.0" y1="138.0" x2="778.0" y2="520.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<rect x="60.0" y="144.0" width="124.0" height="46.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="122.0" y="162.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">查浏览器、系统缓</text>
+<text x="122.0" y="179.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">存、hosts</text>
+<line x1="126.0" y1="220.0" x2="282.0" y2="220.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="204.0" y="212.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">www.example.com ?</text>
+<line x1="290.0" y1="260.0" x2="446.0" y2="260.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="368.0" y="252.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">问根</text>
+<line x1="446.0" y1="300.0" x2="290.0" y2="300.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="368.0" y="292.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">去问 .com</text>
+<line x1="290.0" y1="340.0" x2="610.0" y2="340.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="332.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">问 .com</text>
+<line x1="610.0" y1="380.0" x2="290.0" y2="380.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="372.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">去问 example.com 的 NS</text>
+<line x1="290.0" y1="420.0" x2="774.0" y2="420.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="532.0" y="412.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">问权威</text>
+<line x1="774.0" y1="460.0" x2="290.0" y2="460.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="532.0" y="452.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">A 93.184.216.34  TTL 300</text>
+<line x1="282.0" y1="500.0" x2="126.0" y2="500.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="204.0" y="492.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">返回结果并按 TTL 缓存</text>
+<text x="40.0" y="554.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">客户端到递归解析器是「递归查询」，解析器到各级服务器是「迭代查询」。CDN</text>
+<text x="40.0" y="574.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">就是在权威服务器这一步，根据解析器位置返回离用户最近的节点 IP。</text>
+</svg>

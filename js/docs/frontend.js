@@ -27,7 +27,7 @@
             id: "html-css-layout",
             title: "HTML 语义化与 CSS 布局",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "HTML Living Standard / CSS（Flex·Grid）",
             tags: ["HTML", "CSS", "Flex", "Grid"],
             terms: ["HTML", "CSS", "Flex", "布局"],
@@ -58,6 +58,8 @@ ${F}
 ## 二、CSS 盒模型与布局体系
 
 MDN「CSS layout」模块的官方分类就是布局方案的学习目录：Normal flow → Flexbox → Grid → Float（遗留）→ Positioning。
+
+![CSS 盒模型](/assets/diagrams/docs/box-model.svg)
 
 **盒模型**：${C}box-sizing: border-box${C} 让 width 含 padding 与 border，是现代项目的默认起点：
 
@@ -341,7 +343,7 @@ ${C}0.1 + 0.2 !== 0.3${C}（IEEE 754 二进制浮点）；金额一律用**整�
             id: "dom-event",
             title: "DOM 与事件",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "WHATWG DOM Standard / 所有现代浏览器",
             tags: ["DOM", "事件", "委托"],
             terms: ["DOM", "事件", "冒泡", "委托"],
@@ -371,6 +373,8 @@ ${F}
 ## 二、事件模型：捕获 → 目标 → 冒泡
 
 WHATWG DOM §2.7 规定事件分派三阶段：
+
+![DOM 事件三个阶段](/assets/diagrams/docs/dom-event.svg)
 
 ${F}text
 window → document → ... → 父级      （捕获阶段，Capture Phase）
@@ -483,7 +487,7 @@ ${F}
             id: "browser-http",
             title: "HTTP 与浏览器缓存",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "HTTP/1.1·2·3 / 浏览器网络栈",
             tags: ["HTTP", "缓存", "CORS"],
             terms: ["HTTP", "缓存", "强缓存", "协商缓存"],
@@ -506,6 +510,8 @@ RFC 9110 定义方法的**安全性与幂等性**，这是接口设计与重试�
 状态码按类记忆（MDN「HTTP response status codes」）：2xx 成功、3xx 重定向（301 永久 / 302 临时 / 304 协商缓存命中）、4xx 客户端错（400/401/403/404/429）、5xx 服务端错。
 
 ## 二、HTTP 缓存：强缓存与协商缓存（RFC 9111）
+
+![HTTP 缓存判断流程](/assets/diagrams/docs/http-cache.svg)
 
 ${F}text
 请求发出
@@ -767,7 +773,7 @@ ${F}
             id: "es6-async",
             title: "ES6+ 与异步编程",
             minutes: 28,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "ES2015+ / 所有现代浏览器",
             tags: ["异步", "Promise", "事件循环"],
             terms: ["Promise", "异步", "事件循环", "async"],
@@ -777,6 +783,8 @@ ${F}
 ## 一、事件循环：JS 并发模型的真相
 
 MDN「Concurrency model and the event loop」章的模型：**调用栈空了 → 先清空全部微任务 → 再取一个宏任务 → 渲染 → 循环**。
+
+![浏览器事件循环](/assets/diagrams/docs/event-loop.svg)
 
 ${F}js
 console.log("1");
@@ -1602,7 +1610,7 @@ ${F}
             id: "render-perf",
             title: "浏览器渲染原理与性能优化",
             minutes: 30,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Chromium 渲染管线 / web.dev",
             tags: ["性能", "渲染", "Core Web Vitals"],
             terms: ["性能", "渲染", "重排", "Vitals"],
@@ -1612,6 +1620,8 @@ ${F}
 ## 一、渲染管线：从字节到像素
 
 MDN「How browsers work」+ web.dev 的像素管线四步：
+
+![浏览器渲染流水线](/assets/diagrams/docs/render-pipeline.svg)
 
 ${F}text
 JavaScript → Style（计算样式）→ Layout（几何布局/重排）→ Paint（绘制/重绘）→ Composite（合成）

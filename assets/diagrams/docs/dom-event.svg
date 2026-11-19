@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 304" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="304" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">DOM 事件三个阶段</text>
+<text x="40" y="64" font-size="15" fill="#64748b">点击 button 时，事件从 window 出发再回到 window</text>
+<rect x="40.0" y="92.0" width="236.0" height="124.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="158.0" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">1 捕获阶段</text>
+<text x="158.0" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">window → document → body →</text>
+<text x="158.0" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">div</text>
+<text x="158.0" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">第三个参数为 true</text>
+<text x="158.0" y="198.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">的监听在这里触发</text>
+<rect x="332.0" y="92.0" width="236.0" height="124.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="450.0" y="139.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">2 目标阶段</text>
+<text x="450.0" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">到达真正被点击的</text>
+<text x="450.0" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">button（event.target）</text>
+<line x1="279.0" y1="154.0" x2="329.0" y2="154.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="304.0" y="146.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">向下</text>
+<rect x="624.0" y="92.0" width="236.0" height="124.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="742.0" y="139.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">3 冒泡阶段</text>
+<text x="742.0" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">button → div → body → window</text>
+<text x="742.0" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">默认监听在这里触发</text>
+<line x1="571.0" y1="154.0" x2="621.0" y2="154.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="596.0" y="146.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">向上</text>
+<text x="40.0" y="250.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">事件委托就是利用冒泡：在父元素上监听一次，用 event.target 判断是哪个子元素。stopPropagation()</text>
+<text x="40.0" y="270.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">阻止继续传播，preventDefault() 阻止默认行为（如链接跳转），两者不是一回事。</text>
+</svg>

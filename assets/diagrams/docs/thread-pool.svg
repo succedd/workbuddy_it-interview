@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 322" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="322" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">ThreadPoolExecutor 提交任务的判断顺序</text>
+<text x="40" y="64" font-size="15" fill="#64748b">execute(task) 时依次检查，任何一步满足就停</text>
+<rect x="40.0" y="92.0" width="163.0" height="142.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="121.5" y="139.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">核心线程未满？</text>
+<text x="121.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">线程数 &lt;</text>
+<text x="121.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">corePoolSize：新建</text>
+<text x="121.5" y="198.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">核心线程直接执行</text>
+<rect x="259.0" y="92.0" width="163.0" height="142.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="340.5" y="148.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">队列未满？</text>
+<text x="340.5" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">放进 workQueue</text>
+<text x="340.5" y="189.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">排队，等空闲线程来取</text>
+<line x1="206.0" y1="163.0" x2="256.0" y2="163.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="231.0" y="155.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">已满</text>
+<rect x="478.0" y="92.0" width="163.0" height="142.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="559.5" y="139.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">最大线程未满？</text>
+<text x="559.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">线程数 &lt;</text>
+<text x="559.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">maximumPoolSize：</text>
+<text x="559.5" y="198.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">新建非核心线程执行</text>
+<line x1="425.0" y1="163.0" x2="475.0" y2="163.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="155.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">已满</text>
+<rect x="697.0" y="92.0" width="163.0" height="142.0" rx="12" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.6"/>
+<text x="778.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">执行拒绝策略</text>
+<text x="778.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">Abort 抛异常 /</text>
+<text x="778.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">CallerRuns</text>
+<text x="778.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">调用者执行 /</text>
+<text x="778.5" y="198.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">Discard /</text>
+<text x="778.5" y="216.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">DiscardOldest</text>
+<line x1="644.0" y1="163.0" x2="694.0" y2="163.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="669.0" y="155.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">已满</text>
+<text x="40.0" y="268.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">注意顺序：先排队、后扩线程。用无界队列（LinkedBlockingQueue 默认）时 maximumPoolSize 形同虚设，任务堆积直到</text>
+<text x="40.0" y="288.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">OOM，所以生产上要用有界队列并显式命名线程。</text>
+</svg>

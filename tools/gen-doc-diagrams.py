@@ -1,0 +1,756 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""生成技术教程配图 -> assets/diagrams/docs/*.svg
+
+风格沿用 assets/diagrams/mysql-icp.svg：浅底、圆角浅色框、蓝/青箭头。
+所有图由数据驱动（flow / seq / tree / cols / stack 五种版式 + 少量定制图），
+改文案只需改下方 DIAGRAMS 里的数据，然后重跑：python3 tools/gen-doc-diagrams.py
+"""
+import html, os, unicodedata
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT = os.path.join(ROOT, "assets", "diagrams", "docs")
+W = 900
+FONT = "-apple-system,'PingFang SC','Microsoft YaHei',sans-serif"
+INK, BODY, MUTED = "#0f172a", "#334155", "#64748b"
+BLUE, TEAL, RED = "#2563eb", "#0f766e", "#dc2626"
+PAL = {
+    "b": ("#eff6ff", "#93c5fd"), "g": ("#ecfdf5", "#6ee7b7"), "r": ("#fef2f2", "#fca5a5"),
+    "o": ("#fff7ed", "#fdba74"), "l": ("#f0fdf4", "#86efac"), "p": ("#f5f3ff", "#c4b5fd"),
+    "y": ("#fefce8", "#fde047"), "s": ("#f1f5f9", "#cbd5e1"),
+}
+
+
+def esc(s):
+    return html.escape(str(s))
+
+
+def tw(s, fs):
+    """估算文本宽度：全角字符按 1em，半角按 0.58em。"""
+    w = 0
+    for ch in str(s):
+        w += fs if unicodedata.east_asian_width(ch) in "WF" else fs * 0.58
+    return w
+
+
+def wrap(s, maxw, fs):
+    out = []
+    for para in str(s).split("\n"):
+        cur = ""
+        for ch in para:
+            if cur and tw(cur + ch, fs) > maxw:
+                # 尽量在空格处断开英文
+                if " " in cur and ch != " ":
+                    i = cur.rfind(" ")
+                    out.append(cur[:i]); cur = cur[i + 1:] + ch
+                    continue
+                out.append(cur); cur = ch.lstrip()
+            else:
+                cur += ch
+        out.append(cur)
+    return out
+
+
+def svg(h, title, sub, body):
+    head = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" font-family="%s">\n'
+            '<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" '
+            'orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="%s"/></marker>'
+            '<marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" '
+            'orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="%s"/></marker>'
+            '<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" '
+            'orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="%s"/></marker></defs>\n'
+            '<rect width="%d" height="%d" fill="#f8fafc"/>\n'
+            '<text x="40" y="38" font-size="22" font-weight="700" fill="%s">%s</text>\n'
+            % (W, h, FONT, BLUE, TEAL, RED, W, h, INK, esc(title)))
+    if sub:
+        head += '<text x="40" y="64" font-size="15" fill="%s">%s</text>\n' % (MUTED, esc(sub))
+    return head + "\n".join(body) + "\n</svg>\n"
+
+
+def text(x, y, s, fs=14, color=BODY, anchor="middle", weight="400"):
+    return '<text x="%.1f" y="%.1f" font-size="%s" fill="%s" text-anchor="%s" font-weight="%s">%s</text>' % (
+        x, y, fs, color, anchor, weight, esc(s))
+
+
+def rect(x, y, w, h, c="b", rx=12, dash=False):
+    fc, sc = PAL[c]
+    d = ' stroke-dasharray="6 5"' if dash else ""
+    return '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="%d" fill="%s" stroke="%s" stroke-width="1.6"%s/>' % (
+        x, y, w, h, rx, fc, sc, d)
+
+
+def box(x, y, w, h, head, desc="", c="b", hfs=16, dfs=13, anchor="middle"):
+    """带标题与说明的框；文本按宽度自动换行并垂直居中。"""
+    pad = 12
+    hl = wrap(head, w - 2 * pad, hfs) if head else []
+    dl = wrap(desc, w - 2 * pad, dfs) if desc else []
+    total = len(hl) * (hfs + 4) + (6 if hl and dl else 0) + len(dl) * (dfs + 5)
+    cy = y + (h - total) / 2
+    tx = x + w / 2 if anchor == "middle" else x + pad
+    out = [rect(x, y, w, h, c)]
+    for ln in hl:
+        cy += hfs + 4
+        out.append(text(tx, cy - 4, ln, hfs, INK, anchor, "700"))
+    if hl and dl:
+        cy += 6
+    for ln in dl:
+        cy += dfs + 5
+        out.append(text(tx, cy - 5, ln, dfs, BODY, anchor))
+    return "\n".join(out)
+
+
+def arrow(x1, y1, x2, y2, color="a", dash=False, w=2):
+    col = {"a": BLUE, "t": TEAL, "r": RED}[color]
+    d = ' stroke-dasharray="6 5"' if dash else ""
+    return '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="%s"%s marker-end="url(#%s)"/>' % (
+        x1, y1, x2, y2, col, w, d, color)
+
+
+def path(d, color="a", dash=False, end=True):
+    col = {"a": BLUE, "t": TEAL, "r": RED}[color]
+    ds = ' stroke-dasharray="6 5"' if dash else ""
+    me = ' marker-end="url(#%s)"' % color if end else ""
+    return '<path d="%s" fill="none" stroke="%s" stroke-width="2"%s%s/>' % (d, col, ds, me)
+
+
+def line(x1, y1, x2, y2, color=MUTED, w=1.5, dash=False):
+    d = ' stroke-dasharray="5 5"' if dash else ""
+    return '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="%s"%s/>' % (x1, y1, x2, y2, color, w, d)
+
+
+def note(y, s, fs=13):
+    """底部说明，可多行。返回 (元素列表, 占用高度)。"""
+    ls = wrap(s, W - 80, fs)
+    return [text(40, y + (i + 1) * (fs + 7), ln, fs, MUTED, "start") for i, ln in enumerate(ls)], len(ls) * (fs + 7) + 6
+
+
+# ---------------------------------------------------------------- 版式
+# 每个版式返回 (元素列表, 底部 y)
+TOP = 92
+
+
+def need_h(w, head, desc, hfs=16, dfs=13, minh=60):
+    hl = len(wrap(head, w - 24, hfs)) if head else 0
+    dl = len(wrap(desc, w - 24, dfs)) if desc else 0
+    return max(minh, hl * (hfs + 4) + dl * (dfs + 5) + (6 if hl and dl else 0) + 26)
+
+
+def flow(items, per_row=4, gap=36, y=TOP, minh=78, labels=None):
+    """横向步骤流，超过 per_row 自动换行（折回行首）。items: [(head, desc, c)]"""
+    n = min(per_row, len(items))
+    bw = (W - 80 - gap * (n - 1)) / n
+    rows = [items[i:i + per_row] for i in range(0, len(items), per_row)]
+    out, cy = [], y
+    prev = None
+    for r, row in enumerate(rows):
+        bh = max(need_h(bw, h, d, minh=minh) for h, d, _ in row)
+        for i, (h, d, c) in enumerate(row):
+            x = 40 + i * (bw + gap)
+            out.append(box(x, cy, bw, bh, h, d, c))
+            k = r * per_row + i
+            if i > 0:
+                out.append(arrow(x - gap + 3, cy + bh / 2, x - 3, cy + bh / 2))
+                if labels and labels.get(k):
+                    out.append(text(x - gap / 2, cy + bh / 2 - 8, labels[k], 11, BLUE))
+            elif prev:
+                px, py = prev
+                out.append(path("M%.1f %.1f V%.1f H%.1f V%.1f" % (px, py + 2, py + 18, 40 + bw / 2, cy - 3)))
+        last_x = 40 + (len(row) - 1) * (bw + gap)
+        prev = (last_x + bw / 2, cy + bh)
+        cy += bh + 40
+    return out, cy - 40
+
+
+def seq(actors, msgs, y=TOP, step=46):
+    """时序图。actors: [(name, c)]；msgs: (i, j, label[, kind, dash]) 或 ("--", 分隔文字)"""
+    n = len(actors)
+    span = (W - 80) / n
+    xs = [40 + span * (i + 0.5) for i in range(n)]
+    aw = min(190, span - 20)
+    out = []
+    for (nm, c), x in zip(actors, xs):
+        out.append(box(x - aw / 2, y, aw, 46, nm, "", c, hfs=15))
+    cy = y + 46 + 30
+    body = []
+    for m in msgs:
+        if m[0] == "--":
+            body.append(line(40, cy - 10, W - 40, cy - 10, "#cbd5e1", 1.2, True))
+            body.append('<rect x="%.1f" y="%.1f" width="%.1f" height="22" rx="11" fill="#f8fafc"/>' % (
+                W / 2 - tw(m[1], 13) / 2 - 12, cy - 21, tw(m[1], 13) + 24))
+            body.append(text(W / 2, cy - 5, m[1], 13, TEAL, weight="700"))
+            cy += 30
+            continue
+        i, j, lab = m[0], m[1], m[2]
+        kind = m[3] if len(m) > 3 else "a"
+        dash = m[4] if len(m) > 4 else False
+        if i == j:
+            sh = max(34, len(wrap(lab, aw - 44, 12)) * 17 + 12)
+            body.append(box(xs[i] - aw / 2 + 10, cy - 24, aw - 20, sh, "", lab, "y", dfs=12))
+            cy += sh - 34
+        else:
+            d = 1 if j > i else -1
+            body.append(arrow(xs[i] + 4 * d, cy, xs[j] - 4 * d, cy, kind, dash))
+            col = {"a": BLUE, "t": TEAL, "r": RED}[kind]
+            body.append(text((xs[i] + xs[j]) / 2, cy - 8, lab, 13, col))
+        cy += step
+    for x in xs:
+        out.append(line(x, y + 46, x, cy - step + 20, "#94a3b8", 1.4, True))
+    return out + body, cy - step + 20
+
+
+def stack(layers, y=TOP, lw=190, rh=None, side=None):
+    """分层堆叠。layers: [(name, desc, c)]；side: 右侧竖向标注 [(起层, 止层, 文字)]"""
+    out, cy = [], y
+    right = W - 40 - (150 if side else 0)
+    pos = []
+    for nm, desc, c in layers:
+        h = rh or max(56, need_h(right - 40 - lw - 20, "", desc, minh=56))
+        out.append(rect(40, cy, right - 40, h, c))
+        out.append(line(40 + lw, cy + 10, 40 + lw, cy + h - 10, PAL[c][1], 1.2))
+        for k, ln in enumerate(wrap(nm, lw - 24, 15)):
+            nl = len(wrap(nm, lw - 24, 15))
+            out.append(text(40 + lw / 2, cy + h / 2 - nl * 10 + 15 + k * 20, ln, 15, INK, weight="700"))
+        dl = wrap(desc, right - 40 - lw - 30, 13)
+        ty = cy + h / 2 - (len(dl) * 18) / 2 + 13
+        for k, ln in enumerate(dl):
+            out.append(text(40 + lw + 18, ty + k * 18, ln, 13, BODY, "start"))
+        pos.append((cy, cy + h))
+        cy += h + 8
+    for a, b, s in side or []:
+        y1, y2 = pos[a][0], pos[b][1]
+        x = right + 24
+        out.append(path("M%.1f %.1f H%.1f V%.1f H%.1f" % (x - 14, y1 + 6, x, y2 - 6, x - 14), "t", end=False))
+        sl = wrap(s, 110, 13)
+        for k, ln in enumerate(sl):
+            out.append(text(x + 12, (y1 + y2) / 2 - len(sl) * 9 + 14 + k * 18, ln, 13, TEAL, "start", "700"))
+    return out, cy - 8
+
+
+def cols(columns, y=TOP, gap=24, ih=None):
+    """并列对比栏。columns: [(head, c, [item, ...])]，item 可为 'a' 或 ('a', 'desc')"""
+    n = len(columns)
+    cw = (W - 80 - gap * (n - 1)) / n
+    out, bottom = [], y
+    hh = max(need_h(cw, h, "", minh=50) for h, _, _ in columns)
+    for k, (head, c, items) in enumerate(columns):
+        x = 40 + k * (cw + gap)
+        out.append(box(x, y, cw, hh, head, "", c, hfs=16))
+        cy = y + hh + 12
+        for it in items:
+            h_, d_ = (it, "") if isinstance(it, str) else it
+            bh = ih or need_h(cw, h_, d_, hfs=14, dfs=12, minh=44)
+            out.append(box(x, cy, cw, bh, h_, d_, "s", hfs=14, dfs=12))
+            cy += bh + 10
+        bottom = max(bottom, cy - 10)
+    return out, bottom
+
+
+def tree(root, children, y=TOP, ch=64):
+    """层级树。root: (head, desc, c)；children: [(head, desc, c, [leaf, ...])]"""
+    out = []
+    rw = min(380, W - 80)
+    rh = need_h(rw, root[0], root[1], minh=56)
+    out.append(box(W / 2 - rw / 2, y, rw, rh, root[0], root[1], root[2]))
+    n = len(children)
+    gap = 16
+    cw = (W - 80 - gap * (n - 1)) / n
+    bus = y + rh + 22
+    cy = bus + 24
+    out.append(line(W / 2, y + rh, W / 2, bus, BLUE, 2))
+    xs = [40 + k * (cw + gap) + cw / 2 for k in range(n)]
+    out.append(line(xs[0], bus, xs[-1], bus, BLUE, 2))
+    hh = max(need_h(cw, h, d, hfs=15, minh=ch) for h, d, _, _ in children)
+    bottom = cy + hh
+    for x, (h, d, c, leaves) in zip(xs, children):
+        out.append(arrow(x, bus, x, cy - 2))
+        out.append(box(x - cw / 2, cy, cw, hh, h, d, c, hfs=15))
+        ly = cy + hh + 12
+        for lf in leaves:
+            lh, ld = (lf, "") if isinstance(lf, str) else lf
+            bh = need_h(cw - 16, lh, ld, hfs=13, dfs=12, minh=36)
+            out.append(line(x, ly - 12, x, ly, "#94a3b8", 1.4))
+            out.append(box(x - cw / 2 + 8, ly, cw - 16, bh, lh, ld, "s", hfs=13, dfs=12))
+            ly += bh + 12
+        bottom = max(bottom, ly - 12)
+    return out, bottom
+
+
+def bars(rows, y=TOP, rh=40, lw=150):
+    """封装/字段条。rows: [(左侧标签, [(段文字, 宽度权重, c)])]，各行右对齐"""
+    out, cy = [], y
+    full = W - 80 - lw
+    total = max(sum(s[1] for s in segs) for _, segs in rows)
+    unit = full / total
+    for lab, segs in rows:
+        out.append(text(40, cy + rh / 2 + 5, lab, 14, INK, "start", "700"))
+        x = W - 40 - sum(s[1] for s in segs) * unit
+        for s, wgt, c in segs:
+            w = wgt * unit
+            out.append(box(x, cy, w - 4, rh, s, "", c, hfs=13))
+            x += w
+        cy += rh + 14
+    return out, cy - 14
+
+
+# ---------------------------------------------------------------- 图定义
+DIAGRAMS = {}
+
+
+def diagram(name):
+    def deco(fn):
+        DIAGRAMS[name] = fn
+        return fn
+    return deco
+
+
+def done(title, sub, built, tip=""):
+    els, bottom = built
+    els = list(els)
+    if tip:
+        ns, nh = note(bottom + 14, tip)
+        els += ns
+        bottom += 14 + nh
+    return svg(int(bottom + 28), title, sub, els)
+
+
+# ---- 网络与操作系统
+@diagram("tcpip-encapsulation")
+def _():
+    return done("TCP/IP 封装：每往下一层就多一个头", "发送方自上而下加头，接收方自下而上剥头", bars([
+        ("应用层", [("应用数据 GET / HTTP/1.1", 6, "b")]),
+        ("传输层 TCP", [("TCP 头 20B", 2, "g"), ("应用数据", 6, "b")]),
+        ("网络层 IP", [("IP 头 20B", 2, "o"), ("TCP 头", 2, "g"), ("应用数据", 6, "b")]),
+        ("链路层 以太网", [("帧头 14B", 2, "p"), ("IP 头", 2, "o"), ("TCP 头", 2, "g"), ("应用数据", 6, "b"), ("FCS", 1, "p")]),
+    ]), "路由器只看 IP 头，交换机只看以太网头；每层的头只被对端的同一层解读。以太网 MTU 1500 字节 = IP 头 + TCP 头 + 最多 1460 字节数据（MSS）。")
+
+
+@diagram("tcp-handshake")
+def _():
+    return done("TCP 三次握手与四次挥手", "双方各自确认「我能发、你能收」，再各自关闭自己的发送方向", seq(
+        [("客户端", "b"), ("服务端", "g")], [
+            ("--", "建立连接"),
+            (0, 1, "SYN  seq=x"),
+            (1, 0, "SYN+ACK  seq=y, ack=x+1", "t"),
+            (0, 1, "ACK  ack=y+1"),
+            ("--", "传输数据（ESTABLISHED）"),
+            (0, 1, "数据 / ACK 往返", "a", True),
+            ("--", "关闭连接"),
+            (0, 1, "FIN  客户端不再发送"),
+            (1, 0, "ACK", "t"),
+            (1, 0, "FIN  服务端也发完了", "t"),
+            (0, 1, "ACK  然后等待 2MSL（TIME_WAIT）"),
+        ], step=42), "第三次握手防止「失效的旧 SYN」建立连接；主动关闭方进入 TIME_WAIT，确保最后一个 ACK 丢了还能重发，并让旧报文在网络中消失。")
+
+
+@diagram("tcp-cwnd")
+def _():
+    return done("TCP 拥塞控制四个阶段", "cwnd（拥塞窗口）决定一次最多能发多少未确认数据", flow([
+        ("慢启动", "cwnd 从 10 个 MSS 起步，每个 RTT 翻倍（指数增长）", "b"),
+        ("拥塞避免", "超过 ssthresh 后每个 RTT 只加 1 个 MSS（线性增长）", "g"),
+        ("快速重传", "收到 3 个重复 ACK，不等超时立即重传丢失段", "o"),
+        ("快速恢复", "ssthresh = cwnd/2，cwnd 减半后继续线性增长", "p"),
+    ], gap=64, labels={1: "到阈值", 2: "丢包", 3: "重传后"}), "如果是超时（RTO）才发现丢包，说明网络很差：cwnd 直接降到 1，重新慢启动。Linux 默认算法是 CUBIC，生产上也常换成 BBR。")
+
+
+@diagram("tls13-handshake")
+def _():
+    return done("TLS 1.3 握手（1-RTT）", "一个往返完成密钥协商和身份验证，之后全部加密", seq(
+        [("客户端", "b"), ("服务端", "g")], [
+            (0, 1, "ClientHello：支持的套件 + key_share（ECDHE 公钥）"),
+            (1, 0, "ServerHello：选定套件 + key_share", "t"),
+            ("--", "双方各自算出握手密钥，以下加密传输"),
+            (1, 0, "EncryptedExtensions、Certificate", "t"),
+            (1, 0, "CertificateVerify（证明持有私钥）、Finished", "t"),
+            (0, 0, "校验证书链、域名、有效期"),
+            (0, 1, "Finished"),
+            ("--", "应用数据（HTTP 请求 / 响应）"),
+            (0, 1, "GET /  ⇄  200 OK", "a", True),
+        ], step=44), "TLS 1.2 需要 2-RTT；1.3 删掉了 RSA 密钥交换和不安全套件，只保留前向安全的 (EC)DHE。会话恢复可用 0-RTT，但 0-RTT 数据可被重放，只能用于幂等请求。")
+
+
+@diagram("dns-resolve")
+def _():
+    return done("DNS 解析全过程", "浏览器问一次，递归解析器替你跑完整条链", seq(
+        [("浏览器 / 系统", "b"), ("递归解析器", "g"), ("根服务器", "o"), (".com 顶级域", "p"), ("权威服务器", "y")], [
+            (0, 0, "查浏览器、系统缓存、hosts"),
+            (0, 1, "www.example.com ?"),
+            (1, 2, "问根"),
+            (2, 1, "去问 .com", "t"),
+            (1, 3, "问 .com"),
+            (3, 1, "去问 example.com 的 NS", "t"),
+            (1, 4, "问权威"),
+            (4, 1, "A 93.184.216.34  TTL 300", "t"),
+            (1, 0, "返回结果并按 TTL 缓存", "t"),
+        ], step=40), "客户端到递归解析器是「递归查询」，解析器到各级服务器是「迭代查询」。CDN 就是在权威服务器这一步，根据解析器位置返回离用户最近的节点 IP。")
+
+
+@diagram("io-multiplexing")
+def _():
+    return done("select / poll / epoll 对比", "都是「一个线程等很多连接」，差别在怎么告诉你谁就绪", cols([
+        ("select", "s", [("fd 上限 1024", "FD_SETSIZE 固定"), ("每次调用全量拷贝", "用户态 → 内核态"), ("返回后遍历全部 fd", "O(n) 找就绪"), ("可移植性最好", "POSIX 标准")]),
+        ("poll", "o", [("无数量上限", "pollfd 数组"), ("每次仍全量拷贝", "和 select 一样"), ("返回后仍需遍历", "O(n)"), ("解决了上限问题", "没解决效率问题")]),
+        ("epoll（Linux）", "g", [("epoll_ctl 注册一次", "内核红黑树保存"), ("就绪 fd 进就绪链表", "回调驱动"), ("epoll_wait 只返回就绪", "O(就绪数)"), ("支持 LT / ET", "ET 必须非阻塞读到 EAGAIN")]),
+    ]), "连接数少时三者差别不大；上万连接、活跃比例低时 epoll 优势明显。Nginx、Redis、Netty 在 Linux 上都基于 epoll。")
+
+
+@diagram("write-path")
+def _():
+    return done("一次 write() 的数据落盘路径", "write 返回成功 ≠ 数据已在磁盘上", stack([
+        ("应用程序", "调用 write(fd, buf, n)，数据从用户缓冲区拷进内核", "b"),
+        ("VFS", "统一接口，按 inode 找到具体文件系统（ext4 / xfs）", "s"),
+        ("Page Cache", "数据写进页缓存并标记为脏页，write 到这里就返回了", "o"),
+        ("文件系统 + 块层", "日志（journal）、IO 调度、合并请求", "g"),
+        ("磁盘 / SSD", "设备自身还有易失缓存，需要 FLUSH 才算真正持久", "p"),
+    ], side=[(0, 2, "很快，可能丢"), (3, 4, "fsync() 才保证到这里")]), "脏页由内核按 dirty_ratio / dirty_expire 定期回写；数据库在提交事务时调用 fsync 或使用 O_DIRECT，就是为了不依赖这个时机。")
+
+
+@diagram("virtual-memory")
+def _():
+    return done("虚拟内存：每个进程都以为自己独占内存", "CPU 发出虚拟地址，MMU 查页表换成物理地址", flow([
+        ("进程 A 虚拟地址", "0x7f..1000（只在本进程有意义）", "b"),
+        ("TLB", "页表缓存，命中直接得到物理页号，约 1 个时钟周期", "y"),
+        ("页表（多级）", "TLB 未命中时由 MMU 逐级查表（x86-64 为 4/5 级）", "o"),
+        ("物理内存页", "4KB 一页；未分配或被换出则触发缺页中断", "g"),
+    ], gap=56, labels={1: "查", 2: "未命中", 3: "得到"}), "缺页分两种：minor（页在内存里，只是没建映射，很快）和 major（要从磁盘读，很慢）。两个进程的同一虚拟地址可以映射到不同物理页，这就是隔离。")
+
+
+@diagram("process-states")
+def _():
+    return done("Linux 进程状态与转换", "ps / top 的 STAT 列看到的就是这些字母", flow([
+        ("新建", "fork() / clone() 创建 task_struct", "s"),
+        ("R 就绪 / 运行", "在 CPU 运行队列里，等待或正在占用 CPU", "g"),
+        ("S / D 睡眠", "S 可被信号唤醒；D 不可中断，多为等磁盘或 NFS", "o"),
+        ("Z 僵尸", "已退出，等父进程 wait() 回收退出码", "r"),
+    ], gap=56, labels={1: "调度", 2: "等 IO", 3: "exit"}), "S/D 在等待的事件完成后回到 R。D 状态进程 kill -9 也杀不掉，它会推高 load average；大量 Z 说明父进程没有调用 wait()，要处理的是父进程。")
+
+
+@diagram("container-net")
+def _():
+    els = []
+    els.append(box(40, TOP, 250, 150, "容器 A（netns）", "eth0  172.17.0.2\n独立的网卡、路由表和防火墙规则", "b"))
+    els.append(box(610, TOP, 250, 150, "容器 B（netns）", "eth0  172.17.0.3\n同样独立的网络栈", "b"))
+    els.append(box(300, TOP + 230, 300, 70, "docker0 网桥  172.17.0.1", "二层交换机，连接所有 veth", "g"))
+    els.append(box(300, TOP + 360, 300, 70, "宿主机 eth0  10.0.0.5", "iptables MASQUERADE 做 SNAT 出网", "o"))
+    els.append(box(330, TOP + 40, 240, 70, "veth pair", "一对虚拟网线：一端在容器，一端插网桥", "y"))
+    els.append(path("M165 %d V%d H300" % (TOP + 150, TOP + 265)))
+    els.append(path("M735 %d V%d H600" % (TOP + 150, TOP + 265)))
+    els.append(arrow(450, TOP + 300, 450, TOP + 357, "t"))
+    els.append(arrow(450, TOP + 430, 450, TOP + 480, "t"))
+    els.append(text(450, TOP + 500, "外部网络", 14, TEAL, weight="700"))
+    els.append(text(470, TOP + 340, "NAT", 12, TEAL, "start"))
+    return done("容器网络：netns + veth + 网桥 + NAT", "Docker 默认 bridge 模式的数据路径", (els, TOP + 505),
+                "同一网桥上的容器直接二层互通；访问外网时源地址被改写为宿主机 IP；-p 8080:80 本质是一条 DNAT 规则。Kubernetes 的 CNI 插件把这套模型扩展到跨主机。")
+
+
+# ---- 数据库
+@diagram("bplus-index")
+def _():
+    return done("InnoDB 索引：聚簇索引与二级索引", "二级索引叶子只存主键，查其他列要「回表」", tree(
+        ("根节点（非叶子页）", "只存键值 + 子页指针，一页 16KB 能放上千个指针", "b"), [
+            ("聚簇索引（主键）", "叶子节点存整行数据", "g", ["id=1 · 张三 · 25 · 北京", "id=2 · 李四 · 30 · 上海", "叶子之间双向链表 → 范围扫描快"]),
+            ("二级索引 idx_name", "叶子节点存「索引列 + 主键」", "o", ["李四 → id=2", "张三 → id=1", "要 age 列？拿 id 回聚簇索引再查一次"]),
+            ("覆盖索引", "查询列都在索引里", "p", ["SELECT id,name WHERE name=?", "不回表，EXPLAIN 显示 Using index"]),
+        ]), "三层 B+ 树就能存约 2000 万行，所以主键查询一般只要 1~3 次磁盘 IO。主键用自增整数可以避免页分裂；二级索引越多，写入越慢。")
+
+
+@diagram("mvcc-readview")
+def _():
+    return done("MVCC：版本链 + ReadView 决定「我能看到哪个版本」", "快照读不加锁，靠 undo log 里的历史版本实现", flow([
+        ("当前行  trx_id=300", "name='王五'，roll_ptr 指向上一版", "r"),
+        ("undo 版本  trx_id=200", "name='李四'", "o"),
+        ("undo 版本  trx_id=100", "name='张三'", "g"),
+    ], per_row=3, gap=56, labels={1: "roll_ptr", 2: "roll_ptr"}), "ReadView 记录：创建时的活跃事务列表 m_ids、最小活跃 id、下一个将分配的 id。从最新版本往回找，第一个「已提交且不在 m_ids 中」的版本就是你看到的。RC 每条语句新建 ReadView，RR 整个事务只建一次，所以 RR 可重复读。")
+
+
+@diagram("replication")
+def _():
+    return done("MySQL 主从复制：三个线程", "主库写 binlog，从库拉取后重放", flow([
+        ("主库提交事务", "写 binlog（ROW 格式记录行变更）", "b"),
+        ("Binlog Dump 线程", "主库上，把新的 binlog 事件推给从库", "g"),
+        ("从库 IO 线程", "接收事件写入本地 relay log", "o"),
+        ("从库 SQL 线程", "读取 relay log 重放（可多线程并行）", "p"),
+    ], gap=48), "延迟通常卡在 SQL 线程：大事务、无主键表、单线程重放。用 GTID 定位复制位点，用 semi-sync 保证至少一个从库收到才返回提交成功。")
+
+
+@diagram("backup-pitr")
+def _():
+    return done("全量备份 + binlog = 恢复到任意时间点（PITR）", "例：周日全备，周三 14:05 误删表，恢复到 14:04:59", flow([
+        ("还原全量备份", "周日 02:00 的 xtrabackup / mysqldump", "b"),
+        ("找到备份位点", "备份文件里记录的 binlog 文件名 + 位置 / GTID", "g"),
+        ("重放 binlog", "mysqlbinlog\n--stop-datetime\n截到误操作前", "o"),
+        ("校验后切换", "核对行数与关键数据，再让业务接入", "p"),
+    ], gap=48), "没有连续的 binlog，就只能恢复到全备那一刻。备份必须定期做恢复演练：「备份成功」不代表「能恢复」。")
+
+
+@diagram("migration-phases")
+def _():
+    return done("数据迁移七阶段（双写方案）", "每一步都可回退，切读之前旧库始终是权威数据源", flow([
+        ("1 建新库", "表结构、索引、账号", "s"),
+        ("2 开双写", "写旧库为主，异步写新库", "b"),
+        ("3 迁存量", "按主键分批搬历史数据", "b"),
+        ("4 校验", "全量 + 增量对比，修差异", "o"),
+        ("5 灰度切读", "按比例把读流量切到新库", "g"),
+        ("6 切写", "新库为主，旧库反向同步兜底", "g"),
+        ("7 下线旧库", "观察期结束后停双写", "p"),
+    ], per_row=4, gap=40), "最危险的是第 6 步：要有明确的回切开关和数据对账。存量迁移要限速，避免把线上库打满。")
+
+
+@diagram("ha-topology")
+def _():
+    return done("数据库高可用方案光谱", "RPO = 最多丢多少数据，RTO = 多久恢复服务", cols([
+        ("主从 + 手动切换", "s", [("RPO：秒级~分钟", "异步复制可能丢"), ("RTO：十几分钟", "靠人"), ("适合：内部系统", "")]),
+        ("半同步 + 自动切换", "o", [("RPO：接近 0", "至少一个从库确认"), ("RTO：30 秒内", "Orchestrator / MHA"), ("适合：大多数业务", "")]),
+        ("MGR / 分布式数据库", "g", [("RPO：0", "Paxos 多数派提交"), ("RTO：秒级", "自动选主"), ("适合：核心交易", "")]),
+        ("同城双活 + 异地灾备", "p", [("防机房级故障", "两地三中心"), ("成本最高", "要定期演练"), ("适合：金融级", "")]),
+    ], gap=16), "方案没有最好，只有和业务可承受损失匹配的。切换后一定要防「脑裂」：旧主恢复后不能再接受写入。")
+
+
+# ---- Java
+@diagram("jvm-runtime")
+def _():
+    return done("JVM 运行时数据区", "按 JVM 规范划分：线程私有 vs 线程共享", stack([
+        ("程序计数器", "线程私有。记录当前执行到哪条字节码，唯一不会 OOM 的区域", "s"),
+        ("虚拟机栈", "线程私有。每次方法调用压一个栈帧：局部变量表、操作数栈、返回地址；递归太深 → StackOverflowError", "b"),
+        ("本地方法栈", "线程私有。服务 native 方法（HotSpot 与虚拟机栈合并实现）", "b"),
+        ("堆 Heap", "线程共享。几乎所有对象都在这里；分新生代（Eden + 2 个 Survivor）和老年代，GC 的主战场", "g"),
+        ("元空间 Metaspace", "线程共享。类的元数据、方法信息，JDK 8 起放在本地内存，取代永久代", "o"),
+    ], side=[(0, 2, "线程私有，随线程生灭"), (3, 4, "线程共享，需要 GC")]),
+        "常见 OOM 对应关系：Java heap space → 堆；Metaspace → 类太多（动态代理 / 热部署）；unable to create native thread → 线程数或系统限制。")
+
+
+@diagram("thread-pool")
+def _():
+    return done("ThreadPoolExecutor 提交任务的判断顺序", "execute(task) 时依次检查，任何一步满足就停", flow([
+        ("核心线程未满？", "线程数 < corePoolSize：新建核心线程直接执行", "g"),
+        ("队列未满？", "放进 workQueue 排队，等空闲线程来取", "b"),
+        ("最大线程未满？", "线程数 < maximumPoolSize：新建非核心线程执行", "o"),
+        ("执行拒绝策略", "Abort 抛异常 / CallerRuns 调用者执行 / Discard / DiscardOldest", "r"),
+    ], gap=56, labels={1: "已满", 2: "已满", 3: "已满"}),
+        "注意顺序：先排队、后扩线程。用无界队列（LinkedBlockingQueue 默认）时 maximumPoolSize 形同虚设，任务堆积直到 OOM，所以生产上要用有界队列并显式命名线程。")
+
+
+@diagram("bean-lifecycle")
+def _():
+    return done("Spring Bean 生命周期", "从 BeanDefinition 到销毁，扩展点都挂在这条链上", flow([
+        ("1 实例化", "反射调用构造器创建对象", "s"),
+        ("2 属性注入", "@Autowired / setter 填充依赖", "b"),
+        ("3 Aware 回调", "BeanNameAware 等\n各类 *Aware 接口", "b"),
+        ("4 前置处理", "BeanPostProcessor\n初始化前方法", "o"),
+        ("5 初始化", "@PostConstruct → afterPropertiesSet → init-method", "g"),
+        ("6 后置处理", "BeanPostProcessor\n初始化后方法，AOP 代理在这里生成", "o"),
+        ("7 使用", "放入单例池，被其他 Bean 引用", "g"),
+        ("8 销毁", "@PreDestroy → destroy()，容器关闭时", "p"),
+    ], per_row=4, gap=36), "所以在构造器里拿不到被注入的依赖，在 @PostConstruct 里可以；同类内部方法互调不经过代理，@Transactional 会失效。")
+
+
+@diagram("maven-lifecycle")
+def _():
+    return done("Maven default 生命周期（常用阶段）", "执行某个阶段时，它之前的所有阶段都会先执行", flow([
+        ("validate", "检查 pom 是否正确", "s"),
+        ("compile", "编译 src/main/java", "b"),
+        ("test", "运行单元测试", "b"),
+        ("package", "打成 jar / war", "g"),
+        ("verify", "集成测试、质量检查", "o"),
+        ("install", "装进本地仓库 ~/.m2", "o"),
+        ("deploy", "上传到远程私服 Nexus", "p"),
+    ], per_row=4, gap=36), "mvn package 会自动跑 compile 和 test；-DskipTests 跳过运行测试。依赖冲突用 mvn dependency:tree 查看，Maven 默认「最短路径优先，同长度先声明优先」。")
+
+
+@diagram("collections")
+def _():
+    return done("Java 集合框架主干", "先选接口（要什么语义），再选实现（要什么性能）", tree(
+        ("Collection / Map", "java.util 两棵根接口树", "b"), [
+            ("List 有序可重复", "", "g", [("ArrayList", "数组，随机访问 O(1)"), ("LinkedList", "双向链表，也实现 Deque"), ("CopyOnWriteArrayList", "读多写少并发")]),
+            ("Set 不重复", "", "o", [("HashSet", "基于 HashMap"), ("LinkedHashSet", "保留插入顺序"), ("TreeSet", "红黑树，有序")]),
+            ("Queue / Deque", "", "p", [("ArrayDeque", "栈和队列首选"), ("PriorityQueue", "二叉堆"), ("BlockingQueue", "线程池用")]),
+            ("Map 键值对", "", "y", [("HashMap", "数组+链表/红黑树"), ("LinkedHashMap", "可做 LRU"), ("ConcurrentHashMap", "CAS + synchronized")]),
+        ]), "HashMap 默认容量 16、负载因子 0.75，链表长度 ≥ 8 且容量 ≥ 64 时转红黑树。遍历时修改集合会触发 fail-fast 的 ConcurrentModificationException。")
+
+
+@diagram("exception-tree")
+def _():
+    return done("Java 异常体系", "编译器只强制处理受检异常", tree(
+        ("Throwable", "所有错误和异常的父类", "s"), [
+            ("Error", "JVM 级严重问题，一般不捕获", "r", ["OutOfMemoryError", "StackOverflowError", "NoClassDefFoundError"]),
+            ("受检异常 Exception", "必须 throws 或 try-catch", "o", ["IOException", "SQLException", "InterruptedException"]),
+            ("RuntimeException", "非受检，多是代码 bug", "y", ["NullPointerException", "IllegalArgumentException", "IndexOutOfBoundsException"]),
+        ]), "日志里看根因要找最底下的 Caused by；捕获 InterruptedException 后要恢复中断标志 Thread.currentThread().interrupt()。")
+
+
+# ---- 前端
+@diagram("box-model")
+def _():
+    els = []
+    layers = [("margin 外边距", "s", 0), ("border 边框", "o", 50), ("padding 内边距", "g", 100), ("content 内容", "b", 150)]
+    for nm, c, d in layers:
+        x, y, w, h = 120 + d, TOP + d * 0.8, 660 - 2 * d, 380 - 1.6 * d
+        els.append(rect(x, y, w, h, c))
+        if c == "b":
+            els.append(text(450, y + h / 2 - 4, nm, 16, INK, weight="700"))
+            els.append(text(450, y + h / 2 + 18, "width × height（content-box 时）", 13, BODY))
+        else:
+            els.append(text(x + 14, y + 26, nm, 14, INK, "start", "700"))
+    return done("CSS 盒模型", "每个元素都是一个矩形盒子，从外到内四层", (els, TOP + 380),
+                "box-sizing: content-box（默认）时 width 只算内容；border-box 时 width 包含 padding 和 border，布局更好算，所以大多数项目全局设 *{box-sizing:border-box}。上下相邻块的 margin 会合并（取较大值）。")
+
+
+@diagram("dom-event")
+def _():
+    return done("DOM 事件三个阶段", "点击 button 时，事件从 window 出发再回到 window", flow([
+        ("1 捕获阶段", "window → document → body → div\n第三个参数为 true 的监听在这里触发", "b"),
+        ("2 目标阶段", "到达真正被点击的 button（event.target）", "o"),
+        ("3 冒泡阶段", "button → div → body → window\n默认监听在这里触发", "g"),
+    ], per_row=3, gap=56, labels={1: "向下", 2: "向上"}),
+        "事件委托就是利用冒泡：在父元素上监听一次，用 event.target 判断是哪个子元素。stopPropagation() 阻止继续传播，preventDefault() 阻止默认行为（如链接跳转），两者不是一回事。")
+
+
+@diagram("event-loop")
+def _():
+    return done("浏览器事件循环", "JS 单线程：一次只做一件事，做完再从队列里取下一件", flow([
+        ("执行一个宏任务", "script 整体\nsetTimeout\nI/O、UI 事件", "b"),
+        ("清空微任务队列", "Promise.then\nqueueMicrotask\n新增的也一并清空", "g"),
+        ("需要时渲染", "rAF 回调\n样式 → 布局 → 绘制\n约 16.7ms 一帧", "o"),
+        ("取下一个宏任务", "回到第一步，循环往复", "s"),
+    ], gap=48, labels={1: "然后", 2: "然后", 3: "然后"}),
+        "经典题：console.log(1); setTimeout(()=>log(2)); Promise.resolve().then(()=>log(3)); log(4) 输出 1 4 3 2。一个长任务超过 50ms 就会卡住渲染和点击响应。")
+
+
+@diagram("http-cache")
+def _():
+    return done("HTTP 缓存判断流程", "先看强缓存（不发请求），再走协商缓存（发请求问一句）", flow([
+        ("有缓存且未过期？", "Cache-Control: max-age / Expires", "b"),
+        ("强缓存命中", "直接用本地副本\n不发请求", "g"),
+        ("带条件请求", "If-None-Match\nIf-Modified-Since", "o"),
+        ("304 或 200", "没变返回 304 用本地副本；变了返回 200 + 新内容", "p"),
+    ], gap=56, labels={1: "是", 2: "过期", 3: "比对"}),
+        "最佳实践：HTML 用 no-cache（每次协商），带哈希的 JS/CSS 用 max-age=31536000, immutable。no-store 才是完全不缓存；no-cache 是「可以缓存但用前要验证」。")
+
+
+@diagram("render-pipeline")
+def _():
+    return done("浏览器渲染流水线", "从 HTML 文本到屏幕像素", flow([
+        ("解析 HTML", "生成 DOM 树；遇到同步 script 会暂停", "b"),
+        ("解析 CSS", "生成 CSSOM，会阻塞渲染", "b"),
+        ("样式计算", "DOM + CSSOM 合成渲染树", "g"),
+        ("布局 Layout", "计算每个盒子的位置和大小", "o"),
+        ("绘制 Paint", "生成绘制指令，分图层", "o"),
+        ("合成 Composite", "GPU 合成图层显示到屏幕", "p"),
+    ], per_row=3, gap=48),
+        "改 width/top 会触发重排（布局之后全部重来）；改 color 只重绘；改 transform/opacity 只走合成，最省。读 offsetHeight 等属性会强制同步布局，循环里读写交替会导致布局抖动。")
+
+
+# ---- 运维 / DevOps / 安全
+@diagram("fhs-tree")
+def _():
+    return done("Linux 目录结构（FHS）", "一切从根目录 / 开始，每个目录有约定好的用途", tree(
+        ("/  根目录", "", "b"), [
+            ("系统程序", "", "g", [("/bin /sbin", "基础命令（多为 /usr 的链接）"), ("/usr", "绝大多数软件和库"), ("/lib", "共享库、内核模块")]),
+            ("配置与启动", "", "o", [("/etc", "系统和服务配置"), ("/boot", "内核与引导"), ("/dev", "设备文件")]),
+            ("可变数据", "", "p", [("/var/log", "日志"), ("/var/lib", "数据库等状态数据"), ("/tmp", "临时文件，重启清空")]),
+            ("用户与运行时", "", "y", [("/home /root", "用户目录"), ("/proc /sys", "内核信息虚拟文件"), ("/opt /srv", "第三方软件、服务数据")]),
+        ]), "磁盘满了先看 /var/log 和 /var/lib；/proc 下的文件不占磁盘，是内核实时生成的。")
+
+
+@diagram("use-method")
+def _():
+    return done("USE 方法：对每种资源问三个问题", "Brendan Gregg 提出，适合快速定位性能瓶颈", cols([
+        ("CPU", "b", [("使用率", "top、mpstat -P ALL"), ("饱和度", "load average、vmstat r 列"), ("错误", "dmesg 看 MCE")]),
+        ("内存", "g", [("使用率", "free -h 看 available"), ("饱和度", "vmstat si/so 换页"), ("错误", "dmesg 看 OOM killer")]),
+        ("磁盘", "o", [("使用率", "iostat -x 看 %util"), ("饱和度", "aqsize / await"), ("错误", "smartctl、dmesg")]),
+        ("网络", "p", [("使用率", "sar -n DEV 带宽"), ("饱和度", "ss -s、重传、丢包"), ("错误", "ip -s link 看 errors")]),
+    ], gap=16), "U = Utilization 忙的时间占比，S = Saturation 排队等待的程度，E = Errors 出错次数。先把四类资源过一遍，再深入看可疑的那一项。")
+
+
+@diagram("log-pipeline")
+def _():
+    return done("日志采集链路", "从应用打印到能被检索，经过四个环节", flow([
+        ("应用输出", "JSON 结构化日志写 stdout 或文件，带 trace_id", "b"),
+        ("采集", "Filebeat / Fluent Bit / Vector 读取并打标签", "g"),
+        ("缓冲与加工", "Kafka 削峰；Logstash 解析、脱敏、过滤", "o"),
+        ("存储与检索", "Elasticsearch / Loki，Kibana / Grafana 查询告警", "p"),
+    ], gap=48), "日志量大时先在采集端过滤和采样；按天建索引并设置保留期（ILM）；密码、手机号、身份证号要在进入存储前脱敏。")
+
+
+@diagram("k8s-arch")
+def _():
+    return done("Kubernetes 架构", "控制面负责「想要什么」，工作节点负责「让它发生」", cols([
+        ("控制面 Control Plane", "b", [("kube-apiserver", "唯一入口，所有组件都和它通信"), ("etcd", "保存全部集群状态"), ("kube-scheduler", "决定 Pod 放哪个节点"), ("controller-manager", "不断把实际状态调整为期望状态")]),
+        ("工作节点 Node", "g", [("kubelet", "按 PodSpec 启停容器、上报状态"), ("容器运行时", "containerd 拉镜像、跑容器"), ("kube-proxy", "把 Service 转成 iptables/IPVS 规则"), ("CNI 插件", "给 Pod 分配 IP、打通网络")]),
+    ], gap=40), "kubectl apply 的过程：apiserver 写入 etcd → scheduler 绑定节点 → 该节点 kubelet 发现新 Pod → 调运行时创建容器 → 上报 Running。")
+
+
+@diagram("slo-budget")
+def _():
+    return done("SLI → SLO → 错误预算", "用数字约定「多可靠才够」，并据此决定发版节奏", flow([
+        ("SLI 指标", "例：成功请求数 / 总请求数", "b"),
+        ("SLO 目标", "例：30 天可用性 ≥ 99.9%", "g"),
+        ("错误预算", "100% − 99.9% = 0.1%，约 43 分钟 / 30 天", "o"),
+        ("决策", "预算充足照常发版；快耗尽时冻结变更、优先修稳定性", "p"),
+    ], gap=48), "告警建议按「预算消耗速度」（burn rate）配置：1 小时内烧掉 2% 预算就要立即处理。SLA 是对外合同，通常比内部 SLO 更宽松。")
+
+
+@diagram("incident-timeline")
+def _():
+    return done("故障处理时间线", "目标是缩短每一段：发现、响应、止血、恢复", flow([
+        ("发现", "告警或用户反馈，记录开始时间", "r"),
+        ("响应", "值班确认、拉群、指定指挥人", "o"),
+        ("止血", "回滚、切流、降级、扩容，先恢复服务", "y"),
+        ("恢复", "确认指标回到正常，宣布结束", "g"),
+        ("复盘", "时间线、根因、改进项，每项有负责人", "b"),
+    ], per_row=5, gap=28), "MTTD 平均发现时间，MTTR 平均恢复时间。止血优先于查根因；复盘对事不对人，改进项要能被跟踪验收。")
+
+
+@diagram("cicd-stages")
+def _():
+    return done("CI/CD 流水线典型阶段", "每次提交自动走完，任一步失败就停下", flow([
+        ("代码提交", "push / MR 触发", "s"),
+        ("构建", "编译、依赖缓存、生成制品", "b"),
+        ("测试", "单元测试、代码扫描、覆盖率", "b"),
+        ("制品", "镜像打标签推仓库，签名", "g"),
+        ("部署预发", "自动部署 + 冒烟测试", "o"),
+        ("生产发布", "审批后灰度 / 蓝绿，可一键回滚", "p"),
+    ], per_row=3, gap=48), "同一个制品从测试环境一路晋级到生产，不要每个环境重新构建；配置和密钥通过环境变量或密钥管理注入。")
+
+
+@diagram("oauth-pkce")
+def _():
+    return done("OAuth 2.0 授权码 + PKCE", "前端和移动端的推荐流程，防止授权码被截获后冒用", seq(
+        [("用户浏览器", "b"), ("客户端应用", "g"), ("授权服务器", "o"), ("资源服务器", "p")], [
+            (1, 1, "生成随机 code_verifier，算出 code_challenge = SHA256"),
+            (1, 2, "跳转 /authorize + code_challenge"),
+            (0, 2, "用户登录并同意授权"),
+            (2, 1, "回调 redirect_uri?code=...", "t"),
+            (1, 2, "/token：code + code_verifier"),
+            (2, 2, "校验 SHA256(verifier) == challenge"),
+            (2, 1, "access_token（+ refresh_token）", "t"),
+            (1, 3, "Authorization: Bearer token"),
+            (3, 1, "受保护资源", "t"),
+        ], step=42), "攻击者即使截获 code，没有 code_verifier 也换不到 token。state 参数防 CSRF；access_token 要短期有效，refresh_token 要能吊销。")
+
+
+@diagram("stride")
+def _():
+    return done("STRIDE 威胁建模", "对每个组件和数据流逐项提问：会不会出现这类威胁", cols([
+        ("S 仿冒", "r", [("冒充他人身份", "对策：认证、MFA")]),
+        ("T 篡改", "o", [("修改数据或代码", "对策：签名、完整性校验")]),
+        ("R 抵赖", "y", [("否认做过某操作", "对策：审计日志")]),
+        ("I 信息泄露", "p", [("看到不该看的", "对策：加密、最小权限")]),
+        ("D 拒绝服务", "b", [("让服务不可用", "对策：限流、弹性")]),
+        ("E 权限提升", "g", [("获得更高权限", "对策：授权校验、隔离")]),
+    ], gap=10), "做法：先画数据流图（外部实体、进程、存储、数据流、信任边界），再对跨越信任边界的每条数据流过一遍 STRIDE，记录威胁、等级和缓解措施。")
+
+
+# ---------------------------------------------------------------- 输出
+if __name__ == "__main__":
+    import sys
+    from xml.dom import minidom
+    os.makedirs(OUT, exist_ok=True)
+    only = set(sys.argv[1:])
+    for name, fn in DIAGRAMS.items():
+        if only and name not in only:
+            continue
+        s = fn()
+        minidom.parseString(s.encode("utf-8"))
+        with open(os.path.join(OUT, name + ".svg"), "w", encoding="utf-8") as f:
+            f.write(s)
+    print("generated", len(DIAGRAMS), "->", os.path.relpath(OUT, ROOT))

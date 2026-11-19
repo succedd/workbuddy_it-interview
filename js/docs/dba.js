@@ -25,14 +25,14 @@
             id: "sql-basics",
             title: "SQL 基础与查询优化入门",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / PostgreSQL 16",
             tags: ["SQL", "查询", "执行顺序"],
             terms: ["SQL", "查询", "MySQL", "索引"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → 13.2 DML Statements](https://dev.mysql.com/doc/refman/8.0/en/select.html) · [MySQL RM → 13.2.11 WITH (Common Table Expressions)](https://dev.mysql.com/doc/refman/8.0/en/with.html) · [PostgreSQL → Ch.7 Queries](https://www.postgresql.org/docs/current/queries.html) · [PostgreSQL → Ch.4 SQL Syntax](https://www.postgresql.org/docs/current/sql-syntax.html)
 
-## 一、原理与底层机制
+## 一、SQL 逻辑执行顺序
 
 SQL 是声明式语言：你描述**结果集长什么样**，优化器决定**怎么拿、按什么顺序拿**。写 SQL 与做优化前，先在心里装下这条几乎所有关系库（MySQL / PG / Oracle）通用的逻辑流水线——它解释了大量「为什么我的写法不生效」：
 
@@ -55,14 +55,14 @@ ${F}
    - **Hash Join**：小表建哈希表、大表探测，适合无索引可用的一次性大表关联（MySQL 8.0.18+ 支持，PG 一直支持）。
    - **Merge Join**（PG 常见）：两表连接键都已有序时归并，省去建哈希的开销。
 
-## 二、规范与标准
+## 二、SQL 标准与写法规范
 
 - **SQL 标准（ISO/IEC 9075）语义**：INNER/LEFT/RIGHT/FULL JOIN 的语义由标准定义，对应 MySQL RM 13.2.9.2。实践中 ${C}RIGHT JOIN${C} 一律改写成 ${C}LEFT JOIN${C}，可读性更好。
 - **GROUP BY 语义**：开启 ${C}ONLY_FULL_GROUP_BY${C}（8.0 默认）后，SELECT 中的非聚合列必须全部出现在 GROUP BY 中或被聚合函数包裹，否则直接报错。这是反「薛定谔的查询结果」的硬约束。
 - **NULL 的三值逻辑**：SQL 里 ${C}NULL${C} 既不是 TRUE 也不是 FALSE，而是 UNKNOWN。${C}WHERE col = NULL${C} 永远不成立，必须用 ${C}col IS NULL${C}。这是新手丢数据的头号来源。
 - **LIMIT / OFFSET 语义**：OFFSET 越大越慢——它要先读出并丢弃前 N 行；所以「深分页」不能用 OFFSET，要用键集分页。
 
-## 三、实战
+## 三、动手实践：错误与正确写法对照
 
 错误写法与正确写法对照（可直接复制到测试库运行）：
 
@@ -103,7 +103,7 @@ FROM paid p JOIN users u ON u.id = p.user_id
 ORDER BY p.total DESC LIMIT 10;
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：窗口函数等进阶子主题
 
 | 子主题 | 关键点 | 决策指引 |
 |---|---|---|
@@ -115,7 +115,7 @@ ${F}
 
 边界场景：聚合后过滤必须用 HAVING 而非 WHERE；ORDER BY 多列的方向（ASC/DESC）要与索引方向匹配，否则无法消除 filesort（MySQL 8.0 起支持降序索引，见索引篇）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **LEFT JOIN 时 ON 与 WHERE 混用不区分**：对 INNER JOIN 两者等价；对 LEFT JOIN，右表过滤条件放 ON 是「过滤右表」、放 WHERE 是「过滤结果集」，语义完全不同——这是线上「数据变多/变少」的高频事故源。
 2. **${C}COUNT(col)${C} 与 ${C}COUNT(*)${C} 混为一谈**：${C}COUNT(col)${C} 不统计 col 为 NULL 的行，${C}COUNT(*)${C} 统计行数。统计行数一律 ${C}COUNT(*)${C}。
@@ -123,7 +123,7 @@ ${F}
 4. **隐式类型转换**：${C}WHERE phone = 13800138000${C}（phone 为 VARCHAR）触发转换导致索引失效。一律按列类型写字面量。
 5. **${C}NULL${C} 当空字符串**：${C}''${C} 与 ${C}NULL${C} 不同；${C}NULL = NULL${C} 结果是 UNKNOWN，去重/连接时行为诡异。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 新 SQL 都跑过 EXPLAIN，能说出预期索引与扫描行数
 - [ ] 深分页已改键集分页或「延迟关联」
@@ -319,7 +319,7 @@ ${F}
 - [ ] 返回列已显式列出，核心查询走覆盖索引
 - [ ] 知道 8.0 无查询缓存，优化手段不照搬旧文
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 Reference Manual → 13.2.9 SELECT / 13.2.11 WITH / 13.2.10 Subqueries
 - PostgreSQL Documentation → Ch.7 Queries / Ch.11 Indexes
@@ -330,14 +330,14 @@ ${F}
             id: "schema-normalization",
             title: "库表设计与范式",
             minutes: 28,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / PostgreSQL 16",
             tags: ["范式", "设计", "数据类型"],
             terms: ["范式", "数据库", "设计", "建模"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.11 Data Types](https://dev.mysql.com/doc/refman/8.0/en/data-types.html) · [MySQL RM → Ch.10 Character Sets](https://dev.mysql.com/doc/refman/8.0/en/charset.html) · [PostgreSQL → Ch.5 Data Definition](https://www.postgresql.org/docs/current/ddl.html) · [PostgreSQL → Ch.8 Data Types](https://www.postgresql.org/docs/current/datatype.html)
 
-## 一、原理与底层机制
+## 一、范式：消除更新异常
 
 范式理论出自 Codd 1971 年论文，其本质是**用「结构约束」消除数据冗余带来的更新异常**（插入异常、删除异常、修改异常）。但范式不是越高的越好——过高的范式在小表上带来无意义的 JOIN 开销。官方手册不展开范式，本篇按通用设计教材口径落地：
 
@@ -350,14 +350,14 @@ ${F}
 
 实操判断法：**一张表只描述一个实体**，描述其他实体的信息用外键关联而非重复存储。每多一份冗余，就多一个「改了 A 忘了 B」的不一致风险点。
 
-## 二、规范与标准
+## 二、主键与命名规范
 
 - **主键选择规范**：优先无意义代理主键（自增 BIGINT 或雪花 ID），业务列作唯一键。业务主键（如手机号）一旦需要变更，所有外键引用都要跟着动。
 - **命名规范**：表名/列名用小写下划线（snake_case），见名知义；布尔用 is_/has_ 前缀；外键用 ${C}表名_关联字段${C}。
 - **约束规范**：非空、唯一、外键、CHECK 在 DDL 阶段声明，让数据库做最后一道防线（见「用户与权限」与「约束与默认值」周边实践）。
 - **官方 Data Types 章**是字段选型的事实依据：金额、时间、字符集的选型都有明确官方建议。
 
-## 三、实战
+## 三、动手实践：建表 DDL 与类型选择
 
 字段类型选择的落地 DDL（对照官方规范逐条说明见下）：
 
@@ -383,7 +383,7 @@ ${F}
 - **时间用 DATETIME(3) 或 TIMESTAMP**：TIMESTAMP 占 4 字节但上限 2038 年且随时区转换；「绝对时刻」用 TIMESTAMP，「业务时间」用 DATETIME，毫秒精度用 ${C}(3)${C}。
 - **字符集统一 utf8mb4**：MySQL 的 ${C}utf8${C} 实为 utf8mb3（3 字节），存不了 emoji；官方 Ch.10 明确推荐 utf8mb4。注意 8.0 默认排序规则 ${C}utf8mb4_0900_ai_ci${C} 与 5.7 的 ${C}utf8mb4_general_ci${C} 不同，**跨版本主从/迁移会导致比较行为不一致**。
 
-## 四、覆盖广度
+## 四、拓展：受控反范式
 
 **什么时候故意违反范式（受控反范式）**：互联网业务在读多写少 + 数据量巨大的场景下做受控反范式：
 
@@ -397,7 +397,7 @@ ${F}
 | 纯范式（外键关联） | 强，无冗余 | 写多、数据量小、强一致要求 |
 | 受控反范式 | 应用层/定时对账 | 读多写少、聚合频繁的热点表 |
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **VARCHAR(255) 满天飞**：长度按业务实际约束（如 ${C}VARCHAR(64)${C}）；utf8mb4 下索引单列上限 3072 字节，${C}VARCHAR(768)${C} 恰好占满，超长列只能前缀索引。
 2. **ON DELETE CASCADE 当随手选项**：大表上是「隐形删除风暴」，生产慎用。
@@ -405,7 +405,7 @@ ${F}
 4. **索引当外键用导致索引泛滥**：每多一个索引，写放大多一分；高频写表保持「每表索引 ≤ 5」意识。
 5. **用 TEXT/BLOB 当普通列**：TEXT 字段在 InnoDB 中存溢出页，排序/临时表代价高，能定长就别用 TEXT。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 每张表能一句话说清它描述哪个实体
 - [ ] 金额 DECIMAL、状态整数枚举、时间 DATETIME(3)、字符集 utf8mb4
@@ -539,7 +539,7 @@ ${F}
 4. **「加字段不加默认值也没事」**。列允许 NULL 且无默认值时，旧代码的 INSERT 不报错，但新代码读到 NULL 就崩 —— 与之相比，明确的 ${C}NOT NULL DEFAULT${C} 才是安全起点。
 5. **「分区表能解决大表慢查询」**。分区的收益在运维（归档/清理），不在查询。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 Reference Manual → Ch.11 Data Types / Ch.10 Character Sets / 13.1.20 CREATE TABLE
 - PostgreSQL Documentation → Ch.5 Data Definition / Ch.8 Data Types
@@ -550,16 +550,18 @@ ${F}
             id: "backup-restore",
             title: "备份与恢复基本操作",
             minutes: 30,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / PostgreSQL 16 / Redis 7",
             tags: ["备份", "恢复", "PITR"],
             terms: ["备份", "恢复", "容灾", "MySQL"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.7 Backup and Recovery](https://dev.mysql.com/doc/refman/8.0/en/backup-and-recovery.html) · [MySQL RM → Ch.19 The Binary Log](https://dev.mysql.com/doc/refman/8.0/en/binary-log.html) · [PostgreSQL → Ch.25 Backup and Recovery](https://www.postgresql.org/docs/current/backup.html) · [redis.io → Persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
 
-## 一、原理与底层机制
+## 一、备份两条路线：逻辑与物理
 
 备份的本质是**把「数据 + 重放日志」组合成可恢复的状态**。两条技术路线（MySQL RM 7.2 分类）的底层差异在于「恢复时能恢复到哪个时间点」：
+
+![全量备份 + binlog = 恢复到任意时间点（PITR）](/assets/diagrams/docs/backup-pitr.svg)
 
 | 路线 | 代表工具 | 特点 | 适用 |
 |---|---|---|---|
@@ -568,7 +570,7 @@ ${F}
 
 **PITR（时间点恢复）的底层逻辑**：全量基线给出「某个时刻的整库快照」，binlog / WAL 给出「快照之后每一笔变更」。恢复 = 基线 + 重放增量日志到指定时间点。所以**没有增量日志归档，就不可能做 PITR**。
 
-## 二、规范与标准
+## 二、官方推荐的备份策略
 
 官方推荐的组合拳（MySQL RM 7.3 Example Backup and Recovery Strategy）：
 
@@ -581,7 +583,7 @@ ${F}
 
 PostgreSQL 同构机制：${C}pg_basebackup${C} 取全量基线 + WAL 归档重放（${C}recovery_target_time${C}），见文档 25.3。**思想一致：全量基线 + 增量日志重放 = 任意时间点恢复**。
 
-## 三、实战
+## 三、动手实践：mysqldump 与恢复
 
 mysqldump 的正确姿势（InnoDB 一致性快照导出，不锁表）：
 
@@ -613,7 +615,7 @@ ${F}
 
 Redis 备份（redis.io → Persistence）：RDB 定时 fork 全量快照、AOF 追加每条写命令（${C}appendonly yes${C} / ${C}appendfsync everysec${C} 性能安全平衡点），7.x 支持 AOF-RDB 混合持久化。**备份必须异地多副本**：${C}COPY${C} 出 ${C}dump.rdb${C} 上传对象存储才叫备份，本机拷贝不防机器故障。
 
-## 四、覆盖广度
+## 四、备份工具选型表
 
 | 场景 | 推荐工具 | 备注 |
 |---|---|---|
@@ -625,7 +627,7 @@ Redis 备份（redis.io → Persistence）：RDB 定时 fork 全量快照、AOF 
 
 边界：逻辑备份在大表上锁 DDL 风险（即使单事务，DDL 仍会破坏快照一致性）；物理备份恢复粒度粗（只能到备份时刻，再靠 binlog 补）；备份文件本身要加密（含 PII 的数据）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **以为 ${C}--single-transaction${C} 万事大吉**：只对 InnoDB 有效；MyISAM 仍需 ${C}--lock-all-tables${C}（这也是 8.0 全面 InnoDB 的原因之一）。
 2. **备份从不做恢复演练**：文件损坏、字符集丢失、版本不兼容，只在真恢复时才发现。SRE 纪律：**每月一次恢复演练并记录耗时（决定 RTO）**。
@@ -633,7 +635,7 @@ Redis 备份（redis.io → Persistence）：RDB 定时 fork 全量快照、AOF 
 4. **只备份数据不备份权限与配置**：${C}mysql${C} 系统库、${C}my.cnf${C}、GTID 拓扑同样要备，否则恢复后服务起不来。
 5. **把「有备份文件」当「能恢复」**：文件在但恢复命令没演练过、位点记错，等于没有。演练要跑通「基线 + 增量 + 应用起来」全流程。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 全量 + 增量 + binlog 归档三级策略在跑，有成功/失败告警
 - [ ] 备份加密且异地存储，保留策略明确（如 30 天）
@@ -750,7 +752,7 @@ ${F}
 4. **「增量备份可以一直叠」**。链越长，恢复越慢、任一层损坏则整链失效。工程上建议「每周全量 + 每日增量」，并定期重做全量。
 5. **「大表用 mysqldump 也还行」**。几百 GB 的库用逻辑备份，恢复时要重建索引，耗时是物理备份的数倍，且会长时间占满 IO。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 Reference Manual → Ch.7 Backup and Recovery（全章精读）· Ch.19 The Binary Log
 - PostgreSQL Documentation → Ch.25 Backup and Recovery
@@ -761,14 +763,14 @@ ${F}
             id: "user-privilege",
             title: "用户与权限管理",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / Redis 6+",
             tags: ["权限", "账号", "安全"],
             terms: ["权限", "账号", "MySQL", "安全"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.8 Security](https://dev.mysql.com/doc/refman/8.0/en/security.html)（8.2 Access Control and Account Management / 8.4 Using Encrypted Connections）· [PostgreSQL → Ch.21 Database Roles](https://www.postgresql.org/docs/current/user-manag.html) · [redis.io → ACL](https://redis.io/docs/latest/operate/oss_and_stack/management/security/acl/)
 
-## 一、原理与底层机制
+## 一、两级访问控制
 
 MySQL 的访问控制是**两级验证**（官方 8.2.7），理解它就能理解为什么「host 限定」是第一条防线：
 
@@ -777,14 +779,14 @@ MySQL 的访问控制是**两级验证**（官方 8.2.7），理解它就能理�
 
 Redis 6.0 前的单用户模型没有任何访问控制；6.0 引入 ACL，按「用户 + 命令 + 键前缀」做细粒度控制。
 
-## 二、规范与标准
+## 二、账号分级与认证插件
 
 - **账号分级规范**：应用账号、运维账号、只读报表账号、备份账号必须分离，各自最小权限。
 - **认证插件规范**：8.0 默认 ${C}caching_sha2_password${C}，比 5.7 的 ${C}mysql_native_password${C} 更安全。
 - **密码策略规范**（官方 8.2.8）：通过 ${C}validate_password${C} 组件强制长度/复杂度；账号属性 ${C}PASSWORD EXPIRE${C} / ${C}PASSWORD HISTORY${C} / ${C}FAILED_LOGIN_ATTEMPTS${C} 是服务器强制策略，比脚本自觉强。
 - **角色规范**：8.0 用 ROLE 聚合权限再授予账号，避免散授导致的权限失控。
 
-## 三、实战
+## 三、动手实践：账号管理标准操作
 
 账号管理标准操作：
 
@@ -819,7 +821,7 @@ ACL SETUSER app_rw on >'WrPa55' ~shop:* ~cache:* +@read +@write -@dangerous -flu
 ACL SAVE    # 持久化 ACL
 ${F}
 
-## 四、覆盖广度
+## 四、权限巡检 SQL
 
 | 对象 | 巡检 SQL | 目的 |
 |---|---|---|
@@ -830,7 +832,7 @@ ${F}
 
 边界场景：root 账号禁止应用直连；从库读账号应与主库账号分离；临时账号用后必须回收；权限变更必须入版本库（SQL 迁移脚本）或工单，否则出事件无法回溯「谁何时给了谁什么」。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **root 直接连应用**：应用被拖库等于全库沦陷。应用账号只拿业务库的 ${C}SELECT/INSERT/UPDATE/DELETE${C}。
 2. **僵尸授权无人清**：账号删了授权残留。季度巡检 ${C}mysql.db${C} / ${C}mysql.tables_priv${C}，对照工单清理。
@@ -838,7 +840,7 @@ ${F}
 4. **权限变更无记录**：出事件无法回溯。权限变更必须入版本库或工单。
 5. **只在出事后才审计**：把 ${C}mysql.general_log${C} / 审计插件当摆设，真正需要溯源时一片空白。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 生产账号 host 全部限定网段，无 '%' 账号
 - [ ] 业务账号无 DDL / GRANT / SUPER / FILE 权限
@@ -972,7 +974,7 @@ ${F}
 4. **「% 通配只是方便」**。${C}'%'${C} 让账号可从任意 IP 尝试，等同把攻击面暴露到公网。内网也应按网段收窄。
 5. **「超级账号密码复杂就够了」**。root 不应允许远程登录；${C}root@localhost${C} 之外不应有第二个超级账号。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 Reference Manual → Ch.8 Security（8.1–8.5 全读）
 - PostgreSQL Documentation → Ch.21 Database Roles / Ch.5.7 Privileges
@@ -983,14 +985,14 @@ ${F}
             id: "charset-collation",
             title: "字符集、排序规则与时区",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / PostgreSQL 16",
             tags: ["字符集", "排序规则", "时区"],
             terms: ["字符集", "排序规则", "时区", "utf8mb4"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.10 Character Sets, Collations, Unicode](https://dev.mysql.com/doc/refman/8.0/en/charset.html) · [MySQL RM → 10.9 Unicode Support (utf8mb4)](https://dev.mysql.com/doc/refman/8.0/en/charset-unicode-utf8mb4.html) · [MySQL RM → 5.1.15 Server Time Zone Support](https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html) · [PostgreSQL → Ch.23 Locale & Collation](https://www.postgresql.org/docs/current/collation.html)
 
-## 一、原理与底层机制
+## 一、字符集与排序规则
 
 字符集决定「字节如何映射成字符」，排序规则（collation）决定「两个字符怎么比大小 / 是否相等」。二者一旦不一致，JOIN、唯一索引、ORDER BY 都会出现诡异行为——这是 DBA 最容易踩却最难定位的坑。
 
@@ -999,13 +1001,13 @@ ${F}
 
 时区的底层：MySQL 存 ${C}TIMESTAMP${C} 时按会话时区转成 UTC 存储、读取时再转回会话时区；${C}DATETIME${C} 原样存储不做转换。这决定了「跨时区部署时 TIMESTAMP 会自动换算，DATETIME 不会」。
 
-## 二、规范与标准
+## 二、四处一致的统一规范
 
 - **统一规范**：全库、全表、全列、连接串四处的字符集与排序规则必须一致，避免「列 A 是 utf8mb4_general_ci、列 B 是 utf8mb4_0900_ai_ci」导致 JOIN 报 ${C}Illegal mix of collations${C}。
 - **版本一致性**：8.0 默认 ${C}utf8mb4_0900_ai_ci${C}，5.7 默认 ${C}utf8mb4_general_ci${C}；跨版本主从/迁移要显式指定排序规则，否则比较行为不一致。
 - **时区规范**：服务器 ${C}time_zone${C} 设为具体时区（如 ${C}+08:00${C} 或 ${C}Asia/Shanghai${C}）而非 SYSTEM；JDBC 连接串加 ${C}serverTimezone${C}，避免 JDBC 与服务器时区不一致造成 TIMESTAMP 漂移。
 
-## 三、实战
+## 三、动手实践：建库与字符集转换
 
 ${F}sql
 -- 1) 建库显式指定字符集与排序规则（不要依赖服务器默认）
@@ -1029,7 +1031,7 @@ ${F}
 
 恢复时点时特别留意：**PITR 的时间参数依赖服务器时区**，binlog 里的 ${C}--stop-datetime${C} 按服务器时区解释，跨时区恢复前先确认 ${C}@@global.time_zone${C}。
 
-## 四、覆盖广度
+## 四、常见问题对照
 
 | 问题 | 现象 | 根因 | 对策 |
 |---|---|---|---|
@@ -1040,7 +1042,7 @@ ${F}
 
 边界：emoji 存储必须用 utf8mb4；_ci 排序下 'A' 与 'a' 相等，可能影响唯一约束与分区键；国家化业务考虑按语言选 collation。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **用 ${C}utf8${C} 当 utf8mb4**：5.7 时代遗留习惯，遇到 emoji/生僻字直接写入失败或截断。
 2. **只在库级设字符集**：表、列、连接串未统一，连接串不一致照样乱码。
@@ -1048,7 +1050,7 @@ ${F}
 4. **忽略排序规则差异**：跨版本迁移后 _general_ci 与 _0900_ai_ci 比较结果不同，导致排序/去重结果「悄悄变了」。
 5. **服务器时区用 SYSTEM 又没同步 OS 时区**：OS 时区一改，数据库时间表现跟着变，PITR 时间参数全乱。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 库/表/列/连接串四处字符集与排序规则一致
 - [ ] 全库使用 utf8mb4，无 utf8(utf8mb3) 残留
@@ -1189,7 +1191,7 @@ ${F}
 4. **「VARCHAR(255) 就是 255 字节」**。utf8mb4 下最长占 1020 字节，影响行大小与索引前缀预算。
 5. **「emoji 存不了是客户端问题」**。根因几乎总是在数据库侧仍是 utf8mb3。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → Ch.10 Character Sets / 10.9 Unicode Support
 - MySQL RM → 5.1.15 Server Time Zone Support（TIMESTAMP 转换原理）
@@ -1208,16 +1210,18 @@ ${F}
             id: "index-execplan",
             title: "索引原理与执行计划",
             minutes: 38,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 InnoDB",
             tags: ["索引", "EXPLAIN", "B+树"],
             terms: ["索引", "执行计划", "B+树", "MySQL"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.10.3 Optimizer and Index Statistics](https://dev.mysql.com/doc/refman/8.0/en/optimization-indexes.html) · [MySQL RM → 8.8.2 EXPLAIN Output Format](https://dev.mysql.com/doc/refman/8.0/en/explain-output.html) · [InnoDB → 17.6.2.1 Clustered and Secondary Indexes](https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html) · [InnoDB → 17.6.2.3 Invisible / Descending Indexes](https://dev.mysql.com/doc/refman/8.0/en/descending-indexes.html)
 
-## 一、原理与底层机制
+## 一、B+ 树：聚集索引与二级索引
 
 InnoDB 的索引本质是 **B+ 树**，两类索引的差异决定了一切查询行为（官方 17.6.2.1）：
+
+![InnoDB 索引：聚簇索引与二级索引](/assets/diagrams/docs/bplus-index.svg)
 
 - **聚集索引（主键）**：整张表本身就是一棵按主键组织的 B+ 树，**叶子节点存完整行数据**。这就是「按主键查最快」的根源。
 - **二级索引（辅助索引）**：叶子节点存「索引列值 + 主键值」。用二级索引找到主键后，若还需要其他列，必须**回表**——拿主键回聚集索引再查一次。
@@ -1230,14 +1234,14 @@ InnoDB 的索引本质是 **B+ 树**，两类索引的差异决定了一切查�
 
 **B+ 树的关键数字**：InnoDB 页 16KB；BIGINT 主键 + 指针约 12 字节 → 非叶节点约 1300 分支；树高 3 层可索引约 **2000 万行**（业界估算口径）。这意味着：**单表千万级本身不是问题，问题是你的查询走不走索引**。「数据量大了必须分库分表」是过度设计，先看执行计划。
 
-## 二、规范与标准
+## 二、建索引规范
 
 - **基数与选择性**：索引适合高区分度列；${C}gender${C} 这类低基数列建索引优化器大概率不用，还白付写放大。
 - **联合索引列顺序规范**：等值条件列在前，范围/排序列在后；最左前缀原则要求排序列连续紧跟等值列。
 - **官方 8.3.13 降序索引**：ASC/DESC 混合排序需要 8.0 的降序索引，否则无法消除 filesort。
 - **不可见索引（Invisible Index）**：8.0 支持把索引设为 invisible 观察影响后再删，避免「删了才发现慢」。
 
-## 三、实战
+## 三、动手实践：从 filesort 到覆盖索引
 
 从 filesort 到覆盖索引的改造：
 
@@ -1260,7 +1264,7 @@ WHERE user_id = 10086 AND status = 'PAID'
 ORDER BY created_at DESC LIMIT 20;
 ${F}
 
-## 四、覆盖广度
+## 四、EXPLAIN 逐列精读
 
 **EXPLAIN 输出逐列精读**（官方 8.8.2）：
 
@@ -1276,7 +1280,7 @@ Extra 速查：${C}Using index${C}（覆盖 ✅）、${C}Using index condition${
 
 **索引失效的六种姿势**：① 对索引列做函数/运算（${C}WHERE DATE(created_at)='...'${C}）；② 隐式类型转换；③ 前导模糊（${C}LIKE '%abc'${C}）；④ OR 混合无索引列；⑤ 优化器判定走索引更慢（回表太多，用 EXPLAIN ANALYZE 看真实）；⑥ 统计信息过期（${C}ANALYZE TABLE${C}）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **索引越多越好**：每个索引都是一棵要维护的 B+ 树，写放大 + 优化器选择困难。高频写表索引 ≤ 5。
 2. **拿 ${C}rows${C} 当真实值**：那是统计估算；用 ${C}EXPLAIN ANALYZE${C}（8.0.18+）看真实耗时分布。
@@ -1284,7 +1288,7 @@ Extra 速查：${C}Using index${C}（覆盖 ✅）、${C}Using index condition${
 4. **ORDER BY 列与索引顺序不一致还想消除 filesort**：索引对排序生效要求「等值条件列在前 + 排序列连续在后」，方向混排需要 8.0 降序索引。
 5. **删索引前不观察**：用 invisible 索引先观察再删，避免误删热索引导致线上雪崩。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 核心查询的 EXPLAIN 无 ALL / Using filesort / Using temporary
 - [ ] 每张表的索引都能对应到具体查询，无「孤儿索引」
@@ -1414,7 +1418,7 @@ ${F}
 4. **「联合索引列顺序随便」**。顺序由查询形态决定：等值条件列在前、范围列与排序列在后；顺序错了等于没建。
 5. **「删索引是零风险清理」**。先用 ${C}ALTER TABLE ... ALTER INDEX ... INVISIBLE${C} 观察一个业务周期，确认无计划回归再删。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → 8.3 Optimization and Indexes / 8.8.2 EXPLAIN Output Format / 8.2.1 Optimizing SELECT
 - InnoDB Manual → 17.6.2.1 Clustered and Secondary Indexes
@@ -1425,14 +1429,16 @@ ${F}
             id: "tx-isolation-lock",
             title: "锁与事务隔离级别",
             minutes: 40,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 InnoDB",
             tags: ["事务", "锁", "MVCC"],
             terms: ["事务", "锁", "隔离级别", "死锁"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → 17.7 InnoDB Locking and Transaction Model](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html)（17.7.2 Lock Types / 17.7.2.3 Record / Gap / Next-Key Locks / 17.7.3 Transaction Isolation Levels / 17.7.5 Deadlocks in InnoDB）· [PostgreSQL → Ch.13 Concurrency Control](https://www.postgresql.org/docs/current/mvcc.html)
 
-## 一、原理与底层机制
+## 一、MVCC 与三种行锁
+
+![MVCC：版本链 + ReadView 决定「我能看到哪个版本」](/assets/diagrams/docs/mvcc-readview.svg)
 
 **MVCC（多版本并发控制）** 是 InnoDB 并发能力的根基。每行有两个隐藏列：${C}DB_TRX_ID${C}（最后修改事务号）与 ${C}DB_ROLL_PTR${C}（指向 undo log 旧版本链）。
 
@@ -1449,7 +1455,7 @@ ${F}
 
 **锁的载体是索引**：${C}WHERE col = 5${C} 若 col 无索引，InnoDB 只能全表扫并给**所有扫过的记录加锁**（接近锁全表）。这是「无索引的 UPDATE 引发雪崩」的原理。
 
-## 二、规范与标准
+## 二、四种隔离级别与并发异常
 
 四种隔离级别与三种并发异常（官方 17.7.3）：
 
@@ -1464,7 +1470,7 @@ ${F}
 
 规范：业务默认用 RR；高并发写冲突场景可降 RC 配合「乐观锁版本号 / 唯一索引」防幻读；SERIALIZABLE 吞吐断崖，几乎不用。
 
-## 三、实战
+## 三、动手实践：死锁定位与解除
 
 死锁定位与解除：
 
@@ -1486,7 +1492,7 @@ UPDATE account SET balance = balance - 100, version = version + 1
 WHERE id = 1 AND version = 5;   -- 影响 0 行说明被并发修改，重试
 ${F}
 
-## 四、覆盖广度
+## 四、各隔离级别异常对照
 
 | 异常 | RR 下是否发生 | RC 下是否发生 | 业务影响 |
 |---|---|---|---|
@@ -1496,7 +1502,7 @@ ${F}
 
 边界：长事务会拖长 undo 链、阻塞 purge、放大死锁概率；InnoDB 自动检测死锁并回滚代价小的事务（官方 17.7.5），应用捕获 ${C}1213${C} 错误重试即可，**不重试才是故障**。PG 的 MVCC 实现不同（无回滚链、靠 xmin/xmax 标记），但没有 undo 膨胀问题却有表膨胀问题（需 VACUUM）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **「InnoDB 行锁就是锁行」**：锁在索引记录上；无索引时退化成锁全表扫描路径。给 UPDATE/DELETE 的 WHERE 列建索引是锁粒度优化的第一课。
 2. **RC 没有幻读问题的错觉**：RC 下当前读不锁间隙，幻读真实存在；只是 RR 下业务感知不到。
@@ -1504,7 +1510,7 @@ ${F}
 4. **死锁当成故障**：InnoDB 自动检测并回滚代价小的事务，应用捕获 1213 错误重试即可；**不重试才是故障**。
 5. **用 SERIALIZABLE 追求「绝对安全」**：吞吐断崖式下跌，且仍不解决应用层并发写冲突，性价比极低。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 所有 UPDATE/DELETE 的 WHERE 列有索引（锁粒度可控）
 - [ ] 应用对死锁错误 1213 / 锁等待 1205 有重试逻辑
@@ -1664,7 +1670,7 @@ ${F}
 4. **「先 SELECT 查库存再 UPDATE」**。两步之间库存可能已被改，必须用「条件更新 + 判断行数」或加锁读。
 5. **「死锁靠加锁顺序就能完全避免」**。只在单表批量操作时成立；多表、外键级联、唯一索引冲突场景仍可能死锁，兜底重试不可省。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → 17.7 InnoDB Locking and Transaction Model（全章精读）
 - PostgreSQL Documentation → Ch.13 Concurrency Control（MVCC 的另一种实现：无回滚链、靠 xmin/xmax）
@@ -1675,14 +1681,14 @@ ${F}
             id: "slow-query",
             title: "慢查询治理",
             minutes: 34,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0",
             tags: ["慢查询", "优化", "pt-query-digest"],
             terms: ["慢查询", "SQL", "优化", "MySQL"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → 8.5 Optimizing for Slow Query Log](https://dev.mysql.com/doc/refman/8.0/en/slow-query-log.html) · [MySQL RM → 8.9 Understanding the Query Execution Plan](https://dev.mysql.com/doc/refman/8.0/en/execution-plan-information.html) · [Percona Toolkit → pt-query-digest](https://docs.percona.com/percona-toolkit/pt-query-digest.html)
 
-## 一、原理与底层机制
+## 一、治理闭环：慢日志·EXPLAIN·optimizer trace
 
 慢查询治理不是一次性运动，而是「发现 → 归因 → 修复 → 防回归」的循环。其底层逻辑是：**慢日志是优化器实际行为的采样，EXPLAIN 是优化器的计划声明，optimizer trace 是优化器的决策推理**。三者结合才能从「现象」追到「为什么」。
 
@@ -1693,7 +1699,7 @@ ${F}text
     → ④ 改 SQL/索引/结构 → ⑤ 上线比对 → ⑥ 回归监控
 ${F}
 
-## 二、规范与标准
+## 二、慢日志配置规范
 
 慢日志配置（官方 8.5 节）：
 
@@ -1709,7 +1715,7 @@ ${F}
 
 注意：${C}log_queries_not_using_indexes${C} 可能刷爆日志（全表扫的高频小查询），有此风险时关闭，靠 pt-query-digest 抓全量。阈值 ${C}long_query_time${C} 的设定应与业务 P99 目标对齐，过小则日志无价值，过大则漏掉真凶。
 
-## 三、实战
+## 三、动手实践：pt-query-digest 聚合分析
 
 聚合分析用 pt-query-digest（事实标准）：
 
@@ -1733,7 +1739,7 @@ SELECT * FROM information_schema.OPTIMIZER_TRACE\\G
 SET optimizer_trace = 'enabled=off';
 ${F}
 
-## 四、覆盖广度
+## 四、现象→归因→对策速查
 
 | 现象 | 归因 | 对策 |
 |---|---|---|
@@ -1748,7 +1754,7 @@ ${F}
 - **IoWait**：${C}iostat -x 1${C} 看 %util 与 await；数据库是最吃 IO 的应用，慢常是宿主机资源问题。
 - **MDL 锁等待**：${C}performance_schema.metadata_locks${C}——一个长事务能阻塞后续所有 DDL 与查询。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **按单次最长耗时排序优化**：一条每小时跑一次的 10s 查询，危害可能远小于每秒百次的 200ms 查询。**按「总耗时 × 频率」排序**。
 2. **只优化不改监控**：没有基线对比，无法证明优化有效。上线前后各留 P95/P99。
@@ -1756,7 +1762,7 @@ ${F}
 4. **用 ${C}FORCE INDEX${C} 当长期方案**：那是绕过优化器误判的止血贴，根因（统计信息/版本 bug）要修。
 5. **只看 SQL 不看系统**：慢可能是 Buffer Pool 命中率低、磁盘 IO 饱和、连接池打满，而非 SQL 本身。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 慢日志开启且阈值与业务 P99 目标一致
 - [ ] pt-query-digest 定期跑，TOP SQL 有治理看板
@@ -1881,7 +1887,7 @@ ${F}
 4. **「加索引就解决了」**。写入放大、缓冲池占用、DDL 成本都要一起算；一个表 20 个索引本身就是新问题。
 5. **「压测通过就能上线」**。压测的数据分布常与线上不同（统计数据倾斜时优化器会选不同计划），上线后要用真实分布的统计信息复验。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → 8.5 Optimizing for Slow Query Log / 8.9 Understanding the Query Execution Plan
 - Percona Toolkit Documentation → pt-query-digest
@@ -1892,16 +1898,18 @@ ${F}
             id: "replication",
             title: "主从复制与读写分离",
             minutes: 40,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0",
             tags: ["复制", "读写分离", "GTID"],
             terms: ["主从", "读写分离", "复制", "MySQL"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.19 Replication](https://dev.mysql.com/doc/refman/8.0/en/replication.html)（19.2 Replication Sources / 19.2.1 Binary Log File Position Based / 19.4.11 Semisynchronous Replication / 19.3 GTID-Based Replication）· [MySQL RM → 19.2.5 Replication Channels](https://dev.mysql.com/doc/refman/8.0/en/replication-channels.html) · [MySQL RM → 19.4.3 Replication Threads](https://dev.mysql.com/doc/refman/8.0/en/replication-implementation-details.html)
 
-## 一、原理与底层机制
+## 一、复制原理：三个线程与延迟三段
 
 复制的物理链路由三个线程构成（官方 19.4.3）：
+
+![MySQL 主从复制：三个线程](/assets/diagrams/docs/replication.svg)
 
 ${F}text
 主库                          从库
@@ -1917,7 +1925,7 @@ ${F}
 
 **主从延迟 = 网络传输 + relay log 落盘 + SQL 线程重放** 三段之和；生产中绝大多数延迟来自第三段（从库单线程重放追不上主库并发写）。理解这一点才能正确选优化手段（并行复制）。
 
-## 二、规范与标准
+## 二、binlog 三种格式
 
 binlog 三种格式（官方 19.2.1.1）：
 
@@ -1929,7 +1937,7 @@ binlog 三种格式（官方 19.2.1.1）：
 
 生产推荐 **ROW + binlog_row_image=FULL**：一致性与审计（Canal/Flink CDC 依赖 ROW 格式解析行变更）。
 
-## 三、实战
+## 三、动手实践：GTID 复制搭建
 
 GTID 复制（官方 19.3）：GTID = ${C}source_uuid:transaction_id${C}，给全局每个事务一个唯一编号，**换主从拓扑不再需要手找 binlog 位点**：
 
@@ -1959,7 +1967,7 @@ SET GLOBAL rpl_semi_sync_source_enabled = 1;
 SET GLOBAL rpl_semi_sync_source_timeout = 1000;   -- 1s 超时降级为异步
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：读写分离的正确姿势
 
 **读写分离的正确姿势**：
 
@@ -1970,7 +1978,7 @@ ${F}
 
 边界：多源复制（multi-source）、双主互备、级联复制各有适用场景；从库上**禁止手动跑 DDL**，否则复制冲突。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **以为 ${C}Seconds_Behind_Source=0${C} 就没延迟**：它只比较 binlog 时间戳，大事务卡住时并不真实。更可靠：GTID 集差（${C}SELECT RECEIVED_TRANSACTION_SET vs EXECUTED_TRANSACTION_SET${C}）或心跳表方案。
 2. **写后读不做主从一致性处理**：用户改完昵称刷新看不到——写后同会话读主，或用 GTID 等待。
@@ -1978,7 +1986,7 @@ ${F}
 4. **在从库上跑 DDL**：复制会把主库 DDL 同步过来，从库手动 DDL 会造成表结构冲突、复制中断。
 5. **并行复制没开**：单 SQL 线程重放是从库延迟主因，8.0 的 WRITESET 并行复制能大幅提升从库追平速度。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] ROW 格式 + GTID 开启，SOURCE_AUTO_POSITION=1
 - [ ] 双 Yes + 延迟监控告警在跑
@@ -2102,7 +2110,7 @@ ${F}
 4. **「复制过滤可以随意用」**（如 ${C}replicate-do-table${C}）。过滤后 relay log 与 GTID 集合会出现空洞，故障切换时数据不一致，官方明确不推荐在生产使用。
 5. **「GTID 换了就万事大吉」**。GTID 解决了位点漂移，但 ${C}gtid_executed${C} 集合膨胀、${C}gtid_purged${C} 误清、跨版本复制仍有约束（5.7→8.0 单向兼容）。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → Ch.19 Replication（19.2–19.5 全读）
 - MySQL 8.0 RM → 19.3.3 GTID 复制的运维操作
@@ -2113,14 +2121,14 @@ ${F}
             id: "redis-internals",
             title: "Redis 数据结构与持久化",
             minutes: 38,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Redis 7.x",
             tags: ["Redis", "持久化", "RDB", "AOF"],
             terms: ["Redis", "持久化", "RDB", "AOF"],
             body: `
 > **官方文档基线**：[redis.io → Data Types](https://redis.io/docs/latest/develop/data-types/) · [redis.io → Persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/) · [redis.io → Latency 诊断](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/) · [redis.io → Key Eviction](https://redis.io/docs/latest/operate/oss_and_stack/management/config/)
 
-## 一、原理与底层机制
+## 一、单线程模型与多态编码
 
 Redis 命令执行是**单线程**（6.0+ 仅网络 IO 多线程），**任何一条慢命令都会阻塞所有请求**。理解这点就理解了所有延迟问题的根源。其数据结构采用**多态编码**：同一逻辑类型根据数据量自动在多种底层编码间切换，以平衡内存与性能：
 
@@ -2134,7 +2142,7 @@ Redis 命令执行是**单线程**（6.0+ 仅网络 IO 多线程），**任何�
 
 补充三个高频进阶类型：**Bitmap**（签到、活跃统计）、**HyperLogLog**（UV 估算，误差 0.81%）、**Stream**（正式的消息队列，消费组支持）。
 
-## 二、规范与标准
+## 二、持久化：RDB·AOF·混合
 
 **RDB（快照）**：${C}SAVE${C}/定时触发时 **fork 子进程**，利用操作系统的 **COW（写时复制）** 保证快照一致性——主进程继续服务，子进程遍历内存写 ${C}dump.rdb${C}。
 
@@ -2156,7 +2164,7 @@ ${F}
 
 ⚠ fork 的代价：内存越大 fork 越慢（拷贝页表），10GB+ 实例在高峰期做 RDB 可能造成数百 ms 停顿——这是官方 Latency 文档专门列出的延迟来源之一。
 
-## 三、实战
+## 三、动手实践：内存淘汰配置
 
 内存淘汰配置：
 
@@ -2178,7 +2186,7 @@ ${F}
 - **穿透**：查不存在的 key 每次打到库 → 空值缓存（短 TTL）或布隆过滤器。
 - **雪崩**：大量 key 同 TTL 过期 → TTL 加随机抖动；热点 key 突然过期 → 逻辑过期 + 异步刷新。
 
-## 四、覆盖广度
+## 四、拓展：单线程延迟红线
 
 **单线程延迟红线**（官方 Latency 文档按优先排查）：
 
@@ -2189,7 +2197,7 @@ ${F}
 
 边界：Redis 是内存库，数据可丢；分布式锁正确姿势 ${C}SET key val NX EX 30${C}，释放用 Lua 校验持有者（RedLock 争议下推荐 Redisson）；生产禁用 ${C}KEYS${C}/${C}FLUSHALL${C}（用 rename-command）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **RDB 与 AOF 只开一个**：只开 AOF 恢复慢（重放全部命令），只开 RDB 丢得多。混合持久化两个问题都解决。
 2. **把 Redis 当主存储**：它是内存库，淘汰与故障都意味着数据可丢；主数据必须在 MySQL，Redis 只是加速层。
@@ -2197,7 +2205,7 @@ ${F}
 4. **用 ${C}KEYS${C} 做运维巡检**：生产禁用；用 ${C}SCAN${C} 增量遍历。
 5. **不设 maxmemory-policy**：默认 noeviction，缓存写满直接报错，击穿到数据库。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] RDB + AOF（混合持久化）双开，appendfsync=everysec
 - [ ] maxmemory 与淘汰策略按场景明确设置（缓存 = allkeys-lru/lfu）
@@ -2344,7 +2352,7 @@ ${F}
 4. **「把所有数据都放 Redis 就快了」**。Redis 是内存系统，成本远高于磁盘；用 LRU 策略时应明确「缓存可丢」的业务语义。
 5. **「主从复制不会丢数据」**。Redis 主从默认是**异步**复制，主库写入成功即返回，故障切换可能丢最近若干条；用 ${C}WAIT${C} 命令可要求至少 N 个副本确认，代价是延迟。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - redis.io → Persistence（官方对两种方案取舍的权威论述）
 - redis.io → Latency 诊断指南（一篇讲完所有延迟元凶）
@@ -2355,14 +2363,14 @@ ${F}
             id: "connection-management",
             title: "连接管理与连接池",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / Redis / PgBouncer",
             tags: ["连接", "连接池", "最大连接数"],
             terms: ["连接", "连接池", "max_connections", "MySQL"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → 5.1.8 Server System Variables (max_connections)](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_max_connections) · [MySQL RM → 5.1.14 Wait Timeout](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_wait_timeout) · [PostgreSQL → Ch.27 Client Connection Defaults](https://www.postgresql.org/docs/current/runtime-config-client.html) · [PgBouncer Docs](https://www.pgbouncer.org/)
 
-## 一、原理与底层机制
+## 一、连接的成本与连接池本质
 
 数据库连接是**有成本的资源**：每个连接对应一个后端线程/进程、占用内存（MySQL 每连接默认约数 MB 的 buffer）、持有事务与锁。连接数失控是「数据库突然挂掉」的头号非 SQL 原因。
 
@@ -2370,14 +2378,14 @@ ${F}
 - **连接池的本质**：用「少量长连接 + 复用」替代「每次请求新建/销毁短连接」。新建 TCP + 认证 + 握手开销在高频调用下不可忽略。
 - **Redis 的连接**：单线程处理，大量并发连接本身不慢，但每个连接占内存，且 ${C}MONITOR${C} / 大 pipeline 会阻塞。
 
-## 二、规范与标准
+## 二、连接数、超时与池参数规范
 
 - **max_connections 设定规范**：按「应用连接池上限之和 + 运维/监控余量」设定，而不是拍脑袋。预留 10%~20% 给运维，避免连不上无法排查。
 - **超时规范**：${C}wait_timeout${C} / ${C}interactive_timeout${C} 控制空闲连接回收（默认 8 小时太长，建议 300~600s）；连接池的 maxIdle 与之对齐，避免「连接被服务端回收后客户端还在用」的 ${C}MySQL server has gone away${C}。
 - **连接池参数规范**：最大池大小按「并发峰值 / 单连接处理能力」估算；${C}maxWait${C} 控制获取连接超时，避免线程无限堆积。
 - **PgBouncer 模式规范**：PostgreSQL 短连接成本极高，生产必须用连接池；transaction 模式复用率最高但要求应用不依赖会话级状态（如临时表、SET 变量）。
 
-## 三、实战
+## 三、动手实践：MySQL 侧参数与排查
 
 MySQL 侧关键参数与排查：
 
@@ -2403,7 +2411,7 @@ spring.datasource.hikari.max-lifetime=1800000      # 连接最大存活，小于
 spring.datasource.hikari.connection-timeout=3000   # 获取连接超时
 ${F}
 
-## 四、覆盖广度
+## 四、常见连接问题对照
 
 | 问题 | 现象 | 根因 | 对策 |
 |---|---|---|---|
@@ -2414,7 +2422,7 @@ ${F}
 
 边界：连接池过大反而拖垮数据库（每个连接占 buffer，大量并发查询互相抢资源）；K8s 多副本下池大小 × 副本数要纳入 max_connections 核算。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **连接池越大越好**：池过大 = 数据库并发连接爆炸，每个连接占内存与线程，反而降低吞吐。按实测拐点设定。
 2. **不设 idle/timeout 对齐**：应用 idle 时间比 ${C}wait_timeout${C} 长，连接被服务端静默回收，下次用就 ${C}gone away${C}。
@@ -2422,7 +2430,7 @@ ${F}
 4. **max_connections 直接调到几千**：掩盖了连接泄漏/池过大问题，且每连接占内存，数据库内存被吃光。
 5. **PostgreSQL 不上连接池**：PG 每连接一个进程，短连接成本极高，不上 PgBouncer 在高并发下必崩。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] max_connections 按「应用池上限之和 + 运维余量」设定
 - [ ] 连接池 idle/maxLifetime 与 wait_timeout 对齐
@@ -2585,7 +2593,7 @@ ${F}
 4. **「每个请求开一个新连接更简单」**。单次建连成本 + 会话变量初始化可能比查询本身贵十倍，HTTP 短连接 + 无池化是压垮 DB 的常见组合。
 5. **「只监控连接数就够」**。${C}Threads_connected${C} 高但 ${C}Threads_running${C} 低只是池开大了；只有 ${C}Threads_running${C} 高才是真的负载压力。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → 5.1.8 Server System Variables（max_connections / wait_timeout）
 - PostgreSQL → Ch.27 Client Connection Defaults / PgBouncer 文档
@@ -2604,14 +2612,14 @@ ${F}
             id: "sharding-middleware",
             title: "分库分表与中间件",
             minutes: 42,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 + ShardingSphere / Vitess",
             tags: ["分库分表", "ShardingSphere", "分区"],
             terms: ["分库分表", "ShardingSphere", "中间件", "MySQL"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.15 Partitioning](https://dev.mysql.com/doc/refman/8.0/en/partitioning.html) · [ShardingSphere → Concepts](https://shardingsphere.apache.org/document/current/en/concepts/) · [Vitess Concepts](https://vitess.io/docs/) · [Google F1 论文](https://research.google/pubs/pub41344/)（分库分表的鼻祖场景）
 
-## 一、原理与底层机制
+## 一、分区与分片
 
 先分清三个常被混用的概念：
 
@@ -2625,7 +2633,7 @@ ${F}
 
 **分片**解决单实例容量与吞吐天花板：数据散到 N 个 MySQL 实例。**先分区后分片**——大多数业务走到分区就够了。
 
-## 二、规范与标准
+## 二、分片键选择
 
 **分片键选择：几乎不可逆的决策**，好分片键的三个条件：
 
@@ -2637,7 +2645,7 @@ ${F}
 
 主流选择：**user_id 取模 / 一致性哈希**。代价：**跨片查询**（运营后台按订单号查 → 引入异构索引表或 ES）、**扩容再平衡**（取模方案扩容要迁移大量数据 → 用一致性哈希或翻倍扩容法）。
 
-## 三、实战
+## 三、动手实践：ShardingSphere 两种形态
 
 ShardingSphere 两种形态（官方 Concepts）：
 
@@ -2664,7 +2672,7 @@ rules:
           algorithm-expression: ds_\${user_id % 8}.orders_\${user_id % 8}
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：分片后失去的能力与 Vitess
 
 **分片后立刻失去的能力（提前想清楚）**：
 
@@ -2675,7 +2683,7 @@ ${F}
 
 **Vitess 的不同思路**：把分片做在**数据库代理 + VSchema** 层，应用完全无感，且内置 **Resharding** 工作流（在线迁移分片数）。如果你不想让业务代码感知分片，Vitess 或 TiDB（NewSQL，天然分片）是比手搭 ShardingSphere 更工程化的路线。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **上来就分 64 库 512 表**：过度设计。分区 + 读写分离 + 归档能撑到远超预期；分片的运维复杂度是数量级上升。
 2. **分片键选成时间**：新数据全部打到最新的一个片，热点倾斜；时间只适合做分区键或二级路由。
@@ -2683,7 +2691,7 @@ ${F}
 4. **忘记录入再平衡方案**：取模分片从 8 扩到 16 = 90% 数据要迁移。翻倍扩容法（每片拆两半）能省一半迁移量。
 5. **分片键选错再改**：分片键嵌入了所有数据与查询路径，改分片键 = 全量数据迁移 + 全量代码改造，几乎不可逆。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 分区/读写分离/归档先做足，分片是最后手段
 - [ ] 分片键经过三条件评审，跨片查询路径已设计
@@ -2813,7 +2821,7 @@ ${F}
 4. **「跨片事务交给中间件就没事」**。2PC 有性能与协调者单点问题，且对业务错误（如超卖）并无帮助；能设计成单分片事务就不要跨片。
 5. **「分片键可以随时改」**。改分片键等于全量数据重分布，成本与重新分片同级；上线前必须把分片键和主要查询形态一起评审。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → Ch.15 Partitioning（先读通分区限制）
 - ShardingSphere → Concepts / Features（分片、弹性伸缩、分布式事务）
@@ -2824,14 +2832,14 @@ ${F}
             id: "ha-dr",
             title: "高可用与容灾方案",
             minutes: 42,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 MGR / Redis Sentinel",
             tags: ["高可用", "容灾", "MGR"],
             terms: ["高可用", "容灾", "MGR", "主从"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.20 Group Replication](https://dev.mysql.com/doc/refman/8.0/en/group-replication.html) · [MySQL 8.0 RM → Ch.21 InnoDB Cluster](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html) · [redis.io → Replication / Sentinel / Cluster](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/) · [Google SRE Workbook → Ch.5 Eliminating Toil](https://sre.google/workbook/eliminating-toil/)
 
-## 一、原理与底层机制
+## 一、用成本换 RTO/RPO 与 MGR 机制
 
 高可用的度量本质是**用成本换 RTO/RPO**：
 
@@ -2845,9 +2853,11 @@ ${F}
 
 **MGR 核心机制**（官方 Ch.20）：事务提交经 Paxos 广播到多数派成员 → 多数派 prepare → 提交。读任意成员可读（注意读旧数据问题）；写必须写入多数派 → 少数派分区自动只读；故障检测成员 5s 无响应剔除。
 
-## 二、规范与标准
+## 二、高可用方案光谱
 
 MySQL 高可用方案光谱：
+
+![数据库高可用方案光谱](/assets/diagrams/docs/ha-topology.svg)
 
 | 方案 | 原理 | RPO | 适用 |
 |---|---|---|---|
@@ -2859,7 +2869,7 @@ MySQL 高可用方案光谱：
 
 MGR 约束：仅 InnoDB、每表必须有主键、集群 ≤ 9 节点；两种模式——单主模式（推荐）与多主模式（写冲突高发，慎用）。
 
-## 三、实战
+## 三、动手实践：最小 MGR 集群配置
 
 最小可用集群配置（每节点）：
 
@@ -2880,7 +2890,7 @@ Redis 高可用三级（redis.io 官方文档）：
 | **Sentinel** | 3+ 节点哨兵探测，自动选主 | 自动（客户端走 Sentinel 发现） |
 | **Cluster** | 16384 slot 分片 + 主从自动迁移 | 自动 |
 
-## 四、覆盖广度
+## 四、拓展：两地三中心与容灾演练
 
 **容灾：两地三中心与演练**：
 
@@ -2890,7 +2900,7 @@ Redis 高可用三级（redis.io 官方文档）：
 
 SRE 纪律（Workbook Ch.5）：**故障切换必须自动化 + 定期演练**。人肉切换的 MTTR 以小时计，自动化以秒计；每季度一次「拔网线演习」。Redis 的 Sentinel 至少 3 节点跨机器部署（奇数防脑裂）；Cluster 每个主节点至少配 1 从。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **从库 = 高可用**：异步复制的数据可能落后，直接提升从库可能丢最后几秒数据。核心库用 MGR/半同步。
 2. **MGR 三节点当万能**：多数派要求 2/3 存活，同机房三节点在机房级故障下全部失效——跨机房部署才真容灾。
@@ -2898,7 +2908,7 @@ SRE 纪律（Workbook Ch.5）：**故障切换必须自动化 + 定期演练**�
 4. **只演练正常切换，不演练「带病切换」**：真故障时主库不是干净下线，而是假死/半死。演练脚本必须包含「主库 hang 住」场景。
 5. **忘了接入层自动化**：只做存储层高可用，切换后应用连接串没改，RTO 被拉到分钟级甚至小时级。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 方案有明确的 RTO/RPO 承诺并写入文档
 - [ ] 接入层（Router/Proxy/VIP）自动感知主库切换
@@ -3006,7 +3016,7 @@ ${F}
 4. **「多活就是到处都能写」**。多地域双写会带来写冲突（同一主键两边都改），必须有冲突解决策略（如按地域分片、最后写入获胜、业务层冲突合并）。没有策略的多活等于制造数据事故。
 5. **「容灾机房平时不用管」**。长期不验证的容灾环境，一定会在真用时发现复制断了、磁盘满了、版本不一致。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → Ch.20 Group Replication / Ch.21 InnoDB Cluster / Ch.19.7 Switching Sources and Replicas（failover 流程）
 - redis.io → Sentinel Documentation / Cluster Tutorial
@@ -3017,14 +3027,14 @@ ${F}
             id: "capacity-bench",
             title: "容量规划与压测",
             minutes: 38,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / Redis",
             tags: ["容量", "压测", "sysbench"],
             terms: ["容量", "压测", "规划", "性能"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → Ch.8 Optimization](https://dev.mysql.com/doc/refman/8.0/en/optimization.html)（8.12 Measuring Performance / 8.12.2 Using Sysbench）· [Percona → Sysbench MySQL](https://www.percona.com/blog/using-sysbench-with-mysql/) · [Google SRE Book → Ch.4 SLO](https://sre.google/sre-book/service-level-objectives/) · [USE Method](http://www.brendangregg.com/usemethod.html)
 
-## 一、原理与底层机制
+## 一、容量规划的四个问题
 
 容量规划不是拍数字，而是回答四个问题（SRE 口径）：
 
@@ -3037,7 +3047,7 @@ ${F}
 
 MySQL 的资源画像：**OLTP 先顶内存（Buffer Pool）与连接数，批量报表先顶 IO**。理解「哪个资源先到顶」决定了扩容方向——加内存还是加磁盘还是加只读副本。
 
-## 二、规范与标准
+## 二、Buffer Pool 与内存规划
 
 **Buffer Pool 与内存规划**（官方 Ch.17 InnoDB）：专用 MySQL 服务器，物理内存的 60~75% 给 Buffer Pool；容量指标是**热数据集能否装进 Buffer Pool**，装不进则大量磁盘随机读，QPS 天花板断崖。
 
@@ -3049,7 +3059,7 @@ ${F}
 
 评估：${C}Innodb_buffer_pool_reads${C}（物理读）对比 ${C}Innodb_buffer_pool_read_requests${C}（逻辑读），命中率 < 99% 警戒。
 
-## 三、实战
+## 三、动手实践：sysbench 压测
 
 sysbench（官方 8.12.2 指定）压测：
 
@@ -3069,7 +3079,7 @@ ${F}
 
 压测纪律：① **梯度加压**（16→32→64→128 线程）找 QPS 拐点；② **数据量对齐生产**（空表压测无意义）；③ 只读和读写分开压。
 
-## 四、覆盖广度
+## 四、拓展：USE 方法定位瓶颈
 
 **USE 方法**：对每个资源问三问（Utilization / Saturation / Errors）：
 
@@ -3091,7 +3101,7 @@ ${F}
 | Threads_running | 核数×2 | 核数×4 |
 | 慢查询数/分钟 | 环比 +50% | 基线×3 |
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **压测环境与生产配置不同档**：本地 NVMe 压出的数字对云端 SATA 盘毫无参考。配置差异（CPU 型号 / 磁盘类型 / 网络）逐一记录。
 2. **只压一次不建基线**：容量是过程量——每次大促前复压，与基线对比退化。
@@ -3099,7 +3109,7 @@ ${F}
 4. **把峰值当稳态**：促销日 5 倍流量持续 4 小时 ≠ 全年可承受 5 倍；配合降级预案（关闭非核心写入）一起设计。
 5. **只看 QPS 不看延迟**：QPS 高但 P99 暴涨，用户体验已崩。容量评估必须同时看吞吐与长尾延迟。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] sysbench 基线建立，QPS 拐点已知并成档
 - [ ] Buffer Pool 命中率 / Threads_running / 磁盘有红线告警
@@ -3226,7 +3236,7 @@ ${F}
 4. **「扩容就能解决」**。若是慢 SQL 或缺索引导致饱和，扩容只是把问题推迟，且成本线性增长。先做 SQL 治理，再加容量。
 5. **「sysbench 分数高就代表业务能扛」**。sysbench 是简单点查/点更新，不含业务 JOIN、大事务、跨表写；业务压测必须用真实 SQL 或真实链路。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → 8.12 Measuring Performance / 8.12.2 Using Sysbench
 - Google SRE Book → Ch.4 Service Level Objectives（容量规划与 SLO 的关系）
@@ -3237,14 +3247,14 @@ ${F}
             id: "migration-doublewrite",
             title: "数据迁移与双写",
             minutes: 44,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / gh-ost / Canal",
             tags: ["迁移", "双写", "Online DDL"],
             terms: ["迁移", "双写", "数据", "一致性"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → 15.12 Online DDL](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl.html) · [gh-ost](https://github.com/github/gh-ost) · [pt-online-schema-change](https://docs.percona.com/percona-toolkit/pt-online-schema-change.html) · [Alibaba Canal](https://github.com/alibaba/canal)（binlog 异构迁移）
 
-## 一、原理与底层机制
+## 一、两类迁移与 Online DDL 原理
 
 先分清两类「迁移」，二者原理完全不同：
 
@@ -3257,7 +3267,7 @@ ${F}
 
 **影子表方案（gh-ost/pt-osc）**：建影子表（新结构）→ 分批拷贝存量 → 通过 binlog 捕获增量同步到影子表 → 原子 RENAME 切换 → 删除旧表。gh-ost 的核心优势是**可暂停、可限流、不使用触发器**（pt-osc 用触发器，对写放大明显）。
 
-## 二、规范与标准
+## 二、Online DDL 能力矩阵
 
 Online DDL 能力矩阵（官方 15.12）：
 
@@ -3275,9 +3285,11 @@ ALTER TABLE orders ADD INDEX idx_status (status),
   ALGORITHM=INPLACE, LOCK=NONE;
 ${F}
 
-## 三、实战
+## 三、动手实践：全量+增量+双写七阶段
 
 跨实例迁移：全量 + 增量 + 双写切换七阶段：
+
+![数据迁移七阶段（双写方案）](/assets/diagrams/docs/migration-phases.svg)
 
 ${F}text
 阶段① 全量迁移     : 快照导出导入（mysqldump / XtraBackup / DTS）
@@ -3291,7 +3303,7 @@ ${F}
 
 双写实现要点：先写旧库成功，再写新库（新库失败仅告警不影响主流程）；CDC 重放可能重复，目标端按主键 UPSERT 保证幂等；两库写不追求分布式事务，靠「以谁为准 + 对账修复」收敛。
 
-## 四、覆盖广度
+## 四、拓展：gh-ost / pt-osc 影子表
 
 COPY 类操作在亿级表上 = 数小时锁写，此时用 **gh-ost / pt-osc**（影子表方案）：
 
@@ -3309,7 +3321,7 @@ ${F}
 
 边界：迁移 Runbook 必须含回滚方案（新库异常 → 切回旧库，旧库在双写期数据完整）；灰度切读必须比对结果；切回旧库前确认旧库还能重新开放写入（演练过才算有回滚）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **直接 ALTER 亿级大表**：COPY 类 DDL 锁写数小时；先看 15.12 表格确认 ALGORITHM，再决定是否上 gh-ost。
 2. **双写期间旧库还能直连变更**：双写期「以旧为准」的窗口内，任何绕过双写入口的写入都会造成分叉。冻结期明确到表级。
@@ -3317,7 +3329,7 @@ ${F}
 4. **回滚方案只写在文档里没演练过**：切回旧库时旧库已只读数小时，能否秒级重新开放写入？演练过才算有回滚。
 5. **gh-ost 不限流直接跑**：大表变更在高峰期跑仍会推高主库负载，必须配 ${C}--max-load${C} / ${C}--critical-load${C} 限流与熔断。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 所有 DDL 明确 ALGORITHM 与 LOCK 策略
 - [ ] 大表结构变更有 gh-ost/pt-osc 操作记录（含限流参数）
@@ -3463,7 +3475,7 @@ ${F}
 4. **「校验行数一致就放心了」**。行数一致但字段值不一致（精度截断、字符集转换、时区偏移）极其常见，必须做到 L3 以上。
 5. **「一次迁移做完就删旧库」**。旧库是最后的回滚手段，保留期应由业务与合规共同确定，通常不少于一个完整账期。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 RM → 15.12 InnoDB Online DDL Operations（ALGORITHM 能力矩阵）
 - gh-ost README（设计理念与可暂停性）
@@ -3474,27 +3486,27 @@ ${F}
             id: "consistency-check",
             title: "数据一致性校验",
             minutes: 36,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / Percona Toolkit",
             tags: ["一致性", "对账", "校验"],
             terms: ["一致性", "校验", "对账", "数据"],
             body: `
 > **官方文档基线**：[Percona Toolkit → pt-table-checksum](https://docs.percona.com/percona-toolkit/pt-table-checksum.html) · [pt-table-sync](https://docs.percona.com/percona-toolkit/pt-table-sync.html) · [MySQL 8.0 RM → 19.5.1.30 Replication and Transaction Inconsistencies](https://dev.mysql.com/doc/refman/8.0/en/replication-features-transactions.html) · [Google SRE Book → Ch.26 Data Integrity](https://sre.google/sre-book/data-integrity/)
 
-## 一、原理与底层机制
+## 一、主从为何分叉与校验原理
 
 复制是「尽力而为」的传输：网络闪断、从库磁盘坏块、人为在从库改数据、版本差异的 SQL 行为不同——都可能导致主从数据悄悄分叉。**分叉不会自己告警**，只会某天以「用户余额对不上」的形式爆发。所以一致性校验是 DBA 的例行体检，不是事故后的补救。
 
 **pt-table-checksum 原理**：在**主库**上按表分块（chunk）计算 CRC32 校验和写入 ${C}percona.checksums${C} 表，校验动作本身通过复制传到从库**重放**，从库算出的值与主库不同即分叉。这样天然规避了「主库算完再单独连从库算」的时间窗不一致问题。
 
-## 二、规范与标准
+## 二、校验频率、分块与权威侧规范
 
 - **校验频率规范**：主从环境每周例行 pt-table-checksum；双写/迁移期间 T+0 与 T+1 双轨对账。
 - **chunk 规范**：${C}--chunk-size${C} 控制每块行数（自动调节），太大则单块锁/负载高，太小则 overhead 大。
 - **权威侧规范**：每类数据明确谁是 Source of Truth（资金类通常以银行流水为准，而非任一数据库）。
 - **Redis 一致性规范**：任何缓存 key 都必须设 TTL，否则成为一致性黑洞（无法自然收敛）。
 
-## 三、实战
+## 三、动手实践：pt-table-checksum 与业务对账
 
 ${F}bash
 pt-table-checksum \\
@@ -3526,7 +3538,7 @@ ${F}
 
 全量比对用 checksum 而非逐字段下载：${C}CRC32(CONCAT_WS('#', col1, col2, ...))${C} 分块聚合，网络开销小两个数量级。
 
-## 四、覆盖广度
+## 四、场景与工具对照
 
 | 场景 | 工具 | 说明 |
 |---|---|---|
@@ -3537,7 +3549,7 @@ ${F}
 
 边界：主从延迟大时跑 pt-table-checksum 误报剧增，先确认 ${C}Seconds_BehindSource ≈ 0${C}；pt-table-sync 会改主库数据，先 ${C}--print${C} 预览、备份目标表、选低峰执行；对账差异必须进工单/告警有 owner 有 SLA，否则对账白做。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **主从延迟大时跑 pt-table-checksum**：校验和依赖复制传输，延迟大时误报剧增。先确认 ${C}Seconds_BehindSource ≈ 0${C}。
 2. **pt-table-sync 直接 --execute**：它会改主库数据；先 ${C}--print${C} 预览、备份目标表、选低峰执行。
@@ -3545,7 +3557,7 @@ ${F}
 4. **以为 ROW 格式复制不会分叉**：ROW 只是消除不确定函数问题；磁盘坏块、人为改动、字符集差异仍会分叉。校验仍是必需。
 5. **只在出事后才校验**：分叉是慢性病，等用户举报时往往已影响大量数据，修复成本指数级上升。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] pt-table-checksum 每周例行，DIFFS 有告警
 - [ ] 双写/迁移有对账三件套（定时/实时/差异闭环）
@@ -3692,7 +3704,7 @@ ${F}
 4. **「对账跑一次全量就行」**。全量对账窗口长、成本高；实时增量对账才能把发现时间从「一天」压到「分钟」。
 5. **「忽略了时间边界」**。T+1 对账必须明确「哪一天的交易」的口径（按创建时间还是完成时间、是否含跨日退款），口径不一致会产生大量假差异。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Percona Toolkit → pt-table-checksum / pt-table-sync 全文档（含原理图）
 - Google SRE Book → Ch.26 Data Integrity（对账哲学：不仅比数据，还比「不变量」）
@@ -3703,14 +3715,14 @@ ${F}
             id: "db-observability",
             title: "数据库可观测性与监控告警",
             minutes: 28,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / Redis / Prometheus",
             tags: ["监控", "可观测性", "Prometheus", "告警"],
             terms: ["可观测性", "监控", "Prometheus", "告警"],
             body: `
 > **官方文档基线**：[MySQL 8.0 RM → 5.1.6 Server Status Variables](https://dev.mysql.com/doc/refman/8.0/en/server-status-variables.html) · [Prometheus Docs](https://prometheus.io/docs/introduction/overview/) · [mysqld_exporter](https://github.com/prometheus/mysqld_exporter) · [redis_exporter](https://github.com/oliver006/redis_exporter) · [Google SRE Book → Ch.4 SLO](https://sre.google/sre-book/service-level-objectives/)
 
-## 一、原理与底层机制
+## 一、可观测性三支柱
 
 可观测性的三大支柱是 **Metrics（指标）/ Logs（日志）/ Traces（链路）**。数据库层面：
 
@@ -3720,7 +3732,7 @@ ${F}
 
 与「性能排障」篇的 USE 方法呼应：监控指标应覆盖每一类资源的 Utilization / Saturation / Errors，才能把「哪里不对」变成可量化信号。
 
-## 二、规范与标准
+## 二、指标采集规范与 RED 方法
 
 **指标采集规范**：用 mysqld_exporter / redis_exporter 暴露 Prometheus 指标，Grafana 做面板。关键指标分四类：
 
@@ -3733,7 +3745,7 @@ ${F}
 
 **RED 方法**（Requests / Errors / Duration）适用于数据库服务的 SLI 设计；告警用「多窗口多燃烧率」（见 SLO 篇），避免告警疲劳。
 
-## 三、实战
+## 三、动手实践：mysqld_exporter 与关键查询
 
 mysqld_exporter 部署与关键查询：
 
@@ -3760,7 +3772,7 @@ ${F}
 
 Redis 侧用 redis_exporter 采集命中率（${C}redis_keyspace_hits/(hits+misses)${C}）、内存使用率、连接数、fork 耗时（${C}latest_fork_usec${C}）。
 
-## 四、覆盖广度
+## 四、告警分级
 
 **告警分级**：
 
@@ -3772,7 +3784,7 @@ Redis 侧用 redis_exporter 采集命中率（${C}redis_keyspace_hits/(hits+miss
 
 边界：监控要覆盖「隐性故障」——长事务（${C}innodb_trx TIME > 60${C}）、MDL 锁等待（${C}metadata_locks${C}）、复制 IO/SQL 线程断；日志需要集中收集（ELK/Loki）并带 traceId；告警必须有人认领、有升级路径，否则告警噪声化。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **只监控 CPU/磁盘，不监控数据库特有指标**：连接数打满、Buffer Pool 命中率掉、主从延迟飙升，这些才是数据库特有的「猝死前兆」。
 2. **告警阈值一拍脑袋**：固定绝对值在非业务高峰也狂叫，导致告警疲劳。应结合基线 + 燃烧率。
@@ -3780,7 +3792,7 @@ Redis 侧用 redis_exporter 采集命中率（${C}redis_keyspace_hits/(hits+miss
 4. **只监控主库不监控从库**：从库延迟、从库复制中断往往悄悄发生，切读/切灾备时才发现从库早已不可用。
 5. **日志不采集慢查询**：慢查询日志是优化的第一现场，不进集中日志就永远在「事后才想起来」。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] mysqld_exporter/redis_exporter 已接入 Prometheus
 - [ ] Buffer Pool 命中率 / 主从延迟 / 连接数 / 慢查询有告警
@@ -3959,7 +3971,7 @@ ${F}
 4. **「监控只覆盖 DB 自身」**。连接池等待、应用侧 SQL 耗时、网络 RTT 都在链路上，缺一环就无法区分「DB 慢」与「网络/应用慢」。
 5. **「日志只留不查」**。错误日志与慢日志必须被采集到集中日志系统并建立查询入口，否则出事时只能上机器 grep，慢一个数量级。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Prometheus Docs → Overview / Exporters（指标采集体系）
 - mysqld_exporter / redis_exporter README（暴露的指标清单）

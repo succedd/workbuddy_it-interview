@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="640" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">TCP 三次握手与四次挥手</text>
+<text x="40" y="64" font-size="15" fill="#64748b">双方各自确认「我能发、你能收」，再各自关闭自己的发送方向</text>
+<rect x="150.0" y="92.0" width="190.0" height="46.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="245.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">客户端</text>
+<rect x="560.0" y="92.0" width="190.0" height="46.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="655.0" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">服务端</text>
+<line x1="245.0" y1="138.0" x2="245.0" y2="572.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="655.0" y1="138.0" x2="655.0" y2="572.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="40.0" y1="158.0" x2="860.0" y2="158.0" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 5"/>
+<rect x="412.0" y="147.0" width="76.0" height="22" rx="11" fill="#f8fafc"/>
+<text x="450.0" y="163.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="700">建立连接</text>
+<line x1="249.0" y1="198.0" x2="651.0" y2="198.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="190.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">SYN  seq=x</text>
+<line x1="651.0" y1="240.0" x2="249.0" y2="240.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="232.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">SYN+ACK  seq=y, ack=x+1</text>
+<line x1="249.0" y1="282.0" x2="651.0" y2="282.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="274.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">ACK  ack=y+1</text>
+<line x1="40.0" y1="314.0" x2="860.0" y2="314.0" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 5"/>
+<rect x="357.5" y="303.0" width="184.9" height="22" rx="11" fill="#f8fafc"/>
+<text x="450.0" y="319.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="700">传输数据（ESTABLISHED）</text>
+<line x1="249.0" y1="354.0" x2="651.0" y2="354.0" stroke="#2563eb" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#a)"/>
+<text x="450.0" y="346.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">数据 / ACK 往返</text>
+<line x1="40.0" y1="386.0" x2="860.0" y2="386.0" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 5"/>
+<rect x="412.0" y="375.0" width="76.0" height="22" rx="11" fill="#f8fafc"/>
+<text x="450.0" y="391.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="700">关闭连接</text>
+<line x1="249.0" y1="426.0" x2="651.0" y2="426.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="418.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">FIN  客户端不再发送</text>
+<line x1="651.0" y1="468.0" x2="249.0" y2="468.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="460.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">ACK</text>
+<line x1="651.0" y1="510.0" x2="249.0" y2="510.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="502.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">FIN  服务端也发完了</text>
+<line x1="249.0" y1="552.0" x2="651.0" y2="552.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="544.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">ACK  然后等待 2MSL（TIME_WAIT）</text>
+<text x="40.0" y="606.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">第三次握手防止「失效的旧 SYN」建立连接；主动关闭方进入 TIME_WAIT，确保最后一个 ACK 丢了还能重发，并让旧报文在网络中消失。</text>
+</svg>

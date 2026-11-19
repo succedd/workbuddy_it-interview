@@ -1757,7 +1757,9 @@ body.pan-fs-lock { overflow: hidden; }
 }
 
 /* 深色模式图解：SVG 是白底，反相+色相旋转让它在深色页面不刺眼；alt 仍保留原文 */
-[data-theme="dark"] .md img[src*="/assets/diagrams/"] {
+.doc-body img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); margin: 8px 0; }
+[data-theme="dark"] .md img[src*="/assets/diagrams/"],
+[data-theme="dark"] .doc-body img[src*="/assets/diagrams/"] {
   filter: invert(.9) hue-rotate(180deg) saturate(.85) contrast(.95);
   border: 1px solid var(--border);
   border-radius: 8px;

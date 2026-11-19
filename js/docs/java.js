@@ -33,16 +33,18 @@
             id: "syntax-collection",
             title: "Java 语法核心与集合框架",
             minutes: 18,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "JDK 8 / 11 / 17 / 21",
             tags: ["Java", "集合", "JLS"],
             terms: ["Java", "集合", "HashMap", "equals", "JLS"],
             body: `
 > **官方文档基线**：[Oracle Java Tutorials · Collections](https://docs.oracle.com/javase/tutorial/collections/) · [Java SE 21 API · java.util](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/package-summary.html) · [JLS §10 Arrays](https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html) · [JLS §11 Exceptions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html)
 
-## 一、原理与底层机制
+## 一、集合框架三条主线：接口·实现·算法
 
 Java 集合框架（Java Collections Framework，JCF）的设计哲学在官方 Tutorials 里被拆成三条主线：**接口（interfaces）、实现（implementations）、算法（algorithms）**。接口定义行为契约（如 ${C}List${C}/${C}Set${C}/${C}Map${C}），实现提供具体数据结构（如 ${C}ArrayList${C}/${C}HashSet${C}/${C}HashMap${C}），算法以「对接口编程」的静态方法形式存在（${C}Collections.sort${C}、${C}Collections.binarySearch${C}）。这套分层的价值是：写业务代码只依赖接口，换实现零成本——这是面试里「为什么用 ${C}List${C} 接收 ${C}ArrayList${C}」的根。
+
+![Java 集合框架主干](/assets/diagrams/docs/collections.svg)
 
 ${C}equals${C}/${C}hashCode${C} 是后面所有坑的总根，必须从 JVM 与 JLS 两个视角理解。JLS §4.3.1 规定对象同一性由 ${C}==${C} 表达，而逻辑相等由 ${C}equals${C} 约定；${C}Object${C} 的 API 文档给 ${C}hashCode${C} 定了三条契约（背下来，面试和排查都靠它）：
 
@@ -54,7 +56,7 @@ ${C}equals${C}/${C}hashCode${C} 是后面所有坑的总根，必须从 JVM 与 
 
 HashMap 的哈希不是直接拿 key 的 hash 当下标，而是经过一次**扰动函数**（JDK 8 是 ${C}(h = key.hashCode()) ^ (h >>> 16)${C}，把高位也掺入低位）再与表长取模。为什么要扰动？因为下标只用到 hash 的低几位，如果 key 的 hash 高位变化大、低位雷同，就会全挤进少数桶。扰动让高位参与运算，分布更均匀。冲突解决官方选的是「数组 + 链表 + 红黑树」的拉链法变体（而非开放寻址），因为拉链法在删除、扩容时更简单，且链表转红黑树后能兜住极端哈希攻击。
 
-## 二、规范与标准
+## 二、契约优先：通用约定
 
 JLS 与 API 文档对集合的规范是「契约优先」：
 
@@ -63,7 +65,7 @@ JLS 与 API 文档对集合的规范是「契约优先」：
 - 不可变集合规范：${C}List.of${C}/${C}Set.of${C}/${C}Map.of${C}（Java 9+）返回**真·不可变**集合，任何写操作抛 ${C}UnsupportedOperationException${C}；且它们的 ${C}equals${C}/${C}hashCode${C} 严格按元素/键值对定义，可安全作为 Map 的 key。对比 ${C}Collections.unmodifiableList${C} 只是「视图不可改」，底层集合仍可被原引用改动——这是两者最常踩的坑。
 - 排序接口 ${C}Comparable${C}/${C}Comparator${C} 的约定：${C}compareTo${C} 必须与 ${C}equals${C} 一致（${C}sgn(compareTo(y))==-sgn(compareTo(x))${C} 等三定律），否则放进 ${C}TreeSet${C}/${C}TreeMap${C} 会出现「逻辑相等却被当不同元素」。
 
-## 三、实战
+## 三、动手实践：equals/hashCode 契约
 
 **正确实现契约**（只比业务主键，且 ${C}equals${C}/${C}hashCode${C} 字段完全一致）：
 
@@ -97,7 +99,7 @@ Map<String, List<Order>> byUser = orders.stream()
     .collect(Collectors.groupingBy(Order::getUserId));
 ${F}
 
-## 四、覆盖广度
+## 四、集合选型决策表
 
 **选型决策表（官方 Implementations 页的决策版）**：
 
@@ -113,7 +115,7 @@ ${F}
 
 **边界与进阶**：① 并发容器还有 ${C}CopyOnWriteArrayList${C}（读多写少、遍历期间允许写）、${C}ConcurrentSkipListMap${C}（并发有序）；② 海量原始类型用 Eclipse Collections / fastutil 的 primitive 集合，避免 ${C}Integer${C} 装箱的对象头开销（每个对象 12–16 字节头 + 4 字节值 + 对齐，比原生 int 数组胖一个数量级）；③ ${C}EnumMap${C}/${C}EnumSet${C} 用位数组/数组实现，极省内存且极快；④ ${C}BitSet${C} 做布尔标记比 ${C}boolean[]${C} 省 8 倍内存；⑤ ${C}LinkedHashMap${C} 重写 ${C}removeEldestEntry${C} 即可做 LRU 缓存；⑥ ${C}Collections${C} 工具类的 ${C}unmodifiable${C}/${C}synchronized${C}/${C}checked${C} 包装各有边界，包装后的同步集合迭代仍需手动加锁。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **重写 ${C}equals${C} 不重写 ${C}hashCode${C}**：违反契约 2，HashSet/HashMap 行为未定义，是最经典的「偶发 bug」。
 2. **用可变字段参与 ${C}hashCode${C}**：对象进集合后改字段，再 ${C}get${C} 找不到——桶位算错。
@@ -124,7 +126,7 @@ ${F}
 7. **把 ${C}Collections.unmodifiableList${C} 当不可变**：底层集合仍可被原引用改动，防御性拷贝要 ${C}new ArrayList<>(src)${C}。
 8. **parallel stream 里改外部状态**：非线程安全的 collector 直接数据错乱。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能默写 ${C}hashCode${C} 三条契约，并解释违反契约 2 的后果与对象头 identity hash code 的关系
 - [ ] 能画出 HashMap 结构，说清扰动函数、树化条件（8 / 64）与负载因子 0.75 的出处
@@ -132,7 +134,7 @@ ${F}
 - [ ] 能一眼判断业务场景该用哪种 Map/List/Set，并说清 ${C}List.of${C} 与 ${C}Arrays.asList${C} 的区别
 - [ ] 重写 ${C}equals${C}/${C}hashCode${C} 时字段集合一致，且用不可变字段
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Java Tutorials · Collections trail（Interfaces / Implementations / Algorithms 三章）
 - ${C}java.util${C} 包 API 文档首页：各接口的「通用约定」都写在这里
@@ -144,16 +146,18 @@ ${F}
             id: "exception-log",
             title: "异常与日志规范",
             minutes: 16,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "JDK 8+ / SLF4J 2.x / Logback 1.4+",
             tags: ["Java", "异常", "日志"],
             terms: ["Java", "异常", "SLF4J", "Logback", "MDC"],
             body: `
 > **官方文档基线**：[Java Tutorials · Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/) · [JLS §11 Exceptions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html) · [SLF4J Manual](https://www.slf4j.org/manual.html) · [Logback Manual](https://logback.qos.ch/manual/)
 
-## 一、原理与底层机制
+## 一、异常是一条控制流通道
 
 异常和日志是同一件事的两面：**异常决定程序怎么失败，日志决定人怎么理解失败**。线上排障 80% 的时间花在后者。JLS §11 把异常定义为「对方法正常返回路径的中断」——它是一条与返回值并列的控制流通道，由 JVM 的异常表（exception table）在字节码层实现：每个 ${C}try${C} 块在 class 文件里对应一张「范围 + 目标 handler + 捕获类型」的表，抛出时 JVM 线性匹配，匹配不到就沿调用栈向上展开（stack unwinding），每展开一层就执行相应的 ${C}finally${C}。理解这点就能明白：异常远不止 ${C}if/else${C}，它要填栈、要展开、要构造 ${C}StackTraceElement[]${C} 数组——这就是「异常贵」的硬件真相。
+
+![Java 异常体系](/assets/diagrams/docs/exception-tree.svg)
 
 ${C}Throwable${C} 的继承树是分层设计：
 
@@ -167,7 +171,7 @@ ${F}
 
 ${C}Error${C} 代表 JVM 自身出问题（如 ${C}OutOfMemoryError${C}），按规范**不应也不该**捕获；${C}RuntimeException${C} 代表程序缺陷（NPE、数组越界），属于 unchecked；其余 ${C}Exception${C} 是 checked，编译器强制你处理或声明。三者分工：Error 是「环境崩了」，RuntimeException 是「你代码写错」，checked 是「外部环境不可控但可恢复」。
 
-## 二、规范与标准
+## 二、checked 与 unchecked 的设计意图
 
 checked 异常的设计意图是「**可恢复的、调用方必须面对的**」失败（Tutorials 原话：*recoverable conditions*）。JLS 规定 checked 异常必须被 ${C}catch${C} 或 ${C}throws${C} 声明，unchecked 则不强制。工程共识与规范之间的关系：
 
@@ -177,7 +181,7 @@ checked 异常的设计意图是「**可恢复的、调用方必须面对的**�
 
 SLF4J 与 Logback 的规范：SLF4J 是门面（facade），Logback 是实现，两者通过 ${C}StaticLoggerBinder${C} 桥接；日志级别（TRACE < DEBUG < INFO < WARN < ERROR）语义由 Logback 官方定义，不是约定俗成。
 
-## 三、实战
+## 三、动手实践：try-with-resources 与异常链
 
 **try-with-resources：资源关闭的唯一正解**（JDK 7+，实现 ${C}AutoCloseable${C}，异常不会被吞）：
 
@@ -205,7 +209,7 @@ finally { MDC.clear(); }              // 线程池复用，必须清理
 log.error("handle order failed, id={}", orderId, e);   // ✅ 异常对象作最后参数，完整堆栈
 ${F}
 
-## 四、覆盖广度
+## 四、日志级别决策表
 
 **级别语义决策表（Logback 官方定义）**：
 
@@ -218,7 +222,7 @@ ${F}
 
 **边界与进阶**：① MDC 必须「有 put 必有 clear」，否则线程池复用会把上一个请求的 traceId 带到下一个请求；② 异常日志的唯一正确姿势是把异常对象作为最后一个参数，而不是拼 ${C}e.getMessage()${C}；③ 异步 Appender（${C}AsyncAppender${C}）能把日志 IO 从请求线程摘出去，但队列满时可能丢日志，要配 ${C}discardingThreshold${C}；④ 结构化日志（JSON + ${C}logstash-logback-encoder${C}）比文本更利于 ES 检索；⑤ 集中式采集（ELK / Loki）要做采样，全量在高 QPS 下会打爆带宽。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **catch 后什么都不做**（空 catch / ${C}catch (Exception ignored)${C}）：bug 消失术，排障时连自己都骗。
 2. **${C}catch (Exception e)${C} 兜一切**：连 ${C}InterruptedException${C} 都吞——正确做法是恢复中断标志 ${C}Thread.currentThread().interrupt()${C}。
@@ -228,7 +232,7 @@ ${F}
 6. **异常用于业务分支**（如用 ${C}NumberFormatException${C} 判断是否数字）：性能差且语义混乱，该用正则或解析 API。
 7. **finally 里再抛异常覆盖主异常**：用 try-with-resources 替代。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 所有资源都是 try-with-resources，全库 0 个手写 finally-close
 - [ ] 包装异常必带 cause，抽查 10 条历史异常日志能看到根因
@@ -237,7 +241,7 @@ ${F}
 - [ ] 代码里 grep 不到 ${C}printStackTrace${C} 和 ${C}System.out.println${C}
 - [ ] catch ${C}InterruptedException${C} 的地方都恢复了中断标志
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Java Tutorials · Exceptions trail（What's an Exception / How to Throw / try-with-resources）
 - JLS §11：编译器对异常传播的精确规定
@@ -249,20 +253,22 @@ ${F}
             id: "build-tool",
             title: "Maven / Gradle 与项目结构",
             minutes: 15,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Maven 3.9+ / Gradle 8+",
             tags: ["Maven", "Gradle", "工程化"],
             terms: ["Maven", "Gradle", "BOM", "依赖管理"],
             body: `
 > **官方文档基线**：[Maven · Introduction to the POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html) · [Maven · Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html) · [Maven · Build Lifecycle](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html) · [Gradle User Manual](https://docs.gradle.org/current/userguide/userguide.html)
 
-## 一、原理与底层机制
+## 一、依赖管理：Maven 与 Gradle 的模型
 
 构建工具问题的本质是**依赖管理**：版本从哪来、冲突怎么裁决、传递依赖怎么控制。Maven 与 Gradle 只是用不同模型回答这三个问题。Maven 的模型是「**声明式 POM + 三段生命周期**」：你描述「要什么」，Maven 按固定流水线把「编译→测试→打包」串起来；Gradle 的模型是「**task 依赖图（DAG）+ 编程能力**」：构建脚本本身是 Groovy/Kotlin 程序，task 之间显式声明依赖，Gradle 据此做增量构建与 build cache。理解这个根本差异，就能解释为什么 Maven 配置简单但扩展死板，Gradle 灵活但学习曲线陡。
 
+![Maven default 生命周期（常用阶段）](/assets/diagrams/docs/maven-lifecycle.svg)
+
 Maven 坐标 ${C}groupId:artifactId:version${C} 是仓库世界的唯一地址。版本解析不是「取最新」，而是按依赖树位置裁决（见第二节）。Gradle 的 configuration 则把「编译 classpath」「运行 classpath」建模成可组合的容器，比 Maven 的 scope 粒度的概念更灵活。
 
-## 二、规范与标准
+## 二、依赖范围（scope）语义
 
 **Maven 依赖范围（scope）的官方语义**（编译期/运行期/传递三维度）：
 
@@ -278,7 +284,7 @@ Maven 坐标 ${C}groupId:artifactId:version${C} 是仓库世界的唯一地址�
 
 **生命周期**：Maven 有三套互不交叉的生命周期（clean / default / site），default 里最常用的是 ${C}validate → compile → test → package → verify → install → deploy${C}；阶段**有序且连带**，执行 ${C}mvn verify${C} 会先跑完前面所有阶段，插件 goal 通过 phase 绑定进生命周期。
 
-## 三、实战
+## 三、动手实践：BOM 统一版本
 
 **版本统一的三件套（错误 vs 正确）**：
 
@@ -307,7 +313,7 @@ gradle wrapper --gradle-version 8.10     # 生成 gradlew + gradle-wrapper.prope
 mvn -N io.takari:maven:wrapper           # Maven 对应 mvnw
 ${F}
 
-## 四、覆盖广度
+## 四、多模块项目布局
 
 **多模块布局（官方推荐）**：
 
@@ -322,7 +328,7 @@ ${F}
 
 原则：**依赖只能自上而下、禁止成环**；入口模块独立出来，打包产物与业务模块解耦。边界与进阶：① Gradle 的 ${C}platform()${C} / ${C}enforcedPlatform()${C} 对应 Maven 的 BOM 与强制版本；② ${C}dependency constraints${C} 可在不引入依赖的前提下钉死版本；③ 发布用 ${C}mvn deploy${C} 到 Nexus/Artifactory，禁止把 jar 手动拷进 ${C}lib/${C}（脱离依赖管理，安全扫描失效）；④ Gradle 的 configuration cache 能把配置阶段也缓存，二次构建秒级；⑤ 构建性能瓶颈多在测试与注解处理器，可用 ${C}build scan${C} 可视化分析。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **SNAPSHOT 上生产**：SNAPSHOT 每次解析都可能变，构建不可重现；发布一律用 release 版。
 2. **冲突解决靠本地试**：不跑 ${C}dependency:tree${C} 直接改版本，改完 A 冲突挪到 B。
@@ -332,7 +338,7 @@ ${F}
 6. **不看 Wrapper 版本**：本机 3.9、CI 3.6，行为差异排查半天。
 7. **用 ${C}compile${C} 装 JDBC 驱动**：应为 ${C}runtime${C}，否则编译期耦合具体驱动。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 说得清 nearest wins 与「先声明者胜」两条仲裁规则
 - [ ] 第三方全家桶一律通过 BOM/平台导入，项目中无散落硬编码版本
@@ -418,7 +424,7 @@ ${F}
 - 固定 JDK 版本（${C}maven.compiler.release${C} / Gradle toolchain），否则「本机 JDK17 编译、线上 JDK11 跑」；
 - 关闭时间戳导致的不可复现：${C}<project.build.outputTimestamp>${C}，让同一份源码产出字节一致的 jar。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Maven: Introduction to the POM / Dependency Mechanism / Build Lifecycle
 - Gradle User Manual: Dependency Management / Authoring Tasks / The Build Environment
@@ -429,18 +435,18 @@ ${F}
             id: "mysql-basic",
             title: "MySQL 基础与 SQL 编写",
             minutes: 17,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "MySQL 8.0 / 8.4 LTS",
             tags: ["MySQL", "SQL", "InnoDB"],
             terms: ["MySQL", "InnoDB", "SQL", "事务"],
             body: `
 > **官方文档基线**：[MySQL 8.0 · Data Types](https://dev.mysql.com/doc/refman/8.0/en/data-types.html) · [MySQL 8.0 · SQL Syntax](https://dev.mysql.com/doc/refman/8.0/en/sql-statements.html) · [MySQL 8.0 · InnoDB](https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html) · [MySQL 8.0 · Transaction Isolation](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html)
 
-## 一、原理与底层机制
+## 一、InnoDB 行存与聚簇索引
 
 新手与老手写 SQL 的差距不在「会多少语法」，而在**类型、NULL 语义、JOIN 语义**这三个基本功上。MySQL 是行存 + 聚簇索引（InnoDB）的架构：一行数据按主键物理有序存放，二级索引叶子存「索引列 + 主键」。理解「主键即数据、二级索引要回表」是理解一切索引优化的前提。事务靠 InnoDB 的 redo log（持久性）、undo log（回滚与 MVCC）、buffer pool（内存缓存）三者协作实现 ACID；隔离级别靠 MVCC 读视图 + 间隙锁实现。写 SQL 时脑子里的模型应该是「这行数据在哪个页、要走哪个索引、会不会回表、会不会加锁」。
 
-## 二、规范与标准
+## 二、字段类型选择
 
 **类型选择（Ch.11 的决策版）**：
 
@@ -456,7 +462,7 @@ ${F}
 
 **NULL 语义**是三值逻辑（TRUE / FALSE / UNKNOWN）：${C}NULL = NULL${C} 结果是 UNKNOWN 而非 TRUE，判空只能用 ${C}IS NULL${C}；${C}NOT IN${C} 子查询里出现 NULL 时整个条件恒为 UNKNOWN——这是「为什么 NOT IN 查不出数据」的官方答案。
 
-## 三、实战
+## 三、动手实践：JOIN 语义
 
 **JOIN 语义（错误 vs 正确）**：LEFT JOIN 时过滤右表的条件必须写进 ON，写进 WHERE 会把 LEFT 退化成 INNER：
 
@@ -488,7 +494,7 @@ GROUP BY DATE(create_time)
 ORDER BY d;
 ${F}
 
-## 四、覆盖广度
+## 四、事务与隔离级别
 
 **事务与隔离级别（Ch.15 InnoDB + 官方隔离表）**：InnoDB 默认 **REPEATABLE READ**（多数数据库默认 READ COMMITTED，别记混）。
 
@@ -501,7 +507,7 @@ ${F}
 
 **写好查询的硬规范**：① 不写 ${C}SELECT *${C}（破坏覆盖索引、浪费传输）；② 索引列不做函数/运算，${C}WHERE DATE(create_time)=...${C} 让索引失效；③ 分页用游标；④ ${C}COUNT(*)${C} 与 ${C}COUNT(col)${C} 语义不同（前者数行含 NULL，后者数非 NULL）；⑤ 批量插入合并 ${C}INSERT ... VALUES (...),(...)${C}；⑥ 隐式类型转换是坑，${C}WHERE phone = 13800001111${C} 对 VARCHAR 列放弃索引。事务三纪律：**短**（不裹远程调用）、**小**（影响行数可控）、**明确**（显式 ${C}BEGIN${C}/${C}COMMIT${C}）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **用 float/double 存金额**：舍入误差在累加时爆发。
 2. **WHERE 里对索引列套函数**：索引直接失效。
@@ -511,7 +517,7 @@ ${F}
 6. **在生产直接跑无 LIMIT 的 UPDATE/DELETE**：先 ${C}SELECT${C} 确认影响面，再改写为 DML。
 7. **以为 ${C}COUNT(*)${C} 慢而用 ${C}COUNT(1)${C}**：现代 InnoDB 两者基本等价，差异在语义不在性能。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 金额一律 DECIMAL，时间字段统一时区口径
 - [ ] 能口头解释 NULL 的三值逻辑与 NOT IN 遇 NULL 的行为
@@ -598,7 +604,7 @@ ${F}
 - **一律 ${C}utf8mb4${C}**：MySQL 的 ${C}utf8${C} 是**残缺的三字节 UTF-8**，存不了 emoji 与部分生僻字。同时注意连接层（${C}character_set_client/connection/results${C}）与列字符集三者要一致，否则出现「中文变问号」或「索引失效」（不同字符集的列做 JOIN 无法走索引）。
 - **时间字段**：${C}DATETIME${C} 不存时区（字面值），${C}TIMESTAMP${C} 存 UTC 并按 ${C}time_zone${C} 转换且受 2038 限制。跨时区系统**统一用 DATETIME + 应用层存 UTC** 或统一用 TIMESTAMP 并在连接初始化时 ${C}SET time_zone='+00:00'${C}——最怕的是两者混用。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - MySQL 8.0 Reference Manual：Ch.3 Tutorial / Ch.11 Data Types / Ch.13 SQL Syntax / Ch.15 InnoDB
 - 官方「Transaction Isolation Levels」表：并发异常与隔离级别的权威对照
@@ -609,14 +615,14 @@ ${F}
             id: "springboot-first",
             title: "Spring Boot 第一个服务",
             minutes: 16,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Spring Boot 3.2+ / JDK 17+",
             tags: ["Spring Boot", "REST", "配置"],
             terms: ["Spring Boot", "Actuator", "starter", "配置"],
             body: `
 > **官方文档基线**：[Spring Boot Reference](https://docs.spring.io/spring-boot/docs/current/reference/html/) · [Spring Initializr](https://start.spring.io/) · [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) · [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457.html)
 
-## 一、原理与底层机制
+## 一、自动配置、starter 与内嵌服务器
 
 Spring Boot 解决的是「装配」问题：自动配置（auto-configuration）+ starter 起步依赖 + 内嵌服务器，把「搭一个能上生产的 Web 服务」从半天缩短到五分钟。它不是新框架，是 Spring 的**观点化默认值（opinionated defaults）**。
 
@@ -624,7 +630,7 @@ ${C}@SpringBootApplication${C} 是三合一注解（官方 Javadoc 明确列出�
 
 **自动配置原理**：启动时加载各 starter 里的 ${C}AutoConfiguration.imports${C} 清单（Spring Boot 2.7+ 的 SPI 机制，取代旧 spring.factories），按 ${C}@ConditionalOnClass${C}/${C}@ConditionalOnMissingBean${C} 等条件注解判断哪些配置生效。加了 starter-web 就有 MVC + Tomcat，加了 starter-data-jpa 就有 DataSource + EntityManager——**依赖即配置**。理解这点就能解释「引了某 starter 行为就变了」，以及为什么自定义 Bean 能覆盖自动配置（条件注解的优先级规则：用户 Bean 优先）。
 
-## 二、规范与标准
+## 二、配置优先级
 
 **配置优先级（Externalized Configuration 章节，官方列出 17 级，工程记前六级就够了，从高到低）**：
 
@@ -645,7 +651,7 @@ public record OrderProps(
     @Min(1) int maxRetry) {}
 ${F}
 
-## 三、实战
+## 三、动手实践：标准 REST 服务
 
 **标准 REST 服务（错误 vs 正确）**：
 
@@ -672,7 +678,7 @@ ${F}
 
 **错误响应**：Spring Boot 3 对 ${C}/error${C} 默认输出 **ProblemDetail**（RFC 7807/9457 结构），统一错误体不用自己发明，前端按 ${C}type/title/status/detail${C} 消费即可。
 
-## 四、覆盖广度
+## 四、Actuator 生产可观测
 
 **Actuator：生产可观测的官方答案**：
 
@@ -698,7 +704,7 @@ ${F}
 
 **边界与进阶**：① starter 的本质是「依赖描述 + 自动配置」的捆绑，自研中间件应提供自己的 starter；② ${C}@ConditionalOnMissingBean${C} 保证用户自定义 Bean 优先；③ 配置加密（如 jasypt）与配置中心（Nacos/Apollo）对接 Externalized Configuration 的相应优先级；④ 生产禁用 ${C}include: "*"${C}，否则 heapdump/env 裸奔公网等于泄露源码级信息；⑤ 出问题时用 ${C}/actuator/conditions${C}（或启动 ${C}--debug${C}）看哪些自动配置生效/未生效及原因，而不是猜。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **启动类放子包**：默认扫描不到同包外的 Bean，出现「明明有 Bean 却注入失败」。
 2. **业务逻辑写在 Controller**：Controller 只做参数转换与编排，业务进 Service 层。
@@ -708,7 +714,7 @@ ${F}
 6. **忽略优雅停机**：官方一行配置，滚动发布不掉正在处理的请求。
 7. **以为自动配置是黑箱**：不会用 ${C}/actuator/conditions${C} 或 ${C}--debug${C} 排查「为什么某个 starter 没生效」。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 启动类在根包，构造器注入，无字段注入
 - [ ] 环境差异全部外置：profile + 环境变量，代码里 grep 不到硬编码地址
@@ -826,7 +832,7 @@ ${F}
 
 **健康检查的正确做法**：用 actuator 的 ${C}/actuator/health/liveness${C} 与 ${C}/actuator/health/readiness${C}（K8s 探针分别对应），而不要用「首页能打开」当健康检查——首页 200 而数据库断了，探针会误判为健康，流量打进来全报错。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Spring Boot Reference：Getting Started → Using Spring Boot → Externalized Configuration → Production-ready Features
 - Spring Initializr（start.spring.io）：官方脚手架
@@ -1032,7 +1038,7 @@ ${F}
             id: "jvm-gc",
             title: "JVM 内存模型与 GC 调优",
             minutes: 20,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "HotSpot / JDK 17+（G1 默认）/ JDK 21（ZGC 分代）",
             tags: ["JVM", "GC", "G1", "ZGC"],
             terms: ["JVM", "GC", "G1", "ZGC", "调优"],
@@ -1046,6 +1052,8 @@ ${F}
 JVM 题在面试里最容易背成「名词解释」，正确的打开方式是：**先看官方怎么划内存，再看官方推荐怎么调，最后用线上数据验证**。
 
 ## 一、运行时数据区（JVMS §2.5 原文结构）
+
+![JVM 运行时数据区](/assets/diagrams/docs/jvm-runtime.svg)
 
 ${F}
 线程私有：
@@ -1209,7 +1217,7 @@ ${F}
             id: "concurrency",
             title: "并发编程与线程池",
             minutes: 20,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "JDK 17+（虚拟线程 JDK 21）",
             tags: ["并发", "JMM", "线程池", "虚拟线程"],
             terms: ["并发", "JMM", "ThreadPoolExecutor", "虚拟线程"],
@@ -1239,6 +1247,8 @@ ${F}
 **final 的特殊保证**：构造函数里写的 final 字段，无需同步就能被其他线程安全看到（JLS §17.5）——不可变对象是并发设计的银弹。
 
 ## 二、ThreadPoolExecutor：七个参数与执行顺序（官方 Javadoc 顺序）
+
+![ThreadPoolExecutor 提交任务的判断顺序](/assets/diagrams/docs/thread-pool.svg)
 
 ${F}java
 new ThreadPoolExecutor(
@@ -1436,7 +1446,7 @@ ${F}
             id: "spring-principle",
             title: "Spring 原理（IoC/AOP/事务）",
             minutes: 19,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Spring Framework 6.x",
             tags: ["Spring", "IoC", "AOP", "事务"],
             terms: ["Spring", "IoC", "AOP", "事务传播"],
@@ -1452,6 +1462,8 @@ ${F}
 Spring 面试题的区分点在**「背注解」和「读得懂官方文档章节」之间**——下面按官方目录顺序讲清楚四个机制。
 
 ## 一、IoC 容器：Bean 生命周期（官方「Bean Overview / Lifecycle」链路）
+
+![Spring Bean 生命周期](/assets/diagrams/docs/bean-lifecycle.svg)
 
 ${F}
 实例化 Instantiation

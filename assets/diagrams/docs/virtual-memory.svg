@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 286" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="286" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">虚拟内存：每个进程都以为自己独占内存</text>
+<text x="40" y="64" font-size="15" fill="#64748b">CPU 发出虚拟地址，MMU 查页表换成物理地址</text>
+<rect x="40.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="121.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">进程 A 虚拟地址</text>
+<text x="121.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">0x7f..1000（只在本</text>
+<text x="121.5" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">进程有意义）</text>
+<rect x="259.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="340.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">TLB</text>
+<text x="340.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">页表缓存，命中直接得</text>
+<text x="340.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">到物理页号，约 1</text>
+<text x="340.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">个时钟周期</text>
+<line x1="206.0" y1="145.0" x2="256.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="231.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">查</text>
+<rect x="478.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="559.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">页表（多级）</text>
+<text x="559.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">TLB 未命中时由 MMU</text>
+<text x="559.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">逐级查表（x86-64 为</text>
+<text x="559.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">4/5 级）</text>
+<line x1="425.0" y1="145.0" x2="475.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">未命中</text>
+<rect x="697.0" y="92.0" width="163.0" height="106.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="778.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">物理内存页</text>
+<text x="778.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">4KB</text>
+<text x="778.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">一页；未分配或被换出</text>
+<text x="778.5" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">则触发缺页中断</text>
+<line x1="644.0" y1="145.0" x2="694.0" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="669.0" y="137.0" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="400">得到</text>
+<text x="40.0" y="232.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">缺页分两种：minor（页在内存里，只是没建映射，很快）和</text>
+<text x="40.0" y="252.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">major（要从磁盘读，很慢）。两个进程的同一虚拟地址可以映射到不同物理页，这就是隔离。</text>
+</svg>

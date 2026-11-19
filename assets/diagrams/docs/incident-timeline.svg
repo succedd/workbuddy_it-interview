@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 248" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="248" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">故障处理时间线</text>
+<text x="40" y="64" font-size="15" fill="#64748b">目标是缩短每一段：发现、响应、止血、恢复</text>
+<rect x="40.0" y="92.0" width="141.6" height="88.0" rx="12" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.6"/>
+<text x="110.8" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">发现</text>
+<text x="110.8" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">告警或用户反馈，记</text>
+<text x="110.8" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">录开始时间</text>
+<rect x="209.6" y="92.0" width="141.6" height="88.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="280.4" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">响应</text>
+<text x="280.4" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">值班确认、拉群、指</text>
+<text x="280.4" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">定指挥人</text>
+<line x1="184.6" y1="136.0" x2="206.6" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="379.2" y="92.0" width="141.6" height="88.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="450.0" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">止血</text>
+<text x="450.0" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">回滚、切流、降级、</text>
+<text x="450.0" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">扩容，先恢复服务</text>
+<line x1="354.2" y1="136.0" x2="376.2" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="548.8" y="92.0" width="141.6" height="88.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="619.6" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">恢复</text>
+<text x="619.6" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">确认指标回到正常，</text>
+<text x="619.6" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">宣布结束</text>
+<line x1="523.8" y1="136.0" x2="545.8" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="718.4" y="92.0" width="141.6" height="88.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="789.2" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">复盘</text>
+<text x="789.2" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">时间线、根因、改进</text>
+<text x="789.2" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">项，每项有负责人</text>
+<line x1="693.4" y1="136.0" x2="715.4" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="214.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">MTTD 平均发现时间，MTTR 平均恢复时间。止血优先于查根因；复盘对事不对人，改进项要能被跟踪验收。</text>
+</svg>

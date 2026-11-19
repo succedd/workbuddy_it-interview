@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 594" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="594" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">Java 集合框架主干</text>
+<text x="40" y="64" font-size="15" fill="#64748b">先选接口（要什么语义），再选实现（要什么性能）</text>
+<rect x="260.0" y="92.0" width="380.0" height="70.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="450.0" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">Collection / Map</text>
+<text x="450.0" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">java.util 两棵根接口树</text>
+<line x1="450.0" y1="162.0" x2="450.0" y2="184.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="136.5" y1="184.0" x2="763.5" y2="184.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="136.5" y1="184.0" x2="136.5" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40.0" y="208.0" width="193.0" height="64.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="136.5" y="245.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">List 有序可重复</text>
+<line x1="136.5" y1="272.0" x2="136.5" y2="284.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="284.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="310.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">ArrayList</text>
+<text x="136.5" y="332.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">数组，随机访问 O(1)</text>
+<line x1="136.5" y1="350.0" x2="136.5" y2="362.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="362.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="388.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">LinkedList</text>
+<text x="136.5" y="410.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">双向链表，也实现 Deque</text>
+<line x1="136.5" y1="428.0" x2="136.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="440.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="466.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">CopyOnWriteArrayList</text>
+<text x="136.5" y="488.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">读多写少并发</text>
+<line x1="345.5" y1="184.0" x2="345.5" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="249.0" y="208.0" width="193.0" height="64.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="345.5" y="245.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">Set 不重复</text>
+<line x1="345.5" y1="272.0" x2="345.5" y2="284.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="257.0" y="284.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="310.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">HashSet</text>
+<text x="345.5" y="332.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">基于 HashMap</text>
+<line x1="345.5" y1="350.0" x2="345.5" y2="362.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="257.0" y="362.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="388.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">LinkedHashSet</text>
+<text x="345.5" y="410.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">保留插入顺序</text>
+<line x1="345.5" y1="428.0" x2="345.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="257.0" y="440.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="466.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">TreeSet</text>
+<text x="345.5" y="488.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">红黑树，有序</text>
+<line x1="554.5" y1="184.0" x2="554.5" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="458.0" y="208.0" width="193.0" height="64.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="554.5" y="245.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">Queue / Deque</text>
+<line x1="554.5" y1="272.0" x2="554.5" y2="284.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="466.0" y="284.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="310.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">ArrayDeque</text>
+<text x="554.5" y="332.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">栈和队列首选</text>
+<line x1="554.5" y1="350.0" x2="554.5" y2="362.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="466.0" y="362.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="388.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">PriorityQueue</text>
+<text x="554.5" y="410.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">二叉堆</text>
+<line x1="554.5" y1="428.0" x2="554.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="466.0" y="440.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="466.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">BlockingQueue</text>
+<text x="554.5" y="488.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">线程池用</text>
+<line x1="763.5" y1="184.0" x2="763.5" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="667.0" y="208.0" width="193.0" height="64.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="763.5" y="245.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">Map 键值对</text>
+<line x1="763.5" y1="272.0" x2="763.5" y2="284.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="675.0" y="284.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="310.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">HashMap</text>
+<text x="763.5" y="332.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">数组+链表/红黑树</text>
+<line x1="763.5" y1="350.0" x2="763.5" y2="362.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="675.0" y="362.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="388.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">LinkedHashMap</text>
+<text x="763.5" y="410.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">可做 LRU</text>
+<line x1="763.5" y1="428.0" x2="763.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="675.0" y="440.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="466.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">ConcurrentHashMap</text>
+<text x="763.5" y="488.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">CAS + synchronized</text>
+<text x="40.0" y="540.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">HashMap 默认容量 16、负载因子 0.75，链表长度 ≥ 8 且容量 ≥ 64 时转红黑树。遍历时修改集合会触发 fail-fast 的</text>
+<text x="40.0" y="560.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">ConcurrentModificationException。</text>
+</svg>

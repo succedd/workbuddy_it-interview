@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 687" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="687" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">OAuth 2.0 授权码 + PKCE</text>
+<text x="40" y="64" font-size="15" fill="#64748b">前端和移动端的推荐流程，防止授权码被截获后冒用</text>
+<rect x="50.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="142.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">用户浏览器</text>
+<rect x="255.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="347.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">客户端应用</text>
+<rect x="460.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="552.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">授权服务器</text>
+<rect x="665.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="757.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">资源服务器</text>
+<line x1="142.5" y1="138.0" x2="142.5" y2="599.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="347.5" y1="138.0" x2="347.5" y2="599.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="552.5" y1="138.0" x2="552.5" y2="599.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="757.5" y1="138.0" x2="757.5" y2="599.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<rect x="265.0" y="144.0" width="165.0" height="80.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="347.5" y="162.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">生成随机</text>
+<text x="347.5" y="179.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">code_verifier，算出</text>
+<text x="347.5" y="196.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">code_challenge =</text>
+<text x="347.5" y="213.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">SHA256</text>
+<line x1="351.5" y1="256.0" x2="548.5" y2="256.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="248.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">跳转 /authorize + code_challenge</text>
+<line x1="146.5" y1="298.0" x2="548.5" y2="298.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="347.5" y="290.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">用户登录并同意授权</text>
+<line x1="548.5" y1="340.0" x2="351.5" y2="340.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="332.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">回调 redirect_uri?code=...</text>
+<line x1="351.5" y1="382.0" x2="548.5" y2="382.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="374.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">/token：code + code_verifier</text>
+<rect x="470.0" y="400.0" width="165.0" height="63.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="552.5" y="418.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">校验</text>
+<text x="552.5" y="435.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">SHA256(verifier) ==</text>
+<text x="552.5" y="452.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">challenge</text>
+<line x1="548.5" y1="495.0" x2="351.5" y2="495.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="487.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">access_token（+ refresh_token）</text>
+<line x1="351.5" y1="537.0" x2="753.5" y2="537.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="552.5" y="529.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">Authorization: Bearer token</text>
+<line x1="753.5" y1="579.0" x2="351.5" y2="579.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="552.5" y="571.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">受保护资源</text>
+<text x="40.0" y="633.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">攻击者即使截获 code，没有 code_verifier 也换不到 token。state 参数防 CSRF；access_token 要短期有效，refresh_token</text>
+<text x="40.0" y="653.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">要能吊销。</text>
+</svg>

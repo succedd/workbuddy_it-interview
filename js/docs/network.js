@@ -41,14 +41,14 @@
             id: "tcp-ip-model",
             title: "计算机网络体系与 TCP/IP",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "TCP/IP 协议族（IPv4 / IPv6）",
             tags: ["网络", "TCP/IP", "模型", "分层"],
             terms: ["TCP", "IP", "网络", "协议"],
             body: `
 > **官方文档基线**：[RFC 1122 Internet Hosts](https://www.rfc-editor.org/rfc/rfc1122) · [RFC 9293 TCP](https://www.rfc-editor.org/rfc/rfc9293) · [RFC 791 IPv4](https://www.rfc-editor.org/rfc/rfc791) · [RFC 8200 IPv6](https://www.rfc-editor.org/rfc/rfc8200) · [RFC 826 ARP](https://www.rfc-editor.org/rfc/rfc826) · [man7: ip(7)](https://man7.org/linux/man-pages/man7/ip.7.html)
 
-## 一、原理与底层机制
+## 一、分层、封装与地址
 
 ### 1.1 分层的本质：关注点分离
 网络通信要同时解决四类彼此独立的问题——**物理信号怎么传、跨网络怎么找路、丢了怎么补、应用怎么对话**。分层就是把这些问题分给不同层，每层只依赖下层提供的服务、只向上层暴露接口。这样「换链路技术（以太网 → Wi-Fi → 5G）不动上层」才成为可能。记住一句话：**层与层之间是契约关系，不是实现细节的堆叠**。
@@ -58,6 +58,8 @@ RFC 1122 的哲学内核：**凡是能放到两端实现的可靠性，就不要
 
 ### 1.3 封装与解封装
 发送时逐层加头，接收时逐层剥头，**每层的头只被同层解读**（路由器只看 IP 头，交换机只看 MAC 头）：
+
+![TCP/IP 封装：每往下一层就多一个头](/assets/diagrams/docs/tcpip-encapsulation.svg)
 
 ${F}text
 应用数据   GET / HTTP/1.1
@@ -74,7 +76,7 @@ ${F}
 - **端口** 定位「机器上的哪个进程」，传输层；0–1023 知名端口（22/80/443），1024–49151 注册端口，其余动态端口。
 - **MAC** 定位「同一链路内的哪块网卡」，仅链路层有效，跨网段会被网关重写。
 
-## 二、规范与标准
+## 二、RFC 与地址规范
 
 - **RFC 1122** 规定联网主机必须实现的协议行为，是主机的「合格线」。
 - **CIDR（RFC 4632）**：用 ${C}192.168.1.0/24${C} 表示「地址 + 前缀长度」，取代有类地址。
@@ -82,7 +84,7 @@ ${F}
 - **特殊地址**：${C}127.0.0.1${C} 回环（走本机协议栈，不经网卡）；${C}0.0.0.0${C} 作监听地址=所有网卡、作目地址=本机/默认路由；${C}169.254.0.0/16${C} 链路本地（DHCP 失败时自分配）。
 - **MTU（RFC 1191）**：以太网默认 1500 字节，超长则 IP 分片；分片显著伤性能且易被中间设备丢弃，现代做法是**路径 MTU 发现 + 不分片**。
 
-## 三、实战
+## 三、动手实践：ss / ip / ping 排查
 
 ${F}bash
 # 1) 本机监听了哪些端口（谁在听、绑在哪个地址）
@@ -116,14 +118,14 @@ listen 0.0.0.0:8080;
 listen 10.0.3.7:8080;
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：NAT 与 IPv6
 
 - **NAT（RFC 3022）**：私网 ↔ 公网地址转换。SNAT 改写源（出网），DNAT 改写目的（端口映射）。NAT 让 IPv4 续命，但破坏了端到端透明性——外网主动连内网必须端口映射。
 - **IPv4 → IPv6 过渡**：双栈（同跑两套）、隧道（6to4 / DS-Lite）、转换（NAT64 + DNS64）。IPv6 无 NAT、无广播、支持地址自配置（SLAAC）。
 - **ICMP（RFC 792）**：网络层差错与控制报文，不是传输协议。${C}ping${C} 用 Echo，${C}traceroute${C} 靠 TTL 递减触发超时。很多云安全组默认禁 ICMP，造成「ping 不通但能连」。
 - **ARP（RFC 826）**：同网段「已知 IP 求 MAC」。跨网段时你解析的不是目标主机的 MAC，而是**网关**的 MAC。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **把 localhost / 127.0.0.1 / 0.0.0.0 混为一谈**：localhost 通常解析到 127.0.0.1（仅回环），0.0.0.0 是「所有网卡」。监听地址选错是「本地能连、别人连不上」的头号原因。
 2. **以为 ping 通就等于服务可用**：ping 只验证 ICMP/网络可达，与端口、应用存活无关；反之禁 ICMP 会让人误判「网络不通」。
@@ -131,7 +133,7 @@ ${F}
 4. **以为 TCP「连接」是根实线**：IP 层无连接，TCP 连接只是两端状态机的共识；链路断了但双方未超时前不会「立刻感知」。
 5. **查端口不通的顺序反了**：应先 ${C}ss -lntp${C} 确认进程真在听，再查安全组 / 防火墙，反过来会白折腾。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能画出一次 HTTP 请求的分层封装路径，并说出每层头部
 - [ ] 能解释「端到端原则」为什么让核心网络保持简单
@@ -245,7 +247,7 @@ ${F}
 4. **「连接数就是端口数」**。可用端口受 ${C}ip_local_port_range${C} 与四元组组合限制，且服务端监听端口不消耗客户端端口。
 5. **「软中断是内核的事，应用不用管」**。软中断跑满某个 CPU 会直接表现为应用延迟抖动，容器场景下更明显（CPU 限流加剧）。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 RFC 1122 第 1 章（分层模型与设计哲学），理解分层不是教条而是权衡。
 - CSAPP 第 11 章「网络编程」：从 socket 视角重看这一层。
@@ -256,14 +258,14 @@ ${F}
             id: "http-detail",
             title: "HTTP 协议详解",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "HTTP/1.1 · HTTP/2 · HTTP/3",
             tags: ["HTTP", "协议", "Web", "缓存"],
             terms: ["HTTP", "状态码", "请求", "Web"],
             body: `
 > **官方文档基线**：[RFC 9110 HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110) · [RFC 9111 HTTP Caching](https://www.rfc-editor.org/rfc/rfc9111) · [RFC 9112 HTTP/1.1](https://www.rfc-editor.org/rfc/rfc9112) · [RFC 9113 HTTP/2](https://www.rfc-editor.org/rfc/rfc9113) · [RFC 9000 QUIC](https://www.rfc-editor.org/rfc/rfc9000) · [MDN HTTP](https://developer.mozilla.org/docs/Web/HTTP)
 
-## 一、原理与底层机制
+## 一、请求-响应模型与连接演进
 
 ### 1.1 请求-响应模型与「无状态」的真意
 HTTP 是请求-响应式的**无状态**协议：服务端不记得上一次请求。这不是缺陷而是**可扩展性的前提**——正因为无状态，一台服务器扛不住时，加机器就能水平扩展，任何一台都能处理任意请求。会话状态由客户端自己携带（Cookie / Token），服务端只做校验。
@@ -290,7 +292,7 @@ ${F}
 | HTTP/2 | TCP | 二进制分帧、多路复用、HPACK 头压缩、服务端推送 | **TCP 层队头阻塞**（一个丢包卡住所有流） |
 | HTTP/3 | QUIC(UDP) | 流独立、0-RTT 恢复、连接迁移 | 部署复杂度、部分中间设备不识别 |
 
-## 二、规范与标准
+## 二、状态码与缓存语义
 
 - **状态码五大类**：1xx 信息（100 Continue、101 Switching Protocols）、2xx 成功、3xx 重定向、4xx 客户端错、5xx 服务端错。
 - **缓存语义（RFC 9111）**：${C}Cache-Control: max-age / no-store / no-cache / private / public / must-revalidate${C}；${C}ETag${C} + ${C}If-None-Match${C} → 304；${C}Last-Modified${C} + ${C}If-Modified-Since${C}。
@@ -298,7 +300,7 @@ ${F}
 - **内容协商**：${C}Accept${C} / ${C}Accept-Encoding${C} / ${C}Accept-Language${C} 决定表示形式；${C}Content-Type: application/json; charset=utf-8${C} 明确体格式。
 - **Cookie 安全属性（RFC 6265）**：${C}HttpOnly${C}（禁 JS 读取，防 XSS 窃取）、${C}Secure${C}（仅 HTTPS）、${C}SameSite=Lax/Strict${C}（防 CSRF）、${C}Path${C}/${C}Domain${C} 作用域。
 
-## 三、实战
+## 三、动手实践：curl 看一次请求
 
 ${F}bash
 # 完整看一次请求的过程（分段、头、状态码）
@@ -336,7 +338,7 @@ RequestConfig cfg = RequestConfig.custom()
     .build();
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：重试、幂等与压缩
 
 - **重试与幂等**：只有幂等方法（GET/PUT/DELETE）可无脑重试；POST 要重试必须用**幂等键（Idempotency-Key）**或去重表。
 - **压缩**：${C}Accept-Encoding: gzip, br, zstd${C}；Brotli 通常比 gzip 小 15%–20%，对文本资源显著。
@@ -344,7 +346,7 @@ ${F}
 - **状态码运维语义**：401 = 未认证（该带凭据），403 = 已认证但无权限，404 = 资源不存在，429 = 限流（看 ${C}Retry-After${C}），502 = 网关连不上后端，503 = 过载/维护，504 = 上游超时。
 - **HTTP/2 关键点**：一个 TCP 连接承载多个流（stream），流有优先级；头用 HPACK 压缩（首部表 + 哈夫曼），但**一个 TCP 丢包会阻塞所有流**——这正是 HTTP/3 改用 QUIC 的动机。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **GET 带体 / 用 GET 做变更**：GET 可能被缓存、预取、记入日志，绝不可做写操作或传敏感数据。
 2. **分不清 401 与 403**：401 是「没证明你是谁」，403 是「证明了但你没权限」；401 应带 ${C}WWW-Authenticate${C}。
@@ -353,7 +355,7 @@ ${F}
 5. **忽视 304 / 缓存**：做好的缓存本可 304 省掉整包，结果每次 200 全量返回，带宽和延迟双输。
 6. **改静态资源不加版本**：同名文件被缓存后改了不生效，必须用「文件名带 hash」或版本 query 破缓存。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能说出 GET/POST/PUT/PATCH/DELETE 的安全性与幂等性
 - [ ] 能区分 401/403 与 502/503/504 并给出排查方向
@@ -491,7 +493,7 @@ ${F}
 4. **「Transfer-Encoding 与 Content-Length 都写上更保险」**。这是协议禁止的组合，会被代理拒绝（400）。
 5. **「GET 请求可以有 body」**。协议未禁止但语义未定义，代理与缓存会忽略它，任何依赖它的设计都是隐患。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 通读 RFC 9110 的「Methods」与「Status Codes」两章，建立权威语义认知。
 - 阅读「HTTP/2 中的 TCP 队头阻塞」相关分析，理解 HTTP/3 的设计动机。
@@ -502,14 +504,14 @@ ${F}
             id: "process-thread",
             title: "进程与线程",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Linux / POSIX 通用概念",
             tags: ["进程", "线程", "OS", "并发"],
             terms: ["进程", "线程", "并发"],
             body: `
 > **官方文档基线**：[man7: fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html) · [clone(2)](https://man7.org/linux/man-pages/man2/clone.2.html) · [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) · [sched(7)](https://man7.org/linux/man-pages/man7/sched.7.html) · [signal(7)](https://man7.org/linux/man-pages/man7/signal.7.html) · [proc(5)](https://man7.org/linux/man-pages/man5/proc.5.html) · CSAPP 第 8/12 章 · TLPI
 
-## 一、原理与底层机制
+## 一、进程、线程与上下文切换
 
 ### 1.1 进程是资源容器，线程是调度单位
 - **进程**：拥有独立虚拟地址空间、文件描述符表、信号处理表、进程 ID。进程之间默认互不可见，通信必须走 IPC，成本高。
@@ -549,14 +551,14 @@ ${F}
 
 写代码时**不要把「并发」当「并行」假设**，否则会出现只在单核上偶现的竞态。
 
-## 二、规范与标准
+## 二、POSIX 进程创建规范
 
 - **进程创建（POSIX）**：${C}fork()${C} 复制当前进程（COW），${C}execve()${C} 替换映像，${C}wait()/waitpid()${C} 回收子进程。Linux 上创建线程其实也是 ${C}clone()${C}，只是共享标志不同。
 - **调度策略（sched(7)）**：${C}SCHED_OTHER${C}（CFS 默认，按权重公平）、${C}SCHED_FIFO${C}/${C}SCHED_RR${C}（实时，抢占普通任务）、${C}SCHED_IDLE/BATCH${C}。
 - **信号（signal(7)）**：异步通知机制，${C}SIGTERM${C}（可捕获，优雅退出）、${C}SIGKILL${C}（不可捕获，强杀）、${C}SIGSEGV${C}（段错误）、${C}SIGPIPE${C}（写已关闭管道）。
 - **线程库**：${C}pthread_create/join${C}，同步原语互斥量、条件变量、读写锁、屏障。
 
-## 三、实战
+## 三、动手实践：查看进程与线程
 
 ${F}bash
 # 查看进程与线程：-T 显示线程，-eLf 列出所有线程
@@ -591,7 +593,7 @@ try (var exec = Executors.newVirtualThreadPerTaskExecutor()) {
 }
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：僵尸进程与 IPC
 
 - **僵尸与孤儿进程**：子进程退出但父进程未 ${C}wait${C} → 僵尸（占 PID 表项）；父进程先死 → 孤儿进程被 init/systemd 收养。大量僵尸说明父进程没回收。
 - **IPC 方式对比**：
@@ -605,7 +607,7 @@ ${F}
 - **协程/虚拟线程**：Go goroutine、Java 虚拟线程（Project Loom）、Python asyncio，都是**用户态调度**，栈小（KB 级）、切换不进内核，单进程可跑数十万；写法仍是同步风格，心智负担低。
 - **cgroup 限制**：容器里 ${C}nproc${C}、CPU quota、线程数上限都会影响并发能力，别只看核数。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **以为多线程必然更快**：单核 + 激烈锁竞争下，多线程反而更慢（切换 + 等待锁）。
 2. **共享可变状态不加同步**：竞态导致结果随机错乱，且往往只在生产高并发时偶现。
@@ -614,7 +616,7 @@ ${F}
 5. **跨进程当共享内存读**：进程间不能直接读对方内存，必须走 IPC。
 6. **用 SIGKILL 代替优雅退出**：${C}SIGKILL${C} 不给清理机会，可能丢数据或留下不一致状态。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能说清进程与线程在资源上的差别（共享/独享）
 - [ ] 能画出进程地址空间布局并定位栈溢出/OOM 各发生在哪
@@ -748,7 +750,7 @@ ${F}
 4. **「kill -9 一定能杀死」**。D 状态进程不响应任何信号，只能等 IO 超时或重启。
 5. **「协程一定比线程快」**。协程快在切换与内存，但一旦调用阻塞式系统调用就会占住底层线程；必须配合非阻塞 IO 才能真正发挥。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 TLPI 第 24–33 章（进程创建、线程、同步）与第 20–22 章（信号）。
 - 阅读 JEP 444（虚拟线程）与 Go 调度器 GMP 模型，理解用户态调度的取舍。
@@ -759,17 +761,19 @@ ${F}
             id: "memory-basics",
             title: "内存管理基础",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Linux 虚拟内存子系统",
             tags: ["内存", "OS", "虚拟内存", "页缓存"],
             terms: ["内存", "虚拟内存", "OS"],
             body: `
 > **官方文档基线**：[man7: mmap(2)](https://man7.org/linux/man-pages/man2/mmap.2.html) · [brk(2)](https://man7.org/linux/man-pages/man2/brk.2.html) · [proc(5) / meminfo](https://man7.org/linux/man-pages/man5/proc.5.html) · [CSAPP 第 9 章「虚拟内存」](https://csapp.cs.cmu.edu/) · [TLPI 第 49 章](https://man7.org/tlpi/)
 
-## 一、原理与底层机制
+## 一、虚拟内存、TLB 与缺页
 
 ### 1.1 虚拟内存：每个进程都以为自己独占内存
 进程发出的是**虚拟地址**，由 MMU 经多级页表翻译成物理地址。好处有三：① **隔离**——进程无法越界访问他者内存；② **抽象**——程序不必关心物理位置；③ **超售**——可用「虚拟地址总和」大于物理内存，靠 swap 兜底。
+
+![虚拟内存：每个进程都以为自己独占内存](/assets/diagrams/docs/virtual-memory.svg)
 
 ### 1.2 TLB：地址翻译的加速器
 页表在内存里，每次访存都查表太慢，于是有 **TLB（页表缓存）** 缓存最近翻译。**进程切换要换页表（写 CR3）→ TLB 失效**，这是进程切换比线程切换贵得多的核心原因。
@@ -795,14 +799,14 @@ CPU 分特权级（x86 的 ring0/ring3）：
 - **写时复制（COW）**：${C}fork()${C} 后父子进程共享物理页，任一方写入才真正复制。这让 fork 廉价，但**大内存进程 fork 后仍可能因写触发大量复制**。
 - **swap**：物理内存不足时把冷页换到磁盘。一旦频繁换入换出（si/so 飙高），**性能断崖式下跌**（磁盘比内存慢上万倍）。
 
-## 二、规范与标准
+## 二、mmap 与 /proc/meminfo
 
 - **mmap（POSIX）**：把文件或匿名内存映射进地址空间；${C}MAP_SHARED${C} 共享回写、${C}MAP_PRIVATE${C} 私有 COW、${C}PROT_READ/WRITE${C} 权限。
 - **/proc/meminfo**：${C}MemTotal/MemFree/MemAvailable/Buffers/Cached/SwapTotal/SwapFree${C}；判断内存是否吃紧应看 **MemAvailable**，而不是 MemFree。
 - **overcommit 策略**：${C}vm.overcommit_memory${C}（0 启发式、1 总是允许、2 严格）；严格模式可防「申请成功但用时不 OOM 触发」，但可能让正常 malloc 失败。
 - **cgroup v2 memory**：${C}memory.max${C} / ${C}memory.current${C} / ${C}memory.high${C}，容器内存限额的实际执行者。
 
-## 三、实战
+## 三、动手实践：free / vmstat / 进程内存
 
 ${F}bash
 # 全局内存与 swap 概况（重点看 available 与 swap 使用量）
@@ -833,7 +837,7 @@ memcpy(map + off, data, len);
 msync(map + off, len, MS_SYNC);   // MS_SYNC 同步写回
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：OOM Killer 与内存问题
 
 - **OOM Killer**：物理内存 + swap 耗尽时，内核按 ${C}oom_score${C} 杀进程。容器里常表现为「进程莫名消失」，需看 ${C}dmesg${C}。设置 ${C}oom_score_adj${C} 可保护关键进程。
 - **Page Cache 不是泄漏**：${C}free${C} 里的 ${C}buff/cache${C} 是可回收的页缓存，紧张时自动释放；真正要关注的是 ${C}available${C}。
@@ -841,7 +845,7 @@ ${F}
 - **NUMA**：多路 CPU 各有本地内存，跨节点访问延迟高；用 ${C}numactl${C} 绑核绑内存可提升吞吐。
 - **内存泄漏的排查路径**：RSS 持续上涨 → /proc 或 pmap 定位段 → 堆分析（Valgrind / JVM heap dump）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **看 MemFree 判断内存不足**：应看 ${C}MemAvailable${C}，Page Cache 随时可回收。
 2. **以为 write 返回就是落盘**：默认只写页缓存，宕机丢数据；重要写入要 ${C}fsync${C} 或 ${C}O_DIRECT${C}。
@@ -850,7 +854,7 @@ ${F}
 5. **大对象放栈**：超大局部数组直接撑爆栈，崩溃现场难查。
 6. **在容器里猛写内存不看 cgroup 限额**：触发容器 OOM，进程被秒杀且无 Java 异常栈。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能解释虚拟内存如何实现进程隔离与内存超售
 - [ ] 会区分 VmSize / VmRSS / Page Cache / swap 的含义
@@ -986,7 +990,7 @@ ${F}
 4. **「内存泄漏看 RSS 就够了」**。短期抖动会误导；要看长期趋势（如 24 小时 RSS 斜率）并结合堆分析/对象统计。
 5. **「容器里有内存限制就够了」**。JVM/Go 等运行时若不感知 cgroup 限制（老版本），会按宿主机总量规划堆，直接触发 OOM。必须显式设置（如 ${C}-XX:MaxRAMPercentage${C}）。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 CSAPP 第 9 章，理解页表、TLB、缺页、COW 的硬件支撑。
 - 阅读 TLPI 第 49 章「内存映射」与第 6 章「进程内存布局」。
@@ -1005,14 +1009,14 @@ ${F}
             id: "tcp-reliable",
             title: "TCP 可靠传输与拥塞控制",
             minutes: 26,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "TCP（RFC 9293 / 5681 / 6298）",
             tags: ["TCP", "拥塞控制", "可靠传输", "重传"],
             terms: ["TCP", "三次握手", "拥塞", "网络"],
             body: `
 > **官方文档基线**：[RFC 9293 TCP](https://www.rfc-editor.org/rfc/rfc9293) · [RFC 5681 Congestion Control](https://www.rfc-editor.org/rfc/rfc5681) · [RFC 6298 RTO 计算](https://www.rfc-editor.org/rfc/rfc6298) · [RFC 7323 窗口缩放/SACK/时间戳](https://www.rfc-editor.org/rfc/rfc7323) · [RFC 8312 CUBIC](https://www.rfc-editor.org/rfc/rfc8312) · [man7: tcp(7)](https://man7.org/linux/man-pages/man7/tcp.7.html)
 
-## 一、原理与底层机制
+## 一、可靠传输四件套与拥塞控制
 
 ### 1.1 TCP 凭什么「可靠」——四件套
 UDP 发出去就不管；TCP 承诺**不丢、不乱、不重、按序到**，靠四套机制：
@@ -1022,6 +1026,9 @@ UDP 发出去就不管；TCP 承诺**不丢、不乱、不重、按序到**，�
 4. **拥塞控制**：探测网络容量，主动减速，防止压垮网络。
 
 ### 1.2 三次握手与四次挥手
+
+![TCP 三次握手与四次挥手](/assets/diagrams/docs/tcp-handshake.svg)
+
 ${F}text
 握手（建立连接）              挥手（断开连接）
 C: SYN  seq=x        →        A: FIN  →  B: ACK
@@ -1044,18 +1051,20 @@ ${F}
 | 快速恢复 | 快速重传后 | ssthresh 减半，cwnd 降半，线性恢复 |
 | 超时丢包 | RTO 超时 | cwnd 直接回到 1，重回慢启动（最重惩罚） |
 
+![TCP 拥塞控制四个阶段](/assets/diagrams/docs/tcp-cwnd.svg)
+
 ### 1.5 现代算法：CUBIC 与 BBR
 - **CUBIC（Linux 默认）**：用三次函数控制窗口增长，在高带宽长延迟（LFN）网络上比传统 Reno 更稳。
 - **BBR（Google）**：不再「丢包=拥塞」，而是**建模瓶颈带宽与最小 RTT**，主动把发送速率卡在「带宽 × RTT」附近。在有一定丢包的弱网/跨国链路上，吞吐常显著优于丢包驱动算法。
 
-## 二、规范与标准
+## 二、RFC 5681 / 6298 要点
 
 - **RFC 5681** 定义四阶段与 ssthresh 更新规则，是拥塞控制的标准基线。
 - **RFC 6298** 规定 RTO 计算：${C}SRTT${C} 平滑 RTT、${C}RTTVAR${C} 方差，${C}RTO = SRTT + 4×RTTVAR${C}，且有最小 1s（Linux 内部更小）与指数退避。
 - **RFC 7323 关键扩展**：窗口缩放（突破 64KB 窗口上限）、SACK（选择性确认，只重传真正丢的那段）、时间戳（精确测 RTT、防回绕）。
 - **Nagle + 延迟确认**：Nagle 攒小包，延迟 ACK 攒确认，两者叠加会造成**请求-应答型小包交互的额外延迟**，游戏/即时通信要开 ${C}TCP_NODELAY${C}。
 
-## 三、实战
+## 三、动手实践：ss -ti 与 tcpdump
 
 ${F}bash
 # 看连接的拥塞状态：cwnd / rtt / retrans（-i 显示 TCP 内部信息）
@@ -1088,7 +1097,7 @@ while ((len = readFully(in, head, 4)) == 4) {
 }
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：粘包与 TIME_WAIT
 
 - **粘包 / 拆包是必然**：TCP 只保证字节流有序，不保留消息边界。方案：定长、长度前缀（最通用）、分隔符（如 \\r\\n）、应用层协议。
 - **TIME_WAIT 端口耗尽**：高并发短连接客户端的常见问题。优先级：**用连接池复用连接 > 调大端口范围 > 开 tcp_tw_reuse**。服务端一般无需处理（服务端是被动方，不产生大量 TIME_WAIT）。
@@ -1096,7 +1105,7 @@ ${F}
 - **SYN Flood 防护**：${C}net.ipv4.tcp_syncookies=1${C} + 合理 ${C}tcp_max_syn_backlog${C}，防止半连接队列被打满。
 - **重传率是健康指标**：${C}netstat -s | grep retrans${C} 或监控系统的 TCP Retransmission 曲线，持续升高说明链路或对端有问题。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **把 TCP 当「消息」协议**：忘了字节流没有边界，导致偶发「半条消息」解析错误。
 2. **忽视 Nagle + 延迟 ACK 的叠加延迟**：小包交互场景不加 ${C}TCP_NODELAY${C}，往返延迟莫名偏高。
@@ -1105,7 +1114,7 @@ ${F}
 5. **以为丢包一定等于网络差**：也可能是接收方处理慢（窗口打满）或中间设备限速。
 6. **超时丢包后立刻重传风暴**：正确做法是依赖快速重传 + 合理 RTO，避免无谓重传加剧拥塞。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能说明三次握手/四次挥手的必要性
 - [ ] 能区分 TIME_WAIT（正常）与 CLOSE_WAIT（应用 bug）
@@ -1310,7 +1319,7 @@ ${F}
 4. **「设置了 TCP keepalive 就能检测断链」**。默认 keepalive 是 2 小时，等于没有；必须显式调小，或在应用层做心跳（更可控）。
 5. **「BBR 开了就一定快」**。BBR 在低丢包链路上与 CUBIC 差别不大，且与 CUBIC 共存时可能抢占带宽；跨团队共用链路时要评估公平性。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 RFC 9293 的「连接建立/关闭」与「重传」章节。
 - 阅读 BBR 论文与 Linux ${C}tcp_bbr${C} 实现说明，对比丢包驱动与带宽建模的差异。
@@ -1321,14 +1330,14 @@ ${F}
             id: "https-tls",
             title: "HTTPS / TLS 握手",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "TLS 1.2 / TLS 1.3",
             tags: ["HTTPS", "TLS", "安全", "证书"],
             terms: ["HTTPS", "TLS", "证书", "加密"],
             body: `
 > **官方文档基线**：[RFC 8446 TLS 1.3](https://www.rfc-editor.org/rfc/rfc8446) · [RFC 5280 X.509 证书](https://www.rfc-editor.org/rfc/rfc5280) · [RFC 6797 HSTS](https://www.rfc-editor.org/rfc/rfc6797) · [OWASP TLS Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html) · [man7: openssl-s_client](https://www.openssl.org/docs/man1.1.1/man1/openssl-s_client.html)
 
-## 一、原理与底层机制
+## 一、TLS 的三个目标与握手
 
 ### 1.1 TLS 要同时解决三件事
 HTTP 明文传输，中间人可窃听、篡改、冒充。TLS 提供：
@@ -1352,12 +1361,15 @@ ${F}
 任何一环缺失（**没发中间证书**）、域名不匹配、过期、CA 不受信，浏览器都会报警。
 
 ### 1.4 TLS 1.2 vs 1.3 握手差异
+
+![TLS 1.3 握手（1-RTT）](/assets/diagrams/docs/tls13-handshake.svg)
+
 - **TLS 1.2**：2-RTT，客户端等 ServerHello 后才发密钥材料；支持大量历史算法（含不安全的 RSA 密钥交换、CBC）。
 - **TLS 1.3**：**1-RTT**（客户端直接带上密钥共享），支持 **0-RTT** 会话恢复；只保留**前向安全**的密钥交换（ECDHE）与少量 AEAD 套件，砍掉 RC4/CBC/静态 RSA，攻击面大幅缩小。
 
 **前向安全（PFS）**：会话密钥由临时 ECDHE 生成，**即使服务器私钥日后泄露，也无法解密历史流量**。
 
-## 二、规范与标准
+## 二、RFC 8446 与证书要求
 
 - **RFC 8446**：TLS 1.3 只允许 AEAD 密码套件（如 ${C}TLS_AES_128_GCM_SHA256${C}、${C}TLS_CHACHA20_POLY1305_SHA256${C}）。
 - **证书要求**：SAN 必须包含访问域名（现代浏览器已不看 CN）；有效期（CA/B 论坛强制 ≤398 天）；必须完整下发中间证书。
@@ -1365,7 +1377,7 @@ ${F}
 - **OCSP / CT**：在线吊销检查与证书透明日志；OCSP Stapling 由服务器代为获取并随握手下发，兼顾隐私与性能。
 - **SNI**：一个 IP 承载多域名时，客户端在 ClientHello 里带上目标域名，服务器据此选证书。ECH/加密 SNI 是新一代隐私增强方向。
 
-## 三、实战
+## 三、动手实践：openssl 检查证书
 
 ${F}bash
 # 检查证书链、有效期、协议版本（最关键的一行命令）
@@ -1397,7 +1409,7 @@ ssl_stapling_verify on;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：0-RTT 与证书类型
 
 - **0-RTT 的重放风险**：TLS 1.3 的 0-RTT 早期数据可能被攻击者重放，**只应对幂等的 GET 使用 0-RTT**，支付/下单等写操作不要用。
 - **证书类型**：DV（仅验证域名归属，最便宜最快）、OV（验证组织）、EV（扩展验证，浏览器 UI 已弱化）。Let's Encrypt / acme.sh / cert-manager 可自动化 DV 证书签发与续期。
@@ -1405,7 +1417,7 @@ ${F}
 - **mTLS（双向认证）**：服务端也校验客户端证书，常用于服务网格、支付、IoT，是零信任的基石之一。
 - **内网是否加密**：按合规与威胁模型决定；微服务间可用 mTLS 或服务网格自动加密，避免「入口加密、内网裸奔」。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **证书过期导致全站 HTTPS 失败**：必须做有效期监控 + 自动续期，并留续期失败的告警。
 2. **中间证书没下发**：部分客户端（尤其 Android/老终端）无法构建完整链而报错，服务器必须发送中间 CA。
@@ -1414,7 +1426,7 @@ ${F}
 5. **Mixed Content**：HTTPS 页面嵌 HTTP 资源会被浏览器拦截，需全站 HTTPS。
 6. **没开 HSTS**：首次访问仍可能被劫持到 HTTP，配 HSTS 可强制后续走 HTTPS。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能解释 TLS 为何「非对称协商 + 对称传输」
 - [ ] 能画出证书信任链并指出「缺中间证书」的后果
@@ -1570,7 +1582,7 @@ ${F}
 4. **「0-RTT 越快越好，全量开启」**。0-RTT 可重放，只应对幂等的 GET 使用；开启写操作等于给了重放攻击的机会。
 5. **「TLS 开销可忽略」**。握手期（尤其 RSA 2048）在一些低配设备上是可观的 CPU 成本；高 QPS 网关应实测握手 QPS 上限，并做好复用。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 通读 RFC 8446 第 1–2 章，理解 1.3 移除不安全算法与前向安全的设计取舍。
 - 阅读 OWASP TLS Cheat Sheet，对照生产配置逐项加固。
@@ -1581,14 +1593,14 @@ ${F}
             id: "dns-cdn",
             title: "DNS 与 CDN",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "DNS（RFC 1034/1035）/ CDN",
             tags: ["DNS", "CDN", "网络", "解析"],
             terms: ["DNS", "CDN", "域名解析"],
             body: `
 > **官方文档基线**：[RFC 1034 DNS 概念](https://www.rfc-editor.org/rfc/rfc1034) · [RFC 1035 DNS 实现](https://www.rfc-editor.org/rfc/rfc1035) · [RFC 8484 DoH](https://www.rfc-editor.org/rfc/rfc8484) · [RFC 7858 DoT](https://www.rfc-editor.org/rfc/rfc7858) · [man7: resolv.conf(5)](https://man7.org/linux/man-pages/man5/resolv.conf.5.html)
 
-## 一、原理与底层机制
+## 一、DNS 分层委派与缓存
 
 ### 1.1 DNS 是一棵分布式、分层、带缓存的数据库
 DNS 把「域名 → IP」的映射分散到全球成千上万台服务器上，用**分层委派**避免单点：
@@ -1599,6 +1611,9 @@ ${F}text
 ${F}
 
 ### 1.2 递归 vs 迭代
+
+![DNS 解析全过程](/assets/diagrams/docs/dns-resolve.svg)
+
 - **递归查询**：客户端问本地 resolver（如 8.8.8.8），resolver 负责一路问到答案再回复——客户端只问一次。
 - **迭代查询**：resolver 之间是迭代的，挨个问根、顶级、权威，逐级拿到「下一步该问谁」。
 - **缓存**：每级都有缓存，命中就直接返回，这是 DNS 能扛住全球查询量的根本。
@@ -1618,7 +1633,7 @@ ${F}
 | SOA | 域的管理信息 | 主从/序列号 |
 | SRV | 服务发现 | 带端口与优先级 |
 
-## 二、规范与标准
+## 二、RFC 1034/1035 与 resolv.conf
 
 - **RFC 1034/1035** 定义 DNS 的数据模型、报文格式与查询流程，是全部 DNS 实现的基础。
 - **resolv.conf(5)**：${C}nameserver${C}（可多个，按序尝试）、${C}search${C}、${C}options timeout:1 attempts:2 rotate${C}——配置不当会造成「每次都等超时」的整体变慢。
@@ -1626,7 +1641,7 @@ ${F}
 - **DNS 传输加密**：DoT（RFC 7858，853 端口）、DoH（RFC 8484，走 HTTPS）防窃听与劫持；DoH 与浏览器结合可绕过部分网络策略。
 - **DNSSEC**：用签名链验证解析结果真实，防止缓存投毒；与「加密」是两件事，需分别部署。
 
-## 三、实战
+## 三、动手实践：dig +trace 逐级排查
 
 ${F}bash
 # 完整看一次递归解析路径（从根一路问到权威，定位是哪一级错了）
@@ -1655,7 +1670,7 @@ ${F}bash
 # 4) 把 TTL 调回较大值（如 3600）
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：CDN 调度
 
 - **CDN 调度**：多数靠 **DNS 智能解析**（按来源 IP 返回最近边缘节点），也有 **Anycast**（同一 IP 多地广播，由 BGP 就近路由）与 HTTP-DNS（客户端主动上报）。
 - **负载均衡策略**：轮询、加权、地理就近、故障摘除；结合健康检查剔除异常节点。
@@ -1663,7 +1678,7 @@ ${F}
 - **回源保护**：CDN 大面积失效时会「回源风暴」压垮源站，源站需限流 + 分层缓存 + 设置回源并发上限。
 - **通配符与泛解析**：${C}*.example.com${C} 用于多子域；注意别把内部域名也暴露成公网泛解析。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **改了解析「半天不生效」**：TTL 未过期，全世界仍用旧缓存；紧急变更前必须先降 TTL。
 2. **resolv.conf 配了不可达 DNS**：每次解析都等超时，接口整体变慢，且难定位——这是很隐蔽的性能问题。
@@ -1672,7 +1687,7 @@ ${F}
 5. **静态资源改内容不换名**：CDN 与浏览器缓存旧版，用户看到的还是老文件。
 6. **把 DNS 当配置中心频繁改**：DNS 传播有延迟，不适合毫秒级、频繁变更的策略控制。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能画出 DNS 分层委派与递归/迭代查询流程
 - [ ] 能说出常见记录类型的用途与 CNAME 的限制
@@ -1817,7 +1832,7 @@ ${F}
 4. **「命中率低就调大 TTL」**。若缓存键不合理（如把用户 ID 放进 query），再长的 TTL 也没有帮助。
 5. **「只监控 CDN 整体命中率」**。必须按资源类型、按目录、按状态码细分；整体命中率会被少数超大文件拉高，掩盖真实问题。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 RFC 1034 第 2 章（名称空间与资源记录）与 RFC 1035 第 4 章（报文格式）。
 - 了解 DNSSEC 签名链与 DoH/DoT 的部署差异。
@@ -1828,14 +1843,14 @@ ${F}
             id: "io-multiplexing",
             title: "IO 多路复用",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Linux epoll / select / poll / io_uring",
             tags: ["IO", "epoll", "多路复用", "高并发"],
             terms: ["IO", "epoll", "多路复用", "网络"],
             body: `
 > **官方文档基线**：[man7: epoll(7)](https://man7.org/linux/man-pages/man7/epoll.7.html) · [select(2)](https://man7.org/linux/man-pages/man2/select.2.html) · [poll(2)](https://man7.org/linux/man-pages/man2/poll.2.html) · [io_uring(7)](https://man7.org/linux/man-pages/man7/io_uring.7.html) · [select_tut(2)](https://man7.org/linux/man-pages/man2/select_tut.2.html)
 
-## 一、原理与底层机制
+## 一、select → poll → epoll
 
 ### 1.1 问题的起点：一个线程如何管上万连接
 最朴素的模型是「一连接一线程（BIO）」：1 万连接 = 1 万线程，仅线程栈就要 8 万 MB，上下文切换把机器拖死。
@@ -1843,6 +1858,9 @@ ${F}
 **IO 多路复用**的思想：**一个线程同时监视一大批 fd，谁就绪就处理谁**，不为每个连接配线程。注意它是「多路复用器」，本身**不异步**——仍是「就绪通知 + 自己读写」。
 
 ### 1.2 select → poll → epoll 的演进
+
+![select / poll / epoll 对比](/assets/diagrams/docs/io-multiplexing.svg)
+
 | 机制 | 内核实现 | 瓶颈 |
 |---|---|---|
 | select | 位图传 fd 集合，返回后全量遍历 | fd 上限 1024、每次全量拷贝 + O(n) 遍历 |
@@ -1858,14 +1876,14 @@ ${F}
 ### 1.4 就绪 vs 异步：io_uring
 epoll 属「就绪通知」，读写仍需应用自己做系统调用。Linux 5.1 引入的 **io_uring** 提供真正的**异步 IO**：提交环形队列（SQ）+ 完成环形队列（CQ），可批量提交、共享内存零拷贝、支持 ${C}IORING_OP_READV${C} 等，配合 ${C}IORING_SETUP_SQPOLL${C} 还能内核线程轮询，几乎消除每次 IO 的 syscall 开销。
 
-## 二、规范与标准
+## 二、非阻塞 fd 与 epoll API
 
 - **fd 必须非阻塞**：多路复用配合的 socket 要设 ${C}O_NONBLOCK${C}，否则读到无数据时线程会阻塞，监视其他 fd 的能力就失效。
 - **epoll API**：${C}epoll_create1${C} → ${C}epoll_ctl(ADD/MOD/DEL)${C} → ${C}epoll_wait${C}；ET 模式必须搭配非阻塞并循环读写至 ${C}EAGAIN${C}。
 - **accept 队列**：${C}listen(fd, backlog)${C} 与 ${C}net.core.somaxconn${C} 决定全连接队列上限，太小会在高并发瞬时丢连接。
 - **零拷贝**：${C}sendfile(2)${C}、${C}splice(2)${C} 让数据在内核内直接从文件传到 socket，避免用户态来回复制，Nginx 静态文件服务默认受益。
 
-## 三、实战
+## 三、动手实践：epoll 骨架
 
 ${F}c
 // epoll 骨架（伪代码，体现正确顺序）
@@ -1901,14 +1919,14 @@ ulimit -n 65535
 sysctl -w fs.file-max=1000000
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：Reactor 与 Proactor
 
 - **Reactor vs Proactor**：Reactor 是「就绪后应用自己读」（epoll/Nginx/Netty），Proactor 是「内核读完通知你」（Windows IOCP / Linux io_uring）。Go 的 netpoller 在底层用 epoll，但给上层的仍是「同步风格」。
 - **谁在用 epoll**：Nginx（多 worker + epoll）、Redis（单线程 + epoll，纯内存无锁）、Node.js（libuv）、Netty（Java NIO）。理解它就懂了**为什么 Redis 单线程能扛高并发**。
 - **C10K → C10M**：万级连接靠 epoll + 事件驱动；千万级要内核旁路（DPDK / XDP / eBPF）与用户态协议栈。
 - **sendfile / splice**：静态文件与代理场景用零拷贝减少数据搬运，显著降低 CPU 与内存带宽占用。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **ET 模式没读干净**：只读了一部分就不管，剩余数据永不再触发事件，连接表现成「卡住/假死」。
 2. **事件循环里放阻塞调用**：任何一次同步阻塞（慢 SQL、阻塞读文件）都会卡住整个循环，所有连接一起等。
@@ -1917,7 +1935,7 @@ ${F}
 5. **以为多路复用 = 多线程**：它解决的是「一个线程管多连接」，CPU 密集任务仍要丢线程池。
 6. **不调 fd 上限**：高并发时 ${C}EMFILE: too many open files${C}，是线上高频故障。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能说清 select/poll/epoll 的复杂度差异与 epoll 的三点优势
 - [ ] 能解释 LT 与 ET 的区别，以及 ET 为什么必须读到 EAGAIN
@@ -2068,7 +2086,7 @@ ${F}
 4. **「非阻塞 + epoll 就不用管 fd 上限」**。fd 是硬约束，达到上限后 accept 会失败并返回 EMFILE，必须提前调优并监控。
 5. **「异步 I/O 一定优于同步 I/O」**。取决于场景：小消息高频交互下，Reactor 的开销与 Proactor 相当甚至更优；大文件传输才是异步 I/O 的主场（zero-copy、真正的 DMA 参与）。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 man7 的 ${C}epoll(7)${C} 与 ${C}select_tut(2)${C}，写一个最小可运行的 epoll echo server。
 - 阅读 io_uring 官方设计与「io_uring 与 epoll 对比」分析，理解下一代异步 IO。
@@ -2079,14 +2097,14 @@ ${F}
             id: "fs-disk-io",
             title: "文件系统与磁盘 IO",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Linux VFS（ext4 / XFS / overlayfs）",
             tags: ["文件系统", "磁盘", "IO", "inode"],
             terms: ["磁盘", "IO", "文件系统", "inode"],
             body: `
 > **官方文档基线**：[man7: filesystems(5)](https://man7.org/linux/man-pages/man5/filesystems.5.html) · [inode(7)](https://man7.org/linux/man-pages/man7/inode.7.html) · [fsync(2)](https://man7.org/linux/man-pages/man2/fsync.2.html) · [open(2)](https://man7.org/linux/man-pages/man2/open.2.html) · [proc(5) / diskstats](https://man7.org/linux/man-pages/man5/proc.5.html) · TLPI 第 13/14 章
 
-## 一、原理与底层机制
+## 一、VFS、inode 与页缓存
 
 ### 1.1 VFS：屏蔽底层的统一接口
 Linux 用**虚拟文件系统（VFS）**把 ext4 / XFS / Btrfs / overlayfs / tmpfs 统一成 ${C}open/read/write/close${C} 一套接口。应用不关心底层实现，「一切皆文件」的基础正在这里——${C}/proc${C}、${C}/dev${C}、socket 都挂在 VFS 之下。
@@ -2103,6 +2121,9 @@ Linux 用**虚拟文件系统（VFS）**把 ext4 / XFS / Btrfs / overlayfs / tmp
 - 要持久化必须 ${C}fsync()${C}（或 ${C}O_SYNC${C} / ${C}O_DIRECT${C}，代价是慢）。
 
 ### 1.4 一次 IO 的完整路径
+
+![一次 write() 的数据落盘路径](/assets/diagrams/docs/write-path.svg)
+
 ${F}text
 应用 read/write
   → VFS（文件系统抽象）
@@ -2116,14 +2137,14 @@ ${F}
 ### 1.5 顺序写 vs 随机写
 机械盘随机 IO 要寻道，吞吐可能只有顺序的百分之一；SSD 没有寻道但仍受擦写放大影响。因此工程上的普适原则是**把随机写转成顺序写**——这就是 WAL（预写日志）、LSM-Tree 的价值所在。
 
-## 二、规范与标准
+## 二、POSIX 落盘语义
 
 - **POSIX 语义**：${C}read/write${C} 不保证落盘；${C}fsync${C} 同步数据与元数据，${C}fdatasync${C} 只同步数据；${C}O_DIRECT${C} 绕过页缓存（数据库常用）。
 - **/proc/meminfo dirty 页**：${C}Dirty${C} / ${C}Writeback${C} 反映待写回数据量；脏页过多时写压力集中爆发，表现为周期性卡顿。
 - **挂载选项**：${C}noatime${C}（减少 atime 更新写）、${C}data=ordered${C}、${C}discard/trim${C}（SSD）、${C}nosuid/noexec/nodev${C}（安全加固）。
 - **文件系统选择**：ext4 通用稳妥；XFS 大文件与高并发元数据操作更好；overlayfs 用于容器镜像分层；tmpfs 纯内存（重启即失）。
 
-## 三、实战
+## 三、动手实践：空间与 inode 排查
 
 ${F}bash
 # 空间与 inode 双查（有空间但写不进 → 多半 inode 耗尽）
@@ -2166,7 +2187,7 @@ w.flush();
 channel.force(false);   // 批量结束统一刷盘
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：inode 耗尽与 overlayfs
 
 - **inode 耗尽**：海量小文件（会话、缓存碎片、邮件队列）会把 inode 用光，${C}df -h${C} 有空间但 ${C}df -i${C} 已满。解决要靠减少小文件或重建时调大 inode 密度。
 - **overlayfs 写放大**：容器在可写层修改文件会先复制整个文件（copy-up），频繁写会显著放大 IO 并占满节点磁盘；日志与数据必须挂 volume。
@@ -2174,7 +2195,7 @@ ${F}
 - **RAID 与冗余**：RAID0 提速无冗余、RAID1 镜像、RAID5/6 校验；写惩罚与重建窗口要纳入容量规划。
 - **SSD 特性**：无寻道但需 TRIM 回收、有擦写寿命（DWPD/TBW）；写放大与对齐影响寿命与性能。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **以为 write 成功就持久**：没 ${C}fsync${C}，宕机即丢数据；重要数据必须显式刷盘。
 2. **空间写不进只查 df -h**：忘了 ${C}df -i${C}，inode 耗尽照样写不进。
@@ -2183,7 +2204,7 @@ ${F}
 5. **到处 fsync**：每条日志都刷盘，性能断崖；应按业务重要性分级。
 6. **把 tmpfs 当持久存储**：重启即丢，误用会丢数据。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能解释 inode 与 dentry 的分工，以及「删文件不释放空间」的原因
 - [ ] 知道 write 与 fsync 的语义差别，能为不同数据选择持久化策略
@@ -2339,7 +2360,7 @@ ${F}
 4. **「SSD 不需要 TRIM」**。缺失 TRIM 会显著加剧写放大与性能衰减；确保挂载时开启 ${C}discard${C} 或定期执行 ${C}fstrim${C}。
 5. **「RAID 就一定更快更安全」**。RAID 5/6 的写惩罚（写要 4 次 IO）会严重拖慢随机写；且 RAID 不是备份，无法防误删。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 TLPI 第 13/14 章（文件 IO 缓冲）与第 15 章（文件属性）。
 - 阅读 ext4 / XFS 官方文档的「日志与一致性」章节。
@@ -2358,14 +2379,14 @@ ${F}
             id: "kernel-net-tune",
             title: "内核网络栈与调优",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Linux 内核网络栈 / sysctl",
             tags: ["内核", "网络调优", "参数", "中断"],
             terms: ["网络", "内核", "TCP", "调优"],
             body: `
 > **官方文档基线**：[man7: tcp(7)](https://man7.org/linux/man-pages/man7/tcp.7.html) · [man7: socket(7)](https://man7.org/linux/man-pages/man7/socket.7.html) · [Linux kernel: Scaling](https://www.kernel.org/doc/Documentation/networking/scaling.txt) · [NAPI](https://www.kernel.org/doc/Documentation/networking/napi.txt) · [/proc/sys/net 文档](https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt)
 
-## 一、原理与底层机制
+## 一、收包路径：中断、NAPI 与多队列
 
 ### 1.1 一个包进入内核的完整旅程
 ${F}text
@@ -2395,7 +2416,7 @@ ${F}
 
 队列溢出时：新连接被丢弃（客户端表现为超时/重传），或服务端回 RST。**网关/Proxy 类服务在高并发下「偶发连不上」，十有八九是队列太小**。
 
-## 二、规范与标准
+## 二、sysctl 参数规范
 
 - **/proc/sys/net 参数**（用 ${C}sysctl -w${C} 临时改，写 ${C}/etc/sysctl.conf${C} 或 ${C}/etc/sysctl.d/*.conf${C} 持久化）。
 - **TCP 内存**：${C}net.ipv4.tcp_rmem${C} / ${C}tcp_wmem${C} 各三个值 = min / default / max；长肥管道（高带宽高延迟）需调大 max 才能跑满带宽（BDP = 带宽 × RTT）。
@@ -2403,7 +2424,7 @@ ${F}
 - **Fast Open**：${C}net.ipv4.tcp_fastopen=3${C} 允许 SYN 携带数据（TFO），减少一次 RTT。
 - **完整连接队列**：${C}net.core.somaxconn${C}；半连接：${C}net.ipv4.tcp_max_syn_backlog${C}。
 
-## 三、实战
+## 三、动手实践：队列与端口调优
 
 ${F}bash
 # —— 队列与端口 ——
@@ -2443,7 +2464,7 @@ nstat -az | head -40
 ss -s
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：GRO / GSO / TSO
 
 - **GRO/GSO/TSO**：TSO 把大块数据交给网卡分段（减 CPU），GRO 把收到的包合并成大的（减协议栈开销）。虚拟化/overlay 下如果 GRO 合并了不同流的包会造成误解，故有 ${C}tx-*${C} 关闭的场景（如 K8s overlay 常见调优）。
 - **XDP / eBPF**：在网卡驱动最早阶段处理包（XDP），可实现线速 DDoS 过滤、负载均衡（如 Cilium 的部分能力），绕过部分协议栈开销。
@@ -2451,7 +2472,7 @@ ${F}
 - **中断合并（interrupt coalescing）**：${C}ethtool -C${C} 调整合并参数，在延迟与 CPU 之间权衡（低延迟场景关合并）。
 - **调优方法论**：**先量化、再单点改动、改完复测**。不要抄一份「通用内核参数」无脑套——别人的瓶颈不是你的瓶颈。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **盲开 tcp_tw_recycle**：NAT 环境下会随机丢连接，内核 4.12 已移除；用 ${C}tcp_tw_reuse${C} 即可。
 2. **somaxconn 没调，高并发丢连接**：网关/Proxy 尤甚，且现象是「偶发超时」，很难查。
@@ -2460,7 +2481,7 @@ ${F}
 5. **buffer 一味调大**：${C}rmem/wmem${C} 过大会增加缓冲延迟（bufferbloat），按业务权衡。
 6. **只看带宽不看 PPS**：小包场景下 PPS 才是瓶颈，带宽远未打满但 CPU 已满。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能画出包从网卡到应用的内核路径，并指出各阶段瓶颈
 - [ ] 能解释 RSS/RPS/RFS 与中断亲和分别解决什么问题
@@ -2633,7 +2654,7 @@ ${F}
 4. **「B 开了 BBR 就能跑满带宽」**。还需接收窗口（${C}tcp_rmem${C}）与发送窗口足够大，否则带宽延迟积限制吞吐。
 5. **「netstat -s 里的 drops 都是丢包」**。不同计数含义完全不同（backlog drop 与 socket drop 的解法相反），必须先分类再动手。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 阅读 Linux 内核文档 ${C}Documentation/networking/scaling.txt${C} 与 ${C}napi.txt${C}。
 - 精读 ${C}ip-sysctl.txt${C} 中 TCP 相关条目，理解每个参数的语义与默认值。
@@ -2644,14 +2665,14 @@ ${F}
             id: "high-conn-model",
             title: "高并发网络模型",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "C10K / C10M · Reactor · 协程",
             tags: ["高并发", "网络模型", "架构", "Reactor"],
             terms: ["高并发", "epoll", "网络模型", "IO"],
             body: `
 > **官方文档基线**：[C10K 问题（Dan Kegel）](http://www.kegel.com/c10k.html) · [C10M 问题](http://c10m.robertgraham.com/) · [Netty 线程模型](https://netty.io/wiki/user-guide-for-4.x.html) · [Go netpoller 设计](https://go.dev/src/runtime/netpoll.go) · [DPDK](https://www.dpdk.org/)
 
-## 一、原理与底层机制
+## 一、C10K 到 C10M 与 Reactor
 
 ### 1.1 从 C10K 到 C10M
 - **C10K**（单机 1 万并发连接）：传统「一连接一线程」撑不住，催生**事件驱动 + epoll**（Nginx、Node、Redis）。
@@ -2680,14 +2701,14 @@ ${F}
 ### 1.4 协程：把「同步写法」还给高并发
 Go 的 goroutine 是**用户态调度**，每个初始栈仅几 KB，单进程跑几十万协程；上层写的是「一行行同步调用」，由运行时（GMP 模型）自动映射到 OS 线程并在阻塞点让出。Java 虚拟线程（JEP 444）思路相同：**用同步的代码风格获得异步的伸缩性**，大幅降低心智负担。
 
-## 二、规范与标准
+## 二、背压与池化规范
 
 - **背压（backpressure）**：上游生产速率 > 下游消费速率时必须限流/缓冲/丢弃，否则内存被冲爆。手段：有界队列、令牌桶、响应式流的 ${C}request(n)${C}。
 - **连接与线程池**：用连接池复用（避免 TIME_WAIT 与建连开销）；线程/协程池上限按「IO 密集放大、CPU 密集≈核数」设定。
 - **超时与熔断**：每一层调用都要有超时；下游持续失败要熔断，避免线程被拖死形成雪崩。
 - **限流算法**：固定窗口、滑动窗口、漏桶、令牌桶；网关层做全局限流，服务层做实例级限流。
 
-## 三、实战
+## 三、动手实践：Netty 主从 Reactor
 
 **Netty 主从 Reactor（生产常用骨架）**：
 ${F}java
@@ -2721,7 +2742,7 @@ for {
 }
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：Reactor 与 Proactor
 
 - **Reactor vs Proactor**：Reactor 是「就绪后应用自己读写」，Proactor 是「内核完成 IO 后通知你」（Windows IOCP、Linux io_uring）。Go netpoller 底层用 epoll，但给上层呈现的是同步风格。
 - **Netty 线程模型要点**：boss 只 accept；worker 数量默认 = 2×核数；**严禁在 EventLoop 里执行耗时阻塞操作**，重活丢业务线程池。
@@ -2729,7 +2750,7 @@ ${F}
 - **内核旁路**：DPDK 用轮询替代中断、用户态驱动、零拷贝，适合 NFV/负载均衡；代价是独占核、复杂度高。
 - **容量规划**：连接数 ≠ 吞吐。要按「并发连接 × 每连接内存 + PPS + 带宽」三个维度分别估算。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **在高并发服务里用阻塞 IO**：一次同步调用卡住整个事件循环，所有连接跟着等。
 2. **EventLoop 里跑慢任务**：慢 SQL / 大文件读写在 IO 线程里执行，直接拖垮该线程上的所有连接。
@@ -2738,7 +2759,7 @@ ${F}
 5. **盲目追求 C10M**：绝大多数业务到不了那个量级，epoll + 合理架构足够，先别过度设计。
 6. **协程无脑起**：协程虽轻，但无上限地起仍会耗尽内存（每个仍有栈与对象），要用有界并发。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能对比多进程/多线程/Reactor/协程/内核旁路五种模型的取舍
 - [ ] 能画出主从 Reactor 结构并说明 boss 与 worker 的分工
@@ -2891,7 +2912,7 @@ ${F}
 4. **「多线程就是高并发」**。线程数超过 CPU 并行度后，切换与锁竞争会让性能下降；关键是让每个核都处于有效计算状态。
 5. **「压测到了瓶颈就是系统上限」**。常见的是压测机先到上限（fd、端口、CPU），必须同时监控压测端与被压端。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 阅读 Dan Kegel 的 C10K 原文，理解问题演进的历史脉络。
 - 精读 Netty 官方线程模型文档与 Go netpoller 源码注释。
@@ -2902,19 +2923,22 @@ ${F}
             id: "container-net",
             title: "容器网络原理",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Docker / Kubernetes 网络",
             tags: ["容器", "网络", "CNI", "K8s"],
             terms: ["容器", "网络", "Docker", "CNI"],
             body: `
 > **官方文档基线**：[man7: network_namespaces(7)](https://man7.org/linux/man-pages/man7/network_namespaces.7.html) · [veth(4)](https://man7.org/linux/man-pages/man4/veth.4.html) · [Docker 网络文档](https://docs.docker.com/network/) · [CNI 规范](https://github.com/containernetworking/cni) · [Kubernetes 网络模型](https://kubernetes.io/docs/concepts/services-networking/)
 
-## 一、原理与底层机制
+## 一、netns、veth、网桥与 NAT
 
 ### 1.1 网络命名空间：容器网络的起点
 每个容器拥有独立的**网络命名空间（netns）**——自己的网卡、IP、路由表、arp 表、iptables、端口空间。所以「两个容器监听同一端口」不冲突，因为它们在各自的命名空间里。
 
 ### 1.2 veth pair + 网桥：把容器接出去
+
+![容器网络：netns + veth + 网桥 + NAT](/assets/diagrams/docs/container-net.svg)
+
 - **veth pair** 是一对「虚拟网线」，一端在容器 netns（如 eth0），另一端在宿主机的网桥（如 docker0）。**从一端发出的帧从另一端出来**。
 - **网桥（bridge）** 在宿主机上做二层转发，把多个容器的 veth 接在一起，并按需转发到外部网卡。
 
@@ -2940,14 +2964,14 @@ ${F}
 ### 1.5 K8s 网络模型与 CNI
 K8s 的网络「三约法」：① **所有 Pod 可直接互通**（无需 NAT，扁平网络）；② **Pod 重建 IP 可变，但命名空间内所有容器共享同一 IP**；③ **Service 有稳定虚拟 IP**。实现靠 **CNI 插件**在 Pod 沙箱（pause 容器）的 netns 上插 veth、分配 IP、写路由。
 
-## 二、规范与标准
+## 二、CNI 与 Service 负载均衡
 
 - **CNI 规范**：定义容器运行时如何调用插件（ADD/DEL/CHECK），输入输出为标准 JSON；插件负责 veth 创建、IPAM、路由。
 - **Service 负载均衡**：kube-proxy 有 **iptables 模式**（规则随 Service 数线性膨胀，大规模下匹配变慢）与 **IPVS 模式**（哈希表，O(1)，大规模更稳）。
 - **NetworkPolicy**：默认「全通」，需显式声明入/出白名单；**这要求 CNI 支持策略**（Calico/Cilium 支持，Flannel 默认不支持）。
 - **MTU**：overlay 封装（如 VXLAN）会额外占用字节，Pod MTU 必须相应调小（常见 1450/1440），否则大包被丢或分片。
 
-## 三、实战
+## 三、动手实践：查看容器网络
 
 ${F}bash
 # 列举 Docker 网络与容器地址
@@ -2978,7 +3002,7 @@ ${F}text
 5) 跨节点才不通？→ 查 MTU / NetworkPolicy / 路由
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：CNI 插件选型
 
 - **CNI 插件选型**：**Flannel**（简单 VXLAN，性能一般，适合小集群）、**Calico**（BGP 路由或 VXLAN，支持 NetworkPolicy，性能好）、**Cilium**（基于 eBPF，可观测性与安全强，新项目常见首选）。
 - **overlay vs underlay**：overlay（VXLAN/Geneve）跨三层网络封装，部署简单但有封装开销；underlay（BGP 直连路由）性能好但需网络设备配合。
@@ -2986,7 +3010,7 @@ ${F}
 - **CoreDNS**：集群内服务发现的解析器，Pod 的 ${C}/etc/resolv.conf${C} 指向它；解析失败常见于 CoreDNS 副本不足或网络策略拦截。
 - **eBPF 数据面**：Cilium 用 eBPF 替代大量 iptables 规则，减少规则膨胀与跳数，提升可观测性。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **两个容器端口冲突**：在 host / container 模式下会冲突，bridge 模式各占命名空间才不冲突。
 2. **MTU 不匹配导致偶发大包丢失**：overlay 下没调小 MTU，小请求正常、大响应超时——疑难网络问题先查 MTU。
@@ -2995,7 +3019,7 @@ ${F}
 5. **硬编码 Pod IP**：Pod 重建 IP 会变，必须用 Service / DNS 名字访问。
 6. **只在客户端容器抓包**：跨节点问题要在两端 + 网桥/隧道分别抓，单点抓包容易误判。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能画出 veth pair + 网桥 + NAT 的容器出网路径
 - [ ] 能解释 K8s 网络三约法与 CNI 插件的角色
@@ -3154,7 +3178,7 @@ ${F}
 4. **「改了 iptables 规则只影响新连接」**。移除 conntrack 相关规则会让已有连接失联；变更应通过 K8s API 而非手工改规则。
 5. **「所有跨主机通信都要走 VXLAN」**。同节点通信走 bridge，根本不出宿主；这也是"同节点 Pod 通信比跨节点快很多"的原因。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 man7 的 ${C}network_namespaces(7)${C} 与 ${C}veth(4)${C}，手动用 ${C}ip${C} 命令搭一个容器网络。
 - 阅读 CNI 规范与 Calico / Cilium 官方架构文档，理解 overlay 与 eBPF 数据面的差异。
@@ -3165,14 +3189,14 @@ ${F}
             id: "syscall-profiling",
             title: "系统调用与性能剖析",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "perf / strace / eBPF（bcc / bpftrace）",
             tags: ["性能", "剖析", "syscall", "eBPF"],
             terms: ["性能", "syscall", "strace", "perf"],
             body: `
 > **官方文档基线**：[man7: perf](https://man7.org/linux/man-pages/man1/perf.1.html) · [strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html) · [syscall(2)](https://man7.org/linux/man-pages/man2/syscall.2.html) · [bcc 工具集](https://github.com/iovisor/bcc) · [bpftrace](https://github.com/bpftrace/bpftrace) · Brendan Gregg《Systems Performance》
 
-## 一、原理与底层机制
+## 一、系统调用与采样剖析
 
 ### 1.1 系统调用：用户态与内核态的边界
 你写的 ${C}read/write/open/connect/mmap${C} 并不会直接碰硬件，而是通过 ${C}syscall${C} 指令**陷入内核**由内核代办。每次陷入都要：切换特权级、保存/恢复寄存器、可能切换栈与地址空间校验，**成本远超普通函数调用**。频繁或无谓的 syscall 是隐形性能杀手。
@@ -3190,14 +3214,14 @@ eBPF 允许在**内核事件点**（syscall 入口/出口、调度、IO、TCP �
 - **CPU 型**：热在 CPU 上跑，用 ${C}perf${C} + 火焰图找热点函数。
 - **延迟/等待型**：线程在等（锁、IO、网络），CPU 不高但慢，需要 **off-CPU 分析**（${C}offcputime${C} / ${C}wakeuptime${C}），看「被谁阻塞、等了多久」。
 
-## 二、规范与标准
+## 二、syscall 代价速查
 
 - **syscall 语义**：了解常见 syscall 的代价——${C}read/write${C}（可批量减少次数）、${C}stat${C}（元数据查询最频繁）、${C}mmap${C}（替代大量小 read）、${C}futex${C}（锁的底层）。
 - **/proc 与 /sys**：进程态（${C}/proc/<pid>/status${C}）、IO（${C}io${C}）、调度（${C}schedstat${C}）、网络（${C}/proc/net/*${C}）都是零依赖观测源。
 - **perf 权限**：${C}perf_event_paranoid${C} 控制非 root 可用的采样能力；容器内 perf 需挂载与权限配合。
 - **符号问题**：程序 strip 后火焰图全是问号，需保留 debug 符号或单独存 ${C}.debug${C} 文件。
 
-## 三、实战
+## 三、动手实践：strace 与 perf
 
 ${F}bash
 # —— strace：看程序到底在调什么 ——
@@ -3233,7 +3257,7 @@ CPU 高吗？
                └─ strace -c / tcpretrans（syscall 与网络）
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：perf 常用子命令
 
 - **perf 常用子命令**：${C}perf stat${C}（总体计数）、${C}perf top${C}、${C}perf record/report${C}、${C}perf trace${C}（类 strace）、${C}perf sched${C}（调度延迟）。
 - **Brendan Gregg 的 60 秒检查清单**：${C}uptime / dmesg / vmstat / mpstat / pidstat / iostat / free / sar / top${C} 一轮快速体检，先看全局再钻细节。
@@ -3241,7 +3265,7 @@ ${F}
 - **容器的观测**：容器内 perf/eBPF 需权限与内核版本支持；宿主机侧用 ${C}cgroup${C} 过滤目标容器更可靠。
 - **持续剖析（continuous profiling）**：把采样常态化（如 Parca、Pyroscope），按版本/时间段对比，定位回归。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **strace 上生产忘了关**：${C}strace${C} 会显著拖慢目标进程（尤其 ${C}-f${C} 多线程），用完立即停。
 2. **只盯用户态 CPU**：慢其实在内核态（syscall 多、锁、IO 等待），要看 ${C}perf${C} 的 [kernel] 符号与 syscall 维度。
@@ -3250,7 +3274,7 @@ ${F}
 5. **perf 没符号**：strip 后全是问号，编译保留 debug 符号。
 6. **拿采样当精确计数**：采样有统计误差，精确计数要用 ${C}perf stat${C} 或 eBPF 计数。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能解释一次 syscall 的完整开销与「无谓 syscall」的危害
 - [ ] 会先用 ${C}strace -c${C} 看 syscall 分布，再用 ${C}perf${C} 定位 CPU 热点
@@ -3461,7 +3485,7 @@ ${F}
 4. **「平均延迟达标就没事」**。p99 才是用户感知；平均值会掩盖长尾，而长尾往往才是事故的起点。
 5. **「问题解决就不需要再看」**。性能基线与火焰图应定期存档并对比，才能发现"缓慢劣化"型问题（每次发布慢一点点，几个月后才发现）。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 精读 Brendan Gregg《Systems Performance》第 4–6 章（工具方法论）。
 - 浏览 bcc 的 tools 目录，逐个了解每个小工具的适用场景。

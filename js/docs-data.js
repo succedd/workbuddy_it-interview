@@ -32,16 +32,18 @@
             id: "fs-basics",
             title: "Linux 目录结构与文件操作",
             minutes: 20,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "CentOS 7+ / Ubuntu 20.04+",
             tags: ["Linux", "基础"],
             terms: ["Linux", "文件"],
             body: `
 > **官方文档基线**：[Linux man-pages](https://man7.org/linux/man-pages/) · [The Linux Programming Interface](https://man7.org/tlpi/) · [GNU Coreutils 手册](https://www.gnu.org/software/coreutils/manual/coreutils.html) · [filesystem hierarchy(7)](https://man7.org/linux/man-pages/man7/file-hierarchy.7.html)
 
-## 一、原理与底层机制
+## 一、一切皆文件：VFS、inode 与 FHS
 
 服务器上「一切皆文件」不是比喻，是 Linux 的统一抽象：硬件设备、进程、内核参数、管道、套接字都被暴露成文件，统一用「打开/读/写/关闭」那套接口操作。理解这一点，你就拿到了整张地图，不会再被「这个配置在哪」「那个进程信息怎么看」卡住。
+
+![Linux 目录结构（FHS）](/assets/diagrams/docs/fhs-tree.svg)
 
 - **VFS（虚拟文件系统）**：上层应用不直接碰具体文件系统（ext4/xfs/overlay/btrfs），而是走 VFS 这一层。所以 open()/read()/write() 对你的代码一模一样，底层是本地盘、网络盘还是内存盘对应用透明。换存储类型不用改业务代码。
 - **inode 才是文件的本体**：目录里看到的名字只是「硬链接」——一个指向 inode 的指针。一个 inode 可以被多个名字指向（硬链接），删文件名只是减一个引用计数，引用归零才真正释放数据块。ls -i 能看到 inode 号；同一个 inode 的多个名字地位平等，没有「原文件」之分。
@@ -49,7 +51,7 @@
 - **FHS（文件系统层级标准）**规定各目录该放什么，所有发行版都遵守，所以你换一台机器也知道配置在 /etc、日志在 /var/log、数据在 /var/lib。这是运维的「肌肉记忆」起点。
 - **一切皆文件也意味着一切皆路径**：看进程 ${C}cat /proc/<pid>/cmdline${C}；看内核参数 ${C}cat /proc/sys/...${C} 或 ${C}sysctl${C}；看挂载 ${C}cat /proc/mounts${C}。排障时这些路径比记命令更可靠。
 
-## 二、规范与标准
+## 二、目录约定与操作红线
 
 | 目录 | 角色 | 运维常动作 | 红线 |
 |---|---|---|---|
@@ -63,7 +65,7 @@
 | /proc /sys | 内核运行时信息 | 看进程、看内核参数 | 别随意写 /proc、/sys，可能导致内核异常 |
 | /dev | 设备文件 | 磁盘、null、random、stdin 等 | 理解设备节点，挂载/排障基础 |
 
-## 三、实战
+## 三、动手实践：查看、查找、空间与链接
 
 ### 看（错误 vs 正确）
 ${F}bash
@@ -110,7 +112,7 @@ ${F}
 
 **软链接做版本切换（线上最常用）**：发布时把 /app 指向新版本目录，出问题把软链接指回旧目录即可秒级回滚，比重新部署快得多。配合 ${C}ln -s new /app.tmp && mv -T /app.tmp /app${C} 还能做到原子切换。
 
-## 四、覆盖广度
+## 四、拓展：特殊文件与挂载
 
 - **特殊文件**：/dev/null（黑洞，丢弃输出）、/dev/zero（无限 0）、/dev/random vs /dev/urandom（随机数源，加密用后者，random 会阻塞）、/dev/full（写满报错，测错误处理）。
 - **字符设备 vs 块设备**：磁盘是块设备（随机读写，按扇区块），终端/串口是字符设备（流式），别混用；mount 时类型要对。
@@ -119,7 +121,7 @@ ${F}
 - **隐藏文件与点的含义**：以 . 开头的文件默认隐藏；.. 是父目录；路径里 . 是当前目录。
 - **决策指引**：要「可进目录」给 x；要「列内容」给 r；删文件看的是父目录 w 不是文件本身权限；备份用 cp -a 或 rsync -a。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **rm -rf / 与变量未定义**：rm -rf $DIR/* 在 DIR 为空时变成 rm -rf /*。脚本里一律写 rm -rf "\${DIR:?}"/*（变量未定义直接报错退出，不执行删除）。
 2. **rm -rf 前不确认路径**：先把路径 ls 出来确认，或先 mv 到 /tmp 观察几天再删；生产用 rm -ri 逐条确认。
@@ -129,7 +131,7 @@ ${F}
 6. **硬链接跨分区**：硬链接只能同文件系统，跨分区用软链接；软链接源删了链接就断。
 7. **改完配置不验证**：很多程序改错路径不报错，先确认文件真实存在再重启服务。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 能默写配置在 /etc、日志在 /var/log、数据在 /var/lib、程序在 /usr 与 /opt
 - [ ] 会用 df -h / df -i 区分「空间满」与「inode 满」
@@ -238,7 +240,7 @@ ${F}
 
 **四个操作风险提醒**：① ${C}rm -rf${C} 在变量为空时可能变成 ${C}rm -rf /${C}——脚本里必须用 ${C}\${VAR:?}${C} 或先判断目录非空；② ${C}dd${C} 写错设备会毁数据（一定先 ${C}lsblk${C} 确认）；③ 磁盘写满会导致数据库拒绝写入与日志丢失（必须有容量告警，阈值 80%/90% 两级）；④ 在满盘的文件系统上删除文件**可能仍然无法写入**（ext4 保留 5% 给 root，普通进程仍受限）——要留出余量。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 深入 inode 与 VFS：《The Linux Programming Interface》第 2~5 章（man7.org 可在线读）。
 - stat、file、readlink -f 是定位「真实路径/链接链」的利器；namei -l /a/b/c 可逐级看路径权限。
@@ -250,14 +252,14 @@ ${F}
             id: "perm-sudo",
             title: "用户、权限与 sudo",
             minutes: 22,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "CentOS 7+ / Ubuntu 20.04+",
             tags: ["Linux", "权限", "安全"],
             terms: ["Linux", "权限"],
             body: `
 > **官方文档基线**：[file-hierarchy(7)](https://man7.org/linux/man-pages/man7/file-hierarchy.7.html) · [passwd(5)/credentials](https://man7.org/linux/man-pages/man5/passwd.5.html) · [sudoers 手册](https://www.sudo.ws/docs/man/sudoers.man/) · [TLPI 第 8 章 用户与组](https://man7.org/tlpi/) · [capabilities(7)](https://man7.org/linux/man-pages/man7/capabilities.7.html)
 
-## 一、原理与底层机制
+## 一、权限模型：主体·客体·模式·特殊位
 
 Linux 的权限不是「这个文件谁能访问」一句话，而是**主体（谁）+ 客体（文件）+ 模式（怎么访问）+ 特殊位**的组合。初级运维 80% 的「命令执行不了」「服务起不来」「文件写不进去」，最后追下去都是权限问题。把这一节吃透，能省掉大量无意义的排查时间。
 
@@ -267,7 +269,7 @@ Linux 的权限不是「这个文件谁能访问」一句话，而是**主体（
 - **umask 决定新建默认权限**：文件从 666 减 umask、目录从 777 减。常见 022 → 文件 644、目录 755；设 077 则新建只有自己能看（多用户服务器建议）。
 - **三个特殊位**：setuid（以文件 owner 身份跑，如 passwd）、setgid（目录下新建文件继承组）、sticky（如 /tmp，只能删自己的）。
 
-## 二、规范与标准
+## 二、推荐权限规范
 
 | 操作 | 推荐权限 | 理由 |
 |---|---|---|
@@ -280,7 +282,7 @@ Linux 的权限不是「这个文件谁能访问」一句话，而是**主体（
 
 sudoers 铁律：**永远用 visudo 编辑**，它会做语法检查，错了不让保存；直接 vi 改错可能把自己锁死 root 权限。授权遵循最小权限：只给需要的命令，必要时 NOPASSWD 限定具体路径，绝不给 ALL 全部命令。
 
-## 三、实战
+## 三、动手实践：chmod、sudo 与 sudoers
 
 ### 修改权限（错误 vs 正确）
 ${F}bash
@@ -320,7 +322,7 @@ find / -perm -4000 -type f 2>/dev/null     # setuid
 find / -perm -2000 -type f 2>/dev/null     # setgid
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：ACL 与 capabilities
 
 - **ACL（访问控制列表）**：当 owner/group/other 不够细时，用 setfacl/getfacl 给单个用户/组单独授权（如让运维组只读某目录而不动属主）。
 - **capabilities**：比 setuid 更细的特权拆分（如只给绑定 80 端口的能力 CAP_NET_BIND_SERVICE），容器里常用，避免给整个程序 root。
@@ -329,7 +331,7 @@ ${F}
 - **umask 与部署**：CI/CD 部署出的文件默认 022，如果服务以低权用户跑，注意属主与 umask 协同。
 - **决策指引**：服务以专用低权用户跑（app/nginx），绝不用 root；改 sudoers 一律 visudo；私钥 600；巡检 setuid/setgid。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **sudo echo x > file 报 Permission denied**：重定向是当前 shell 做的，不是 sudo。正确：echo x | sudo tee file 或 sudo sh -c 'echo x > file'。
 2. **chmod 777 是万恶之源**：看着解决了，实际是绕过。先搞清楚「谁要访问、需要什么权限」再精确授权。
@@ -339,7 +341,7 @@ ${F}
 6. **用 root 跑应用**：出问题影响面大，且安全风险高，合规不通过。
 7. **sudoers 里给 ALL ALL=(ALL) ALL 再 NOPASSWD**：等于把 root 随便给人，应细化到命令。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 报错 Permission denied → 先 ls -l 看属主/权限，再 ps -ef 确认进程以哪个用户跑
 - [ ] 查权限一路查父目录的 x 位
@@ -468,7 +470,7 @@ ${C}${C}${C}
 
 **两个实用认知**：① **SSH 的权限拒绝可能来自 PAM 而不是 sshd 配置**（如账号被 pam_faillock 锁定、${C}/etc/security/access.conf${C} 限制来源）——排查要同时看 sshd 日志与 PAM 日志；② **${C}limits.conf${C} 对 systemd 服务无效**（systemd 服务要用单元里的 ${C}LimitNOFILE=${C}）——这是「明明改了 limits 但服务仍然 too many open files」的根因。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 深入 capability 与 setuid 安全：《TLPI》第 8、9 章。
 - 生产环境接 LDAP/SSSD 做统一身份；服务器多后用 Ansible 的 file/acl 模块批量收敛权限。
@@ -480,16 +482,18 @@ ${C}${C}${C}
             id: "process-basics",
             title: "进程与资源查看入门",
             minutes: 20,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "CentOS 7+ / Ubuntu 20.04+",
             tags: ["Linux", "进程", "systemd"],
             terms: ["进程", "Linux"],
             body: `
 > **官方文档基线**：[proc(5)](https://man7.org/linux/man-pages/man5/proc.5.html) · [signal(7)](https://man7.org/linux/man-pages/man7/signal.7.html) · [systemd.service](https://www.freedesktop.org/software/systemd/man/systemd.service.html) · [TLPI 第 24~25 章 进程](https://man7.org/tlpi/) · [ps(1)](https://man7.org/linux/man-pages/man1/ps.1.html)
 
-## 一、原理与底层机制
+## 一、进程是什么：PID、状态与资源
 
 程序是躺在磁盘上的文件，**进程是跑起来的程序**。每个进程有 PID、PPID（父进程）、所属 uid/gid、占用的 CPU/内存，以及一组文件描述符。运维日常就是：看进程在不在、占多少资源、卡在哪、怎么优雅地重启它。
+
+![Linux 进程状态与转换](/assets/diagrams/docs/process-states.svg)
 
 - **进程树**：所有进程都是 init/PID 1 的后代；父进程退出，子进程被 init 收养（孤儿进程）。进程组、会话用于批量管理信号。
 - **进程状态**：R 运行、S 可中断睡眠、D 不可中断睡眠（常等 IO，杀不掉）、Z 僵尸（已死但父进程没回收）、T 停止（被信号暂停）。
@@ -497,7 +501,7 @@ ${C}${C}${C}
 - **信号是进程间异步通知**：kill 本质是发信号，不是「杀死」。默认 SIGTERM 可被捕获做清理，SIGKILL 不可捕获。
 - **systemd 管理服务生命周期**：start/stop/restart/reload/status，日志统一走 journalctl -u；它是绝大多数现代发行版的 init。
 
-## 二、规范与标准
+## 二、常用命令速查
 
 | 命令 | 用途 |
 |---|---|
@@ -510,7 +514,7 @@ ${C}${C}${C}
 
 **load average = 正在运行 + 等待运行（含等 IO）的进程数**；经验值 load/CPU 核数 ≤ 1 算轻松，持续 > 1 说明有排队。⚠ **load 高 ≠ CPU 高**：大量进程在等磁盘 IO 时，load 能飙到几十而 CPU 空闲，看 load 一定要配合 CPU 使用率和 IO 一起判断。
 
-## 三、实战
+## 三、动手实践：定位、信号、systemd 与后台
 
 ### 查看与定位（错误 vs 正确）
 ${F}bash
@@ -551,7 +555,7 @@ ${F}
 
 **正经服务别用 nohup**：没有自动拉起、没有日志轮转、没有依赖管理。交给 systemd（见进阶内容）。
 
-## 四、覆盖广度
+## 四、拓展：内存判断与 D 状态
 
 - **内存判断**：free 很小正常（被拿去做 buff/cache），available 才是「还能用多少」；available 持续偏低才危险。
 - **D 状态进程**：等不可中断 IO（通常磁盘/网络存储），kill -9 也杀不掉，只能解决底层 IO 或重启；大量 D 状态往往指向存储故障。
@@ -560,7 +564,7 @@ ${F}
 - **信号与优雅退出**：写服务时务必处理 SIGTERM 做清理（关连接、落盘、从注册中心注销），否则 kill -9 会雪崩。
 - **决策指引**：服务不可用 ≠ 进程活着，要配合端口(ss)和健康接口；重启用 reload 不断连接；kill 先 -15 再 -9。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **ps aux | grep 带出 grep 自己**：用 pgrep -a 或 grep [n]ginx 规避。
 2. **进程在但服务不可用**：进程活着 ≠ 能服务。要配合端口（ss -lntp）和健康检查接口判断。
@@ -570,7 +574,7 @@ ${F}
 6. **直接 kill -9**：来不及刷盘/释放锁/从注册中心摘除，可能导致数据损坏或流量继续打进来；永远先 -15。
 7. **只看单进程不看树**：一个父进程带一堆子进程，要 top -Hp 看线程、pstree 看全貌。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 服务「起不来」：systemctl status + journalctl -u 看具体报错
 - [ ] 服务「卡住」：top 看 CPU/内存，ss 看连接，pidstat 看上下文切换
@@ -697,7 +701,7 @@ ${F}
 
 **上下文切换**：${C}voluntary_ctxt_switches${C}（主动让出，如等 IO）与 ${C}nonvoluntary${C}（被抢占，说明 CPU 竞争激烈）。前者高是 IO 密集的正常表现，**后者高才是 CPU 不足的信号**——这比单纯看 CPU 使用率更有解释力。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 深入 fork/exec、信号、僵尸：《TLPI》第 24~27 章。
 - cgroups：systemd 用 cgroup 隔离资源，容器本质也是 cgroup + namespace；systemd-run 可临时起受限单元。
@@ -716,19 +720,21 @@ ${F}
             id: "perf-four",
             title: "性能分析四板斧：CPU / 内存 / 磁盘 / 网络",
             minutes: 28,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Linux 内核 3.10+",
             tags: ["性能", "排障"],
             terms: ["性能", "CPU", "内存"],
             body: `
 > **官方文档基线**：[Brendan Gregg — Systems Performance](https://www.brendangregg.com/systems-performance.html) · [USE 方法](https://www.brendangregg.com/usemethod.html) · [Linux Performance 实战](https://www.brendangregg.com/linuxperf.html) · [proc(5)](https://man7.org/linux/man-pages/man5/proc.5.html) · [vmstat(8)](https://man7.org/linux/man-pages/man8/vmstat.8.html)
 
-## 一、原理与底层机制
+## 一、USE 方法：使用率·饱和度·错误
 
 性能排障的本质是**在四类资源上逐一回答三个问题**（USE 方法，Brendan Gregg）：
 - **U**tilization 使用率：资源忙不忙
 - **S**aturation 饱和度：有没有排队（排队长度比使用率更早暴露问题）
 - **E**rrors 错误：有没有报错
+
+![USE 方法：对每种资源问三个问题](/assets/diagrams/docs/use-method.svg)
 
 四类资源：**CPU、内存、磁盘、网络**。盲目 top 一圈是找不到瓶颈的，按资源逐个过，5 分钟就能圈定方向。绝大多数性能问题是**局部的、可定位的**，关键是方法而非工具数量。
 
@@ -737,7 +743,7 @@ ${F}
 - **磁盘视角**：%util 接近 100 是饱和，await 是平均等待；真正信号是 await 涨+应用变慢，不是单纯 %util。
 - **网络视角**：连接状态分布（TIME_WAIT/CLOSE_WAIT）、重传率、丢包；小包风暴与吞吐瓶颈表现不同。
 
-## 二、规范与标准
+## 二、四类资源指标与危险阈值
 
 | 资源 | 第一手命令 | 关键指标 | 危险阈值 |
 |---|---|---|---|
@@ -748,7 +754,7 @@ ${F}
 
 线上规范：定位到瓶颈后**先保存现场快照**再重启；看趋势（sar/监控）而非瞬时；90% 问题在应用层（慢 SQL、死循环、连接不复用、锁竞争），不要一上来调内核参数。
 
-## 三、实战
+## 三、动手实践：CPU、内存、磁盘、网络定位
 
 ### CPU 定位（错误 vs 正确）
 ${F}bash
@@ -785,7 +791,7 @@ ${F}
 
 **容器 OOM 经典坑**：JVM 看不到 cgroup 限制，按宿主机内存算堆 → 一跑就 OOMKilled。JDK 8u191+/11+ 默认容器感知，或显式 -XX:MaxRAMPercentage=70.0（别用 -Xmx 写死）。
 
-## 四、覆盖广度
+## 四、拓展：磁盘 IO 与网络状态
 
 - **磁盘 IO 模型**：%util 100% 不一定到极限（RAID/SSD 有并行度），要结合 await 与业务变慢判断；真正的信号是 await 明显上涨 + 应用变慢。
 - **网络状态语义**：TIME_WAIT 正常（主动关闭方，不占内存描述符）；CLOSE_WAIT=程序 bug（连接泄漏）；重传率高=网络差或对端慢；大量 SYN_RECV=可能被 SYN Flood。
@@ -794,7 +800,7 @@ ${F}
 - **平均响应时间骗人**：P99 才是用户体验，平均 50ms 但 P99 3s 说明有长尾；监控要盯分位。
 - **决策指引**：load 高先分 CPU 还是 IO；容器里按 cgroup 限额看，别看宿主机；定位后保存 jstack/perf/ss 快照再重启。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **只看瞬时 top**：瞬时值易误导，看 5 分钟以上趋势（sar/监控图）。
 2. **一上来调内核参数**：90% 在应用层，先查慢 SQL/死循环/连接复用/锁。
@@ -804,7 +810,7 @@ ${F}
 6. **把 wa 高当 CPU 问题**：wa 高指向磁盘 IO，去磁盘章节。
 7. **忽视饱和度**：使用率不高但排队严重（如磁盘 %util 80% 但 await 暴涨）才是真瓶颈。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] USE 四问覆盖 CPU/内存/磁盘/网络
 - [ ] CPU：区分 us/sy/wa/si，run 队列是否 > 核数
@@ -937,7 +943,7 @@ ${F}
 
 **排障的工具选择纪律**：**先用低开销工具（vmstat/iostat/ss）确认方向，再用高开销工具（strace/tcpdump）确认细节**。直接在核心服务上跑 ${C}strace -f${C} 可能让延迟翻倍——这是「排障导致故障」的经典方式。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - Brendan Gregg 的 [Flame Graphs](https://www.brendangregg.com/flamegraphs.html)：用 perf/torch 生成火焰图，一眼看 CPU 花在哪。
 - eBPF（bcc 工具集）：无侵入观测（biosnoop、offcputime、tcplife），取代很多老工具。
@@ -948,14 +954,14 @@ ${F}
             id: "log-system",
             title: "日志体系：收集、轮转与排障",
             minutes: 24,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "systemd / rsyslog / ELK / Loki",
             tags: ["日志", "可观测性"],
             terms: ["日志"],
             body: `
 > **官方文档基线**：[systemd journald 文档](https://www.freedesktop.org/software/systemd/man/journalctl.html) · [journald.conf](https://www.freedesktop.org/software/systemd/man/journald.conf.html) · [logrotate(8)](https://man7.org/linux/man-pages/man8/logrotate.8.html) · [Grafana Loki 文档](https://grafana.com/docs/loki/latest/) · [Elasticsearch 文档](https://www.elastic.co/guide/index.html)
 
-## 一、原理与底层机制
+## 一、日志在排障中的位置
 
 日志是故障现场的唯一还原手段：监控告诉你「出事了」，日志告诉你「为什么」。但现实常是——没打、打满磁盘、或散在 50 台机器各登各的。出故障时，日志是**唯一能还原现场的东西**，其它手段（指标、链路）只能告诉你「哪里慢/错了」，说不清「为什么」。
 
@@ -964,7 +970,7 @@ ${F}
 - **轮转的本质**：避免单文件无限增长打满磁盘。应用日志靠 logrotate；journald 靠自身容量上限（SystemMaxUse）。
 - **集中式的必要**：多机后必须汇聚，靠 traceId 把一次请求跨服务串起来；否则 50 台机器一台台登着找日志不现实。
 
-## 二、规范与标准
+## 二、持久化与轮转规范
 
 | 项 | 规范 |
 |---|---|
@@ -975,7 +981,7 @@ ${F}
 | 脱敏 | 密码/身份证/token 必须脱敏（合规红线） |
 | 时钟 | 所有机器 NTP 同步、时区一致（容器注意默认 UTC） |
 
-## 三、实战
+## 三、动手实践：journald 与 logrotate
 
 ### journald（错误 vs 正确）
 ${F}bash
@@ -1025,7 +1031,9 @@ ${F}
 
 验证：${C}logrotate -d /etc/logrotate.d/myapp${C}（演练看会做什么）、${C}-f${C}（强制执行一次）。
 
-## 四、覆盖广度
+## 四、拓展：集中日志方案选型
+
+![日志采集链路](/assets/diagrams/docs/log-pipeline.svg)
 
 - **集中方案选型**：ELK（Elasticsearch+Logstash/Fluentd+Kibana，检索强但重）、Loki+Promtail+Grafana（轻量、按标签索引、成本低）、云日志服务（开箱即用）。
 - **采集端**：Filebeat/Promtail/Fluent Bit 比 Logstash 轻得多，边车或 DaemonSet 部署。
@@ -1034,7 +1042,7 @@ ${F}
 - **采集与存储分层**：热数据（近 7 天）全文检索，冷数据降采样或归档，控制成本。
 - **决策指引**：先持久化+轮转+告警（防自伤），再多机集中+traceId（防排查崩溃）；DEBUG 日志生产默认关。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **日志打满磁盘拖垮整机**：最常见自伤。必须 logrotate + journald 上限 + 磁盘 >80% 告警。
 2. **时间不同步排查崩溃**：多机日志对不上时间等于白打，全机 NTP 同步、容器注意时区。
@@ -1044,7 +1052,7 @@ ${F}
 6. **明文敏感信息**：密码、token、身份证进日志，合规事故。
 7. **配置没演练**：logrotate 没验证过，真出问题才发现根本没轮转。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] journald 已持久化且有容量上限（SystemMaxUse）
 - [ ] 应用日志配 logrotate 且验证过（logrotate -d）
@@ -1167,7 +1175,7 @@ ${C}${C}${C}
 
 **认证与授权日志要落到「可回答四问」**：谁（账号/来源 IP）、何时、做了什么（操作+目标）、结果（成功/失败）。缺少任一项，事件追溯时都要靠猜。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 可观测性三支柱：Logs（Loki/ELK）+ Metrics（Prometheus）+ Traces（Jaeger/Tempo），三者关联 traceId/spanId。
 - 采样与成本：高流量下全量存成本高，按级别/采样率存；错误日志全量、INFO 采样。
@@ -1178,14 +1186,14 @@ ${C}${C}${C}
             id: "troubleshoot-manual",
             title: "常见故障速查手册",
             minutes: 30,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "通用",
             tags: ["故障", "手册"],
             terms: ["故障", "排查"],
             body: `
 > **官方文档基线**：[Brendan Gregg — Linux Performance 实战](https://www.brendangregg.com/linuxperf.html) · [Google SRE Book — 故障应对](https://sre.google/sre-book/table-of-contents/) · [proc(5)](https://man7.org/linux/man-pages/man5/proc.5.html) · [ss(8)](https://man7.org/linux/man-pages/man8/ss.8.html) · [openssl(1)](https://man7.org/linux/man-pages/man1/openssl.1.html)
 
-## 一、原理与底层机制
+## 一、排障流水线：现象→定性→定位→处理
 
 故障排查是「现象 → 定性 → 定位 → 处理」的流水线。核心心法：**先想清楚是什么资源/哪一层的问题，再动手**，而不是凭直觉乱试。这一篇是**可以按 Ctrl+F 搜症状的救命手册**。
 
@@ -1194,7 +1202,7 @@ ${C}${C}${C}
 - **变更视角**：80% 故障与最近变更相关（发布、配置、数据、基础设施）。先问「最近改了什么」，能直接缩小范围。
 - **分层视角**：网络→系统→应用→数据，自上而下或自下而上逐层排除，不要同时改多处。
 
-## 二、规范与标准
+## 二、条目格式与止损优先级
 
 每个排障条目统一格式：**现象 → 一句话定性 → 定位命令 → 处理**。随身优先级：**止损 > 定位**（回滚 > 摘流量/降级 > 扩容/重启 > 限流 > 修数据）。能在 1 分钟内回滚的，不要花 10 分钟定位。
 
@@ -1206,7 +1214,7 @@ ${C}${C}${C}
 | 端口起不来 | ss -lntp | 被占用 |
 | 接口慢 | DNS/下游/磁盘依次排 | 多因叠加 |
 
-## 三、实战
+## 三、十大常见故障
 
 ### 1. 磁盘满了但 du 对不上
 ${F}bash
@@ -1272,7 +1280,7 @@ ${F}
 ### 10. 改了配置但不生效
 顺序自查：改对文件 → 语法校验（nginx -t/sshd -t）→ reload 还是 restart → 是否有多处配置/容器改了宿主机文件。
 
-## 四、覆盖广度
+## 四、拓展：OOM 与连接异常
 
 - **OOM 处理顺序**：内存真不够 vs limit 太小 → JVM 容器感知 → 加内存/swap 缓冲 → 查泄漏。
 - **连接异常**：CLOSE_WAIT=bug；TIME_WAIT=正常但客户端海量短连接时端口耗尽（Cannot assign requested address）。
@@ -1281,7 +1289,7 @@ ${F}
 - **配置不生效**：改错文件 → 语法校验 → reload/restart → 容器改了宿主机文件。
 - **决策指引**：一次只改一处；操作前想好怎么回滚；重启前存现场（jstack/jmap/ss/dmesg/top -H）。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **先定位后止损**：大故障先回滚/摘流量，再慢慢查；止损优先于定位。
 2. **重启前不存现场**：jstack/jmap/ss/dmesg/top -H 存一份，否则无法复盘。
@@ -1291,7 +1299,7 @@ ${F}
 6. **只查一台机器**：分布式下要跨服务、跨节点关联（集中日志/traceId）。
 7. **把重启当结论**：恢复后不查根因，故障必复发。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 磁盘满 → df -h / df -i / lsof | grep deleted
 - [ ] 服务没了 → dmesg 查 OOM、systemctl status 看状态
@@ -1422,7 +1430,7 @@ journalctl -p warning --since "-30 min" > "$D/07-journal.txt" 2>/dev/null
 tar czf "$D.tgz" -C "$(dirname $D)" "$(basename $D)"; echo "collected: $D.tgz"
 ${F}
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 把高频条目做成 runbook，接入 ChatOps/告警自动建议，缩短 MTTR。
 - 故障演练（混沌工程）：主动注入磁盘满、网络延迟，验证预案有效。
@@ -1441,23 +1449,25 @@ ${F}
             id: "k8s-ops",
             title: "Kubernetes 集群运维要点",
             minutes: 32,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "Kubernetes 1.24+",
             tags: ["K8s", "云原生"],
             terms: ["Kubernetes", "K8s", "容器"],
             body: `
 > **官方文档基线**：[Kubernetes 官方文档](https://kubernetes.io/docs/) · [kubectl 参考](https://kubernetes.io/docs/reference/kubectl/) · [工作负载](https://kubernetes.io/docs/concepts/workloads/) · [网络模型](https://kubernetes.io/docs/concepts/cluster-administration/networking/) · [存储](https://kubernetes.io/docs/concepts/storage/) · [调度](https://kubernetes.io/docs/concepts/scheduling-eviction/)
 
-## 一、原理与底层机制
+## 一、声明式模型与控制面
 
 K8s 的核心是**声明式**：你声明「要 3 个副本跑这镜像」，控制面持续对比实际状态并自动收敛。排障第一性问题永远是：**期望状态是什么？实际状态是什么？谁在阻止收敛？**
+
+![Kubernetes 架构](/assets/diagrams/docs/k8s-arch.svg)
 
 - **控制面**：API Server（唯一入口，鉴权/校验）、etcd（唯一状态源，一切配置与状态的真相）、Scheduler（调度决策）、Controller Manager（各类控制器维持期望，如 ReplicaSet 维持副本数）。
 - **数据面**：kubelet（节点代理，管 Pod 生命周期）、kube-proxy（维护转发规则）、容器运行时（containerd/CRI-O）。
 - **Pod 是最小调度单元**：一个 Pod 内多容器共享网络命名空间与存储卷；通常一个 Pod 跑一个主容器，加 sidecar（日志/代理）。
 - **收敛循环**：Controller watch 实际状态，与 etcd 里的期望对比，驱动变更直到一致。所以「改了不生效」往往是因为期望状态没改对，或控制器被卡住。
 
-## 二、规范与标准
+## 二、上线必配项
 
 | 上线必配项 | 要求 |
 |---|---|
@@ -1469,7 +1479,7 @@ K8s 的核心是**声明式**：你声明「要 3 个副本跑这镜像」，控
 | PDB | 主动驱逐保最小可用副本 |
 | ResourceQuota/LimitRange | 每命名空间限额，防一个应用拖垮集群 |
 
-## 三、实战
+## 三、动手实践：Pod 异常定位与资源配额
 
 ### 生命周期异常定位
 ${F}bash
@@ -1504,7 +1514,7 @@ resources:
     memory: "2Gi"
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：调度与网络
 
 - **调度控制**：亲和/反亲和（同节点/同可用区）、污点容忍（专用节点 GPU/高性能盘）、TopologySpreadConstraints（比反亲和精细，推荐新项目）。
 - **网络三层**：CNI（Flannel 简单/Calico 有策略/Cilium eBPF）、Service（ClusterIP/NodePort/LoadBalancer，kube-proxy IPVS 模式更稳）、Ingress（Ingress-Nginx/Traefik/Gateway API）。
@@ -1513,7 +1523,7 @@ ${F}
 - **升级与废弃 API**：先升控制面后升节点；一次升一个小版本；用 pluto/kubent 扫废弃 API。
 - **决策指引**：数据库别在 K8s 自建；配额+PDB 保稳定；禁 latest；探针/resources/反亲和是上线基本盘。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **没配 readinessProbe 就上线**：Pod 未预热就被塞流量，发布期大量 5xx；就绪探针是必配项。
 2. **探针打到重接口**：探针超时会杀正常 Pod；探针要独立轻量。
@@ -1524,7 +1534,7 @@ ${F}
 7. **etcd 磁盘慢**：集群整体抖，必须 SSD + 监控。
 8. **用 latest 标签**：无法回滚、无法追溯，事故时抓瞎。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 先看 describe 的 Events，再看 logs --previous
 - [ ] Pending→调度/污点；CrashLoop→上次日志；ImagePull→镜像与 secret
@@ -1679,7 +1689,7 @@ ${C}${C}${C}
 
 **一条经验**：**集群的稳定性来自「日常巡检 + 演练」，而不是「出事时的应急」。** 上面这份清单里，维护成本最低、收益最高的三项是：**证书有效期监控、etcd 备份恢复演练、节点磁盘/镜像清理**——它们覆盖了集群级故障中最高频的三类成因。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 可观测性：Prometheus（指标）+ Loki/ELK（日志）+ Jaeger/Tempo（链路）三件套。
 - GitOps（Argo CD/Flux）：声明式发布+自动回滚+审计。
@@ -1690,16 +1700,18 @@ ${C}${C}${C}
             id: "slo-sli",
             title: "SLO / SLI / 错误预算：把稳定性量化",
             minutes: 26,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "通用方法论",
             tags: ["SRE", "稳定性"],
             terms: ["可用性"],
             body: `
 > **官方文档基线**：[Google SRE Book — Service Level Objectives](https://sre.google/sre-book/service-level-objectives/) · [Prometheus 告警实践](https://prometheus.io/docs/practices/alerting/) · [Grafana 告警](https://grafana.com/docs/grafana/latest/alerting/) · [错误预算](https://sre.google/sre-book/embracing-risk/) · [多窗口多燃烧率](https://sre.google/sre-book/alerting-on-slos/)
 
-## 一、原理与底层机制
+## 一、SLI、SLO 与错误预算
 
 稳定性不能靠「感觉」，要量化成数字。三个概念：
+
+![SLI → SLO → 错误预算](/assets/diagrams/docs/slo-budget.svg)
 
 - **SLI**（指标/Indicator）：怎么测，如 成功请求数/总请求数。
 - **SLO**（内部目标/Objective）：要多少，如 30 天成功率 ≥ 99.9%。
@@ -1707,7 +1719,7 @@ ${C}${C}${C}
 
 核心：**SLA 是给客户的，SLO 是给自己的，且 SLO 应比 SLA 更严**，留出缓冲。错误预算把「稳定 vs 快速迭代」的争论变成数据决策：预算足→激进发布、做有风险的变更；预算耗尽→冻结非必要变更，全部精力投入稳定性改进。这是 SRE 里最优雅的机制。
 
-## 二、规范与标准
+## 二、可用性与停机时间对照
 
 | 可用性 | 每月可 downtime | 每年 |
 |---|---|---|
@@ -1718,7 +1730,7 @@ ${C}${C}${C}
 
 每多一个 9，成本常是数量级上升（冗余、多活、自动化）。好 SLI 满足：**用户可感知、可测量、能反映真实体验**。延迟类用「响应 < 阈值的请求占比」而非平均；吞吐/质量类用「消息不丢失率、数据新鲜度」。
 
-## 三、实战
+## 三、动手实践：选 SLI 与燃烧率告警
 
 ### 选 SLI（错误 vs 正确）
 ${F}
@@ -1741,7 +1753,7 @@ ${F}
 
 **好处**：短窗口+高阈值快速发现严重故障，又不因短暂抖动半夜叫醒人（长窗口+低阈值兜底）。
 
-## 四、覆盖广度
+## 四、拓展：有效请求与多窗口
 
 - **有效请求定义**：客户端 4xx 不算服务端错误预算，先定义边界，否则会被正常拒绝刷爆预算。
 - **多窗口价值**：1h 窗口抓快故障，3d 窗口确认慢消耗，组合避免告警疲劳。
@@ -1750,7 +1762,7 @@ ${F}
 - **决策指引**：SLO 与业务方共定，先粗后细、可松不可严，慢慢收紧；预算耗尽的处理流程需管理层支持。
 - **多 SLO 场景**：不同用户旅程可设不同 SLO，核心链路更严，内部工具更松。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **SLO 定 100%**：等于禁止任何变更，也做不到；100% 是错误的目标。
 2. **定太严致告警疲劳**：团队开始忽略告警，比没有告警更糟；宁可先松，慢慢收紧。
@@ -1760,7 +1772,7 @@ ${F}
 6. **忘排除合理失败**：4xx 算进预算，预算被正常流量吃光。
 7. **只看月度总览**：不在 Dashboard 上实时看燃烧率，等事故才发现预算早没了。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 选定 1~2 条核心用户旅程
 - [ ] 定义清晰 SLI 计算公式（含什么算有效请求）
@@ -1876,7 +1888,7 @@ ${C}${C}${C}
 
 **最有价值的一次 SLO 评审**通常是：「我们这个 SLI 没能反映用户的真实体验——用户抱怨的是慢，而我们只测了可用性。」**指标定义错误比指标不达标更危险**，因为它会让你在「指标全绿」的情况下持续流失用户。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 错误预算策略需管理层支持：耗尽了谁有权冻结发布、谁有权决定冒险。
 - SLO 与容量规划联动：预算消耗快=扩容/优化信号，提前行动。
@@ -1887,22 +1899,24 @@ ${C}${C}${C}
             id: "incident-review",
             title: "事故复盘与变更管理",
             minutes: 26,
-            updated: "2026-09-17",
+            updated: "2026-11-19",
             applies: "通用方法论",
             tags: ["SRE", "流程"],
             terms: ["故障", "变更"],
             body: `
 > **官方文档基线**：[Google SRE Book — 管理事件](https://sre.google/sre-book/managing-incidents/) · [事后复盘文化](https://sre.google/sre-book/postmortem-culture/) · [有效的事后复盘](https://sre.google/sre-book/example-postmortem/) · [变更管理](https://sre.google/sre-book/) · [ITIL 变更管理](https://www.axelos.com/best-practice-solutions/itil)
 
-## 一、原理与底层机制
+## 一、止损优先与变更风险
 
 故障处理的第一优先级**永远是恢复服务**，不是找根因。顺序：**止损 → 收敛影响 → 定位 → 根治**。行业共识：**70%~80% 的故障由变更引起**（发布、配置、数据变更、基础设施调整）。所以变更管理比排障本身更重要——防住变更，就防住大多数故障。
+
+![故障处理时间线](/assets/diagrams/docs/incident-timeline.svg)
 
 - **止损手段排序**：回滚 > 摘流量/降级 > 扩容/重启 > 限流 > 修数据。能 1 分钟回滚就别 10 分钟定位。
 - **复盘对事不对人**：批斗会让人不敢说真话，拿不到真实原因；无责复盘才能暴露系统问题。
 - **根因要追问到系统层**：不是「某人操作失误」就停，而是「为什么流程允许他这么操作、为什么没有卡点」。
 
-## 二、规范与标准
+## 二、事故角色分工
 
 | 角色 | 职责 |
 |---|---|
@@ -1913,7 +1927,7 @@ ${C}${C}${C}
 
 故障分级（提前公开定好）：P0 核心业务全面不可用/资金损失→立即召人、IC 上线、实时通报；P1 严重受损、大量用户→30 分钟内；P2 部分异常、有替代→工作时段；P3 轻微→排期。分级标准不公开，现场一定为「算 P0 还是 P1」吵起来。
 
-## 三、实战
+## 三、动手实践：复盘文档与变更三板斧
 
 ### 复盘文档结构（错误 vs 正确）
 ${F}
@@ -1935,7 +1949,7 @@ ${F}bash
 # 可回滚：底线，没有回滚方案的变更不许上线
 ${F}
 
-## 四、覆盖广度
+## 四、拓展：时间线与根因追问
 
 - **时间线三时间点**：发生/发现/恢复必须区分；发现慢、止损慢常比故障本身更值得改（监控与止损能力）。
 - **根因追问链**：服务不可用→DB 连不上→连接池满→慢查询→无索引 SQL→无 SQL 审核（系统层）。
@@ -1944,7 +1958,7 @@ ${F}
 - **变更窗口与审批**：低峰期做、通知相关方（值班、客服、依赖团队）、数据库变更评估大表 DDL 风险。
 - **决策指引**：任何变更先问「怎么回滚、影响谁、观察什么指标、谁来盯」。
 
-## 五、常见误区
+## ⚠ 常见误区
 
 1. **只追责不改系统**：罚了当事人，流程没变，下次换个人照样出。
 2. **复盘文档没人看**：要公开、可检索、变更时能被翻出。
@@ -1954,7 +1968,7 @@ ${F}
 6. **「重启就好了」当结论**：不继续查，故障必复发。
 7. **变更不灰度直接全量**：一次把 100% 流量暴露给未验证的变更，赌运气。
 
-## 六、自检清单
+## ✅ 自检清单
 
 - [ ] 故障发生：先止损再定位
 - [ ] 明确 IC，指定 Scribe 记时间线
@@ -2072,7 +2086,7 @@ ${C}${C}${C}
 
 **最有价值的一次改进是把「个案修复」升级为「默认正确」**：修一个服务的连接池只是修了一个服务；把它写进脚手架模板与流水线检查，就让**下一个新服务默认不会犯同样的错误**。这也是平台工程与 SRE 的交汇点——**把事故教训编码进默认路径**，是工程组织积累可靠性的唯一可规模化方式。
 
-## 七、延伸
+## 📚 延伸阅读
 
 - 混沌工程：主动注入故障验证预案与回滚有效（没演练的预案=没有）。
 - 将复盘行动项接入 tracker 自动跟踪关闭，下次复盘先回顾上次行动项。

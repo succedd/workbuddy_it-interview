@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="520" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">select / poll / epoll 对比</text>
+<text x="40" y="64" font-size="15" fill="#64748b">都是「一个线程等很多连接」，差别在怎么告诉你谁就绪</text>
+<rect x="40.0" y="92.0" width="257.3" height="50.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="168.7" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">select</text>
+<rect x="40.0" y="154.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="168.7" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">fd 上限 1024</text>
+<text x="168.7" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">FD_SETSIZE 固定</text>
+<rect x="40.0" y="231.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="168.7" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">每次调用全量拷贝</text>
+<text x="168.7" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">用户态 → 内核态</text>
+<rect x="40.0" y="308.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="168.7" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">返回后遍历全部 fd</text>
+<text x="168.7" y="357.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">O(n) 找就绪</text>
+<rect x="40.0" y="385.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="168.7" y="412.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">可移植性最好</text>
+<text x="168.7" y="434.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">POSIX 标准</text>
+<rect x="321.3" y="92.0" width="257.3" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="450.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">poll</text>
+<rect x="321.3" y="154.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">无数量上限</text>
+<text x="450.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">pollfd 数组</text>
+<rect x="321.3" y="231.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">每次仍全量拷贝</text>
+<text x="450.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">和 select 一样</text>
+<rect x="321.3" y="308.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">返回后仍需遍历</text>
+<text x="450.0" y="357.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">O(n)</text>
+<rect x="321.3" y="385.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="412.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">解决了上限问题</text>
+<text x="450.0" y="434.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">没解决效率问题</text>
+<rect x="602.7" y="92.0" width="257.3" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="731.3" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">epoll（Linux）</text>
+<rect x="602.7" y="154.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="731.3" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">epoll_ctl 注册一次</text>
+<text x="731.3" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">内核红黑树保存</text>
+<rect x="602.7" y="231.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="731.3" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">就绪 fd 进就绪链表</text>
+<text x="731.3" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">回调驱动</text>
+<rect x="602.7" y="308.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="731.3" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">epoll_wait 只返回就绪</text>
+<text x="731.3" y="357.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">O(就绪数)</text>
+<rect x="602.7" y="385.0" width="257.3" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="731.3" y="412.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">支持 LT / ET</text>
+<text x="731.3" y="434.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">ET 必须非阻塞读到 EAGAIN</text>
+<text x="40.0" y="486.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">连接数少时三者差别不大；上万连接、活跃比例低时 epoll 优势明显。Nginx、Redis、Netty 在 Linux 上都基于 epoll。</text>
+</svg>

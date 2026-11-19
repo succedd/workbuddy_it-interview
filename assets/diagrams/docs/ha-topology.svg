@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="420" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">数据库高可用方案光谱</text>
+<text x="40" y="64" font-size="15" fill="#64748b">RPO = 最多丢多少数据，RTO = 多久恢复服务</text>
+<rect x="40.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">主从 + 手动切换</text>
+<rect x="40.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">RPO：秒级~分钟</text>
+<text x="136.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">异步复制可能丢</text>
+<rect x="40.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">RTO：十几分钟</text>
+<text x="136.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">靠人</text>
+<rect x="40.0" y="308.0" width="193.0" height="44.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">适合：内部系统</text>
+<rect x="249.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="345.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">半同步 + 自动切换</text>
+<rect x="249.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">RPO：接近 0</text>
+<text x="345.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">至少一个从库确认</text>
+<rect x="249.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">RTO：30 秒内</text>
+<text x="345.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">Orchestrator / MHA</text>
+<rect x="249.0" y="308.0" width="193.0" height="44.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">适合：大多数业务</text>
+<rect x="458.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="554.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">MGR / 分布式数据库</text>
+<rect x="458.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">RPO：0</text>
+<text x="554.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">Paxos 多数派提交</text>
+<rect x="458.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">RTO：秒级</text>
+<text x="554.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">自动选主</text>
+<rect x="458.0" y="308.0" width="193.0" height="44.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">适合：核心交易</text>
+<rect x="667.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="763.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">同城双活 + 异地灾备</text>
+<rect x="667.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">防机房级故障</text>
+<text x="763.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">两地三中心</text>
+<rect x="667.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">成本最高</text>
+<text x="763.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">要定期演练</text>
+<rect x="667.0" y="308.0" width="193.0" height="44.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="335.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">适合：金融级</text>
+<text x="40.0" y="386.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">方案没有最好，只有和业务可承受损失匹配的。切换后一定要防「脑裂」：旧主恢复后不能再接受写入。</text>
+</svg>

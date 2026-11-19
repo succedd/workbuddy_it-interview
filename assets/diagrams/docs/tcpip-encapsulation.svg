@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 382" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="382" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">TCP/IP 封装：每往下一层就多一个头</text>
+<text x="40" y="64" font-size="15" fill="#64748b">发送方自上而下加头，接收方自下而上剥头</text>
+<text x="40.0" y="117.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">应用层</text>
+<rect x="550.8" y="92.0" width="305.2" height="40.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="703.4" y="116.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">应用数据 GET / HTTP/1.1</text>
+<text x="40.0" y="171.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">传输层 TCP</text>
+<rect x="447.7" y="146.0" width="99.1" height="40.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="497.2" y="170.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">TCP 头 20B</text>
+<rect x="550.8" y="146.0" width="305.2" height="40.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="703.4" y="170.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">应用数据</text>
+<text x="40.0" y="225.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">网络层 IP</text>
+<rect x="344.6" y="200.0" width="99.1" height="40.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="394.2" y="224.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">IP 头 20B</text>
+<rect x="447.7" y="200.0" width="99.1" height="40.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="497.2" y="224.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">TCP 头</text>
+<rect x="550.8" y="200.0" width="305.2" height="40.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="703.4" y="224.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">应用数据</text>
+<text x="40.0" y="279.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">链路层 以太网</text>
+<rect x="190.0" y="254.0" width="99.1" height="40.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="239.5" y="278.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">帧头 14B</text>
+<rect x="293.1" y="254.0" width="99.1" height="40.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="342.6" y="278.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">IP 头</text>
+<rect x="396.2" y="254.0" width="99.1" height="40.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="445.7" y="278.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">TCP 头</text>
+<rect x="499.2" y="254.0" width="305.2" height="40.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="651.8" y="278.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">应用数据</text>
+<rect x="808.5" y="254.0" width="47.5" height="40.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="832.2" y="278.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">FCS</text>
+<text x="40.0" y="328.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">路由器只看 IP 头，交换机只看以太网头；每层的头只被对端的同一层解读。以太网 MTU 1500 字节 = IP 头 + TCP 头 + 最多 1460</text>
+<text x="40.0" y="348.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">字节数据（MSS）。</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 376" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="376" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">数据迁移七阶段（双写方案）</text>
+<text x="40" y="64" font-size="15" fill="#64748b">每一步都可回退，切读之前旧库始终是权威数据源</text>
+<rect x="40.0" y="92.0" width="175.0" height="88.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="127.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">1 建新库</text>
+<text x="127.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">表结构、索引、账号</text>
+<rect x="255.0" y="92.0" width="175.0" height="88.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="342.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">2 开双写</text>
+<text x="342.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">写旧库为主，异步写新库</text>
+<line x1="218.0" y1="136.0" x2="252.0" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="470.0" y="92.0" width="175.0" height="88.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="557.5" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">3 迁存量</text>
+<text x="557.5" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">按主键分批搬历史数据</text>
+<line x1="433.0" y1="136.0" x2="467.0" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="685.0" y="92.0" width="175.0" height="88.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="772.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">4 校验</text>
+<text x="772.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">全量 +</text>
+<text x="772.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">增量对比，修差异</text>
+<line x1="648.0" y1="136.0" x2="682.0" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40.0" y="220.0" width="175.0" height="88.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="127.5" y="258.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">5 灰度切读</text>
+<text x="127.5" y="281.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">按比例把读流量切到新库</text>
+<path d="M772.5 182.0 V198.0 H127.5 V217.0" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="255.0" y="220.0" width="175.0" height="88.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="342.5" y="249.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">6 切写</text>
+<text x="342.5" y="272.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">新库为主，旧库反向同步</text>
+<text x="342.5" y="290.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">兜底</text>
+<line x1="218.0" y1="264.0" x2="252.0" y2="264.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="470.0" y="220.0" width="175.0" height="88.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="557.5" y="258.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">7 下线旧库</text>
+<text x="557.5" y="281.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">观察期结束后停双写</text>
+<line x1="433.0" y1="264.0" x2="467.0" y2="264.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="342.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">最危险的是第 6 步：要有明确的回切开关和数据对账。存量迁移要限速，避免把线上库打满。</text>
+</svg>

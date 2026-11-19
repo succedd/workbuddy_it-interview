@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 268" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="268" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">MySQL 主从复制：三个线程</text>
+<text x="40" y="64" font-size="15" fill="#64748b">主库写 binlog，从库拉取后重放</text>
+<rect x="40.0" y="92.0" width="169.0" height="88.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="124.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">主库提交事务</text>
+<text x="124.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">写 binlog（ROW</text>
+<text x="124.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">格式记录行变更）</text>
+<rect x="257.0" y="92.0" width="169.0" height="88.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="341.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">Binlog Dump 线程</text>
+<text x="341.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">主库上，把新的 binlog</text>
+<text x="341.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">事件推给从库</text>
+<line x1="212.0" y1="136.0" x2="254.0" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="474.0" y="92.0" width="169.0" height="88.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="558.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">从库 IO 线程</text>
+<text x="558.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">接收事件写入本地</text>
+<text x="558.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">relay log</text>
+<line x1="429.0" y1="136.0" x2="471.0" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="691.0" y="92.0" width="169.0" height="88.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="775.5" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">从库 SQL 线程</text>
+<text x="775.5" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">读取 relay log</text>
+<text x="775.5" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">重放（可多线程并行）</text>
+<line x1="646.0" y1="136.0" x2="688.0" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="214.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">延迟通常卡在 SQL 线程：大事务、无主键表、单线程重放。用 GTID 定位复制位点，用 semi-sync</text>
+<text x="40.0" y="234.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">保证至少一个从库收到才返回提交成功。</text>
+</svg>

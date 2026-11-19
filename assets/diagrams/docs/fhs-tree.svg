@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 577" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="577" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">Linux 目录结构（FHS）</text>
+<text x="40" y="64" font-size="15" fill="#64748b">一切从根目录 / 开始，每个目录有约定好的用途</text>
+<rect x="260.0" y="92.0" width="380.0" height="56.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="450.0" y="126.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">/  根目录</text>
+<line x1="450.0" y1="148.0" x2="450.0" y2="170.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="136.5" y1="170.0" x2="763.5" y2="170.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="136.5" y1="170.0" x2="136.5" y2="192.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40.0" y="194.0" width="193.0" height="64.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="136.5" y="231.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">系统程序</text>
+<line x1="136.5" y1="258.0" x2="136.5" y2="270.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="270.0" width="177.0" height="83.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="296.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/bin /sbin</text>
+<text x="136.5" y="318.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">基础命令（多为 /usr</text>
+<text x="136.5" y="335.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">的链接）</text>
+<line x1="136.5" y1="353.0" x2="136.5" y2="365.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="365.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="391.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/usr</text>
+<text x="136.5" y="413.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">绝大多数软件和库</text>
+<line x1="136.5" y1="431.0" x2="136.5" y2="443.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="443.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="469.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/lib</text>
+<text x="136.5" y="491.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">共享库、内核模块</text>
+<line x1="345.5" y1="170.0" x2="345.5" y2="192.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="249.0" y="194.0" width="193.0" height="64.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="345.5" y="231.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">配置与启动</text>
+<line x1="345.5" y1="258.0" x2="345.5" y2="270.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="257.0" y="270.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="296.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/etc</text>
+<text x="345.5" y="318.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">系统和服务配置</text>
+<line x1="345.5" y1="336.0" x2="345.5" y2="348.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="257.0" y="348.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="374.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/boot</text>
+<text x="345.5" y="396.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">内核与引导</text>
+<line x1="345.5" y1="414.0" x2="345.5" y2="426.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="257.0" y="426.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="452.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/dev</text>
+<text x="345.5" y="474.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">设备文件</text>
+<line x1="554.5" y1="170.0" x2="554.5" y2="192.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="458.0" y="194.0" width="193.0" height="64.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="554.5" y="231.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">可变数据</text>
+<line x1="554.5" y1="258.0" x2="554.5" y2="270.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="466.0" y="270.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="296.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/var/log</text>
+<text x="554.5" y="318.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">日志</text>
+<line x1="554.5" y1="336.0" x2="554.5" y2="348.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="466.0" y="348.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="374.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/var/lib</text>
+<text x="554.5" y="396.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">数据库等状态数据</text>
+<line x1="554.5" y1="414.0" x2="554.5" y2="426.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="466.0" y="426.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="452.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/tmp</text>
+<text x="554.5" y="474.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">临时文件，重启清空</text>
+<line x1="763.5" y1="170.0" x2="763.5" y2="192.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="667.0" y="194.0" width="193.0" height="64.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="763.5" y="231.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">用户与运行时</text>
+<line x1="763.5" y1="258.0" x2="763.5" y2="270.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="675.0" y="270.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="296.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/home /root</text>
+<text x="763.5" y="318.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">用户目录</text>
+<line x1="763.5" y1="336.0" x2="763.5" y2="348.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="675.0" y="348.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="374.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/proc /sys</text>
+<text x="763.5" y="396.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">内核信息虚拟文件</text>
+<line x1="763.5" y1="414.0" x2="763.5" y2="426.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="675.0" y="426.0" width="177.0" height="66.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="452.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">/opt /srv</text>
+<text x="763.5" y="474.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">第三方软件、服务数据</text>
+<text x="40.0" y="543.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">磁盘满了先看 /var/log 和 /var/lib；/proc 下的文件不占磁盘，是内核实时生成的。</text>
+</svg>

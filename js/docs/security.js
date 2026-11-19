@@ -1323,7 +1323,7 @@ ${F}
             id: "security-mid-2",
             title: "认证与授权设计：OAuth 2.0 / OIDC / RBAC / ABAC",
             minutes: 30,
-            updated: "2026-09-16",
+            updated: "2026-11-19",
             applies: "通用后端 / 开放平台",
             tags: ["授权", "OAuth", "RBAC", "零信任"],
             terms: ["OAuth 2.0", "OIDC", "PKCE", "RBAC", "ABAC"],
@@ -1368,6 +1368,8 @@ ${F}
 ## 三、OAuth 2.0：它其实是「授权」协议，不是登录协议
 
 OAuth 2.0 解决的是「第三方应用在用户授权下访问用户在资源服务器上的数据」。**「用微信登录」这个需求本质是 OIDC（在 OAuth 之上加了一层身份层）。**
+
+![OAuth 2.0 授权码 + PKCE](/assets/diagrams/docs/oauth-pkce.svg)
 
 **四种授权类型，以及 2026 年的取舍**：
 
@@ -2288,7 +2290,7 @@ ${F}
             id: "security-adv-1",
             title: "安全开发生命周期（SDL）与威胁建模",
             minutes: 26,
-            updated: "2026-09-16",
+            updated: "2026-11-19",
             applies: "研发流程 / 架构设计",
             tags: ["SDL", "威胁建模", "STRIDE"],
             terms: ["SDL", "威胁建模", "STRIDE", "SAMM"],
@@ -2311,6 +2313,8 @@ ${F}
 **判断 SDL 是否真的落地，看一个信号**：**没有通过安全门禁的代码能不能合并？** 如果不能，SDL 是真的；如果能（理由是「先上线，回头再修」），SDL 就是纸面的。
 
 ## 二、威胁建模：四问 + STRIDE
+
+![STRIDE 威胁建模](/assets/diagrams/docs/stride.svg)
 
 **四问**（微软经典）：
 1. 我们在构建什么？（画数据流图）
