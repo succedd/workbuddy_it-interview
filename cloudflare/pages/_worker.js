@@ -62,7 +62,6 @@ const BOT_RE = new RegExp(
     "Claude-User",
     "anthropic-ai",
     "CCBot",
-    "Bytespider",
     "Amazonbot",
     "PerplexityBot",
     "Perplexity-User",

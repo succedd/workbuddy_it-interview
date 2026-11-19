@@ -7860,7 +7860,7 @@
         <div class="about-hero">
           <span class="about-hero-chip">${U.icon("sparkles")} ABOUT · 关于本站</span>
           <h1 class="about-hero-title">专注 IT 面试准备<br><span>持续更新的实战题库</span></h1>
-          <p class="about-hero-sub">运维 · 开发 · AI —— 题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
+          <p class="about-hero-sub">运维 · 开发 · AI —— 题目整理自真实面试场景、公开资料与官方文档，持续抽检与修订，部分题目已人工复核。</p>
         </div>
 
         <div class="about-stats">
@@ -7878,7 +7878,7 @@
               <div class="about-card-sub">一份会自己长大的面试题库</div>
             </div>
           </div>
-          <p class="about-prose">这里是一份持续更新的 IT 面试题库，覆盖 <b>运维、开发、AI</b> 等方向。题目源自真实面试场景与官方文档，逐题核对来源，而非凭印象拼凑。</p>
+          <p class="about-prose">这里是一份持续更新的 IT 面试题库，覆盖 <b>运维、开发、AI</b> 等方向。题目整理自真实面试场景、公开资料与官方文档，持续抽检与修订，部分题目已人工复核。</p>
           <div class="about-lead">希望帮你做到三件事：</div>
           <div class="about-grid3">
             ${tile("grid", "系统梳理", "按技术体系归类高频考点，告别零散刷题", "#2563EB")}
