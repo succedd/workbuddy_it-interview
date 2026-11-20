@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 366" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="366" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">四种常用用例设计方法</text>
+<text x="40" y="64" font-size="15" fill="#64748b">用更少的用例覆盖更多的情况</text>
+<rect x="40.0" y="92.0" width="196.0" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="138.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">等价类</text>
+<rect x="40.0" y="154.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="138.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">思路</text>
+<text x="138.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">输入分成有效和无效几组</text>
+<rect x="40.0" y="231.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="138.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">例子</text>
+<text x="138.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">年龄 18 到 60 分三组</text>
+<rect x="248.0" y="92.0" width="196.0" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="346.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">边界值</text>
+<rect x="248.0" y="154.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="346.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">思路</text>
+<text x="346.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">测边界及其两侧</text>
+<rect x="248.0" y="231.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="346.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">例子</text>
+<text x="346.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">17、18、60、61</text>
+<rect x="456.0" y="92.0" width="196.0" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="554.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">判定表</text>
+<rect x="456.0" y="154.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">思路</text>
+<text x="554.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">多个条件组合出结果</text>
+<rect x="456.0" y="231.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">例子</text>
+<text x="554.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">会员 × 满减 × 优惠券</text>
+<rect x="664.0" y="92.0" width="196.0" height="50.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="762.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">场景法</text>
+<rect x="664.0" y="154.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="762.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">思路</text>
+<text x="762.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">按用户操作流程走</text>
+<rect x="664.0" y="231.0" width="196.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="762.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">例子</text>
+<text x="762.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">下单、支付失败、重试</text>
+<text x="40.0" y="332.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">实际项目里几种方法组合使用：先用场景法列流程，再对每个输入用等价类和边界值。</text>
+</svg>

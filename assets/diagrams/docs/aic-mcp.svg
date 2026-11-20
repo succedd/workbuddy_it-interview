@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 455" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="455" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">MCP 架构</text>
+<text x="40" y="64" font-size="15" fill="#64748b">一套协议，让 AI 工具接上各种外部系统</text>
+<rect x="260.0" y="92.0" width="380.0" height="70.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="450.0" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">AI 客户端（Host）</text>
+<text x="450.0" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">Claude Code、Cursor、Codex、VS Code</text>
+<line x1="450.0" y1="162.0" x2="450.0" y2="184.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="171.3" y1="184.0" x2="728.7" y2="184.0" stroke="#2563eb" stroke-width="2"/>
+<line x1="171.3" y1="184.0" x2="171.3" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40.0" y="208.0" width="262.7" height="69.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="171.3" y="236.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">数据库 MCP</text>
+<text x="171.3" y="259.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">查表结构、执行只读 SQL</text>
+<line x1="171.3" y1="277.0" x2="171.3" y2="289.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="289.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="315.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">PostgreSQL</text>
+<line x1="171.3" y1="332.0" x2="171.3" y2="344.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="48.0" y="344.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="370.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">MySQL</text>
+<line x1="450.0" y1="184.0" x2="450.0" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="318.7" y="208.0" width="262.7" height="69.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="450.0" y="236.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">浏览器 MCP</text>
+<text x="450.0" y="259.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">打开页面、截图、点击</text>
+<line x1="450.0" y1="277.0" x2="450.0" y2="289.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="326.7" y="289.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="315.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">Playwright</text>
+<line x1="450.0" y1="332.0" x2="450.0" y2="344.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="326.7" y="344.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="370.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">Chrome DevTools</text>
+<line x1="728.7" y1="184.0" x2="728.7" y2="206.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="597.3" y="208.0" width="262.7" height="69.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="728.7" y="236.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">协作 MCP</text>
+<text x="728.7" y="259.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">读工单、读文档</text>
+<line x1="728.7" y1="277.0" x2="728.7" y2="289.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="605.3" y="289.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="315.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">GitHub</text>
+<line x1="728.7" y1="332.0" x2="728.7" y2="344.0" stroke="#94a3b8" stroke-width="1.4"/>
+<rect x="605.3" y="344.0" width="246.7" height="43.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="370.0" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">Jira / 飞书</text>
+<text x="40.0" y="421.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">每个 MCP 服务器提供工具（Tools）、资源（Resources）和提示词（Prompts）。只接可信来源，按最小权限配置。</text>
+</svg>

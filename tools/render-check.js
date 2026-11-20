@@ -69,6 +69,8 @@ const TARGETS = [
   ["bigdata", "basic", "bd-overview", "大数据生态全景"],
   ["algo", "basic", "algo-complexity", "复杂度分析"],
   ["sysdesign", "basic", "sd-method", "系统设计四步答题法"],
+  ["aicoding", "basic", "aic-overview", "AI 编程工具全景"],
+  ["testing", "basic", "ts-basics", "测试基础"],
   ["dba", "basic", "backup-restore", "备份与恢复基本操作"],
   ["dba", "mid", "index-execplan", "索引原理与执行计划"],
   ["dba", "mid", "redis-internals", "Redis 数据结构与持久化"],

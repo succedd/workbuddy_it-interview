@@ -603,6 +603,8 @@
     "/js/docs/bigdata.js",
     "/js/docs/algo.js",
     "/js/docs/sysdesign.js",
+    "/js/docs/aicoding.js",
+    "/js/docs/testing.js",
     "/js/docs-data.js"
   ];
   function fileUrls() {

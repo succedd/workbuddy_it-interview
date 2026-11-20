@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 508" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="508" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">云端 Agent：从 Issue 到 PR</text>
+<text x="40" y="64" font-size="15" fill="#64748b">在隔离环境里异步完成任务</text>
+<rect x="50.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="142.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">开发者</text>
+<rect x="255.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="347.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">云端 Agent</text>
+<rect x="460.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="552.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">代码仓库</text>
+<rect x="665.0" y="92.0" width="185.0" height="46.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="757.5" y="120.5" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">CI</text>
+<line x1="142.5" y1="138.0" x2="142.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="347.5" y1="138.0" x2="347.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="552.5" y1="138.0" x2="552.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="757.5" y1="138.0" x2="757.5" y2="440.0" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 5"/>
+<line x1="146.5" y1="168.0" x2="343.5" y2="168.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="245.0" y="160.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">分配 Issue</text>
+<line x1="351.5" y1="210.0" x2="548.5" y2="210.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="202.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">拉代码、建分支</text>
+<rect x="265.0" y="228.0" width="165.0" height="34.0" rx="12" fill="#fefce8" stroke="#fde047" stroke-width="1.6"/>
+<text x="347.5" y="248.5" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">改代码、跑测试</text>
+<line x1="351.5" y1="294.0" x2="548.5" y2="294.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="450.0" y="286.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">提交 PR</text>
+<line x1="556.5" y1="336.0" x2="753.5" y2="336.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="655.0" y="328.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">触发检查</text>
+<line x1="753.5" y1="378.0" x2="146.5" y2="378.0" stroke="#0f766e" stroke-width="2" marker-end="url(#t)"/>
+<text x="450.0" y="370.0" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="400">结果和 diff</text>
+<line x1="146.5" y1="420.0" x2="343.5" y2="420.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="245.0" y="412.0" font-size="13" fill="#2563eb" text-anchor="middle" font-weight="400">评论要求修改</text>
+<text x="40.0" y="474.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">适合边界清楚的小任务：修 bug、补测试、升级依赖。合并前必须有人审查。</text>
+</svg>

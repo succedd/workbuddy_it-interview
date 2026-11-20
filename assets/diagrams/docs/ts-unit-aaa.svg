@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 366" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="366" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">单元测试的 AAA 结构与测试替身</text>
+<text x="40" y="64" font-size="15" fill="#64748b">每个测试只验证一件事</text>
+<rect x="40.0" y="92.0" width="262.7" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="171.3" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">Arrange 准备</text>
+<rect x="40.0" y="154.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">做什么</text>
+<text x="171.3" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">创建对象、准备输入</text>
+<rect x="40.0" y="231.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">替身</text>
+<text x="171.3" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">用 Mock 替代数据库、网络</text>
+<rect x="318.7" y="92.0" width="262.7" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="450.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">Act 执行</text>
+<rect x="318.7" y="154.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">做什么</text>
+<text x="450.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">调用被测方法，只调一次</text>
+<rect x="318.7" y="231.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">要求</text>
+<text x="450.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">不依赖执行顺序</text>
+<rect x="597.3" y="92.0" width="262.7" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="728.7" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">Assert 断言</text>
+<rect x="597.3" y="154.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">做什么</text>
+<text x="728.7" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">检查返回值和状态</text>
+<rect x="597.3" y="231.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">交互</text>
+<text x="728.7" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">必要时验证 Mock 被调用</text>
+<text x="40.0" y="332.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">测试替身分 Dummy、Stub、Spy、Mock、Fake。能用真实对象就别 Mock，Mock 太多会让测试失去意义。</text>
+</svg>

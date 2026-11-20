@@ -2107,11 +2107,13 @@ ${C}${C}${C}
     //            两者加载顺序均先于本文件）
     //           → AI 大模型 → Python → Go → 大数据 → 算法与数据结构 → 系统设计（2026-11-20 新增，
     //            分别在 js/docs/ai.js、python.js、golang.js、bigdata.js、algo.js、sysdesign.js）
+    //           → AI 编程工具 → 软件测试（2026-11-20 新增，在 js/docs/aicoding.js、testing.js）
     dirs: [
       OPS,
       window.JAVA, window.NETWORK, window.DBA, window.FRONTEND,
       window.DEVOPS, window.SECURITY,
-      window.AI, window.PYTHON, window.GOLANG, window.BIGDATA, window.ALGO, window.SYSDESIGN
+      window.AI, window.PYTHON, window.GOLANG, window.BIGDATA, window.ALGO, window.SYSDESIGN,
+      window.AICODING, window.TESTING
     ]
   };
 })();
