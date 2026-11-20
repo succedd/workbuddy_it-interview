@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 362" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="362" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">雪花算法 64 位 ID 组成</text>
+<text x="40" y="64" font-size="15" fill="#64748b">按时间递增，单机每毫秒可生成 4096 个</text>
+<text x="40.0" y="117.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">符号位</text>
+<rect x="843.7" y="92.0" width="12.3" height="40.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="849.8" y="116.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">0</text>
+<text x="40.0" y="171.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">时间戳</text>
+<rect x="190.0" y="146.0" width="666.0" height="40.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="523.0" y="170.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">41 位毫秒，可用约 69 年</text>
+<text x="40.0" y="225.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">机器 ID</text>
+<rect x="696.6" y="200.0" width="159.4" height="40.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="776.3" y="224.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">10 位，最多 1024 台</text>
+<text x="40.0" y="279.0" font-size="14" fill="#0f172a" text-anchor="start" font-weight="700">序列号</text>
+<rect x="663.9" y="254.0" width="192.1" height="40.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="760.0" y="278.5" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="700">12 位，0~4095</text>
+<text x="40.0" y="328.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">风险是时钟回拨：回拨很小就等待，回拨较大就报错或切换备用机器 ID。</text>
+</svg>

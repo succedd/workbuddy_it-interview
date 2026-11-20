@@ -2105,13 +2105,13 @@ ${C}${C}${C}
     //           → 云原生/DevOps → 安全
     //           （安全方向正文在 js/docs/security.js、云原生/DevOps 方向在 js/docs/devops.js 中定义，
     //            两者加载顺序均先于本文件）
-    //           → AI 大模型 → Python → Go → 大数据 → 算法与数据结构（2026-11-20 新增，
-    //            分别在 js/docs/ai.js、python.js、golang.js、bigdata.js、algo.js）
+    //           → AI 大模型 → Python → Go → 大数据 → 算法与数据结构 → 系统设计（2026-11-20 新增，
+    //            分别在 js/docs/ai.js、python.js、golang.js、bigdata.js、algo.js、sysdesign.js）
     dirs: [
       OPS,
       window.JAVA, window.NETWORK, window.DBA, window.FRONTEND,
       window.DEVOPS, window.SECURITY,
-      window.AI, window.PYTHON, window.GOLANG, window.BIGDATA, window.ALGO
+      window.AI, window.PYTHON, window.GOLANG, window.BIGDATA, window.ALGO, window.SYSDESIGN
     ]
   };
 })();

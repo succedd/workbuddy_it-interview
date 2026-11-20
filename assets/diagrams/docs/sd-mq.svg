@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 366" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="366" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">消息队列的三大作用</text>
+<text x="40" y="64" font-size="15" fill="#64748b">生产者和消费者之间加一层缓冲</text>
+<rect x="40.0" y="92.0" width="262.7" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="171.3" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">异步</text>
+<rect x="40.0" y="154.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">下单后</text>
+<text x="171.3" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">发消息即返回，积分、通知异步处理</text>
+<rect x="40.0" y="231.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="171.3" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">效果</text>
+<text x="171.3" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">接口响应从秒级降到毫秒级</text>
+<rect x="318.7" y="92.0" width="262.7" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="450.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">解耦</text>
+<rect x="318.7" y="154.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">新增下游</text>
+<text x="450.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">订阅主题即可，上游不改代码</text>
+<rect x="318.7" y="231.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">效果</text>
+<text x="450.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">一个下游挂了不影响其他</text>
+<rect x="597.3" y="92.0" width="262.7" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="728.7" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">削峰</text>
+<rect x="597.3" y="154.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">流量洪峰</text>
+<text x="728.7" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">先堆积在队列里</text>
+<rect x="597.3" y="231.0" width="262.7" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="728.7" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">效果</text>
+<text x="728.7" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">下游按自己的能力匀速消费</text>
+<text x="40.0" y="332.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">代价：可能重复（消费端要幂等）、可能乱序（同一业务 key 发到同一分区）、可能丢失（生产确认 + 持久化 + 消费后提交位点）。</text>
+</svg>

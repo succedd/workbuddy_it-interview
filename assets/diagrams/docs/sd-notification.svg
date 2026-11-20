@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 248" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="248" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">通知系统架构</text>
+<text x="40" y="64" font-size="15" fill="#64748b">统一入口，按渠道拆分队列，失败重试</text>
+<rect x="40.0" y="92.0" width="141.6" height="88.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="110.8" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">业务服务</text>
+<text x="110.8" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">调用通知 API</text>
+<rect x="209.6" y="92.0" width="141.6" height="88.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="280.4" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">通知服务</text>
+<text x="280.4" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">鉴权、模板渲染、用</text>
+<text x="280.4" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">户偏好与频控</text>
+<line x1="184.6" y1="136.0" x2="206.6" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="379.2" y="92.0" width="141.6" height="88.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="450.0" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">渠道队列</text>
+<text x="450.0" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">短信 / 邮件 /</text>
+<text x="450.0" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">App 推送各一个</text>
+<line x1="354.2" y1="136.0" x2="376.2" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="548.8" y="92.0" width="141.6" height="88.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="619.6" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">渠道 Worker</text>
+<text x="619.6" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">调用第三方，失败按</text>
+<text x="619.6" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">退避重试</text>
+<line x1="523.8" y1="136.0" x2="545.8" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="718.4" y="92.0" width="141.6" height="88.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="789.2" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">通知日志</text>
+<text x="789.2" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">记录状态，支持去重</text>
+<text x="789.2" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">和查询</text>
+<line x1="693.4" y1="136.0" x2="715.4" y2="136.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="214.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">按渠道拆队列，一个第三方变慢不拖累其他渠道。用通知 ID 做幂等，避免重试导致重复发送。</text>
+</svg>

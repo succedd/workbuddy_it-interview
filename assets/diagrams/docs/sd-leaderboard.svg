@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 266" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="266" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">实时排行榜架构</text>
+<text x="40" y="64" font-size="15" fill="#64748b">数据库保证不丢，Redis 有序集合负责排序</text>
+<rect x="40.0" y="92.0" width="141.6" height="106.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="110.8" y="139.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">游戏服务</text>
+<text x="110.8" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">一局结束上报得分</text>
+<rect x="209.6" y="92.0" width="141.6" height="106.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="280.4" y="139.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">消息队列</text>
+<text x="280.4" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">加分事件持久化</text>
+<line x1="184.6" y1="145.0" x2="206.6" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="379.2" y="92.0" width="141.6" height="106.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="450.0" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">积分服务</text>
+<text x="450.0" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">写数据库，再</text>
+<text x="450.0" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">ZINCRBY</text>
+<line x1="354.2" y1="145.0" x2="376.2" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="548.8" y="92.0" width="141.6" height="106.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="619.6" y="130.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">Redis ZSET</text>
+<text x="619.6" y="153.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">按月一个</text>
+<text x="619.6" y="171.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">key，跳表排序</text>
+<line x1="523.8" y1="145.0" x2="545.8" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="718.4" y="92.0" width="141.6" height="106.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="789.2" y="121.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">查询接口</text>
+<text x="789.2" y="144.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">前 N</text>
+<text x="789.2" y="162.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">名、我的名次、附近</text>
+<text x="789.2" y="180.0" font-size="13" fill="#334155" text-anchor="middle" font-weight="400">名次</text>
+<line x1="693.4" y1="145.0" x2="715.4" y2="145.0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<text x="40.0" y="232.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">ZSET 只存用户 ID 和分数，昵称头像另外批量取。Redis 数据丢失时可从数据库重建。</text>
+</svg>

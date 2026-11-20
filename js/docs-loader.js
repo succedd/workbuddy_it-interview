@@ -60,6 +60,7 @@
     "/js/docs/golang.js",
     "/js/docs/bigdata.js",
     "/js/docs/algo.js",
+    "/js/docs/sysdesign.js",
     "/js/docs-data.js"
   ];
   function fileUrls() {
