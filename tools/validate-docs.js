@@ -3,8 +3,9 @@
  *
  *  用法：node tools/validate-docs.js
  *  校验项：
- *    1. 6 个方向独立文件 + docs-data.js 能装配出 window.DOCS
+ *    1. 11 个方向独立文件 + docs-data.js 能装配出 window.DOCS
  *    2. 侧栏顺序为 ops → java → network → dba → frontend → devops → security
+ *       → ai → python → golang → bigdata → algo
  *    3. 无重复章节 ID、无空正文、无过短正文
  *    4. 每章都有 terms（章末挂题依赖它）；本轮重构方向须带「官方文档基线」块
  *    5. 源码里无裸反引号（会破坏模板字符串）
@@ -20,7 +21,7 @@ const base = path.join(ROOT, "js", "docs");
 // 加载顺序与 js/docs-loader.js 的 FILES 数组一致：方向文件在前，docs-data.js 在后
 // （2026-10-06 起这批文件不再写在 index.html 里，改由 docs-loader 按需加载，
 //   但装配顺序要求不变，所以这里是校验该顺序的正确性所在）
-const order = ["java", "network", "dba", "frontend", "security", "devops"];
+const order = ["java", "network", "dba", "frontend", "security", "devops", "ai", "python", "golang", "bigdata", "algo"];
 for (const id of order) require(path.join(base, id + ".js"));
 require(path.join(ROOT, "js", "docs-data.js"));
 
@@ -30,7 +31,7 @@ const fail = (m) => { console.log("  x " + m); ok = false; };
 
 if (!DOCS) { console.log("FAIL: window.DOCS 未定义"); process.exit(1); }
 
-const wantOrder = ["ops", "java", "network", "dba", "frontend", "devops", "security"];
+const wantOrder = ["ops", "java", "network", "dba", "frontend", "devops", "security", "ai", "python", "golang", "bigdata", "algo"];
 const gotOrder = DOCS.dirs.map((d) => d.id);
 console.log("方向数:", DOCS.dirs.length);
 console.log("顺序:", gotOrder.join(" -> "));
@@ -52,7 +53,7 @@ for (const d of DOCS.dirs) {
       if (!b.trim()) { emptyBody++; console.log("    空正文:", ch.id); }
       else if (b.length < 800) { shortBody++; console.log("    正文过短(" + b.length + "):", ch.id); }
       if (!Array.isArray(ch.terms) || ch.terms.length === 0) { noTerms++; console.log("    缺 terms:", ch.id); }
-      if (["devops", "security"].includes(d.id) && !b.includes("官方文档基线")) {
+      if (["devops", "security", "ai", "python", "golang", "bigdata", "algo"].includes(d.id) && !b.includes("官方文档基线")) {
         noBaseline++; console.log("    缺官方文档基线块:", ch.id);
       }
     }

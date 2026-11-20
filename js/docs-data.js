@@ -2099,16 +2099,19 @@ ${C}${C}${C}
   };
 
   window.DOCS = {
-    version: "1.2",
-    updated: "2026-09-16",
+    version: "1.3",
+    updated: "2026-11-20",
     // 侧栏顺序：运维/SRE → Java 后端 → 网络与操作系统 → 数据库/DBA → 前端 Web
     //           → 云原生/DevOps → 安全
     //           （安全方向正文在 js/docs/security.js、云原生/DevOps 方向在 js/docs/devops.js 中定义，
     //            两者加载顺序均先于本文件）
+    //           → AI 大模型 → Python → Go → 大数据 → 算法与数据结构（2026-11-20 新增，
+    //            分别在 js/docs/ai.js、python.js、golang.js、bigdata.js、algo.js）
     dirs: [
       OPS,
       window.JAVA, window.NETWORK, window.DBA, window.FRONTEND,
-      window.DEVOPS, window.SECURITY
+      window.DEVOPS, window.SECURITY,
+      window.AI, window.PYTHON, window.GOLANG, window.BIGDATA, window.ALGO
     ]
   };
 })();

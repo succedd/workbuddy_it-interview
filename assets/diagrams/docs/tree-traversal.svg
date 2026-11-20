@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 289" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="289" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">二叉树遍历方式</text>
+<text x="40" y="64" font-size="15" fill="#64748b">前中后序是深度优先，层序是广度优先</text>
+<rect x="40.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="136.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">前序</text>
+<rect x="40.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">根 → 左 → 右</text>
+<text x="136.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">复制树、序列化</text>
+<rect x="249.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="345.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">中序</text>
+<rect x="249.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">左 → 根 → 右</text>
+<text x="345.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">BST 得到有序序列</text>
+<rect x="458.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="554.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">后序</text>
+<rect x="458.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">左 → 右 → 根</text>
+<text x="554.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">先算子树再算自己，如树高</text>
+<rect x="667.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="763.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">层序</text>
+<rect x="667.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">一层一层</text>
+<text x="763.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">队列实现，求最短深度</text>
+<text x="40.0" y="255.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">递归写法三种只是「处理根节点」那一行的位置不同。迭代写法用栈模拟递归，层序用队列，每轮先记下当前层的节点数。</text>
+</svg>

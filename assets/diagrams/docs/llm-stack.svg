@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 472" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="472" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">大模型应用技术栈</text>
+<text x="40" y="64" font-size="15" fill="#64748b">从下往上：模型能力 → 调用方式 → 应用形态</text>
+<rect x="40.0" y="92.0" width="670.0" height="56.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<line x1="230.0" y1="102.0" x2="230.0" y2="138.0" stroke="#c4b5fd" stroke-width="1.2"/>
+<text x="135.0" y="125.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">应用层</text>
+<text x="248.0" y="124.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">智能客服、知识库问答、代码助手、数据分析 Agent</text>
+<rect x="40.0" y="156.0" width="670.0" height="56.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<line x1="230.0" y1="166.0" x2="230.0" y2="202.0" stroke="#fdba74" stroke-width="1.2"/>
+<text x="135.0" y="189.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">编排层</text>
+<text x="248.0" y="188.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">Prompt 模板、RAG 检索、Agent 循环、工具调用 / MCP</text>
+<rect x="40.0" y="220.0" width="670.0" height="56.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<line x1="230.0" y1="230.0" x2="230.0" y2="266.0" stroke="#6ee7b7" stroke-width="1.2"/>
+<text x="135.0" y="253.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">调用层</text>
+<text x="248.0" y="252.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">Chat Completions / Messages API，流式输出、结构化输出</text>
+<rect x="40.0" y="284.0" width="670.0" height="56.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<line x1="230.0" y1="294.0" x2="230.0" y2="330.0" stroke="#93c5fd" stroke-width="1.2"/>
+<text x="135.0" y="317.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">推理服务</text>
+<text x="248.0" y="316.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">vLLM / TGI / Ollama，KV Cache、批处理、量化</text>
+<rect x="40.0" y="348.0" width="670.0" height="56.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<line x1="230.0" y1="358.0" x2="230.0" y2="394.0" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="135.0" y="381.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">基础模型</text>
+<text x="248.0" y="380.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">Transformer 解码器：GPT、Claude、Qwen、DeepSeek、Llama</text>
+<path d="M720.0 98.0 H734.0 V206.0 H720.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="746.0" y="148.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">业务团队主要工作</text>
+<text x="746.0" y="166.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">区</text>
+<path d="M720.0 290.0 H734.0 V398.0 H720.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="746.0" y="349.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">平台 / 算法团队</text>
+<text x="40.0" y="438.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">大多数业务问题先用 Prompt 解决，不够再加 RAG 补知识，再不够才考虑微调；Agent 适合多步骤、要调用外部系统的任务。</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 472" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="472" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">数据仓库分层</text>
+<text x="40" y="64" font-size="15" fill="#64748b">每层只做一类事，问题能定位到层</text>
+<rect x="40.0" y="92.0" width="670.0" height="56.0" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.6"/>
+<line x1="230.0" y1="102.0" x2="230.0" y2="138.0" stroke="#c4b5fd" stroke-width="1.2"/>
+<text x="135.0" y="125.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">ADS 应用层</text>
+<text x="248.0" y="124.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">报表、接口直接用的指标结果</text>
+<rect x="40.0" y="156.0" width="670.0" height="56.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<line x1="230.0" y1="166.0" x2="230.0" y2="202.0" stroke="#fdba74" stroke-width="1.2"/>
+<text x="135.0" y="189.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">DWS 汇总层</text>
+<text x="248.0" y="188.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">按主题和粒度轻度汇总，例如用户日活跃宽表</text>
+<rect x="40.0" y="220.0" width="670.0" height="56.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<line x1="230.0" y1="230.0" x2="230.0" y2="266.0" stroke="#6ee7b7" stroke-width="1.2"/>
+<text x="135.0" y="253.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">DWD 明细层</text>
+<text x="248.0" y="252.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">清洗、去重、统一口径后的事实明细</text>
+<rect x="40.0" y="284.0" width="670.0" height="56.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<line x1="230.0" y1="294.0" x2="230.0" y2="330.0" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="135.0" y="317.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">DIM 维度层</text>
+<text x="248.0" y="316.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">用户、商品、地区等维度表，可做拉链表记录历史</text>
+<rect x="40.0" y="348.0" width="670.0" height="56.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<line x1="230.0" y1="358.0" x2="230.0" y2="394.0" stroke="#93c5fd" stroke-width="1.2"/>
+<text x="135.0" y="381.0" font-size="15" fill="#0f172a" text-anchor="middle" font-weight="700">ODS 原始层</text>
+<text x="248.0" y="380.0" font-size="13" fill="#334155" text-anchor="start" font-weight="400">业务库、日志原样同步，保留原始数据便于回溯</text>
+<path d="M720.0 98.0 H734.0 V206.0 H720.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="746.0" y="157.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">面向需求</text>
+<path d="M720.0 226.0 H734.0 V398.0 H720.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="746.0" y="317.0" font-size="13" fill="#0f766e" text-anchor="start" font-weight="700">面向数据</text>
+<text x="40.0" y="438.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">指标口径在 DWD/DWS 统一定义一次，上层复用；不要让 ADS 直接读 ODS，否则同一个指标会出现多个数字。</text>
+</svg>

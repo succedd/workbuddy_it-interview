@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 366" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="366" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">GIL 对并发方式的影响</text>
+<text x="40" y="64" font-size="15" fill="#64748b">CPython 同一时刻只有一个线程执行字节码</text>
+<rect x="40.0" y="92.0" width="260.0" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="170.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">多线程 threading</text>
+<rect x="40.0" y="154.0" width="260.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="170.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">IO 密集</text>
+<text x="170.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">等待 IO 时释放 GIL，有效</text>
+<rect x="40.0" y="231.0" width="260.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="170.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">CPU 密集</text>
+<text x="170.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">抢 GIL，几乎不加速</text>
+<rect x="320.0" y="92.0" width="260.0" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="450.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">多进程 multiprocessing</text>
+<rect x="320.0" y="154.0" width="260.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">CPU 密集</text>
+<text x="450.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">每个进程独立 GIL，能用满多核</text>
+<rect x="320.0" y="231.0" width="260.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="450.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">代价</text>
+<text x="450.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">进程启动和数据序列化开销</text>
+<rect x="600.0" y="92.0" width="260.0" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="730.0" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">协程 asyncio</text>
+<rect x="600.0" y="154.0" width="260.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="730.0" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">高并发 IO</text>
+<text x="730.0" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">单线程上万连接</text>
+<rect x="600.0" y="231.0" width="260.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="730.0" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">限制</text>
+<text x="730.0" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">整条调用链都要是 async</text>
+<text x="40.0" y="332.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">Python 3.13 起提供实验性的 free-threaded 构建（python3.13t）可关闭 GIL，生产使用前要确认依赖库兼容。</text>
+</svg>

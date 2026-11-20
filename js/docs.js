@@ -172,7 +172,7 @@
     setMain(`
       <div class="hero" style="padding:26px 16px 18px">
         <h1 style="font-size:22px">📘 技术教程</h1>
-        <p>按「技术方向 × 初级 / 中级 / 高级」组织的成套文档，<b>目录骨架取自官方文档</b>（OWASP、RFC、Docker / K8s / Terraform 官方文档、MySQL / Redis 手册、MDN、Oracle / Spring 参考等），按官方目录逐节展开讲解。
+        <p>按「技术方向 × 初级 / 中级 / 高级」组织的成套文档，<b>目录骨架取自官方文档</b>（OWASP、RFC、Docker / K8s / Terraform 官方文档、MySQL / Redis 手册、MDN、Oracle / Spring 参考、Python / Go 官方文档、Spark / Flink 文档、《Hello 算法》等），按官方目录逐节展开讲解。
            每篇开头的「官方文档基线」告诉你可以对照哪份权威文档；实战案例与踩坑记录来自真实现场，读完记得做章末的练习题巩固。</p>
       </div>
       <div class="docs-dir-grid">

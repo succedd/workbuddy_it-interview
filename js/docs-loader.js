@@ -55,6 +55,11 @@
     "/js/docs/frontend.js",
     "/js/docs/security.js",
     "/js/docs/devops.js",
+    "/js/docs/ai.js",
+    "/js/docs/python.js",
+    "/js/docs/golang.js",
+    "/js/docs/bigdata.js",
+    "/js/docs/algo.js",
     "/js/docs-data.js"
   ];
   function fileUrls() {

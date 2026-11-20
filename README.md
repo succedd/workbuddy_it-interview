@@ -318,6 +318,10 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-11-20 · docs: 新增 AI 大模型 / Python / Go / 大数据 / 算法 教程方向（缓存 20261119f → 20261120a）
+
+> **本轮**：技术教程由 7 个方向扩到 12 个、共 152 章。新增：①**AI 大模型应用**（10 章：大模型原理、Prompt、API 调用、Embedding 与向量库、RAG、Agent、MCP / LangChain、微调、vLLM 部署、评测与安全）；②**Python**（10 章，按 Python 官方教程目录）；③**Go**（11 章，按 Go 官方文档 / Effective Go）；④**大数据**（8 章：Hadoop、Hive、数仓分层、Spark、Kafka、Flink、ClickHouse / Doris、湖仓一体）；⑤**算法与数据结构**（12 章，参考《Hello 算法》与 LeetCode Hot 100）。配套 13 张新示意图（`assets/diagrams/docs/`）；`docs-loader.js` 与 bundle 已加入新文件，`validate-docs.js` / `render-check.js` 已覆盖新方向。
+
 ### 2026-11-19 · perf(首页+移动端): 首页不再预载教程 + 分片去重 + 品牌完整显示 + 点击区放大 + 加载屏缩短（缓存 20261119e → 20261119f）
 
 > **本轮**：①**首页减重**——`docs-loader.js` 去掉首屏空闲自动预热，首页不再下载 6 个 `js/docs/*.js` 与 `docs-data.js`（约 1.3MB 原始体积）；进入教程页时由 `docs.js` 加载，`index.html` 在悬停 / 触摸 / 聚焦「技术教程」链接时预取。②**分片去重**——`Cloud.fetchShard` 缓存进行中的请求，首页示例答案懒加载与后台补齐同时要同一分片时只下载一次（原先 s00 会下两次）。③**移动端品牌**——400px 以下顶栏由「只露 logo」改为 15px 字号完整显示「IT面试题库」，320/375px 无横向溢出。④**点击区**——「查看完整解析 →」等 `.more` 链接 21px → 32px 高，toast 关闭键 16×22 → 32×32，「温故知新」复选框放大并加高整行。⑤**加载屏**——最长等待 5s → 3s，结束延迟 520ms → 200ms，淡出 0.55s → 0.35s。验证：本地首页总下载 7.9MB → 6.1MB 且无教程请求，进入 /docs 正常加载 7 个教程文件；pages-guard 57/57、smoke 26/26、ui-regression 7/7、build-pages 通过。
