@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？ · IT面试题库</title>
+  <meta name="description" content="先给结论 服务端没有问题：Pod Ready、sshd 在监听、BLB 和 Endpoints 都正常，而且 sshd 日志里没有用户连接，说明请求在到达开发机之前就丢了，问题在网络链路。 开发机没有公网 IP 和 EIP，唯一入口是 BLB 内网 VIP。公网或没打通内网的办公网访问，一定会超时。 客户端不一定…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？ · IT面试题库">
+  <meta property="og:description" content="先给结论 服务端没有问题：Pod Ready、sshd 在监听、BLB 和 Endpoints 都正常，而且 sshd 日志里没有用户连接，说明请求在到达开发机之前就丢了，问题在网络链路。 开发机没有公网 IP 和 EIP，唯一入口是 BLB 内网 VIP。公网或没打通内网的办公网访问，一定会超时。 客户端不一定…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/2076.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/2076.jpg">
+  <meta property="og:url" content="https://itinterview.com.cn/q/2076">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？ · IT面试题库">
+  <meta name="twitter:description" content="先给结论 服务端没有问题：Pod Ready、sshd 在监听、BLB 和 Endpoints 都正常，而且 sshd 日志里没有用户连接，说明请求在到达开发机之前就丢了，问题在网络链路。 开发机没有公网 IP 和 EIP，唯一入口是 BLB 内网 VIP。公网或没打通内网的办公网访问，一定会超时。 客户端不一定…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/2076.jpg">
+  <meta name="twitter:image:alt" content="百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？ · IT面试题库">
+  <link rel="canonical" href="https://itinterview.com.cn/q/2076">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？","text":"场景：北京地域的百舸开发机（Isaac Lab 3.0.0 镜像，约 16.7GB）启动后，用户 SSH 报 Connection timed out。检查结果：Pod 已 Ready、重启 0 次；sshd 正常监听 22 端口，host key 与 authorized_keys 正常，sshd 日志里没有任何用户连接记录；LoadBalancer Service 和 BLB 同步成功，Endpoints 就绪；BLB 只有 10.x 内网 VIP，没有公网 IP，也没有绑定 EIP；控制台显示 SSH 接入端口为 1535（映射到容器 22 端口）。客户机房通过专线接入苏州 VPC，苏州 VPC 与北京 VPC 之间配置了对等连接。请说明排查思路、最可能的根因和解决方案。","answerCount":1,"datePublished":"2026-11-20T13:19:04.836Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先给结论 服务端没有问题：Pod Ready、sshd 在监听、BLB 和 Endpoints 都正常，而且 sshd 日志里没有用户连接，说明请求在到达开发机之前就丢了，问题在网络链路。 开发机没有公网 IP 和 EIP，唯一入口是 BLB 内网 VIP。公网或没打通内网的办公网访问，一定会超时。 客户端不一定要和 BLB 在同一个 VPC。只要客户端网络到 VIP 有路由、回程也通即可，同 VPC、对等连接的 VPC、通过专线或 VPN 有路由的网络都可以。 本例最可能的根因：链路是串起来的 实际路径是：客户机房 → 专线 → 苏州 VPC → 对等连接 → 北京 VPC。 对等连接通常只负责两个 VPC 之间互通，不会把专线那一端的流量继续转发到第三个网络。所以苏州 VPC 里的机器能访问北京，机房却可能到不了。 这是基于常见云网络设计的推断，需要用分段测试和路由表核实，并以百度智能云 VPC 文档中对等连接的路由说明为准。 先排除的简单问题 端口：SSH 要连控制台给出的接入端口（本例为 1535），不是容器内的 22。 时间：大镜像拉取需要几分钟，Pod Ready 之前 Endpoints 没就绪，这段时间连接也会超时。启动时出现一次 Startup probe failed 属于探针早于服务就绪，Pod 随后 Ready 就与本问题无关。 访问策略：BLB 没绑安全组时要确认「默认放通」已开启；安全组和 ACL 要放行客户端网段访问接入端口。 分段测试，找出断在哪一段 第一步：在北京 VPC 内找一台机器连 VIP 的接入端口，应该能通，用来确认开发机和 BLB 本身没问题。 第二步：在苏州 VPC 内的机器上连。能通，说明对等连接和两边路由正常。 第三步：从客户机房连。只有这一步不通，基本可以确定是专线和对等连接之间没有转发。 每一步都用 ssh -vvv -p root@ 、nc -vz 和 traceroute 看卡在哪一跳。 核对路由 北京 VPC 路由表里，要有回到苏州 VPC 和客户机房网段的路由；只有去程没有回程，同样表现为超时。 专线网关和机房侧，要有到北京 VPC 网段的路由。 机房、苏州 VPC、北京 VPC 三段地址范围不能重叠。 解决方案 推荐：用云智能网（CSN）把专线、苏州 VPC、北京 VPC 接入同一张网，由 CSN 统一学习和下发路由，解决跨地域加专线的转发问题。 临时办法：在苏州 VPC 里放一台跳板机，客户先登录跳板机，再访问北京的开发机。 安全规范允许时，可为开发机开启公网访问或绑定 EIP，并用安全组限制来源 IP。 以后新建开发机时，直接选择专线已经能直达的 VPC 和地域。 预防 创建开发机前先确认访问方式：公网、同 VPC，还是经专线访问，并提前打通路由。 固定使用控制台给出的完整 SSH 命令，避免把容器端口和接入端口混淆。 大镜像先转存到国内仓库，缩短启动时间；状态变成「运行中」后再连接。","url":"https://itinterview.com.cn/question/2076"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"百度云","item":"https://itinterview.com.cn/category?cat=285"},{"@type":"ListItem","position":4,"name":"百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？","item":"https://itinterview.com.cn/q/2076"}]}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
+    .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">网络运维工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">百度百舸</span><span class="chip tag">开发机</span><span class="chip tag">SSH</span><span class="chip tag">BLB</span><span class="chip tag">对等连接</span><span class="chip tag">专线</span></div>
+    <div class="card"><h2>题目</h2><p>场景：北京地域的百舸开发机（Isaac Lab 3.0.0 镜像，约 16.7GB）启动后，用户 SSH 报 Connection timed out。检查结果：Pod 已 Ready、重启 0 次；sshd 正常监听 22 端口，host key 与 authorized_keys 正常，sshd 日志里没有任何用户连接记录；LoadBalancer Service 和 BLB 同步成功，Endpoints 就绪；BLB 只有 10.x 内网 VIP，没有公网 IP，也没有绑定 EIP；控制台显示 SSH 接入端口为 1535（映射到容器 22 端口）。客户机房通过专线接入苏州 VPC，苏州 VPC 与北京 VPC 之间配置了对等连接。请说明排查思路、最可能的根因和解决方案。</p></div>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>先给结论</strong></p>
+<ul>
+<li>服务端没有问题：Pod Ready、sshd 在监听、BLB 和 Endpoints 都正常，而且 sshd 日志里没有用户连接，说明请求在到达开发机之前就丢了，问题在网络链路。</li>
+<li>开发机没有公网 IP 和 EIP，唯一入口是 BLB 内网 VIP。公网或没打通内网的办公网访问，一定会超时。</li>
+<li>客户端不一定要和 BLB 在同一个 VPC。只要客户端网络到 VIP 有路由、回程也通即可，同 VPC、对等连接的 VPC、通过专线或 VPN 有路由的网络都可以。</li>
+</ul>
+<p><strong>本例最可能的根因：链路是串起来的</strong></p>
+<ul>
+<li>实际路径是：客户机房 → 专线 → 苏州 VPC → 对等连接 → 北京 VPC。</li>
+<li>对等连接通常只负责两个 VPC 之间互通，不会把专线那一端的流量继续转发到第三个网络。所以苏州 VPC 里的机器能访问北京，机房却可能到不了。</li>
+<li>这是基于常见云网络设计的推断，需要用分段测试和路由表核实，并以百度智能云 VPC 文档中对等连接的路由说明为准。</li>
+</ul>
+<p><strong>先排除的简单问题</strong></p>
+<ul>
+<li>端口：SSH 要连控制台给出的接入端口（本例为 1535），不是容器内的 22。</li>
+<li>时间：大镜像拉取需要几分钟，Pod Ready 之前 Endpoints 没就绪，这段时间连接也会超时。启动时出现一次 Startup probe failed 属于探针早于服务就绪，Pod 随后 Ready 就与本问题无关。</li>
+<li>访问策略：BLB 没绑安全组时要确认「默认放通」已开启；安全组和 ACL 要放行客户端网段访问接入端口。</li>
+</ul>
+<p><strong>分段测试，找出断在哪一段</strong></p>
+<ul>
+<li>第一步：在北京 VPC 内找一台机器连 VIP 的接入端口，应该能通，用来确认开发机和 BLB 本身没问题。</li>
+<li>第二步：在苏州 VPC 内的机器上连。能通，说明对等连接和两边路由正常。</li>
+<li>第三步：从客户机房连。只有这一步不通，基本可以确定是专线和对等连接之间没有转发。</li>
+<li>每一步都用 <code>ssh -vvv -p &lt;接入端口&gt; root@&lt;VIP&gt;</code>、<code>nc -vz &lt;VIP&gt; &lt;接入端口&gt;</code> 和 <code>traceroute</code> 看卡在哪一跳。</li>
+</ul>
+<p><strong>核对路由</strong></p>
+<ul>
+<li>北京 VPC 路由表里，要有回到苏州 VPC 和客户机房网段的路由；只有去程没有回程，同样表现为超时。</li>
+<li>专线网关和机房侧，要有到北京 VPC 网段的路由。</li>
+<li>机房、苏州 VPC、北京 VPC 三段地址范围不能重叠。</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>推荐：用云智能网（CSN）把专线、苏州 VPC、北京 VPC 接入同一张网，由 CSN 统一学习和下发路由，解决跨地域加专线的转发问题。</li>
+<li>临时办法：在苏州 VPC 里放一台跳板机，客户先登录跳板机，再访问北京的开发机。</li>
+<li>安全规范允许时，可为开发机开启公网访问或绑定 EIP，并用安全组限制来源 IP。</li>
+<li>以后新建开发机时，直接选择专线已经能直达的 VPC 和地域。</li>
+</ul>
+<p><strong>预防</strong></p>
+<ul>
+<li>创建开发机前先确认访问方式：公网、同 VPC，还是经专线访问，并提前打通路由。</li>
+<li>固定使用控制台给出的完整 SSH 命令，避免把容器端口和接入端口混淆。</li>
+<li>大镜像先转存到国内仓库，缩短启动时间；状态变成「运行中」后再连接。</li>
+</ul></div>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/2076">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/2075">百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？</a><span class="rel-n">新题</span></li></ul></div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=285&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

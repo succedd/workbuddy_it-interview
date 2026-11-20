@@ -62,7 +62,7 @@
       { name: "Docker" }, { name: "Kubernetes" }, { name: "Helm" }, { name: "Jenkins" }, { name: "GitLab CI/CD" },
       { name: "GitHub Actions" }, { name: "ArgoCD" }, { name: "Prometheus" }, { name: "Grafana" }, { name: "ELK日志体系" },
       { name: "SkyWalking" }, { name: "Terraform" }, { name: "Ansible" }, { name: "AWS" }, { name: "阿里云" },
-      { name: "腾讯云" }, { name: "华为云" }, { name: "混沌工程" }, { name: "FinOps" }
+      { name: "腾讯云" }, { name: "华为云" }, { name: "百度云" }, { name: "混沌工程" }, { name: "FinOps" }
     ]},
     { name: "大数据与数据工程", era: "2010s-至今", icon: "📊", children: [
       { name: "Hadoop生态" }, { name: "HDFS" }, { name: "MapReduce" }, { name: "Hive" }, { name: "Spark" }, { name: "Flink" },
