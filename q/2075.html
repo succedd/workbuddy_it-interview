@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？ · IT面试题库</title>
+  <meta name="description" content="先给结论 这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。 镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？ · IT面试题库">
+  <meta property="og:description" content="先给结论 这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。 镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/2075.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/2075.jpg">
+  <meta property="og:url" content="https://itinterview.com.cn/q/2075">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？ · IT面试题库">
+  <meta name="twitter:description" content="先给结论 这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。 镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/2075.jpg">
+  <meta name="twitter:image:alt" content="百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？ · IT面试题库">
+  <link rel="canonical" href="https://itinterview.com.cn/q/2075">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？","text":"场景：在百舸控制台创建开发机，自定义镜像地址填写 NVIDIA NGC 公共镜像 nvcr.io/nvidia/isaac-lab:3.0.0。进度依次为创建中、排队中、部署中（等待存储挂载中），随后提示「发生过拉取镜像失败，网络异常」，近 2 小时仍未启动。用户反馈「开发机启动很慢」。请说明排查思路、根因判断和处理方案。","answerCount":1,"datePublished":"2026-11-20T12:56:02.537Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先给结论 这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。 镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大，进一步放大了超时概率。 按链路逐段排除 调度：Pod 条件 PodScheduled=True，排除资源不足或排队。 初始化：sidecar init 容器已 Completed，说明节点和 Pod 基础环境正常。 存储：存储诊断无异常，CSI 日志出现 NodePublishVolume ... volume mounted，排除 PFS 挂载问题。界面上「等待存储挂载中」只是更早阶段的状态。 镜像：main 容器 waiting.reason=ImagePullBackOff，消息为 Back-off pulling image \"nvcr.io/nvidia/isaac-lab:3.0.0\"；事件持续交替出现 Pulling 和 BackOff。 区分具体失败原因 通用的 Pulling/BackOff 事件不够，要找底层报错：控制台事件页、kubectl describe pod 的 Events，或在节点上用 crictl pull 复现。 manifest unknown / not found：镜像名或 tag 不存在，改成 NGC 上实际存在的 tag。 unauthorized / 401：仓库要求登录或凭据错误。 i/o timeout / TLS handshake timeout / context deadline exceeded：网络到海外仓库不可用或太慢。 本例只看到通用事件，网络问题是结合海外仓库、大镜像和长时间退避得出的高概率判断，仍应用底层报错坐实。 解决方案 推荐：把镜像转存到国内可达的仓库，例如百度智能云 CCR。可在有外网的机器上 docker pull、docker tag、docker push 到 CCR，或使用仓库的镜像同步能力。 回到百舸控制台：开发机 → 实例列表 → 选择实例 → 修改镜像，填写 CCR 地址后重新部署。私有仓库要同时配置访问凭据。 不建议一直等待退避重试：链路偶尔恢复时可能成功，但耗时不可预期，也会继续占用实例资源。 预防 nvcr.io、docker.io 等海外大镜像先同步到国内仓库，再给开发机或训练任务使用。 固定 tag 和镜像版本，避免使用不存在的 tag 或 latest 漂移。 常用环境可在实例正常运行后用「制作镜像」固化，下次直接使用；创建前核对控制台对镜像大小或写入数据的限制。 给部署时间设告警，超过阈值自动展示底层拉取错误，缩短定位时间。","url":"https://itinterview.com.cn/question/2075"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"Kubernetes","item":"https://itinterview.com.cn/category?cat=137"},{"@type":"ListItem","position":4,"name":"百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？","item":"https://itinterview.com.cn/q/2075"}]}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
+    .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">MLOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">百度百舸</span><span class="chip tag">开发机</span><span class="chip tag">ImagePullBackOff</span><span class="chip tag">镜像拉取</span><span class="chip tag">nvcr.io</span><span class="chip tag">CCR</span></div>
+    <div class="card"><h2>题目</h2><p>场景：在百舸控制台创建开发机，自定义镜像地址填写 NVIDIA NGC 公共镜像 nvcr.io/nvidia/isaac-lab:3.0.0。进度依次为创建中、排队中、部署中（等待存储挂载中），随后提示「发生过拉取镜像失败，网络异常」，近 2 小时仍未启动。用户反馈「开发机启动很慢」。请说明排查思路、根因判断和处理方案。</p></div>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>先给结论</strong></p>
+<ul>
+<li>这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。</li>
+<li>镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大，进一步放大了超时概率。</li>
+</ul>
+<p><strong>按链路逐段排除</strong></p>
+<ul>
+<li>调度：Pod 条件 <code>PodScheduled=True</code>，排除资源不足或排队。</li>
+<li>初始化：sidecar init 容器已 Completed，说明节点和 Pod 基础环境正常。</li>
+<li>存储：存储诊断无异常，CSI 日志出现 <code>NodePublishVolume ... volume mounted</code>，排除 PFS 挂载问题。界面上「等待存储挂载中」只是更早阶段的状态。</li>
+<li>镜像：main 容器 <code>waiting.reason=ImagePullBackOff</code>，消息为 <code>Back-off pulling image &quot;nvcr.io/nvidia/isaac-lab:3.0.0&quot;</code>；事件持续交替出现 <code>Pulling</code> 和 <code>BackOff</code>。</li>
+</ul>
+<p><strong>区分具体失败原因</strong></p>
+<ul>
+<li>通用的 Pulling/BackOff 事件不够，要找底层报错：控制台事件页、<code>kubectl describe pod</code> 的 Events，或在节点上用 <code>crictl pull &lt;镜像&gt;</code> 复现。</li>
+<li><code>manifest unknown</code> / <code>not found</code>：镜像名或 tag 不存在，改成 NGC 上实际存在的 tag。</li>
+<li><code>unauthorized</code> / <code>401</code>：仓库要求登录或凭据错误。</li>
+<li><code>i/o timeout</code> / <code>TLS handshake timeout</code> / <code>context deadline exceeded</code>：网络到海外仓库不可用或太慢。</li>
+<li>本例只看到通用事件，网络问题是结合海外仓库、大镜像和长时间退避得出的高概率判断，仍应用底层报错坐实。</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>推荐：把镜像转存到国内可达的仓库，例如百度智能云 CCR。可在有外网的机器上 <code>docker pull</code>、<code>docker tag</code>、<code>docker push</code> 到 CCR，或使用仓库的镜像同步能力。</li>
+<li>回到百舸控制台：开发机 → 实例列表 → 选择实例 → 修改镜像，填写 CCR 地址后重新部署。私有仓库要同时配置访问凭据。</li>
+<li>不建议一直等待退避重试：链路偶尔恢复时可能成功，但耗时不可预期，也会继续占用实例资源。</li>
+</ul>
+<p><strong>预防</strong></p>
+<ul>
+<li>nvcr.io、docker.io 等海外大镜像先同步到国内仓库，再给开发机或训练任务使用。</li>
+<li>固定 tag 和镜像版本，避免使用不存在的 tag 或 latest 漂移。</li>
+<li>常用环境可在实例正常运行后用「制作镜像」固化，下次直接使用；创建前核对控制台对镜像大小或写入数据的限制。</li>
+<li>给部署时间设告警，超过阈值自动展示底层拉取错误，缩短定位时间。</li>
+</ul></div>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/2075">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/155">Kubernetes中ConfigMap和Secret的使用？</a><span class="rel-n">238 次浏览</span></li><li><a href="https://itinterview.com.cn/q/154">Kubernetes Service类型有哪些？</a><span class="rel-n">205 次浏览</span></li><li><a href="https://itinterview.com.cn/q/156">Kubernetes滚动更新和回滚？</a><span class="rel-n">186 次浏览</span></li><li><a href="https://itinterview.com.cn/q/158">Kubernetes资源限制和HPA自动扩缩容？</a><span class="rel-n">153 次浏览</span></li></ul></div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=137&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

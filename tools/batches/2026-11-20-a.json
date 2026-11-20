@@ -1,0 +1,30 @@
+{
+  "batch": "2026-11-20-a",
+  "note": "真实工单改写：百度百舸开发机长时间部署中，根因为海外镜像拉取失败（已去除实例名、ID、Pod 名和存储地址）。",
+  "chain": false,
+  "questions": [
+    {
+      "title": "百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？",
+      "body": "场景：在百舸控制台创建开发机，自定义镜像地址填写 NVIDIA NGC 公共镜像 nvcr.io/nvidia/isaac-lab:3.0.0。进度依次为创建中、排队中、部署中（等待存储挂载中），随后提示「发生过拉取镜像失败，网络异常」，近 2 小时仍未启动。用户反馈「开发机启动很慢」。请说明排查思路、根因判断和处理方案。",
+      "answer": "**先给结论**\n- 这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。\n- 镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大，进一步放大了超时概率。\n\n**按链路逐段排除**\n- 调度：Pod 条件 `PodScheduled=True`，排除资源不足或排队。\n- 初始化：sidecar init 容器已 Completed，说明节点和 Pod 基础环境正常。\n- 存储：存储诊断无异常，CSI 日志出现 `NodePublishVolume ... volume mounted`，排除 PFS 挂载问题。界面上「等待存储挂载中」只是更早阶段的状态。\n- 镜像：main 容器 `waiting.reason=ImagePullBackOff`，消息为 `Back-off pulling image \"nvcr.io/nvidia/isaac-lab:3.0.0\"`；事件持续交替出现 `Pulling` 和 `BackOff`。\n\n**区分具体失败原因**\n- 通用的 Pulling/BackOff 事件不够，要找底层报错：控制台事件页、`kubectl describe pod` 的 Events，或在节点上用 `crictl pull <镜像>` 复现。\n- `manifest unknown` / `not found`：镜像名或 tag 不存在，改成 NGC 上实际存在的 tag。\n- `unauthorized` / `401`：仓库要求登录或凭据错误。\n- `i/o timeout` / `TLS handshake timeout` / `context deadline exceeded`：网络到海外仓库不可用或太慢。\n- 本例只看到通用事件，网络问题是结合海外仓库、大镜像和长时间退避得出的高概率判断，仍应用底层报错坐实。\n\n**解决方案**\n- 推荐：把镜像转存到国内可达的仓库，例如百度智能云 CCR。可在有外网的机器上 `docker pull`、`docker tag`、`docker push` 到 CCR，或使用仓库的镜像同步能力。\n- 回到百舸控制台：开发机 → 实例列表 → 选择实例 → 修改镜像，填写 CCR 地址后重新部署。私有仓库要同时配置访问凭据。\n- 不建议一直等待退避重试：链路偶尔恢复时可能成功，但耗时不可预期，也会继续占用实例资源。\n\n**预防**\n- nvcr.io、docker.io 等海外大镜像先同步到国内仓库，再给开发机或训练任务使用。\n- 固定 tag 和镜像版本，避免使用不存在的 tag 或 latest 漂移。\n- 常用环境可在实例正常运行后用「制作镜像」固化，下次直接使用；创建前核对控制台对镜像大小或写入数据的限制。\n- 给部署时间设告警，超过阈值自动展示底层拉取错误，缩短定位时间。",
+      "category": "Kubernetes",
+      "positions": [
+        "公有云售后技术支持",
+        "MLOps工程师",
+        "SRE站点可靠性工程师"
+      ],
+      "difficulty": "中级",
+      "type": "故障排查题",
+      "tags": [
+        "百度百舸",
+        "开发机",
+        "ImagePullBackOff",
+        "镜像拉取",
+        "nvcr.io",
+        "CCR"
+      ],
+      "years": "1-3年",
+      "source": "https://kubernetes.io/zh-cn/docs/concepts/containers/images/"
+    }
+  ]
+}
