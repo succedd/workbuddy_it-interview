@@ -18,14 +18,212 @@
     id: "ai",
     name: "AI 大模型应用",
     icon: "🤖",
-    desc: "面向后端和全栈工程师的大模型应用开发路线：从会调 API、写好 Prompt，到搭 RAG 知识库、做 Agent 与工具调用，再到微调、推理部署、评测与安全。按 OpenAI / Anthropic 官方文档、Hugging Face 课程与 vLLM 文档的目录组织。",
+    desc: "面向后端和全栈工程师的大模型应用开发路线：先把 AI、机器学习、深度学习、大模型的常用名词和概念讲透，再到会调 API、写好 Prompt，到搭 RAG 知识库、做 Agent 与工具调用，再到微调、推理部署、评测与安全。按 OpenAI / Anthropic 官方文档、Hugging Face 课程与 vLLM 文档的目录组织。",
     levels: [
       {
         id: "basic",
         name: "初级",
-        desc: "理解大模型怎么工作，能稳定调用 API、写出可控的 Prompt、拿到结构化结果。",
+        desc: "搞懂 AI 与大模型的核心名词和概念，理解大模型怎么工作，能稳定调用 API、写出可控的 Prompt、拿到结构化结果。",
         chapters: [
           // <ai-basic>
+          {
+            id: "ai-concepts-map",
+            title: "AI 入门概念地图：机器学习、深度学习与大模型",
+            minutes: 15,
+            updated: "2026-11-20",
+            applies: "零基础入门，无需数学背景",
+            tags: ["AI", "机器学习", "概念"],
+            terms: ["人工智能", "机器学习", "深度学习", "监督学习", "过拟合", "损失函数", "梯度下降"],
+            body: `
+> **官方文档基线**：[Google · Machine Learning Glossary](https://developers.google.com/machine-learning/glossary) · [Google · Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course) · [NVIDIA · AI Glossary](https://www.nvidia.com/en-us/glossary/)
+
+## 一、四个词的包含关系
+
+很多人把 AI、机器学习、深度学习、大模型混着说。它们其实是一层套一层的关系：
+
+![AI、机器学习、深度学习与大模型的关系](/assets/diagrams/docs/ai-family.svg)
+
+| 名词 | 一句话解释 | 典型例子 |
+|---|---|---|
+| 人工智能（AI） | 让机器做出「看起来有智能」的行为，方法不限 | 下棋程序、导航路线规划 |
+| 机器学习（ML） | 不手写规则，给数据让程序自己找规律 | 垃圾邮件识别、房价预测 |
+| 深度学习（DL） | 用多层神经网络做机器学习 | 人脸识别、语音转文字 |
+| 大模型（LLM） | 参数量巨大、在海量文本上训练的深度学习模型 | ChatGPT、Claude、通义千问、DeepSeek |
+| 生成式 AI（AIGC） | 能生成新内容（文字、图片、音视频）的 AI | 写文案、画图、生成代码 |
+
+## 二、模型、参数、训练、推理
+
+用「学生备考」来理解最直观：
+
+- **模型**：学生的大脑，本质是一个带很多可调数字的数学函数。
+- **参数（权重）**：大脑里的「知识」，就是那些可调的数字。7B 模型就是有 70 亿个参数。
+- **训练**：刷题。看题、作答、对答案、改正，反复调整参数。
+- **推理（Inference）**：上考场。参数不再变化，只用学到的东西回答新问题。我们平时调用 ChatGPT 都是推理。
+
+训练成本极高，通常只有模型厂商做；推理是每次调用都发生的，应用开发者主要关心推理的速度和费用。
+
+## 三、数据集与标签
+
+- **样本**：一条数据，比如一封邮件。
+- **特征**：描述样本的信息，比如邮件里有没有「中奖」二字。
+- **标签**：正确答案，比如「垃圾邮件 / 正常邮件」。
+- **训练集 / 验证集 / 测试集**：分别用来学习、调参、最终考试。常见比例 8:1:1，测试集训练时绝不能偷看。
+
+## 四、几种学习方式
+
+| 方式 | 有没有标签 | 怎么学 | 例子 |
+|---|---|---|---|
+| 监督学习 | 有 | 照着正确答案学 | 图片分类、情感分析 |
+| 无监督学习 | 没有 | 自己发现数据里的结构 | 用户分群、异常检测 |
+| 自监督学习 | 从数据本身造标签 | 遮住一部分让模型猜 | 大模型预训练「猜下一个词」 |
+| 强化学习 | 只有奖励信号 | 试错，做对了加分 | AlphaGo、RLHF、推理模型训练 |
+
+分类问题预测的是类别（是不是垃圾邮件），回归问题预测的是数值（房价多少），这是监督学习最常见的两类任务。
+
+## 五、损失函数与梯度下降
+
+**损失函数（Loss）** 是给模型打分的尺子：预测和正确答案差得越多，损失越大。训练的目标就是让损失尽量小。
+
+**梯度下降** 是最小化损失的方法。想象蒙着眼下山：每一步先摸一下哪个方向最陡（梯度），然后往下走一小步。每步走多远叫**学习率**，太大容易来回跳过谷底，太小走得太慢。
+
+${F}python
+# 最简单的梯度下降：找到让 loss = (w - 3)^2 最小的 w
+w, lr = 0.0, 0.1
+for step in range(50):
+    grad = 2 * (w - 3)      # loss 对 w 的导数
+    w -= lr * grad          # 沿梯度反方向走一步
+print(round(w, 3))          # 接近 3.0
+${F}
+
+## 六、过拟合与欠拟合
+
+| 现象 | 像什么 | 表现 | 常见解决办法 |
+|---|---|---|---|
+| 欠拟合 | 没学会 | 训练集、测试集都差 | 换更大的模型、训练更久 |
+| 过拟合 | 死记硬背 | 训练集很好，测试集差 | 加数据、正则化、Dropout、早停 |
+| 泛化好 | 真正理解 | 两边都好 | 目标状态 |
+
+**泛化能力**就是模型在没见过的数据上表现好不好，这是衡量模型价值的核心。
+
+## 七、常用评估指标
+
+- **准确率（Accuracy）**：预测对的比例。类别不平衡时会骗人：99% 是正常邮件，全猜正常也有 99%。
+- **精确率（Precision）**：判为垃圾的里面，真垃圾占多少，关心「别误杀」。
+- **召回率（Recall）**：所有真垃圾里，抓出来多少，关心「别漏掉」。
+- **F1**：精确率和召回率的综合。
+
+## ⚠ 常见误区
+
+- **误区：AI 就等于大模型**。推荐系统、风控模型大多仍是传统机器学习，便宜、快、可解释。
+- **误区：数据越多越好**。脏数据、错标签会直接教坏模型，质量比数量更重要。
+- **误区：训练集分数高就是好模型**。只有测试集上的表现才说明问题。
+
+## ✅ 自检清单
+
+- 能画出 AI ⊃ 机器学习 ⊃ 深度学习 ⊃ 大模型 的关系。
+- 能区分训练和推理，知道参数是什么。
+- 能说出监督、无监督、强化学习各一个例子。
+- 能解释过拟合，以及精确率和召回率的区别。
+
+## 📚 延伸阅读
+
+- Google Machine Learning Crash Course（有中文版）
+- 吴恩达《Machine Learning Specialization》
+- 周志华《机器学习》（西瓜书）第 1~2 章
+`
+          },
+          {
+            id: "ai-nn-terms",
+            title: "神经网络与深度学习核心名词",
+            minutes: 16,
+            updated: "2026-11-20",
+            applies: "看懂模型论文、技术文章的基础",
+            tags: ["深度学习", "神经网络", "概念"],
+            terms: ["神经网络", "激活函数", "反向传播", "Epoch", "Batch", "学习率", "CNN", "RNN", "Embedding"],
+            body: `
+> **官方文档基线**：[Google · ML Crash Course: Neural networks](https://developers.google.com/machine-learning/crash-course/neural-networks) · [PyTorch · Learn the Basics](https://pytorch.org/tutorials/beginner/basics/intro.html) · [Dive into Deep Learning（动手学深度学习）](https://zh.d2l.ai/)
+
+## 一、神经元、层与网络
+
+- **神经元**：接收多个输入，每个输入乘一个**权重**，加起来再加一个**偏置**，最后过一个激活函数。
+- **层（Layer）**：一排神经元。输入层接数据，输出层给结果，中间的叫**隐藏层**。
+- **深度**：隐藏层多就叫「深」。GPT 类模型通常有几十到上百层。
+- **全连接层（Linear / Dense）**：上一层每个神经元都连到下一层每个神经元，是最基础的层。
+
+**激活函数**给网络加入「非线性」。没有它，叠多少层都等价于一层线性计算。常见的有 ReLU（负数变 0）、Sigmoid（压到 0~1）、Softmax（把一组分数变成概率，合计为 1），大模型里常用 GELU、SwiGLU。
+
+## 二、训练循环
+
+![神经网络训练一轮在做什么](/assets/diagrams/docs/nn-training.svg)
+
+| 名词 | 含义 | 常见取值 |
+|---|---|---|
+| Epoch | 把全部训练数据完整过一遍 | 小数据集几十轮；大模型预训练约 1 轮 |
+| Batch Size | 一次喂给模型多少条样本 | 32、256，大模型按 Token 计 |
+| Step / Iteration | 更新一次参数 | 步数 = 数据量 / batch × epoch |
+| 学习率（LR） | 每次更新走多大一步 | 1e-3 ~ 1e-5，常配合预热和衰减 |
+| 优化器 | 决定怎么用梯度更新参数 | SGD、Adam、AdamW |
+
+${F}python
+import torch, torch.nn as nn
+model = nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 2))
+opt = torch.optim.AdamW(model.parameters(), lr=1e-3)
+loss_fn = nn.CrossEntropyLoss()
+for x, y in loader:                 # 每次一个 batch
+    loss = loss_fn(model(x), y)     # 前向 + 计算损失
+    opt.zero_grad()
+    loss.backward()                 # 反向传播求梯度
+    opt.step()                      # 更新参数
+${F}
+
+## 三、防止过拟合的手段
+
+- **正则化（L2 / Weight Decay）**：惩罚过大的权重，让模型更「简单」。
+- **Dropout**：训练时随机关掉一部分神经元，逼模型不依赖个别特征。
+- **早停（Early Stopping）**：验证集指标不再变好就停。
+- **数据增强**：图片翻转裁剪、文本同义改写，凭空多出训练数据。
+- **归一化（BatchNorm / LayerNorm）**：让每层输入分布稳定，训练更快更稳。Transformer 用 LayerNorm 或 RMSNorm。
+
+## 四、经典网络结构
+
+| 结构 | 擅长 | 核心思想 | 代表 |
+|---|---|---|---|
+| CNN 卷积网络 | 图像 | 用小窗口在图上滑动提取局部特征 | ResNet、YOLO |
+| RNN / LSTM | 早期的文本、语音 | 一个字一个字按顺序处理，带记忆 | Seq2Seq 翻译 |
+| Transformer | 文本、图像、语音全都行 | 注意力机制，所有位置并行计算 | GPT、BERT、ViT |
+| Diffusion 扩散模型 | 图像、视频生成 | 从噪声一步步去噪还原出图 | Stable Diffusion、Sora |
+| GAN 生成对抗网络 | 早期图像生成 | 生成器和判别器互相博弈 | StyleGAN |
+
+RNN 必须按顺序算，难以并行，长文本还会「忘掉前面」。Transformer 用注意力一次看全部内容，既能并行训练又能处理长距离依赖，因此取代了 RNN。
+
+## 五、Embedding 与注意力
+
+**Embedding（嵌入）** 把离散的东西（词、商品、用户）变成一串数字向量。意思相近的词，向量也靠得近：「国王 - 男人 + 女人 ≈ 女王」是经典例子。它是 RAG 检索和推荐系统的基础。
+
+**注意力（Attention）** 让模型在处理一个词时，自动决定该重点看哪些其他词。计算时每个词生成三个向量：Query（我要找什么）、Key（我是什么）、Value（我的内容），用 Query 和 Key 的相似度给 Value 加权求和。
+
+**编码器与解码器**：BERT 只用编码器，擅长理解（分类、抽取）；GPT 只用解码器，擅长生成；T5 两者都有，适合翻译、摘要。
+
+## ⚠ 常见误区
+
+- **误区：神经网络像人脑一样思考**。它只是借用了「神经元」的名字，本质是大量矩阵乘法。
+- **误区：层数越多越好**。层数过深会梯度消失，需要残差连接（ResNet 的核心发明）才能训练。
+- **误区：学习率随便设**。学习率是最影响训练结果的超参数，通常第一个调它。
+
+## ✅ 自检清单
+
+- 能说出前向传播、损失、反向传播、更新参数四步。
+- 能区分 epoch、batch、step。
+- 知道 CNN、RNN、Transformer 各擅长什么。
+- 能用一句话解释 Embedding 和注意力。
+
+## 📚 延伸阅读
+
+- 3Blue1Brown：《深度学习》系列动画视频
+- 李沐《动手学深度学习》在线版
+- Jay Alammar：The Illustrated Transformer
+`
+          },
           {
             id: "ai-llm-basics",
             title: "大模型是怎么工作的：Token、Transformer 与上下文窗口",
@@ -98,6 +296,116 @@ ${F}
 - Andrej Karpathy：《Let's build GPT: from scratch》视频
 - Jay Alammar：The Illustrated Transformer
 - Hugging Face LLM Course 第 1~2 章
+`
+          },
+          {
+            id: "ai-llm-terms",
+            title: "大模型名词详解：参数量、MoE、对齐、推理模型与多模态",
+            minutes: 18,
+            updated: "2026-11-20",
+            applies: "看懂模型发布公告和评测榜单",
+            tags: ["大模型", "LLM", "概念"],
+            terms: ["参数量", "MoE", "预训练", "SFT", "RLHF", "DPO", "推理模型", "多模态", "幻觉", "蒸馏", "Scaling Law"],
+            body: `
+> **官方文档基线**：[Hugging Face · LLM Course](https://huggingface.co/learn/llm-course) · [Hugging Face · Mixture of Experts Explained](https://huggingface.co/blog/moe) · [OpenAI · Reasoning models](https://platform.openai.com/docs/guides/reasoning)
+
+## 一、怎么读懂一个模型名
+
+以 ${C}Qwen2.5-72B-Instruct-AWQ${C} 为例，拆开看：
+
+| 片段 | 含义 |
+|---|---|
+| Qwen2.5 | 模型系列和版本 |
+| 72B | 参数量 720 亿（B = Billion，十亿） |
+| Instruct / Chat | 经过指令微调，能对话；不带后缀或带 Base 的只会续写 |
+| AWQ / GPTQ / GGUF / Q4 | 量化格式，体积更小，精度略降 |
+| 128K | 有时会标上下文窗口长度 |
+
+常见规模：1.5B~8B 可以在单张消费级显卡或笔记本上跑；14B~32B 需要一张 24~80GB 显卡；70B 以上通常要多卡。
+
+## 二、模型从哪来
+
+![一个大模型从训练到上线](/assets/diagrams/docs/llm-lifecycle.svg)
+
+| 名词 | 解释 |
+|---|---|
+| 预训练（Pre-training） | 在万亿级 Token 上学「预测下一个词」，最耗钱的一步 |
+| 基座模型（Base Model） | 预训练的产物，会续写但不会好好回答问题 |
+| SFT 监督微调 | 用「指令-回答」样例教它按要求回答 |
+| RLHF | 人类给回答排序，训练奖励模型，再用强化学习优化 |
+| DPO | 直接用「好回答 vs 差回答」对训练，比 RLHF 简单，开源模型常用 |
+| 对齐（Alignment） | 让模型的行为符合人的意图和价值观：有用、诚实、无害 |
+| 蒸馏（Distillation） | 用大模型（老师）的输出训练小模型（学生），小模型能力接近而成本低 |
+| 合成数据 | 用模型生成的训练数据，弥补人工数据不足 |
+
+## 三、Dense 与 MoE
+
+- **Dense（稠密）模型**：每生成一个 Token，所有参数都参与计算，如 Llama 3 70B。
+- **MoE（混合专家）模型**：内部有很多「专家」子网络，每个 Token 只激活其中几个。DeepSeek-V3 总参数 671B，每个 Token 只激活约 37B。
+
+MoE 的好处是「知识容量大、计算量小」；代价是全部参数仍要放进显存，部署门槛高。看 MoE 模型要分清 **总参数** 和 **激活参数**。
+
+## 四、推理模型与思维链
+
+**思维链（Chain of Thought, CoT）**：让模型先写出推理步骤再给答案，数学和逻辑题正确率明显提高。
+
+**推理模型（Reasoning Model）**：把「先想再答」训练进模型本身，回答前自动生成很长的内部思考，如 OpenAI o 系列、DeepSeek-R1。特点是：
+
+- 数学、编程、复杂规划更强；
+- 更慢、更贵（思考过程也算 Token）；
+- 简单问答没必要用，普通对话模型更快。
+
+**测试时计算（Test-time Compute）** 指推理阶段多花算力换更好答案，是推理模型背后的思路。
+
+## 五、多模态
+
+**多模态**指能同时处理文字以外的信息：
+
+- **视觉理解**：看图回答问题、读截图和表格，如 GPT-4o、Qwen-VL。
+- **图像生成**：文生图，常基于扩散模型，如 Stable Diffusion、Midjourney。
+- **语音**：ASR 语音转文字（Whisper），TTS 文字转语音，以及端到端实时语音对话。
+- **视频生成**：如 Sora、可灵。
+
+**VLM** 是视觉语言模型（Vision Language Model）的缩写。
+
+## 六、能力边界相关
+
+| 名词 | 解释 | 应对 |
+|---|---|---|
+| 幻觉（Hallucination） | 自信地编造不存在的事实、链接、函数 | RAG 提供资料、要求引用来源、事后校验 |
+| 知识截止日期 | 训练数据的最晚时间 | 联网搜索或 RAG 补充新信息 |
+| 涌现能力 | 模型变大后突然出现的能力，如多步推理 | 了解即可，学界仍有争议 |
+| Scaling Law | 参数、数据、算力按比例增加，损失按规律下降 | 解释了为什么模型越做越大 |
+| 开源权重 vs 闭源 | 开源权重可下载自部署（Llama、Qwen、DeepSeek）；闭源只能调 API（GPT、Claude） | 数据敏感选自部署，追求效果先试闭源 |
+
+## 七、怎么看评测榜单
+
+- **MMLU**：57 个学科的选择题，测知识面。
+- **GSM8K / MATH / AIME**：数学推理。
+- **HumanEval / SWE-bench**：写代码、修真实 GitHub Issue。
+- **C-Eval / CMMLU**：中文能力。
+- **LMArena（Chatbot Arena）**：真人盲评投票排名，更接近实际体验。
+
+榜单分数可能因为题目泄漏进训练数据而虚高。选型时一定要用自己业务的数据做一轮小评测。
+
+## ⚠ 常见误区
+
+- **误区：参数越大一定越好**。新一代 8B 模型常常超过上一代 70B，训练数据和方法更重要。
+- **误区：开源就能随便商用**。要看具体许可证，部分模型限制用户规模或用途。
+- **误区：推理模型什么都该用**。简单任务用它只会更慢更贵。
+
+## ✅ 自检清单
+
+- 能读懂模型名里的参数量、Instruct、量化后缀。
+- 能说清预训练、SFT、RLHF/DPO 的先后和作用。
+- 能区分 MoE 的总参数和激活参数。
+- 知道幻觉是什么，以及至少两种缓解办法。
+
+## 📚 延伸阅读
+
+- Hugging Face Blog：Mixture of Experts Explained
+- DeepSeek-R1 技术报告
+- Andrej Karpathy：《Intro to Large Language Models》视频
 `
           },
           {
@@ -297,6 +605,245 @@ ${F}
 
 - OpenAI Cookbook：How to stream completions / How to handle rate limits
 - MDN：Using server-sent events
+`
+          },
+          {
+            id: "ai-app-terms",
+            title: "AI 应用开发名词：Prompt、RAG、Agent、MCP 一次讲清",
+            minutes: 15,
+            updated: "2026-11-20",
+            applies: "产品、开发、测试都能看懂的 AI 应用术语",
+            tags: ["AI 应用", "Agent", "概念"],
+            terms: ["System Prompt", "Few-shot", "RAG", "向量数据库", "Agent", "Function Calling", "MCP", "A2A", "Copilot", "AIGC"],
+            body: `
+> **官方文档基线**：[OpenAI · Function calling](https://platform.openai.com/docs/guides/function-calling) · [Anthropic · Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) · [Model Context Protocol](https://modelcontextprotocol.io/introduction)
+
+## 一、和模型对话的名词
+
+| 名词 | 一句话解释 |
+|---|---|
+| Prompt 提示词 | 发给模型的全部输入，包括指令、资料、示例 |
+| System Prompt 系统提示 | 设定角色、规则、输出格式，整段对话都生效 |
+| Zero-shot / Few-shot | 不给示例直接做 / 先给几个示例再做 |
+| CoT 思维链 | 让模型「一步一步想」，先推理再给答案 |
+| 上下文（Context） | 模型这次能看到的所有内容，包括历史对话 |
+| 上下文工程 | 精心挑选放进上下文的资料、工具和记忆，比措辞技巧更重要 |
+| 结构化输出 | 让模型按 JSON Schema 返回，方便程序解析 |
+| 流式输出（Streaming） | 边生成边返回，打字机效果 |
+| 多轮对话 | 每次请求都把历史消息带上，模型本身不记得上一次 |
+
+**生成参数**：${C}temperature${C} 控制随机性，越低越稳定；${C}top_p${C} 限制候选词范围；${C}max_tokens${C} 限制输出长度；${C}stop${C} 遇到指定字符就停。
+
+## 二、给模型补知识：RAG
+
+**RAG（检索增强生成）**：先从知识库里搜出相关资料，再连同问题一起交给模型回答。相当于「开卷考试」。
+
+![RAG 检索增强生成流程](/assets/diagrams/docs/rag-pipeline.svg)
+
+| 名词 | 解释 |
+|---|---|
+| Chunk 切块 | 把长文档切成几百字的小段，方便检索 |
+| Embedding 向量化 | 把文本变成向量，语义相近的向量距离近 |
+| 向量数据库 | 存向量并快速找「最相似」的库，如 Milvus、pgvector、Elasticsearch |
+| 召回 Top-K | 找出最相似的 K 段资料 |
+| 混合检索 | 向量检索 + 关键词检索（BM25）结合，专有名词更准 |
+| Rerank 重排 | 用专门模型给召回结果重新打分排序 |
+| GraphRAG | 先从文档抽取实体关系图谱，再按图检索，适合跨文档综合问题 |
+
+## 三、让模型做事：Agent
+
+**Function Calling / Tool Use（工具调用）**：告诉模型有哪些函数可用，模型决定调用哪个、传什么参数，由你的程序执行，再把结果交还模型。
+
+**Agent（智能体）**：模型在一个循环里自己规划步骤、调用工具、观察结果、决定下一步，直到完成任务。
+
+![Agent 工具调用循环](/assets/diagrams/docs/agent-loop.svg)
+
+| 名词 | 解释 |
+|---|---|
+| ReAct | 「思考 → 行动 → 观察」循环，最经典的 Agent 模式 |
+| 工作流（Workflow） | 步骤由程序写死，模型只负责其中某些环节；比 Agent 更可控 |
+| 规划（Planning） | 把大任务拆成子任务 |
+| 记忆（Memory） | 短期记忆是当前对话，长期记忆存进数据库按需取回 |
+| 多智能体（Multi-Agent） | 多个分工不同的 Agent 协作，如「写代码 + 审代码」 |
+| MCP 模型上下文协议 | Anthropic 提出的开放标准，统一 AI 应用接入工具和数据源的方式，像 AI 的 USB 接口 |
+| A2A | Google 提出的 Agent 之间互相通信协作的协议 |
+| Computer Use / 浏览器 Agent | 让模型看屏幕截图、操作鼠标键盘完成任务 |
+| Human-in-the-loop | 关键步骤需要人确认后才执行 |
+
+## 四、产品形态名词
+
+- **AIGC**：AI 生成内容，泛指 AI 写的文字、画的图、做的视频。
+- **Copilot（副驾驶）**：嵌入现有软件里辅助人工作，人做决定，如 GitHub Copilot。
+- **Chatbot**：对话机器人，如智能客服。
+- **AI 编程助手 / Coding Agent**：能读代码库、改代码、跑测试，如 Cursor、Claude Code、Codex。
+- **低代码 Agent 平台**：拖拽搭建 AI 应用，如 Dify、Coze、FastGPT。
+- **开发框架**：LangChain、LlamaIndex、Spring AI 等，封装了模型调用、RAG、Agent 的常用代码。
+
+## 五、怎么选方案
+
+| 需求 | 优先方案 |
+|---|---|
+| 改输出风格、格式 | Prompt |
+| 回答要基于公司内部文档 | RAG |
+| 要查数据库、调接口、发消息 | Function Calling |
+| 多步骤且步骤不固定 | Agent |
+| 步骤固定、要求稳定 | Workflow |
+| 固定格式、特定领域风格且量很大 | 微调 |
+
+## ⚠ 常见误区
+
+- **误区：Agent 越自主越好**。自主性越高越难控制，能用固定工作流解决的就别上 Agent。
+- **误区：有 RAG 就不会幻觉**。检索不到正确资料时模型仍会编，要让它「找不到就说不知道」。
+- **误区：MCP 是一种模型**。它是一个协议，规定应用和工具怎么对接，和用哪家模型无关。
+
+## ✅ 自检清单
+
+- 能区分 Prompt、RAG、微调各解决什么问题。
+- 能解释 Function Calling 中模型和程序各干什么。
+- 能说清 Agent 和 Workflow 的区别。
+- 知道 MCP 和 A2A 分别连接什么。
+
+## 📚 延伸阅读
+
+- Anthropic：Building effective agents
+- Lilian Weng：LLM Powered Autonomous Agents
+- MCP 官方文档 Introduction 与 Architecture
+`
+          },
+          {
+            id: "ai-glossary",
+            title: "AI 大模型名词速查表（80 个高频术语）",
+            minutes: 12,
+            updated: "2026-11-20",
+            applies: "随时查阅，面试前快速过一遍",
+            tags: ["AI", "名词", "速查"],
+            terms: ["AI 名词", "大模型术语", "LLM 术语", "AGI", "Transformer", "Token", "LoRA", "vLLM"],
+            body: `
+> **官方文档基线**：[Google · Machine Learning Glossary](https://developers.google.com/machine-learning/glossary) · [Hugging Face · Glossary](https://huggingface.co/docs/transformers/glossary) · [NVIDIA · Glossary](https://www.nvidia.com/en-us/glossary/)
+
+按主题分组，每个词一句话。想深入了解，可以看本方向对应的详细章节。
+
+## 一、基础概念
+
+| 术语 | 中文 | 一句话解释 |
+|---|---|---|
+| AI | 人工智能 | 让机器表现出智能行为的技术总称 |
+| AGI | 通用人工智能 | 在几乎所有任务上达到人类水平的 AI，目前尚未实现 |
+| ML | 机器学习 | 从数据中自动学习规律 |
+| DL | 深度学习 | 用多层神经网络做机器学习 |
+| Model | 模型 | 学到规律后的数学函数 |
+| Parameter / Weight | 参数 / 权重 | 模型里可调的数字，7B 即 70 亿个 |
+| Training | 训练 | 用数据调整参数的过程 |
+| Inference | 推理 | 用训练好的模型做预测，参数不变 |
+| Dataset | 数据集 | 训练用的数据，分训练、验证、测试集 |
+| Label | 标签 | 样本的正确答案 |
+| Loss | 损失 | 预测和正确答案的差距 |
+| Gradient Descent | 梯度下降 | 沿损失下降最快的方向更新参数 |
+| Overfitting | 过拟合 | 训练集好、新数据差，死记硬背 |
+| Hyperparameter | 超参数 | 训练前人为设定的值，如学习率 |
+| Benchmark | 基准测试 | 标准化的评测题集，如 MMLU |
+
+## 二、神经网络
+
+| 术语 | 中文 | 一句话解释 |
+|---|---|---|
+| Neural Network | 神经网络 | 多层神经元连接成的模型 |
+| Activation | 激活函数 | 引入非线性，如 ReLU、GELU |
+| Backpropagation | 反向传播 | 从输出往回计算梯度 |
+| Epoch / Batch | 轮次 / 批次 | 完整过一遍数据 / 一次喂多少条 |
+| Learning Rate | 学习率 | 每次参数更新的步长 |
+| Optimizer | 优化器 | 决定怎么更新参数，如 AdamW |
+| Dropout | 随机失活 | 训练时随机关神经元防过拟合 |
+| CNN | 卷积神经网络 | 擅长图像 |
+| RNN / LSTM | 循环神经网络 | 按顺序处理序列，已被 Transformer 取代 |
+| Transformer | — | 基于注意力的架构，当前大模型的基础 |
+| Attention | 注意力 | 计算每个位置该重点关注哪些位置 |
+| Embedding | 嵌入 / 向量 | 把文字等变成表示语义的数字向量 |
+| Encoder / Decoder | 编码器 / 解码器 | 理解输入 / 生成输出 |
+| Diffusion | 扩散模型 | 从噪声逐步去噪生成图像 |
+
+## 三、大模型
+
+| 术语 | 中文 | 一句话解释 |
+|---|---|---|
+| LLM | 大语言模型 | 海量文本训练的超大 Transformer |
+| Foundation Model | 基础模型 | 可适配多种下游任务的大模型 |
+| Token | 词元 | 模型处理文本的最小单位 |
+| Tokenizer | 分词器 | 把文本切成 Token |
+| Context Window | 上下文窗口 | 一次请求能处理的 Token 上限 |
+| Pre-training | 预训练 | 海量数据上学预测下一个词 |
+| Base / Instruct | 基座 / 指令模型 | 只会续写 / 会按指令回答 |
+| SFT | 监督微调 | 用问答样例教模型回答 |
+| RLHF | 人类反馈强化学习 | 用人类偏好训练模型 |
+| DPO | 直接偏好优化 | 不用奖励模型的偏好对齐方法 |
+| Alignment | 对齐 | 让模型有用、诚实、无害 |
+| MoE | 混合专家 | 每个 Token 只激活部分参数 |
+| Reasoning Model | 推理模型 | 先长时间思考再回答，如 o 系列、R1 |
+| CoT | 思维链 | 先写推理步骤再给答案 |
+| Multimodal | 多模态 | 同时处理文本、图像、语音等 |
+| VLM | 视觉语言模型 | 能看图的大模型 |
+| Hallucination | 幻觉 | 编造不真实的内容 |
+| Distillation | 蒸馏 | 大模型教小模型 |
+| Scaling Law | 缩放定律 | 规模越大损失越低的经验规律 |
+| Open Weights | 开源权重 | 权重可下载自部署 |
+
+## 四、应用开发
+
+| 术语 | 中文 | 一句话解释 |
+|---|---|---|
+| Prompt | 提示词 | 给模型的输入指令 |
+| System Prompt | 系统提示词 | 全局角色和规则设定 |
+| Few-shot | 少样本 | 在提示里给几个示例 |
+| Temperature | 温度 | 控制输出随机性 |
+| Structured Output | 结构化输出 | 按 JSON Schema 返回 |
+| RAG | 检索增强生成 | 先检索资料再回答 |
+| Vector DB | 向量数据库 | 按语义相似度检索 |
+| Rerank | 重排序 | 对召回结果精细打分 |
+| Function Calling | 函数调用 | 模型决定调用哪个工具 |
+| Agent | 智能体 | 自主规划、调用工具完成任务 |
+| Workflow | 工作流 | 预先编排好的固定步骤 |
+| MCP | 模型上下文协议 | AI 应用接入工具和数据的统一标准 |
+| A2A | 智能体互联协议 | Agent 之间通信协作的标准 |
+| Guardrails | 护栏 | 对输入输出做安全检查 |
+| Prompt Injection | 提示注入 | 用恶意文本劫持模型指令 |
+| Eval | 评测 | 用测试集衡量应用效果 |
+| LLM-as-a-Judge | 模型当裁判 | 用大模型给回答打分 |
+
+## 五、训练、部署与算力
+
+| 术语 | 中文 | 一句话解释 |
+|---|---|---|
+| Fine-tuning | 微调 | 在已有模型上用少量数据继续训练 |
+| LoRA / QLoRA | 低秩适配 | 只训练很少的附加参数，省显存 |
+| PEFT | 参数高效微调 | LoRA 等方法的统称 |
+| Quantization | 量化 | 降低参数精度以省显存 |
+| BF16 / FP8 / INT4 | 数值精度 | 每参数 2 / 1 / 0.5 字节 |
+| GPU / VRAM | 显卡 / 显存 | 算力和模型存放位置 |
+| FLOPS | 每秒浮点运算 | 衡量算力 |
+| KV Cache | 键值缓存 | 缓存注意力结果加速生成 |
+| TTFT | 首字延迟 | 多久出第一个 Token |
+| Throughput | 吞吐量 | 单位时间处理的 Token 总数 |
+| vLLM | — | 主流开源高性能推理引擎 |
+| Ollama | — | 本地一键运行模型的工具 |
+| CUDA | — | NVIDIA GPU 编程平台 |
+| Tensor Parallel | 张量并行 | 把一层拆到多卡计算 |
+
+## ⚠ 常见误区
+
+- **误区：Inference 翻译成「推理」就是逻辑推理**。在部署语境里它指「运行模型得到输出」，和推理模型的 Reasoning 不是一回事。
+- **误区：Token 等于字数**。中英文、不同模型的换算比例都不同，要用分词器实际计算。
+- **误区：开源模型等于开源**。多数只开放权重，训练数据和代码并不公开。
+
+## ✅ 自检清单
+
+- 每组随机挑 5 个词，能用自己的话讲清楚。
+- 能分清 Inference 和 Reasoning、Base 和 Instruct、RAG 和微调。
+
+## 📚 延伸阅读
+
+- Google Machine Learning Glossary（可按字母检索）
+- Hugging Face Transformers Glossary
+- 本方向「AI 入门概念地图」「大模型名词详解」「AI 算力与工程名词」章节
 `
           },
         ]
@@ -694,6 +1241,118 @@ ${F}
         desc: "能做微调与私有化部署，建立评测体系，处理成本、延迟和安全问题。",
         chapters: [
           // <ai-adv>
+          {
+            id: "ai-infra-terms",
+            title: "AI 算力与工程名词：GPU、显存、精度、并行与推理指标",
+            minutes: 17,
+            updated: "2026-11-20",
+            applies: "做私有化部署、算力采购、性能优化前的必备概念",
+            tags: ["GPU", "算力", "概念"],
+            terms: ["GPU", "显存", "FLOPs", "BF16", "量化", "KV Cache", "TTFT", "吞吐", "张量并行", "CUDA", "NCCL"],
+            body: `
+> **官方文档基线**：[NVIDIA · Glossary](https://www.nvidia.com/en-us/glossary/) · [Hugging Face · Efficient Training on Multiple GPUs](https://huggingface.co/docs/transformers/perf_train_gpu_many) · [vLLM Documentation](https://docs.vllm.ai/)
+
+## 一、为什么大模型离不开 GPU
+
+神经网络的计算几乎全是矩阵乘法，可以拆成成千上万个小计算同时做。CPU 有几十个强核心，GPU 有上万个简单核心，做这种并行计算快几十到上百倍。
+
+| 名词 | 解释 |
+|---|---|
+| GPU | 图形处理器，现在是 AI 训练和推理的主力 |
+| Tensor Core | GPU 里专门做矩阵乘法的单元 |
+| 显存（HBM / VRAM） | GPU 自带的内存，模型权重必须放进去，往往是第一瓶颈 |
+| 显存带宽 | 每秒能读写多少数据，决定推理生成速度 |
+| FLOPS | 每秒浮点运算次数，衡量算力；TFLOPS 是万亿次 |
+| 常见型号 | A100（80GB）、H100 / H800（80GB）、H200（141GB）、B200；推理常用 L40S、4090 |
+| NPU / 国产卡 | 昇腾 910B 等，需要对应的软件栈（CANN）适配 |
+
+## 二、数值精度与量化
+
+![数值精度与显存](/assets/diagrams/docs/ai-precision.svg)
+
+**量化（Quantization）**：把参数从高精度（16 位）压到低精度（8 位、4 位），显存减半甚至更多，速度更快，精度略有损失。常见格式：
+
+- **GPTQ / AWQ**：GPU 上用的 4 位量化，vLLM 支持。
+- **GGUF**：llama.cpp / Ollama 使用，CPU 和 Mac 也能跑。
+- **FP8**：H100 及之后的卡原生支持，精度损失很小，生产部署常用。
+
+粗估显存：${C}参数量(B) × 每参数字节数 ≈ 权重显存(GB)${C}。70B 模型 BF16 约需 140GB，至少两张 80GB 卡；INT4 量化后约 35GB，一张卡可放下。
+
+## 三、推理性能指标
+
+| 指标 | 含义 | 影响因素 |
+|---|---|---|
+| TTFT 首 Token 延迟 | 从发请求到看到第一个字 | 输入长度、排队、预填充计算量 |
+| TPOT / ITL | 之后每个 Token 的间隔 | 显存带宽、模型大小 |
+| TPS / Tokens/s | 每秒生成多少 Token | 单请求看速度，整机看吞吐 |
+| 吞吐（Throughput） | 单位时间处理的总 Token 数 | 批处理大小、并发 |
+| QPS / 并发数 | 同时服务多少请求 | 显存余量、KV Cache 大小 |
+
+推理分两个阶段：**Prefill（预填充）** 一次性处理整段输入，主要吃算力；**Decode（解码）** 一个个生成 Token，主要吃显存带宽。
+
+## 四、推理加速技术
+
+- **KV Cache**：缓存已经算过的注意力 Key/Value，避免重复计算。上下文越长占显存越多。
+- **PagedAttention**：vLLM 的核心，把 KV Cache 像操作系统内存分页一样管理，减少浪费。
+- **Continuous Batching 连续批处理**：请求随到随加入批次，完成就退出，GPU 不空等。
+- **Prefix Caching 前缀缓存**：相同的系统提示只算一次，多请求共享。
+- **投机解码（Speculative Decoding）**：小模型先猜几个 Token，大模型一次验证，速度提升 2~3 倍。
+- **FlashAttention**：重写注意力计算方式，减少显存读写，训练和推理都更快。
+
+## 五、训练的并行方式
+
+模型太大一张卡放不下，或数据太多一张卡算不完，就要多卡并行：
+
+| 方式 | 怎么切 | 适用 |
+|---|---|---|
+| 数据并行（DP / DDP） | 每张卡一份完整模型，各算一部分数据 | 模型能放进单卡 |
+| ZeRO / FSDP | 把参数、梯度、优化器状态分到各卡 | 模型稍大，DeepSpeed 和 PyTorch 原生支持 |
+| 张量并行（TP） | 把一层的矩阵拆到多卡 | 单层太大，通常限于一台机器内 |
+| 流水线并行（PP） | 不同层放不同卡，像流水线 | 层数多，跨机器 |
+| 专家并行（EP） | MoE 的不同专家放不同卡 | MoE 模型 |
+
+训练显存远大于推理：除了权重，还有梯度和优化器状态。全参数微调 7B 模型用 AdamW 约需 7×16 ≈ 112GB，所以普通团队多用 LoRA / QLoRA。
+
+## 六、软件栈
+
+| 名词 | 作用 |
+|---|---|
+| CUDA | NVIDIA 的 GPU 编程平台，几乎所有框架都依赖它 |
+| cuDNN | 深度学习常用算子的加速库 |
+| NCCL | 多卡、多机之间的高速通信库 |
+| NVLink / InfiniBand / RoCE | 卡间和机器间的高速互联网络 |
+| PyTorch | 主流深度学习框架 |
+| DeepSpeed / Megatron-LM | 大模型分布式训练框架 |
+| vLLM / SGLang / TensorRT-LLM | 高性能推理引擎 |
+| Ollama / llama.cpp | 本地轻量运行模型 |
+| Kubernetes + GPU Operator | 在集群里调度 GPU 资源 |
+
+${F}bash
+nvidia-smi                      # 看显卡型号、显存占用、利用率
+nvidia-smi topo -m              # 看卡间连接方式（NVLink / PCIe）
+vllm serve Qwen/Qwen2.5-7B-Instruct --tensor-parallel-size 2
+${F}
+
+## ⚠ 常见误区
+
+- **误区：GPU 利用率 100% 就是跑满了**。这个数字只表示有任务在跑，不代表算力用满，要看 MFU 或实际吞吐。
+- **误区：显存够放权重就能跑**。还要留出 KV Cache 空间，否则并发和上下文长度都上不去。
+- **误区：卡越多越快**。卡间通信慢时（只走 PCIe），多卡张量并行可能反而更慢。
+
+## ✅ 自检清单
+
+- 能估算一个模型在 BF16 和 INT4 下需要多少显存。
+- 能解释 TTFT 和吞吐，以及 Prefill 与 Decode 的区别。
+- 知道 KV Cache、连续批处理为什么能加速。
+- 能说出数据并行、张量并行、流水线并行的区别。
+
+## 📚 延伸阅读
+
+- Hugging Face：The Ultra-Scale Playbook
+- vLLM 论文：Efficient Memory Management for LLM Serving with PagedAttention
+- NVIDIA 开发者博客：Mastering LLM Techniques: Inference Optimization
+`
+          },
           {
             id: "ai-finetune",
             title: "模型微调：SFT、LoRA / QLoRA 与什么时候该微调",

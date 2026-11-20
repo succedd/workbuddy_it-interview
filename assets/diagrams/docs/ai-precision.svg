@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 366" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0f766e"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker></defs>
+<rect width="900" height="366" fill="#f8fafc"/>
+<text x="40" y="38" font-size="22" font-weight="700" fill="#0f172a">数值精度与显存</text>
+<text x="40" y="64" font-size="15" fill="#64748b">每个参数占几个字节，决定模型要多大显存</text>
+<rect x="40.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">FP32</text>
+<rect x="40.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">4 字节</text>
+<text x="136.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">传统训练精度</text>
+<rect x="40.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="136.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">7B 模型</text>
+<text x="136.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">约 28 GB</text>
+<rect x="249.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="345.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">BF16 / FP16</text>
+<rect x="249.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">2 字节</text>
+<text x="345.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">当前训练和推理主流</text>
+<rect x="249.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="345.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">7B 模型</text>
+<text x="345.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">约 14 GB</text>
+<rect x="458.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+<text x="554.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">FP8 / INT8</text>
+<rect x="458.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">1 字节</text>
+<text x="554.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">H100 支持 FP8，精度损失小</text>
+<rect x="458.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="554.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">7B 模型</text>
+<text x="554.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">约 7 GB</text>
+<rect x="667.0" y="92.0" width="193.0" height="50.0" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+<text x="763.5" y="123.0" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="700">INT4</text>
+<rect x="667.0" y="154.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="181.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">0.5 字节</text>
+<text x="763.5" y="203.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">GPTQ / AWQ / GGUF 量化</text>
+<rect x="667.0" y="231.0" width="193.0" height="67.0" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="763.5" y="258.0" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="700">7B 模型</text>
+<text x="763.5" y="280.0" font-size="12" fill="#334155" text-anchor="middle" font-weight="400">约 3.5 GB</text>
+<text x="40.0" y="332.0" font-size="13" fill="#64748b" text-anchor="start" font-weight="400">估算公式：权重显存 ≈ 参数量 × 每参数字节数。推理还要加上 KV Cache 和运行开销，一般再预留 20%~50%。</text>
+</svg>

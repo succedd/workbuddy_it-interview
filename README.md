@@ -318,6 +318,11 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-11-20 · docs: AI 方向新增名词与概念教程（缓存 20261120a → 20261120b）
+
+- AI 大模型应用方向新增 6 章：AI 入门概念地图、神经网络与深度学习核心名词、大模型名词详解、AI 应用开发名词、AI 名词速查表（80 个术语，初级）；AI 算力与工程名词（高级）。AI 方向 10 → 16 章，教程总数 152 → 158 章。
+- 新增示意图 `ai-family`、`nn-training`、`llm-lifecycle`、`ai-precision`（`tools/gen-doc-diagrams.py`）。
+
 ### 2026-11-20 · docs: 新增 AI 大模型 / Python / Go / 大数据 / 算法 教程方向（缓存 20261119f → 20261120a）
 
 > **本轮**：技术教程由 7 个方向扩到 12 个、共 152 章。新增：①**AI 大模型应用**（10 章：大模型原理、Prompt、API 调用、Embedding 与向量库、RAG、Agent、MCP / LangChain、微调、vLLM 部署、评测与安全）；②**Python**（10 章，按 Python 官方教程目录）；③**Go**（11 章，按 Go 官方文档 / Effective Go）；④**大数据**（8 章：Hadoop、Hive、数仓分层、Spark、Kafka、Flink、ClickHouse / Doris、湖仓一体）；⑤**算法与数据结构**（12 章，参考《Hello 算法》与 LeetCode Hot 100）。配套 13 张新示意图（`assets/diagrams/docs/`）；`docs-loader.js` 与 bundle 已加入新文件，`validate-docs.js` / `render-check.js` 已覆盖新方向。
