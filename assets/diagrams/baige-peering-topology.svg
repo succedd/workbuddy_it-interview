@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 490" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker>
+  </defs>
+  <rect width="960" height="490" fill="#f8fafc"/>
+  <text x="36" y="38" font-size="22" font-weight="700" fill="#0f172a">专线 + 跨地域对等连接访问百舸开发机</text>
+  <text x="36" y="64" font-size="15" fill="#64748b">对等连接只连通两个 VPC，机房网段要在两端路由里明确放通</text>
+  <rect x="30" y="120" width="150" height="110" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="72" y="160" font-size="17" font-weight="700" fill="#9a3412">客户机房</text>
+  <text x="62" y="188" font-size="13" fill="#9a3412">IDC 网段</text>
+  <text x="62" y="208" font-size="13" fill="#9a3412">（与 VPC 不重叠）</text>
+  <rect x="250" y="100" width="230" height="150" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="270" y="132" font-size="17" font-weight="700" fill="#047857">华东-苏州 VPC</text>
+  <text x="270" y="158" font-size="13" fill="#047857">网段示例 10.x.0.0/22</text>
+  <rect x="270" y="176" width="190" height="52" rx="6" fill="#ffffff" stroke="#a7f3d0"/>
+  <text x="286" y="198" font-size="13" fill="#065f46">专线网关 / 跳板机</text>
+  <text x="286" y="218" font-size="12" fill="#065f46">跳板机可作临时方案</text>
+  <rect x="660" y="100" width="270" height="150" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="680" y="132" font-size="17" font-weight="700" fill="#1e40af">华北-北京 VPC</text>
+  <text x="680" y="158" font-size="13" fill="#1e40af">网段示例 10.x.20.0/22</text>
+  <rect x="680" y="176" width="105" height="52" rx="6" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="692" y="198" font-size="13" fill="#1e3a8a">BLB 内网VIP</text>
+  <text x="692" y="218" font-size="12" fill="#1e3a8a">接入端口</text>
+  <rect x="805" y="176" width="105" height="52" rx="6" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="822" y="198" font-size="13" fill="#1e3a8a">开发机</text>
+  <text x="822" y="218" font-size="12" fill="#1e3a8a">sshd :22</text>
+  <line x1="785" y1="202" x2="803" y2="202" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="182" y1="175" x2="248" y2="175" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <text x="196" y="164" font-size="13" fill="#1e40af">专线</text>
+  <line x1="482" y1="175" x2="658" y2="175" stroke="#2563eb" stroke-width="3" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="514" y="160" font-size="14" font-weight="700" fill="#1e40af">VPC 对等连接</text>
+  <text x="504" y="198" font-size="12" fill="#475569">同账号 · 非跨境</text>
+  <text x="504" y="216" font-size="12" fill="#475569">按流量计费 · 带宽上限</text>
+  <path d="M105 232 C105 320, 780 320, 735 232" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#r)"/>
+  <text x="300" y="334" font-size="14" font-weight="700" fill="#b91c1c">机房 → 北京：需要逐段核对路由，不会自动转发</text>
+  <rect x="30" y="356"  width="900" height="104" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="50" y="386" font-size="14" font-weight="700" fill="#0f172a">核对清单</text>
+  <text x="50" y="412" font-size="13" fill="#334155">1. 对等连接状态为可用，两端 VPC 网段不重叠，VIP 在北京 VPC 网段内</text>
+  <text x="50" y="436" font-size="13" fill="#334155">2. 对等连接路由与两端 VPC 路由表：是否包含机房网段的去程和回程</text>
+  <text x="500" y="412" font-size="13" fill="#334155">3. 专线网关与机房侧：是否有到北京 VPC 网段的路由</text>
+  <text x="500" y="436" font-size="13" fill="#334155">4. 不满足时：改用云智能网 CSN，或经苏州跳板机访问</text>
+</svg>
